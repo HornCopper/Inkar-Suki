@@ -1,2 +1,9 @@
-# Inkar-Suki
-QQ chat bot by Nonebot
+# 介绍
+`Inkar-Suki`是一款在线聊天机器人，她(设定是女孩子哦~)由强力的[Nonebot2](https://github.com/nonebot/nonebot2)驱动，目前适配`Onebot`协议（推荐Onebot v11）。
+
+# 配置
+由于设计时的初衷，`Inkar-Suki`非常不支持自搭建，除非您能找出目录下所有的`绝对路径`并改为您想使用的路径。
+> 在Windows上，并非一定要用`\`，`/`亦可以。
+
+# 使用
+您可以使用作者提供的公共实例，作者QQ号为`3349104868`，机器人QQ号为`3438531564`，提交申请请发issue，使用模板，**否则一概不处理**，加作者QQ，加机器人QQ的行为将会被直接拒绝。
