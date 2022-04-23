@@ -12,12 +12,19 @@
 `3.7.3`以上理论都可以，建议`3.9`以上哦~
 ## 安装Bot需求的库
 `nonebot2`:`2.0.0b1`
+
 `nb-cli`:`0.6.5`
+
 `nonebot-adapters-onebot`:`2.0.0b1`
+
 `httpx`:`?`
+
 `tabulate`:`?`
+
 `aiocqhttp`:`?`
+
 `selenium`:`?`
+
 `fastapi`:`?`
 
 # 使用
