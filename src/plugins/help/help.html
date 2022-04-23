@@ -1,0 +1,44 @@
+<div style="font-family:Minecraft"><table>
+<thead>
+<tr><th>插件名称               </th><th>插件版本    </th><th>插件介绍                                                                                                                                                    </th><th>插件作者  </th><th>权限等级            </th><th>别名                                                                                                       </th></tr>
+</thead>
+<tbody>
+<tr><td>指令集(smallcmd)       </td><td>1.7-Release </td><td>修改帮助图片的尺寸：+helpimg &lt;??x??&gt;<br>查看当前帮助图片尺寸：+imgsize<br>关闭Bot：+shutdown<br>清除图片缓存：+purge<br>重启Bot：+restart                               </td><td>HornCopper</td><td>0-10                </td><td>+helpimg -&gt; +hi<br>+imgsize -&gt; +is<br>+shutdown -&gt; +poweroff                                                     </td></tr>
+<tr><td>欢迎语(welcome)        </td><td>1.0-Snapshot</td><td>设置指定欢迎消息：+welcome &lt;message&gt;                                                                                                                        </td><td>HornCopper</td><td>修改(5)             </td><td>+welcome_msg_edit -&gt; +wme                                                                                  </td></tr>
+<tr><td>op(op)                 </td><td>1.5-Release </td><td>设置管理员：+op &lt;user&gt; &lt;level&gt;                                                                                                                              </td><td>HornCopper</td><td>10                  </td><td>+op -&gt; +admin, +setadmin                                                                                   </td></tr>
+<tr><td>违禁词封锁(banword)    </td><td>1.1-Release </td><td>封禁指定词语<br>添加：+bwa &lt;message&gt;<br>移除：+bwr &lt;message&gt;                                                                                                      </td><td>HornCopper</td><td>触发(0-4)<br>设置(5-10)</td><td>+bwa<br>+bwr<br>+bwl                                                                                             </td></tr>
+<tr><td>管理员工具(sign)       </td><td>1.0-Keep    </td><td>发布全域公告：+sign &lt;msg&gt;<br>调用CQHTTP API：+call_api &lt;api_with_args&gt;                                                                                         </td><td>HornCopper</td><td>10                  </td><td>+sign -&gt; +公告<br>+call_api -&gt; +api                                                                           </td></tr>
+<tr><td>结婚插件(marry)        </td><td>1.1-Snapshot</td><td>结婚插件<br>结婚：+getmarry &lt;user&gt;<br>离婚：+leavemarry &lt;qq&gt;<br>拒绝：+dm &lt;user&gt;<br>温馨提示：被求婚的是老婆哦~<br>同意：+cm &lt;user&gt;<br>查询：+marry -&gt; +我的老婆(公) +老婆(公)</td><td>HornCopper</td><td>无                  </td><td>+gm -&gt; +getmarry<br>+cm -&gt; +confirmmarryapply, +cmp<br>+dm -&gt; +denymarryapply, +dmp<br>+leavemarry -&gt; +lm, +delmarry</td></tr>
+<tr><td>黑名单/封锁系统(ban)   </td><td>1.0-Snapshot</td><td>封禁指定用户<br>添加：+ban &lt;user&gt;<br>移除：+unban &lt;user&gt;                                                                                                          </td><td>HornCopper</td><td>10                  </td><td>+ban -&gt; +block<br>+unban -&gt; +unblock                                                                          </td></tr>
+<tr><td>help(help)             </td><td>1.2-Snapshot</td><td>获取帮助的插件。<br>+help                                                                                                                                      </td><td>HornCopper</td><td>0                   </td><td>帮助                                                                                                       </td></tr>
+<tr><td>echo(echo)             </td><td>1.0-Keep    </td><td>让机器人发送指定内容。<br>纯文本：+echo &lt;message&gt;<br>CQ码：+say &lt;cqcode&gt;                                                                                          </td><td>HornCopper</td><td>9                   </td><td>None                                                                                                       </td></tr>
+<tr><td>sh(sh)                 </td><td>1.0-Keep    </td><td>执行系统命令。<br>获得输出：+front &lt;cmd&gt;<br>后台执行：+back &lt;cmd&gt;                                                                                                 </td><td>HornCopper</td><td>10                  </td><td>无                                                                                                         </td></tr>
+<tr><td>Wiki Search(wiki)      </td><td>1.1-Release </td><td>搜索MediaWiki上的内容：+wiki &lt;title&gt; [-i]<br>-i参数会附加图片。                                                                                                </td><td>HornCopper</td><td>None                </td><td>+mcw -&gt; 我的世界百科, +我的世界维基, +mcwiki<br>+wzh -&gt; +维基百科, +wikipedia, +wp                            </td></tr>
+<tr><td>GitHub Webhook(webhook)</td><td>1.5-Snapshot</td><td>添加GitHub Webhook监听群：<br>+webhookadd &lt;group_id&gt; &lt;repo&gt;<br>移除GitHub Webhook监听群：+webhookremove &lt;group_id&gt; &lt;repo&gt;                                         </td><td>HornCopper</td><td>10                  </td><td>+webhookadd -&gt; +wa<br>+webhookremove -&gt; +wr                                                                   </td></tr>
+<tr><td>ping(ping)             </td><td>1.0-Keep    </td><td>测试机器人是否在线：+ping                                                                                                                                   </td><td>HornCopper</td><td>时间(All)<br>占用(1-10)</td><td>测试                                                                                                       </td></tr>
+</tbody>
+</table></div>
+<style>
+            ::-webkit-scrollbar 
+            {
+            display: none;
+                
+            }
+            table { 
+            border-collapse: collapse; 
+                } 
+              table, th, td { 
+                border: 1px solid rgba(0,0,0,0.05); 
+                font-size: 0.8125rem; 
+                font-weight: 500; 
+              } 
+              th, td { 
+              padding: 15px; 
+              text-align: left; 
+              }
+              @font-face
+              {
+                  font-family: Minecraft;
+                  src: url("file:///root/nb/src/plugins/help/unifont.ttf");
+              }
+            </style>
