@@ -12,7 +12,7 @@
 ## 安装Bot需求的库
 `nonebot2`:`2.0.0b1`    
 `nb-cli`:`0.6.5`    
-`nonebot-adapters-onebot`:`2.0.0b1`    
+`nonebot-adapter-onebot`:`2.0.0b1`    
 `httpx`:`?`    
 `tabulate`:`?`     
 `aiocqhttp`:`?`     
