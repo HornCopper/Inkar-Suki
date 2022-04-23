@@ -1,0 +1,1 @@
+{"author":"HornCopper","version":"1.1-Snapshot","name":"结婚插件(marry)","admin":"无","aliases":"+gm -> +getmarry$+cm -> +confirmmarryapply, +cmp$+dm -> +denymarryapply, +dmp$+leavemarry -> +lm, +delmarry","desc":"结婚插件$结婚：+getmarry <user>$离婚：+leavemarry <qq>$拒绝：+dm <user>$温馨提示：被求婚的是老婆哦~$同意：+cm <user>$查询：+marry -> +我的老婆(公) +老婆(公)"}
