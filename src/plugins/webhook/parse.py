@@ -1,13 +1,11 @@
+import re
+from nonebot.log import logger
+from nonebot.adapters.onebot.v11 import MessageSegment as ms
 class main:
     def push(body):
         pusher = body['pusher']['name']
-        repo_url = body["repository"]["html_url"]
         repo_name = body["repository"]["full_name"]
-        commit_url = body['commits'][0]['url']
         commit = body['commits'][0]['message']
-        added = body['commits'][0]['added']
-        removed = body['commits'][0]['removed']
-        modified = body['commits'][0]['modified']
         ver = body["after"][0:6]
         return f"{pusher} pushed to {repo_name}.\n[{ver}]{commit}"
     def issues(body):
@@ -43,6 +41,11 @@ class main:
         if action == "created":
             sender = body["sender"]["login"]
             msg = body["comment"]["body"]
+            msg_regex = re.compile(r"!\[.*\]\((.*)\)")
+            images = msg_regex.findall(msg)
+            msg = re.sub(r"!\[.*\]\((.*)\)","[图片]",msg)
+            for i in images:
+                msg = msg + ms.image(i)          
             repo_name = body["repository"]["full_name"]
             issue_num = str(body["issue"]["number"])
             issue_title = body["issue"]["title"]
