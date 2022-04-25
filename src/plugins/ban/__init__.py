@@ -35,7 +35,7 @@ async def _(bot: Bot, event: Event, args: Message = CommandArg()):
     else:
         now = json.loads(read("/root/nb/src/tools/ban.json"))
         now.append(sb)
-        write("/root/nb/src/tools/ban.json",now)
+        write("/root/nb/src/tools/ban.json",json.dumps(now))
         sb_name = info["nickname"]
         await ban.finish(f"好的，已经封禁{sb_name}({sb})。")
 
@@ -49,14 +49,14 @@ async def _(bot: Bot, event: Event, args: Message = CommandArg()):
     info = await bot.call_api("get_stranger_info",user_id=int(sb))
     sb_name = info["nickname"]
     if sb == False:
-        await ban.finish("您输入了什么？")
+        await unban.finish("您输入了什么？")
     if in_it(sb) == False:
         await unban.finish("解封失败，并没有封禁此人哦~")
     now = json.loads(read("/root/nb/src/tools/ban.json"))
     for i in now:
         if i == sb:
             now.remove(i)
-    write("/root/nb/src/tools/ban.json",json_)
+    write("/root/nb/src/tools/ban.json",json.dumps(now))
     await ban.finish(f"好的，已经解封{sb_name}({sb})。")
 
 ban = on_message(priority=1,block=False)
