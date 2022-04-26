@@ -1,11 +1,14 @@
+import sys
+from pathlib import Path
+
 from nonebot.adapters.onebot.v11 import Event
+from nonebot.matcher import Matcher
 from nonebot.params import CommandArg
 from nonebot.plugin import on_command
-from nonebot.matcher import Matcher
-import sys
-sys.path.append("/root/nb/src/tools")
-from permission import checker, error
 
+TOOLS = Path(__file__).resolve().parent.parent.parent / "tools"
+sys.path.append(str(TOOLS))
+from permission import checker, error
 
 from functools import reduce
 from nonebot.adapters.onebot.v11 import (

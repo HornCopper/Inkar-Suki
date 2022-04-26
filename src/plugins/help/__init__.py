@@ -1,20 +1,24 @@
+import json
+import os
+import sys
 from pathlib import Path
+
+from aiocqhttp import MessageSegment
 from nonebot import on_command
-from nonebot.matcher import Matcher
 from nonebot.adapters import Message
 from nonebot.adapters.onebot.v11 import Event
+from nonebot.matcher import Matcher
 from nonebot.params import CommandArg
 from tabulate import tabulate
-from aiocqhttp import MessageSegment
+
 from .picture import main as pic
-import os
-import json
-import sys
-sys.path.append("/root/nb/src/tools")
+
+TOOLS = Path(__file__).resolve().parent.parent.parent / "tools"
+sys.path.append(str(TOOLS))
 from file import read
 
 help = on_command("help", aliases={"帮助"}, priority=5)
-css="""
+css = """
 <style>
             ::-webkit-scrollbar 
             {
