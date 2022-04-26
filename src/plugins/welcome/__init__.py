@@ -1,15 +1,20 @@
-from nonebot import on_notice, on_command
-from nonebot.matcher import Matcher
-from nonebot.adapters import Message
-from nonebot.params import CommandArg
-from nonebot.adapters.onebot.v11 import Bot, NoticeEvent, Event
-from aiocqhttp import MessageSegment as ms
 import sys
-sys.path.append("/root/nb/src/tools")
+from pathlib import Path
+
+from aiocqhttp import MessageSegment as ms
+from nonebot import on_notice, on_command
+from nonebot.adapters import Message
+from nonebot.adapters.onebot.v11 import Bot, NoticeEvent, Event
+from nonebot.matcher import Matcher
+from nonebot.params import CommandArg
+
+TOOLS = Path(__file__).resolve().parent.parent.parent / "tools"
+sys.path.append(str(TOOLS))
 from permission import checker, error
 from file import read, write
 
 welcome = on_notice(priority=5)
+
 
 @welcome.handle()
 async def _(bot: Bot, event: NoticeEvent):

@@ -1,30 +1,36 @@
-from nonebot import on_command
-from nonebot import get_bot
-from nonebot.log import logger
-import nonebot
-from nonebot.matcher import Matcher
-from nonebot.adapters import Message
-from nonebot.params import CommandArg
-from nonebot.adapters.onebot.v11 import Bot, Event
 import json
 import sys
-sys.path.append("/root/nb/src/tools")
+from pathlib import Path
+
+import nonebot
+from nonebot import get_bot
+from nonebot import on_command
+from nonebot.adapters import Message
+from nonebot.adapters.onebot.v11 import Bot, Event
+from nonebot.log import logger
+from nonebot.matcher import Matcher
+from nonebot.params import CommandArg
+
+TOOLS = Path(__file__).resolve().parent.parent.parent / "tools"
+sys.path.append(str(TOOLS))
 from permission import checker, error
 from http_ import http
 from file import read, write
 
+
 def checknumber(number):
     return number.isdecimal()
-    
+
+
 def group_exist(group):
-    info = json.loads(read("/root/nb/src/tools/webhook.json"))
+    info = json.loads(read(TOOLS / "webhook.json"))
     for i in info:
         if i["group"] == group:
             return True
     return False
     
 def group_and_repo_exist(group, repo):
-    info = json.loads(read("/root/nb/src/tools/webhook.json"))
+    info = json.loads(read(TOOLS / "webhook.json"))
     for i in info:
         if i["group"] == group:
             for q in i["repo"]:
@@ -56,17 +62,17 @@ async def _(matcher: Matcher, event: Event, args: Message = CommandArg()):
     if group_and_repo_exist(group, repo):
         await wa.finish("Repo已经添加过了哦~")
     if group_exist(group):
-        info = json.loads(read("/root/nb/src/tools/webhook.json"))
+        info = json.loads(read(TOOLS / "webhook.json"))
         for i in info:
             if i["group"] == group:
                 i["repo"].append(repo)
-        write("/root/nb/src/tools/webhook.json", json.dumps(info))
+        write(TOOLS / "webhook.json", json.dumps(info))
         await wa.finish("绑定成功！")
     else:
-        new = {"group":group,"repo":[repo]}
-        info = json.loads(read("/root/nb/src/tools/webhook.json"))
+        new = {"group": group, "repo": [repo]}
+        info = json.loads(read(TOOLS / "webhook.json"))
         info.append(new)
-        write("/root/nb/src/tools/webhook.json", json.dumps(info))
+        write(TOOLS / "webhook.json", json.dumps(info))
         await wa.finish("绑定成功！")
     
         
@@ -92,12 +98,12 @@ async def _(matcher: Matcher, event: Event, args: Message = CommandArg()):
         await wr.finish("唔……这个群尚未绑定任何Repo~")
     if group_and_repo_exist(group, repo) == False:
         await wr.finish("唔……这个群没有绑定这个仓库哦~")
-    info = json.loads(read("/root/nb/src/tools/webhook.json"))
+    info = json.loads(read(TOOLS / "webhook.json"))
     if repo == "-a":
         for i in info:
             if i["group"] == group:
                 info.remove(i)
-                write("/root/nb/src/tools/webhook.json", json.dumps(info))
+                write(TOOLS / "webhook.json", json.dumps(info))
                 await wr.finish("解绑成功！")
     else:
         for i in info:
@@ -106,11 +112,11 @@ async def _(matcher: Matcher, event: Event, args: Message = CommandArg()):
                     if b == repo:
                         if len(i["repo"]) == 1:
                             info.remove(i)
-                            write("/root/nb/src/tools/webhook.json", json.dumps(info))
+                            write(TOOLS / "webhook.json", json.dumps(info))
                             await wr.finish("解绑成功！")
                         else:
                             i["repo"].remove(b)
-                            write("/root/nb/src/tools/webhook.json", json.dumps(info))
+                            write(TOOLS / "webhook.json", json.dumps(info))
                             await wr.finish("解绑成功！")
     
 from fastapi import Request, FastAPI
@@ -128,7 +134,7 @@ async def recWebHook(req: Request):
     return {"status":200}
 
 async def sendNbMessage(bot: Bot, message, repo):
-    group_id_list = json.loads(read("/root/nb/src/tools/webhook.json"))
+    group_id_list = json.loads(read(TOOLS / "webhook.json"))
     for i in group_id_list:
         for m in i["repo"]:
             if m == repo:

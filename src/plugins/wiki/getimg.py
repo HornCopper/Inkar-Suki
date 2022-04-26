@@ -1,7 +1,13 @@
-from bs4 import BeautifulSoup
 import sys
-sys.path.append("/root/nb/src/tools")
+from pathlib import Path
+
+from bs4 import BeautifulSoup
+
+TOOLS = Path(__file__).resolve().parent.parent.parent / "tools"
+sys.path.append(str(TOOLS))
 from http_ import http
+
+
 class main:
     async def mcw(title):
         url = f"https://minecraft.fandom.com/zh/wiki/{title}"
@@ -9,7 +15,7 @@ class main:
         soup = BeautifulSoup(html, 'html.parser')
         images = []
         for x in soup.find_all(class_="infobox-imagearea"):
-            soup_ = BeautifulSoup(str(x),'html.parser')
+            soup_ = BeautifulSoup(str(x), 'html.parser')
             for y in soup_.find_all(class_="image"):
                 tag = str(y['href'])
                 images.append(tag[:tag.find("/revision")])
