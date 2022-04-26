@@ -1,19 +1,26 @@
+import json
+import sys
+from pathlib import Path
+
+from aiocqhttp import MessageSegment as ms
 from nonebot import on_command
 from nonebot.adapters import Message
 from nonebot.adapters.onebot.v11 import Event, Bot
 from nonebot.params import CommandArg
-from aiocqhttp import MessageSegment as ms
-import json
-import sys
+
 from .marry import already_married
-sys.path.append("/root/nb/src/tools")
-from permission import checker, error
+
+TOOLS = Path(__file__).resolve().parent.parent.parent / "tools"
+sys.path.append(str(TOOLS))
 from file import read, write
+
 
 def checknumber(number):
     return number.isdecimal()
 
-gm = on_command("gm",aliases={"getmarry"},priority=5)
+
+gm = on_command("gm", aliases={"getmarry"}, priority=5)
+
 
 @gm.handle()
 async def _(bot: Bot, event: Event, args: Message = CommandArg()):
@@ -30,10 +37,10 @@ async def _(bot: Bot, event: Event, args: Message = CommandArg()):
     elif already_married(wife):
         await gm.finish("可惜别人抢先求婚/结婚了，除非对方拒绝/离婚，否则您只能下次早点了。")
     else:
-        newmarry = {"wife":wife,"husband":husband,"confirm":"No"}
-        nowlist = json.loads(read("/root/nb/src/tools/marry.json"))
+        newmarry = {"wife": wife, "husband": husband, "confirm": "No"}
+        nowlist = json.loads(read(TOOLS / "marry.json"))
         nowlist.append(newmarry)
-        write("/root/nb/src/tools/marry.json",json.dumps(nowlist))
+        write(TOOLS / "marry.json", json.dumps(nowlist))
         msg = ms.at(husband) + " 已收到！请提醒对方使用+cm <你的QQ号>来同意哦，其他人都没办法抢哦~"
         await gm.finish(msg)
         
@@ -43,14 +50,14 @@ cm = on_command("confirmmarryapply",aliases={"cm","cmp"},priority=5)
 async def __(bot: Bot, event: Event, args: Message = CommandArg()):
     husband = args.extract_plain_text()
     wife = str(event.user_id)
-    nowlist = json.loads(read("/root/nb/src/tools/marry.json"))
+    nowlist = json.loads(read(TOOLS / "marry.json"))
     for i in nowlist:
         if i["wife"] == wife and i["husband"] == husband:
             if i["confirm"] == "Yes":
                 await cm.finish("不能再同意了哦，你们已经结婚了。")
             else:
                 i["confirm"] = "Yes"
-                write("/root/nb/src/tools/marry.json",json.dumps(nowlist))
+                write(TOOLS / "marry.json", json.dumps(nowlist))
                 await cm.finish("恭喜" + ms.at(husband) + "和" + ms.at(wife) + "结婚！")
     await cm.finish("你不能和他结婚，因为他还没有求婚呢！")
 
@@ -60,12 +67,12 @@ dm = on_command("denymarryapply",aliases={"dm","dmp"},priority=5)
 async def ___(bot: Bot, event: Event, args: Message = CommandArg()):
     husband = args.extract_plain_text()
     wife = str(event.user_id)
-    nowlist = json.loads(read("/root/nb/src/tools/marry.json"))
+    nowlist = json.loads(read(TOOLS / "marry.json"))
     for i in nowlist:
         if i["wife"] == wife and i["husband"] == husband:
             if i["confirm"] == "No":
                 nowlist.remove(i)
-                write("/root/nb/src/tools/marry.json",json.dumps(nowlist))
+                write(TOOLS / "marry.json", json.dumps(nowlist))
                 await dm.finish(ms.at(husband) + " 你的求婚被拒绝了！")
             else:
                 await dm.finish("已经结婚了，不能拒绝求婚，请使用+lm进行离婚，非常不推荐的哦！")
@@ -76,12 +83,12 @@ lm = on_command("leavemarry",aliases={"lm","delmarry"},priority=5)
 @lm.handle()
 async def ____(bot: Bot, event: Event, args: Message = CommandArg()):
     self_id = str(event.user_id)
-    nowlist = json.loads(read("/root/nb/src/tools/marry.json"))
+    nowlist = json.loads(read(TOOLS / "marry.json"))
     for i in nowlist:
         if i["wife"] == self_id or i["husband"] == self_id:
             if i["confirm"] == "Yes":
                 nowlist.remove(i)
-                write("/root/nb/src/tools/marry.json",json.dumps(nowlist))
+                write(TOOLS / "marry.json", json.dumps(nowlist))
                 await lm.finish("你们离婚了！")
             else:
                 await lm.finish("你们不能离婚，因为尚未接受对方求婚！")
@@ -92,7 +99,7 @@ m = on_command("marry",aliases={"老婆","我的老婆","老公","我的老公"}
 @m.handle()
 async def _____(bot: Bot, event: Event, args: Message = CommandArg()):
     self_id = str(event.user_id)
-    nowlist = json.loads(read("/root/nb/src/tools/marry.json"))
+    nowlist = json.loads(read(TOOLS / "marry.json"))
     role = ""
     another = ""
     for i in nowlist:

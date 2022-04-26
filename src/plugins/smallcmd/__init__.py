@@ -1,20 +1,27 @@
+import os
+import sys
+from pathlib import Path
+
+from nonebot import on_command
+from nonebot.adapters import Message
 from nonebot.adapters.onebot.v11 import Event, Bot
 from nonebot.params import CommandArg
-from nonebot.adapters import Message
-from nonebot import on_command
+
 from .example import status
-import sys, os
-sys.path.append("/root/nb/src/tools")
+
+TOOLS = Path(__file__).resolve().parent.parent.parent / "tools"
+sys.path.append(str(TOOLS))
 from permission import checker, error
 from file import read, write
 
 status
 
-helpimg = on_command("helpimg",aliases={"hi"},priority=5)
+helpimg = on_command("helpimg", aliases={"hi"}, priority=5)
+
 
 @helpimg.handle()
 async def _(bot: Bot, event: Event, args: Message = CommandArg()):
-    if checker(str(event.user_id),9) == False:
+    if checker(str(event.user_id), 9) == False:
         await helpimg.finish(error(10))
     size = args.extract_plain_text()
     if size:
