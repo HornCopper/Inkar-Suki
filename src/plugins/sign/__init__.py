@@ -1,17 +1,22 @@
+import sys
+from pathlib import Path
+
 from nonebot import on_command
 from nonebot.adapters import Message
-from nonebot.params import CommandArg
 from nonebot.adapters.onebot.v11 import Bot, Event
-import sys
-sys.path.append("/root/nb/src/tools")
+from nonebot.params import CommandArg
+
+TOOLS = Path(__file__).resolve().parent.parent.parent / "tools"
+sys.path.append(str(TOOLS))
 from permission import checker, error
 from http_ import http
 
-sign = on_command("sign",aliases={"公告"},priority=5)
+sign = on_command("sign", aliases={"公告"}, priority=5)
+
 
 @sign.handle()
 async def _(bot: Bot, event: Event, args: Message = CommandArg()):
-    if checker(str(event.user_id),10) == False:
+    if checker(str(event.user_id), 10) == False:
         sign.finish(error(10))
     cmd = args.extract_plain_text()
     groups = await bot.call_api("get_group_list")

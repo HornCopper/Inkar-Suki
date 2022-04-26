@@ -1,37 +1,43 @@
-from nonebot import on_command
-from nonebot import on_message
-from nonebot.matcher import Matcher
-from nonebot.adapters import Message
-from nonebot.params import CommandArg
-from nonebot.adapters.onebot.v11 import Bot, MessageEvent, Event
-from aiocqhttp import MessageSegment as ms
 import json
 import sys
-sys.path.append("/root/nb/src/tools")
+from pathlib import Path
+
+from aiocqhttp import MessageSegment as ms
+from nonebot import on_command
+from nonebot import on_message
+from nonebot.adapters import Message
+from nonebot.adapters.onebot.v11 import Bot, MessageEvent, Event
+from nonebot.matcher import Matcher
+from nonebot.params import CommandArg
+
+TOOLS = Path(__file__).resolve().parent.parent.parent / "tools"
+sys.path.append(str(TOOLS))
 from permission import checker, error
 from file import read, write
 
-def is_in(full_str, sub_str): 
-  try: 
-    full_str.index(sub_str) 
-    return True
-  except ValueError: 
-    return False
+
+def is_in(full_str, sub_str):
+    try:
+        full_str.index(sub_str)
+        return True
+    except ValueError:
+        return False
+
 
 global flag
 
-    
-bwa = on_command("banwordadd",aliases={"bwa","addbanword"},priority=5)
+bwa = on_command("banwordadd", aliases={"bwa", "addbanword"}, priority=5)
+
 
 @bwa.handle()
 async def __(matcher: Matcher, event: Event, args: Message = CommandArg()):
     cmd = args.extract_plain_text()
-    if checker(str(event.user_id),5) == False:
+    if checker(str(event.user_id), 5) == False:
         await bwa.finish(error(5))
     if cmd:
-        now = json.loads(read("/root/nb/src/tools/banword.json"))
+        now = json.loads(read(TOOLS / "banword.json"))
         now.append(cmd)
-        write("/root/nb/src/tools/banword.json",json.dumps(now,ensure_ascii=False))
+        write(TOOLS / "banword.json", json.dumps(now, ensure_ascii=False))
         await bwa.finish("已成功封禁词语！")
     else:
         await bwa.finish("您封禁了什么？")
@@ -44,10 +50,10 @@ async def ___(matcher: Matcher, event: Event, args: Message = CommandArg()):
         await bwr.finish(error(5))
     cmd = args.extract_plain_text()
     if cmd:
-        now = json.loads(read("/root/nb/src/tools/banword.json"))
+        now = json.loads(read(TOOLS / "banword.json"))
         try:
             now.remove(cmd)
-            write("/root/nb/src/tools/banword.json",json.dumps(now,ensure_ascii=False))
+            write(TOOLS / "banword.json", json.dumps(now, ensure_ascii=False))
             await bwr.finish("成功解封词语！")
         except ValueError:
             await bwr.finish("您解封了什么？")
@@ -61,7 +67,7 @@ async def _(matcher: Matcher,bot: Bot, event: MessageEvent):
     if checker(str(event.user_id),5):
         return
     flag = False
-    banwordlist = read("/root/nb/src/tools/banword.json")
+    banwordlist = read(TOOLS / "banword.json")
     msg = str(event.raw_message)
     id = str(event.message_id)
     for i in banwordlist:

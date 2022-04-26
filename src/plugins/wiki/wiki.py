@@ -1,14 +1,21 @@
-import json, sys
-sys.path.append("/root/nb/src/tools")
+import json
+import sys
+from pathlib import Path
 
-global redirect_flag 
+TOOLS = Path(__file__).resolve().parent.parent.parent / "tools"
+sys.path.append(str(TOOLS))
+
+global redirect_flag
 global redirect_from
 global redirect_to
 global img_flag
 from http_ import http
+
+
 class apilinks:
     def mcw(msg):
         return f"https://minecraft.fandom.com/zh/api.php?action=query&titles={msg}&prop=extracts&format=json&redirects=True&explaintext=True"
+
     def wzh(msg):
         return f"https://zh.wikipedia.org/w/api.php?action=query&titles={msg}&prop=extracts&format=json&redirects=True&explaintext=True&variant=zh-cn"
 class wikilinks:
