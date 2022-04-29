@@ -7,3 +7,16 @@
 ![GitHub Repo stars](https://img.shields.io/github/stars/HornCopper/Inkar-Suki?style=social)
 ![GitHub Repo stars](https://img.shields.io/github/forks/HornCopper/Inkar-Suki?style=social)
 ![GitHub tag](https://img.shields.io/github/v/tag/HornCopper/Inkar-Suki?include_prereleases)
+## 介绍
+`Inkar Suki`是由`HornCopper`所编写，所有用户共同维护的`Python`机器人，基于`[Nonebot2](https://github.com/nonebot/nonebot2)开发`。
+
+当然啦，你也可以叫她伊卡尔酱哦~
+
+## 公告栏
+> `Inkar Suki`正在规划`v0.8`大版本发布！此次更新有如下内容：
+> 1.将所有的绝对路径加入到配置文件中（`.env.dev`）；
+> 2.加入适配**所有MediaWiki**的wiki插件（目前仅适配[Minecraft Wiki](https://minecraft.fandom.com/zh/wiki/)和[维基百科](https://zh.wikipedia.org/wiki/)）。
+## 使用
+### 准备环境
+#### Python
+Python版本限制是`3.8`以上，当然，这**不是硬性限制**，你依然可以较低的版本，但是最低硬性限制是`3.7.3`。
