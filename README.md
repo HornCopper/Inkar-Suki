@@ -27,7 +27,25 @@
 - 如果是Windows用户，安装的时候请一定要勾选`添加至PATH`之类的字眼，否则`pip`可能无法直接使用。
 - 如果是Linux用户，编译安装的时候请一定记得安装完成后创建到`/usr/local/bin`的软链接文件以便直接使用（`python`和`python3`以及`pip`和`pip3`等）。
 #### 第三方库
-~~想要偷懒？
-`
-pip install -r requirements.txt
-`~~
+~~想要偷懒？`pip install -r requirements.txt`~~
+- `Inkar Suki`目前对`Nonebot2`的`2.0.0b2`版本**不是很兼容(#9)**，所以暂时请安装Nonebot2.0.0b1版本。
+```bash
+pip install nonebot2==2.0.0b1
+```
+### 运行
+由于第三方库补全时已经补全了`nb-cli`，**如果环境变量没有出问题，那么可以用`nb run`启动，反之，请使用`python3 bot.py`。
+**等等！你还没有配置哦！**
+#### 配置
+首先打开我们的`.env.dev`，你会看到如下内容。
+```dotenv
+HOST=127.0.0.1
+PORT=2333
+COMMAND_START=["+"]
+
+[FastAPI]
+fastapi_reload = true
+```
+其中`PORT`和`HOST`可根据`go-cqhttp`的配置进行修改。
+- `COMMAND_START`即命令前缀，比如`/cmd aabbb`中`/`即为前缀，以此类推，默认为`+`（某些地方也称为`明确调用`）。
+你需要在`COMMAND_START`下方加一行`SUPERUSERS`，假设`QQ号`是`123456789`，那么请填写为`SUPERUSERS=["123456789"]`，具体可参考[Nonebot 2文档](https://v2.nonebot.dev/docs/tutorial/configuration)。
+> 正在续写中哦~
