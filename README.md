@@ -28,6 +28,6 @@
 - 如果是Linux用户，编译安装的时候请一定记得安装完成后创建到`/usr/local/bin`的软链接文件以便直接使用（`python`和`python3`以及`pip`和`pip3`等）。
 #### 第三方库
 ~~想要偷懒？
-```bash
+`
 pip install -r requirements.txt
-```~~
+`~~
