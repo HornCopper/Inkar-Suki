@@ -30,4 +30,4 @@
 ~~想要偷懒？
 ```bash
 pip install -r requirements.txt
-```
+```~~
