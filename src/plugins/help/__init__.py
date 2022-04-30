@@ -17,6 +17,7 @@ from .picture import main as pic
 TOOLS = nonebot.get_driver().config.tools_path
 sys.path.append(str(TOOLS))
 from file import read
+from config import Config
 
 help = on_command("help", aliases={"帮助"}, priority=5)
 css = """
@@ -41,10 +42,11 @@ css = """
               @font-face
               {
                   font-family: Minecraft;
-                  src: url("file:///root/nb/src/plugins/help/oppo_sans.ttf");
+                  src: url("file://略略略");
               }
             </style>"""
-path = "/root/nb/src/plugins/"
+css.replace("略略略",Config.font_path)
+path = Config.global_path
 final_plugin_information_file_path = {}
 name = {}
 version = {}
@@ -54,8 +56,8 @@ desc = {}
 admin = {}
 aliases = {}
 table = []
-html_path = "/root/nb/src/plugins/help/help.html"
-imgPath = "/root/nb/src/plugins/help/help.png"
+html_path = Config.html_path
+imgPath = Config.help_image_save_to
 
 @help.handle()
 async def help_(matcher: Matcher, event: Event, args: Message = CommandArg()):
@@ -87,14 +89,13 @@ async def help_(matcher: Matcher, event: Event, args: Message = CommandArg()):
     if os.path.exists(imgPath) == False:
         pic_status = pic()
         if pic_status == "200 OK":
-            help_path = Path("/root/nb/src/plugins/help/help.png").as_uri()
+            help_path = Path(Config.help_image_save_to).as_uri()
             pic_msg = MessageSegment.image(help_path)
             msg = "喵……以下为帮助信息：" + pic_msg
         else:
             msg = f"唔……帮助图片生成失败了哦，请联系管理员尝试清除缓存。\n错误信息如下：{pic_status}"
     else:
-        help_path = Path("/root/nb/src/plugins/help/help.png").as_uri()
+        help_path = Path(Config.help_image_save_to).as_uri()
         pic_msg = MessageSegment.image(help_path)
         msg = "喵……以下为帮助信息：" + pic_msg
     await help.finish(msg)
-    return

@@ -11,6 +11,7 @@ TOOLS = nonebot.get_driver().config.tools_path
 sys.path.append(str(TOOLS))
 from permission import checker, error
 from http_ import http
+from config import Config
 
 sign = on_command("sign", aliases={"公告"}, priority=5)
 
@@ -30,4 +31,4 @@ async def _(bot: Bot, event: Event, args: Message = CommandArg()):
     if checker(str(event.user_id),10) == False:
         await call_api.finish(error(10))
     cmd = args.extract_plain_text()
-    await http.get_url(f"http://127.0.0.1:2334/{cmd}",300)
+    await http.get_url(f"{Config.cqhttp}{cmd}",300)
