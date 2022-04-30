@@ -112,7 +112,3 @@ class Config:
 > 有关`go-cqhttp`的配置，请前往`文档`（[点此前往](https://docs.go-cqhttp.org)）。
 #### 运行
 由于第三方库补全时已经补全了`nb-cli`，**如果环境变量没有出问题，那么可以用`nb run`启动，反之，请使用`python3 bot.py`。
-=======
-> 有关`go-cqhttp`的配置，请前往`文档`（[点此前往](https://docs.go-cqhttp.org)）。
-#### 运行
-由于第三方库补全时已经补全了`nb-cli`，**如果环境变量没有出问题，那么可以用`nb run`启动，反之，请使用`python3 bot.py`。
