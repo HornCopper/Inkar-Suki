@@ -2,7 +2,8 @@ import json
 import sys
 from pathlib import Path
 
-from aiocqhttp import MessageSegment as ms
+import nonebot
+from nonebot.adapters.onebot.v11 import MessageSegment as ms
 from nonebot import on_command
 from nonebot.adapters import Message
 from nonebot.adapters.onebot.v11 import Event, Bot
@@ -10,7 +11,7 @@ from nonebot.params import CommandArg
 
 from .marry import already_married
 
-TOOLS = Path(__file__).resolve().parent.parent.parent / "tools"
+TOOLS = nonebot.get_driver().config.tools_path
 sys.path.append(str(TOOLS))
 from file import read, write
 

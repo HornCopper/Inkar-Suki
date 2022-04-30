@@ -3,17 +3,18 @@ import os
 import sys
 from pathlib import Path
 
-from aiocqhttp import MessageSegment
+from nonebot.adapters.onebot.v11 import MessageSegment
 from nonebot import on_command
 from nonebot.adapters import Message
 from nonebot.adapters.onebot.v11 import Event
 from nonebot.matcher import Matcher
 from nonebot.params import CommandArg
 from tabulate import tabulate
+import nonebot
 
 from .picture import main as pic
 
-TOOLS = Path(__file__).resolve().parent.parent.parent / "tools"
+TOOLS = nonebot.get_driver().config.tools_path
 sys.path.append(str(TOOLS))
 from file import read
 
@@ -40,7 +41,7 @@ css = """
               @font-face
               {
                   font-family: Minecraft;
-                  src: url("file:///root/nb/src/plugins/help/unifont.ttf");
+                  src: url("file:///root/nb/src/plugins/help/oppo_sans.ttf");
               }
             </style>"""
 path = "/root/nb/src/plugins/"

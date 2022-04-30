@@ -7,8 +7,10 @@ from nonebot.adapters import Message
 from nonebot.adapters.onebot.v11 import Event
 from nonebot.matcher import Matcher
 from nonebot.params import CommandArg
+import nonebot
 
-TOOLS = Path(__file__).resolve().parent.parent.parent / "tools"
+TOOLS = nonebot.get_driver().config.tools_path
+OWNER = nonebot.get_driver().config.owner
 sys.path.append(str(TOOLS))
 from permission import checker, error
 from file import write, read
@@ -37,7 +39,7 @@ async def handle_first_receive(matcher: Matcher, event: Event, args: Message = C
             await op.finish("唔，你好像少了点参数。")
         else:
             adminlist = json.loads(read(TOOLS / "permission.json"))
-            if arguments[0] == "3349104868":
+            if arguments[0] == OWNER:
                 await op.finish("哈哈你改不了主人的权限的啦！")
             if arguments[1] not in ["0","1","2","3","4","5","6","7","8","9","10"]:
                 await op.finish("你这设置的什么鬼权限啊？！")

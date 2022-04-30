@@ -11,7 +11,7 @@ from nonebot.log import logger
 from nonebot.matcher import Matcher
 from nonebot.params import CommandArg
 
-TOOLS = Path(__file__).resolve().parent.parent.parent / "tools"
+TOOLS = nonebot.get_driver().config.tools_path
 sys.path.append(str(TOOLS))
 from permission import checker, error
 from http_ import http

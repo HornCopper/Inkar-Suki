@@ -4,9 +4,10 @@ from pathlib import Path
 from nonebot.adapters.onebot.v11 import Event
 from nonebot.matcher import Matcher
 from nonebot.params import CommandArg
-from nonebot.plugin import on_command
+from nonebot import on_command
+import nonebot
 
-TOOLS = Path(__file__).resolve().parent.parent.parent / "tools"
+TOOLS = nonebot.get_driver().config.tools_path
 sys.path.append(str(TOOLS))
 from permission import checker, error
 

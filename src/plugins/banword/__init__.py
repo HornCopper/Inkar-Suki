@@ -2,15 +2,16 @@ import json
 import sys
 from pathlib import Path
 
-from aiocqhttp import MessageSegment as ms
+from nonebot.adapters.onebot.v11 import MessageSegment as ms
 from nonebot import on_command
 from nonebot import on_message
 from nonebot.adapters import Message
 from nonebot.adapters.onebot.v11 import Bot, MessageEvent, Event
 from nonebot.matcher import Matcher
 from nonebot.params import CommandArg
+import nonebot
 
-TOOLS = Path(__file__).resolve().parent.parent.parent / "tools"
+TOOLS = nonebot.get_driver().config.tools_path
 sys.path.append(str(TOOLS))
 from permission import checker, error
 from file import read, write

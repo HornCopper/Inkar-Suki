@@ -9,7 +9,8 @@ from nonebot.params import CommandArg
 
 from .example import status
 
-TOOLS = Path(__file__).resolve().parent.parent.parent / "tools"
+import nonebot
+TOOLS = nonebot.get_driver().config.tools_path
 sys.path.append(str(TOOLS))
 from permission import checker, error
 from file import read, write
