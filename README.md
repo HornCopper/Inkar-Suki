@@ -93,7 +93,7 @@ class Config:
 - `font_path`作用在`help`，请填入形如`"file:///root/main.ttf"`或`"file://C:/main.ttf"`的字符串；
 - `global_path`作用在`help`，请填入指向`src/plugins`文件夹的**绝对路径**；
 - `cqhttp`作用在`sign`，请填入`CQHTTP`服务器的链接，参考`go-cqhttp`文档（见下）。
-<<<<<<< HEAD
+
 这里有一份运行在`/root/nb/`下的`Inkar Suki`实例，配置是这样的：
 ```python3
 class Config:
@@ -116,4 +116,3 @@ class Config:
 > 有关`go-cqhttp`的配置，请前往`文档`（[点此前往](https://docs.go-cqhttp.org)）。
 #### 运行
 由于第三方库补全时已经补全了`nb-cli`，**如果环境变量没有出问题，那么可以用`nb run`启动，反之，请使用`python3 bot.py`。
->>>>>>> 358d0eefb8d4d8e2acd188fcd83e596d07c3c58a
