@@ -14,6 +14,7 @@ from nonebot.adapters.onebot.v11 import Adapter as ONEBOT_V11Adapter
 #            format=default_format)
 
 # You can pass some keyword args config to init function
+nonebot.init(tools_path="C:/Users/HornC/Inkar-Suki/src/tools")
 nonebot.init()
 app = nonebot.get_asgi()
 
@@ -31,8 +32,6 @@ nonebot.load_from_toml("pyproject.toml")
 # 
 # config = driver.config
 # do something...
-nonebot.init(tools_path="/root/nb/src/tools")
-nonebot.init(owner="3349104868")
 
 if __name__ == "__main__":
     nonebot.logger.warning("Always use `nb run` to start the bot instead of manually running!")
