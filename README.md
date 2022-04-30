@@ -28,10 +28,7 @@
 - 如果是Linux用户，编译安装的时候请一定记得安装完成后创建到`/usr/local/bin`的软链接文件以便直接使用（`python`和`python3`以及`pip`和`pip3`等）。
 #### 第三方库
 ~~想要偷懒？`pip install -r requirements.txt`~~
-- `Inkar Suki`目前对`Nonebot2`的`2.0.0b2`版本**不是很兼容(#9)**，所以暂时请安装Nonebot2.0.0b1版本。
-```bash
-pip install nonebot2==2.0.0b1
-```
+如果实在不想偷懒，那建议您自己去找（
 #### 配置
 首先打开我们的`.env.dev`，你会看到如下内容。
 ```dotenv
