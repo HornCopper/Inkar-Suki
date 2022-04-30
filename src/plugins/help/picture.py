@@ -15,10 +15,7 @@ def main():
     options.add_argument('--headless')
     options.add_argument('--disable-gpu')
     options.add_argument('--no-sandbox')
-    file = open(Config.size_path,mode="r")
-    size = file.read()
-    file.close()
-    options.add_argument(f'window-size={size}')
+    options.add_argument(f'window-size={Config.size}')
     full_path = Path(Config.html_path).as_uri()
     try:
         driver = webdriver.Chrome(options=options,executable_path=Config.chromedriver_path)
