@@ -32,9 +32,6 @@
 ```bash
 pip install nonebot2==2.0.0b1
 ```
-### 运行
-由于第三方库补全时已经补全了`nb-cli`，**如果环境变量没有出问题，那么可以用`nb run`启动，反之，请使用`python3 bot.py`。
-**等等！你还没有配置哦！**
 #### 配置
 首先打开我们的`.env.dev`，你会看到如下内容。
 ```dotenv
@@ -48,4 +45,54 @@ fastapi_reload = true
 其中`PORT`和`HOST`可根据`go-cqhttp`的配置进行修改。
 - `COMMAND_START`即命令前缀，比如`/cmd aabbb`中`/`即为前缀，以此类推，默认为`+`（某些地方也称为`明确调用`）。
 你需要在`COMMAND_START`下方加一行`SUPERUSERS`，假设`QQ号`是`123456789`，那么请填写为`SUPERUSERS=["123456789"]`，具体可参考[Nonebot 2文档](https://v2.nonebot.dev/docs/tutorial/configuration)。
+然后打开`bot.py`，找到这段代码：
+```python3
+nonebot.init(tools_path="C:/Users/HornC/Inkar-Suki/src/tools")
+```
+将其中的路径改为你想使用的路径，注意必须是绝对路径，~~相对路径懒得试~~。
+**这样还没完哦**，打开`Inkar-Suki/src/tools`，这里有个`config.py`，~~这才是费脑的地方~~。
+这里是默认配置：
+```python3
+class Config:
+    '''
+    Inkar-Suki内部的配置
+    <变量名>:<类型> - <含义> - <格式>
+
+    web_path: str - Webhook的路径 - "/webhook"
+    bot: str - Bot的QQ号码 - "123456789"
+    platform: bool - Bot运行平台，True为Linux，False为Windows - 格式：True或False
+    owner: str - 您的QQ号/Bot主人 - 格式：Any
+    html_path: str - help插件所生成的html的存放位置 - 格式："C:/Path/To/Your/HTML"
+    size_path: str - help插件所生成的帮助图片的尺寸 - 格式："nxn"
+    chromedriver_path: str - ChromeDriver的可执行文件存放位置 - 格式："C:/Path/To/Your/ChromeDriver"
+    help_image_save_to: str - help插件所生成的png图片存放位置 - 格式："C:/Path/To/Your/ImagePath"
+    font_path: str - help插件所用字体 - 格式："C:/Path/To/Your/TTF"
+    global_path: str - 全局路径/插件路径，即src/plugins目录下的绝对路径 - 格式："C:/Bot/src/plugin"
+    cqhttp: str - CQHTTP服务器 - 格式："http://127.0.0.1:2333/" 
+    '''
+    web_path = ""
+    bot = ""
+    platform = False
+    owner = ""
+    size = ""
+    html_path = ""
+    chromedriver_path = ""
+    help_image_save_to = ""
+    font_path = ""
+    global_path = ""
+    cqhttp = ""
+```
+- `web_path`作用在`webhook`插件中，主要控制`Webhook`的收地址，例如`Nonebot`已设置为`http://127.0.0.1:2333`，那么`http://127.0.0.1:2333/webhook`就是收取Webhook的地址；
+- `bot`作用在`webhook`插件中，主要控制`Bot`传参，请填入您的Bot的`QQ`号，注意要打`"`或`'`；
+- `platform`作用在`smallcmd`，主要控制不同平台的`关闭`操作，注意只能填`布尔值`（`True`或`False`）；
+- `owner`作用在`op`，主要控制Bot的主人是谁，只能填字符串，例如`"123456789"`；
+- `size`作用在`help`，控制帮助图片生成的尺寸，填入字符串，形如`axa`，`a`是纯数字，两处不必相同；
+- `html_path`作用在`help`，控制帮助图片所依赖的`HTML`源文件的路径，填入字符串，形如`"C:/Bot/test.html`；
+- `chromedriver_path`作用在`help`，请填入指向`chromedriver`可执行文件的**绝对路径**；
+- `help_image_save_to`作用在`help`，请填入形如`"C:/cache.png"`的字符串；
+- `font_path`作用在`help`，请填入形如`"file:///root/main.ttf"`或`"file://C:/main.ttf"`的字符串；
+- `global_path`作用在`help`，请填入指向`src/plugins`文件夹的**绝对路径**；
+- `cqhttp`作用在`sign`，请填入`CQHTTP`服务器的链接，参考`go-cqhttp`文档（见下）。
 > 有关`go-cqhttp`的配置，请前往`文档`（[点此前往](https://docs.go-cqhttp.org)）。
+#### 运行
+由于第三方库补全时已经补全了`nb-cli`，**如果环境变量没有出问题，那么可以用`nb run`启动，反之，请使用`python3 bot.py`。

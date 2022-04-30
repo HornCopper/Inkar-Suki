@@ -42,7 +42,7 @@ css = """
               @font-face
               {
                   font-family: Minecraft;
-                  src: url("file://略略略");
+                  src: url("略略略");
               }
             </style>"""
 css.replace("略略略",Config.font_path)
