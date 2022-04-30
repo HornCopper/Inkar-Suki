@@ -1,6 +1,5 @@
 import json
 import sys
-from pathlib import Path
 
 import nonebot
 from nonebot import get_bot
@@ -42,7 +41,7 @@ def group_and_repo_exist(group, repo):
 wa = on_command("webhookadd",aliases={"wa"},priority=5)
 
 @wa.handle()
-async def _(matcher: Matcher, event: Event, args: Message = CommandArg()):
+async def _(event: Event, args: Message = CommandArg()):
     if checker(str(event.user_id),10) == False:
         await wa.finish(error(10))
     cmd = args.extract_plain_text()
@@ -80,7 +79,7 @@ async def _(matcher: Matcher, event: Event, args: Message = CommandArg()):
 wr = on_command("webhookremove",aliases={"wr"},priority=5)
 
 @wr.handle()
-async def _(matcher: Matcher, event: Event, args: Message = CommandArg()):
+async def _(event: Event, args: Message = CommandArg()):
     if checker(str(event.user_id),10) == False:
         await wr.finish(error(10))
     cmd = args.extract_plain_text()

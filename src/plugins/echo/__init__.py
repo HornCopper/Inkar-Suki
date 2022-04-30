@@ -23,7 +23,7 @@ echo = on_command("echo",priority=5)
 
 
 @echo.handle()
-async def echo_(matcher: Matcher, event: Event, args: Message = CommandArg()):
+async def echo_(event: Event, args: Message = CommandArg()):
     if checker(str(event.user_id),9) == False:
         await echo.finish(error(9))
     await echo.finish(args)
@@ -33,7 +33,7 @@ say = on_command("say",priority=5)
 
 
 @say.handle()
-async def say_(matcher: Matcher, event: Event, args: Message = CommandArg()): 
+async def say_(event: Event, args: Message = CommandArg()): 
     def _unescape(message: Message, segment: MessageSegment):
         if segment.is_text():
             return message.append(unescape(str(segment)))

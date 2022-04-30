@@ -4,7 +4,6 @@ import sys
 from nonebot import on_command
 from nonebot.adapters import Message
 from nonebot.adapters.onebot.v11 import Event
-from nonebot.matcher import Matcher
 from nonebot.params import CommandArg
 import nonebot
 
@@ -22,7 +21,7 @@ def checknumber(number):
 
 
 @op.handle()
-async def handle_first_receive(matcher: Matcher, event: Event, args: Message = CommandArg()):
+async def handle_first_receive(event: Event, args: Message = CommandArg()):
     if checker(str(event.user_id), 10) == False:
         await op.finish(error(10))
     info = args.extract_plain_text()

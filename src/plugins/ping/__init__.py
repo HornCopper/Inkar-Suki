@@ -1,16 +1,12 @@
 import sys
 import time
-from pathlib import Path
 from typing import List
 
 import nonebot
 import psutil
 from nonebot import on_command
-from nonebot.adapters import Message
 from nonebot.adapters.onebot.v11 import Event
-from nonebot.matcher import Matcher
 import nonebot
-from nonebot.params import CommandArg
 
 TOOLS = nonebot.get_driver().config.tools_path
 sys.path.append(str(TOOLS))
@@ -20,7 +16,7 @@ ping = on_command("ping", aliases={"测试"}, priority=5)
 
 
 @ping.handle()
-async def _(matcher: Matcher, event: Event, args: Message = CommandArg()):
+async def _(event: Event):
     if block(str(event.user_id)):
         return
     if checker(str(event.user_id), 1) == False:

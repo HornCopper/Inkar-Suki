@@ -1,11 +1,9 @@
 import sys
-from pathlib import Path
 
 from nonebot.adapters.onebot.v11 import MessageSegment as ms
 from nonebot import on_notice, on_command
 from nonebot.adapters import Message
 from nonebot.adapters.onebot.v11 import Bot, NoticeEvent, Event
-from nonebot.matcher import Matcher
 from nonebot.params import CommandArg
 
 import nonebot
@@ -28,7 +26,7 @@ async def _(bot: Bot, event: NoticeEvent):
 welcome_msg_edit = on_command("welcome_msg_edit",aliases={"wme"},priority=5)
 
 @welcome_msg_edit.handle()
-async def __(matcher: Matcher, event: Event, args: Message = CommandArg()):
+async def __(event: Event, args: Message = CommandArg()):
     if checker(str(event.user_id),5) == False:
         await welcome_msg_edit.finish(error(5))
     msg = args.extract_plain_text()

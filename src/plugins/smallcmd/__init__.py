@@ -1,6 +1,5 @@
 import os
 import sys
-from pathlib import Path
 
 from nonebot import on_command
 from nonebot.adapters import Message
@@ -22,7 +21,7 @@ helpimg = on_command("helpimg", aliases={"hi"}, priority=5)
 
 
 @helpimg.handle()
-async def _(bot: Bot, event: Event, args: Message = CommandArg()):
+async def _(event: Event, args: Message = CommandArg()):
     if checker(str(event.user_id), 9) == False:
         await helpimg.finish(error(10))
     size = args.extract_plain_text()
@@ -38,7 +37,7 @@ async def _(bot: Bot, event: Event, args: Message = CommandArg()):
 imgsize = on_command("imgsize",aliases={"is"},priority=5)
 
 @imgsize.handle()
-async def __(bot: Bot, event: Event, args: Message = CommandArg()):
+async def __(bot: Bot, event: Event):
     if checker(str(event.user_id),9) == False:
         await bot.finish(error(9))
     size = read(Config.size_path)
@@ -46,7 +45,7 @@ async def __(bot: Bot, event: Event, args: Message = CommandArg()):
 purge = on_command("purge",priority=5)
 
 @purge.handle()
-async def ___(bot: Bot, event: Event, args: Message = CommandArg()):
+async def ___(event: Event):
     if checker(str(event.user_id),1) == False:
         await purge.finish(error(1))
     if Config.platform == True:
@@ -60,7 +59,7 @@ async def ___(bot: Bot, event: Event, args: Message = CommandArg()):
 shutdown = on_command("shutdown",aliases={"poweroff"},priority=5)
 
 @shutdown.handle()
-async def ____(bot: Bot, event: Event, args: Message = CommandArg()):
+async def ____(event: Event):
     if checker(str(event.user_id),10) == False:
         await shutdown.error(10)
     if Config.platform == False:
@@ -71,7 +70,7 @@ async def ____(bot: Bot, event: Event, args: Message = CommandArg()):
 
 restart = on_command("restart",priority=5)
 @restart.handle()
-async def _(bot: Bot, event: Event, args: Message = CommandArg()):
+async def _(event: Event):
     with open("./example.py",mode="w") as cache:
         if checker(str(event.user_id),5) == False:
             await restart.finish(error(5))
