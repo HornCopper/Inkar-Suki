@@ -31,6 +31,8 @@ nonebot.load_from_toml("pyproject.toml")
 # 
 # config = driver.config
 # do something...
+nonebot.init(tools_path="/root/nb/src/tools")
+nonebot.init(owner="3349104868")
 
 if __name__ == "__main__":
     nonebot.logger.warning("Always use `nb run` to start the bot instead of manually running!")

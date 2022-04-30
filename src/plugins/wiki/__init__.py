@@ -2,9 +2,10 @@ from nonebot import on_command
 from nonebot.adapters import Message
 from nonebot.adapters.onebot.v11 import Event, Bot
 from nonebot.params import CommandArg
-from aiocqhttp import MessageSegment as ms
+from nonebot.adapters.onebot.v11 import MessageSegment as ms
 from .getimg import main as image
-from .wiki import wiki 
+import nonebot
+from .wiki import wiki
 mcwiki = on_command("mcw",aliases={"我的世界百科","我的世界维基","mcwiki"})
 @mcwiki.handle()
 async def _(bot: Bot, event: Event, args: Message = CommandArg()):
