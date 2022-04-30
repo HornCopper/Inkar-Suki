@@ -41,11 +41,11 @@ css = """
               }
               @font-face
               {
-                  font-family: Minecraft;
+                  font-family: Custom;
                   src: url("略略略");
               }
             </style>"""
-css.replace("略略略",Config.font_path)
+css = css.replace("略略略",Config.font_path)
 path = Config.global_path
 final_plugin_information_file_path = {}
 name = {}
@@ -82,7 +82,7 @@ async def help_(matcher: Matcher, event: Event, args: Message = CommandArg()):
     if os.path.exists(html_path) == False:
         msg = str(tabulate(table,headers="firstrow",tablefmt="html"))
         table.clear()
-        html = "<div style=\"font-family:Minecraft\">" + msg.replace("$", "<br>") + "</div>"+css
+        html = "<div style=\"font-family:Custom\">" + msg.replace("$", "<br>") + "</div>"+css
         file0 = open(html_path,mode="w")
         file0.write(html)
         file0.close()
