@@ -16,6 +16,7 @@ sys.path.append(str(TOOLS))
 from permission import checker, error
 from http_ import http
 from file import read, write
+from config import Config
 
 
 def checknumber(number):
