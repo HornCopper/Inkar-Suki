@@ -123,7 +123,7 @@ from fastapi import Request, FastAPI
 from .parse import main
 app: FastAPI = nonebot.get_app()
 
-@app.post("{Config.web_path}")
+@app.post(Config.web_path)
 async def recWebHook(req: Request):
     body = await req.json()
     repo = body["repository"]["full_name"]
