@@ -48,4 +48,4 @@ fastapi_reload = true
 其中`PORT`和`HOST`可根据`go-cqhttp`的配置进行修改。
 - `COMMAND_START`即命令前缀，比如`/cmd aabbb`中`/`即为前缀，以此类推，默认为`+`（某些地方也称为`明确调用`）。
 你需要在`COMMAND_START`下方加一行`SUPERUSERS`，假设`QQ号`是`123456789`，那么请填写为`SUPERUSERS=["123456789"]`，具体可参考[Nonebot 2文档](https://v2.nonebot.dev/docs/tutorial/configuration)。
-> 有关`go-cqhttp`的配置，请前往`文档`（[点此前往](https://docs.go-cqhttp.org)）
+> 有关`go-cqhttp`的配置，请前往`文档`（[点此前往](https://docs.go-cqhttp.org)）。
