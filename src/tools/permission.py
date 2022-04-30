@@ -5,7 +5,7 @@ TOOLS = nonebot.get_driver().config.tools_path
 
 
 def judge(qqnumber):
-    file = open(TOOLS / "permission.json", mode="r")
+    file = open(TOOLS+"/permission.json", mode="r")
     file.close()
     json_ = json.loads(file.read())
     if qqnumber not in json_:
@@ -15,7 +15,7 @@ def judge(qqnumber):
 
 
 def checker(qqnumber: str, score: int):
-    file = open(TOOLS / "permission.json", mode="r")
+    file = open(TOOLS+"/permission.json", mode="r")
     json_ = json.loads(file.read())
     file.close()
     if qqnumber not in json_:
@@ -31,7 +31,7 @@ def error(score):
     return f"唔……你权限不够哦，这条命令要至少{score}的权限哦~"
 
 def block(sb: str) -> bool:
-    with open(TOOLS / "ban.json", mode="r") as cache:
+    with open(TOOLS+"/ban.json", mode="r") as cache:
         for i in json.loads(cache.read()):
             if i == sb:
                 return True

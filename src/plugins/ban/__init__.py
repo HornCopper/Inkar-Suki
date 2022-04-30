@@ -20,7 +20,7 @@ ban = on_command("ban", aliases={"block"}, priority=5)
 
 
 def in_it(qq: str):
-    for i in json.loads(read(TOOLS / "ban.json")):
+    for i in json.loads(read(TOOLS+"/ban.json")):
         if i == qq:
             return True
     return False
@@ -41,9 +41,9 @@ async def _(bot: Bot, event: Event, args: Message = CommandArg()):
     elif in_it(sb):
         return ban.finish("唔……封禁失败，这个人已经被封禁了。")
     else:
-        now = json.loads(read(TOOLS / "ban.json"))
+        now = json.loads(read(TOOLS+"/ban.json"))
         now.append(sb)
-        write(TOOLS / "ban.json", json.dumps(now))
+        write(TOOLS+"/ban.json", json.dumps(now))
         sb_name = info["nickname"]
         await ban.finish(f"好的，已经封禁{sb_name}({sb})。")
 
@@ -60,18 +60,18 @@ async def _(bot: Bot, event: Event, args: Message = CommandArg()):
         await unban.finish("您输入了什么？")
     if in_it(sb) == False:
         await unban.finish("解封失败，并没有封禁此人哦~")
-    now = json.loads(read(TOOLS / "ban.json"))
+    now = json.loads(read(TOOLS+"/ban.json"))
     for i in now:
         if i == sb:
             now.remove(i)
-    write(TOOLS / "ban.json", json.dumps(now))
+    write(TOOLS+"/ban.json", json.dumps(now))
     await ban.finish(f"好的，已经解封{sb_name}({sb})。")
 
 banned = on_message(priority=1,block=False)
 
 @banned.handle()
 async def _(matcher: Matcher, event: Event):
-    info = json.loads(read(TOOLS / "webhook.json"))
+    info = json.loads(read(TOOLS+"/webhook.json"))
     if str(event.user_id) in info:
         matcher.stop_propagation()
     else:

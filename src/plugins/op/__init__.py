@@ -37,7 +37,7 @@ async def handle_first_receive(matcher: Matcher, event: Event, args: Message = C
         except:
             await op.finish("唔，你好像少了点参数。")
         else:
-            adminlist = json.loads(read(TOOLS / "permission.json"))
+            adminlist = json.loads(read(TOOLS+"/permission.json"))
             if arguments[0] == Config.owner:
                 await op.finish("哈哈你改不了主人的权限的啦！")
             if arguments[1] not in ["0","1","2","3","4","5","6","7","8","9","10"]:
@@ -54,7 +54,7 @@ async def handle_first_receive(matcher: Matcher, event: Event, args: Message = C
             else:
                 adminlist[arguments[0]] = int(arguments[1])
                 msg = f"已经帮你添加管理员账号({arguments[0]})及权限等级{str(arguments[1])}了哦~。"
-            write(TOOLS / "permission.json", json.dumps(adminlist))
+            write(TOOLS+"/permission.json", json.dumps(adminlist))
             await op.finish(msg)
             
     else:

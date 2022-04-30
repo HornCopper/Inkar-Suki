@@ -36,9 +36,9 @@ async def __(matcher: Matcher, event: Event, args: Message = CommandArg()):
     if checker(str(event.user_id), 5) == False:
         await bwa.finish(error(5))
     if cmd:
-        now = json.loads(read(TOOLS / "banword.json"))
+        now = json.loads(read(TOOLS+"/banword.json"))
         now.append(cmd)
-        write(TOOLS / "banword.json", json.dumps(now, ensure_ascii=False))
+        write(TOOLS+"/banword.json", json.dumps(now, ensure_ascii=False))
         await bwa.finish("已成功封禁词语！")
     else:
         await bwa.finish("您封禁了什么？")
@@ -51,10 +51,10 @@ async def ___(matcher: Matcher, event: Event, args: Message = CommandArg()):
         await bwr.finish(error(5))
     cmd = args.extract_plain_text()
     if cmd:
-        now = json.loads(read(TOOLS / "banword.json"))
+        now = json.loads(read(TOOLS+"/banword.json"))
         try:
             now.remove(cmd)
-            write(TOOLS / "banword.json", json.dumps(now, ensure_ascii=False))
+            write(TOOLS+"/banword.json", json.dumps(now, ensure_ascii=False))
             await bwr.finish("成功解封词语！")
         except ValueError:
             await bwr.finish("您解封了什么？")
@@ -68,7 +68,7 @@ async def _(matcher: Matcher,bot: Bot, event: MessageEvent):
     if checker(str(event.user_id),5):
         return
     flag = False
-    banwordlist = read(TOOLS / "banword.json")
+    banwordlist = read(TOOLS+"/banword.json")
     msg = str(event.raw_message)
     id = str(event.message_id)
     for i in banwordlist:
