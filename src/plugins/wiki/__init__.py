@@ -1,14 +1,12 @@
 from nonebot import on_command
 from nonebot.adapters import Message
-from nonebot.adapters.onebot.v11 import Event, Bot
 from nonebot.params import CommandArg
 from nonebot.adapters.onebot.v11 import MessageSegment as ms
 from .getimg import main as image
-import nonebot
 from .wiki import wiki
 mcwiki = on_command("mcw",aliases={"我的世界百科","我的世界维基","mcwiki"})
 @mcwiki.handle()
-async def _(bot: Bot, event: Event, args: Message = CommandArg()):
+async def _(args: Message = CommandArg()):
     title = args.extract_plain_text()
     args = title.split(" ")
     title = args[0]
@@ -21,7 +19,6 @@ async def _(bot: Bot, event: Event, args: Message = CommandArg()):
             info = await wiki(title,"mcw")
             final_msg = info+msg
             await mcwiki.finish(final_msg)
-            return
         else:
             await mcwiki.finish("请不要乱跟参数哦，使用+help获取更多信息\n温馨提示：搜索的标题中的空格请用下划线(_)代替哦~")
     else:
@@ -31,7 +28,7 @@ async def _(bot: Bot, event: Event, args: Message = CommandArg()):
 
 wikipedia = on_command("wp",aliases={"wikipedia","维基百科","wzh"})
 @wikipedia.handle()
-async def _(bot: Bot, event: Event, args: Message = CommandArg()):
+async def _(args: Message = CommandArg()):
     title = args.extract_plain_text()
     args = title.split(" ")
     title = args[0]
@@ -44,7 +41,6 @@ async def _(bot: Bot, event: Event, args: Message = CommandArg()):
             info = await wiki(title,"wzh")
             final_msg = info+msg
             await wikipedia.finish(final_msg)
-            return
         else:
             await wikipedia.finish("请不要乱跟参数哦，使用+help获取更多信息\n温馨提示：搜索的标题中的空格请用下划线(_)代替哦~")
     else:

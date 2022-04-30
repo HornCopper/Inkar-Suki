@@ -1,8 +1,8 @@
 import json
 import sys
-from pathlib import Path
 
-TOOLS = Path(__file__).resolve().parent.parent.parent / "tools"
+import nonebot
+TOOLS = nonebot.get_driver().config.tools_path
 sys.path.append(str(TOOLS))
 
 global redirect_flag

@@ -60,8 +60,7 @@ html_path = Config.html_path
 imgPath = Config.help_image_save_to
 
 @help.handle()
-async def help_(matcher: Matcher, event: Event, args: Message = CommandArg()):
-    cmd = args.extract_plain_text()
+async def help_():
     os.system(f"rm -rf {html_path}")
     all_cmd = os.listdir(path)
     for plugin in all_cmd:

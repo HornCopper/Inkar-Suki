@@ -1,5 +1,4 @@
 import sys
-from pathlib import Path
 
 from nonebot import on_command
 from nonebot.adapters import Message
@@ -27,7 +26,7 @@ async def _(bot: Bot, event: Event, args: Message = CommandArg()):
         
 call_api = on_command("call_api",aliases={"api"},priority=5)
 @call_api.handle()
-async def _(bot: Bot, event: Event, args: Message = CommandArg()):
+async def _(event: Event, args: Message = CommandArg()):
     if checker(str(event.user_id),10) == False:
         await call_api.finish(error(10))
     cmd = args.extract_plain_text()

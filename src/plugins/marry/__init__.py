@@ -1,12 +1,11 @@
 import json
 import sys
-from pathlib import Path
 
 import nonebot
 from nonebot.adapters.onebot.v11 import MessageSegment as ms
 from nonebot import on_command
 from nonebot.adapters import Message
-from nonebot.adapters.onebot.v11 import Event, Bot
+from nonebot.adapters.onebot.v11 import Event
 from nonebot.params import CommandArg
 
 from .marry import already_married
@@ -24,7 +23,7 @@ gm = on_command("gm", aliases={"getmarry"}, priority=5)
 
 
 @gm.handle()
-async def _(bot: Bot, event: Event, args: Message = CommandArg()):
+async def _(event: Event, args: Message = CommandArg()):
     husband = str(event.user_id)
     wife = args.extract_plain_text()
     if husband == wife:
@@ -48,7 +47,7 @@ async def _(bot: Bot, event: Event, args: Message = CommandArg()):
 cm = on_command("confirmmarryapply",aliases={"cm","cmp"},priority=5)
 
 @cm.handle()
-async def __(bot: Bot, event: Event, args: Message = CommandArg()):
+async def __(event: Event, args: Message = CommandArg()):
     husband = args.extract_plain_text()
     wife = str(event.user_id)
     nowlist = json.loads(read(TOOLS / "marry.json"))
@@ -65,7 +64,7 @@ async def __(bot: Bot, event: Event, args: Message = CommandArg()):
 dm = on_command("denymarryapply",aliases={"dm","dmp"},priority=5)
 
 @dm.handle()
-async def ___(bot: Bot, event: Event, args: Message = CommandArg()):
+async def ___(event: Event, args: Message = CommandArg()):
     husband = args.extract_plain_text()
     wife = str(event.user_id)
     nowlist = json.loads(read(TOOLS / "marry.json"))
@@ -82,7 +81,7 @@ async def ___(bot: Bot, event: Event, args: Message = CommandArg()):
 lm = on_command("leavemarry",aliases={"lm","delmarry"},priority=5)
 
 @lm.handle()
-async def ____(bot: Bot, event: Event, args: Message = CommandArg()):
+async def ____(event: Event):
     self_id = str(event.user_id)
     nowlist = json.loads(read(TOOLS / "marry.json"))
     for i in nowlist:
@@ -98,7 +97,7 @@ async def ____(bot: Bot, event: Event, args: Message = CommandArg()):
 m = on_command("marry",aliases={"老婆","我的老婆","老公","我的老公"},priority=5)
 
 @m.handle()
-async def _____(bot: Bot, event: Event, args: Message = CommandArg()):
+async def _____(event: Event):
     self_id = str(event.user_id)
     nowlist = json.loads(read(TOOLS / "marry.json"))
     role = ""
