@@ -26,3 +26,4 @@ class Config:
     font_path = ""
     global_path = ""
     cqhttp = ""
+    version = "0.7.5-Hotfix-8b68252"
