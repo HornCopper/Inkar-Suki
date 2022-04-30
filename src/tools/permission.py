@@ -1,7 +1,7 @@
 import json
 from pathlib import Path
-
-TOOLS = Path(__file__).resolve().parent.parent.parent / "tools"
+import nonebot
+TOOLS = nonebot.get_driver().config.tools_path
 
 
 def judge(qqnumber):
