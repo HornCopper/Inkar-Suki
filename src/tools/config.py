@@ -19,7 +19,7 @@ class Config:
     bot = ""
     platform = False
     owner = ""
-    size_path = ""
+    size = ""
     html_path = ""
     chromedriver_path = ""
     help_image_save_to = ""

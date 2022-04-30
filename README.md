@@ -93,6 +93,21 @@ class Config:
 - `font_path`作用在`help`，请填入形如`"file:///root/main.ttf"`或`"file://C:/main.ttf"`的字符串；
 - `global_path`作用在`help`，请填入指向`src/plugins`文件夹的**绝对路径**；
 - `cqhttp`作用在`sign`，请填入`CQHTTP`服务器的链接，参考`go-cqhttp`文档（见下）。
+这里有一份运行在`/root/nb/`下的`Inkar Suki`实例，配置是这样的：
+```python3
+class Config:
+    web_path = "/webhook" #意思是http://127.0.0.1:2333/webhook即为Webhook接收地址，2333端口在.env.dev中定义过了
+    bot = "3438531564" #公共实例QQ号
+    platform = True #使用Debian 11
+    owner = "3349104868" #作者QQ号，这里填主人的QQ就可以了
+    size = "750x1730" #帮助图片的尺寸
+    html_path = "/root/nb/src/plugins/help/help.html" #帮助HTML的路径
+    chromedriver_path = "/root/nb/src/plugins/help/chromedriver" #ChromeDriver可执行文件的路径，注意要安装Chrome对应版本！
+    help_image_save_to = "/root/nb/src/plugins/help/help.png" #生成后的图片的保存位置
+    font_path = "file:///root/nb/src/plugins/help/oppo_sans.ttf" #字体位置
+    global_path = "/root/nb/src/plugins/" #全局路径
+    cqhttp = "http://127.0.0.1:2334/" #CQHTTP服务器
+```
 > 有关`go-cqhttp`的配置，请前往`文档`（[点此前往](https://docs.go-cqhttp.org)）。
 #### 运行
 由于第三方库补全时已经补全了`nb-cli`，**如果环境变量没有出问题，那么可以用`nb run`启动，反之，请使用`python3 bot.py`。
