@@ -69,7 +69,7 @@ class Config:
     <变量名>:<类型> - <含义> - <格式>
 
     web_path: str - Webhook的路径 - "/webhook"
-    bot: str - Bot的QQ号码 - "123456789"
+    bot: str - Bot的QQ号码 - ["123456789"]
     platform: bool - Bot运行平台，True为Linux，False为Windows - 格式：True或False
     owner: str - 您的QQ号/Bot主人 - 格式：Any
     html_path: str - help插件所生成的html的存放位置 - 格式："C:/Path/To/Your/HTML"
@@ -108,7 +108,7 @@ class Config:
 ```python3
 class Config:
     web_path = "/webhook" #意思是http://127.0.0.1:2333/webhook即为Webhook接收地址，2333端口在.env.dev中定义过了
-    bot = "3438531564" #公共实例QQ号
+    bot = ["3438531564"] #公共实例QQ号
     platform = True #使用Debian 11
     owner = "3349104868" #作者QQ号，这里填主人的QQ就可以了
     size = "750x1730" #帮助图片的尺寸
