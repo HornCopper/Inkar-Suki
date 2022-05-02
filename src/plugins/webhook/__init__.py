@@ -128,8 +128,9 @@ async def recWebHook(req: Request):
     repo = body["repository"]["full_name"]
     event = req.headers.get("X-GitHub-Event")
     message = "[GitHub]" + getattr(main,event)(body)
-    bot = get_bot(Config.bot)
-    await sendNbMessage(bot, message, repo)
+    bots = Config.bot
+    for i in bots:
+        await sendNbMessage(bot = get_bot(i), message, repo)
     return {"status":200}
 
 async def sendNbMessage(bot: Bot, message, repo):
