@@ -5,10 +5,6 @@ from pathlib import Path
 
 from nonebot.adapters.onebot.v11 import MessageSegment
 from nonebot import on_command
-from nonebot.adapters import Message
-from nonebot.adapters.onebot.v11 import Event
-from nonebot.matcher import Matcher
-from nonebot.params import CommandArg
 from tabulate import tabulate
 import nonebot
 

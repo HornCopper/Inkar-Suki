@@ -1,8 +1,6 @@
 import sys
-from pathlib import Path
 
 from nonebot.adapters.onebot.v11 import Event
-from nonebot.matcher import Matcher
 from nonebot.params import CommandArg
 from nonebot import on_command
 import nonebot
