@@ -127,10 +127,15 @@ async def recWebHook(req: Request):
     body = await req.json()
     repo = body["repository"]["full_name"]
     event = req.headers.get("X-GitHub-Event")
-    message = "[GitHub]" + getattr(main,event)(body)
-    bots = Config.bot
+    try:
+        message = "[GitHub] " + getattr(main,event)(body)
+    except:
+        msg = f"Event {event} has not been supported."
+        return {"status":"500","message":msg}
+    bots: list = Config.bot
     for i in bots:
-        await sendNbMessage(bot = get_bot(i), message, repo)
+        bot = get_bot(i)
+        await sendNbMessage(bot, message, repo)
     return {"status":200}
 
 async def sendNbMessage(bot: Bot, message, repo):
