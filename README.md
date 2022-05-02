@@ -30,7 +30,19 @@
 #### 第三方库
 ~~想要偷懒？`pip install -r requirements.txt`~~
 如果实在不想偷懒，那建议您自己去找（
-#### 配置
+#### Chrome
+运行下面的命令下载`Chrome`的安装包（以`Debian`系为例）：
+```bash
+wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+```
+随后，安装：
+```bash
+sudo dpkg -i google-chrome-stable_current_amd64.deb
+```
+- 如果使用`32位`操作系统，请将`amd64`改为`i386`。
+- 安装完毕后，请前往[ChromeDriver](https://chromedriver.storage.googleapis.com/index.html)网站下载对应版本的`ChromeDriver`，将其放置在服务器上并在`src/tools/config.py`中写清楚**绝对路径**（Chrome的版本可通过`google-chrome --version`查看，如无法执行，请检查安装是否成功！）。
+- 另外请运行`apt install psmisc`补全所需软件。
+### 配置
 首先打开我们的`.env.dev`，你会看到如下内容。
 ```dotenv
 HOST=127.0.0.1
@@ -108,5 +120,5 @@ class Config:
     cqhttp = "http://127.0.0.1:2334/" #CQHTTP服务器
 ```
 > 有关`go-cqhttp`的配置，请前往`文档`（[点此前往](https://docs.go-cqhttp.org)）。
-#### 运行
+### 运行
 由于第三方库补全时已经补全了`nb-cli`，**如果环境变量没有出问题**，那么可以用`nb run`启动，反之，请使用`python3 bot.py`。
