@@ -6,7 +6,7 @@ from nonebot import on_command
 from nonebot import on_message
 from nonebot.adapters import Message
 from nonebot.matcher import Matcher
-from nonebot.adapters.onebot.v11 import Bot, MessageEvent, Event
+from nonebot.adapters.onebot.v11 import Bot, GroupMessageEvent, Event
 from nonebot.params import CommandArg
 import nonebot
 
@@ -63,7 +63,7 @@ async def ___(event: Event, args: Message = CommandArg()):
 bw = on_message(priority=2, block=False)
 
 @bw.handle()
-async def _(matcher: Matcher, bot: Bot, event: MessageEvent):
+async def _(matcher: Matcher, bot: Bot, event: GroupMessageEvent):
     if checker(str(event.user_id),5):
         return
     flag = False
