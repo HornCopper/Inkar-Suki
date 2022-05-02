@@ -37,7 +37,8 @@ def group_and_repo_exist(group, repo):
                 if q == repo:
                     return True
     return False
-github_repo = on_command("ghrepo","github_repo")
+
+github_repo = on_command("ghrepo",aliases={"github_repo"}, priority=5)
 
 @github_repo.handle()
 async def _(event: Event, args: Message = CommandArg()):
