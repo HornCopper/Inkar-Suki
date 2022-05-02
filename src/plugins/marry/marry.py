@@ -1,5 +1,4 @@
 import json
-from pathlib import Path
 import nonebot
 TOOLS = nonebot.get_driver().config.tools_path
 
