@@ -36,6 +36,11 @@ MANIFEST
 # Installer logs
 pip-log.txt
 pip-delete-this-directory.txt
+ban.json
+banword.json
+marry.json
+permission.json
+webhook.json
 
 # Unit test / coverage reports
 htmlcov/
