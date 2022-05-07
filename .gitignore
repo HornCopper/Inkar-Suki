@@ -41,6 +41,7 @@ banword.json
 marry.json
 permission.json
 webhook.json
+bot.py
 
 # Unit test / coverage reports
 htmlcov/
