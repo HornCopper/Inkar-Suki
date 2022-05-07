@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 import nonebot
 from nonebot.adapters.onebot.v11 import Adapter as ONEBOT_V11Adapter
-nonebot.init(tools_path="C:/Users/HornC/Inkar-Suki/src/tools")
+nonebot.init(tools_path="/root/Inkar-Suki/src/tools")
 nonebot.init()
 app = nonebot.get_asgi()
 driver = nonebot.get_driver()

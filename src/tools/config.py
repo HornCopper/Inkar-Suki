@@ -1,29 +1,13 @@
 class Config:
-    '''
-    Inkar-Suki内部的配置
-    <变量名>:<类型> - <含义> - <格式>
-
-    web_path: str - Webhook的路径 - "/webhook"
-    bot: str - Bot的QQ号码 - ["123456789"]
-    platform: bool - Bot运行平台，True为Linux，False为Windows - 格式：True或False
-    owner: str - 您的QQ号/Bot主人 - 格式：Any
-    html_path: str - help插件所生成的html的存放位置 - 格式："C:/Path/To/Your/HTML"
-    size: str - help插件所生成的帮助图片的尺寸 - 格式："nxn"
-    chromedriver_path: str - ChromeDriver的可执行文件存放位置 - 格式："C:/Path/To/Your/ChromeDriver"
-    help_image_save_to: str - help插件所生成的png图片存放位置 - 格式："C:/Path/To/Your/ImagePath"
-    font_path: str - help插件所用字体 - 格式："C:/Path/To/Your/TTF"
-    global_path: str - 全局路径/插件路径，即src/plugins目录下的绝对路径 - 格式："C:/Bot/src/plugin"
-    cqhttp: str - CQHTTP服务器 - 格式："http://127.0.0.1:2333/" 
-    '''
-    web_path = ""
-    bot = ""
-    platform = False
-    owner = ""
-    size = ""
-    html_path = ""
-    chromedriver_path = ""
-    help_image_save_to = ""
-    font_path = ""
-    global_path = ""
-    cqhttp = ""
-    version = "0.7.5-Hotfix-8b68252"
+    web_path = "/webhook" #意思是http://127.0.0.1:2333/webhook即为Webhook接收地址，2333端口在.env.dev中定义过了
+    bot = ["3438531564"] #公共实例QQ号
+    platform = True #使用Debian 11
+    owner = "3349104868" #作者QQ号，这里填主人的QQ就可以了
+    size = "750x1730" #帮助图片的尺寸
+    html_path = "/root/Inkar-Suki/src/plugins/help/help.html" #帮助HTML的路径
+    chromedriver_path = "/root/Inkar-Suki/src/plugins/help/chromedriver" #ChromeDriver可执行文件的路径，注意要安装Chrome对应版本！
+    help_image_save_to = "/root/Inkar-Suki/src/plugins/help/help.png" #生成后的图片的保存位置
+    font_path = "file:///root/Inkar-Suki/src/plugins/help/oppo_sans.ttf" #字体位置
+    global_path = "/root/Inkar-Suki/src/plugins/" #全局路径
+    cqhttp = "http://127.0.0.1:2334/" #CQHTTP服务器
+    version = "0.7.5-Hotfix"
