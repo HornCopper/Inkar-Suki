@@ -16,7 +16,8 @@
 ## 公告栏
 > `Inkar Suki`正在规划`v0.8`大版本发布！此次更新有如下内容：
 > - ~~将所有的绝对路径加入到配置文件中.env.dev~~（`v0.7.5-Hotfix`已修改为`config.py`）
-> - 加入适配**所有MediaWiki**的wiki插件（目前仅适配[Minecraft Wiki](https://minecraft.fandom.com/zh/wiki/)和[维基百科](https://zh.wikipedia.org/wiki/)）。 <div style='display:none'>
+> - 加入适配**所有MediaWiki**的wiki插件（目前仅适配[Minecraft Wiki](https://minecraft.fandom.com/zh/wiki/)和[维基百科](https://zh.wikipedia.org/wiki/)）。 
+<div style='display:none'>
 ## 使用
 ### 准备环境
 #### 系统
