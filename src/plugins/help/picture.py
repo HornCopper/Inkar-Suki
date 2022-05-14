@@ -9,13 +9,15 @@ import nonebot
 TOOLS = nonebot.get_driver().config.tools_path
 sys.path.append(str(TOOLS))
 from config import Config
+from file import read
 def main():
     path = os.getcwd()
     options = webdriver.ChromeOptions()
     options.add_argument('--headless')
     options.add_argument('--disable-gpu')
     options.add_argument('--no-sandbox')
-    options.add_argument(f'window-size={Config.size}')
+    size = read(Config.size)
+    options.add_argument(f'window-size={size}')
     full_path = Path(Config.html_path).as_uri()
     try:
         driver = webdriver.Chrome(options=options,executable_path=Config.chromedriver_path)
