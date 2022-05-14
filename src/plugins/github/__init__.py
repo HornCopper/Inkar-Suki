@@ -142,6 +142,7 @@ async def recWebHook(req: Request):
     event = req.headers.get("X-GitHub-Event")
     try:
         message = "[GitHub] " + getattr(main,event)(body)
+        message = message.replace("codethink-cn","CodeThink-CN")
     except:
         msg = f"Event {event} has not been supported."
         return {"status":"500","message":msg}
