@@ -42,6 +42,7 @@ marry.json
 permission.json
 webhook.json
 welcome.txt
+config.py
 # Unit test / coverage reports
 htmlcov/
 .tox/
