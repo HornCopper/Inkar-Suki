@@ -22,7 +22,7 @@ class wikilinks:
     mcw = "https://minecraft.fandom.com/zh/wiki/"
     wzh = "https://zh.wikipedia.org/wiki/"
 class curidlinks:
-    mcw = "https://minecraft.fandom.com/w/index.php?curid="
+    mcw = "https://minecraft.fandom.com/zh/index.php?curid="
     wzh = "https://zh.wikipedia.org/w/index.php?curid="
 async def wiki(title,wiki):
     redirect_flag = False
@@ -36,7 +36,8 @@ async def wiki(title,wiki):
         for i in info["query"]["interwiki"]:
             title = i["title"]
         interwiki_link = getattr(wikilinks, wiki) + title
-        return f"ヾ(≧へ≦)〃 唔..你的搜索跨站了嗷，暂时没办法完成，但是可以给你链接嘞：{interwiki_link}"
+        iwlink = interwiki_link.replace(" ","_")
+        return f"ヾ(≧へ≦)〃 唔..你的搜索跨站了嗷，暂时没办法完成，但是可以给你链接嘞：{iwlink}"
     except:
         curid_json = info["query"]["pages"]
         for i in curid_json:

@@ -3,7 +3,7 @@ class Config:
     bot = ["3438531564"] #公共实例QQ号
     platform = True #使用Debian 11
     owner = "3349104868" #作者QQ号，这里填主人的QQ就可以了
-    size = "750x1730" #帮助图片的尺寸
+    size = "1000x1730" #帮助图片的尺寸
     html_path = "/root/Inkar-Suki/src/plugins/help/help.html" #帮助HTML的路径
     chromedriver_path = "/root/Inkar-Suki/src/plugins/help/chromedriver" #ChromeDriver可执行文件的路径，注意要安装Chrome对应版本！
     help_image_save_to = "/root/Inkar-Suki/src/plugins/help/help.png" #生成后的图片的保存位置
