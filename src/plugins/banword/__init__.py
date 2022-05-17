@@ -1,6 +1,4 @@
-import json
-import sys
-
+import json, sys, nonebot
 from nonebot.adapters.onebot.v11 import MessageSegment as ms
 from nonebot import on_command
 from nonebot import on_message
@@ -8,61 +6,49 @@ from nonebot.adapters import Message
 from nonebot.matcher import Matcher
 from nonebot.adapters.onebot.v11 import Bot, GroupMessageEvent, Event
 from nonebot.params import CommandArg
-import nonebot
 
 TOOLS = nonebot.get_driver().config.tools_path
 sys.path.append(str(TOOLS))
 from permission import checker, error
 from file import read, write
-
-
 def is_in(full_str, sub_str):
     try:
         full_str.index(sub_str)
         return True
     except ValueError:
         return False
-
-
 global flag
-
-bwa = on_command("banwordadd", aliases={"bwa", "addbanword"}, priority=5)
-
-
-@bwa.handle()
+banword = on_command("banword", priority=5)
+@banword.handle()
 async def __(event: Event, args: Message = CommandArg()):
     cmd = args.extract_plain_text()
     if checker(str(event.user_id), 5) == False:
-        await bwa.finish(error(5))
+        await banword.finish(error(5))
     if cmd:
         now = json.loads(read(TOOLS+"/banword.json"))
         now.append(cmd)
         write(TOOLS+"/banword.json", json.dumps(now, ensure_ascii=False))
-        await bwa.finish("已成功封禁词语！")
+        await banword.finish("已成功封禁词语！")
     else:
-        await bwa.finish("您封禁了什么？")
-
-bwr = on_command("banwordremove",aliases={"removebanword","deletebanword","bwd","bwr"},priority=5)
-
-@bwr.handle()
+        await banword.finish("您封禁了什么？")
+unbanword = on_command("unbanword",priority=5)
+@unbanword.handle()
 async def ___(event: Event, args: Message = CommandArg()):
     if checker(str(event.user_id),5) == False:
-        await bwr.finish(error(5))
+        await unbanword.finish(error(5))
     cmd = args.extract_plain_text()
     if cmd:
         now = json.loads(read(TOOLS+"/banword.json"))
         try:
             now.remove(cmd)
             write(TOOLS+"/banword.json", json.dumps(now, ensure_ascii=False))
-            await bwr.finish("成功解封词语！")
+            await unbanword.finish("成功解封词语！")
         except ValueError:
-            await bwr.finish("您解封了什么？")
+            await unbanword.finish("您解封了什么？")
     else:
-        await bwr.finish("您解封了什么？")
-
-bw = on_message(priority=2, block=False)
-
-@bw.handle()
+        await unbanword.finish("您解封了什么？")
+banned_word = on_message(priority=2, block=False)
+@banned_word.handle()
 async def _(matcher: Matcher, bot: Bot, event: GroupMessageEvent):
     if checker(str(event.user_id),5):
         return
@@ -81,7 +67,7 @@ async def _(matcher: Matcher, bot: Bot, event: GroupMessageEvent):
             await bot.call_api("set_group_ban", group_id = group, user_id = sb, duration = 60)
             msg = ms.at(sb) + "唔……你触发了违禁词，已经给你喝了1分钟的红茶哦~"
             matcher.stop_propagation()
-            await bw.finish(msg)
+            await banned_word.finish(msg)
         except:
             pass
     else:

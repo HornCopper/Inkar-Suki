@@ -1,15 +1,10 @@
-import json
-import sys
-
-import nonebot
-from nonebot import get_bot
-from nonebot import on_command
+import json,sys,nonebot
+from nonebot import get_bot, on_command
 from nonebot.adapters import Message
 from nonebot.adapters.onebot.v11 import Bot, Event
 from nonebot.adapters.onebot.v11 import MessageSegment as ms
 from nonebot.log import logger
 from nonebot.params import CommandArg
-
 TOOLS = nonebot.get_driver().config.tools_path
 sys.path.append(str(TOOLS))
 from permission import checker, error
@@ -17,18 +12,14 @@ from http_ import http
 from file import read, write
 from config import Config
 
-
 def checknumber(number):
     return number.isdecimal()
-
-
 def group_exist(group):
     info = json.loads(read(TOOLS+"/webhook.json"))
     for i in info:
         if i["group"] == group:
             return True
     return False
-    
 def group_and_repo_exist(group, repo):
     info = json.loads(read(TOOLS+"/webhook.json"))
     for i in info:
@@ -37,25 +28,21 @@ def group_and_repo_exist(group, repo):
                 if q == repo:
                     return True
     return False
-
-github_repo = on_command("ghrepo",aliases={"github_repo"}, priority=5)
-
-@github_repo.handle()
+repo = on_command("repo", priority=5)
+@repo.handle()
 async def _(event: Event, args: Message = CommandArg()):
-    repo = args.extract_plain_text()
-    status_code = await http.get_status("https://github.com/"+repo)
+    reponame = args.extract_plain_text()
+    status_code = await http.get_status("https://github.com/"+reponame)
     if status_code != 200 and status_code != 301 and status_code != 302:
-        await github_repo.finish("仓库获取失败，请检查后重试哦~")
+        await repo.finish("仓库获取失败，请检查后重试哦~")
     else:
         img = ms.image("https://opengraph.githubassets.com/c9f4179f4d560950b2355c82aa2b7750bffd945744f9b8ea3f93cc24779745a0/"+repo)
-        await github_repo.finish(img)
-
-wa = on_command("webhookadd",aliases={"wa"},priority=5)
-
-@wa.handle()
+        await repo.finish(img)
+webhook = on_command("bindrepo",aliases={"webhook"},priority=5)
+@webhook.handle()
 async def _(event: Event, args: Message = CommandArg()):
-    if checker(str(event.user_id),10) == False:
-        await wa.finish(error(10))
+    if checker(str(event.user_id),9) == False:
+        await webhook.finish(error(9))
     cmd = args.extract_plain_text()
     args = cmd.split(" ")
     if len(args)>2:
@@ -65,58 +52,55 @@ async def _(event: Event, args: Message = CommandArg()):
     group = args[0]
     repo = args[1]
     if repo.find("/") == -1:
-        await wa.finish("这不是有效的Repo名，正确的格式应为{作者/组织}/{项目名称}")
+        await webhook.finish("这不是有效的Repo名，正确的格式应为{作者/组织}/{项目名称}")
     if checknumber(group) == False:
-        await wa.finish("这不是有效的QQ群号！")
+        await webhook.finish("这不是有效的QQ群号！")
     repo_status = await http.get_status("https://github.com/"+repo)
     if repo_status != 200:
-        await wa.finish("Repo不存在哦~")
+        await webhook.finish("Repo不存在哦~")
     if group_and_repo_exist(group, repo):
-        await wa.finish("Repo已经添加过了哦~")
+        await webhook.finish("Repo已经添加过了哦~")
     if group_exist(group):
         info = json.loads(read(TOOLS+"/webhook.json"))
         for i in info:
             if i["group"] == group:
                 i["repo"].append(repo)
         write(TOOLS+"/webhook.json", json.dumps(info))
-        await wa.finish("绑定成功！")
+        await webhook.finish("绑定成功！")
     else:
         new = {"group": group, "repo": [repo]}
         info = json.loads(read(TOOLS+"/webhook.json"))
         info.append(new)
         write(TOOLS+"/webhook.json", json.dumps(info))
-        await wa.finish("绑定成功！")
-    
-        
-wr = on_command("webhookremove",aliases={"wr"},priority=5)
-
-@wr.handle()
+        await webhook.finish("绑定成功！")
+unbind = on_command("unbindrepo",aliases={"unbind_webhook"},priority=5)
+@unbind.handle()
 async def _(event: Event, args: Message = CommandArg()):
-    if checker(str(event.user_id),10) == False:
-        await wr.finish(error(10))
+    if checker(str(event.user_id),9) == False:
+        await unbind.finish(error(9))
     cmd = args.extract_plain_text()
     args = cmd.split(" ")
     if len(args)>2:
-        await wr.finish("唔……你的参数有多余的哦~")
+        await unbind.finish("唔……你的参数有多余的哦~")
     if len(args)<2:
-        await wr.finish("唔……你好像缺了一些参数哦~")
+        await unbind.finish("唔……你好像缺了一些参数哦~")
     group = args[0]
     repo = args[1]
     if repo.find("/") == -1 and repo != "-a":
-        await wr.finish("这不是有效的Repo名，正确的格式应为{作者/组织}/{项目名称}")
+        await unbind.finish("这不是有效的Repo名，正确的格式应为{作者/组织}/{项目名称}")
     if checknumber(group) == False:
-        await wr.finish("这不是有效的QQ群号啦！")
+        await unbind.finish("这不是有效的QQ群号啦！")
     if group_exist(group) == False:
-        await wr.finish("唔……这个群尚未绑定任何Repo~")
+        await unbind.finish("唔……这个群尚未绑定任何Repo~")
     if group_and_repo_exist(group, repo) == False:
-        await wr.finish("唔……这个群没有绑定这个仓库哦~")
+        await unbind.finish("唔……这个群没有绑定这个仓库哦~")
     info = json.loads(read(TOOLS+"/webhook.json"))
     if repo == "-a":
         for i in info:
             if i["group"] == group:
                 info.remove(i)
                 write(TOOLS+"/webhook.json", json.dumps(info))
-                await wr.finish("解绑成功！")
+                await unbind.finish("解绑成功！")
     else:
         for i in info:
             if i["group"] == group:
@@ -125,11 +109,11 @@ async def _(event: Event, args: Message = CommandArg()):
                         if len(i["repo"]) == 1:
                             info.remove(i)
                             write(TOOLS+"/webhook.json", json.dumps(info))
-                            await wr.finish("解绑成功！")
+                            await unbind.finish("解绑成功！")
                         else:
                             i["repo"].remove(b)
                             write(TOOLS+"/webhook.json", json.dumps(info))
-                            await wr.finish("解绑成功！")
+                            await unbind.finish("解绑成功！")
     
 from fastapi import Request, FastAPI
 from .parse import main

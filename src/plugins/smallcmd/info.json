@@ -1,1 +1,0 @@
-{"author":"HornCopper","version":"1.7-Release","name":"指令集(smallcmd)","admin":"0-10","aliases":"+helpimg -> +hi$+imgsize -> +is$+shutdown -> +poweroff","desc":"修改帮助图片的尺寸：+helpimg <??x??>$查看当前帮助图片尺寸：+imgsize$关闭Bot：+shutdown$清除图片缓存：+purge$重启Bot：+restart"}

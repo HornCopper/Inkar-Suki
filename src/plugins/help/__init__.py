@@ -1,15 +1,9 @@
-import json
-import os
-import sys
+import json, os, sys, nonebot
 from pathlib import Path
-
 from nonebot.adapters.onebot.v11 import MessageSegment
 from nonebot import on_command
 from tabulate import tabulate
-import nonebot
-
 from .picture import main as pic
-
 TOOLS = nonebot.get_driver().config.tools_path
 sys.path.append(str(TOOLS))
 from file import read
