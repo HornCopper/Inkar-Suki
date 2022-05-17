@@ -36,7 +36,7 @@ async def _(event: Event, args: Message = CommandArg()):
     if status_code != 200 and status_code != 301 and status_code != 302:
         await repo.finish("仓库获取失败，请检查后重试哦~")
     else:
-        img = ms.image("https://opengraph.githubassets.com/c9f4179f4d560950b2355c82aa2b7750bffd945744f9b8ea3f93cc24779745a0/"+repo)
+        img = ms.image("https://opengraph.githubassets.com/c9f4179f4d560950b2355c82aa2b7750bffd945744f9b8ea3f93cc24779745a0/"+reponame)
         await repo.finish(img)
 webhook = on_command("bindrepo",aliases={"webhook"},priority=5)
 @webhook.handle()
