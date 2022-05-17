@@ -1,35 +1,18 @@
-import sys
-
-from nonebot.adapters.onebot.v11 import Event
+import sys, nonebot
 from nonebot.params import CommandArg
 from nonebot import on_command
-import nonebot
-
 TOOLS = nonebot.get_driver().config.tools_path
 sys.path.append(str(TOOLS))
 from permission import checker, error
-
 from functools import reduce
-from nonebot.adapters.onebot.v11 import (
-    Message,
-    MessageSegment,
-    unescape,
-)
-
-
+from nonebot.adapters.onebot.v11 import Message, MessageSegment, unescape, Event
 echo = on_command("echo",priority=5)
-
-
 @echo.handle()
 async def echo_(event: Event, args: Message = CommandArg()):
     if checker(str(event.user_id),9) == False:
         await echo.finish(error(9))
     await echo.finish(args)
-
-
 say = on_command("say",priority=5)
-
-
 @say.handle()
 async def say_(event: Event, args: Message = CommandArg()): 
     def _unescape(message: Message, segment: MessageSegment):

@@ -1,21 +1,18 @@
-import sys
-
+import sys, nonebot
 from nonebot.adapters.onebot.v11 import MessageSegment as ms
 from nonebot import on_notice, on_command
 from nonebot.adapters import Message
 from nonebot.adapters.onebot.v11 import Bot, NoticeEvent, Event
 from nonebot.params import CommandArg
-
-import nonebot
 TOOLS = nonebot.get_driver().config.tools_path
 sys.path.append(str(TOOLS))
 from permission import checker, error
 from file import read, write
 
-welcome = on_notice(priority=5)
+notice = on_notice(priority=5)
 
 
-@welcome.handle()
+@notice.handle()
 async def _(bot: Bot, event: NoticeEvent):
     if event.notice_type == "group_increase":
         obj = event.user_id

@@ -4,6 +4,7 @@ from nonebot.params import CommandArg
 from nonebot.adapters.onebot.v11 import MessageSegment as ms
 from .getimg import main as image
 from .wiki import wiki
+
 mcwiki = on_command("mcw",aliases={"我的世界百科","我的世界维基","mcwiki"})
 @mcwiki.handle()
 async def _(args: Message = CommandArg()):

@@ -1,31 +1,22 @@
-import json
-import sys
+import json, sys, nonebot
 from nonebot import on_command, on_message
 from nonebot.adapters import Message
 from nonebot.adapters.onebot.v11 import Event, Bot
 from nonebot.matcher import Matcher
 from nonebot.params import CommandArg
-import nonebot
 TOOLS = nonebot.get_driver().config.tools_path
 sys.path.append(str(TOOLS))
 from permission import checker, error
 from file import read, write
 
-
 def checknumber(number):
     return number.isdecimal()
-
-
 ban = on_command("ban", aliases={"block"}, priority=5)
-
-
 def in_it(qq: str):
     for i in json.loads(read(TOOLS+"/ban.json")):
         if i == qq:
             return True
     return False
-
-
 @ban.handle()
 async def _(bot: Bot, event: Event, args: Message = CommandArg()):
     if checker(str(event.user_id),10) == False:
@@ -46,9 +37,7 @@ async def _(bot: Bot, event: Event, args: Message = CommandArg()):
         write(TOOLS+"/ban.json", json.dumps(now))
         sb_name = info["nickname"]
         await ban.finish(f"好的，已经封禁{sb_name}({sb})。")
-
 unban = on_command("unban",aliases={"unblock"},priority=5)
-
 @unban.handle()
 async def _(bot: Bot, event: Event, args: Message = CommandArg()):
     if checker(str(event.user_id),10) == False:
@@ -66,13 +55,11 @@ async def _(bot: Bot, event: Event, args: Message = CommandArg()):
             now.remove(i)
     write(TOOLS+"/ban.json", json.dumps(now))
     await ban.finish(f"好的，已经解封{sb_name}({sb})。")
-
 banned = on_message(priority=1,block=False)
-
 @banned.handle()
 async def _(matcher: Matcher, event: Event):
     info = json.loads(read(TOOLS+"/webhook.json"))
-    if str(event.user_id) in info:
+    if str(event.user_id) in info and checker(str(event.user_id),10) == False:
         matcher.stop_propagation()
     else:
         pass

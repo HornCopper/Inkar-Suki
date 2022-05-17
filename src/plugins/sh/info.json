@@ -1,1 +1,1 @@
-{"author":"HornCopper","version":"1.0-Keep","name":"sh(sh)","admin":"10","aliases":"无","desc":"执行系统命令。$获得输出：+front <cmd>$后台执行：+back <cmd>"}
+{"author":"HornCopper","version":"1.0-Keep","name":"sh(sh)","admin":"获得输出(10)$后台执行(10)","aliases":"N/A","desc":"执行系统命令。$获得输出：+front <cmd>$后台执行：+back <cmd>"}
