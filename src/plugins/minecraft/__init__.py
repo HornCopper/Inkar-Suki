@@ -7,9 +7,11 @@ from .mcv import *
 mcbv = on_command("mcbv",priority=5)
 @mcbv.handle()
 async def _():
-    await mcbv.finish(await mcbv())
+    msg = await mcbv()
+    await mcbv.finish(msg)
 
 mcjv = on_command("mcjv",priority=5)
 @mcjv.handle()
 async def _():
-    await mcje.finish(await mcjv())
+    msg = await mcjv()
+    await mcje.finish(msg)
