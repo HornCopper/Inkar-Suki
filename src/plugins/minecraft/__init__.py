@@ -14,4 +14,4 @@ mcjv = on_command("mcjv",priority=5)
 @mcjv.handle()
 async def _():
     msg = await mcjavav()
-    await mcje.finish(msg)
+    await mcjv.finish(msg)
