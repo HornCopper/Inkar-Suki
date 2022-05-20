@@ -27,7 +27,7 @@ async def _(event: Event, args: Message = CommandArg()):
     size = args.extract_plain_text()
     if size:
         if size.find("x"):
-            write(Config.size_path,size)
+            write(Config.size,size)
             await helpimg.finish("好的~图片尺寸已修改为"+size+"。")
         else:
             await helpimg.finish("唔，这尺寸不对哦~")
