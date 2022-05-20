@@ -34,7 +34,7 @@ async def _(event: Event, args: Message = CommandArg()):
     reponame = args.extract_plain_text()
     status_code = await http.get_status("https://github.com/"+reponame)
     if status_code != 200 and status_code != 301 and status_code != 302:
-        await repo.finish("仓库获取失败，请检查后重试哦~")
+        await repo.finish(f"仓库获取失败，请检查后重试哦~\n错误码：{status_code}")
     else:
         img = ms.image("https://opengraph.githubassets.com/c9f4179f4d560950b2355c82aa2b7750bffd945744f9b8ea3f93cc24779745a0/"+reponame)
         await repo.finish(img)

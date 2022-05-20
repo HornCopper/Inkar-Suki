@@ -1,1 +1,0 @@
-{"author":"HornCopper","version":"1.0-Keep","name":"管理员工具(sign)","admin":"10","aliases":"+sign -> +公告$+call_api -> +api","desc":"发布全域公告：+sign <msg>$调用CQHTTP API：+call_api <api_with_args>"}
