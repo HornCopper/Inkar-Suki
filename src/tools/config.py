@@ -1,4 +1,4 @@
-from .local_version import local_version, nonebot_version
+from local_version import local_version, nonebot_version
 class Config:
     global_path = "/root/Inkar-Suki/src/" #全局路径
     web_path = "/webhook" #意思是http://127.0.0.1:2333/webhook即为Webhook接收地址，2333端口在.env.dev中定义过了
