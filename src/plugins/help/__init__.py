@@ -36,7 +36,7 @@ css = """
               }
             </style>"""
 css = css.replace("略略略",Config.font_path)
-path = Config.global_path
+path = Config.global_path + "plugins/"
 final_plugin_information_file_path = {}
 name = {}
 version = {}
