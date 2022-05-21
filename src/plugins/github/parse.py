@@ -6,7 +6,7 @@ class main:
         pusher = body['pusher']['name']
         repo_name = body["repository"]["full_name"]
         commit = body['commits'][0]['message']
-        ver = body["after"][0:6]
+        ver = body["after"][0:7]
         return f"{pusher} pushed to {repo_name}.\n[{ver}]{commit}"
     def issues(body):
         action = body["action"]
