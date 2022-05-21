@@ -29,7 +29,7 @@ async def handle_first_receive(event: Event, args: Message = CommandArg()):
             await op.finish("唔，你好像少了点参数。")
         else:
             adminlist = json.loads(read(TOOLS+"/permission.json"))
-            if arguments[0] == Config.owner:
+            if arguments[0] in Config.owner:
                 await op.finish("哈哈你改不了主人的权限的啦！")
             if arguments[1] not in ["0","1","2","3","4","5","6","7","8","9","10"]:
                 await op.finish("你这设置的什么鬼权限啊？！")
