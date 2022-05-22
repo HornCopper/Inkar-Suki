@@ -86,5 +86,5 @@ async def help_():
     else:
         help_path = Path(Config.help_image_save_to).as_uri()
         pic_msg = MessageSegment.image(help_path)
-        msg = "喵……以下为帮助信息：" + pic_msg
+        msg = "喵……以下为帮助信息：" + pic_msg + "\n你也可以搜索文档以获取更详细的帮助信息：\nhttps://www.inkar-suki.xyz/usage.html"
     await help.finish(msg)
