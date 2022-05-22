@@ -1,4 +1,4 @@
-import os, sys, psutil, nonebot
+import os, sys, psutil, nonebot, time
 from nonebot import on_command
 from nonebot.adapters import Message
 from nonebot.params import CommandArg
@@ -95,13 +95,13 @@ ping = on_command("ping", aliases={"测试"}, priority=5)
 @ping.handle()
 async def _(event: Event):
     if checker(str(event.user_id), 1) == False:
-        times = str("现在是" + time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()) + f"\n当前版本v{Config.version}{Config.nonebot}")
+        times = str("现在是" + time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()) + f"\n当前版本v{Config.version}(Nonebot {Config.nonebot})")
         await ping.finish(times)
     def per_cpu_status() -> List[float]:
         return psutil.cpu_percent(interval=1, percpu=True)
     def memory_status() -> float:
         return psutil.virtual_memory().percent
-    times = str("现在是" + time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()) + f"\n当前版本v{Config.version}{Config.nonebot}")
+    times = str("现在是" + time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()) + f"\n当前版本v{Config.version}(Nonebot {Config.nonebot})")
     msg = f"来啦！\n系统信息如下：\nCPU占用：{str(per_cpu_status()[0])}%\n内存占用：{str(memory_status())}%\n"
     await ping.finish(msg + times)
 back = on_command("back", priority=5)
