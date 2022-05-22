@@ -11,6 +11,13 @@ from file import read, write
 
 notice = on_notice(priority=5)
 
+def banned(sb):
+    with open(TOOLS + "/ban.json") as cache:
+        banlist = json.loads(cache.read())
+        for i in banlist:
+            if i == sb:
+                return True
+        return False
 
 @notice.handle()
 async def _(bot: Bot, event: NoticeEvent):
@@ -20,6 +27,12 @@ async def _(bot: Bot, event: NoticeEvent):
         msg = ms.at(obj) + read(TOOLS+"/welcome.txt")
         await bot.call_api("send_group_msg",group_id=group, message=msg)
     elif event.notice_type == "group_decrease":
+        if event.sub_type == "kick_me":
+            kicker = str(event.operator_id)
+            if banned(kicker) == False:
+                banlist = json.loads(read(TOOLS + "/ban.json"))
+                banlist.append(kicker)
+                write(TOOLS + "/ban.json",banlist)
         who = event.user_id
         group = event.group_id
         if group == 458416873:
@@ -29,7 +42,7 @@ async def _(bot: Bot, event: NoticeEvent):
         msg = f"唔……成员{name}({who})离开了咱们群哦~"
         await bot.call_api("send_group_msg",group_id=group, message=msg)
     
-welcome_msg_edit = on_command("welcome_msg_edit",aliases={"wme"},priority=5)
+welcome_msg_edit = on_command("welcome",priority=5)
 
 @welcome_msg_edit.handle()
 async def __(event: Event, args: Message = CommandArg()):
