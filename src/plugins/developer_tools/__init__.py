@@ -58,11 +58,12 @@ shutdown = on_command("shutdown",aliases={"poweroff"},priority=5)
 async def ____(event: Event):
     if checker(str(event.user_id),10) == False:
         await shutdown.error(10)
-    if Config.platform == False:
-        await shutdown.finish("唔，主人用了Windows，我没办法关闭哦~")
     await shutdown.send("请稍候，正在关闭中……")
     await shutdown.send("关闭成功！请联系Owner到后台手动开启哦~")
-    os.system("killall nb")
+    if Config.platform:
+        os.system("killall nb")
+    else:
+        os.system("taskkill /f /t /im nb.exe")
 
 restart = on_command("restart",priority=5)
 @restart.handle()

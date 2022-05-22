@@ -13,7 +13,7 @@ class http:
             return result
     
     async def get_status(url):
-        async with httpx.AsyncClient(follow_redirects=True) as client:
+        async with httpx.AsyncClient(follow_redirects=False) as client:
             resp = await client.get(url,timeout=300)
             result = resp.status_code
             return result
