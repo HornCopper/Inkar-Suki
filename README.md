@@ -7,7 +7,7 @@
 ![GitHub Repo stars](https://img.shields.io/github/stars/HornCopper/Inkar-Suki?style=social)
 ![GitHub Repo stars](https://img.shields.io/github/forks/HornCopper/Inkar-Suki?style=social)
 ![GitHub tag](https://img.shields.io/github/v/tag/HornCopper/Inkar-Suki?include_prereleases)
-[![Readme Card](https://github-readme-stats.vercel.app/api/pin/?username=HornCopper&repo=Inkar-Suki)](https://github.com/anuraghazra/github-readme-stats)
+[![Readme Card](https://github-readme-stats.vercel.app/api/pin/?username=HornCopper&repo=Inkar-Suki)](https://github.com/codethink/Inkar-Suki)
 ## 介绍
 `Inkar Suki`是由`HornCopper`所编写并维护的`Python`机器人，基于[Nonebot2](https://github.com/nonebot/nonebot2)开发。
 
