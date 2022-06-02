@@ -6,7 +6,7 @@ class main:
         pusher = body['pusher']['name']
         repo_name = body["repository"]["full_name"]
         commit = body['commits'][0]['message']
-        ver = body["after"][0:7]
+        ver = body["commits"]["id"][0:7]
         return f"{pusher} pushed to {repo_name}.\n[{ver}]{commit}"
     def issues(body):
         action = body["action"]
@@ -50,4 +50,18 @@ class main:
             issue_num = str(body["issue"]["number"])
             issue_title = body["issue"]["title"]
             msg = f"{sender} commented on {repo_name}#{issue_num}.\nTitle:{issue_title}\nDescription:{msg}"
+            return msg
+    def commit_comment(body):
+        action = body["action"]
+        if action == "created":
+            sender = body["sender"]["login"]
+            msg = body["comment"]["body"]
+            msg_regex = re.compile(r"!\[.*\]\((.*)\)")
+            images = msg_regex.findall(msg)
+            msg = re.sub(r"!\[.*\]\((.*)\)","[图片]",msg)
+            for i in images:
+                msg = msg + ms.image(i)          
+            repo_name = body["repository"]["full_name"]
+            commit = body["comment"]["commit_id"]
+            msg = f"{sender} commented on {repo_name} commit {commit}.\nTitle:{issue_title}\nDescription:{msg}"
             return msg
