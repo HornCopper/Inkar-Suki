@@ -129,7 +129,7 @@ async def recWebHook(req: Request):
         message = message.replace("codethink-cn","CodeThink-CN")
     except:
         msg = f"Event {event} has not been supported."
-        return {"status":"500","message":msg}
+        return {"status":"500","message":msg, "error":e}
     bots: list = Config.bot
     for i in bots:
         bot = get_bot(i)

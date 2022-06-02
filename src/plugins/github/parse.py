@@ -62,6 +62,6 @@ class main:
             for i in images:
                 msg = msg + ms.image(i)          
             repo_name = body["repository"]["full_name"]
-            commit = body["comment"]["commit_id"]
-            msg = f"{sender} commented on {repo_name} commit {commit}.\nTitle:{issue_title}\nDescription:{msg}"
+            commit = body["comment"]["commit_id"][0:7]
+            msg = f"{sender} commented on {repo_name} commit {commit}.\n{msg}"
             return msg
