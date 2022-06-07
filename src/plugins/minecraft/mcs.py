@@ -55,7 +55,7 @@ async def bes(ip: str) -> str:
         else:
             return "唔……获取信息失败：未知错误。"
     except:
-        unpack_data = infomation["data"].split(":")
+        unpack_data = infomation["data"].split(";")
         motd_1 = unpack_data[1]
         motd_2 = unpack_data[7]
         player_count = unpack_data[4]
