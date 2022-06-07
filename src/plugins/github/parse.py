@@ -3,10 +3,10 @@ from nonebot.log import logger
 from nonebot.adapters.onebot.v11 import MessageSegment as ms
 class main:
     def push(body):
-        pusher = body['pusher']['name']
+        pusher = body["pusher"]["name"]
         repo_name = body["repository"]["full_name"]
-        commit = body['commits'][0]['message']
-        ver = body["commits"]["id"][0:7]
+        commit = body["commits"][0]["message"]
+        ver = body["commits"][0]["id"][0:7]
         return f"{pusher} pushed to {repo_name}.\n[{ver}]{commit}"
     def issues(body):
         action = body["action"]
