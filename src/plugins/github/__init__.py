@@ -142,5 +142,12 @@ async def sendNbMessage(bot: Bot, message, repo):
         for m in i["repo"]:
             if m == repo:
                 group = i["group"]
-                response = await bot.call_api("send_group_msg", group_id=int(group), message=message)
-                logger.info(response)
+                try:
+                    response = await bot.call_api("send_group_msg", group_id=int(group), message=message)
+                except:
+                    try:
+                        response = await bot.call_api("send_group_msg", group_id=int(group), message="唔……刚刚发送消息失败了哦（原因懂的都懂），重新发送：\n"+message)
+                    except:
+                        logger.info("Webhook推送失败：被风控。")
+                        return
+                logger.info("Webhook推送成功：消息ID为"+json.loads(response)["message_id"])
