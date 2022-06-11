@@ -151,4 +151,4 @@ async def sendNbMessage(bot: Bot, message, repo):
                     except:
                         logger.info("Webhook推送失败：被风控，重新发送失败。")
                         return
-                logger.info("Webhook推送成功：消息ID为"+response["message_id"])
+                logger.info("Webhook推送成功：消息ID为"+str(response["message_id"]))
