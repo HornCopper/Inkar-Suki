@@ -8,6 +8,7 @@ TOOLS = nonebot.get_driver().config.tools_path
 sys.path.append(str(TOOLS))
 from permission import checker, error
 from file import read, write
+from config import Config
 
 notice = on_notice(priority=5)
 
@@ -24,7 +25,11 @@ async def _(bot: Bot, event: NoticeEvent):
     if event.notice_type == "group_increase":
         obj = event.user_id
         group = event.group_id
-        msg = ms.at(obj) + read(TOOLS+"/welcome.txt")
+        bot = Config.bot
+        if obj == bot[0]:
+            msg = "欢迎使用Inkar Suki！如需帮助请发送+help或查询文档哦~\nhttps://www.inkar-suki.xyz"
+        else:
+            msg = ms.at(obj) + read(TOOLS+"/welcome.txt")
         await bot.call_api("send_group_msg",group_id=group, message=msg)
     elif event.notice_type == "group_decrease":
         if event.sub_type == "kick_me":

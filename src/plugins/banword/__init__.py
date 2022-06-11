@@ -47,7 +47,7 @@ async def ___(event: Event, args: Message = CommandArg()):
             await unbanword.finish("您解封了什么？")
     else:
         await unbanword.finish("您解封了什么？")
-banned_word = on_message(priority=2, block=False)
+banned_word = on_message(priority=3, block=False)
 @banned_word.handle()
 async def _(matcher: Matcher, bot: Bot, event: GroupMessageEvent):
     if checker(str(event.user_id),5):

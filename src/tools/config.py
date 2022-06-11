@@ -2,7 +2,7 @@ from local_version import local_version, nonebot_version
 class Config:
     global_path = "/root/Inkar-Suki/src/" #全局路径
     web_path = "/webhook" #意思是http://127.0.0.1:2333/webhook即为Webhook接收地址，2333端口在.env.dev中定义过了
-    bot = ["3438531564"] #公共实例QQ号
+    bot = ["3438531564"] #公共实例QQ号，最好只写一个
     platform = True #使用Debian 11
     owner = ["3349104868"] #作者QQ号，这里填主人的QQ就可以了
     size = global_path+"/tools/size.txt" #帮助图片的尺寸，保存为文本文件的路径，格式不限
