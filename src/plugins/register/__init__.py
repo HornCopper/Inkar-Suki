@@ -32,4 +32,5 @@ async def _(event: GroupMessageEvent):
         write(new_path+"/webhook.json","[]")
         write(new_path+"/marry.json","[]")
         write(new_path+"/welcome.txt","欢迎入群！")
+        write(new_path+"/banword.json","[]")
         await register.finish("注册成功！")
