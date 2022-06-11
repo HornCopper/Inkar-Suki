@@ -150,4 +150,4 @@ async def sendNbMessage(bot: Bot, message, repo):
                     except:
                         logger.info("Webhook推送失败：被风控。")
                         return
-                logger.info("Webhook推送成功：消息ID为"+json.loads(response)["message_id"])
+                logger.info("Webhook推送成功：消息ID为"+response["message_id"])
