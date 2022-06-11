@@ -149,7 +149,7 @@ async def _(event: Event, args: Message = CommandArg()):
         await git.finish(output)
     os.system("git add .")
     msg = ""
-    msg = msg + os.popen("git commit -m "+commit).read()
+    msg = msg + os.popen("git commit -m \""+commit+"\"").read()
     msg = msg + os.popen("git push").read()
     if msg == "":
         msg = "执行完成，但没有输出哦~"
