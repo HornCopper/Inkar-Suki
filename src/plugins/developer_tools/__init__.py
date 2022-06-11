@@ -117,6 +117,8 @@ async def front_(event: Event, args: Message = CommandArg()):
     if checker(str(event.user_id),10) == False:
         await front.finish(error(10))
     msg = os.popen(args.extract_plain_text()).read()
+    if msg == "":
+        msg = "执行完成，但没有输出哦~"
     await front.finish(f"{msg}")
 post = on_command("post", aliases={"公告"}, priority=5)
 @post.handle()
@@ -134,3 +136,21 @@ async def _(event: Event, args: Message = CommandArg()):
         await call_api.finish(error(10))
     cmd = args.extract_plain_text()
     await http.get_url(f"{Config.cqhttp}{cmd}")
+
+git = on_command("git",priority=5)
+@git.handle()
+async def _(event: Event, args: Message = CommandArg()):
+    if checker(str(event.user_id),10) == False:
+        await call_api.finish(error(10))
+    output = ""
+    commit = args.extract_plain_text()
+    if commit == "pull":
+        output = os.popen("git pull").read()
+        await git.finish(output)
+    os.system("git add .")
+    msg = ""
+    msg = msg + os.popen("git commit -m "+commit).read()
+    msg = msg + os.popen("git push").read()
+    if msg == "":
+        msg = "执行完成，但没有输出哦~"
+    await git.finish(msg)
