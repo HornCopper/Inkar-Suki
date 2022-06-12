@@ -49,9 +49,9 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
             cache = open(DATA+"/"+group+"/"+"webhook.json",mode="w")
             cache.write(json.dumps(now))
             cache.close()
-            webhook.finish("绑定成功！")
+            await webhook.finish("绑定成功！")
         else:
-            webhook.finish("唔……绑定失败：已经绑定过了。")
+            await webhook.finish("唔……绑定失败：已经绑定过了。")
 unbind = on_command("unbindrepo",aliases={"unbind_webhook"},priority=5)
 @unbind.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
