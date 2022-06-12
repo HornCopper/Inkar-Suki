@@ -15,8 +15,7 @@ from config import Config
 
 def already(reponame: str, group) -> bool:
     final_path = DATA + "/" + group + "/" + "webhook.json"
-    cache = open(final_path,mode="r")
-    repos = json.loads(cache.read())
+    repos = json.loads(read(final_path))
     for i in repos:
         if i == reponame:
             return True
