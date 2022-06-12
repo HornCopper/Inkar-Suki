@@ -47,7 +47,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
             now.append(repo_name)
             cache.close()
             cache = open(DATA+"/"+group+"/"+"webhook.json",mode="w")
-            cache.write(now)
+            cache.write(json.dumps(now))
             cache.close()
             webhook.finish("绑定成功！")
         else:
@@ -67,7 +67,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
         now.remove(repo)
         cache.close()
         cache = open(DATA+"/"+group+"/webhook.json",mode="w")
-        cache.write(now)
+        cache.write(json.dumps(now))
         cache.close()
         await unbind.finish("解绑成功！")
 
