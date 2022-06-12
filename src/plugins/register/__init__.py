@@ -22,12 +22,12 @@ async def _(matcher: Matcher, event: GroupMessageEvent):
 register = on_command("register",block=False,priority=0)
 @register.handle()
 async def _(event: GroupMessageEvent):
-    group = event.group_id
+    group = str(event.group_id)
     directorys=os.listdir("./src/data")
     if group in directorys:
         await register.finish("已注册，无需再次注册哦~")
     else:
-        new_path = "./src/data/"+str(group)
+        new_path = "./src/data/"+group
         os.mkdir(new_path)
         write(new_path+"/webhook.json","[]")
         write(new_path+"/marry.json","[]")
