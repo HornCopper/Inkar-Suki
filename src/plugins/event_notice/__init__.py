@@ -25,8 +25,8 @@ async def _(bot: Bot, event: NoticeEvent):
     if event.notice_type == "group_increase":
         obj = event.user_id
         group = event.group_id
-        bot = Config.bot
-        if obj == bot[0]:
+        bots = Config.bot
+        if obj == bots[0]:
             msg = "欢迎使用Inkar Suki！如需帮助请发送+help或查询文档哦~\nhttps://www.inkar-suki.xyz"
         else:
             msg = ms.at(obj) + read(TOOLS+"/welcome.txt")
