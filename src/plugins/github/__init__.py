@@ -1,36 +1,29 @@
 import json,sys,nonebot
 from nonebot import get_bot, on_command
 from nonebot.adapters import Message
-from nonebot.adapters.onebot.v11 import Bot, Event
+from nonebot.adapters.onebot.v11 import Bot, GroupMessageEvent
 from nonebot.adapters.onebot.v11 import MessageSegment as ms
 from nonebot.log import logger
 from nonebot.params import CommandArg
 TOOLS = nonebot.get_driver().config.tools_path
+DATA = TOOLS[:TOOLS.find("/tools")]+"/data"
 sys.path.append(str(TOOLS))
 from permission import checker, error
 from http_ import http
 from file import read, write
 from config import Config
 
-def checknumber(number):
-    return number.isdecimal()
-def group_exist(group):
-    info = json.loads(read(TOOLS+"/webhook.json"))
-    for i in info:
-        if i["group"] == group:
+def already(reponame: str, group) -> bool:
+    final_path = DATA + "/" + group + "/" + "webhook.json"
+    cache = open(final_path,mode="r")
+    repos = json.loads(cache.read())
+    for i in repos:
+        if i == reponame:
             return True
-    return False
-def group_and_repo_exist(group, repo):
-    info = json.loads(read(TOOLS+"/webhook.json"))
-    for i in info:
-        if i["group"] == group:
-            for q in i["repo"]:
-                if q == repo:
-                    return True
     return False
 repo = on_command("repo", priority=5)
 @repo.handle()
-async def _(event: Event, args: Message = CommandArg()):
+async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     reponame = args.extract_plain_text()
     status_code = await http.get_status("https://github.com/"+reponame)
     if status_code != 200:
@@ -40,42 +33,27 @@ async def _(event: Event, args: Message = CommandArg()):
         await repo.finish(img)
 webhook = on_command("bindrepo",aliases={"webhook"},priority=5)
 @webhook.handle()
-async def _(event: Event, args: Message = CommandArg()):
+async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     if checker(str(event.user_id),9) == False:
-        await webhook.finish(error(9))
-    cmd = args.extract_plain_text()
-    args = cmd.split(" ")
-    if len(args)>2:
-        await wa.finish("唔……你的参数有多余的哦~")
-    if len(args)<2:
-        await wa.finish("唔……你好像缺了一些参数哦~")
-    group = args[0]
-    repo = args[1]
-    if repo.find("/") == -1:
-        await webhook.finish("这不是有效的Repo名，正确的格式应为{作者/组织}/{项目名称}")
-    if checknumber(group) == False:
-        await webhook.finish("这不是有效的QQ群号！")
-    repo_status = await http.get_status("https://github.com/"+repo)
-    if repo_status != 200:
-        await webhook.finish("Repo不存在哦~")
-    if group_and_repo_exist(group, repo):
-        await webhook.finish("Repo已经添加过了哦~")
-    if group_exist(group):
-        info = json.loads(read(TOOLS+"/webhook.json"))
-        for i in info:
-            if i["group"] == group:
-                i["repo"].append(repo)
-        write(TOOLS+"/webhook.json", json.dumps(info))
-        await webhook.finish("绑定成功！")
+        await unbind.finish(error(9))
+    repo_name = args.extract_plain_text()
+    status_code = await http.get_status("https://github.com/"+repo_name)
+    if status_code != 200:
+        await repo.finish(f"唔……绑定失败。\n错误码：{status_code}")
     else:
-        new = {"group": group, "repo": [repo]}
-        info = json.loads(read(TOOLS+"/webhook.json"))
-        info.append(new)
-        write(TOOLS+"/webhook.json", json.dumps(info))
-        await webhook.finish("绑定成功！")
+        if already(repo_name, str(event.group_id)) == False:
+            cache = open(DATA+"/"+group+"/"+"webhook.json",mode="r")
+            new = json.loads(cache.read()).append(repo_name)
+            cache.close()
+            cache = open(DATA+"/"+group+"/"+"webhook.json",mode="w")
+            cache.write(new)
+            cache.close()
+            webhook.finish("绑定成功！")
+        else:
+            webhook.finish("唔……绑定失败：已经绑定过了。")
 unbind = on_command("unbindrepo",aliases={"unbind_webhook"},priority=5)
 @unbind.handle()
-async def _(event: Event, args: Message = CommandArg()):
+async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     if checker(str(event.user_id),9) == False:
         await unbind.finish(error(9))
     cmd = args.extract_plain_text()
