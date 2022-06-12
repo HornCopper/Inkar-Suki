@@ -41,7 +41,8 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     if status_code != 200:
         await repo.finish(f"唔……绑定失败。\n错误码：{status_code}")
     else:
-        if already(repo_name, str(event.group_id)) == False:
+        group=str(event.group_id)
+        if already(repo_name, group) == False:
             cache = open(DATA+"/"+group+"/"+"webhook.json",mode="r")
             new = json.loads(cache.read()).append(repo_name)
             cache.close()
