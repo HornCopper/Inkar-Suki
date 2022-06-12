@@ -56,43 +56,19 @@ unbind = on_command("unbindrepo",aliases={"unbind_webhook"},priority=5)
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     if checker(str(event.user_id),9) == False:
         await unbind.finish(error(9))
-    cmd = args.extract_plain_text()
-    args = cmd.split(" ")
-    if len(args)>2:
-        await unbind.finish("唔……你的参数有多余的哦~")
-    if len(args)<2:
-        await unbind.finish("唔……你好像缺了一些参数哦~")
-    group = args[0]
-    repo = args[1]
-    if repo.find("/") == -1 and repo != "-a":
-        await unbind.finish("这不是有效的Repo名，正确的格式应为{作者/组织}/{项目名称}")
-    if checknumber(group) == False:
-        await unbind.finish("这不是有效的QQ群号啦！")
-    if group_exist(group) == False:
-        await unbind.finish("唔……这个群尚未绑定任何Repo~")
-    info = json.loads(read(TOOLS+"/webhook.json"))
-    if repo == "-a":
-        for i in info:
-            if i["group"] == group:
-                info.remove(i)
-                write(TOOLS+"/webhook.json", json.dumps(info))
-                await unbind.finish("解绑成功！")
-    if group_and_repo_exist(group, repo) == False:
-        await unbind.finish("唔……这个群没有绑定这个仓库哦~")
+    repo = args.extract_plain_text()
+    group = str(event.group_id)
+    if already(repo, group) == False:
+        await unbind.finish("唔……解绑失败：尚未绑定此仓库。")
     else:
-        for i in info:
-            if i["group"] == group:
-                for b in i["repo"]:
-                    if b == repo:
-                        if len(i["repo"]) == 1:
-                            info.remove(i)
-                            write(TOOLS+"/webhook.json", json.dumps(info))
-                            await unbind.finish("已解绑所有此群的Webhook！")
-                        else:
-                            i["repo"].remove(b)
-                            write(TOOLS+"/webhook.json", json.dumps(info))
-                            await unbind.finish("解绑成功！")
-    
+        cache = open(DATA+"/"+group+"/webhook.json",mode="r")
+        new = json.loads(cache.read()).remove(repo)
+        cache.close()
+        cache = open(DATA+"/"+group+"/webhook.json",mode="w")
+        cache.write(new)
+        cache.close()
+        await unbind.finish("解绑成功！")
+
 from fastapi import Request, FastAPI
 from .parse import main
 app: FastAPI = nonebot.get_app()
@@ -115,18 +91,20 @@ async def recWebHook(req: Request):
     return {"status":200}
 
 async def sendNbMessage(bot: Bot, message, repo):
-    group_id_list = json.loads(read(TOOLS+"/webhook.json"))
-    for i in group_id_list:
-        for m in i["repo"]:
-            if m == repo:
-                group = i["group"]
-                try:
-                    response = await bot.call_api("send_group_msg", group_id=int(group), message=message)
-                except:
-                    try:
-                        response = await bot.call_api("send_group_msg", group_id=int(group), message="唔……刚刚发送消息失败了哦（原因懂的都懂），重新发送：\n"+message)
-                        logger.info("Webhook推送失败：被风控，重新发送消息ID为"+response["message_id"])
-                    except:
-                        logger.info("Webhook推送失败：被风控，重新发送失败。")
-                        return
-                logger.info("Webhook推送成功：消息ID为"+str(response["message_id"]))
+    groups=os.listdir("./src/data")
+    send_group = []
+    for i in groups:
+        if repo in json.loads(read(DATA+"/"+i+"/webhook.json")):
+            send.group.append(int(i))
+    try:
+        response = await bot.call_api("send_group_msg", group_id=int(group), message=message)
+        logger.info("Webhook推送成功：消息ID为"+str(response["message_id"]))
+        return
+    except:
+        try:
+            response = await bot.call_api("send_group_msg", group_id=int(group), message="唔……刚刚发送消息失败了哦（原因懂的都懂），重新发送：\n"+message)
+            logger.info("Webhook推送失败：被风控，重新发送消息ID为"+response["message_id"])
+            return
+        except:
+            logger.info("Webhook推送失败：被风控，重新发送失败。")
+            return
