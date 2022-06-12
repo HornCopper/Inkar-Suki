@@ -44,10 +44,11 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
         group=str(event.group_id)
         if already(repo_name, group) == False:
             cache = open(DATA+"/"+group+"/"+"webhook.json",mode="r")
-            new = json.loads(cache.read()).append(repo_name)
+            now = json.loads(cache.read())
+            now.append(repo_name)
             cache.close()
             cache = open(DATA+"/"+group+"/"+"webhook.json",mode="w")
-            cache.write(new)
+            cache.write(now)
             cache.close()
             webhook.finish("绑定成功！")
         else:
@@ -63,10 +64,11 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
         await unbind.finish("唔……解绑失败：尚未绑定此仓库。")
     else:
         cache = open(DATA+"/"+group+"/webhook.json",mode="r")
-        new = json.loads(cache.read()).remove(repo)
+        now = json.loads(cache.read())
+        now.remove(repo)
         cache.close()
         cache = open(DATA+"/"+group+"/webhook.json",mode="w")
-        cache.write(new)
+        cache.write(now)
         cache.close()
         await unbind.finish("解绑成功！")
 
