@@ -30,7 +30,7 @@ async def _(bot: Bot, event: NoticeEvent):
         if str(obj) == bots[0]:
             msg = "欢迎使用Inkar Suki！如需帮助请发送+help或查询文档哦~\nhttps://www.inkar-suki.xyz"
         else:
-            msg = ms.at(obj) + read(DATA+str(group)+"/welcome.txt")
+            msg = ms.at(obj) + read(DATA+"/"+str(group)+"/welcome.txt")
         await bot.call_api("send_group_msg",group_id=group, message=msg)
     elif event.notice_type == "group_decrease":
         if event.sub_type == "kick_me":
@@ -56,7 +56,7 @@ async def __(event: Event, args: Message = CommandArg()):
         await welcome_msg_edit.finish(error(5))
     msg = args.extract_plain_text()
     if msg:
-        write(DATA+str(event.group_id)+"/welcome.txt", msg)
+        write(DATA+"/"+str(event.group_id)+"/welcome.txt", msg)
         await welcome_msg_edit.finish("喵~已设置入群欢迎！")
     else:
         await welcome_msg_edit.finish("您输入了什么？")
