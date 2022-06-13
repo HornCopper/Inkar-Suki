@@ -5,12 +5,13 @@ class main:
     def push(body):
         pusher = body["pusher"]["name"]
         repo_name = body["repository"]["full_name"]
-        commit = body["commits"][0]["message"]
-        ver = body["commits"][0]["id"][0:7]
         if body["ref"].find("tags") != -1:
             tag = body["ref"]
-            tag = tag[:tag.find("refs/tags/")+10]
+            tag = tag[tag.find("refs/tags/")+10:]
             msg =  f"{pusher} pushed to {repo_name}(Tag {tag})."
+            return msg
+        commit = body["commits"][0]["message"]
+        ver = body["commits"][0]["id"][0:7]
         msg = f"{pusher} pushed to {repo_name}.\n[{ver}]{commit}"
         return msg
     def issues(body):
@@ -85,11 +86,11 @@ class main:
             release_name = body["release"]["name"]
             tag_name = body["release"]["tag_name"]
             release_msg = body["release"]["body"]
-            msg = f"{sender} published a release on {repo_name}.\n{tag_name} - {release}\n{release_msg}"
+            msg = f"{sender} published a release on {repo_name}.\n{tag_name} - {release_name}\n{release_msg}"
             return msg
         elif action == "released":
             sender = body["sender"]["login"]
             repo_name = body["repository"]["full_name"]
             release_name = body["release"]["name"]
             tag_name = body["release"]["tag_name"]
-            msg = f"{sender} released a release on {repo_name}.\n{tag_name} - {release}"
+            msg = f"{sender} released a release on {repo_name}.\n{tag_name} - {release_name}"
