@@ -22,12 +22,14 @@ global flag
 banword = on_command("banword", priority=5)
 @banword.handle()
 async def __(event: GroupMessageEvent, args: Message = CommandArg()):
-    cmd = args.extract_plain_text()
+    bw = args.extract_plain_text()
     if checker(str(event.user_id), 5) == False:
         await banword.finish(error(5))
-    if cmd:
+    if bw:
         now = json.loads(read(DATA+"/"+str(event.group_id)+"/banword.json"))
-        now.append(cmd)
+        if bw in now:
+            await banword.finish("唔……封禁失败，已经封禁过了。")
+        now.append(bw)
         write(DATA+"/"+str(event.group_id)+"/banword.json", json.dumps(now, ensure_ascii=False))
         await banword.finish("已成功封禁词语！")
     else:
