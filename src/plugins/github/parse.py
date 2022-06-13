@@ -93,3 +93,4 @@ class main:
             release_name = body["release"]["name"]
             tag_name = body["release"]["tag_name"]
             msg = f"{sender} released a release on {repo_name}.\n{tag_name} - {release}"
+            return msg
