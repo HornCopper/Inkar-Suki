@@ -100,7 +100,7 @@ async def sendm(bot: Bot, message, repo):
             send_group.append(int(i))
     for i in send_group:
         try:
-            response = await bot.call_api("send_group_msg", group_id=int(group), message=message)
+            response = await bot.call_api("send_group_msg", group_id=int(i), message=message)
             logger.info("Webhook推送成功：消息ID为"+str(response["message_id"]))
             return
         except:
