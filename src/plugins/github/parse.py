@@ -14,6 +14,18 @@ class main:
         ver = body["commits"][0]["id"][0:7]
         msg = f"{pusher} pushed to {repo_name}.\n[{ver}]{commit}"
         return msg
+    def pull_request(body):
+        action = body["action"]
+        if action == "opened":
+            source = body["pull_request"]["head"]["label"]
+            goal = body["pull_request"]["base"]["label"]
+            title = body["pull_request"]["title"]
+            comment = body["pull_request"]["body"]
+            repo = body["repository"]["full_name"]
+            sender = body["sender"]["login"]
+            num = body["pull_request"]["number"]
+            msg = f"{sender} opened a pull request on {repo}#{num}.\nFrom {source} to {goal}.\nTitle:{title}\nDescription:{comment}"
+        return msg
     def issues(body):
         action = body["action"]
         if action == "opened" or action == "closed" or action == "reopened":
