@@ -10,9 +10,11 @@ class main:
             tag = tag[tag.find("refs/tags/")+10:]
             msg =  f"{pusher} pushed to {repo_name}(Tag {tag})."
             return msg
+        branch = body["ref"]
+        branch = branch[branch.find("refs/heads/")+11:]
         commit = body["commits"][0]["message"]
         ver = body["commits"][0]["id"][0:7]
-        msg = f"{pusher} pushed to {repo_name}.\n[{ver}]{commit}"
+        msg = f"{pusher} pushed to {repo_name}:{branch}.\n[{ver}]{commit}"
         return msg
     def pull_request(body):
         action = body["action"]
@@ -25,6 +27,19 @@ class main:
             sender = body["sender"]["login"]
             num = body["pull_request"]["number"]
             msg = f"{sender} opened a pull request on {repo}#{num}.\nFrom {source} to {goal}.\nTitle:{title}\nDescription:{comment}"
+        elif action == "closed":
+            source = body["pull_request"]["head"]["label"]
+            goal = body["pull_request"]["base"]["label"]
+            title = body["pull_request"]["title"]
+            comment = body["pull_request"]["body"]
+            repo = body["repository"]["full_name"]
+            sender = body["sender"]["login"]
+            num = body["pull_request"]["number"]
+            merged = body["pull_request"]["merged"]
+            if merged == True:
+                msg = f"{sender} closed the pull request on {repo}#{num}.\nFrom {source} to {goal}.\n(Already merged)\nTitle:{title}\nDescription:{comment}"
+            else:
+                msg = f"{sender} closed the pull request on {repo}#{num}.\nFrom {source} to {goal}.\nTitle:{title}\nDescription:{comment}"
         return msg
     def issues(body):
         action = body["action"]
@@ -57,6 +72,11 @@ class main:
     def issue_comment(body):
         action = body["action"]
         if action == "created":
+            try:
+                pr = body["issue"]["pull_request"]
+                itype = "pull request"
+            except:
+                itype = "issue"
             sender = body["sender"]["login"]
             msg = body["comment"]["body"]
             msg_regex = re.compile(r"!\[.*\]\((.*)\)")
@@ -67,7 +87,7 @@ class main:
             repo_name = body["repository"]["full_name"]
             issue_num = str(body["issue"]["number"])
             issue_title = body["issue"]["title"]
-            msg = f"{sender} commented on {repo_name}#{issue_num}.\nTitle:{issue_title}\nDescription:{msg}"
+            msg = f"{sender} commented on {itype} {repo_name}#{issue_num}.\nTitle:{issue_title}\nDescription:{msg}"
             return msg
     def commit_comment(body):
         action = body["action"]

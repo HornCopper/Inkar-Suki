@@ -3,13 +3,15 @@ def space():
     print("----------------------分割线----------------------")
 try:
     os.mkdir("./src/data")
-except FileExistsError:
+except FileExistsError:javascript:;
     print("检测到`data`文件夹已创建。")
 def write(file, something):
     with open(f"./src/tools/{file}",mode="w") as cache:
         cache.write(something)
 json_ = {}
 if __name__ == "__main__":
+    abpath = __file__
+    json_["abpath"] = abpath[:abpath.find("/initialization.py")]+"/src/tools"
     print("模块`github`需要使用`web_path`，如果您填写的值为`/a`，那么通过`http://127.0.0.1:2333/a`可传入Webhook，但内网显然不行，因此您需要手动配置Nginx或Apache2进行反向代理，代理地址为`http://127.0.0.1:2333/a`。")
     print("此处提供Nginx配置文件写法（当填入值为`/a`时：）")
     print("location = /")
