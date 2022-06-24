@@ -12,10 +12,6 @@ DATA = TOOLS[:TOOLS.find("/tools")]+"/data"
 sys.path.append(str(TOOLS))
 from permission import checker, error
 from file import read, write
-def is_in(full_str, sub_str):
-    if full_str.find(sub_str) != -1:
-        return True
-    return False
 global flag
 banword = on_command("banword", priority=5)
 @banword.handle()
@@ -54,17 +50,17 @@ async def _(matcher: Matcher, bot: Bot, event: GroupMessageEvent):
     if checker(str(event.user_id),5):
         return
     flag = False
-    banwordlist = read(DATA+"/"+str(event.group_id)+"/banword.json")
-    msg = str(event.raw_message)
-    id = str(event.message_id)
+    banwordlist = json.loads(read(DATA+"/"+str(event.group_id)+"/banword.json"))
+    msg = event.get_plaintext()
+    id_ = str(event.message_id)
     for i in banwordlist:
-        if is_in(msg,i):
+        if msg.find(i) != -1:
             flag = True
     if flag:
         sb = event.user_id
         try:
             group = event.group_id
-            await bot.call_api("delete_msg",message_id=id)
+            await bot.call_api("delete_msg",message_id=id_)
             await bot.call_api("set_group_ban", group_id = group, user_id = sb, duration = 60)
             msg = ms.at(sb) + "唔……你触发了违禁词，已经给你喝了1分钟的红茶哦~"
             matcher.stop_propagation()

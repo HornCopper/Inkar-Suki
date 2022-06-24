@@ -35,7 +35,7 @@ imgsize = on_command("imgsize",aliases={"is"},priority=5)
 @imgsize.handle()
 async def __(bot: Bot, event: Event):
     if checker(str(event.user_id),9) == False:
-        await bot.finish(error(9))
+        await imgsize.finish(error(9))
     size = read(Config.size)
     await imgsize.finish("查到啦！当前图片尺寸为"+size+"。")
 purge = on_command("purge",priority=5)
