@@ -55,7 +55,7 @@ async def _(bot: Bot, event: Event, args: Message = CommandArg()):
             now.remove(i)
     write(TOOLS+"/ban.json", json.dumps(now))
     await ban.finish(f"好的，已经解封{sb_name}({sb})。")
-banned = on_message(priority=1,block=False)
+banned = on_message(priority=2,block=False)
 @banned.handle()
 async def _(matcher: Matcher, event: Event):
     info = json.loads(read(TOOLS+"/webhook.json"))

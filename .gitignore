@@ -11,6 +11,7 @@ __pycache__/
 build/
 develop-eggs/
 dist/
+data/
 downloads/
 eggs/
 .eggs/
@@ -41,7 +42,6 @@ banword.json
 marry.json
 permission.json
 webhook.json
-config.py
 # Unit test / coverage reports
 htmlcov/
 .tox/
