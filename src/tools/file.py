@@ -1,9 +1,8 @@
 def read(Path):
-    try:
-        cache = open(Path,mode="r")
-        return cache.read()
-    except:
-        return False
+    cache = open(Path,mode="r")
+    msg = cache.read()
+    cache.close()
+    return msg
 
 def write(Path, sth):
     with open(Path, mode="w") as cache:
