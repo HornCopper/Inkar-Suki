@@ -1,4 +1,4 @@
-import sys, nonebot
+import sys, nonebot, json
 from nonebot.adapters.onebot.v11 import MessageSegment as ms
 from nonebot import on_notice, on_command
 from nonebot.adapters import Message
@@ -38,15 +38,20 @@ async def _(bot: Bot, event: NoticeEvent):
             if banned(kicker) == False:
                 banlist = json.loads(read(TOOLS + "/ban.json"))
                 banlist.append(kicker)
-                write(TOOLS + "/ban.json",banlist)
-        who = event.user_id
-        group = event.group_id
-        if group == 458416873:
-            return
-        info = await bot.call_api("get_stranger_info", user_id=who)
-        name = info["nickname"]
-        msg = f"唔……成员{name}({who})离开了咱们群哦~"
-        await bot.call_api("send_group_msg",group_id=group, message=msg)
+                write(TOOLS + "/ban.json",json.dumps(banlist))
+                return
+            else:
+                return
+        else:
+            who = event.user_id
+            group = event.group_id
+            no_notice_leave = json.loads(read(TOOLS + "/nnl.json"))
+            if group in no_notice_leave:
+                return
+            info = await bot.call_api("get_stranger_info", user_id=who)
+            name = info["nickname"]
+            msg = f"唔……成员{name}({who})离开了咱们群哦~"
+            await bot.call_api("send_group_msg",group_id=group, message=msg)
     
 welcome_msg_edit = on_command("welcome",priority=5)
 
