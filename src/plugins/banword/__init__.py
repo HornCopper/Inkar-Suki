@@ -13,11 +13,9 @@ sys.path.append(str(TOOLS))
 from permission import checker, error
 from file import read, write
 def is_in(full_str, sub_str):
-    try:
-        full_str.index(sub_str)
+    if full_str.find(sub_str) != -1:
         return True
-    except ValueError:
-        return False
+    return False
 global flag
 banword = on_command("banword", priority=5)
 @banword.handle()
