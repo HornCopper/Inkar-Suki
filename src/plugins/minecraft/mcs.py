@@ -63,4 +63,12 @@ async def bes(ip: str) -> str:
         edition = unpack_data[0]
         version_name = unpack_data[3]
         game_mode = unpack_data[8]
+        if game_mode == "Survival":
+            game_mode = "生存"
+        elif game_mode == "Creative":
+            game_mode = "创造"
+        elif game_mode == "Adventure":
+            game_mode = "冒险"
+        else:
+            game_mode = "未知"
         return f"已经查到基岩版服务器啦：\n地址：{ip}:{port}\n在线人数：{player_count}/{max_players}\n版本：{edition}{version_name}\n游戏模式：{game_mode}\n介绍：{motd_1} - {motd_2}"
