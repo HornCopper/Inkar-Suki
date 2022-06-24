@@ -5,9 +5,11 @@ from nonebot.adapters import Message
 from nonebot.adapters.onebot.v11 import Bot, NoticeEvent, Event
 from nonebot.params import CommandArg
 TOOLS = nonebot.get_driver().config.tools_path
+DATA = TOOLS[:TOOLS.find("/tools")]+"/data"
 sys.path.append(str(TOOLS))
 from permission import checker, error
 from file import read, write
+from config import Config
 
 notice = on_notice(priority=5)
 
@@ -24,7 +26,11 @@ async def _(bot: Bot, event: NoticeEvent):
     if event.notice_type == "group_increase":
         obj = event.user_id
         group = event.group_id
-        msg = ms.at(obj) + read(TOOLS+"/welcome.txt")
+        bots = Config.bot
+        if str(obj) == bots[0]:
+            msg = "欢迎使用Inkar Suki！如需帮助请发送+help或查询文档哦~\nhttps://www.inkar-suki.xyz"
+        else:
+            msg = ms.at(obj) + read(DATA+"/"+str(group)+"/welcome.txt")
         await bot.call_api("send_group_msg",group_id=group, message=msg)
     elif event.notice_type == "group_decrease":
         if event.sub_type == "kick_me":
@@ -50,7 +56,7 @@ async def __(event: Event, args: Message = CommandArg()):
         await welcome_msg_edit.finish(error(5))
     msg = args.extract_plain_text()
     if msg:
-        write(TOOLS+"/welcome.txt", msg)
+        write(DATA+"/"+str(event.group_id)+"/welcome.txt", msg)
         await welcome_msg_edit.finish("喵~已设置入群欢迎！")
     else:
         await welcome_msg_edit.finish("您输入了什么？")
