@@ -2,7 +2,7 @@ import sys, nonebot, json
 from nonebot.adapters.onebot.v11 import MessageSegment as ms
 from nonebot import on_notice, on_command
 from nonebot.adapters import Message
-from nonebot.adapters.onebot.v11 import Bot, NoticeEvent, Event
+from nonebot.adapters.onebot.v11 import Bot, GroupMessageEvent, NoticeEvent
 from nonebot.params import CommandArg
 TOOLS = nonebot.get_driver().config.tools_path
 DATA = TOOLS[:TOOLS.find("/tools")]+"/data"
@@ -11,7 +11,8 @@ from permission import checker, error
 from file import read, write
 from config import Config
 
-notice = on_notice(priority=5)
+def checknumber(number):
+    number.isdecimal()
 
 def banned(sb):
     with open(TOOLS + "/ban.json") as cache:
@@ -20,7 +21,7 @@ def banned(sb):
             if i == sb:
                 return True
         return False
-
+notice = on_notice(priority=5)
 @notice.handle()
 async def _(bot: Bot, event: NoticeEvent):
     if event.notice_type == "group_increase":
@@ -46,7 +47,7 @@ async def _(bot: Bot, event: NoticeEvent):
             who = event.user_id
             group = event.group_id
             no_notice_leave = json.loads(read(TOOLS + "/nnl.json"))
-            if group in no_notice_leave:
+            if str(group) in no_notice_leave:
                 return
             info = await bot.call_api("get_stranger_info", user_id=who)
             name = info["nickname"]
@@ -56,7 +57,7 @@ async def _(bot: Bot, event: NoticeEvent):
 welcome_msg_edit = on_command("welcome",priority=5)
 
 @welcome_msg_edit.handle()
-async def __(event: Event, args: Message = CommandArg()):
+async def __(event: GroupMessageEvent, args: Message = CommandArg()):
     if checker(str(event.user_id),5) == False:
         await welcome_msg_edit.finish(error(5))
     msg = args.extract_plain_text()
@@ -65,3 +66,16 @@ async def __(event: Event, args: Message = CommandArg()):
         await welcome_msg_edit.finish("喵~已设置入群欢迎！")
     else:
         await welcome_msg_edit.finish("您输入了什么？")
+        
+no_notice_leave = on_command("no_notice_leave",priority=5)
+@no_notice_leave.handle()
+async def __(event: GroupMessageEvent):
+    if checker(str(event.user_id),5) == False:
+        await no_notice_leave.finish(error(5))
+    nnllist = json.loads(read(TOOLS+"/nnl.json"))
+    for i in nnllist:
+        if i == str(event.group_id):
+            await no_notice_leave.finish("已经关闭过退群提醒了哦~")
+    nnllist.append(str(event.group_id))
+    write(TOOLS+"/nnl.json",json.dumps(nnllist))
+    await no_notice_leave.finish("已关闭退群提醒~")

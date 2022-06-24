@@ -19,10 +19,10 @@ async def _(matcher: Matcher, event: GroupMessageEvent):
     else:
         return
     
-register = on_command("register",block=False,priority=0)
+register = on_command("register"，aliases={"reg"},block=False,priority=0)
 @register.handle()
 async def _(event: GroupMessageEvent):
-    if checker(str(event.user_id),8):
+    if checker(str(event.user_id),8) == False:
         await register.finish(error(8))
     group = str(event.group_id)
     directorys=os.listdir("./src/data")
