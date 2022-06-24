@@ -87,7 +87,7 @@ class main:
             repo_name = body["repository"]["full_name"]
             issue_num = str(body["issue"]["number"])
             issue_title = body["issue"]["title"]
-            msg = f"{sender} commented on {itype} {repo_name}#{issue_num}.\nTitle:{issue_title}\nDescription:{msg}"
+            msg = f"{sender} commented on {itype} on {repo_name}#{issue_num}.\nTitle:{issue_title}\nDescription:{msg}"
             return msg
     def commit_comment(body):
         action = body["action"]
