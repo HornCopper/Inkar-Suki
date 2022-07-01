@@ -19,7 +19,7 @@ async def _(matcher: Matcher, event: GroupMessageEvent):
     else:
         return
     
-register = on_command("register"，aliases={"reg"},block=False,priority=0)
+register = on_command("register",aliases={"reg"},block=False,priority=0)
 @register.handle()
 async def _(event: GroupMessageEvent):
     if checker(str(event.user_id),8) == False:
@@ -35,4 +35,5 @@ async def _(event: GroupMessageEvent):
         write(new_path+"/marry.json","[]")
         write(new_path+"/welcome.txt","欢迎入群！")
         write(new_path+"/banword.json","[]")
+        write(new_path+"/block.json","[]")
         await register.finish("注册成功！")

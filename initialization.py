@@ -3,7 +3,7 @@ def space():
     print("----------------------分割线----------------------")
 try:
     os.mkdir("./src/data")
-except FileExistsError:javascript:;
+except FileExistsError:
     print("检测到`data`文件夹已创建。")
 def write(file, something):
     with open(f"./src/tools/{file}",mode="w") as cache:

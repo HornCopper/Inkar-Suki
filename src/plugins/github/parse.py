@@ -127,3 +127,6 @@ class main:
             tag_name = body["release"]["tag_name"]
             msg = f"{sender} released a release on {repo_name}.\n{tag_name} - {release_name}"
             return msg
+    def ping(body):
+        repo_name = body["repository"]["full_name"]
+        return f"{repo_name} has already binded successfully."
