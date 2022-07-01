@@ -1,1 +1,1 @@
-{"author":"HornCopper","version":"1.0-Snapshot","name":"黑名单/封锁系统(ban)","admin":"封禁(10)$解封(10)$触发(10-)","aliases":"+ban -> +block$+unban -> +unblock","desc":"封禁指定用户$添加：+ban <user>$移除：+unban <user>"}
+{"author":"HornCopper","version":"1.0-Snapshot","name":"黑名单/封锁系统(ban)","admin":"全域封禁(10)$全域解封(10)$全域触发(10-)$局部封禁(9)$局部解封(9)$局部触发(5-)","aliases":"+ban -> +block$+unban -> +unblock","desc":"封禁指定用户$添加：+ban <user>$移除：+unban <user>$在特定群聊（需在群内执行）封禁用户：+group_ban <qq>$在特定群聊（需在群内执行）解封用户：+group_unban <qq>"}

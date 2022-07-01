@@ -21,12 +21,22 @@ def banned(sb):
             if i == sb:
                 return True
         return False
+
+def group_banned(sb,group):
+    bans = json.loads(read(DATA+"/"+group+"/block.json"))
+    for i in bans:
+        if i == sb:
+            return True
+    return False
 notice = on_notice(priority=5)
 @notice.handle()
 async def _(bot: Bot, event: NoticeEvent):
     if event.notice_type == "group_increase":
         obj = event.user_id
         group = event.group_id
+        if group_banned(str(obj),str(group)):
+            await bot.call_api("set_group_kick",user_id=obj, group_id=group)
+            await bot.call_api("send_group_msg",group_id=group,message="喵~已拦截一位不速之客：\n"+str(obj))
         bots = Config.bot
         if str(obj) == bots[0]:
             msg = "欢迎使用Inkar Suki！如需帮助请发送+help或查询文档哦~\nhttps://www.inkar-suki.xyz"

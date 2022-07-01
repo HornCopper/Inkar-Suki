@@ -44,26 +44,23 @@ purge = on_command("purge",priority=5)
 async def ___(event: Event):
     if checker(str(event.user_id),1) == False:
         await purge.finish(error(1))
-    if Config.platform == True:
-        os.system(f"rm -rf {Config.help_image_save_to}")
-        os.system(f"rm -rf {Config.html_path}")
+    try:
+        os.remove(f"{Config.help_image_save_to}")
+        os.remove(f"{Config.html_path}")
+    except:
+        await purge.finish("部分文件并没有找到哦~")
     else:
-        os.system(f"rd /s /q {Config.help_image_save_to}")
-        os.system(f"rd /s /q {Config.html_path}")
-    await purge.finish("好的，已帮你清除图片缓存~")
+        await purge.finish("好的，已帮你清除图片缓存~")
 
 shutdown = on_command("shutdown",aliases={"poweroff"},priority=5)
 
 @shutdown.handle()
 async def ____(event: Event):
     if checker(str(event.user_id),10) == False:
-        await shutdown.error(10)
+        await shutdown.finish(error(10))
     await shutdown.send("请稍候，正在关闭中……")
     await shutdown.send("关闭成功！请联系Owner到后台手动开启哦~")
-    if Config.platform:
-        os.system("killall nb")
-    else:
-        os.system("taskkill /f /t /im nb.exe")
+    sys.exit(0)
 
 restart = on_command("restart",priority=5)
 @restart.handle()
