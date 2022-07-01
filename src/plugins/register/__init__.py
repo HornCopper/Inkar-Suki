@@ -9,6 +9,7 @@ TOOLS = nonebot.get_driver().config.tools_path
 sys.path.append(str(TOOLS))
 from permission import checker, error
 from file import read, write
+from http_ import http
 
 unregistered = on_message(block=False,priority=1)
 @unregistered.handle()
@@ -19,7 +20,7 @@ async def _(matcher: Matcher, event: GroupMessageEvent):
     else:
         return
     
-register = on_command("register",aliases={"reg"},block=False,priority=0)
+register = on_command("register",aliases={"reg"},priority=0)
 @register.handle()
 async def _(event: GroupMessageEvent):
     if checker(str(event.user_id),8) == False:
@@ -37,3 +38,16 @@ async def _(event: GroupMessageEvent):
         write(new_path+"/banword.json","[]")
         write(new_path+"/block.json","[]")
         await register.finish("注册成功！")
+
+flushdata = on_command("flushdata",priority=5)
+@flushdata.handle()
+async def _(event: Event):
+    if checker(str(event.user_id),10) == False:
+        await register.finish(error(10))
+    directorys=os.listdir("./src/data")
+    enable_groups = json.loads(await http.get_url(f"{Config.cqhttp}get_group_list"))
+    disabled_groups = []
+    for i in directorys:
+        if i not in enable_groups:
+            disabled_groups.append(i)
+    
