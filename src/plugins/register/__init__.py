@@ -50,4 +50,10 @@ async def _(event: Event):
     for i in directorys:
         if i not in enable_groups:
             disabled_groups.append(i)
-    
+    for i in disabled_groups:
+        try:
+            os.rmdir(DATA+"/"+i)
+        except:
+            logger.info("删除文件夹"+i+"失败，未知错误。")
+    dlt_count = len(disabled_groups)
+    await flushdata.finish("好啦，刷新完成！\n删除了"+str(dlt_count)+"个文件夹。")
