@@ -1,1 +1,1 @@
-{"author":"HornCopper","version":"1.0-Snapshot","name":"剑网三搜索器(jx3)","admin":"N/A","aliases":"N/A","desc":"获取马匹刷新地点：+jx3_horse <horse_name>$获取服务器状态：+jx3_server <server_name>"}
+{"author":"HornCopper","version":"1.0-Snapshot","name":"剑网三搜索器(jx3)","admin":"N/A","aliases":"+jx3_random -> +骚话","desc":"获取马匹刷新地点：+jx3_horse <马驹名>$获取服务器状态：+jx3_server <服务器名>$获取剑网3宏命令：+jx3_macro <心法名>$获取日常/周常：+jx3_daily [服务器名(可选)]$获取科举答案：+jx3_exam <问题关键词>$获取阵眼效果：+jx3_matrix <心法名>$获取推荐装备：+jx3_equip <心法名>$获取绝世/珍稀奇遇前置条件：+jx3_require <奇遇名>$获取剑网3新闻：+jx3_news$获取剑网三“万花谷”频道骚话：+jx3_random"}

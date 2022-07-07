@@ -101,7 +101,7 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
         await group_unban.finish("解除本群封禁失败，尚未封禁此人。")
     else:
         now.remove(sb)
-        write(DATA+"/"+str(event.group_id)+"/block.json",now)
+        write(DATA+"/"+str(event.group_id)+"/block.json",json.dumps(now))
         await group_unban.finish("解除其在本群的封禁成功！")
         
 group_banned = on_message(block=False,priority=3)
