@@ -10,6 +10,7 @@ sys.path.append(str(TOOLS))
 from permission import checker, error
 from file import read, write
 from http_ import http
+from config import Config
 
 unregistered = on_message(block=False,priority=1)
 @unregistered.handle()
