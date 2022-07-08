@@ -4,7 +4,7 @@ from nonebot.params import CommandArg
 from nonebot.adapters.onebot.v11 import MessageSegment as ms
 from .jx3 import *
 
-horse = on_command("jx3_horse",priority=5)
+horse = on_command("jx3_horse",aliases={"马"},priority=5)
 @horse.handle()
 async def _(args: Message = CommandArg()):
     if args.extract_plain_text():
@@ -12,7 +12,7 @@ async def _(args: Message = CommandArg()):
     else:
         await horse.finish("没有输入任何马的名称哦，没办法帮你找啦。")
 
-server = on_command("jx3_server",priority=5)
+server = on_command("jx3_server",aliases={"服务器"},priority=5)
 @server.handle()
 async def _(args: Message = CommandArg()):
     if args.extract_plain_text():
@@ -20,7 +20,7 @@ async def _(args: Message = CommandArg()):
     else:
         await server.finish("没有输入任何服务器名称哦，没办法帮你找啦。")
 
-macro = on_command("jx3_macro",priority=5)
+macro = on_command("jx3_macro",aliases={"宏"},priority=5)
 @macro.handle()
 async def _(args: Message = CommandArg()):
     if args.extract_plain_text():
@@ -28,7 +28,7 @@ async def _(args: Message = CommandArg()):
     else:
         await macro.finish("没有输入任何心法名称哦，没办法帮你找啦。")
 
-daily = on_command("jx3_daily",priority=5)
+daily = on_command("jx3_daily",aliases={"日常","周常"},priority=5)
 @daily.handle()
 async def _(args: Message = CommandArg()):
     if args.extract_plain_text():
@@ -36,7 +36,7 @@ async def _(args: Message = CommandArg()):
     else:
         await daily.finish("没有输入任何服务器名称哦，自动切换至电信一区-长安城。\n"+await daily_("长安城"))
         
-exam = on_command("jx3_exam",priority=5)
+exam = on_command("jx3_exam",aliases={"科举"},priority=5)
 @exam.handle()
 async def _(args: Message = CommandArg()):
     if args.extract_plain_text():
@@ -44,7 +44,7 @@ async def _(args: Message = CommandArg()):
     else:
         await exam.finish("没有提供科举的问题，没办法解答啦。")
         
-matrix = on_command("jx3_matrix",priority=5)
+matrix = on_command("jx3_matrix",aliases={"阵眼"},priority=5)
 @matrix.handle()
 async def _(args: Message = CommandArg()):
     if args.extract_plain_text():
@@ -52,7 +52,7 @@ async def _(args: Message = CommandArg()):
     else:
         await matrix.finish("没有输入任何心法名称哦，没办法帮你找啦。")
         
-equip = on_command("jx3_equip",priority=5)
+equip = on_command("jx3_equip",aliases={"装备"},priority=5)
 @equip.handle()
 async def _(args: Message = CommandArg()):
     if args.extract_plain_text():
@@ -60,7 +60,7 @@ async def _(args: Message = CommandArg()):
     else:
         await equip.finish("没有输入任何心法名称哦，没办法帮你找啦。")
         
-require = on_command("jx3_require",priority=5)
+require = on_command("jx3_require",aliases={"奇遇"},priority=5)
 @require.handle()
 async def _(args: Message = CommandArg()):
     if args.extract_plain_text():
@@ -68,7 +68,7 @@ async def _(args: Message = CommandArg()):
     else:
         await require.finish("没有输入任何奇遇名称，没办法帮你找啦，输入时也请不要输入宠物奇遇哦~")
         
-news = on_command("jx3_news",priority=5)
+news = on_command("jx3_news",aliases={"新闻"},priority=5)
 @news.handle()
 async def _():
     await require.finish(await news_())
