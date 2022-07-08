@@ -7,6 +7,7 @@ from nonebot.params import CommandArg
 from nonebot.log import logger
 TOOLS = nonebot.get_driver().config.tools_path
 sys.path.append(str(TOOLS))
+DATA = TOOLS[:TOOLS.find("/tools")]+"/data"
 from permission import checker, error
 from file import read, write
 from http_ import http
