@@ -14,7 +14,7 @@ from http_ import http
 unregistered = on_message(block=False,priority=1)
 @unregistered.handle()
 async def _(matcher: Matcher, event: GroupMessageEvent):
-    directorys=os.listdir("./src/data")
+    directorys=os.listdir(TOOLS.replace("tools","data"))
     if str(event.group_id) not in directorys:
         matcher.stop_propagation()
     else:
