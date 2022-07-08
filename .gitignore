@@ -9,7 +9,6 @@ __pycache__/
 # Distribution / packaging
 .Python
 build/
-nnl.json
 config.json
 develop-eggs/
 dist/
@@ -40,6 +39,7 @@ MANIFEST
 pip-log.txt
 pip-delete-this-directory.txt
 ban.json
+nnl.json
 banword.json
 marry.json
 permission.json

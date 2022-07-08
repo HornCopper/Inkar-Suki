@@ -49,9 +49,9 @@ async def _(event: Event):
     directorys=os.listdir("./src/data")
     enable_groups = json.loads(await http.get_url(f"{Config.cqhttp}get_group_list"))
     disabled_groups = []
-    for i in directorys:
-        if i not in enable_groups:
-            disabled_groups.append(i)
+    for i in enable_groups["data"]:
+        if str(i["group_id"]) not in directorys:
+            disabled_groups.append(str(i["group_id"]))
     for i in disabled_groups:
         try:
             os.rmdir(DATA+"/"+i)
