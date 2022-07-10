@@ -1,0 +1,1 @@
+{"author":"HornCopper","version":"1.5-Snapshot","name":"GitHub Webhook(github)","admin":"收取Webhook(0+)$获取repo信息(0+)$添加Webhook(9+)$移除Webhook(9+)","aliases":"+bindrepo -> +webhook$+unbindrepo -> unbind_webhook","desc":"添加GitHub Webhook监听群：$+bindrepo <group_id> <repo>$移除GitHub Webhook监听群：+unbindrepo <group_id> <repo>$获取GitHub的Repo：+repo <author/repo>"}

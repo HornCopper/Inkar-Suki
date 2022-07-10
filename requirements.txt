@@ -1,0 +1,7 @@
+beautifulsoup4
+nb-cli
+nonebot2
+nonebot-adapter-onebot
+psutil
+tabulate
+selenium

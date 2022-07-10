@@ -1,0 +1,1 @@
+{"author":"HornCopper","version":"1.1-Release","name":"违禁词封锁(banword)","admin":"触发(5-)$设置(5+)","aliases":"N/A","desc":"封禁指定词语$添加：+banword <message>$移除：+unbanword <message>"}
