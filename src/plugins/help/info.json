@@ -1,1 +1,1 @@
-{"author":"HornCopper","version":"1.2-Snapshot","name":"help(help)","admin":"获取帮助(0+)","aliases":"+help -> +帮助","desc":"获取帮助的插件。$+help"}
+{"author":"HornCopper","version":"1.2-Snapshot","name":"help(help)","admin":"获取帮助(0+)","aliases":"+help -> +帮助","desc":"获取帮助的插件：+help [module]"}

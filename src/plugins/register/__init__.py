@@ -7,7 +7,7 @@ from nonebot.params import CommandArg
 from nonebot.log import logger
 TOOLS = nonebot.get_driver().config.tools_path
 sys.path.append(str(TOOLS))
-DATA = TOOLS[:TOOLS.find("/tools")]+"/data"
+DATA = TOOLS.replace("tools","data")
 from permission import checker, error
 from file import read, write
 from http_ import http
@@ -47,13 +47,26 @@ async def _(event: Event):
     if checker(str(event.user_id),10) == False:
         await register.finish(error(10))
     directorys=os.listdir("./src/data")
-    enable_groups = json.loads(await http.get_url(f"{Config.cqhttp}get_group_list"))
+    groups = json.loads(await http.get_url(f"{Config.cqhttp}get_group_list"))
+    enable_group = []
+    for i in groups["data"]:
+        enable_group.append(str(i["group_id"]))
     disabled_groups = []
-    for i in enable_groups["data"]:
-        if str(i["group_id"]) not in directorys:
-            disabled_groups.append(str(i["group_id"]))
+    for i in directorys:
+        if i not in enable_group:
+            disabled_groups.append(i)
     for i in disabled_groups:
         try:
+            os.remove(DATA+"/"+i+"/webhook.json")
+            os.remove(DATA+"/"+i+"/marry.json")
+            os.remove(DATA+"/"+i+"/welcome.txt")
+            os.remove(DATA+"/"+i+"/banword.json")
+            os.remove(DATA+"/"+i+"/block.json")
+            nnl = json.loads(read(TOOLS+"/nnl.json"))
+            for a in nnl:
+                if a == i:
+                    nnl.remove(a)
+            write(TOOLS+"/nnl.json",nnl)
             os.rmdir(DATA+"/"+i)
         except:
             logger.info("删除文件夹"+i+"失败，未知错误。")

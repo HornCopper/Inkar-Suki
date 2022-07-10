@@ -3,15 +3,18 @@ from nonebot import on_command
 from nonebot.adapters import Message
 from nonebot.params import CommandArg
 from typing import List
+from pathlib import Path
 from .example import status
 TOOLS = nonebot.get_driver().config.tools_path
 sys.path.append(str(TOOLS))
+CACHE = TOOLS.replace("tools","cache")
 from permission import checker, error
 from file import read, write
 from config import Config
 from http_ import http
 from functools import reduce
-from nonebot.adapters.onebot.v11 import Message, MessageSegment, unescape, Event, Bot
+from gender import gender
+from nonebot.adapters.onebot.v11 import Message, MessageSegment, unescape, Event, Bot, GroupMessageEvent
 
 helpimg = on_command("helpimg", aliases={"hi"}, priority=5)
 
@@ -45,8 +48,8 @@ async def ___(event: Event):
     if checker(str(event.user_id),1) == False:
         await purge.finish(error(1))
     try:
-        os.remove(f"{Config.help_image_save_to}")
-        os.remove(f"{Config.html_path}")
+        for i in os.listdir(CACHE):
+            os.remove(CACHE+"/"+i)
     except:
         await purge.finish("部分文件并没有找到哦~")
     else:
@@ -151,3 +154,24 @@ async def _(event: Event, args: Message = CommandArg()):
     if msg == "":
         msg = "执行完成，但没有输出哦~"
     await git.finish(msg)
+
+voice = on_command("voice", priority=5)
+@voice.handle()
+async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
+    if checker(str(event.user_id),10) == False:
+        await call_api.finish(error(10))
+    sth = args.extract_plain_text()
+    final_msg = f"[CQ:tts,text={sth}]"
+    await bot.call_api("send_group_msg",group_id=event.group_id,message=final_msg)
+    
+web = on_command("web",priority=5)
+@web.handle()
+async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
+    if checker(str(event.user_id),10) == False:
+        await call_api.finish(error(10))
+    url = args.extract_plain_text()
+    if await http.get_status(url) not in [200,301,302]:
+        await web.finish("唔……网站图片获取失败。\n原因：响应码非200，请检查是否能正常访问。")
+    else:
+        image = gender(url,2,"1366x768",True)
+        await web.finish("获取图片成功！\n"+MessageSegment.image(Path(image).as_uri()))

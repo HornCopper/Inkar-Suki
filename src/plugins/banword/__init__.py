@@ -8,7 +8,7 @@ from nonebot.adapters.onebot.v11 import Bot, GroupMessageEvent
 from nonebot.params import CommandArg
 
 TOOLS = nonebot.get_driver().config.tools_path
-DATA = TOOLS[:TOOLS.find("/tools")]+"/data"
+DATA = TOOLS.replace("tools","data")
 sys.path.append(str(TOOLS))
 from permission import checker, error
 from file import read, write
