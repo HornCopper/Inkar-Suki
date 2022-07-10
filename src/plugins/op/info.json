@@ -1,0 +1,1 @@
+{"author":"HornCopper","version":"1.5-Release","name":"op(op)","admin":"设置管理员(10)","aliases":"+op -> +admin, +setadmin","desc":"设置管理员：+op <user> <level>"}

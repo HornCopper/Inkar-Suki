@@ -1,0 +1,1 @@
+{"author":"HornCopper","version":"1.1-Snapshot","name":"结婚插件(marry)","admin":"求婚(0+)$离婚(0+)$拒绝求婚(0+)$查看结婚状态(0+)","aliases":"N/A","desc":"向某人求婚：$+marry <qq>$同意某人的求婚：$+confirm_marry <qq>$拒绝某人的求婚：$+deny_marry <qq>$离婚：$+leave_marry <qq>$查看结婚状态：$+my_marry <qq>"}
