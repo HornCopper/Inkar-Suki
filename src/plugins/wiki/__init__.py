@@ -1,12 +1,10 @@
 import json, sys, nonebot
-from threading import local
 from nonebot import on_command
 from nonebot.adapters import Message
 from nonebot.adapters.onebot.v11 import GroupMessageEvent
 from nonebot.params import CommandArg, Arg
 from nonebot.log import logger
 from nonebot.typing import T_State
-from numpy import full
 TOOLS = nonebot.get_driver().config.tools_path
 sys.path.append(str(TOOLS))
 DATA = TOOLS.replace("tools","data")
