@@ -1,8 +1,8 @@
 import httpx
 class http:
-    async def get_url(url):
+    async def get_url(url, headers: str = None):
         async with httpx.AsyncClient(follow_redirects=True) as client:
-            resp = await client.get(url,timeout=300)
+            resp = await client.get(url,timeout=300,headers=headers)
             result = resp.text
             return result
         

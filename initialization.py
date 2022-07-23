@@ -11,7 +11,7 @@ def write(file, something):
 json_ = {}
 if __name__ == "__main__":
     abpath = __file__
-    json_["abpath"] = abpath[:abpath.find("/initialization.py")]+"/src/tools"
+    json_["abpath"] = abpath[:abpath.find("/initialization.py")-17].replace("\\","/")+"/src/tools"
     print("模块`github`需要使用`web_path`，如果您填写的值为`/a`，那么通过`http://127.0.0.1:2333/a`可传入Webhook，但内网显然不行，因此您需要手动配置Nginx或Apache2进行反向代理，代理地址为`http://127.0.0.1:2333/a`。")
     print("此处提供Nginx配置文件写法（当填入值为`/a`时：）")
     print("location = /")
@@ -35,6 +35,9 @@ if __name__ == "__main__":
     print("不限数量，例如`[\"123456789\"]`或`[\"123456789\",\"234567890\"]都是可以的。`")
     owner = input("请输入owner的值：")
     owner = json.loads(owner)
+    permission = {}
+    for i in owner:
+        permission[i] = 10
     json_["owner"] = owner
     space()
     print("模块`developer_tools`需要使用`cqhttp`的值，请输入`go-cqhttp`的`HTTP`服务器地址，例如`http://127.0.0.1:2334/`，注意末尾处的`/`是必要的。")
@@ -44,10 +47,11 @@ if __name__ == "__main__":
     write("config.json",final)
     space()
     def clear():
-        clean = input("是否需要重置ban和permission两个json文件(y/n)：")
+        clean = input("是否需要重置ban.json、nnl.json和permission三个json文件，若初次使用请填写y(y/n)：")
         if clean == "y":
             write("ban.json","[]")
-            write("permission.json","{}")
+            write("permission.json",json.dumps(permission))
+            write("nnl.json","[]")
             return
         elif clean == "n":
             return
@@ -55,4 +59,4 @@ if __name__ == "__main__":
             print("输出错误，请重试。")
             clear()
     clear()
-    
+    space()    

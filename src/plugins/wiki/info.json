@@ -1,0 +1,1 @@
+{"author":"HornCopper","version":"1.0-Alpha","name":"wiki(wiki)","admin":"设置Interwiki(5)","aliases":"+interwiki -> +iw","desc":"搜索Wiki：+wiki [iwprefix:]<title>$添加Interwiki前缀：+interwiki add <prefix> <link>$移除Interwiki前缀：+interwiki del <prefix>$更新Interwiki前缀：+interwiki upd <prefix> <link>$进行跨Wiki搜索：+iwiki <iwprefix:title>$$注意：+iwiki要求必须有自定义Interwiki前缀，而+wiki只能使用起始Wiki的Interwiki表。"}
