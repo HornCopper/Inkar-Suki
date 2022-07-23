@@ -39,7 +39,7 @@ async def _(event: GroupMessageEvent):
         write(new_path+"/welcome.txt","欢迎入群！")
         write(new_path+"/banword.json","[]")
         write(new_path+"/block.json","[]")
-        write(new_path+"/wiki.json","{\"startwiki\":"",\"interwiki\":[]}")
+        write(new_path+"/wiki.json","{\"startwiki\":\"\",\"interwiki\":[]}")
         await register.finish("注册成功！")
 
 flushdata = on_command("flushdata",priority=5)
