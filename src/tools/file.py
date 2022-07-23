@@ -8,8 +8,11 @@ def read(Path):
         return False
 
 def write(Path, sth):
-    with open(Path, mode="w") as cache:
-        try:
-            return cache.write(sth)
-        except:
-            return False
+    cache = open(Path, mode="w")
+    try:
+        cache.write(sth)
+        cache.close()
+        return True
+    except:
+        cache.close()
+        return False
