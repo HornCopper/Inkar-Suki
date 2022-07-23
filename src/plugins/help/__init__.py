@@ -40,14 +40,7 @@ css = """
               }
             </style>"""
 css = css.replace("customfont",Config.font_path)
-name = {}
-version = {}
-author = {}
-json_ = {}
-desc = {}
-admin = {}
-aliases = {}
-table = []
+path = PLUGINS
 
 @help.handle()
 async def help_(args: Message = CommandArg()):
@@ -86,6 +79,7 @@ async def help_(args: Message = CommandArg()):
                 picture_message = ms.image(Path(image).as_uri())
                 await help.finish("查询到插件"+module+"的帮助文件啦~\n"+picture_message+"还有文档可以找哦~\nhttps://www.inkar-suki.xyz")
     else:
+        final_plugin_information_file_path = {}
         name = {}
         version = {}
         author = {}
