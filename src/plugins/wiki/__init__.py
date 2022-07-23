@@ -142,7 +142,8 @@ async def _(state: T_State, event: GroupMessageEvent, args: Message = CommandArg
     if len(search) == 2:
         title = search[1]
     else:
-        title = ":".join(search.remove(search[0]))
+        search.remove(search[0])
+        title = ":".join(search)
     if api == False:
         await iwiki.finish("唔……该前缀不存在哦，请检查后重试~")
     else:
