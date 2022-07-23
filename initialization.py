@@ -5,6 +5,10 @@ try:
     os.mkdir("./src/data")
 except FileExistsError:
     print("检测到`data`文件夹已创建。")
+try:
+    os.mkdir("./src/cache")
+except FileExistError:
+    print("检测到`cache`文件夹已创建。")
 def write(file, something):
     with open(f"./src/tools/{file}",mode="w") as cache:
         cache.write(something)
