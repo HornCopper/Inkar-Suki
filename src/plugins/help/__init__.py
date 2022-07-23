@@ -36,12 +36,10 @@ css = """
               @font-face
               {
                   font-family: Custom;
-                  src: url("略略略");
+                  src: url("customfont");
               }
             </style>"""
-css = css.replace("略略略",Config.font_path)
-path = PLUGINS
-final_plugin_information_file_path = {}
+css = css.replace("customfont",Config.font_path)
 name = {}
 version = {}
 author = {}
@@ -50,13 +48,19 @@ desc = {}
 admin = {}
 aliases = {}
 table = []
-html_path = Config.html_path
-imgPath = Config.help_image_save_to
 
 @help.handle()
 async def help_(args: Message = CommandArg()):
     module = args.extract_plain_text()
     if module:
+        name = {}
+        version = {}
+        author = {}
+        json_ = {}
+        desc = {}
+        admin = {}
+        aliases = {}
+        table = []
         modules = os.listdir(PLUGINS)
         if module not in modules:
             await help.finish("唔……没有找到此模块哦，请使用+help查看所有模块及其帮助。")
@@ -82,6 +86,14 @@ async def help_(args: Message = CommandArg()):
                 picture_message = ms.image(Path(image).as_uri())
                 await help.finish("查询到插件"+module+"的帮助文件啦~\n"+picture_message+"还有文档可以找哦~\nhttps://www.inkar-suki.xyz")
     else:
+        name = {}
+        version = {}
+        author = {}
+        json_ = {}
+        desc = {}
+        admin = {}
+        aliases = {}
+        table = []
         all_module = os.listdir(path)
         for plugin in all_module:
             final_plugin_information_file_path[plugin] = path + "/" + plugin + "/info.json"
