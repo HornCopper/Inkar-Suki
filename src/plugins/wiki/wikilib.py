@@ -1,7 +1,6 @@
 import nonebot, json, sys, re
 from urllib import parse
-# TOOLS = nonebot.get_driver().config.tools_path
-TOOLS = "C:/Users/HornCopper/Inkar-Suki/src/tools"
+TOOLS = nonebot.get_driver().config.tools_path
 sys.path.append(TOOLS)
 from http_ import http
 DATA = TOOLS.replace("tools","data")
@@ -9,22 +8,47 @@ DATA = TOOLS.replace("tools","data")
 状态码：
 200 - 正常，含 status(int) 、 link(str) 、 decription(str) 三个参数
 201 - 特殊正常，含 status(int) 、 link(str) 两个参数
-202 - 搜索正常，含 status(int) 、 data(list) 两个参数
+202 - 搜索正常，含 status(int) 、 api(str) 、 data(list) 两个参数
 301 - 重定向正常，含 status(int) 、 redirect(list) 、 link(str) 、 description(str) 四个参数
 404 - 未找到，含 status(int) 一个参数
 500 - 网站问题，含 status(int) 一个参数
 '''
+
+headers = {
+   'Connection': 'keep-alive',
+   'Cache-Control': 'max-age=0',
+   'sec-ch-ua': '"Google Chrome";v="89", "Chromium";v="89", ";Not A Brand";v="99"',
+   'sec-ch-ua-mobile': '?0',
+   'Upgrade-Insecure-Requests': '1',
+   'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.114 Safari/537.36',
+   'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
+   'Sec-Fetch-Site': 'same-origin',
+   'Sec-Fetch-Mode': 'navigate',
+   'Sec-Fetch-User': '?1',
+   'Sec-Fetch-Dest': 'document',
+   'Referer': 'https://bj.ke.com/',
+   'Accept-Language': 'zh-CN,zh;q=0.9',
+}
+
+def convert(source_string: str):
+    return parse.quote(source_string)
+
 class wiki:
     '''
     `wiki`插件的核心部分。
     包含了获取API、简单搜索、跨维搜索等。
     '''
+    async def get_site_info(api: str):
+        final_link = api + "?action=query&meta=siteinfo&siprop=general&format=json"
+        info = json.loads(await http.get_url(final_link, headers=headers))
+        sitename = info["query"]["general"]["sitename"]
+        return sitename
     async def get_iw_url(api: str, iwprefix: str):
         '''
         工具型函数：不参与对话
         '''
         final_link = api + "?action=query&meta=siteinfo&siprop=interwikimap&sifilteriw=local&format=json"
-        data = json.loads(await http.get_url(final_link))
+        data = json.loads(await http.get_url(final_link, headers=headers))
         for i in data["query"]["interwikimap"]:
             if i["prefix"] == iwprefix:
                 return {"status":200,"data":i["url"]}
@@ -35,7 +59,7 @@ class wiki:
         工具型函数：不参与对话
         '''
         final_link = api + "?action=query&meta=siteinfo&siprop=extensions&format=json"
-        data = await http.get_url(final_link)
+        data = await http.get_url(final_link, headers=headers)
         data = json.loads(data)
         for i in data["query"]["extensions"]:
             if i["name"] == extension:
@@ -43,7 +67,7 @@ class wiki:
         return {"status":404}
 
     async def get_api(init_link: str) -> str:
-        page_info = await http.get_url(init_link)
+        page_info = await http.get_url(init_link, headers=headers)
         api_links = re.findall(r"(?im)<\s*link\s*rel=\"EditURI\"\s*type=\"application/rsd\+xml\"\s*href=\"([^>]+?)\?action=rsd\"\s*/\s*>",page_info)
         if len(api_links) != 1:
             return {"status":500}
@@ -52,7 +76,7 @@ class wiki:
     
     async def simple(api: str, title: str):
         final_link = api + f"?action=query&titles={title}&prop=extracts&format=json&redirects=True&explaintext=True"
-        page = json.loads(await http.get_url(final_link))
+        page = json.loads(await http.get_url(final_link, headers=headers))
         try:
             iw_flag = page["query"]["interwiki"]
             iw = iw_flag[0]["iw"]
@@ -61,40 +85,56 @@ class wiki:
             curid_dict = page["query"]["pages"]
         for i in curid_dict:
             try:
-                if curid_dict[i]["missing"] == "" and title[0:6] != "Special":
-                    return await wiki.search(api, title)
-                elif curid_dict[i]["missing"] == "" and title[0:6] == "Special":
-                    return {"status":404}
+                if page["query"]["pages"][i]["special"] == "":
+                    special = True
             except:
-                if title[0:6] == "Special":
-                    return {"status":201, "link":api.replace("api","index") + "?title=" + parse.quote(title)}
-                link = api.replace("api","index") + "?curid=" + i
-                desc = curid_dict[i]["extract"]
-                desc = desc.split("\n\n\n")
-                desc = desc[0]
-                actually_title = curid_dict[i]["title"]
+                special = False
+            try:
+                if page["query"]["pages"][i]["missing"] == "":
+                    missing = True
+            except:
+                missing = False
+            
+            if missing and special:
+                return {"status":404}
+            elif missing and special == False:
+                return await wiki.search(api, title)
+            elif missing == False and special:
+                actually_title = page["query"]["pages"][i]["title"]
+                link = api.replace("/api.php","/index.php") + "?title=" + convert(actually_title)
+                desc = ""
                 if actually_title != title:
-                    return {"status":301,"redirect":[{title},{actually_title}],"link":link,"description":desc}
+                    return {"status":301,"redirect":[title,actually_title],"link":link,"desc":desc}
                 else:
-                    return {"status":200,"link":link,"description":desc}
-
+                    return {"status":200,"link":link,"desc":desc}
+            else:
+                actually_title = page["query"]["pages"][i]["title"]
+                link = api.replace("/api.php","/index.php") + "?curid=" + i
+                try:
+                    desc = page["query"]["pages"][i]["extract"].split("\n\n\n")
+                    desc = "\n" + desc[0]
+                except:
+                    desc = ""
+                return {"status":200,"link":link,"desc":desc}
+                
     async def interwiki_search(source_wiki: str, interwiki: str, title: str):
-        if wiki.extension_checker(source_wiki, "Interwiki") == False:
+        if await wiki.extension_checker(source_wiki, "Interwiki") == False:
             return {"status":201,"link":source_wiki + interwiki + f":{title}"}
-        new_api = await wiki.get_api(await wiki.get_iw_url(source_wiki, interwiki))
+        iwdata = await wiki.get_iw_url(source_wiki, interwiki)
+        iwlink = iwdata["data"]
+        data = await wiki.get_api(iwlink)
+        new_api = data["data"]
         return await wiki.simple(new_api, title)
 
     async def search(api, title):
-        final_link = api + f"?action=query&list=search&srsearch={title}"
-        info = json.loads(await http.get_url(final_link))
-        results = [""]
-        curids = [""]
+        final_link = api + f"?action=query&list=search&format=json&srsearch={title}"
+        info = json.loads(await http.get_url(final_link, headers=headers))
+        results = []
+        curids = []
         for i in info["query"]["search"]:
             results.append(i["title"])
             curids.append(i["pageid"])
-        return {"status":202,"data":[results,curids]}
-
-async def run():
-    print(await wiki.search("https://minecraft.fandom.com/zh/api.php","草"))
-import asyncio
-asyncio.run(run())
+        if len(results) >= 1:
+            return {"status":202,"api":api,"data":[results,curids]}
+        else:
+            return {"status":404}

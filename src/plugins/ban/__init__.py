@@ -59,7 +59,7 @@ async def _(bot: Bot, event: Event, args: Message = CommandArg()):
 banned = on_message(priority=2,block=False)
 @banned.handle()
 async def _(matcher: Matcher, event: Event):
-    info = json.loads(read(TOOLS+"/webhook.json"))
+    info = json.loads(read(TOOLS+"/ban.json"))
     if str(event.user_id) in info and checker(str(event.user_id),10) == False:
         matcher.stop_propagation()
     else:
