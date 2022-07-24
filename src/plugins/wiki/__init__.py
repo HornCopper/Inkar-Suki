@@ -44,6 +44,8 @@ async def _(event: GroupMessageEvent, state: T_State, args: Message = CommandArg
         await wiki.finish(f"重定向「{from_}」到「{to_}」：\n{link}{desc}")
     elif info["status"] == 404:
         await wiki.finish(f"未找到「{title}」。")
+    elif info["status"] == 502:
+        await wiki.finish(info["reason"])
 
 setwiki = on_command("setwiki",priority=5)
 @setwiki.handle()
