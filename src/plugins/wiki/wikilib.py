@@ -87,6 +87,7 @@ class wiki:
             page = json.loads(info)
         except:
             return {"status":502,"reason":"萌娘百科的API阻止了我们的连接请求，请过一会儿再试哦~"}
+
         try:
             iw_flag = page["query"]["interwiki"]
             iw = iw_flag[0]["iw"]
