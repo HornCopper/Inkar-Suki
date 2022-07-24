@@ -12,6 +12,7 @@ DATA = TOOLS.replace("tools","data")
 301 - 重定向正常，含 status(int) 、 redirect(list) 、 link(str) 、 description(str) 四个参数
 404 - 未找到，含 status(int) 一个参数
 500 - 网站问题，含 status(int) 一个参数
+502 - 网站问题，含 status(int) 、 reason(str) 两个参数
 '''
 
 headers = {
@@ -47,7 +48,7 @@ class wiki:
         '''
         工具型函数：不参与对话
         '''
-        final_link = api + "?action=query&meta=siteinfo&siprop=interwikimap&format=json"
+        final_link = api + "?action=query&meta=siteinfo&siprop=interwikimap&sifilteriw=local&format=json"
         data = json.loads(await http.get_url(final_link, headers=headers))
         for i in data["query"]["interwikimap"]:
             if i["prefix"] == iwprefix:
@@ -81,7 +82,11 @@ class wiki:
     
     async def simple(api: str, title: str):
         final_link = api + f"?action=query&titles={title}&prop=extracts&format=json&redirects=True&explaintext=True"
-        page = json.loads(await http.get_url(final_link, headers=headers))
+        info = await http.get_url(final_link, headers=headers)
+        try:
+            page = json.loads(info)
+        except:
+            return {"status":502,"reason":"萌娘百科的API阻止了我们的连接请求，请过一会儿再试哦~"}
         try:
             iw_flag = page["query"]["interwiki"]
             iw = iw_flag[0]["iw"]
