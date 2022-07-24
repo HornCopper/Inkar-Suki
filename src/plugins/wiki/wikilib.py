@@ -69,10 +69,13 @@ class wiki:
     async def get_api(init_link: str) -> str:
         page_info = await http.get_url(init_link, headers=headers)
         api_links = re.findall(r"(?im)<\s*link\s*rel=\"EditURI\"\s*type=\"application/rsd\+xml\"\s*href=\"([^>]+?)\?action=rsd\"\s*/\s*>",page_info)
+        api_link  api_links[0]
+        if api_link[0:3] != "http":
+            api_link = "http:"+api_link
         if len(api_links) != 1:
             return {"status":500}
         else:
-            return {"status":200, "data":api_links[0]}
+            return {"status":200, "data":api_link}
     
     async def simple(api: str, title: str):
         final_link = api + f"?action=query&titles={title}&prop=extracts&format=json&redirects=True&explaintext=True"
