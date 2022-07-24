@@ -47,7 +47,7 @@ class wiki:
         '''
         工具型函数：不参与对话
         '''
-        final_link = api + "?action=query&meta=siteinfo&siprop=interwikimap&sifilteriw=local&format=json"
+        final_link = api + "?action=query&meta=siteinfo&siprop=interwikimap&format=json"
         data = json.loads(await http.get_url(final_link, headers=headers))
         for i in data["query"]["interwikimap"]:
             if i["prefix"] == iwprefix:
