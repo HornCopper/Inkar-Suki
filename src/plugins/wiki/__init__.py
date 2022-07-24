@@ -159,7 +159,8 @@ async def _(state: T_State, event: GroupMessageEvent, args: Message = CommandArg
             return
         elif info["status"] == 201:
             url = info["link"]
-            await wiki.finish(f"中间Wiki出现错误，请自行重定向至「{title}」：\n{url}")
+            final_title = f"{prefix}:{title}"
+            await wiki.finish(f"中间Wiki出现错误，请自行重定向至「{final_title}」：\n{url}")
         elif info["status"] == 200:
             link = info["link"]
             desc = info["desc"]
@@ -174,7 +175,8 @@ async def _(state: T_State, event: GroupMessageEvent, args: Message = CommandArg
             desc = info["desc"]
             await wiki.finish(f"重定向「{from_}」到「{to_}」：\n{link}{desc}")
         elif info["status"] == 404:
-            await wiki.finish(f"未找到「{title}」。")
+            final_title = f"{prefix}:{title}"
+            await wiki.finish(f"未找到「{final_title}」。")
 
 @iwiki.got("num",prompt="发送序号以搜索，发送其他内容则取消搜索。")
 @wiki.got("num",prompt="发送序号以搜索，发送其他内容则取消搜索。")
