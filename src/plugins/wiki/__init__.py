@@ -179,6 +179,8 @@ async def _(state: T_State, event: GroupMessageEvent, args: Message = CommandArg
         elif info["status"] == 404:
             final_title = f"{prefix}:{title}"
             await wiki.finish(f"未找到「{final_title}」。")
+        elif info["status"] == 502:
+            await wiki.finish(info["reason"])
 
 @iwiki.got("num",prompt="发送序号以搜索，发送其他内容则取消搜索。")
 @wiki.got("num",prompt="发送序号以搜索，发送其他内容则取消搜索。")

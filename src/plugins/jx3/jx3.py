@@ -51,9 +51,9 @@ async def daily_(server):
     war = info["data"]["war"]
     camp = info["data"]["camp"]
     relief = info["data"]["relief"].replace("·乱世","")
-    if week in ["三","五","六","日"]:
+    try:
         draw_obj = info["data"]["draw"]
-    else:
+    except:
         draw_obj = "无（周三、周五、周末才有哦~）"
     weekly_war = info["data"]["team"][1].replace(";","，")
     weekly_big_war = info["data"]["team"][2].replace(";","，")
