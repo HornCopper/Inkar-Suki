@@ -77,3 +77,11 @@ random_ = on_command("jx3_random",aliases={"骚话"},priority=5)
 @random_.handle()
 async def _():
     await random_.finish("来自“万花谷”频道：\n"+await random__())
+    
+heighten = on_command("jx3_heighten",aliases={"小药"},priority=5)
+@heighten.handle()
+async def _(args: Message = CommandArg()):
+    if args.extract_plain_text():
+        await heighten.finish(await heighten_(args.extract_plain_text()))
+    else:
+        await heighten.finish("没有输入任何心法名称哦，没办法帮你找啦。")
