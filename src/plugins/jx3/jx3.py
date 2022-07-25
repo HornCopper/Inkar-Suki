@@ -1,5 +1,6 @@
 import json, nonebot, sys
 from nonebot.adapters.onebot.v11 import MessageSegment as ms
+from nonebot.log import logger
 TOOLS = nonebot.get_driver().config.tools_path
 sys.path.append(TOOLS)
 from http_ import http
@@ -122,3 +123,17 @@ async def random__():
     full_link = "https://www.jx3api.com/app/random"
     info = json.loads(await http.get_url(full_link))
     return info["data"]["text"]
+
+async def heighten_(name):
+    full_link = "https://www.jx3api.com/app/heighten?name=" + name
+    data = json.loads(await http.get_url(full_link))
+    if data["code"] == 401:
+        return "此心法不存在哦~请检查后重试。"
+    else:
+        info = data["data"]
+        logger.info(info)
+        heighten_food = info["heighten_food"]
+        auxiliary_food = info["auxiliary_food"]
+        heighten_drug = info["heighten_drug"]
+        auxiliary_drug = info["auxiliary_drug"]
+        return f"查到{name}的推荐小药了：\n增强食品：{heighten_food}\n辅助食品：{auxiliary_food}\n增强药品：{heighten_drug}\n辅助药品：{auxiliary_drug}"
