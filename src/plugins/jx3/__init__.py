@@ -85,3 +85,19 @@ async def _(args: Message = CommandArg()):
         await heighten.finish(await heighten_(args.extract_plain_text()))
     else:
         await heighten.finish("没有输入任何心法名称哦，没办法帮你找啦。")
+
+price = on_command("jx3_price",aliases={"物价"},priority=5)
+@price.handle()
+async def _(args: Message = CommandArg()):
+    if args.extract_plain_text():
+        await price.finish(await price_(args.extract_plain_text()))
+    else:
+        await price.finish("没有输入任何外观名称哦，没办法帮你找啦。")
+
+demon = on_command("jx3_demon",aliases={"金价"},priority=5)
+@demon.handle()
+async def _(args: Message = CommandArg()):
+    if args.extract_plain_text():
+        await demon.finish(await demon_(args.extract_plain_text()))
+    else:
+        await demon.finish("没有输入任何服务器名称哦，没办法帮你找啦。")
