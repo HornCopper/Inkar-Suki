@@ -137,3 +137,48 @@ async def heighten_(name):
         heighten_drug = info["heighten_drug"]
         auxiliary_drug = info["auxiliary_drug"]
         return f"查到{name}的推荐小药了：\n增强食品：{heighten_food}\n辅助食品：{auxiliary_food}\n增强药品：{heighten_drug}\n辅助药品：{auxiliary_drug}"
+    
+async def price_(name):
+    full_link = "https://www.jx3api.com/app/price?name=" + name
+    data = json.loads(await http.get_url(full_link))
+    if data["code"] == 401:
+        return "此外观不存在哦~请检查后重试。"
+    else:
+        info = data["data"]
+        name = info["name"]
+        info_ = info["info"]
+        img = ms.image(info["upload"])
+        msg = f"{name}\n{info_}\n" + img + "\n"
+        each_srv = info["data"]
+        def zsdpt(zone, server, date, price, type_):
+            if type_ == "收入":
+                return f"{zone}-{server}\n{date}：{price}金收。"
+            else:
+                return f"{zone}-{server}\n{date}：{price}金出。"
+        for i in each_srv[0]:
+            if len(i) == 0:
+                continue
+            else:
+                zone = i["zone"]
+                server = i["server"]
+                price = str(i["value"])
+                sale = i["sale"]
+                date = i["date"]
+                msg = msg + "\n" + zsdpt(zone, server, date, price, sale)
+        return msg
+        
+async def demon_(name):
+    full_link = "https://www.jx3api.com/app/demon?server=" + name
+    data = json.loads(await http.get_url(full_link))
+    lastest = data["data"][0]
+    if lastest["server"] != name:
+        return "此服务器不存在哦~请检查后重试。"
+    else:
+        wbl = lastest["wanbaolou"]
+        tb = lastest["tieba"]
+        dd = lastest["dd373"]
+        uu = lastest["uu898"]
+        _5173 = lastest["5173"]
+        _7881 = lastest["7881"]
+        date = lastest["date"]
+        return f"查到区服{name}{date}的金价信息：\n万宝楼：{wbl}\n贴吧：{tb}\nDD373：{dd}\nUU898：{uu}\n5173：{_5173}\n7881：{_7881}"
