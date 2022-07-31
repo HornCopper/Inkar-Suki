@@ -6,8 +6,8 @@ TOOLS = nonebot.get_driver().config.tools_path
 
 def judge(qqnumber):
     file = open(TOOLS+"/permission.json", mode="r")
-    file.close()
     json_ = json.loads(file.read())
+    file.close()
     if qqnumber not in json_:
         return False
     else:
