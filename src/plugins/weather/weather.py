@@ -18,21 +18,24 @@ async def getWeatherByCity(city: str) -> str:
                 msg = msg + "\n" + warn_info
         else:
             pass
-        for i in more_info:
-            weather = i["weather"] # 天气
-            humidity = i["humidity"] # 湿度
-            wind = i["wind"] # 风向
-            pm25 = i["pm25"] # PM 2.5
-            lowest_temp = i["low"] # 最低气温
-            highest_temp = i["high"] # 最高气温
-            airData = i["airData"] # 空气指数
-            airQuality = i["airQuality"] # 空气质量
-            windLevel = i["windLevel"] # 风力等级
-            date = i["date"] # 预报日期
-            if wind[-1] == "风":
-                wind = wind + str(windLevel) + "级"
-            daily_weather = f"日期：{date}，{weather}（{lowest_temp}℃~{highest_temp}℃）；\n空气指数{airData}，{airQuality}，大气PM2.5含量为{pm25}；\n{wind}，湿度{humidity}。"
-            msg = msg + "\n" + daily_weather
+        try:
+            for i in more_info:
+                weather = i["weather"] # 天气
+                humidity = i["humidity"] # 湿度
+                wind = i["wind"] # 风向
+                pm25 = i["pm25"] # PM 2.5
+                lowest_temp = i["low"] # 最低气温
+                highest_temp = i["high"] # 最高气温
+                airData = i["airData"] # 空气指数
+                airQuality = i["airQuality"] # 空气质量
+                windLevel = i["windLevel"] # 风力等级
+                date = i["date"] # 预报日期
+                if wind[-1] == "风":
+                    wind = wind + str(windLevel) + "级"w
+                daily_weather = f"日期：{date}，{weather}（{lowest_temp}℃~{highest_temp}℃）；\n空气指数{airData}，{airQuality}，大气PM2.5含量为{pm25}；\n{wind}，湿度{humidity}。"
+                msg = msg + "\n" + daily_weather
+        except:
+            msg = "唔……不支持查询国外城市哦"
         return msg
     else:
         return "唔……未知错误。"
