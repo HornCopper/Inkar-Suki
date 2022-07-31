@@ -11,7 +11,7 @@ async def getWeatherByCity(city: str) -> str:
         more_info = information["data"]["list"]
         weather_warn = more_info[0]["moreData"]["alert"]
         now_temp = more_info[0]["temp"]
-        msg = f"查询到地区「{city}」（当前温度{now_temp}）的信息啦："
+        msg = f"查询到地区「{city}」（当前温度{now_temp}℃）的信息啦："
         if type(weather_warn) == type([]):
             for i in weather_warn:
                 warn_info = i["content"]
