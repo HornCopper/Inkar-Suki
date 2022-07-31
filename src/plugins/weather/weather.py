@@ -30,7 +30,7 @@ async def getWeatherByCity(city: str) -> str:
             windLevel = i["windLevel"] # 风力等级
             date = i["date"] # 预报日期
             if wind[-1] == "风":
-                wind = wind + windLevel + "级"
+                wind = wind + str(windLevel) + "级"
             daily_weather = f"日期：{date}，{weather}（{lowest_temp}℃~{highest_temp}℃）；\n空气指数{airData}，{airQuality}，大气PM2.5含量为{pm25}；\n{wind}，湿度{humidity}。"
             msg = msg + "\n" + daily_weather
         return msg
