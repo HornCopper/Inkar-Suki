@@ -1,10 +1,15 @@
 import sys, nonebot, json
+from nonebot.log import logger
 TOOLS = nonebot.get_driver().config.tools_path
 sys.path.append(TOOLS)
 from http_ import http
 async def getWeatherByCity(city: str) -> str:
     final_link = f"https://autodev.openspeech.cn/csp/api/v2.1/weather?openId=aiuicus&clientType=android&sign=android&needMoreData=true&city={city}"
-    information = json.loads(await http.get_url(final_link))
+    try:
+        information_ = await http.get_url(final_link)
+        information = json.loads(information_)
+    except:
+        logger.error(information_)
     if information["code"] == 105:
         return "您要查询的城市不存在哦，请检查后重试~"
     elif information["code"] == 0:

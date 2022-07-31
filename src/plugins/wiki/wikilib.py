@@ -126,7 +126,10 @@ class wiki:
                     desc = "\n" + desc[0]
                 except:
                     desc = ""
-                return {"status":200,"link":link,"desc":desc}
+                if actually_title != title:
+                    return {"status":301,"redirect":[title,actually_title],"link":link,"desc":desc}
+                else:
+                    return {"status":200,"link":link,"desc":desc}
                 
     async def interwiki_search(source_wiki: str, interwiki: str, title: str):
         if await wiki.extension_checker(source_wiki, "Interwiki") == False:
