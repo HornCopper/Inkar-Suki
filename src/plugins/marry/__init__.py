@@ -1,4 +1,5 @@
-import json, sys
+import json
+import sys
 import nonebot
 from nonebot.adapters.onebot.v11 import MessageSegment as ms
 from nonebot import on_command

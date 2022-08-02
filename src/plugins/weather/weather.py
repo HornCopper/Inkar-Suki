@@ -1,4 +1,6 @@
-import sys, nonebot, json
+import sys
+import nonebot
+import json
 from nonebot.log import logger
 TOOLS = nonebot.get_driver().config.tools_path
 sys.path.append(TOOLS)

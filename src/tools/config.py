@@ -1,5 +1,7 @@
-from local_version import local_version, nonebot_version
-import nonebot, sys, json
+from local_version import nbv, ikv
+import nonebot
+import sys
+import json
 TOOLS = nonebot.get_driver().config.tools_path
 sys.path.append(TOOLS)
 from file import read
@@ -18,7 +20,7 @@ class Config:
     font_path = "file://"+global_path+"/tools/custom.ttf"
     cqhttp = configs["cqhttp"]
     welcome_file = global_path+"/tools/welcome.txt"
-    version = local_version
-    nonebot = nonebot_version
+    version = ikv
+    nonebot = nbv
     auaurl = configs["aua_api"]
     auatok = configs["aua_token"]
