@@ -1,4 +1,7 @@
-import json, os, sys, nonebot
+import json
+import os
+import sys
+import nonebot
 from pathlib import Path
 from nonebot.params import CommandArg
 from nonebot.adapters.onebot.v11 import MessageSegment as ms

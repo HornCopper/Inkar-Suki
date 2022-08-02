@@ -1,6 +1,8 @@
-import json, sys, nonebot, os
+import json
+import sys
+import nonebot
+import os
 from nonebot import on_command, on_message
-from nonebot.adapters import Message
 from nonebot.adapters.onebot.v11 import Event, Bot, GroupMessageEvent
 from nonebot.matcher import Matcher
 from nonebot.params import CommandArg
@@ -10,8 +12,8 @@ sys.path.append(str(TOOLS))
 DATA = TOOLS[:-5] + "data"
 from permission import checker, error
 from file import read, write
-from http_ import http
 from config import Config
+from utils import get_url
 
 unregistered = on_message(block=False,priority=1)
 @unregistered.handle()
@@ -40,6 +42,7 @@ async def _(event: GroupMessageEvent):
         write(new_path+"/banword.json","[]")
         write(new_path+"/block.json","[]")
         write(new_path+"/wiki.json","{\"startwiki\":\"\",\"interwiki\":[]}")
+        write(new_path+"/arcaea.json","{}")
         await register.finish("注册成功！")
 
 flushdata = on_command("flushdata",priority=5)
@@ -48,7 +51,7 @@ async def _(event: Event):
     if checker(str(event.user_id),10) == False:
         await register.finish(error(10))
     directorys=os.listdir("./src/data")
-    groups = json.loads(await http.get_url(f"{Config.cqhttp}get_group_list"))
+    groups = json.loads(await get_url(f"{Config.cqhttp}get_group_list"))
     enable_group = []
     for i in groups["data"]:
         enable_group.append(str(i["group_id"]))
