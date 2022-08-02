@@ -7,7 +7,7 @@ except FileExistsError:
     print("检测到`data`文件夹已创建。")
 try:
     os.mkdir("./src/cache")
-except FileExistError:
+except FileExistsError:
     print("检测到`cache`文件夹已创建。")
 def write(file, something):
     with open(f"./src/tools/{file}",mode="w") as cache:
@@ -44,9 +44,20 @@ if __name__ == "__main__":
         permission[i] = 10
     json_["owner"] = owner
     space()
-    print("模块`developer_tools`需要使用`cqhttp`的值，请输入`go-cqhttp`的`HTTP`服务器地址，例如`http://127.0.0.1:2334/`，注意末尾处的`/`是必要的。")
+    print("模块`developer_tools`需要使用`cqhttp`的值，请输入`go-cqhttp`的`HTTP`服务器地址，例如`http://127.0.0.1:2334`。")
     cqhttp = input("请输出cqhttp的值：")
+    if cqhttp[-1] != "/":
+        cqhttp = cqhttp + "/"
     json_["cqhttp"] = cqhttp
+    space()
+    print("模块`arcaea`使用了AUA（ArcaeaUnlimitedAPI），需要Token和API链接，请先输入API链接，格式为`https://xxx.xxx/botarcapi/`信息仅保存至本地，若有怀疑可检查源代码。")
+    print("同时请您也务必保管好个人信息。")
+    aua_api = input("请输入API地址：")
+    json_["aua_api"] = aua_api
+    space()
+    print("Token也是必要的，没有固定格式，请输入AUA开发者给予你的Token。")
+    aua_token = input("请输入Token：")
+    json_["aua_token"] = aua_token
     final = json.dumps(json_)
     write("config.json",final)
     space()

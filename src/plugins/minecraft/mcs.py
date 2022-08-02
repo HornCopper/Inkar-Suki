@@ -1,7 +1,7 @@
 import nonebot, json, sys, re
 TOOLS = nonebot.get_driver().config.tools_path
 sys.path.append(TOOLS)
-from http_ import http
+from utils import get_url
 
 def clean(string: str) -> str:
     return re.sub(r"§.", "", string)
@@ -17,7 +17,7 @@ async def jes(ip: str) -> str:
         port = 25565
     try:
         final_link = f"http://motd.wd-api.com/v1/java?host={ip}&platform={port}"
-        infomation = json.loads(await http.get_url(final_link))
+        infomation = json.loads(await get_url(final_link))
     except:
         return "唔……获取信息失败：连接API超时。"
     try:
@@ -45,7 +45,7 @@ async def bes(ip: str) -> str:
         port = 19132
     try:
         final_link = f"http://motd.wd-api.com/v1/bedrock?host={ip}&platform={port}"
-        infomation = json.loads(await http.get_url(final_link))
+        infomation = json.loads(await get_url(final_link))
     except:
         return "唔……获取信息失败：连接API超时。"
     try:

@@ -7,8 +7,8 @@ from nonebot.adapters.onebot.v11 import Message
 from tabulate import tabulate
 TOOLS = nonebot.get_driver().config.tools_path
 sys.path.append(str(TOOLS))
-CACHE = TOOLS.replace("tools","cache")
-PLUGINS = TOOLS.replace("tools","plugins")
+CACHE = TOOLS[:-5] + "cache"
+PLUGINS = TOOLS[:-5] + "plugins"
 from file import read, write
 from config import Config
 from gender import gender, get_uuid

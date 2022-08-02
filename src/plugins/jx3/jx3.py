@@ -3,10 +3,10 @@ from nonebot.adapters.onebot.v11 import MessageSegment as ms
 from nonebot.log import logger
 TOOLS = nonebot.get_driver().config.tools_path
 sys.path.append(TOOLS)
-from http_ import http
+from utils import get_url
 async def server_status(server_name):
     full_link = "https://www.jx3api.com/app/check?server="+server_name
-    info = json.loads(await http.get_url(full_link))
+    info = json.loads(await get_url(full_link))
     try:
         all_servers = info["data"]
         if str(type(all_servers)).find("list") != -1:
@@ -23,7 +23,7 @@ async def horse_flush_place(horse_name):
     def template(place, last_update):
         return f"刷新地点：{place}\n上次更新：{last_update}\n"
     full_link = "https://www.jx3api.com/app/horse?name="+horse_name
-    info = json.loads(await http.get_url(full_link))
+    info = json.loads(await get_url(full_link))
     if info["code"] == 401:
         return "未找到对应马匹。"
     msg = ""
@@ -36,7 +36,7 @@ async def horse_flush_place(horse_name):
 
 async def macro_(name):
     full_link = "https://www.jx3api.com/app/macro?name="+name
-    info = json.loads(await http.get_url(full_link))
+    info = json.loads(await get_url(full_link))
     if info["code"] == 401:
         return "此心法不存在哦~请检查后重试。"
     qixue = info["data"]["qixue"]
@@ -46,7 +46,7 @@ async def macro_(name):
     
 async def daily_(server):
     full_link = "https://www.jx3api.com/app/daily?server=" + server
-    info = json.loads(await http.get_url(full_link))
+    info = json.loads(await get_url(full_link))
     date = info["data"]["date"]
     week = info["data"]["week"]
     war = info["data"]["war"]
@@ -65,7 +65,7 @@ async def exam_(question):
     def qa(q,a):
         return f"问题：{q}\n答案：{a}"
     full_link = "https://www.jx3api.com/app/exam?question="+question
-    info = json.loads(await http.get_url(full_link))
+    info = json.loads(await get_url(full_link))
     if info["code"] == 401:
         return "没有找到任何与此相关的题目哦~"
     else:
@@ -77,7 +77,7 @@ async def exam_(question):
     
 async def matrix_(name):
     full_link = "https://www.jx3api.com/app/matrix?name="+name
-    info = json.loads(await http.get_url(full_link))
+    info = json.loads(await get_url(full_link))
     if info["code"] == 401:
         return "此心法不存在哦~请检查后重试。"
     else:
@@ -91,7 +91,7 @@ async def matrix_(name):
         
 async def equip_(name):
     full_link = "https://www.jx3api.com/app/equip?name="+name
-    info = json.loads(await http.get_url(full_link))
+    info = json.loads(await get_url(full_link))
     if info["code"] == 401:
         return "此心法不存在哦~请检查后重试。"
     else:
@@ -99,7 +99,7 @@ async def equip_(name):
     
 async def require_(name):
     full_link = "https://www.jx3api.com/app/require?name="+name
-    info = json.loads(await http.get_url(full_link))
+    info = json.loads(await get_url(full_link))
     if info["code"] == 401:
         return "此奇遇不存在或不是绝世/珍稀奇遇哦~请检查后重试。"
     else:
@@ -111,7 +111,7 @@ async def require_(name):
         
 async def news_():
     full_link = "https://www.jx3api.com/app/news"
-    info = json.loads(await http.get_url(full_link))
+    info = json.loads(await get_url(full_link))
     def dtut(date,title,url,type_):
         return f"{date}{type_}：{title}\n{url}"
     msg = ""
@@ -121,12 +121,12 @@ async def news_():
 
 async def random__():
     full_link = "https://www.jx3api.com/app/random"
-    info = json.loads(await http.get_url(full_link))
+    info = json.loads(await get_url(full_link))
     return info["data"]["text"]
 
 async def heighten_(name):
     full_link = "https://www.jx3api.com/app/heighten?name=" + name
-    data = json.loads(await http.get_url(full_link))
+    data = json.loads(await get_url(full_link))
     if data["code"] == 401:
         return "此心法不存在哦~请检查后重试。"
     else:
@@ -140,7 +140,7 @@ async def heighten_(name):
     
 async def price_(name):
     full_link = "https://www.jx3api.com/app/price?name=" + name
-    data = json.loads(await http.get_url(full_link))
+    data = json.loads(await get_url(full_link))
     if data["code"] == 401:
         return "此外观不存在哦~请检查后重试。"
     else:
@@ -169,7 +169,7 @@ async def price_(name):
         
 async def demon_(name):
     full_link = "https://www.jx3api.com/app/demon?server=" + name
-    data = json.loads(await http.get_url(full_link))
+    data = json.loads(await get_url(full_link))
     lastest = data["data"][0]
     if lastest["server"] != name:
         return "此服务器不存在哦~请检查后重试。"

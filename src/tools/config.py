@@ -20,3 +20,5 @@ class Config:
     welcome_file = global_path+"/tools/welcome.txt"
     version = local_version
     nonebot = nonebot_version
+    auaurl = configs["aua_api"]
+    auatok = configs["aua_token"]

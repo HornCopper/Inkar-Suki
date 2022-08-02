@@ -2,7 +2,7 @@ import nonebot, json, sys, re
 from urllib import parse
 TOOLS = nonebot.get_driver().config.tools_path
 sys.path.append(TOOLS)
-from http_ import http
+from utils import get_url
 DATA = TOOLS.replace("tools","data")
 '''
 状态码：
@@ -41,7 +41,7 @@ class wiki:
     '''
     async def get_site_info(api: str):
         final_link = api + "?action=query&meta=siteinfo&siprop=general&format=json"
-        info = json.loads(await http.get_url(final_link, headers=headers))
+        info = json.loads(await get_url(final_link, headers=headers))
         sitename = info["query"]["general"]["sitename"]
         return sitename
     async def get_iw_url(api: str, iwprefix: str):
@@ -49,7 +49,7 @@ class wiki:
         工具型函数：不参与对话
         '''
         final_link = api + "?action=query&meta=siteinfo&siprop=interwikimap&sifilteriw=local&format=json"
-        data = json.loads(await http.get_url(final_link, headers=headers))
+        data = json.loads(await get_url(final_link, headers=headers))
         for i in data["query"]["interwikimap"]:
             if i["prefix"] == iwprefix:
                 return {"status":200,"data":i["url"]}
@@ -60,7 +60,7 @@ class wiki:
         工具型函数：不参与对话
         '''
         final_link = api + "?action=query&meta=siteinfo&siprop=extensions&format=json"
-        data = await http.get_url(final_link, headers=headers)
+        data = await get_url(final_link, headers=headers)
         data = json.loads(data)
         for i in data["query"]["extensions"]:
             if i["name"] == extension:
@@ -68,11 +68,11 @@ class wiki:
         return {"status":404}
 
     async def get_api(init_link: str) -> str:
-        page_info = await http.get_url(init_link, headers=headers)
+        page_info = await get_url(init_link, headers=headers)
         api_links = re.findall(r"(?im)<\s*link\s*rel=\"EditURI\"\s*type=\"application/rsd\+xml\"\s*href=\"([^>]+?)\?action=rsd\"\s*/\s*>",page_info)
         api_link = api_links[0]
         try:
-            await http.get_url(api_link)
+            await get_url(api_link)
         except:
             api_link = "http:"+api_link
         if len(api_links) != 1:
@@ -82,7 +82,7 @@ class wiki:
     
     async def simple(api: str, title: str):
         final_link = api + f"?action=query&titles={title}&prop=extracts&format=json&redirects=True&explaintext=True"
-        info = await http.get_url(final_link, headers=headers)
+        info = await get_url(final_link, headers=headers)
         try:
             page = json.loads(info)
         except:
@@ -142,7 +142,7 @@ class wiki:
 
     async def search(api, title):
         final_link = api + f"?action=query&list=search&format=json&srsearch={title}"
-        info = json.loads(await http.get_url(final_link, headers=headers))
+        info = json.loads(await get_url(final_link, headers=headers))
         results = []
         curids = []
         for i in info["query"]["search"]:
