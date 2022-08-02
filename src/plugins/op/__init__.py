@@ -8,10 +8,9 @@ sys.path.append(str(TOOLS))
 from permission import checker, error
 from file import write, read
 from config import Config
+from utils import checknumber
 
 op = on_command("op", aliases={"admin", "setadmin"}, priority=5)
-def checknumber(number):
-    number.isdecimal()
 @op.handle()
 async def handle_first_receive(event: Event, args: Message = CommandArg()):
     if checker(str(event.user_id), 10) == False:

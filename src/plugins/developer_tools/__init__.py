@@ -2,19 +2,19 @@ import os, sys, psutil, nonebot, time
 from nonebot import on_command
 from nonebot.adapters import Message
 from nonebot.params import CommandArg
+from nonebot.adapters.onebot.v11 import Message, MessageSegment, unescape, Event, Bot, GroupMessageEvent
 from typing import List
 from pathlib import Path
-from .example import status
+from functools import reduce
 TOOLS = nonebot.get_driver().config.tools_path
 sys.path.append(str(TOOLS))
-CACHE = TOOLS.replace("tools","cache")
+CACHE = TOOLS[:-5] + "cache"
 from permission import checker, error
 from file import read, write
 from config import Config
-from http_ import http
-from functools import reduce
+from utils import get_url, get_status
 from gender import gender
-from nonebot.adapters.onebot.v11 import Message, MessageSegment, unescape, Event, Bot, GroupMessageEvent
+from .example import status
 
 helpimg = on_command("helpimg", aliases={"hi"}, priority=5)
 
@@ -135,7 +135,7 @@ async def _(event: Event, args: Message = CommandArg()):
     if checker(str(event.user_id),10) == False:
         await call_api.finish(error(10))
     cmd = args.extract_plain_text()
-    await http.get_url(f"{Config.cqhttp}{cmd}")
+    await get_url(f"{Config.cqhttp}{cmd}")
 
 git = on_command("git",priority=5)
 @git.handle()
@@ -170,7 +170,7 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
     if checker(str(event.user_id),10) == False:
         await call_api.finish(error(10))
     url = args.extract_plain_text()
-    if await http.get_status(url) not in [200,301,302]:
+    if await get_status(url) not in [200,301,302]:
         await web.finish("唔……网站图片获取失败。\n原因：响应码非200，请检查是否能正常访问。")
     else:
         image = gender(url,2,"1366x768",True)

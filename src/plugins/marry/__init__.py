@@ -7,7 +7,7 @@ from nonebot.adapters.onebot.v11 import GroupMessageEvent
 from nonebot.params import CommandArg
 from .marry import already_married
 TOOLS = nonebot.get_driver().config.tools_path
-DATA = TOOLS.replace("tools","data")
+DATA = TOOLS[:-5] + "data"
 sys.path.append(str(TOOLS))
 from file import read, write
 
