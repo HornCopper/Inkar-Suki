@@ -7,7 +7,7 @@ from nonebot.log import logger
 from nonebot.typing import T_State
 TOOLS = nonebot.get_driver().config.tools_path
 sys.path.append(str(TOOLS))
-DATA = TOOLS.replace("tools","data")
+DATA = TOOLS[:-5] + "data"
 from .wikilib import wiki as wiki_
 from file import read, write
 from permission import checker, error

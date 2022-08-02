@@ -6,10 +6,10 @@ from nonebot.adapters.onebot.v11 import MessageSegment as ms
 from nonebot.log import logger
 from nonebot.params import CommandArg
 TOOLS = nonebot.get_driver().config.tools_path
-DATA = TOOLS.replace("tools","data")
+DATA = TOOLS[:-5] + "data"
 sys.path.append(str(TOOLS))
 from permission import checker, error
-from http_ import http
+from utils import get_status
 from file import read, write
 from config import Config
 
