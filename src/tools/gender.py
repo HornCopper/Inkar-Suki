@@ -1,4 +1,8 @@
-import os,uuid,time,traceback,sys,nonebot
+import uuid
+import time
+import traceback
+import sys
+import nonebot
 from pathlib import Path
 from selenium import webdriver
 from selenium.common.exceptions import WebDriverException
@@ -6,7 +10,6 @@ TOOLS = nonebot.get_driver().config.tools_path
 sys.path.append(str(TOOLS))
 CACHE = TOOLS.replace("tools","cache")
 from config import Config
-from file import read
 
 def get_uuid():
     return str(uuid.uuid1()).replace("-","")

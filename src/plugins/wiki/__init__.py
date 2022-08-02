@@ -1,4 +1,6 @@
-import json, sys, nonebot
+import json
+import sys
+import nonebot
 from nonebot import on_command
 from nonebot.adapters import Message
 from nonebot.adapters.onebot.v11 import GroupMessageEvent

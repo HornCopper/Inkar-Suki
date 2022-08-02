@@ -1,4 +1,6 @@
-import json, sys, nonebot
+import json
+import sys
+import nonebot
 from nonebot import on_command
 from nonebot.adapters import Message
 from nonebot.adapters.onebot.v11 import Event
@@ -33,7 +35,7 @@ async def handle_first_receive(event: Event, args: Message = CommandArg()):
             if arguments[1] not in ["0","1","2","3","4","5","6","7","8","9","10"]:
                 await op.finish("你这设置的什么鬼权限啊？！")
             if arguments[1] == "10":
-                await op.finish("这么高的权限还是请后台修改吧（")
+                await op.finish("这么高的权限还是请后台修改吧。")
             if arguments[0] in adminlist:
                 if arguments[1] == "0":
                     adminlist.pop(arguments[0])

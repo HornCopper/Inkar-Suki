@@ -1,4 +1,6 @@
-import json, nonebot, sys
+import json
+import nonebot
+import sys
 from nonebot.adapters.onebot.v11 import MessageSegment as ms
 from nonebot.log import logger
 TOOLS = nonebot.get_driver().config.tools_path
