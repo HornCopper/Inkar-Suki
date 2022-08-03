@@ -9,6 +9,13 @@ try:
     os.mkdir("./src/cache")
 except FileExistsError:
     print("检测到`cache`文件夹已创建。")
+try:
+    os.mkdir("./src/assets")
+    os.mkdir("./src/assets/char")
+    os.mkdir("./src/assets/icon")
+    os.mkdir("./src/assets/song")
+except FileExistsError:
+    print("检测到`assets`文件夹已创建。")
 def write(file, something):
     with open(f"./src/tools/{file}",mode="w") as cache:
         cache.write(something)
