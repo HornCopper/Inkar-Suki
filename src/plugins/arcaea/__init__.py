@@ -17,11 +17,11 @@ arcaea_userinfo = on_command("arcuser",priority=5)
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     arg = args.extract_plain_text()
     if arg == False:
-        arg = str(getUserCode(event.group_id, event.user_id))
+        info = str(getUserCode(event.group_id, event.user_id))
     if checknumber(arg):
-        msg = await getUserInfo(usercode=int(arg))
+        msg = await getUserInfo(usercode=int(info))
     else:
-        msg = await getUserInfo(nickname=arg)
+        msg = await getUserInfo(nickname=info)
     await arcaea_userinfo.finish(msg)
 
 arcaea_binduser = on_command("arcbind",priority=5)
