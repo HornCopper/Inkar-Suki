@@ -11,6 +11,7 @@ api = Config.auaurl
 token = Config.auatok
 headers = {"User-Agent":token}
 difficulties = ["Past","Present","Future"]
+clear_statuses = ["Track Lost","Track Complete","Full Recall","Pure Memory"]
 
 async def getUserInfo(nickname: str = None, usercode: int = None) -> str:
     if nickname:
@@ -39,13 +40,14 @@ async def getUserInfo(nickname: str = None, usercode: int = None) -> str:
             scoretype = 'C'
         else:
             scoretype = 'D'
+        clear_status = clear_statuses[info["content"]["recent_score"][0]["clear_type"]]
         difficulty = difficulties[info["content"]["recent_score"][0]["difficulty"]]
         far = info["content"]["recent_score"][0]["near_count"]
         lost = info["content"]["recent_score"][0]["miss_count"]
         song_name = info["content"]["songinfo"][0]["name_en"]
         register_time = convert_time(info["content"]["account_info"]["join_date"])
         play_time = convert_time(info["content"]["recent_score"][0]["time_played"])
-        return f"查询到玩家{nickname}（{friend_code}）：\n注册时间：{register_time}\n上次游玩：{song_name}（{difficulty}）\n分数：{score} {scoretype}\nFAR {far} LOST {lost}\n游玩时间：{play_time}"
+        return f"查询到玩家{nickname}（{friend_code}）：\n注册时间：{register_time}\n上次游玩：{song_name}（{difficulty}）\n{clear_status}\n分数：{score} {scoretype}\nFAR {far} LOST {lost}\n游玩时间：{play_time}"
     else:
         return "唔……查询失败，未知错误。"
 
