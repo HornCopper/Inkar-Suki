@@ -6,6 +6,6 @@
 ![GitHub Repo stars](https://img.shields.io/github/stars/HornCopper/Inkar-Suki?style=social)
 ![GitHub Repo stars](https://img.shields.io/github/forks/HornCopper/Inkar-Suki?style=social)
 ![GitHub tag](https://img.shields.io/github/v/tag/HornCopper/Inkar-Suki?include_prereleases)
-[![Readme Card](https://github-readme-stats.vercel.app/api/pin/?username=codethink-cn&repo=Inkar-Suki)](https://github.com/codethink/Inkar-Suki)
+[![Readme Card](https://github-readme-stats.vercel.app/api/pin/?username=codethink-cn&repo=Inkar-Suki)](https://github.com/codethink-cn/Inkar-Suki)
 
 有关更多信息，请查阅[文档](https://www.inkar-suki.xyz)。
