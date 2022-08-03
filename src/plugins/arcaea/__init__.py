@@ -17,7 +17,7 @@ arcaea_userinfo = on_command("arcuser",priority=5)
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     arg = args.extract_plain_text()
     info = ""
-    if arg == False:
+    if arg == "":
         info = getUserCode(event.group_id, event.user_id)
         if info == False:
             await arcaea_userinfo.finish("未绑定Arcaea账号且未给出任何信息，没办法找啦！")
