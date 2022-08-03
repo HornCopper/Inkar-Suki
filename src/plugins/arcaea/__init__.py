@@ -24,10 +24,10 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
         msg = await getUserInfo(usercode=info)
         await arcaea_userinfo.finish(msg)
     else:
-        if checknumber(info):
-            msg = await getUserInfo(usercode=int(info))
+        if checknumber(arg):
+            msg = await getUserInfo(usercode=int(arg))
         else:
-            msg = await getUserInfo(nickname=info)
+            msg = await getUserInfo(nickname=arg)
         await arcaea_userinfo.finish(msg)
 
 arcaea_binduser = on_command("arcbind",priority=5)
