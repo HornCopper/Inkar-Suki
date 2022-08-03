@@ -70,5 +70,8 @@ def getUserCode(groupid:int, user: int):
     userid = str(user)
     group = str(groupid)
     data = json.loads(read(DATA + "/" + group + "/arcaea.json"))
-    usercode = data[userid]
-    return usercode
+    try:
+        usercode = data[userid]
+        return usercode
+    except KeyError:
+        return False
