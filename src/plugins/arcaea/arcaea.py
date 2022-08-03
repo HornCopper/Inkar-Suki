@@ -19,7 +19,7 @@ api = Config.auaurl
 token = Config.auatok
 headers = {"User-Agent":token}
 difficulties = ["Past","Present","Future","Beyond"]
-clear_statuses = ["Track Lost","Track Complete","Full Recall","Pure Memory"]
+clear_statuses = ["Track Lost","Track Complete","Full Recall","Pure Memory","Easy Complete","Hard Complete"]
 
 def judgeLevelByScore(score: int):
     if score >= 9900000:
