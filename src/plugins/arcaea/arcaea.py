@@ -5,12 +5,13 @@ TOOLS = nonebot.get_driver().config.tools_path
 sys.path.append(TOOLS)
 DATA = TOOLS[:-5] + "data"
 from config import Config
+from file import read, write
 from utils import get_url, convert_time
 
 api = Config.auaurl
 token = Config.auatok
 headers = {"User-Agent":token}
-difficulties = ["Past","Present","Future"]
+difficulties = ["Past","Present","Future","Beyond"]
 clear_statuses = ["Track Lost","Track Complete","Full Recall","Pure Memory"]
 
 async def getUserInfo(nickname: str = None, usercode: int = None) -> str:
@@ -66,6 +67,8 @@ async def judgeWhetherPlayer(usercode: int=None, nickname: str=None):
         return False
 
 def getUserCode(groupid:int, user: int):
-    userid = int(user)
-    group = int(groupid)
-    data = json.loads(read())
+    userid = str(user)
+    group = str(groupid)
+    data = json.loads(read(DATA + "/" + group + "/arcaea.json"))
+    usercode = data[userid]
+    return usercode
