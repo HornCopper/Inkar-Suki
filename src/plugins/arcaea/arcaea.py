@@ -151,7 +151,7 @@ async def getUserBestBySongName(usercode: int, songname: str, difficulty: str) -
         far = record["near_count"]
         lost = record["miss_count"]
         pure = record["perfect_count"]
-        return f"{player}/{code}\n" + song + f"{song_name}\n搭档：\n" + char + f"分数：{score} {level}\n{clear_status} {memory}（最佳：{best_clear}）\n单曲PTT：{ptt}\nPURE {pure} FAR {far} LOST {lost}\n游玩时间：{time_played}"
+        return f"{player}/{code}：{song_name}\n" + song + f"\n" + char + f"分数：{score} {level}\n{clear_status} {memory}（最佳：{best_clear}）\n单曲PTT：{ptt}\nPURE {pure} FAR {far} LOST {lost}\n游玩时间：{time_played}"
     else:
         return "歌曲名不对哦，请检查后重试~"
     
