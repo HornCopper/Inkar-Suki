@@ -70,9 +70,10 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     if len(arg) == 2:
         final = arg[0]
         difficulty = arg[1]
-    else:
+    elif len(arg) >= 3:
         difficulty = arg[-1]
-        final = " ".join(arg.remove(arg[-1]))
+        arg.remove(arg[-1])
+        final = " ".join(arg)
     user_code = getUserCode(event.group_id, event.user_id)
     msg = await getUserBestBySongName(user_code, final, difficulty)
     await arcaea_best.finish(msg)
