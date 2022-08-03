@@ -8,7 +8,7 @@ from nonebot.params import CommandArg
 TOOLS = nonebot.get_driver().config.tools_path
 sys.path.append(TOOLS)
 DATA = TOOLS[:-5] + "data"
-from .arcaea import getUserInfo, judgeWhetherPlayer, getUserCode
+from .arcaea import getUserBestBySongName, getUserInfo, judgeWhetherPlayer, getUserCode
 from utils import checknumber
 from file import read, write
 
@@ -60,3 +60,14 @@ async def _(event: GroupMessageEvent):
     else:
         await arcaea_unbind.finish("唔……尚未绑定过Arcaea，无法解绑啦！")
 
+arcaea_best = on_command("arcbest", priority=5)
+@arcaea_best.handle()
+async def _(event: GroupMessageEvent, args: Message = CommandArg()):
+    arg = args.extract_plain_text()
+    arg = arg.split(" ")
+    if len(arg) != 2:
+        await arcaea_best.finish("缺少必要信息，没办法搜索，请查看帮助文件。")
+    else:
+        user_code = getUserCode(event.group_id, event.user_id)
+        msg = await getUserBestBySongName(user_code, arg[0], arg[1])
+        await arcaea_best.finish(msg)
