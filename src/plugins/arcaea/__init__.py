@@ -19,7 +19,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     info = ""
     if arg == False:
         info = str(getUserCode(event.group_id, event.user_id))
-    if checknumber(arg):
+    if checknumber(info):
         msg = await getUserInfo(usercode=int(info))
     else:
         msg = await getUserInfo(nickname=info)
