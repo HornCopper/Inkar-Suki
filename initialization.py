@@ -14,8 +14,6 @@ def write(file, something):
         cache.write(something)
 json_ = {}
 if __name__ == "__main__":
-    abpath = __file__
-    json_["abpath"] = abpath[:abpath.find("/initialization.py")-17].replace("\\","/")+"/src/tools"
     print("模块`github`需要使用`web_path`，如果您填写的值为`/a`，那么通过`http://127.0.0.1:2333/a`可传入Webhook，但内网显然不行，因此您需要手动配置Nginx或Apache2进行反向代理，代理地址为`http://127.0.0.1:2333/a`。")
     print("此处提供Nginx配置文件写法（当填入值为`/a`时：）")
     print("location = /")
@@ -33,7 +31,15 @@ if __name__ == "__main__":
     space()
     print("模块`developer_tools`需要使用`platform`的值，请输入0或任意字符串，0代表`Bot`运行在`Windows`上，`任意字符串`则代表运行在`Linux`（最好是`Debian/Ubuntu`）上，请注意：仅有`Debian`和`Ubuntu`运行效果最佳，其他平台有或多或少的问题。")
     platform = input("请输入platform的值：")
-    json_["platform"] = bool(platform)
+    if platform == "0":
+        platform = False
+    else:
+        platform = bool(platform)
+    json_["platform"] = platform
+    if platform:
+        abpath = __file__.replace("\\","/")[:-17] + "src/tools"
+    else:
+        abpath = __file__[:-17] + "src/tools"
     space()
     print("模块`op`需要使用`owner`的值，这里请填写一个list（列表），列表内的值为`Bot`主人的QQ号。")
     print("不限数量，例如`[\"123456789\"]`或`[\"123456789\",\"234567890\"]都是可以的。`")
