@@ -7,8 +7,8 @@ from nonebot.adapters.onebot.v11 import Event, Bot, GroupMessageEvent
 from nonebot.matcher import Matcher
 from nonebot.params import CommandArg
 TOOLS = nonebot.get_driver().config.tools_path
-DATA = TOOLS[:-5] + "data"
-sys.path.append(str(TOOLS))
+sys.path.append(TOOLS)
+DATA = TOOLS[:-7] + "data"
 from permission import checker, error
 from file import read, write
 from utils import checknumber
@@ -74,55 +74,3 @@ def check_group_banned(obj,group):
         if i == obj:
             return True
     return False
-
-group_ban = on_command("group_ban",priority=5)
-@group_ban.handle()
-async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
-    if checker(str(event.user_id),9) == False:
-        await ban.finish(error(9))
-    sb = args.extract_plain_text()
-    if checknumber(sb) == False:
-        await ban.finish("不能全域封禁不是纯数字的QQ哦~")
-    info = await bot.call_api("get_stranger_info",user_id=int(sb))
-    sb_name = info["nickname"]
-    now = json.loads(read(DATA+"/"+str(event.group_id)+"/block.json"))
-    if check_group_banned(sb,str(event.group_id)) == False:
-        now.append(sb)
-        write(DATA+"/"+str(event.group_id)+"/block.json",json.dumps(now))
-    else:
-        await group_ban.finish("封禁失败，本群已经封禁过了哦~")
-    try:
-        bot.call_api("set_group_kick",group_id=event.group_id,user_id=int(sb))
-    except:
-        pass
-    await group_ban.finish("喵~成功在本群封禁"+sb_name+f"({sb})。")
-
-group_unban = on_command("group_unban",priority=5)
-@group_unban.handle()
-async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
-    if checker(str(event.user_id),9) == False:
-        await ban.finish(error(9))
-    sb = args.extract_plain_text()
-    if checknumber(sb) == False:
-        await ban.finish("不能全域解封不是纯数字的QQ哦~")
-    now = json.loads(read(DATA+"/"+str(event.group_id)+"/block.json"))
-    if check_group_banned(sb,str(event.group_id)) == False:
-        await group_unban.finish("解除本群封禁失败，尚未封禁此人。")
-    else:
-        now.remove(sb)
-        write(DATA+"/"+str(event.group_id)+"/block.json",json.dumps(now))
-        await group_unban.finish("解除其在本群的封禁成功！")
-        
-group_banned = on_message(block=False,priority=3)
-@group_banned.handle()
-async def _(bot: Bot, event: GroupMessageEvent, matcher: Matcher):
-    if checker(str(event.user_id),5):
-        return
-    sb = str(event.user_id)
-    group = str(event.group_id)
-    if check_group_banned(sb,group):
-        await bot.call_api("set_group_kick",group_id=event.group_id,user_id=event.user_id)
-        await bot.call_api("send_group_msg",group_id=event.group_id,message="喵~已为本群拦截不速之客：\n"+sb)
-        matcher.stop_propagation()
-    else:
-        return
