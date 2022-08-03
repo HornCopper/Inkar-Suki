@@ -62,7 +62,7 @@ async def getUserInfo(nickname: str = None, usercode: int = None) -> str:
         song_ptt = info["content"]["recent_score"][0]["rating"]
         song_name = info["content"]["songinfo"][0]["name_en"]
         ptt = info["content"]["account_info"]["rating"]
-        song_icon = ms.at(await get_song(info["content"]["recent_score"][0]["song_id"]))
+        song_icon = ms.image(await get_song(info["content"]["recent_score"][0]["song_id"]))
         register_time = convert_time(info["content"]["account_info"]["join_date"])
         partner = ms.image(await get_char(info["content"]["account_info"]["character"]))
         play_time = convert_time(info["content"]["recent_score"][0]["time_played"])
