@@ -17,7 +17,7 @@ arcaea_userinfo = on_command("arcuser",priority=5)
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     arg = args.extract_plain_text()
     if arg == False:
-        await arcaea_userinfo.finish("尚未输入任何信息，没办法帮你找哦~")
+        arg = str(getUserCode(event.group_id, event.user_id))
     if checknumber(arg):
         msg = await getUserInfo(usercode=int(arg))
     else:
@@ -29,7 +29,7 @@ arcaea_binduser = on_command("arcbind",priority=5)
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     arg = args.extract_plain_text()
     if arg == False:
-        arg = str(getUserCode(event.group_id, event.user_id))
+        await arcaea_binduser.finish("未给出任何信息，没办法绑定哦~")
     present_data = json.loads(read(DATA + "/" + str(event.group_id) + "/arcaea.json"))
     if checknumber(arg):
         resp = await judgeWhetherPlayer(usercode=int(arg))
