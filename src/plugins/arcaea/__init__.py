@@ -16,6 +16,7 @@ arcaea_userinfo = on_command("arcuser",priority=5)
 @arcaea_userinfo.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     arg = args.extract_plain_text()
+    info = ""
     if arg == False:
         info = str(getUserCode(event.group_id, event.user_id))
     if checknumber(arg):
