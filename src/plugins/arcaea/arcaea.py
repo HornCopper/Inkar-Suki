@@ -133,6 +133,8 @@ async def getUserBestBySongName(usercode: int, songname: str, difficulty: str) -
         return f"未找到您要的难度，可以使用0/1/2/3分别代替Past、Present、Future、Beyond哦~"
     url = api + f"user/best?usercode={usercode}&songname={songname}&difficulty={difficulty}&withrecent=true&withsonginfo=true"
     info = json.loads(await get_url(url, headers=headers))
+    if info["status"] == -15:
+        return "尚未游玩这首歌曲。"
     song_name = info["content"]["songinfo"][0]["name_en"]
     if quote(song_name) == quote(songname):
         record = info["content"]["record"]
