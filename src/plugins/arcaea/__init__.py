@@ -18,12 +18,17 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     arg = args.extract_plain_text()
     info = ""
     if arg == False:
-        info = str(getUserCode(event.group_id, event.user_id))
-    if checknumber(info):
-        msg = await getUserInfo(usercode=int(info))
+        info = getUserCode(event.group_id, event.user_id)
+        if info == False:
+            await arcaea_userinfo.finish("未绑定Arcaea账号且未给出任何信息，没办法找啦！")
+        msg = await getUserInfo(usercode=info)
+        await arcaea_userinfo.finish(msg)
     else:
-        msg = await getUserInfo(nickname=info)
-    await arcaea_userinfo.finish(msg)
+        if checknumber(info):
+            msg = await getUserInfo(usercode=int(info))
+        else:
+            msg = await getUserInfo(nickname=info)
+        await arcaea_userinfo.finish(msg)
 
 arcaea_binduser = on_command("arcbind",priority=5)
 @arcaea_binduser.handle()
