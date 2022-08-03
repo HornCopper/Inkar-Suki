@@ -27,7 +27,7 @@ repo = on_command("repo", priority=5)
 @repo.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     reponame = args.extract_plain_text()
-    status_code = await http.get_status("https://github.com/"+reponame)
+    status_code = await get_status("https://github.com/"+reponame)
     if status_code != 200:
         await repo.finish(f"仓库获取失败，请检查后重试哦~\n错误码：{status_code}")
     else:
@@ -39,7 +39,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     if checker(str(event.user_id),9) == False:
         await unbind.finish(error(9))
     repo_name = args.extract_plain_text()
-    status_code = await http.get_status("https://github.com/"+repo_name)
+    status_code = await get_status("https://github.com/"+repo_name)
     if status_code != 200:
         await repo.finish(f"唔……绑定失败。\n错误码：{status_code}")
     else:

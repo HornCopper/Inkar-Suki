@@ -162,5 +162,5 @@ async def _(event: GroupMessageEvent):
         if i not in files:
             missing.append(i)
     for i in missing:
-        write(DATA + "/" + i, fix_data[i])
+        write(DATA + "/" + str(event.group_id), fix_data[i])
     await fix.finish("已补全本群数据文件~")
