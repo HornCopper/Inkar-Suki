@@ -15,6 +15,7 @@ difficulties = ["Past","Present","Future","Beyond"]
 clear_statuses = ["Track Lost","Track Complete","Full Recall","Pure Memory"]
 
 async def getUserInfo(nickname: str = None, usercode: int = None) -> str:
+    info = ""
     if nickname:
         info = await get_url(api+f"user/info?user={nickname}&withsonginfo=true",headers=headers)
     elif usercode:
