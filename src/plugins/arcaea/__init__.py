@@ -65,9 +65,14 @@ arcaea_best = on_command("arcbest", priority=5)
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     arg = args.extract_plain_text()
     arg = arg.split(" ")
-    if len(arg) != 2:
+    if len(arg) < 2:
         await arcaea_best.finish("缺少必要信息，没办法搜索，请查看帮助文件。")
+    if len(arg) == 2:
+        final = arg[0]
+        difficulty = arg[1]
     else:
-        user_code = getUserCode(event.group_id, event.user_id)
-        msg = await getUserBestBySongName(user_code, arg[0], arg[1])
-        await arcaea_best.finish(msg)
+        difficulty = arg[-1]
+        final = " ".join(arg.remove(arg[-1]))
+    user_code = getUserCode(event.group_id, event.user_id)
+    msg = await getUserBestBySongName(user_code, final, difficulty)
+    await arcaea_best.finish(msg)
