@@ -46,10 +46,11 @@ async def getUserInfo(nickname: str = None, usercode: int = None) -> str:
         difficulty = difficulties[info["content"]["recent_score"][0]["difficulty"]]
         far = info["content"]["recent_score"][0]["near_count"]
         lost = info["content"]["recent_score"][0]["miss_count"]
+        pure = info["content"]["recent_score"][0]["perfect_count"]
         song_name = info["content"]["songinfo"][0]["name_en"]
         register_time = convert_time(info["content"]["account_info"]["join_date"])
         play_time = convert_time(info["content"]["recent_score"][0]["time_played"])
-        return f"查询到玩家{nickname}（{friend_code}）：\n注册时间：{register_time}\n上次游玩：{song_name}（{difficulty}）\n{clear_status}\n分数：{score} {scoretype}\nFAR {far} LOST {lost}\n游玩时间：{play_time}"
+        return f"查询到玩家{nickname}（{friend_code}）：\n注册时间：{register_time}\n上次游玩：{song_name}（{difficulty}）\n{clear_status}\n分数：{score} {scoretype}\nPURE {pure} FAR {far} LOST {lost}\n游玩时间：{play_time}"
     else:
         return "唔……查询失败，未知错误。"
 
