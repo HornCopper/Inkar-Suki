@@ -39,11 +39,10 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     present_data = json.loads(read(DATA + "/" + str(event.group_id) + "/arcaea.json"))
     if checknumber(arg):
         resp = await judgeWhetherPlayer(usercode=int(arg))
-        present_data[str(event.user_id)] = resp[1]
     else:
         resp = await judgeWhetherPlayer(nickname=arg)
-        present_data[str(event.user_id)] = resp[1]
     if resp:
+        present_data[str(event.user_id)] = resp[1]
         write(DATA + "/" + str(event.group_id) + "/arcaea.json", json.dumps(present_data))
         await arcaea_binduser.finish("绑定成功：" +  resp[0] + "（" + str(resp[1]) + "）") 
     else:
