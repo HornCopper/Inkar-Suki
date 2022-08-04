@@ -11,9 +11,8 @@ sys.path.append(TOOLS)
 DATA = TOOLS[:-5] + "data"
 ASSETS = TOOLS[:-5] + "assets"
 from config import Config
-from file import read, write
+from file import read
 from utils import get_url, convert_time, get_content
-from gender import uuid
 
 api = Config.auaurl
 token = Config.auatok
