@@ -4,6 +4,7 @@ from nonebot.adapters import Message
 from nonebot.params import CommandArg
 from nonebot.adapters.onebot.v11 import MessageSegment as ms
 from nonebot.adapters.onebot.v11 import Bot, GroupMessageEvent
+from nonebot.log import logger
 from .jx3 import *
 from .skilldatalib import getSkills, getAllSkillsInfo
 
@@ -110,4 +111,5 @@ kungfu = on_command("jx3_kungfu",aliases={"心法"},priority=5)
 async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
     kungfu = args.extract_plain_text()
     node = await getAllSkillsInfo(kungfu)
-    await bot.call_api("send_group_forward_msg", group_id = event.group_id, messages = json.dumps(node))
+    logger.info(node)
+    # await bot.call_api("send_group_forward_msg", group_id = event.group_id, messages = node)
