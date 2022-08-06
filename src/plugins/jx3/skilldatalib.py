@@ -105,6 +105,7 @@ async def get_icon(skillName: str, api_icon: str = None) -> str:
         cache.write(icon)
         cache.close()
         return "[CQ:image,file=" + Path(final_path).as_uri() + "]"
+
 async def getAllSkillsInfo(Kungfu: str) -> str:
     '''
     获取心法下所有技能。
@@ -134,7 +135,7 @@ async def getAllSkillsInfo(Kungfu: str) -> str:
             distance = x["distance"] # 距离
             consumption = x["consumption"] # 内力消耗
             cheasts = x["cheasts"] # 秘籍
-            skillType = i["remarks"] # 武学派别
+            skillType = i["remark"] # 武学派别
             if len(cheasts) == 0:
                 cheastsInfo = "无"
             else:
