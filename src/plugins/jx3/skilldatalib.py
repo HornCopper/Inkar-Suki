@@ -141,7 +141,7 @@ async def getAllSkillsInfo(Kungfu: str) -> str:
             else:
                 cheastsInfo = ""
                 for y in cheasts:
-                    cheastsInfo = cheastsInfo + "\n" + y["name"] + y["desc"] + "\n"
+                    cheastsInfo = cheastsInfo + "\n" + y["name"] + "\n" + y["desc"] + "\n"
             msg = image + f"\n技能名：{skillName}\n{releaseType} {cd}\n距离：{distance}\n武器：{weapon}\n内力消耗：{consumption}\n{specialDesc}\n{desc}\n{simpleDesc}\n技能归属：{skillType}\n秘籍：{cheastsInfo}"
             node.append(nodetemp(f"{Kungfu}技能", Config.bot[0], msg))
     return node
