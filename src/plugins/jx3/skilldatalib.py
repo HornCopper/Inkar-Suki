@@ -126,6 +126,8 @@ async def getAllSkillsInfo(Kungfu: str) -> str:
         for x in i["forceSkills"]:
             image = await get_icon(x["skillName"], x["icon"]["FileName"])
             releaseType = x["releaseType"] # 释放类型
+            if releaseType != "瞬间释放":
+                releaseType = releaseType + "释放"
             cd = x["cd"] # 调息时间
             skillName = x["skillName"] # 技能名
             specialDesc = x["specialDesc"] # 简单描述
@@ -141,7 +143,7 @@ async def getAllSkillsInfo(Kungfu: str) -> str:
             else:
                 cheastsInfo = ""
                 for y in cheasts:
-                    cheastsInfo = cheastsInfo + "\n" + y["name"] + y["desc"] + "\n"
+                    cheastsInfo = cheastsInfo + "\n" + y["name"] + "\n" + y["desc"] + "\n"
             msg = image + f"\n技能名：{skillName}\n{releaseType} {cd}\n距离：{distance}\n武器：{weapon}\n内力消耗：{consumption}\n{specialDesc}\n{desc}\n{simpleDesc}\n技能归属：{skillType}\n秘籍：{cheastsInfo}"
             node.append(nodetemp(f"{Kungfu}技能", Config.bot[0], msg))
     return node
