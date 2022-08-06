@@ -113,6 +113,8 @@ async def getAllSkillsInfo(Kungfu: str) -> str:
     if Kungfu == "隐龙诀":
         Kungfu == "隐龙决" # 由于`JX3Box`的`API`的数据错误问题，目前只能这样适配，等到数据纠正后删除这块代码。
     skill = read(ASSETS + "/jx3/skills/" + Kungfu + ".json")
+    if skill == False:
+        await getSkills()
     if Kungfu == False:
         return False
     skills = json.loads(skill)
