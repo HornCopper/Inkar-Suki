@@ -1,12 +1,10 @@
-import json
 from nonebot import on_command
 from nonebot.adapters import Message
 from nonebot.params import CommandArg
 from nonebot.adapters.onebot.v11 import MessageSegment as ms
 from nonebot.adapters.onebot.v11 import Bot, GroupMessageEvent
-from nonebot.log import logger
 from .jx3 import *
-from .skilldatalib import getSkills, getAllSkillsInfo
+from .skilldatalib import getSkills, getAllSkillsInfo, getSingleSkill
 
 horse = on_command("jx3_horse",aliases={"马"},priority=5)
 @horse.handle()
@@ -114,3 +112,17 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
     if node == False:
         await kungfu.finish("此心法不存在哦，请检查后重试~")
     await bot.call_api("send_group_forward_msg", group_id = event.group_id, messages = node)
+
+skill = on_command("jx3_skill",aliases={"技能"},priority=5)
+@skill.handle()
+async def _(args: Message = CommandArg()):
+    info = args.extract_plain_text().split(" ")
+    if len(info) != 2:
+        await skill.finish("信息不正确哦，只能有2个参数，请检查后重试~")
+    else:
+        kungfu = info[0]
+        skill = info[1]
+    msg = await getSingleSkill(kungfu, skill)
+    if msg == False:
+        await skill.finish("此心法不存在哦，请检查后重试~")
+    await skill.finish(msg)
