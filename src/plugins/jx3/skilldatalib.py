@@ -80,7 +80,7 @@ async def getSkills():
     
     数据来源：`JX3BOX` & `JX3API`。
     '''
-    force_list = await get_api("https://raw.githubusercontent.com/JX3BOX/jx3box-data/master/data/xf/forceid.json")
+    force_list = await get_api("https://www.inkar-suki.xyz/api")
     data_list = []
     for i in force_list:
         data_list.append(i)
@@ -89,7 +89,7 @@ async def getSkills():
             info = await get_url(url = f"https://data.jx3box.com/bps/v1/{i}/skill.json")
             data = json.loads(info)
             for a in data["data"]:
-                write(ASSETS + "/jx3/skills/" + a["kungfuName"] + ".json", json.dumps(a))
+                write(ASSETS + "/jx3/skills/" + a["kungfuName"] + ".json", json.dumps(a,ensure_ascii=False))
 
 async def get_icon(skillName: str, type_: str, api_icon: str = None) -> str:
     final_path = ASSETS + "/jx3/icons/" + skillName + ".png"
@@ -162,11 +162,19 @@ async def getSingleSkill(kungfu: str, skillName: str):
         kungfu == "隐龙决" # 由于`JX3Box`的`API`的数据错误问题，目前只能这样适配，等到数据纠正后删除这块代码。
     if kungfu == False:
         return False
-    data = json.loads(read(ASSETS + "/jx3/skills/" + kungfu + ".json"))
+    try:
+        data = json.loads(read(ASSETS + "/jx3/skills/" + kungfu + ".json"))
+    except:
+        await getSkills()
+        await getSingleSkill(kungfu, skillName)
     moreInfo = data["remarks"]
+    msg = ""
+    from nonebot.log import logger
     for i in moreInfo:
         for x in i["forceSkills"]:
+            logger.info(x)
             if x["skillName"] == skillName:
+                logger.info(x["skillName"])
                 image = await get_icon(x["skillName"], "ms", x["icon"]["FileName"])
                 releaseType = x["releaseType"] # 释放类型
                 if releaseType != "瞬间释放":
@@ -191,4 +199,4 @@ async def getSingleSkill(kungfu: str, skillName: str):
                         cheastsInfo = cheastsInfo + "\n" + y["name"] + "：" + y["desc"]
                 msg = image + f"\n技能名：{skillName}\n{releaseType} {cd}\n距离：{distance}\n武器：{weapon}\n内力消耗：{consumption}\n{specialDesc}\n{desc}\n{simpleDesc}\n技能归属：{skillType}\n秘籍：{cheastsInfo}"
                 return msg
-        return "未找到技能，请检查后重试~"
+            continue
