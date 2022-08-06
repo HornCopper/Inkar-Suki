@@ -1,6 +1,6 @@
 def read(Path):
     try:
-        cache = open(Path,mode="r")
+        cache = open(Path,mode="r", encoding="utf-8")
         msg = cache.read()
         cache.close()
         return msg
@@ -8,7 +8,7 @@ def read(Path):
         return False
 
 def write(Path, sth):
-    cache = open(Path, mode="w")
+    cache = open(Path, mode="w", encoding="utf-8")
     try:
         cache.write(sth)
         cache.close()
