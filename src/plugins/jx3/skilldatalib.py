@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 from urllib.error import HTTPError
 import nonebot
 import sys
