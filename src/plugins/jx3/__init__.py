@@ -1,3 +1,4 @@
+import json
 from nonebot import on_command
 from nonebot.adapters import Message
 from nonebot.params import CommandArg
@@ -109,4 +110,4 @@ kungfu = on_command("jx3_kungfu",aliases={"心法"},priority=5)
 async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
     kungfu = args.extract_plain_text()
     node = await getAllSkillsInfo(kungfu)
-    await bot.call_api("send_group_forward_msg", group_id = event.group_id, messages = node)
+    await bot.call_api("send_group_forward_msg", group_id = event.group_id, messages = json.dumps(node))
