@@ -115,6 +115,7 @@ async def getAllSkillsInfo(Kungfu: str) -> str:
     skill = read(ASSETS + "/jx3/skills/" + Kungfu + ".json")
     if skill == False:
         await getSkills()
+        await getAllSkillsInfo(Kungfu)
     if Kungfu == False:
         return False
     skills = json.loads(skill)
