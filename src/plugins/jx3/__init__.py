@@ -121,8 +121,8 @@ async def _(args: Message = CommandArg()):
         await skill.finish("信息不正确哦，只能有2个参数，请检查后重试~")
     else:
         kungfu = info[0]
-        skill = info[1]
-    msg = await getSingleSkill(kungfu, skill)
+        skill_ = info[1]
+    msg = await getSingleSkill(kungfu, skill_)
     if msg == False:
         await skill.finish("此心法不存在哦，请检查后重试~")
     await skill.finish(msg)
