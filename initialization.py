@@ -51,6 +51,7 @@ if __name__ == "__main__":
         abpath = __file__.replace("\\","/")[:-17] + "src/tools"
     else:
         abpath = __file__[:-17] + "src/tools"
+    json[abpath] = abpath
     space()
     print("模块`op`需要使用`owner`的值，这里请填写一个list（列表），列表内的值为`Bot`主人的QQ号。")
     print("不限数量，例如`[\"123456789\"]`或`[\"123456789\",\"234567890\"]都是可以的。`")
