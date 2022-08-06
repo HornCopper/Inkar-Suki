@@ -166,27 +166,29 @@ async def getSingleSkill(kungfu: str, skillName: str):
     moreInfo = data["remarks"]
     for i in moreInfo:
         for x in i["forceSkills"]:
-            image = await get_icon(x["skillName"], "ms", x["icon"]["FileName"])
-            releaseType = x["releaseType"] # 释放类型
-            if releaseType != "瞬间释放":
-                releaseType = releaseType + "释放"
-            if releaseType == "":
-                releaseType = "释放时间未知"
-            cd = x["cd"] # 调息时间
-            skillName = x["skillName"] # 技能名
-            specialDesc = x["specialDesc"] # 简单描述
-            weapon = x["weapon"] # 武器
-            desc = x["desc"] # 描述
-            simpleDesc = x["simpleDesc"] # 简单描述，包含伤害/治疗/威胁值等基础信息
-            distance = x["distance"] # 距离
-            consumption = x["consumption"] # 内力消耗
-            cheasts = x["cheasts"] # 秘籍
-            skillType = i["remark"] # 武学派别
-            if len(cheasts) == 0:
-                cheastsInfo = "无"
-            else:
-                cheastsInfo = ""
-                for y in cheasts:
-                    cheastsInfo = cheastsInfo + "\n" + y["name"] + "\n" + y["desc"] + "\n"
-            msg = image + f"\n技能名：{skillName}\n{releaseType} {cd}\n距离：{distance}\n武器：{weapon}\n内力消耗：{consumption}\n{specialDesc}\n{desc}\n{simpleDesc}\n技能归属：{skillType}\n秘籍：{cheastsInfo}"
-            return msg
+            if x["skillName"] == skillName:
+                image = await get_icon(x["skillName"], "ms", x["icon"]["FileName"])
+                releaseType = x["releaseType"] # 释放类型
+                if releaseType != "瞬间释放":
+                    releaseType = releaseType + "释放"
+                if releaseType == "":
+                    releaseType = "释放时间未知"
+                cd = x["cd"] # 调息时间
+                skillName = x["skillName"] # 技能名
+                specialDesc = x["specialDesc"] # 简单描述
+                weapon = x["weapon"] # 武器
+                desc = x["desc"] # 描述
+                simpleDesc = x["simpleDesc"] # 简单描述，包含伤害/治疗/威胁值等基础信息
+                distance = x["distance"] # 距离
+                consumption = x["consumption"] # 内力消耗
+                cheasts = x["cheasts"] # 秘籍
+                skillType = i["remark"] # 武学派别
+                if len(cheasts) == 0:
+                    cheastsInfo = "无"
+                else:
+                    cheastsInfo = ""
+                    for y in cheasts:
+                        cheastsInfo = cheastsInfo + "\n" + y["name"] + "\n" + y["desc"] + "\n"
+                msg = image + f"\n技能名：{skillName}\n{releaseType} {cd}\n距离：{distance}\n武器：{weapon}\n内力消耗：{consumption}\n{specialDesc}\n{desc}\n{simpleDesc}\n技能归属：{skillType}\n秘籍：{cheastsInfo}"
+                break
+        return msg
