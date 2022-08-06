@@ -114,4 +114,4 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
     logger.info(node)
     if node == False:
         await kungfu.finish("此心法不存在哦，请检查后重试~")
-    await bot.call_api("send_group_forward_msg", group_id = event.group_id, messages = json.dumps(node))
+    await bot.call_api("send_group_forward_msg", group_id = event.group_id, messages = json.dumps(node,ensure_ascii=False))
