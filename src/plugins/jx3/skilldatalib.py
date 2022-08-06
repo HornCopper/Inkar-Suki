@@ -190,5 +190,5 @@ async def getSingleSkill(kungfu: str, skillName: str):
                     for y in cheasts:
                         cheastsInfo = cheastsInfo + "\n" + y["name"] + "：" + y["desc"]
                 msg = image + f"\n技能名：{skillName}\n{releaseType} {cd}\n距离：{distance}\n武器：{weapon}\n内力消耗：{consumption}\n{specialDesc}\n{desc}\n{simpleDesc}\n技能归属：{skillType}\n秘籍：{cheastsInfo}"
-                break
-        return msg
+                return msg
+        return "未找到技能，请检查后重试~"
