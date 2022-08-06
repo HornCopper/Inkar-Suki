@@ -89,7 +89,7 @@ async def getSkills():
             info = await get_url(url = f"https://data.jx3box.com/bps/v1/{i}/skill.json")
             data = json.loads(info)
             for a in data["data"]:
-                write(ASSETS + "/jx3/skills/" + a["kungfuName"] + ".json", a)
+                write(ASSETS + "/jx3/skills/" + a["kungfuName"] + ".json", json.dumps(a))
 
 async def get_icon(skillName: str, api_icon: str = None) -> str:
     final_path = ASSETS + "/jx3/icons/" + skillName + ".png"
