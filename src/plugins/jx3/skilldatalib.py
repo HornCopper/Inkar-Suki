@@ -106,7 +106,7 @@ async def get_icon(skillName: str, api_icon: str = None) -> str:
         cache.close()
         return "[CQ:image,file=" + Path(final_path).as_uri() + "]"
 
-async def getAllSkillsInfo(Kungfu: str) -> str:
+async def getAllSkillsInfo(Kungfu: str):
     '''
     获取心法下所有技能。
     '''
