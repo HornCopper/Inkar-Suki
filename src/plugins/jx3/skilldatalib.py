@@ -128,6 +128,8 @@ async def getAllSkillsInfo(Kungfu: str) -> str:
             releaseType = x["releaseType"] # 释放类型
             if releaseType != "瞬间释放":
                 releaseType = releaseType + "释放"
+            if releaseType == "":
+                releaseType = "释放时间未知"
             cd = x["cd"] # 调息时间
             skillName = x["skillName"] # 技能名
             specialDesc = x["specialDesc"] # 简单描述
