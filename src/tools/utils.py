@@ -41,4 +41,4 @@ def convert_time(timestamp: int):
     return dt
 
 def nodetemp(nickname: str, qqnumber: str, message: str) -> dict:
-    return {"type":"node","data":{"name":nickname,"uin":qqnumber,"content":[{"type":"text","data":{"text":message}}]}}
+    return {"type":"node","data":{"name":nickname,"uin":qqnumber,"content":message}}
