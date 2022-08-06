@@ -2,7 +2,9 @@ from nonebot import on_command
 from nonebot.adapters import Message
 from nonebot.params import CommandArg
 from nonebot.adapters.onebot.v11 import MessageSegment as ms
+from nonebot.adapters.onebot.v11 import Bot, GroupMessageEvent
 from .jx3 import *
+from .skilldatalib import getSkills, getAllSkillsInfo
 
 horse = on_command("jx3_horse",aliases={"马"},priority=5)
 @horse.handle()
@@ -101,3 +103,10 @@ async def _(args: Message = CommandArg()):
         await demon.finish(await demon_(args.extract_plain_text()))
     else:
         await demon.finish("没有输入任何服务器名称哦，没办法帮你找啦。")
+
+kungfu = on_command("jx3_kungfu",aliases={"心法"},priority=5)
+@kungfu.handle()
+async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
+    kungfu = args.extract_plain_text()
+    node = await getAllSkillsInfo(kungfu)
+    await bot.call_api("send_group_forward_msg", group_id = event.group_id, messages = node)

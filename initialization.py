@@ -11,11 +11,15 @@ except FileExistsError:
     print("检测到`cache`文件夹已创建。")
 try:
     os.mkdir("./src/assets")
-    os.mkdir("./src/assets/char")
-    os.mkdir("./src/assets/icon")
-    os.mkdir("./src/assets/song")
+    os.mkdir("./src/assets/arcaea")
+    os.mkdir("./src/assets/arcaea/char")
+    os.mkdir("./src/assets/arcaea/icon")
+    os.mkdir("./src/assets/arcaea/song")
+    os.mkdir("./src/assets/jx3")
+    os.mkdir("./src/assets/jx3/skills")
+    os.mkdir("./src/assets/jx3/icons")
 except FileExistsError:
-    print("检测到`assets`文件夹已创建。")
+    print("检测到`assets`文件夹已创建，已自动补全所有需要的文件夹。")
 def write(file, something):
     with open(f"./src/tools/{file}",mode="w") as cache:
         cache.write(something)

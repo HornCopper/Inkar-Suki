@@ -1,17 +1,16 @@
 import sys
+from urllib.error import HTTPError
 import nonebot
-import json
 from nonebot.log import logger
 TOOLS = nonebot.get_driver().config.tools_path
 sys.path.append(TOOLS)
-from utils import get_url
+from utils import get_api
 async def getWeatherByCity(city: str) -> str:
     final_link = f"https://autodev.openspeech.cn/csp/api/v2.1/weather?openId=aiuicus&clientType=android&sign=android&needMoreData=true&city={city}"
     try:
-        information_ = await get_url(final_link)
-        information = json.loads(information_)
+        information = await get_api(final_link)
     except:
-        logger.error(information_)
+        raise HTTPError("Can't connect to " + final_link)
     if information["code"] == 105:
         return "您要查询的城市不存在哦，请检查后重试~"
     elif information["code"] == 0:

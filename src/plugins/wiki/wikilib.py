@@ -5,7 +5,7 @@ import re
 from urllib import parse
 TOOLS = nonebot.get_driver().config.tools_path
 sys.path.append(TOOLS)
-from utils import get_url
+from utils import get_api, get_url
 DATA = TOOLS.replace("tools","data")
 '''
 状态码：
@@ -44,7 +44,7 @@ class wiki:
     '''
     async def get_site_info(api: str):
         final_link = api + "?action=query&meta=siteinfo&siprop=general&format=json"
-        info = json.loads(await get_url(final_link, headers=headers))
+        info = await get_api(final_link, headers=headers)
         sitename = info["query"]["general"]["sitename"]
         return sitename
     async def get_iw_url(api: str, iwprefix: str):
@@ -52,7 +52,7 @@ class wiki:
         工具型函数：不参与对话
         '''
         final_link = api + "?action=query&meta=siteinfo&siprop=interwikimap&sifilteriw=local&format=json"
-        data = json.loads(await get_url(final_link, headers=headers))
+        data = await get_api(final_link, headers=headers)
         for i in data["query"]["interwikimap"]:
             if i["prefix"] == iwprefix:
                 return {"status":200,"data":i["url"]}
@@ -63,8 +63,7 @@ class wiki:
         工具型函数：不参与对话
         '''
         final_link = api + "?action=query&meta=siteinfo&siprop=extensions&format=json"
-        data = await get_url(final_link, headers=headers)
-        data = json.loads(data)
+        data = await get_api(final_link, headers=headers)
         for i in data["query"]["extensions"]:
             if i["name"] == extension:
                 return {"status":200}
@@ -145,7 +144,7 @@ class wiki:
 
     async def search(api, title):
         final_link = api + f"?action=query&list=search&format=json&srsearch={title}"
-        info = json.loads(await get_url(final_link, headers=headers))
+        info = await get_api(final_link, headers=headers)
         results = []
         curids = []
         for i in info["query"]["search"]:

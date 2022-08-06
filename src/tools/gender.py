@@ -30,7 +30,7 @@ def gender(html: str,waiting: int,size: str, web: bool):
         driver.get(html)
         time.sleep(waiting)
         uuid_=get_uuid()
-        final_path=CACHE+"/"+uuid_+".png"
+        final_path=CACHE + "/" + uuid_ + ".png"
         driver.get_screenshot_as_file(final_path)
         driver.quit()
         return final_path

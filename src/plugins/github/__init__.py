@@ -13,7 +13,7 @@ DATA = TOOLS[:-5] + "data"
 sys.path.append(str(TOOLS))
 from permission import checker, error
 from utils import get_status
-from file import read, write
+from file import read
 from config import Config
 
 def already(reponame: str, group) -> bool:
