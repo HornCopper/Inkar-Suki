@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 from urllib.error import HTTPError
 import nonebot
 import sys
@@ -91,10 +92,13 @@ async def getSkills():
             for a in data["data"]:
                 write(ASSETS + "/jx3/skills/" + a["kungfuName"] + ".json", json.dumps(a))
 
-async def get_icon(skillName: str, api_icon: str = None) -> str:
+async def get_icon(skillName: str, type_: str, api_icon: str = None) -> str:
     final_path = ASSETS + "/jx3/icons/" + skillName + ".png"
     if os.path.exists(final_path):
-        return "[CQ:image,file=" + Path(final_path).as_uri() + "]"
+        if type_ == "cq":
+            return "[CQ:image,file=" + Path(final_path).as_uri() + "]"
+        else:
+            return MessageSegment.image(Path(final_path).as_uri())
     else:
         api_icon_url = api_icon
         try:
@@ -104,9 +108,12 @@ async def get_icon(skillName: str, api_icon: str = None) -> str:
         cache = open(ASSETS + "/jx3/icons/" + skillName + ".png", mode = "wb")
         cache.write(icon)
         cache.close()
-        return "[CQ:image,file=" + Path(final_path).as_uri() + "]"
+        if type_ == "cq":
+            return "[CQ:image,file=" + Path(final_path).as_uri() + "]"
+        else:
+            return MessageSegment.image(Path(final_path).as_uri())
 
-async def getAllSkillsInfo(Kungfu: str):
+async def getAllSkillsInfo(Kungfu: str) -> str:
     '''
     获取心法下所有技能。
     '''
@@ -124,7 +131,7 @@ async def getAllSkillsInfo(Kungfu: str):
     moreInfo = skills["remarks"]
     for i in moreInfo:
         for x in i["forceSkills"]:
-            image = await get_icon(x["skillName"], x["icon"]["FileName"])
+            image = await get_icon(x["skillName"], "cq", x["icon"]["FileName"])
             releaseType = x["releaseType"] # 释放类型
             if releaseType != "瞬间释放":
                 releaseType = releaseType + "释放"
@@ -149,3 +156,38 @@ async def getAllSkillsInfo(Kungfu: str):
             msg = image + f"\n技能名：{skillName}\n{releaseType} {cd}\n距离：{distance}\n武器：{weapon}\n内力消耗：{consumption}\n{specialDesc}\n{desc}\n{simpleDesc}\n技能归属：{skillType}\n秘籍：{cheastsInfo}"
             node.append(nodetemp(f"{Kungfu}技能", Config.bot[0], msg))
     return node
+
+async def getSingleSkill(kungfu: str, skillName: str):
+    kungfu = aliases(kungfu)
+    if kungfu == "隐龙诀":
+        kungfu == "隐龙决" # 由于`JX3Box`的`API`的数据错误问题，目前只能这样适配，等到数据纠正后删除这块代码。
+    if kungfu == False:
+        return False
+    data = json.loads(read(ASSETS + "/jx3/skills/" + kungfu + ".json"))
+    moreInfo = data["remarks"]
+    for i in moreInfo:
+        for x in i["forceSkills"]:
+            image = await get_icon(x["skillName"], "ms", x["icon"]["FileName"])
+            releaseType = x["releaseType"] # 释放类型
+            if releaseType != "瞬间释放":
+                releaseType = releaseType + "释放"
+            if releaseType == "":
+                releaseType = "释放时间未知"
+            cd = x["cd"] # 调息时间
+            skillName = x["skillName"] # 技能名
+            specialDesc = x["specialDesc"] # 简单描述
+            weapon = x["weapon"] # 武器
+            desc = x["desc"] # 描述
+            simpleDesc = x["simpleDesc"] # 简单描述，包含伤害/治疗/威胁值等基础信息
+            distance = x["distance"] # 距离
+            consumption = x["consumption"] # 内力消耗
+            cheasts = x["cheasts"] # 秘籍
+            skillType = i["remark"] # 武学派别
+            if len(cheasts) == 0:
+                cheastsInfo = "无"
+            else:
+                cheastsInfo = ""
+                for y in cheasts:
+                    cheastsInfo = cheastsInfo + "\n" + y["name"] + "\n" + y["desc"] + "\n"
+            msg = image + f"\n技能名：{skillName}\n{releaseType} {cd}\n距离：{distance}\n武器：{weapon}\n内力消耗：{consumption}\n{specialDesc}\n{desc}\n{simpleDesc}\n技能归属：{skillType}\n秘籍：{cheastsInfo}"
+            return msg
