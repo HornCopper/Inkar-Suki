@@ -5,6 +5,7 @@ from nonebot.adapters.onebot.v11 import MessageSegment as ms
 from nonebot.adapters.onebot.v11 import Bot, GroupMessageEvent
 from .jx3 import *
 from .skilldatalib import getSkills, getAllSkillsInfo, getSingleSkill
+from .achievement import getAchievementFinishMethod
 
 horse = on_command("jx3_horse",aliases={"马"},priority=5)
 @horse.handle()
@@ -62,7 +63,7 @@ async def _(args: Message = CommandArg()):
     else:
         await equip.finish("没有输入任何心法名称哦，没办法帮你找啦。")
         
-require = on_command("jx3_require",aliases={"奇遇"},priority=5)
+require = on_command("jx3_require",aliases={"奇遇信息"},priority=5)
 @require.handle()
 async def _(args: Message = CommandArg()):
     if args.extract_plain_text():
@@ -126,3 +127,13 @@ async def _(args: Message = CommandArg()):
     if msg == False:
         await skill.finish("此心法不存在哦，请检查后重试~")
     await skill.finish(msg)
+
+adventure = on_command("jx3_adventure",aliases={"奇遇"})
+@adventure.handle()
+async def _(args: Message = CommandArg()):
+    adventure_name = args.extract_plain_text()
+    if adventure_name == False:
+        await adventure.finish("没有输入奇遇名称，没办法帮你找啦！")
+    else:
+        msg = await getAchievementFinishMethod(adventure_name)
+        await adventure.finish(msg)

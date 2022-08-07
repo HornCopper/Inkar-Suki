@@ -5,3 +5,4 @@ nonebot-adapter-onebot
 psutil
 tabulate
 selenium
+xpinyin
