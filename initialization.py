@@ -18,7 +18,7 @@ try:
     os.mkdir("./src/assets/jx3")
     os.mkdir("./src/assets/jx3/skills")
     os.mkdir("./src/assets/jx3/icons")
-    os.mkdir("./src/assets/jx3/achievements")
+    os.mkdir("./src/assets/jx3/achievement")
 except FileExistsError:
     print("检测到`assets`文件夹已创建，已自动补全所有需要的文件夹。")
 def write(file, something):
