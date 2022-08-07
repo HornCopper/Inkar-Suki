@@ -58,7 +58,7 @@ async def getAchievementFinishMethod(Achievement: str):
     else:
         short_num = await getShortNum(Achievement)
         if short_num == False:
-            return "奇遇不存在哦，请检查后重试~\n若游戏中只显示为“宠物奇缘”，则请使用奇遇ID搜索。\n奇遇ID是魔盒中打开某一奇遇页面后，网址的最后三个数字。\n唔……ID搜索奇遇暂时不支持获取图片哦~"
+            return "数据库中查不到这个奇遇，很有可能是数据的问题，可尝试使用ID搜索~\n若游戏中只显示为“宠物奇缘”，则请使用奇遇ID搜索。\n奇遇ID是魔盒中打开某一奇遇页面后，网址的最后三个数字。\n唔……ID搜索奇遇暂时不支持获取图片哦~"
         long_num = await getLongNumByShortNum(str(short_num))
         final_url = f"https://helper.jx3box.com/api/wiki/post?client=std&supply=1&type=achievement&source_id={long_num}"
         method = await get_api(final_url)
