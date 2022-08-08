@@ -74,6 +74,23 @@ def aliases(SkillName: str) -> str:
     else:
         return False
 
+async def getTalents():
+    '''
+    获取所有门派的奇穴。
+
+    数据来源：`JX3BOX` & `JX3API`
+    '''
+    force_list = await get_api("https://www.inkar-suki.xyz/api")
+    data_list = []
+    for i in force_list:
+        data_list.append(i)
+    for i in data_list:
+        if await get_status(url=f"https://data.jx3box.com/bps/v1/{i}/talent.json") != 404:
+            info = await get_url(url = f"https://data.jx3box.com/bps/v1/{i}/talent.json")
+            data = json.loads(info)
+            for a in data["data"]:
+                write(ASSETS + "/jx3/talents/" + a["kungfu"] + ".json", json.dumps(a,ensure_ascii=False))
+
 async def getSkills():
     '''
     获取所有门派的技能。
@@ -169,12 +186,9 @@ async def getSingleSkill(kungfu: str, skillName: str):
         await getSingleSkill(kungfu, skillName)
     moreInfo = data["remarks"]
     msg = ""
-    from nonebot.log import logger
     for i in moreInfo:
         for x in i["forceSkills"]:
-            logger.info(x)
             if x["skillName"] == skillName:
-                logger.info(x["skillName"])
                 image = await get_icon(x["skillName"], "ms", x["icon"]["FileName"])
                 releaseType = x["releaseType"] # 释放类型
                 if releaseType != "瞬间释放":
@@ -200,3 +214,52 @@ async def getSingleSkill(kungfu: str, skillName: str):
                 msg = image + f"\n技能名：{skillName}\n{releaseType} {cd}\n距离：{distance}\n武器：{weapon}\n内力消耗：{consumption}\n{specialDesc}\n{desc}\n{simpleDesc}\n技能归属：{skillType}\n秘籍：{cheastsInfo}"
                 return msg
             continue
+
+async def getSingleTalent(Kungfu: str, TalentName: str):
+    kungfuname = aliases(Kungfu)
+    if kungfuname == False:
+        return "此心法不存在哦，请检查后重试~"
+    try:
+        data = json.loads(read(ASSETS + "/jx3/talents/" + kungfuname + ".json"))
+    except:
+        await getTalents()
+        await getSingleTalent(kungfuname, TalentName)
+    correct = {}
+    detail = data["kungfuLevel"]
+    for i in detail:
+        correct[str(i["level"])] = i         
+    for i in range(1,13):
+        Skills = correct[str(i)]["forceSkills"]
+        Talents = correct[str(i)]["kungfuSkills"]
+        for a in Skills:
+            if a["skillName"] == TalentName:
+                image = await get_icon("TalentName", "ms", a["icon"]["FileName"])
+                releaseType = a["releaseType"] # 释放类型
+                if releaseType != "瞬间释放":
+                    releaseType = releaseType + "释放"
+                if releaseType == "":
+                    releaseType = "释放时间未知"
+                cd = a["cd"] # 调息时间
+                skillName = a["skillName"] # 技能名
+                specialDesc = a["specialDesc"] # 简单描述
+                weapon = a["weapon"] # 武器
+                desc = a["desc"] # 描述
+                simpleDesc = a["simpleDesc"] # 简单描述，包含伤害/治疗/威胁值等基础信息
+                distance = a["distance"] # 距离
+                consumption = a["consumption"] # 内力消耗
+                cheasts = a["cheasts"] # 秘籍
+                skillType = i["remark"] # 武学派别
+                if len(cheasts) == 0:
+                    cheastsInfo = "无"
+                else:
+                    cheastsInfo = ""
+                    for y in cheasts:
+                        cheastsInfo = cheastsInfo + "\n" + y["name"] + "：" + y["desc"]
+                msg = f"第{i}重\n" + image + f"\n技能名：{skillName}\n{releaseType} {cd}\n距离：{distance}\n武器：{weapon}\n内力消耗：{consumption}\n{specialDesc}\n{desc}\n{simpleDesc}\n技能归属：{skillType}\n秘籍：{cheastsInfo}"
+                return msg
+        for a in Talents:
+            if a["name"] == TalentName:
+                image = await get_icon("TalentName", "ms", a["icon"]["FileName"])
+                desc = a["desc"]
+                msg = f"第{i}重·{TalentName}\n" + image + f"\n{desc}"
+                return msg

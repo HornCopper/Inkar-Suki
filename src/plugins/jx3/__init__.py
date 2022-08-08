@@ -4,7 +4,7 @@ from nonebot.params import CommandArg
 from nonebot.adapters.onebot.v11 import MessageSegment as ms
 from nonebot.adapters.onebot.v11 import Bot, GroupMessageEvent
 from .jx3 import *
-from .skilldatalib import getSkills, getAllSkillsInfo, getSingleSkill
+from .skilldatalib import getSkills, getAllSkillsInfo, getSingleSkill, getSingleTalent
 from .achievement import getAchievementFinishMethod
 
 horse = on_command("jx3_horse",aliases={"马"},priority=5)
@@ -128,7 +128,7 @@ async def _(args: Message = CommandArg()):
         await skill.finish("此心法不存在哦，请检查后重试~")
     await skill.finish(msg)
 
-adventure = on_command("jx3_adventure",aliases={"奇遇"})
+adventure = on_command("jx3_adventure",aliases={"奇遇"},priority=5)
 @adventure.handle()
 async def _(args: Message = CommandArg()):
     adventure_name = args.extract_plain_text()
@@ -137,3 +137,16 @@ async def _(args: Message = CommandArg()):
     else:
         msg = await getAchievementFinishMethod(adventure_name)
         await adventure.finish(msg)
+
+talent = on_command("jx3_talent",aliases={"奇穴"},priority=5)
+@talent.handle()
+async def _(args: Message = CommandArg()):
+    data = args.extract_plain_text()
+    data = data.split(" ")
+    if len(data) != 2:
+        await talent.finish("信息不正确哦，只能有2个参数，请检查后重试~")
+    else:
+        kungfu = data[0]
+        talent_ = data[1]
+        msg = await getSingleTalent(kungfu, talent_)
+        await talent.finish(msg)
