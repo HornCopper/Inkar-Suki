@@ -1,12 +1,3 @@
-# 奇遇系统
-# 开始施工
-# 完成方法：https://helper.jx3box.com/api/wiki/post?client=std&supply=1&type=achievement&source_id=10140  source_id为奇遇id，用于标识 getAchievementFinishMethod
-# 奇遇记录：https://pull.j3cx.com/api/serendipity?server=%E5%B9%BD%E6%9C%88%E8%BD%AE&start=0&pageIndex=1&pageSize=60 server为服务器
-# 获取奇遇ID：https://data.jx3box.com/pvx/serendipity/output/serendipity.json 短数字拼接URL，长数字用于标识 getLongNumByShortNum
-# 获取奇遇列表：https://node.jx3box.com/serendipities?per=93&page=1 将用户输入的字符串进行检索 找出短数字 getShortNum
-
-# 题外话，奇穴：https://data.jx3box.com/bps/v1/22/talent.json
-
 import os
 import sys
 import re
