@@ -233,7 +233,7 @@ async def getSingleTalent(Kungfu: str, TalentName: str):
         Talents = correct[str(i)]["kungfuSkills"]
         for a in Skills:
             if a["skillName"] == TalentName:
-                image = await get_icon("TalentName", "ms", a["icon"]["FileName"])
+                image = await get_icon(TalentName, "ms", a["icon"]["FileName"])
                 releaseType = a["releaseType"] # 释放类型
                 if releaseType != "瞬间释放":
                     releaseType = releaseType + "释放"
