@@ -263,3 +263,4 @@ async def getSingleTalent(Kungfu: str, TalentName: str):
                 desc = a["desc"]
                 msg = f"第{i}重·{TalentName}\n" + image + f"\n{desc}"
                 return msg
+    return "没有找到奇穴哦，请检查后重试~"
