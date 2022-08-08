@@ -258,7 +258,7 @@ async def getSingleTalent(Kungfu: str, TalentName: str):
                 return msg
         for a in Talents:
             if a["name"] == TalentName:
-                image = await get_icon("TalentName", "ms", a["icon"]["FileName"])
+                image = await get_icon(TalentName, "ms", a["icon"]["FileName"])
                 desc = a["desc"]
                 msg = f"第{i}重·{TalentName}\n" + image + f"\n{desc}"
                 return msg
