@@ -109,11 +109,11 @@ async def get_char(char: int):
     
     具体实现可参考`get_song`的代码。
     '''
-    if os.path.exists(ASSETS + f"arcaea/char/{char}.png"):
-        return Path(ASSETS + f"arcaea/char/{char}.png").as_uri()
+    if os.path.exists(ASSETS + f"/arcaea/char/{char}.png"):
+        return Path(ASSETS + f"/arcaea/char/{char}.png").as_uri()
     else:
         url = f"{api}assets/char?partner={char}"
-        cache = open(ASSETS + f"arcaea/char/{char}.png", mode = "wb")
+        cache = open(ASSETS + f"/arcaea/char/{char}.png", mode = "wb")
         try:
             cache.write(await get_content(url, headers = headers))
         except:
