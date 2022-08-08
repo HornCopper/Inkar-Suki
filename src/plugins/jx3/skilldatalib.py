@@ -214,6 +214,7 @@ async def getSingleSkill(kungfu: str, skillName: str):
                 msg = image + f"\n技能名：{skillName}\n{releaseType} {cd}\n距离：{distance}\n武器：{weapon}\n内力消耗：{consumption}\n{specialDesc}\n{desc}\n{simpleDesc}\n技能归属：{skillType}\n秘籍：{cheastsInfo}"
                 return msg
             continue
+    return "没有找到技能哦，请检查后重试~\n也许这是该门派另一个心法的技能哦~"
 
 async def getSingleTalent(Kungfu: str, TalentName: str):
     kungfuname = aliases(Kungfu)
