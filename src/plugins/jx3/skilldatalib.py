@@ -248,14 +248,13 @@ async def getSingleTalent(Kungfu: str, TalentName: str):
                 distance = a["distance"] # 距离
                 consumption = a["consumption"] # 内力消耗
                 cheasts = a["cheasts"] # 秘籍
-                skillType = i["remark"] # 武学派别
                 if len(cheasts) == 0:
                     cheastsInfo = "无"
                 else:
                     cheastsInfo = ""
                     for y in cheasts:
                         cheastsInfo = cheastsInfo + "\n" + y["name"] + "：" + y["desc"]
-                msg = f"第{i}重\n" + image + f"\n技能名：{skillName}\n{releaseType} {cd}\n距离：{distance}\n武器：{weapon}\n内力消耗：{consumption}\n{specialDesc}\n{desc}\n{simpleDesc}\n技能归属：{skillType}\n秘籍：{cheastsInfo}"
+                msg = f"第{i}重\n" + image + f"\n技能名：{skillName}\n{releaseType} {cd}\n距离：{distance}\n武器：{weapon}\n内力消耗：{consumption}\n{specialDesc}\n{desc}\n{simpleDesc}\n秘籍：{cheastsInfo}"
                 return msg
         for a in Talents:
             if a["name"] == TalentName:
