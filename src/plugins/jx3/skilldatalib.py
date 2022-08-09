@@ -108,7 +108,9 @@ async def getSkills():
             for a in data["data"]:
                 write(ASSETS + "/jx3/skills/" + a["kungfuName"] + ".json", json.dumps(a,ensure_ascii=False))
 
-async def get_icon(skillName: str, type_: str, api_icon: str = None) -> str:
+async def get_icon(skillName: str, type_: str, api_icon: str = None, kungfu: str = None) -> str:
+    if kungfu == None:
+        raise ValueError("Key value `kungfu` was not found.")
     final_path = ASSETS + "/jx3/icons/" + skillName + ".png"
     if os.path.exists(final_path):
         if type_ == "cq":
@@ -121,7 +123,7 @@ async def get_icon(skillName: str, type_: str, api_icon: str = None) -> str:
             icon = await get_content(api_icon_url)
         except:
             raise HTTPError(msg = "Can't connect to " + api_icon_url + ".")
-        cache = open(ASSETS + "/jx3/icons/" + skillName + ".png", mode = "wb")
+        cache = open(ASSETS + "/jx3/icons/" + kungfu + "_" + skillName + ".png", mode = "wb")
         cache.write(icon)
         cache.close()
         if type_ == "cq":
@@ -147,7 +149,7 @@ async def getAllSkillsInfo(Kungfu: str) -> str:
     moreInfo = skills["remarks"]
     for i in moreInfo:
         for x in i["forceSkills"]:
-            image = await get_icon(x["skillName"], "cq", x["icon"]["FileName"])
+            image = await get_icon(x["skillName"], "cq", x["icon"]["FileName"], Kungfu)
             releaseType = x["releaseType"] # 释放类型
             if releaseType != "瞬间释放":
                 releaseType = releaseType + "释放"
@@ -189,7 +191,7 @@ async def getSingleSkill(kungfu: str, skillName: str):
     for i in moreInfo:
         for x in i["forceSkills"]:
             if x["skillName"] == skillName:
-                image = await get_icon(x["skillName"], "ms", x["icon"]["FileName"])
+                image = await get_icon(x["skillName"], "ms", x["icon"]["FileName"], kungfu)
                 releaseType = x["releaseType"] # 释放类型
                 if releaseType != "瞬间释放":
                     releaseType = releaseType + "释放"
