@@ -111,7 +111,7 @@ async def getSkills():
 async def get_icon(skillName: str, type_: str, api_icon: str = None, kungfu: str = None) -> str:
     if kungfu == None:
         raise ValueError("Key value `kungfu` was not found.")
-    final_path = ASSETS + "/jx3/icons/" + skillName + ".png"
+    final_path = ASSETS + "/jx3/icons/" + kungfu + skillName + ".png"
     if os.path.exists(final_path):
         if type_ == "cq":
             return "[CQ:image,file=" + Path(final_path).as_uri() + "]"
