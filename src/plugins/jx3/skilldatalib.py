@@ -111,7 +111,7 @@ async def getSkills():
 async def get_icon(skillName: str, type_: str, api_icon: str = None, kungfu: str = None) -> str:
     if kungfu == None:
         raise ValueError("Key value `kungfu` was not found.")
-    final_path = ASSETS + "/jx3/icons/" + kungfu + skillName + ".png"
+    final_path = ASSETS + "/jx3/icons/" + kungfu + "_" + skillName + ".png"
     if os.path.exists(final_path):
         if type_ == "cq":
             return "[CQ:image,file=" + Path(final_path).as_uri() + "]"
@@ -236,7 +236,7 @@ async def getSingleTalent(Kungfu: str, TalentName: str):
         Talents = correct[str(i)]["kungfuSkills"]
         for a in Skills:
             if a["skillName"] == TalentName:
-                image = await get_icon(TalentName, "ms", a["icon"]["FileName"])
+                image = await get_icon(TalentName, "ms", a["icon"]["FileName"], kungfuname)
                 releaseType = a["releaseType"] # 释放类型
                 if releaseType != "瞬间释放":
                     releaseType = releaseType + "释放"
@@ -261,7 +261,7 @@ async def getSingleTalent(Kungfu: str, TalentName: str):
                 return msg
         for a in Talents:
             if a["name"] == TalentName:
-                image = await get_icon(TalentName, "ms", a["icon"]["FileName"])
+                image = await get_icon(TalentName, "ms", a["icon"]["FileName"],kungfuname)
                 desc = a["desc"]
                 msg = f"第{i}重·{TalentName}\n" + image + f"\n{desc}"
                 return msg
