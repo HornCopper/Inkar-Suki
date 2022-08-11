@@ -6,3 +6,4 @@ psutil
 tabulate
 selenium
 xpinyin
+numpy

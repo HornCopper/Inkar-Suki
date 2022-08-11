@@ -40,8 +40,11 @@ async def _(event: GroupMessageEvent):
         write(new_path + "/marry.json","[]")
         write(new_path + "/welcome.txt","欢迎入群！")
         write(new_path + "/banword.json","[]")
+        write(new_path + "/opening.json","[]")
         write(new_path + "/wiki.json","{\"startwiki\":\"\",\"interwiki\":[]}")
         write(new_path + "/arcaea.json","{}")
+        write(new_path + "/record.json","[]")
+        write(new_path + "/jx3group.json","{}")
         await register.finish("注册成功！")
 
 flushdata = on_command("flushdata",priority=5)
@@ -65,6 +68,10 @@ async def _(event: Event):
             os.remove(DATA + "/" + i + "/welcome.txt")
             os.remove(DATA + "/" + i + "/banword.json")
             os.remove(DATA + "/" + i + "/wiki.json")
+            os.remove(DATA + "/" + i + "/opening.json")
+            os.remove(DATA + "/" + i + "/arcaea.json")
+            os.remove(DATA + "/" + i + "/record.json")
+            os.remove(DATA + "/" + i + "/jx3group.json")
             nnl = json.loads(read(TOOLS + "/nnl.json"))
             for a in nnl:
                 if a == i:
@@ -89,7 +96,11 @@ async def _(bot: Bot, event: GroupMessageEvent):
             os.remove(DATA + "/" + group + "/marry.json")
             os.remove(DATA + "/" + group + "/welcome.txt")
             os.remove(DATA + "/" + group + "/banword.json")
+            os.remove(DATA + "/" + group + "/record.json")
             os.remove(DATA + "/" + group + "/wiki.json")
+            os.remove(DATA + "/" + group + "/opening.json")
+            os.remove(DATA + "/" + group + "/jx3group.json")
+            os.remove(DATA + "/" + group + "/arcaea.json")
             nnl = json.loads(read(TOOLS + "/nnl.json"))
             for a in nnl:
                 if a == group:
@@ -113,9 +124,12 @@ async def _(event: GroupMessageEvent):
             os.remove(DATA + "/" + group + "/webhook.json")
             os.remove(DATA + "/" + group + "/marry.json")
             os.remove(DATA + "/" + group + "/welcome.txt")
+            os.remove(DATA + "/" + group + "/opening.json")
             os.remove(DATA + "/" + group + "/banword.json")
+            os.remove(DATA + "/" + group + "/record.json")
             os.remove(DATA + "/" + group + "/wiki.json")
             os.remove(DATA + "/" + group + "/arcaea.json")
+            os.remove(DATA + "/" + group + "/jx3group.json")
             nnl = json.loads(read(TOOLS + "/nnl.json"))
             for a in nnl:
                 if a == group:
@@ -138,8 +152,11 @@ async def _(event: GroupMessageEvent):
             os.remove(DATA + "/" + i + "/marry.json")
             os.remove(DATA + "/" + i + "/welcome.txt")
             os.remove(DATA + "/" + i + "/banword.json")
+            os.remove(DATA + "/" + i + "/record.json")
             os.remove(DATA + "/" + i + "/wiki.json")
+            os.remove(DATA + "/" + i + "/opening.json")
             os.remove(DATA + "/" + i + "/arcaea.json")
+            os.remove(DATA + "/" + i + "/jx3group.json")
             nnl = json.loads(read(TOOLS + "/nnl.json"))
             for a in nnl:
                 if a == i:
@@ -156,8 +173,8 @@ fix = on_command("fix",priority=5)
 async def _(event: GroupMessageEvent):
     files = os.listdir(DATA + "/" + str(event.group_id))
     missing = []
-    right = ["webhook.json","marry.json","welcome.txt","banword.json","block.json","wiki.json","arcaea.json"]
-    fix_data = {"webhook.json":"[]","marry.json":"[]","welcome.txt":"欢迎入群！","banword.json":"[]","wiki.json":"{\"startwiki\":\"\",\"interwiki\":[]}","arcaea.json":"{}"}
+    right = ["webhook.json","marry.json","welcome.txt","banword.json","wiki.json","arcaea.json","opening.json","record.json"]
+    fix_data = {"webhook.json":"[]","marry.json":"[]","welcome.txt":"欢迎入群！","banword.json":"[]","wiki.json":"{\"startwiki\":\"\",\"interwiki\":[]}","arcaea.json":"{}","opening.json":"[]","record.json":"[]"}
     for i in right:
         if i not in files:
             missing.append(i)
