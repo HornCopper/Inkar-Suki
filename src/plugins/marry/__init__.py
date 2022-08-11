@@ -24,7 +24,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     group = str(event.group_id)
     if husband == wife:
         await get_married.finish("诶？不能自娱自乐啊！")
-    if checknumber(wife) == Flse or wife == "3438531564":
+    if checknumber(wife) == False or wife == "3438531564":
         await get_married.finish("你在跟谁求婚啊喂？！")
     if already_married(husband,group):
         await get_married.finish("你已经求过婚了哦，不能再要了。")
