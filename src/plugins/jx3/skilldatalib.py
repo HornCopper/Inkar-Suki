@@ -29,7 +29,7 @@ def aliases(SkillName: str) -> str:
         return "太虚剑意"
     elif SkillName in ["奶秀","秀奶","云裳心经"]:
         return "云裳心经"
-    elif SkillName in ["冰心","冰心诀"]:
+    elif SkillName in ["冰心","冰心诀","冰心决"]:
         return "冰心诀"
     elif SkillName in ["毒经"]:
         return "毒经"
