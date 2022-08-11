@@ -12,6 +12,7 @@ sys.path.append(str(TOOLS))
 DATA = TOOLS[:-5] + "data"
 from .wikilib import wiki as wiki_
 from file import read, write
+from utils import checknumber
 from permission import checker, error
 
 wiki = on_command("wiki",priority=5)
@@ -188,7 +189,7 @@ async def _(state: T_State, event: GroupMessageEvent, args: Message = CommandArg
 @wiki.got("num",prompt="发送序号以搜索，发送其他内容则取消搜索。")
 async def __(state: T_State, num: Message = Arg()):
     num = num.extract_plain_text()
-    if num.isdecimal() == True:
+    if checknumber(num):
         api = state["wiki"]
         results = state["results"]
         if int(num) not in range(len(results)):

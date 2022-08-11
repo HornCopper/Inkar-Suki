@@ -42,6 +42,8 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     else:
         if len(data) == 3:
             type_ = data[1]
+            if type_ not in ["t","T","dps","DPS","奶","治疗","输出","Dps","老板"]:
+                await book.finish("唔……您的预定类型是什么呀，可以说得再明白些吗？")
             id = data[2]
             group = data[0]
             for i in now:
@@ -58,6 +60,8 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
             await book.finish("唔……目前还没有这个团，检查一下是不是完全一致哦~")
         else:
             type_ = data[1]
+            if type_ not in ["t","T","dps","DPS","奶","治疗","输出","Dps","老板"]:
+                await book.finish("唔……您的预定类型是什么呀，可以说得再明白些吗？")
             id = data[2]
             group = data[0]
             info = data[3]
