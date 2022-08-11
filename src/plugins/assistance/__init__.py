@@ -225,3 +225,43 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
         await get_gkp.finish(msg)
     else:
         await get_gkp.finish("请使用纯数字的QQ哦~")
+
+opening = on_command("opening", aliases = {"团列表"}, priority = 5)
+@opening.handle()
+async def _(bot: Bot, event: GroupMessageEvent):
+    final_path = DATA + "/" + str(event.group_id) + "/opening.json"
+    localdata = json.loads(read(final_path))
+    msg = ""
+    count = 0
+    for i in localdata:
+        desc = i["desc"]
+        time = convert_time(i["time"])
+        leaderqq = int(i["leader"])
+        leader_data = await bot.call_api("get_group_member_info", group_id = event.group_id, user_id = leaderqq)
+        leader = leader_data["card"]
+        if leader == "":
+            leader = leader_data["nickname"]
+        people_count = len(i["book"])
+        msg = msg + f"{leader}的团队：{desc}（已有{people_count}人申请）\n开团时间：{time}\n"
+        count = count + 1
+        if count == 9:
+            msg = msg[:-1]
+            await opening.finish(msg)
+    await opening.finish("唔……没有找到，请检查团队描述是否一致~")
+
+modify = on_command("modify", aliases = {"修改"}, priority = 5)
+@modify.handle()
+async def _(event: GroupMessageEvent, args: Message = CommandArg()):
+    data = args.extract_plain_text().split(" ")
+    if len(data) != 2:
+        await modify.finish("参数不对哦！应该有2个参数，具体请查看帮助文件~")
+    old = data[0]
+    new = data[1]
+    final_path = DATA + "/" + str(event.group_id) + "/opening.json"
+    data = json.loads(read(final_path))
+    for i in data:
+        if i["desc"] == old:
+            i["desc"] = new
+            write(final_path, json.dumps(data, ensure_ascii = False))
+            await modify.finish("修改团队信息成功！")
+    await modify.finish("唔……没有找到，请检查团队描述是否一致~")

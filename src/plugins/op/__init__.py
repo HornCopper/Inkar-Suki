@@ -12,7 +12,7 @@ from file import write, read
 from config import Config
 from utils import checknumber
 
-op = on_command("op", aliases={"admin", "setadmin"}, priority=5)
+op = on_command("setop", aliases={"admin", "setadmin"}, priority=5)
 @op.handle()
 async def handle_first_receive(event: Event, args: Message = CommandArg()):
     if checker(str(event.user_id), 10) == False:
