@@ -127,6 +127,31 @@ class main:
             tag_name = body["release"]["tag_name"]
             msg = f"{sender} released a release on {repo_name}.\n{tag_name} - {release_name}"
             return msg
+    def fork(body):
+        to_ = body["forkee"]["full_name"]
+        from_ = body["repository"]["full_name"]
+        forker = body["sender"]["login"]
+        total = body["repository"]["forks_count"]
+        msg = f"{forker} forked from {from_} to {to_}.\n(total {total} forks)"
     def ping(body):
         repo_name = body["repository"]["full_name"]
         return f"{repo_name} has already binded successfully."
+    def watch(body):
+        if body["action"] == "started":
+            repo = body["repository"]["full_name"]
+            sender = body["sender"]["login"]
+            total = body["repository"]["watchers_count"]
+            msg = f"{sender} started watching {repo}.\n(total {total} watchers)"
+        return msg
+    def star(body):
+        if body["action"] == "created":
+            sender = body["sender"]["login"]
+            repo = body["repository"]["full_name"]
+            total = body["repository"]["stargazers_count"]
+            msg = f"{sender} starred {repo}.\n(total {total} stargazers)"
+        elif body["action"] == "deleted":
+            sender = body["sender"]["login"]
+            repo = body["repository"]["full_name"]
+            total = body["repository"]["stargazers_count"]
+            msg = f"{sender} cancelled starring {repo}.\n(total {total} stargazers)"
+        return msg
