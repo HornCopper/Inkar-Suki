@@ -18,6 +18,7 @@ try:
     os.mkdir("./src/assets/jx3")
     os.mkdir("./src/assets/jx3/skills")
     os.mkdir("./src/assets/jx3/icons")
+    os.mkdir("./src/assets/jx3/maps")
     os.mkdir("./src/assets/jx3/achievement")
     os.mkdir("./src/assets/jx3/talents")
 except FileExistsError:

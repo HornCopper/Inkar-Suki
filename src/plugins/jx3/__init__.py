@@ -1,11 +1,18 @@
+import sys
+import nonebot
 from nonebot import on_command
 from nonebot.adapters import Message
-from nonebot.params import CommandArg
+from nonebot.params import CommandArg, Arg
 from nonebot.adapters.onebot.v11 import MessageSegment as ms
 from nonebot.adapters.onebot.v11 import Bot, GroupMessageEvent
+from nonebot.typing import T_State
+TOOLS = nonebot.get_driver().config.tools_path
+sys.path.append(TOOLS)
 from .jx3 import *
+from utils import checknumber
 from .skilldatalib import getSkills, getAllSkillsInfo, getSingleSkill, getSingleTalent
 from .achievement import getAchievementFinishMethod
+from .pet import get_pet
 
 horse = on_command("jx3_horse",aliases={"马"},priority=5)
 @horse.handle()
@@ -150,3 +157,44 @@ async def _(args: Message = CommandArg()):
         talent_ = data[1]
         msg = await getSingleTalent(kungfu, talent_)
         await talent.finish(msg)
+
+pet_ = on_command("get_pet", aliases={"宠物"}, priority=5)
+@pet_.handle()
+async def _(state: T_State, args: Message = CommandArg()):
+    data = args.extract_plain_text()
+    info = await get_pet(data)
+    if info["status"] == 404:
+        await pet_.finish("唔……没有找到你要的宠物，请检查后重试~")
+    elif info["status"] == 201:
+        from nonebot.log import logger
+        logger.info(info)
+        result = info["result"]
+        state["result"] = result
+        desc = info["desc"]
+        state["desc"] = desc
+        clue = info["clue"]
+        state["clue"] = clue
+        url = info["url"]
+        state["url"] = url
+        msg = ""
+        for i in range(len(result)):
+            msg = msg + f"\n{i}.{result[i]}"
+        msg = msg[1:]
+        await pet_.send(msg)
+
+@pet_.got("num",prompt="发送序号以搜索，发送其他内容则取消搜索。")
+async def __(state: T_State, num: Message = Arg()):
+    num = num.extract_plain_text()
+    if checknumber(num):
+        result = state["result"]
+        desc = state["desc"]
+        clue = state["clue"]
+        url = state["url"]
+        name = result[int(num)]
+        desc = desc[int(num)] 
+        clue = clue[int(num)]
+        url = url[int(num)]
+        msg = f"查询到「{name}」：\n{url}\n{clue}\n{desc}"
+        await pet_.finish(msg)
+    else:
+        await pet_.finish("唔……输入的不是数字哦，取消搜索。")
