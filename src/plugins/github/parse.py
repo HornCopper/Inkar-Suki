@@ -133,6 +133,7 @@ class main:
         forker = body["sender"]["login"]
         total = body["repository"]["forks_count"]
         msg = f"{forker} forked from {from_} to {to_}.\n(total {total} forks)"
+        return msg
     def ping(body):
         repo_name = body["repository"]["full_name"]
         return f"{repo_name} has already binded successfully."
