@@ -10,8 +10,9 @@ TOOLS = nonebot.get_driver().config.tools_path
 sys.path.append(TOOLS)
 from .jx3 import *
 from utils import checknumber
-from .skilldatalib import getSkills, getAllSkillsInfo, getSingleSkill, getSingleTalent
+from .skilldatalib import getAllSkillsInfo, getSingleSkill, getSingleTalent
 from .achievement import getAchievementFinishMethod
+from .adventure import getAdventure, getAchievementsIcon
 from .pet import get_pet
 
 horse = on_command("jx3_horse",aliases={"马"},priority=5)
@@ -135,7 +136,7 @@ async def _(args: Message = CommandArg()):
         await skill.finish("此心法不存在哦，请检查后重试~")
     await skill.finish(msg)
 
-adventure = on_command("jx3_adventure",aliases={"奇遇"},priority=5)
+adventure = on_command("jx3_achievement",aliases={"奇遇"},priority=5)
 @adventure.handle()
 async def _(args: Message = CommandArg()):
     adventure_name = args.extract_plain_text()
@@ -182,7 +183,7 @@ async def _(state: T_State, args: Message = CommandArg()):
         msg = msg[1:]
         await pet_.send(msg)
 
-@pet_.got("num",prompt="发送序号以搜索，发送其他内容则取消搜索。")
+@pet_.got("num", prompt="发送序号以搜索，发送其他内容则取消搜索。")
 async def __(state: T_State, num: Message = Arg()):
     num = num.extract_plain_text()
     if checknumber(num):
@@ -198,3 +199,47 @@ async def __(state: T_State, num: Message = Arg()):
         await pet_.finish(msg)
     else:
         await pet_.finish("唔……输入的不是数字哦，取消搜索。")
+
+adventure_ = on_command("jx3_adventure")# 别骂了，想不出其他变量名了
+@adventure_.handle()
+async def _(state: T_State, args: Message = CommandArg()):
+    achievement_name = args.extract_plain_text()
+    data = await getAdventure(achievement_name)
+    if data["status"] == 404:
+        await adventure_.finish("没有找到任何相关成就哦，请检查后重试~")
+    achievement_list = data["achievement_list"]
+    icon_list = data["icon_list"]
+    subAchievements = data["subAchievements"]
+    id_list = data["id_list"]
+    simpleDesc = data["simpleDesc"]
+    fullDesc = data["fullDesc"]
+    map = data["map"]
+    state["map"] = map
+    state["achievement_list"] = achievement_list
+    state["icon_list"] = icon_list
+    state["id_list"] = id_list
+    state["simpleDesc"] = simpleDesc
+    state["fullDesc"] = fullDesc
+    state["subAchievements"] = subAchievements
+    for i in range(len(achievement_list)):
+        msg = msg + f"{i}." + achievement_list[i] + "\n"
+    msg = msg[:-1]
+    await adventure_.send(msg)
+    return
+
+@adventure_.got("num", prompt = "发送序号以搜索，发送其他内容则取消搜索。")
+async def _(state: T_State, num: Message = Arg()):
+    num = num.extract_plain_text()
+    if checknumber(num):
+        num = int(num)
+        map = state["map"][num]
+        achievement = state["achievement_list"][num]
+        icon = state["icon_list"][num]
+        id = state["id_list"][num]
+        simpleDesc = state["simpleDesc"][num]
+        fullDesc = state["fullDesc"][num]
+        subAchievement = state["subAchievements"][num]
+        msg = f"查询到「{achievement}」：\n" + await getAchievementsIcon(icon) + f"\nhttps://www.jx3box.com/cj/view/{id}\n{simpleDesc}\n{fullDesc}\n地图：{map}\n附属成就：{subAchievement}"
+        await adventure_.finish(msg)
+    else:
+        await adventure_.finish("唔……输入的不是数字哦，取消搜索。")
