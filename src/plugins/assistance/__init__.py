@@ -243,7 +243,6 @@ async def _(bot: Bot, event: GroupMessageEvent):
             leader = leader_data["nickname"]
         people_count = len(i["book"])
         msg = msg + f"{leader}的团队：{desc}（已有{people_count}人申请）\n开团时间：{time}\n"
-        count = count + 1
         if count == 9:
             msg = msg[:-1]
             break
