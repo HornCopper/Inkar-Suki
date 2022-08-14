@@ -214,8 +214,10 @@ async def _(state: T_State, args: Message = CommandArg()):
         id_list = data["id"]
         simpleDesc = data["simpDesc"]
         fullDesc = data["Desc"]
+        point = data["point"]
         map = data["map"]
         state["map"] = map
+        state["point"] = point
         state["achievement_list"] = achievement_list
         state["icon_list"] = icon_list
         state["id_list"] = id_list
@@ -239,9 +241,10 @@ async def _(state: T_State, num: Message = Arg()):
         icon = state["icon_list"][num]
         id = state["id_list"][num]
         simpleDesc = state["simpleDesc"][num]
+        point = state["point"][num]
         fullDesc = state["fullDesc"][num]
         subAchievement = state["subAchievements"][num]
-        msg = f"查询到「{achievement}」：\n" + await getAchievementsIcon(icon) + f"\nhttps://www.jx3box.com/cj/view/{id}\n{simpleDesc}\n{fullDesc}\n地图：{map}\n附属成就：{subAchievement}"
+        msg = f"查询到「{achievement}」：\n" + await getAchievementsIcon(icon) + f"\nhttps://www.jx3box.com/cj/view/{id}\n{simpleDesc}\n{fullDesc}\n地图：{map}\n资历：{point}点\n附属成就：{subAchievement}"
         await adventure_.finish(msg)
     else:
         await adventure_.finish("唔……输入的不是数字哦，取消搜索。")
