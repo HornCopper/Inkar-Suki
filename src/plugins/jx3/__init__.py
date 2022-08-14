@@ -285,6 +285,8 @@ async def _(state: T_State, num: Message = Arg()):
         target = state["target"][num]
         level = state["level"][num]
         msg = f"查询到「{task__}」：\nhttps://www.jx3box.com/quest/view/{id}\n开始等级：{level}\n地图：{map}\n任务目标：{target}"
+        chain = await getTaskChain(id)
+        msg = msg + f"\n任务链：{chain}"
         await task_.finish(msg)
     else:
         await task_.finish("唔……输入的不是数字哦，取消搜索。")
