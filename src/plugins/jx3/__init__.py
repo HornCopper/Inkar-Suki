@@ -200,7 +200,7 @@ async def __(state: T_State, num: Message = Arg()):
     else:
         await pet_.finish("唔……输入的不是数字哦，取消搜索。")
 
-adventure_ = on_command("jx3_adventure")# 别骂了，想不出其他变量名了
+adventure_ = on_command("jx3_adventure", aliases={"成就"}, priority=5)# 别骂了，想不出其他变量名了
 @adventure_.handle()
 async def _(state: T_State, args: Message = CommandArg()):
     achievement_name = args.extract_plain_text()
