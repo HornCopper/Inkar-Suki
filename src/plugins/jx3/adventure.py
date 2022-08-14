@@ -20,6 +20,7 @@ async def getAdventure(adventure: str):
     id_list = []
     simpleDesc = []
     fullDesc = []
+    point = []
     map = []
     subAchievements = []
     for i in data:
@@ -28,6 +29,7 @@ async def getAdventure(adventure: str):
         id_list.append(i["ID"])
         simpleDesc.append(i["ShortDesc"])
         fullDesc.append(i["Desc"])
+        point.append(i["Point"])
         if i["SubAchievementList"] != None:
             SubAchievements = []
             for x in i["SubAchievementList"]:
@@ -40,7 +42,7 @@ async def getAdventure(adventure: str):
             map.append("未知")
         else:
             map.append(i["LayerName"] + i["SceneName"])
-    return {"status":200, "achievements": achievement_list, "icon": icon_list, "id": id_list, "simpDesc": simpleDesc, "Desc": fullDesc, "subAchievements": subAchievements, "map": map}
+    return {"status":200, "point": point, "achievements": achievement_list, "icon": icon_list, "id": id_list, "simpDesc": simpleDesc, "Desc": fullDesc, "subAchievements": subAchievements, "map": map}
 
 async def getAchievementsIcon(IconID: str):
     final_path = ASSETS + "/jx3/adventure/" + IconID + ".png"
