@@ -246,8 +246,13 @@ async def _(bot: Bot, event: GroupMessageEvent):
         count = count + 1
         if count == 9:
             msg = msg[:-1]
-            await opening.finish(msg)
-    await opening.finish("唔……没有找到，请检查团队描述是否一致~")
+            break
+        else:
+            continue
+    if msg:
+        await opening.finish(msg)
+    else:
+        await opening.finish("唔……没有找到任何团哦~")
 
 modify = on_command("modify", aliases = {"修改"}, priority = 5)
 @modify.handle()
