@@ -243,11 +243,13 @@ async def _(bot: Bot, event: GroupMessageEvent):
             leader = leader_data["nickname"]
         people_count = len(i["book"])
         msg = msg + f"{leader}的团队：{desc}（已有{people_count}人申请）\n开团时间：{time}\n"
-        count = count + 1
         if count == 9:
             msg = msg[:-1]
             await opening.finish(msg)
-    await opening.finish("唔……没有找到，请检查团队描述是否一致~")
+        else:
+            count = count + 1
+            continue
+    await opening.finish("唔……当前没有团哦~")
 
 modify = on_command("modify", aliases = {"修改"}, priority = 5)
 @modify.handle()
