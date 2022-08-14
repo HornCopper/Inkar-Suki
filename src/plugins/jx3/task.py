@@ -33,6 +33,12 @@ async def getTaskChain(TaskID: int):
     if len(data) <= 1:
         return "无"
     for i in data:
-        chain.append(i["name"])
+        try:
+            chain.append(i["name"])
+        except:
+            branch = []
+            for x in i["quests"]:
+                branch.append(x["name"])
+            chain.append(" & ".join(branch))
     msg = " -> ".join(chain)
     return msg
