@@ -208,7 +208,7 @@ async def _(state: T_State, args: Message = CommandArg()):
     if data["status"] == 404:
         await adventure_.finish("没有找到任何相关成就哦，请检查后重试~")
     elif data["status"] == 200:
-        achievement_list = data["achievement"]
+        achievement_list = data["achievements"]
         icon_list = data["icon"]
         subAchievements = data["subAchievements"]
         id_list = data["id"]
