@@ -210,7 +210,7 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
             if i["leader"] == qq:
                 leader = i["leadername"]
                 times = times + 1
-                pays.append(i["gkp"][1])
+                pays.append(int(i["gkp"][1]))
                 desc.append(i["desc"])
                 time__.append(i["time"])
         msg = ""
@@ -221,7 +221,10 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
             max = max + 1
             if max == 9:
                 break
-        msg = f"{leader}共开团{times}次，平均{mean}金：" + msg[:-1] + "。"
+        try:
+            msg = f"{leader}共开团{times}次，平均{mean}金：" + msg[:-1] + "。"
+        except UnboundLocalError:
+            msg = "没有查到这位团长的开团记录哦~"
         await get_gkp.finish(msg)
     else:
         await get_gkp.finish("请使用纯数字的QQ哦~")
