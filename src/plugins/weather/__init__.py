@@ -12,9 +12,3 @@ async def _(args: Message = CommandArg()):
     city = args.extract_plain_text()
     msg = await getWeatherByCity(city)
     await weather.finish(msg)
-
-foreign = on_command("")
-@foreign.handle()
-async def _():
-    city = args.extract_plain_text()
-    
