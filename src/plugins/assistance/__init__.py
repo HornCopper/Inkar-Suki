@@ -21,12 +21,12 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     final_path = DATA + "/" + str(event.group_id) + "/opening.json"
     now = json.loads(read(final_path))
     for i in now:
-        if now["desc"] == useful_info:
+        if i["desc"] == useful_info:
             await open_.finish("要不换一个描述？这个描述已经有人用了哦~")
     time_ = int(round(time.time() * 1000))
     from nonebot.log import logger
     logger.info(time_)
-    new = {"desc":useful_info, "leader": str(event.user_id), "book":[], "gkp":[], "special":[], "time": time_}
+    new = {"desc":useful_info, "leader": str(event.user_id), "book":[], "gkp":["0","0"], "special":["无"], "time": time_}
     now.append(new)
     write(final_path, json.dumps(now, ensure_ascii = False))
     await open_.finish(f"已开启预定！\n使用以下命令即可预定：\n+预定 <团队描述> <T/奶/dps/老板> <ID> [备注(可不写)]\n此团的团队描述为：\n{useful_info}")
@@ -164,7 +164,7 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
     now = json.loads(read(final_path))
     for i in now:
         if i["desc"] == data and i["leader"] != str(event.user_id):
-            await gkp.finish("唔……只有团长才能操作GKP哦~")
+            await close_.finish("唔……只有团长才能操作GKP哦~")
     msg = ""
     archived = False
     for i in now:
@@ -177,7 +177,7 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
             leader_name = leader_data["card"]
             if leader_name == "":
                 leader_name = leader_data["nickname"]
-            msg = f"{leader_name}的团队（{data}），记录如下：\n总金团：{all}金，人均工资：{one}\n开团时间：" + convert_time(time_) + "\n特殊掉落："
+            msg = f"{leader_name}的团队（{data}），记录如下：\n总金团：{all}金，人均工资：{one}金\n开团时间：" + convert_time(time_) + "\n特殊掉落："
             for a in i["special"]:
                 msg = msg + a + "、"
             archive = {"leader":leader, "leadername": leader_name, "desc":data, "time": time_, "special": i["special"], "gkp": i["gkp"]}
