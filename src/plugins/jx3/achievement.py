@@ -9,7 +9,6 @@ from xpinyin import Pinyin
 TOOLS = nonebot.get_driver().config.tools_path
 sys.path.append(TOOLS)
 ASSETS = TOOLS[:-5] + "assets"
-PLUGINS = TOOLS[:-5] + "plugins"
 from utils import get_api, get_content, get_status, checknumber
 
 async def get_achievement(Achievement: str):
