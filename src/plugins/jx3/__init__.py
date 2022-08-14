@@ -207,25 +207,26 @@ async def _(state: T_State, args: Message = CommandArg()):
     data = await getAdventure(achievement_name)
     if data["status"] == 404:
         await adventure_.finish("没有找到任何相关成就哦，请检查后重试~")
-    achievement_list = data["achievement_list"]
-    icon_list = data["icon_list"]
-    subAchievements = data["subAchievements"]
-    id_list = data["id_list"]
-    simpleDesc = data["simpleDesc"]
-    fullDesc = data["fullDesc"]
-    map = data["map"]
-    state["map"] = map
-    state["achievement_list"] = achievement_list
-    state["icon_list"] = icon_list
-    state["id_list"] = id_list
-    state["simpleDesc"] = simpleDesc
-    state["fullDesc"] = fullDesc
-    state["subAchievements"] = subAchievements
-    for i in range(len(achievement_list)):
-        msg = msg + f"{i}." + achievement_list[i] + "\n"
-    msg = msg[:-1]
-    await adventure_.send(msg)
-    return
+    elif data["status"] == 200:
+        achievement_list = data["achievement_list"]
+        icon_list = data["icon_list"]
+        subAchievements = data["subAchievements"]
+        id_list = data["id_list"]
+        simpleDesc = data["simpleDesc"]
+        fullDesc = data["fullDesc"]
+        map = data["map"]
+        state["map"] = map
+        state["achievement_list"] = achievement_list
+        state["icon_list"] = icon_list
+        state["id_list"] = id_list
+        state["simpleDesc"] = simpleDesc
+        state["fullDesc"] = fullDesc
+        state["subAchievements"] = subAchievements
+        for i in range(len(achievement_list)):
+            msg = msg + f"{i}." + achievement_list[i] + "\n"
+        msg = msg[:-1]
+        await adventure_.send(msg)
+        return
 
 @adventure_.got("num", prompt = "发送序号以搜索，发送其他内容则取消搜索。")
 async def _(state: T_State, num: Message = Arg()):
