@@ -21,6 +21,7 @@ try:
     os.mkdir("./src/assets/jx3/maps")
     os.mkdir("./src/assets/jx3/achievement")
     os.mkdir("./src/assets/jx3/talents")
+    os.mkdir("./src/assets/jx3/adventure")
 except FileExistsError:
     print("检测到`assets`文件夹已创建，已自动补全所有需要的文件夹。")
 def write(file, something):
