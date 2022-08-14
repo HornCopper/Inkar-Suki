@@ -222,6 +222,7 @@ async def _(state: T_State, args: Message = CommandArg()):
         state["simpleDesc"] = simpleDesc
         state["fullDesc"] = fullDesc
         state["subAchievements"] = subAchievements
+        msg = ""
         for i in range(len(achievement_list)):
             msg = msg + f"{i}." + achievement_list[i] + "\n"
         msg = msg[:-1]
