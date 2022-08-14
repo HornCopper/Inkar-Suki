@@ -210,7 +210,7 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
             if i["leader"] == qq:
                 leader = i["leadername"]
                 times = times + 1
-                pays.append(i["gkp"][1])
+                pays.append(int(i["gkp"][1]))
                 desc.append(i["desc"])
                 time__.append(i["time"])
         msg = ""
