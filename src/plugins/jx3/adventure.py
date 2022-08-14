@@ -45,11 +45,11 @@ async def getAdventure(adventure: str):
 async def getAchievementsIcon(IconID: str):
     final_path = ASSETS + "/jx3/adventure/" + IconID + ".png"
     if os.path.exists(final_path):
-        return MessageSegment.image(Path(final_path).as_usi())
+        return MessageSegment.image(Path(final_path).as_uri())
     else:
         image_url = f"https://icon.jx3box.com/icon/{IconID}.png"
         cache = open(ASSETS + "/jx3/adventure/" + IconID + ".png", mode = "wb")
         cache.write(await get_content(image_url))
         cache.close()
-        return MessageSegment.image(Path(final_path).as_usi())
+        return MessageSegment.image(Path(final_path).as_uri())
         
