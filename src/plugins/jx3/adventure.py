@@ -32,8 +32,8 @@ async def getAdventure(adventure: str):
             SubAchievements = []
             for x in i["SubAchievementList"]:
                 SubAchievements.append(x["Name"])
-                subAchievementsMsg = "、".join(SubAchievements)
-                subAchievements.append(subAchievementsMsg)
+            subAchievementsMsg = "、".join(SubAchievements)
+            subAchievements.append(subAchievementsMsg)
         else:
             subAchievements.append("无")
         if i["LayerName"] == None or i["SceneName"] == None:
