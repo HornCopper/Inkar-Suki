@@ -82,6 +82,7 @@ async def judgeWhetherPlayer(usercode: int=None, nickname: str=None):
         info = await get_api(api + f"user/info?user={nickname}&withsonginfo=true",headers=headers)
     elif usercode:
         info = await get_api(api + f"user/info?usercode={usercode}&withsonginfo=true",headers=headers)
+    data = info
     if data["status"] == 0:
         name = data["content"]["account_info"]["name"]
         code = data["content"]["account_info"]["code"]
