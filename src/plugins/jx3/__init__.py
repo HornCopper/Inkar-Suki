@@ -290,17 +290,3 @@ async def _(state: T_State, num: Message = Arg()):
         await task_.finish(msg)
     else:
         await task_.finish("唔……输入的不是数字哦，取消搜索。")
-
-from nonebot.internal.driver.model import Request
-from websockets.legacy.client import WebSocketClientProtocol
-from nonebot.drivers.websockets import WebSocket
-import websockets
-
-class JX3API_RECV():
-    def __init__(self):
-        self.wss_url = "wss://socket.nicemoe.cn"
-    async def _(self):
-        async with websockets.connect(self.wss_url) as websocket:
-            while True:
-				tmp = await websocket.recv()
-                print(tmp)
