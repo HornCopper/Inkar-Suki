@@ -142,8 +142,9 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     if len(data) < 2:
         await special.finish("参数不对哦！至少有2个参数，具体请查看帮助文件~")
     for i in now:
-        if i["desc"] == desc and i["leader"] != str(event.user_id):
-            await gkp.finish("唔……只有团长才能操作GKP哦~")
+        if i["desc"] == data[0]:
+            if i["leader"] != str(event.user_id):
+                await special.finish("唔……只有团长才能操作GKP哦~")
     desc = data[0]
     data.remove(desc)
     special_ = data
@@ -217,7 +218,7 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
         max = 0
         mean = np.mean(pays)
         for i in range(times):
-            msg = f"\n{i}.{desc[i]}({convert_time(time__[i])})：工资{pays[i]}金；"
+            msg = msg + f"\n{i}.{desc[i]}({convert_time(time__[i])})：工资{pays[i]}金；"
             max = max + 1
             if max == 9:
                 break
