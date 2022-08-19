@@ -1,20 +1,29 @@
 import sys
 import nonebot
+import json
+
+from nonebot import get_driver
 from nonebot import on_command
 from nonebot.adapters import Message
 from nonebot.params import CommandArg, Arg
 from nonebot.adapters.onebot.v11 import MessageSegment as ms
 from nonebot.adapters.onebot.v11 import Bot, GroupMessageEvent
 from nonebot.typing import T_State
+
 TOOLS = nonebot.get_driver().config.tools_path
 sys.path.append(TOOLS)
-from .jx3 import *
+
 from utils import checknumber
+from file import read, write
+
+from .jx3 import *
 from .skilldatalib import getAllSkillsInfo, getSingleSkill, getSingleTalent
 from .achievement import getAchievementFinishMethod
 from .adventure import getAdventure, getAchievementsIcon
 from .pet import get_pet
 from .task import getTask, getTaskChain
+from .jx3apiws import ws_client
+from .jx3_event import RecvEvent
 
 horse = on_command("jx3_horse",aliases={"马"},priority=5)
 @horse.handle()
@@ -290,3 +299,43 @@ async def _(state: T_State, num: Message = Arg()):
         await task_.finish(msg)
     else:
         await task_.finish("唔……输入的不是数字哦，取消搜索。")
+
+subscribe = on_command("jx3_subscribe", aliases={"订阅"}, priority=5)
+@subscribe.handle()
+async def _(event: GroupMessageEvent):
+    now = json.loads(read(TOOLS + "/subscribe.json"))
+    if str(event.group_id) not in now:
+        now.append(str(event.group_id))
+        write(TOOLS + "/subscribe.json", json.dumps(now))
+        await subscribe.finish("已开启本群的订阅！当收到事件时会自动推送。")
+    else:
+        await subscribe.finish("已经订阅了，不能重复订阅哦~")
+
+unsubscribe = on_command("jx3_unsubscribe", aliases={"退订"}, priority=5)
+@unsubscribe.handle()
+async def _(event: GroupMessageEvent):
+    now = json.loads(read(TOOLS + "/subscribe.json"))
+    if str(event.group_id) not in now:
+        await unsubscribe.finish("尚未订阅，无法退订哦~")
+    else:
+        now.remove(str(event.group_id))
+        write(TOOLS + "/unubscribe.json", json.dumps(now))
+        await unsubscribe.finish("退订成功！不会再收到订阅了，需要的话请使用命令重新订阅~")
+
+driver = get_driver()
+
+@driver.on_startup
+async def _():
+    logger.info("Connecting to JX3API...Please wait.")
+    await ws_client.init()
+    logger.info("Connected to JX3API successfully.")
+
+async def _(bot: Bot, event: RecvEvent):
+    message = event.get_message()
+    groups = json.loads(read(TOOLS + "/subscribe.json"))
+    for i in groups:
+        try:
+            await bot.call_api("send_group_msg", group_id = int(i), message = message)
+            return
+        except:
+            logger.info(f"向群({i})推送失败，可能是因为风控、禁言或者未加入该群。")
