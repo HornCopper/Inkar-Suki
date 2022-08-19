@@ -1,14 +1,19 @@
-import os, json
+import os
+import json
+
 def space():
     print("----------------------分割线----------------------")
+
 try:
     os.mkdir("./src/data")
 except FileExistsError:
     print("检测到`data`文件夹已创建。")
+
 try:
     os.mkdir("./src/cache")
 except FileExistsError:
     print("检测到`cache`文件夹已创建。")
+
 try:
     os.mkdir("./src/assets")
     os.mkdir("./src/assets/arcaea")
@@ -24,10 +29,13 @@ try:
     os.mkdir("./src/assets/jx3/adventure")
 except FileExistsError:
     print("检测到`assets`文件夹已创建，已自动补全所有需要的文件夹。")
+
 def write(file, something):
     with open(f"./src/tools/{file}",mode="w") as cache:
         cache.write(something)
+
 json_ = {}
+
 if __name__ == "__main__":
     print("模块`github`需要使用`web_path`，如果您填写的值为`/a`，那么通过`http://127.0.0.1:2333/a`可传入Webhook，但内网显然不行，因此您需要手动配置Nginx或Apache2进行反向代理，代理地址为`http://127.0.0.1:2333/a`。")
     print("此处提供Nginx配置文件写法（当填入值为`/a`时：）")
@@ -80,15 +88,33 @@ if __name__ == "__main__":
     print("Token也是必要的，没有固定格式，请输入AUA开发者给予你的Token。")
     aua_token = input("请输入Token：")
     json_["aua_token"] = aua_token
+    space()
+    print("模块`jx3`需要使用JX3API的Socket API，请查询`https://www.jx3api.com`，获取`Socket API`地址并填写。")
+    print("格式为：`wss://xxxx.xxxx.xxx`")
+    jx3api_link = input("请输入JX3API的Socket API地址：")
+    json_["jx3api_link"] = jx3api_link
+    space()
+    print("Token并非必要，但推荐填写，需要找JX3API购买。")
+    print("如果您没有Token，请输入数字`0`。")
+    jx3api_token = input("请输入Token：")
+    if jx3api_token.isdecimal():
+        if int(jx3api_token) == 0:
+            json_["jx3api_token"] = None
+        else:
+            json_["jx3api_token"] = jx3api_token
+    else:
+        json_["jx3api_token"] = jx3api_token
+    space()
     final = json.dumps(json_)
     write("config.json",final)
     space()
     def clear():
-        clean = input("是否需要重置ban.json、nnl.json和permission三个json文件，若初次使用请填写y(y/n)：")
+        clean = input("是否需要重置ban.json、nnl.json、permission.json、subscribe.json？若初次使用请填写y(y/n)：")
         if clean == "y":
             write("ban.json","[]")
             write("permission.json",json.dumps(permission))
             write("nnl.json","[]")
+            write("subscribe.json","[]")
             return
         elif clean == "n":
             return
@@ -96,4 +122,4 @@ if __name__ == "__main__":
             print("输出错误，请重试。")
             clear()
     clear()
-    space()    
+    space()

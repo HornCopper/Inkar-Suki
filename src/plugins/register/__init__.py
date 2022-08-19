@@ -2,14 +2,17 @@ import json
 import sys
 import nonebot
 import os
+
 from nonebot import on_command, on_message
 from nonebot.adapters.onebot.v11 import Event, Bot, GroupMessageEvent
 from nonebot.matcher import Matcher
 from nonebot.params import CommandArg
 from nonebot.log import logger
+
 TOOLS = nonebot.get_driver().config.tools_path
 sys.path.append(str(TOOLS))
 DATA = TOOLS[:-5] + "data"
+
 from permission import checker, error
 from file import read, write
 from config import Config
@@ -76,7 +79,12 @@ async def _(event: Event):
             for a in nnl:
                 if a == i:
                     nnl.remove(a)
-            write(TOOLS + "/nnl.json",nnl)
+            subscribe = json.loads(read(TOOLS + "/subscribe.json"))
+            for a in subscribe:
+                if a == i:
+                    subscribe.remove(a)
+            write(TOOLS + "/nnl.json", nnl)
+            write(TOOLS + "/subscribe.json", subscribe)
             os.rmdir(DATA + "/"+i)
         except:
             logger.info("删除文件夹" + i + "失败，未知错误。")
@@ -105,7 +113,12 @@ async def _(bot: Bot, event: GroupMessageEvent):
             for a in nnl:
                 if a == group:
                     nnl.remove(a)
-            write(TOOLS + "/nnl.json",nnl)
+            subscribe = json.loads(read(TOOLS + "/subscribe.json"))
+            for a in subscribe:
+                if a == group:
+                    subscribe.remove(a)
+            write(TOOLS + "/nnl.json", nnl)
+            write(TOOLS + "/subscribe.json", subscribe)
             os.rmdir(DATA + "/" + group)
         except:
             logger.info("删除文件夹"+group+"失败，未知错误。")
@@ -134,7 +147,12 @@ async def _(event: GroupMessageEvent):
             for a in nnl:
                 if a == group:
                     nnl.remove(a)
-            write(TOOLS + "/nnl.json",nnl)
+            subscribe = json.loads(read(TOOLS + "/subscribe.json"))
+            for a in subscribe:
+                if a == group:
+                    subscribe.remove(a)
+            write(TOOLS + "/nnl.json", nnl)
+            write(TOOLS + "/subscribe.json", subscribe)
             os.rmdir(DATA + "/" + group)
         except:
             logger.info("删除文件夹"+group+"失败，未知错误。")
@@ -161,7 +179,12 @@ async def _(event: GroupMessageEvent):
             for a in nnl:
                 if a == i:
                     nnl.remove(a)
+            subscribe = json.loads(read(TOOLS + "/subscribe.json"))
+            for a in subscribe:
+                if a == i:
+                    subscribe.remove(a)
             write(TOOLS + "/nnl.json",nnl)
+            write(TOOLS + "/subscribe.json", subscribe)
             os.rmdir(DATA + "/" + i)
         except:
             logger.info("删除文件夹" + i + "失败，未知错误。")
