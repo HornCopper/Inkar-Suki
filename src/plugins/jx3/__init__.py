@@ -169,7 +169,7 @@ async def _(args: Message = CommandArg()):
         msg = await getSingleTalent(kungfu, talent_)
         await talent.finish(msg)
 
-pet_ = on_command("get_pet", aliases={"宠物"}, priority=5)
+pet_ = on_command("jx3_pet", aliases={"宠物"}, priority=5)
 @pet_.handle()
 async def _(state: T_State, args: Message = CommandArg()):
     data = args.extract_plain_text()
@@ -336,6 +336,5 @@ async def _(bot: Bot, event: RecvEvent):
     for i in groups:
         try:
             await bot.call_api("send_group_msg", group_id = int(i), message = message)
-            return
         except:
             logger.info(f"向群({i})推送失败，可能是因为风控、禁言或者未加入该群。")
