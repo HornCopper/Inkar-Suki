@@ -3,7 +3,7 @@ import nonebot
 import json
 
 from nonebot import get_driver
-from nonebot import on_command
+from nonebot import on, on_command
 from nonebot.adapters import Message
 from nonebot.params import CommandArg, Arg
 from nonebot.adapters.onebot.v11 import MessageSegment as ms
@@ -330,6 +330,9 @@ async def _():
     await ws_client.init()
     logger.info("Connected to JX3API successfully.")
 
+ws_recev = on(type="WsRecv", priority=5, block=False)
+
+@ws_recev.handle()
 async def _(bot: Bot, event: RecvEvent):
     message = event.get_message()
     groups = json.loads(read(TOOLS + "/subscribe.json"))

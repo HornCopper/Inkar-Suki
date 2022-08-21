@@ -155,9 +155,9 @@ class ServerStatusEvent(RecvEvent):
     def get_message(self) -> Message:
         time_now = datetime.now().strftime("%H时%M分")
         if self.status:
-            return Message(f"时间：{time_now}\n[{self.server}] 开服啦！")
+            return Message(f"现在是{time_now}，并且{self.server}已经开服了哦~")
         else:
-            return Message(f"时间{time_now}\n[{self.server}]维护惹。")
+            return Message(f"现在是{time_now}，但是{self.server}已经维护了哦~")
 
 
 @EventRister.rister(action=2002)
@@ -183,7 +183,7 @@ class NewsRecvEvent(RecvEvent):
     @overrides(RecvEvent)
     def get_message(self) -> Message:
         return Message(
-            f"[{self.type}]来惹\n标题：{self.title}\n链接：{self.url}\n日期：{self.date}"
+            f"[{self.type}]来啦！\n标题：{self.title}\n链接：{self.url}\n日期：{self.date}"
         )
 
 
