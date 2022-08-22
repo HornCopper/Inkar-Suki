@@ -1,5 +1,6 @@
 import sys
 import nonebot
+import time
 
 TOOLS = nonebot.get_driver().config.tools_path
 sys.path.append(TOOLS)
@@ -15,13 +16,14 @@ async def adventure____(id: str, server: str = "幽月轮"):
     node = []
     for i in data["data"]:
         if i["time"] == 0:
-            time = "过去太久了或者没有记录到哦~"
+            time_ = "过去太久了或者没有记录到哦~"
         else:
-            time = convert_time(i["time"])
+            timeArray = time.localtime(i["time"])
+            time_ = time.strftime("%Y年%m月%d日%H:%M:%S", timeArray)
         server = i["server"]
         name = i["serendipity"]
         id = i["name"]
-        node.append(nodetemp("奇遇查询", Config.bot[0], f"服务器：{server}\n角色：{id}\n奇遇：{name}\n时间：{time}"))
+        node.append(nodetemp("奇遇查询", Config.bot[0], f"服务器：{server}\n角色：{id}\n奇遇：{name}\n时间：{time_}"))
     return node
 
 async def firework(id: str, server: str = "幽月轮"):
