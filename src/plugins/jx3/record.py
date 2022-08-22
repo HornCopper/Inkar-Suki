@@ -36,7 +36,8 @@ async def firework(id: str, server: str = "幽月轮"):
         if i["time"] == 0:
             time = "过去太久了或者没有记录到哦~"
         else:
-            time = convert_time(i["time"])
+            timeArray = time.localtime(i["time"])
+            time_ = time.strftime("%Y年%m月%d日%H:%M:%S", timeArray)
         server = i["server"]
         firework_name = i["name"]
         map = i["map"]
