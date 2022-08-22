@@ -1,13 +1,12 @@
 import sys
 import nonebot
-from pathlib import Path
-from nonebot.adapters.onebot.v11 import MessageSegment
 import re
+
 TOOLS = nonebot.get_driver().config.tools_path
 sys.path.append(TOOLS)
 ASSETS = TOOLS[:-5] + "assets"
 PLUGINS = TOOLS[:-5] + "plugins"
-from utils import get_api, get_content, get_status, checknumber
+from utils import get_api
 
 '''
 状态码：
