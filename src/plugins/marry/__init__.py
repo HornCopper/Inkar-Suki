@@ -121,5 +121,6 @@ async def _(event: GroupMessageEvent):
     for i in data:
         if i["husband"] == qq and i["confirm"] == "No":
             data.remove(i)
+            write(DATA + "/" + str(event.group_id) + "/marry.json", json.dumps(data))
             await cancel_marry.finish("已取消求婚！")
     await cancel_marry.finish("没有可以取消的求婚哦~")
