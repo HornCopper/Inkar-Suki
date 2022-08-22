@@ -4,7 +4,7 @@ import nonebot
 from nonebot.adapters.onebot.v11 import MessageSegment as ms
 from nonebot import on_command
 from nonebot.adapters import Message
-from nonebot.adapters.onebot.v11 import GroupMessageEvent
+from nonebot.adapters.onebot.v11 import GroupMessageEvent, Bot
 from nonebot.params import CommandArg
 from .marry import already_married
 TOOLS = nonebot.get_driver().config.tools_path
@@ -91,7 +91,7 @@ async def ____(event: GroupMessageEvent):
 marry = on_command("my_marry",priority=5)
 
 @marry.handle()
-async def _____(event: GroupMessageEvent):
+async def _____(bot: Bot, event: GroupMessageEvent):
     self_id = str(event.user_id)
     nowlist = json.loads(read(DATA+"/"+str(event.group_id)+"/marry.json"))
     role = ""
@@ -111,3 +111,15 @@ async def _____(event: GroupMessageEvent):
     else:
         msg = ms.at(self_id) + " 没有查到呢，本群你应该还没结婚吧！"
     await marry.finish(msg)
+
+cancel_marry = on_command("cancel_marry", priority=5)
+@cancel_marry.handle()
+async def _(event: GroupMessageEvent):
+    qq = event.user_id
+    qq = str(qq)
+    data = json.loads(read(DATA + "/" + str(event.group_id) + "/marry.json"))
+    for i in data:
+        if i["husband"] == qq and i["confirm"] == "No":
+            data.remove(i)
+            await cancel_marry.finish("已取消求婚！")
+    await cancel_marry.finish("没有可以取消的求婚哦~")

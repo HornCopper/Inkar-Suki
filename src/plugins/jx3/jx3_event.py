@@ -177,13 +177,13 @@ class NewsRecvEvent(RecvEvent):
 
     @property
     def log(self) -> str:
-        log = f"[{self.type}]事件：{self.title}"
+        log = f"{self.type}事件：{self.title}"
         return log
 
     @overrides(RecvEvent)
     def get_message(self) -> Message:
         return Message(
-            f"[{self.type}]来啦！\n标题：{self.title}\n链接：{self.url}\n日期：{self.date}"
+            f"{self.type}来啦！\n标题：{self.title}\n链接：{self.url}\n日期：{self.date}"
         )
 
 
