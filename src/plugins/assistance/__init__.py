@@ -196,7 +196,7 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
     else:
         await close_.finish("唔……没有找到，请检查团队描述是否一致~")
 
-get_gkp = on_command("get_gkp", aliases = {"记录"}, priority = 5)
+get_gkp = on_command("get_gkp", aliases = {"团长"}, priority = 5)
 @get_gkp.handle()
 async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
     qq = args.extract_plain_text()
