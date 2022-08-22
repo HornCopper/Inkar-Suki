@@ -1,8 +1,6 @@
-import os
 import sys
 import nonebot
-from pathlib import Path
-from nonebot.adapters.onebot.v11 import MessageSegment
+
 TOOLS = nonebot.get_driver().config.tools_path
 sys.path.append(TOOLS)
 ASSETS = TOOLS[:-5] + "assets"
