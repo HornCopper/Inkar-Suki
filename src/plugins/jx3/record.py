@@ -34,7 +34,7 @@ async def firework(id: str, server: str = "幽月轮"):
     node = []
     for i in data["data"]:
         if i["time"] == 0:
-            time = "过去太久了或者没有记录到哦~"
+            time_ = "过去太久了或者没有记录到哦~"
         else:
             timeArray = time.localtime(i["time"])
             time_ = time.strftime("%Y年%m月%d日%H:%M:%S", timeArray)
@@ -43,5 +43,5 @@ async def firework(id: str, server: str = "幽月轮"):
         map = i["map"]
         sender = i["sender"]
         receiver = i["recipient"]
-        node.append(nodetemp("烟花查询", Config.bot[0], f"服务器：{server}\n时间：{time}\n{sender}在{map}对{receiver}使用了传说中的{firework_name}。"))
+        node.append(nodetemp("烟花查询", Config.bot[0], f"服务器：{server}\n时间：{time_}\n{sender}在{map}对{receiver}使用了传说中的{firework_name}。"))
     return node
