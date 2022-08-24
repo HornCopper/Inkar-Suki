@@ -144,7 +144,7 @@ async def heighten_(name):
     full_link = "https://www.jx3api.com/app/heighten?name=" + name
     data = await get_api(full_link)
     if data["code"] == 401:
-        return "此心法不存在哦~请检查后重试。"
+        return data["msg"]
     else:
         info = data["data"]
         logger.info(info)
@@ -168,9 +168,9 @@ async def price_(name):
         each_srv = info["data"]
         def zsdpt(zone, server, date, price, type_):
             if type_ == "收入":
-                return f"{zone}-{server}\n{date}：{price}金收。"
+                return f"{zone}-{server}\n{date}：￥{price}收。"
             else:
-                return f"{zone}-{server}\n{date}：{price}金出。"
+                return f"{zone}-{server}\n{date}：￥{price}出。"
         for i in each_srv[0]:
             if len(i) == 0:
                 continue
