@@ -2,10 +2,12 @@ import nonebot
 import json
 import sys
 import time
+
+from nonebot.typing import T_State
 from nonebot import on_command
 from nonebot.adapters.onebot.v11 import GroupMessageEvent, Bot
 from nonebot.adapters import Message
-from nonebot.params import CommandArg
+from nonebot.params import CommandArg, Arg
 import numpy as np
 TOOLS = nonebot.get_driver().config.tools_path
 sys.path.append(TOOLS)
@@ -198,22 +200,30 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
 
 get_gkp = on_command("get_gkp", aliases = {"团长"}, priority = 5)
 @get_gkp.handle()
-async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
+async def _(state: T_State, bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
     qq = args.extract_plain_text()
     if checknumber(qq):
         final_path = DATA + "/" + str(event.group_id) + "/record.json"
         data = json.loads(read(final_path))
         times = 0
+        max = 0
+        gkp = []
         pays = []
+        special_ = []
         desc = []
         time__ = []
         for i in data:
             if i["leader"] == qq:
                 leader = i["leadername"]
                 times = times + 1
+                special_.append("、".join(i["special"]))
+                gkp.append(int(i["gkp"][0]))
                 pays.append(int(i["gkp"][1]))
                 desc.append(i["desc"])
                 time__.append(i["time"])
+                max = max + 1
+            if max == 9:
+                break
         msg = ""
         max = 0
         mean = np.mean(pays)
@@ -223,12 +233,37 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
             if max == 9:
                 break
         try:
+            state["leader"] = leader
+            state["time"] = time__
+            state["desc"] = desc
+            state["pays"] = pays
+            state["gkp"] = gkp
+            state["special"] = special_
             msg = f"{leader}共开团{times}次，平均{mean}金：" + msg[:-1] + "。"
         except UnboundLocalError:
             msg = "没有查到这位团长的开团记录哦~"
-        await get_gkp.finish(msg)
+        await get_gkp.send(msg)
+        return
     else:
         await get_gkp.finish("请使用纯数字的QQ哦~")
+        
+@get_gkp.got("num", prompt = "发送序号可以获取该次的详细信息，其他内容则无视。")
+async def _(state: T_State, num: Message = Arg()):
+    num = num.extract_plain_text()
+    if checknumber(num) == False:
+        return
+    num = int(num)
+    if num not in [0,1,2,3,4,5,6,7,8,9]:
+        await get_gkp.finish("只能查找最近10次的记录哦~")
+    else:
+        leader = state["leader"]
+        time__ = state["time"]
+        desc = state["desc"]
+        pays = state["pays"]
+        gkp = state["gkp"]
+        special_ = state["special"]
+        msg = f"团长：{leader}\n团队描述：{desc[num]}\n开团时间：{convert_time(time__[num])}\n总金团：{gkp[num]}金，人均工资：{pays[num]}金\n特殊掉落：{special_[num]}"
+        await get_gkp.finish(msg)
 
 opening = on_command("opening", aliases = {"团列表"}, priority = 5)
 @opening.handle()
