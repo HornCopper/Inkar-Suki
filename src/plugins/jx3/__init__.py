@@ -324,6 +324,12 @@ async def _(event: GroupMessageEvent):
         write(TOOLS + "/unubscribe.json", json.dumps(now))
         await unsubscribe.finish("退订成功！不会再收到订阅了，需要的话请使用命令重新订阅~")
 
+tiangou = on_command("jx3_tiangou", aliases={"舔狗"}, priority=5)
+@tiangou.handle()
+async def _(event: GroupMessageEvent):
+    data = await tiangou_()
+    await tiangou.finish(f"舔狗日志：\n{data}")
+
 driver = get_driver()
 
 @driver.on_startup
