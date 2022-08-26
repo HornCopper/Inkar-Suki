@@ -25,7 +25,6 @@ from .pet import get_pet
 from .task import getTask, getTaskChain
 from .jx3apiws import ws_client
 from .jx3_event import RecvEvent
-from .record import adventure____, firework
 
 horse = on_command("jx3_horse",aliases={"马"},priority=5)
 @horse.handle()
