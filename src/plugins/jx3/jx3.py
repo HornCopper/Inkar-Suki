@@ -198,3 +198,9 @@ async def demon_(name):
         _7881 = lastest["7881"]
         date = lastest["date"]
         return f"查到区服{name}{date}的金价信息：\n万宝楼：{wbl}\n贴吧：{tb}\nDD373：{dd}\nUU898：{uu}\n5173：{_5173}\n7881：{_7881}"
+
+async def tiangou_():
+    full_link = "https://www.jx3api.com/transmit/random"
+    data = await get_api(full_link)
+    text = data["data"]["text"]
+    return text
