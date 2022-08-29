@@ -10,6 +10,11 @@ except FileExistsError:
     print("检测到`data`文件夹已创建。")
 
 try:
+    os.mkdir("./src/user")
+except FileExistsError:
+    print("检测到`user`文件夹已创建。")
+
+try:
     os.mkdir("./src/cache")
 except FileExistsError:
     print("检测到`cache`文件夹已创建。")
