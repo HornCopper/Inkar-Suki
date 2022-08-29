@@ -148,15 +148,15 @@ async def _(args: Message = CommandArg()):
         await skill.finish("此心法不存在哦，请检查后重试~")
     await skill.finish(msg)
 
-adventure = on_command("jx3_achievement",aliases={"奇遇"},priority=5)
-@adventure.handle()
+adventure_____ = on_command("jx3_achievement",aliases={"奇遇"},priority=5)
+@adventure_____.handle()
 async def _(args: Message = CommandArg()):
     adventure_name = args.extract_plain_text()
     if adventure_name == False:
-        await adventure.finish("没有输入奇遇名称，没办法帮你找啦！")
+        await adventure_____.finish("没有输入奇遇名称，没办法帮你找啦！")
     else:
         msg = await getAchievementFinishMethod(adventure_name)
-        await adventure.finish(msg)
+        await adventure_____.finish(msg)
 
 talent = on_command("jx3_talent",aliases={"奇穴"},priority=5)
 @talent.handle()
