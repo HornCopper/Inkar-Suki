@@ -321,7 +321,7 @@ async def _(event: GroupMessageEvent):
         await unsubscribe.finish("尚未订阅，无法退订哦~")
     else:
         now.remove(str(event.group_id))
-        write(TOOLS + "/unubscribe.json", json.dumps(now))
+        write(TOOLS + "/subscribe.json", json.dumps(now))
         await unsubscribe.finish("退订成功！不会再收到订阅了，需要的话请使用命令重新订阅~")
 
 tiangou = on_command("jx3_tiangou", aliases={"舔狗"}, priority=5)
