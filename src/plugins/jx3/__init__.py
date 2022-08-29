@@ -147,15 +147,15 @@ async def _(args: Message = CommandArg()):
         await skill.finish("此心法不存在哦，请检查后重试~")
     await skill.finish(msg)
 
-adventure = on_command("jx3_achievement",aliases={"奇遇"},priority=5)
-@adventure.handle()
+adventure_____ = on_command("jx3_achievement",aliases={"奇遇"},priority=5)
+@adventure_____.handle()
 async def _(args: Message = CommandArg()):
     adventure_name = args.extract_plain_text()
     if adventure_name == False:
-        await adventure.finish("没有输入奇遇名称，没办法帮你找啦！")
+        await adventure_____.finish("没有输入奇遇名称，没办法帮你找啦！")
     else:
         msg = await getAchievementFinishMethod(adventure_name)
-        await adventure.finish(msg)
+        await adventure_____.finish(msg)
 
 talent = on_command("jx3_talent",aliases={"奇穴"},priority=5)
 @talent.handle()
@@ -328,6 +328,28 @@ tiangou = on_command("jx3_tiangou", aliases={"舔狗"}, priority=5)
 async def _(event: GroupMessageEvent):
     data = await tiangou_()
     await tiangou.finish(f"舔狗日志：\n{data}")
+
+record_ = on_command("jx3_record", aliases={"记录"}, priority=5)
+@record_.handle()
+async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
+    data = args.extract_plain_text().split(" ")
+    if len(data) != 3:
+        await record_.finish("唔……参数不对哦，只能有3个参数，分别为类型（烟花或者奇遇）、所在服务器、玩家昵称。")
+    else:
+        type_ = data[0]
+        if type_ not in ["奇遇","烟花"]:
+            await record_.finish("没有这个类型哦，只能是奇遇或者烟花。")
+        server = data[1]
+        id = data[2]
+        if type_ == "奇遇":
+            node = await adventure____(id, server)
+        else:
+            node = await firework(id, server)
+        if len(node) == 0:
+            await record_.finish(f"没有查到该玩家的{type_}记录哦~")
+        else:
+            await bot.call_api("send_group_forward_msg", group_id = event.group_id, messages = node)
+
 
 driver = get_driver()
 
