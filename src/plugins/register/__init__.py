@@ -128,7 +128,7 @@ async def _(bot: Bot, event: GroupMessageEvent):
 cleardata = on_command("cleardata",priority=5)
 @cleardata.handle()
 async def _(event: GroupMessageEvent):
-    if checker(str(event.user_id),9):
+    if checker(str(event.user_id),9) == False:
         await cleardata.finish(error(9))
     groups = os.listdir(DATA)
     group = str(event.group_id)
@@ -161,7 +161,7 @@ async def _(event: GroupMessageEvent):
 clear = on_command("clear",priority=5)
 @clear.handle()
 async def _(event: GroupMessageEvent):
-    if checker(str(event.user_id),10):
+    if checker(str(event.user_id),10) == False:
         await clear.finish(error(10))
     groups = os.listdir(DATA)
     for i in groups:
