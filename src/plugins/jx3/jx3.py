@@ -212,6 +212,8 @@ async def tiangou_():
 
 async def recruit_(server: str):
     token = Config.jx3api_recruittoken
+    if token == None:
+        return "Bot尚未填写Token，请联系Bot主人~"
     final_link = "https://www.jx3api.com/next/recruit?token=" + token + "&server=" + server
     info = await get_api(final_link)
     if info["code"] == 401:
