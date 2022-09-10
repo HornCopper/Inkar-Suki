@@ -91,7 +91,7 @@ if __name__ == "__main__":
     print("模块`jx3`需要使用JX3API的Socket API，请查询`https://www.jx3api.com`，获取`Socket API`地址并填写。")
     print("格式为：`wss://xxxx.xxxx.xxx`")
     jx3api_wslink = input("请输入JX3API的Socket API地址：")
-    json_["jx3api_link"] = jx3api_wslink
+    json_["jx3api_wslink"] = jx3api_wslink
     space()
     print("Websocket Token并非必要（若只需要新闻和开服推送），但推荐填写，需要在`https://pay.jx3api.com`购买。")
     print("如果您没有Token，请直接回车：")
