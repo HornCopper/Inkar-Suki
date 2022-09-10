@@ -230,7 +230,7 @@ async def recruit_(server: str, copy: str = None):
             leader = i["leader"]
             timeArray = time.localtime(i["createTime"])
             createTime = time.strftime("%Y年%m月%d日%H:%M:%S", timeArray)
-            people_count = i["number"] + "/" + i["maxNumber"]
+            people_count = str(i["number"]) + "/" + str(i["maxNumber"])
             content = i["content"]
             msg = f"活动：{activity}\n等级：{level}\n团长：{leader}\n开团时间：{createTime}\n人数：{people_count}\n描述：{content}"
             node.append(nodetemp("团队招募", Config.bot[0], msg))
@@ -252,7 +252,7 @@ async def recruit_(server: str, copy: str = None):
                 leader = i["leader"]
                 timeArray = time.localtime(i["createTime"])
                 createTime = time.strftime("%Y年%m月%d日%H:%M:%S", timeArray)
-                people_count = i["number"] + "/" + i["maxNumber"]
+                people_count = str(i["number"]) + "/" + str(i["maxNumber"])
                 content = i["content"]
                 msg = f"活动：{activity}\n等级：{level}\n团长：{leader}\n开团时间：{createTime}\n人数：{people_count}\n描述：{content}"
                 node.append(nodetemp("团队招募", Config.bot[0], msg))
