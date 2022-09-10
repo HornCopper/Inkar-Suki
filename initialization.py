@@ -28,7 +28,6 @@ try:
     os.mkdir("./src/assets/jx3")
     os.mkdir("./src/assets/jx3/skills")
     os.mkdir("./src/assets/jx3/icons")
-    os.mkdir("./src/assets/jx3/maps")
     os.mkdir("./src/assets/jx3/achievement")
     os.mkdir("./src/assets/jx3/talents")
     os.mkdir("./src/assets/jx3/adventure")
@@ -96,20 +95,33 @@ if __name__ == "__main__":
     space()
     print("模块`jx3`需要使用JX3API的Socket API，请查询`https://www.jx3api.com`，获取`Socket API`地址并填写。")
     print("格式为：`wss://xxxx.xxxx.xxx`")
-    jx3api_link = input("请输入JX3API的Socket API地址：")
-    json_["jx3api_link"] = jx3api_link
+    jx3api_wslink = input("请输入JX3API的Socket API地址：")
+    json_["jx3api_link"] = jx3api_wslink
     space()
-    print("Token并非必要，但推荐填写，需要找JX3API购买。")
-    print("如果您没有Token，请输入数字`0`。")
-    jx3api_token = input("请输入Token：")
-    if jx3api_token.isdecimal():
-        if int(jx3api_token) == 0:
-            json_["jx3api_token"] = None
-        else:
-            json_["jx3api_token"] = jx3api_token
+    print("Websocket Token并非必要（若只需要新闻和开服推送），但推荐填写，需要在`https://pay.jx3api.com`购买。")
+    print("如果您没有Token，请直接回车：")
+    jx3api_wstoken = input("请输入Token：")
+    if jx3api_wstoken == "":
+        json_["jx3api_wstoken"]
     else:
-        json_["jx3api_token"] = jx3api_token
+        json_["jx3api_wstoken"] = jx3api_wstoken
     space()
+    print("如果您有JX3API的通用Token，可以填写在下方，填写之后不需要再填写。")
+    print("需要在`https://pay.jx3api.com`购买，若没有请直接回车。")
+    jx3api_globaltoken = input("请输入通用Token：")
+    moreApiTokenRequiredFlag = False
+    if jx3api_globaltoken == "":
+        moreApiTokenRequiredFlag = True
+        json_["jx3api_globaltoken"] = None
+    else:
+        json_["jx3api_globaltoken"] = jx3api_globaltoken
+    if moreApiTokenRequiredFlag:
+        print("请输入团队招募API的Token，若没有请直接回车。")
+        recruit = input("请输入Token：")
+        if recruit == "":
+            json_["jx3api_recruittoken"] = None
+        else:
+            json_["jx3api_recruittoken"] = recruit
     final = json.dumps(json_)
     write("config.json",final)
     space()

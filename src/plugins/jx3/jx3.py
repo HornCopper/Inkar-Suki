@@ -1,4 +1,6 @@
+from venv import create
 import nonebot
+import time
 import sys
 
 from nonebot.adapters.onebot.v11 import MessageSegment as ms
@@ -6,8 +8,11 @@ from nonebot.log import logger
 
 TOOLS = nonebot.get_driver().config.tools_path
 sys.path.append(TOOLS)
-from utils import get_api
+
+from utils import get_api, nodetemp
 from .skilldatalib import aliases
+from config import Config
+
 async def server_status(server_name):
     full_link = "https://www.jx3api.com/app/check?server="+server_name
     info = await get_api(full_link)
@@ -204,3 +209,33 @@ async def tiangou_():
     data = await get_api(full_link)
     text = data["data"]["text"]
     return text
+
+async def recruit_(server: str):
+    token = Config.jx3api_recruittoken
+    final_link = "https://www.jx3api.com/next/recruit?token=" + token + "&server=" + server
+    info = await get_api(final_link)
+    if info["code"] == 401:
+        return "唔……服务器名输入有误！请检查后重试哦~"
+    detail_info = info["data"]["data"]
+    if len(detail_info) <= 0:
+        return "唔……当前没有招募哦~"
+    count = 0
+    node = []
+    over = False
+    for i in detail_info:
+        activity = i["activity"]
+        level = i["level"]
+        leader = i["leader"]
+        timeArray = time.localtime(i["createTime"])
+        createTime = time.strftime("%Y年%m月%d日%H:%M:%S", timeArray)
+        people_count = i["number"] + "/" + i["maxNumber"]
+        content = i["content"]
+        msg = f"活动：{activity}\n等级：{level}\n团长：{leader}\n开团时间：{createTime}\n人数：{people_count}\n描述：{content}"
+        node.append(nodetemp("团队招募", Config.bot[0], msg))
+        count = count + 1
+        if count == 100:
+            over = True
+            break
+    if count < 100:
+        return ["few",node]
+    return ["more",node]
