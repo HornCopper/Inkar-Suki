@@ -97,7 +97,7 @@ if __name__ == "__main__":
     print("如果您没有Token，请直接回车：")
     jx3api_wstoken = input("请输入Token：")
     if jx3api_wstoken == "":
-        json_["jx3api_wstoken"]
+        json_["jx3api_wstoken"] = None
     else:
         json_["jx3api_wstoken"] = jx3api_wstoken
     space()
@@ -105,13 +105,16 @@ if __name__ == "__main__":
     print("需要在`https://pay.jx3api.com`购买，若没有请直接回车。")
     jx3api_globaltoken = input("请输入通用Token：")
     moreApiTokenRequiredFlag = False
+    json_["jx3api_globaltoken"] = ""
     if jx3api_globaltoken == "":
         moreApiTokenRequiredFlag = True
         json_["jx3api_globaltoken"] = None
     else:
         json_["jx3api_globaltoken"] = jx3api_globaltoken
     if moreApiTokenRequiredFlag:
+        space()
         print("请输入团队招募API的Token，若没有请直接回车。")
+        json_["jx3api_recruittoken"] = ""
         recruit = input("请输入Token：")
         if recruit == "":
             json_["jx3api_recruittoken"] = None
