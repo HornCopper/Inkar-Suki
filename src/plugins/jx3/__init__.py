@@ -357,7 +357,7 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
     server = args.extract_plain_text()
     if server == "":
         await recruit.finish("缺少服务器名称哦~")
-    data = recruit_(server)
+    data = await recruit_(server)
     if type(data) != type([]):
         await recruit.finish(data)
     else:
