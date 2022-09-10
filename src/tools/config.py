@@ -24,8 +24,8 @@ class Config:
     nonebot = nbv
     auaurl = configs["aua_api"]
     auatok = configs["aua_token"]
-    jx3api_wslink = configs["jx3api_link"]
-    jx3api_wstoken = configs["jx3api_token"]
+    jx3api_wslink = configs["jx3api_wslink"]
+    jx3api_wstoken = configs["jx3api_wstoken"]
     jx3api_globaltoken = configs["jx3api_globaltoken"]
     jx3api_recruittoken = configs["jx3api_recruittoken"]
     if jx3api_globaltoken:
