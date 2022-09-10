@@ -351,7 +351,7 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
         else:
             await bot.call_api("send_group_forward_msg", group_id = event.group_id, messages = node)
 
-recruit = on_command("jx3_recruit", aliaes={"招募"}, priority=5)
+recruit = on_command("jx3_recruit", aliases={"招募"}, priority=5)
 @recruit.handle()
 async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
     server = args.extract_plain_text()
