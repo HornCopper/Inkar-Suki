@@ -354,19 +354,35 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
 recruit = on_command("jx3_recruit", aliases={"招募"}, priority=5)
 @recruit.handle()
 async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
-    server = args.extract_plain_text()
-    if server == "":
+    arg = args.extract_plain_text()
+    if arg == "":
         await recruit.finish("缺少服务器名称哦~")
-    data = await recruit_(server)
-    if type(data) != type([]):
-        await recruit.finish(data)
+    arg = arg.split(" ")
+    if len(arg) not in [1,2]:
+        await recruit.finish("参数不正确哦，只能有1或2个参数~")
+    if len(arg) == 1:
+        server = arg[0]
+        data = await recruit_(server)
+        if type(data) != type([]):
+            await recruit.finish(data)
+        else:
+            status = data[0]
+            data = data[1]
+            if status == "more":
+                await recruit.send("团队招募超过100条啦！已截取前100条~")
+            await bot.call_api("send_group_forward_msg", group_id = event.group_id, messages = data)
     else:
-        status = data[0]
-        data = data[1]
-        if status == "more":
-            await recruit.send("团队招募超过100条啦！已截取前100条~")
-        await bot.call_api("send_group_forward_msg", group_id = event.group_id, messages = data)
-
+        server = arg[0]
+        copy = arg[1]
+        data = await recruit_(server, copy)
+        if type(data) != type([]):
+            await recruit.finish(data)
+        else:
+            status = data[0]
+            data = data[1]
+            if status == "more":
+                await recruit.send("团队招募超过100条啦！已截取前100条~")
+            await bot.call_api("send_group_forward_msg", group_id = event.group_id, messages = data)
 
 driver = get_driver()
 
