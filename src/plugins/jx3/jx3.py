@@ -210,7 +210,7 @@ async def tiangou_():
     text = data["data"]["text"]
     return text
 
-async def recruit_(server: str):
+async def recruit_(server: str, copy: str = None):
     token = Config.jx3api_recruittoken
     if token == None:
         return "Bot尚未填写Token，请联系Bot主人~"
@@ -219,25 +219,46 @@ async def recruit_(server: str):
     if info["code"] == 401:
         return "唔……服务器名输入有误！请检查后重试哦~"
     detail_info = info["data"]["data"]
-    if len(detail_info) <= 0:
-        return "唔……当前没有招募哦~"
-    count = 0
-    node = []
-    over = False
-    for i in detail_info:
-        activity = i["activity"]
-        level = i["level"]
-        leader = i["leader"]
-        timeArray = time.localtime(i["createTime"])
-        createTime = time.strftime("%Y年%m月%d日%H:%M:%S", timeArray)
-        people_count = i["number"] + "/" + i["maxNumber"]
-        content = i["content"]
-        msg = f"活动：{activity}\n等级：{level}\n团长：{leader}\n开团时间：{createTime}\n人数：{people_count}\n描述：{content}"
-        node.append(nodetemp("团队招募", Config.bot[0], msg))
-        count = count + 1
-        if count == 100:
-            over = True
-            break
-    if count < 100:
-        return ["few",node]
-    return ["more",node]
+    if copy == None:
+        if len(detail_info) <= 0:
+            return "唔……当前没有招募哦~"
+        count = 0
+        node = []
+        for i in detail_info:
+            activity = i["activity"]
+            level = i["level"]
+            leader = i["leader"]
+            timeArray = time.localtime(i["createTime"])
+            createTime = time.strftime("%Y年%m月%d日%H:%M:%S", timeArray)
+            people_count = i["number"] + "/" + i["maxNumber"]
+            content = i["content"]
+            msg = f"活动：{activity}\n等级：{level}\n团长：{leader}\n开团时间：{createTime}\n人数：{people_count}\n描述：{content}"
+            node.append(nodetemp("团队招募", Config.bot[0], msg))
+            count = count + 1
+            if count == 100:
+                break
+        if count < 100:
+            return ["few",node]
+        return ["more",node]
+    else:
+        if len(detail_info) <= 0:
+            return "唔……当前没有任何招募哦~"
+        node = []
+        count = 0
+        for i in detail_info:
+            activity = i["activity"]
+            if activity == copy:
+                level = i["level"]
+                leader = i["leader"]
+                timeArray = time.localtime(i["createTime"])
+                createTime = time.strftime("%Y年%m月%d日%H:%M:%S", timeArray)
+                people_count = i["number"] + "/" + i["maxNumber"]
+                content = i["content"]
+                msg = f"活动：{activity}\n等级：{level}\n团长：{leader}\n开团时间：{createTime}\n人数：{people_count}\n描述：{content}"
+                node.append(nodetemp("团队招募", Config.bot[0], msg))
+                count = count + 1
+                if count == 100:
+                    break
+        if count < 100:
+            return ["few",node]
+        return ["more",node]
