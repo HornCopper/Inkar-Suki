@@ -259,6 +259,8 @@ async def recruit_(server: str, copy: str = None):
                 count = count + 1
                 if count == 100:
                     break
+        if len(node) == 0:
+            return "没有找到这个活动的相关招募哦~"
         if count < 100:
             return ["few",node]
         return ["more",node]
