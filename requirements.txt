@@ -7,4 +7,3 @@ tabulate
 selenium
 xpinyin
 numpy
-nonebot_plugin_apscheduler

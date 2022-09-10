@@ -39,8 +39,6 @@ async def _(event: GroupMessageEvent):
     else:
         new_path = "./src/data/" + group
         os.mkdir(new_path)
-        write(new_path + "/user.json","{}")
-        write(new_path + "/checkin.json","[]")
         write(new_path + "/webhook.json","[]")
         write(new_path + "/marry.json","[]")
         write(new_path + "/welcome.txt","欢迎入群！")
@@ -67,8 +65,6 @@ async def _(event: Event):
             disabled_groups.append(i)
     for i in disabled_groups:
         try:
-            os.remove(DATA + "/" + i + "/checkin.json")
-            os.remove(DATA + "/" + i + "/user.json")
             os.remove(DATA + "/" + i + "/webhook.json")
             os.remove(DATA + "/" + i + "/marry.json")
             os.remove(DATA + "/" + i + "/welcome.txt")
@@ -102,8 +98,6 @@ async def _(bot: Bot, event: GroupMessageEvent):
     group = str(event.group_id)
     if group in groups:
         try:
-            os.remove(DATA + "/" + group + "/checkin.json")
-            os.remove(DATA + "/" + group + "/user.json")
             os.remove(DATA + "/" + group + "/webhook.json")
             os.remove(DATA + "/" + group + "/marry.json")
             os.remove(DATA + "/" + group + "/welcome.txt")
@@ -137,8 +131,6 @@ async def _(event: GroupMessageEvent):
     group = str(event.group_id)
     if group in groups:
         try:
-            os.remove(DATA + "/" + group + "/checkin.json")
-            os.remove(DATA + "/" + group + "/user.json")
             os.remove(DATA + "/" + group + "/webhook.json")
             os.remove(DATA + "/" + group + "/marry.json")
             os.remove(DATA + "/" + group + "/welcome.txt")
@@ -170,8 +162,6 @@ async def _(event: GroupMessageEvent):
     groups = os.listdir(DATA)
     for i in groups:
         try:
-            os.remove(DATA + "/" + i + "/user.json")
-            os.remove(DATA + "/" + i + "/checkin.json")
             os.remove(DATA + "/" + i + "/webhook.json")
             os.remove(DATA + "/" + i + "/marry.json")
             os.remove(DATA + "/" + i + "/welcome.txt")
@@ -201,8 +191,8 @@ fix = on_command("fix",priority=5)
 async def _(event: GroupMessageEvent):
     files = os.listdir(DATA + "/" + str(event.group_id))
     missing = []
-    right = ["webhook.json","marry.json","welcome.txt","banword.json","wiki.json","arcaea.json","opening.json","record.json","checkin.json","user.json"]
-    fix_data = {"webhook.json":"[]","marry.json":"[]","welcome.txt":"欢迎入群！","banword.json":"[]","wiki.json":"{\"startwiki\":\"\",\"interwiki\":[]}","arcaea.json":"{}","opening.json":"[]","record.json":"[]","checkin.json":"[]","user.json":"{}"}
+    right = ["webhook.json","marry.json","welcome.txt","banword.json","wiki.json","arcaea.json","opening.json","record.json"]
+    fix_data = {"webhook.json":"[]","marry.json":"[]","welcome.txt":"欢迎入群！","banword.json":"[]","wiki.json":"{\"startwiki\":\"\",\"interwiki\":[]}","arcaea.json":"{}","opening.json":"[]","record.json":"[]"}
     for i in right:
         if i not in files:
             missing.append(i)
