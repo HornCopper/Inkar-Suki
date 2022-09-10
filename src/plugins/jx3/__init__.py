@@ -355,6 +355,8 @@ recruit = on_command("jx3_recruit", aliases={"招募"}, priority=5)
 @recruit.handle()
 async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
     server = args.extract_plain_text()
+    if server == "":
+        await bot.call_api("缺少服务器名称哦~")
     data = recruit_(server)
     if type(data) != type([]):
         await recruit.finish(data)
