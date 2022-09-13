@@ -247,7 +247,7 @@ async def recruit_(server: str, copy: str = None):
         count = 0
         for i in detail_info:
             activity = i["activity"]
-            if activity == copy:
+            if activity == copy or i["content"].find(copy) != -1:
                 level = i["level"]
                 leader = i["leader"]
                 timeArray = time.localtime(i["createTime"])
