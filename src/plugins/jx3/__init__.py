@@ -13,6 +13,7 @@ from nonebot.typing import T_State
 
 TOOLS = nonebot.get_driver().config.tools_path
 sys.path.append(TOOLS)
+DATA = TOOLS[:-5] + "data"
 
 from utils import checknumber
 from file import read, write
@@ -399,7 +400,18 @@ async def _(bot: Bot, event: RecvEvent):
     message = event.get_message()
     groups = json.loads(read(TOOLS + "/subscribe.json"))
     for i in groups:
-        try:
-            await bot.call_api("send_group_msg", group_id = int(i), message = message)
-        except:
-            logger.info(f"向群({i})推送失败，可能是因为风控、禁言或者未加入该群。")
+        data = json.loads(read(DATA + "/" + i + "/jx3group.json"))
+        server = data["server"]
+        if message.find("已开服") != -1 or message.find("已维护") != -1:
+            if message.find(server) != -1:
+                try:
+                    await bot.call_api("send_group_msg", group_id = int(i), message = message)
+                except:
+                    logger.info(f"向群({i})推送失败，可能是因为风控、禁言或者未加入该群。")
+            else:
+                pass
+        else:
+            try:
+                await bot.call_api("send_group_msg", group_id = int(i), message = message)
+            except:
+                logger.info(f"向群({i})推送失败，可能是因为风控、禁言或者未加入该群。")
