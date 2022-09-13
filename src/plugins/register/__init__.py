@@ -39,7 +39,7 @@ async def _(event: GroupMessageEvent):
     else:
         new_path = "./src/data/" + group
         os.mkdir(new_path)
-        write(new_path + "/jx3group.json","{\"group\":\""+ str(event.group_id) + "\",\"server\":[],\"notice\":false,\"name\":\"\",\"status\":false}")
+        write(new_path + "/jx3group.json","{\"group\":\""+ str(event.group_id) + "\",\"server\":\"\",\"notice\":false,\"name\":\"\",\"status\":false}")
         write(new_path + "/webhook.json","[]")
         write(new_path + "/marry.json","[]")
         write(new_path + "/welcome.txt","欢迎入群！")
@@ -197,7 +197,7 @@ async def _(event: GroupMessageEvent):
     files = os.listdir(DATA + "/" + str(event.group_id))
     missing = []
     right = ["webhook.json","marry.json","welcome.txt","banword.json","wiki.json","arcaea.json","opening.json","record.json","jx3group.json"]
-    fix_data = {"webhook.json":"[]","marry.json":"[]","welcome.txt":"欢迎入群！","banword.json":"[]","wiki.json":"{\"startwiki\":\"\",\"interwiki\":[]}","arcaea.json":"{}","opening.json":"[]","record.json":"[]","jx3group.json":"{\"group\":\""+ str(event.group_id) + "\",\"server\":[],\"notice\":false,\"name\":\"\",\"status\":false}"}
+    fix_data = {"webhook.json":"[]","marry.json":"[]","welcome.txt":"欢迎入群！","banword.json":"[]","wiki.json":"{\"startwiki\":\"\",\"interwiki\":[]}","arcaea.json":"{}","opening.json":"[]","record.json":"[]","jx3group.json":"{\"group\":\""+ str(event.group_id) + "\",\"server\":\"\",\"notice\":false,\"name\":\"\",\"status\":false}"}
     for i in right:
         if i not in files:
             missing.append(i)
