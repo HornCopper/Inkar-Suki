@@ -83,16 +83,15 @@ async def recWebHook(req: Request):
     body = await req.json()
     repo = body["repository"]["full_name"]
     event = req.headers.get("X-GitHub-Event")
-    # try:
-    message = "[GitHub] " + getattr(main,event)(body)
-    message = message.replace("codethink-cn","CodeThink-CN")
-    # except Exception as e:
-    # msg = f"Event {event} has not been supported."
-    # return {"status":"500","message":msg, "error":e}
+    try:
+        message = "[GitHub] " + getattr(main,event)(body)
+        message = message.replace("codethink-cn","CodeThink-CN")
+    except Exception as e:
+        msg = f"Event {event} has not been supported."
+        return {"status":"500","message":msg, "error":e}
     bots: list = Config.bot
     for i in bots:
-        bot = get_bot(i)
-        await sendm(bot, message, repo)
+        await sendm(Bot, message, repo)
     return {"status":200}
 
 async def sendm(bot: Bot, message, repo):
