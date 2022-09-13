@@ -2,18 +2,23 @@ import nonebot
 import json
 import sys
 import time
+import os
 
 from nonebot.typing import T_State
 from nonebot import on_command
 from nonebot.adapters.onebot.v11 import GroupMessageEvent, Bot
+from nonebot_plugin_apscheduler import scheduler
+from nonebot import require
 from nonebot.adapters import Message
+from nonebot.log import logger
 from nonebot.params import CommandArg, Arg
 import numpy as np
 TOOLS = nonebot.get_driver().config.tools_path
 sys.path.append(TOOLS)
 DATA = TOOLS[:-5] + "data"
+from config import Config
 from file import read, write
-from utils import convert_time, checknumber
+from utils import convert_time, checknumber, get_api
 
 open_ = on_command("open_group", aliases = {"开团"}, priority = 5)
 @open_.handle()
@@ -308,3 +313,73 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
             write(final_path, json.dumps(data, ensure_ascii = False))
             await modify.finish("修改团队信息成功！")
     await modify.finish("唔……没有找到，请检查团队描述是否一致~")
+
+require("nonebot_plugin_apscheduler")
+
+@scheduler.scheduled_job("cron", minute="*/1")
+async def get_group(bot: Bot):
+    token = Config.jx3api_recruittoken
+    if token == None:
+        logger.info("Token is null. If you don't want to see this message, please remove in `src/plugins/assistance/__init__.py` from line 318.")
+    final_link = "https://www.jx3api.com/next/recruit?token=" + token + "&server=" + "幽月轮" # 目前不打算支持其他服务器
+    data = await get_api(final_link)
+    group_list: list = os.listdir(DATA)
+    for i in group_list:
+        group_data = json.loads(read(DATA + "/" + str(i) + "/jx3group.json"))
+        if group_data["notice"] == False:
+            continue
+        else:
+            for x in data:
+                found = False
+                name = group_data["name"]
+                if x["content"].find(name) and group_data["status"] == False:
+                    group_data["status"] = True
+                    found = True
+                    write(DATA + "/" + str(i) + "/jx3group.json", json.dumps(group_data, ensure_ascii=False))
+                    leader = x["leader"]
+                    activity = x["activity"]
+                    people_count = str(x["number"]) + "/" + str(x["maxNumber"])
+                    timeArray = time.localtime(x["createTime"])
+                    createTime = time.strftime("%Y年%m月%d日%H:%M:%S", timeArray)
+                    msg = f"【{name}】{leader}开团啦！\n时间：{createTime}\n人数：{people_count}\n活动名：{activity}"
+                    await bot.call_api("send_group_msg", group_id = i, message = msg)
+                    return
+                else:
+                    pass
+            if found == False and group_data["status"] == True:
+                group_data["status"] = False
+                write(DATA + "/" + str(i) + "/jx3group.json", json.dumps(group_data, ensure_ascii=False))
+
+set_server = on_command("jx3_setserver", aliases={"设置服务器"}, priority=5)
+@set_server.handle()
+async def _(event: GroupMessageEvent, args: Message = CommandArg()):
+    server = args.extract_plain_text()
+    now = json.loads(read(DATA + "/" + str(event.group_id) + "/jx3group.json"))
+    now["server"] = server
+    write(DATA + "/" + str(event.group_id) + "/jx3group.json", json.dumps(now, ensure_ascii=False))
+    await set_server.finish("主服务器设置成功，推送将会遵照此进行~！")
+
+set_group = on_command("jx3_setgroup", aliases={"设置团牌"}, priority=5)
+@set_group.handle()
+async def _(event: GroupMessageEvent, args: Message = CommandArg()):
+    group = args.extract_plain_text()
+    now = json.loads(read(DATA + "/" + str(event.group_id) + "/jx3group.json"))
+    now["group"] = group
+    write(DATA + "/" + str(event.group_id) + "/jx3group.json", json.dumps(now, ensure_ascii=False))
+    await set_group.finish("团牌设置成功，推送将会遵照此进行~！\n小提示：一个群只能设置一个团牌哦~")
+
+set_group_notice = on_command("jx3_groupnotice", aliases={"监控开团"}, priority=5)
+@set_group_notice.handle()
+async def _(event: GroupMessageEvent):
+    now = json.loads(read(DATA + "/" + str(event.group_id) + "/jx3group.json"))
+    now["notice"] = True
+    write(DATA + "/" + str(event.group_id) + "/jx3group.json", json.dumps(now, ensure_ascii=False))
+    await set_group_notice.finish("监控设置成功，推送将会遵照此进行~！")
+
+cancel_notice = on_command("jx3_cancelnotice", aliases={"取消监控"}, priority=5)
+@cancel_notice.handle()
+async def _(event: GroupMessageEvent):
+    now = json.loads(read(DATA + "/" + str(event.group_id) + "/jx3group.json"))
+    now["notice"] = False
+    write(DATA + "/" + str(event.group_id) + "/jx3group.json", json.dumps(now, ensure_ascii=False))
+    await cancel_notice.finish("监控取消成功，推送将会遵照此进行~！")
