@@ -352,7 +352,8 @@ require("nonebot_plugin_apscheduler")
 from nonebot_plugin_apscheduler import scheduler
 
 @scheduler.scheduled_job("cron", minute="*/1")
-async def get_group(bot: Bot):
+async def get_group():
+    bot = nonebot.get_bot()
     token = Config.jx3api_recruittoken
     if token == None:
         logger.info("Token is null. If you don't want to see this message, please remove in `src/plugins/assistance/__init__.py` from line 318.")
