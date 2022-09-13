@@ -7,7 +7,6 @@ import os
 from nonebot.typing import T_State
 from nonebot import on_command
 from nonebot.adapters.onebot.v11 import GroupMessageEvent, Bot
-from nonebot_plugin_apscheduler import scheduler
 from nonebot import require
 from nonebot.adapters import Message
 from nonebot.log import logger
@@ -314,7 +313,43 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
             await modify.finish("修改团队信息成功！")
     await modify.finish("唔……没有找到，请检查团队描述是否一致~")
 
+set_server = on_command("jx3_setserver", aliases={"设置服务器"}, priority=5)
+@set_server.handle()
+async def _(event: GroupMessageEvent, args: Message = CommandArg()):
+    server = args.extract_plain_text()
+    now = json.loads(read(DATA + "/" + str(event.group_id) + "/jx3group.json"))
+    now["server"] = server
+    write(DATA + "/" + str(event.group_id) + "/jx3group.json", json.dumps(now, ensure_ascii=False))
+    await set_server.finish("主服务器设置成功，推送将会遵照此进行~！")
+
+set_group = on_command("jx3_setgroup", aliases={"设置团牌"}, priority=5)
+@set_group.handle()
+async def _(event: GroupMessageEvent, args: Message = CommandArg()):
+    group = args.extract_plain_text()
+    now = json.loads(read(DATA + "/" + str(event.group_id) + "/jx3group.json"))
+    now["group"] = group
+    write(DATA + "/" + str(event.group_id) + "/jx3group.json", json.dumps(now, ensure_ascii=False))
+    await set_group.finish("团牌设置成功，推送将会遵照此进行~！\n小提示：一个群只能设置一个团牌哦~")
+
+set_group_notice = on_command("jx3_groupnotice", aliases={"监控开团"}, priority=5)
+@set_group_notice.handle()
+async def _(event: GroupMessageEvent):
+    now = json.loads(read(DATA + "/" + str(event.group_id) + "/jx3group.json"))
+    now["notice"] = True
+    write(DATA + "/" + str(event.group_id) + "/jx3group.json", json.dumps(now, ensure_ascii=False))
+    await set_group_notice.finish("监控设置成功，推送将会遵照此进行~！")
+
+cancel_notice = on_command("jx3_cancelnotice", aliases={"取消监控"}, priority=5)
+@cancel_notice.handle()
+async def _(event: GroupMessageEvent):
+    now = json.loads(read(DATA + "/" + str(event.group_id) + "/jx3group.json"))
+    now["notice"] = False
+    write(DATA + "/" + str(event.group_id) + "/jx3group.json", json.dumps(now, ensure_ascii=False))
+    await cancel_notice.finish("监控取消成功，推送将会遵照此进行~！")
+
 require("nonebot_plugin_apscheduler")
+
+from nonebot_plugin_apscheduler import scheduler
 
 @scheduler.scheduled_job("cron", minute="*/1")
 async def get_group(bot: Bot):
@@ -349,37 +384,3 @@ async def get_group(bot: Bot):
             if found == False and group_data["status"] == True:
                 group_data["status"] = False
                 write(DATA + "/" + str(i) + "/jx3group.json", json.dumps(group_data, ensure_ascii=False))
-
-set_server = on_command("jx3_setserver", aliases={"设置服务器"}, priority=5)
-@set_server.handle()
-async def _(event: GroupMessageEvent, args: Message = CommandArg()):
-    server = args.extract_plain_text()
-    now = json.loads(read(DATA + "/" + str(event.group_id) + "/jx3group.json"))
-    now["server"] = server
-    write(DATA + "/" + str(event.group_id) + "/jx3group.json", json.dumps(now, ensure_ascii=False))
-    await set_server.finish("主服务器设置成功，推送将会遵照此进行~！")
-
-set_group = on_command("jx3_setgroup", aliases={"设置团牌"}, priority=5)
-@set_group.handle()
-async def _(event: GroupMessageEvent, args: Message = CommandArg()):
-    group = args.extract_plain_text()
-    now = json.loads(read(DATA + "/" + str(event.group_id) + "/jx3group.json"))
-    now["group"] = group
-    write(DATA + "/" + str(event.group_id) + "/jx3group.json", json.dumps(now, ensure_ascii=False))
-    await set_group.finish("团牌设置成功，推送将会遵照此进行~！\n小提示：一个群只能设置一个团牌哦~")
-
-set_group_notice = on_command("jx3_groupnotice", aliases={"监控开团"}, priority=5)
-@set_group_notice.handle()
-async def _(event: GroupMessageEvent):
-    now = json.loads(read(DATA + "/" + str(event.group_id) + "/jx3group.json"))
-    now["notice"] = True
-    write(DATA + "/" + str(event.group_id) + "/jx3group.json", json.dumps(now, ensure_ascii=False))
-    await set_group_notice.finish("监控设置成功，推送将会遵照此进行~！")
-
-cancel_notice = on_command("jx3_cancelnotice", aliases={"取消监控"}, priority=5)
-@cancel_notice.handle()
-async def _(event: GroupMessageEvent):
-    now = json.loads(read(DATA + "/" + str(event.group_id) + "/jx3group.json"))
-    now["notice"] = False
-    write(DATA + "/" + str(event.group_id) + "/jx3group.json", json.dumps(now, ensure_ascii=False))
-    await cancel_notice.finish("监控取消成功，推送将会遵照此进行~！")
