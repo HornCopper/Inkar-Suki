@@ -366,14 +366,16 @@ async def get_group():
         if group_data["notice"] == False:
             continue
         else:
+            found = False
             for x in data["data"]["data"]:
-                found = False
                 name = group_data["name"]
                 if x["content"].find("【" + name + "】") != -1:
                     if group_data["status"] == False:
                         group_data["status"] = True
                         found = True
-                        write(DATA + "/" + str(i) + "/jx3group.json", json.dumps(group_data, ensure_ascii=False))
+                        final_data = json.dumps(group_data, ensure_ascii=False)
+                        logger.info(final_data)
+                        resp = write(DATA + "/" + str(i) + "/jx3group.json", final_data)
                         leader = x["leader"]
                         activity = x["activity"]
                         content = x["content"]
