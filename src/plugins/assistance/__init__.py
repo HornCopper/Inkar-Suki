@@ -369,16 +369,17 @@ async def get_group():
             for x in data["data"]["data"]:
                 found = False
                 name = group_data["name"]
-                if x["content"].find("【" + name + "】") and group_data["status"] == False:
+                if x["content"].find("【" + name + "】") != -1 and group_data["status"] == False:
                     group_data["status"] = True
                     found = True
                     write(DATA + "/" + str(i) + "/jx3group.json", json.dumps(group_data, ensure_ascii=False))
                     leader = x["leader"]
                     activity = x["activity"]
+                    content = x["content"]
                     people_count = str(x["number"]) + "/" + str(x["maxNumber"])
                     timeArray = time.localtime(x["createTime"])
                     createTime = time.strftime("%Y年%m月%d日%H:%M:%S", timeArray)
-                    msg = f"【{name}】{leader}开团啦！\n时间：{createTime}\n人数：{people_count}\n活动名：{activity}"
+                    msg = f"【{name}】{leader}开团啦！\n时间：{createTime}\n人数：{people_count}\n活动名：{activity}\n描述：{content}"
                     await bot.call_api("send_group_msg", group_id = int(i), message = msg)
                     return
                 else:
