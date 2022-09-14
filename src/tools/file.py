@@ -9,10 +9,6 @@ def read(Path):
 
 def write(Path, sth):
     cache = open(Path, mode="w", encoding="utf-8")
-    try:
-        cache.write(sth)
-        cache.close()
-        return True
-    except:
-        cache.close()
-        return False
+    cache.write(sth)
+    cache.close()
+    return True
