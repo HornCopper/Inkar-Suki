@@ -363,29 +363,28 @@ async def get_group():
     group_list: list = os.listdir(DATA)
     for i in group_list:
         group_data = json.loads(read(DATA + "/" + str(i) + "/jx3group.json"))
+        found = False
         if group_data["notice"] == False:
             continue
         else:
-            found = False
             for x in data["data"]["data"]:
                 name = group_data["name"]
-                if x["content"].find("【" + name + "】") != -1:
-                    if group_data["status"] == False:
-                        group_data["status"] = True
-                        found = True
-                        final_data = json.dumps(group_data, ensure_ascii=False)
-                        logger.info(final_data)
-                        resp = write(DATA + "/" + str(i) + "/jx3group.json", final_data)
-                        leader = x["leader"]
-                        activity = x["activity"]
-                        content = x["content"]
-                        people_count = str(x["number"]) + "/" + str(x["maxNumber"])
-                        timeArray = time.localtime(x["createTime"])
-                        createTime = time.strftime("%Y年%m月%d日%H:%M:%S", timeArray)
-                        msg = f"【{name}】{leader}开团啦！\n时间：{createTime}\n人数：{people_count}\n活动名：{activity}\n描述：{content}"
-                        await bot.call_api("send_group_msg", group_id = int(i), message = msg)
-                    elif group_data["status"] == True:
-                        continue
+                if x["content"].find("【" + name + "】") != -1 and group_data["status"] == False:
+                    found = True
+                    leader = x["leader"]
+                    activity = x["activity"]
+                    content = x["content"]
+                    people_count = str(x["number"]) + "/" + str(x["maxNumber"])
+                    timeArray = time.localtime(x["createTime"])
+                    createTime = time.strftime("%Y年%m月%d日%H:%M:%S", timeArray)
+                    msg = f"【{name}】{leader}开团啦！\n时间：{createTime}\n人数：{people_count}\n活动名：{activity}\n描述：{content}"
+                    await bot.call_api("send_group_msg", group_id = int(i), message = msg)
+                if x["content"].find("【" + name + "】") != -1 and group_data["status"] == True:
+                    found = True
+                if found == True and group_data["status"] == False:
+                    group_data["status"] = True
+                    final_data = json.dumps(group_data, ensure_ascii=False)
+                    write(DATA + "/" + str(i) + "/jx3group.json", final_data)
             if found == False and group_data["status"] == True:
                 group_data["status"] = False
                 write(DATA + "/" + str(i) + "/jx3group.json", json.dumps(group_data, ensure_ascii=False))
