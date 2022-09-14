@@ -397,7 +397,7 @@ ws_recev = on(type="WsRecv", priority=5, block=False)
 
 @ws_recev.handle()
 async def _(bot: Bot, event: RecvEvent):
-    message = event.get_message()
+    message = str(event.get_message())
     groups = json.loads(read(TOOLS + "/subscribe.json"))
     for i in groups:
         data = json.loads(read(DATA + "/" + i + "/jx3group.json"))
