@@ -234,7 +234,7 @@ async def _(state: T_State, bot: Bot, event: GroupMessageEvent, args: Message = 
         for i in range(times):
             msg = msg + f"\n{i}.{desc[i]}({convert_time(time__[i])})：工资{pays[i]}金；"
             max = max + 1
-            if max == 9:
+            if max == 10:
                 break
         try:
             state["leader"] = leader
@@ -327,9 +327,9 @@ set_group = on_command("jx3_setgroup", aliases={"设置团牌"}, priority=5)
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     group = args.extract_plain_text()
     now = json.loads(read(DATA + "/" + str(event.group_id) + "/jx3group.json"))
-    now["group"] = group
+    now["name"] = group
     write(DATA + "/" + str(event.group_id) + "/jx3group.json", json.dumps(now, ensure_ascii=False))
-    await set_group.finish("团牌设置成功，推送将会遵照此进行~！\n小提示：一个群只能设置一个团牌哦~")
+    await set_group.finish("团牌设置成功，推送将会遵照此进行~！\n小提示：一个群只能设置一个团牌哦~\n另外，会抓取【xxx】，所以团长注意加中文中括号哦~")
 
 set_group_notice = on_command("jx3_groupnotice", aliases={"监控开团"}, priority=5)
 @set_group_notice.handle()
@@ -353,6 +353,7 @@ from nonebot_plugin_apscheduler import scheduler
 
 @scheduler.scheduled_job("cron", minute="*/1")
 async def get_group():
+    logger.info("Scheduler job has run successfully.")
     bot = nonebot.get_bot()
     token = Config.jx3api_recruittoken
     if token == None:
@@ -365,10 +366,10 @@ async def get_group():
         if group_data["notice"] == False:
             continue
         else:
-            for x in data:
+            for x in data["data"]["data"]:
                 found = False
                 name = group_data["name"]
-                if x["content"].find(name) and group_data["status"] == False:
+                if x["content"].find("【" + name + "】") and group_data["status"] == False:
                     group_data["status"] = True
                     found = True
                     write(DATA + "/" + str(i) + "/jx3group.json", json.dumps(group_data, ensure_ascii=False))
@@ -378,7 +379,7 @@ async def get_group():
                     timeArray = time.localtime(x["createTime"])
                     createTime = time.strftime("%Y年%m月%d日%H:%M:%S", timeArray)
                     msg = f"【{name}】{leader}开团啦！\n时间：{createTime}\n人数：{people_count}\n活动名：{activity}"
-                    await bot.call_api("send_group_msg", group_id = i, message = msg)
+                    await bot.call_api("send_group_msg", group_id = int(i), message = msg)
                     return
                 else:
                     pass
