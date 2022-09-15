@@ -352,7 +352,7 @@ require("nonebot_plugin_apscheduler")
 
 from nonebot_plugin_apscheduler import scheduler
 
-@scheduler.scheduled_job("cron", minute="*/2")
+@scheduler.scheduled_job("cron", minute="*/1")
 async def get_group():
     logger.info("Scheduler job has run successfully.")
     bot = nonebot.get_bot()
