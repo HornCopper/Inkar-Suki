@@ -155,9 +155,9 @@ class ServerStatusEvent(RecvEvent):
     def get_message(self) -> Message:
         time_now = datetime.now().strftime("%H时%M分")
         if self.status:
-            return Message(f"现在是{time_now}，并且{self.server}{self.status}~")
+            return Message(f"现在是{time_now}，并且{self.server}已开服~")
         else:
-            return Message(f"现在是{time_now}，但是{self.server}{self.status}~")
+            return Message(f"现在是{time_now}，但是{self.server}已维护~")
 
 
 @EventRister.rister(action=2002)
