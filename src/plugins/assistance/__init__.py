@@ -208,7 +208,8 @@ async def _(state: T_State, bot: Bot, event: GroupMessageEvent, args: Message = 
     qq = args.extract_plain_text()
     if checknumber(qq):
         final_path = DATA + "/" + str(event.group_id) + "/record.json"
-        data = json.loads(read(final_path)).reverse()
+        data = json.loads(read(final_path))
+        data.reverse()
         times = 0
         max = 0
         gkp = []
@@ -220,14 +221,13 @@ async def _(state: T_State, bot: Bot, event: GroupMessageEvent, args: Message = 
             if i["leader"] == qq:
                 leader = i["leadername"]
                 times = times + 1
-                special_.append("、".join(i["special"]))
-                gkp.append(int(i["gkp"][0]))
-                pays.append(int(i["gkp"][1]))
-                desc.append(i["desc"])
-                time__.append(i["time"])
+                if max <= 10:
+                    special_.append("、".join(i["special"]))
+                    gkp.append(int(i["gkp"][0]))
+                    pays.append(int(i["gkp"][1]))
+                    desc.append(i["desc"])
+                    time__.append(i["time"])
                 max = max + 1
-            if max == 10:
-                break
         msg = ""
         max = 0
         mean = np.mean(pays)
