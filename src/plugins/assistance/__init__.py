@@ -208,7 +208,7 @@ async def _(state: T_State, bot: Bot, event: GroupMessageEvent, args: Message = 
     qq = args.extract_plain_text()
     if checknumber(qq):
         final_path = DATA + "/" + str(event.group_id) + "/record.json"
-        data = json.loads(read(final_path))
+        data = json.loads(read(final_path)).reverse()
         times = 0
         max = 0
         gkp = []
@@ -226,7 +226,7 @@ async def _(state: T_State, bot: Bot, event: GroupMessageEvent, args: Message = 
                 desc.append(i["desc"])
                 time__.append(i["time"])
                 max = max + 1
-            if max == 9:
+            if max == 10:
                 break
         msg = ""
         max = 0
@@ -385,6 +385,6 @@ async def get_group():
                     group_data["status"] = True
                     final_data = json.dumps(group_data, ensure_ascii=False)
                     write(DATA + "/" + str(i) + "/jx3group.json", final_data)
-            if found == False and group_data["status"] == True:
-                group_data["status"] = False
-                write(DATA + "/" + str(i) + "/jx3group.json", json.dumps(group_data, ensure_ascii=False))
+        if found == False and group_data["status"] == True:
+            group_data["status"] = False
+            write(DATA + "/" + str(i) + "/jx3group.json", json.dumps(group_data, ensure_ascii=False))
