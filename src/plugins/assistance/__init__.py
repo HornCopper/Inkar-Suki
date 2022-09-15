@@ -231,6 +231,7 @@ async def _(state: T_State, bot: Bot, event: GroupMessageEvent, args: Message = 
         msg = ""
         max = 0
         mean = np.mean(pays)
+        mean = round(mean, 2)
         for i in range(times):
             msg = msg + f"\n{i}.{desc[i]}({convert_time(time__[i])})：工资{pays[i]}金；"
             max = max + 1
