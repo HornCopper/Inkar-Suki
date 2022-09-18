@@ -358,6 +358,7 @@ async def get_group():
     token = Config.jx3api_recruittoken
     if token == None:
         logger.info("Token is null. If you don't want to see this message, please remove in `src/plugins/assistance/__init__.py` from line 318.")
+        return
     final_link = "https://www.jx3api.com/next/recruit?token=" + token + "&server=" + "幽月轮" # 目前不打算支持其他服务器
     data = await get_api(final_link)
     group_list: list = os.listdir(DATA)
