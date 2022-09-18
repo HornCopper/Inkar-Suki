@@ -416,7 +416,9 @@ async def _(event: GroupMessageEvent, state: T_State, num: Message = Arg()):
         if int(num) not in list(range(len(icon))):
             await buff_.finish("唔，输入的数字不对哦，取消搜索~")
         else:
+            num = int(num)
             msg = ms.image(icon[num]) + f"\nBUFF名称：{name[num]}\n{desc[num]}\n特殊描述：{remark[num]}"
+            await buff_.finish(msg)
     else:
         return
 
