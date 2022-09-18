@@ -75,7 +75,7 @@ async def help_(args: Message = CommandArg()):
             html = "<div style=\"font-family:Custom\">" + msg.replace("$", "<br>") + "</div>"+css
             final_path = CACHE + "/" + get_uuid() + ".html"
             write(final_path,html)
-            image = gender(final_path,0.1,"1500x500",False)
+            image = gender(final_path,0.1,"1400x700",False)
             if type(image) != type("sb"):
                 await help.finish("唔，帮助文件生成失败了哦~请联系机器人管理员解决此问题，附带以下信息：\n"+image)
             else:

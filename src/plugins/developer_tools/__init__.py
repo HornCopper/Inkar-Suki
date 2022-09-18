@@ -174,9 +174,13 @@ web = on_command("web",priority=5)
 async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
     if checker(str(event.user_id),10) == False:
         await call_api.finish(error(10))
-    url = args.extract_plain_text()
+    data = args.extract_plain_text().split(" ")
+    if len(data) != 2:
+        await web.finish("至少需要两个参数哦，请检查后重试~")
+    url = data[0]
+    size = data[1]
     if await get_status(url) not in [200,301,302]:
         await web.finish("唔……网站图片获取失败。\n原因：响应码非200，请检查是否能正常访问。")
     else:
-        image = gender(url,2,"1366x768",True)
+        image = gender(url,2,size,True)
         await web.finish("获取图片成功！\n"+MessageSegment.image(Path(image).as_uri()))
