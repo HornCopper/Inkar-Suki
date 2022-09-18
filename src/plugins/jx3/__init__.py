@@ -399,6 +399,7 @@ async def _(event: GroupMessageEvent, state: T_State, args: Message = CommandArg
         msg = ""
         for i in range(len(data["icon"])):
             msg = "\n" + str(i) + "." + data["name"][i] + "（技能ID：" + data["id"][i] + "）"
+            logger.info(msg)
         await buff_.send(msg[1:])
         return
     else:
