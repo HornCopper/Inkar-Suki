@@ -62,6 +62,7 @@ async def daily_(server):
     date = info["data"]["date"]
     week = info["data"]["week"]
     war = info["data"]["war"]
+    battle = info["data"]["battle"]
     camp = info["data"]["camp"]
     relief = info["data"]["relief"].replace("·乱世","")
     try:
@@ -71,7 +72,7 @@ async def daily_(server):
     weekly_war = info["data"]["team"][1].replace(";","，")
     weekly_big_war = info["data"]["team"][2].replace(";","，")
     weekly_task = info["data"]["team"][0].replace(";","，")
-    return f"查到该区服（{date}，周{week}）的信息啦！\n大战：大战！{war}\n矿车阵营日常：战！{camp}\n驰援任务：驰援{relief}\n美人图：{draw_obj}\n周常任务：{weekly_task}\n小队秘境周常：{weekly_war}\n团队秘境周常：{weekly_big_war}"
+    return f"查到该区服（{date}，周{week}）的信息啦！\n大战：大战！{war}！\n矿车阵营日常：战！{camp}！\n战场：{battle}\n驰援任务：驰援{relief}\n美人图：{draw_obj}\n周常任务：{weekly_task}\n小队秘境周常：{weekly_war}\n团队秘境周常：{weekly_big_war}"
 
 async def exam_(question):
     def qa(q,a):
