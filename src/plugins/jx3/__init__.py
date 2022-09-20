@@ -435,7 +435,9 @@ ws_recev = on(type="WsRecv", priority=5, block=False)
 @ws_recev.handle()
 async def _(bot: Bot, event: RecvEvent):
     message = str(event.get_message())
-    try:
-        await bot.call_api("send_group_msg", group_id = int(i), message = message)
-    except:
-        logger.info(f"向群({i})推送失败，可能是因为风控、禁言或者未加入该群。")
+    groups = json.loads(read(TOOLS + "/subscribe.json"))
+    for i in groups:
+        try:
+            await bot.call_api("send_group_msg", group_id = int(i), message = message)
+        except:
+            logger.info(f"向群({i})推送失败，可能是因为风控、禁言或者未加入该群。")
