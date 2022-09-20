@@ -435,20 +435,7 @@ ws_recev = on(type="WsRecv", priority=5, block=False)
 @ws_recev.handle()
 async def _(bot: Bot, event: RecvEvent):
     message = str(event.get_message())
-    groups = json.loads(read(TOOLS + "/subscribe.json"))
-    for i in groups:
-        data = json.loads(read(DATA + "/" + i + "/jx3group.json"))
-        server = data["server"]
-        if message.find("已开服") != -1 or message.find("已维护") != -1:
-            if message.find(server) != -1:
-                try:
-                    await bot.call_api("send_group_msg", group_id = int(i), message = message)
-                except:
-                    logger.info(f"向群({i})推送失败，可能是因为风控、禁言或者未加入该群。")
-            else:
-                pass
-        else:
-            try:
-                await bot.call_api("send_group_msg", group_id = int(i), message = message)
-            except:
-                logger.info(f"向群({i})推送失败，可能是因为风控、禁言或者未加入该群。")
+    try:
+        await bot.call_api("send_group_msg", group_id = int(i), message = message)
+    except:
+        logger.info(f"向群({i})推送失败，可能是因为风控、禁言或者未加入该群。")
