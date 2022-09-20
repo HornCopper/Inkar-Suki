@@ -15,7 +15,7 @@ from file import read, write
 def checknumber(number):
     return number.isdecimal()
 
-get_married = on_command("marry", priority=5)
+get_married = on_command("marry", priority=5, aliases={"求婚"})
 
 @get_married.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
@@ -38,7 +38,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
         msg = ms.at(husband) + " 已收到！请提醒对方使用+comfirm_marry <你的QQ号>来同意哦，其他人都没办法抢哦~"
         await get_married.finish(msg)
         
-comfirm_marry = on_command("confirm_marry",priority=5)
+comfirm_marry = on_command("confirm_marry",priority=5, aliases={"同意求婚"})
 
 @comfirm_marry.handle()
 async def __(event: GroupMessageEvent, args: Message = CommandArg()):
@@ -55,7 +55,7 @@ async def __(event: GroupMessageEvent, args: Message = CommandArg()):
                 await comfirm_marry.finish("恭喜" + ms.at(husband) + "和" + ms.at(wife) + "结婚！")
     await comfirm_marry.finish("你不能和他结婚，因为他还没有求婚呢！")
 
-deny_marry = on_command("deny_marry",priority=5)
+deny_marry = on_command("deny_marry",priority=5,aliases={"拒绝求婚"})
 
 @deny_marry.handle()
 async def ___(event: GroupMessageEvent, args: Message = CommandArg()):
@@ -72,7 +72,7 @@ async def ___(event: GroupMessageEvent, args: Message = CommandArg()):
                 await deny_marry.finish("已经结婚了，不能拒绝求婚，请使用+leave_marry进行离婚，非常不推荐的哦！")
     await deny_marry.finish("你不能拒绝他的求婚，因为他还没向你求婚呢！")
     
-leave_marry = on_command("leave_marry",priority=5)
+leave_marry = on_command("leave_marry",priority=5,aliases={"离婚"})
 
 @leave_marry.handle()
 async def ____(event: GroupMessageEvent):
@@ -88,7 +88,7 @@ async def ____(event: GroupMessageEvent):
                 await leave_marry.finish("你们不能离婚，因为尚未接受对方求婚！")
     await leave_marry.finish("你和他没有任何瓜葛，不可以离婚。")
 
-marry = on_command("my_marry",priority=5)
+marry = on_command("my_marry",priority=5,aliases={"结婚状态"})
 
 @marry.handle()
 async def _____(bot: Bot, event: GroupMessageEvent):
@@ -112,7 +112,7 @@ async def _____(bot: Bot, event: GroupMessageEvent):
         msg = ms.at(self_id) + " 没有查到呢，本群你应该还没结婚吧！"
     await marry.finish(msg)
 
-cancel_marry = on_command("cancel_marry", priority=5)
+cancel_marry = on_command("cancel_marry", priority=5, aliases={"取消求婚"})
 @cancel_marry.handle()
 async def _(event: GroupMessageEvent):
     qq = event.user_id
