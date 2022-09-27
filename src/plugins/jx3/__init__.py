@@ -435,6 +435,8 @@ ws_recev = on(type="WsRecv", priority=5, block=False)
 @ws_recev.handle()
 async def _(bot: Bot, event: RecvEvent):
     message = str(event.get_message())
+    if message == "False":
+        return
     groups = json.loads(read(TOOLS + "/subscribe.json"))
     for i in groups:
         try:
