@@ -34,7 +34,7 @@ async def _(state: T_State, event: GroupMessageEvent, args: Message = CommandArg
     state["id"] = info[1]
     state["platform"] = music_platform_type
     msg = ""
-    for i in range(info[0]):
+    for i in range(len(info[0])):
         msg = msg + "\n" + str(i) + "." + info[0][i]
     msg = msg[1:]
     await search_music.send(msg)
@@ -84,5 +84,5 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
             type_ = "qq"
         else:
             type_ = "163"
-        msg = ms.music(type_, info)
+        msg = ms.music(type_, info[0])
         await get_music.finish(msg)
