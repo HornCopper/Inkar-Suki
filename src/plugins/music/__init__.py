@@ -73,7 +73,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     if platform in ["QQ","QQ音乐","qq","q","Q","tx","tc","tencent","腾讯","腾讯音乐","qq音乐","Qq","Qq音乐","qQ","qQ音乐"]:
         info = await get(True, song, singer)
         music_platform_type = True
-    elif platform in ["网易","163","网抑云","网抑","网","netease","n","网易云音乐","网抑云音乐"]:
+    elif platform in ["网易","163","网抑云","网抑","网","netease","n","网易云音乐","网抑云音乐","网易云"]:
         info = await get(False, song, singer)
     else:
         await get_music.finish("唔……这是什么平台呢？")
