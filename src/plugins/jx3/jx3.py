@@ -1,4 +1,3 @@
-from venv import create
 import nonebot
 import time
 import sys
@@ -14,7 +13,7 @@ from .skilldatalib import aliases
 from config import Config
 
 async def server_status(server_name):
-    full_link = "https://www.jx3api.com/app/check?server="+server_name
+    full_link = "https://api.jx3api.com/app/check?server="+server_name
     info = await get_api(full_link)
     try:
         all_servers = info["data"]
@@ -31,7 +30,7 @@ async def server_status(server_name):
 async def horse_flush_place(horse_name):
     def template(place, last_update):
         return f"刷新地点：{place}\n上次更新：{last_update}\n"
-    full_link = "https://www.jx3api.com/app/horse?name="+horse_name
+    full_link = "https://api.jx3api.com/app/horse?name="+horse_name
     info = await get_api(full_link)
     if info["code"] == 401:
         return "未找到对应马匹。"
@@ -47,7 +46,7 @@ async def macro_(name):
     name = aliases(name)
     if name == False:
         return "此心法不存在哦~请检查后重试。"
-    full_link = "https://www.jx3api.com/app/macro?name=" + name
+    full_link = "https://api.jx3api.com/app/macro?name=" + name
     info = await get_api(full_link)
     if info["code"] == 401:
         return "此心法不存在哦~请检查后重试。"
@@ -57,7 +56,7 @@ async def macro_(name):
     return f"查到{xinfa}的宏命令啦！\n推荐奇穴搭配：{qixue}\n宏命令：\n{macro}"
     
 async def daily_(server):
-    full_link = "https://www.jx3api.com/app/daily?server=" + server
+    full_link = "https://api.jx3api.com/app/daily?server=" + server
     info = await get_api(full_link)
     date = info["data"]["date"]
     week = info["data"]["week"]
@@ -77,7 +76,7 @@ async def daily_(server):
 async def exam_(question):
     def qa(q,a):
         return f"问题：{q}\n答案：{a}"
-    full_link = "https://www.jx3api.com/app/exam?question="+question
+    full_link = "https://api.jx3api.com/app/exam?question="+question
     info = await get_api(full_link)
     if info["code"] == 401:
         return "没有找到任何与此相关的题目哦~"
@@ -92,7 +91,7 @@ async def matrix_(name):
     name = aliases(name)
     if name == False:
         return "此心法不存在哦~请检查后重试。"
-    full_link = "https://www.jx3api.com/app/matrix?name="+name
+    full_link = "https://api.jx3api.com/app/matrix?name="+name
     info = await get_api(full_link)
     if info["code"] == 401:
         return "此心法不存在哦~请检查后重试。"
@@ -109,7 +108,7 @@ async def equip_(name):
     name = aliases(name)
     if name == False:
         return "此心法不存在哦~请检查后重试。"
-    full_link = "https://www.jx3api.com/app/equip?name="+name
+    full_link = "https://api.jx3api.com/app/equip?name="+name
     info = await get_api(full_link)
     if info["code"] == 401:
         return "此心法不存在哦~请检查后重试。"
@@ -117,7 +116,7 @@ async def equip_(name):
         return f"找到{name}的推荐装备了：\nPVE：\n"+ms.image(info["data"]["pve"])+"\nPVP：\n"+ms.image(info["data"]["pvp"])
     
 async def require_(name):
-    full_link = "https://www.jx3api.com/app/require?name="+name
+    full_link = "https://api.jx3api.com/app/require?name="+name
     info = await get_api(full_link)
     if info["code"] == 401:
         return "此奇遇不存在或不是绝世/珍稀奇遇哦~请检查后重试。"
@@ -129,7 +128,7 @@ async def require_(name):
         return f"成功查询到奇遇：{name}\n触发方式：{means}\n触发前置：{req}\n触发条件：{mb}\n奇遇奖励：{rw}"
         
 async def news_():
-    full_link = "https://www.jx3api.com/app/news"
+    full_link = "https://api.jx3api.com/app/news"
     info = await get_api(full_link)
     def dtut(date,title,url,type_):
         return f"{date}{type_}：{title}\n{url}"
@@ -139,7 +138,7 @@ async def news_():
     return msg
 
 async def random__():
-    full_link = "https://www.jx3api.com/app/random"
+    full_link = "https://api.jx3api.com/app/random"
     info = await get_api(full_link)
     return info["data"]["text"]
 
@@ -147,7 +146,7 @@ async def heighten_(name):
     name = aliases(name)
     if name == False:
         return "此心法不存在哦~请检查后重试。"
-    full_link = "https://www.jx3api.com/app/heighten?name=" + name
+    full_link = "https://api.jx3api.com/app/heighten?name=" + name
     data = await get_api(full_link)
     if data["code"] == 401:
         return data["msg"]
@@ -161,7 +160,7 @@ async def heighten_(name):
         return f"查到{name}的推荐小药了：\n增强食品：{heighten_food}\n辅助食品：{auxiliary_food}\n增强药品：{heighten_drug}\n辅助药品：{auxiliary_drug}"
     
 async def price_(name):
-    full_link = "https://www.jx3api.com/app/price?name=" + name
+    full_link = "https://api.jx3api.com/app/price?name=" + name
     data = await get_api(full_link)
     if data["code"] == 401:
         return "此外观不存在哦~请检查后重试。"
@@ -190,7 +189,7 @@ async def price_(name):
         return msg
         
 async def demon_(name):
-    full_link = "https://www.jx3api.com/app/demon?server=" + name
+    full_link = "https://api.jx3api.com/app/demon?server=" + name
     data = await get_api(full_link)
     lastest = data["data"][0]
     if lastest["server"] != name:
@@ -206,7 +205,7 @@ async def demon_(name):
         return f"查到区服{name}{date}的金价信息：\n万宝楼：{wbl}\n贴吧：{tb}\nDD373：{dd}\nUU898：{uu}\n5173：{_5173}\n7881：{_7881}"
 
 async def tiangou_():
-    full_link = "https://www.jx3api.com/transmit/random"
+    full_link = "https://api.jx3api.com/transmit/random"
     data = await get_api(full_link)
     text = data["data"]["text"]
     return text
@@ -215,7 +214,7 @@ async def recruit_(server: str, copy: str = None):
     token = Config.jx3api_recruittoken
     if token == None:
         return "Bot尚未填写Token，请联系Bot主人~"
-    final_link = "https://www.jx3api.com/next/recruit?token=" + token + "&server=" + server
+    final_link = "https://api.jx3api.com/next/recruit?token=" + token + "&server=" + server
     info = await get_api(final_link)
     if info["code"] == 401:
         return "唔……服务器名输入有误！请检查后重试哦~"
