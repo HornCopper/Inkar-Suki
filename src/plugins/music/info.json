@@ -1,0 +1,1 @@
+{"author":"HornCopper","version":"1.0-Snapshot","name":"点歌(music)","admin":"N/A","aliases":"+search_music -> +搜歌$+get_music -> +点歌","desc":"搜索歌曲：+search_music <平台> <歌曲>$点歌（直接返回结果）：+get_music <平台> <歌曲> [歌手(可选)]"}
