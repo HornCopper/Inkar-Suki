@@ -18,12 +18,12 @@ async def search(platform: bool, song: str):
     copper_api_token = Config.coppertoken
     if platform:
         if copper_api_token:
-            final_link = "https://copper.codethink.cn/proxy?url=" + "https://www.jx3api.com/data/music/tencent?name="+ song
+            final_link = "https://copper.codethink.cn/music?platform=tencent&song=" + song + "&token=" + copper_api_token
         else:
             final_link = "https://www.jx3api.com/data/music/tencent?name=" + song
     else:
         if copper_api_token:
-            final_link = "https://copper.codethink.cn/nets?name=" + "https://www.jx3api.com/data/music/netease?name=" + song
+            final_link = "https://copper.codethink.cn/music?platform=netease&song=" + song + "&token=" + copper_api_token
         else:
             final_link = "https://www.jx3api.com/data/music/netease?name=" + song
     data = await get_api(final_link)
@@ -50,12 +50,12 @@ async def get(platform: bool, song: str, singer: str = None):
     copper_api_token = Config.coppertoken
     if platform:
         if copper_api_token:
-            final_link = "https://copper.codethink.cn/proxy?url=" + "https://www.jx3api.com/data/music/tencent?name="+ song
+            final_link = "https://copper.codethink.cn/music?platform=tencent&song=" + song + "&token=" + copper_api_token
         else:
             final_link = "https://www.jx3api.com/data/music/tencent?name=" + song
     else:
         if copper_api_token:
-            final_link = "https://copper.codethink.cn/nets?name=" + "https://www.jx3api.com/data/music/netease?name=" + song
+            final_link = "https://copper.codethink.cn/music?platform=netease&song=" + song + "&token=" + copper_api_token
         else:
             final_link = "https://www.jx3api.com/data/music/netease?name=" + song
     data = await get_api(final_link)
