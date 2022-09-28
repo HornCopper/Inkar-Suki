@@ -5,6 +5,8 @@ TOOLS = nonebot.get_driver().config.tools_path
 sys.path.append(TOOLS)
 
 from utils import get_api
+from config import Config
+
 async def search(platform: bool, song: str):
     '''
     搜索型函数。
@@ -13,10 +15,17 @@ async def search(platform: bool, song: str):
 
     第一个参数是平台，类型为`bool`，若为`True`则识别为`QQ音乐`，反之则为`网易云音乐`。
     '''
+    copper_api_token = Config.coppertoken
     if platform:
-        final_link = "https://www.jx3api.com/data/music/tencent?name=" + song
+        if copper_api_token:
+            final_link = "https://copper.codethink.cn/proxy?url=" + "https://www.jx3api.com/data/music/tencent?name="+ song
+        else:
+            final_link = "https://www.jx3api.com/data/music/tencent?name=" + song
     else:
-        final_link = "https://www.jx3api.com/data/music/netease?name=" + song
+        if copper_api_token:
+            final_link = "https://copper.codethink.cn/nets?name=" + "https://www.jx3api.com/data/music/netease?name=" + song
+        else:
+            final_link = "https://www.jx3api.com/data/music/netease?name=" + song
     data = await get_api(final_link)
     if data["code"] == 404:
         return "未收录该歌曲，请检查后重试~"
@@ -38,10 +47,17 @@ async def get(platform: bool, song: str, singer: str = None):
 
     第一个参数是平台，类型为`bool`，若为`True`则识别为`QQ音乐`，反之则为`网易云音乐`。
     '''
+    copper_api_token = Config.coppertoken
     if platform:
-        final_link = "https://www.jx3api.com/data/music/tencent?name=" + song
+        if copper_api_token:
+            final_link = "https://copper.codethink.cn/proxy?url=" + "https://www.jx3api.com/data/music/tencent?name="+ song
+        else:
+            final_link = "https://www.jx3api.com/data/music/tencent?name=" + song
     else:
-        final_link = "https://www.jx3api.com/data/music/netease?name=" + song
+        if copper_api_token:
+            final_link = "https://copper.codethink.cn/nets?name=" + "https://www.jx3api.com/data/music/netease?name=" + song
+        else:
+            final_link = "https://www.jx3api.com/data/music/netease?name=" + song
     data = await get_api(final_link)
     if data["code"] == 404:
         return "未收录该歌曲，请检查后重试~"
