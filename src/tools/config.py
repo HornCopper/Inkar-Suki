@@ -22,6 +22,7 @@ class Config:
     welcome_file = global_path+"/tools/welcome.txt"
     version = ikv
     nonebot = nbv
+    coppertoken = configs["coppertoken"]
     auaurl = configs["aua_api"]
     auatok = configs["aua_token"]
     jx3api_wslink = configs["jx3api_wslink"]
