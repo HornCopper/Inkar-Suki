@@ -67,10 +67,3 @@ async def _(matcher: Matcher, event: Event):
         matcher.stop_propagation()
     else:
         pass
-
-def check_group_banned(obj,group):
-    bans = json.loads(read(DATA+"/"+group+"/block.json"))
-    for i in bans:
-        if i == obj:
-            return True
-    return False
