@@ -101,5 +101,5 @@ async def sendm(bot, message, repo):
         if repo in json.loads(read(DATA + "/" + i + "/webhook.json")):
             send_group.append(int(i))
     for i in send_group:
-        response = await bot.call_api("send_group_msg", group_id=int(i), message=message)
+        response = await bot.call_api(api = "send_group_msg", group_id=int(i), message=message)
         logger.info("Webhook推送成功：消息ID为"+str(response["message_id"]))
