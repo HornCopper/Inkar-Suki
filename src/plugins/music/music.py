@@ -7,6 +7,13 @@ sys.path.append(TOOLS)
 from utils import get_api
 from config import Config
 
+proxy = Config.proxy
+
+proxies = {
+    "http://": proxy,
+    "https://": proxy
+}
+
 async def search(platform_: str, song: str):
     '''
     搜索型函数。
@@ -34,7 +41,7 @@ async def search(platform_: str, song: str):
             "is_xml": 0,
             "key": keyword
         }
-        data = await get_api(url = api, args = params)
+        data = await get_api(url = api, args = params, proxy = proxies)
         id = []
         song_ = []
         for i in data["data"]["song"]:
@@ -51,7 +58,7 @@ async def search(platform_: str, song: str):
             "type": 1,
             "offset": 0
         }
-        data = await get_api(url = api, args = params)
+        data = await get_api(url = api, args = params, proxy = proxies)
         id = []
         song_ = []
         for i in data["result"]["songs"]:
@@ -89,7 +96,7 @@ async def get(platform_: str, song: str, singer: str = None):
             "is_xml": 0,
             "key": keyword
         }
-        data = await get_api(url = api, args = params)
+        data = await get_api(url = api, args = params, proxy = proxies)
         if len(data["data"]["song"]) == 0:
             return "404"
         if singer == None:
@@ -110,7 +117,7 @@ async def get(platform_: str, song: str, singer: str = None):
             "type": 1,
             "offset": 0
         }
-        data = await get_api(url = api, args = params)
+        data = await get_api(url = api, args = params, proxy = proxies)
         if len(data["result"]["songs"]) == 0:
             return "404"
         if singer == None:

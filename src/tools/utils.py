@@ -5,8 +5,8 @@ import time
 def checknumber(number):
     return number.isdecimal()
 
-async def get_url(url, args: dict = None, headers: str = None, timeout: int = 300):
-    async with httpx.AsyncClient(follow_redirects = True) as client:
+async def get_url(url, proxy: dict = None, args: dict = None, headers: str = None, timeout: int = 300):
+    async with httpx.AsyncClient(proxies=proxy, follow_redirects = True) as client:
         if args != None:
             resp = await client.get(url, timeout = timeout, headers = headers)
         else:
@@ -14,8 +14,8 @@ async def get_url(url, args: dict = None, headers: str = None, timeout: int = 30
         result = resp.text
         return result
 
-async def get_api(url, args: dict = None, headers: str = None, timeout: int = 300):
-    async with httpx.AsyncClient(follow_redirects = True) as client:
+async def get_api(url, proxy: dict = None, args: dict = None, headers: str = None, timeout: int = 300):
+    async with httpx.AsyncClient(proxies=proxy, follow_redirects = True) as client:
         if args != None:
             resp = await client.get(url, timeout = timeout, headers = headers)
         else:
@@ -23,8 +23,8 @@ async def get_api(url, args: dict = None, headers: str = None, timeout: int = 30
         result = resp.json()
         return result
 
-async def post_url(url, args: dict = None, timeout: int = 300):
-    async with httpx.AsyncClient(follow_redirects = True) as client:
+async def post_url(url, proxy: dict = None, args: dict = None, headers: str = None, timeout: int = 300):
+    async with httpx.AsyncClient(proxies=proxy, follow_redirects = True) as client:
         if args != None:
             resp = await client.post(url, timeout = timeout, headers = headers)
         else:
@@ -32,8 +32,8 @@ async def post_url(url, args: dict = None, timeout: int = 300):
         result = resp.text
         return result
     
-async def get_status(url, args: dict = None, headers: str = None, timeout: int = 300):
-    async with httpx.AsyncClient(follow_redirects = False) as client:
+async def get_status(url, proxy: dict = None, args: dict = None, headers: str = None, timeout: int = 300):
+    async with httpx.AsyncClient(proxies=proxy, follow_redirects = True) as client:
         if args != None:
             resp = await client.get(url, timeout = timeout, headers = headers)
         else:
@@ -41,8 +41,8 @@ async def get_status(url, args: dict = None, headers: str = None, timeout: int =
         result = resp.status_code
         return result
 
-async def get_content(url, args: dict = None, headers: str = None, timeout: int = 300):
-    async with httpx.AsyncClient(follow_redirects=True) as client:
+async def get_content(url, proxy: dict = None, args: dict = None, headers: str = None, timeout: int = 300):
+    async with httpx.AsyncClient(proxies=proxy, follow_redirects = True) as client:
         if args != None:
             resp = await client.get(url, timeout = timeout, headers = headers)
         else:
