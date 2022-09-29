@@ -94,19 +94,12 @@ async def recWebHook(req: Request):
         await sendm(Bot, message, repo)
     return {"status":200}
 
-async def sendm(bot: Bot, message, repo):
-    groups=os.listdir("./src/data")
+async def sendm(bot, message, repo):
+    groups = os.listdir("./src/data")
     send_group = []
     for i in groups:
-        if repo in json.loads(read(DATA+"/"+i+"/webhook.json")):
+        if repo in json.loads(read(DATA + "/" + i + "/webhook.json")):
             send_group.append(int(i))
     for i in send_group:
-        try:
-            response = await bot.call_api("send_group_msg", group_id=int(i), message=message)
-            logger.info("Webhook推送成功：消息ID为"+str(response["message_id"]))
-        except:
-            try:
-                response = await bot.call_api("send_group_msg", group_id=int(group), message="唔……刚刚发送消息失败了哦（原因懂的都懂），重新发送：\n"+message)
-                logger.info("Webhook推送失败：被风控，重新发送消息ID为"+response["message_id"])
-            except:
-                logger.info("Webhook推送失败：被风控，重新发送失败。")
+        response = await bot.call_api("send_group_msg", group_id=int(i), message=message)
+        logger.info("Webhook推送成功：消息ID为"+str(response["message_id"]))
