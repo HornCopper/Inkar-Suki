@@ -91,7 +91,7 @@ async def recWebHook(req: Request):
         return {"status":"500","message":msg, "error":e}
     bots: list = Config.bot
     for i in bots:
-        bot = get_bot(int(i))
+        bot = get_bot(i)
         await sendm(bot, message, repo)
     return {"status":200}
 
