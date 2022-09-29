@@ -20,69 +20,58 @@ search_music = on_command("search_music", aliases={"搜歌"}, priority=5)
 async def _(state: T_State, event: GroupMessageEvent, args: Message = CommandArg()):
     data = args.extract_plain_text().split(" ")
     if len(data) != 2:
-        await search_music.finish("唔……只能有两个参数哦~")
+        await search_music.finish("唔……参数不正确哦，只能有2个参数~")
     platform = data[0]
-    music_platform_type = False
     song = data[1]
-    if platform in ["QQ","QQ音乐","qq","q","Q","tx","tc","tencent","腾讯","腾讯音乐","qq音乐","Qq","Qq音乐","qQ","qQ音乐"]:
-        info = await search(True, song)
-        music_platform_type = True
-    elif platform in ["网易","163","网抑云","网抑","网","netease","n","网易云音乐","网抑云音乐","网易云"]:
-        info = await search(False, song)
-    else:
-        await search_music.finish("唔……这是什么平台呢？")
-    state["id"] = info[1]
-    state["platform"] = music_platform_type
+    info = await search(platform, song)
+    if info == "404":
+        await search_music.finish("唔……没有找到您要的音乐哦~")
+    songs = info[0]
+    id = info[1]
+    platform = info[2]
+    state["id"] = id
+    state["platform"] = platform
     msg = ""
-    for i in range(len(info[0])):
-        msg = msg + "\n" + str(i) + "." + info[0][i]
-    msg = msg[1:]
-    await search_music.send(msg)
+    for i in range(len(songs)):
+        msg = msg + f"\n{i}." + songs[i]
+    await search_music.send(msg[1:])
     return
 
 @search_music.got("num", prompt="输入序号即可搜索搜索歌曲，其他内容则无视~")
 async def __(state: T_State, num: Message = Arg()):
     num = num.extract_plain_text()
-    if checknumber(num) != True:
-        return
-    else:
-        num = int(num)
+    if checknumber(num):
         id = state["id"]
         platform = state["platform"]
-        if platform:
-            type_ = "qq"
+        num = int(num)
+        song = id[num]
+        if platform == 1:
+            p = "qq"
         else:
-            type_ = "163"
-        msg = ms.music(type_, id[num])
+            p = "163"
+        msg = ms.music(p, song)
         await search_music.finish(msg)
+    else:
+        return
 
 get_music = on_command("get_music", aliases={"点歌"}, priority=5)
 @get_music.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     data = args.extract_plain_text().split(" ")
     if len(data) not in [2,3]:
-        await get_music.finish("唔……只能有两个或者三个参数哦~")
-    platform = data[0]
-    music_platform_type = False
-    song = data[1]
+        await get_music.finish("唔……参数只能有2或3个哦~")
     singer = None
     if len(data) == 3:
         singer = data[2]
+    platform = data[0]
+    song_name = data[1]
+    info = await get(platform, song_name, singer)
+    if info == "404":
+        await get_music.finish("唔……没有找到您要的歌曲~")
+    platform = info[2]
+    if platform == 1:
+        p = "qq"
     else:
-        singer = None
-    if platform in ["QQ","QQ音乐","qq","q","Q","tx","tc","tencent","腾讯","腾讯音乐","qq音乐","Qq","Qq音乐","qQ","qQ音乐"]:
-        info = await get(True, song, singer)
-        music_platform_type = True
-    elif platform in ["网易","163","网抑云","网抑","网","netease","n","网易云音乐","网抑云音乐","网易云"]:
-        info = await get(False, song, singer)
-    else:
-        await get_music.finish("唔……这是什么平台呢？")
-    if type(info) == type("sb"):
-        await get_music.finish(info)
-    else:
-        if music_platform_type:
-            type_ = "qq"
-        else:
-            type_ = "163"
-        msg = ms.music(type_, info[0])
-        await get_music.finish(msg)
+        p = "163"
+    msg = ms.music(p, info[1])
+    await get_music.finish(msg)

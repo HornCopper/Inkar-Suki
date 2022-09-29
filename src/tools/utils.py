@@ -5,33 +5,48 @@ import time
 def checknumber(number):
     return number.isdecimal()
 
-async def get_url(url, headers: str = None, timeout: int = 300):
+async def get_url(url, args: dict = None, headers: str = None, timeout: int = 300):
     async with httpx.AsyncClient(follow_redirects = True) as client:
-        resp = await client.get(url, timeout = timeout, headers = headers)
+        if args != None:
+            resp = await client.get(url, timeout = timeout, headers = headers)
+        else:
+            resp = await client.get(url, timeout = timeout, headers = headers, params=args)
         result = resp.text
         return result
 
-async def get_api(url, headers: str = None, timeout: int = 300):
+async def get_api(url, args: dict = None, headers: str = None, timeout: int = 300):
     async with httpx.AsyncClient(follow_redirects = True) as client:
-        resp = await client.get(url, timeout = timeout, headers = headers)
+        if args != None:
+            resp = await client.get(url, timeout = timeout, headers = headers)
+        else:
+            resp = await client.get(url, timeout = timeout, headers = headers, params=args)
         result = resp.json()
         return result
 
-async def post_url(url, timeout: int = 300):
+async def post_url(url, args: dict = None, timeout: int = 300):
     async with httpx.AsyncClient(follow_redirects = True) as client:
-        resp = await client.post(url, timeout = timeout)
+        if args != None:
+            resp = await client.post(url, timeout = timeout, headers = headers)
+        else:
+            resp = await client.post(url, timeout = timeout, headers = headers, params=args)
         result = resp.text
         return result
     
-async def get_status(url, headers: str = None, timeout: int = 300):
+async def get_status(url, args: dict = None, headers: str = None, timeout: int = 300):
     async with httpx.AsyncClient(follow_redirects = False) as client:
-        resp = await client.get(url,timeout=timeout)
+        if args != None:
+            resp = await client.get(url, timeout = timeout, headers = headers)
+        else:
+            resp = await client.get(url, timeout = timeout, headers = headers, params=args)
         result = resp.status_code
         return result
 
-async def get_content(url, headers: str = None, timeout: int = 300):
+async def get_content(url, args: dict = None, headers: str = None, timeout: int = 300):
     async with httpx.AsyncClient(follow_redirects=True) as client:
-        resp = await client.get(url, timeout = timeout, headers = headers)
+        if args != None:
+            resp = await client.get(url, timeout = timeout, headers = headers)
+        else:
+            resp = await client.get(url, timeout = timeout, headers = headers, params=args)
         results = resp.content
         return results
 
