@@ -89,8 +89,11 @@ if __name__ == "__main__":
     json_["aua_token"] = aua_token
     space()
     print("是否需要使用代理服务器？放心，这仅会在作者认为需要代理服务器的代码中生效，请自行配置代理服务器，不要设置账号密码，可以设置仅某IP可用。")
-    proxy = input("请输入代理服务器（需要协议头和端口）：")
-    json_["proxy"] = proxy
+    proxy = input("请输入代理服务器，不需要则请直接回车（需要协议头和端口）：")
+    if proxy == "":
+        json_["proxy"] = None
+    else:
+        json_["proxy"] = proxy
     space()
     print("模块`jx3`需要使用JX3API的Socket API，请查询`https://www.jx3api.com`，获取`Socket API`地址并填写。")
     print("格式为：`wss://xxxx.xxxx.xxx`")

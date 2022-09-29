@@ -14,6 +14,9 @@ proxies = {
     "https://": proxy
 }
 
+if proxy == None:
+    proxies = None
+
 async def search(platform_: str, song: str):
     '''
     搜索型函数。
