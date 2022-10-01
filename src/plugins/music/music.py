@@ -16,8 +16,10 @@ async def search(platform_: str, song: str):
     '''
     if platform_ in ["QQ","QQ音乐","qq","q","Q","tx","tc","tencent","腾讯","腾讯音乐","qq音乐","Qq","Qq音乐","qQ","qQ音乐"]:
         platform = 1 # 1 QQ 2 网易
-    elif platform_ in ["网易","163","网抑云","网抑","网","netease","n","网易云音乐","网抑云音乐","网易云"]:
+    elif platform_ in ["网易","163","网抑云","网抑","网","netease","n","网易云音乐","网抑云音乐","网易云","wy","w"]:
         platform = 2
+    else:
+        platform = 1
     keyword = song
     if platform == 1:
         api = "https://c.y.qq.com/splcloud/fcgi-bin/smartbox_new.fcg?format=json&key=" + keyword
