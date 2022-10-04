@@ -1,4 +1,4 @@
-M!--
+<!--
 # [Inkar Suki](https://www.inkar-suki.xyz)——多功能的 QQ 群聊机器人
 - 名字不完整来源：Inkar-usi@DIA
 
