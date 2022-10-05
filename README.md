@@ -17,7 +17,7 @@
         - [x] 获取成就信息；
         - [x] 获取任务信息；
         - [x] 获取buff信息。
-    - 以下功能数据来源于[JX3API](https://www.jx3api.com)，<font color=red>红色字体为付费功能，即您需要向JX3API购买Token方可使用的功能。</font>
+    - 以下功能数据来源于[JX3API](https://www.jx3api.com)，$\color{red}{红色字体为付费功能，即您需要向JX3API购买Token方可使用的功能。}$
         - [x] 获取马匹刷新地点；
         - [x] 获取服务器状态；
         - [x] 获取心法对应宏命令以及推荐奇穴搭配；
@@ -31,9 +31,9 @@
         - [x] 获取当前赛季推荐的小药；
         - [x] 获取服务器外观的物价；
         - [x] 获取服务器的金价；
-        - [x] 订阅新闻、开服与维护、<font color=red>玄晶、马匹、奇遇、扶摇</font>；
-        - [x] <font color=red>获取奇遇/烟花记录</font>；
-        - [x] <font color=red>获取服务器的团队招募</font>；
+        - [x] 订阅新闻、开服与维护、$\color{red}{玄晶、马匹、奇遇、扶摇)$；
+        - [x] $\color{red}{获取奇遇/烟花记录)$；
+        - [x] $\color{red}{获取服务器的团队招募)$；
         - [x] 获取一条舔狗日志。
     - 以下为辅助性功能。
         - [x] 团长群内开团（不同步至游戏）；
@@ -52,7 +52,7 @@
         - [x] 获取用户单曲最佳成绩；
         - [x] 绑定Arcaea用户。
 - [Minecraft（我的世界）](https://www.minecraft.net/zh-hans)相关功能。
-        > 由于上游API的改动，该功能正在努力重新适配中。（HornCopper， 2022-10-6）
+        <br>**注：**由于上游API的改动，该功能正在努力重新适配中。（HornCopper， 2022-10-6）
         - [x] 获取Minecraft服务器信息；
         - [x] 获取Minecraft最新版本号。
 - 娱乐功能。
