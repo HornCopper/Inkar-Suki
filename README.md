@@ -113,6 +113,9 @@ _基于Nonebot 2的多功能的 QQ 群聊机器人_
 
 感谢您使用`Inkar Suki`，幸甚有您！
 
+# 赞助
+欢迎[投喂](https://afdian.net/a/Inkar-Suki)。
+
 # 友情链接
 - [Nonebot 2](https://v2.nonebot.dev/) - 跨平台 Python 异步机器人框架；
 - [go-cqhttp](https://docs.go-cqhttp.org/) - 基于 Mirai 以及 MiraiGo 的 OneBot Golang 原生实现；
