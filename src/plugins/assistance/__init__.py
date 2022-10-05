@@ -7,7 +7,6 @@ import os
 from nonebot.typing import T_State
 from nonebot import on_command
 from nonebot.adapters.onebot.v11 import GroupMessageEvent, Bot
-from nonebot import require
 from nonebot.adapters import Message
 from nonebot.log import logger
 from nonebot.params import CommandArg, Arg
@@ -347,45 +346,3 @@ async def _(event: GroupMessageEvent):
     now["notice"] = False
     write(DATA + "/" + str(event.group_id) + "/jx3group.json", json.dumps(now, ensure_ascii=False))
     await cancel_notice.finish("监控取消成功，推送将会遵照此进行~！")
-
-# require("nonebot_plugin_apscheduler")
-
-# from nonebot_plugin_apscheduler import scheduler
-
-# @scheduler.scheduled_job("cron", minute="*/1")
-# async def get_group():
-#     logger.info("Scheduler job has run successfully.")
-#     bot = nonebot.get_bot()
-#     token = Config.jx3api_recruittoken
-#     if token == None:
-#         logger.info("Token is null. If you don't want to see this message, please remove in `src/plugins/assistance/__init__.py` from line 318.")
-#     final_link = "https://www.jx3api.com/next/recruit?token=" + token + "&server=" + "幽月轮" # 目前不打算支持其他服务器
-#     data = await get_api(final_link)
-#     group_list: list = os.listdir(DATA)
-#     for i in group_list:
-#         group_data = json.loads(read(DATA + "/" + str(i) + "/jx3group.json"))
-#         found = False
-#         if group_data["notice"] == False:
-#             continue
-#         else:
-#             for x in data["data"]["data"]:
-#                 name = group_data["name"]
-#                 if x["content"].find("【" + name + "】") != -1 and group_data["status"] == False:
-#                     found = True
-#                     leader = x["leader"]
-#                     activity = x["activity"]
-#                     content = x["content"]
-#                     people_count = str(x["number"]) + "/" + str(x["maxNumber"])
-#                     timeArray = time.localtime(x["createTime"])
-#                     createTime = time.strftime("%Y年%m月%d日%H:%M:%S", timeArray)
-#                     msg = f"【{name}】{leader}开团啦！\n时间：{createTime}\n人数：{people_count}\n活动名：{activity}\n描述：{content}"
-#                     await bot.call_api("send_group_msg", group_id = int(i), message = msg)
-#                 if x["content"].find("【" + name + "】") != -1 and group_data["status"] == True:
-#                     found = True
-#                 if found == True and group_data["status"] == False:
-#                     group_data["status"] = True
-#                     final_data = json.dumps(group_data, ensure_ascii=False)
-#                     write(DATA + "/" + str(i) + "/jx3group.json", final_data)
-#         if found == False and group_data["status"] == True:
-#             group_data["status"] = False
-#             write(DATA + "/" + str(i) + "/jx3group.json", json.dumps(group_data, ensure_ascii=False))
