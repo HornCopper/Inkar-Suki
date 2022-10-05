@@ -16,6 +16,8 @@ _基于Nonebot 2的多功能的 QQ 群聊机器人_
 
 **万水千山总是情，点个star行不行？**
 
+</div>
+    
 # 简介
 各种功能于一体的[QQ](https://im.qq.com)群聊机器人，基于[Nonebot 2](https://v2.nonebot.dev)。
 
