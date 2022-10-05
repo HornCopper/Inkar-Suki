@@ -328,19 +328,3 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     now["name"] = group
     write(DATA + "/" + str(event.group_id) + "/jx3group.json", json.dumps(now, ensure_ascii=False))
     await set_group.finish("团牌设置成功，推送将会遵照此进行~！\n小提示：一个群只能设置一个团牌哦~\n另外，会抓取【xxx】，所以团长注意加中文中括号哦~")
-
-set_group_notice = on_command("jx3_groupnotice", aliases={"监控开团"}, priority=5)
-@set_group_notice.handle()
-async def _(event: GroupMessageEvent):
-    now = json.loads(read(DATA + "/" + str(event.group_id) + "/jx3group.json"))
-    now["notice"] = True
-    write(DATA + "/" + str(event.group_id) + "/jx3group.json", json.dumps(now, ensure_ascii=False))
-    await set_group_notice.finish("监控设置成功，推送将会遵照此进行~！")
-
-cancel_notice = on_command("jx3_cancelnotice", aliases={"取消监控"}, priority=5)
-@cancel_notice.handle()
-async def _(event: GroupMessageEvent):
-    now = json.loads(read(DATA + "/" + str(event.group_id) + "/jx3group.json"))
-    now["notice"] = False
-    write(DATA + "/" + str(event.group_id) + "/jx3group.json", json.dumps(now, ensure_ascii=False))
-    await cancel_notice.finish("监控取消成功，推送将会遵照此进行~！")
