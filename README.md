@@ -67,7 +67,6 @@ _基于Nonebot 2的多功能的 QQ 群聊机器人_
         - [x] 获取用户单曲最佳成绩；
         - [x] 绑定Arcaea用户。
 - [Minecraft（我的世界）](https://www.minecraft.net/zh-hans)相关功能。
-        <br>**注：**由于上游API的改动，该功能正在努力重新适配中。（HornCopper， 2022-10-6）
         - [x] 获取Minecraft服务器信息；
         - [x] 获取Minecraft最新版本号。
 - 娱乐功能。
