@@ -1,6 +1,8 @@
 # [Inkar Suki](https://www.inkar-suki.xyz)——多功能的 QQ 群聊机器人
 - 名字不完整来源：Inkar-usi@DIA
 
+**万水千山总是情，点个star行不行？**
+
 # 简介
 各种功能于一体的[QQ](https://im.qq.com)群聊机器人，基于[Nonebot 2](https://v2.nonebot.dev)。
 
