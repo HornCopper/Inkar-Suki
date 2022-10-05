@@ -1,1 +1,1 @@
-{"author":"HornCopper","version":"1.0-Snapshot","name":"事件响应器(notice_event)","admin":"修改(5)","aliases":"N/A","desc":"设置指定欢迎消息：+welcome <message>$关闭退群提示（一旦关闭不可开启）：+no_notice_leave"}
+{"author":"HornCopper","version":"1.0-Snapshot","name":"事件响应器(notice_event)","admin":"修改(5)","aliases":"N/A","desc":"设置指定欢迎消息：+welcome <message>"}
