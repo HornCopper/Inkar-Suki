@@ -1,5 +1,18 @@
-# [Inkar Suki](https://www.inkar-suki.xyz)——多功能的 QQ 群聊机器人
-- 名字不完整来源：Inkar-usi@DIA
+<div align="center">
+
+# [Inkar Suki](https://www.inkar-suki.xyz)
+
+_基于Nonebot 2的多功能的 QQ 群聊机器人_
+
+![Nonebot2](https://img.shields.io/badge/Nonebot2-Release_v2.0.0_beta.5-brightgreen)
+![go-cqhttp](https://img.shields.io/badge/go--cqhttp-v1.0.0_rc3-brightgreen)
+<br>
+![GitHub](https://img.shields.io/github/license/Ailitonia/omega-miya)
+![Python](https://img.shields.io/badge/Python-3.8+-blue)
+![GitHub release (latest by date including pre-releases)](https://img.shields.io/github/v/release/codethink-cn/Inkar-Suki?include_prereleases)
+![GitHub (Pre-)Release Date](https://img.shields.io/github/release-date-pre/codethink-cn/Inkar-Suki)
+
+名字不完整来源：Inkar-usi@DIA
 
 **万水千山总是情，点个star行不行？**
 
