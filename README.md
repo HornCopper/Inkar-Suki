@@ -67,8 +67,8 @@ _基于Nonebot 2的多功能的 QQ 群聊机器人_
         - [x] 获取用户单曲最佳成绩；
         - [x] 绑定Arcaea用户。
 - [Minecraft（我的世界）](https://www.minecraft.net/zh-hans)相关功能。
-        - [x] 获取Minecraft服务器信息；
-        - [x] 获取Minecraft最新版本号。
+    - [x] 获取Minecraft服务器信息；
+    - [x] 获取Minecraft最新版本号。
 - 娱乐功能。
     - [x] 结婚（包含求婚、接受/拒绝、离婚）；
     - 以下数据来源于[QQ音乐](https://y.qq.com)和[网易云音乐](https://music.163.com)。
