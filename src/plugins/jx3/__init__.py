@@ -443,7 +443,10 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     real_data = data[name]
     for i in range(1,13):
         for x in range(1,6):
-            each = real_data[str(i)][str(x)]
+            try:
+                each = real_data[str(i)][str(x)]
+            except:
+                continue
             if each["name"] == tl:
                 if each["is_skill"] == 1:
                     special_desc = each["meta"]
