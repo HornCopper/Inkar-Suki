@@ -161,7 +161,7 @@ async def _(args: Message = CommandArg()):
         msg = await getAchievementFinishMethod(adventure_name)
         await adventure_____.finish(msg)
 
-talent = on_command("jx3_talent",aliases={"奇穴"},priority=5)
+talent = on_command("_jx3_talent",aliases={"_奇穴"},priority=5)
 @talent.handle()
 async def _(args: Message = CommandArg()):
     data = args.extract_plain_text()
@@ -424,7 +424,7 @@ async def _(event: GroupMessageEvent, state: T_State, num: Message = Arg()):
     else:
         return
 
-_talent = on_command("_jx3_talent", aliases={"_奇穴"}, priority=5)
+_talent = on_command("jx3_talent", aliases={"奇穴"}, priority=5)
 @_talent.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     arg = args.extract_plain_text().split(" ")
