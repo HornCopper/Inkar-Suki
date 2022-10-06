@@ -440,6 +440,8 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
         final_url = f"https://oss.jx3box.com/data/qixue/v{ver}.json"
         data = await get_api(final_url)
         write(ASSETS + "/jx3" + f"v{ver}.json", json.dumps(data, ensure_ascii=False))
+    else:
+        data = json.loads(read(ASSETS + "/jx3" + f"v{ver}.json"))
     real_data = data[name]
     for i in range(1,13):
         for x in range(1,6):
