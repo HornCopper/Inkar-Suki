@@ -1,6 +1,23 @@
-# [Inkar Suki](https://www.inkar-suki.xyz)——多功能的 QQ 群聊机器人
-- 名字不完整来源：Inkar-usi@DIA
+<div align="center">
 
+# [Inkar Suki](https://www.inkar-suki.xyz)
+
+_基于Nonebot 2的多功能的 QQ 群聊机器人_
+
+![Nonebot2](https://img.shields.io/badge/Nonebot2-Release_v2.0.0_beta.5-brightgreen)
+![go-cqhttp](https://img.shields.io/badge/go--cqhttp-v1.0.0_rc3-brightgreen)
+<br>
+![GitHub](https://img.shields.io/github/license/Ailitonia/omega-miya)
+![Python](https://img.shields.io/badge/Python-3.8+-blue)
+![GitHub release (latest by date including pre-releases)](https://img.shields.io/github/v/release/codethink-cn/Inkar-Suki?include_prereleases)
+![GitHub (Pre-)Release Date](https://img.shields.io/github/release-date-pre/codethink-cn/Inkar-Suki)
+
+名字不完整来源：Inkar-usi@DIA
+
+**万水千山总是情，点个star行不行？**
+
+</div>
+    
 # 简介
 各种功能于一体的[QQ](https://im.qq.com)群聊机器人，基于[Nonebot 2](https://v2.nonebot.dev)。
 
@@ -15,7 +32,7 @@
         - [x] 获取成就信息；
         - [x] 获取任务信息；
         - [x] 获取buff信息。
-    - 以下功能数据来源于[JX3API](https://www.jx3api.com)，<font color="FF0000">红色字体为付费功能，即您需要向JX3API购买Token方可使用的功能。</font>
+    - 以下功能数据来源于[JX3API](https://www.jx3api.com)，*斜体为付费功能，即您需要向JX3API购买Token方可使用的功能*。
         - [x] 获取马匹刷新地点；
         - [x] 获取服务器状态；
         - [x] 获取心法对应宏命令以及推荐奇穴搭配；
@@ -29,9 +46,9 @@
         - [x] 获取当前赛季推荐的小药；
         - [x] 获取服务器外观的物价；
         - [x] 获取服务器的金价；
-        - [x] 订阅新闻、开服与维护、<font color="FF0000">玄晶、马匹、奇遇、扶摇</font>；
-        - [x] <font color="FF0000">获取奇遇/烟花记录</font>；
-        - [x] <font color="FF0000">获取服务器的团队招募</font>；
+        - [x] 订阅新闻、开服与维护、*玄晶、马匹、奇遇、扶摇*；
+        - [x] *获取奇遇/烟花记录*；
+        - [x] *获取服务器的团队招募*；
         - [x] 获取一条舔狗日志。
     - 以下为辅助性功能。
         - [x] 团长群内开团（不同步至游戏）；
@@ -50,9 +67,8 @@
         - [x] 获取用户单曲最佳成绩；
         - [x] 绑定Arcaea用户。
 - [Minecraft（我的世界）](https://www.minecraft.net/zh-hans)相关功能。
-        > 由于上游API的改动，该功能正在努力重新适配中。（HornCopper， 2022-10-6）
-        - [x] 获取Minecraft服务器信息；
-        - [x] 获取Minecraft最新版本号。
+    - [x] 获取Minecraft服务器信息；
+    - [x] 获取Minecraft最新版本号。
 - 娱乐功能。
     - [x] 结婚（包含求婚、接受/拒绝、离婚）；
     - 以下数据来源于[QQ音乐](https://y.qq.com)和[网易云音乐](https://music.163.com)。
@@ -96,6 +112,9 @@
 - 欢迎加入`Inkar-Suki用户群`，群号为[650495414](https://jq.qq.com/?_wv=1027&k=JazIPJxf)，您可以在这里与其他使用机器人的用户交流。
 
 感谢您使用`Inkar Suki`，幸甚有您！
+
+# 赞助
+欢迎[投喂](https://afdian.net/a/Inkar-Suki)。
 
 # 友情链接
 - [Nonebot 2](https://v2.nonebot.dev/) - 跨平台 Python 异步机器人框架；
