@@ -16,7 +16,7 @@ sys.path.append(TOOLS)
 DATA = TOOLS[:-5] + "data"
 ASSETS = TOOLS[:-5] + "assets"
 
-from utils import checknumber
+from utils import checknumber, get_status, get_api
 from file import read, write
 
 from .jx3 import *
@@ -427,12 +427,39 @@ async def _(event: GroupMessageEvent, state: T_State, num: Message = Arg()):
 _talent = on_command("_jx3_talent", aliases={"_奇穴"}, priority=5)
 @_talent.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
-    ver = "20220921"
     arg = args.extract_plain_text().split(" ")
-    if len(arg) != 2:
+    if len(arg) not in [2,3]:
         await _talent.finish("唔……参数不正确哦~")
-    kf = arg[0]
-    tl = arg[1]
+    if len(arg) == 2:
+        kf = arg[0]
+        tl = arg[1]
+        ver = "20220921"
+    else:
+        kf = arg[0]
+        tl = arg[1]
+        ver = arg[2]
+        if ver == "怒海争锋":
+            ver = "20190926"
+        elif ver == "凌雪藏锋":
+            ver = "20191128"
+        elif ver == "结庐在江湖":
+            ver = "20200522"
+        elif ver == "同筑山水居":
+            ver = "20200805"
+        elif ver == "奉天证道":
+            ver = "20201030"
+        elif ver == "月满归乡":
+            ver = "20201130"
+        elif ver == "白帝风云":
+            ver = "20210830"
+        elif ver == "北天药宗":
+            ver = "20220118"
+        elif ver == "江湖无限":
+            ver = "20220706"
+        elif ver == "横刀断浪":
+            ver = "20220921"
+        else:
+            await _talent.finish("唔……这是什么赛季呢？")
     name = aliases(kf)
     if name == False:
         await _talent.finish("未找到该心法，请检查后重试~")
@@ -442,7 +469,10 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
         write(ASSETS + "/jx3" + f"v{ver}.json", json.dumps(data, ensure_ascii=False))
     else:
         data = json.loads(read(ASSETS + "/jx3" + f"v{ver}.json"))
-    real_data = data[name]
+    try:
+        real_data = data[name]
+    except:
+        await _talent.finish("唔……该赛季没有此心法~")
     for i in range(1,13):
         for x in range(1,6):
             try:
