@@ -435,7 +435,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     name = aliases(kf)
     if name == False:
         await _talent.finish("未找到该心法，请检查后重试~")
-    if os.path.exist(ASSETS + "/jx3" + f"v{ver}.json") == False:
+    if os.path.exists(ASSETS + "/jx3" + f"v{ver}.json") == False:
         ver = "20220921"
         final_url = f"https://oss.jx3box.com/data/qixue/v{ver}.json"
         data = await get_api(final_url)
