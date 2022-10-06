@@ -454,11 +454,11 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
                     special_desc = each["meta"]
                     desc = each["desc"]
                     extend = each["extend"]
-                    icon = "https://icon.jx3box.com/icon/" + each["icon"] + ".png"
+                    icon = "https://icon.jx3box.com/icon/" + str(each["icon"]) + ".png"
                     msg = f"第{i}重·第{x}层：{tl}\n" + ms.image(icon) + f"\n{special_desc}\n{desc}\n{extend}"
                 else:
                     desc = each["desc"]
-                    icon = "https://icon.jx3box.com/icon/" + each["icon"] + ".png"
+                    icon = "https://icon.jx3box.com/icon/" + str(each["icon"]) + ".png"
                     msg = f"第{i}重·第{x}层：{tl}\n" + ms.image(icon) + f"\n{desc}"
                 await _talent.finish(msg)
     await _talent.finish("唔……未找到该奇穴哦~")
