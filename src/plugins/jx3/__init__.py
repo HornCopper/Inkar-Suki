@@ -1,6 +1,7 @@
 import sys
 import nonebot
 import json
+import os
 
 from nonebot import get_driver
 from nonebot import on, on_command
@@ -13,6 +14,7 @@ from nonebot.typing import T_State
 TOOLS = nonebot.get_driver().config.tools_path
 sys.path.append(TOOLS)
 DATA = TOOLS[:-5] + "data"
+ASSETS = TOOLS[:-5] + "assets"
 
 from utils import checknumber
 from file import read, write
@@ -421,6 +423,40 @@ async def _(event: GroupMessageEvent, state: T_State, num: Message = Arg()):
             await buff_.finish(msg)
     else:
         return
+
+_talent = on_command("_jx3_talent", aliases={"_奇穴"}, priority=5)
+@_talent.handle()
+async def _(event: GroupMessageEvent, args: Message = CommandArg()):
+    arg = args.extract_plain_text().split(" ")
+    if len(arg) != 2:
+        await _talent.finish("唔……参数不正确哦~")
+    kf = arg[0]
+    tl = arg[1]
+    name = aliases(kf)
+    if name == False:
+        await _talent.finish("未找到该心法，请检查后重试~")
+    if os.path.exist(ASSETS + "/jx3" + f"v{ver}.json") == False:
+        ver = "20220921"
+        final_url = f"https://oss.jx3box.com/data/qixue/v{ver}.json"
+        data = await get_api(final_url)
+        write(ASSETS + "/jx3" + f"v{ver}.json", json.dumps(data, ensure_ascii=False))
+    real_data = data[name]
+    for i in range(1,13):
+        for x in range(1,6):
+            each = real_data[str(i)][str(x)]
+            if each["name"] == tl:
+                if each["is_skill"] == 1:
+                    special_desc = each["meta"]
+                    desc = each["desc"]
+                    extend = each["extend"]
+                    icon = "https://icon.jx3box.com/icon/" + each["icon"] + ".png"
+                    msg = f"第{i}重·第{x}层：{tl}\n" + ms.image(icon) + f"\n{special_desc}\n{desc}\n{extend}"
+                else:
+                    desc = each["desc"]
+                    icon = "https://icon.jx3box.com/icon/" + each["icon"] + ".png"
+                    msg = f"第{i}重·第{x}层：{tl}\n" + ms.image(icon) + f"\n{desc}"
+                await _talent.finish(msg)
+    await _talent.finish("唔……未找到该奇穴哦~")
 
 driver = get_driver()
 
