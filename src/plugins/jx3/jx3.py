@@ -218,5 +218,9 @@ async def recruit_(server: str, copy: str = None):
     if copy != None:
         final_url = final_url + copy
     data = await get_api(final_url)
+    if data["code"] == 403:
+        return ["Token不正确哦，请联系Bot主人~"]
+    elif data["code"] == 401:
+        return ["服务器名输入错误，请检查后重试~"]
     url = data["data"]["url"]
     return url
