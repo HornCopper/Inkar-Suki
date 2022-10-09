@@ -23,7 +23,7 @@ async def mcbedrockv():
     msg = f"Beta: {fix.join(beta)}\nPreview: {fix.join(preview)}\nRelease: {fix.join(release)}"
     return f"目前最新版本为：{msg}（数据来自Mojira，商店尚未更新属正常情况）"
 
-async def mcbedrockv():
+async def mcjavav():
     data = await get_api("https://piston-meta.mojang.com/mc/game/version_manifest.json")
     release = data["latest"]["release"]
     snapshot = data["latest"]["snapshot"]

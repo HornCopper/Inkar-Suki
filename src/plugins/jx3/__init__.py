@@ -366,12 +366,13 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
     if len(arg) == 1:
         server = arg[0]
         data = await recruit_(server)
-        await recruit.finish(ms.image(data))
     else:
         server = arg[0]
         copy = arg[1]
         data = await recruit_(server, copy)
-        await recruit.finish(ms.image(data))
+    if type(data) == type([]):
+        await recruit.finish(data[0])
+    await recruit.finish(ms.image(data))
         
 
 buff_ = on_command("jx3_buff", aliases={"debuff","buff"}, priority=5)
