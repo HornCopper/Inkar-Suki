@@ -366,26 +366,13 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
     if len(arg) == 1:
         server = arg[0]
         data = await recruit_(server)
-        if type(data) != type([]):
-            await recruit.finish(data)
-        else:
-            status = data[0]
-            data = data[1]
-            if status == "more":
-                await recruit.send("团队招募超过100条啦！已截取前100条~")
-            await bot.call_api("send_group_forward_msg", group_id = event.group_id, messages = data)
+        await recruit.finish(ms.image(data))
     else:
         server = arg[0]
         copy = arg[1]
         data = await recruit_(server, copy)
-        if type(data) != type([]):
-            await recruit.finish(data)
-        else:
-            status = data[0]
-            data = data[1]
-            if status == "more":
-                await recruit.send("团队招募超过100条啦！已截取前100条~")
-            await bot.call_api("send_group_forward_msg", group_id = event.group_id, messages = data)
+        await recruit.finish(ms.image(data))
+        
 
 buff_ = on_command("jx3_buff", aliases={"debuff","buff"}, priority=5)
 @buff_.handle()
