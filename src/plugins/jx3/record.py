@@ -28,7 +28,7 @@ async def adventure____(id: str = None, server: str = "幽月轮"):
         node.append(nodetemp("奇遇查询", Config.bot[0], f"服务器：{server}\n角色：{id}\n奇遇：{name}\n时间：{time_}"))
     return node
 
-# async def firework(id: str = None, server: str = "幽月轮"):
+async def firework(id: str = None, server: str = "幽月轮"):
 #     final_url = f"https://www.jx3pd.com/api/firework?server={server}&name={id}"
 #     if id == None:
 #         final_url = f"https://www.jx3pd.com/api/firework?server={server}&name={id}"
@@ -49,3 +49,4 @@ async def adventure____(id: str = None, server: str = "幽月轮"):
 #         receiver = i["recipient"]
 #         node.append(nodetemp("烟花查询", Config.bot[0], f"服务器：{server}\n时间：{time_}\n{sender}在{map}对{receiver}使用了传说中的{firework_name}。"))
 #     return node 
+    pass
