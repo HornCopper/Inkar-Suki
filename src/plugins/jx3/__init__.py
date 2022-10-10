@@ -348,7 +348,8 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
         if type_ == "奇遇":
             node = await adventure____(id, server)
         else:
-            node = await firework(id, server)
+            # node = await firework(id, server)
+            await record_.finish("唔……暂不支持烟花查询。")
         if len(node) == 0:
             await record_.finish(f"没有查到该玩家的{type_}记录哦~")
         else:
