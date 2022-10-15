@@ -15,8 +15,8 @@ from file import read
 from utils import get_api, convert_time, get_content
 
 api = Config.auaurl
-token = Config.auatok
-headers = {"User-Agent":token}
+token = "Bearer " + Config.auatok
+headers = {"Authorization": token}
 difficulties = ["Past","Present","Future","Beyond"]
 clear_statuses = ["Track Lost","Track Complete","Full Recall","Pure Memory","Easy Complete","Hard Complete"]
 
