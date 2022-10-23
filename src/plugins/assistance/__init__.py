@@ -311,6 +311,19 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
             await modify.finish("修改团队信息成功！")
     await modify.finish("唔……没有找到，请检查团队描述是否一致~")
 
+cancel = on_command("cancel", aliases={"取消开团"}, priority=5)
+@cancel.handle()
+async def _(event: GroupMessageEvent, args: Message = CommandArg()):
+    name = args.extract_plain_text()
+    final_path = DATA + "/" + str(event.group_id) + "/opening.json"
+    data = json.loads(read(final_path))
+    for i in data:
+        if data["desc"] == name:
+            data.remove(i)
+            write(final_path, json.dumps(data,ensure_ascii=True))
+            await cancel.finish("删除成功！")
+    await cancel.finish("唔……没有找到该团队描述对应的团哦~")
+
 set_server = on_command("jx3_setserver", aliases={"设置服务器"}, priority=5)
 @set_server.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
