@@ -69,6 +69,16 @@ class main:
             sender = body["sender"]["login"]
             msg = f"{sender} {action} \"{label}\" on {repo_name}#{issue_num}.\nTitle:{issue_title}\nDescription:{issue_desc}"
             return msg
+        elif action == "edited":
+            issue_num = str(body["issue"]["number"])
+            issue_title = body["issue"]["title"]
+            repo_name = body["repository"]["full_name"]=
+            sender = body["sender"]["login"]
+            from_ = body["changes"]["body"]["from"]
+            to_ = body["issue"]["body"]
+            user = body["issue"]["user"]
+            msg = f"{sender} {action} the comment by {user} on {repo_name}#{issue_num}.\nTitle:{issue_title}\nSource Commment:{from_}\nChanged Comment:{to_}"
+            return msg
     def issue_comment(body):
         action = body["action"]
         if action == "created":
