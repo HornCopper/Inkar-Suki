@@ -72,7 +72,7 @@ class main:
         elif action == "edited":
             issue_num = str(body["issue"]["number"])
             issue_title = body["issue"]["title"]
-            repo_name = body["repository"]["full_name"]=
+            repo_name = body["repository"]["full_name"]
             sender = body["sender"]["login"]
             from_ = body["changes"]["body"]["from"]
             to_ = body["issue"]["body"]
