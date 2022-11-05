@@ -17,6 +17,14 @@ from file import read, write
 from utils import convert_time, checknumber, get_api
 from permission import checker, error
 
+proxy = Config.proxy
+if proxy != None:
+    proxies = {
+        "http://": proxy,                                                                  "https://": proxy
+     }
+else:
+    proxies = None
+
 open_ = on_command("open_group", aliases = {"开团"}, priority = 5)
 @open_.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
@@ -353,7 +361,7 @@ async def _(state: T_State, bot: Bot, event: GroupMessageEvent):
 @set_group.got("server", prompt="请核对信息，若无误，请发送本团所处的服务器（请发送主服名称，例如发送“幽月轮”而不是“千岛湖”）。")
 async def _(state: T_State, server: Message = Arg()):
     server = server.extract_plain_text()
-    server_info = await get_api("https://www.jx3api.com/data/server/status?server=1")
+    server_info = await get_api("https://www.jx3api.com/data/server/status?server=" + server, proxy = proxies)
     if server_info["code"] == 401:
         await set_group.finish("认证失败，错误的服务器！")
     cache = state["cache"]
