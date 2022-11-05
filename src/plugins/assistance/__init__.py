@@ -20,7 +20,8 @@ from permission import checker, error
 proxy = Config.proxy
 if proxy != None:
     proxies = {
-        "http://": proxy,                                                                  "https://": proxy
+        "http://": proxy,
+        "https://": proxy
      }
 else:
     proxies = None
@@ -379,7 +380,7 @@ async def _(state: T_State, server: Message = Arg()):
 
 add_leader = on_command("jx3_helper", aliases = {"副团长"}, priority=5)
 @add_leader.handle()
-async def _(event: GroupMessageEvent, args: Message = CommandArg()):
+async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
     helper = args.extract_plain_text()
     if helper[0] not in ["+","-"]:
         await add_leader.finish("副团长QQ号前要加一个“+”或“-”来区分增加或移除哦~")
@@ -391,6 +392,9 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
         helper = helper[1:]
     if checknumber(helper) == False:
         await add_leader.finish("添加失败，QQ号非纯数字。")
+    helper_data = await bot.call_api("get_group_member_info", group_id = event.group_id, user_id = int(helper))
+    if helper_data["role"] != "admin":
+        await add_leader.finish("唔……副团长需要是管理员哦~")
     group_data = json.loads(DATA + "/" + str(event.group_id) + "/jx3group.json")
     if str(event.user_id) != group_data["leader"]:
         await add_leader.finish("唔，只有团长能增加或减少副团长哦~")
@@ -427,7 +431,7 @@ async def _(bot: Bot, event: Event, args: Message = CommandArg()):
             await verify_group.finish("验证失败，该群尚未提交认证~")
         if data["name"] != name:
             await verify_group.finish(f"验证失败，该群的团牌并非“{name}”。")
-        data["status"] == True
-        write(DATA + "/" + group + "/jx3group.json",json.dumps(data, ensure_ascii=False))
         await bot.call_api("send_group_msg", group_id = int(group), message = f"团牌【{name}】（{group}）验证已通过！\n操作人：{str(event.user_id)}")
+        data["status"] = True
+        write(DATA + "/" + group + "/jx3group.json",json.dumps(data, ensure_ascii=False))
         await verify_group.finish("验证通过！")
