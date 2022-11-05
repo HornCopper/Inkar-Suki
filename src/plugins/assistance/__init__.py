@@ -364,7 +364,7 @@ async def _(state: T_State, server: Message = Arg()):
     server_info = await get_api("https://www.jx3api.com/data/server/status?server=" + server, proxy = proxies)
     if server_info["code"] == 401:
         await set_group.finish("认证失败，错误的服务器！")
-    cache = state["cache"]
+    cache = state["data"]
     group_name = cache[0]
     leader = cache[1]
     group_id = cache[3]
