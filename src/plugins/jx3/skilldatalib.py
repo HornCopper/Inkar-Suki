@@ -74,6 +74,8 @@ def aliases(SkillName: str) -> str:
         return "灵素"
     elif SkillName in ["无方"]:
         return "无方"
+    elif SkillName in ["刀宗","孤锋诀","孤锋"]:
+        return "孤锋诀"
     else:
         return False
 
