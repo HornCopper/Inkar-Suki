@@ -5,7 +5,7 @@ import time
 
 from nonebot.typing import T_State
 from nonebot import on_command
-from nonebot.adapters.onebot.v11 import GroupMessageEvent, Bot
+from nonebot.adapters.onebot.v11 import GroupMessageEvent, Bot, Event
 from nonebot.adapters import Message
 from nonebot.params import CommandArg, Arg
 import numpy as np
@@ -15,6 +15,7 @@ DATA = TOOLS[:-5] + "data"
 from config import Config
 from file import read, write
 from utils import convert_time, checknumber, get_api
+from permission import checker, error
 
 open_ = on_command("open_group", aliases = {"开团"}, priority = 5)
 @open_.handle()
@@ -311,7 +312,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
             await modify.finish("修改团队信息成功！")
     await modify.finish("唔……没有找到，请检查团队描述是否一致~")
 
-cancel = on_command("cancel", aliases={"取消开团"}, priority=5)
+cancel = on_command("jx3_cancel", aliases={"取消开团"}, priority=5)
 @cancel.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     name = args.extract_plain_text()
@@ -324,20 +325,101 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
             await cancel.finish("删除成功！")
     await cancel.finish("唔……没有找到该团队描述对应的团哦~")
 
-set_server = on_command("jx3_setserver", aliases={"设置服务器"}, priority=5)
-@set_server.handle()
-async def _(event: GroupMessageEvent, args: Message = CommandArg()):
-    server = args.extract_plain_text()
-    now = json.loads(read(DATA + "/" + str(event.group_id) + "/jx3group.json"))
-    now["server"] = server
-    write(DATA + "/" + str(event.group_id) + "/jx3group.json", json.dumps(now, ensure_ascii=False))
-    await set_server.finish("主服务器设置成功，推送将会遵照此进行~！")
-
-set_group = on_command("jx3_setgroup", aliases={"设置团牌"}, priority=5)
+set_group = on_command("jx3_auto", aliases={"认证"}, priority=5)
 @set_group.handle()
+async def _(state: T_State, bot: Bot, event: GroupMessageEvent):
+    leader = str(event.user_id)
+    leader_data = await bot.call_api("get_group_member_info", group_id=event.group_id, user_id=event.user_id)
+    leader_role = leader_data["role"]
+    if leader_role != "owner":
+        await set_group.finish("唔，抱歉，只有群主可以认证团长哦，若欲申请副团长，请联系团长发送“+副团长 +[副团长QQ]”。\n（QQ号前面的“+”或“-”不可以省略哦~）")
+    else:
+        role = "群主"
+    group_data = await bot.call_api("get_group_info", group_id=event.group_id)
+    group_name = group_data["group_name"]
+    if group_name[0] != "【":
+        await set_group.finish("群名称不正确哦，请修改为“【团牌】任意文字”的格式！")
+    else:
+        rest_string = group_name[1:]
+        other_side = rest_string.find("】")
+        if other_side == -1:
+            await set_group.finish("群名称不正确哦，请修改为“【团牌】任意文字”的格式！")
+        final_name = rest_string[0:other_side]
+    await set_group.send(f"整理出以下信息：\n团牌：{final_name}\n团长QQ号：{leader}\n申请人权限：{role}\n申请类别：群认证 + 主团长认证")
+    cache = [final_name, leader, role, str(event.group_id)] # 团牌 团长QQ 申请人权限
+    state["data"] = cache
+    return
+
+@set_group.got("server", prompt="请核对信息，若无误，请发送本团所处的服务器（请发送主服名称，例如发送“幽月轮”而不是“千岛湖”）。")
+async def _(state: T_State, server: Message = Arg()):
+    server = server.extract_plain_text()
+    server_info = await get_api("https://www.jx3api.com/data/server/status?server=1")
+    if server_info["code"] == 401:
+        await set_group.finish("认证失败，错误的服务器！")
+    cache = state["cache"]
+    group_name = cache[0]
+    leader = cache[1]
+    group_id = cache[3]
+    now = json.loads(read(DATA + "/" + group_id + "/jx3group.json"))
+    now["group"] = group_id
+    now["server"] = server
+    now["leader"] = leader
+    now["name"] = group_name
+    now["status"] = False
+    write(DATA + "/" + group_id + "/jx3group.json", json.dumps(now, ensure_ascii=False))
+    await set_group.finish("已提交认证，请等待机器人管理员通过！")
+
+add_leader = on_command("jx3_helper", aliases = "副团长", priority=5)
+@add_leader.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
-    group = args.extract_plain_text()
-    now = json.loads(read(DATA + "/" + str(event.group_id) + "/jx3group.json"))
-    now["name"] = group
-    write(DATA + "/" + str(event.group_id) + "/jx3group.json", json.dumps(now, ensure_ascii=False))
-    await set_group.finish("团牌设置成功，推送将会遵照此进行~！\n小提示：一个群只能设置一个团牌哦~\n另外，会抓取【xxx】，所以团长注意加中文中括号哦~")
+    helper = args.extract_plain_text()
+    if helper[0] not in ["+","-"]:
+        await add_leader.finish("副团长QQ号前要加一个“+”或“-”来区分增加或移除哦~")
+    if helper[0] == "+":
+        action = True # 增加
+        helper = helper[1:]
+    else:
+        action = False # 删除
+        helper = helper[1:]
+    if checknumber(helper) == False:
+        await add_leader.finish("添加失败，QQ号非纯数字。")
+    group_data = json.loads(DATA + "/" + str(event.group_id) + "/jx3group.json")
+    if str(event.user_id) != group_data["leader"]:
+        await add_leader.finish("唔，只有团长能增加或减少副团长哦~")
+    else:
+        if helper in group_data["leaders"] and action:
+            await add_leader.finish("该副团长已存在哦~")
+        if helper not in group_data["leaders"] and action == False:
+            await add_leader.finish("该用户尚非副团长哦~")
+        if action:
+            group_data["leaders"].append(helper)
+        else:
+            group_data["leaders"].remove(helper)
+        write(DATA + "/" + str(event.group_id) + "/jx3group.json", json.dumps(group_data, ensure_ascii=False))
+        action_msg = "添加" if action else "移除"
+        await add_leader.finish(f"副团长{action_msg}成功")
+
+verify_group = on_command("jx3_verify", aliases={"验证团"}, priority=5)
+@verify_group.handle()
+async def _(bot: Bot, event: Event, args: Message = CommandArg()):
+    if checker(str(event.user_id),10) == False:
+        await verify_group.finish(error(10))
+    arg = args.extract_plain_text().split(" ")
+    if len(arg) != 2:
+        await verify_group.finish("唔，参数数量不对哦~")
+    else:
+        name = arg[0]
+        group = arg[1]
+        data = json.loads(read(DATA + "/" + group + "/jx3group.json"))
+        if data == False:
+            await verify_group.finish("验证失败，该群尚未加入哦~")
+        if data["status"] == True:
+            await verify_group.finish("验证失败，该群已认证过了哦~")
+        if data["leader"] == "":
+            await verify_group.finish("验证失败，该群尚未提交认证~")
+        if data["name"] != name:
+            await verify_group.finish(f"验证失败，该群的团牌并非“{name}”。")
+        data["status"] == True
+        write(DATA + "/" + group + "/jx3group.json",json.dumps(data, ensure_ascii=False))
+        await bot.call_api("send_group_msg", group_id = int(group), message = f"团牌【{name}】（{group}）验证已通过！\n操作人：{str(event.user_id)}")
+        await verify_group.finish("验证通过！")
