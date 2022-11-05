@@ -377,7 +377,7 @@ async def _(state: T_State, server: Message = Arg()):
     write(DATA + "/" + group_id + "/jx3group.json", json.dumps(now, ensure_ascii=False))
     await set_group.finish("已提交认证，请等待机器人管理员通过！")
 
-add_leader = on_command("jx3_helper", aliases = "副团长", priority=5)
+add_leader = on_command("jx3_helper", aliases = {"副团长"}, priority=5)
 @add_leader.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     helper = args.extract_plain_text()
