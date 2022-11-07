@@ -395,7 +395,7 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
     helper_data = await bot.call_api("get_group_member_info", group_id = event.group_id, user_id = int(helper))
     if helper_data["role"] != "admin":
         await add_leader.finish("唔……副团长需要是管理员哦~")
-    group_data = json.loads(DATA + "/" + str(event.group_id) + "/jx3group.json")
+    group_data = json.loads(read(DATA + "/" + str(event.group_id) + "/jx3group.json"))
     if str(event.user_id) != group_data["leader"]:
         await add_leader.finish("唔，只有团长能增加或减少副团长哦~")
     else:
