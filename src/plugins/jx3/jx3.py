@@ -66,7 +66,7 @@ async def macro_(name):
     return f"查到{xinfa}的宏命令啦！\n推荐奇穴搭配：{qixue}\n宏命令：\n{macro}"
     
 async def daily_(server):
-    full_link = "https://api.jx3api.com/app/daily?server=" + server
+    full_link = "https://www.jx3api.com/data/active/current?server=" + server
     info = await get_api(full_link, proxy = proxies)
     date = info["data"]["date"]
     week = info["data"]["week"]
@@ -84,7 +84,7 @@ async def daily_(server):
     weekly_war = info["data"]["team"][1].replace(";","，")
     weekly_big_war = info["data"]["team"][2].replace(";","，")
     weekly_task = info["data"]["team"][0].replace(";","，")
-    return f"查到该区服（{date}，周{week}）的信息啦！\n大战：跨服·{war}！\n矿车阵营日常：战！{camp}！\n驰援任务：{relief}\n战场：{battle}\n美人图：{draw_obj}\n世界公共任务：{weekly_task}\n小队秘境周常：{weekly_war}\n团队秘境周常：{weekly_big_war}\n家园声望秘境：{prestige}\n门派事件：{school}"
+    return f"查到该区服（{date}，周{week}）的信息啦！\n大战：大战！{war}！\n矿车阵营日常：跨服·{camp}！\n驰援任务：{relief}\n战场：{battle}\n美人图：{draw_obj}\n世界公共任务：{weekly_task}\n小队秘境周常：{weekly_war}\n团队秘境周常：{weekly_big_war}\n家园声望秘境：{prestige}\n门派事件：{school}"
 
 async def exam_(question):
     def qa(q,a):
