@@ -163,10 +163,10 @@ async def heighten_(name):
     else:
         info = data["data"]
         logger.info(info)
-        heighten_food = info["heighten_food"]
-        auxiliary_food = info["auxiliary_food"]
-        heighten_drug = info["heighten_drug"]
-        auxiliary_drug = info["auxiliary_drug"]
+        heighten_food = info["heightenFood"]
+        auxiliary_food = info["auxiliaryFood"]
+        heighten_drug = info["heightenDrug"]
+        auxiliary_drug = info["auxiliaryDrug"]
         return f"查到{name}的推荐小药了：\n增强食品：{heighten_food}\n辅助食品：{auxiliary_food}\n增强药品：{heighten_drug}\n辅助药品：{auxiliary_drug}"
 
 async def price_(name): # API 3.0 数据较为实用，暂不更新
