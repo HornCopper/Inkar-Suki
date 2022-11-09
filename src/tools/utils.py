@@ -31,6 +31,15 @@ async def post_url(url, proxy: dict = None, args: dict = None, headers: str = No
             resp = await client.post(url, timeout = timeout, headers = headers, params=args)
         result = resp.text
         return result
+
+async def data_post(url, proxy: dict = None, json: dict = None, headers: str = None, timeout: int = 300):
+    async with httpx.AsyncClient(proxies=proxy, follow_redirects = True) as client:
+        if json == None:
+            resp = await client.post(url, timeout = timeout, headers = headers)
+        else:
+            resp = await client.post(url, timeout = timeout, headers = headers, json=json)
+        result = resp.text
+        return result
     
 async def get_status(url, proxy: dict = None, args: dict = None, headers: str = None, timeout: int = 300):
     async with httpx.AsyncClient(proxies=proxy, follow_redirects = True) as client:
