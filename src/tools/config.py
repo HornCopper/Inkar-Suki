@@ -29,5 +29,6 @@ class Config:
     jx3api_wstoken = configs["jx3api_wstoken"]
     jx3api_globaltoken = configs["jx3api_globaltoken"]
     jx3api_recruittoken = configs["jx3api_recruittoken"]
+    ght = configs["githubtoken"]
     if jx3api_globaltoken:
         jx3api_recruittoken = jx3api_globaltoken
