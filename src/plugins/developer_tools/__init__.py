@@ -2,11 +2,13 @@ import os
 import sys
 import psutil
 import nonebot
+import json
 import time
 from nonebot import on_command
 from nonebot.adapters import Message
-from nonebot.params import CommandArg
+from nonebot.params import CommandArg, Arg
 from nonebot.adapters.onebot.v11 import Message, MessageSegment, unescape, Event, Bot, GroupMessageEvent
+from nonebot.typing import T_State
 from typing import List
 from pathlib import Path
 from functools import reduce
@@ -16,9 +18,10 @@ CACHE = TOOLS[:-5] + "cache"
 from permission import checker, error
 from file import read, write
 from config import Config
-from utils import get_url, get_status
+from utils import get_url, get_status, checknumber, data_post
 from gender import gender
 from .example import *
+from config import Config
 
 helpimg = on_command("helpimg", aliases={"hi"}, priority=5)
 
@@ -84,6 +87,7 @@ async def echo_(event: Event, args: Message = CommandArg()):
     if checker(str(event.user_id),9) == False:
         await echo.finish(error(9))
     await echo.finish(args)
+
 say = on_command("say",priority=5)
 @say.handle()
 async def say_(event: Event, args: Message = CommandArg()): 
@@ -95,6 +99,7 @@ async def say_(event: Event, args: Message = CommandArg()):
         await say.finish(error(9))
     message = reduce(_unescape, args, Message())
     await say.finish(message)
+
 ping = on_command("ping", aliases={"测试"}, priority=5)
 @ping.handle()
 async def _(event: Event):
@@ -109,6 +114,7 @@ async def _(event: Event):
     times = str("现在是" + time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()) + f"\n当前版本{ikv}\n(Nonebot {Config.nonebot})")
     msg = f"来啦！\n系统信息如下：\nCPU占用：{str(per_cpu_status()[0])}%\n内存占用：{str(memory_status())}%\n"
     await ping.finish(msg + times)
+
 back = on_command("back", priority=5)
 @back.handle()
 async def back_(event: Event, args: Message = CommandArg()):
@@ -116,6 +122,7 @@ async def back_(event: Event, args: Message = CommandArg()):
         await back.finish(error(10))
     os.system(args.extract_plain_text())
     await back.finish("好啦，执行完毕！")
+
 front = on_command("front",priority=5)
 @front.handle()
 async def front_(event: Event, args: Message = CommandArg()):
@@ -125,6 +132,7 @@ async def front_(event: Event, args: Message = CommandArg()):
     if msg == "":
         msg = "执行完成，但没有输出哦~"
     await front.finish(f"{msg}")
+
 post = on_command("post", aliases={"公告"}, priority=5)
 @post.handle()
 async def _(bot: Bot, event: Event, args: Message = CommandArg()):
@@ -134,6 +142,7 @@ async def _(bot: Bot, event: Event, args: Message = CommandArg()):
     groups = await bot.call_api("get_group_list")
     for i in groups:
         await bot.call_api("send_group_msg",group_id=i["group_id"],message=f"[开发者全域公告]{cmd}")
+
 call_api = on_command("call_api",aliases={"api"},priority=5)
 @call_api.handle()
 async def _(event: Event, args: Message = CommandArg()):
@@ -184,3 +193,26 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
     else:
         image = gender(url,2,size,True)
         await web.finish("获取图片成功！\n"+MessageSegment.image(Path(image).as_uri()))
+
+apply = on_command("apply", aliases={"申请"}, priority=5)
+@apply.handle()
+async def _(state: T_State, event: Event):
+    applier = str(event.user_id)
+    state["user"] = applier
+    return
+
+@apply.got("group", prompt="感谢您申请使用Inkar Suki，接下来请发送您所为之申请的群聊的群号。")
+async def _(bot: Bot, state: T_State, group: Message = Arg()):
+    group_id = group.extract_plain_text()
+    if checknumber(group_id) == False:
+        await apply.finish("输入的内容有误，申请失败。")
+    else:
+        data = json.dumps(await bot.call_api("get_group_info", group_id=int(group_id)), ensure_ascii=False)
+        url = "https://api.github.com/repos/codethink-cn/Inkar-Suki/issues"
+        token = Config.ght
+        user = state["user"]
+        bearer = "Bearer " + token
+        final_header = {"Accept": "application/vnd.github+json","Authorization":bearer}
+        body = {"title":f"Inkar-Suki·使用申请","body":f"申请人QQ：{user}\n申请群聊：{group_id}\n群聊请求数据如下：```{data}```"}
+        await data_post(url, headers = final_header, json=body)
+        await apply.finish("申请成功，请求已发送至GitHub，请等待通知！")
