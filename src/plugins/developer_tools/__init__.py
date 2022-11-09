@@ -213,6 +213,6 @@ async def _(bot: Bot, state: T_State, group: Message = Arg()):
         user = state["user"]
         bearer = "Bearer " + token
         final_header = {"Accept": "application/vnd.github+json","Authorization":bearer}
-        body = {"title":f"Inkar-Suki·使用申请","body":f"申请人QQ：{user}\n申请群聊：{group_id}\n群聊请求数据如下：```{data}```"}
+        body = {"title":f"Inkar-Suki·使用申请","body":f"申请人QQ：{user}\n申请群聊：{group_id}\n群聊请求数据如下：```{data}```","labels":["申请"]}
         await data_post(url, headers = final_header, json=body)
         await apply.finish("申请成功，请求已发送至GitHub，请等待通知！")
