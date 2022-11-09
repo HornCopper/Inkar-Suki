@@ -127,6 +127,14 @@ if __name__ == "__main__":
             json_["jx3api_recruittoken"] = None
         else:
             json_["jx3api_recruittoken"] = recruit
+    space()
+    print("请输入用于申请机器人使用的GitHub Personal Token，若没有请直接回车。")
+    json_["githubtoken"] = ""
+    ght = input("请输入GitHub Personal Access Token：")
+    if ght == "":
+        json_["githubtoken"] = None
+    else:
+        json_["githubtoken"] = ght
     final = json.dumps(json_)
     write("config.json",final)
     space()
