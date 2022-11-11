@@ -98,15 +98,16 @@ async def recWebHook(req: Request):
 @app.post("/auth")
 async def recAuth(req: Request):
     headers = req.headers
-    if headers["user"] not in Config.owner:
+    if headers["user"] not in Config.owners:
         return {"status":403}
     else:
         final = []
         groups = os.listdir(DATA)
         for i in groups:
             group_data = json.loads(read(DATA + "/" + i + "/jx3group.json"))
-            if group_data["status"] == False:
-                continue
+            if headers["type"] != "all":
+                if group_data["status"] == False:
+                    continue
             name = group_data["name"]
             owner = group_data["leader"]
             group = group_data["group"]
