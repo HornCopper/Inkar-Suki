@@ -106,17 +106,23 @@ async def recAuth(req: Request):
         for i in groups:
             group_data = json.loads(read(DATA + "/" + i + "/jx3group.json"))
             try:
-                if headers["type"] != "all":
-                    if group_data["leader"] == "":
-                        continue
-            except:
-                return {"status":"502"}
-            name = group_data["name"]
-            owner = group_data["leader"]
-            group = group_data["group"]
-            server = group_data["server"]
-            dict_ = {"name":name,"leader":owner,"group":group,"server":server}
-            final.append(dict_)
+                if headers["type"] == "all":
+                    if headers["leader"] != "":    
+                        name = group_data["name"]
+                        owner = group_data["leader"]
+                        group = group_data["group"]
+                        server = group_data["server"]
+                        dict_ = {"name":name,"leader":owner,"group":group,"server":server}
+                        final.append(dict_)
+                else:
+                    if headers["leader"] != "":
+                        if group_data["status"] != False:
+                            name = group_data["name"]
+                            owner = group_data["leader"]
+                            group = group_data["group"]
+                            server = group_data["server"]
+                            dict_ = {"name":name,"leader":owner,"group":group,"server":server}
+                            final.append(dict_)
         return final
 
 async def sendm(bot, message, repo):
