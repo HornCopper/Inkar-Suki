@@ -123,6 +123,8 @@ async def recAuth(req: Request):
                             server = group_data["server"]
                             dict_ = {"name":name,"leader":owner,"group":group,"server":server}
                             final.append(dict_)
+            except:
+                return {"status":502}
         return final
 
 async def sendm(bot, message, repo):
