@@ -107,8 +107,8 @@ async def getSkills():
     for i in force_list:
         data_list.append(i)
     for i in data_list:
-        if await get_status(url=f"https://data.jx3box.com/bps/v1/{i}/skill.json") != 404:
-            info = await get_url(url = f"https://data.jx3box.com/bps/v1/{i}/skill.json")
+        if await get_status(url=f"https://data.jx3box.com/bps/std/{i}/skill.json") != 404:
+            info = await get_url(url = f"https://data.jx3box.com/bps/std/{i}/skill.json")
             data = json.loads(info)
             for a in data:
                 write(ASSETS + "/jx3/skills/" + a["kungfuName"] + ".json", json.dumps(a,ensure_ascii=False))
