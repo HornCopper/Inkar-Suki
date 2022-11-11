@@ -107,7 +107,7 @@ async def recAuth(req: Request):
             group_data = json.loads(read(DATA + "/" + i + "/jx3group.json"))
             try:
                 if headers["type"] != "all":
-                    if group_data["status"] == False:
+                    if group_data["leader"] == "":
                         continue
             except:
                 return {"status":"502"}
