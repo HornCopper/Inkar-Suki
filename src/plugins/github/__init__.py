@@ -98,7 +98,7 @@ async def recWebHook(req: Request):
 @app.post("/auth")
 async def recAuth(req: Request):
     headers = req.headers
-    if headers["user"] not in Config.owners:
+    if headers["user"] not in Config.owner:
         return {"status":403}
     else:
         final = []
