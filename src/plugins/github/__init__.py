@@ -107,7 +107,7 @@ async def recAuth(req: Request):
             group_data = json.loads(read(DATA + "/" + i + "/jx3group.json"))
             try:
                 if headers["type"] == "all":
-                    if headers["leader"] != "":    
+                    if group_data["leader"] != "":    
                         name = group_data["name"]
                         owner = group_data["leader"]
                         group = group_data["group"]
@@ -115,7 +115,7 @@ async def recAuth(req: Request):
                         dict_ = {"name":name,"leader":owner,"group":group,"server":server}
                         final.append(dict_)
                 else:
-                    if headers["leader"] != "":
+                    if group_data["leader"] != "":
                         if group_data["status"] != False:
                             name = group_data["name"]
                             owner = group_data["leader"]
