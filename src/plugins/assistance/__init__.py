@@ -346,6 +346,9 @@ async def _(state: T_State, bot: Bot, event: GroupMessageEvent):
         role = "群主"
     group_data = await bot.call_api("get_group_info", group_id=event.group_id)
     group_name = group_data["group_name"]
+    correct = json.loads(read(DATA + "/" + str(event.group_id) + "/jx3group.json"))
+    if correct["status"] == True:
+        await set_group.finish("本群已经认证过啦，请不要重复认证哦~")
     if group_name[0] != "【":
         await set_group.finish("群名称不正确哦，请修改为“【团牌】任意文字”的格式！")
     else:
