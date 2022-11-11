@@ -90,10 +90,10 @@ async def getTalents():
     for i in force_list:
         data_list.append(i)
     for i in data_list:
-        if await get_status(url=f"https://data.jx3box.com/bps/v1/{i}/talent.json") != 404:
-            info = await get_url(url = f"https://data.jx3box.com/bps/v1/{i}/talent.json")
+        if await get_status(url=f"https://data.jx3box.com/bps/std/{i}/talent.json") != 404:
+            info = await get_url(url = f"https://data.jx3box.com/bps/std/{i}/talent.json")
             data = json.loads(info)
-            for a in data["data"]:
+            for a in data:
                 write(ASSETS + "/jx3/talents/" + a["kungfu"] + ".json", json.dumps(a,ensure_ascii=False))
 
 async def getSkills():
@@ -110,7 +110,7 @@ async def getSkills():
         if await get_status(url=f"https://data.jx3box.com/bps/v1/{i}/skill.json") != 404:
             info = await get_url(url = f"https://data.jx3box.com/bps/v1/{i}/skill.json")
             data = json.loads(info)
-            for a in data["data"]:
+            for a in data:
                 write(ASSETS + "/jx3/skills/" + a["kungfuName"] + ".json", json.dumps(a,ensure_ascii=False))
 
 async def get_icon(skillName: str, type_: str, api_icon: str = None, kungfu: str = None) -> str:
