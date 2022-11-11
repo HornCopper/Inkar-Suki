@@ -105,9 +105,12 @@ async def recAuth(req: Request):
         groups = os.listdir(DATA)
         for i in groups:
             group_data = json.loads(read(DATA + "/" + i + "/jx3group.json"))
-            if headers["type"] != "all":
-                if group_data["status"] == False:
-                    continue
+            try:
+                if headers["type"] != "all":
+                    if group_data["status"] == False:
+                        continue
+            except:
+                return {"status":"502"}
             name = group_data["name"]
             owner = group_data["leader"]
             group = group_data["group"]
