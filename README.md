@@ -7,7 +7,7 @@ _基于Nonebot 2的多功能的 QQ 群聊机器人_
 ![Nonebot2](https://img.shields.io/badge/Nonebot2-Release_v2.0.0_beta.5-brightgreen)
 ![go-cqhttp](https://img.shields.io/badge/go--cqhttp-v1.0.0_rc3-brightgreen)
 <br>
-![GitHub](https://img.shields.io/github/license/Ailitonia/omega-miya)
+![GitHub](https://img.shields.io/github/license/codethink-cn/Inkar-Suki)
 ![Python](https://img.shields.io/badge/Python-3.8+-blue)
 ![GitHub release (latest by date including pre-releases)](https://img.shields.io/github/v/release/codethink-cn/Inkar-Suki?include_prereleases)
 ![GitHub (Pre-)Release Date](https://img.shields.io/github/release-date-pre/codethink-cn/Inkar-Suki)
