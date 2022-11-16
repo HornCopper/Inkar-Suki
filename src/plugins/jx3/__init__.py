@@ -27,7 +27,6 @@ from .pet import get_pet
 from .task import getTask, getTaskChain
 from .jx3apiws import ws_client
 from .jx3_event import RecvEvent
-from .record import adventure____, firework
 from .buff import get_buff
 
 horse = on_command("jx3_horse",aliases={"马"},priority=5)
@@ -111,14 +110,6 @@ async def _(args: Message = CommandArg()):
         await heighten.finish(await heighten_(args.extract_plain_text()))
     else:
         await heighten.finish("没有输入任何心法名称哦，没办法帮你找啦。")
-
-price = on_command("jx3_price",aliases={"物价"},priority=5)
-@price.handle()
-async def _(args: Message = CommandArg()):
-    if args.extract_plain_text():
-        await price.finish(await price_(args.extract_plain_text()))
-    else:
-        await price.finish("没有输入任何外观名称哦，没办法帮你找啦。")
 
 demon = on_command("jx3_demon",aliases={"金价"},priority=5)
 @demon.handle()
@@ -333,49 +324,6 @@ async def _(event: GroupMessageEvent):
     data = await tiangou_()
     await tiangou.finish(f"舔狗日志：\n{data}")
 
-record_ = on_command("jx3_record", aliases={"记录"}, priority=5)
-@record_.handle()
-async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
-    data = args.extract_plain_text().split(" ")
-    if len(data) != 3:
-        await record_.finish("唔……参数不对哦，只能有3个参数，分别为类型（烟花或者奇遇）、所在服务器、玩家昵称。")
-    else:
-        type_ = data[0]
-        if type_ not in ["奇遇","烟花"]:
-            await record_.finish("没有这个类型哦，只能是奇遇或者烟花。")
-        server = data[1]
-        id = data[2]
-        if type_ == "奇遇":
-            node = await adventure____(id, server)
-        else:
-            # node = await firework(id, server)
-            await record_.finish("唔……暂不支持烟花查询。")
-        if len(node) == 0:
-            await record_.finish(f"没有查到该玩家的{type_}记录哦~")
-        else:
-            await bot.call_api("send_group_forward_msg", group_id = event.group_id, messages = node)
-
-recruit = on_command("jx3_recruit", aliases={"招募"}, priority=5)
-@recruit.handle()
-async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
-    arg = args.extract_plain_text()
-    if arg == "":
-        await recruit.finish("缺少服务器名称哦~")
-    arg = arg.split(" ")
-    if len(arg) not in [1,2]:
-        await recruit.finish("参数不正确哦，只能有1或2个参数~")
-    if len(arg) == 1:
-        server = arg[0]
-        data = await recruit_(server)
-    else:
-        server = arg[0]
-        copy = arg[1]
-        data = await recruit_(server, copy)
-    if type(data) == type([]):
-        await recruit.finish(data[0])
-    await recruit.finish(ms.image(data))
-        
-
 buff_ = on_command("jx3_buff", aliases={"debuff","buff"}, priority=5)
 @buff_.handle()
 async def _(event: GroupMessageEvent, state: T_State, args: Message = CommandArg()):
@@ -481,6 +429,161 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
                     msg = f"第{i}重·第{x}层：{tl}\n" + ms.image(icon) + f"\n{desc}"
                 await _talent.finish(msg)
     await _talent.finish("唔……未找到该奇穴哦~")
+
+recruit = on_command("jx3_recruit", aliases={"招募"}, priority=5)
+@recruit.handle()
+async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
+    arg = args.extract_plain_text()
+    if arg == "":
+        await recruit.finish("缺少服务器名称哦~")
+    arg = arg.split(" ")
+    if len(arg) not in [1,2]:
+        await recruit.finish("参数不正确哦，只能有1或2个参数~")
+    if len(arg) == 1:
+        server = arg[0]
+        data = await recruit_(server)
+    else:
+        server = arg[0]
+        copy = arg[1]
+        data = await recruit_(server, copy)
+    if type(data) == type([]):
+        await recruit.finish(data[0])
+    await recruit.finish(ms.image(data))
+
+calculate = on_command("jx3_calculate", aliases={"日历"}, priority=5)
+@calculate.handle()
+async def _(event: GroupMessageEvent):
+    data = await calculate_()
+    if type(data) == type([]):
+        await calculate.finish(data[0])
+    else:
+        await calculate.finish(ms.image(data))
+
+flower = on_command("jx3_flower", aliases={"花价"}, priority=5)
+@flower.handle()
+async def _(event: GroupMessageEvent, args: Message = CommandArg()):
+    arg = args.extract_plain_text().split(" ")
+    if len(arg) not in [1,2]:
+        await flower.finish("唔……参数数量不对哦，请检查后重试~")
+    if len(arg) == 1:
+        server = arg[0]
+        flower__ = None
+    else:
+        server = arg[0]
+        flower__ = arg[1]
+    data = await flower_(flower__, server)
+    if type(data) == type([]):
+        await flower.finish(data[0])
+    else:
+        await flower.finish(ms.image(data))
+
+demon = on_command("jx3_demon", aliases={"金价"}, priority=5)
+@demon.handle()
+async def _(event: GroupMessageEvent, args: Message = CommandArg()):
+    arg = args.extract_plain_text()
+    if arg == "":
+        arg = None
+    data = await demon_(arg)
+    if type(data) == type([]):
+        await demon.finish(data[0])
+    else:
+        await demon.finish(ms.image(data))
+
+item_price = on_command("jx3_price", aliases={"物价"}, priority=5)
+@item_price.handle()
+async def _(event: GroupMessageEvent, args: Message = CommandArg()):
+    arg = args.extract_plain_text()
+    if arg == "":
+        await item_price.finish("缺少物品名称，没办法找哦~")
+    data = await item_(arg)
+    if type(data) == type([]):
+        await item_price.finish(data[0])
+    else:
+        await item_price.finish(ms.image(data))
+
+serendipity = on_command("jx3_serendipity", aliases={"个人奇遇"}, priority=5)
+@serendipity.handle()  
+async def _(event: GroupMessageEvent, args: Message = CommandArg()):
+    arg = args.extract_plain_text().split(" ")
+    if len(arg) != 2:
+        await serendipity.finish("唔……参数不正确哦，请检查后重试~")
+    server = arg[0]
+    id = arg[1]
+    data = await serendipity_(server, id)
+    if type(data) == type([]):
+        await serendipity.finish(data[0])
+    else:
+        await serendipity.finish(ms.image(data))
+
+statistical = on_command("jx3_statistical", aliases={"近期奇遇"}, priority=5)
+@statistical.handle()
+async def _(event: GroupMessageEvent, args: Message = CommandArg()):
+    arg = args.extract_plain_text().split(" ")
+    if len(arg) not in [1,2]:
+        await statistical.finish("唔……参数不正确哦，请检查后重试~")
+    if len(arg) == 1:
+        server = arg[0]
+        name = None
+    else:
+        server = arg[0]
+        name = arg[1]
+    data = await statistical_(server, name)
+    if type(data) == type([]):
+        await statistical.finish(data[0])
+    else:
+        await statistical.finish(ms.image(data))
+
+gserendipity = on_command("jx3_gserendipity", aliases={"全服奇遇"}, priority=5)
+@gserendipity.handle()
+async def _(event: GroupMessageEvent, args: Message = CommandArg()):
+    arg = args.extract_plain_text()
+    if arg == "":
+        await gserendipity.finish("唔，缺少奇遇名称，没有办法找哦~")
+    data = await global_serendipity(arg)
+    if type(data) == type([]):
+        await gserendipity.finish(data[0])
+    else:
+        await gserendipity.finish(ms.image(data))
+
+gstatistical = on_command("jx3_gstatistical", aliases={"全服统计"}, priority=5)
+@gstatistical.handle()
+async def _(event: GroupMessageEvent, args: Message = CommandArg()):
+    arg = args.extract_plain_text()
+    if arg == "":
+        await gstatistical.finish("唔，缺少奇遇名称，没有办法找哦~")
+    data = await global_statistical(arg)
+    if type(data) == type([]):
+        await gstatistical.finish(data[0])
+    else:
+        await gstatistical.finish(ms.image(data))
+
+addritube = on_command("jx3_addritube", aliases={"查装"}, priority=5)
+@addritube.handle()
+async def _(event: GroupMessageEvent, args: Message = CommandArg()):
+    arg = args.extract_plain_text().split(" ")
+    if len(arg) != 2:
+        await addritube.finish("唔……参数不正确哦，请检查后重试~")
+    server = arg[0]
+    id = arg[1]
+    data = await addritube_(server, id)
+    if type(data) == type([]):
+        await addritube.finish(data[0])
+    else:
+        await addritube.finish(ms.image(data))
+
+firework = on_command("jx3_firework", aliases={"烟花"}, priority=5)
+@firework.handle()
+async def _(event: GroupMessageEvent, args: Message = CommandArg()):
+    arg = args.extract_plain_text().split(" ")
+    if len(arg) != 2:
+        await addritube.finish("唔……参数不正确哦，请检查后重试~")
+    server = arg[0]
+    id = arg[1]
+    data = await addritube_(server, id)
+    if type(data) == type([]):
+        await addritube.finish(data[0])
+    else:
+        await addritube.finish(ms.image(data))
 
 driver = get_driver()
 
