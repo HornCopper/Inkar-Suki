@@ -111,14 +111,6 @@ async def _(args: Message = CommandArg()):
     else:
         await heighten.finish("没有输入任何心法名称哦，没办法帮你找啦。")
 
-demon = on_command("jx3_demon",aliases={"金价"},priority=5)
-@demon.handle()
-async def _(args: Message = CommandArg()):
-    if args.extract_plain_text():
-        await demon.finish(await demon_(args.extract_plain_text()))
-    else:
-        await demon.finish("没有输入任何服务器名称哦，没办法帮你找啦。")
-
 kungfu = on_command("jx3_kungfu",aliases={"心法"},priority=5)
 @kungfu.handle()
 async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
