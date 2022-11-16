@@ -568,14 +568,14 @@ firework = on_command("jx3_firework", aliases={"烟花"}, priority=5)
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     arg = args.extract_plain_text().split(" ")
     if len(arg) != 2:
-        await addritube.finish("唔……参数不正确哦，请检查后重试~")
+        await firework.finish("唔……参数不正确哦，请检查后重试~")
     server = arg[0]
     id = arg[1]
-    data = await addritube_(server, id)
+    data = await firework_(server, id)
     if type(data) == type([]):
-        await addritube.finish(data[0])
+        await firework.finish(data[0])
     else:
-        await addritube.finish(ms.image(data))
+        await firework.finish(ms.image(data))
 
 driver = get_driver()
 
