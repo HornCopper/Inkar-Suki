@@ -169,62 +169,20 @@ async def heighten_(name):
         auxiliary_drug = info["auxiliaryDrug"]
         return f"查到{name}的推荐小药了：\n增强食品：{heighten_food}\n辅助食品：{auxiliary_food}\n增强药品：{heighten_drug}\n辅助药品：{auxiliary_drug}"
 
-async def price_(name): # API 3.0 数据较为实用，暂不更新
-    full_link = "https://api.jx3api.com/app/price?name=" + name
-    data = await get_api(full_link, proxy = proxies)
-    if data["code"] == 401:
-        return "此外观不存在哦~请检查后重试。"
-    else:
-        info = data["data"]
-        name = info["name"]
-        info_ = info["info"]
-        img = ms.image(info["upload"])
-        msg = f"{name}\n{info_}\n" + img + "\n"
-        each_srv = info["data"]
-        def zsdpt(zone, server, date, price, type_):
-            if type_ == "收入":
-                return f"{zone}-{server}\n{date}：￥{price}收。"
-            else:
-                return f"{zone}-{server}\n{date}：￥{price}出。"
-        for i in each_srv[0]:
-            if len(i) == 0:
-                continue
-            else:
-                zone = i["zone"]
-                server = i["server"]
-                price = str(i["value"])
-                sale = i["sale"]
-                date = i["date"]
-                msg = msg + "\n" + zsdpt(zone, server, date, price, sale)
-        return msg
-
-async def demon_(name):
-    full_link = "https://www.jx3api.com/data/trade/demon?server=" + name
-    data = await get_api(full_link, proxy = proxies)
-    lastest = data["data"][0]
-    if lastest["server"] != name:
-        return "此服务器不存在哦~请检查后重试。"
-    else:
-        wbl = lastest["wanbaolou"]
-        tb = lastest["tieba"]
-        dd = lastest["dd373"]
-        uu = lastest["uu898"]
-        _5173 = lastest["5173"]
-        _7881 = lastest["7881"]
-        date = lastest["date"]
-        return f"查到区服{name}{date}的金价信息：\n万宝楼：{wbl}\n贴吧：{tb}\nDD373：{dd}\nUU898：{uu}\n5173：{_5173}\n7881：{_7881}"
-
 async def tiangou_():
     full_link = "https://www.jx3api.com/data/useless/flatterer"
     data = await get_api(full_link, proxy = proxies)
     text = data["data"]["text"]
     return text
 
-async def recruit_(server: str, copy: str = None):
-    token = Config.jx3api_recruittoken
+token = Config.jx3api_recruittoken
+bot = "Inkar-Suki"
+ticket = Config.jx3_ticket
+
+async def recruit_(server: str, copy: str = None): # 团队招募 <服务器> [关键词]
     if token == None:
-        return "Bot尚未填写Token，请联系Bot主人~"
-    final_url = f"https://www.jx3api.com/view/team/member/recruit?token={token}&server={server}&robot=Inkar-Suki&&keyword="
+        return ["Bot尚未填写Token，请联系Bot主人~"]
+    final_url = f"https://www.jx3api.com/view/team/member/recruit?token={token}&server={server}&robot={bot}&keyword="
     if copy != None:
         final_url = final_url + copy
     data = await get_api(final_url, proxy = proxies)
@@ -234,3 +192,88 @@ async def recruit_(server: str, copy: str = None):
         return ["服务器名输入错误，请检查后重试~"]
     url = data["data"]["url"]
     return url
+
+async def calculate_(): # 日常预测
+    if token == None:
+        return ["Bot尚未填写Token，请联系Bot主人~"]
+    final_url = f"https://www.jx3api.com/view/active/calculate?token={token}&robot={bot}"
+    data = await get_api(final_url, proxy = proxies)
+    url = data["data"]["url"]
+    return url
+
+async def flower_(flower: str = None, server: str = None): # 鲜花价格 <服务器> [花]
+    if token == None:
+        return ["Bot尚未填写Token，请联系Bot主人~"]
+    final_url = f"https://www.jx3api.com/view/home/flower?token={token}&robot={bot}&server={server}&name="
+    if flower != None:
+        final_url = final_url + flower
+    data = await get_api(final_url, proxy = proxies)
+    return data["data"]["url"]
+
+async def demon_(server: str = None): # 金价 <服务器>
+    if token == None:
+        return ["Bot尚未填写Token，请联系Bot主人~"]
+    if server == None:
+        final_url = f"https://www.jx3api.com/view/trade/server/demon?robot={bot}&token={token}"
+    else:
+        final_url = f"https://www.jx3api.com/view/trade/demon?server={server}&robot={bot}&token={token}"
+    data = await get_api(final_url, proxy = proxies)
+    if data["code"] == 401:
+        return ["服务器名输入错误，请检查后重试~"]
+    return data["data"]["url"]
+
+async def item_(name: str = None): # 物价 <物品>
+    if token == None:
+        return ["Bot尚未填写Token，请联系Bot主人~"]
+    final_url = f"https://www.jx3api.com/view/trade/search?token={token}&robot={bot}&name={name}"
+    data = await get_api(final_url, proxy = proxies)
+    if data["code"] == 404:
+        return ["唔……尚未收录该物品。"]
+    return data["data"]["url"]
+
+async def serendipity_(server: str = None, name: str = None): # 角色奇遇 <服务器> <ID>
+    if token == None:
+        return ["Bot尚未填写Token，请联系Bot主人~"]
+    final_url = f"https://www.jx3api.com/view/lucky/serendipity?token={token}&robot={bot}&ticket={ticket}&server={server}&name={name}"
+    data = await get_api(final_url, proxy = proxies)
+    return data["data"]["url"]
+
+async def statistical_(server: str = None, serendipity: str = None): # 近期奇遇 <服务器> [奇遇]
+    if token == None:
+        return ["Bot尚未填写Token，请联系Bot主人~"]
+    if serendipity == None:
+        final_url = f"https://www.jx3api.com/view/lucky/collect?token={token}&robot={bot}&server={server}"
+    else:
+        final_url = f"https://www.jx3api.com/view/lucky/statistical?token={token}&robot={bot}&ticket={ticket}&server={server}&name={serendipity}"
+    data = await get_api(final_url, proxy = proxies)
+    return data["data"]["url"]
+
+async def global_serendipity(name: str = None): # 全服奇遇 [奇遇]
+    if token == None:
+        return ["Bot尚未填写Token，请联系Bot主人~"]
+    if name != None:
+        final_url = f"https://www.jx3api.com/view/lucky/server/serendipity?name={name}&token={token}&robot={bot}"
+    data = await get_api(final_url, proxy = proxies)
+    return data["data"]["url"]
+
+async def global_statistical(name: str = None): # 全服统计 [奇遇]
+    if token == None:
+        return ["Bot尚未填写Token，请联系Bot主人~"]
+    if name != None:
+        final_url = f"https://www.jx3api.com/view/lucky/server/statistical?name={name}&token={token}&robot={bot}"
+    data = await get_api(final_url, proxy = proxies)
+    return data["data"]["url"]
+
+async def addritube_(server: str = None, name: str = None): # 查装 <服务器> <ID>
+    if token == None or ticket == None:
+        return ["Bot尚未填写Ticket或Token，请联系Bot主人~"]
+    final_url = f"https://www.jx3api.com/view/role/attribute?ticket={ticket}&token={token}&robot={bot}&server={server}&name={name}"
+    data = await get_api(final_url, proxy = proxies)
+    return data["data"]["url"]
+
+async def firework_(server: str = None, name: str = None):
+    if token == None:
+        return ["Bot尚未填写Token，请联系Bot主人~"]
+    final_url = f"https://www.jx3api.com/view/role/firework?token={token}&robot={bot}&server={server}&name={name}"
+    data = await get_api(final_url, proxy = proxies)
+    return data["data"]["url"]
