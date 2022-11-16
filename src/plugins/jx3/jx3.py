@@ -175,9 +175,9 @@ async def tiangou_():
     text = data["data"]["text"]
     return text
 
-token = Config.jx3api_recruittoken
+token = Config.jx3api_globaltoken
 bot = "Inkar-Suki"
-ticket = Config.jx3_ticket
+ticket = Config.jx3_token
 
 async def recruit_(server: str, copy: str = None): # 团队招募 <服务器> [关键词]
     if token == None:
