@@ -276,4 +276,6 @@ async def firework_(server: str = None, name: str = None):
         return ["Bot尚未填写Token，请联系Bot主人~"]
     final_url = f"https://www.jx3api.com/view/role/firework?token={token}&robot={bot}&server={server}&name={name}"
     data = await get_api(final_url, proxy = proxies)
+    if data["code"] == 404:
+        return["该玩家没有烟花记录哦~"]
     return data["data"]["url"]

@@ -572,8 +572,6 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     server = arg[0]
     id = arg[1]
     data = await firework_(server, id)
-    if data["code"] == 404:
-        await firework.finish("该玩家没有烟花记录哦~")
     if type(data) == type([]):
         await firework.finish(data[0])
     else:
