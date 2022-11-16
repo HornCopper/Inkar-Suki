@@ -135,6 +135,13 @@ if __name__ == "__main__":
         json_["githubtoken"] = None
     else:
         json_["githubtoken"] = ght
+    space()
+    print("请输入推栏Token，若没有请直接回车（抓包即可获得）。")
+    jx3t = input("请输入推栏Ticket/Token：")
+    if jx3t == "":
+        json_["jx3_token"] = None
+    else:
+        json_["jx3_token"] = jx3t
     final = json.dumps(json_)
     write("config.json",final)
     space()
