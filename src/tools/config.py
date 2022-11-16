@@ -29,4 +29,4 @@ class Config:
     jx3api_wstoken = configs["jx3api_wstoken"]
     jx3api_globaltoken = configs["jx3api_globaltoken"]
     ght = configs["githubtoken"]
-    jx3t = configs["jx3_token"]
+    jx3_token = configs["jx3_token"]
