@@ -271,11 +271,19 @@ async def addritube_(server: str = None, name: str = None): # 查装 <服务器>
     data = await get_api(final_url, proxy = proxies)
     return data["data"]["url"]
 
-async def firework_(server: str = None, name: str = None):
+async def firework_(server: str = None, name: str = None): # 烟花 <服务器> <ID>
     if token == None:
         return ["Bot尚未填写Token，请联系Bot主人~"]
     final_url = f"https://www.jx3api.com/view/role/firework?token={token}&robot={bot}&server={server}&name={name}"
     data = await get_api(final_url, proxy = proxies)
     if data["code"] == 404:
         return["该玩家没有烟花记录哦~"]
+    return data["data"]["url"]
+
+async def sandbox_(server: str = None): # 沙盘 <服务器>
+    if server != None:
+        final_url = f"https://www.jx3api.com/view/sand/search?server=" + server
+    data = await get_api(final_url, proxy = proxies)
+    if data["code"] == 401:
+        return["唔……服务器名输入错误。"]
     return data["data"]["url"]
