@@ -577,6 +577,18 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     else:
         await firework.finish(ms.image(data))
 
+sandbox = on_command("jx3_sandbox", aliases={"沙盘"}, priority=5)
+@sandbox.handle()
+async def _(event: GroupMessageEvent, args: Message = CommandArg()):
+    arg = args.extract_plain_text()
+    if arg == "":
+        await sandbox.finish("缺少服务器名称，没办法帮你找哦~")
+    data = await sandbox_(arg)
+    if type(data) == type([]):
+        await sandbox.finish(data[0])
+    else:
+        await sandbox.finish(ms.image(data))
+
 driver = get_driver()
 
 @driver.on_startup
