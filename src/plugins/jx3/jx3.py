@@ -269,6 +269,8 @@ async def addritube_(server: str = None, name: str = None): # 查装 <服务器>
         return ["Bot尚未填写Ticket或Token，请联系Bot主人~"]
     final_url = f"https://www.jx3api.com/view/role/attribute?ticket={ticket}&token={token}&robot={bot}&server={server}&name={name}"
     data = await get_api(final_url, proxy = proxies)
+    if data["code"] == 404:
+        return["唔……玩家不存在。"]
     return data["data"]["url"]
 
 async def firework_(server: str = None, name: str = None): # 烟花 <服务器> <ID>
