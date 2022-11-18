@@ -24,7 +24,7 @@ def aliases(SkillName: str) -> str:
         return "离经易道"
     elif SkillName in ["傲雪","傲血","傲血战意"]:
         return "傲血战意"
-    elif SkillName in ["天策T","策T","铁牢","铁牢律"]:
+    elif SkillName in ["天策T","策T","铁牢","铁牢律","策t","天策t"]:
         return "铁牢律"
     elif SkillName in ["气纯","紫霞功","紫霞"]:
         return "紫霞功"
@@ -50,9 +50,9 @@ def aliases(SkillName: str) -> str:
         return "笑尘诀"
     elif SkillName in ["焚影圣诀","焚影圣决","焚影"]:
         return "焚影圣诀"
-    elif SkillName in ["明教T","喵T","明尊","明尊琉璃体"]:
+    elif SkillName in ["明教T","喵T","明尊","明尊琉璃体","明教t","明尊t","喵t"]:
         return "明尊琉璃体"
-    elif SkillName in ["苍云T","铁骨","铁骨衣"]:
+    elif SkillName in ["苍云T","铁骨","铁骨衣","铁骨1","苍t","苍云t"]:
         return "铁骨衣"
     elif SkillName in ["分山劲","分山"]:
         return "分山劲"
@@ -60,11 +60,11 @@ def aliases(SkillName: str) -> str:
         return "莫问"
     elif SkillName in ["奶歌","歌奶","相知"]:
         return "相知"
-    if SkillName in ["北傲决","北傲诀","霸刀","北傲"]:
+    elif SkillName in ["北傲决","北傲诀","霸刀","北傲"]:
         return "北傲诀"
     elif SkillName in ["蓬莱","凌海","凌海诀"]:
         return "凌海诀"
-    elif SkillName in ["洗髓经","洗髓","和尚T","秃T"]:
+    elif SkillName in ["洗髓经","洗髓","和尚T","秃T","和尚t","大师t","大师T"]:
         return "洗髓经"
     elif SkillName in ["易筋经","易筋"]:
         return "易筋经"
