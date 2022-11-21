@@ -23,7 +23,7 @@ async def search_item_info(item_name: str):
 async def getItemPriceById(id: str, server: str):
     final_url = f"https://next2.jx3box.com/api/item-price/{id}/logs?server={server}"
     data = await get_api(final_url)
-    if data["code"] == 0:
+    if data["data"]["logs"] == "null":
         return {"msg":"唔……交易行没有此物品哦~"}
     logs = data["data"]["logs"]
     logs.reverse()
