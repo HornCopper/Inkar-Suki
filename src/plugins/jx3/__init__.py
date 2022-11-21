@@ -621,6 +621,8 @@ async def _(state: T_State, event: GroupMessageEvent, num: Message = Arg()):
         server = state["server"]
         id = data[int(num)][0]
         final_data = await getItemPriceById(id, server)
+        if type(final_data) == type({}):
+            await trade_.finish(final_data["msg"])
         msg = f"查到{server}的该物品交易行价格：\n最低价格：{final_data[0]}\n平均价格：{final_data[1]}\n最高价格：{final_data[2]}"
         await trade_.finish(msg)
     else:
