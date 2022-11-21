@@ -610,7 +610,7 @@ async def _(state: T_State, event: GroupMessageEvent, args: Message = CommandArg
         state["data"] = data
         msg = ""
         for i in range(len(data)):
-            msg = msg + "\n" + str(i) + "." + f"{i[1]}（ID：{i[0]}）"
+            msg = msg + "\n" + str(i) + "." + f"{data[i][1]}（ID：{data[i][0]}）"
         await trade_.send(msg[1:] + "\n小提示：按住Ctrl并将鼠标放在物品上，即可查看该物品的ID。")
 
 @trade_.got("num", prompt="输入序号以搜索，其他内容则无视。")
