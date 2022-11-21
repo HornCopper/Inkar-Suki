@@ -28,6 +28,7 @@ from .task import getTask, getTaskChain
 from .jx3apiws import ws_client
 from .jx3_event import RecvEvent
 from .buff import get_buff
+from .trade import search_item_info, getItemPriceById
 
 horse = on_command("jx3_horse",aliases={"马"},priority=5)
 @horse.handle()
@@ -588,6 +589,42 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
         await sandbox.finish(data[0])
     else:
         await sandbox.finish(ms.image(data))
+
+trade_ = on_command("jx3_trade", aliases={"交易行"}, priority=5)
+@trade_.handle()
+async def _(state: T_State, event: GroupMessageEvent, args: Message = CommandArg()):
+    arg = args.extract_plain_text().split(" ")
+    if len(arg) != 2:
+        await trade_.finish("唔……参数不正确哦，请检查后重试~")
+    server = arg[0]
+    check_url = f"https://www.jx3api.com/data/server/status?server={server}"
+    check_data = await get_api(check_url, proxy = proxies)
+    if check_data["code"] == 401:
+        await trade_.finish("唔……服务器不存在，请检查后重试~")
+    item = arg[1]
+    state["server"] = server
+    data = await search_item_info(item)
+    if data == []:
+        await trade_.finish("唔……没有找到该物品哦~")
+    else:
+        state["data"] = data
+        msg = ""
+        for i in range(len(data)):
+            msg = msg + "\n" + str(i) + "." + f"{i[1]}（ID：{i[0]}）"
+        await trade_.send(msg[1:] + "\n小提示：按住Ctrl并将鼠标放在物品上，即可查看该物品的ID。")
+
+@trade_.got("num", prompt="输入序号以搜索，其他内容则无视。")
+async def _(state: T_State, event: GroupMessageEvent, num: Message = Arg()):
+    num = num.extract_plain_text()
+    if checknumber(num):
+        data = state["data"]
+        server = state["server"]
+        id = data[int(num)][0]
+        final_data = await getItemPriceById(id, server)
+        msg = f"查到{server}的该物品交易行价格：\n最低价格：{final_data[0]}\n平均价格：{final_data[1]}\n最高价格：{final_data[2]}"
+        await trade_.finish(msg)
+    else:
+        return
 
 driver = get_driver()
 
