@@ -21,18 +21,17 @@ async def search_item_info(item_name: str):
     return space
 
 async def getItemPriceById(id: str, server: str):
-    final_url = f"https://next2.jx3box.com/api/item-price/{id}/logs"
+    final_url = f"https://next2.jx3box.com/api/item-price/{id}/logs?server={server}"
     data = await get_api(final_url)
     if data["code"] == 0:
         return {"msg":"唔……交易行没有此物品哦~"}
     logs = data["data"]["logs"]
     logs.reverse()
-    for i in logs:
-        if i["Server"] == server:
-            LowestPrice = convert(i["LowestPrice"])
-            AvgPrice = convert(i["AvgPrice"])
-            HighestPrice = convert(i["HighestPrice"])
-            return [LowestPrice, AvgPrice, HighestPrice]
+    if logs[0]["Server"] == server:
+        LowestPrice = convert(logs[0]["LowestPrice"])
+        AvgPrice = convert(logs[0]["AvgPrice"])
+        HighestPrice = convert(logs[0]["HighestPrice"])
+        return [LowestPrice, AvgPrice, HighestPrice]
 
 def convert(price: int):
     if 1 <= price <= 99: # 铜
