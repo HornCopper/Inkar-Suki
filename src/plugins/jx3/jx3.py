@@ -270,7 +270,9 @@ async def addritube_(server: str = None, name: str = None): # 查装 <服务器>
     final_url = f"https://www.jx3api.com/view/role/attribute?ticket={ticket}&token={token}&robot={bot}&server={server}&name={name}"
     data = await get_api(final_url, proxy = proxies)
     if data["code"] == 404:
-        return["唔……玩家不存在。"]
+        return ["唔……玩家不存在。"]
+    if data["code"] == 403 and data["data"]["msg"] == "侠客隐藏了游戏信息":
+        return ["唔，该玩家隐藏了Ta的信息。"]
     return data["data"]["url"]
 
 async def firework_(server: str = None, name: str = None): # 烟花 <服务器> <ID>
@@ -279,7 +281,7 @@ async def firework_(server: str = None, name: str = None): # 烟花 <服务器> 
     final_url = f"https://www.jx3api.com/view/role/firework?token={token}&robot={bot}&server={server}&name={name}"
     data = await get_api(final_url, proxy = proxies)
     if data["code"] == 404:
-        return["该玩家没有烟花记录哦~"]
+        return ["该玩家没有烟花记录哦~"]
     return data["data"]["url"]
 
 async def sandbox_(server: str = None): # 沙盘 <服务器>
@@ -287,5 +289,5 @@ async def sandbox_(server: str = None): # 沙盘 <服务器>
         final_url = f"https://www.jx3api.com/view/sand/search?server=" + server
     data = await get_api(final_url, proxy = proxies)
     if data["code"] == 401:
-        return["唔……服务器名输入错误。"]
+        return ["唔……服务器名输入错误。"]
     return data["data"]["url"]
