@@ -271,8 +271,8 @@ async def addritube_(server: str = None, name: str = None): # 查装 <服务器>
     data = await get_api(final_url, proxy = proxies)
     if data["code"] == 404:
         return ["唔……玩家不存在。"]
-    if data["code"] == 403 and data["data"]["msg"] == "侠客隐藏了游戏信息":
-        return ["唔，该玩家隐藏了Ta的信息。"]
+    if data["code"] == 403 and data["msg"] == "侠客隐藏了游戏信息":
+        return ["唔，该玩家隐藏了信息。"]
     return data["data"]["url"]
 
 async def firework_(server: str = None, name: str = None): # 烟花 <服务器> <ID>
