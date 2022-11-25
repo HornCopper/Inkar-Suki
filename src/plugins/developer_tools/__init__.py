@@ -75,7 +75,7 @@ async def ____(event: Event):
 restart = on_command("restart",priority=5)
 @restart.handle()
 async def _(event: Event):
-    with open("./example.py",mode="w") as cache:
+    with open("./src/plugins/developer_tools/example.py",mode="w") as cache:
         if checker(str(event.user_id),5) == False:
             await restart.finish(error(5))
         await  restart.send("好啦，开始重启，整个过程需要些许时间，还请等我一下哦~")
