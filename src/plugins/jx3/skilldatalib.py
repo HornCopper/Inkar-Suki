@@ -85,7 +85,7 @@ async def getTalents():
 
     数据来源：`JX3BOX` & `JX3API`
     '''
-    force_list = await get_api("https://www.inkar-suki.xyz/api")
+    force_list = await get_api("https://www.inkar-suki.xyz/jx3boxdata")
     data_list = []
     for i in force_list:
         data_list.append(i)
