@@ -101,7 +101,6 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
                         if x["name"] == msg[1] and x["finished"] == True:
                             passed = True
                             found = True
-                    progress_msg = "".join(progress)
                     if found == False:
                         final_msg = "未找到该首领，请检查副本名称是否输入正确。"
                     else:
