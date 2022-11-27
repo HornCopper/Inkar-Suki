@@ -41,10 +41,10 @@ async def _(event: Event, args: Message = CommandArg()):
 
 def getData(qq):
     data = json.loads(read(TOOLS + "/token.json"))
-    if qq not in list(data):
-        return False
-    else:
-        return data[qq]
+    for i in data:
+        if list(i)[0] == qq:
+            return i[qq]
+    return False
 
 cd = on_command("jx3_cd", aliases={"副本cd"}, priority=5)
 @cd.handle()
