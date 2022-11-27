@@ -10,7 +10,7 @@ from nonebot.adapters.onebot.v11 import Event, GroupMessageEvent
 TOOLS = nonebot.get_driver().config.tools_path
 sys.path.append(TOOLS)
 
-from file import read
+from file import read, write
 from utils import data_post
 
 storage = on_command("jx3_storage", aliases={"推栏"}, priority=5)
@@ -33,6 +33,7 @@ async def _(event: Event, args: Message = CommandArg()):
         updated = True
     else:
         now.append(new)
+    write(TOOLS + "/token.json",json.dumps(now))
     if updated:
         await storage.finish("已更新您的数据，该信息仅保存在机器人服务器，不与任何第三方共享。")
     else:
