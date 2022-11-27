@@ -6,7 +6,6 @@ import os
 from nonebot import on_command, on_message
 from nonebot.adapters.onebot.v11 import Event, Bot, GroupMessageEvent
 from nonebot.matcher import Matcher
-from nonebot.params import CommandArg
 from nonebot.log import logger
 
 TOOLS = nonebot.get_driver().config.tools_path
