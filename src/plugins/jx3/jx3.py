@@ -1,5 +1,4 @@
 import nonebot
-import time
 import sys
 
 from nonebot.adapters.onebot.v11 import MessageSegment as ms
