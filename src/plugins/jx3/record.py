@@ -58,6 +58,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     sign = data["sign"]
     token = data["token"]
     remote_data = await data_post(url = "https://w.pvp.xoyo.com/api/h5/parser/cd-process/get-by-role", headers = {"token":token}, json = {"globalRoleId":globalRoleId, "ts":ts, "sign":sign})
+    remote_data = json.loads(remote_data)
     if msg == "":
         final_msg = ""
         for i in remote_data["data"]:
