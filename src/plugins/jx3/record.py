@@ -77,6 +77,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     else:
         msg = msg.split()
         if len(msg) == 1:
+            final_msg = ""
             for i in remote_data["data"]:
                 if msg[0] == i["mapType"] + i["mapName"]:
                     part = i["mapType"] + i["mapName"] + "\n"
