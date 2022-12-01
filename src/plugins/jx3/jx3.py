@@ -290,3 +290,54 @@ async def sandbox_(server: str = None): # 沙盘 <服务器>
     if data["code"] == 401:
         return ["唔……服务器名输入错误。"]
     return data["data"]["url"]
+
+async def single_achievement_(server: str = None, name: str = None, achievement: str = None):
+    if token == None:
+        return ["Bot尚未填写Token，请联系Bot主人~"]
+    if ticket == None:
+        return ["Bot尚未填写Ticket，请联系Bot主人~"]
+    final_url = f"https://www.jx3api.com/data/role/achievement?ticket={ticket}&token={token}&server={server}&role={name}&name={achievement}"
+    data = await get_api(final_url, proxy = proxies)
+    if data["code"] == 401 or data["code"] == 404:
+        return ["角色或成就不存在哦~"]
+    if len(data["data"]["data"]) >= 2:
+        return ["成就名称输入错误，或者您可以使用“+成就”先进行搜索哦~"]
+    data = data["data"]["data"][0]
+    icon = ms.image(data["icon"])
+    detail = data["detail"]
+    name = data["name"]
+    desc = data["desc"]
+    point = data["rewardPoint"]
+    isFinished = data["isFinished"]
+    msg = f"查询到以下成就：\n{detail}：{name}\n" + icon + f"\n{desc}\n资历：{point}点\n"
+    if isFinished:
+        msg = msg + "状态：已完成"
+    else:
+        msg = msg + "状态：尚未完成"
+
+async def achievements_(server: str = None, name: str = None, achievement: str = None):
+    if token == None:
+        return ["Bot尚未填写Token，请联系Bot主人~"]
+    if ticket == None:
+        return ["Bot尚未填写Ticket，请联系Bot主人~"]
+    final_url = f"https://www.jx3api.com/data/role/achievement?ticket={ticket}&token={token}&server={server}&role={name}&name={achievement}"
+    data = await get_api(final_url, proxy = proxies)
+    logger.info(data)
+    if data["code"] == 401 or data["code"] == 404:
+        return ["角色或成就不存在哦~"]
+    node = []
+    for i in data["data"]["data"]:
+        icon = ms.image(i["icon"])
+        name = i["name"]
+        desc = i["desc"]
+        point = i["rewardPoint"]
+        isFinished = i["isFinished"]
+        msg = icon + f"\n{name}\n{desc}\n资历：{point}点\n"
+        if isFinished:
+            msg = msg + "状态：已完成"
+        else:
+            msg = msg + "状态：尚未完成"
+        node.append(nodetemp("团本成就",Config.bot[0],msg))
+    if len(node) == 0:
+        return ["未找到该副本的成就哦，或许试试单成就搜索？"]
+    return {"result":node}
