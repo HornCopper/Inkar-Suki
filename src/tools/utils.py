@@ -14,21 +14,27 @@ async def get_url(url, proxy: dict = None, args: dict = None, headers: str = Non
         result = resp.text
         return result
 
-async def get_api(url, proxy: dict = None, args: dict = None, headers: str = None, timeout: int = 300):
+async def get_api(url, proxy: dict = None, args: dict = None, headers: str = None, timeout: int = 300, data: dict = None):
     async with httpx.AsyncClient(proxies=proxy, follow_redirects = True) as client:
         if args == None:
             resp = await client.get(url, timeout = timeout, headers = headers)
         else:
-            resp = await client.get(url, timeout = timeout, headers = headers, params=args)
+            if data != None:
+                resp = await client.get(url, timeout = timeout, headers = headers, params=args, data = data)
+            else:
+                resp = await client.get(url, timeout = timeout, headers = headers, params=args)
         result = resp.json()
         return result
 
-async def post_url(url, proxy: dict = None, args: dict = None, headers: str = None, timeout: int = 300):
+async def post_url(url, proxy: dict = None, args: dict = None, headers: str = None, timeout: int = 300, data: dict = None):
     async with httpx.AsyncClient(proxies=proxy, follow_redirects = True) as client:
         if args == None:
             resp = await client.post(url, timeout = timeout, headers = headers)
         else:
-            resp = await client.post(url, timeout = timeout, headers = headers, params=args)
+            if data != None:
+                resp = await client.post(url, timeout = timeout, headers = headers, params=args, data = data)
+            else:
+                resp = await client.post(url, timeout = timeout, headers = headers, params=args)
         result = resp.text
         return result
 
