@@ -641,7 +641,10 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     id = achievement[1]
     achi = achievement[2]
     msg = await single_achievement_(server, id, achi)
-    await single_achievement.finish(msg[0])
+    if type(msg) == type([]):
+        await single_achievement.finish(msg[0])
+    else:
+        await single_achievement.finish(msg)
     
 achievements = on_command("jx3_machi",aliases={"进度"},priority=5)
 @achievements.handle()
