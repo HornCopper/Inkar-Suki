@@ -142,6 +142,13 @@ if __name__ == "__main__":
         json_["jx3_token"] = None
     else:
         json_["jx3_token"] = jx3t
+    space()
+    print("请输入推栏deviceId，若没有请直接回车（抓包即可获得）。")
+    jx3d = input("请输入deviceId：")
+    if jx3d == "":
+        json_["jx3_deviceId"] = None
+    else:
+        json_["jx3_deviceId"] = jx3d
     final = json.dumps(json_)
     write("config.json",final)
     space()

@@ -30,3 +30,4 @@ class Config:
     jx3api_globaltoken = configs["jx3api_globaltoken"]
     ght = configs["githubtoken"]
     jx3_token = configs["jx3_token"]
+    jx3_deviceId = configs["jx3_deviceId"]
