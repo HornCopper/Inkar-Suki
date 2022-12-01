@@ -309,7 +309,7 @@ async def single_achievement_(server: str = None, name: str = None, achievement:
     desc = data["desc"]
     point = data["rewardPoint"]
     isFinished = data["isFinished"]
-    msg = f"查询到以下成就：\n{detail}：{name}\n" + icon + f"\n{desc}\n资历：{point}点\n"
+    msg = icon + "\n" + detail + "：" + name + "\n" + desc + "\n资历：" + str(point) + "点\n"
     if isFinished:
         msg = msg + "状态：已完成"
     else:
