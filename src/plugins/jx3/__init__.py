@@ -29,7 +29,6 @@ from .jx3apiws import ws_client
 from .jx3_event import RecvEvent
 from .buff import get_buff
 from .trade import search_item_info, getItemPriceById
-from .record import *
 
 horse = on_command("jx3_horse",aliases={"马"},priority=5)
 @horse.handle()
@@ -631,6 +630,33 @@ async def _(state: T_State, event: GroupMessageEvent, num: Message = Arg()):
         await trade_.finish(msg)
     else:
         return
+
+single_achievement = on_command("jx3_sachi", aliases={"单成就"},priority=5)
+@single_achievement.handle()
+async def _(event: GroupMessageEvent, args: Message = CommandArg()):
+    achievement = args.extract_plain_text().split(" ")
+    if len(achievement) != 3:
+        await single_achievement.finish("唔……缺少参数哦~")
+    server = achievement[0]
+    id = achievement[1]
+    achi = achievement[2]
+    msg = await single_achievement_(server, id, achi)
+    await single_achievement.finish(msg[0])
+    
+achievements = on_command("jx3_machi",aliases={"进度"},priority=5)
+@achievements.handle()
+async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
+    achievement = args.extract_plain_text().split(" ")
+    if len(achievement) != 3:
+        await achievements.finish("唔……缺少参数哦~")
+    server = achievement[0]
+    id = achievement[1]
+    achi = achievement[2]
+    data = await achievements_(server, id, achi)
+    if type(data) == type([]):
+        await achievements.finish(data[0])
+    else:
+        await bot.call_api("send_group_forward_msg",group_id = event.group_id, messages = data["result"])
 
 driver = get_driver()
 
