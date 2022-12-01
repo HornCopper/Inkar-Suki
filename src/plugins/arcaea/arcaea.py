@@ -20,7 +20,7 @@ headers = {"Authorization": token}
 difficulties = ["Past","Present","Future","Beyond"]
 clear_statuses = ["Track Lost","Track Complete","Full Recall","Pure Memory","Easy Complete","Hard Complete"]
 
-def judgeLevelByScore(score: int): # 来自Arcaea的评分标准
+def judgeLevelByScore(score: int): # 来自Arcaea的评分标准 @OasisAkari
     '''
     使用分数进行等级判定。 @OasisAkari
     '''
