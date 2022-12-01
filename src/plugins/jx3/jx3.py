@@ -291,31 +291,6 @@ async def sandbox_(server: str = None): # 沙盘 <服务器>
         return ["唔……服务器名输入错误。"]
     return data["data"]["url"]
 
-async def single_achievement_(server: str = None, name: str = None, achievement: str = None):
-    if token == None:
-        return ["Bot尚未填写Token，请联系Bot主人~"]
-    if ticket == None:
-        return ["Bot尚未填写Ticket，请联系Bot主人~"]
-    final_url = f"https://www.jx3api.com/data/role/achievement?ticket={ticket}&token={token}&server={server}&role={name}&name={achievement}"
-    data = await get_api(final_url, proxy = proxies)
-    if data["code"] == 401 or data["code"] == 404:
-        return ["角色或成就不存在哦~"]
-    if len(data["data"]["data"]) >= 2:
-        return ["成就名称输入错误，或者您可以使用“+成就”先进行搜索哦~"]
-    data = data["data"]["data"][0]
-    icon = ms.image(data["icon"])
-    detail = data["detail"]
-    name = data["name"]
-    desc = data["desc"]
-    point = data["rewardPoint"]
-    isFinished = data["isFinished"]
-    msg = icon + "\n" + detail + "：" + name + "\n" + desc + "\n资历：" + str(point) + "点\n"
-    if isFinished:
-        msg = msg + "状态：已完成"
-    else:
-        msg = msg + "状态：尚未完成"
-    return msg
-
 async def achievements_(server: str = None, name: str = None, achievement: str = None):
     if token == None:
         return ["Bot尚未填写Token，请联系Bot主人~"]
