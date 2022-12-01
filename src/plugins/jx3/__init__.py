@@ -630,21 +630,6 @@ async def _(state: T_State, event: GroupMessageEvent, num: Message = Arg()):
         await trade_.finish(msg)
     else:
         return
-
-single_achievement = on_command("jx3_sachi", aliases={"单成就"},priority=5)
-@single_achievement.handle()
-async def _(event: GroupMessageEvent, args: Message = CommandArg()):
-    achievement = args.extract_plain_text().split(" ")
-    if len(achievement) != 3:
-        await single_achievement.finish("唔……缺少参数哦~")
-    server = achievement[0]
-    id = achievement[1]
-    achi = achievement[2]
-    msg = await single_achievement_(server, id, achi)
-    if type(msg) == type([]):
-        await single_achievement.finish(msg[0])
-    else:
-        await single_achievement.finish(msg)
     
 achievements = on_command("jx3_machi",aliases={"进度"},priority=5)
 @achievements.handle()
