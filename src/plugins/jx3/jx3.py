@@ -314,6 +314,7 @@ async def single_achievement_(server: str = None, name: str = None, achievement:
         msg = msg + "状态：已完成"
     else:
         msg = msg + "状态：尚未完成"
+    return msg
 
 async def achievements_(server: str = None, name: str = None, achievement: str = None):
     if token == None:
