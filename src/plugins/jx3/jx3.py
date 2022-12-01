@@ -296,6 +296,9 @@ async def achievements_(server: str = None, name: str = None, achievement: str =
         return ["Bot尚未填写Token，请联系Bot主人~"]
     if ticket == None:
         return ["Bot尚未填写Ticket，请联系Bot主人~"]
+    personal_info = await get_api(f"https://www.jx3api.com/data/role/roleInfo?server={server}&name={name}&token={token}")
+    roleId = personal_info["data"]["roleId"]
+    await get_api(url=f"https://www.jx3api.com/data/save/roleInfo?ticket={ticket}&roleId={roleId}&ticket={ticket}")
     final_url = f"https://www.jx3api.com/data/role/achievement?ticket={ticket}&token={token}&server={server}&role={name}&name={achievement}"
     data = await get_api(final_url, proxy = proxies)
     logger.info(data)
