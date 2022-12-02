@@ -317,3 +317,17 @@ async def achievements_(server: str = None, name: str = None, achievement: str =
     if len(node) == 0:
         return ["未找到该副本的成就哦，或许试试单成就搜索？"]
     return {"result":node}
+
+async def special_(server: str, item: str = None):
+    if token == None:
+        return ["Bot尚未填写Token，请联系Bot主人~"]
+    if item != None:
+        final_url = f"https://www.jx3api.com/view/team/items/statistical?token={token}&server={server}&name={item}&robot={bot}"
+    else:
+        final_url = f"https://www.jx3api.com/view/team/items/collect?token={token}&server={server}&robot={bot}"
+    data = await get_api(final_url, proxy = proxies)
+    if data["code"] == 401:
+        return ["唔……服务器名输入错误。"]
+    if data["code"] == 404:
+        return ["唔……未找到该物品。"]
+    return data["data"]["url"]
