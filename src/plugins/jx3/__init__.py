@@ -646,6 +646,22 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
     else:
         await bot.call_api("send_group_forward_msg",group_id = event.group_id, messages = data["result"])
 
+special = on_command("jx3_special",aliases={"掉落"},priority=5)
+@special.handle()
+async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
+    arg = args.extract_plain_text().split(" ")
+    if len(arg) not in [1,2]:
+        await special.finish("唔……参数数量有误，请检查后重试~")
+    if len(arg) == 1:
+        data = await special_(server = arg[0])
+    else:
+        data = await special_(server = arg[0], item = arg[1])
+    if type(data) == type([]):
+        await special.finish(data[0])
+    else:
+        await special.finish(ms.image(data))
+    
+
 driver = get_driver()
 
 @driver.on_startup
