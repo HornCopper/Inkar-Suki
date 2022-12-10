@@ -21,7 +21,6 @@ from file import read, write
 
 from .jx3 import *
 from .skilldatalib import getAllSkillsInfo, getSingleSkill, getSingleTalent
-from .achievement import getAchievementFinishMethod
 from .adventure import getAdventure, getAchievementsIcon
 from .pet import get_pet
 from .task import getTask, getTaskChain
@@ -134,16 +133,6 @@ async def _(args: Message = CommandArg()):
     if msg == False:
         await skill.finish("此心法不存在哦，请检查后重试~")
     await skill.finish(msg)
-
-adventure_____ = on_command("jx3_achievement",aliases={"奇遇"},priority=5)
-@adventure_____.handle()
-async def _(args: Message = CommandArg()):
-    adventure_name = args.extract_plain_text()
-    if adventure_name == False:
-        await adventure_____.finish("没有输入奇遇名称，没办法帮你找啦！")
-    else:
-        msg = await getAchievementFinishMethod(adventure_name)
-        await adventure_____.finish(msg)
 
 talent = on_command("_jx3_talent",aliases={"_奇穴"},priority=5)
 @talent.handle()
@@ -494,7 +483,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     else:
         await item_price.finish(ms.image(data))
 
-serendipity = on_command("jx3_serendipity", aliases={"个人奇遇"}, priority=5)
+serendipity = on_command("jx3_serendipity", aliases={"奇遇"}, priority=5)
 @serendipity.handle()  
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     arg = args.extract_plain_text().split(" ")
@@ -550,7 +539,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     else:
         await gstatistical.finish(ms.image(data))
 
-addritube = on_command("jx3_addritube", aliases={"查装"}, priority=5)
+addritube = on_command("jx3_addritube", aliases={"属性","查装"}, priority=5)
 @addritube.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     arg = args.extract_plain_text().split(" ")
@@ -660,7 +649,6 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
         await special.finish(data[0])
     else:
         await special.finish(ms.image(data))
-    
 
 driver = get_driver()
 
