@@ -681,6 +681,20 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
         else:
             await arena.finish(ms.image(data))
 
+trials = on_command("jx3_trials", aliases={"试炼"}, priority=5)
+@trials.handle()
+async def _(event: GroupMessageEvent, args: Message = CommandArg()):
+    arg = args.extract_plain_text().split(" ")
+    if len(arg) != 2:
+        await trials.finish("唔……参数不正确哦，请检查后重试~")
+    server = arg[0]
+    school = arg[1]
+    data = await trials_(server, school)
+    if type(data) == type([]):
+        await trials.finish(data[0])
+    else:
+        await trials.finish(ms.image(data))
+
 driver = get_driver()
 
 @driver.on_startup
