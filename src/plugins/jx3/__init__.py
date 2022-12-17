@@ -650,6 +650,37 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
     else:
         await special.finish(ms.image(data))
 
+arena = on_command("jx3_arena",aliases={"名剑"}, priority=5)
+@arena.handle()
+async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
+    arg = args.extract_plain_text().split(" ")
+    if len(arg) not in [2,3]:
+        await arena.finish("唔……参数数量有误，请检查后重试~")
+    if arg[0] == "战绩":
+        if len(arg) != 3:
+            await arena.finish("唔……参数数量有误，请检查后重试~")
+        data = await arena_(object = "战绩", server = arg[1], name = arg[2])
+        if type(data) == type([]):
+            await arena.finish(data[0])
+        else:
+            await arena.finish(ms.image(data))
+    elif arg[0] == "排行":
+        if len(arg) != 2:
+            await arena.finish("唔……参数数量有误，请检查后重试~")
+        data = await arena_(object = "排行", mode = arg[1])
+        if type(data) == type([]):
+            await arena.finish(data[0])
+        else:
+            await arena.finish(ms.image(data))
+    elif arg[0] == "统计":
+        if len(arg) != 2:
+            await arena.finish("唔……参数数量有误，请检查后重试~")
+        data = await arena_(object = "统计", mode = arg[1])
+        if type(data) == type([]):
+            await arena.finish(data[0])
+        else:
+            await arena.finish(ms.image(data))
+
 driver = get_driver()
 
 @driver.on_startup
