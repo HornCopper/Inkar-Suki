@@ -363,7 +363,7 @@ async def trials_(server: str = None, school: str = None):
         return ["Bot尚未填写Token，请联系Bot主人~"]
     if ticket == None:
         return ["Bot尚未填写Ticket，请联系Bot主人~"]
-    final_url = f"https://www.jx3api.com/view/rank/trials?server={server}&school={school}&token={token}"
+    final_url = f"https://www.jx3api.com/view/rank/trials?server={server}&school={school}&token={token}&robot={bot}"
     data = await get_api(final_url, proxy = proxies)
     if data["code"] == 401:
         return ["唔……服务器名输入错误。"]
