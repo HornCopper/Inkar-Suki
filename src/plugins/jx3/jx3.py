@@ -357,3 +357,16 @@ async def arena_(object: str, server: str = None, name: str = None):
         if data["code"] == 401:
             return ["唔……名剑模式输入错误。"]
         return data["data"]["url"]
+
+async def trials_(server: str = None, school: str = None):
+    if token == None:
+        return ["Bot尚未填写Token，请联系Bot主人~"]
+    if ticket == None:
+        return ["Bot尚未填写Ticket，请联系Bot主人~"]
+    final_url = f"https://www.jx3api.com/view/rank/trials?server={server}&school={school}&token={token}"
+    data = await get_api(final_url, proxy = proxies)
+    if data["code"] == 401:
+        return ["唔……服务器名输入错误。"]
+    if data["code"] == 404:
+        return ["唔……门派名称输入错误。"]
+    return data["data"]["url"]
