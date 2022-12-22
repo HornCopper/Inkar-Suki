@@ -137,7 +137,7 @@ post = on_command("post", aliases={"公告"}, priority=5)
 @post.handle()
 async def _(bot: Bot, event: Event, args: Message = CommandArg()):
     if checker(str(event.user_id), 10) == False:
-        post.finish(error(10))
+        await post.finish(error(10))
     cmd = args.extract_plain_text()
     groups = await bot.call_api("get_group_list")
     for i in groups:
