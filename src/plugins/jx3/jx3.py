@@ -25,7 +25,7 @@ async def server_status(server: str = None):
     server = server_mapping(server)
     if server == False:
         return ["唔……服务器名输入错误。"]
-    full_link = "https://www.jx3api.com/data/server/check?server="+server_name
+    full_link = "https://www.jx3api.com/data/server/check?server="+server
     info = await get_api(full_link, proxy = proxies)
     try:
         all_servers = info["data"]
