@@ -21,7 +21,7 @@ if proxy != None:
 else:
     proxies = None
 
-async def server_status(server_name):
+async def server_status(server: str = None):
     server = server_mapping(server)
     if server == False:
         return ["唔……服务器名输入错误。"]
@@ -35,9 +35,9 @@ async def server_status(server_name):
         pass
     status = info["data"]["status"]
     if status == 1:
-        return f"{server_name}服务器状态正常。"
+        return f"{server}服务器状态正常。"
     elif status == 0:
-        return f"{server_name}服务器维护中。"
+        return f"{server}服务器维护中。"
 
 async def horse_flush_place(horse_name):
     def template(place, img):
