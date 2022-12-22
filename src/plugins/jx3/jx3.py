@@ -22,6 +22,9 @@ else:
     proxies = None
 
 async def server_status(server_name):
+    server = server_mapping(server)
+    if server == False:
+        return ["唔……服务器名输入错误。"]
     full_link = "https://www.jx3api.com/data/server/check?server="+server_name
     info = await get_api(full_link, proxy = proxies)
     try:
@@ -64,7 +67,10 @@ async def macro_(name):
     xinfa = info["data"]["name"]
     return f"查到{xinfa}的宏命令啦！\n推荐奇穴搭配：{qixue}\n宏命令：\n{macro}"
     
-async def daily_(server):
+async def daily_(server: str = None):
+    server = server_mapping(server)
+    if server == False:
+        return ["唔……服务器名输入错误。"]
     full_link = "https://www.jx3api.com/data/active/current?server=" + server
     info = await get_api(full_link, proxy = proxies)
     date = info["data"]["date"]
@@ -181,6 +187,9 @@ ticket = Config.jx3_token
 async def recruit_(server: str, copy: str = None): # 团队招募 <服务器> [关键词]
     if token == None:
         return ["Bot尚未填写Token，请联系Bot主人~"]
+    server = server_mapping(server)
+    if server == False:
+        return ["唔……服务器名输入错误。"]
     final_url = f"https://www.jx3api.com/view/team/member/recruit?token={token}&server={server}&robot={bot}&keyword="
     if copy != None:
         final_url = final_url + copy
@@ -203,6 +212,9 @@ async def calculate_(): # 日常预测
 async def flower_(flower: str = None, server: str = None): # 鲜花价格 <服务器> [花]
     if token == None:
         return ["Bot尚未填写Token，请联系Bot主人~"]
+    server = server_mapping(server)
+    if server == False:
+        return ["唔……服务器名输入错误。"]
     final_url = f"https://www.jx3api.com/view/home/flower?token={token}&robot={bot}&server={server}&name="
     if flower != None:
         final_url = final_url + flower
@@ -215,6 +227,9 @@ async def demon_(server: str = None): # 金价 <服务器>
     if server == None:
         final_url = f"https://www.jx3api.com/view/trade/server/demon?robot={bot}&token={token}"
     else:
+        server = server_mapping(server)
+        if server == False:
+            return ["唔……服务器名输入错误。"]
         final_url = f"https://www.jx3api.com/view/trade/demon?server={server}&robot={bot}&token={token}"
     data = await get_api(final_url, proxy = proxies)
     if data["code"] == 401:
@@ -233,6 +248,9 @@ async def item_(name: str = None): # 物价 <物品>
 async def serendipity_(server: str = None, name: str = None): # 角色奇遇 <服务器> <ID>
     if token == None:
         return ["Bot尚未填写Token，请联系Bot主人~"]
+    server = server_mapping(server)
+    if server == False:
+        return ["唔……服务器名输入错误。"]
     final_url = f"https://www.jx3api.com/view/lucky/serendipity?token={token}&robot={bot}&ticket={ticket}&server={server}&name={name}"
     data = await get_api(final_url, proxy = proxies)
     return data["data"]["url"]
@@ -240,6 +258,9 @@ async def serendipity_(server: str = None, name: str = None): # 角色奇遇 <�
 async def statistical_(server: str = None, serendipity: str = None): # 近期奇遇 <服务器> [奇遇]
     if token == None:
         return ["Bot尚未填写Token，请联系Bot主人~"]
+    server = server_mapping(server)
+    if server == False:
+        return ["唔……服务器名输入错误。"]
     if serendipity == None:
         final_url = f"https://www.jx3api.com/view/lucky/collect?token={token}&robot={bot}&server={server}"
     else:
@@ -266,6 +287,9 @@ async def global_statistical(name: str = None): # 全服统计 [奇遇]
 async def addritube_(server: str = None, name: str = None): # 查装 <服务器> <ID>
     if token == None or ticket == None:
         return ["Bot尚未填写Ticket或Token，请联系Bot主人~"]
+    server = server_mapping(server)
+    if server == False:
+        return ["唔……服务器名输入错误。"]
     final_url = f"https://www.jx3api.com/view/role/attribute?ticket={ticket}&token={token}&robot={bot}&server={server}&name={name}"
     data = await get_api(final_url, proxy = proxies)
     if data["code"] == 404:
@@ -277,6 +301,9 @@ async def addritube_(server: str = None, name: str = None): # 查装 <服务器>
 async def firework_(server: str = None, name: str = None): # 烟花 <服务器> <ID>
     if token == None:
         return ["Bot尚未填写Token，请联系Bot主人~"]
+    server = server_mapping(server)
+    if server == False:
+        return ["唔……服务器名输入错误。"]
     final_url = f"https://www.jx3api.com/view/role/firework?token={token}&robot={bot}&server={server}&name={name}"
     data = await get_api(final_url, proxy = proxies)
     if data["code"] == 404:
@@ -284,6 +311,9 @@ async def firework_(server: str = None, name: str = None): # 烟花 <服务器> 
     return data["data"]["url"]
 
 async def sandbox_(server: str = None): # 沙盘 <服务器>
+    server = server_mapping(server)
+    if server == False:
+        return ["唔……服务器名输入错误。"]
     if server != None:
         final_url = f"https://www.jx3api.com/view/sand/search?server=" + server
     data = await get_api(final_url, proxy = proxies)
@@ -296,6 +326,9 @@ async def achievements_(server: str = None, name: str = None, achievement: str =
         return ["Bot尚未填写Token，请联系Bot主人~"]
     if ticket == None:
         return ["Bot尚未填写Ticket，请联系Bot主人~"]
+    server = server_mapping(server)
+    if server == False:
+        return ["唔……服务器名输入错误。"]
     final_url = f"https://www.jx3api.com/data/role/achievement?ticket={ticket}&token={token}&server={server}&role={name}&name={achievement}"
     data = await get_api(final_url, proxy = proxies)
     logger.info(data)
@@ -321,6 +354,9 @@ async def achievements_(server: str = None, name: str = None, achievement: str =
 async def special_(server: str, item: str = None):
     if token == None:
         return ["Bot尚未填写Token，请联系Bot主人~"]
+    server = server_mapping(server)
+    if server == False:
+        return ["唔……服务器名输入错误。"]
     if item != None:
         final_url = f"https://www.jx3api.com/view/team/items/statistical?token={token}&server={server}&name={item}&robot={bot}"
     else:
@@ -338,6 +374,9 @@ async def arena_(object: str, server: str = None, name: str = None):
     if ticket == None:
         return ["Bot尚未填写Ticket，请联系Bot主人~"]
     if object == "战绩":
+        server = server_mapping(server)
+        if server == False:
+            return ["唔……服务器名输入错误。"]
         final_url = f"https://www.jx3api.com/view/arena/recent?token={token}&name={name}&server={server}&robot={bot}&ticket={ticket}"
         data = await get_api(final_url, proxy = proxies)
         if data["code"] == 401:
@@ -363,6 +402,9 @@ async def trials_(server: str = None, school: str = None):
         return ["Bot尚未填写Token，请联系Bot主人~"]
     if ticket == None:
         return ["Bot尚未填写Ticket，请联系Bot主人~"]
+    server = server_mapping(server)
+    if server == False:
+        return ["唔……服务器名输入错误。"]
     final_url = f"https://www.jx3api.com/view/rank/trials?server={server}&school={school}&token={token}&robot={bot}"
     data = await get_api(final_url, proxy = proxies)
     if data["code"] == 401:
@@ -370,3 +412,37 @@ async def trials_(server: str = None, school: str = None):
     if data["code"] == 404:
         return ["唔……门派名称输入错误。"]
     return data["data"]["url"]
+
+def server_mapping(server: str):
+    if server in ["二合一","四合一","六合一","七合一","千岛湖","圣墓山","执子之手","平步青云","笑傲江湖","幽月轮","山雨欲来"]:
+        return "幽月轮"
+    elif server in ["剑胆琴心","煎蛋","剑胆"]:
+        return "剑胆琴心"
+    elif server in ["梦江南","双梦","如梦令","枫泾古镇"]:
+        return "梦江南"
+    elif server in ["斗转星移","金戈铁马","风雨同舟","大唐万象","姨妈","风雨","风雨大姨妈"]:
+        return "斗转星移"
+    elif server in ["长安城"]:
+        return "长安城"
+    elif server in ["电八","电信八区","绝代天骄","风骨霸刀"]:
+        return "绝代天骄"
+    elif server in ["龙虎","龙争虎斗"]:
+        return "龙争虎斗"
+    elif server in ["唯满侠","唯我独尊"]:
+        return "唯我独尊"
+    elif server in ["华山论剑","乾坤一掷","花钱","华乾"]:
+        return "乾坤一掷"
+    elif server in ["蝶服","蝶恋花"]:
+        return "蝶恋花"
+    elif server in ["纵月","天鹅坪"]:
+        return "天鹅坪"
+    elif server in ["青梅煮酒","青梅"]:
+        return "青梅煮酒"
+    elif server in ["横刀断浪","横刀"]:
+        return "横刀断浪"
+    elif server in ["破阵子","念破"]:
+        return "破阵子"
+    elif server in ["飞龙在天","飞龙"]:
+        return "飞龙在天"
+    else:
+        return False
