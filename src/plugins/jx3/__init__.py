@@ -37,7 +37,7 @@ async def _(args: Message = CommandArg()):
     else:
         await horse.finish("没有输入任何马的名称哦，没办法帮你找啦。")
 
-server = on_command("jx3_server",aliases={"服务器"},priority=5)
+server = on_command("jx3_server",aliases={"服务器","开服"},priority=5)
 @server.handle()
 async def _(args: Message = CommandArg()):
     if args.extract_plain_text():
