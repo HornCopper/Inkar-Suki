@@ -15,7 +15,7 @@ TOOLS = nonebot.get_driver().config.tools_path
 sys.path.append(TOOLS)
 DATA = TOOLS[:-5] + "data"
 
-from utils import read
+from file import read
 
 def format_body(data: dict) -> str:
     return json.dumps(data, separators=(',', ':'))
