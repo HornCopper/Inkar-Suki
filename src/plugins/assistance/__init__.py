@@ -328,7 +328,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     final_path = DATA + "/" + str(event.group_id) + "/opening.json"
     data = json.loads(read(final_path))
     for i in data:
-        if data["desc"] == name:
+        if i["desc"] == name:
             data.remove(i)
             write(final_path, json.dumps(data,ensure_ascii=True))
             await cancel.finish("删除成功！")

@@ -136,8 +136,8 @@ async def front_(event: Event, args: Message = CommandArg()):
 post = on_command("post", aliases={"公告"}, priority=5)
 @post.handle()
 async def _(bot: Bot, event: Event, args: Message = CommandArg()):
-    if checker(str(event.user_id), 10) == False:
-        await post.finish(error(10))
+    if str(event.user_id) not in Config.owner:
+        await post.finish("唔……只有机器人主人可以使用该命令哦~")
     cmd = args.extract_plain_text()
     groups = await bot.call_api("get_group_list")
     for i in groups:
