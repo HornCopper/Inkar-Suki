@@ -135,15 +135,16 @@ async def recToken(token: str = None, qq: str = None):
         return {"status":404,"msg":"没有找到您提交的QQ号哦，请检查您的链接是否有误！如果有不懂的请查询文档或询问作者(QQ:3349104868)！"}
     else:
         now = json.loads(read(TOOLS + "/token.json"))
-        if qq in list(now):
-            old_ = now[qq]
-            now[qq] = token
-            write(TOOLS + "/token.json", json.dumps(now))
-            return {"status":200,"msg":"已经更新你的token啦！如果你是不小心更改的，请根据这里附带的旧token，重新拼接url并访问哦~","old_token":old_}
-        else:
-            now[qq] = token
-            write(TOOLS + "/token.json", json.dumps(now))
-            return {"status":200,"msg":"已为你存储token，请记住，只有您提交的QQ拥有访问部分功能的权限，他人无法查看哦~"}
+        for i in now:
+            if i["qq"] == qq:
+                old_ = i["token"]
+                i["token"] = token
+                write(TOOLS + "/token.json", json.dumps(now))
+                return {"status":200,"msg":"已经更新你的token啦！如果你是不小心更改的，请根据这里附带的旧token，重新拼接url并访问哦~","old_token":old_}
+        new = {"qq":qq, "token":token}
+        now.append(new)
+        write(TOOLS + "/token.json", json.dumps(now))
+        return {"status":200,"msg":"已为你存储token，请记住，只有您提交的QQ拥有访问部分功能的权限，他人无法查看哦~"}
 
 async def sendm(bot, message, repo):
     groups = os.listdir("./src/data")
