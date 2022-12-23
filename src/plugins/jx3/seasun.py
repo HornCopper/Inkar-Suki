@@ -79,7 +79,7 @@ async def _(event: Event):
         result = await get_arena_data(token=token)
         value = result["data"]["Value"]
         nickname = result["data"]["roleName"]
-        msg = "查询到「" + nickname + "」的资历为：" + value + "。"   
+        msg = "查询到「" + nickname + "」的资历为：" + str(value) + "。"   
     else:
         msg = "唔……您尚未提交Token，提交方法请戳下面文档：\nhttps://inkar-suki.codethink.cn/get_jx3_token.html"
     await qualification.finish(msg)
