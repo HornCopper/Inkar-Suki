@@ -13,7 +13,7 @@ DATA = TOOLS[:-5] + "data"
 sys.path.append(str(TOOLS))
 from permission import checker, error
 from utils import get_status
-from file import read
+from file import read, write
 from config import Config
 
 def already(reponame: str, group) -> bool:
@@ -95,7 +95,7 @@ async def recWebHook(req: Request):
         await sendm(bot, message, repo)
     return {"status":200}
 
-@app.post("/auth")
+@app.post("/auth") # 该项用于`assistance`，为方便写代码，放置于此
 async def recAuth(req: Request):
     headers = req.headers
     if headers["user"] not in Config.owner:
@@ -126,6 +126,24 @@ async def recAuth(req: Request):
             except:
                 return {"status":502}
         return final
+
+@app.get("/token") # `jx3`提交token的位置。
+async def recToken(token: str = None, qq: str = None):
+    if token == None:
+        return {"status":404,"msg":"没有找到您提交的token哦，请检查您的链接是否有误！如果有不懂的请查询文档或询问作者(QQ:3349104868)！"}
+    if qq == None:
+        return {"status":404,"msg":"没有找到您提交的QQ号哦，请检查您的链接是否有误！如果有不懂的请查询文档或询问作者(QQ:3349104868)！"}
+    else:
+        now = json.loads(read(TOOLS + "/token.json"))
+        if qq in list(now):
+            old_ = now[qq]
+            now[qq] = token
+            write(TOOLS + "/token.json", json.dumps(now))
+            return {"status":200,"msg":"已经更新你的token啦！如果你是不小心更改的，请根据这里附带的旧token，重新拼接url并访问哦~","old_token":old_}
+        else:
+            now[qq] = token
+            write(TOOLS + "/token.json", json.dumps(now))
+            return {"status":200,"msg":"已为你存储token，请记住，只有您提交的QQ拥有访问部分功能的权限，他人无法查看哦~"}
 
 async def sendm(bot, message, repo):
     groups = os.listdir("./src/data")
