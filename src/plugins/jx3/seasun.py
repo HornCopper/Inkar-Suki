@@ -69,13 +69,17 @@ qualification = on_command("jx3_qualification",aliases={"资历"})
 @qualification.handle()
 async def _(event: Event):
     now = json.loads(read(TOOLS + "/token.json"))
-    if str(event.user_id) not in list(now):
-        await qualification.finish("唔……您尚未填写Token，请点击下面的文档查看完整教程哦~")
-    token = now[str(event.user_id)]
-    result = await get_arena_data(
-        token=token
-    )
-    value = result["data"]["Value"]
-    nickname = result["data"]["roleName"]
-    msg = "查询到「" + nickname + "」的资历为：" + value + "。"
+    flag = False
+    token = ""
+    for i in now:
+        if i["qq"] == str(event.user_id):
+            flag = True
+            token = i["token"]
+    if flag:
+        result = await get_arena_data(token=token)
+        value = result["data"]["Value"]
+        nickname = result["data"]["roleName"]
+        msg = "查询到「" + nickname + "」的资历为：" + value + "。"   
+    else:
+        msg = "唔……您尚未提交Token，提交方法请戳下面文档：\nhttps://inkar-suki.codethink.cn/get_jx3_token.html"
     await qualification.finish(msg)
