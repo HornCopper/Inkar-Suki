@@ -12,6 +12,7 @@ DATA = TOOLS[:-7] + "data"
 from permission import checker, error
 from file import read, write
 from utils import checknumber
+from config import Config
 
 ban = on_command("ban", aliases={"block"}, priority=5)
 def in_it(qq: str):
@@ -21,9 +22,11 @@ def in_it(qq: str):
     return False
 @ban.handle()
 async def _(bot: Bot, event: Event, args: Message = CommandArg()):
+    sb = args.extract_plain_text()
+    if sb in Config.owner:
+        await ban.finish("不能封禁机器人主人，这么玩就不好了，所以我先把你ban了QwQ")
     if checker(str(event.user_id),10) == False:
         await ban.finish(error(10))
-    sb = args.extract_plain_text()
     if sb == False:
         await ban.finish("您输入了什么？")
     if checknumber(sb) == False:
