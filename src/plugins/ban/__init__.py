@@ -29,7 +29,8 @@ async def _(bot: Bot, event: Event, args: Message = CommandArg()):
         sb = str(event.user_id)
         self_protection = True
     if checker(str(event.user_id),10) == False:
-        await ban.finish(error(10))
+        if self_protection == False:
+            await ban.finish(error(10))
     if sb == False:
         await ban.finish("您输入了什么？")
     if checknumber(sb) == False:
