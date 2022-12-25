@@ -65,7 +65,7 @@ async def get_arena_data(token: str) -> dict:
     data = await post_url(url="https://m.pvp.xoyo.com/user/get-jx3-topn-self-info", data=param, headers=headers)
     return json.loads(data)
 
-qualification = on_command("jx3_qualification",aliases={"资历"})
+qualification = on_command("jx3_qualification", aliases={"资历"})
 @qualification.handle()
 async def _(event: Event):
     now = json.loads(read(TOOLS + "/token.json"))
@@ -83,3 +83,4 @@ async def _(event: Event):
     else:
         msg = "唔……您尚未提交Token，提交方法请戳下面文档：\nhttps://inkar-suki.codethink.cn/get_jx3_token.html"
     await qualification.finish(msg)
+

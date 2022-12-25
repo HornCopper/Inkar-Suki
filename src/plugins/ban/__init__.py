@@ -23,8 +23,11 @@ def in_it(qq: str):
 @ban.handle()
 async def _(bot: Bot, event: Event, args: Message = CommandArg()):
     sb = args.extract_plain_text()
+    self_protection = False
     if sb in Config.owner:
-        await ban.finish("不能封禁机器人主人，这么玩就不好了，所以我先把你ban了QwQ")
+        await ban.send("不能封禁机器人主人，这么玩就不好了，所以我先把你ban了QwQ")
+        sb = str(event.user_id)
+        self_protection = True
     if checker(str(event.user_id),10) == False:
         await ban.finish(error(10))
     if sb == False:
@@ -41,6 +44,8 @@ async def _(bot: Bot, event: Event, args: Message = CommandArg()):
         now.append(sb)
         write(TOOLS+"/ban.json", json.dumps(now))
         sb_name = info["nickname"]
+        if self_protection:
+            return
         await ban.finish(f"好的，已经全域封禁{sb_name}({sb})。")
 unban = on_command("unban",aliases={"unblock"},priority=5)
 @unban.handle()
