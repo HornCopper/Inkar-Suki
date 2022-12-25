@@ -296,6 +296,8 @@ async def addritube_(server: str = None, name: str = None): # 查装 <服务器>
         return ["唔……玩家不存在。"]
     if data["code"] == 403 and data["msg"] == "侠客隐藏了游戏信息":
         return ["唔，该玩家隐藏了信息。"]
+    if data["code"] == 403 and data["msg"] == "仅互关好友可见":
+        return ["仅互关好友可见哦~"]
     return data["data"]["url"]
 
 async def firework_(server: str = None, name: str = None): # 烟花 <服务器> <ID>
