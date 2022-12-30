@@ -9,8 +9,12 @@ sys.path.append(TOOLS)
 ASSETS = TOOLS[:-5] + "assets"
 PLUGINS = TOOLS[:-5] + "plugins"
 from utils import get_api
+from .jx3 import server_mapping
 
 async def get_top100(server: str, team: str):
+    server = server_mapping(server)
+    if server == False:
+        return "唔……服务器输入错误。"
     final_url = f"https://team.api.jx3box.com/api/team/race/achieve/10369/top100?server={server}&event_id=6"
     data = await get_api(final_url)
     people = []
