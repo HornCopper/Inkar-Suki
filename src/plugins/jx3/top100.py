@@ -42,17 +42,20 @@ async def get_top100(server: str, team: str, boss: str):
     for i in data["data"]:
         if i["team_name"] == team:
             found = True
+            leader = i["role"]
             team_logo = i["team_logo"]
             start_time = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(i["start_time"]))
             finish_time = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(i["finish_time"]))
             num = 0
             for x in i["teammate"].split(";"):
-                people.append(x.split(",")[0])
+                add_one = x.split(",")[0]
+                if add_one == leader:
+                    continue
+                people.append()
                 num = num + 1
                 if num == 4:
                     people.append("\n")
                     num = 0
-            leader = i["role"]
     if found == False:
         return "唔……未找到该团，您可以点击下方链接查看该团是否上榜。\nhttps://www.jx3box.com/rank/race/#/"
     people = "、".join(people).replace("\n、","\n")
