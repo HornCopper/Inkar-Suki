@@ -285,12 +285,10 @@ class HorseCatchedEvent(RecvEvent):
 
 @EventRister.rister(action=1004)
 class FuyaoRefreshEvent(RecvEvent):
-    """扶摇开启事件"""
 
     __event__ = "WsRecv.FuyaoRefresh"
     message_type = "FuyaoRefresh"
     time: str
-    """事件时间"""
 
     @validator("time", pre=True)
     def check_time(cls, v):
