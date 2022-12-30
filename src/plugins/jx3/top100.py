@@ -51,7 +51,7 @@ async def get_top100(server: str, team: str, boss: str):
                 add_one = x.split(",")[0]
                 if add_one == leader:
                     continue
-                people.append()
+                people.append(add_one)
                 num = num + 1
                 if num == 4:
                     people.append("\n")
