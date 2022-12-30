@@ -11,11 +11,31 @@ PLUGINS = TOOLS[:-5] + "plugins"
 from utils import get_api
 from .jx3 import server_mapping
 
-async def get_top100(server: str, team: str):
+def boss_mapping(boss:str):
+    num = 10369
+    if boss in ["西津渡老一","张景超","张法雷","张景超与张法雷","张法雷与张景超"]:
+        return num
+    elif boss in ["西津渡老二","刘展"]:
+        return num + 1
+    elif boss in ["苏凤楼","西津渡老三","孤鸿"]:
+        return num + 2
+    elif boss in ["韩敬青","兵刃巫医","西津渡老四"]:
+        return num + 3
+    elif boss in ["藤原佑野","西津渡老五","秘藤比丘","送的"]:
+        return num + 4
+    elif boss in ["李重茂","废帝","西津渡老六"]:
+        return num + 5
+    else:
+        return False
+
+async def get_top100(server: str, team: str, boss: str):
     server = server_mapping(server)
+    boss_id = boss_mapping(boss)
+    if boss_id == False:
+        return "唔……没有找到该boss哦~"
     if server == False:
         return "唔……服务器输入错误。"
-    final_url = f"https://team.api.jx3box.com/api/team/race/achieve/10369/top100?server={server}&event_id=6"
+    final_url = f"https://team.api.jx3box.com/api/team/race/achieve/{boss_id}/top100?server={server}&event_id=6"
     data = await get_api(final_url)
     people = []
     found = False
