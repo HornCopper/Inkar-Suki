@@ -29,6 +29,7 @@ from .jx3_event import RecvEvent
 from .buff import get_buff
 from .trade import search_item_info, getItemPriceById
 from .seasun import *
+from .top100 import get_top100
 
 horse = on_command("jx3_horse",aliases={"马"},priority=5)
 @horse.handle()
@@ -695,6 +696,17 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
         await trials.finish(data[0])
     else:
         await trials.finish(ms.image(data))
+
+top100_ = on_command("jx3_top100",aliases={"百强"},priority=5)
+@top100_.handle()
+async def _(event: GroupMessageEvent, args: Message = CommandArg()):
+    arg = args.extract_plain_text().split(" ")
+    if len(arg) != 2:
+        await top100_.finish("唔……参数不正确哦，请检查后重试~")
+    server = arg[0]
+    team = arg[1]
+    data = await get_top100(server, team)
+    await top100_.finish(data)
 
 driver = get_driver()
 
