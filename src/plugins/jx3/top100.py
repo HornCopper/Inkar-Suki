@@ -32,6 +32,6 @@ async def get_top100(server: str, team: str):
     if found == False:
         return "唔……未找到该团，您可以点击下方链接查看该团是否上榜。\nhttps://www.jx3box.com/rank/race/#/"
     people = "、".join(people).replace("\n、","\n")
-    msg = ms.image(team_logo) + f"\n团长：{leader}\n队员：" + people + f"开始时间：{start_time}\n通关时间：{finish_time}"
+    msg = ms.image(team_logo) + f"\n团长：{leader}\n队员：" + people + f"\n开始时间：{start_time}\n通关时间：{finish_time}"
     return msg
     
