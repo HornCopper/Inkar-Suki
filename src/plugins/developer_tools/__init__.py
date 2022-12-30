@@ -141,7 +141,7 @@ async def _(bot: Bot, event: Event, args: Message = CommandArg()):
     cmd = args.extract_plain_text()
     groups = await bot.call_api("get_group_list")
     for i in groups:
-        await bot.call_api("send_group_msg",group_id=i["group_id"],message=f"[开发者全域公告]{cmd}")
+        await bot.call_api("send_group_msg",group_id=i["group_id"],message=cmd)
 
 call_api = on_command("call_api",aliases={"api"},priority=5)
 @call_api.handle()
