@@ -198,6 +198,8 @@ async def recruit_(server: str, copy: str = None): # 团队招募 <服务器> [�
         return ["Token不正确哦，请联系Bot主人~"]
     elif data["code"] == 401:
         return ["服务器名输入错误，请检查后重试~"]
+    elif data["code"] == 404:
+        return ["未找到相关团队，请检查后重试~"]
     url = data["data"]["url"]
     return url
 
