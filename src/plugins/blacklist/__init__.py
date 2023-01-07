@@ -97,7 +97,7 @@ async def _(rec: Request):
     args = list(headers)
     if "password" not in args or "action" not in args:
         return {"code":422,"reason":"Arguments are missing!"}
-    if headers["password"] != read(TOOLS + "/password.json"):
+    if headers["password"] != read(TOOLS + "/password.txt"):
         return {"code":403,"reason":"Password is incorrect!"}
     if headers["action"] == "add":
         if "sb" not in args or "reason" not in args:
