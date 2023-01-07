@@ -153,13 +153,15 @@ if __name__ == "__main__":
     write("config.json",final)
     space()
     def clear():
-        clean = input("是否需要重置ban.json、nnl.json、permission.json、subscribe.json、token.json？若初次使用请填写y(y/n)：")
+        clean = input("是否需要重置ban.json、nnl.json、permission.json、subscribe.json、token.json、blacklist.json、agl.json？若初次使用请填写y(y/n)：")
         if clean == "y":
             write("ban.json","[]")
             write("permission.json",json.dumps(permission))
             write("nnl.json","[]")
             write("subscribe.json","[]")
             write("token.json","[]")
+            write("blacklist.json","[]")
+            write("agl.json","[]")
             return
         elif clean == "n":
             return

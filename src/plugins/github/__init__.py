@@ -2,18 +2,21 @@ import json
 import sys
 import nonebot
 import os
+
 from nonebot import get_bot, on_command
 from nonebot.adapters import Message
 from nonebot.adapters.onebot.v11 import Bot, GroupMessageEvent
 from nonebot.adapters.onebot.v11 import MessageSegment as ms
 from nonebot.log import logger
 from nonebot.params import CommandArg
+
 TOOLS = nonebot.get_driver().config.tools_path
 DATA = TOOLS[:-5] + "data"
 sys.path.append(str(TOOLS))
+
 from permission import checker, error
 from utils import get_status
-from file import read, write
+from file import read
 from config import Config
 
 def already(reponame: str, group) -> bool:
@@ -94,57 +97,6 @@ async def recWebHook(req: Request):
         bot = get_bot(i)
         await sendm(bot, message, repo)
     return {"status":200}
-
-@app.post("/auth") # 该项用于`assistance`，为方便写代码，放置于此
-async def recAuth(req: Request):
-    headers = req.headers
-    if headers["user"] not in Config.owner:
-        return {"status":403}
-    else:
-        final = []
-        groups = os.listdir(DATA)
-        for i in groups:
-            group_data = json.loads(read(DATA + "/" + i + "/jx3group.json"))
-            try:
-                if headers["type"] == "all":
-                    if group_data["leader"] != "":    
-                        name = group_data["name"]
-                        owner = group_data["leader"]
-                        group = group_data["group"]
-                        server = group_data["server"]
-                        dict_ = {"name":name,"leader":owner,"group":group,"server":server}
-                        final.append(dict_)
-                else:
-                    if group_data["leader"] != "":
-                        if group_data["status"] != False:
-                            name = group_data["name"]
-                            owner = group_data["leader"]
-                            group = group_data["group"]
-                            server = group_data["server"]
-                            dict_ = {"name":name,"leader":owner,"group":group,"server":server}
-                            final.append(dict_)
-            except:
-                return {"status":502}
-        return final
-
-@app.get("/token") # `jx3`提交token的位置。
-async def recToken(token: str = None, qq: str = None):
-    if token == None:
-        return {"status":404,"msg":"没有找到您提交的token哦，请检查您的链接是否有误！如果有不懂的请查询文档或询问作者(QQ:3349104868)！"}
-    if qq == None:
-        return {"status":404,"msg":"没有找到您提交的QQ号哦，请检查您的链接是否有误！如果有不懂的请查询文档或询问作者(QQ:3349104868)！"}
-    else:
-        now = json.loads(read(TOOLS + "/token.json"))
-        for i in now:
-            if i["qq"] == qq:
-                old_ = i["token"]
-                i["token"] = token
-                write(TOOLS + "/token.json", json.dumps(now))
-                return {"status":200,"msg":"已经更新你的token啦！如果你是不小心更改的，请根据这里附带的旧token，重新拼接url并访问哦~","old_token":old_}
-        new = {"qq":qq, "token":token}
-        now.append(new)
-        write(TOOLS + "/token.json", json.dumps(now))
-        return {"status":200,"msg":"已为你存储token，请记住，只有您提交的QQ拥有访问部分功能的权限，他人无法查看哦~"}
 
 async def sendm(bot, message, repo):
     groups = os.listdir("./src/data")

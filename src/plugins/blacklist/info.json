@@ -1,0 +1,8 @@
+{
+    "author": "HornCopper",
+    "version": "1.0-Snapshot",
+    "name": "避雷名单(blacklist)",
+    "admin": "操作黑名单(10/S)",
+    "aliases": "+block -> +加黑、+避雷$+unblock -> +删黑$+sblock -> +查黑$+lblock -> +列黑",
+    "desc": "将某玩家加入黑名单：+block <玩家> <理由>$将某玩家移出黑名单：+unblock <玩家>$查询某玩家是否在黑名单中：+sblock <玩家>$列出所有的黑名单：+lblock"
+}
