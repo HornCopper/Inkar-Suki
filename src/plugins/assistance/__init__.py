@@ -438,3 +438,38 @@ async def _(bot: Bot, event: Event, args: Message = CommandArg()):
         data["status"] = True
         write(DATA + "/" + group + "/jx3group.json",json.dumps(data, ensure_ascii=False))
         await verify_group.finish("验证通过！")
+
+from fastapi import FastAPI, Request
+app: FastAPI = nonebot.get_app()
+
+@app.post("/auth") # 该项用于`assistance`，为方便写代码，放置于此
+async def recAuth(req: Request):
+    headers = req.headers
+    if headers["user"] not in Config.owner:
+        return {"status":403}
+    else:
+        final = []
+        groups = os.listdir(DATA)
+        for i in groups:
+            group_data = json.loads(read(DATA + "/" + i + "/jx3group.json"))
+            try:
+                if headers["type"] == "all":
+                    if group_data["leader"] != "":    
+                        name = group_data["name"]
+                        owner = group_data["leader"]
+                        group = group_data["group"]
+                        server = group_data["server"]
+                        dict_ = {"name":name,"leader":owner,"group":group,"server":server}
+                        final.append(dict_)
+                else:
+                    if group_data["leader"] != "":
+                        if group_data["status"] != False:
+                            name = group_data["name"]
+                            owner = group_data["leader"]
+                            group = group_data["group"]
+                            server = group_data["server"]
+                            dict_ = {"name":name,"leader":owner,"group":group,"server":server}
+                            final.append(dict_)
+            except:
+                return {"status":502}
+        return final
