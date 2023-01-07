@@ -92,7 +92,53 @@ from fastapi import FastAPI, Request
 app: FastAPI = nonebot.get_app()
 
 @app.post("/blacklist")
-async def _():
-    pass # 先咕了
-    
-    
+async def _(rec: Request):
+    headers = rec.headers
+    args = list(headers)
+    if "password" not in args or "action" not in args:
+        return {"code":422,"reason":"Arguments are missing!"}
+    if headers["password"] != read(TOOLS + "/password.json"):
+        return {"code":403,"reason":"Password is incorrect!"}
+    if headers["action"] == "add":
+        if "sb" not in args or "reason" not in args:
+            return {"code":422,"reason":"Arguments are missing!"}
+        sb = headers["sb"]
+        reason = headers["reason"]
+        new = {"ban":sb,"reason":reason}
+        now = json.loads(read(TOOLS + "/blacklist.json"))
+        for i in now:
+            if i["ban"] == sb:
+                return {"code":502,"reason":"The player is already banned."}
+        now.append(new)
+        write(TOOLS + "/blacklist.json", json.dumps(now, ensure_ascii=False))
+        return {"code":200,"reason":"Successfully."}
+    elif headers["action"] == "del":
+        if "sb" not in args:
+            return {"code":422,"reason":"Arguments are missing!"}
+        sb = headers["sb"]
+        now = json.loads(read(TOOLS + "/blacklist.json"))
+        for i in now:
+            if i["ban"] == sb:
+                now.remove(i)
+                write(TOOLS + "/blacklist.json", json.dumps(now, ensure_ascii=False))
+                return {"code":200,"reason":"Successfully."}
+        return {"code":404,"reason":"The player has not been banned yet."}
+    elif headers["action"] == "src":
+        if "sb" not in args:
+            return {"code":422,"reason":"Arguments are missing!"}
+        sb = headers["sb"]
+        now = json.loads(read(TOOLS + "/blacklist.json"))
+        for i in now:
+            if i["ban"] == sb:
+                reason = i["reason"]
+                return {"code":200, "player":sb, "reason":reason}
+        return {"code":404, "reason":"The player has not been banned yet."}
+    elif headers["action"] == "lst":
+        now = json.loads(read(TOOLS + "/blacklist.json"))
+        return now
+    elif headers["action"] == "vfy":
+        if headers["password"] != read(TOOLS + "/password.json"):
+            return {"code":403}
+        return {"code":200}
+    else:
+        return {"code":404,"reason":"No such action!"}
