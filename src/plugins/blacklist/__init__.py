@@ -137,7 +137,7 @@ async def _(rec: Request):
         now = json.loads(read(TOOLS + "/blacklist.json"))
         return now
     elif headers["action"] == "vfy":
-        if headers["password"] != read(TOOLS + "/password.json"):
+        if headers["password"] != read(TOOLS + "/password.txt"):
             return {"code":403}
         return {"code":200}
     else:
