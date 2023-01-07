@@ -32,6 +32,7 @@ async def _(event: Event, args: Message = CommandArg()):
         if i["ban"] == sb:
             await block.finish("该玩家已加入黑名单。")
     now.append(new)
+    write(TOOLS + "/blacklist.json", json.dumps(now, ensure_ascii=False))
     await block.finish("成功将该玩家加入黑名单！")
 
 unblock = on_command("unblock", aliases={"删黑"}, priority=5)
