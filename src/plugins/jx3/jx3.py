@@ -420,6 +420,9 @@ async def trials_(server: str = None, school: str = None):
     return data["data"]["url"]
 
 async def rank_(type_1: str, type_2: str, server: str):
+    server = server_mapping(server)
+    if server == False:
+        return ["唔……服务器名输入错误。"]
     if token == None:
         return ["Bot尚未填写Token，请联系Bot主人~"]
     if type_1 == "个人":
