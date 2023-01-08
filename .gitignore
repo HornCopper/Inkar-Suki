@@ -38,6 +38,9 @@ MANIFEST
 *.manifest
 *.spec
 
+agl.json
+blacklist.json
+password.txt
 # Installer logs
 pip-log.txt
 pip-delete-this-directory.txt
