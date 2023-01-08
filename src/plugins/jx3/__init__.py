@@ -709,6 +709,21 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     data = await get_top100(server, team, boss)
     await top100_.finish(data)
 
+rank = on_command("jx3_rank", aliases={"榜单"}, priority=5)
+@rank.handle()
+async def _(event: GroupMessageEvent, args: Message = CommandArg()):
+    arg = args.extract_plain_text().split(" ")
+    if len(arg) != 3:
+        await rank.finish("唔……参数不正确哦，请检查后重试~")
+    type1 = arg[0]
+    server = arg[1]
+    type2 = arg[2]
+    data = await rank_(type_1=type1, server=server, type_2=type2)
+    if type(data) == type([]):
+        await rank.finish(data[0])
+    else:
+        await rank.finish(ms.image(data))
+
 driver = get_driver()
 
 @driver.on_startup
