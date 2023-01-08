@@ -79,7 +79,6 @@ banned = on_message(priority=2, block=False)
 async def _(matcher: Matcher, event: Event):
     info = json.loads(read(TOOLS+"/ban.json"))
     if str(event.user_id) in info and checker(str(event.user_id),10) == False:
-        await banned.send("唔……您已被封禁，请联系机器人管理员进行解封！")
         matcher.stop_propagation()
     else:
         pass
