@@ -446,6 +446,11 @@ async def rank_(type_1: str, type_2: str, server: str):
         return ["唔……未收录！"]
     return data["data"]["url"]
 
+async def announce_():
+    final_url = f"https://www.jx3api.com/view/web/announce?robot={bot}&token={token}"
+    data = await get_api(final_url, proxy = proxies)
+    return data["data"]["url"]
+
 def server_mapping(server: str):
     if server in ["二合一","四合一","六合一","七合一","千岛湖","圣墓山","执子之手","平步青云","笑傲江湖","幽月轮","山雨欲来"]:
         return "幽月轮"
