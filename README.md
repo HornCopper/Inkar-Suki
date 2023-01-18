@@ -128,3 +128,4 @@ _基于Nonebot 2的多功能的 QQ 群聊机器人_
 - [go-cqhttp](https://docs.go-cqhttp.org/) - 基于 Mirai 以及 MiraiGo 的 OneBot Golang 原生实现；
 - [小可·Akaribot](https://github.com/Teahouse-Studios/akari-bot) - 茶馆群内QQ机器人（小可）by @OasisAkari；
 - [团子机器人](https://github.com/JustUndertaker/mini_jx3_bot) - 基于nonebot2的剑网三群聊机器人，采用jx3api作为数据源 by @JustUndertaker；
+- [资源酒肆](https://jq.qq.com/?_wv=1027&k=urh2dqal) - 欢迎来这里畅聊`Minecraft`相关内容；
