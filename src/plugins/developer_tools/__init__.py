@@ -19,7 +19,7 @@ from permission import checker, error
 from file import read, write
 from config import Config
 from utils import get_url, get_status, checknumber, data_post
-from gender import gender
+from generate import generate
 from .example import *
 from config import Config
 

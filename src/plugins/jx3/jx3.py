@@ -451,7 +451,7 @@ async def announce_():
     data = await get_api(final_url, proxy = proxies)
     return data["data"]["url"]
 
-def server_mapping(server: str):
+def server_mapping(server: str, group_id: int):
     if server in ["二合一","四合一","六合一","七合一","千岛湖","圣墓山","执子之手","平步青云","笑傲江湖","幽月轮","山雨欲来"]:
         return "幽月轮"
     elif server in ["剑胆琴心","煎蛋","剑胆"]:

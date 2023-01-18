@@ -15,6 +15,12 @@ except FileExistsError:
     print("检测到`cache`文件夹已创建。")
 
 try:
+    os.mkdir("./src/sign")
+
+except FileExistsError:
+    print("检测到`sign`文件夹已创建。")
+
+try:
     os.mkdir("./src/assets")
     os.mkdir("./src/assets/arcaea")
     os.mkdir("./src/assets/arcaea/char")
@@ -32,6 +38,10 @@ except FileExistsError:
 def write(file, something):
     with open(f"./src/tools/{file}",mode="w") as cache:
         cache.write(something)
+
+def write_(file, something):
+    with open(f"./src/sign/{file}",mode="w") as cache:
+        cache.write(something)        
 
 json_ = {}
 
@@ -153,7 +163,7 @@ if __name__ == "__main__":
     write("config.json",final)
     space()
     def clear():
-        clean = input("是否需要重置ban.json、nnl.json、permission.json、subscribe.json、token.json、blacklist.json、agl.json？若初次使用请填写y(y/n)：")
+        clean = input("是否需要重置各数据文件？若初次使用请填写y(y/n)：")
         if clean == "y":
             write("ban.json","[]")
             write("permission.json",json.dumps(permission))
@@ -162,6 +172,8 @@ if __name__ == "__main__":
             write("token.json","[]")
             write("blacklist.json","[]")
             write("agl.json","[]")
+            write_("signed.json","[]")
+            write_("accounts.json","[]")
             return
         elif clean == "n":
             return

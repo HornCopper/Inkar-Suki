@@ -14,7 +14,7 @@ from config import Config
 def get_uuid():
     return str(uuid.uuid1()).replace("-","")
 
-def gender(html: str,waiting: int,size: str, web: bool):
+def generate(html: str,waiting: int,size: str, web: bool):
     options = webdriver.ChromeOptions()
     options.add_argument('--headless')
     options.add_argument('--disable-gpu')
