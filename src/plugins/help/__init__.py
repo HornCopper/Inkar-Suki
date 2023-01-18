@@ -14,7 +14,7 @@ CACHE = TOOLS[:-5] + "cache"
 PLUGINS = TOOLS[:-5] + "plugins"
 from file import read, write
 from config import Config
-from gender import gender, get_uuid
+from generate import generate, get_uuid
 
 help = on_command("help", aliases={"帮助"}, priority=5)
 css = """
@@ -75,7 +75,7 @@ async def help_(args: Message = CommandArg()):
             html = "<div style=\"font-family:Custom\">" + msg.replace("$", "<br>") + "</div>"+css
             final_path = CACHE + "/" + get_uuid() + ".html"
             write(final_path,html)
-            image = gender(final_path,0.1,"1400x800",False)
+            image = generate(final_path,0.1,"1400x800",False)
             if type(image) != type("sb"):
                 await help.finish("唔，帮助文件生成失败了哦~请联系机器人管理员解决此问题，附带以下信息：\n"+image)
             else:
@@ -112,7 +112,7 @@ async def help_(args: Message = CommandArg()):
         html = "<div style=\"font-family:Custom\">" + msg.replace("$", "<br>") + "</div>"+css
         final_path = CACHE + "/" + get_uuid() + ".html"
         write(final_path,html)
-        image = gender(final_path,0.1,read(Config.size),False)
+        image = generate(final_path,0.1,read(Config.size),False)
         if type(image) != type("sb"):
             await help.finish("唔，帮助文件生成失败了哦~请联系机器人管理员解决此问题，附带以下信息：\n"+image)
         else:
