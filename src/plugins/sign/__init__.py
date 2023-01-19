@@ -49,7 +49,7 @@ require("nonebot_plugin_apscheduler")
 
 from nonebot_plugin_apscheduler import scheduler
 
-@scheduler.scheduled_job("cron", hour="4", minute="45")
+@scheduler.scheduled_job("cron", hour="7")
 async def clean_data():
     write(SIGN + "/signed.json","[]")
     l.info("Signed.json has been cleaned.")
