@@ -45,6 +45,15 @@ async def sign(event: Event):
     msg = msg + f"\n在所有群内，您是第{s}位签到的哦~"
     await sign_.finish(msg)
 
+coin = on_command("金币", aliases={"余额"}, priority=5)
+@coin.handle()
+async def sign(event: Event):
+    coin_ = Sign.get_coin(event.user_id)
+    if coin_ == False:
+        await coin.finish("唔……您没有签到过哦，没有任何金币余额呢！")
+    else:
+        await coin.finish(ms.at(event.user_id) + f"\n您的金币余额为：\n{coin_}枚")
+
 require("nonebot_plugin_apscheduler")
 
 from nonebot_plugin_apscheduler import scheduler

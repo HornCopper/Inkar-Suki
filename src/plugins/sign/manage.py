@@ -74,3 +74,10 @@ class Sign:
             if i["id"] == qq:
                 return i["continuity"]
         return False
+    def get_coin(qq):
+        qq = str(qq)
+        accounts = json.loads(read(SIGN + "/account.json"))
+        for i in accounts:
+            if i["id"] == qq:
+                return i["coin"]
+        return False
