@@ -28,7 +28,6 @@ from .jx3apiws import ws_client
 from .jx3_event import RecvEvent
 from .buff import get_buff
 from .trade import search_item_info, getItemPriceById
-from .seasun import *
 from .top100 import get_top100
 
 horse = on_command("jx3_horse",aliases={"马"},priority=5)

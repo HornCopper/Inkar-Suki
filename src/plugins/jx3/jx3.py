@@ -474,6 +474,7 @@ def server_mapping(server: str):
         return "蝶恋花"
     elif server in ["纵月","天鹅坪"]:
         return "天鹅坪"
+        ......................./.1-017
     elif server in ["青梅煮酒","青梅"]:
         return "青梅煮酒"
     elif server in ["横刀断浪","横刀"]:
