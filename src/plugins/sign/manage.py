@@ -5,7 +5,7 @@ import nonebot
 
 TOOLS = nonebot.get_driver().config.tools_path
 sys.path.append(str(TOOLS))
-SIGN = TOOLS[:-5] + "sign"
+CLOCK = TOOLS[:-5] + "clock"
 
 from file import read, write
 
@@ -28,7 +28,7 @@ class Sign:
         if lottery % 10 == 0:
             coin = coin + 100
             wlottery = True
-        signed_list = json.loads(read(SIGN + "/signed.json"))
+        signed_list = json.loads(read(CLOCK + "/signed.json"))
         signed_people = len(signed_list)
         data = {
             "coin": coin,
@@ -38,16 +38,16 @@ class Sign:
         }
         return data
     def wsigned(qq: int):
-        signed = json.loads(read(SIGN + "/signed.json"))
+        signed = json.loads(read(CLOCK + "/signed.json"))
         if str(qq) in signed:
             return True
         return False
     def save_data(data, qq):
         qq = str(qq)
-        signed_list = json.loads(read(SIGN + "/signed.json"))
+        signed_list = json.loads(read(CLOCK + "/signed.json"))
         signed_list.append(qq)
-        write(SIGN + "/signed.json", json.dumps(signed_list, ensure_ascii=False))
-        accounts = json.loads(read(SIGN + "/account.json"))
+        write(CLOCK + "/signed.json", json.dumps(signed_list, ensure_ascii=False))
+        accounts = json.loads(read(CLOCK + "/account.json"))
         for i in accounts:
             if i["id"] == qq:
                 nc = i["coin"]
@@ -56,7 +56,7 @@ class Sign:
                 nt = i["continuity"]
                 ft = nt + 1
                 i["continuity"] = ft
-                write(SIGN + "/account.json", json.dumps(accounts, ensure_ascii=False))
+                write(CLOCK + "/account.json", json.dumps(accounts, ensure_ascii=False))
                 return
         accounts.append(
             {
@@ -65,18 +65,18 @@ class Sign:
                 "continuity":1
             }
         )
-        write(SIGN + "/account.json", json.dumps(accounts, ensure_ascii=False))
+        write(CLOCK + "/account.json", json.dumps(accounts, ensure_ascii=False))
         return
     def get_continuity(qq):
         qq = str(qq)
-        accounts = json.loads(read(SIGN + "/account.json"))
+        accounts = json.loads(read(CLOCK + "/account.json"))
         for i in accounts:
             if i["id"] == qq:
                 return i["continuity"]
         return False
     def get_coin(qq):
         qq = str(qq)
-        accounts = json.loads(read(SIGN + "/account.json"))
+        accounts = json.loads(read(CLOCK + "/account.json"))
         for i in accounts:
             if i["id"] == qq:
                 return i["coin"]
