@@ -8,6 +8,11 @@ from nonebot.typing import overrides
 from nonebot.utils import escape_tag
 from pydantic import BaseModel, Extra, validator
 
+'''
+感谢友情提供代码@白师傅
+原链接：
+https://github.com/JustUndertaker/mini_jx3_bot
+'''
 
 class EventRister:
     """事件注册器"""
