@@ -62,6 +62,7 @@ htmlcov/
 .coverage.*
 .cache
 nosetests.xml
+clock/
 coverage.xml
 *.cover
 *.py,cover
