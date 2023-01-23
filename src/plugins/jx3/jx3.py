@@ -143,16 +143,6 @@ async def require_(name):
     else:
         image = ms.image(info["data"]["url"])
         return image
-        
-async def news_():
-    full_link = "https://www.jx3api.com/data/web/news"
-    info = await get_api(full_link, proxy = proxies)
-    def dtut(date,title,url,type_):
-        return f"{date}{type_}：{title}\n{url}"
-    msg = ""
-    for i in info["data"]:
-        msg = msg + dtut(i["date"],i["title"],i["url"],i["type"]) + "\n"
-    return msg
 
 async def random__():
     full_link = "https://www.jx3api.com/data/chat/random"
@@ -474,7 +464,6 @@ def server_mapping(server: str):
         return "蝶恋花"
     elif server in ["纵月","天鹅坪"]:
         return "天鹅坪"
-        ......................./.1-017
     elif server in ["青梅煮酒","青梅"]:
         return "青梅煮酒"
     elif server in ["横刀断浪","横刀"]:

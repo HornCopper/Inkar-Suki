@@ -93,12 +93,7 @@ async def _(args: Message = CommandArg()):
         await require.finish(await require_(args.extract_plain_text()))
     else:
         await require.finish("没有输入任何奇遇名称，没办法帮你找啦，输入时也请不要输入宠物奇遇哦~")
-        
-news = on_command("jx3_news",aliases={"新闻"},priority=5)
-@news.handle()
-async def _():
-    await require.finish(await news_())
-    
+
 random_ = on_command("jx3_random",aliases={"骚话"},priority=5)
 @random_.handle()
 async def _():
