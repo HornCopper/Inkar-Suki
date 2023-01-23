@@ -30,6 +30,11 @@ from .buff import get_buff
 from .trade import search_item_info, getItemPriceById
 from .top100 import get_top100
 
+news = on_command("jx3_news",aliases={"新闻"},priority=5)
+@news.handle()
+async def _():
+    await require.finish(await news_())
+
 horse = on_command("jx3_horse",aliases={"马"},priority=5)
 @horse.handle()
 async def _(args: Message = CommandArg()):

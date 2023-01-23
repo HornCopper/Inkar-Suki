@@ -20,6 +20,12 @@ TOOLS = nonebot.get_driver().config.tools_path
 sys.path.append(TOOLS)
 from config import Config
 
+'''
+感谢友情提供代码@白师傅
+原链接：
+https://github.com/JustUndertaker/mini_jx3_bot
+'''
+
 class Jx3WebSocket(object):
     """
     jx3_api的ws链接封装
