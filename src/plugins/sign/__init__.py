@@ -9,7 +9,7 @@ from nonebot.log import logger as l
 
 TOOLS = nonebot.get_driver().config.tools_path
 sys.path.append(str(TOOLS))
-SIGN = TOOLS[:-5] + "sign"
+CLOCK = TOOLS[:-5] + "clock"
 
 from .manage import Sign
 from file import read, write
@@ -60,6 +60,6 @@ from nonebot_plugin_apscheduler import scheduler
 
 @scheduler.scheduled_job("cron", hour="7")
 async def clean_data():
-    write(SIGN + "/signed.json","[]")
+    write(CLOCK + "/signed.json","[]")
     l.info("Signed.json has been cleaned.")
     
