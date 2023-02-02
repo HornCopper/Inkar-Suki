@@ -729,6 +729,17 @@ async def _(event: GroupMessageEvent):
     url = await announce_()
     await announce.finish(ms.image(url))
 
+roleInfo = on_command("jx3_player", aliases={"玩家信息"}, priority=5)
+@roleInfo.handle()
+async def _(event: GroupMessageEvent, args: Message = CommandArg()):
+    text = args.extract_plain_text().split(" ")
+    if len(text) != 2:
+        await roleInfo.finish("唔……参数数量不正确哦~")
+    srv = text[0]
+    id = text[1]
+    msg = await roleInfo_(server = srv, player = id)
+    await roleInfo(msg)
+
 driver = get_driver()
 
 @driver.on_startup

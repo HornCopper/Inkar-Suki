@@ -451,6 +451,27 @@ async def announce_():
     data = await get_api(final_url, proxy = proxies)
     return data["data"]["url"]
 
+async def roleInfo_(server, player):
+    final_url = f"https://www.jx3api.com/data/role/roleInfo?token={token}&name={player}&server={server}"
+    server = server_mapping(server)
+    if server == False:
+        return "唔……服务器名输入错误。"
+    data = await get_api(final_url, proxy = proxies)
+    if data["code"] == 404:
+        return "没有找到该玩家哦~\n需要该玩家在世界频道发言后方可查询。"
+    msg = "以下信息仅供参考！\n数据可能已经过期，但UID之类的仍可参考。"
+    zone = data["data"]["zoneName"]
+    srv = data["data"]["serverName"]
+    nm = data["data"]["roleName"]
+    uid = data["data"]["roleId"]
+    fc = data["data"]["forceName"]
+    bd = data["data"]["bodyName"]
+    tg = data["data"]["tongName"]
+    cp = data["data"]["campName"]
+    msg = msg + f"\n服务器：{zone} - {srv}\n角色名称：{nm}\nUID：{uid}\n体型：{fc}·{bd}\n帮会：{cp} - {tg}"
+    return msg
+    
+
 def server_mapping(server: str):
     if server in ["二合一","四合一","六合一","七合一","千岛湖","圣墓山","执子之手","平步青云","笑傲江湖","幽月轮","山雨欲来"]:
         return "幽月轮"
