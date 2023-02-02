@@ -452,8 +452,8 @@ async def announce_():
     return data["data"]["url"]
 
 async def roleInfo_(server, player):
-    final_url = f"https://www.jx3api.com/data/role/roleInfo?token={token}&name={player}&server={server}"
     server = server_mapping(server)
+    final_url = f"https://www.jx3api.com/data/role/roleInfo?token={token}&name={player}&server={server}"
     if server == False:
         return "唔……服务器名输入错误。"
     data = await get_api(final_url, proxy = proxies)
@@ -477,7 +477,7 @@ def server_mapping(server: str):
         return "幽月轮"
     elif server in ["剑胆琴心","煎蛋","剑胆"]:
         return "剑胆琴心"
-    elif server in ["梦江南","双梦","如梦令","枫泾古镇"]:
+    elif server in ["梦江南","双梦","如梦令","枫泾古镇","双梦镇"]:
         return "梦江南"
     elif server in ["斗转星移","金戈铁马","风雨同舟","大唐万象","姨妈","风雨","风雨大姨妈"]:
         return "斗转星移"
