@@ -738,7 +738,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     srv = text[0]
     id = text[1]
     msg = await roleInfo_(server = srv, player = id)
-    await roleInfo(msg)
+    await roleInfo.finish(msg)
 
 driver = get_driver()
 
