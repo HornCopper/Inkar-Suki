@@ -3,6 +3,7 @@ import json
 import sys
 import re
 from urllib import parse
+from bs4 import BeautifulSoup
 TOOLS = nonebot.get_driver().config.tools_path
 sys.path.append(TOOLS)
 from utils import get_api, get_url
@@ -127,7 +128,8 @@ class wiki:
                     desc = page["query"]["pages"][i]["extract"].split("\n")
                     desc = "\n" + desc[0]
                 except:
-                    desc = ""
+                    desc = await wiki.get_wiki_content(api, actually_title)
+                    desc = "\n" + desc
                 if actually_title != title:
                     return {"status":301,"redirect":[title,actually_title],"link":link,"desc":desc}
                 else:
@@ -154,3 +156,12 @@ class wiki:
             return {"status":202,"api":api,"data":[results,curids]}
         else:
             return {"status":404}
+    async def get_wiki_content(api, title):
+        final_url = api.replace("api.php", "index.php") + "?title=" + title
+        data = await get_url(final_url)
+        bs_obj_data = BeautifulSoup(data, "html.parser")
+        main_content = bs_obj_data.body.find(id="mw-content-text").find(class_ ="mw-parser-output")
+        div_s = main_content.find_all("div")
+        for i in div_s:
+            i.decompose()
+        return re.sub("\n+", "\n", main_content.get_text()).split("\n")[1]
