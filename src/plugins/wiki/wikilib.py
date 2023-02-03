@@ -170,7 +170,12 @@ class wiki:
         try:
             for i in range(128):
                 if len(ans[i]) >= 3:
-                    return ans[i]
+                    fans = ans[i]
+                    if fans[0] == "\n":
+                        fans = ans[1:]
+                    if fans[-1] == "\n":
+                        fans = ans[:-1]
+                    return fans
             return ""
         except:
             return ""
