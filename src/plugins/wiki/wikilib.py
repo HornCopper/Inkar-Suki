@@ -129,7 +129,8 @@ class wiki:
                     desc = "\n" + desc[0]
                 except:
                     desc = await wiki.get_wiki_content(api, actually_title)
-                    desc = "\n" + desc
+                    if desc != "":
+                        desc = "\n" + desc
                 if actually_title != title:
                     return {"status":301,"redirect":[title,actually_title],"link":link,"desc":desc}
                 else:
@@ -164,4 +165,9 @@ class wiki:
         div_s = main_content.find_all("div")
         for i in div_s:
             i.decompose()
-        return re.sub("\n+", "\n", main_content.get_text()).split("\n")[1]
+        text = main_content.get_text()
+        ans = re.sub("\n\n+", "\n\n", text).split("\n\n")
+        for i in range(128):
+            if len(ans[i]) >= 3:
+                return ans[i]
+        return ""
