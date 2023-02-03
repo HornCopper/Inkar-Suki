@@ -167,7 +167,10 @@ class wiki:
             i.decompose()
         text = main_content.get_text()
         ans = re.sub("\n\n+", "\n\n", text).split("\n\n")
-        for i in range(128):
-            if len(ans[i]) >= 3:
-                return ans[i]
-        return ""
+        try:
+            for i in range(128):
+                if len(ans[i]) >= 3:
+                    return ans[i]
+            return ""
+        except:
+            return ""
