@@ -16,6 +16,7 @@ from file import read, write # 导入文件操作函数，来自src/tools/file.p
 arcaea_userinfo = on_command("arcuser",priority=5)
 @arcaea_userinfo.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
+    
     '''
     `arcaea_userinfo`，用于获取`Arcaea`用户信息。
     示例：
