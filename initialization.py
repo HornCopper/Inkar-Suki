@@ -174,6 +174,7 @@ if __name__ == "__main__":
             write("agl.json","[]")
             write_("signed.json","[]")
             write_("accounts.json","[]")
+            write("nrp.json")
             return
         elif clean == "n":
             return
