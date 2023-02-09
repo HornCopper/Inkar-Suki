@@ -225,6 +225,10 @@ async def _(matcher: Matcher, event: GroupMessageEvent):
     nrp = json.loads(nrp)
     if str(event.raw_message)[0] != "+" and str(event.group_id) not in nrp:
         matcher.stop_propagation()
+    elif str(event.raw_message)[0] == "+" and str(event.group_id) not in nrp:
+        return
+    else:
+        return
 
 nrp = on_command("nrp", priority=5)
 @nrp.handle()
