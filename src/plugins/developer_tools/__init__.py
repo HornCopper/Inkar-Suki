@@ -4,9 +4,10 @@ import psutil
 import nonebot
 import json
 import time
-from nonebot import on_command
+from nonebot import on_command, on_message
 from nonebot.adapters import Message
 from nonebot.params import CommandArg, Arg
+from nonebot.matcher import Matcher
 from nonebot.adapters.onebot.v11 import Message, MessageSegment, unescape, Event, Bot, GroupMessageEvent
 from nonebot.typing import T_State
 from typing import List
@@ -191,7 +192,7 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
     if await get_status(url) not in [200,301,302]:
         await web.finish("唔……网站图片获取失败。\n原因：响应码非200，请检查是否能正常访问。")
     else:
-        image = gender(url,2,size,True)
+        image = generate(url,2,size,True)
         await web.finish("获取图片成功！\n"+MessageSegment.image(Path(image).as_uri()))
 
 apply = on_command("apply", aliases={"申请"}, priority=5)
@@ -216,3 +217,21 @@ async def _(bot: Bot, state: T_State, group: Message = Arg()):
         body = {"title":f"Inkar-Suki·使用申请","body":f"申请人QQ：{user}\n申请群聊：{group_id}\n群聊请求数据如下：```{data}```","labels":["申请"]}
         await data_post(url, headers = final_header, json=body)
         await apply.finish("申请成功，请求已发送至GitHub，请等待通知！")
+
+prefix = on_message(priority=3)
+@prefix.handle()
+async def _(matcher: Matcher, event: GroupMessageEvent):
+    nrp = read(TOOLS + "/nrp.json")
+    nrp = json.loads(nrp)
+    if str(event.raw_message)[0] != "+" and str(event.group_id) not in nrp:
+        matcher.stop_propagation()
+
+nrp = on_command("nrp", priority=5)
+@nrp.handle()
+async def _(event: GroupMessageEvent):
+    now = json.loads(read(TOOLS + "/nrp.json"))
+    if str(event.group_id) in now:
+        await nrp.finish("唔……本群已启用免前缀！")
+    now.append(str(event.group_id))
+    write(TOOLS + "/nrp.json", json.dumps(now))
+    await nrp.finish("已启用本群免前缀了哦~")
