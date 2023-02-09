@@ -72,3 +72,8 @@ def convert_time(timestamp: int):
 
 def nodetemp(nickname: str, qqnumber: str, message: str) -> dict:
     return {"type":"node","data":{"name":nickname,"uin":qqnumber,"content":message}}
+
+def prefix(event, prefix):
+    if str(event.raw_message)[0] != prefix:
+        return False
+    return True
