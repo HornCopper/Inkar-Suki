@@ -172,9 +172,9 @@ class wiki:
                 if len(ans[i]) >= 3:
                     fans = ans[i]
                     if fans[0] == "\n":
-                        fans = ans[1:]
+                        fans = fans[1:]
                     if fans[-1] == "\n":
-                        fans = ans[:-1]
+                        fans = fans[:-1]
                     return fans
             return ""
         except:
