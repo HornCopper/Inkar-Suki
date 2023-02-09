@@ -55,9 +55,9 @@ def convert(price: int):
         return msg
     elif 100000000 <= price: # 砖
         copper = price % 100
-        silver = ((price - copper) % 10000) / 100
-        gold = ((price - copper - silver) % 1000000) / 10000
-        brick = (price - copper - silver - gold) / 100000000
+        silver: int = ((price - copper) % 10000) / 100
+        gold = ((price - copper - silver*100) % 100000000) / 10000
+        brick = (price - copper - silver*100 - gold*10000) / 100000000
         msg = str(int(brick)) + " 砖"
         if str(int(gold)) != "0":
             msg = msg + " " + str(int(gold)) + " 金"
