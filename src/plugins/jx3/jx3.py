@@ -508,6 +508,8 @@ def server_mapping(server: str, group_id: str):
         binded = getGroupServer(group_id)
         if binded == False:
             return False
+        else:
+            return binded
     
 def getGroupServer(group):
     data = json.loads(read(DATA + "/" + group + "/jx3group.json"))
