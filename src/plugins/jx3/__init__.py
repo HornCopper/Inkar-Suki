@@ -425,11 +425,11 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
         await recruit.finish("参数不正确哦，只能有1或2个参数~")
     if len(arg) == 1:
         server = arg[0]
-        data = await recruit_(server, group)
+        data = await recruit_(server, group=group)
     else:
         server = arg[0]
         copy = arg[1]
-        data = await recruit_(server, copy, group)
+        data = await recruit_(server, copy, group=group)
     if type(data) == type([]):
         await recruit.finish(data[0])
     await recruit.finish(ms.image(data))
