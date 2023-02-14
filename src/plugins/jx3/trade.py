@@ -8,6 +8,7 @@ sys.path.append(TOOLS)
 ASSETS = TOOLS[:-5] + "assets"
 
 from utils import get_api
+from .jx3 import server_mapping
 
 async def search_item_info(item_name: str):
     final_url = f"https://helper.jx3box.com/api/item/search?keyword={item_name}"
@@ -20,7 +21,10 @@ async def search_item_info(item_name: str):
         space.append(new)
     return space
 
-async def getItemPriceById(id: str, server: str):
+async def getItemPriceById(id: str, server: str, group: str = None):
+    server = server_mapping(server, group)
+    if server == False:
+        return {"msg":"唔……服务器名输入错误。"}
     final_url = f"https://next2.jx3box.com/api/item-price/{id}/logs?server={server}"
     data = await get_api(final_url)
     if data["data"]["logs"] == "null":

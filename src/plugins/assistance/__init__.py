@@ -2,6 +2,7 @@ import nonebot
 import json
 import sys
 import time
+import os
 
 from nonebot.typing import T_State
 from nonebot import on_command
@@ -26,7 +27,7 @@ if proxy != None:
 else:
     proxies = None
 
-open_ = on_command("open_group", aliases = {"开团"}, priority = 5)
+open_ = on_command("open_group", aliases = {"-开团"}, priority = 5)
 @open_.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     data = args.extract_plain_text().split(" ")
@@ -44,7 +45,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     write(final_path, json.dumps(now, ensure_ascii = False))
     await open_.finish(f"已开启预定！\n使用以下命令即可预定：\n+预定 <团队描述> <T/奶/dps/老板> <ID> [备注(可不写)]\n此团的团队描述为：\n{useful_info}")
 
-book = on_command("book", aliases = {"预定"}, priority = 5)
+book = on_command("book", aliases = {"-预定"}, priority = 5)
 @book.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     data = args.extract_plain_text().split(" ")
@@ -91,7 +92,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
                     await book.finish("预定成功！")
             await book.finish("唔……目前还没有这个团，检查一下是不是完全一致哦~")
 
-books = on_command("books", aliases = {"预定列表"}, priority = 5)
+books = on_command("books", aliases = {"-预定列表"}, priority = 5)
 @books.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     data = args.extract_plain_text()
@@ -111,7 +112,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
             await books.finish(msg)
     await books.finish("没有查到这个团哦，请检查是否一致~")
 
-gkp = on_command("gkp", aliases={"金团"}, priority = 5)
+gkp = on_command("gkp", aliases={"-金团"}, priority = 5)
 @gkp.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     data = args.extract_plain_text().split(" ")
@@ -146,7 +147,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
             await gkp.finish(msg)
     await gkp.finish("唔……没有找到，请检查团队描述是否一致~")
 
-special = on_command("special_item",aliases = {"特殊"}, priority = 5)
+special = on_command("special_item",aliases = {"-特殊"}, priority = 5)
 @special.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     data = args.extract_plain_text().split(" ")
@@ -170,7 +171,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
             await special.finish("已保存该团的特殊掉落记录！")
     await special.finish("唔……没有找到，请检查团队描述是否一致~")
 
-close_ = on_command("closegroup",aliases={"结算"}, priority = 5)
+close_ = on_command("closegroup",aliases={"-结算"}, priority = 5)
 @close_.handle()
 async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
     data = args.extract_plain_text()
@@ -209,7 +210,7 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
     else:
         await close_.finish("唔……没有找到，请检查团队描述是否一致~")
 
-get_gkp = on_command("get_gkp", aliases = {"团长"}, priority = 5)
+get_gkp = on_command("get_gkp", aliases = {"-团长"}, priority = 5)
 @get_gkp.handle()
 async def _(state: T_State, bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
     qq = args.extract_plain_text()
@@ -277,7 +278,7 @@ async def _(state: T_State, num: Message = Arg()):
         msg = f"团长：{leader}\n团队描述：{desc[num]}\n开团时间：{convert_time(time__[num])}\n总金团：{gkp[num]}金，人均工资：{pays[num]}金\n特殊掉落：{special_[num]}"
         await get_gkp.finish(msg)
 
-opening = on_command("opening", aliases = {"团列表"}, priority = 5)
+opening = on_command("opening", aliases = {"-团列表"}, priority = 5)
 @opening.handle()
 async def _(bot: Bot, event: GroupMessageEvent):
     final_path = DATA + "/" + str(event.group_id) + "/opening.json"
@@ -304,7 +305,7 @@ async def _(bot: Bot, event: GroupMessageEvent):
     else:
         await opening.finish("唔……没有找到任何团哦~")
 
-modify = on_command("modify", aliases = {"修改"}, priority = 5)
+modify = on_command("modify", aliases = {"-修改"}, priority = 5)
 @modify.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     data = args.extract_plain_text().split(" ")
@@ -321,7 +322,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
             await modify.finish("修改团队信息成功！")
     await modify.finish("唔……没有找到，请检查团队描述是否一致~")
 
-cancel = on_command("jx3_cancel", aliases={"取消开团"}, priority=5)
+cancel = on_command("jx3_cancel", aliases={"-取消开团"}, priority=5)
 @cancel.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     name = args.extract_plain_text()
@@ -334,7 +335,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
             await cancel.finish("删除成功！")
     await cancel.finish("唔……没有找到该团队描述对应的团哦~")
 
-set_group = on_command("jx3_auto", aliases={"认证"}, priority=5)
+set_group = on_command("jx3_auto", aliases={"-认证"}, priority=5)
 @set_group.handle()
 async def _(state: T_State, bot: Bot, event: GroupMessageEvent):
     leader = str(event.user_id)
@@ -381,7 +382,7 @@ async def _(state: T_State, server: Message = Arg()):
     write(DATA + "/" + group_id + "/jx3group.json", json.dumps(now, ensure_ascii=False))
     await set_group.finish("已提交认证，请等待机器人管理员通过！")
 
-add_leader = on_command("jx3_helper", aliases = {"副团长"}, priority=5)
+add_leader = on_command("jx3_helper", aliases = {"-副团长"}, priority=5)
 @add_leader.handle()
 async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
     helper = args.extract_plain_text()
@@ -414,7 +415,7 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
         action_msg = "添加" if action else "移除"
         await add_leader.finish(f"副团长{action_msg}成功")
 
-verify_group = on_command("jx3_verify", aliases={"验证团"}, priority=5)
+verify_group = on_command("jx3_verify", aliases={"-验证团"}, priority=5)
 @verify_group.handle()
 async def _(bot: Bot, event: Event, args: Message = CommandArg()):
     if checker(str(event.user_id),10) == False:
