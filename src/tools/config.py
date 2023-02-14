@@ -1,33 +1,66 @@
 from local_version import nbv, ikv
 import nonebot
 import sys
-import json
 TOOLS = nonebot.get_driver().config.tools_path
 sys.path.append(TOOLS)
-from file import read
-configs = json.loads(read("./src/tools/config.json"))
 class Config:
-    config_py_path = configs["abpath"]
+    '''
+    这里是`Inkar Suki`的配置文件，从`V0.8.3-Hotfix-3起，我们删除了`initialization.py`。
+    取消了问答式配置，改为了用户自己填写。
+    需要您填写的是末尾有注释的行，其他行请勿改动，感谢使用！
+    '''
+    config_py_path = __file__[:-10]
     global_path = config_py_path[:-6]+"/"
-    web_path = configs["web_path"]
-    bot = configs["bot"]
-    platform = configs["platform"]
-    owner = configs["owner"]
+
+
+    web_path = "" # GitHub Webhook的地址，填写`/a`，则内网地址为`http://127.0.0.1:<NB端口>/a`，`NB端口`在`.env.dev`中的`PORT`
+
+
+    bot = [""] # Bot的QQ号，此处请只填写一个，用`str`存在`list`中。
+
+
+    platform = True # 平台标识，`True`为Linux，`False`为`Windows`
+
+
+    owner = [""] # Bot主人，可以有多个，用`str`存在`list`中
+
+
     size = global_path+"/tools/size.txt"
     html_path = global_path+"/plugins/help/help.html"
     chromedriver_path = global_path+"/tools/chromedriver"
     help_image_save_to = global_path+"/plugins/help/help.png"
     font_path = "file://"+global_path+"/tools/custom.ttf"
-    cqhttp = configs["cqhttp"]
+
+
+    cqhttp = "" # CQHTTP地址，参考`https://go-cqhttp.org`。
+
+
     welcome_file = global_path+"/tools/welcome.txt"
     version = ikv
     nonebot = nbv
-    proxy = configs["proxy"]
-    auaurl = configs["aua_api"]
-    auatok = configs["aua_token"]
-    jx3api_wslink = configs["jx3api_wslink"]
-    jx3api_wstoken = configs["jx3api_wstoken"]
-    jx3api_globaltoken = configs["jx3api_globaltoken"]
-    ght = configs["githubtoken"]
-    jx3_token = configs["jx3_token"]
-    jx3_deviceId = configs["jx3_deviceId"]
+
+
+    proxy = "" # 代理服务器地址，以`http://`开头或`https://`开头，可以跟端口。
+
+
+    auaurl = "" # Arcaea Unlimited API地址
+
+
+    auatok = "" # Arcaea Unlimited API Token
+    # 以上两者都请进群：“574250621”
+
+
+    jx3api_wslink = "" # JX3API WebSocket地址
+
+
+    jx3api_wstoken = "" # JX3API WebSocket Token
+
+
+    jx3api_globaltoken = "" # JX3API API Token
+    # 以上三者都请访问：“https://vip.jx3api.com”
+
+    ght = "" # GitHub Personal Access Token
+
+
+    jx3_token = "" # 推栏Token
+

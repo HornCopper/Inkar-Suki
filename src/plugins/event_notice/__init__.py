@@ -32,7 +32,7 @@ async def _(bot: Bot, event: NoticeEvent):
         group = event.group_id
         bots = Config.bot
         if str(obj) == bots[0]:
-            msg = "欢迎使用Inkar Suki！如需帮助请发送+help或查询文档哦~\nhttps://www.inkar-suki.xyz"
+            msg = "欢迎使用Inkar Suki！如需帮助请发送+help或查询文档哦~\nhttps://inkar-suki.codethink.cn\n若为初次使用，请申请人在本群发送+reg进行注册方可使用哦~"
         else:
             msg = ms.at(obj) + read(DATA+"/"+str(group)+"/welcome.txt")
         await bot.call_api("send_group_msg",group_id=group, message=msg)
