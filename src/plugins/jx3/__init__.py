@@ -45,9 +45,9 @@ async def _(args: Message = CommandArg()):
 
 server = on_command("jx3_server",aliases={"服务器","开服"},priority=5)
 @server.handle()
-async def _(args: Message = CommandArg()):
+async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     if args.extract_plain_text():
-        await server.finish(await server_status(args.extract_plain_text()))
+        await server.finish(await server_status(server=args.extract_plain_text(), group=str(event.group_id)))
     else:
         await server.finish("没有输入任何服务器名称哦，没办法帮你找啦。")
 
@@ -61,9 +61,9 @@ async def _(args: Message = CommandArg()):
 
 daily = on_command("jx3_daily",aliases={"日常","周常"},priority=5)
 @daily.handle()
-async def _(args: Message = CommandArg()):
+async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     if args.extract_plain_text():
-        await daily.finish(await daily_(args.extract_plain_text()))
+        await daily.finish(await daily_(server=args.extract_plain_text(),group=str(event.group_id)))
     else:
         await daily.finish("没有输入任何服务器名称哦，自动切换至电信一区-长安城。\n"+await daily_("长安城"))
         
@@ -420,15 +420,16 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
     if arg == "":
         await recruit.finish("缺少服务器名称哦~")
     arg = arg.split(" ")
+    group = str(event.group_id)
     if len(arg) not in [1,2]:
         await recruit.finish("参数不正确哦，只能有1或2个参数~")
     if len(arg) == 1:
         server = arg[0]
-        data = await recruit_(server)
+        data = await recruit_(server, group)
     else:
         server = arg[0]
         copy = arg[1]
-        data = await recruit_(server, copy)
+        data = await recruit_(server, copy, group)
     if type(data) == type([]):
         await recruit.finish(data[0])
     await recruit.finish(ms.image(data))
@@ -454,7 +455,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     else:
         server = arg[0]
         flower__ = arg[1]
-    data = await flower_(flower__, server)
+    data = await flower_(flower__, server, group=str(event.group_id))
     if type(data) == type([]):
         await flower.finish(data[0])
     else:
@@ -466,7 +467,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     arg = args.extract_plain_text()
     if arg == "":
         arg = None
-    data = await demon_(arg)
+    data = await demon_(arg, group=str(event.group_id))
     if type(data) == type([]):
         await demon.finish(data[0])
     else:
@@ -492,7 +493,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
         await serendipity.finish("唔……参数不正确哦，请检查后重试~")
     server = arg[0]
     id = arg[1]
-    data = await serendipity_(server, id)
+    data = await serendipity_(server, id, group=str(event.group_id))
     if type(data) == type([]):
         await serendipity.finish(data[0])
     else:
@@ -510,7 +511,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     else:
         server = arg[0]
         name = arg[1]
-    data = await statistical_(server, name)
+    data = await statistical_(server, name, group=str(event.group_id))
     if type(data) == type([]):
         await statistical.finish(data[0])
     else:
@@ -548,7 +549,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
         await addritube.finish("唔……参数不正确哦，请检查后重试~")
     server = arg[0]
     id = arg[1]
-    data = await addritube_(server, id)
+    data = await addritube_(server, id, group=str(event.group_id))
     if type(data) == type([]):
         await addritube.finish(data[0])
     else:
@@ -562,7 +563,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
         await firework.finish("唔……参数不正确哦，请检查后重试~")
     server = arg[0]
     id = arg[1]
-    data = await firework_(server, id)
+    data = await firework_(server, id, group=str(event.group_id))
     if type(data) == type([]):
         await firework.finish(data[0])
     else:
@@ -574,7 +575,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     arg = args.extract_plain_text()
     if arg == "":
         await sandbox.finish("缺少服务器名称，没办法帮你找哦~")
-    data = await sandbox_(arg)
+    data = await sandbox_(arg, group=str(event.group_id))
     if type(data) == type([]):
         await sandbox.finish(data[0])
     else:
@@ -611,7 +612,7 @@ async def _(state: T_State, event: GroupMessageEvent, num: Message = Arg()):
         server = state["server"]
         id = data[int(num)][0]
         try:
-            final_data = await getItemPriceById(id, server)
+            final_data = await getItemPriceById(id, server, group=str(event.group_id))
         except:
             await trade_.finish("暂未找到该区服报价，请查看其他区服~")
         if type(final_data) == type({}):
@@ -642,10 +643,11 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
     arg = args.extract_plain_text().split(" ")
     if len(arg) not in [1,2]:
         await special.finish("唔……参数数量有误，请检查后重试~")
+    group = str(event.group_id)
     if len(arg) == 1:
-        data = await special_(server = arg[0])
+        data = await special_(server = arg[0], group=group)
     else:
-        data = await special_(server = arg[0], item = arg[1])
+        data = await special_(server = arg[0], item = arg[1], group=group)
     if type(data) == type([]):
         await special.finish(data[0])
     else:
@@ -660,7 +662,7 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
     if arg[0] == "战绩":
         if len(arg) != 3:
             await arena.finish("唔……参数数量有误，请检查后重试~")
-        data = await arena_(object = "战绩", server = arg[1], name = arg[2])
+        data = await arena_(object = "战绩", server = arg[1], name = arg[2], group = str(event.group_id))
         if type(data) == type([]):
             await arena.finish(data[0])
         else:
@@ -690,7 +692,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
         await trials.finish("唔……参数不正确哦，请检查后重试~")
     server = arg[0]
     school = arg[1]
-    data = await trials_(server, school)
+    data = await trials_(server, school, group=str(event.group_id))
     if type(data) == type([]):
         await trials.finish(data[0])
     else:
@@ -717,7 +719,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     type1 = arg[0]
     server = arg[1]
     type2 = arg[2]
-    data = await rank_(type_1=type1, server=server, type_2=type2)
+    data = await rank_(type_1=type1, server=server, type_2=type2, group=str(event.group_id))
     if type(data) == type([]):
         await rank.finish(data[0])
     else:
@@ -737,7 +739,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
         await roleInfo.finish("唔……参数数量不正确哦~")
     srv = text[0]
     id = text[1]
-    msg = await roleInfo_(server = srv, player = id)
+    msg = await roleInfo_(server = srv, player = id, group=str(event.group_id))
     await roleInfo.finish(msg)
 
 driver = get_driver()

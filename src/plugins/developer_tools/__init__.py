@@ -101,7 +101,7 @@ async def say_(event: Event, args: Message = CommandArg()):
     message = reduce(_unescape, args, Message())
     await say.finish(message)
 
-ping = on_command("ping", aliases={"测试"}, priority=5)
+ping = on_command("ping", aliases={"-测试"}, priority=5)
 @ping.handle()
 async def _(event: Event):
     ikv = await Config.version()
@@ -134,7 +134,7 @@ async def front_(event: Event, args: Message = CommandArg()):
         msg = "执行完成，但没有输出哦~"
     await front.finish(f"{msg}")
 
-post = on_command("post", aliases={"公告"}, priority=5)
+post = on_command("post", aliases={"-公告"}, priority=5)
 @post.handle()
 async def _(bot: Bot, event: Event, args: Message = CommandArg()):
     if str(event.user_id) not in Config.owner:
@@ -195,7 +195,7 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
         image = generate(url,2,size,True)
         await web.finish("获取图片成功！\n"+MessageSegment.image(Path(image).as_uri()))
 
-apply = on_command("apply", aliases={"申请"}, priority=5)
+apply = on_command("apply", aliases={"-申请"}, priority=5)
 @apply.handle()
 async def _(state: T_State, event: Event):
     applier = str(event.user_id)
@@ -217,13 +217,3 @@ async def _(bot: Bot, state: T_State, group: Message = Arg()):
         body = {"title":f"Inkar-Suki·使用申请","body":f"申请人QQ：{user}\n申请群聊：{group_id}\n群聊请求数据如下：```{data}```","labels":["申请"]}
         await data_post(url, headers = final_header, json=body)
         await apply.finish("申请成功，请求已发送至GitHub，请等待通知！")
-
-nrp = on_command("nrp", priority=5)
-@nrp.handle()
-async def _(event: GroupMessageEvent):
-    now = json.loads(read(TOOLS + "/nrp.json"))
-    if str(event.group_id) in now:
-        await nrp.finish("唔……本群已启用免前缀！")
-    now.append(str(event.group_id))
-    write(TOOLS + "/nrp.json", json.dumps(now))
-    await nrp.finish("已启用本群免前缀了哦~")

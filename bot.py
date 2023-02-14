@@ -5,6 +5,36 @@ import sys
 import json
 import os
 from nonebot.adapters.onebot.v11 import Adapter as ONEBOT_V11Adapter
+try:
+    os.mkdir("./src/data")
+except FileExistsError:
+    print("检测到`data`文件夹已创建。")
+
+try:
+    os.mkdir("./src/cache")
+except FileExistsError:
+    print("检测到`cache`文件夹已创建。")
+
+try:
+    os.mkdir("./src/sign")
+
+except FileExistsError:
+    print("检测到`sign`文件夹已创建。")
+
+try:
+    os.mkdir("./src/assets")
+    os.mkdir("./src/assets/arcaea")
+    os.mkdir("./src/assets/arcaea/char")
+    os.mkdir("./src/assets/arcaea/icon")
+    os.mkdir("./src/assets/arcaea/song")
+    os.mkdir("./src/assets/jx3")
+    os.mkdir("./src/assets/jx3/skills")
+    os.mkdir("./src/assets/jx3/icons")
+    os.mkdir("./src/assets/jx3/achievement")
+    os.mkdir("./src/assets/jx3/talents")
+    os.mkdir("./src/assets/jx3/adventure")
+except FileExistsError:
+    print("检测到`assets`文件夹已创建，已自动补全所有需要的文件夹。")
 plugins = os.listdir("./src/plugins")
 error = False
 for i in plugins:
