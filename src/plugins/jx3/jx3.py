@@ -361,7 +361,7 @@ async def achievements_(server: str = None, name: str = None, achievement: str =
 async def special_(server: str, item: str = None, group: str = None):
     if token == None:
         return ["Bot尚未填写Token，请联系Bot主人~"]
-    server = server_mapping(server)
+    server = server_mapping(server, group)
     if server == False:
         return ["唔……服务器名输入错误。"]
     if item != None:
