@@ -208,7 +208,10 @@ async def _(bot: Bot, state: T_State, group: Message = Arg()):
     if checknumber(group_id) == False:
         await apply.finish("输入的内容有误，申请失败。")
     else:
-        data = json.dumps(await bot.call_api("get_group_info", group_id=int(group_id)), ensure_ascii=False)
+        try:
+            data = json.dumps(await bot.call_api("get_group_info", group_id=int(group_id)), ensure_ascii=False)
+        except:
+            data = "获取失败！"
         url = "https://api.github.com/repos/codethink-cn/Inkar-Suki/issues"
         token = Config.ght
         user = state["user"]
