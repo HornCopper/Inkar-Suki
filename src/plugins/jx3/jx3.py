@@ -71,7 +71,7 @@ async def macro_(name):
     return f"查到{xinfa}的宏命令啦！\n推荐奇穴搭配：{qixue}\n宏命令：\n{macro}"
     
 async def daily_(server: str = None, group: str = None):
-    server = server_mapping(server, group = group)
+    server = server_mapping(server, group_id = group)
     if server == False:
         return ["唔……服务器名输入错误。"]
     full_link = "https://www.jx3api.com/data/active/current?server=" + server
