@@ -64,7 +64,7 @@ daily = on_command("jx3_daily",aliases={"日常","周常"},priority=5)
 @daily.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     if args.extract_plain_text():
-        await daily.finish(await daily_(server=args.extract_plain_text(),group=str(event.group_id)))
+        await daily.finish(await daily_(server=server_mapping(args.extract_plain_text(),group=str(event.group_id))))
     else:
         await daily.finish("没有输入任何服务器名称哦，自动切换至电信一区-长安城。\n"+await daily_("长安城"))
         
@@ -632,7 +632,7 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
     server = achievement[0]
     id = achievement[1]
     achi = achievement[2]
-    data = await achievements_(server, id, achi)
+    data = await achievements_(server, id, achi, group = str(event.group_id))
     if type(data) == type([]):
         await achievements.finish(data[0])
     else:

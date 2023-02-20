@@ -328,12 +328,12 @@ async def sandbox_(server: str = None, group: str = None): # 沙盘 <服务器>
         return ["唔……服务器名输入错误。"]
     return data["data"]["url"]
 
-async def achievements_(server: str = None, name: str = None, achievement: str = None):
+async def achievements_(server: str = None, name: str = None, achievement: str = None, group: str = None):
     if token == None:
         return ["Bot尚未填写Token，请联系Bot主人~"]
     if ticket == None:
         return ["Bot尚未填写Ticket，请联系Bot主人~"]
-    server = server_mapping(server)
+    server = server_mapping(server, group = group)
     if server == False:
         return ["唔……服务器名输入错误。"]
     final_url = f"https://www.jx3api.com/data/role/achievement?ticket={ticket}&token={token}&server={server}&role={name}&name={achievement}"
