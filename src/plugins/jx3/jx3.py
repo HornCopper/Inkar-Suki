@@ -28,7 +28,7 @@ async def server_status(server: str = None, group: str = None):
     server = server_mapping(server, group)
     if server == False:
         return ["唔……服务器名输入错误。"]
-    full_link = "https://www.jx3api.com/data/server/check?server="+server
+    full_link = "https://api.jx3api.com/data/server/check?server="+server
     info = await get_api(full_link, proxy = proxies)
     try:
         all_servers = info["data"]
@@ -45,7 +45,7 @@ async def server_status(server: str = None, group: str = None):
 async def horse_flush_place(horse_name):
     def template(place, img):
         return f"刷新地点：{place}\n" + ms.image(img)
-    full_link = "https://www.jx3api.com/data/useless/refresh?name="+horse_name
+    full_link = "https://api.jx3api.com/data/useless/refresh?name="+horse_name
     info = await get_api(full_link, proxy = proxies)
     if info["code"] == 401:
         return "未找到对应马匹。"
@@ -61,7 +61,7 @@ async def macro_(name):
     name = aliases(name)
     if name == False:
         return "此心法不存在哦~请检查后重试。"
-    full_link = "https://www.jx3api.com/data/school/macro?name=" + name
+    full_link = "https://api.jx3api.com/data/school/macro?name=" + name
     info = await get_api(full_link, proxy = proxies)
     if info["code"] == 401:
         return "此心法不存在哦~请检查后重试。"
@@ -74,7 +74,7 @@ async def daily_(server: str = None, group: str = None):
     server = server_mapping(server, group_id = group)
     if server == False:
         return ["唔……服务器名输入错误。"]
-    full_link = "https://www.jx3api.com/data/active/current?server=" + server
+    full_link = "https://api.jx3api.com/data/active/current?server=" + server
     info = await get_api(full_link, proxy = proxies)
     date = info["data"]["date"]
     week = info["data"]["week"]
@@ -97,7 +97,7 @@ async def daily_(server: str = None, group: str = None):
 async def exam_(question):
     def qa(q,a):
         return f"问题：{q}\n答案：{a}"
-    full_link = "https://www.jx3api.com/data/exam/search?question="+question
+    full_link = "https://api.jx3api.com/data/exam/search?question="+question
     info = await get_api(full_link, proxy = proxies)
     if info["code"] == 401:
         return "没有找到任何与此相关的题目哦~"
@@ -112,7 +112,7 @@ async def matrix_(name):
     name = aliases(name)
     if name == False:
         return "此心法不存在哦~请检查后重试。"
-    full_link = "https://www.jx3api.com/data/school/matrix?name="+name
+    full_link = "https://api.jx3api.com/data/school/matrix?name="+name
     info = await get_api(full_link, proxy = proxies)
     if info["code"] == 401:
         return "此心法不存在哦~请检查后重试。"
@@ -126,7 +126,7 @@ async def matrix_(name):
         return f"查到了{name}的{skillName}：\n" + description
         
 async def news_():
-    full_link = "https://www.jx3api.com/data/web/news?limit=5"
+    full_link = "https://api.jx3api.com/data/web/news?limit=5"
     info = await get_api(full_link, proxy = proxies)
     def dtut(date,title,url,type_):
         return f"{date}{type_}：{title}\n{url}"
@@ -139,7 +139,7 @@ async def equip_(name):
     name = aliases(name)
     if name == False:
         return "此心法不存在哦~请检查后重试。"
-    full_link = "https://www.jx3api.com/data/school/equip?name="+name
+    full_link = "https://api.jx3api.com/data/school/equip?name="+name
     info = await get_api(full_link, proxy = proxies)
     if info["code"] == 401:
         return "此心法不存在哦~请检查后重试。"
@@ -147,7 +147,7 @@ async def equip_(name):
         return f"找到{name}的推荐装备了：\nPVE：\n"+ms.image(info["data"]["pve"])+"\nPVP：\n"+ms.image(info["data"]["pvp"])
     
 async def require_(name):
-    full_link = "https://www.jx3api.com/data/lucky/sub/strategy?name="+name
+    full_link = "https://api.jx3api.com/data/lucky/sub/strategy?name="+name
     info = await get_api(full_link, proxy = proxies)
     if info["code"] == 401:
         return "此奇遇不存在或不是绝世/珍稀奇遇哦~请检查后重试。"
@@ -156,7 +156,7 @@ async def require_(name):
         return image
 
 async def random__():
-    full_link = "https://www.jx3api.com/data/chat/random"
+    full_link = "https://api.jx3api.com/data/chat/random"
     info = await get_api(full_link, proxy = proxies)
     return info["data"]["text"]
 
@@ -164,7 +164,7 @@ async def heighten_(name):
     name = aliases(name)
     if name == False:
         return "此心法不存在哦~请检查后重试。"
-    full_link = "https://www.jx3api.com/data/school/snacks?name=" + name
+    full_link = "https://api.jx3api.com/data/school/snacks?name=" + name
     data = await get_api(full_link, proxy = proxies)
     if data["code"] == 401:
         return data["msg"]
@@ -178,7 +178,7 @@ async def heighten_(name):
         return f"查到{name}的推荐小药了：\n增强食品：{heighten_food}\n辅助食品：{auxiliary_food}\n增强药品：{heighten_drug}\n辅助药品：{auxiliary_drug}"
 
 async def tiangou_():
-    full_link = "https://www.jx3api.com/data/useless/flatterer"
+    full_link = "https://api.jx3api.com/data/useless/flatterer"
     data = await get_api(full_link, proxy = proxies)
     text = data["data"]["text"]
     return text
@@ -193,7 +193,7 @@ async def recruit_(server: str, copy: str = None, group: str = None): # 团队�
     server = server_mapping(server, group)
     if server == False:
         return ["唔……服务器名输入错误。"]
-    final_url = f"https://www.jx3api.com/view/team/member/recruit?token={token}&server={server}&robot={bot}&keyword="
+    final_url = f"https://api.jx3api.com/view/team/member/recruit?token={token}&server={server}&robot={bot}&keyword="
     if copy != None:
         final_url = final_url + copy
     data = await get_api(final_url, proxy = proxies)
@@ -209,7 +209,7 @@ async def recruit_(server: str, copy: str = None, group: str = None): # 团队�
 async def calculate_(): # 日常预测
     if token == None:
         return ["Bot尚未填写Token，请联系Bot主人~"]
-    final_url = f"https://www.jx3api.com/view/active/calculate?token={token}&robot={bot}"
+    final_url = f"https://api.jx3api.com/view/active/calculate?token={token}&robot={bot}"
     data = await get_api(final_url, proxy = proxies)
     url = data["data"]["url"]
     return url
@@ -220,7 +220,7 @@ async def flower_(flower: str = None, server: str = None, group: str = None): # 
     server = server_mapping(server, group)
     if server == False:
         return ["唔……服务器名输入错误。"]
-    final_url = f"https://www.jx3api.com/view/home/flower?token={token}&robot={bot}&server={server}&name="
+    final_url = f"https://api.jx3api.com/view/home/flower?token={token}&robot={bot}&server={server}&name="
     if flower != None:
         final_url = final_url + flower
     data = await get_api(final_url, proxy = proxies)
@@ -230,12 +230,12 @@ async def demon_(server: str = None, group: str = None): # 金价 <服务器>
     if token == None:
         return ["Bot尚未填写Token，请联系Bot主人~"]
     if server == None:
-        final_url = f"https://www.jx3api.com/view/trade/server/demon?robot={bot}&token={token}"
+        final_url = f"https://api.jx3api.com/view/trade/server/demon?robot={bot}&token={token}"
     else:
         server = server_mapping(server, group)
         if server == False:
             return ["唔……服务器名输入错误。"]
-        final_url = f"https://www.jx3api.com/view/trade/demon?server={server}&robot={bot}&token={token}"
+        final_url = f"https://api.jx3api.com/view/trade/demon?server={server}&robot={bot}&token={token}"
     data = await get_api(final_url, proxy = proxies)
     if data["code"] == 401:
         return ["服务器名输入错误，请检查后重试~"]
@@ -244,7 +244,7 @@ async def demon_(server: str = None, group: str = None): # 金价 <服务器>
 async def item_(name: str = None): # 物价 <物品>
     if token == None:
         return ["Bot尚未填写Token，请联系Bot主人~"]
-    final_url = f"https://www.jx3api.com/view/trade/search?token={token}&robot={bot}&name={name}"
+    final_url = f"https://api.jx3api.com/view/trade/search?token={token}&robot={bot}&name={name}"
     data = await get_api(final_url, proxy = proxies)
     if data["code"] == 404:
         return ["唔……尚未收录该物品。"]
@@ -256,7 +256,7 @@ async def serendipity_(server: str = None, name: str = None, group: str = None):
     server = server_mapping(server, group)
     if server == False:
         return ["唔……服务器名输入错误。"]
-    final_url = f"https://www.jx3api.com/view/lucky/serendipity?token={token}&robot={bot}&ticket={ticket}&server={server}&name={name}"
+    final_url = f"https://api.jx3api.com/view/lucky/serendipity?token={token}&robot={bot}&ticket={ticket}&server={server}&name={name}"
     data = await get_api(final_url, proxy = proxies)
     return data["data"]["url"]
 
@@ -267,9 +267,9 @@ async def statistical_(server: str = None, serendipity: str = None, group: str =
     if server == False:
         return ["唔……服务器名输入错误。"]
     if serendipity == None:
-        final_url = f"https://www.jx3api.com/view/lucky/collect?token={token}&robot={bot}&server={server}"
+        final_url = f"https://api.jx3api.com/view/lucky/collect?token={token}&robot={bot}&server={server}"
     else:
-        final_url = f"https://www.jx3api.com/view/lucky/statistical?token={token}&robot={bot}&ticket={ticket}&server={server}&name={serendipity}"
+        final_url = f"https://api.jx3api.com/view/lucky/statistical?token={token}&robot={bot}&ticket={ticket}&server={server}&name={serendipity}"
     data = await get_api(final_url, proxy = proxies)
     return data["data"]["url"]
 
@@ -277,7 +277,7 @@ async def global_serendipity(name: str = None): # 全服奇遇 [奇遇]
     if token == None:
         return ["Bot尚未填写Token，请联系Bot主人~"]
     if name != None:
-        final_url = f"https://www.jx3api.com/view/lucky/server/serendipity?name={name}&token={token}&robot={bot}"
+        final_url = f"https://api.jx3api.com/view/lucky/server/serendipity?name={name}&token={token}&robot={bot}"
     data = await get_api(final_url, proxy = proxies)
     return data["data"]["url"]
 
@@ -285,7 +285,7 @@ async def global_statistical(name: str = None): # 全服统计 [奇遇]
     if token == None:
         return ["Bot尚未填写Token，请联系Bot主人~"]
     if name != None:
-        final_url = f"https://www.jx3api.com/view/lucky/server/statistical?name={name}&token={token}&robot={bot}"
+        final_url = f"https://api.jx3api.com/view/lucky/server/statistical?name={name}&token={token}&robot={bot}"
     data = await get_api(final_url, proxy = proxies)
     return data["data"]["url"]
 
@@ -295,7 +295,7 @@ async def addritube_(server: str = None, name: str = None, group: str = None): #
     server = server_mapping(server, group)
     if server == False:
         return ["唔……服务器名输入错误。"]
-    final_url = f"https://www.jx3api.com/view/role/attribute?ticket={ticket}&token={token}&robot={bot}&server={server}&name={name}"
+    final_url = f"https://api.jx3api.com/view/role/attribute?ticket={ticket}&token={token}&robot={bot}&server={server}&name={name}"
     data = await get_api(final_url, proxy = proxies)
     if data["code"] == 404:
         return ["唔……玩家不存在。"]
@@ -311,7 +311,7 @@ async def firework_(server: str = None, name: str = None, group: str = None): # 
     server = server_mapping(server, group)
     if server == False:
         return ["唔……服务器名输入错误。"]
-    final_url = f"https://www.jx3api.com/view/role/firework?token={token}&robot={bot}&server={server}&name={name}"
+    final_url = f"https://api.jx3api.com/view/role/firework?token={token}&robot={bot}&server={server}&name={name}"
     data = await get_api(final_url, proxy = proxies)
     if data["code"] == 404:
         return ["该玩家没有烟花记录哦~"]
@@ -322,7 +322,7 @@ async def sandbox_(server: str = None, group: str = None): # 沙盘 <服务器>
     if server == False:
         return ["唔……服务器名输入错误。"]
     if server != None:
-        final_url = f"https://www.jx3api.com/view/sand/search?server=" + server
+        final_url = f"https://api.jx3api.com/view/sand/search?server=" + server
     data = await get_api(final_url, proxy = proxies)
     if data["code"] == 401:
         return ["唔……服务器名输入错误。"]
@@ -336,7 +336,7 @@ async def achievements_(server: str = None, name: str = None, achievement: str =
     server = server_mapping(server, group_id = group)
     if server == False:
         return ["唔……服务器名输入错误。"]
-    final_url = f"https://www.jx3api.com/data/role/achievement?ticket={ticket}&token={token}&server={server}&role={name}&name={achievement}"
+    final_url = f"https://api.jx3api.com/data/role/achievement?ticket={ticket}&token={token}&server={server}&role={name}&name={achievement}"
     data = await get_api(final_url, proxy = proxies)
     logger.info(data)
     if data["code"] == 401 or data["code"] == 404:
@@ -365,9 +365,9 @@ async def special_(server: str, item: str = None, group: str = None):
     if server == False:
         return ["唔……服务器名输入错误。"]
     if item != None:
-        final_url = f"https://www.jx3api.com/view/team/items/statistical?token={token}&server={server}&name={item}&robot={bot}"
+        final_url = f"https://api.jx3api.com/view/team/items/statistical?token={token}&server={server}&name={item}&robot={bot}"
     else:
-        final_url = f"https://www.jx3api.com/view/team/items/collect?token={token}&server={server}&robot={bot}"
+        final_url = f"https://api.jx3api.com/view/team/items/collect?token={token}&server={server}&robot={bot}"
     data = await get_api(final_url, proxy = proxies)
     if data["code"] == 401:
         return ["唔……服务器名输入错误。"]
@@ -384,7 +384,7 @@ async def arena_(object: str, server: str = None, name: str = None, mode: str = 
         server = server_mapping(server, group)
         if server == False:
             return ["唔……服务器名输入错误。"]
-        final_url = f"https://www.jx3api.com/view/arena/recent?token={token}&name={name}&server={server}&robot={bot}&ticket={ticket}"
+        final_url = f"https://api.jx3api.com/view/arena/recent?token={token}&name={name}&server={server}&robot={bot}&ticket={ticket}"
         data = await get_api(final_url, proxy = proxies)
         if data["code"] == 401:
             return ["唔……服务器名输入错误。"]
@@ -392,13 +392,13 @@ async def arena_(object: str, server: str = None, name: str = None, mode: str = 
             return ["唔……未找到该玩家的记录，请检查玩家名或服务器名。"]
         return data["data"]["url"]
     elif object == "排行":
-        final_url = f"https://www.jx3api.com/view/arena/awesome?token={token}&robot={bot}&ticket={ticket}&mode={mode}"
+        final_url = f"https://api.jx3api.com/view/arena/awesome?token={token}&robot={bot}&ticket={ticket}&mode={mode}"
         data = await get_api(final_url, proxy = proxies)
         if data["code"] == 401:
             return ["唔……名剑模式输入错误。"]
         return data["data"]["url"]
     elif object == "统计":
-        final_url = f"https://www.jx3api.com/view/arena/schools?token={token}&robot={bot}&ticket={ticket}&mode={mode}"
+        final_url = f"https://api.jx3api.com/view/arena/schools?token={token}&robot={bot}&ticket={ticket}&mode={mode}"
         data = await get_api(final_url, proxy = proxies)
         if data["code"] == 401:
             return ["唔……名剑模式输入错误。"]
@@ -412,7 +412,7 @@ async def trials_(server: str = None, school: str = None, group: str = None):
     server = server_mapping(server, group)
     if server == False:
         return ["唔……服务器名输入错误。"]
-    final_url = f"https://www.jx3api.com/view/rank/trials?server={server}&school={school}&token={token}&robot={bot}"
+    final_url = f"https://api.jx3api.com/view/rank/trials?server={server}&school={school}&token={token}&robot={bot}"
     data = await get_api(final_url, proxy = proxies)
     if data["code"] == 401:
         return ["唔……服务器名输入错误。"]
@@ -429,15 +429,15 @@ async def rank_(type_1: str, type_2: str, server: str, group: str = None):
     if type_1 == "个人":
         if type_2 not in ["名士五十强","老江湖五十强","兵甲藏家五十强","名师五十强","阵营英雄五十强","薪火相传五十强","庐园广记一百强"]:
             return ["唔……类型不正确，请检查后重试~"]
-        final_url = f"https://www.jx3api.com/view/rank/various?token={token}&robot={bot}&server={server}&type={type_2}"
+        final_url = f"https://api.jx3api.com/view/rank/various?token={token}&robot={bot}&server={server}&type={type_2}"
     elif type_1 == "帮会":
         if type_2 not in ["浩气神兵宝甲五十强","恶人神兵宝甲五十强","浩气爱心帮会五十强","恶人爱心帮会五十强"]:
             return ["唔……类型不正确，请检查后重试~"]
-        final_url = f"https://www.jx3api.com/view/rank/tribe?token={token}&robot={bot}&server={server}&type={type_2}"
+        final_url = f"https://api.jx3api.com/view/rank/tribe?token={token}&robot={bot}&server={server}&type={type_2}"
     elif type_1 == "战功":
         if type_2 not in ["赛季恶人五十强","赛季浩气五十强","上周恶人五十强","上周浩气五十强","本周恶人五十强","本周浩气五十强"]:
             return ["唔……类型不正确，请检查后重试~"]
-        final_url = f"https://www.jx3api.com/view/rank/excellent?token={token}&robot={bot}&server={server}&type={type_2}"
+        final_url = f"https://api.jx3api.com/view/rank/excellent?token={token}&robot={bot}&server={server}&type={type_2}"
     else:
         return ["未知类型，只能是个人/帮会/战功哦！"]
     data = await get_api(final_url, proxy = proxies)
@@ -448,13 +448,13 @@ async def rank_(type_1: str, type_2: str, server: str, group: str = None):
     return data["data"]["url"]
 
 async def announce_():
-    final_url = f"https://www.jx3api.com/view/web/announce?robot={bot}&token={token}"
+    final_url = f"https://api.jx3api.com/view/web/announce?robot={bot}&token={token}"
     data = await get_api(final_url, proxy = proxies)
     return data["data"]["url"]
 
 async def roleInfo_(server, player, group: str = None):
     server = server_mapping(server, group)
-    final_url = f"https://www.jx3api.com/data/role/roleInfo?token={token}&name={player}&server={server}"
+    final_url = f"https://api.jx3api.com/data/role/roleInfo?token={token}&name={player}&server={server}"
     if server == False:
         return "唔……服务器名输入错误。"
     data = await get_api(final_url, proxy = proxies)
