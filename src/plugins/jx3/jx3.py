@@ -484,7 +484,7 @@ def server_mapping(server: str, group_id: str):
         return "斗转星移"
     elif server in ["长安城"]:
         return "长安城"
-    elif server in ["电八","电信八区","绝代天骄","风骨霸刀"]:
+    elif server in ["电八","电信八区","绝代天骄","风骨霸刀","绝代双骄"]:
         return "绝代天骄"
     elif server in ["龙虎","龙争虎斗"]:
         return "龙争虎斗"
