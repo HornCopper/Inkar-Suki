@@ -36,7 +36,7 @@ news = on_command("jx3_news",aliases={"新闻"},priority=5)
 async def _():
     await require.finish(await news_())
 
-horse = on_command("jx3_horse",aliases={"马"},priority=5)
+horse = on_command("jx3_horse",aliases={"抓马"},priority=5)
 @horse.handle()
 async def _(args: Message = CommandArg()):
     if args.extract_plain_text():
