@@ -1,0 +1,8 @@
+{
+    "author": "HornCopper",
+    "version": "1.3-Release",
+    "name": "综合搜索(search)",
+    "admin": "N/A",
+    "aliases": "+tieba -> +贴吧",
+    "desc": "获取帖子信息（百度贴吧）：+tieba <TID>"
+}
