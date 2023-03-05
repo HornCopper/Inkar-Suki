@@ -15,7 +15,7 @@ async def get_tieba(thread: int):
     if data.find("该帖已被删除") != -1:
         return "唔……该帖子不存在或已被删除。"
     bs = BeautifulSoup(data, 'html.parser')
-    title = bs.title
+    title = bs.title.get_text
     for i in bs.find_all(class_="l_reply_num"):
         reply_count = i.get_text()
         break
