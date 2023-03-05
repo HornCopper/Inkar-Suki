@@ -13,7 +13,7 @@ from utils import checknumber
 
 from .gettor import get_tieba
 
-tieba = on_command("tieba", aliases={"贴吧"}, priority=5)
+tieba = on_command("-tieba", aliases={"-贴吧"}, priority=5)
 @tieba.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     tid = args.extract_plain_text()
