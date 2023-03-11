@@ -704,12 +704,17 @@ top100_ = on_command("jx3_top100",aliases={"百强"},priority=5)
 @top100_.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     arg = args.extract_plain_text().split(" ")
-    if len(arg) != 3:
+    if len(arg) not in [2,3]:
         await top100_.finish("唔……参数不正确哦，请检查后重试~")
-    server = arg[0]
-    boss = arg[1]
-    team = arg[2]
-    data = await get_top100(server, team, boss, group=str(event.group_id))
+    if len(arg) == 2:
+        server = arg[0]
+        boss = arg[1]
+        team = None
+    else:
+        server = arg[0]
+        boss = arg[1]
+        team = arg[2]
+    data = await get_top100(server, boss, group=str(event.group_id), team=team)
     await top100_.finish(data)
 
 rank = on_command("jx3_rank", aliases={"榜单"}, priority=5)
