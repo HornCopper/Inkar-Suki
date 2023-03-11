@@ -709,7 +709,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     server = arg[0]
     boss = arg[1]
     team = arg[2]
-    data = await get_top100(server, team, boss)
+    data = await get_top100(server, team, boss, group=str(event.group_id))
     await top100_.finish(data)
 
 rank = on_command("jx3_rank", aliases={"榜单"}, priority=5)
