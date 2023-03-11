@@ -28,8 +28,8 @@ def boss_mapping(boss:str):
     else:
         return False
 
-async def get_top100(server: str, team: str, boss: str):
-    server = server_mapping(server)
+async def get_top100(server: str, team: str, boss: str, group: str):
+    server = server_mapping(server, group)
     boss_id = boss_mapping(boss)
     if boss_id == False:
         return "唔……没有找到该boss哦~"
