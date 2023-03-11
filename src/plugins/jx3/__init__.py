@@ -30,6 +30,7 @@ from .buff import get_buff
 from .trade import search_item_info, getItemPriceById
 from .top100 import get_top100
 from .dh import *
+from .chitu import get_chitu
 
 news = on_command("jx3_news",aliases={"新闻"},priority=5)
 @news.handle()
@@ -743,7 +744,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     msg = await roleInfo_(server = srv, player = id, group=str(event.group_id))
     await roleInfo.finish(msg)
 
-dh_ = on_command("jx3_dh",aliases={"蹲号"}, priority=5)
+dh_ = on_command("jx3_dh", aliases={"蹲号"}, priority=5)
 @dh_.handle()
 async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
     details = args.extract_plain_text()
@@ -758,6 +759,15 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
         await dh_.finish(data)
     else:
         await bot.call_api("send_group_forward_msg", group_id = event.group_id, messages = data)
+
+ct = on_command("jx3_ct", aliases={"-赤兔"}, priority=5)
+@ct.handle()
+async def _(event: GroupMessageEvent, args: Message = CommandArg()):
+    server = args.extract_plain_text()
+    if server == "":
+        await ct.finish("您没有输入服务器名称哦，请检查后重试~")
+    msg = await get_chitu(server, str(event.group_id))
+    await ct.finish(msg)
 
 driver = get_driver()
 
