@@ -17,7 +17,7 @@ async def get_chitu(server: str, group: str):
     bs_obj_data = BeautifulSoup(data, "html.parser")
     info = bs_obj_data.find_all(onchange="show_input();")[0].find_all("option")
     for i in info:
-        if i["value"].find(server) != -1:
-            return f"{server}：{i.get_text()}"
+        if i.get_text().find(server) != -1:
+            return f"{i.get_text()}：" + i["value"]
     return "唔……服务器名输入有误，请检查后重试~"
         
