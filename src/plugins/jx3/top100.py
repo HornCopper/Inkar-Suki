@@ -28,7 +28,7 @@ def boss_mapping(boss:str):
     else:
         return False
 
-async def get_top100(server: str, team: str, boss: str, group: str):
+async def get_top100(server: str, boss: str, group: str, team: str = None):
     server = server_mapping(server, group)
     boss_id = boss_mapping(boss)
     if boss_id == False:
@@ -39,23 +39,32 @@ async def get_top100(server: str, team: str, boss: str, group: str):
     data = await get_api(final_url)
     people = []
     found = False
-    for i in data["data"]:
-        if i["team_name"] == team:
-            found = True
-            leader = i["role"]
-            team_logo = i["team_logo"]
-            start_time = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(i["start_time"]))
-            finish_time = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(i["finish_time"]))
-            num = 0
-            for x in i["teammate"].split(";"):
-                add_one = x.split(",")[0]
-                if add_one == leader:
-                    continue
-                people.append(add_one)
-                num = num + 1
-                if num == 4:
-                    people.append("\n")
-                    num = 0
+    if team != None:
+        for i in data["data"]:
+            if i["team_name"] == team:
+                found = True
+                leader = i["role"]
+                team_logo = i["team_logo"]
+                start_time = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(i["start_time"]))
+                finish_time = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(i["finish_time"]))
+                num = 0
+                for x in i["teammate"].split(";"):
+                    add_one = x.split(",")[0]
+                    if add_one == leader:
+                        continue
+                    people.append(add_one)
+                    num = num + 1
+                    if num == 4:
+                        people.append("\n")
+                        num = 0
+    else:
+        msg = ""
+        num = 1
+        for i in data["data"]:
+            t = i["team_name"]
+            l = i["leader"]
+            msg = msg + f"{num}. 【{t}】{i}\n"
+        return msg + "小提示：团牌后方为团长的ID哦~\n使用“+百强 <服务器> <BOSS名称> <团牌>”可以获得更详细的信息。"
     if found == False:
         return "唔……未找到该团，您可以点击下方链接查看该团是否上榜。\nhttps://www.jx3box.com/rank/race/#/"
     people = "、".join(people).replace("\n、","\n")
