@@ -22,14 +22,14 @@ from file import read, write
 from .jx3 import *
 from .skilldatalib import getAllSkillsInfo, getSingleSkill, getSingleTalent
 from .adventure import getAdventure, getAchievementsIcon
-from .pet import get_pet
+from .pet import get_pet, get_cd
 from .task import getTask, getTaskChain
 from .jx3apiws import ws_client
 from .jx3_event import RecvEvent
 from .buff import get_buff
 from .trade import search_item_info, getItemPriceById
 from .top100 import get_top100
-from .dh import *
+from .dh import get_dh
 from .chitu import get_chitu
 
 news = on_command("jx3_news",aliases={"新闻"},priority=5)
@@ -773,6 +773,17 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
         await ct.finish("您没有输入服务器名称哦，请检查后重试~")
     msg = await get_chitu(server, str(event.group_id))
     await ct.finish(msg)
+
+mc_helper = on_command("jx3_cd","-cd",priority=5)
+@mc_helper.handle()
+async def _(event: GroupMessageEvent, args: Message = CommandArg()):
+    arg = args.extract_plain_text().split(" ")
+    if len(arg) != 2:
+        await mc_helper.finish("唔……参数数量有误，请检查后重试~")
+    server = arg[0]
+    sep = arg[1]
+    msg = await get_cd(server, sep, str(event.group_id))
+    await mc_helper.finish(msg)
 
 driver = get_driver()
 
