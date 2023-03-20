@@ -774,7 +774,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     msg = await get_chitu(server, str(event.group_id))
     await ct.finish(msg)
 
-mc_helper = on_command("jx3_cd","-cd",priority=5)
+mc_helper = on_command("jx3_cd",aliases={"-cd"},priority=5)
 @mc_helper.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     arg = args.extract_plain_text().split(" ")
