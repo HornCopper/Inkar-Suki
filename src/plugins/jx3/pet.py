@@ -6,7 +6,9 @@ TOOLS = nonebot.get_driver().config.tools_path
 sys.path.append(TOOLS)
 ASSETS = TOOLS[:-5] + "assets"
 PLUGINS = TOOLS[:-5] + "plugins"
+
 from utils import get_api
+from .jx3 import server_mapping
 
 '''
 状态码：
@@ -41,3 +43,12 @@ async def get_pet(pet: str):
         return {"status":404} # 不是摆烂
     else:
         raise ValueError("Unexcept Error! Please check the api instead of the source code.")
+
+async def get_cd(server: str, sep: str, group: str):
+    server = server_mapping(server, group)
+    url = f"https://pull.j3cx.com/api/serendipity?server={server}&serendipity={sep}&pageSize=1" # Thanks to @茗伊
+    data = await get_api(url)
+    data = data["data"]["data"][0]
+    time = data["date_str"]
+    msg = f"「{server}」服务器上一次记录「{sep}」：\n{time}\n数据来源：@茗伊插件集"
+    return msg
