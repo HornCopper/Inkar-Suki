@@ -65,7 +65,7 @@ daily = on_command("jx3_daily",aliases={"日常","周常"},priority=5)
 @daily.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     if args.extract_plain_text():
-        await daily.finish(await daily_(server=server_mapping(args.extract_plain_text()),group=str(event.group_id)))
+        await daily.finish(await daily_(server))
     else:
         await daily.finish("没有输入任何服务器名称哦，自动切换至电信一区-长安城。\n"+await daily_("长安城"))
         
