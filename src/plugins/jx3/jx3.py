@@ -358,23 +358,6 @@ async def achievements_(server: str = None, name: str = None, achievement: str =
         return ["未找到该副本的成就哦，或许试试单成就搜索？"]
     return {"result":node}
 
-async def special_(server: str, item: str = None, group: str = None):
-    if token == None:
-        return ["Bot尚未填写Token，请联系Bot主人~"]
-    server = server_mapping(server, group)
-    if server == False:
-        return ["唔……服务器名输入错误。"]
-    if item != None:
-        final_url = f"https://api.jx3api.com/view/team/items/statistical?token={token}&server={server}&name={item}&robot={bot}"
-    else:
-        final_url = f"https://api.jx3api.com/view/team/items/collect?token={token}&server={server}&robot={bot}"
-    data = await get_api(final_url, proxy = proxies)
-    if data["code"] == 401:
-        return ["唔……服务器名输入错误。"]
-    if data["code"] == 404:
-        return ["唔……未找到该物品。"]
-    return data["data"]["url"]
-
 async def arena_(object: str, server: str = None, name: str = None, mode: str = "33", group: str = None):
     if token == None:
         return ["Bot尚未填写Token，请联系Bot主人~"]
@@ -472,6 +455,26 @@ async def roleInfo_(server, player, group: str = None):
     msg = msg + f"\n服务器：{zone} - {srv}\n角色名称：{nm}\nUID：{uid}\n体型：{fc}·{bd}\n帮会：{cp} - {tg}"
     return msg
     
+async def zone(server, id, group):
+    server = server_mapping(server, group)
+    final_url = f"https://www.jx3api.com/data/role/teamCdList?token={token}&ticket={ticket}&name={id}"
+    data = await get_api(final_url)
+    done = "⚫"
+    ntyet = "⚪"
+    msg = ""
+    if len(data["data"]["data"]) == 0:
+        return "别查了，这个人啥也没打233~"
+    for i in data["data"]["data"]:
+        zone_msg = ""
+        mapName = i["mapType"] + i["mapName"]
+        for x in i["bossProgress"]:
+            if x["finished"]:
+                zone_msg = zone_msg + done
+            else:
+                zone_msg = zone_msg + ntyet
+        pMsg = mapName + "：" + zone_msg
+        msg = msg + pMsg + "\n"
+    return msg + "小提示：没有列出的副本均为全亮。"
 
 def server_mapping(server: str, group_id: str):
     if server in ["二合一","四合一","六合一","七合一","千岛湖","圣墓山","执子之手","平步青云","笑傲江湖","幽月轮","山雨欲来"]:
