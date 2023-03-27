@@ -457,7 +457,7 @@ async def roleInfo_(server, player, group: str = None):
     
 async def zone(server, id, group):
     server = server_mapping(server, group)
-    final_url = f"https://www.jx3api.com/data/role/teamCdList?token={token}&ticket={ticket}&name={id}"
+    final_url = f"https://www.jx3api.com/data/role/teamCdList?token={token}&ticket={ticket}&name={id}&server={server}"
     data = await get_api(final_url)
     done = "⚫"
     ntyet = "⚪"
