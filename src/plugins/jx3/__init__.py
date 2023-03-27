@@ -639,22 +639,6 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
     else:
         await bot.call_api("send_group_forward_msg",group_id = event.group_id, messages = data["result"])
 
-special = on_command("jx3_special",aliases={"掉落"},priority=5)
-@special.handle()
-async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
-    arg = args.extract_plain_text().split(" ")
-    if len(arg) not in [1,2]:
-        await special.finish("唔……参数数量有误，请检查后重试~")
-    group = str(event.group_id)
-    if len(arg) == 1:
-        data = await special_(server = arg[0], group=group)
-    else:
-        data = await special_(server = arg[0], item = arg[1], group=group)
-    if type(data) == type([]):
-        await special.finish(data[0])
-    else:
-        await special.finish(ms.image(data))
-
 arena = on_command("jx3_arena",aliases={"名剑"}, priority=5)
 @arena.handle()
 async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
@@ -784,6 +768,17 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     sep = arg[1]
     msg = await get_cd(server, sep, str(event.group_id))
     await mc_helper.finish(msg)
+
+zones = on_command("jx3_zones",aliases={"副本"}, priority=5)
+@zones.handle()
+async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
+    arg = args.extract_plain_text().split(" ")
+    if len(arg) != 2:
+        await zones.finish("唔……参数数量有误，请检查后重试~")
+    server = arg[0]
+    id = arg[1]
+    msg = await zone(server, id, str(event.group_id))
+    await zones.finish(msg)
 
 driver = get_driver()
 
