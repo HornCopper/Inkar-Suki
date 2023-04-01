@@ -557,20 +557,6 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     else:
         await addritube.finish(ms.image(data))
 
-firework = on_command("jx3_firework", aliases={"烟花"}, priority=5)
-@firework.handle()
-async def _(event: GroupMessageEvent, args: Message = CommandArg()):
-    arg = args.extract_plain_text().split(" ")
-    if len(arg) != 2:
-        await firework.finish("唔……参数不正确哦，请检查后重试~")
-    server = arg[0]
-    id = arg[1]
-    data = await firework_(server, id, group=str(event.group_id))
-    if type(data) == type([]):
-        await firework.finish(data[0])
-    else:
-        await firework.finish(ms.image(data))
-
 sandbox = on_command("jx3_sandbox", aliases={"沙盘"}, priority=5)
 @sandbox.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):

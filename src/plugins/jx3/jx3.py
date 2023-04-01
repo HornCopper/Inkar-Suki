@@ -305,18 +305,6 @@ async def addritube_(server: str = None, name: str = None, group: str = None): #
         return ["仅互关好友可见哦~"]
     return data["data"]["url"]
 
-async def firework_(server: str = None, name: str = None, group: str = None): # 烟花 <服务器> <ID>
-    if token == None:
-        return ["Bot尚未填写Token，请联系Bot主人~"]
-    server = server_mapping(server, group)
-    if server == False:
-        return ["唔……服务器名输入错误。"]
-    final_url = f"https://api.jx3api.com/view/role/firework?token={token}&robot={bot}&server={server}&name={name}"
-    data = await get_api(final_url, proxy = proxies)
-    if data["code"] == 404:
-        return ["该玩家没有烟花记录哦~"]
-    return data["data"]["url"]
-
 async def sandbox_(server: str = None, group: str = None): # 沙盘 <服务器>
     server = server_mapping(server, group)
     if server == False:

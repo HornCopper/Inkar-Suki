@@ -212,7 +212,8 @@ async def _(bot: Bot, state: T_State, group: Message = Arg()):
             data = json.dumps(await bot.call_api("get_group_info", group_id=int(group_id)), ensure_ascii=False)
         except:
             data = "获取失败！"
-        url = "https://api.github.com/repos/codethink-cn/Inkar-Suki/issues"
+        repo_name = Config.repo_name
+        url = f"https://api.github.com/repos/{repo_name}/issues"
         token = Config.ght
         user = state["user"]
         bearer = "Bearer " + token
