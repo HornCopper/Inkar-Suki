@@ -15,6 +15,13 @@ PLUGINS = TOOLS[:-5] + "plugins"
 from file import read, write
 from config import Config
 from generate import generate, get_uuid
+'''
+帮助文件生成函数。
+
+包含文字+图片信息。
+
+文字来源于内置，图片由每个`plugin`文件夹下的`info.json`中的内容整合，再以`selenium`进行渲染所得。
+'''
 
 help = on_command("help", aliases={"帮助"}, priority=5)
 css = """

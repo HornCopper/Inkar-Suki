@@ -29,6 +29,9 @@ def already(reponame: str, group) -> bool:
 repo = on_command("repo", priority=5)
 @repo.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
+    '''
+    获取`GitHub`仓库的简介图片。
+    '''
     reponame = args.extract_plain_text()
     status_code = await get_status("https://github.com/"+reponame)
     if status_code != 200:
@@ -36,9 +39,13 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     else:
         img = ms.image("https://opengraph.githubassets.com/c9f4179f4d560950b2355c82aa2b7750bffd945744f9b8ea3f93cc24779745a0/"+reponame)
         await repo.finish(img)
-webhook = on_command("bindrepo",aliases={"webhook"},priority=5)
+
+webhook = on_command("bindrepo", aliases={"webhook"}, priority=5)
 @webhook.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
+    '''
+    添加群聊响应的`Webhook`仓库。
+    '''
     if checker(str(event.user_id),9) == False:
         await unbind.finish(error(9))
     repo_name = args.extract_plain_text()
@@ -61,6 +68,9 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
 unbind = on_command("unbindrepo",aliases={"unbind_webhook"},priority=5)
 @unbind.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
+    '''
+    与上一个函数功能相反。
+    '''
     if checker(str(event.user_id),9) == False:
         await unbind.finish(error(9))
     repo = args.extract_plain_text()
@@ -83,6 +93,9 @@ app: FastAPI = nonebot.get_app()
 
 @app.post(Config.web_path)
 async def recWebHook(req: Request):
+    '''
+    接受`Webhook`的`POST`接口，路径来源于`config.py`。
+    '''
     body = await req.json()
     repo = body["repository"]["full_name"]
     event = req.headers.get("X-GitHub-Event")
@@ -99,6 +112,9 @@ async def recWebHook(req: Request):
     return {"status":200}
 
 async def sendm(bot, message, repo):
+    '''
+    推送`Webhook`。
+    '''
     groups = os.listdir("./src/data")
     send_group = []
     for i in groups:

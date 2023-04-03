@@ -4,10 +4,10 @@ import nonebot
 TOOLS = nonebot.get_driver().config.tools_path
 sys.path.append(TOOLS)
 ASSETS = TOOLS[:-5] + "assets"
-from utils import get_api, get_content
+from utils import get_api
 
 async def getTask(Task: str):
-    info = await get_api(f"https://node.jx3box.com/quests?keyword={Task}&chain=false&client=std&page=1&per=20")
+    info = await get_api(f"https://node.jx3box.com/quests?keyword={Task}&chain=false&client=std&page=1&per=20") # 任务搜索器 数据来源@JX3BOX
     if info["total"] == 0:
         return {"status":404}
     data = info["list"]["byKeyword"]

@@ -28,7 +28,7 @@ def boss_mapping(boss:str):
     else:
         return False
 
-async def get_top100(server: str, boss: str, group: str, team: str = None):
+async def get_top100(server: str, boss: str, group: str, team: str = None): # 数据来源@JX3BOX
     server = server_mapping(server, group)
     boss_id = boss_mapping(boss)
     if boss_id == False:
