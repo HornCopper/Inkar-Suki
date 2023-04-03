@@ -390,7 +390,7 @@ class XuanJingEvent(RecvEvent):
     @validator("time", pre=True)
     def check_time(cls, v):
         start_trans = datetime.fromtimestamp(int(v))
-        return start_trans.strftime("%D:%H:%M:%S")
+        return start_trans.strftime("%H:%M:%S")
 
     @property
     def log(self) -> str:
@@ -402,10 +402,10 @@ class XuanJingEvent(RecvEvent):
         xuanjing = open("./xuanjing.json", mode="r")
         correct = json.loads(xuanjing.read())
         msg = f"{self.name};{self.map};{self.role};{self.time}"
-        correct.append(map)
+        correct.append(msg)
         xuanjing.close()
         xuanjing = open("./xuanjing.json", mode="w")
-        xuanjing.write(json.dumps(msg, ensure_ascii=False))
+        xuanjing.write(json.dumps(correct, ensure_ascii=False))
         xuanjing.close()
         return {"type":"玄晶","msg":f"{self.time}\n恭喜侠士[{self.role}]在{self.map}获得稀有掉落[{self.name}]！"}
 
