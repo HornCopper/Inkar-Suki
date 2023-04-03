@@ -8,6 +8,7 @@ from nonebot import on_command, on_message
 from nonebot.adapters import Message
 from nonebot.params import CommandArg, Arg
 from nonebot.matcher import Matcher
+from nonebot.log import logger
 from nonebot.adapters.onebot.v11 import Message, MessageSegment, unescape, Event, Bot, GroupMessageEvent
 from nonebot.typing import T_State
 from typing import List
@@ -216,7 +217,8 @@ async def _(bot: Bot, state: T_State, group: Message = Arg()):
         token = Config.ght
         user = state["user"]
         bearer = "Bearer " + token
-        final_header = {"Accept": "application/vnd.github+json","Authorization":bearer}
+        final_header = {"Accept": "application/vnd.github+json","Authorization":bearer,"X-GitHub-Api-Version":"2022-11-28"}
         body = {"title":f"Inkar-Suki·使用申请","body":f"申请人QQ：{user}\n申请群聊：{group_id}\n群聊请求数据如下：```{data}```","labels":["申请"]}
-        await data_post(url, headers = final_header, json=body)
+        resp = await data_post(url, headers = final_header, json=body)
+        logger.info(resp)
         await apply.finish("申请成功，请求已发送至GitHub，请等待通知！")
