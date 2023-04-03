@@ -13,11 +13,19 @@ sys.path.append(str(TOOLS))
 DATA = TOOLS[:-5] + "data"
 
 from permission import checker, error
-from file import read, write
+from file import write
 from config import Config
 from utils import get_url
 
-unregistered = on_message(block=False,priority=1)
+'''
+原理：文件操作。
+
+未注册的群聊无法调用命令（有最高优先级阻断器）。
+
+目的是防止滥用。
+'''
+
+unregistered = on_message(block=False, priority=1) # 未注册的群聊无法调用命令！
 @unregistered.handle()
 async def _(matcher: Matcher, event: GroupMessageEvent):
     directorys=os.listdir(TOOLS.replace("tools","data"))
@@ -26,7 +34,7 @@ async def _(matcher: Matcher, event: GroupMessageEvent):
     else:
         return
     
-register = on_command("register",aliases={"reg"},priority=0)
+register = on_command("register", aliases={"reg"}, priority=0) # 注册
 @register.handle()
 async def _(event: GroupMessageEvent):
     if checker(str(event.user_id),8) == False:
@@ -47,9 +55,10 @@ async def _(event: GroupMessageEvent):
         write(new_path + "/wiki.json","{\"startwiki\":\"\",\"interwiki\":[]}")
         write(new_path + "/arcaea.json","{}")
         write(new_path + "/record.json","[]")
+        write(new_path + "/subscribe.json","[]")
         await register.finish("注册成功！")
 
-flushdata = on_command("flushdata",priority=5)
+flushdata = on_command("flushdata", priority=5) # 刷新
 @flushdata.handle()
 async def _(event: Event):
     if checker(str(event.user_id),10) == False:
@@ -74,23 +83,15 @@ async def _(event: Event):
             os.remove(DATA + "/" + i + "/opening.json")
             os.remove(DATA + "/" + i + "/arcaea.json")
             os.remove(DATA + "/" + i + "/record.json")
-            nnl = json.loads(read(TOOLS + "/nnl.json"))
-            for a in nnl:
-                if a == i:
-                    nnl.remove(a)
-            subscribe = json.loads(read(TOOLS + "/subscribe.json"))
-            for a in subscribe:
-                if a == i:
-                    subscribe.remove(a)
-            write(TOOLS + "/nnl.json", nnl)
-            write(TOOLS + "/subscribe.json", subscribe)
+            os.remove(DATA + "/" + i + "/record.json")
+            os.remove(DATA + "/" + i + "/subscribe.json")
             os.rmdir(DATA + "/"+i)
         except:
             logger.info("删除文件夹" + i + "失败，未知错误。")
     dlt_count = len(disabled_groups)
     await flushdata.finish("好啦，刷新完成！\n删除了" + str(dlt_count) + "个文件夹。")
 
-leave = on_command("leave",priority=5)
+leave = on_command("leave", priority=5) # 退群
 @leave.handle()
 async def _(bot: Bot, event: GroupMessageEvent):
     if checker(str(event.user_id),8) == False:
@@ -108,23 +109,14 @@ async def _(bot: Bot, event: GroupMessageEvent):
             os.remove(DATA + "/" + group + "/wiki.json")
             os.remove(DATA + "/" + group + "/opening.json")
             os.remove(DATA + "/" + group + "/arcaea.json")
-            nnl = json.loads(read(TOOLS + "/nnl.json"))
-            for a in nnl:
-                if a == group:
-                    nnl.remove(a)
-            subscribe = json.loads(read(TOOLS + "/subscribe.json"))
-            for a in subscribe:
-                if a == group:
-                    subscribe.remove(a)
-            write(TOOLS + "/nnl.json", nnl)
-            write(TOOLS + "/subscribe.json", subscribe)
+            os.remove(DATA + "/" + group + "/subscribe.json")
             os.rmdir(DATA + "/" + group)
         except:
             logger.info("删除文件夹"+group+"失败，未知错误。")
     await leave.send("已清除本群数据，正在退出群聊~")
     await bot.call_api("set_group_leave",group_id=event.group_id)
 
-cleardata = on_command("cleardata",priority=5)
+cleardata = on_command("cleardata", priority=5) # 清除本群群聊数据，使之恢复到未注册状态
 @cleardata.handle()
 async def _(event: GroupMessageEvent):
     if checker(str(event.user_id),9) == False:
@@ -142,22 +134,13 @@ async def _(event: GroupMessageEvent):
             os.remove(DATA + "/" + group + "/record.json")
             os.remove(DATA + "/" + group + "/wiki.json")
             os.remove(DATA + "/" + group + "/arcaea.json")
-            nnl = json.loads(read(TOOLS + "/nnl.json"))
-            for a in nnl:
-                if a == group:
-                    nnl.remove(a)
-            subscribe = json.loads(read(TOOLS + "/subscribe.json"))
-            for a in subscribe:
-                if a == group:
-                    subscribe.remove(a)
-            write(TOOLS + "/nnl.json", nnl)
-            write(TOOLS + "/subscribe.json", subscribe)
+            os.remove(DATA + "/" + group + "/subscribe.json")
             os.rmdir(DATA + "/" + group)
         except:
-            logger.info("删除文件夹"+group+"失败，未知错误。")
+            logger.info("删除文件夹" + group + "失败，未知错误。")
     await cleardata.finish("已清除本群数据。")
 
-clear = on_command("clear",priority=5)
+clear = on_command("clear", priority=5) # 清除所有群聊数据，~~恢复出厂设置~~
 @clear.handle()
 async def _(event: GroupMessageEvent):
     if checker(str(event.user_id),10) == False:
@@ -174,29 +157,20 @@ async def _(event: GroupMessageEvent):
             os.remove(DATA + "/" + i + "/wiki.json")
             os.remove(DATA + "/" + i + "/opening.json")
             os.remove(DATA + "/" + i + "/arcaea.json")
-            nnl = json.loads(read(TOOLS + "/nnl.json"))
-            for a in nnl:
-                if a == i:
-                    nnl.remove(a)
-            subscribe = json.loads(read(TOOLS + "/subscribe.json"))
-            for a in subscribe:
-                if a == i:
-                    subscribe.remove(a)
-            write(TOOLS + "/nnl.json",nnl)
-            write(TOOLS + "/subscribe.json", subscribe)
+            os.remove(DATA + "/" + i + "/subscribe.json")
             os.rmdir(DATA + "/" + i)
         except:
             logger.info("删除文件夹" + i + "失败，未知错误。")
     dlt_count = len(groups)
     await flushdata.finish("好啦，刷新完成！\n删除了" + str(dlt_count) + "个文件夹。")
 
-fix = on_command("fix",priority=5)
+fix = on_command("fix", priority=5) # 修补数据，用于数据文件残缺时
 @fix.handle()
 async def _(event: GroupMessageEvent):
     files = os.listdir(DATA + "/" + str(event.group_id))
     missing = []
-    right = ["webhook.json","marry.json","welcome.txt","banword.json","wiki.json","arcaea.json","opening.json","record.json","jx3group.json"]
-    fix_data = {"webhook.json":"[]","marry.json":"[]","welcome.txt":"欢迎入群！","banword.json":"[]","wiki.json":"{\"startwiki\":\"\",\"interwiki\":[]}","arcaea.json":"{}","opening.json":"[]","record.json":"[]","jx3group.json":"{\"group\":\"" + str(event.group_id) + "\",\"server\":\"\",\"leader\":\"\",\"leaders\":[],\"name\":\"\",\"status\":false}"}
+    right = ["webhook.json","marry.json","welcome.txt","banword.json","wiki.json","arcaea.json","opening.json","record.json","jx3group.json","subscribe.json"]
+    fix_data = {"webhook.json":"[]","marry.json":"[]","welcome.txt":"欢迎入群！","banword.json":"[]","wiki.json":"{\"startwiki\":\"\",\"interwiki\":[]}","arcaea.json":"{}","opening.json":"[]","record.json":"[]","jx3group.json":"{\"group\":\"" + str(event.group_id) + "\",\"server\":\"\",\"leader\":\"\",\"leaders\":[],\"name\":\"\",\"status\":false}","subscribe.json":"[]"}
     for i in right:
         if i not in files:
             missing.append(i)

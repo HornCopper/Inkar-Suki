@@ -2,9 +2,7 @@ import json
 import sys
 import nonebot
 from nonebot import on_command, require
-from nonebot.adapters import Message
-from nonebot.adapters.onebot.v11 import Event, Bot, MessageSegment as ms
-from nonebot.params import CommandArg
+from nonebot.adapters.onebot.v11 import Event, MessageSegment as ms
 from nonebot.log import logger as l
 
 TOOLS = nonebot.get_driver().config.tools_path
@@ -14,6 +12,11 @@ CLOCK = TOOLS[:-5] + "clock"
 from .manage import Sign
 from file import read, write
 
+'''
+签到功能，仅供娱乐。
+
+原理：定时任务 + 文件操作
+'''
 
 sign_main = Sign
 

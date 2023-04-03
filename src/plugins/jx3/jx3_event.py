@@ -157,12 +157,12 @@ class ServerStatusEvent(RecvEvent):
         return log
 
     @overrides(RecvEvent)
-    def get_message(self) -> Message:
+    def get_message(self) -> dict:
         time_now = datetime.now().strftime("%H时%M分")
         if self.status and str(self.server) == "幽月轮":
-            return Message(f"现在是{time_now}，并且{self.server}已开服~")
+            return {"type":"开服","msg":f"{time_now}：{self.server}已开服~"}
         elif self.status == False and str(self.server) == "幽月轮":
-            return Message(f"现在是{time_now}，但是{self.server}已维护~")
+            return {"type":"开服","msg":f"{time_now}：{self.server}已维护~"}
         else:
             return False
 
@@ -188,10 +188,8 @@ class NewsRecvEvent(RecvEvent):
         return log
 
     @overrides(RecvEvent)
-    def get_message(self) -> Message:
-        return Message(
-            f"{self.type}来啦！\n标题：{self.title}\n链接：{self.url}\n日期：{self.date}"
-        )
+    def get_message(self) -> dict:
+        return {"type":"公告","msg":f"{self.type}来啦！\n标题：{self.title}\n链接：{self.url}\n日期：{self.date}"}
 
 
 @EventRister.rister(action=1001)
@@ -386,11 +384,13 @@ class XuanJingEvent(RecvEvent):
     """玄晶名"""
     time: str
     """获取时间"""
+    time_stamp: str
+    """时间戳"""
 
     @validator("time", pre=True)
     def check_time(cls, v):
         start_trans = datetime.fromtimestamp(int(v))
-        return start_trans.strftime("%H:%M:%S")
+        return start_trans.strftime("%D:%H:%M:%S")
 
     @property
     def log(self) -> str:
@@ -398,10 +398,8 @@ class XuanJingEvent(RecvEvent):
         return log
 
     @overrides(RecvEvent)
-    def get_message(self) -> Message:
-        return Message(
-            f"[玄晶监控] 时间：{self.time}\n侠士 {self.role} 在 {self.map} 获取了 {self.name}！"
-        )
+    def get_message(self, v) -> dict:
+        return {"type":"玄晶","msg":f"{self.time}\n恭喜侠士[{self.role}]在{self.map}获得稀有掉落[{self.name}]！"}
 
 
 @EventRister.rister(action=1008)

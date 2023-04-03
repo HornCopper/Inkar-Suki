@@ -10,6 +10,12 @@ ASSETS = TOOLS[:-5] + "assets"
 from utils import get_api
 from .jx3 import server_mapping
 
+'''
+交易行物品查询。
+
+数据来源@JX3BOX
+'''
+
 async def search_item_info(item_name: str):
     final_url = f"https://helper.jx3box.com/api/item/search?keyword={item_name}"
     box_data = await get_api(final_url)
