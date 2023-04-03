@@ -8,7 +8,7 @@ sys.path.append(TOOLS)
 from utils import get_url
 from .jx3 import server_mapping
 
-async def get_chitu(server: str, group: str):
+async def get_chitu(server: str, group: str): # 数据来源@jw3cx.com
     api = "https://jw3cx.com/"
     data = await get_url(api)
     server = server_mapping(server, group)

@@ -13,10 +13,10 @@ from permission import checker, error
 from file import read, write
 from config import Config
 
-def checknumber(number):
+def checknumber(number): # 检查参数是否为`int`。
     number.isdecimal()
 
-def banned(sb):
+def banned(sb): # 检测某个人是否被封禁。
     with open(TOOLS + "/ban.json") as cache:
         banlist = json.loads(cache.read())
         for i in banlist:
@@ -27,6 +27,9 @@ def banned(sb):
 notice = on_notice(priority=5)
 @notice.handle()
 async def _(bot: Bot, event: NoticeEvent):
+    '''
+    入群自动发送帮助信息。
+    '''
     if event.notice_type == "group_increase":
         obj = event.user_id
         group = event.group_id
@@ -48,9 +51,11 @@ async def _(bot: Bot, event: NoticeEvent):
                 return
     
 welcome_msg_edit = on_command("welcome",priority=5)
-
 @welcome_msg_edit.handle()
 async def __(event: GroupMessageEvent, args: Message = CommandArg()):
+    '''
+    欢迎语的修改。
+    '''
     if checker(str(event.user_id),5) == False:
         await welcome_msg_edit.finish(error(5))
     msg = args.extract_plain_text()

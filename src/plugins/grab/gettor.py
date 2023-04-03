@@ -10,6 +10,9 @@ ASSETS = TOOLS[:-5] + "assets"
 from utils import get_url
 
 async def get_tieba(thread: int):
+    '''
+    贴吧内容获取。
+    '''
     final_url = f"https://tieba.baidu.com/p/{thread}"
     data = await get_url(final_url)
     if data.find("该帖已被删除") != -1:

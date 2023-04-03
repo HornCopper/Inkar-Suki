@@ -77,7 +77,7 @@ arcaea_unbind = on_command("arcunbind",priority=5)
 @arcaea_unbind.handle()
 async def _(event: GroupMessageEvent):
     '''
-    相反操作，解绑。
+    与上一个函数相反操作，解绑。
     '''
     present_data = json.loads(read(DATA + "/" + str(event.group_id) + "/arcaea.json"))
     if present_data[str(event.user_id)]:
