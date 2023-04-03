@@ -379,7 +379,9 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
         elif ver == "江湖无限":
             ver = "20220706"
         elif ver == "横刀断浪":
-            ver = "20221027"
+            ver = "20230206"
+        elif ver == "群侠万变":
+            ver = "20230328"
         else:
             await _talent.finish("唔……这是什么赛季呢？")
     name = aliases(kf)
@@ -556,20 +558,6 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
         await addritube.finish(data[0])
     else:
         await addritube.finish(ms.image(data))
-
-firework = on_command("jx3_firework", aliases={"烟花"}, priority=5)
-@firework.handle()
-async def _(event: GroupMessageEvent, args: Message = CommandArg()):
-    arg = args.extract_plain_text().split(" ")
-    if len(arg) != 2:
-        await firework.finish("唔……参数不正确哦，请检查后重试~")
-    server = arg[0]
-    id = arg[1]
-    data = await firework_(server, id, group=str(event.group_id))
-    if type(data) == type([]):
-        await firework.finish(data[0])
-    else:
-        await firework.finish(ms.image(data))
 
 sandbox = on_command("jx3_sandbox", aliases={"沙盘"}, priority=5)
 @sandbox.handle()
