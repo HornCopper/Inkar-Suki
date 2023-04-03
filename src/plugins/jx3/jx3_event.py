@@ -398,7 +398,7 @@ class XuanJingEvent(RecvEvent):
         return log
 
     @overrides(RecvEvent)
-    def get_message(self, v) -> dict:
+    def get_message(self) -> dict:
         xuanjing = open("./xuanjing.json", mode="r")
         correct = json.loads(xuanjing.read())
         msg = f"{self.name};{self.map};{self.role};{self.time}"

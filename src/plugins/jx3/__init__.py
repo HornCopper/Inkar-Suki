@@ -1022,13 +1022,19 @@ xuanjing = on_command("jx3_xuanjing", aliases={"-玄晶"}, priority=5)
 async def _(event: GroupMessageEvent):
     dt = json.loads(read("./xuanjing.json"))
     dt = list(reversed(dt))
+    if len(dt) == 0:
+        await xuanjing.finish("尚未检测到玄晶哦~")
     msg = ""
+    num = 0
     for i in dt:
         x = i.split(";")
         map = x[1]
         id = x[2]
         time = x[3]
         msg = msg + f"{map}：{id} {time}\n"
+        num = num + 1
+        if num == 6:
+            break
     await xuanjing.finish(msg[:-1])
 
 driver = get_driver()
