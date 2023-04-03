@@ -15,7 +15,7 @@ from permission import checker
 from utils import nodetemp
 from config import Config
 
-block = on_command("block", aliases={"加黑","避雷"}, priority=5)
+block = on_command("block", aliases={"加黑","避雷"}, priority=5) # 综合避雷名单-添加
 @block.handle()
 async def _(event: Event, args: Message = CommandArg()):
     arg = args.extract_plain_text().split(" ")
@@ -35,7 +35,7 @@ async def _(event: Event, args: Message = CommandArg()):
     write(TOOLS + "/blacklist.json", json.dumps(now, ensure_ascii=False))
     await block.finish("成功将该玩家加入黑名单！")
 
-unblock = on_command("unblock", aliases={"删黑"}, priority=5)
+unblock = on_command("unblock", aliases={"删黑"}, priority=5) # 解除避雷
 @unblock.handle()
 async def _(event: Event, args: Message = CommandArg()):
     arg = args.extract_plain_text().split(" ")
@@ -53,7 +53,7 @@ async def _(event: Event, args: Message = CommandArg()):
             await unblock.finish("成功移除该玩家的避雷！")
     await unblock.finish("移除失败！尚未避雷该玩家！")
 
-sblock = on_command("sblock", aliases={"查黑"}, priority=5)
+sblock = on_command("sblock", aliases={"查黑"}, priority=5) # 查询是否在避雷名单
 @sblock.handle()
 async def _(event: Event, args: Message = CommandArg()):
     arg = args.extract_plain_text().split(" ")
@@ -71,7 +71,7 @@ async def _(event: Event, args: Message = CommandArg()):
             await sblock.finish(msg)
     await sblock.finish("该玩家尚未被避雷哦~")
 
-lblock = on_command("lblock", aliases={"列黑"}, priority=5)
+lblock = on_command("lblock", aliases={"列黑"}, priority=5) # 列出所有黑名单
 @lblock.handle()
 async def _(bot: Bot, event: GroupMessageEvent):
     agl_list = json.loads(read(TOOLS + "/agl.json"))
@@ -90,6 +90,8 @@ async def _(bot: Bot, event: GroupMessageEvent):
 
 from fastapi import FastAPI, Request
 app: FastAPI = nonebot.get_app()
+
+# 来点数据接口？
 
 @app.post("/blacklist")
 async def _(rec: Request):

@@ -24,6 +24,12 @@ if proxy != None:
 else:
     proxies = None
 
+'''
+根据`__init__.py`的各功能而设计的功能函数。
+
+数据来源@JX3API
+'''
+
 async def server_status(server: str = None, group: str = None):
     server = server_mapping(server, group)
     if server == False:
@@ -501,6 +507,8 @@ def server_mapping(server: str, group_id: str):
             return False
         else:
             return binded
+        
+# 服务器绑定群聊的意义在此体现。
     
 def getGroupServer(group):
     data = json.loads(read(DATA + "/" + group + "/jx3group.json"))

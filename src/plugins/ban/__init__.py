@@ -23,7 +23,7 @@ def in_it(qq: str):
             return True
     return False
 
-ban = on_command("ban",priority=5)
+ban = on_command("ban",priority=5) # 封禁，≥10的用户无视封禁。
 @ban.handle()
 async def _(bot: Bot, event: Event, args: Message = CommandArg()):
     sb = args.extract_plain_text()
@@ -53,7 +53,7 @@ async def _(bot: Bot, event: Event, args: Message = CommandArg()):
             return
         await ban.finish(f"好的，已经全域封禁{sb_name}({sb})。")
 
-unban = on_command("unban" ,priority=5)
+unban = on_command("unban" ,priority=5) # 解封
 @unban.handle()
 async def _(bot: Bot, event: Event, args: Message = CommandArg()):
     if checker(str(event.user_id),10) == False:
@@ -74,7 +74,7 @@ async def _(bot: Bot, event: Event, args: Message = CommandArg()):
     write(TOOLS+"/ban.json", json.dumps(now))
     await ban.finish(f"好的，已经全域解封{sb_name}({sb})。")
 
-banned = on_message(priority=2, block=False)
+banned = on_message(priority=2, block=False) # 封禁阻断器
 @banned.handle()
 async def _(matcher: Matcher, event: Event):
     info = json.loads(read(TOOLS+"/ban.json"))

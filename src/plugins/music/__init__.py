@@ -15,6 +15,14 @@ from utils import checknumber
 
 from .music import get, search
 
+'''
+搜歌可查询歌曲，点歌直接根据歌曲名和作者（若有）推出歌曲。
+
+数据来源：
+@网易云音乐
+@QQ音乐
+'''
+
 search_music = on_command("search_music", aliases={"搜歌"}, priority=5)
 @search_music.handle()
 async def _(state: T_State, event: GroupMessageEvent, args: Message = CommandArg()):

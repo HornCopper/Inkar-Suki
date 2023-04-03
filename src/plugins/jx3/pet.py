@@ -17,7 +17,7 @@ from .jx3 import server_mapping
 '''
 
 async def get_pet(pet: str):
-    final_url = f"https://node.jx3box.com/pets?per=12&page=1&Class=&Name={pet}&Source=&client=std"
+    final_url = f"https://node.jx3box.com/pets?per=12&page=1&Class=&Name={pet}&Source=&client=std" # 数据来源@JX3BOX
     data = await get_api(final_url)
     data = data["list"]
     count = len(data)

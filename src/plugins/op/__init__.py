@@ -12,6 +12,7 @@ from file import write, read
 from config import Config
 from utils import checknumber
 
+# 机器人管理员权限设置
 op = on_command("setop", aliases={"admin", "setadmin"}, priority=5)
 @op.handle()
 async def handle_first_receive(bot: Bot, event: Event, args: Message = CommandArg()):

@@ -25,9 +25,7 @@ from generate import generate
 from .example import *
 from config import Config
 
-helpimg = on_command("helpimg", aliases={"hi"}, priority=5)
-
-
+helpimg = on_command("helpimg", aliases={"hi"}, priority=5) # 修改`help`生成的图片尺寸
 @helpimg.handle()
 async def _(event: Event, args: Message = CommandArg()):
     if checker(str(event.user_id), 9) == False:
@@ -42,16 +40,15 @@ async def _(event: Event, args: Message = CommandArg()):
     else:
         await helpimg.finish("唔，你忘记输入尺寸了啦！")
     
-imgsize = on_command("imgsize",aliases={"is"},priority=5)
-
+imgsize = on_command("imgsize", aliases={"is"}, priority=5) # 查看`help`生成的图片尺寸
 @imgsize.handle()
 async def __(bot: Bot, event: Event):
     if checker(str(event.user_id),9) == False:
         await imgsize.finish(error(9))
     size = read(Config.size)
-    await imgsize.finish("查到啦！当前图片尺寸为"+size+"。")
-purge = on_command("purge",priority=5)
+    await imgsize.finish("查到啦！当前图片尺寸为" + size + "。")
 
+purge = on_command("purge", priority=5) # 清除所有`help`生成的缓存图片
 @purge.handle()
 async def ___(event: Event):
     if checker(str(event.user_id),1) == False:
@@ -64,8 +61,7 @@ async def ___(event: Event):
     else:
         await purge.finish("好的，已帮你清除图片缓存~")
 
-shutdown = on_command("shutdown",aliases={"poweroff"},priority=5)
-
+shutdown = on_command("shutdown", aliases={"poweroff"}, priority=5) # 关掉`Inkar-Suki`主程序
 @shutdown.handle()
 async def ____(event: Event):
     if checker(str(event.user_id),10) == False:
@@ -74,7 +70,7 @@ async def ____(event: Event):
     await shutdown.send("关闭成功！请联系Owner到后台手动开启哦~")
     sys.exit(0)
 
-restart = on_command("restart",priority=5)
+restart = on_command("restart", priority=5) # 重启`Inkar-Suki`，原理为`FastAPI`的文件监控自动重启
 @restart.handle()
 async def _(event: Event):
     with open("./src/plugins/developer_tools/example.py",mode="w") as cache:
@@ -83,14 +79,14 @@ async def _(event: Event):
         await  restart.send("好啦，开始重启，整个过程需要些许时间，还请等我一下哦~")
         cache.write("status=\"OK\"")
 
-echo = on_command("echo",priority=5)
+echo = on_command("echo", priority=5) # 复读只因功能
 @echo.handle()
 async def echo_(event: Event, args: Message = CommandArg()):
     if checker(str(event.user_id),9) == False:
         await echo.finish(error(9))
     await echo.finish(args)
 
-say = on_command("say",priority=5)
+say = on_command("say", priority=5) # 复读只因 + CQ码转换（mix：没有CQ码）
 @say.handle()
 async def say_(event: Event, args: Message = CommandArg()): 
     def _unescape(message: Message, segment: MessageSegment):
@@ -102,7 +98,7 @@ async def say_(event: Event, args: Message = CommandArg()):
     message = reduce(_unescape, args, Message())
     await say.finish(message)
 
-ping = on_command("ping", aliases={"-测试"}, priority=5)
+ping = on_command("ping", aliases={"-测试"}, priority=5) # 测试机器人是否在线
 @ping.handle()
 async def _(event: Event):
     ikv = await Config.version()
@@ -117,7 +113,7 @@ async def _(event: Event):
     msg = f"来啦！\n系统信息如下：\nCPU占用：{str(per_cpu_status()[0])}%\n内存占用：{str(memory_status())}%\n"
     await ping.finish(msg + times)
 
-back = on_command("back", priority=5)
+back = on_command("back", priority=5) # 后台执行命令。
 @back.handle()
 async def back_(event: Event, args: Message = CommandArg()):
     if checker(str(event.user_id), 10) == False:
@@ -125,7 +121,7 @@ async def back_(event: Event, args: Message = CommandArg()):
     os.system(args.extract_plain_text())
     await back.finish("好啦，执行完毕！")
 
-front = on_command("front",priority=5)
+front = on_command("front",priority=5) # 执行命令并给予输出。
 @front.handle()
 async def front_(event: Event, args: Message = CommandArg()):
     if checker(str(event.user_id),10) == False:
@@ -135,7 +131,7 @@ async def front_(event: Event, args: Message = CommandArg()):
         msg = "执行完成，但没有输出哦~"
     await front.finish(f"{msg}")
 
-post = on_command("post", aliases={"-公告"}, priority=5)
+post = on_command("post", aliases={"-公告"}, priority=5) # 发送全域公告至每一个机器人加入的QQ群。
 @post.handle()
 async def _(bot: Bot, event: Event, args: Message = CommandArg()):
     if str(event.user_id) not in Config.owner:
@@ -145,7 +141,7 @@ async def _(bot: Bot, event: Event, args: Message = CommandArg()):
     for i in groups:
         await bot.call_api("send_group_msg",group_id=i["group_id"],message=cmd)
 
-call_api = on_command("call_api",aliases={"api"},priority=5)
+call_api = on_command("call_api", aliases={"api"}, priority=5) # 调用`go-cqhttp`的`API`接口。
 @call_api.handle()
 async def _(event: Event, args: Message = CommandArg()):
     if checker(str(event.user_id),10) == False:
@@ -153,7 +149,7 @@ async def _(event: Event, args: Message = CommandArg()):
     cmd = args.extract_plain_text()
     await get_url(f"{Config.cqhttp}{cmd}")
 
-git = on_command("git",priority=5)
+git = on_command("git", priority=5) # 调用`Git`，~~别问意义是什么~~
 @git.handle()
 async def _(event: Event, args: Message = CommandArg()):
     if checker(str(event.user_id),10) == False:
@@ -171,7 +167,7 @@ async def _(event: Event, args: Message = CommandArg()):
         msg = "执行完成，但没有输出哦~"
     await git.finish(msg)
 
-voice = on_command("voice", priority=5)
+voice = on_command("voice", priority=5) # 调用腾讯的语音TTS接口，生成语音。
 @voice.handle()
 async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
     if checker(str(event.user_id),10) == False:
@@ -180,7 +176,7 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
     final_msg = f"[CQ:tts,text={sth}]"
     await bot.call_api("send_group_msg",group_id=event.group_id,message=final_msg)
     
-web = on_command("web",priority=5)
+web = on_command("web", priority=5) # 网页截图，需要提供尺寸和网址。
 @web.handle()
 async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
     if checker(str(event.user_id),10) == False:
@@ -196,7 +192,7 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
         image = generate(url,2,size,True)
         await web.finish("获取图片成功！\n"+MessageSegment.image(Path(image).as_uri()))
 
-apply = on_command("apply", aliases={"-申请"}, priority=5)
+apply = on_command("apply", aliases={"-申请"}, priority=5) # 申请使用机器人的命令，`repo`地址来源于`config.py`。
 @apply.handle()
 async def _(state: T_State, event: Event):
     applier = str(event.user_id)
