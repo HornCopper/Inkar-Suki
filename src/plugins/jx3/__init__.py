@@ -418,7 +418,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
         await subscribe.finish("尚未订阅，无法取消订阅哦~")
     now.remove(obj)
     write(path, json.dumps(now, ensure_ascii=False))
-    await subscribe.finish(f"已关闭本群的{obj}订阅！如需再次开启，请发送：\n-订阅 {obj}")ss
+    await subscribe.finish(f"已关闭本群的{obj}订阅！如需再次开启，请发送：\n-订阅 {obj}")
 
 tiangou = on_command("jx3_tiangou", aliases={"舔狗"}, priority=5)
 @tiangou.handle()
