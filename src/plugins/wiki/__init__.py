@@ -15,7 +15,7 @@ from file import read, write
 from utils import checknumber
 from permission import checker, error
 
-wiki = on_command("wiki",priority=5)
+wiki = on_command("wiki", priority=5)
 @wiki.handle()
 async def _(event: GroupMessageEvent, state: T_State, args: Message = CommandArg()):
     title = args.extract_plain_text()
@@ -50,7 +50,7 @@ async def _(event: GroupMessageEvent, state: T_State, args: Message = CommandArg
     elif info["status"] == 502:
         await wiki.finish(info["reason"])
 
-setwiki = on_command("setwiki",priority=5)
+setwiki = on_command("setwiki", priority=5)
 @setwiki.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     if checker(str(event.user_id),5) == False:
@@ -73,7 +73,7 @@ def check_interwiki_prefix(group, prefix):
             return True
     return False        
 
-interwiki = on_command("interwiki",aliases={"iw"},priority=5)
+interwiki = on_command("interwiki", aliases={"iw"}, priority=5)
 @interwiki.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     if checker(str(event.user_id),5) == False:
@@ -136,7 +136,7 @@ def get_local_api(group, prefix):
             return i["link"]
     return False
 
-iwiki = on_command("iwiki",priority=5)
+iwiki = on_command("iwiki", priority=5)
 @iwiki.handle()
 async def _(state: T_State, event: GroupMessageEvent, args: Message = CommandArg()):
     search = args.extract_plain_text().split(":")
@@ -185,8 +185,8 @@ async def _(state: T_State, event: GroupMessageEvent, args: Message = CommandArg
         elif info["status"] == 502:
             await wiki.finish(info["reason"])
 
-@iwiki.got("num",prompt="发送序号以搜索，发送其他内容则取消搜索。")
-@wiki.got("num",prompt="发送序号以搜索，发送其他内容则取消搜索。")
+@iwiki.got("num", prompt="发送序号以搜索，发送其他内容则取消搜索。")
+@wiki.got("num" ,prompt="发送序号以搜索，发送其他内容则取消搜索。")
 async def __(state: T_State, num: Message = Arg()):
     num = num.extract_plain_text()
     if checknumber(num):

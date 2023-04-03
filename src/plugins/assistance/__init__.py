@@ -27,9 +27,12 @@ if proxy != None:
 else:
     proxies = None
 
-open_ = on_command("open_group", aliases = {"-开团"}, priority = 5)
+open_ = on_command("open_group", aliases = {"-开团"}, priority = 5) # 开团 <团队描述>
 @open_.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
+    '''
+    简易开团函数。
+    '''
     data = args.extract_plain_text().split(" ")
     useful_info = data[0]
     final_path = DATA + "/" + str(event.group_id) + "/opening.json"
@@ -48,6 +51,9 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
 book = on_command("book", aliases = {"-预定"}, priority = 5)
 @book.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
+    '''
+    简易预定函数。
+    '''
     data = args.extract_plain_text().split(" ")
     final_path = DATA + "/" + str(event.group_id) + "/opening.json"
     now = json.loads(read(final_path))
@@ -95,6 +101,9 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
 books = on_command("books", aliases = {"-预定列表"}, priority = 5)
 @books.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
+    '''
+    预定列表列出。
+    '''
     data = args.extract_plain_text()
     final_path = DATA + "/" + str(event.group_id) + "/opening.json"
     now = json.loads(read(final_path))
@@ -115,6 +124,9 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
 gkp = on_command("gkp", aliases={"-金团"}, priority = 5)
 @gkp.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
+    '''
+    提交打本的工资。
+    '''
     data = args.extract_plain_text().split(" ")
     final_path = DATA + "/" + str(event.group_id) + "/opening.json"
     now = json.loads(read(final_path))
@@ -150,6 +162,9 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
 special = on_command("special_item",aliases = {"-特殊"}, priority = 5)
 @special.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
+    '''
+    提交打本的物品掉落。
+    '''
     data = args.extract_plain_text().split(" ")
     final_path = DATA + "/" + str(event.group_id) + "/opening.json"
     now = json.loads(read(final_path))
@@ -174,6 +189,9 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
 close_ = on_command("closegroup",aliases={"-结算"}, priority = 5)
 @close_.handle()
 async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
+    '''
+    结算团队，并非关闭。
+    '''
     data = args.extract_plain_text()
     final_path = DATA + "/" + str(event.group_id) + "/opening.json"
     now = json.loads(read(final_path))
@@ -213,6 +231,9 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
 get_gkp = on_command("get_gkp", aliases = {"-团长"}, priority = 5)
 @get_gkp.handle()
 async def _(state: T_State, bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
+    '''
+    查看某团长的开团记录。
+    '''
     qq = args.extract_plain_text()
     if checknumber(qq):
         final_path = DATA + "/" + str(event.group_id) + "/record.json"
@@ -262,6 +283,9 @@ async def _(state: T_State, bot: Bot, event: GroupMessageEvent, args: Message = 
         
 @get_gkp.got("num", prompt = "发送序号可以获取该次的详细信息，其他内容则无视。")
 async def _(state: T_State, num: Message = Arg()):
+    '''
+    上一个函数的后续。
+    '''
     num = num.extract_plain_text()
     if checknumber(num) == False:
         return
@@ -281,6 +305,9 @@ async def _(state: T_State, num: Message = Arg()):
 opening = on_command("opening", aliases = {"-团列表"}, priority = 5)
 @opening.handle()
 async def _(bot: Bot, event: GroupMessageEvent):
+    '''
+    查看群内正在开的团。
+    '''
     final_path = DATA + "/" + str(event.group_id) + "/opening.json"
     localdata = json.loads(read(final_path))
     msg = ""
@@ -308,6 +335,9 @@ async def _(bot: Bot, event: GroupMessageEvent):
 modify = on_command("modify", aliases = {"-修改"}, priority = 5)
 @modify.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
+    '''
+    修改开团信息。
+    '''
     data = args.extract_plain_text().split(" ")
     if len(data) != 2:
         await modify.finish("参数不对哦！应该有2个参数，具体请查看帮助文件~")
@@ -325,6 +355,9 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
 cancel = on_command("jx3_cancel", aliases={"-取消开团"}, priority=5)
 @cancel.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
+    '''
+    取消开团，并不结算。
+    '''
     name = args.extract_plain_text()
     final_path = DATA + "/" + str(event.group_id) + "/opening.json"
     data = json.loads(read(final_path))
@@ -338,6 +371,11 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
 set_group = on_command("jx3_auto", aliases={"-认证"}, priority=5)
 @set_group.handle()
 async def _(state: T_State, bot: Bot, event: GroupMessageEvent):
+    '''
+    将群聊和服务器绑定。
+
+    绑定的作用是在其他功能服务器名称输入错误时自动定向到所认证的服务器。
+    '''
     leader = str(event.user_id)
     leader_data = await bot.call_api("get_group_member_info", group_id=event.group_id, user_id=event.user_id)
     leader_role = leader_data["role"]
@@ -365,6 +403,9 @@ async def _(state: T_State, bot: Bot, event: GroupMessageEvent):
 
 @set_group.got("server", prompt="请核对信息，若无误，请发送本团所处的服务器（请发送主服名称，例如发送“幽月轮”而不是“千岛湖”）。")
 async def _(state: T_State, server: Message = Arg()):
+    '''
+    上一个函数的后续。
+    '''
     server = server.extract_plain_text()
     server_info = await get_api("https://www.jx3api.com/data/server/status?server=" + server, proxy = proxies)
     if server_info["code"] == 401:
@@ -385,6 +426,9 @@ async def _(state: T_State, server: Message = Arg()):
 add_leader = on_command("jx3_helper", aliases = {"-副团长"}, priority=5)
 @add_leader.handle()
 async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
+    '''
+    团长添加副团长的命令。
+    '''
     helper = args.extract_plain_text()
     if helper[0] not in ["+","-"]:
         await add_leader.finish("副团长QQ号前要加一个“+”或“-”来区分增加或移除哦~")
@@ -418,6 +462,9 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
 verify_group = on_command("jx3_verify", aliases={"-验证团"}, priority=5)
 @verify_group.handle()
 async def _(bot: Bot, event: Event, args: Message = CommandArg()):
+    '''
+    机器人管理员验证团牌。
+    '''
     if checker(str(event.user_id),10) == False:
         await verify_group.finish(error(10))
     arg = args.extract_plain_text().split(" ")
@@ -443,7 +490,9 @@ async def _(bot: Bot, event: Event, args: Message = CommandArg()):
 from fastapi import FastAPI, Request
 app: FastAPI = nonebot.get_app()
 
-@app.post("/auth") # 该项用于`assistance`，为方便写代码，放置于此
+# 来个数据接口尝尝鲜。
+
+@app.post("/auth")
 async def recAuth(req: Request):
     headers = req.headers
     if headers["user"] not in Config.owner:

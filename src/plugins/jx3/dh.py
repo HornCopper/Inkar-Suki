@@ -11,7 +11,7 @@ from utils import nodetemp, get_api
 from config import Config
 
 async def get_dh(type_: str):
-    url = f"https://www.j3dh.com/v1/h/data/hero?ifKnownDaishou=false&exterior={type_}&school=0&figure=0&page=0"
+    url = f"https://www.j3dh.com/v1/h/data/hero?ifKnownDaishou=false&exterior={type_}&school=0&figure=0&page=0" # 数据来源 @盆栽蹲号
     data = await get_api(url)
     if data["Code"] != 0:
         return "唔……API访问失败！"
