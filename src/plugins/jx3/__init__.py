@@ -1017,6 +1017,20 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
     msg = await zone(server, id, str(event.group_id))
     await zones.finish(msg)
 
+xuanjing = on_command("jx3_xuanjing", aliases={"-玄晶"}, priority=5)
+@xuanjing.handle()
+async def _(event: GroupMessageEvent):
+    dt = json.loads(read("./xuanjing.json"))
+    dt = list(reversed(dt))
+    msg = ""
+    for i in dt:
+        x = i.split(";")
+        map = x[1]
+        id = x[2]
+        time = x[3]
+        msg = msg + f"{map}：{id} {time}\n"
+    await xuanjing.finish(msg[:-1])
+
 driver = get_driver()
 
 @driver.on_startup

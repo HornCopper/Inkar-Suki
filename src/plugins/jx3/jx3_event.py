@@ -8,6 +8,8 @@ from nonebot.typing import overrides
 from nonebot.utils import escape_tag
 from pydantic import BaseModel, Extra, validator
 
+import json
+
 '''
 感谢友情提供代码@白师傅
 原链接：
@@ -384,8 +386,6 @@ class XuanJingEvent(RecvEvent):
     """玄晶名"""
     time: str
     """获取时间"""
-    time_stamp: str
-    """时间戳"""
 
     @validator("time", pre=True)
     def check_time(cls, v):
@@ -399,6 +399,14 @@ class XuanJingEvent(RecvEvent):
 
     @overrides(RecvEvent)
     def get_message(self, v) -> dict:
+        xuanjing = open("./xuanjing.json", mode="r")
+        correct = json.loads(xuanjing.read())
+        msg = f"{self.name};{self.map};{self.role};{self.time}"
+        correct.append(map)
+        xuanjing.close()
+        xuanjing = open("./xuanjing.json", mode="w")
+        xuanjing.write(json.dumps(msg, ensure_ascii=False))
+        xuanjing.close()
         return {"type":"玄晶","msg":f"{self.time}\n恭喜侠士[{self.role}]在{self.map}获得稀有掉落[{self.name}]！"}
 
 
