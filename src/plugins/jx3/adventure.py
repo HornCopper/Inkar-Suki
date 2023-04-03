@@ -11,7 +11,7 @@ ASSETS = TOOLS[:-5] + "assets"
 from utils import get_api, get_content
 
 async def getAdventure(adventure: str):
-    info = await get_api(f"https://helper.jx3box.com/api/achievement/search?keyword={adventure}&page=1&limit=15&client=std")
+    info = await get_api(f"https://helper.jx3box.com/api/achievement/search?keyword={adventure}&page=1&limit=15&client=std") # 数据来源@JX3BOX
     data = info["data"]["achievements"]
     if len(data) == 0:
         return {"status":404}

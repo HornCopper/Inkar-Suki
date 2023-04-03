@@ -16,6 +16,9 @@ from .gettor import get_tieba
 tieba = on_command("-tieba", aliases={"-贴吧"}, priority=5)
 @tieba.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
+    '''
+    贴吧内容查询，具体实现参考`gettor.py`的`get_tieba`函数。
+    '''
     tid = args.extract_plain_text()
     if checknumber(tid) == False:
         await tieba.finish("请给出纯数字的帖子ID哦~")

@@ -6,11 +6,20 @@ from nonebot import on_command
 from nonebot.adapters import Message
 from nonebot.adapters.onebot.v11 import GroupMessageEvent, Bot
 from nonebot.params import CommandArg
-from .marry import already_married
+
 TOOLS = nonebot.get_driver().config.tools_path
 DATA = TOOLS[:-5] + "data"
 sys.path.append(str(TOOLS))
+
 from file import read, write
+
+from .marry import already_married
+
+'''
+结婚插件，纯娱乐，无实际意义。
+
+原理：文件操作。
+'''
 
 def checknumber(number):
     return number.isdecimal()

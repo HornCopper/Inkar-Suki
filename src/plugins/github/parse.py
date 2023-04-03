@@ -1,6 +1,11 @@
 import re
 from nonebot.log import logger
 from nonebot.adapters.onebot.v11 import MessageSegment as ms
+'''
+解析类，没什么好看的。
+
+建议自行查阅文档或者发起一些用于测试的`Webhook`以便于观察数据结构，欢迎`Pull Request`，此处仅解析部分常见`Event`。
+'''
 class main:
     def push(body):
         pusher = body["pusher"]["name"]

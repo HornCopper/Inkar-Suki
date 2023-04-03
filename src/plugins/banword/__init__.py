@@ -16,7 +16,7 @@ from file import read, write
 global flag
 banword = on_command("banword", priority=5)
 @banword.handle()
-async def __(event: GroupMessageEvent, args: Message = CommandArg()):
+async def __(event: GroupMessageEvent, args: Message = CommandArg()): # 违禁词封锁
     bw = args.extract_plain_text()
     if checker(str(event.user_id), 5) == False:
         await banword.finish(error(5))
@@ -29,7 +29,8 @@ async def __(event: GroupMessageEvent, args: Message = CommandArg()):
         await banword.finish("已成功封禁词语！")
     else:
         await banword.finish("您封禁了什么？")
-unbanword = on_command("unbanword",priority=5)
+
+unbanword = on_command("unbanword", priority=5) # 违禁词解封
 @unbanword.handle()
 async def ___(event: GroupMessageEvent, args: Message = CommandArg()):
     if checker(str(event.user_id),5) == False:
@@ -45,7 +46,8 @@ async def ___(event: GroupMessageEvent, args: Message = CommandArg()):
             await unbanword.finish("您解封了什么？")
     else:
         await unbanword.finish("您解封了什么？")
-banned_word = on_message(priority=3, block=False)
+
+banned_word = on_message(priority=3, block=False) # 违禁词阻断器
 @banned_word.handle()
 async def _(matcher: Matcher, bot: Bot, event: GroupMessageEvent):
     if checker(str(event.user_id),5):
