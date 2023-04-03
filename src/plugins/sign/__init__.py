@@ -1,4 +1,3 @@
-import json
 import sys
 import nonebot
 from nonebot import on_command, require
