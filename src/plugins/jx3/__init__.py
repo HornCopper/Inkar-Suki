@@ -40,7 +40,7 @@ async def _():
 
     Example：-新闻
     '''
-    await require.finish(await news_())
+    await news.finish(await news_())
 
 server = on_command("jx3_server", aliases={"服务器","开服"}, priority=5)
 @server.handle()
