@@ -229,7 +229,7 @@ async def achievements_(server: str = None, name: str = None, achievement: str =
     server = server_mapping(server, group_id = group)
     if server == False:
         return ["唔……服务器名输入错误。"]
-    final_url = f"https://www.jx3api.com/view/role/achievement?server={server}&name={achievement}&role={role}&robot={bot}&ticket={ticket}&token={token}&scale=1"
+    final_url = f"https://www.jx3api.com/view/role/achievement?server={server}&name={achievement}&role={name}&robot={bot}&ticket={ticket}&token={token}&scale=1"
     data = await get_api(final_url, proxy = proxies)
     if data["code"] == 400:
         return ["唔……服务器名输入错误。"]
