@@ -42,19 +42,6 @@ async def _():
     '''
     await require.finish(await news_())
 
-horse = on_command("jx3_horse", aliases={"抓马"}, priority=5)
-@horse.handle()
-async def _(args: Message = CommandArg()):
-    '''
-    获取马驹刷新地点：
-
-    Example：-抓马 赤兔
-    '''
-    if args.extract_plain_text():
-        await horse.finish(await horse_flush_place(args.extract_plain_text()))
-    else:
-        await horse.finish("没有输入任何马的名称哦，没办法帮你找啦。")
-
 server = on_command("jx3_server", aliases={"服务器","开服"}, priority=5)
 @server.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
@@ -69,19 +56,6 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     else:
         await server.finish("没有输入任何服务器名称哦，没办法帮你找啦。")
 
-macro = on_command("jx3_macro", aliases={"宏"}, priority=5)
-@macro.handle()
-async def _(args: Message = CommandArg()):
-    '''
-    查宏命令。
-
-    Example：-宏 莫问
-    '''
-    if args.extract_plain_text():
-        await macro.finish(await macro_(args.extract_plain_text()))
-    else:
-        await macro.finish("没有输入任何心法名称哦，没办法帮你找啦。")
-
 daily = on_command("jx3_daily", aliases={"日常","周常"}, priority=5)
 @daily.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
@@ -95,9 +69,10 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     Example：-日常 幽月轮
     '''
     if args.extract_plain_text():
-        await daily.finish(await daily_(server, group=str(event.group_id)))
+        img = await daily_(args.extract_plain_text(), str(event.group_id))
     else:
-        await daily.finish("没有输入任何服务器名称哦，自动切换至电信一区-长安城。\n"+await daily_("长安城"))
+        img = await daily_("长安城", str(event.group_id))
+    await daily.finish(ms.image(img))
         
 exam = on_command("jx3_exam", aliases={"科举"}, priority=5)
 @exam.handle()
@@ -124,33 +99,6 @@ async def _(args: Message = CommandArg()):
         await matrix.finish(await matrix_(args.extract_plain_text()))
     else:
         await matrix.finish("没有输入任何心法名称哦，没办法帮你找啦。")
-        
-equip = on_command("jx3_equip", aliases={"装备"}, priority=5)
-@equip.handle()
-async def _(args: Message = CommandArg()):
-    '''
-    查询推荐配装：
-
-    Example：-装备 冰心诀
-    '''
-    if args.extract_plain_text():
-        await equip.finish(await equip_(args.extract_plain_text()))
-    else:
-        await equip.finish("没有输入任何心法名称哦，没办法帮你找啦。")
-        
-require = on_command("jx3_require", aliases={"奇遇信息","前置"}, priority=5)
-@require.handle()
-async def _(args: Message = CommandArg()):
-    '''
-    查询奇遇前置：
-
-    Example：-奇遇信息 阴阳两界
-    Example：-前置 韶华故
-    '''
-    if args.extract_plain_text():
-        await require.finish(await require_(args.extract_plain_text()))
-    else:
-        await require.finish("没有输入任何奇遇名称，没办法帮你找啦，输入时也请不要输入宠物奇遇哦~")
 
 random_ = on_command("jx3_random", aliases={"骚话"}, priority=5)
 @random_.handle()
@@ -161,19 +109,6 @@ async def _():
     Example：-骚话
     '''
     await random_.finish("来自“万花谷”频道：\n"+await random__())
-    
-heighten = on_command("jx3_heighten", aliases={"小药"}, priority=5)
-@heighten.handle()
-async def _(args: Message = CommandArg()):
-    '''
-    查询推荐小药：
-
-    Example：-小药 莫问
-    '''
-    if args.extract_plain_text():
-        await heighten.finish(await heighten_(args.extract_plain_text()))
-    else:
-        await heighten.finish("没有输入任何心法名称哦，没办法帮你找啦。")
 
 kungfu = on_command("jx3_kungfu", aliases={"心法"}, priority=5)
 @kungfu.handle()
@@ -571,51 +506,12 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
         await recruit.finish(data[0])
     await recruit.finish(ms.image(data))
 
-calculate = on_command("jx3_calculate", aliases={"日历"}, priority=5)
-@calculate.handle()
-async def _(event: GroupMessageEvent):
-    '''
-    获取未来日常，以日历形式：
-
-    Example：-日历
-    '''
-    data = await calculate_()
-    if type(data) == type([]):
-        await calculate.finish(data[0])
-    else:
-        await calculate.finish(ms.image(data))
-
-flower = on_command("jx3_flower", aliases={"花价"}, priority=5)
-@flower.handle()
-async def _(event: GroupMessageEvent, args: Message = CommandArg()):
-    '''
-    获取家园线路花价：
-
-    Example：-花价 幽月轮 绣球花
-    Example：-花价 幽月轮
-    '''
-    arg = args.extract_plain_text().split(" ")
-    if len(arg) not in [1,2]:
-        await flower.finish("唔……参数数量不对哦，请检查后重试~")
-    if len(arg) == 1:
-        server = arg[0]
-        flower__ = None
-    else:
-        server = arg[0]
-        flower__ = arg[1]
-    data = await flower_(flower__, server, group=str(event.group_id))
-    if type(data) == type([]):
-        await flower.finish(data[0])
-    else:
-        await flower.finish(ms.image(data))
-
 demon = on_command("jx3_demon", aliases={"金价"}, priority=5)
 @demon.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     '''
     获取各服金价：
 
-    Example：-金价
     Example：-金价 幽月轮
     '''
     arg = args.extract_plain_text()
@@ -824,7 +720,7 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
     if type(data) == type([]):
         await achievements.finish(data[0])
     else:
-        await bot.call_api("send_group_forward_msg",group_id = event.group_id, messages = data["result"])
+        await achievements.finish(ms.image(data))
 
 arena = on_command("jx3_arena", aliases={"名剑"}, priority=5)
 @arena.handle()
@@ -856,25 +752,6 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
             await arena.finish(data[0])
         else:
             await arena.finish(ms.image(data))
-
-trials = on_command("jx3_trials", aliases={"试炼"}, priority=5)
-@trials.handle()
-async def _(event: GroupMessageEvent, args: Message = CommandArg()):
-    '''
-    获取试炼之地信息：
-
-    Example：-试炼 幽月轮 万花
-    '''
-    arg = args.extract_plain_text().split(" ")
-    if len(arg) != 2:
-        await trials.finish("唔……参数不正确哦，请检查后重试~")
-    server = arg[0]
-    school = arg[1]
-    data = await trials_(server, school, group=str(event.group_id))
-    if type(data) == type([]):
-        await trials.finish(data[0])
-    else:
-        await trials.finish(ms.image(data))
 
 top100_ = on_command("jx3_top100", aliases={"百强"}, priority=5)
 @top100_.handle()
@@ -908,6 +785,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     Example：-榜单 个人 幽月轮 名士五十强
     Example：-榜单 帮会 幽月轮 恶人神兵宝甲五十强
     Example：-榜单 阵营 幽月轮 赛季恶人五十强
+    Example：-榜单 试炼 幽月轮 明教
     '''
     arg = args.extract_plain_text().split(" ")
     if len(arg) != 3:
@@ -1014,8 +892,11 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
         await zones.finish("唔……参数数量有误，请检查后重试~")
     server = arg[0]
     id = arg[1]
-    msg = await zone(server, id, str(event.group_id))
-    await zones.finish(msg)
+    data = await zone(server, id, str(event.group_id))
+    if type(data) == type([]):
+        await zones.finish(data[0])
+    else:
+        await zones.finish(ms.image(data))
 
 xuanjing = on_command("jx3_xuanjing", aliases={"-玄晶"}, priority=5)
 @xuanjing.handle()

@@ -390,7 +390,7 @@ class XuanJingEvent(RecvEvent):
     @validator("time", pre=True)
     def check_time(cls, v):
         start_trans = datetime.fromtimestamp(int(v))
-        return start_trans.strftime("%H:%M:%S")
+        return start_trans.strftime("%Y-%m-%d %H:%M:%S")
 
     @property
     def log(self) -> str:
