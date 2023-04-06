@@ -112,7 +112,7 @@ async def tiangou_():
     text = data["data"]["text"]
     return text
 
-async def recruit_(server: str, copy: str = None, group: str = None): # 团队招募 <服务器> [关键词]
+async def recruit_(server: str, copy: str = "", group: str = None): # 团队招募 <服务器> [关键词]
     if token == None:
         return ["Bot尚未填写Token，请联系Bot主人~"]
     server = server_mapping(server, group)
