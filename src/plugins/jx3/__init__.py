@@ -501,7 +501,7 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
     else:
         server = arg[0]
         copy = arg[1]
-        data = await recruit_(server, copy, group=group)
+        data = await recruit_(server, copy = copy, group = group)
     if type(data) == type([]):
         await recruit.finish(data[0])
     await recruit.finish(ms.image(data))
