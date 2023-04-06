@@ -20,7 +20,7 @@ from utils import checknumber, get_api
 from file import read, write
 
 from .jx3 import *
-from .skilldatalib import getAllSkillsInfo, getSingleSkill, getSingleTalent
+from .skilldatalib import getAllSkillsInfo, getSingleSkill, getSingleTalent, aliases as als
 from .adventure import getAdventure, getAchievementsIcon
 from .pet import get_pet, get_cd
 from .task import getTask, getTaskChain
@@ -30,6 +30,7 @@ from .buff import get_buff
 from .trade import search_item_info, getItemPriceById
 from .top100 import get_top100
 from .dh import get_dh
+from .macro import get_macro
 from .chitu import get_chitu
 
 news = on_command("jx3_news", aliases={"新闻"}, priority=5)
@@ -453,7 +454,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     if os.path.exists(ASSETS + "/jx3" + f"v{ver}.json") == False:
         final_url = f"https://oss.jx3box.com/data/qixue/v{ver}.json"
         data = await get_api(final_url)
-        write(ASSETS + "/jx3" + f"v{ver}.json", json.dumps(data, ensure_ascii=False))
+        write(ASSETS + "/jx3/" + f"v{ver}.json", json.dumps(data, ensure_ascii=False))
     else:
         data = json.loads(read(ASSETS + "/jx3" + f"v{ver}.json"))
     try:
@@ -917,6 +918,16 @@ async def _(event: GroupMessageEvent):
         if num == 6:
             break
     await xuanjing.finish(msg[:-1])
+
+macro_ = on_command("jx3_macro", aliases={"宏"}, priority=5)
+@macro_.handle()
+async def _(event: GroupMessageEvent, args: Message = CommandArg()):
+    xf = args.extract_plain_text()
+    xf = als(xf)
+    if xf == False:
+        await macro_.finish("唔……心法输入有误，请检查后重试~")
+    data = await get_macro(xf)
+    await macro_.finish(data)
 
 driver = get_driver()
 
