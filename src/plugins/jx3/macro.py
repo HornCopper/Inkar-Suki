@@ -54,15 +54,16 @@ async def get_macro(xf):
     talent_info = await get_talent(talent)
     speed = detail["speed"]
     msg = f"推荐的宏命令如下：\n{macro}\n\n奇穴：{talent_info}\n来源：@{title}\n推荐加速：{speed}"
+    return msg
 
 async def get_talent(talent):
     ver = talent["version"]
-    data = await get_url(url = f"https://oss.jx3box.com/data/qixue/v{ver}.json")
+    data = await get_api(url = f"https://oss.jx3box.com/data/qixue/{ver}.json")
     xf_data = data[talent["xf"]]
     talents = []
     num = 1
     for i in talent["sq"].split(","):
-        talents.append(xf_data[num][i])
+        talents.append(xf_data[str(num)][i]["name"])
         num = num + 1
     talents_msg = ",".join(talents)
     return talents_msg
