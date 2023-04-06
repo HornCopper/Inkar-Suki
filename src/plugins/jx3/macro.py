@@ -47,12 +47,21 @@ async def get_url(xf):
 async def get_macro(xf):
     url = await get_url(xf)
     data = await get_api(url)
+    talent_flag = True
     title = data["data"]["post_title"]
     detail = data["data"]["post_meta"]["data"][0]
     macro = detail["macro"]
-    talent = json.loads(detail["talent"])
-    talent_info = await get_talent(talent)
+    talent = detail["talent"]
+    if talent == "":
+        talent_flag = False
+    if talent_flag:
+        talent = json.loads(talent)
+        talent_info = await get_talent(talent)
+    else:
+        talent_info = "可恶，作者没有给奇穴！"
     speed = detail["speed"]
+    if speed == "":
+        speed = "未知"
     msg = f"推荐的宏命令如下：\n{macro}\n\n奇穴：{talent_info}\n来源：@{title}\n推荐加速：{speed}"
     return msg
 
