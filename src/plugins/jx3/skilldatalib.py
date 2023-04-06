@@ -28,24 +28,22 @@ def aliases(SkillName: str) -> str:
         return "铁牢律"
     elif SkillName in ["气纯","紫霞功","紫霞"]:
         return "紫霞功"
-    elif SkillName in ["剑纯","太虚剑意"]:
+    elif SkillName in ["剑纯","太虚剑意","jc","JC"]:
         return "太虚剑意"
     elif SkillName in ["奶秀","秀奶","云裳心经","云裳"]:
         return "云裳心经"
-    elif SkillName in ["冰心","冰心诀","冰心决"]:
+    elif SkillName in ["冰心","冰心诀","冰心决","BX","bx"]:
         return "冰心诀"
-    elif SkillName in ["毒经"]:
+    elif SkillName in ["毒经","dj","DJ","Dj"]:
         return "毒经"
     elif SkillName in ["奶毒","毒奶","补天诀","补天决","补天"]:
         return "补天诀"
     elif SkillName in ["惊羽诀","惊羽决","鲸鱼","惊羽"]:
         return "惊羽诀"
-    elif SkillName in ["天罗诡道","田螺","天罗"]:
+    elif SkillName in ["天罗诡道","田螺","天罗","tl","TL"]:
         return "天罗诡道"
-    elif SkillName in ["问水诀","问水决","问水","轻剑"]:
+    elif SkillName in ["问水诀","问水决","问水","轻剑","山居剑意","山居","重剑","叽","KFC","kfc","肯德基","疯狂星期四","v我50","二少","二小姐","黄鸡","鸡","鲲","坤","叽哥","鸡哥"]:
         return "问水诀"
-    elif SkillName in ["山居剑意","山居","重剑"]:
-        return "山居剑意"
     elif SkillName in ["丐帮","笑尘决","笑尘决","笑尘"]:
         return "笑尘诀"
     elif SkillName in ["焚影圣诀","焚影圣决","焚影"]:
@@ -90,7 +88,7 @@ async def getTalents():
     for i in force_list:
         data_list.append(i)
     for i in data_list:
-        if await get_status(url=f"https://data.jx3box.com/bps/std/{i}/talent.json") != 404:
+        if await get_status(url = f"https://data.jx3box.com/bps/std/{i}/talent.json") != 404:
             info = await get_url(url = f"https://data.jx3box.com/bps/std/{i}/talent.json")
             data = json.loads(info)
             for a in data:
