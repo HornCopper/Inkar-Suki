@@ -118,7 +118,7 @@ async def recruit_(server: str, copy: str = "", group: str = None): # 团队招�
     server = server_mapping(server, group)
     if server == False:
         return ["唔……服务器名输入错误。"]
-    final_url = f"https://www.jx3api.com/view/member/recruit?token={token}&server={server}&robot={bot}&keyword={copy}&scale=1"
+    final_url = f"https://www.jx3api.com/view/member/recruit?token={token}&server={server}&robot={bot}&scale=1&keyword="
     if copy != None:
         final_url = final_url + copy
     data = await get_api(final_url, proxy = proxies)
