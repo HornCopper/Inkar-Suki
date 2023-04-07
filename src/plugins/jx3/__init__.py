@@ -933,6 +933,8 @@ horse = on_command("jx3_horse", aliases={"抓马","马场"}, priority=5)
 @horse.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     server = args.extract_plain_text()
+    if server == "":
+        await horse.finish("没有输入服务器信息哦，暂时没有办法帮您获取呢~")
     group = str(event.group_id)
     msg = await get_horse_reporter(server, group)
     await horse.finish(msg)
