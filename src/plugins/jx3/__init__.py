@@ -31,7 +31,7 @@ from .trade import search_item_info, getItemPriceById
 from .top100 import get_top100
 from .dh import get_dh
 from .macro import get_macro
-from .chitu import get_chitu
+from .chitu import get_chitu, get_horse_reporter
 
 news = on_command("jx3_news", aliases={"新闻"}, priority=5)
 @news.handle()
@@ -928,6 +928,14 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
         await macro_.finish("唔……心法输入有误，请检查后重试~")
     data = await get_macro(xf)
     await macro_.finish(data)
+
+horse = on_command("jx3_horse", aliases={"抓马","马场"}, priority=5)
+@horse.handle()
+async def _(event: GroupMessageEvent, args: Message = CommandArg()):
+    server = args.extract_plain_text()
+    group = str(event.group_id)
+    msg = await get_horse_reporter(server, group)
+    await horse.finish(msg)
 
 driver = get_driver()
 
