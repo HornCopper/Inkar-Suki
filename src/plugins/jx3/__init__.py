@@ -444,8 +444,10 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
             ver = "20220706"
         elif ver == "横刀断浪":
             ver = "20230206"
-        elif ver == "群侠万变":
+        elif ver == "群侠万变一改":
             ver = "20230328"
+        elif ver == "群侠万变二改" or ver == "群侠万变":
+            ver = "20230411"
         else:
             await _talent.finish("唔……这是什么赛季呢？")
     name = aliases(kf)
