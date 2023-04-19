@@ -1,14 +1,12 @@
-from local_version import nbv, ikv
-import nonebot
-import sys
-TOOLS = nonebot.get_driver().config.tools_path
-sys.path.append(TOOLS)
+import json
+
 class Config:
     '''
     这里是`Inkar Suki`的配置文件，从`V0.8.3-Hotfix-3起，我们删除了`initialization.py`。
     取消了问答式配置，改为了用户自己填写。
     需要您填写的是末尾有注释的行，其他行请勿改动，感谢使用！
     此处的内容填写完毕后，请将文件名称改为`config.py`~
+    先完成再修改！最后再运行一遍！！！！
     '''
     config_py_path = __file__[:-10]
     global_path = config_py_path[:-6]+"/"
@@ -24,6 +22,7 @@ class Config:
 
 
     owner = [""] # Bot主人，可以有多个，用`str`存在`list`中
+    # 提示：每次重启`Inkar-Suki`时，会检测`permission.json`是否存在，若文件不存在则会补上并为`owner`列表中每一元素添加`10`级权限，方式为`dict`。
 
 
     size = global_path+"/tools/size.txt"
@@ -37,8 +36,6 @@ class Config:
 
 
     welcome_file = global_path+"/tools/welcome.txt"
-    version = ikv
-    nonebot = nbv
 
 
     proxy = "" # 代理服务器地址，以`http://`开头或`https://`开头，可以跟端口。
@@ -66,3 +63,18 @@ class Config:
     jx3_token = "" # 推栏Token，抓包可得
 
     repo_name = "" # 该`Inkar-Suki`的副本的来源，若从主仓库克隆，则填写`codethink-cn/Inkar-Suki`，若为fork之后克隆的仓库，则填写`<你的GitHub用户名>/Inkar-Suki`
+
+flag = False
+try:
+    permission_file = open(Config.config_py_path + "/config.py", mode="r")
+except FileNotFoundError:
+    permission_file = open(Config.config_py_path + "/config.py", mode="w")
+    add = {}
+    for i in Config.owner:
+        if i not in list(add):
+            add[i] = 10
+    permission_file.write(json.dumps(add))
+    permission_file.close()
+    flag = True
+if flag == False:
+    permission_file.close()
