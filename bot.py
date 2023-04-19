@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 import nonebot
 import sys
-import json
+from src.tools.configs import config_py_path
 import os
 from nonebot.adapters.onebot.v11 import Adapter as ONEBOT_V11Adapter
 try:
@@ -43,9 +43,8 @@ for i in plugins:
         raise FileNotFoundError(f"Plugin `{i}` required a `info.json` but not found. Please check and try again.")
 if error:
     sys.exit(1)
-cache = open("./src/tools/config.json",mode="r")
-nonebot.init(tools_path=json.loads(cache.read())["abpath"])
-cache.close()
+print(config_py_path)
+nonebot.init(tools_path=config_py_path)
 nonebot.init()
 app = nonebot.get_asgi()
 driver = nonebot.get_driver()
