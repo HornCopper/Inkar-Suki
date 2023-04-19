@@ -24,6 +24,7 @@ from utils import get_url, get_status, checknumber, data_post
 from generate import generate
 from .example import *
 from config import Config
+from local_version import ikv, nbv
 
 helpimg = on_command("helpimg", aliases={"hi"}, priority=5) # 修改`help`生成的图片尺寸
 @helpimg.handle()
@@ -73,7 +74,7 @@ async def ____(event: Event):
 restart = on_command("restart", priority=5) # 重启`Inkar-Suki`，原理为`FastAPI`的文件监控自动重启
 @restart.handle()
 async def _(event: Event):
-    with open("./src/plugins/developer_tools/example.py",mode="w") as cache:
+    with open("./src/plugins/developer_tools/example.py", mode="w") as cache:
         if checker(str(event.user_id),5) == False:
             await restart.finish(error(5))
         await  restart.send("好啦，开始重启，整个过程需要些许时间，还请等我一下哦~")
@@ -101,15 +102,14 @@ async def say_(event: Event, args: Message = CommandArg()):
 ping = on_command("ping", aliases={"-测试"}, priority=5) # 测试机器人是否在线
 @ping.handle()
 async def _(event: Event):
-    ikv = await Config.version()
     if checker(str(event.user_id),1) == False:
-        times = str("现在是" + time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()) + f"\n当前版本{ikv}\n(Nonebot {Config.nonebot})")
+        times = str("现在是" + time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()) + f"\n当前版本{ikv}\n(Nonebot {nbv})")
         await ping.finish(times)
     def per_cpu_status() -> List[float]:
         return psutil.cpu_percent(interval=1, percpu=True)
     def memory_status() -> float:
         return psutil.virtual_memory().percent
-    times = str("现在是" + time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()) + f"\n当前版本{ikv}\n(Nonebot {Config.nonebot})")
+    times = str("现在是" + time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()) + f"\n当前版本{ikv}\n(Nonebot {nbv})")
     msg = f"来啦！\n系统信息如下：\nCPU占用：{str(per_cpu_status()[0])}%\n内存占用：{str(memory_status())}%\n"
     await ping.finish(msg + times)
 
