@@ -347,7 +347,7 @@ def server_mapping(server: str, group_id: str):
         return "绝代天骄"
     elif server in ["龙虎","龙争虎斗"]:
         return "龙争虎斗"
-    elif server in ["唯满侠","唯我独尊"]:
+    elif server in ["唯满侠","唯我独尊","wmx","唯我","WMX"]:
         return "唯我独尊"
     elif server in ["华山论剑","乾坤一掷","花钱","华乾"]:
         return "乾坤一掷"
