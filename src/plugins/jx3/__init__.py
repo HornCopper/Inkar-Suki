@@ -669,10 +669,8 @@ async def _(state: T_State, event: GroupMessageEvent, args: Message = CommandArg
     arg = args.extract_plain_text().split(" ")
     if len(arg) != 2:
         await trade_.finish("唔……参数不正确哦，请检查后重试~")
-    server = arg[0]
-    check_url = f"https://api.jx3api.com/data/server/status?server={server}"
-    check_data = await get_api(check_url, proxy = proxies)
-    if check_data["code"] == 401:
+    server = server_mapping(arg[0], group_id=str(event.group_id))
+    if server == False:
         await trade_.finish("唔……服务器不存在，请检查后重试~")
     item = arg[1]
     state["server"] = server
