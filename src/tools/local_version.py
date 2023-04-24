@@ -1,7 +1,14 @@
+<<<<<<< HEAD
 from nonebot import __version__ as nbv
 import nonebot
 import sys
 TOOLS = nonebot.get_driver().config.tools_path
+=======
+from nonebot import get_driver, __version__ as nbv
+import sys
+import json
+TOOLS = get_driver().config.tools_path
+>>>>>>> d8b2504beca8460f8b171e5d5909389e3237967e
 sys.path.append(TOOLS)
 
 from utils import get_api
