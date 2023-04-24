@@ -29,10 +29,12 @@ def generate(html: str,waiting: int,size: str, web: bool):
         driver.maximize_window()
         driver.get(html)
         time.sleep(waiting)
-        uuid_=get_uuid()
-        final_path=CACHE + "/" + uuid_ + ".png"
+        uuid_ = get_uuid()
+        final_path = CACHE + "/" + uuid_ + ".png"
         driver.get_screenshot_as_file(final_path)
         driver.quit()
+        from nonebot.log import logger
+        logger.info(final_path)
         return final_path
     except WebDriverException:
         traceback.print_exc()
