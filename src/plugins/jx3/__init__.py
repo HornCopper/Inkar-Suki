@@ -849,7 +849,7 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
     else:
         await bot.call_api("send_group_forward_msg", group_id = event.group_id, messages = data)
 
-ct = on_command("jx3_ct", aliases={"-赤兔"}, priority=5)
+ct = on_command("jx3_ct", aliases={"赤兔"}, priority=5)
 @ct.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     '''
@@ -863,7 +863,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     msg = await get_chitu(server, str(event.group_id))
     await ct.finish(msg)
 
-mc_helper = on_command("jx3_cd", aliases={"-cd"}, priority=5)
+mc_helper = on_command("jx3_cd", aliases={"cd"}, priority=5)
 @mc_helper.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     '''
@@ -900,7 +900,7 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
     else:
         await zones.finish(ms.image(data))
 
-xuanjing = on_command("jx3_xuanjing", aliases={"-玄晶"}, priority=5)
+xuanjing = on_command("jx3_xuanjing", aliases={"玄晶"}, priority=5)
 @xuanjing.handle()
 async def _(event: GroupMessageEvent):
     dt = json.loads(read("./xuanjing.json"))
