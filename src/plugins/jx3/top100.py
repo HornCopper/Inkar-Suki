@@ -12,19 +12,32 @@ from utils import get_api
 from .jx3 import server_mapping
 
 def boss_mapping(boss:str):
-    num = 10369
+    xjd_num = 10369
+    wyhl_num = 10907
     if boss in ["西津渡老一","张景超","张法雷","张景超与张法雷","张法雷与张景超"]:
-        return num
+        return xjd_num
     elif boss in ["西津渡老二","刘展"]:
-        return num + 1
+        return xjd_num + 1
     elif boss in ["苏凤楼","西津渡老三","孤鸿"]:
-        return num + 2
+        return xjd_num + 2
     elif boss in ["韩敬青","兵刃巫医","西津渡老四"]:
-        return num + 3
+        return xjd_num + 3
     elif boss in ["藤原佑野","西津渡老五","秘藤比丘","送的"]:
-        return num + 4
+        return xjd_num + 4
     elif boss in ["李重茂","废帝","西津渡老六"]:
-        return num + 5
+        return xjd_num + 5
+    elif boss in ["时风"]:
+        return wyhl_num
+    elif boss in ["乐临川"]:
+        return wyhl_num + 1
+    elif boss in ["牛波"]:
+        return wyhl_num + 2
+    elif boss in ["和正"]:
+        return wyhl_num + 3
+    elif boss in ["武云阙","解兰舟"]:
+        return wyhl_num + 4
+    elif boss in ["翁幼之"]:
+        return wyhl_num + 5
     else:
         return False
 
