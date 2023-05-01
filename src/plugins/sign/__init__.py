@@ -24,7 +24,7 @@ sign_ = on_command("-签到", aliases={"-打卡"}, priority=5)
 async def sign(event: Event):
     if sign_main.wsigned(event.user_id):
         await sign_.finish(ms.at(event.user_id) + "\n你已经签到过了哦，不能重复签到。")
-    data = sign_main.generate_everyday_reward()
+    data = sign_main.generate_everayday_reward()
     coin = data["coin"]
     luck = data["luck"]
     if luck == 0:

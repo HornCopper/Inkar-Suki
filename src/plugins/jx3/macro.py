@@ -67,7 +67,7 @@ async def get_macro(xf):
 
 async def get_talent(talent):
     ver = talent["version"]
-    data = await get_api(url = f"https://oss.jx3box.com/data/qixue/{ver}.json")
+    data = await get_api(url = f"https://data.jx3box.com/talent/{ver}.json")
     xf_data = data[talent["xf"]]
     talents = []
     num = 1

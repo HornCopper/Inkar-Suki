@@ -4,7 +4,7 @@ nonebot2
 nonebot-adapter-onebot
 psutil
 tabulate
-selenium
 xpinyin
 numpy
 nonebot_plugin_apscheduler
+playwright
