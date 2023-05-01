@@ -26,29 +26,6 @@ from .example import *
 from config import Config
 from local_version import ikv, nbv
 
-helpimg = on_command("helpimg", aliases={"hi"}, priority=5) # 修改`help`生成的图片尺寸
-@helpimg.handle()
-async def _(event: Event, args: Message = CommandArg()):
-    if checker(str(event.user_id), 9) == False:
-        await helpimg.finish(error(10))
-    size = args.extract_plain_text()
-    if size:
-        if size.find("x"):
-            write(Config.size,size)
-            await helpimg.finish("好的~图片尺寸已修改为"+size+"。")
-        else:
-            await helpimg.finish("唔，这尺寸不对哦~")
-    else:
-        await helpimg.finish("唔，你忘记输入尺寸了啦！")
-    
-imgsize = on_command("imgsize", aliases={"is"}, priority=5) # 查看`help`生成的图片尺寸
-@imgsize.handle()
-async def __(bot: Bot, event: Event):
-    if checker(str(event.user_id),9) == False:
-        await imgsize.finish(error(9))
-    size = read(Config.size)
-    await imgsize.finish("查到啦！当前图片尺寸为" + size + "。")
-
 purge = on_command("purge", priority=5) # 清除所有`help`生成的缓存图片
 @purge.handle()
 async def ___(event: Event):
@@ -103,14 +80,23 @@ ping = on_command("ping", aliases={"-测试"}, priority=5) # 测试机器人是�
 @ping.handle()
 async def _(event: Event):
     if checker(str(event.user_id),1) == False:
-        times = str("现在是" + time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()) + f"\n当前版本{ikv}\n(Nonebot {nbv})")
+        times = str("现在是"
+        + time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
+        + f"\n当前版本{ikv}\n(Nonebot {nbv})")
         await ping.finish(times)
     def per_cpu_status() -> List[float]:
-        return psutil.cpu_percent(interval=1, percpu=True)
+        return psutil.cpu_percent(interval = 1, percpu = True)
     def memory_status() -> float:
         return psutil.virtual_memory().percent
-    times = str("现在是" + time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()) + f"\n当前版本{ikv}\n(Nonebot {nbv})")
-    msg = f"来啦！\n系统信息如下：\nCPU占用：{str(per_cpu_status()[0])}%\n内存占用：{str(memory_status())}%\n"
+    times = str("现在是" 
+        + time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()) 
+        + f"\n当前版本{ikv}\n(Nonebot {nbv})"
+    )
+    msg = f"来啦！\n\
+        系统信息如下：\n\
+        CPU占用：{str(per_cpu_status()[0])}%\
+        \n内存占用：{str(memory_status())}%\
+        \n"
     await ping.finish(msg + times)
 
 back = on_command("back", priority=5) # 后台执行命令。
@@ -139,7 +125,10 @@ async def _(bot: Bot, event: Event, args: Message = CommandArg()):
     cmd = args.extract_plain_text()
     groups = await bot.call_api("get_group_list")
     for i in groups:
-        await bot.call_api("send_group_msg",group_id=i["group_id"],message=cmd)
+        await bot.call_api("send_group_msg",
+            group_id = i["group_id"],
+            message = cmd
+        )
 
 call_api = on_command("call_api", aliases={"api"}, priority=5) # 调用`go-cqhttp`的`API`接口。
 @call_api.handle()
@@ -161,7 +150,10 @@ async def _(event: Event, args: Message = CommandArg()):
         await git.finish(output)
     os.system("git add .")
     msg = ""
-    msg = msg + os.popen("git commit -m \""+commit+"\"").read()
+    msg = msg + os.popen("git commit -m \"" 
+        + commit 
+        + "\""
+    ).read()
     msg = msg + os.popen("git push").read()
     if msg == "":
         msg = "执行完成，但没有输出哦~"
@@ -174,7 +166,10 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
         await call_api.finish(error(10))
     sth = args.extract_plain_text()
     final_msg = f"[CQ:tts,text={sth}]"
-    await bot.call_api("send_group_msg",group_id=event.group_id,message=final_msg)
+    await bot.call_api("send_group_msg",
+        group_id = event.group_id,
+        message = final_msg
+    )
     
 web = on_command("web", priority=5) # 网页截图，需要提供尺寸和网址。
 @web.handle()
@@ -189,8 +184,12 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
     if await get_status(url) not in [200,301,302]:
         await web.finish("唔……网站图片获取失败。\n原因：响应码非200，请检查是否能正常访问。")
     else:
-        image = generate(url,2,size,True)
-        await web.finish("获取图片成功！\n"+MessageSegment.image(Path(image).as_uri()))
+        image = generate(url,
+            True,
+            None
+        )
+        await web.finish("获取图片成功！\n"
+        + MessageSegment.image(Path(image).as_uri()))
 
 apply = on_command("apply", aliases={"-申请"}, priority=5) # 申请使用机器人的命令，`repo`地址来源于`config.py`。
 @apply.handle()
@@ -206,7 +205,11 @@ async def _(bot: Bot, state: T_State, group: Message = Arg()):
         await apply.finish("输入的内容有误，申请失败。")
     else:
         try:
-            data = json.dumps(await bot.call_api("get_group_info", group_id=int(group_id)), ensure_ascii=False)
+            data = json.dumps(
+                await bot.call_api("get_group_info",
+                group_id = int(group_id)),
+                ensure_ascii = False
+            )
         except:
             data = "获取失败！"
         repo_name = Config.repo_name
@@ -214,8 +217,19 @@ async def _(bot: Bot, state: T_State, group: Message = Arg()):
         token = Config.ght
         user = state["user"]
         bearer = "Bearer " + token
-        final_header = {"Accept": "application/vnd.github+json","Authorization":bearer,"X-GitHub-Api-Version":"2022-11-28"}
-        body = {"title":f"Inkar-Suki·使用申请","body":f"申请人QQ：{user}\n申请群聊：{group_id}\n群聊请求数据如下：```{data}```","labels":["申请"]}
-        resp = await data_post(url, headers = final_header, json=body)
+        final_header = {
+            "Accept":"application/vnd.github+json",
+            "Authorization":bearer,
+            "X-GitHub-Api-Version":"2022-11-28"}
+        body = {
+            "title":f"Inkar-Suki·使用申请",
+            "body":f"申请人QQ：{user}\n申请群聊：{group_id}\n群聊请求数据如下：```{data}```",
+            "labels":["申请"]
+        }
+        resp = await data_post(
+            url,
+            headers = final_header,
+            json=body
+        )
         logger.info(resp)
         await apply.finish("申请成功，请求已发送至GitHub，请等待通知！")
