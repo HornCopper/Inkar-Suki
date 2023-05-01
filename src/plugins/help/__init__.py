@@ -28,30 +28,31 @@ css = """
 <style>
             ::-webkit-scrollbar 
             {
-            display: none;
-                
+                display: none;   
             }
-            table { 
-            border-collapse: collapse; 
-                } 
-              table, th, td { 
+            table 
+            { 
+                border-collapse: collapse; 
+            } 
+            table, th, td
+            { 
                 border: 1px solid rgba(0,0,0,0.05); 
                 font-size: 0.8125rem; 
                 font-weight: 500; 
-              } 
-              th, td { 
-              padding: 15px; 
-              text-align: left; 
-              }
-              @font-face
-              {
-                  font-family: Custom;
-                  src: url("customfont");
-              }
+            } 
+            th, td 
+            { 
+                padding: 15px; 
+                text-align: left; 
+            }
+            @font-face
+            {
+                font-family: Custom;
+                src: url("customfont");
+            }
             </style>"""
 css = css.replace("customfont",Config.font_path)
 path = PLUGINS
-
 @help.handle()
 async def help_(args: Message = CommandArg()):
     module = args.extract_plain_text()
