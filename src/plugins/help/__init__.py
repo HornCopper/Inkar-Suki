@@ -18,7 +18,7 @@ from generate import generate, get_uuid
 '''
 帮助文件生成函数。
 
-包含文字+图片信息。
+包含文字 + 图片信息。
 
 文字来源于内置，图片由每个`plugin`文件夹下的`info.json`中的内容整合，再以`selenium`进行渲染所得。
 '''
@@ -82,12 +82,16 @@ async def help_(args: Message = CommandArg()):
             html = "<div style=\"font-family:Custom\">" + msg.replace("$", "<br>") + "</div>"+css
             final_path = CACHE + "/" + get_uuid() + ".html"
             write(final_path,html)
-            image = generate(final_path,0.1,"1400x900",False)
+            image = generate(final_path, False, "table")
             if type(image) != type("sb"):
                 await help.finish("唔，帮助文件生成失败了哦~请联系机器人管理员解决此问题，附带以下信息：\n"+image)
             else:
                 picture_message = ms.image(Path(image).as_uri())
-                await help.finish("查询到插件"+module+"的帮助文件啦~\n"+picture_message+"还有文档可以找哦~\nhttps://inkar-suki.codethink.cn\n如果你觉得有帮助的话，欢迎来给作者赞助哦~\n链接：https://inkar-suki.codethink.cn/donate.html")
+                await help.finish("查询到插件"
+                + module
+                + "的帮助文件啦~\n"
+                + picture_message
+                + "还有文档可以找哦~\nhttps://inkar-suki.codethink.cn\n如果你觉得有帮助的话，欢迎来给作者赞助哦~\n链接：https://inkar-suki.codethink.cn/donate.html")
     else:
         final_plugin_information_file_path = {}
         name = {}
@@ -119,9 +123,11 @@ async def help_(args: Message = CommandArg()):
         html = "<div style=\"font-family:Custom\">" + msg.replace("$", "<br>") + "</div>"+css
         final_path = CACHE + "/" + get_uuid() + ".html"
         write(final_path,html)
-        image = generate(final_path,0.1,read(Config.size),False)
+        image = generate(final_path, False, "table")
         if type(image) != type("sb"):
             await help.finish("唔，帮助文件生成失败了哦~请联系机器人管理员解决此问题，附带以下信息：\n"+image)
         else:
             picture_message = ms.image(Path(image).as_uri())
-            await help.finish("帮助信息来啦！输入+help <module>可快速定位你要查找的模块哦~\n"+picture_message+"还有文档可以找哦~\nhttps://inkar-suki.codethink.cn/\n如果你觉得有帮助的话，欢迎来给作者赞助哦~\n链接：https://inkar-suki.codethink.cn/donate.html")
+            await help.finish("帮助信息来啦！输入+help <module>可快速定位你要查找的模块哦~\n"
+                + picture_message
+                + "还有文档可以找哦~\nhttps://inkar-suki.codethink.cn/\n如果你觉得有帮助的话，欢迎来给作者赞助哦~\n链接：https://inkar-suki.codethink.cn/donate.html")
