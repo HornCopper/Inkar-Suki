@@ -7,7 +7,6 @@ from nonebot.log import logger
 TOOLS = nonebot.get_driver().config.tools_path
 sys.path.append(str(TOOLS))
 CACHE = TOOLS.replace("tools","cache")
-from config import Config
 
 def get_uuid():
     return str(uuid.uuid1()).replace("-","")

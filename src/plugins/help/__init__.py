@@ -50,7 +50,7 @@ css = """
                 font-family: Custom;
                 src: url("customfont");
             }
-            </style>"""
+</style>"""
 css = css.replace("customfont",Config.font_path)
 path = PLUGINS
 @help.handle()
