@@ -3,6 +3,7 @@ import sys
 import time
 
 from tabulate import tabulate
+from pathlib import Path
 from nonebot.adapters.onebot.v11 import MessageSegment as ms
 
 TOOLS = nonebot.get_driver().config.tools_path
@@ -83,4 +84,4 @@ async def get_data(server: str, id: str, group: str):
     if type(image) != type("sb"):
         return [f"唔，帮助文件生成失败了哦~请联系机器人管理员解决此问题，附带以下信息：\n{image}"]
     else:
-        return ms.image(image)
+        return ms.image(Path(image).as_uri())
