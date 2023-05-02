@@ -17,6 +17,7 @@ nbnhhsh = on_command("nbnhhsh", aliases={"能不能好好说话"}, priority=5)
 @nbnhhsh.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     content = args.extract_plain_text()
+    from nonebot.log import logger
     url = "https://lab.magiconch.com/api/nbnhhsh/guess"
     data = {
         "text": content
