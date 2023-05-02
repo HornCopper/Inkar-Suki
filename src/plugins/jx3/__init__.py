@@ -33,6 +33,7 @@ from .dh import get_dh
 from .macro import get_macro
 from .chitu import get_chitu, get_horse_reporter
 from .wanbaolou import get_wanbaolou
+from .firework import get_data as firework_
 
 news = on_command("jx3_news", aliases={"新闻"}, priority=5)
 @news.handle()
@@ -958,6 +959,21 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
         product_flag = False
     msg = await get_wanbaolou(product_num, product_flag)
     await wbl.finish(msg)
+
+firework__ = on_command("jx3_firework", aliases={"烟花"}, priority=5)
+@firework__.handle()
+async def _(event: GroupMessageEvent, args: Message = CommandArg()):
+    arg = args.extract_plain_text().split(" ")
+    if len(arg) != 2:
+        await firework__.finish("唔……参数数量有误，请检查后重试~")
+    server = arg[0]
+    id = arg[1]
+    group = str(event.group_id)
+    img = await firework_(server, id, group)
+    if type(img) == type([]):
+        await firework__.finish(img[0])
+    else:
+        await firework__.finish(img)
 
 driver = get_driver()
 
