@@ -16,6 +16,16 @@ from file import write
 
 from .jx3 import server_mapping
 
+proxy = Config.proxy
+
+if proxy != None:
+    proxies = {
+    "http://": proxy,
+    "https://": proxy
+    }
+else:
+    proxies = None
+
 css = """
 <style>
             ::-webkit-scrollbar 
@@ -50,7 +60,7 @@ async def get_data(server: str, id: str, group: str):
     if server == False:
         return ["服务器输入错误，请检查后重试~"]
     final_url = f"https://www.jx3pet.com/api/firework?server={server}&name={id}"
-    content = await get_api(final_url)
+    content = await get_api(final_url, proxy = proxies)
     if content["data"] == {}:
         return ["唔……该玩家不存在或是没有人炸过烟花哦~"]
     table = []

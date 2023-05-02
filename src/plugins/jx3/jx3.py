@@ -18,15 +18,7 @@ token = Config.jx3api_globaltoken
 bot = "Inkar-Suki"
 ticket = Config.jx3_token
 
-proxy = Config.proxy
-
-if proxy != None:
-    proxies = {
-    "http://": proxy,
-    "https://": proxy
-    }
-else:
-    proxies = None
+proxies = None
 
 '''
 根据`__init__.py`的各功能而设计的功能函数。
