@@ -73,7 +73,7 @@ async def get_data(server: str, id: str, group: str):
         sender = i["sender"]
         rec = i["recipient"]
         timestamp = i["time"]
-        time_local = time.localtime(timestamp / 1000)
+        time_local = time.localtime(timestamp)
         dt = time.strftime("%Y年%m月%d日 %H:%M:%S", time_local)
         table.append([server, firework, map, sender, rec, dt])
     output = str(tabulate(table,headers="firstrow",tablefmt="html"))
