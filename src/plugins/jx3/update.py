@@ -15,6 +15,7 @@ sys.path.append(TOOLS)
 DATA = TOOLS[:-5] + "data"
 
 from file import read
+from config import Config
 
 UpdatePackageUrls = "https://jx3hdv4.autoupdate.kingsoft.com/jx3hd_v4/zhcn_hd/"
 
@@ -57,4 +58,10 @@ async def update_patch_checker(bot: Bot, parser: ConfigParser = ConfigParser()) 
                 CURRENT_VERSION = new_version
             await asyncio.sleep(30)
 
-asyncio.run(update_patch_checker())
+async def main():
+    bots: list = Config.bot
+    for i in bots:
+        bot = nonebot.get_bot(i)
+        await update_patch_checker(bot)
+
+asyncio.run(main())
