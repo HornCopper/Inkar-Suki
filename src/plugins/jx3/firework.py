@@ -60,7 +60,7 @@ async def get_data(server: str, id: str, group: str):
     server = server_mapping(server, group)
     if server == False:
         return ["服务器输入错误，请检查后重试~"]
-    final_url = f"https://www.jx3pet.com/api/firework?server={server}&name={id}"
+    final_url = f"https://api.kuxi.tech/jx3/firework?server={server}&name={id}"
     content = await get_api(final_url, proxy = proxies)
     if content["data"] == {}:
         return ["唔……该玩家不存在或是没有人炸过烟花哦~"]
