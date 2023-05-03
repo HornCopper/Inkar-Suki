@@ -2,16 +2,19 @@ import sys
 import nonebot
 import json
 # sys用于添加新的path，方便导入src/tools下的工具包
+
 from nonebot import on_command # on_command响应器
 from nonebot.adapters import Message 
 from nonebot.adapters.onebot.v11 import GroupMessageEvent # 只处理群消息事件，因为数据要从群内的数据中获取，所以不处理私聊。
 from nonebot.params import CommandArg
+
 TOOLS = nonebot.get_driver().config.tools_path # 获取工具包路径
 sys.path.append(TOOLS) # 导入工具包路径
 DATA = TOOLS[:-5] + "data" # 拼接数据路径
+
 from .arcaea import getUserBestBySongName, getUserInfo, judgeWhetherPlayer, getUserCode
-from utils import checknumber # 导入检测是否为数字的函数，来自src/tools/utils.py
-from file import read, write # 导入文件操作函数，来自src/tools/file.py
+from src.tools.utils import checknumber # 导入检测是否为数字的函数，来自src/tools/utils.py
+from src.tools.file import read, write # 导入文件操作函数，来自src/tools/file.py
 
 arcaea_userinfo = on_command("arcuser",priority=5)
 @arcaea_userinfo.handle()

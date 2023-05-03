@@ -10,10 +10,10 @@ from nonebot.params import CommandArg
 TOOLS = nonebot.get_driver().config.tools_path
 sys.path.append(str(TOOLS))
 
-from file import read, write
-from permission import checker
-from utils import nodetemp
-from config import Config
+from src.tools.file import read, write
+from src.tools.permission import checker
+from src.tools.utils import nodetemp
+from src.tools.config import Config
 
 block = on_command("block", aliases={"加黑","避雷"}, priority=5) # 综合避雷名单-添加
 @block.handle()

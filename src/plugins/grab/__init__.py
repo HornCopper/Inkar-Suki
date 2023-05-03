@@ -9,7 +9,7 @@ from nonebot.adapters.onebot.v11 import GroupMessageEvent
 TOOLS = nonebot.get_driver().config.tools_path
 sys.path.append(TOOLS)
 
-from utils import checknumber
+from src.tools.utils import checknumber
 
 from .gettor import get_tieba
 

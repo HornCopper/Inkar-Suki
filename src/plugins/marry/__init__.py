@@ -11,7 +11,7 @@ TOOLS = nonebot.get_driver().config.tools_path
 DATA = TOOLS[:-5] + "data"
 sys.path.append(str(TOOLS))
 
-from file import read, write
+from src.tools.file import read, write
 
 from .marry import already_married
 

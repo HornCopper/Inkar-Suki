@@ -1,5 +1,6 @@
 import json
 import nonebot
+
 TOOLS = nonebot.get_driver().config.tools_path
 DATA = TOOLS[:TOOLS.find("/tools")]+"/data"
 

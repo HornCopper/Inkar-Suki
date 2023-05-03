@@ -12,10 +12,10 @@ TOOLS = nonebot.get_driver().config.tools_path
 sys.path.append(str(TOOLS))
 DATA = TOOLS[:-5] + "data"
 
-from permission import checker, error
-from file import write
-from config import Config
-from utils import get_url
+from src.tools.permission import checker, error
+from src.tools.file import write
+from src.tools.config import Config
+from src.tools.utils import get_url
 
 '''
 原理：文件操作。

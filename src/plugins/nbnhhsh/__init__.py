@@ -1,16 +1,9 @@
-import nonebot
-import sys
 import httpx
 
 from nonebot import on_command
 from nonebot.adapters import Message
 from nonebot.adapters.onebot.v11 import GroupMessageEvent
 from nonebot.params import CommandArg
-
-TOOLS = nonebot.get_driver().config.tools_path
-sys.path.append(TOOLS)
-
-from utils import post_url
 
 nbnhhsh = on_command("nbnhhsh", aliases={"能不能好好说话"}, priority=5)
 @nbnhhsh.handle()

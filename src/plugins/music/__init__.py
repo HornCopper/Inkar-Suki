@@ -11,7 +11,7 @@ from nonebot.typing import T_State
 TOOLS = nonebot.get_driver().config.tools_path
 sys.path.append(TOOLS)
 
-from utils import checknumber
+from src.tools.utils import checknumber
 
 from .music import get, search
 

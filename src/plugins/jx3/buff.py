@@ -4,7 +4,8 @@ import nonebot
 TOOLS = nonebot.get_driver().config.tools_path
 sys.path.append(TOOLS)
 ASSETS = TOOLS[:-5] + "assets"
-from utils import get_api
+
+from src.tools.utils import get_api
 
 async def get_buff(buffName: str):
     final_url = f"https://node.jx3box.com/buff/name/{buffName}?strict=1&per=10" # 数据来源@JX3BOX
