@@ -61,7 +61,7 @@ async def update_patch_checker(bot: Bot, parser: ConfigParser = ConfigParser()) 
 
 driver = get_driver()
 
-@driver.on_bot_connect()
+@driver.on_bot_connect
 async def main():
     bots: list = Config.bot
     for i in bots:
