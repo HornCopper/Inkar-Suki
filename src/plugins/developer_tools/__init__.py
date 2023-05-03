@@ -92,11 +92,7 @@ async def _(event: Event):
         + time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()) 
         + f"\n当前版本{ikv}\n(Nonebot {nbv})"
     )
-    msg = f"来啦！\n\
-        系统信息如下：\n\
-        CPU占用：{str(per_cpu_status()[0])}%\
-        \n内存占用：{str(memory_status())}%\
-        \n"
+    msg = f"来啦！\n\系统信息如下：\nCPU占用：{str(per_cpu_status()[0])}%\n内存占用：{str(memory_status())}%\n"
     await ping.finish(msg + times)
 
 back = on_command("back", priority=5) # 后台执行命令。
