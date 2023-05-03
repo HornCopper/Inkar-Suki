@@ -5,6 +5,7 @@ import os
 import sys
 import json
 
+from nonebot import get_driver()
 from configparser import ConfigParser
 from enum import IntEnum
 from itertools import dropwhile
@@ -58,10 +59,11 @@ async def update_patch_checker(bot: Bot, parser: ConfigParser = ConfigParser()) 
                 CURRENT_VERSION = new_version
             await asyncio.sleep(30)
 
+driver = get_driver()
+
+@driver.on_bot_connect()
 async def main():
     bots: list = Config.bot
     for i in bots:
         bot = nonebot.get_bot(i)
         await update_patch_checker(bot)
-
-asyncio.run(main())
