@@ -15,7 +15,7 @@ sys.path.append(TOOLS)
 DATA = TOOLS[:-5] + "data"
 
 from file import read
-from config import Config
+from src.tools.config import Config
 
 UpdatePackageUrls = "https://jx3hdv4.autoupdate.kingsoft.com/jx3hd_v4/zhcn_hd/"
 
