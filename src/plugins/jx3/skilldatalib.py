@@ -11,9 +11,9 @@ TOOLS = nonebot.get_driver().config.tools_path
 sys.path.append(TOOLS)
 ASSETS = TOOLS[:-5] + "assets"
 
-from utils import get_url, get_status, nodetemp, get_content, get_api
-from file import read, write
-from config import Config
+from src.tools.utils import get_url, get_status, nodetemp, get_content, get_api
+from src.tools.file import read, write
+from src.tools.config import Config
 
 def aliases(SkillName: str) -> str:
     if SkillName in ["隐龙诀","隐龙决","隐龙","凌雪","凌雪阁"]:

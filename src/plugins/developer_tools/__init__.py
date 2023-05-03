@@ -4,6 +4,7 @@ import psutil
 import nonebot
 import json
 import time
+
 from nonebot import on_command, on_message
 from nonebot.adapters import Message
 from nonebot.params import CommandArg, Arg
@@ -14,17 +15,19 @@ from nonebot.typing import T_State
 from typing import List
 from pathlib import Path
 from functools import reduce
+
 TOOLS = nonebot.get_driver().config.tools_path
 sys.path.append(str(TOOLS))
 CACHE = TOOLS[:-5] + "cache"
-from permission import checker, error
-from file import read, write
-from config import Config
-from utils import get_url, get_status, checknumber, data_post
-from generate import generate
+
+from src.tools.permission import checker, error
+from src.tools.file import read, write
+from src.tools.config import Config
+from src.tools.utils import get_url, get_status, checknumber, data_post
+from src.tools.generate import generate
+from src.tools.local_version import ikv, nbv
+
 from .example import *
-from config import Config
-from local_version import ikv, nbv
 
 purge = on_command("purge", priority=5) # 清除所有`help`生成的缓存图片
 @purge.handle()

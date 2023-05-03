@@ -1,19 +1,23 @@
 import json
 import sys
 import nonebot
+
 from nonebot import on_command
 from nonebot.adapters import Message
 from nonebot.adapters.onebot.v11 import GroupMessageEvent
 from nonebot.params import CommandArg, Arg
 from nonebot.log import logger
 from nonebot.typing import T_State
+
 TOOLS = nonebot.get_driver().config.tools_path
 sys.path.append(str(TOOLS))
 DATA = TOOLS[:-5] + "data"
+
+from src.tools.file import read, write
+from src.tools.utils import checknumber
+from src.tools.permission import checker, error
+
 from .wikilib import wiki as wiki_
-from file import read, write
-from utils import checknumber
-from permission import checker, error
 
 wiki = on_command("wiki", priority=5)
 @wiki.handle()

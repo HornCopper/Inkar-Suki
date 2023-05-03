@@ -7,7 +7,7 @@ TOOLS = nonebot.get_driver().config.tools_path
 sys.path.append(str(TOOLS))
 CLOCK = TOOLS[:-5] + "clock"
 
-from file import read, write
+from src.tools.file import read, write
 
 class Sign:
     def lucky_level(luck: int):

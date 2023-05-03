@@ -2,17 +2,20 @@ import json
 import sys
 import nonebot
 import os
+
 from urllib.parse import quote
 from pathlib import Path
 from urllib.error import HTTPError
 from nonebot.adapters.onebot.v11 import MessageSegment as ms
+
 TOOLS = nonebot.get_driver().config.tools_path
 sys.path.append(TOOLS)
 DATA = TOOLS[:-5] + "data"
 ASSETS = TOOLS[:-5] + "assets"
-from config import Config
-from file import read
-from utils import get_api, convert_time, get_content
+
+from src.tools.config import Config
+from src.tools.file import read
+from src.tools.utils import get_api, convert_time, get_content
 
 api = Config.auaurl
 token = "Bearer " + Config.auatok

@@ -8,7 +8,8 @@ TOOLS = nonebot.get_driver().config.tools_path
 sys.path.append(TOOLS)
 ASSETS = TOOLS[:-5] + "assets"
 PLUGINS = TOOLS[:-5] + "plugins"
-from utils import get_api
+
+from src.tools.utils import get_api
 from .jx3 import server_mapping
 
 def boss_mapping(boss:str):

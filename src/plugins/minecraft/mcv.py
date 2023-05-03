@@ -1,9 +1,11 @@
 import sys
 import nonebot
 import re
+
 TOOLS = nonebot.get_driver().config.tools_path
 sys.path.append(TOOLS)
-from utils import get_api
+
+from src.tools.utils import get_api
 
 async def mcbedrockv(): # Minecraft 基岩版 最新版本获取，数据来源@Mojira
     data = await get_api("https://bugs.mojang.com/rest/api/2/project/10200/versions")

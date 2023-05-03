@@ -10,14 +10,18 @@ from nonebot.params import CommandArg, Arg
 from nonebot.adapters.onebot.v11 import MessageSegment as ms
 from nonebot.adapters.onebot.v11 import Bot, GroupMessageEvent
 from nonebot.typing import T_State
+from tabulate import tabulate
+from pathlib import Path
 
 TOOLS = nonebot.get_driver().config.tools_path
 sys.path.append(TOOLS)
 DATA = TOOLS[:-5] + "data"
+CACHE = TOOLS[:-5] + "cache"
 ASSETS = TOOLS[:-5] + "assets"
 
-from utils import checknumber, get_api
-from file import read, write
+from src.tools.utils import checknumber, get_api
+from src.tools.file import read, write
+from src.tools.generate import generate, get_uuid
 
 from .jx3 import *
 from .skilldatalib import getAllSkillsInfo, getSingleSkill, getSingleTalent, aliases as als
@@ -882,6 +886,34 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     msg = await get_cd(server, sep, str(event.group_id))
     await mc_helper.finish(msg)
 
+css = """
+<style>
+            ::-webkit-scrollbar 
+            {
+                display: none;   
+            }
+            table 
+            { 
+                border-collapse: collapse; 
+            } 
+            table, th, td
+            { 
+                border: 1px solid rgba(0,0,0,0.05); 
+                font-size: 0.8125rem; 
+                font-weight: 500; 
+            } 
+            th, td 
+            { 
+                padding: 15px; 
+                text-align: left; 
+            }
+            @font-face
+            {
+                font-family: Custom;
+                src: url("customfont");
+            }
+</style>"""
+
 zones = on_command("jx3_zones", aliases={"副本"}, priority=5)
 @zones.handle()
 async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
@@ -903,23 +935,29 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
 
 xuanjing = on_command("jx3_xuanjing", aliases={"玄晶"}, priority=5)
 @xuanjing.handle()
-async def _(event: GroupMessageEvent):
-    dt = json.loads(read("./xuanjing.json"))
-    dt = list(reversed(dt))
-    if len(dt) == 0:
-        await xuanjing.finish("尚未检测到玄晶哦~")
-    msg = ""
-    num = 0
+async def _(event: GroupMessageEvent, args: Message = CommandArg()):
+    server = args.extract_plain_text()
+    if server_mapping(server, str(event.group_id)) == False:
+        await xuanjing.finish("唔……服务器名输入错误~")
+    dt = json.loads(read(TOOLS + "/xuanjing.json"))
     for i in dt:
-        x = i.split(";")
-        map = x[1]
-        id = x[2]
-        time = x[3]
-        msg = msg + f"{map}：{id} {time}\n"
-        num = num + 1
-        if num == 6:
-            break
-    await xuanjing.finish(msg[:-1])
+        if i["server"] == server:
+            if len(i["records"]) == 0:
+                await xuanjing.finish("唔……尚未检测到玄晶哦~")
+            table = []
+            table.append(["时间","地图","角色","名称"])
+            for x in i["records"]:
+                table.append(x["time"], x["map"], x["role"], x["name"])
+            msg = str(tabulate(table,headers="firstrow",tablefmt="html"))
+            table.clear()
+            html = "<div style=\"font-family:Custom\">" + msg.replace("$", "<br>") + "</div>" + css
+            path = CACHE + "/" + get_uuid() + ".html"
+            write(path, html)
+            img = await generate(path, False, "table")
+            if type(img) != type("sb"):
+                await help.finish("唔，帮助文件生成失败了哦~请联系机器人管理员解决此问题，附带以下信息：\n" + img)
+            await xuanjing.finish(ms.image(Path))
+            
 
 macro_ = on_command("jx3_macro", aliases={"宏"}, priority=5)
 @macro_.handle()
