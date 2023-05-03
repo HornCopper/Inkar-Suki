@@ -14,10 +14,10 @@ TOOLS = nonebot.get_driver().config.tools_path
 DATA = TOOLS[:-5] + "data"
 sys.path.append(str(TOOLS))
 
-from permission import checker, error
-from utils import get_status
-from file import read
-from config import Config
+from src.tools.permission import checker, error
+from src.tools.utils import get_status
+from src.tools.file import read
+from src.tools.config import Config
 
 def already(reponame: str, group) -> bool:
     final_path = DATA + "/" + group + "/" + "webhook.json"

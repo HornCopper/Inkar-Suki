@@ -9,6 +9,13 @@ from nonebot.utils import escape_tag
 from pydantic import BaseModel, Extra, validator
 
 import json
+import nonebot
+import sys
+
+TOOLS = nonebot.get_driver().config.tools_path
+sys.path.append(str(TOOLS))
+
+from src.tools.file import read, write
 
 '''
 感谢友情提供代码@白师傅
@@ -386,6 +393,8 @@ class XuanJingEvent(RecvEvent):
     """玄晶名"""
     time: str
     """获取时间"""
+    server: str
+    """区服"""
 
     @validator("time", pre=True)
     def check_time(cls, v):
@@ -399,15 +408,18 @@ class XuanJingEvent(RecvEvent):
 
     @overrides(RecvEvent)
     def get_message(self) -> dict:
-        xuanjing = open("./xuanjing.json", mode="r")
-        correct = json.loads(xuanjing.read())
-        msg = f"{self.name};{self.map};{self.role};{self.time}"
-        correct.append(msg)
-        xuanjing.close()
-        xuanjing = open("./xuanjing.json", mode="w")
-        xuanjing.write(json.dumps(correct, ensure_ascii=False))
-        xuanjing.close()
-        return {"type":"玄晶","msg":f"{self.time}\n恭喜侠士[{self.role}]在{self.map}获得稀有掉落[{self.name}]！"}
+        xuanjing_record_file = TOOLS + "/xuanjing.json"
+        correct = json.loads(read(xuanjing_record_file))
+        found = False
+        for i in correct:
+            if i["server"] == self.server:
+                found = True
+                new = {"time":self.time, "map":self.map, "role":self.role, "name":self.name}
+                i["records"].append(new)
+        if found == False:
+            return
+        write(xuanjing_record_file, json.dumps(correct, ensure_ascii=False))
+        return {"type":"玄晶","server":self.server,"msg":f"{self.time}\n恭喜侠士[{self.role}]在{self.map}获得稀有掉落[{self.name}]！"}
 
 
 @EventRister.rister(action=1008)

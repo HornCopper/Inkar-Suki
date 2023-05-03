@@ -1,11 +1,10 @@
 import nonebot
-import time
 import sys
 
 TOOLS = nonebot.get_driver().config.tools_path
 sys.path.append(TOOLS)
 
-from utils import get_api
+from src.tools.utils import get_api
 
 async def get_wanbaolou(product_number: int, product_type: bool):
     def strange_time_number_to_person_s_message(strange_time_number: int):

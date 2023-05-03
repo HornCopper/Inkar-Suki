@@ -9,10 +9,11 @@ TOOLS = nonebot.get_driver().config.tools_path
 sys.path.append(TOOLS)
 DATA = TOOLS[:-5] + "data"
 
-from utils import get_api, nodetemp
-from file import write, read
+from src.tools.utils import get_api, nodetemp
+from src.tools.file import write, read
+from src.tools.config import Config
+
 from .skilldatalib import aliases
-from config import Config
 
 token = Config.jx3api_globaltoken
 bot = "Inkar-Suki"

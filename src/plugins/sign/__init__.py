@@ -8,8 +8,9 @@ TOOLS = nonebot.get_driver().config.tools_path
 sys.path.append(str(TOOLS))
 CLOCK = TOOLS[:-5] + "clock"
 
+from src.tools.file import read, write
+
 from .manage import Sign
-from file import read, write
 
 '''
 签到功能，仅供娱乐。

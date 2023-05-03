@@ -6,7 +6,7 @@ import sys
 TOOLS = nonebot.get_driver().config.tools_path
 sys.path.append(TOOLS)
 
-from utils import get_url, get_api
+from src.tools.utils import get_url, get_api
 from .jx3 import server_mapping
 
 async def get_chitu(server: str, group: str): # 数据来源@jw3cx.com

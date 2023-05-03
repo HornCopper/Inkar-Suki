@@ -2,19 +2,22 @@ import json
 import os
 import sys
 import nonebot
+
 from pathlib import Path
 from nonebot.params import CommandArg
 from nonebot.adapters.onebot.v11 import MessageSegment as ms
 from nonebot import on_command
 from nonebot.adapters.onebot.v11 import Message
 from tabulate import tabulate
+
 TOOLS = nonebot.get_driver().config.tools_path
 sys.path.append(str(TOOLS))
 CACHE = TOOLS[:-5] + "cache"
 PLUGINS = TOOLS[:-5] + "plugins"
-from file import read, write
-from config import Config
-from generate import generate, get_uuid
+
+from src.tools.file import read, write
+from src.tools.config import Config
+from src.tools.generate import generate, get_uuid
 '''
 帮助文件生成函数。
 

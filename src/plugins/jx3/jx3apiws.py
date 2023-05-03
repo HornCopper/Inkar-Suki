@@ -18,7 +18,7 @@ from .jx3_event import EventRister, WsData, WsNotice
 
 TOOLS = nonebot.get_driver().config.tools_path
 sys.path.append(TOOLS)
-from config import Config
+from src.tools.config import Config
 
 '''
 感谢友情提供代码@白师傅

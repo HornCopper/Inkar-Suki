@@ -15,7 +15,7 @@ TOOLS = nonebot.get_driver().config.tools_path
 sys.path.append(TOOLS)
 DATA = TOOLS[:-5] + "data"
 
-from file import read
+from src.tools.file import read
 from src.tools.config import Config
 
 UpdatePackageUrls = "https://jx3hdv4.autoupdate.kingsoft.com/jx3hd_v4/zhcn_hd/"

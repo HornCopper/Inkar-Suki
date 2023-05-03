@@ -12,10 +12,10 @@ TOOLS = nonebot.get_driver().config.tools_path
 sys.path.append(TOOLS)
 DATA = TOOLS[:-7] + "data"
 
-from permission import checker, error
-from file import read, write
-from utils import checknumber
-from config import Config
+from src.tools.permission import checker, error
+from src.tools.file import read, write
+from src.tools.utils import checknumber
+from src.tools.config import Config
 
 def in_it(qq: str):
     for i in json.loads(read(TOOLS+"/ban.json")):

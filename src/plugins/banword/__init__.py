@@ -1,6 +1,7 @@
 import json
 import sys
 import nonebot
+
 from nonebot.adapters.onebot.v11 import MessageSegment as ms
 from nonebot import on_command
 from nonebot import on_message
@@ -8,11 +9,13 @@ from nonebot.adapters import Message
 from nonebot.matcher import Matcher
 from nonebot.adapters.onebot.v11 import Bot, GroupMessageEvent
 from nonebot.params import CommandArg
+
 TOOLS = nonebot.get_driver().config.tools_path
 DATA = TOOLS[:-5] + "data"
 sys.path.append(str(TOOLS))
-from permission import checker, error
-from file import read, write
+
+from src.tools.permission import checker, error
+from src.tools.file import read, write
 global flag
 banword = on_command("banword", priority=5)
 @banword.handle()

@@ -1,16 +1,19 @@
 import json
 import sys
 import nonebot
+
 from nonebot import on_command
 from nonebot.adapters import Message
 from nonebot.adapters.onebot.v11 import Event, Bot
 from nonebot.params import CommandArg
+
 TOOLS = nonebot.get_driver().config.tools_path
 sys.path.append(str(TOOLS))
-from permission import checker, error
-from file import write, read
-from config import Config
-from utils import checknumber
+
+from src.tools.permission import checker, error
+from src.tools.file import write, read
+from src.tools.config import Config
+from src.tools.utils import checknumber
 
 # 机器人管理员权限设置
 op = on_command("setop", aliases={"admin", "setadmin"}, priority=5)
