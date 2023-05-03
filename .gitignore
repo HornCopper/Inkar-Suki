@@ -40,6 +40,7 @@ MANIFEST
 *.manifest
 *.spec
 
+firework.py
 agl.json
 blacklist.json
 password.txt
