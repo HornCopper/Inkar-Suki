@@ -5,7 +5,7 @@ import os
 import sys
 import json
 
-from nonebot import get_driver()
+from nonebot import get_driver
 from configparser import ConfigParser
 from enum import IntEnum
 from itertools import dropwhile
