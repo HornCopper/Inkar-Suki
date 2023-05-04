@@ -18,7 +18,7 @@ DATA = TOOLS[:-5] + "data"
 from src.tools.file import read
 from src.tools.config import Config
 
-UpdatePackageUrls = "https://jx3hdv4.autoupdate.kingsoft.com/jx3hd_v4/zhcn_hd/"
+UpdatePackageUrls = "http://jx3hdv4-autoupdate.xoyocdn.com/jx3hd_v4/zhcn_hd/"
 
 class SizeUnit(IntEnum):
     B = 1 << 10
@@ -26,13 +26,14 @@ class SizeUnit(IntEnum):
     MB = 1 << 30
     GB = 1 << 40
 
-async def package_size(session: httpx.AsyncClient, patch_url: str) -> int:
-    async with session.head(f"{UpdatePackageUrls}{patch_url}") as resp:
-        return int(resp.headers["Content-Length"])
+async def package_size(patch_url: str) -> int:
+    async with httpx.AsyncClient(timeout=10, verify = False) as session:
+        resp = await session.get(patch_url)
+        return resp.headers["Content-Length"]
 
 async def update_patch_checker(bot: Bot, parser: ConfigParser = ConfigParser()) -> None:
     async with httpx.AsyncClient(timeout=10, verify = False) as session:
-        resp = await session.get(f"{UpdatePackageUrls}autoupdateentry.txt")
+        resp = await session.get(url = f"{UpdatePackageUrls}autoupdateentry.txt")
         content = resp.text
         parser.read_string(content)
         CURRENT_VERSION = parser["version"]["LatestVersion"]
@@ -41,7 +42,7 @@ async def update_patch_checker(bot: Bot, parser: ConfigParser = ConfigParser()) 
             parser.read_string(resp.text)
             if (new_version := parser["version"]["LatestVersion"]) > CURRENT_VERSION:
                 patchs = [patch for patch in dropwhile(lambda x: not (x.startswith(f"jx3hd_v4_c_{CURRENT_VERSION}")), parser["PatchList"].values()) if patch.endswith("exe")]
-                size = sum(await asyncio.gather(*[package_size(session, patch) for patch in patchs]))
+                size = sum(await asyncio.gather(*[package_size(patch) for patch in patchs]))
                 if size < SizeUnit.B:
                     size = f"{size:.2f} B"
                 elif size < SizeUnit.KB:

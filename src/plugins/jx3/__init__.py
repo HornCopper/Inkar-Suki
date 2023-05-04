@@ -38,6 +38,7 @@ from .macro import get_macro
 from .chitu import get_chitu, get_horse_reporter
 from .wanbaolou import get_wanbaolou
 from .update import *
+from .bind import *
 
 news = on_command("jx3_news", aliases={"新闻"}, priority=5)
 @news.handle()
@@ -936,8 +937,8 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
 xuanjing = on_command("jx3_xuanjing", aliases={"玄晶"}, priority=5)
 @xuanjing.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
-    server = args.extract_plain_text()
-    if server_mapping(server, str(event.group_id)) == False:
+    server = server_mapping(args.extract_plain_text(), str(event.group_id))
+    if server == False:
         await xuanjing.finish("唔……服务器名输入错误~")
     dt = json.loads(read(TOOLS + "/xuanjing.json"))
     for i in dt:
@@ -947,16 +948,16 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
             table = []
             table.append(["时间","地图","角色","名称"])
             for x in i["records"]:
-                table.append(x["time"], x["map"], x["role"], x["name"])
-            msg = str(tabulate(table,headers="firstrow",tablefmt="html"))
+                table.append([x["time"], x["map"], x["role"], x["name"]])
+            msg = str(tabulate(table, headers="firstrow", tablefmt="html"))
             table.clear()
             html = "<div style=\"font-family:Custom\">" + msg.replace("$", "<br>") + "</div>" + css
             path = CACHE + "/" + get_uuid() + ".html"
             write(path, html)
             img = await generate(path, False, "table")
             if type(img) != type("sb"):
-                await help.finish("唔，帮助文件生成失败了哦~请联系机器人管理员解决此问题，附带以下信息：\n" + img)
-            await xuanjing.finish(ms.image(Path))
+                await xuanjing.finish("唔，图片生成失败了哦~请联系机器人管理员解决此问题，附带以下信息：\n" + img)
+            await xuanjing.finish(ms.image(Path(img).as_uri()))
             
 
 macro_ = on_command("jx3_macro", aliases={"宏"}, priority=5)
@@ -1033,6 +1034,8 @@ async def _(bot: Bot, event: RecvEvent):
     for i in groups:
         subscribe = json.loads(read(DATA + "/" + i + "/subscribe.json"))
         if message["type"] in subscribe:
+            if message["type"] == "玄晶" and message["server"] != subscribe["server"]:
+                return
             try:
                 await bot.call_api("send_group_msg", group_id = int(i), message = message["msg"])
             except:
