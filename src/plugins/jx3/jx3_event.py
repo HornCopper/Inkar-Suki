@@ -393,8 +393,6 @@ class XuanJingEvent(RecvEvent):
     """玄晶名"""
     time: str
     """获取时间"""
-    server: str
-    """区服"""
 
     @validator("time", pre=True)
     def check_time(cls, v):
