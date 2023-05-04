@@ -22,6 +22,7 @@ ASSETS = TOOLS[:-5] + "assets"
 from src.tools.utils import checknumber, get_api
 from src.tools.file import read, write
 from src.tools.generate import generate, get_uuid
+from src.plugins.help import css
 
 from .jx3 import *
 from .skilldatalib import getAllSkillsInfo, getSingleSkill, getSingleTalent, aliases as als
@@ -886,34 +887,6 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     sep = arg[1]
     msg = await get_cd(server, sep, str(event.group_id))
     await mc_helper.finish(msg)
-
-css = """
-<style>
-            ::-webkit-scrollbar 
-            {
-                display: none;   
-            }
-            table 
-            { 
-                border-collapse: collapse; 
-            } 
-            table, th, td
-            { 
-                border: 1px solid rgba(0,0,0,0.05); 
-                font-size: 0.8125rem; 
-                font-weight: 500; 
-            } 
-            th, td 
-            { 
-                padding: 15px; 
-                text-align: left; 
-            }
-            @font-face
-            {
-                font-family: Custom;
-                src: url("customfont");
-            }
-</style>"""
 
 zones = on_command("jx3_zones", aliases={"副本"}, priority=5)
 @zones.handle()
