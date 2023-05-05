@@ -682,30 +682,28 @@ async def _(state: T_State, event: GroupMessageEvent, args: Message = CommandArg
     item = arg[1]
     state["server"] = server
     data = await search_item_info(item)
-    if data == []:
-        await trade_.finish("唔……没有找到该物品哦~")
+    if type(data) != type([]):
+        await trade_.finish(data)
     else:
-        state["data"] = data
-        msg = ""
-        for i in range(len(data)):
-            msg = msg + "\n" + str(i) + "." + f"{data[i][1]}（ID：{data[i][0]}）"
-        await trade_.send(msg[1:] + "\n小提示：按住Ctrl并将鼠标放在物品上，即可查看该物品的ID。")
+        id = data[0]
+        state["id"] = id
+        await trade_.send(ms.image(data[1]))
+        return
 
 @trade_.got("num", prompt="输入序号以搜索，其他内容则无视。")
 async def _(state: T_State, event: GroupMessageEvent, num: Message = Arg()):
     num = num.extract_plain_text()
     if checknumber(num):
-        data = state["data"]
+        id = state["id"][num]
         server = state["server"]
-        id = data[int(num)][0]
-        try:
-            final_data = await getItemPriceById(id, server, group=str(event.group_id))
-        except:
-            await trade_.finish("暂未找到该区服报价，请查看其他区服~")
-        if type(final_data) == type({}):
-            await trade_.finish(final_data["msg"])
-        msg = f"查到{server}的该物品交易行价格：\n最低价格：{final_data[0]}\n平均价格：{final_data[1]}\n最高价格：{final_data[2]}"
-        await trade_.finish(msg)
+        data = await getItemPriceById(id, server, str(event.group_id))
+        if type(data) != type([]):
+            await trade_.finish(data)
+        else:
+            img = data[0]
+            itd = data[1]
+            await trade_.send(ms.image(img))
+            await trade_.finish(ms.iamge(itd))
     else:
         return
     
