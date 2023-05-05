@@ -11,7 +11,7 @@ CACHE = TOOLS.replace("tools","cache")
 def get_uuid():
     return str(uuid.uuid1()).replace("-","")
 
-async def generate(html: str, web: bool, locate: str = None):
+async def generate(html: str, web: bool, locate: str = None, first: bool = False):
     if web:
         pass
     else:
@@ -25,7 +25,10 @@ async def generate(html: str, web: bool, locate: str = None):
             uuid_ = get_uuid()
             img = CACHE + "/" + uuid_ + ".png"
             if locate != None:
-                await page.locator(locate).screenshot(path = img)
+                if first:
+                    await page.locator(locate).first.screenshot(path = img)
+                else:
+                    await page.locator(locate).screenshot(path = img)
             else:
                 await page.screenshot(path = img)
             return img
