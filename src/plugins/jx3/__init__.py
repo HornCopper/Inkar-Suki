@@ -703,7 +703,7 @@ async def _(state: T_State, event: GroupMessageEvent, num: Message = Arg()):
             img = data[0]
             itd = data[1]
             await trade_.send(ms.image(img))
-            await trade_.finish(ms.iamge(itd))
+            await trade_.finish(ms.iamge())
     else:
         return
     
