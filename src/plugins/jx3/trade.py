@@ -94,7 +94,8 @@ async def getItemPriceById(id: str, server: str, group: str = None):
     return [img]
 
 async def getItem(id: str):
-    if await get_api(f"https://helper.jx3box.com/api/wiki/post?type=item&source_id={id}")["data"]["source"] == None:
+    boxdata = await get_api(f"https://helper.jx3box.com/api/wiki/post?type=item&source_id={id}")
+    if boxdata["data"]["source"] == None:
         return ["唔……该物品不存在哦~"]
     async with async_playwright() as p:
         browser = await p.chromium.launch(headless = True, slow_mo = 0)
