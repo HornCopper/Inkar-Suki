@@ -1,7 +1,7 @@
 import nonebot
 import sys
 
-from pathlib import Path
+from playwright.async_api import async_playwright
 from tabulate import tabulate
 
 TOOLS = nonebot.get_driver().config.tools_path
@@ -22,6 +22,27 @@ from .jx3 import server_mapping
 
 数据来源@JX3BOX
 '''
+
+css_fixed = """
+.c-header
+{
+    display: none;
+}
+.m-breadcrumb .u-stat
+{
+    display: none;
+}
+.c-breadcrumb
+{
+    display: none;
+}
+.c-header-inner
+{
+    display: none;
+}
+// 别抄啊，用了好久测出来的呢（
+// 要抄好歹点个star 然后赞助赞助（狗头）
+"""
 
 async def search_item_info(item_name: str):
     final_url = f"https://helper.jx3box.com/api/item/search?keyword={item_name}"
@@ -72,6 +93,17 @@ async def getItemPriceById(id: str, server: str, group: str = None):
     img = await generate(final_path, False, "table", False)
     introduction = await generate(html = f"https://www.jx3box.com/item/view/{id}", web = True, locate = "c-item-wrapper", first = True)
     return [img, introduction]
+
+async def getItem(id: str):
+    async with async_playwright() as p:
+        browser = await p.chromium.launch(headless = True, slow_mo = 0)
+        context = await browser.new_context()
+        page = await context.new_page()
+        await page.goto(f"https://www.jx3box.com/item/view/{id}")
+        await page.add_style_tag(content = css_fixed)
+        path = CACHE + "/" + get_uuid() + ".png"
+        await page.locator(".c-item-wrapper").first.screenshot(path = path)
+        return path
 
 def convert(price: int):
     if 1 <= price <= 99: # 铜
