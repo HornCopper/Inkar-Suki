@@ -687,23 +687,21 @@ async def _(state: T_State, event: GroupMessageEvent, args: Message = CommandArg
     else:
         id = data[0]
         state["id"] = id
-        await trade_.send(ms.image(data[1]))
+        await trade_.send(ms.image(Path(data[1]).as_uri()))
         return
 
 @trade_.got("num", prompt="输入序号以搜索，其他内容则无视。")
 async def _(state: T_State, event: GroupMessageEvent, num: Message = Arg()):
     num = num.extract_plain_text()
     if checknumber(num):
-        id = state["id"][num]
+        id = state["id"][int(num)]
         server = state["server"]
         data = await getItemPriceById(id, server, str(event.group_id))
         if type(data) != type([]):
             await trade_.finish(data)
         else:
             img = data[0]
-            itd = data[1]
-            await trade_.send(ms.image(img))
-            await trade_.finish(ms.iamge(itd))
+            await trade_.send(ms.image(Path(img).as_uri()))
     else:
         return
     
