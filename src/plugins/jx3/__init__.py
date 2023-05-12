@@ -464,7 +464,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
         data = await get_api(final_url)
         write(ASSETS + "/jx3/" + f"v{ver}.json", json.dumps(data, ensure_ascii=False))
     else:
-        data = json.loads(read(ASSETS + "/jx3" + f"v{ver}.json"))
+        data = json.loads(read(ASSETS + "/jx3/" + f"v{ver}.json"))
     try:
         real_data = data[name]
     except:
