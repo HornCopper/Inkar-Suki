@@ -44,6 +44,15 @@ css_fixed = """
 // 要抄好歹点个star 然后赞助赞助（狗头）
 """
 
+async def check_bind(id: str):
+    final_url = f"https://helper.jx3box.com/api/wiki/post?type=item&source_id={id}"
+    data = await get_api(final_url)
+    bind_type = data["data"]["source"]["BindType"]
+    if bind_type == None:
+        bind_type = 0
+    bind_types = ["未知","不绑定","装备后绑定","拾取后绑定"]
+    return bind_types[bind_type]
+
 async def search_item_info(item_name: str):
     final_url = f"https://helper.jx3box.com/api/item/search?keyword={item_name}&limit=1000"
     box_data = await get_api(final_url)
@@ -51,13 +60,14 @@ async def search_item_info(item_name: str):
         return "没有找到该物品哦~"
     space = []
     id = []
-    space.append(["序号","物品ID","物品名称","物品图标"])
+    space.append(["序号","物品ID","物品名称","绑定类型","物品图标"])
     num = 0
     for i in box_data["data"]["data"]:
         icon = i["IconID"]
         img_url = f"https://icon.jx3box.com/icon/{icon}.png"
         html_code = f"<img src={img_url}></img>"
-        new = [num, i["id"], i["Name"], html_code]
+        bind_type = await check_bind(i["id"])
+        new = [num, i["id"], i["Name"], bind_type, html_code]
         space.append(new)
         id.append(i["id"])
         num = num + 1
