@@ -92,9 +92,9 @@ async def getItemPriceById(id: str, server: str, group: str = None):
     for i in logs:
         server_ = i["Server"]
         date = i["Date"]
-        LowestPrice = convert(logs[0]["LowestPrice"])
-        AvgPrice = convert(logs[0]["AvgPrice"])
-        HighestPrice = convert(logs[0]["HighestPrice"])
+        LowestPrice = convert(i["LowestPrice"])
+        AvgPrice = convert(i["AvgPrice"])
+        HighestPrice = convert(i["HighestPrice"])
         new = [server_, date, HighestPrice, AvgPrice, LowestPrice]
         chart.append(new)
     html = "<div style=\"font-family:Custom\">" + tabulate(chart, tablefmt="unsafehtml") + "</div>" + css
