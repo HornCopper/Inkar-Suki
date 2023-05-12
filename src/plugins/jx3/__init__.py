@@ -427,7 +427,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     if len(arg) == 2:
         kf = arg[0]
         tl = arg[1]
-        ver = "20221027"
+        ver = "20230427"
     else:
         kf = arg[0]
         tl = arg[1]
