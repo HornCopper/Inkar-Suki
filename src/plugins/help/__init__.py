@@ -54,7 +54,7 @@ css = """
                 src: url("customfont");
             }
 </style>"""
-css = css.replace("customfont",Config.font_path)
+css = css.replace("customfont", Config.font_path)
 path = PLUGINS
 @help.handle()
 async def help_(args: Message = CommandArg()):
