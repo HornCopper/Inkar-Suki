@@ -25,11 +25,11 @@ class Config:
     # 提示：每次重启`Inkar-Suki`时，会检测`permission.json`是否存在，若文件不存在则会补上并为`owner`列表中每一元素添加`10`级权限，方式为`dict`。
 
 
-    size = global_path+"/tools/size.txt"
-    html_path = global_path+"/plugins/help/help.html"
-    chromedriver_path = global_path+"/tools/chromedriver"
-    help_image_save_to = global_path+"/plugins/help/help.png"
-    font_path = "file://"+global_path+"/tools/custom.ttf"
+    size = global_path + "/tools/size.txt"
+    html_path = global_path + "/plugins/help/help.html"
+    chromedriver_path = global_path + "/tools/chromedriver"
+    help_image_save_to = global_path + "/plugins/help/help.png"
+    font_path = "file://" + global_path + "/tools/custom.ttf"
 
 
     cqhttp = "" # CQHTTP地址，参考`https://go-cqhttp.org`。

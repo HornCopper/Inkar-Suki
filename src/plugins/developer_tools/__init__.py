@@ -82,6 +82,7 @@ async def say_(event: Event, args: Message = CommandArg()):
 ping = on_command("ping", aliases={"-测试"}, priority=5) # 测试机器人是否在线
 @ping.handle()
 async def _(event: Event):
+    ikv = await ikv()
     if checker(str(event.user_id),1) == False:
         times = str("现在是"
         + time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())

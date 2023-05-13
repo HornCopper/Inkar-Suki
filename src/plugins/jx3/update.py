@@ -55,7 +55,7 @@ async def update_patch_checker(bot: Bot, parser: ConfigParser = ConfigParser()) 
                 groups = os.listdir(DATA)
                 for i in groups:
                     subscribe = json.loads(read(DATA + "/" + i + "/subscribe.json"))
-                    if ["更新"] in subscribe:
+                    if "更新" in subscribe:
                         await bot.call_api("send_group_msg", group_id = int(i), message = msg)
                 CURRENT_VERSION = new_version
             await asyncio.sleep(30)
