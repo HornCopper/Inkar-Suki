@@ -28,8 +28,8 @@ class SizeUnit(IntEnum):
 
 async def package_size(patch_url: str) -> int:
     async with httpx.AsyncClient(timeout=10, verify = False) as session:
-        resp = await session.get(patch_url)
-        return resp.headers["Content-Length"]
+        resp = await session.get(UpdatePackageUrls + patch_url)
+        return int(resp.headers["Content-Length"])
 
 async def update_patch_checker(bot: Bot, parser: ConfigParser = ConfigParser()) -> None:
     async with httpx.AsyncClient(timeout=10, verify = False) as session:
