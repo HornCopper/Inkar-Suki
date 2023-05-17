@@ -15,6 +15,44 @@ from src.tools.utils import get_url, get_status, nodetemp, get_content, get_api
 from src.tools.file import read, write
 from src.tools.config import Config
 
+def kftosh(kf: str) -> str:
+    if kf in ["隐龙决"]:
+        return "凌雪"
+    elif kf in ["花间游","离经易道"]:
+        return "万花"
+    elif kf in ["傲血战意","铁牢律"]:
+        return "天策"
+    elif kf in ["紫霞功","太虚剑意"]:
+        return "纯阳"
+    elif kf in ["云裳心经","冰心诀"]:
+        return "七秀"
+    elif kf in ["毒经","补天诀"]:
+        return "五毒"
+    elif kf in ["惊羽诀","天罗诡道"]:
+        return "唐门"
+    elif kf in ["问水诀","山居剑意"]:
+        return "藏剑"
+    elif kf in ["焚影圣诀","明尊琉璃体"]:
+        return "明教"
+    elif kf in ["分山劲","铁骨衣"]:
+        return "苍云"
+    elif kf in ["莫问","相知"]:
+        return "长歌"
+    elif kf in ["北傲诀"]:
+        return "霸刀"
+    elif kf in ["凌海诀"]:
+        return "蓬莱"
+    elif kf in ["洗髓经","易筋经"]:
+        return "少林"
+    elif kf in ["太玄经"]:
+        return "衍天"
+    elif kf in ["无方","灵素"]:
+        return "药宗"
+    elif kf in ["孤锋诀"]:
+        return "刀宗"
+    else:
+        return False
+
 def aliases(SkillName: str) -> str:
     if SkillName in ["隐龙诀","隐龙决","隐龙","凌雪","凌雪阁"]:
         return "隐龙诀"
@@ -24,9 +62,9 @@ def aliases(SkillName: str) -> str:
         return "离经易道"
     elif SkillName in ["傲雪","傲血","傲血战意"]:
         return "傲血战意"
-    elif SkillName in ["天策T","策T","铁牢","铁牢律","策t","天策t"]:
+    elif SkillName in ["天策T","策T","铁牢","铁牢律","策t","天策t","TCT","tct"]:
         return "铁牢律"
-    elif SkillName in ["气纯","紫霞功","紫霞"]:
+    elif SkillName in ["气纯","紫霞功","紫霞","qc","QC"]:
         return "紫霞功"
     elif SkillName in ["剑纯","太虚剑意","jc","JC"]:
         return "太虚剑意"
@@ -48,15 +86,15 @@ def aliases(SkillName: str) -> str:
         return "笑尘诀"
     elif SkillName in ["焚影圣诀","焚影圣决","焚影"]:
         return "焚影圣诀"
-    elif SkillName in ["明教T","喵T","明尊","明尊琉璃体","明教t","明尊t","喵t"]:
+    elif SkillName in ["明教T","喵T","明尊","明尊琉璃体","明教t","明尊t","喵t","mt","MT"]:
         return "明尊琉璃体"
-    elif SkillName in ["苍云T","铁骨","铁骨衣","铁骨1","苍t","苍云t"]:
+    elif SkillName in ["苍云T","铁骨","铁骨衣","铁骨1","苍t","苍云t","盾T","盾t","cyt","CYT"]:
         return "铁骨衣"
-    elif SkillName in ["分山劲","分山"]:
+    elif SkillName in ["分山劲","分山","岔劲"]:
         return "分山劲"
     elif SkillName in ["莫问"]:
         return "莫问"
-    elif SkillName in ["奶歌","歌奶","相知"]:
+    elif SkillName in ["奶歌","歌奶","相知","奶咕"]:
         return "相知"
     elif SkillName in ["北傲决","北傲诀","霸刀","北傲"]:
         return "北傲诀"

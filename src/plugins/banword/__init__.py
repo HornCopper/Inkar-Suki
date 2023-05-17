@@ -16,7 +16,9 @@ sys.path.append(str(TOOLS))
 
 from src.tools.permission import checker, error
 from src.tools.file import read, write
+
 global flag
+
 banword = on_command("banword", priority=5)
 @banword.handle()
 async def __(event: GroupMessageEvent, args: Message = CommandArg()): # 违禁词封锁
