@@ -393,6 +393,7 @@ class XuanJingEvent(RecvEvent):
     """玄晶名"""
     time: str
     """获取时间"""
+    server: str
 
     @validator("time", pre=True)
     def check_time(cls, v):
@@ -401,7 +402,7 @@ class XuanJingEvent(RecvEvent):
 
     @property
     def log(self) -> str:
-        log = f"玄晶事件：[{self.time}] 侠士 {self.role} 在 {self.map} 获取了 {self.name}。"
+        log = f"玄晶事件：【{self.server}】[{self.time}] 侠士 {self.role} 在 {self.map} 获取了 {self.name}。"
         return log
 
     @overrides(RecvEvent)
