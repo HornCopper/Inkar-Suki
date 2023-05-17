@@ -17,13 +17,12 @@ from src.tools.file import read
 
 from .assistance import Assistance
 
-aic = Assistance()
+aic = Assistance
 
 create = on_command("创建团队", priority=5)
 @create.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
-    keyword = args.extract_plain_text()
-    resp = await aic.create_group(str(event.group_id), keyword, str(event.user_id))
+    resp = await aic.create_group(str(event.group_id), args.extract_plain_text(), str(event.user_id))
     await create.finish(resp)
 
 apply = on_command("预定", priority=5)
@@ -63,5 +62,7 @@ team = on_command("查看团队", priority=5)
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     keyword = args.extract_plain_text()
     html_path = await aic.generate_html(str(event.group_id), keyword)
+    from nonebot.log import logger
+    logger.info(html_path)
     img = await generate(html_path, False, "table", False)
     await team.finish(ms.image(Path(img).as_uri()))

@@ -55,9 +55,10 @@ class Assistance:
 
     async def create_group(group: str, description: str, creator: str):
         group_info = json.loads(read(f"{DATA}/{group}/jx3group.json"))
+        server = group_info["server"]
         if group_info["server"] == "":
             return "开团失败，未绑定服务器的群聊暂无法使用该功能，请先联系群主或管理员进行绑定哦~"
-        status = await Assistance.check_description(description)
+        status = await Assistance.check_description(group, description)
         if status == False:
             return "开团失败，已经有相同的团队关键词！\n使用“团队列表”可查看本群目前正在进行的团队。"
         new = {
@@ -65,10 +66,12 @@ class Assistance:
             "applying": [],
             "member":[[],[],[],[],[]],
             "create_time": int(time.time()),
-            "description": description
+            "description": description,
+            "server": server
         }
         now = json.loads(read(f"{DATA}/{group}/opening.json"))
         now.append(new)
+        write(f"{DATA}/{group}/opening.json", json.dumps(now, ensure_ascii = False))
         return "开团成功，团员可通过以下命令进行预定：\n预定 <团队关键词> <ID> <职业>\n上述命令使用时请勿带尖括号，职业请使用准确些的词语，避免使用“长歌”，“万花”等模棱两可的职业字眼，也可以是“躺拍”“老板”等词语。\n特别注意：团长请给自己预定，否则预定总人数将为26人！"
 
     async def apply_for_place(group: str, description: str, id: str, job: str, applyer: str):
@@ -84,7 +87,8 @@ class Assistance:
             if job == False:
                 return "唔……音卡暂时没办法识别您的职业，请检查一下呗？\n避免使用“长歌”“万花”“天策”等字眼，您可以使用“天策t”“奶咕”“qc”等准确些的词语方便理解哦~\n如果您使用的词语实在无法识别，请使用标准名称，例如“离经易道”。"
         job_icon = await Assistance.get_icon(job)
-        player_data = await get_api(f"https://www.jx3api.com/data/role/roleInfo?token={token}&server={server}&name={id}")
+        final_url = f"https://www.jx3api.com/data/role/roleInfo?token={token}&server={server}&name={id}"
+        player_data = await get_api(final_url)
         uid = player_data["data"]["roleId"]
         if player_data["data"]["forceName"] != get_xinfa_belong(job):
             return "检测到自身预定职业和角色职业冲突，预定失败。"
@@ -169,7 +173,7 @@ class Assistance:
             if i["description"] == description:
                 chart = []
                 creator = i["creator"]
-                time_ = await Assistance.time_convert(i["time"])
+                time_ = await Assistance.time_convert(i["create_time"])
                 server = i["server"]
                 lenth = len(i["member"][0]) + len(i["member"][1]) + len(i["member"][2]) + len(i["member"][3]) + len(i["member"][4])
                 chart.append([f"创建者：{creator}", description, time_, server, f"{lenth}/25"])
@@ -181,12 +185,12 @@ class Assistance:
                         uid = y["uid"]
                         job = y["job"]
                         time1 = await Assistance.time_convert(y["time"])
-                        content = f"<img src={icon}></img>{id}<br>职业：{job}<br>UID：{uid}<br>{time1}"
+                        content = f"<img src={icon} width=\"20\" height=\"20\"></img>{id}<br>职业：{job}<br>UID：{uid}<br>{time1}"
                         space.append(content)
-                        if len(space) == 5:
-                            chart.append(space)
-                            space.clear()
-                final_html = "<div style=\"font-family:Custom\">" + tabulate(chart, headers="firstrow", tablefmt="unsafehtml") + "</div>" + css
+                    chart.append(space)
+                from nonebot.log import logger
+                logger.info(chart)
+                final_html = "<div style=\"font-family:Custom\">" + tabulate(chart, tablefmt="unsafehtml") + "</div>" + css
                 path = CACHE + "/" + get_uuid() + ".html"
                 write(path, final_html)
                 return path
