@@ -188,8 +188,6 @@ class Assistance:
                         content = f"<img src={icon} width=\"20\" height=\"20\"></img>{id}<br>职业：{job}<br>UID：{uid}<br>{time1}"
                         space.append(content)
                     chart.append(space)
-                from nonebot.log import logger
-                logger.info(chart)
                 final_html = "<div style=\"font-family:Custom\">" + tabulate(chart, tablefmt="unsafehtml") + "</div>" + css
                 path = CACHE + "/" + get_uuid() + ".html"
                 write(path, final_html)
