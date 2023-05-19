@@ -224,6 +224,30 @@ class UpdRecEvent(RecvEvent):
     def get_message(self) -> dict:
         return {"type":"更新","msg":f"检测到客户端有更新哦~\n当前版本：{self.old_version}\n更新版本：{self.new_version}\n共计{self.package_num}个更新包，总大小为{self.package_size}。"}
 
+@EventRister.rister(action=2004)
+class _818RecEvent(RecvEvent):
+    """818推送事件"""
+
+    __event__ = "WsRecv.818"
+    message_type = "818"
+
+    name: str
+    """服务器"""
+    title: str
+    """标题"""
+    url: str
+    """链接"""
+
+    @property
+    def log(self) -> str:
+        log = f"{self.type}事件：{self.name} - {self.title}：{self.url}"
+        return log
+    
+    @overrides(RecvEvent)
+    def get_message(self) -> dict:
+        return {"type":"818", "server": self.name, "msg":f"【{self.server}】{self.title}\n{self.url}"}
+    
+
 @EventRister.rister(action=1001)
 class SerendipityEvent(RecvEvent):
     """奇遇播报事件"""
