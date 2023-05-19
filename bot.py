@@ -15,9 +15,6 @@ try:
 except FileExistsError:
     print("检测到`cache`文件夹已创建。")
 
-try:
-    os.mkdir("./src/sign")
-
 except FileExistsError:
     print("检测到`sign`文件夹已创建。")
 
