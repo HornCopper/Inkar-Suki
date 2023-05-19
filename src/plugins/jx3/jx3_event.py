@@ -200,6 +200,29 @@ class NewsRecvEvent(RecvEvent):
     def get_message(self) -> dict:
         return {"type":"公告","msg":f"{self.type}来啦！\n标题：{self.title}\n链接：{self.url}\n日期：{self.date}"}
 
+@EventRister.rister(action=2003)
+class UpdRecEvent(RecvEvent):
+    """更新推送事件"""
+
+    __event__ = "WsRecv.Upd"
+    message_type = "Update"
+    old_version: str
+    """旧版本"""
+    new_version: str
+    """新版本"""
+    package_num: int
+    """更新包数量"""
+    package_size: str
+    """更新包大小"""
+
+    @property
+    def log(self) -> str:
+        log = f"{self.type}事件，{self.old_version} -> {self.new_version} {self.package_num}*{self.package_size}"
+        return log
+    
+    @overrides(RecvEvent)
+    def get_message(self) -> dict:
+        return {"type":"更新","msg":f"检测到客户端有更新哦~\n当前版本：{self.old_version}\n更新版本：{self.new_version}\n共计{self.package_num}个更新包，总大小为{self.package_size}。"}
 
 @EventRister.rister(action=1001)
 class SerendipityEvent(RecvEvent):
@@ -418,7 +441,7 @@ class XuanJingEvent(RecvEvent):
         if found == False:
             return
         write(xuanjing_record_file, json.dumps(correct, ensure_ascii=False))
-        return {"type":"玄晶","server":self.server,"msg":f"{self.time}\n恭喜侠士[{self.role}]在{self.map}获得稀有掉落[{self.name}]！"}
+        return {"type":"玄晶","server":f"{self.server}","msg":f"{self.time}\n恭喜侠士[{self.role}]在{self.map}获得稀有掉落[{self.name}]！"}
 
 
 @EventRister.rister(action=1008)
@@ -475,7 +498,6 @@ class SubscribeEvent(RecvEvent):
     @overrides(RecvEvent)
     def get_message(self) -> Message:
         return Message(f"[订阅回执]\n类型：{self.action}。")
-
 
 @EventRister.rister(action=10002)
 class DisSubscribeEvent(RecvEvent):
