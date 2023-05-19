@@ -245,7 +245,7 @@ class _818RecEvent(RecvEvent):
     
     @overrides(RecvEvent)
     def get_message(self) -> dict:
-        return {"type":"818", "server": self.name, "msg":f"【{self.server}】{self.title}\n"}
+        return {"type":"818", "server": self.name, "msg":f"【{self.server}】{self.title}\n{self.url}"}
     
 
 @EventRister.rister(action=1001)
