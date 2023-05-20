@@ -77,7 +77,7 @@ class WsNotice(BaseEvent):
         return escape_tag(str(self.dict()))
 
     @overrides(BaseEvent)
-    def get_message(self) -> Message:
+    def get_message(self) -> dict:
         raise ValueError("Event has no message!")
 
     @overrides(BaseEvent)
@@ -126,7 +126,7 @@ class RecvEvent(BaseEvent, extra=Extra.ignore):
         return escape_tag(str(self.dict()))
 
     @overrides(BaseEvent)
-    def get_message(self) -> Message:
+    def get_message(self) -> dict:
         raise ValueError("Event has no message!")
 
     @overrides(BaseEvent)
@@ -225,7 +225,7 @@ class UpdRecEvent(RecvEvent):
         return {"type":"更新","msg":f"检测到客户端有更新哦~\n当前版本：{self.old_version}\n更新版本：{self.new_version}\n共计{self.package_num}个更新包，总大小为{self.package_size}。"}
 
 @EventRister.rister(action=2004)
-class _818RecEvent(RecvEvent):
+class GossipecEvent(RecvEvent):
     """818推送事件"""
 
     __event__ = "WsRecv.818"
@@ -274,7 +274,7 @@ class SerendipityEvent(RecvEvent):
         return log
 
     @overrides(RecvEvent)
-    def get_message(self) -> Message:
+    def get_message(self) -> dict:
         return Message(f"奇遇推送 {self.time}\n{self.serendipity} 被 {self.name} 抱走惹。")
 
 
@@ -304,7 +304,7 @@ class HorseRefreshEvent(RecvEvent):
         return log
 
     @overrides(RecvEvent)
-    def get_message(self) -> Message:
+    def get_message(self) -> dict:
         return Message(
             f"[抓马监控] 时间：{self.time}\n{self.map} 将在[{self.min} - {self.max}分]后刷新马驹。"
         )
@@ -336,7 +336,7 @@ class HorseCatchedEvent(RecvEvent):
         return log
 
     @overrides(RecvEvent)
-    def get_message(self) -> Message:
+    def get_message(self) -> dict:
         return Message(
             f"[抓马监控] 时间：{self.time}\n{self.map} 的 {self.horse} 被 {self.name} 抓走了~"
         )
@@ -360,7 +360,7 @@ class FuyaoRefreshEvent(RecvEvent):
         return log
 
     @overrides(RecvEvent)
-    def get_message(self) -> Message:
+    def get_message(self) -> dict:
         return Message(f"[扶摇监控]\n扶摇九天在 {self.time} 开启了。")
 
 
@@ -387,7 +387,7 @@ class FuyaoNamedEvent(RecvEvent):
         return log
 
     @overrides(RecvEvent)
-    def get_message(self) -> Message:
+    def get_message(self) -> dict:
         name = ",".join(self.names)
         return Message(f"[扶摇监控] 时间：{self.time}\n唐文羽点名了[{name}]。")
 
@@ -420,7 +420,7 @@ class FireworksEvent(RecvEvent):
         return log
 
     @overrides(RecvEvent)
-    def get_message(self) -> Message:
+    def get_message(self) -> dict:
         return Message(
             f"[烟花监控] 时间：{self.time}\n{self.sender} 在 {self.map} 对 {self.name} 使用了烟花：{self.recipient}。"
         )
@@ -490,7 +490,7 @@ class GameSysMsgEvent(RecvEvent):
         return log
 
     @overrides(RecvEvent)
-    def get_message(self) -> Message:
+    def get_message(self) -> dict:
         return Message(f"[系统频道推送]\n时间：{self.time}\n{self.message}。")
 
 
@@ -520,7 +520,7 @@ class SubscribeEvent(RecvEvent):
         return log
 
     @overrides(RecvEvent)
-    def get_message(self) -> Message:
+    def get_message(self) -> dict:
         return Message(f"[订阅回执]\n类型：{self.action}。")
 
 @EventRister.rister(action=10002)
@@ -549,5 +549,5 @@ class DisSubscribeEvent(RecvEvent):
         return log
 
     @overrides(RecvEvent)
-    def get_message(self) -> Message:
+    def get_message(self) -> dict:
         return Message(f"[取消订阅回执]\n类型：{self.action}。")
