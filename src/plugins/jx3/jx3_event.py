@@ -500,7 +500,7 @@ class SubscribeEvent(RecvEvent):
 
     __event__ = "WsRecv.Subscribe"
     message_type = "Subscribe"
-    action: Literal["烟花报时", "玄晶报时", "游戏消息"]
+    action: Literal["烟花报时", "玄晶报时", "游戏消息","游戏更新","八卦速报"]
     """订阅内容"""
     server: list
     """已订阅服务器"""
@@ -513,6 +513,10 @@ class SubscribeEvent(RecvEvent):
             return "玄晶报时"
         elif v == 1010:
             return "游戏消息"
+        elif v == 2003:
+            return "游戏更新"
+        elif v == 2004:
+            return "八卦速报"
 
     @property
     def log(self) -> str:
@@ -529,7 +533,7 @@ class DisSubscribeEvent(RecvEvent):
 
     __event__ = "WsRecv.DisSubscribe"
     message_type = "DisSubscribe"
-    action: Literal["烟花报时", "玄晶报时", "游戏消息"]
+    action: Literal["烟花报时", "玄晶报时", "游戏消息","游戏更新","八卦速报"]
     """订阅内容"""
     server: list[str]
     """已订阅服务器"""
