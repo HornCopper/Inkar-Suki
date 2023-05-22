@@ -41,6 +41,7 @@ MANIFEST
 *.spec
 
 firework.py
+special_application.py
 agl.json
 blacklist.json
 password.txt
