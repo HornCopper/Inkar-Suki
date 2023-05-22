@@ -40,6 +40,11 @@ from .chitu import get_chitu, get_horse_reporter
 from .wanbaolou import get_wanbaolou
 from .bind import *
 
+try:
+    from .special_application import * # 公共实例独有功能，闭源
+except:
+    pass
+
 news = on_command("jx3_news", aliases={"新闻"}, priority=5)
 @news.handle()
 async def _():
@@ -568,7 +573,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     else:
         await serendipity.finish(ms.image(data))
 
-statistical = on_command("jx3_statistical", aliases={"近期奇遇"}, priority=5)
+statistical = on_command("jx3_lstatistical", aliases={"近期奇遇"}, priority=5)
 @statistical.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     '''
@@ -965,7 +970,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     msg = await get_wanbaolou(product_num, product_flag)
     await wbl.finish(msg)
 
-firework__ = on_command("jx3_firework", aliases={"烟花"}, priority=5)
+firework__ = on_command("jx3-firework", aliases={"_烟花"}, priority=5)
 @firework__.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     arg = args.extract_plain_text().split(" ")
@@ -991,6 +996,11 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     else:
         await item.finish(ms.image(Path(info).as_uri()))
 
+pendents = on_command("jx3_pendents", aliases={"挂件"}, priority=5)
+@pendents.handle()
+async def _(event: GroupMessageEvent, args: Message = CommandArg()):
+    await pendents.finish(await pendant(name = args.extract_plain_text()))
+
 driver = get_driver()
 
 @driver.on_startup
@@ -1006,7 +1016,7 @@ async def _(bot: Bot, event: RecvEvent):
     message = event.get_message()
     if message == "False":
         return
-    groups = os.listdir(DATA)
+    groups = await bot.call_api("get_group_list")
     for i in groups:
         subscribe = json.loads(read(DATA + "/" + i + "/subscribe.json"))
         if message["type"] in subscribe:
@@ -1014,7 +1024,12 @@ async def _(bot: Bot, event: RecvEvent):
                 group_info = json.loads(read(DATA + "/" + i + "/jx3group.json"))
                 if group_info["server"] != message["server"]:
                     return
-            try:
-                await bot.call_api("send_group_msg", group_id = int(i), message = message["msg"])
-            except:
-                logger.info(f"向群({i})推送失败，可能是因为风控、禁言或者未加入该群。")
+                else:
+                    await bot.call_api("send_group_msg", group_id = int(i), message = message["msg"])
+                    return
+            else:
+                try:
+                    await bot.call_api("send_group_msg", group_id = int(i), message = message["msg"])
+                    return
+                except:
+                    logger.info(f"向群({i})推送失败，可能是因为风控、禁言或者未加入该群。")
