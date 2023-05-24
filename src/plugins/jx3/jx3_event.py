@@ -200,8 +200,6 @@ class NewsRecvEvent(RecvEvent):
     def get_message(self) -> dict:
         return {"type":"公告","msg":f"{self.type}来啦！\n标题：{self.title}\n链接：{self.url}\n日期：{self.date}"}
 
-'''
-
 @EventRister.rister(action=2003)
 class UpdRecEvent(RecvEvent):
     """更新推送事件"""
@@ -230,7 +228,7 @@ class UpdRecEvent(RecvEvent):
 class GossipecEvent(RecvEvent):
     """818推送事件"""
 
-    __event__ = "WsRecv.818"
+    __event__ = "WsRecv.SpillTheTea"
     message_type = "818"
 
     name: str
@@ -247,8 +245,7 @@ class GossipecEvent(RecvEvent):
     
     @overrides(RecvEvent)
     def get_message(self) -> dict:
-        return {"type":"818", "server": self.name, "msg":f"【{self.server}】{self.title}\n{self.url}"}
-'''
+        return {"type":"818", "server": self.server, "msg":f"有新的八卦推送来啦！\n{self.title}\n{self.url}\n来源：{self.name}吧"}
 
 @EventRister.rister(action=1001)
 class SerendipityEvent(RecvEvent):
