@@ -1018,13 +1018,14 @@ async def _(bot: Bot, event: RecvEvent):
         return
     groups = await bot.call_api("get_group_list")
     for i in groups:
-        subscribe = json.loads(read(DATA + "/" + i + "/subscribe.json"))
+        group = i["group_id"]
+        subscribe = json.loads(read(DATA + "/" + str(group) + "/subscribe.json"))
         if message["type"] in subscribe:
             if message["type"] == "玄晶":
-                group_info = json.loads(read(DATA + "/" + i + "/jx3group.json"))
+                group_info = json.loads(read(DATA + "/" + str(group) + "/jx3group.json"))
                 if group_info["server"] != message["server"]:
-                    return
+                    continue
             try:
-                await bot.call_api("send_group_msg", group_id = int(i), message = message["msg"])
+                await bot.call_api("send_group_msg", group_id = group, message = message["msg"])
             except:
                 logger.info(f"向群({i})推送失败，可能是因为风控、禁言或者未加入该群。")
