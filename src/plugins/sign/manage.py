@@ -10,18 +10,19 @@ CLOCK = TOOLS[:-5] + "clock"
 from src.tools.file import read, write
 
 class Sign:
-    def lucky_level(luck: int):
-        if 0 <= luck < 2500:
+    def lucky_level(luck: int = None):
+        if not luck:
+            luck = random.randint(0, 10000)
+        if luck < 5000:
             return 0
-        elif 2500 <= luck < 5000:
+        elif luck < 7500:
             return 1
-        elif 5000 <= luck < 7500:
+        elif luck < 9000:
             return 2
-        elif 5000 <= luck < 10000:
-            return 3
+        return 3
     def generate_everyday_reward():
         coin = random.randint(1,100)
-        luck = Sign.lucky_level(random.randint(0,10000))
+        luck = Sign.lucky_level()
         coin = coin * (luck + 1)
         lottery = random.randint(0,100)
         wlottery = False
