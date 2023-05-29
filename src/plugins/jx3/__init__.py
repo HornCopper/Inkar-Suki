@@ -336,13 +336,13 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
 
     Notice：一次只可订阅一个。
     '''
-    path = DATA + "/" + str(event.group_id) + "/subscribe.json"
+    path = f'{DATA}/{event.group_id}/subscribe.json'
     now = json.loads(read(path))
     obj = args.extract_plain_text()
     if obj not in ["玄晶","公告","开服","更新","818"]:
         await subscribe.finish("请不要订阅一些很奇怪的东西，我可是无法理解的哦~")
     if obj in now:
-        await subscribe.finish("已经订阅了哦，请不要重复订阅~")
+        await subscribe.finish(f"{obj}已经订阅了哦，请不要重复订阅~")
     now.append(obj)
     write(path, json.dumps(now, ensure_ascii=False))
     await subscribe.finish(f"已开启本群的{obj}订阅！当收到事件时会自动推送，如需取消推送，请发送：-退订 {obj}")
@@ -357,7 +357,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
 
     Example：-退订 开服
     '''
-    path = DATA + "/" + str(event.group_id) + "/subscribe.json"
+    path = f'{DATA}/{event.group_id}/subscribe.json'
     now = json.loads(read(path))
     obj = args.extract_plain_text()
     if obj not in ["玄晶","公告","开服","更新","818"]:
@@ -1017,15 +1017,21 @@ async def _(bot: Bot, event: RecvEvent):
     if message == "False":
         return
     groups = await bot.call_api("get_group_list")
+    async def call_single(group:str):
+        try:
+            await bot.call_api("send_group_msg", group_id = group, message = message["msg"])
+        except:
+            logger.info(f"向群({i})推送失败，可能是因为风控、禁言或者未加入该群。")
     for i in groups:
         group = i["group_id"]
-        subscribe = json.loads(read(DATA + "/" + str(group) + "/subscribe.json"))
-        if message["type"] in subscribe:
-            if message["type"] == "玄晶":
-                group_info = json.loads(read(DATA + "/" + str(group) + "/jx3group.json"))
-                if group_info["server"] != message["server"]:
-                    continue
-            try:
-                await bot.call_api("send_group_msg", group_id = group, message = message["msg"])
-            except:
-                logger.info(f"向群({i})推送失败，可能是因为风控、禁言或者未加入该群。")
+        subscribe = json.loads(read(f'{DATA}/{group}/subscribe.json'))
+
+        ignore_flag = not 'all' in subscribe
+        ignore_flag = ignore_flag or (not message["type"] in subscribe)
+        if ignore_flag:
+            continue
+        if message["type"] == "玄晶":
+            group_info = json.loads(read(DATA + "/" + str(group) + "/jx3group.json"))
+            if group_info["server"] != message["server"]:
+                continue
+        call_single(group)
