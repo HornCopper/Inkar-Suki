@@ -1025,6 +1025,10 @@ async def _(bot: Bot, event: RecvEvent):
                 group_info = json.loads(read(DATA + "/" + str(group) + "/jx3group.json"))
                 if group_info["server"] != message["server"]:
                     continue
+            elif message["type"] == "818":
+                group_info = json.loads(read(DATA + "/" + str(group) + "/jx3group.json"))
+                if group_info["server"] != "" and group_info["server"] != message["server"]:
+                    continue
             try:
                 await bot.call_api("send_group_msg", group_id = group, message = message["msg"])
             except:

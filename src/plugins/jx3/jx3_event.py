@@ -201,10 +201,10 @@ class NewsRecvEvent(RecvEvent):
         return {"type":"公告","msg":f"{self.type}来啦！\n标题：{self.title}\n链接：{self.url}\n日期：{self.date}"}
 
 @EventRister.rister(action=2003)
-class UpdRecEvent(RecvEvent):
+class UpdateRecEvent(RecvEvent):
     """更新推送事件"""
 
-    __event__ = "WsRecv.Upd"
+    __event__ = "WsRecv.Update"
     message_type = "Update"
     old_version: str
     """旧版本"""
@@ -225,14 +225,15 @@ class UpdRecEvent(RecvEvent):
         return {"type":"更新","msg":f"检测到客户端有更新哦~\n当前版本：{self.old_version}\n更新版本：{self.new_version}\n共计{self.package_num}个更新包，总大小为{self.package_size}。"}
 
 @EventRister.rister(action=2004)
-class GossipecEvent(RecvEvent):
+class SpillTheTeaEvent(RecvEvent):
     """818推送事件"""
 
     __event__ = "WsRecv.SpillTheTea"
-    message_type = "818"
-
+    message_type = "SpillTheTea"
+    server: str
+    """服务器名"""
     name: str
-    """服务器"""
+    """吧名"""
     title: str
     """标题"""
     url: str
