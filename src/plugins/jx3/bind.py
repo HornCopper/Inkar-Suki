@@ -24,7 +24,7 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
         await bind.finish("唔……只有群主或管理员才可以修改哦！")
     server = args.extract_plain_text()
     group = str(event.group_id)
-    server = server_mapping(server, group)
+    server = server_mapping(server)
     if server == False:
         await bind.finish("唔……服务器名称输入有误，绑定失败！")
     path = DATA + "/" + group + "/jx3group.json"
