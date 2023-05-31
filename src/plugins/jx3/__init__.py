@@ -586,6 +586,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     if len(arg) == 1:
         if group_server == False:
             await serendipity.finish("没有绑定服务器，请携带服务器参数使用！")
+        server = group_server
         id = arg[0]
     elif len(arg) ==2:
         server = arg[0]
@@ -611,6 +612,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     if len(arg) == 1:
         if group_server == False:
             await statistical.finish("没有绑定服务器，请携带服务器参数使用！")
+        server = group_server
         name = arg[0]
     elif len(arg) ==2:
         server = arg[0]
@@ -671,6 +673,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     if len(arg) == 1:
         if group_server == False:
             await addritube.finish("没有绑定服务器，请携带服务器参数使用！")
+        server = group_server
         id = arg[0]
     elif len(arg) ==2:
         server = arg[0]
@@ -907,6 +910,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     if len(arg) == 1:
         if group_server == False:
             await roleInfo.finish("没有绑定服务器，请携带服务器参数使用！")
+        server = group_server
         id = arg[0]
     elif len(arg) ==2:
         server = arg[0]
@@ -971,6 +975,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     if len(arg) == 1:
         if group_server == False:
             await mc_helper.finish("没有绑定服务器，请携带服务器参数使用！")
+        server = group_server
         name = arg[0]
     elif len(arg) ==2:
         server = arg[0]
@@ -993,6 +998,7 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
     if len(arg) == 1:
         if group_server == False:
             await zones.finish("没有绑定服务器，请携带服务器参数使用！")
+        server = group_server
         id = arg[0]
     elif len(arg) ==2:
         server = arg[0]
@@ -1088,6 +1094,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     if len(arg) == 1:
         if group_server == False:
             await mc_helper.finish("没有绑定服务器，请携带服务器参数使用！")
+        server = group_server
         name = arg[0]
     elif len(arg) ==2:
         server = arg[0]
