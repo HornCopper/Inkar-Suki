@@ -9,7 +9,7 @@ sys.path.append(TOOLS)
 from src.tools.utils import get_url, get_api
 from .jx3 import server_mapping
 
-async def get_chitu(server: str, group: str): # 数据来源@jw3cx.com
+async def get_chitu(server: str): # 数据来源@jw3cx.com
     api = "https://jw3cx.com/"
     data = await get_url(api)
     server = server_mapping(server, group)
@@ -22,8 +22,8 @@ async def get_chitu(server: str, group: str): # 数据来源@jw3cx.com
             return f"{i.get_text()}：" + i["value"]
     return "唔……服务器名输入有误，请检查后重试~"
 
-async def get_horse_reporter(server: str, group: str): #数据来源@JX3BOX
-    server = server_mapping(server, group)
+async def get_horse_reporter(server: str): #数据来源@JX3BOX
+    server = server_mapping(server)
     if server == False:
         return "没有找到该服务器哦，请检查后重试~"
     final_url = f"https://next2.jx3box.com/api/game/reporter/horse?type=horse&server={server}"
