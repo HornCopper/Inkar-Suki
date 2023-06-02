@@ -201,11 +201,11 @@ class NewsRecvEvent(RecvEvent):
         return {"type":"公告","msg":f"{self.type}来啦！\n标题：{self.title}\n链接：{self.url}\n日期：{self.date}"}
 
 @EventRister.rister(action=2003)
-class UpdateRecEvent(RecvEvent):
+class ClientUpdateRecEvent(RecvEvent):
     """更新推送事件"""
 
-    __event__ = "WsRecv.Update"
-    message_type = "Update"
+    __event__ = "WsRecv.ClientUpdate"
+    message_type = "ClientUpdate"
     old_version: str
     """旧版本"""
     new_version: str
@@ -217,7 +217,7 @@ class UpdateRecEvent(RecvEvent):
 
     @property
     def log(self) -> str:
-        log = f"{self.type}事件，{self.old_version} -> {self.new_version} {self.package_num}*{self.package_size}"
+        log = f"客户端版本更新事件，更新至：{self.new_version}"
         return log
     
     @overrides(RecvEvent)
@@ -241,7 +241,7 @@ class SpillTheTeaEvent(RecvEvent):
 
     @property
     def log(self) -> str:
-        log = f"{self.type}事件：{self.name} - {self.title}：{self.url}"
+        log = f"吃瓜推送事件：[{self.title}]"
         return log
     
     @overrides(RecvEvent)
