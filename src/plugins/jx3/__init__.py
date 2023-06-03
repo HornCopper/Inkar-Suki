@@ -516,7 +516,7 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
         if len(arg) not in [1,2]:
             await recruit.finish("参数不正确哦，只能有1或2个参数~")
         if len(arg) == 1:
-            if group_server == False:
+            if server_mapping(arg[0]) != False or group_server == False:
                 server = arg[0]
                 copy = ""
             else:
@@ -717,7 +717,7 @@ async def _(state: T_State, event: GroupMessageEvent, args: Message = CommandArg
     arg = args.extract_plain_text().split(" ")
     if len(arg) != 2:
         await trade_.finish("唔……参数不正确哦，请检查后重试~")
-    server = server_mapping(arg[0], group_id=str(event.group_id))
+    server = server_mapping(arg[0])
     if server == False:
         await trade_.finish("唔……服务器不存在，请检查后重试~")
     item = arg[1]
@@ -737,7 +737,7 @@ async def _(state: T_State, event: GroupMessageEvent, num: Message = Arg()):
     if checknumber(num):
         id = state["id"][int(num)]
         server = state["server"]
-        data = await getItemPriceById(id, server, str(event.group_id))
+        data = await getItemPriceById(id, server)
         if type(data) != type([]):
             await trade_.finish(data)
         else:
@@ -1142,11 +1142,11 @@ async def _(bot: Bot, event: RecvEvent):
         if message["type"] in subscribe:
             if message["type"] == "玄晶":
                 group_info = json.loads(read(DATA + "/" + str(group) + "/jx3group.json"))
-                if group_info["server"] != message["server"]:
+                if group_info["server"] != message["server"] and group_info["server"] != "":
                     continue
             elif message["type"] == "818":
                 group_info = json.loads(read(DATA + "/" + str(group) + "/jx3group.json"))
-                if group_info["server"] != "" and group_info["server"] != message["server"]:
+                if group_info["server"] != "" and group_info["server"] != message["server"] and message["name"] != "剑网3":
                     continue
             try:
                 await bot.call_api("send_group_msg", group_id = group, message = message["msg"])
