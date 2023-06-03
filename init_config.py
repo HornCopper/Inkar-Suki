@@ -2,6 +2,7 @@ import sys
 import os
 
 if __name__ == '__main__':
+    import bot
     argv = sys.argv
     if len(argv) == 1:
         token = 'invalid'
