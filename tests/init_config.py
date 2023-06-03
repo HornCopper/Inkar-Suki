@@ -1,5 +1,6 @@
 import sys
 import os
+import bot
 if __name__ == '__main__':
     argv = sys.argv
     if len(argv) == 1:
