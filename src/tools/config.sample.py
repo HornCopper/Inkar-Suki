@@ -2,15 +2,9 @@
 # 请将该文件改为 config.py 后使用
 ###############################
 
-from src.tools.file import get_resource_path
-from pathlib import Path
-import os
-from local_version import nbv, ikv
+from src.tools.local_version import ikv, nbv
 import nonebot
 import sys
-TOOLS = nonebot.get_driver().config.tools_path
-sys.path.append(TOOLS)
-
 
 class Config:
     '''

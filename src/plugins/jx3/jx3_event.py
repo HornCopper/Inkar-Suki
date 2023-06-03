@@ -201,11 +201,11 @@ class NewsRecvEvent(RecvEvent):
         return {"type":"公告","msg":f"{self.type}来啦！\n标题：{self.title}\n链接：{self.url}\n日期：{self.date}"}
 
 @EventRister.rister(action=2003)
-class UpdRecEvent(RecvEvent):
+class ClientUpdateRecEvent(RecvEvent):
     """更新推送事件"""
 
-    __event__ = "WsRecv.Upd"
-    message_type = "Update"
+    __event__ = "WsRecv.ClientUpdate"
+    message_type = "ClientUpdate"
     old_version: str
     """旧版本"""
     new_version: str
@@ -217,7 +217,7 @@ class UpdRecEvent(RecvEvent):
 
     @property
     def log(self) -> str:
-        log = f"{self.type}事件，{self.old_version} -> {self.new_version} {self.package_num}*{self.package_size}"
+        log = f"客户端版本更新事件，更新至：{self.new_version}"
         return log
     
     @overrides(RecvEvent)
@@ -225,14 +225,15 @@ class UpdRecEvent(RecvEvent):
         return {"type":"更新","msg":f"检测到客户端有更新哦~\n当前版本：{self.old_version}\n更新版本：{self.new_version}\n共计{self.package_num}个更新包，总大小为{self.package_size}。"}
 
 @EventRister.rister(action=2004)
-class GossipecEvent(RecvEvent):
+class SpillTheTeaEvent(RecvEvent):
     """818推送事件"""
 
     __event__ = "WsRecv.SpillTheTea"
-    message_type = "818"
-
+    message_type = "SpillTheTea"
+    server: str
+    """服务器名"""
     name: str
-    """服务器"""
+    """吧名"""
     title: str
     """标题"""
     url: str
@@ -240,12 +241,12 @@ class GossipecEvent(RecvEvent):
 
     @property
     def log(self) -> str:
-        log = f"{self.type}事件：{self.name} - {self.title}：{self.url}"
+        log = f"吃瓜推送事件：[{self.title}]"
         return log
     
     @overrides(RecvEvent)
     def get_message(self) -> dict:
-        return {"type":"818", "server": self.server, "msg":f"有新的八卦推送来啦！\n{self.title}\n{self.url}\n来源：{self.name}吧"}
+        return {"type":"818", "server": self.server, "name": self.name, "msg":f"有新的八卦推送来啦！\n{self.title}\n{self.url}\n来源：{self.name}吧"}
 
 @EventRister.rister(action=1001)
 class SerendipityEvent(RecvEvent):
@@ -464,7 +465,7 @@ class XuanJingEvent(RecvEvent):
         if found == False:
             return
         write(xuanjing_record_file, json.dumps(correct, ensure_ascii=False))
-        return {"type":"玄晶","server":f"{self.server}","msg":f"{self.time}\n恭喜侠士[{self.role}]在{self.map}获得稀有掉落[{self.name}]！"}
+        return {"type":"玄晶","server":f"{self.server}","msg":f"{self.time}\n【{self.server}】恭喜侠士[{self.role}]在{self.map}获得稀有掉落[{self.name}]！"}
 
 
 @EventRister.rister(action=1008)
