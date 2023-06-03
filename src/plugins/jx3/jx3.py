@@ -95,7 +95,8 @@ async def news_():
 async def random__():
     full_link = "https://www.jx3api.com/data/saohua/random"
     info = await get_api(full_link, proxy = proxies)
-    return info["data"]["text"]
+    data = info["data"]
+    return [data["text"],data["id"]]
 
 async def tiangou_():
     full_link = "https://www.jx3api.com/data/saohua/content"

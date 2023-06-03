@@ -115,7 +115,7 @@ async def _(args: Message = CommandArg()):
     else:
         await matrix.finish("没有输入任何心法名称哦，没办法帮你找啦。")
 
-random_ = on_command("jx3_random", aliases={"骚话"}, priority=5)
+random_ = on_command("jx3_random", aliases={'骚话','烧话'}, priority=5)
 @random_.handle()
 async def _():
     '''
@@ -123,7 +123,9 @@ async def _():
 
     Example：-骚话
     '''
-    await random_.finish("来自“万花谷”频道：\n"+await random__())
+    r_text,r_id = await random__()
+    # await random_.finish(f'来自推栏“万花谷”频道：\n{r}')
+    await random_.finish(f'推栏之{r_id}：{r_text}')
 
 kungfu = on_command("jx3_kungfu", aliases={"心法"}, priority=5)
 @kungfu.handle()
