@@ -5,8 +5,7 @@ from typing import Literal
 from sgtpyutils.logger import logger
 import sys
 import os
-root_path = os.path.dirname(__file__)
-root_path = os.path.join(root_path,'..')
+root_path = os.path.join(__file__,'..','..')
 root_path = os.path.realpath(root_path)
 sys.path.append(root_path)
 import bot
