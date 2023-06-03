@@ -80,9 +80,8 @@ async def search_item_info(item_name: str):
     img = await generate(final_path, False, "table", False)
     return [id, img]
 
-
-async def getItemPriceById(id: str, server: str, group: str = None):
-    server = server_mapping(server, group)
+async def getItemPriceById(id: str, server: str):
+    server = server_mapping(server)
     if server == False:
         return "唔……服务器名输入错误。"
     final_url = f"https://next2.jx3box.com/api/item-price/{id}/logs?server={server}"
