@@ -30,6 +30,9 @@ jobs:
           python -m pip install pytest
           python -m pip install -r requirements.txt
           playwright install
+      - name: Init Config.py
+        run: |
+          python ./tests/init_config.py ${{ secrets.JX3Token }}
       - name: Test with pytest
         run: |
           pytest -v --full-trace --durations 10

@@ -3,11 +3,6 @@ import random
 import asyncio
 from typing import Literal
 from sgtpyutils.logger import logger
-import sys
-import os
-root_path = os.path.join(__file__,'..','..')
-root_path = os.path.realpath(root_path)
-sys.path.append(root_path)
 import bot
 from nonebot.adapters.onebot.v11 import Bot, GroupMessageEvent, Message as obMessage
 from nonebot.adapters.onebot.v11.event import Anonymous, Sender, Reply
