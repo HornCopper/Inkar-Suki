@@ -8,3 +8,4 @@ xpinyin
 numpy
 nonebot_plugin_apscheduler
 playwright
+sgtpyutils
