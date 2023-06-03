@@ -5,7 +5,7 @@ def read(Path):
         cache.close()
         return msg
     except:
-        return False
+        return "{}" # 默认返回空对象
 
 def write(Path, sth):
     cache = open(Path, mode="w", encoding="utf-8")
