@@ -2,7 +2,6 @@ import sys
 import os
 
 if __name__ == '__main__':
-    import bot
     argv = sys.argv
     if len(argv) == 1:
         token = 'invalid'
@@ -16,3 +15,4 @@ if __name__ == '__main__':
         data = data.replace('jx3_token = ""', f'jx3_token = "{token}"')
     with open(target_config, 'w', encoding='utf-8') as f:
         f.write(data)
+    import bot
