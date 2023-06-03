@@ -499,7 +499,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
 
 recruit = on_command("jx3_recruit", aliases={"招募"}, priority=5)
 @recruit.handle()
-async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
+async def jx3_recruit(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
     '''
     获取招募：
 
@@ -708,7 +708,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
 
 trade_ = on_command("jx3_trade", aliases={"交易行"}, priority=5)
 @trade_.handle()
-async def _(state: T_State, event: GroupMessageEvent, args: Message = CommandArg()):
+async def jx3_trade(state: T_State, event: GroupMessageEvent, args: Message = CommandArg()):
     '''
     获取交易行物品价格：
 
@@ -719,6 +719,7 @@ async def _(state: T_State, event: GroupMessageEvent, args: Message = CommandArg
     if len(arg) == 0:
         await trade_.finish("唔……参数不正确哦，请检查后重试~如 交易行 帝骖龙翔")
     arg_server = arg[0] if len(arg) == 2 else None
+    print('arg_server',arg_server)
     arg_item = arg[1] if len(arg) == 2 else arg[0]
 
     server = server_mapping(arg_server, group_id=str(event.group_id))
