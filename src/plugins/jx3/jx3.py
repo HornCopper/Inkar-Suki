@@ -336,7 +336,15 @@ async def pendant(name: str):
         msg = f"{pendant_name} - {pendant_type}\n{desc}\n获取线索：{source}"
         return msg
 
-def server_mapping(server: str):
+def server_mapping(server: str = None,group_id: str = None):
+    '''
+    通过别名匹配服务器，如果传入None，则返回当前绑定的服务器
+    param server str:服务器名称 如唯满侠
+    param group str:群id
+    '''
+    if not server:
+        server = getGroupServer(group_id)
+
     if server in ["二合一","四合一","六合一","七合一","千岛湖","圣墓山","执子之手","平步青云","笑傲江湖","幽月轮","山雨欲来"]:
         return "幽月轮"
     elif server in ["剑胆琴心","煎蛋","剑胆"]:
@@ -367,14 +375,11 @@ def server_mapping(server: str):
         return "破阵子"
     elif server in ["飞龙在天","飞龙"]:
         return "飞龙在天"
-    else:
-        return False
+    return False
         
-# 服务器绑定群聊的意义在此体现。
-    
-def getGroupServer(group):
-    data = json.loads(read(DATA + "/" + group + "/jx3group.json"))
-    if data["server"] == "":
-        return False
-    else:
-        return data["server"]
+def getGroupServer(group_id:str):
+    '''
+    获取当前群绑定的服务器，默认返回唯满侠
+    '''
+    data = json.loads(read(f"{DATA}/{group_id}/jx3group.json"))
+    return data["server"] if "name" in data else "唯我独尊"
