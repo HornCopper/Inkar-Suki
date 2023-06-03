@@ -1,4 +1,4 @@
-from local_version import nbv, ikv
+from src.tools.local_version import ikv, nbv
 import nonebot
 import sys
 TOOLS = nonebot.get_driver().config.tools_path
