@@ -1,8 +1,7 @@
 from src.tools.local_version import ikv, nbv
 import nonebot
 import sys
-TOOLS = nonebot.get_driver().config.tools_path
-sys.path.append(TOOLS)
+
 class Config:
     '''
     这里是`Inkar Suki`的配置文件，从`V0.8.3-Hotfix-3起，我们删除了`initialization.py`。
