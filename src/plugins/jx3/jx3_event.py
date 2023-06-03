@@ -246,7 +246,7 @@ class SpillTheTeaEvent(RecvEvent):
     
     @overrides(RecvEvent)
     def get_message(self) -> dict:
-        return {"type":"818", "server": self.server, "msg":f"有新的八卦推送来啦！\n{self.title}\n{self.url}\n来源：{self.name}吧"}
+        return {"type":"818", "server": self.server, "name": self.name, "msg":f"有新的八卦推送来啦！\n{self.title}\n{self.url}\n来源：{self.name}吧"}
 
 @EventRister.rister(action=1001)
 class SerendipityEvent(RecvEvent):
@@ -465,7 +465,7 @@ class XuanJingEvent(RecvEvent):
         if found == False:
             return
         write(xuanjing_record_file, json.dumps(correct, ensure_ascii=False))
-        return {"type":"玄晶","server":f"{self.server}","msg":f"{self.time}\n恭喜侠士[{self.role}]在{self.map}获得稀有掉落[{self.name}]！"}
+        return {"type":"玄晶","server":f"{self.server}","msg":f"{self.time}\n【{self.server}】恭喜侠士[{self.role}]在{self.map}获得稀有掉落[{self.name}]！"}
 
 
 @EventRister.rister(action=1008)

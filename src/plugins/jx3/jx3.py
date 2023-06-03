@@ -351,7 +351,7 @@ def server_mapping(server: str):
         return "绝代天骄"
     elif server in ["龙虎","龙争虎斗"]:
         return "龙争虎斗"
-    elif server in ["唯满侠","唯我独尊","wmx","唯我","WMX"]:
+    elif server in ["唯满侠","唯我独尊","wmx","唯我","WMX","唯满侠"]:
         return "唯我独尊"
     elif server in ["华山论剑","乾坤一掷","花钱","华乾"]:
         return "乾坤一掷"
@@ -374,7 +374,7 @@ def server_mapping(server: str):
     
 def getGroupServer(group):
     data = json.loads(read(DATA + "/" + group + "/jx3group.json"))
-    if data["name"] == "":
+    if data["server"] == "":
         return False
     else:
         return data["server"]
