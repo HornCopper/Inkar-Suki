@@ -8,6 +8,9 @@ __pycache__/
 
 /src/tools/config.py
 
+/src/assets/jx3/
+/src/assets/arcaea/
+
 # Distribution / packaging
 .Python
 build/
