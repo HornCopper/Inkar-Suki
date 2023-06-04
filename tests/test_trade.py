@@ -3,16 +3,19 @@ from . import *
 
 def test_trade_record():
     import src.plugins.jx3
+    mc = MessageCallback()
+    src.plugins.jx3.trade_ = mc
+
     jx3_trade = src.plugins.jx3.jx3_trade
-
-    def handle_finish(msg: str):
-        assert False, f'fail run:{msg}'
-
-    def handle_send(msg: str):
-        assert len(msg) > 10
-    src.plugins.jx3.trade_ = MessageCallback(handle_finish, handle_send)
-    state = dict()
-    state['server'] = '双梦'
+    state = {}
     event = SFGroupMessageEvent()
-    task = jx3_trade(state, event, obMessage('唯满侠 五行石'))
+
+    mc.tag = '唯满侠 五行石'
+    task = jx3_trade(state, event, obMessage(mc.tag))
     asyncio.run(task)
+    mc.check_counter()
+
+    mc.tag = '五行石'
+    task = jx3_trade(state, event, obMessage(mc.tag))
+    asyncio.run(task)
+    mc.check_counter()

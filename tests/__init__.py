@@ -32,6 +32,7 @@ class MessageCallback:
 
     def check_counter(self):
         assert self.callback_counter, self.to_warning('no answer to tester till test completed')
+        self.callback_counter = 0 # reset after round check
 
     async def send(self, msg: str):
         self.callback_counter += 1
