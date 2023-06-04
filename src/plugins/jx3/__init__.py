@@ -64,12 +64,14 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     Example：-服务器 幽月轮
     Example：-开服 幽月轮 
     '''
-    server = args.extract_plain_text()
-    if server == "":
-        server = getGroupServer(str(event.group_id))
-        if server == False and getGroupServer(str(event.group_id)) == False:
+    server_ = args.extract_plain_text()
+    if server_ == "":
+        server_ = getGroupServer(str(event.group_id))
+        if server_ == False:
             await server.finish("没有输入任何服务器名称，也没有绑定服务器，没办法帮你找啦。")
-        await server.finish(await server_status(server=server, group=str(event.group_id)))
+        else:
+            server.finish(await server_status(server = server_))
+    await server.finish(await server_status(server = server_))
         
 daily = on_command("jx3_daily", aliases={"日常","周常"}, priority=5)
 @daily.handle()
@@ -86,7 +88,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     if args.extract_plain_text():
         img = await daily_(args.extract_plain_text(), str(event.group_id))
     else:
-        img = await daily_("长安城", str(event.group_id))
+        img = await daily_("长安城")
     await daily.finish(ms.image(img))
         
 exam = on_command("jx3_exam", aliases={"科举"}, priority=5)
