@@ -119,7 +119,7 @@ async def recruit_(server: str, copy: str = ""): # 团队招募 <服务器> [关
     if data["code"] == 403:
         return [PROMPT_InvalidToken]
     elif data["code"] == 400:
-        return ["PROMPT_ServerNotExist~"]
+        return [PROMPT_ServerNotExist]
     elif data["code"] == 404:
         return ["未找到相关团队，请检查后重试~"]
     url = data["data"]["url"]
@@ -129,7 +129,7 @@ async def demon_(server: str = None): # 金价 <服务器>
     if token == None:
         return [PROMPT_NoToken]
     if server == None:
-        return ["PROMPT_ServerNotExist~"]
+        return [PROMPT_ServerNotExist]
     else:
         server = server_mapping(server)
         if server == False:
