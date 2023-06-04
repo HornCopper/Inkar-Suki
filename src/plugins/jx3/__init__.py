@@ -1029,7 +1029,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
         server = group_server
     else:
         server = server
-    dt = json.loads(read(TOOLS + "/xuanjing.json"))
+    dt = json.loads(read(ASSETS + "/jx3/xuanjing.json"))
     for i in dt:
         if i["server"] == server:
             if len(i["records"]) == 0:
