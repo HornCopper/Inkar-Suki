@@ -14,6 +14,7 @@ import sys
 
 TOOLS = nonebot.get_driver().config.tools_path
 sys.path.append(str(TOOLS))
+ASSETS = TOOLS[:-5] + "assets"
 
 from src.tools.file import read, write
 
@@ -454,7 +455,7 @@ class XuanJingEvent(RecvEvent):
 
     @overrides(RecvEvent)
     def get_message(self) -> dict:
-        xuanjing_record_file = TOOLS + "/xuanjing.json"
+        xuanjing_record_file = ASSETS + "/jx3/xuanjing.json"
         correct = json.loads(read(xuanjing_record_file))
         found = False
         for i in correct:
