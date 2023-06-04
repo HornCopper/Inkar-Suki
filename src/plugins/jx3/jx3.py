@@ -30,8 +30,8 @@ proxies = None
 数据来源@JX3API
 '''
 
-async def server_status(server: str = None):
-    server = server_mapping(server)
+async def server_status(server: str = None,group:str=None):
+    server = server_mapping(server,group)
     full_link = "https://www.jx3api.com/data/server/check?server=" + server
     info = await get_api(full_link, proxy = proxies)
     try:
