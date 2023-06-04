@@ -55,16 +55,17 @@ async def check_bind(id: str):
     return bind_types[bind_type]
 
 
-async def search_item_info(item_name: str):
-    final_url = f"https://helper.jx3box.com/api/item/search?keyword={item_name}&limit=1000"
+async def search_item_info(item_name: str,pageIndex:int=0,pageSize:int=20):
+    final_url = f"https://helper.jx3box.com/api/item/search?keyword={item_name}&limit={pageSize}&page={pageIndex+1}"
     box_data = await get_api(final_url)
-    if len(box_data["data"]["data"]) == 0:
+    items = box_data["data"]["data"]
+    if not items:
         return "没有找到该物品哦~"
     space = []
     id = []
     space.append(["序号", "物品ID", "物品名称", "绑定类型", "物品图标"])
     num = 0
-    for i in box_data["data"]["data"]:
+    for i in items:
         icon = i["IconID"]
         img_url = f"https://icon.jx3box.com/icon/{icon}.png"
         html_code = f"<img src={img_url}></img>"
