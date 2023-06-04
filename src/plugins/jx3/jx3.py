@@ -8,6 +8,9 @@ from nonebot.log import logger
 TOOLS = nonebot.get_driver().config.tools_path
 sys.path.append(TOOLS)
 DATA = TOOLS[:-5] + "data"
+PROMPT_NoToken = "Bot尚未填写Token，请联系Bot主人~"
+PROMPT_InvalidToken = "Token不正确哦，请联系Bot主人~"
+PROMPT_ServerNotExist = "唔……服务器名输入错误。"
 
 from src.tools.utils import get_api
 from src.tools.file import read
@@ -27,8 +30,8 @@ proxies = None
 数据来源@JX3API
 '''
 
-async def server_status(server: str = None):
-    server = server_mapping(server)
+async def server_status(server: str = None,group:str=None):
+    server = server_mapping(server,group)
     full_link = "https://www.jx3api.com/data/server/check?server=" + server
     info = await get_api(full_link, proxy = proxies)
     try:
@@ -46,7 +49,7 @@ async def server_status(server: str = None):
 async def daily_(server: str = None):
     server = server_mapping(server)
     if server == False:
-        return ["唔……服务器名输入错误。"]
+        return [PROMPT_ServerNotExist]
     full_link = f"https://www.jx3api.com/view/active/current?robot={bot}&server={server}"
     data = await get_api(full_link, proxy = proxies)
     return data["data"]["url"]
@@ -106,17 +109,17 @@ async def tiangou_():
 
 async def recruit_(server: str, copy: str = ""): # 团队招募 <服务器> [关键词]
     if token == None:
-        return ["Bot尚未填写Token，请联系Bot主人~"]
+        return [PROMPT_NoToken]
     if server == False:
-        return ["唔……服务器名输入错误。"]
+        return [PROMPT_ServerNotExist]
     final_url = f"https://www.jx3api.com/view/member/recruit?token={token}&server={server}&robot={bot}&scale=1&keyword="
     if copy != None:
         final_url = final_url + copy
     data = await get_api(final_url, proxy = proxies)
     if data["code"] == 403:
-        return ["Token不正确哦，请联系Bot主人~"]
+        return [PROMPT_InvalidToken]
     elif data["code"] == 400:
-        return ["服务器名输入错误，请检查后重试~"]
+        return ["PROMPT_ServerNotExist~"]
     elif data["code"] == 404:
         return ["未找到相关团队，请检查后重试~"]
     url = data["data"]["url"]
@@ -124,22 +127,22 @@ async def recruit_(server: str, copy: str = ""): # 团队招募 <服务器> [关
 
 async def demon_(server: str = None): # 金价 <服务器>
     if token == None:
-        return ["Bot尚未填写Token，请联系Bot主人~"]
+        return [PROMPT_NoToken]
     if server == None:
-        return ["服务器名输入错误，请检查后重试~"]
+        return ["PROMPT_ServerNotExist~"]
     else:
         server = server_mapping(server)
         if server == False:
-            return ["唔……服务器名输入错误。"]
+            return [PROMPT_ServerNotExist]
         final_url = f"https://www.jx3api.com/view/trade/demon?robot={bot}&server={server}&scale=1"
     data = await get_api(final_url, proxy = proxies)
     if data["code"] == 400:
-        return ["服务器名输入错误，请检查后重试~"]
+        return ["PROMPT_ServerNotExist~"]
     return data["data"]["url"]
 
 async def item_(name: str = None): # 物价 <物品>
     if token == None:
-        return ["Bot尚未填写Token，请联系Bot主人~"]
+        return [PROMPT_NoToken]
     final_url = f"https://www.jx3api.com/view/trade/record?token={token}&robot={bot}&name={name}&scale=1"
     data = await get_api(final_url, proxy = proxies)
     if data["code"] == 404:
@@ -148,20 +151,20 @@ async def item_(name: str = None): # 物价 <物品>
 
 async def serendipity_(server: str = None, name: str = None): # 奇遇 <服务器> <ID>
     if token == None:
-        return ["Bot尚未填写Token，请联系Bot主人~"]
+        return [PROMPT_NoToken]
     server = server_mapping(server)
     if server == False:
-        return ["唔……服务器名输入错误。"]
+        return [PROMPT_ServerNotExist]
     final_url = f"https://www.jx3api.com/view/luck/adventure?token={token}&robot={bot}&ticket={ticket}&server={server}&name={name}&scale=1"
     data = await get_api(final_url, proxy = proxies)
     return data["data"]["url"]
 
 async def statistical_(server: str = None, serendipity: str = None): # 近期奇遇 <服务器> [奇遇]
     if token == None:
-        return ["Bot尚未填写Token，请联系Bot主人~"]
+        return [PROMPT_NoToken]
     server = server_mapping(server)
     if server == False:
-        return ["唔……服务器名输入错误。"]
+        return [PROMPT_ServerNotExist]
     if serendipity == None:
         final_url = f"https://www.jx3api.com/view/luck/collect?token={token}&robot={bot}&server={server}&scale=1"
     else:
@@ -171,7 +174,7 @@ async def statistical_(server: str = None, serendipity: str = None): # 近期奇
 
 async def global_serendipity(name: str = None): # 全服奇遇 [奇遇]
     if token == None:
-        return ["Bot尚未填写Token，请联系Bot主人~"]
+        return [PROMPT_NoToken]
     if name != None:
         final_url = f"https://www.jx3api.com/view/luck/server/adventure?name={name}&token={token}&robot={bot}&scale=1"
     data = await get_api(final_url, proxy = proxies)
@@ -179,7 +182,7 @@ async def global_serendipity(name: str = None): # 全服奇遇 [奇遇]
 
 async def global_statistical(name: str = None): # 全服统计 [奇遇]
     if token == None:
-        return ["Bot尚未填写Token，请联系Bot主人~"]
+        return [PROMPT_NoToken]
     if name != None:
         final_url = f"https://www.jx3api.com/view/luck/server/statistical?name={name}&token={token}&robot={bot}"
     data = await get_api(final_url, proxy = proxies)
@@ -190,7 +193,7 @@ async def addritube_(server: str = None, name: str = None): # 查装 <服务器>
         return ["Bot尚未填写Ticket或Token，请联系Bot主人~"]
     server = server_mapping(server)
     if server == False:
-        return ["唔……服务器名输入错误。"]
+        return [PROMPT_ServerNotExist]
     final_url = f"https://www.jx3api.com/view/role/attribute?ticket={ticket}&token={token}&robot={bot}&server={server}&name={name}&scale=1"
     data = await get_api(final_url, proxy = proxies)
     if data["code"] == 404:
@@ -204,26 +207,26 @@ async def addritube_(server: str = None, name: str = None): # 查装 <服务器>
 async def sandbox_(server: str = None): # 沙盘 <服务器>
     server = server_mapping(server)
     if server == False:
-        return ["唔……服务器名输入错误。"]
+        return [PROMPT_ServerNotExist]
     if server != None:
         final_url = f"https://www.jx3api.com/view/server/sand?token={token}&scale=1&robot={bot}&server=" + server
     data = await get_api(final_url, proxy = proxies)
     if data["code"] == 400:
-        return ["唔……服务器名输入错误。"]
+        return [PROMPT_ServerNotExist]
     return data["data"]["url"]
 
 async def achievements_(server: str = None, name: str = None, achievement: str = None):
     if token == None:
-        return ["Bot尚未填写Token，请联系Bot主人~"]
+        return [PROMPT_NoToken]
     if ticket == None:
         return ["Bot尚未填写Ticket，请联系Bot主人~"]
     server = server_mapping(server)
     if server == False:
-        return ["唔……服务器名输入错误。"]
+        return [PROMPT_ServerNotExist]
     final_url = f"https://www.jx3api.com/view/role/achievement?server={server}&name={achievement}&role={name}&robot={bot}&ticket={ticket}&token={token}&scale=1"
     data = await get_api(final_url, proxy = proxies)
     if data["code"] == 400:
-        return ["唔……服务器名输入错误。"]
+        return [PROMPT_ServerNotExist]
     if data["data"] == {}:
         return ["唔……未找到相应成就。"]
     if data["code"] == 404:
@@ -232,17 +235,17 @@ async def achievements_(server: str = None, name: str = None, achievement: str =
 
 async def arena_(object: str, server: str = None, name: str = None, mode: str = "33"):
     if token == None:
-        return ["Bot尚未填写Token，请联系Bot主人~"]
+        return [PROMPT_NoToken]
     if ticket == None:
         return ["Bot尚未填写Ticket，请联系Bot主人~"]
     if object == "战绩":
         server = server_mapping(server)
         if server == False:
-            return ["唔……服务器名输入错误。"]
+            return [PROMPT_ServerNotExist]
         final_url = f"https://www.jx3api.com/view/match/recent?token={token}&name={name}&server={server}&robot={bot}&ticket={ticket}&mode={mode}&scale=1"
         data = await get_api(final_url, proxy = proxies)
         if data["code"] == 400:
-            return ["唔……服务器名输入错误。"]
+            return [PROMPT_ServerNotExist]
         if data["code"] == 404:
             return ["唔……未找到该玩家的记录，请检查玩家名或服务器名。"]
         return data["data"]["url"]
@@ -262,9 +265,9 @@ async def arena_(object: str, server: str = None, name: str = None, mode: str = 
 async def rank_(type_1: str, type_2: str, server: str):
     server = server_mapping(server)
     if server == False:
-        return ["唔……服务器名输入错误。"]
+        return [PROMPT_ServerNotExist]
     if token == None:
-        return ["Bot尚未填写Token，请联系Bot主人~"]
+        return [PROMPT_NoToken]
     if type_1 == "个人":
         if type_2 not in ["名士五十强","老江湖五十强","兵甲藏家五十强","名师五十强","阵营英雄五十强","薪火相传五十强","庐园广记一百强"]:
             return ["唔……类型不正确，请检查后重试~"]
@@ -299,7 +302,7 @@ async def roleInfo_(server, player):
     server = server_mapping(server)
     final_url = f"https://www.jx3api.com/data/role/roleInfo?token={token}&name={player}&server={server}"
     if server == False:
-        return "唔……服务器名输入错误。"
+        return PROMPT_ServerNotExist
     data = await get_api(final_url, proxy = proxies)
     if data["code"] == 404:
         return "没有找到该玩家哦~\n需要该玩家在世界频道发言后方可查询。"
