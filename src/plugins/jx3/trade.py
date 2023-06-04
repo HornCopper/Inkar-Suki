@@ -44,15 +44,18 @@ css_fixed = """
 // 要抄好歹点个star 然后赞助赞助（狗头）
 """
 
-
+CACHE_bind = {}
 async def check_bind(id: str):
+    if id in CACHE_bind:
+        return CACHE_bind[id]
     final_url = f"https://helper.jx3box.com/api/wiki/post?type=item&source_id={id}"
     data = await get_api(final_url)
     bind_type = data["data"]["source"]["BindType"]
     if bind_type == None:
         bind_type = 0
     bind_types = ["未知", "不绑定", "装备后绑定", "拾取后绑定"]
-    return bind_types[bind_type]
+    CACHE_bind[id] = bind_types[bind_type]
+    return CACHE_bind[id]
 
 
 async def search_item_info(item_name: str,pageIndex:int=0,pageSize:int=20):
