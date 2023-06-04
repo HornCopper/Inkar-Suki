@@ -29,14 +29,10 @@ proxies = None
 
 async def server_status(server: str = None):
     server = server_mapping(server)
+    if server == False:
+        return "服务器名输入错误。"
     full_link = "https://www.jx3api.com/data/server/check?server=" + server
     info = await get_api(full_link, proxy = proxies)
-    try:
-        all_servers = info["data"]
-        if str(type(all_servers)).find("list") != -1:
-            return "服务器名输入错误。"
-    except:
-        pass
     status = info["data"]["status"]
     if status == 1:
         return f"{server}服务器并未维护。"
