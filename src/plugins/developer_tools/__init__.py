@@ -82,11 +82,10 @@ async def say_(event: Event, args: Message = CommandArg()):
 ping = on_command("ping", aliases={"-测试"}, priority=5) # 测试机器人是否在线
 @ping.handle()
 async def _(event: Event):
-    ikv = await ikv()
     if checker(str(event.user_id),1) == False:
         times = str("现在是"
         + time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
-        + f"\n当前版本{ikv}\n(Nonebot {nbv})")
+        + f"\nNonebot {nbv}")
         await ping.finish(times)
     def per_cpu_status() -> List[float]:
         return psutil.cpu_percent(interval = 1, percpu = True)
@@ -94,7 +93,7 @@ async def _(event: Event):
         return psutil.virtual_memory().percent
     times = str("现在是" 
         + time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()) 
-        + f"\n当前版本{ikv}\n(Nonebot {nbv})"
+        + f"\nNonebot {nbv}"
     )
     msg = f"来啦！\n\系统信息如下：\nCPU占用：{str(per_cpu_status()[0])}%\n内存占用：{str(memory_status())}%\n"
     await ping.finish(msg + times)
