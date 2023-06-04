@@ -57,7 +57,7 @@ async def _():
 
 server = on_command("jx3_server", aliases={"服务器","开服"}, priority=5)
 @server.handle()
-async def _(event: GroupMessageEvent, args: Message = CommandArg()):
+async def jx3_server(event: GroupMessageEvent, args: Message = CommandArg()):
     '''
     获取服务器开服状态：
 
@@ -72,6 +72,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
         else:
             server.finish(await server_status(server = server_))
     await server.finish(await server_status(server = server_))
+
         
 daily = on_command("jx3_daily", aliases={"日常","周常"}, priority=5)
 @daily.handle()
@@ -86,7 +87,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     Example：-日常 幽月轮
     '''
     if args.extract_plain_text():
-        img = await daily_(args.extract_plain_text(), str(event.group_id))
+        img = await daily_(args.extract_plain_text())
     else:
         img = await daily_("长安城")
     await daily.finish(ms.image(img))
@@ -117,7 +118,7 @@ async def _(args: Message = CommandArg()):
     else:
         await matrix.finish("没有输入任何心法名称哦，没办法帮你找啦。")
 
-random_ = on_command("jx3_random", aliases={"骚话"}, priority=5)
+random_ = on_command("jx3_random", aliases={'骚话','烧话'}, priority=5)
 @random_.handle()
 async def _():
     '''
@@ -125,7 +126,9 @@ async def _():
 
     Example：-骚话
     '''
-    await random_.finish("来自“万花谷”频道：\n"+await random__())
+    r_text,r_id = await random__()
+    # await random_.finish(f'来自推栏“万花谷”频道：\n{r}')
+    await random_.finish(f'推栏之{r_id}：{r_text}')
 
 kungfu = on_command("jx3_kungfu", aliases={"心法"}, priority=5)
 @kungfu.handle()
@@ -501,7 +504,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
 
 recruit = on_command("jx3_recruit", aliases={"招募"}, priority=5)
 @recruit.handle()
-async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
+async def jx3_recruit(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
     '''
     获取招募：
 
@@ -710,21 +713,25 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
 
 trade_ = on_command("jx3_trade", aliases={"交易行"}, priority=5)
 @trade_.handle()
-async def _(state: T_State, event: GroupMessageEvent, args: Message = CommandArg()):
+async def jx3_trade(state: T_State, event: GroupMessageEvent, args: Message = CommandArg()):
     '''
     获取交易行物品价格：
 
     Example：-交易行 幽月轮 帝骖龙翔
+    Example：-交易行 帝骖龙翔
     '''
     arg = args.extract_plain_text().split(" ")
-    if len(arg) != 2:
-        await trade_.finish("唔……参数不正确哦，请检查后重试~")
-    server = server_mapping(arg[0])
+    if len(arg) == 0:
+        await trade_.finish("唔……参数不正确哦，请检查后重试~如 交易行 帝骖龙翔")
+    arg_server = arg[0] if len(arg) == 2 else None
+    print('arg_server',arg_server)
+    arg_item = arg[1] if len(arg) == 2 else arg[0]
+
+    server = server_mapping(arg_server, group_id=str(event.group_id))
     if server == False:
         await trade_.finish("唔……服务器不存在，请检查后重试~")
-    item = arg[1]
     state["server"] = server
-    data = await search_item_info(item)
+    data = await search_item_info(arg_item)
     if type(data) != type([]):
         await trade_.finish(data)
     else:

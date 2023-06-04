@@ -1,9 +1,7 @@
 from nonebot import get_driver, __version__ as nbv
 import sys
-TOOLS = get_driver().config.tools_path
-sys.path.append(TOOLS)
 
-from utils import get_api
+from src.tools.utils import get_api
 
 async def ikv():
     all_rls = await get_api("https://api.github.com/repos/codethink-cn/Inkar-Suki/releases")
