@@ -11,6 +11,8 @@ import sys
 from playwright.async_api import async_playwright
 from tabulate import tabulate
 
+from .coin import copperl, silverl, goldl, brickl
+
 TOOLS = nonebot.get_driver().config.tools_path
 sys.path.append(TOOLS)
 ASSETS = TOOLS[:-5] + "assets"
@@ -157,10 +159,3 @@ def convert(price: int):
     msg = msg.replace("金", f"<img src=\"{goldl}\">").replace("砖", f"<img src=\"{brickl}\">").replace(
         "银", f"<img src=\"{silverl}\">").replace("铜", f"<img src=\"{copperl}\">")
     return msg
-
-
-prefix = 'data:image/png;base64,'
-target_file = ['brickl.png', 'goldl.png', 'silverl.png', 'copperl.png']
-target_url = [basexx.base64_encode(get_res_image(x)) for x in target_file]
-target_url = [f'{prefix}{x}' for x in target_url]
-brickl, goldl, silverl, copperl = target_url
