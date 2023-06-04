@@ -18,22 +18,35 @@ class MessageCallback:
     class for overwrite none-bot message-sender
     '''
 
-    def __init__(self, cb_finish: callable, cb_send: callable) -> None:
-        self.cb_finish = cb_finish
-        self.cb_send = cb_send
-    
+    def default_cb_finish(self, msg: str):
+        assert False, self.to_warning(f'fail run:{msg}')
+
+    def default_cb_send(self, msg: str):
+        assert len(msg) > 10, self.to_warning(f'fail run by message too short:{msg}')
+
+    def __init__(self, cb_finish: callable = None, cb_send: callable = None) -> None:
+        self.cb_finish = cb_finish or self.default_cb_finish
+        self.cb_send = cb_send or self.default_cb_send
+        self.callback_counter = 0
+        self.tag = 'default test'
+
+    def check_counter(self):
+        assert self.callback_counter, self.to_warning('no answer to tester till test completed')
+
     async def send(self, msg: str):
+        self.callback_counter += 1
         if not self.cb_finish:
-            logger.warning('callback of send not set, but been called.')
+            logger.warning(self.to_warning('callback of send not set, but been called.'))
             return
         self.cb_send(msg)
 
     async def finish(self, msg: str):
         if not self.cb_finish:
-            logger.warning('callback of finish not set, but been called.')
+            logger.warning(self.to_warning('callback of finish not set, but been called.'))
             return
         self.cb_finish(msg)
-
+    def to_warning(self,warn:str):
+        return f'[{self.tag}]{warn}'
 
 class SFGroupMessageEvent(GroupMessageEvent):
     def build_user(self):

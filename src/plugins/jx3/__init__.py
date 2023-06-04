@@ -57,19 +57,16 @@ async def _():
 
 server = on_command("jx3_server", aliases={"服务器","开服"}, priority=5)
 @server.handle()
-async def _(event: GroupMessageEvent, args: Message = CommandArg()):
+async def jx3_server(event: GroupMessageEvent, args: Message = CommandArg()):
     '''
     获取服务器开服状态：
 
     Example：-服务器 幽月轮
     Example：-开服 幽月轮 
     '''
-    server = args.extract_plain_text()
-    if server == "":
-        server = getGroupServer(str(event.group_id))
-        if server == False and getGroupServer(str(event.group_id)) == False:
-            await server.finish("没有输入任何服务器名称，也没有绑定服务器，没办法帮你找啦。")
-        await server.finish(await server_status(server=server, group=str(event.group_id)))
+    u_server = args.extract_plain_text()
+    status = await server_status(server=u_server, group=str(event.group_id))
+    await server.send(status)
         
 daily = on_command("jx3_daily", aliases={"日常","周常"}, priority=5)
 @daily.handle()
