@@ -1,16 +1,16 @@
-from src.tools.file import get_res_image
-from sgtpyutils.encode import basexx
-from .jx3 import server_mapping
+import nonebot
+import json
+import sys
+
 from src.plugins.help import css
-from src.tools.file import write
+from src.tools.file import write, read
 from src.tools.utils import get_api
 from src.tools.generate import generate, get_uuid
-import nonebot
-import sys
 
 from playwright.async_api import async_playwright
 from tabulate import tabulate
 
+from .jx3 import server_mapping
 from .coin import copperl, silverl, goldl, brickl
 
 TOOLS = nonebot.get_driver().config.tools_path
@@ -48,12 +48,23 @@ css_fixed = """
 
 
 async def check_bind(id: str):
+    bind_types = ["未知", "不绑定", "装备后绑定", "拾取后绑定"]
+    cached = json.loads(read(ASSETS + "/jx3/bindinfo.json"))
+    for i in cached:
+        if i["id"] == id:
+            return bind_types[i["bind_type"]]
     final_url = f"https://helper.jx3box.com/api/wiki/post?type=item&source_id={id}"
     data = await get_api(final_url)
     bind_type = data["data"]["source"]["BindType"]
     if bind_type == None:
         bind_type = 0
-    bind_types = ["未知", "不绑定", "装备后绑定", "拾取后绑定"]
+    cached = json.loads(read(ASSETS + "/jx3/bindinfo.json"))
+    new_info = {
+        "id": id,
+        "bind_type": bind_type
+    }
+    cached.append(new_info)
+    write(ASSETS + "/jx3/bindinfo.json", json.dumps(cached))
     return bind_types[bind_type]
 
 
