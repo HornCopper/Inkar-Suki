@@ -5,7 +5,8 @@
 from src.tools.local_version import ikv, nbv
 import nonebot
 import sys
-
+from src.tools.file import get_resource_path
+import os
 class Config:
     '''
     这里是`Inkar Suki`的配置文件，从`V0.8.3-Hotfix-3起，我们删除了`initialization.py`。
@@ -28,7 +29,7 @@ class Config:
     html_path = global_path+"/plugins/help/help.html"
     chromedriver_path = global_path+"/tools/chromedriver"
     help_image_save_to = global_path+"/plugins/help/help.png"
-    font_path = Path(get_resource_path(f'font{os.sep}custom.ttf'))
+    font_path = get_resource_path(f'font{os.sep}custom.ttf')
 
     cqhttp = ""  # CQHTTP地址，参考`https://go-cqhttp.org`。
 
