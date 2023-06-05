@@ -13,7 +13,7 @@ def test_server_map():
 
 def test_server_status():
     def default_cb_finish(msg: str):
-        if '维护中' in msg:
+        if '开服状态：' in msg:
             return
         assert False, mc.to_warning(f'fail run:{msg}')
     mc = MessageCallback(cb_finish=default_cb_finish)
