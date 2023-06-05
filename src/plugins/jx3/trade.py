@@ -1,15 +1,17 @@
-from src.tools.file import get_res_image
-from sgtpyutils.encode import basexx
-from .jx3 import server_mapping
+import nonebot
+import json
+import sys
+
 from src.plugins.help import css
-from src.tools.file import write
+from src.tools.file import write, read
 from src.tools.utils import get_api
 from src.tools.generate import generate, get_uuid
-import nonebot
-import sys
 
 from playwright.async_api import async_playwright
 from tabulate import tabulate
+
+from .jx3 import server_mapping
+from .coin import copperl, silverl, goldl, brickl
 
 TOOLS = nonebot.get_driver().config.tools_path
 sys.path.append(TOOLS)
@@ -46,16 +48,24 @@ css_fixed = """
 
 CACHE_bind = {}
 async def check_bind(id: str):
-    if id in CACHE_bind:
-        return CACHE_bind[id]
+    bind_types = ["未知", "不绑定", "装备后绑定", "拾取后绑定"]
+    cached = json.loads(read(ASSETS + "/jx3/bindinfo.json"))
+    for i in cached:
+        if i["id"] == id:
+            return bind_types[i["bind_type"]]
     final_url = f"https://helper.jx3box.com/api/wiki/post?type=item&source_id={id}"
     data = await get_api(final_url)
     bind_type = data["data"]["source"]["BindType"]
     if bind_type == None:
         bind_type = 0
-    bind_types = ["未知", "不绑定", "装备后绑定", "拾取后绑定"]
-    CACHE_bind[id] = bind_types[bind_type]
-    return CACHE_bind[id]
+    cached = json.loads(read(ASSETS + "/jx3/bindinfo.json"))
+    new_info = {
+        "id": id,
+        "bind_type": bind_type
+    }
+    cached.append(new_info)
+    write(ASSETS + "/jx3/bindinfo.json", json.dumps(cached))
+    return bind_types[bind_type]
 
 
 async def search_item_info(item_name: str,pageIndex:int=0,pageSize:int=20):
@@ -161,10 +171,3 @@ def convert(price: int):
     msg = msg.replace("金", f"<img src=\"{goldl}\">").replace("砖", f"<img src=\"{brickl}\">").replace(
         "银", f"<img src=\"{silverl}\">").replace("铜", f"<img src=\"{copperl}\">")
     return msg
-
-
-prefix = 'data:image/png;base64,'
-target_file = ['brickl.png', 'goldl.png', 'silverl.png', 'copperl.png']
-target_url = [basexx.base64_encode(get_res_image(x)) for x in target_file]
-target_url = [f'{prefix}{x}' for x in target_url]
-brickl, goldl, silverl, copperl = target_url

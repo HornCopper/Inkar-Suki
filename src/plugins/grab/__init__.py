@@ -46,8 +46,7 @@ img_drink_path = Path(os.path.join(os.path.dirname(__file__), "drink_pic"))
 all_file_drink_name = os.listdir(str(img_drink_path))
 
 # 载入bot名字
-Bot_NICKNAME = list(nonebot.get_driver().config.nickname)
-Bot_NICKNAME = Bot_NICKNAME[0] if Bot_NICKNAME else "脑积水"
+Bot_NICKNAME = "音卡"
 
 
 TOOLS = nonebot.get_driver().config.tools_path

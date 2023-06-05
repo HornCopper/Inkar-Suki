@@ -30,16 +30,12 @@ proxies = None
 数据来源@JX3API
 '''
 
-async def server_status(server: str = None,group:str=None):
-    server = server_mapping(server,group)
+async def server_status(server: str = None):
+    server = server_mapping(server)
+    if server == False:
+        return PROMPT_ServerNotExist
     full_link = "https://www.jx3api.com/data/server/check?server=" + server
     info = await get_api(full_link, proxy = proxies)
-    try:
-        all_servers = info["data"]
-        if str(type(all_servers)).find("list") != -1:
-            return "服务器名输入错误。"
-    except:
-        pass
     status = info["data"]["status"]
     if status == 1:
         return f"{server}服务器并未维护。"
@@ -119,7 +115,7 @@ async def recruit_(server: str, copy: str = ""): # 团队招募 <服务器> [关
     if data["code"] == 403:
         return [PROMPT_InvalidToken]
     elif data["code"] == 400:
-        return ["PROMPT_ServerNotExist~"]
+        return [f"{PROMPT_ServerNotExist}"]
     elif data["code"] == 404:
         return ["未找到相关团队，请检查后重试~"]
     url = data["data"]["url"]
@@ -129,7 +125,7 @@ async def demon_(server: str = None): # 金价 <服务器>
     if token == None:
         return [PROMPT_NoToken]
     if server == None:
-        return ["PROMPT_ServerNotExist~"]
+        return [f"{PROMPT_ServerNotExist}"]
     else:
         server = server_mapping(server)
         if server == False:
@@ -137,7 +133,7 @@ async def demon_(server: str = None): # 金价 <服务器>
         final_url = f"https://www.jx3api.com/view/trade/demon?robot={bot}&server={server}&scale=1"
     data = await get_api(final_url, proxy = proxies)
     if data["code"] == 400:
-        return ["PROMPT_ServerNotExist~"]
+        return [f"{PROMPT_ServerNotExist}"]
     return data["data"]["url"]
 
 async def item_(name: str = None): # 物价 <物品>
