@@ -1,11 +1,12 @@
-from src.tools.file import get_resource_path
 import os
 import time
 import json
 
 from tabulate import tabulate
 from pathlib import Path
+from random import randint
 
+from src.tools.file import get_resource_path
 from src.tools.file import read, write
 from src.plugins.jx3.skilldatalib import aliases as get_job_aliases, kftosh as get_xinfa_belong
 from src.tools.config import Config
@@ -205,3 +206,17 @@ class Assistance:
                 write(path, final_html)
                 return path
         return False
+
+    async def random_member(group: str, description: str):
+        now = json.loads(read(f"{DATA}/{group}/opening.json"))
+        members = []
+        for i in now:
+            if i["description"] == description:
+                for x in i["member"]:
+                    for y in x:
+                        members.append(y["id"])
+        length = len(members)
+        if length == 0:
+            return "没有任何人可供抽取哦……"
+        random_num = randint(0, length - 1)
+        return "您抽中了：\n" + members[random_num]
