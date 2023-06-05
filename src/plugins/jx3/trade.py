@@ -45,26 +45,22 @@ css_fixed = """
 // 别抄啊，用了好久测出来的呢（
 // 要抄好歹点个star 然后赞助赞助（狗头）
 """
-
-CACHE_bind = {}
+bind_types = ["未知", "不绑定", "装备后绑定", "拾取后绑定"]
+CACHE_bind = json.loads(read(ASSETS + "/jx3/bindinfo.json")) # 每次重启后从磁盘加载缓存
 async def check_bind(id: str):
-    bind_types = ["未知", "不绑定", "装备后绑定", "拾取后绑定"]
-    cached = json.loads(read(ASSETS + "/jx3/bindinfo.json"))
-    for i in cached:
-        if i["id"] == id:
-            return bind_types[i["bind_type"]]
+    if id in CACHE_bind: # 每次检查仅检查缓存
+        return CACHE_bind[id]["bind_type"]
     final_url = f"https://helper.jx3box.com/api/wiki/post?type=item&source_id={id}"
     data = await get_api(final_url)
     bind_type = data["data"]["source"]["BindType"]
     if bind_type == None:
         bind_type = 0
-    cached = json.loads(read(ASSETS + "/jx3/bindinfo.json"))
     new_info = {
         "id": id,
         "bind_type": bind_type
     }
-    cached.append(new_info)
-    write(ASSETS + "/jx3/bindinfo.json", json.dumps(cached))
+    CACHE_bind[id] = new_info 
+    write(ASSETS + "/jx3/bindinfo.json", json.dumps(CACHE_bind))
     return bind_types[bind_type]
 
 
