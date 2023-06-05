@@ -143,9 +143,9 @@ async def getItemPriceById(id: str, server: str, all_ids:list):
         return "唔……服务器名输入错误。"
     final_url = f"https://next2.jx3box.com/api/item-price/{id}/logs?server={server}"
     data = await get_api(final_url)
-    if data["data"]["logs"] == "null":
-        return "唔……交易行没有此物品哦~"
     logs = data["data"]["logs"]
+    if not logs or logs == "null":
+        return "唔……交易行没有此物品哦~"
     logs.reverse()
     chart = []
     chart.append(["日期", "日最高价", "日均价", "日最低价"])
