@@ -16,6 +16,7 @@ asyncio.set_event_loop(loop)
 class MessageCallback:
     '''
     class for overwrite none-bot message-sender
+    at default behavior , we defined `bot.finish` as fail and `bot.send` as success , you can overwrite it if needed.
     '''
 
     def default_cb_finish(self, msg: str):
@@ -42,10 +43,12 @@ class MessageCallback:
         self.cb_send(msg)
 
     async def finish(self, msg: str):
+        self.callback_counter += 1
         if not self.cb_finish:
             logger.warning(self.to_warning('callback of finish not set, but been called.'))
             return
         self.cb_finish(msg)
+        
     def to_warning(self,warn:str):
         return f'[{self.tag}]{warn}'
 
