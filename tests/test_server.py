@@ -12,7 +12,13 @@ def test_server_map():
 
 
 def test_server_status():
-    mc = MessageCallback()
+    def default_cb_finish(msg: str):
+        if '开服状态：' in msg:
+            return
+        assert False, mc.to_warning(f'fail run:{msg}')
+    mc = MessageCallback(cb_finish=default_cb_finish)
+
+
     import src.plugins.jx3
     jx3_server = src.plugins.jx3.jx3_server
     src.plugins.jx3.server = mc

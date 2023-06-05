@@ -735,25 +735,25 @@ async def jx3_trade(state: T_State, event: GroupMessageEvent, args: Message = Co
     if type(data) != type([]):
         await trade_.finish(data)
     else:
-        id = data[0]
+        id = data[0] # 取到的是id列表
         state["id"] = id
         await trade_.send(ms.image(Path(data[1]).as_uri()))
         return
 
 @trade_.got("num", prompt="输入序号以搜索，其他内容则无视。")
-async def _(state: T_State, event: GroupMessageEvent, num: Message = Arg()):
+async def price_num_selected(state: T_State, event: GroupMessageEvent, num: Message = Arg()):
     num = num.extract_plain_text()
-    if checknumber(num):
-        id = state["id"][int(num)]
-        server = state["server"]
-        data = await getItemPriceById(id, server)
-        if type(data) != type([]):
-            await trade_.finish(data)
-        else:
-            img = data[0]
-            await trade_.send(ms.image(Path(img).as_uri()))
-    else:
+    if not checknumber(num):
         return
+    all_ids = state["id"]
+    id = all_ids[int(num)]
+    server = state["server"]
+    data = await getItemPriceById(id, server, all_ids)
+    if type(data) != type([]):
+        await trade_.finish(data)
+    else:
+        img = data[0]
+        await trade_.send(ms.image(Path(img).as_uri()))
     
 achievements = on_command("jx3_machi", aliases={"进度"}, priority=5)
 @achievements.handle()
