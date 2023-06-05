@@ -14,8 +14,7 @@ def get_uuid():
 async def generate(html: str, web: bool, locate: str = None, first: bool = False):
     if web:
         pass
-    else:
-        html = Path(html).as_uri()
+    html = Path(html).as_uri()
     try:
         async with async_playwright() as p:
             browser = await p.chromium.launch(headless = True, slow_mo = 0)
@@ -32,5 +31,5 @@ async def generate(html: str, web: bool, locate: str = None, first: bool = False
             else:
                 await page.screenshot(path = img)
             return img
-    except:
-        logger.info("音卡的图片生成失败啦！请尝试执行`playwright install`！")
+    except Exception as ex:
+        logger.info(f"音卡的图片生成失败啦！请尝试执行`playwright install`！:{ex}")
