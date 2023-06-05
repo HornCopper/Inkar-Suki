@@ -12,6 +12,7 @@ from tabulate import tabulate
 
 from .jx3 import server_mapping
 from .coin import copperl, silverl, goldl, brickl
+from sgtpyutils.extensions.clazz import dict2obj,get_fields
 
 TOOLS = nonebot.get_driver().config.tools_path
 sys.path.append(TOOLS)
@@ -46,54 +47,97 @@ css_fixed = """
 // 要抄好歹点个star 然后赞助赞助（狗头）
 """
 
-
 async def check_bind(id: str):
-    bind_types = ["未知", "不绑定", "装备后绑定", "拾取后绑定"]
-    cached = json.loads(read(ASSETS + "/jx3/bindinfo.json"))
-    for i in cached:
-        if i["id"] == id:
-            return bind_types[i["bind_type"]]
     final_url = f"https://helper.jx3box.com/api/wiki/post?type=item&source_id={id}"
     data = await get_api(final_url)
-    bind_type = data["data"]["source"]["BindType"]
-    if bind_type == None:
-        bind_type = 0
-    cached = json.loads(read(ASSETS + "/jx3/bindinfo.json"))
-    new_info = {
-        "id": id,
-        "bind_type": bind_type
-    }
-    cached.append(new_info)
-    write(ASSETS + "/jx3/bindinfo.json", json.dumps(cached))
-    return bind_types[bind_type]
+    bind_type = data["data"]["source"]["BindType"] or 0
+    return bind_type
 
+class GoodsInfo(dict):
+    bind_types = ["未知", "不绑定", "装备后绑定", "拾取后绑定"]
+    def __init__(self,data:dict = None) -> None:
+        if data is None:
+            data = {}
+        self.id = data.get('id')
+        self.bind_type = data.get('bind_type') or 0
+        self.icon = data.get('IconID') or 18888 # 默认给个小兔兔
+        self.quality = data.get('Quality')
+        self.ui_id = data.get('UiID')
+        self.name = data.get('Name') or '未知物品'
+        '''被使用的次数，次数多的优先前置'''
+        self.u_popularity = 0
+        super().__init__()
+    @property
+    def img_url(self):
+        return f"https://icon.jx3box.com/icon/{self.icon}.png"
+    @property
+    def html_code(self):
+        return f"<img src={self.img_url}></img>"
+    @property
+    def color(self):
+        '''
+        根据品质返回 灰、绿、蓝、紫、金、红
+        '''
+        return ['rgb(190,190,190)','rgb(0, 210, 75)','rgb(0, 126, 255)','rgb(254, 45, 254)','rgb(255, 165, 0)','#ff0000'][self.quality]
+    def to_row(self):
+        new = [self.id, self.name, self.bind_type_str, self.html_code]
+        return new
 
-async def search_item_info(item_name: str):
-    final_url = f"https://helper.jx3box.com/api/item/search?keyword={item_name}&limit=1000"
+    @property
+    def bind_type_str(self):
+        return self.bind_types[self.bind_type]
+        
+    def __repr__(self) -> str:
+        return json.dumps(self.__dict__)
+
+CACHE_goods = json.loads(read(ASSETS + "/jx3/info_goods.json")) # 每次重启后从磁盘加载缓存
+CACHE_goods = dict([[x,dict2obj(GoodsInfo(),CACHE_goods[x])] for x in CACHE_goods]) # 转换为类
+def __flush_cache_goods():
+    data = json.dumps(dict([key, CACHE_goods[key].__dict__] for key in CACHE_goods))
+    write(ASSETS + "/jx3/info_goods.json", data)
+
+async def search_item_info(item_name: str,pageIndex:int=0,pageSize:int=20):
+    final_url = f"https://helper.jx3box.com/api/item/search?keyword={item_name}&limit={pageSize}&page={pageIndex+1}"
     box_data = await get_api(final_url)
-    if len(box_data["data"]["data"]) == 0:
+    items = box_data["data"]["data"]
+    if not items:
         return "没有找到该物品哦~"
     space = []
-    id = []
+    query_items = []
     space.append(["序号", "物品ID", "物品名称", "绑定类型", "物品图标"])
-    num = 0
-    for i in box_data["data"]["data"]:
-        icon = i["IconID"]
-        img_url = f"https://icon.jx3box.com/icon/{icon}.png"
-        html_code = f"<img src={img_url}></img>"
-        bind_type = await check_bind(i["id"])
-        new = [num, i["id"], i["Name"], bind_type, html_code]
-        space.append(new)
-        id.append(i["id"])
-        num = num + 1
+    new_goods = False
+    for item in items:
+        id = item['id']
+        if not id in CACHE_goods:
+            item['bind_type'] = await check_bind(id)
+            CACHE_goods[id] = GoodsInfo(item)
+            new_goods = True
+        item:GoodsInfo = CACHE_goods[id]
+        query_items.append(item)
+
+    query_items.sort(key=lambda x:x.u_popularity) # 按热门程度排序
+    space += [([index] + x.to_row()) for index,x in enumerate(query_items)]
+    
     html = "<div style=\"font-family:Custom\">" + \
         tabulate(space, tablefmt="unsafehtml") + "</div>" + css
     final_path = CACHE + "/" + get_uuid() + ".html"
     write(final_path, html)
     img = await generate(final_path, False, "table", False)
-    return [id, img]
+    if new_goods:
+        __flush_cache_goods()
 
-async def getItemPriceById(id: str, server: str):
+    return [[i.id for i in query_items], img]
+    
+
+async def getItemPriceById(id: str, server: str, all_ids:list):
+    '''
+    通过物品id获取交易行价格
+    @param id:物品id
+    @param server:服务器名称
+    @param all_ids:本次选中的所有id。出现过的id应将其人气降1，以更好排序
+
+    @return [image] | str: 正确处理则返回[]，否则返回错误原因
+    '''
     server = server_mapping(server)
     if server == False:
         return "唔……服务器名输入错误。"
@@ -104,20 +148,32 @@ async def getItemPriceById(id: str, server: str):
     logs = data["data"]["logs"]
     logs.reverse()
     chart = []
-    chart.append(["服务器", "日期", "日最高价", "日均价", "日最低价"])
+    chart.append(["日期", "日最高价", "日均价", "日最低价"])
     for i in logs:
-        server_ = i["Server"]
         date = i["Date"]
         LowestPrice = convert(i["LowestPrice"])
         AvgPrice = convert(i["AvgPrice"])
         HighestPrice = convert(i["HighestPrice"])
-        new = [server_, date, HighestPrice, AvgPrice, LowestPrice]
+        new = [date, HighestPrice, AvgPrice, LowestPrice]
         chart.append(new)
-    html = "<div style=\"font-family:Custom\">" + \
-        tabulate(chart, tablefmt="unsafehtml") + "</div>" + css
+    header_server = f'<div style="font-size:3rem">交易行·{server}</div>'
+    goods_info:GoodsInfo = CACHE_goods[id] if id in CACHE_goods else GoodsInfo()
+    goods_info.u_popularity += 10 # 被选中则增加其曝光概率
+    header_goods = f'<div style="margin: 0.5rem;font-size:1.8rem;color:{goods_info.color}">物品 {goods_info.name} <img style="vertical-align: middle;width:1.8rem" src="{goods_info.img_url}"/></div>'
+    header = f'{header_server}{header_goods}'
+    table = tabulate(chart, tablefmt="unsafehtml")
+    table = table.replace('<table>','<table style="margin: auto">') # 居中显示
+    table = f'<div>{table}</div>' # 居中表格
+    html = f'<section style="text-align: center;width:50rem;"><div style=\"font-family:Custom\">{header}{table}</div></section>' + css
     final_path = CACHE + "/" + get_uuid() + ".html"
     write(final_path, html)
-    img = await generate(final_path, False, "table", False)
+    img = await generate(final_path,False,'section')
+
+    # 本轮已曝光物品，日后曝光率应下调
+    for id in all_ids:
+        x:GoodsInfo = CACHE_goods[id]
+        x.u_popularity -= 1
+    __flush_cache_goods()
     return [img]
 
 

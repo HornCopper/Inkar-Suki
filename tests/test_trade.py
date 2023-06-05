@@ -3,16 +3,35 @@ from . import *
 
 def test_trade_record():
     import src.plugins.jx3
+    mc = MessageCallback()
+    src.plugins.jx3.trade_ = mc
+
     jx3_trade = src.plugins.jx3.jx3_trade
-
-    def handle_finish(msg: str):
-        assert False, f'fail run:{msg}'
-
-    def handle_send(msg: str):
-        assert len(msg) > 10
-    src.plugins.jx3.trade_ = MessageCallback(handle_finish, handle_send)
-    state = dict()
-    state['server'] = '双梦'
+    state = {}
     event = SFGroupMessageEvent()
-    task = jx3_trade(state, event, obMessage('唯满侠 五行石'))
+
+    mc.tag = '唯满侠 五行石'
+    task = jx3_trade(state, event, obMessage(mc.tag))
     asyncio.run(task)
+    mc.check_counter()
+
+    mc.tag = '五行石'
+    task = jx3_trade(state, event, obMessage(mc.tag))
+    asyncio.run(task)
+    mc.check_counter()
+
+
+def test_trade_price():
+
+    import src.plugins.jx3
+    mc = MessageCallback()
+    src.plugins.jx3.trade_ = mc
+
+    price_num_selected = src.plugins.jx3.price_num_selected
+    state = {'id': ['5_24428'], 'server': '唯我独尊'}  # 五行石六级
+    event = SFGroupMessageEvent()
+
+    task = price_num_selected(state, event, obMessage('0'))
+    asyncio.run(task)
+    mc.check_counter()
+

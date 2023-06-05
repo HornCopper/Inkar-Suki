@@ -38,9 +38,9 @@ async def server_status(server: str = None):
     info = await get_api(full_link, proxy = proxies)
     status = info["data"]["status"]
     if status == 1:
-        return f"{server}服务器并未维护。"
+        return f"开服状态：{server}已经开服啦。"
     elif status == 0:
-        return f"{server}服务器维护中。"
+        return f"开服状态：{server}在维护中。"
 
 async def daily_(server: str = None):
     server = server_mapping(server)
