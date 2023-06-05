@@ -52,14 +52,19 @@ async def check_bind(id: str):
     data = await get_api(final_url)
     bind_type = data["data"]["source"]["BindType"] or 0
     return bind_type
-
-class GoodsInfo(dict):
+from enum import Enum
+class GoodsBindType(Enum):
     bind_types = ["未知", "不绑定", "装备后绑定", "拾取后绑定"]
+    UnKnown = 0
+    UnBind = 1
+    BindOnUse = 2
+    BindOnPick = 3
+class GoodsInfo(dict):
     def __init__(self,data:dict = None) -> None:
         if data is None:
             data = {}
         self.id = data.get('id')
-        self.bind_type = data.get('bind_type') or 0
+        self.bind_type:GoodsBindType = data.get('bind_type') or GoodsBindType.BindOnPick
         self.icon = data.get('IconID') or 18888 # 默认给个小兔兔
         self.quality = data.get('Quality')
         self.ui_id = data.get('UiID')
@@ -67,6 +72,7 @@ class GoodsInfo(dict):
         '''被使用的次数，次数多的优先前置'''
         self.u_popularity = 0
         super().__init__()
+
     @property
     def img_url(self):
         return f"https://icon.jx3box.com/icon/{self.icon}.png"
@@ -76,16 +82,16 @@ class GoodsInfo(dict):
     @property
     def color(self):
         '''
-        根据品质返回 灰、绿、蓝、紫、金、红
+        根据品质返回 老灰、灰、绿、蓝、紫、金、红
         '''
-        return ['rgb(190,190,190)','rgb(0, 210, 75)','rgb(0, 126, 255)','rgb(254, 45, 254)','rgb(255, 165, 0)','#ff0000'][self.quality]
+        return ['rgb(220,220,220)','rgb(190,190,190)','rgb(0, 210, 75)','rgb(0, 126, 255)','rgb(254, 45, 254)','rgb(255, 165, 0)','#ff0000'][self.quality]
     def to_row(self):
         new = [self.id, self.name, self.bind_type_str, self.html_code]
         return new
 
     @property
     def bind_type_str(self):
-        return self.bind_types[self.bind_type]
+        return GoodsBindType.bind_types[self.bind_type]
         
     def __repr__(self) -> str:
         return json.dumps(self.__dict__)
@@ -141,6 +147,9 @@ async def getItemPriceById(id: str, server: str, all_ids:list):
     server = server_mapping(server)
     if server == False:
         return "唔……服务器名输入错误。"
+    goods_info:GoodsInfo = CACHE_goods[id] if id in CACHE_goods else GoodsInfo()
+    if goods_info.bind_type == GoodsBindType.BindOnPick:
+        return "唔……绑定的物品无法在交易行出售哦~"
     final_url = f"https://next2.jx3box.com/api/item-price/{id}/logs?server={server}"
     data = await get_api(final_url)
     logs = data["data"]["logs"]
@@ -157,7 +166,6 @@ async def getItemPriceById(id: str, server: str, all_ids:list):
         new = [date, HighestPrice, AvgPrice, LowestPrice]
         chart.append(new)
     header_server = f'<div style="font-size:3rem">交易行·{server}</div>'
-    goods_info:GoodsInfo = CACHE_goods[id] if id in CACHE_goods else GoodsInfo()
     goods_info.u_popularity += 10 # 被选中则增加其曝光概率
     header_goods = f'<div style="margin: 0.5rem;font-size:1.8rem;color:{goods_info.color}">物品 {goods_info.name} <img style="vertical-align: middle;width:1.8rem" src="{goods_info.img_url}"/></div>'
     header = f'{header_server}{header_goods}'
