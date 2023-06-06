@@ -13,7 +13,7 @@ class SignInRecord:
     def init_lucky(self, luck: int = None):
         if not luck:
             luck = random.randint(0, 10000)
-        if luck < 5000:
+        if luck < 1000:
             return 0
         elif luck < 7500:
             return 1
@@ -32,12 +32,11 @@ class SignInRecord:
 class Sign:
 
     def generate_everyday_reward(qq: str):
-        signed_list = json.loads(read(CLOCK + "/signed.json"))
+        signed_list = json.loads(read(CLOCK + "/signed.json")) or []
         rank = len(signed_list)
 
         s = SignInRecord()
         continious = Sign.get_continuity(qq)
-        s.luck = Sign.lucky_level()
         s.coin = random.randint(1, 100) * (s.luck + 1)
         lottery = random.randint(0, 100)
         wlottery = False
@@ -51,22 +50,22 @@ class Sign:
         if wlottery:
             msg = f"{msg}\n触发额外奖励！已帮你额外添加了100枚金币！"
         msg = f"{msg}\n已连续签到{continious}天！"
-        msg = f"{msg}\n您是第{rank}位签到的哦~"
+        msg = f"{msg}\n您是第{rank+1}位签到的哦~"
         s.msg = msg
         return s
 
     def wsigned(qq: int):
-        signed = json.loads(read(CLOCK + "/signed.json"))
+        signed = json.loads(read(CLOCK + "/signed.json")) or []
         if str(qq) in signed:
             return True
         return False
 
     def save_data(data:SignInRecord, qq):
         qq = str(qq)
-        signed_list = json.loads(read(CLOCK + "/signed.json"))
+        signed_list = json.loads(read(CLOCK + "/signed.json")) or []
         signed_list.append(qq)
         write(CLOCK + "/signed.json", json.dumps(signed_list, ensure_ascii=False))
-        accounts = json.loads(read(CLOCK + "/account.json"))
+        accounts = json.loads(read(CLOCK + "/account.json")) or []
         for i in accounts:
             if i["id"] == qq:
                 nc = i["coin"]
