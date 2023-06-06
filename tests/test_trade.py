@@ -56,3 +56,9 @@ def test_trade_bound_good():
     task = price_num_selected(state, event, obMessage('0'))
     asyncio.run(task)
     mc.check_counter()
+
+def test_goods_info_db():
+    '''
+    test by run test_trade_record twice for load cache_file
+    '''
+    test_trade_record()
