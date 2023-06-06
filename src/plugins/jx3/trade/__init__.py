@@ -85,7 +85,7 @@ class GoodsInfo(dict):
 
     @bind_type.setter
     def bind_type(self,v:GoodsBindType):
-        if not v:
+        if v is None:
           self._bind_type = GoodsBindType.BindOnPick # default
           return
         self._bind_type = v
