@@ -53,8 +53,10 @@ async def check_bind(id: str):
     bind_type = data["data"]["source"]["BindType"] or 0
     return bind_type
 from enum import Enum
+
+GoodsBindTypeBindTypes = ["未知", "不绑定", "装备后绑定", "拾取后绑定"]
 class GoodsBindType(Enum):
-    bind_types = ["未知", "不绑定", "装备后绑定", "拾取后绑定"]
+    
     UnKnown = 0
     UnBind = 1
     BindOnUse = 2
@@ -64,7 +66,7 @@ class GoodsInfo(dict):
         if data is None:
             data = {}
         self.id = data.get('id')
-        self.bind_type:GoodsBindType = data.get('bind_type') or GoodsBindType.BindOnPick
+        self.bind_type:GoodsBindType = GoodsBindType(data.get('bind_type') or GoodsBindType.BindOnPick.value)
         self.icon = data.get('IconID') or 18888 # 默认给个小兔兔
         self.quality = data.get('Quality')
         self.ui_id = data.get('UiID')
@@ -91,16 +93,22 @@ class GoodsInfo(dict):
 
     @property
     def bind_type_str(self):
-        return GoodsBindType.bind_types[self.bind_type]
+        return GoodsBindTypeBindTypes[self.bind_type.value]
         
     def __repr__(self) -> str:
         return json.dumps(self.__dict__)
 
-CACHE_goods = json.loads(read(ASSETS + "/jx3/info_goods.json")) # 每次重启后从磁盘加载缓存
+cache_file = ASSETS + "/jx3/info_tradegoods.json"
+CACHE_goods = json.loads(read(cache_file)) # 每次重启后从磁盘加载缓存
 CACHE_goods = dict([[x,dict2obj(GoodsInfo(),CACHE_goods[x])] for x in CACHE_goods]) # 转换为类
+class GoodsEncoder(json.JSONEncoder):
+    def default(self, o) -> str:
+        if isinstance(o,Enum):
+            return o.value
+        return super().default(o)
 def __flush_cache_goods():
-    data = json.dumps(dict([key, CACHE_goods[key].__dict__] for key in CACHE_goods))
-    write(ASSETS + "/jx3/info_goods.json", data)
+    data = json.dumps(dict([key, CACHE_goods[key].__dict__] for key in CACHE_goods),cls=GoodsEncoder)
+    write(cache_file, data)
 
 async def search_item_info(item_name: str,pageIndex:int=0,pageSize:int=20):
     final_url = f"https://helper.jx3box.com/api/item/search?keyword={item_name}&limit={pageSize}&page={pageIndex+1}"
