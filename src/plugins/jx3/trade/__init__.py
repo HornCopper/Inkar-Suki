@@ -11,8 +11,8 @@ from playwright.async_api import async_playwright
 from tabulate import tabulate
 
 from ..jx3 import server_mapping
-from .coin import copperl, silverl, goldl, brickl
 from .GoodsInfo import GoodsBindType, GoodsInfo, CACHE_goods, flush_cache_goods, check_bind
+from .Golds import Gold
 TOOLS = nonebot.get_driver().config.tools_path
 sys.path.append(TOOLS)
 ASSETS = TOOLS[:-5] + "assets"
@@ -106,9 +106,9 @@ async def getItemPriceById(id: str, server: str, all_ids: list):
     chart.append(["日期", "日最高价", "日均价", "日最低价"])
     for i in logs:
         date = i["Date"]
-        LowestPrice = convert(i["LowestPrice"])
-        AvgPrice = convert(i["AvgPrice"])
-        HighestPrice = convert(i["HighestPrice"])
+        LowestPrice = Gold(i["LowestPrice"])
+        AvgPrice = Gold(i["AvgPrice"])
+        HighestPrice = Gold(i["HighestPrice"])
         new = [date, HighestPrice, AvgPrice, LowestPrice]
         chart.append(new)
     header_server = f'<div style="font-size:3rem">交易行·{server}</div>'
@@ -146,37 +146,3 @@ async def getItem(id: str):
         return path
 
 
-def convert(price: int):
-    if 1 <= price <= 99:  # 铜
-        msg = f"{price} 铜"
-    elif 100 <= price <= 9999:  # 银
-        copper = price % 100
-        silver = (price - copper) / 100
-        if copper == 0:
-            msg = str(int(silver)) + " 银"
-        else:
-            msg = str(int(silver)) + " 银" + " " + str(int(copper)) + " 铜"
-    elif 10000 <= price <= 99999999:  # 金
-        copper = price % 100
-        silver = ((price - copper) % 10000) / 100
-        gold = (price - copper - silver) / 10000
-        msg = str(int(gold)) + " 金"
-        if str(int(silver)) != "0":
-            msg = msg + " " + str(int(silver)) + " 银"
-        if str(int(copper)) != "0":
-            msg = msg + " " + str(int(copper)) + " 铜"
-    elif 100000000 <= price:  # 砖
-        copper = price % 100
-        silver: int = ((price - copper) % 10000) / 100
-        gold = ((price - copper - silver*100) % 100000000) / 10000
-        brick = (price - copper - silver*100 - gold*10000) / 100000000
-        msg = str(int(brick)) + " 砖"
-        if str(int(gold)) != "0":
-            msg = msg + " " + str(int(gold)) + " 金"
-        if str(int(silver)) != "0":
-            msg = msg + " " + str(int(silver)) + " 银"
-        if str(int(copper)) != "0":
-            msg = msg + " " + str(int(copper)) + " 铜"
-    msg = msg.replace("金", f"<img src=\"{goldl}\">").replace("砖", f"<img src=\"{brickl}\">").replace(
-        "银", f"<img src=\"{silverl}\">").replace("铜", f"<img src=\"{copperl}\">")
-    return msg
