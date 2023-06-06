@@ -6,7 +6,7 @@ from sgtpyutils.logger import logger
 import bot
 from nonebot.adapters.onebot.v11 import Bot, GroupMessageEvent, Message as obMessage
 from nonebot.adapters.onebot.v11.event import Anonymous, Sender, Reply
-from nonebot.adapters import Message
+from nonebot.adapters import Message,MessageSegment
 test_group_id = 11123456
 
 loop = asyncio.new_event_loop()
