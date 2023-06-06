@@ -10,7 +10,7 @@ from src.tools.generate import generate, get_uuid
 from playwright.async_api import async_playwright
 from tabulate import tabulate
 
-from .jx3 import server_mapping
+from ..jx3 import server_mapping
 from .coin import copperl, silverl, goldl, brickl
 from sgtpyutils.extensions.clazz import dict2obj,get_fields
 
@@ -66,7 +66,8 @@ class GoodsInfo(dict):
         if data is None:
             data = {}
         self.id = data.get('id')
-        self.bind_type:GoodsBindType = GoodsBindType(data.get('bind_type') or GoodsBindType.BindOnPick.value)
+        self._bind_type:GoodsBindType = GoodsBindType.BindOnPick
+        self.bind_type = data.get('bind_type')
         self.icon = data.get('IconID') or 18888 # 默认给个小兔兔
         self.quality = data.get('Quality')
         self.ui_id = data.get('UiID')
@@ -74,7 +75,20 @@ class GoodsInfo(dict):
         '''被使用的次数，次数多的优先前置'''
         self.u_popularity = 0
         super().__init__()
+    
+    @property
+    def bind_type(self)->GoodsBindType:
+        if isinstance(self._bind_type,GoodsBindType):
+          return self._bind_type
+        self._bind_type = GoodsBindType(self._bind_type)
+        return self._bind_type
 
+    @bind_type.setter
+    def bind_type(self,v:GoodsBindType):
+        if not v:
+          self._bind_type = GoodsBindType.BindOnPick # default
+          return
+        self._bind_type = v
     @property
     def img_url(self):
         return f"https://icon.jx3box.com/icon/{self.icon}.png"
