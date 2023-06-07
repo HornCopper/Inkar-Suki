@@ -11,7 +11,7 @@ CACHE = TOOLS.replace("tools","cache")
 def get_uuid():
     return str(uuid.uuid1()).replace("-","")
 
-async def generate(html: str, web: bool, locate: str = None, first: bool = False):
+async def generate(html: str, web: bool = False, locate: str = None, first: bool = False):
     if web:
         pass
     html = Path(html).as_uri()
