@@ -11,3 +11,4 @@ nonebot_plugin_apscheduler
 playwright
 sgtpyutils >= 1.15.22
 pydantic
+pathlib2

@@ -1,6 +1,22 @@
 from . import *
 
 
+def test_trade_gold():
+    from src.plugins.jx3.trade import Gold
+    assert Gold(1).__repr__() == '1 铜'
+    assert Gold(200).__repr__() == '2 银'
+    assert Gold(80000).__repr__() == '8 金'
+    assert Gold(88800).__repr__() == '8 金 88 银'
+    assert Gold(100888800).__repr__() == '1 砖 88 金 88 银'
+    assert Gold(100008800).__repr__() == '1 砖 88 银'
+    assert Gold(100000000).__repr__() == '1 砖'
+    assert len(str(Gold(100888800))) > 1e3, 'image of b64 should be very long'
+
+    from src.plugins.jx3.trade import coin
+    t = f'98 <img src="{coin.brickl}" /> 12 <img src="{coin.goldl}" /> 34 <img src="{coin.silverl}" /> 56 <img src="{coin.copperl}" />'
+    assert str(Gold(9800123456)) == t, 'convert image maybe wrong'
+
+
 def test_trade_record():
     import src.plugins.jx3
     mc = MessageCallback()
@@ -15,7 +31,7 @@ def test_trade_record():
     asyncio.run(task)
     mc.check_counter()
 
-    mc.tag = '五行石'
+    mc.tag = '武技殊影图'
     task = jx3_trade(state, event, obMessage(mc.tag))
     asyncio.run(task)
     mc.check_counter()
@@ -28,7 +44,7 @@ def test_trade_price():
     src.plugins.jx3.trade_ = mc
 
     price_num_selected = src.plugins.jx3.price_num_selected
-    state = {'id': ['5_24428'], 'server': '唯我独尊'}  # 五行石六级
+    state = {'id': ['5_47116'], 'server': '唯我独尊'}  # 武技殊影图·上将
     event = SFGroupMessageEvent()
 
     task = price_num_selected(state, event, obMessage('0'))
@@ -39,12 +55,13 @@ def test_trade_price():
 def test_trade_bound_good():
 
     import src.plugins.jx3
+
     def cb_finish(msg: str):
         assert '绑定' in msg, w_tip
 
     def cb_send(msg: str):
         assert False, w_tip
-    mc = MessageCallback(cb_finish=cb_finish,cb_send=cb_send)
+    mc = MessageCallback(cb_finish=cb_finish, cb_send=cb_send)
     src.plugins.jx3.trade_ = mc
 
     price_num_selected = src.plugins.jx3.price_num_selected
@@ -56,6 +73,7 @@ def test_trade_bound_good():
     task = price_num_selected(state, event, obMessage('0'))
     asyncio.run(task)
     mc.check_counter()
+
 
 def test_goods_info_db():
     '''
