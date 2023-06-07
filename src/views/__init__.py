@@ -19,14 +19,21 @@ def get_tag_content(data: str, tag: str) -> str:
     return '\n'.join(result)
 
 
-def get_render_image(view_file_path: str, data: dict = None, delay: int = 0) -> bytes:
+def get_render_image(view_file_path: str, data: dict = None, delay: int = 0, target: str = 'section') -> bytes:
+    '''
+    渲染网页为图片
+    @param view_file_path: 页面文件
+    @param data: 数据
+    @param delay: 延迟截图时间，单位ms
+    @param target: 截图目标标签
+    '''
     if not data:
         data = {}
     content = get_render_content(view_file_path, data)
     file = pathlib2.Path(CACHE).joinpath(f'tpl_{get_uuid()}.html').as_posix()
     with open(file, 'w', encoding='utf-8') as f:
         f.write(content)
-    return asyncio.run(generate(file, delay=delay))
+    return asyncio.run(generate(file, delay=delay, locate=target))
 
 
 def __init_data(data: dict):
