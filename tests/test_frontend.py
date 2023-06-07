@@ -12,4 +12,4 @@ def test_vue():
 def test_render_data():
     rnd_id = random.randrange(int(10e7), int(10e8))
     content = get_render_content(test_base_path, {'test': rnd_id})
-    assert rnd_id in content, 'content should be in rendered result'
+    assert str(rnd_id) in content, 'content should be in rendered result'
