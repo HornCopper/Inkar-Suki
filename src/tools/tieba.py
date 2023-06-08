@@ -28,17 +28,42 @@ class SubjectStatus:
 class Jx3Tieba(threading.Thread):
     Interval = 3  # 延迟
     Interval_Rnd = 1  # 随机变换
+    name = 'tieba thread'  # 线程名称
 
     def __init__(self, subject: List[str]) -> None:
-        self.subject = subject
+        self.subject = subject or ['剑网三']
+        logger.info(f'{Jx3Tieba.name} load subjects:{"|".join(subject)}')
         self.subject_status = {}
-        self.current_index = 0
+        self._current_index = 0
+        self.is_stop = True
+        super().__init__(name=Jx3Tieba.name)
+
+    def start(self) -> None:
+        logger.info(f'{self.name} is going to start')
+        if not self.is_stop:
+            return
+        self.is_stop = False
+        return super().start()
+
+    def stop(self):
+        logger.info(f'{self.name} is going to stop')
+        self.is_stop = True
 
     @staticmethod
     def get_interval() -> float:
         s = Jx3Tieba.Interval * 1000
         r = Jx3Tieba.Interval_Rnd * 1000
         return random.randint(s-r, s+r) / 1000
+
+    @property
+    def current_index(self) -> int:
+        return self._current_index
+
+    @current_index.setter
+    def current_index(self, v: int):
+        if v >= len(self.subject):
+            v = 0
+        self._current_index = v
 
     @property
     def current_subject(self) -> str:
@@ -52,21 +77,27 @@ class Jx3Tieba(threading.Thread):
         return self.subject_status[self.current_subject]
 
     def run(self):
+        logger.debug(f'{self.name} proceeding.')
         while True:
-
+            self.current_index += 1
+            asyncio.run(self.run_once())
+            if self.is_stop:
+                return logger.info(f'{self.name} is stopped')
             time.sleep(Jx3Tieba.get_interval())
 
     async def run_once(self) -> list:
         s: SubjectStatus = self.current_status
+        s.last_fetch = time.time()
         pn = 1
         while True:
             async with aiotieba.Client() as client:
                 sub = self.current_subject
-                logger.debug(f'load forum[{sub}] at page {pn}')
+                logger.debug(f'{self.name}:load forum[{sub}] at page {pn}')
                 _threads = await client.get_threads(sub, pn=pn)
                 t_index = _threads.page.total_page * _threads.page.page_size - pn
                 s.threads += _threads[0:]
-                logger.debug(f'load forum[{sub}] at page {pn}, loaded threads:{len(s.threads)}')
+                logger.debug(
+                    f'{self.name}:load forum[{sub}] at page {pn}, loaded threads:{len(s.threads)}')
                 if s.last_thread_index == 0:
                     s.last_thread_index = t_index
                     break
@@ -77,4 +108,5 @@ class Jx3Tieba(threading.Thread):
         return s.threads
 
 
-client = Jx3Tieba(['唯满侠', '剑网三'])
+client = Jx3Tieba(['唯满侠', '剑网三', '剑三', '剑网三交易', '剑网三外观'])
+client.start()
