@@ -55,8 +55,8 @@ async def _():
     '''
     await news.finish(await news_())
 
-server = on_command("jx3_server", aliases={"服务器","开服"}, priority=5)
-@server.handle()
+cmd_jx3_server = on_command("jx3_server", aliases={"服务器","开服"}, priority=5)
+@cmd_jx3_server.handle()
 async def jx3_server(event: GroupMessageEvent, args: Message = CommandArg()):
     '''
     获取服务器开服状态：
@@ -65,9 +65,7 @@ async def jx3_server(event: GroupMessageEvent, args: Message = CommandArg()):
     Example：-开服 幽月轮 
     '''
     server = args.extract_plain_text()
-    if not server:
-        server = server_mapping(str(event.group_id))
-    await server.finish(await server_status(server=server, group=str(event.group_id)))
+    await cmd_jx3_server.finish(await server_status(server=server))
         
 daily = on_command("jx3_daily", aliases={"日常","周常"}, priority=5)
 @daily.handle()
