@@ -1,9 +1,10 @@
 from . import *
+import asyncio
 from src.tools.file import write
 def test_cron_signin():
     import src.plugins.sign
     clean_data = src.plugins.sign.clean_data
-    clean_data()
+    asyncio.run(clean_data())
   
 
 def test_signin():
