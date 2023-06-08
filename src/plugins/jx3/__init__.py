@@ -55,8 +55,8 @@ async def _():
     '''
     await news.finish(await news_())
 
-cmd_jx3_server = on_command("jx3_server", aliases={"服务器","开服"}, priority=5)
-@cmd_jx3_server.handle()
+server = on_command("jx3_server", aliases={"服务器","开服"}, priority=5)
+@server.handle()
 async def jx3_server(event: GroupMessageEvent, args: Message = CommandArg()):
     '''
     获取服务器开服状态：
@@ -64,8 +64,15 @@ async def jx3_server(event: GroupMessageEvent, args: Message = CommandArg()):
     Example：-服务器 幽月轮
     Example：-开服 幽月轮 
     '''
-    server = args.extract_plain_text()
-    await cmd_jx3_server.finish(await server_status(server=server))
+    server_ = args.extract_plain_text()
+    if server_ == "":
+        server_ = getGroupServer(str(event.group_id))
+        if server_ == False:
+            await server.finish("没有输入任何服务器名称，也没有绑定服务器，没办法帮你找啦。")
+        else:
+            server.finish(await server_status(server = server_))
+    await server.finish(await server_status(server = server_))
+
         
 daily = on_command("jx3_daily", aliases={"日常","周常"}, priority=5)
 @daily.handle()
@@ -503,7 +510,7 @@ async def jx3_recruit(bot: Bot, event: GroupMessageEvent, args: Message = Comman
 
     Example：-招募 幽月轮
     '''
-    group_server = server_mapping(str(event.group_id))
+    group_server = getGroupServer(str(event.group_id))
     arg = args.extract_plain_text()
     if arg == "":
         if group_server == False:
@@ -518,7 +525,7 @@ async def jx3_recruit(bot: Bot, event: GroupMessageEvent, args: Message = Comman
                 server = arg[0]
                 copy = ""
             else:
-                server = server_mapping(str(event.group_id))
+                server = getGroupServer(str(event.group_id))
                 copy = arg[0]
             data = await recruit_(server, copy)
         else:
@@ -537,7 +544,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
 
     Example：-金价 幽月轮
     '''
-    group_server = server_mapping(str(event.group_id))
+    group_server = getGroupServer(str(event.group_id))
     arg = args.extract_plain_text()
     if arg == "":
         if group_server == False:
@@ -577,7 +584,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
 
     Example：-奇遇 幽月轮 哭包猫@唯我独尊
     '''
-    group_server = server_mapping(str(event.group_id))
+    group_server = getGroupServer(str(event.group_id))
     arg = args.extract_plain_text().split(" ")
     if len(arg) not in [1,2]:
         await serendipity.finish("唔……参数不正确哦，请检查后重试~")
@@ -603,7 +610,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
 
     Example：-近期奇遇 幽月轮 阴阳两界
     '''
-    group_server = server_mapping(str(event.group_id))
+    group_server = getGroupServer(str(event.group_id))
     arg = args.extract_plain_text().split(" ")
     if len(arg) not in [1,2]:
         await statistical.finish("唔……参数不正确哦，请检查后重试~")
@@ -664,7 +671,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     Example：-属性 幽月轮 哭包猫@唯我独尊
     Example：-查装 幽月轮 哭包猫@唯我独尊
     '''
-    group_server = server_mapping(str(event.group_id))
+    group_server = getGroupServer(str(event.group_id))
     arg = args.extract_plain_text().split(" ")
     if len(arg) not in [1,2]:
         await addritube.finish("唔……参数不正确哦，请检查后重试~")
@@ -690,7 +697,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
 
     Example：-沙盘 幽月轮
     '''
-    group_server = server_mapping(str(event.group_id))
+    group_server = getGroupServer(str(event.group_id))
     arg = args.extract_plain_text()
     if arg == "":
         if group_server == False:
@@ -758,7 +765,7 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
     Example：-进度 幽月轮 哭包猫@唯我独尊 25人英雄范阳夜变
     Example：-进度 幽月轮 哭包猫@唯我独尊 扶摇九天
     '''
-    group_server = server_mapping(str(event.group_id))
+    group_server = getGroupServer(str(event.group_id))
     achievement = args.extract_plain_text().split(" ")
     if len(achievement) not in [2,3]:
         await achievements.finish("唔……参数数量不正确哦，请检查后重试~")
@@ -784,7 +791,7 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
     arg = args.extract_plain_text().split(" ")
     if len(arg) not in [2,3]:
         await arena.finish("唔……参数数量有误，请检查后重试~")
-    group_server = server_mapping(str(event.group_id))
+    group_server = getGroupServer(str(event.group_id))
     if arg[0] == "战绩":
         if len(arg) not in [2,3]:
             await arena.finish("唔……参数数量有误，请检查后重试~")
@@ -827,7 +834,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     Example：-百强 幽月轮 李重茂
     Example：-百强 幽月轮 李重茂 风波渡
     '''
-    group_server = server_mapping(str(event.group_id))
+    group_server = getGroupServer(str(event.group_id))
     arg = args.extract_plain_text().split(" ")
     if len(arg) not in [1,2,3]:
         await top100_.finish("唔……参数不正确哦，请检查后重试~")
@@ -866,7 +873,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     Example：-榜单 阵营 幽月轮 赛季恶人五十强
     Example：-榜单 试炼 幽月轮 明教
     '''
-    group_server = server_mapping(str(event.group_id))
+    group_server = getGroupServer(str(event.group_id))
     arg = args.extract_plain_text().split(" ")
     if len(arg) not in [2,3]:
         await rank.finish("唔……参数不正确哦，请检查后重试~")
@@ -905,7 +912,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
 
     Example：-玩家信息 幽月轮 哭包猫@唯我独尊
     '''
-    group_server = server_mapping(str(event.group_id))
+    group_server = getGroupServer(str(event.group_id))
     arg = args.extract_plain_text().split(" ")
     if len(arg) not in [1,2]:
         await roleInfo.finish("唔……参数不正确哦，请检查后重试~")
@@ -949,7 +956,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
 
     Example：-赤兔 幽月轮
     '''
-    group_server = server_mapping(str(event.group_id))
+    group_server = getGroupServer(str(event.group_id))
     server = args.extract_plain_text()
     if server == "":
         if group_server == False:
@@ -970,7 +977,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
 
     Example：-cd 幽月轮 归墟玄晶
     '''
-    group_server = server_mapping(str(event.group_id))
+    group_server = getGroupServer(str(event.group_id))
     arg = args.extract_plain_text().split(" ")
     if len(arg) not in [1,2]:
         await mc_helper.finish("唔……参数不正确哦，请检查后重试~")
@@ -993,7 +1000,7 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
 
     Example：-副本 幽月轮 哭包猫@唯我独尊
     '''
-    group_server = server_mapping(str(event.group_id))
+    group_server = getGroupServer(str(event.group_id))
     arg = args.extract_plain_text().split(" ")
     if len(arg) not in [1,2]:
         await zones.finish("唔……参数不正确哦，请检查后重试~")
@@ -1015,7 +1022,7 @@ xuanjing = on_command("jx3_xuanjing", aliases={"玄晶"}, priority=5)
 @xuanjing.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     server = args.extract_plain_text()
-    group_server = server_mapping(str(event.group_id))
+    group_server = getGroupServer(str(event.group_id))
     if server == "":
         if group_server == False:
             await xuanjing.finish("没有绑定服务器，请携带服务器参数使用！")
@@ -1056,7 +1063,7 @@ horse = on_command("jx3_horse", aliases={"抓马","马场"}, priority=5)
 @horse.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     server = args.extract_plain_text()
-    group_server = server_mapping(str(event.group_id))
+    group_server = getGroupServer(str(event.group_id))
     if server == "":
         if group_server == False:
             await horse.finish("没有绑定服务器，请携带服务器参数使用！")
@@ -1088,7 +1095,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
 firework__ = on_command("jx3-firework", aliases={"_烟花"}, priority=5)
 @firework__.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
-    group_server = server_mapping(str(event.group_id))
+    group_server = getGroupServer(str(event.group_id))
     from .firework import get_data as firework_ # CodeThink独家出品，仅限公共音卡使用，闭源
     arg = args.extract_plain_text().split(" ")
     if len(arg) not in [1,2]:
