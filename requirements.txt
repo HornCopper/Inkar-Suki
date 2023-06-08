@@ -12,3 +12,4 @@ playwright
 sgtpyutils >= 1.15.22
 pydantic
 pathlib2
+aiotieba
