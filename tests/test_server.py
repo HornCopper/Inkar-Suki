@@ -21,7 +21,7 @@ def test_server_status():
 
     import src.plugins.jx3
     jx3_server = src.plugins.jx3.jx3_server
-    src.plugins.jx3.server = mc
+    src.plugins.jx3.cmd_jx3_server = mc
     event = SFGroupMessageEvent()
     
     mc.tag = '双梦'
