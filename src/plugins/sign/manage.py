@@ -1,8 +1,11 @@
-from src.tools.file import read, write
 import random
 import json
 import sys
 import nonebot
+
+from nonebot.adapters.onebot.v11 import MessageSegment as ms
+
+from src.tools.file import read, write
 
 TOOLS = nonebot.get_driver().config.tools_path
 sys.path.append(str(TOOLS))
@@ -34,7 +37,6 @@ class Sign:
     def generate_everyday_reward(qq: str):
         signed_list = json.loads(read(CLOCK + "/signed.json")) or []
         rank = len(signed_list)
-
         s = SignInRecord()
         continious = Sign.get_continuity(qq)
         s.coin = random.randint(1, 100) * (s.luck + 1)
@@ -46,11 +48,11 @@ class Sign:
             s.wlottery = 1
         luck_desc = ['末吉签', '中吉签', '上吉签', '上上签'][s.luck]
         luck_desc = f'{luck_desc}(x{s.luck+1})'
-        msg = f'\n签到成功！\n金币：+{s.coin}\n今日运势：{s.luck}'
+        msg = ms.at(qq) + f'\n签到成功！\n金币：+{s.coin}\n今日运势：{s.luck_desc}（{s.luck}x）'
         if wlottery:
             msg = f"{msg}\n触发额外奖励！已帮你额外添加了100枚金币！"
         msg = f"{msg}\n已连续签到{continious}天！"
-        msg = f"{msg}\n您是第{rank+1}位签到的哦~"
+        msg = f"{msg}\n您是第{rank + 1}位签到的哦~"
         s.msg = msg
         return s
 
