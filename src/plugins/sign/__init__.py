@@ -46,4 +46,10 @@ from nonebot_plugin_apscheduler import scheduler
 async def clean_data():
     write(CLOCK + "/signed.json","[]")
     l.info("Signed.json has been cleaned.")
+    try:
+        for i in os.listdir(CACHE):
+            os.remove(CACHE + "/" + i)
+        l.info("已清理所有缓存文件。")
+    except:
+        l.info("缓存清理失败，请检查后重试！！！")
     
