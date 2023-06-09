@@ -48,12 +48,12 @@ class Sign:
             s.wlottery = 1
         luck_desc = ['末吉签', '中吉签', '上吉签', '上上签'][s.luck]
         luck_desc = f'{luck_desc}(x{s.luck+1})'
-        msg = ms.at(qq) + f'\n签到成功！\n金币：+{s.coin}\n今日运势：{s.luck_desc}（{s.luck}x）'
+        msg = f'\n签到成功！\n金币：+{s.coin}\n今日运势：{luck_desc}'
         if wlottery:
             msg = f"{msg}\n触发额外奖励！已帮你额外添加了100枚金币！"
         msg = f"{msg}\n已连续签到{continious}天！"
         msg = f"{msg}\n您是第{rank + 1}位签到的哦~"
-        s.msg = msg
+        s.msg = ms.at(qq) + msg
         return s
 
     def wsigned(qq: int):
