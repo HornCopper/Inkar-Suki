@@ -47,7 +47,7 @@ css_fixed = """
 """
 
 
-async def search_item_info(item_name: str, pageIndex: int = 0, pageSize: int = 20):
+async def search_item_info(item_name: str, pageIndex: int = 0, pageSize: int = 40):
     final_url = f"https://helper.jx3box.com/api/item/search?keyword={item_name}&limit={pageSize}&page={pageIndex+1}"
     box_data = await get_api(final_url)
     items = box_data["data"]["data"]
