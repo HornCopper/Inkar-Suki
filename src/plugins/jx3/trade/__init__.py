@@ -3,7 +3,7 @@ import json
 import sys
 
 from src.plugins.help import css
-from src.tools.file import write, read
+from src.tools.file import write
 from src.tools.utils import get_api
 from src.tools.generate import generate, get_uuid
 

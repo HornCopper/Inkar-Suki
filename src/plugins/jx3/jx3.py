@@ -377,7 +377,7 @@ def server_mapping(server: str = None,group_id: str = None):
         return "飞龙在天"
     return False
         
-def getGroupServer(group_id:str):
+def getGroupServer(group_id: str):
     '''
     获取当前群绑定的服务器，默认返回唯满侠
     '''
