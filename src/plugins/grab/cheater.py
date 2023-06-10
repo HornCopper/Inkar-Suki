@@ -7,7 +7,10 @@ async def verify_cheater(content):
     dt = await get_url(url)
     bs_obj = BeautifulSoup(dt, "html.parser")
     list_ = bs_obj.find(class_ = "s_post_list")
-    objects = list_.find_all(class_ = "s_post")
+    try:
+        objects = list_.find_all(class_ = "s_post")
+    except:
+        return False
     contents = []
     titles = []
     urls = []
