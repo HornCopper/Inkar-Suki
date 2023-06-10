@@ -43,14 +43,14 @@ class MessageCallback:
     def convert_to_str(self, msg: MessageSegment):
         if isinstance(msg, MessageSegment):
             msg = msg.data
-        if isinstance(msg,v11Message):
+        if isinstance(msg, v11Message):
             msg = str(msg)
             pass
-        if isinstance(msg,dict):
+        if isinstance(msg, dict):
             import json
-            msg = json.dumps(msg)
-        
-        if isinstance(msg,str):
+            msg = json.dumps(msg, ensure_ascii=False)
+
+        if isinstance(msg, str):
             return msg
         logger.warn(f'message cant convert to str:{msg}')
         return msg
@@ -82,8 +82,10 @@ class MessageCallback:
 class SFGroupMessageEvent(GroupMessageEvent):
     def build_user(self):
         return Sender(user_id=0, nickname='0', sec='男', age=0, card='0', area='0', level='0', role='user', title='0')
+
     def render_message(self, group):
         return super().render_message(group)
+
     def __init__(self, time: int = None, self_id: int = None, post_type: Literal['message'] = None, sub_type: str = None, user_id: int = None, message_type: Literal['group'] = None, message_id: int = None, message: Message = None, original_message: Message = None, raw_message: str = None, font: int = None, sender: Sender = None, to_me: bool = False, reply: Reply | None = None, group_id: int = None, anonymous: Anonymous | None = None):
         time = time or int(sys_time.time())
         self_id = self_id or '0'
