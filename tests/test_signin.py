@@ -13,6 +13,7 @@ def test_signin():
 
     def handle_finish(msg: str):
         assert '签到成功' in msg, f'fail run:{msg}'
+        assert '1天' in msg, f'fail run:{msg}'
 
     def handle_send(msg: str):
         assert False, f'fail run:{msg}'
@@ -24,9 +25,7 @@ def test_signin():
     mc.check_counter()
 
     def handle_finish(msg: str):
-        assert isinstance(msg, Message)
-        assert len(msg) == 2,'msg0=@xxx msg1=tip'
-        assert '不能重复签到' in msg[1].data['text'], f'fail run:{msg}'
+        assert '不能重复签到' in msg, f'fail run:{msg}'
 
     src.plugins.sign.sign_.cb_finish = handle_finish
     task = sign(event)

@@ -2,6 +2,11 @@ import random
 import json
 import sys
 import nonebot
+import os
+from nonebot.adapters.onebot.v11 import MessageSegment as ms
+from sgtpyutils.extensions import find 
+
+from src.tools.file import read, write
 
 from nonebot.adapters.onebot.v11 import MessageSegment as ms
 
@@ -51,7 +56,7 @@ class Sign:
         msg = f'\n签到成功！\n金币：+{s.coin}\n今日运势：{luck_desc}'
         if wlottery:
             msg = f"{msg}\n触发额外奖励！已帮你额外添加了100枚金币！"
-        msg = f"{msg}\n已连续签到{continious}天！"
+        msg = f"{msg}\n已连续签到{continious + 1}天！"
         msg = f"{msg}\n您是第{rank + 1}位签到的哦~"
         s.msg = ms.at(qq) + msg
         return s
@@ -88,19 +93,22 @@ class Sign:
         )
         write(CLOCK + "/account.json", json.dumps(accounts, ensure_ascii=False))
         return
+    def get_user_record(qq:str)->dict:
+        '''
+        获取用户签到信息
+        '''
+        qq = str(qq)
+        accounts = json.loads(read(f"{CLOCK}{os.sep}account.json"))
+        return find(accounts,lambda x:x['id'] == qq) or {}
 
     def get_continuity(qq):
-        qq = str(qq)
-        accounts = json.loads(read(CLOCK + "/account.json"))
-        for i in accounts:
-            if i["id"] == qq:
-                return i["continuity"]
-        return False
+        '''
+        获取用户连续登录天数
+        '''
+        return Sign.get_user_record(qq).get('continuity') or 0
 
     def get_coin(qq):
-        qq = str(qq)
-        accounts = json.loads(read(CLOCK + "/account.json"))
-        for i in accounts:
-            if i["id"] == qq:
-                return i["coin"]
-        return False
+        '''
+        获取用户当前金币数
+        '''
+        return Sign.get_user_record(qq).get('coin') or 0
