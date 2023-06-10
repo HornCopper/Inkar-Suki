@@ -724,7 +724,6 @@ async def jx3_trade(state: T_State, event: GroupMessageEvent, args: Message = Co
     if len(arg) == 0:
         await trade_.finish("唔……参数不正确哦，请检查后重试~如 交易行 帝骖龙翔")
     arg_server = arg[0] if len(arg) == 2 else None
-    print('arg_server',arg_server)
     arg_item = arg[1] if len(arg) == 2 else arg[0]
 
     server = server_mapping(arg_server, group_id=str(event.group_id))
