@@ -3,7 +3,7 @@ import json
 import sys
 
 from src.plugins.help import css
-from src.tools.file import write, read
+from src.tools.file import write
 from src.tools.utils import get_api
 from src.tools.generate import generate, get_uuid
 
@@ -47,7 +47,7 @@ css_fixed = """
 """
 
 
-async def search_item_info(item_name: str, pageIndex: int = 0, pageSize: int = 20):
+async def search_item_info(item_name: str, pageIndex: int = 0, pageSize: int = 40):
     final_url = f"https://helper.jx3box.com/api/item/search?keyword={item_name}&limit={pageSize}&page={pageIndex+1}"
     box_data = await get_api(final_url)
     items = box_data["data"]["data"]
