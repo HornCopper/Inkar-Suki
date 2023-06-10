@@ -48,3 +48,4 @@ async def generate(html: str, web: bool = False, locate: str = None, first: bool
             return img
     except Exception as ex:
         logger.info(f"音卡的图片生成失败啦！请尝试执行`playwright install`！:{ex}")
+        return False
