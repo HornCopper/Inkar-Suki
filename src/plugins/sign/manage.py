@@ -56,7 +56,7 @@ class Sign:
         msg = f'\n签到成功！\n金币：+{s.coin}\n今日运势：{luck_desc}'
         if wlottery:
             msg = f"{msg}\n触发额外奖励！已帮你额外添加了100枚金币！"
-        msg = f"{msg}\n已连续签到{continious}天！"
+        msg = f"{msg}\n已连续签到{continious + 1}天！"
         msg = f"{msg}\n您是第{rank + 1}位签到的哦~"
         s.msg = ms.at(qq) + msg
         return s
