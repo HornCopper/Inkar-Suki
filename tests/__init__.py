@@ -1,14 +1,11 @@
-import bot
-import nonebot
+
+from bot import *
+from sgtpyutils.logger import logger
 import time as sys_time
 import random
 import asyncio
 from typing import Literal
-from sgtpyutils.logger import logger
-from nonebot.adapters.onebot.v11 import Bot, GroupMessageEvent, Message as obMessage
-from nonebot.adapters.onebot.v11.message import Message as v11Message
-from nonebot.adapters.onebot.v11.event import Anonymous, Sender, Reply
-from nonebot.adapters import Message, MessageSegment
+
 
 import src.plugins.jx3
 

@@ -1,13 +1,12 @@
-from src.tools.dep.api import token, proxies, bot, get_api, PROMPT_NoToken, PROMPT_ServerNotExist, PROMPT_InvalidToken
+from src.tools.dep.api import *
 from src.tools.dep.server import *
-
 
 async def api_recruit(server: str, copy: str = ""):  # 团队招募 <服务器> [关键词]
     if token == None:
         return [PROMPT_NoToken]
     server = server_mapping(server)
-    if server == False:
-        return [PROMPT_ServerInvalid]
+    if not server:
+        return [PROMPT_ServerNotExist]
     final_url = f"https://www.jx3api.com/view/member/recruit?token={token}&server={server}&robot={bot}&scale=1&keyword="
     if copy != "":
         final_url = final_url + copy

@@ -1,16 +1,10 @@
 import sys
-import nonebot
 import time
 
 from nonebot.adapters.onebot.v11 import MessageSegment as ms
 
-TOOLS = nonebot.get_driver().config.tools_path
-sys.path.append(TOOLS)
-ASSETS = TOOLS[:-5] + "assets"
-PLUGINS = TOOLS[:-5] + "plugins"
-
-from src.tools.utils import get_api
-from ..jx3 import server_mapping
+from src.tools.dep.server import *
+from src.tools.dep.api import *
 
 def boss_mapping(boss:str):
     xjd_num = 10369
@@ -47,8 +41,8 @@ async def get_top100(server: str, boss: str, team: str = None): # 数据来源@J
     boss_id = boss_mapping(boss)
     if boss_id == False:
         return "唔……没有找到该boss哦~"
-    if server == False:
-        return "唔……服务器输入错误。"
+    if not server:
+        return PROMPT_ServerNotExist
     final_url = f"https://team.api.jx3box.com/api/team/race/achieve/{boss_id}/top100?server={server}&event_id=6"
     data = await get_api(final_url)
     people = []
