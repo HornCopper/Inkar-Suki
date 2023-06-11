@@ -137,7 +137,7 @@ async def _(event: Event, args: Message = CommandArg()):
     cmd = args.extract_plain_text()
     await get_url(f"{Config.cqhttp}{cmd}")
 
-git = on_command("git", priority=5) # 调用`Git`，~~别问意义是什么~~
+git = on_command("-git", priority=5) # 调用`Git`，~~别问意义是什么~~
 @git.handle()
 async def _(event: Event, args: Message = CommandArg()):
     if checker(str(event.user_id),10) == False:
