@@ -6,7 +6,7 @@ async def addritube_(server: str = None, name: str = None): # 查装 <服务器>
         return ["Bot尚未填写Ticket或Token，请联系Bot主人~"]
     server = server_mapping(server)
     if server == False:
-        return ["唔……服务器名输入错误。"]
+        return [PROMPT_ServerInvalid]
     final_url = f"https://www.jx3api.com/view/role/attribute?ticket={ticket}&token={token}&robot={bot}&server={server}&name={name}&scale=1"
     data = await get_api(final_url, proxy = proxies)
     if data["code"] == 404:
@@ -22,7 +22,7 @@ async def roleInfo_(server, player):
     server = server_mapping(server)
     final_url = f"https://www.jx3api.com/data/role/roleInfo?token={token}&name={player}&server={server}"
     if server == False:
-        return "唔……服务器名输入错误。"
+        return PROMPT_ServerInvalid
     data = await get_api(final_url, proxy = proxies)
     if data["code"] == 404:
         return "没有找到该玩家哦~\n需要该玩家在世界频道发言后方可查询。"

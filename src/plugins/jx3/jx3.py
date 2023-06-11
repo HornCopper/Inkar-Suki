@@ -9,7 +9,7 @@ from sgtpyutils.logger import logger
 from src.tools.dep.bot import *
 from src.tools.dep.api import *
 from src.tools.dep.path import *
-from ...constant.jx3.skilldatalib import aliases
+from src.constant.jx3.skilldatalib import aliases
 
 from .achievement import *
 from .arena import *
