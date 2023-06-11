@@ -8,28 +8,23 @@ async def jx3_recruit(bot: Bot, event: GroupMessageEvent, args: Message = Comman
 
     Example：-招募 幽月轮
     '''
-    group_server = getGroupServer(str(event.group_id))
+    
     arg = args.extract_plain_text()
     if arg == "":
-        if group_server == False:
+        group_server = getGroupServer(str(event.group_id))
+        if not group_server:
             await jx3_cmd_recruit.finish("尚未绑定服务器，请携带服务器参数使用！")
         data = await api_recruit(server = group_server)
     else:
         arg = arg.split(" ")
         if len(arg) not in [1,2]:
             await jx3_cmd_recruit.finish("参数不正确哦，只能有1或2个参数~")
+        server = server_mapping(arg[0], str(event.group_id))
         if len(arg) == 1:
-            if server_mapping(arg[0]) != False or group_server == False:
-                server = server_mapping(arg[0], str(event.group_id))
-                copy = ""
-            else:
-                server = getGroupServer(str(event.group_id))
-                copy = arg[0]
-            data = await api_recruit(server, copy)
+            copy = arg[0] if not server_mapping(arg[0]) else "" # 当第一个参数是服务器的话则为空
         else:
-            server = server_mapping(arg[0], str(event.group_id))
             copy = arg[1]
-            data = await api_recruit(server, copy)
+        data = await api_recruit(server, copy)
     if type(data) == type([]):
         await jx3_cmd_recruit.finish(data[0])
     await jx3_cmd_recruit.finish(ms.image(data))
