@@ -6,7 +6,7 @@ async def api_recruit(server: str, copy: str = ""):  # 团队招募 <服务器> 
         return [PROMPT_NoToken]
     server = server_mapping(server)
     if not server:
-        return [PROMPT_ServerInvalid]
+        return [PROMPT_ServerNotExist]
     final_url = f"https://www.jx3api.com/view/member/recruit?token={token}&server={server}&robot={bot}&scale=1&keyword="
     if copy != "":
         final_url = final_url + copy
