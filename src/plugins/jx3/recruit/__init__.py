@@ -13,7 +13,7 @@ async def jx3_recruit(bot: Bot, event: GroupMessageEvent, args: Message = Comman
     if arg == "":
         if group_server == False:
             await jx3_cmd_recruit.finish("尚未绑定服务器，请携带服务器参数使用！")
-        data = await recruit_(server = group_server)
+        data = await api_recruit(server = group_server)
     else:
         arg = arg.split(" ")
         if len(arg) not in [1,2]:
@@ -25,11 +25,11 @@ async def jx3_recruit(bot: Bot, event: GroupMessageEvent, args: Message = Comman
             else:
                 server = getGroupServer(str(event.group_id))
                 copy = arg[0]
-            data = await recruit_(server, copy)
+            data = await api_recruit(server, copy)
         else:
             server = server_mapping(arg[0], str(event.group_id))
             copy = arg[1]
-            data = await recruit_(server, copy)
+            data = await api_recruit(server, copy)
     if type(data) == type([]):
         await jx3_cmd_recruit.finish(data[0])
     await jx3_cmd_recruit.finish(ms.image(data))
