@@ -1,5 +1,6 @@
 from ... import *
 
+import src.plugins.jx3
 import src.plugins.jx3.price_goods
 
 def test_trade_gold():
