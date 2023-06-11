@@ -1,6 +1,6 @@
 PROMPT_NoToken = "唔……Bot尚未填写Token，请联系Bot主人~"
 PROMPT_NoTicket = "唔……Bot尚未填写Ticket，请联系Bot主人~"
-PROMPT_InvalidToken = "T唔……oken不正确哦，请联系Bot主人~"
+PROMPT_InvalidToken = "唔……Token不正确哦，请联系Bot主人~"
 PROMPT_ServerNotExist = "唔……服务器没有找到。"
 PROMPT_ServerInvalid = "唔……服务器名输入错误。"
 PROMPT_ArgumentInvalid = "唔……参数不正确哦，请检查后重试~"
