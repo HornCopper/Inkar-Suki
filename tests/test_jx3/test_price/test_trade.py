@@ -3,6 +3,7 @@ from ... import *
 import src.plugins.jx3
 from src.plugins.jx3 import price_goods
 
+
 def test_trade_gold():
     Gold = price_goods.Gold
     coin = price_goods.coin
@@ -32,6 +33,17 @@ def test_trade_record():
     asyncio.run(task)
     mc.check_counter()
 
+
+def test_default_server():
+    mc = MessageCallback()
+    price_goods.jx3_cmd_trade = mc
+
+    jx3_trade = src.plugins.jx3.jx3_trade
+    state = {}
+    event = SFGroupMessageEvent()
+    from src.plugins.jx3.bind import server_bind
+    server_bind(event.group_id, '唯满侠')
+
     mc.tag = '武技殊影图'
     task = jx3_trade(state, event, obMessage(mc.tag))
     asyncio.run(task)
@@ -56,6 +68,7 @@ def test_trade_bound_good():
     import src.plugins.jx3
 
     w_tip = 'bound goods should show alert.'
+
     def cb_finish(msg: str):
         assert '绑定' in msg, w_tip
 

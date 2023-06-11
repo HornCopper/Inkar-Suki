@@ -13,8 +13,5 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     Example：-周常
     Example：-日常 幽月轮
     '''
-    if args.extract_plain_text():
-        img = await daily_(args.extract_plain_text())
-    else:
-        img = await daily_("长安城")
+    img = await daily_(args.extract_plain_text(),group_id=event.group_id)
     await daily.finish(ms.image(img))

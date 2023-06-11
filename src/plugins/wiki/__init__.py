@@ -1,24 +1,14 @@
 import json
 import sys
-import nonebot
-
-from nonebot import on_command
-from nonebot.adapters import Message
-from nonebot.adapters.onebot.v11 import GroupMessageEvent
-from nonebot.params import CommandArg, Arg
-from nonebot.log import logger
-from nonebot.typing import T_State
-
-TOOLS = nonebot.get_driver().config.tools_path
-sys.path.append(str(TOOLS))
-DATA = TOOLS[:-5] + "data"
 
 from src.tools.file import read, write
 from src.tools.utils import checknumber
 from src.tools.permission import checker, error
 
 from .wikilib import wiki as wiki_
-from src.tools.dep.api import *
+from src.tools.dep.bot import *
+from src.tools.dep.path import *
+from src.constant.jx3 import *
 
 wiki = on_command("wiki", priority=5)
 @wiki.handle()
@@ -67,7 +57,6 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
         link = api["data"]
         now = json.loads(read(DATA + "/" + str(event.group_id) + "/wiki.json"))
         now["startwiki"] = link
-        logger.info(now)
         write(DATA + "/" + str(event.group_id) + "/wiki.json", json.dumps(now))
         await setwiki.finish("初始Wiki修改成功！")
 
