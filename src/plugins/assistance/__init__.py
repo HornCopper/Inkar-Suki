@@ -12,7 +12,7 @@ TOOLS = nonebot.get_driver().config.tools_path
 DATA = TOOLS[:-5] + "data"
 
 from src.tools.generate import generate
-from src.plugins.jx3.image import skill_icons
+from src.constant.jx3.image import skill_icons
 from src.tools.file import read
 
 from .assistance import Assistance
