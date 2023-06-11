@@ -70,7 +70,7 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
     group_server = getGroupServer(str(event.group_id))
     achievement = args.extract_plain_text().split(" ")
     if len(achievement) not in [2,3]:
-        await achievements.finish("唔……参数数量不正确哦，请检查后重试~")
+        await achievements.finish(PROMPT_ArgumentInvalid)
     if len(achievement) == 2:
         if group_server == False:
             await achievements.finish("没有绑定服务器，请携带服务器参数使用！")

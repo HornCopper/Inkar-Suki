@@ -5,9 +5,9 @@ from .top100 import *
 async def rank_(type_1: str, type_2: str, server: str):
     server = server_mapping(server)
     if server == False:
-        return ["唔……服务器名输入错误。"]
+        return [PROMPT_ServerInvalid]
     if token == None:
-        return ["Bot尚未填写Token，请联系Bot主人~"]
+        return [PROMPT_NoToken]
     if type_1 == "个人":
         if type_2 not in ["名士五十强","老江湖五十强","兵甲藏家五十强","名师五十强","阵营英雄五十强","薪火相传五十强","庐园广记一百强"]:
             return ["唔……类型不正确，请检查后重试~"]

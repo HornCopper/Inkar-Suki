@@ -1,10 +1,11 @@
-from src.tools.dep.api import *
+from src.tools.dep.api import token, proxies, get_api
 from src.tools.dep.server import *
+
 
 async def server_status(server: str = None):
     server = server_mapping(server)
     full_link = "https://www.jx3api.com/data/server/check?server=" + server
-    info = await get_api(full_link, proxy = proxies)
+    info = await get_api(full_link, proxy=proxies)
     try:
         all_servers = info["data"]
         if str(type(all_servers)).find("list") != -1:
