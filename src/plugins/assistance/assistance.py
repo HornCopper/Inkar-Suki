@@ -8,7 +8,7 @@ from random import randint
 
 from src.tools.file import get_resource_path
 from src.tools.file import read, write
-from src.plugins.jx3.skilldatalib import aliases as get_job_aliases, kftosh as get_xinfa_belong
+from src.constant.jx3.skilldatalib import aliases as get_job_aliases, kftosh as get_xinfa_belong
 from src.tools.config import Config
 from src.tools.utils import get_api
 from src.tools.generate import get_uuid
