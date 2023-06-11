@@ -9,6 +9,9 @@ from nonebot.adapters.onebot.v11 import Bot, GroupMessageEvent, Message as obMes
 from nonebot.adapters.onebot.v11.message import Message as v11Message
 from nonebot.adapters.onebot.v11.event import Anonymous, Sender, Reply
 from nonebot.adapters import Message, MessageSegment
+
+import src.plugins.jx3
+
 test_group_id = 11123456
 
 loop = asyncio.new_event_loop()
