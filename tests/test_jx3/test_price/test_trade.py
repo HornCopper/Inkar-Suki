@@ -1,10 +1,11 @@
 from ... import *
 
 import src.plugins.jx3
-import src.plugins.jx3.price_goods
+from src.plugins.jx3 import price_goods
 
 def test_trade_gold():
-    from src.plugins.jx3.price_goods import Gold
+    Gold = price_goods.Gold
+    coin = price_goods.coin
     assert Gold(1).__repr__() == '1 铜'
     assert Gold(200).__repr__() == '2 银'
     assert Gold(80000).__repr__() == '8 金'
@@ -14,14 +15,13 @@ def test_trade_gold():
     assert Gold(100000000).__repr__() == '1 砖'
     assert len(str(Gold(100888800))) > 1e3, 'image of b64 should be very long'
 
-    from src.plugins.jx3.price_goods import coin
     t = f'98 <img src="{coin.brickl}" /> 12 <img src="{coin.goldl}" /> 34 <img src="{coin.silverl}" /> 56 <img src="{coin.copperl}" />'
     assert str(Gold(9800123456)) == t, 'convert image maybe wrong'
 
 
 def test_trade_record():
     mc = MessageCallback()
-    src.plugins.jx3.price_goods.jx3_cmd_trade = mc
+    price_goods.jx3_cmd_trade = mc
 
     jx3_trade = src.plugins.jx3.jx3_trade
     state = {}
@@ -40,7 +40,7 @@ def test_trade_record():
 
 def test_trade_price():
     mc = MessageCallback()
-    src.plugins.jx3.price_goods.jx3_cmd_trade = mc
+    price_goods.jx3_cmd_trade = mc
 
     price_num_selected = src.plugins.jx3.price_num_selected
     state = {'id': ['5_47116'], 'server': '唯我独尊'}  # 武技殊影图·上将
@@ -62,7 +62,7 @@ def test_trade_bound_good():
     def cb_send(msg: str):
         assert False, w_tip
     mc = MessageCallback(cb_finish=cb_finish, cb_send=cb_send)
-    src.plugins.jx3.price_goods.jx3_cmd_trade = mc
+    price_goods.jx3_cmd_trade = mc
 
     price_num_selected = src.plugins.jx3.price_num_selected
     state = {'id': ['5_24447'], 'server': '唯我独尊'}  # 五行石五级（拾绑）
