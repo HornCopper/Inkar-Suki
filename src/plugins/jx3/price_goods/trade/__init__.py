@@ -11,6 +11,7 @@ from .Golds import Gold
 
 from src.tools.dep.server import *
 from src.tools.dep.path import *
+from src.tools.dep.api import *
 
 '''
 交易行物品查询。
@@ -73,7 +74,7 @@ async def search_item_info(item_name: str, pageIndex: int = 0, pageSize: int = 4
     return [[i.id for i in query_items], img]
 
 
-async def getItemPriceById(id: str, server: str, all_ids: list):
+async def getItemPriceById(id: str, server: str, all_ids: list, group_id: str):
     '''
     通过物品id获取交易行价格
     @param id:物品id
@@ -82,9 +83,9 @@ async def getItemPriceById(id: str, server: str, all_ids: list):
 
     @return [image] | str: 正确处理则返回[]，否则返回错误原因
     '''
-    server = server_mapping(server)
-    if server == False:
-        return PROMPT_ServerInvalid
+    server = server_mapping(server, group_id=group_id)
+    if not server:
+        return PROMPT_ServerNotExist
     goods_info: GoodsInfo = CACHE_goods[id] if id in CACHE_goods else GoodsInfo(
     )
     if goods_info.bind_type == GoodsBindType.BindOnPick:
@@ -137,5 +138,3 @@ async def getItem(id: str):
         path = CACHE + "/" + get_uuid() + ".png"
         await page.locator(".c-item-wrapper").first.screenshot(path=path)
         return path
-
-
