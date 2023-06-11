@@ -10,7 +10,7 @@ async def achievements_(server: str = None, name: str = None, achievement: str =
         return [PROMPT_NoTicket]
     server = server_mapping(server, group_id)
     if not server:
-        return [PROMPT_ServerInvalid]
+        return [PROMPT_ServerNotExist]
     final_url = f"https://www.jx3api.com/view/role/achievement?server={server}&name={achievement}&role={name}&robot={bot}&ticket={ticket}&token={token}&scale=1"
     data = await get_api(final_url, proxy=proxies)
     if data["code"] == 400:
