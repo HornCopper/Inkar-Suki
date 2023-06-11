@@ -10,7 +10,7 @@ async def arena_(object: str, server: str = None, name: str = None, mode: str = 
     if object == "战绩":
         server = server_mapping(server, group_id)
         if not server:
-            return [PROMPT_ServerInvalid]
+            return [PROMPT_ServerNotExist]
         final_url = f"https://www.jx3api.com/view/match/recent?token={token}&name={name}&server={server}&robot={bot}&ticket={ticket}&mode={mode}&scale=1"
         data = await get_api(final_url, proxy=proxies)
         if data["code"] == 400:
