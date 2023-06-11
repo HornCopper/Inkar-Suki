@@ -14,7 +14,7 @@ from nonebot.log import logger
 from nonebot import get_bots
 from nonebot.message import handle_event
 
-from .jx3_event import EventRister, WsData, WsNotice
+from .jx3_event import *
 
 TOOLS = nonebot.get_driver().config.tools_path
 sys.path.append(TOOLS)
