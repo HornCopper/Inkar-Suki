@@ -84,7 +84,7 @@ async def getItemPriceById(id: str, server: str, all_ids: list):
     '''
     server = server_mapping(server)
     if server == False:
-        return "唔……服务器名输入错误。"
+        return PROMPT_ServerInvalid
     goods_info: GoodsInfo = CACHE_goods[id] if id in CACHE_goods else GoodsInfo(
     )
     if goods_info.bind_type == GoodsBindType.BindOnPick:
