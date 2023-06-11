@@ -2,6 +2,8 @@ from src.tools.dep.bot import *
 from .api import *
 
 adventure_ = on_command("jx3_adventure", aliases={"成就"}, priority=5)
+
+
 @adventure_.handle()
 async def _(state: T_State, args: Message = CommandArg()):
     '''
@@ -39,7 +41,8 @@ async def _(state: T_State, args: Message = CommandArg()):
         await adventure_.send(msg)
         return
 
-@adventure_.got("num", prompt = "发送序号以搜索，发送其他内容则取消搜索。")
+
+@adventure_.got("num", prompt="发送序号以搜索，发送其他内容则取消搜索。")
 async def _(state: T_State, num: Message = Arg()):
     num = num.extract_plain_text()
     if checknumber(num):
@@ -58,6 +61,8 @@ async def _(state: T_State, num: Message = Arg()):
         await adventure_.finish("唔……输入的不是数字哦，取消搜索。")
 
 achievements = on_command("jx3_machi", aliases={"进度"}, priority=5)
+
+
 @achievements.handle()
 async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
     '''
@@ -66,22 +71,20 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
     Example：-进度 幽月轮 哭包猫@唯我独尊 好久不见
     Example：-进度 幽月轮 哭包猫@唯我独尊 25人英雄范阳夜变
     Example：-进度 幽月轮 哭包猫@唯我独尊 扶摇九天
+    Example：-进度 哭包猫@唯我独尊 扶摇九天
     '''
-    group_server = getGroupServer(str(event.group_id))
     achievement = args.extract_plain_text().split(" ")
-    if len(achievement) not in [2,3]:
+    if len(achievement) not in [2, 3]:
         await achievements.finish(PROMPT_ArgumentInvalid)
     if len(achievement) == 2:
-        if group_server == False:
-            await achievements.finish("没有绑定服务器，请携带服务器参数使用！")
-        server = group_server
+        server = None
         id = achievement[0]
         achi = achievement[1]
     elif len(achievement) == 3:
         server = achievement[0]
         id = achievement[1]
         achi = achievement[2]
-    data = await achievements_(server, id, achi)
+    data = await achievements_(server, id, achi, event.group_id)
     if type(data) == type([]):
         await achievements.finish(data[0])
     else:

@@ -2,6 +2,8 @@ from src.tools.dep.bot import *
 from .api import *
 
 jx3_cmd_trade = on_command("jx3_trade", aliases={"交易行"}, priority=5)
+
+
 @jx3_cmd_trade.handle()
 async def jx3_trade(state: T_State, event: GroupMessageEvent, args: Message = CommandArg()):
     '''
@@ -17,17 +19,17 @@ async def jx3_trade(state: T_State, event: GroupMessageEvent, args: Message = Co
     arg_item = arg[1] if len(arg) == 2 else arg[0]
 
     server = server_mapping(arg_server, group_id=str(event.group_id))
-    if server == False:
+    if not server:
         return await jx3_cmd_trade.finish(PROMPT_ServerNotExist)
     state["server"] = server
     data = await search_item_info(arg_item)
     if type(data) != type([]):
-        return  jx3_cmd_trade.finish(data)
+        return jx3_cmd_trade.finish(data)
     else:
-        id = data[0] # 取到的是id列表
+        id = data[0]  # 取到的是id列表
         state["id"] = id
         return await jx3_cmd_trade.send(ms.image(Path(data[1]).as_uri()))
-        
+
 
 @jx3_cmd_trade.got("num", prompt="输入序号以搜索，其他内容则无视。")
 async def price_num_selected(state: T_State, event: GroupMessageEvent, num: Message = Arg()):
@@ -37,7 +39,7 @@ async def price_num_selected(state: T_State, event: GroupMessageEvent, num: Mess
     all_ids = state["id"]
     id = all_ids[int(num)]
     server = state["server"]
-    data = await getItemPriceById(id, server, all_ids)
+    data = await getItemPriceById(id, server, all_ids, group_id=event.group_id)
     if type(data) != type([]):
         return await jx3_cmd_trade.finish(data)
     else:
@@ -45,6 +47,8 @@ async def price_num_selected(state: T_State, event: GroupMessageEvent, num: Mess
         return await jx3_cmd_trade.send(ms.image(Path(img).as_uri()))
 
 jx3_cmd_item = on_command("jx3_item", aliases={"物品"}, priority=5)
+
+
 @jx3_cmd_item.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     id = args.extract_plain_text()
