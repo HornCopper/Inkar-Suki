@@ -522,14 +522,14 @@ async def jx3_recruit(bot: Bot, event: GroupMessageEvent, args: Message = Comman
             await recruit.finish("参数不正确哦，只能有1或2个参数~")
         if len(arg) == 1:
             if server_mapping(arg[0]) != False or group_server == False:
-                server = server_mapping(arg[0], str(event.group_id))
+                server = server_mapping(arg[0])
                 copy = ""
             else:
                 server = getGroupServer(str(event.group_id))
                 copy = arg[0]
             data = await recruit_(server, copy)
         else:
-            server = server_mapping(arg[0], str(event.group_id))
+            server = server_mapping(arg[0])
             copy = arg[1]
             data = await recruit_(server, copy)
     if type(data) == type([]):
