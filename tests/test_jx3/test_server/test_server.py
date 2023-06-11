@@ -1,6 +1,7 @@
 from ... import *
 from src.tools.dep.server import *
 
+
 def test_server_map():
     assert server_mapping('唯满侠') == '唯我独尊'
     assert server_mapping('双梦') == '梦江南'
@@ -17,14 +18,20 @@ def test_server_status():
         assert False, mc.to_warning(f'fail run:{msg}')
     mc = MessageCallback(cb_finish=default_cb_finish)
 
-
     import src.plugins.jx3.server
     jx3_server = src.plugins.jx3.jx3_server
     src.plugins.jx3.server.cmd_jx3_server = mc
     event = SFGroupMessageEvent()
-    
+
     mc.tag = '双梦'
     task = jx3_server(event, obMessage(mc.tag))
     asyncio.run(task)
     mc.check_counter()
-    
+
+
+def test_server_bind():
+    event = SFGroupMessageEvent()
+    from src.plugins.jx3.bind import server_bind
+    server_bind(event.group_id, '唯满侠')
+    x = server_mapping(None,group_id=event.group_id)
+    assert x == '唯我独尊'
