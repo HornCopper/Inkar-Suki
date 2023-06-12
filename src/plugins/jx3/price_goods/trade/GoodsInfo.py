@@ -33,7 +33,7 @@ class GoodsInfo(dict):
             data = {}
         self.id = data.get('id')
         self._bind_type: GoodsBindType = GoodsBindType.BindOnPick
-        self.bind_type = data.get('bind_type')
+        self.bind_type = data.get('bind_type') or GoodsBindType.UnKnown
         self.icon = data.get('IconID') or 18888  # 默认给个小兔兔
         self.quality = data.get('Quality')
         self.ui_id = data.get('UiID')
