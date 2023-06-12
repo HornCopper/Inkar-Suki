@@ -9,7 +9,7 @@ xpinyin
 numpy
 nonebot_plugin_apscheduler
 playwright
-sgtpyutils >= 1.15.22
+sgtpyutils >= 1.15.23
 pydantic
 pathlib2
 aiotieba

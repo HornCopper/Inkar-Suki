@@ -1,3 +1,4 @@
+from typing import List
 from src.plugins.help import css
 from src.tools.file import write
 from src.tools.utils import get_api
@@ -39,16 +40,23 @@ css_fixed = """
 // 别抄啊，用了好久测出来的呢（
 // 要抄好歹点个star 然后赞助赞助（狗头）
 """
+from sgtpyutils.extensions.clazz import get_fields
+async def search_item_local(item_name:str)->list:
+    v = [CACHE_goods[x] for x in CACHE_goods if item_name in CACHE_goods[x].name]
+    v = [get_fields(x) for x in v]
+    return v
 
-
-async def search_item_info(item_name: str, pageIndex: int = 0, pageSize: int = 40):
-    final_url = f"https://helper.jx3box.com/api/item/search?keyword={item_name}&limit={pageSize}&page={pageIndex+1}"
+async def search_item_info(item_name: str, pageIndex: int = 0, pageSize: int = 20):
+    pageIndex = pageIndex or 0
+    final_url = f"https://helper.jx3box.com/api/item/search?keyword={item_name}&limit=1000&page=1"
     box_data = await get_api(final_url)
     items = box_data["data"]["data"]
     if not items:
+        items = await search_item_local(item_name)
+    if not items:
         return "没有找到该物品哦~"
     space = []
-    query_items = []
+    query_items: List[GoodsInfo] = []
     space.append(["序号", "物品ID", "物品名称", "绑定类型", "物品图标"])
     new_goods = False
     for item in items:
@@ -60,7 +68,9 @@ async def search_item_info(item_name: str, pageIndex: int = 0, pageSize: int = 4
         item: GoodsInfo = CACHE_goods[id]
         query_items.append(item)
 
-    query_items.sort(key=lambda x: x.u_popularity)  # 按热门程度排序
+    query_items.sort(key=lambda x: -x.priority)  # 按热门程度排序，拾绑的放后面
+    page_start = pageIndex * pageSize
+    query_items = query_items[page_start:page_start+pageSize]
     space += [([index] + x.to_row()) for index, x in enumerate(query_items)]
 
     html = "<div style=\"font-family:Custom\">" + \
