@@ -48,11 +48,30 @@ def test_default_server():
     task = jx3_trade(state, event, obMessage(mc.tag))
     asyncio.run(task)
     mc.check_counter()
-    mc.tag = '武技殊影图 2' # 第二页
+    mc.tag = '武技殊影图 2'  # 第二页
     task = jx3_trade(state, event, obMessage(mc.tag))
     asyncio.run(task)
     mc.check_counter()
     server_bind(event.group_id, '')
+
+
+def test_not_exist():
+    def handle_finish(msg: str):
+        assert '没有找到该物品' in msg, f'expected not exist , but get result:{msg}'
+
+    def handle_send(msg: str):
+        assert False, f'expected finish but get send:{msg}'
+    mc = MessageCallback(cb_finish=handle_finish, cb_send=handle_send)
+    price_goods.jx3_cmd_trade = mc
+
+    jx3_trade = src.plugins.jx3.jx3_trade
+    state = {}
+    event = SFGroupMessageEvent()
+    mc.tag = '不存在哈哈哈'
+    task = jx3_trade(state, event, obMessage(mc.tag))
+    asyncio.run(task)
+    mc.check_counter()
+
 
 def test_trade_price():
     mc = MessageCallback()
