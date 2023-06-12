@@ -1,8 +1,16 @@
-from src.tools.file import read, write
 import random
 import json
 import sys
 import nonebot
+import os
+from nonebot.adapters.onebot.v11 import MessageSegment as ms
+from sgtpyutils.extensions import find 
+
+from src.tools.file import read, write
+
+from nonebot.adapters.onebot.v11 import MessageSegment as ms
+
+from src.tools.file import read, write
 
 TOOLS = nonebot.get_driver().config.tools_path
 sys.path.append(str(TOOLS))
@@ -13,7 +21,7 @@ class SignInRecord:
     def init_lucky(self, luck: int = None):
         if not luck:
             luck = random.randint(0, 10000)
-        if luck < 5000:
+        if luck < 1000:
             return 0
         elif luck < 7500:
             return 1
@@ -32,12 +40,10 @@ class SignInRecord:
 class Sign:
 
     def generate_everyday_reward(qq: str):
-        signed_list = json.loads(read(CLOCK + "/signed.json"))
+        signed_list = json.loads(read(CLOCK + "/signed.json")) or []
         rank = len(signed_list)
-
         s = SignInRecord()
         continious = Sign.get_continuity(qq)
-        s.luck = Sign.lucky_level()
         s.coin = random.randint(1, 100) * (s.luck + 1)
         lottery = random.randint(0, 100)
         wlottery = False
@@ -47,26 +53,26 @@ class Sign:
             s.wlottery = 1
         luck_desc = ['末吉签', '中吉签', '上吉签', '上上签'][s.luck]
         luck_desc = f'{luck_desc}(x{s.luck+1})'
-        msg = f'\n签到成功！\n金币：+{s.coin}\n今日运势：{s.luck}'
+        msg = f'\n签到成功！\n金币：+{s.coin}\n今日运势：{luck_desc}'
         if wlottery:
             msg = f"{msg}\n触发额外奖励！已帮你额外添加了100枚金币！"
-        msg = f"{msg}\n已连续签到{continious}天！"
-        msg = f"{msg}\n您是第{rank}位签到的哦~"
-        s.msg = msg
+        msg = f"{msg}\n已连续签到{continious + 1}天！"
+        msg = f"{msg}\n您是第{rank + 1}位签到的哦~"
+        s.msg = ms.at(qq) + msg
         return s
 
     def wsigned(qq: int):
-        signed = json.loads(read(CLOCK + "/signed.json"))
+        signed = json.loads(read(CLOCK + "/signed.json")) or []
         if str(qq) in signed:
             return True
         return False
 
     def save_data(data:SignInRecord, qq):
         qq = str(qq)
-        signed_list = json.loads(read(CLOCK + "/signed.json"))
+        signed_list = json.loads(read(CLOCK + "/signed.json")) or []
         signed_list.append(qq)
         write(CLOCK + "/signed.json", json.dumps(signed_list, ensure_ascii=False))
-        accounts = json.loads(read(CLOCK + "/account.json"))
+        accounts = json.loads(read(CLOCK + "/account.json")) or []
         for i in accounts:
             if i["id"] == qq:
                 nc = i["coin"]
@@ -87,19 +93,22 @@ class Sign:
         )
         write(CLOCK + "/account.json", json.dumps(accounts, ensure_ascii=False))
         return
+    def get_user_record(qq:str)->dict:
+        '''
+        获取用户签到信息
+        '''
+        qq = str(qq)
+        accounts = json.loads(read(f"{CLOCK}{os.sep}account.json"))
+        return find(accounts,lambda x:x['id'] == qq) or {}
 
     def get_continuity(qq):
-        qq = str(qq)
-        accounts = json.loads(read(CLOCK + "/account.json"))
-        for i in accounts:
-            if i["id"] == qq:
-                return i["continuity"]
-        return False
+        '''
+        获取用户连续登录天数
+        '''
+        return Sign.get_user_record(qq).get('continuity') or 0
 
     def get_coin(qq):
-        qq = str(qq)
-        accounts = json.loads(read(CLOCK + "/account.json"))
-        for i in accounts:
-            if i["id"] == qq:
-                return i["coin"]
-        return False
+        '''
+        获取用户当前金币数
+        '''
+        return Sign.get_user_record(qq).get('coin') or 0

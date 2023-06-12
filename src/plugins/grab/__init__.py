@@ -1,6 +1,11 @@
-from .gettor import get_tieba
-from src.tools.utils import checknumber
+import os
+import re
+import nonebot
+import requests
+import random
+import base64
 import sys
+
 from nonebot.adapters.onebot.v11 import MessageSegment, MessageEvent, Bot, Message, GroupMessageEvent
 from nonebot.adapters.onebot.v11.permission import GROUP_ADMIN, GROUP_OWNER
 from nonebot.permission import SUPERUSER
@@ -12,19 +17,19 @@ from nonebot.params import Arg, CommandArg
 from nonebot.log import logger
 from nonebot.typing import T_State
 from nonebot import require
+from pathlib import Path
+
 try:
     scheduler = require("nonebot_plugin_apscheduler").scheduler
 except Exception:
     scheduler = None
     logger.warning("未安装定时插件依赖")
-from pathlib import Path
+
+from src.tools.utils import checknumber
+
 from .check_pass import check_cd, check_max
-import os
-import re
-import nonebot
-import requests
-import random
-import base64
+from .gettor import get_tieba
+from .cheater import verify_cheater
 
 what_eat = on_regex(
     r"^(/)?[今|明|后]?[天|日]?(早|中|晚)?(上|午|餐|饭|夜宵|宵夜)吃(什么|啥|点啥)$", priority=5)
@@ -46,16 +51,12 @@ img_drink_path = Path(os.path.join(os.path.dirname(__file__), "drink_pic"))
 all_file_drink_name = os.listdir(str(img_drink_path))
 
 # 载入bot名字
-Bot_NICKNAME = list(nonebot.get_driver().config.nickname)
-Bot_NICKNAME = Bot_NICKNAME[0] if Bot_NICKNAME else "脑积水"
-
+Bot_NICKNAME = "音卡"
 
 TOOLS = nonebot.get_driver().config.tools_path
 sys.path.append(TOOLS)
 
-
 tieba = on_command("-tieba", aliases={"-贴吧"}, priority=5)
-
 
 @tieba.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
@@ -68,6 +69,29 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     msg = await get_tieba(int(tid))
     await tieba.finish(msg)
 
+cheater_ = on_command("jx3_cheater", aliases={"-骗子"}, priority=5)
+@cheater_.handle()
+async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
+    content = args.extract_plain_text()
+    if not checknumber(content):
+        await cheater_.finish("请输入纯数字的QQ哦~")
+    else:
+        personal_data = await bot.call_api("get_stranger_info", user_id=int(content))
+        if personal_data["user_id"] == 0:
+            await cheater_.finish("唔……该QQ号似乎不存在哦~")
+        else:
+            level = personal_data["level"]
+            login = personal_data["login_days"]
+            nickname = personal_data["nickname"]
+            basic_info = f"QQ等级：{level}\n登录天数：{login}\n昵称：{nickname}"
+        data = await verify_cheater(str(content))
+        if data == False:
+            msg = f"此人应该不是骗子？音卡在贴吧没有找到哦~\n{basic_info}"
+        else:
+            url = data
+            msg = f"此人是骗子！在贴吧已有记录！\n{url}\n{basic_info}"
+        await cheater_.finish(msg)
+            
 
 @del_dish.handle()
 async def got_dish_name(matcher: Matcher, state: T_State):
@@ -75,7 +99,6 @@ async def got_dish_name(matcher: Matcher, state: T_State):
     state['type'] = args[1]
     if args[2]:
         matcher.set_arg("name", args[2])
-
 
 @del_dish.got("name", prompt="请告诉我你要删除哪个菜品或饮料,发送“取消”可取消操作")
 async def del_(state: T_State, name: Message = Arg()):
@@ -91,7 +114,6 @@ async def del_(state: T_State, name: Message = Arg()):
     except OSError:
         await del_dish.finish(f"不存在该{state['type']}，请检查下菜单再重试吧")
     await del_dish.send(f"已成功删除{state['type']}:{name}", at_sender=True)
-
 
 @add_dish.handle()
 async def got_dish_name(matcher: Matcher, state: T_State):

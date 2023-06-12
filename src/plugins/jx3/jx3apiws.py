@@ -1,7 +1,6 @@
 import websockets
 import asyncio
 import json
-import nonebot
 import sys
 
 from typing import Optional
@@ -9,16 +8,12 @@ from typing import Optional
 from websockets.legacy.client import WebSocketClientProtocol
 from websockets.exceptions import ConnectionClosedError, ConnectionClosedOK
 
-from nonebot.log import logger
 
-from nonebot import get_bots
-from nonebot.message import handle_event
-
-from .jx3_event import EventRister, WsData, WsNotice
-
-TOOLS = nonebot.get_driver().config.tools_path
-sys.path.append(TOOLS)
 from src.tools.config import Config
+
+from src.tools.dep.bot import *
+from .jx3_event import *
+
 
 '''
 感谢友情提供代码@白师傅

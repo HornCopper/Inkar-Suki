@@ -3,6 +3,6 @@
     "version": "1.3-Release",
     "name": "综合搜索(search)",
     "admin": "N/A",
-    "aliases": "+tieba -> +贴吧$+what2eat -> +今天吃什么、+吃什么",
-    "desc": "获取帖子信息（百度贴吧）：+tieba <TID>$今天吃什么：+what2eat"
+    "aliases": "+tieba -> +贴吧$+what2eat -> +今/明/后 早上/中午/晚上 吃什么$+jx3_cheater -> -骗子",
+    "desc": "获取帖子信息（百度贴吧）：+tieba <TID>$今天吃什么：+what2eat$查询QQ是否为骗子：+jx3_cheater <QQ号>"
 }
