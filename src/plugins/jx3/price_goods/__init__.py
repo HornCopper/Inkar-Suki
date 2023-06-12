@@ -30,7 +30,7 @@ async def jx3_trade(state: T_State, event: GroupMessageEvent, args: Message = Co
     state["server"] = server
     data = await search_item_info(arg_item, pageIndex=arg_page)
     if type(data) != type([]):
-        return jx3_cmd_trade.finish(data)
+        return await jx3_cmd_trade.finish(data)
     id = data[0]  # 取到的是id列表
     state["id"] = id
     return await jx3_cmd_trade.send(ms.image(Path(data[1]).as_uri()))
