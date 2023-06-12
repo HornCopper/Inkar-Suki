@@ -52,6 +52,7 @@ def test_default_server():
     task = jx3_trade(state, event, obMessage(mc.tag))
     asyncio.run(task)
     mc.check_counter()
+    server_bind(event.group_id, '')
 
 def test_trade_price():
     mc = MessageCallback()
