@@ -51,9 +51,9 @@ async def search_item_info(item_name: str, pageIndex: int = 0, pageSize: int = 2
     final_url = f"https://helper.jx3box.com/api/item/search?keyword={item_name}&limit=1000&page=1"
     box_data = await get_api(final_url)
     items = box_data["data"]["data"]
-    if not items:
+    if not items: # 接口请求失败，从本地读取
         items = await search_item_local(item_name)
-    if not items:
+    if not items: # 无数据，返回
         return "没有找到该物品哦~"
     space = []
     query_items: List[GoodsInfo] = []
@@ -72,9 +72,11 @@ async def search_item_info(item_name: str, pageIndex: int = 0, pageSize: int = 2
     page_start = pageIndex * pageSize
     query_items = query_items[page_start:page_start+pageSize]
     space += [([index] + x.to_row()) for index, x in enumerate(query_items)]
-
-    html = "<div style=\"font-family:Custom\">" + \
-        tabulate(space, tablefmt="unsafehtml") + "</div>" + css
+    html_table = tabulate(space, tablefmt="unsafehtml")
+    html = ""
+    html = f"{html}"
+    html = f"<div style=\"font-family:Custom\">{html_table}</div>"
+    html = f"{html}{css}"
     final_path = CACHE + "/" + get_uuid() + ".html"
     write(final_path, html)
     img = await generate(final_path, False, "table", False)
