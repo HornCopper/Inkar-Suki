@@ -48,7 +48,10 @@ def test_default_server():
     task = jx3_trade(state, event, obMessage(mc.tag))
     asyncio.run(task)
     mc.check_counter()
-
+    mc.tag = '武技殊影图 2' # 第二页
+    task = jx3_trade(state, event, obMessage(mc.tag))
+    asyncio.run(task)
+    mc.check_counter()
 
 def test_trade_price():
     mc = MessageCallback()
