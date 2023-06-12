@@ -95,9 +95,13 @@ class Assistance:
         job_icon = await Assistance.get_icon(job)
         final_url = f"https://www.jx3api.com/data/role/roleInfo?token={token}&server={server}&name={id}"
         player_data = await get_api(final_url)
-        uid = player_data["data"]["roleId"]
-        if player_data["data"]["forceName"] != get_xinfa_belong(job):
-            return "检测到自身预定职业和角色职业冲突，预定失败。"
+        try:
+            uid = player_data["data"]["roleId"]
+        except:
+            return "无法获取到UID！"
+        if job != "老板":
+            if player_data["data"]["forceName"] != get_xinfa_belong(job):
+                return "检测到自身预定职业和角色职业冲突，预定失败。"
         new = {
             "uid": uid,
             "id": id,
