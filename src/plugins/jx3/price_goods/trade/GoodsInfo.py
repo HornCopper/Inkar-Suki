@@ -41,6 +41,16 @@ class GoodsInfo(dict):
         '''被使用的次数，次数多的优先前置'''
         self.u_popularity = 0
         super().__init__()
+    def __str__(self) -> str:
+        x = '※' * (self.quality + 1)
+        return f'{x}{self.name}({self.id}){self.bind_type_str}'
+    def __repr__(self) -> str:
+        return self.__str__()
+    @property
+    def priority(self) -> int:
+        v_bind = 1 if self.bind_type == GoodsBindType.BindOnPick else 0
+        v_create_id = self.ui_id
+        return 1e8 * self.u_popularity - v_bind * 1e12 + v_create_id
 
     @property
     def bind_type(self) -> GoodsBindType:
