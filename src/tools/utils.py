@@ -3,6 +3,8 @@ import datetime
 import time
 
 def checknumber(number):
+    if isinstance(number,int):
+        return True
     return number.isdecimal()
 
 async def get_url(url, proxy: dict = None, args: dict = None, headers: str = None, timeout: int = 300):

@@ -1,17 +1,20 @@
 import os
-
+import pathlib2
 
 def read(Path):
     try:
         cache = open(Path, mode="r", encoding="utf-8")
         msg = cache.read()
         cache.close()
-        return msg
+        return msg or "{}"
     except:
         return "{}" # 默认返回空对象
 
 
 def write(Path, sth):
+    p = pathlib2.Path(Path).parent
+    if not p.exists():
+        p.mkdir() # check if not exist
     cache = open(Path, mode="w", encoding="utf-8")
     cache.write(sth)
     cache.close()
