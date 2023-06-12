@@ -39,10 +39,12 @@ async def jx3_trade(state: T_State, event: GroupMessageEvent, args: Message = Co
 @jx3_cmd_trade.got("num", prompt="输入序号以搜索，其他内容则无视。")
 async def price_num_selected(state: T_State, event: GroupMessageEvent, num: Message = Arg()):
     num = num.extract_plain_text()
-    if not checknumber(num):
-        return
+    num = get_number(num)
     all_ids = state["id"]
-    id = all_ids[int(num)]
+    if num >= len(all_ids):
+        return await jx3_cmd_trade.finish(f'无效的序号，有效范围:0-{len(all_ids)}')
+
+    id = all_ids[num]
     server = state["server"]
     data = await getItemPriceById(id, server, all_ids, group_id=event.group_id)
     if type(data) != type([]):
