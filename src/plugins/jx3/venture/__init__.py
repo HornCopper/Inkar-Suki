@@ -1,4 +1,5 @@
 from src.tools.dep.bot import *
+from src.tools.dep.path import ASSETS
 from .api import *
 
 jx3_cmd_serendipity = on_command("jx3_serendipity", aliases={"奇遇"}, priority=5)
@@ -114,10 +115,21 @@ async def jx3_serendipity_recipe(event: GroupMessageEvent, args: Message = Comma
     Example：-攻略 阴阳两界
 
     数据来源：隐元秘鉴
+
+    本功能由于图片~~又臭又长~~所以需要缓存到本地再发送。
     '''
     serendipity = args.extract_plain_text()
+    imgs = os.listdir(ASSETS + "/jx3/serendipity")
+    filename = serendipity + ".png"
+    filepath = ASSETS + "/jx3/serendipity/" + filename
+    if filename in imgs:
+        await preposition.finsih(ms.image(Path(filepath).as_uri()))
     data = await get_image(serendipity)
     if data == False:
         await preposition.finish("唔……没有找到相关信息~")
     else:
-        await preposition.finish(data)
+        image_content = await get_content(data)
+        image = open(filepath, mode="wb")
+        image.write(image_content)
+        image.close()
+        await preposition.finsih(ms.image(Path(filepath).as_uri()))
