@@ -49,6 +49,7 @@ init_folders = {
                     "achievement": None,
                     "talents": None,
                     "adventure": None,
+                    "serendipity": None,
                 }
             },
             "plugins": None
