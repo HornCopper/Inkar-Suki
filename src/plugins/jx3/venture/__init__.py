@@ -120,4 +120,4 @@ async def jx3_serendipity_recipe(event: GroupMessageEvent, args: Message = Comma
     if data == False:
         await preposition.finish("唔……没有找到相关信息~")
     else:
-        await preposition.finish(ms.image(data))
+        await preposition.finish(data)
