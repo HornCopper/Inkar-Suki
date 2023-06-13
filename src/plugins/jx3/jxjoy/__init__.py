@@ -9,8 +9,8 @@ async def _():
 
     Example：-骚话
     '''
-    r_text,r_id = await random__()
-    await random_.finish(f'推栏之{r_id}：{r_text}')
+    r_text = await random__()
+    await random_.finish(f'{r_text}')
 
 
 tiangou = on_command("jx3_tiangou", aliases={"舔狗"}, priority=5)
