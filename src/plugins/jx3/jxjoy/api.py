@@ -1,13 +1,18 @@
 from src.tools.dep.api import *
 from src.tools.dep.server import *
+from typing import Literal, Tuple
 
-async def random__():
-    full_link = "https://www.jx3api.com/data/saohua/random"
-    info = await get_api(full_link, proxy = proxies)
-    return info["data"]["text"]
 
-async def tiangou_():
-    full_link = "https://www.jx3api.com/data/saohua/content"
-    data = await get_api(full_link, proxy = proxies)
-    text = data["data"]["text"]
-    return text
+async def saohua_primary(subject: Literal["random", "content"]) -> Tuple[str, str]:
+    full_link = f"https://www.jx3api.com/data/saohua/{subject}"
+    info = await get_api(full_link, proxy=proxies)
+    data = info["data"]
+    return data["text"], data["id"]
+
+
+async def saohua_random():
+    return await saohua_primary("random")
+
+
+async def saohua_tiangou():
+    return await saohua_primary("content")
