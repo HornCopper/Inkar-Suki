@@ -67,7 +67,7 @@ def test_not_exist():
     jx3_trade = src.plugins.jx3.jx3_trade
     state = {}
     event = SFGroupMessageEvent()
-    mc.tag = '不存在哈哈哈'
+    mc.tag = '唯满侠 不存在哈哈哈'
     task = jx3_trade(state, event, obMessage(mc.tag))
     asyncio.run(task)
     mc.check_counter()
