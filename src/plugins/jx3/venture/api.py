@@ -1,5 +1,6 @@
 from src.tools.dep.api import *
 from src.tools.dep.server import *
+from src.tools.dep.path import CACHE
 
 from src.tools.generate import generate, get_uuid
 from src.plugins.help import css
@@ -72,8 +73,8 @@ async def get_preposition(name: str = None):
     table = css + str(table).replace("<caption class=\"blind\">Extra Form</caption>", "")
     path = CACHE + "/" + get_uuid() + ".html"
     html = write(path, table)
-    img = await generate(path, "table")
-    return img
+    img = await generate(path, False, "table", False)
+    return Path(img).as_uri()
 
 async def get_image(name: str = None):
     url = await get_preposition_page_url(name)
