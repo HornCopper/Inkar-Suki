@@ -1,6 +1,11 @@
 from src.tools.dep.api import *
 from src.tools.dep.server import *
 
+from src.tools.generate import generate, get_uuid
+from src.plugins.help import css
+
+from bs4 import BeautifulSoup
+
 
 async def serendipity_(server: str = None, name: str = None, group_id: str = None):  # 奇遇 <服务器> <ID>
     if token == None:
@@ -44,3 +49,37 @@ async def global_statistical(name: str = None):  # 全服统计 [奇遇]
         final_url = f"https://www.jx3api.com/view/luck/server/statistical?name={name}&token={token}&robot={bot}"
     data = await get_api(final_url, proxy=proxies)
     return data["data"]["url"]
+
+async def get_preposition_page_url(name: str = None):
+    api = "http://jx3yymj.com/index.php?mid=qy"
+    data = await get_url(api)
+    bs = BeautifulSoup(data, "html.parser")
+    all = bs.find_all("li", class_="clear")
+    for i in all:
+        singlen = i.find(class_="ngeb").get_text()
+        singleu = "http://jx3yymj.com/" + i.a["href"]
+        if singlen.find(name) != -1:
+            return singleu
+    return False
+        
+async def get_preposition(name: str = None):
+    url = await get_preposition_page_url(name)
+    if url == False:
+        return False
+    data = await get_url(url)
+    bs = BeautifulSoup(data, "html.parser")
+    table = bs.find(class_ = "et_vars bd_tb")
+    table = css + str(table).replace("<caption class=\"blind\">Extra Form</caption>", "")
+    path = CACHE + "/" + get_uuid() + ".html"
+    html = write(path, table)
+    img = await generate(path, "table")
+    return img
+
+async def get_image(name: str = None):
+    url = await get_preposition_page_url(name)
+    if url == False:
+        return False
+    data = await get_url(url)
+    bs = BeautifulSoup(data, "html.parser")
+    article = bs.find("article").find_all("img")[0]["src"]
+    return article

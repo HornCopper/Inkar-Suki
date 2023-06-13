@@ -72,7 +72,6 @@ async def jx3_gserendipity(event: GroupMessageEvent, args: Message = CommandArg(
 
 jx3_cmd_gstatistical = on_command("jx3_gstatistical", aliases={"全服统计"}, priority=5)
 
-
 @jx3_cmd_gstatistical.handle()
 async def jx3_gstatistical(event: GroupMessageEvent, args: Message = CommandArg()):
     '''
@@ -88,3 +87,37 @@ async def jx3_gstatistical(event: GroupMessageEvent, args: Message = CommandArg(
         return await jx3_cmd_gstatistical.finish(data[0])
     else:
         return await jx3_cmd_gstatistical.finish(ms.image(data))
+
+preposition = on_command("jx3_preposition", aliases={"前置"}, priority=5)
+@preposition.handle()
+async def jx3_preposition(event: GroupMessageEvent, args: Message = CommandArg()):
+    '''
+    获取奇遇前置。
+
+    Example：-前置 阴阳两界
+
+    数据来源：隐元秘鉴
+    '''
+    serendipity = args.extract_plain_text()
+    data = await get_preposition(serendipity)
+    if data == False:
+        await preposition.finish("唔……没有找到相关信息~")
+    else:
+        await preposition.finish(ms.image(data))
+    
+recipe = on_command("jx3_recipe", aliases={"攻略"}, priority=5)
+@recipe.handle()
+async def jx3_serendipity_recipe(event: GroupMessageEvent, args: Message = CommandArg()):
+    '''
+    获取奇遇攻略。
+
+    Example：-攻略 阴阳两界
+
+    数据来源：隐元秘鉴
+    '''
+    serendipity = args.extract_plain_text()
+    data = await get_image(serendipity)
+    if data == False:
+        await preposition.finish("唔……没有找到相关信息~")
+    else:
+        await preposition.finish(ms.image(data))
