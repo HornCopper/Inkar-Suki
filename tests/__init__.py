@@ -5,7 +5,7 @@ import time as sys_time
 import random
 import asyncio
 from typing import Literal
-
+from src.tools.dep.api import *
 
 import src.plugins.jx3
 
@@ -40,20 +40,7 @@ class MessageCallback:
             'no answer to tester till test completed')
         self.callback_counter = 0  # reset after round check
 
-    def convert_to_str(self, msg: MessageSegment):
-        if isinstance(msg, MessageSegment):
-            msg = msg.data
-        if isinstance(msg, v11Message):
-            msg = str(msg)
-            pass
-        if isinstance(msg, dict):
-            import json
-            msg = json.dumps(msg, ensure_ascii=False)
 
-        if isinstance(msg, str):
-            return msg
-        logger.warn(f'message cant convert to str:{msg}')
-        return msg
 
     async def send(self, msg: str):
         self.callback_counter += 1
@@ -62,7 +49,7 @@ class MessageCallback:
                 'callback of send not set, but been called.'))
             return
         if not self.ignore_convert:
-            msg = self.convert_to_str(msg)
+            msg = convert_to_str(msg)
         self.cb_send(msg)
 
     async def finish(self, msg: str):
@@ -72,7 +59,7 @@ class MessageCallback:
                 'callback of finish not set, but been called.'))
             return
         if not self.ignore_convert:
-            msg = self.convert_to_str(msg)
+            msg = convert_to_str(msg)
         self.cb_finish(msg)
 
     def to_warning(self, warn: str):
