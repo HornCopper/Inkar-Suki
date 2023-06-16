@@ -1,63 +1,30 @@
+from sgtpyutils.extensions.clazz import get_fields
 from typing import List
-from src.plugins.help import css
-from src.tools.file import write
-from src.tools.utils import get_api
-from src.tools.generate import generate, get_uuid
-
-from playwright.async_api import async_playwright
-from tabulate import tabulate
-
-from .GoodsInfo import GoodsBindType, GoodsInfo, CACHE_goods, flush_cache_goods, check_bind
-from .Golds import Gold
+from ..lib.GoodsInfo import GoodsBindType, GoodsInfo, CACHE_goods, flush_cache_goods, check_bind
+from ..lib.Golds import Gold
 
 from src.tools.dep.server import *
 from src.tools.dep.path import *
 from src.tools.dep.api import *
 
-'''
-交易行物品查询。
 
-数据来源@JX3BOX
-'''
-
-css_fixed = """
-.c-header
-{
-    display: none;
-}
-.m-breadcrumb .u-stat
-{
-    display: none;
-}
-.c-breadcrumb
-{
-    display: none;
-}
-.c-header-inner
-{
-    display: none;
-}
-// 别抄啊，用了好久测出来的呢（
-// 要抄好歹点个star 然后赞助赞助（狗头）
-"""
-from sgtpyutils.extensions.clazz import get_fields
-async def search_item_local(item_name:str)->list:
-    v = [CACHE_goods[x] for x in CACHE_goods if item_name in CACHE_goods[x].name]
+async def search_item_local(item_name: str) -> list:
+    v = [CACHE_goods[x]
+         for x in CACHE_goods if item_name in CACHE_goods[x].name]
     v = [get_fields(x) for x in v]
     return v
+
 
 async def search_item_info(item_name: str, pageIndex: int = 0, pageSize: int = 20):
     pageIndex = pageIndex or 0
     final_url = f"https://helper.jx3box.com/api/item/search?keyword={item_name}&limit=1000&page=1"
     box_data = await get_api(final_url)
     items = box_data["data"]["data"]
-    if not items: # 接口请求失败，从本地读取
+    if not items:  # 接口请求失败，从本地读取
         items = await search_item_local(item_name)
-    if not items: # 无数据，返回
+    if not items:  # 无数据，返回
         return "没有找到该物品哦~"
-    space = []
     query_items: List[GoodsInfo] = []
-    space.append(["序号", "物品ID", "物品名称", "绑定类型", "物品图标"])
     new_goods = False
     for item in items:
         id = item['id']
@@ -67,23 +34,13 @@ async def search_item_info(item_name: str, pageIndex: int = 0, pageSize: int = 2
             new_goods = True
         item: GoodsInfo = CACHE_goods[id]
         query_items.append(item)
+    if new_goods:
+        flush_cache_goods()
 
     query_items.sort(key=lambda x: -x.priority)  # 按热门程度排序，拾绑的放后面
     page_start = pageIndex * pageSize
     query_items = query_items[page_start:page_start+pageSize]
-    space += [([index] + x.to_row()) for index, x in enumerate(query_items)]
-    html_table = tabulate(space, tablefmt="unsafehtml")
-    html = ""
-    html = f"{html}"
-    html = f"<div style=\"font-family:Custom\">{html_table}</div>"
-    html = f"{html}{css}"
-    final_path = CACHE + "/" + get_uuid() + ".html"
-    write(final_path, html)
-    img = await generate(final_path, False, "table", False)
-    if new_goods:
-        flush_cache_goods()
-
-    return [[i.id for i in query_items], img]
+    return query_items
 
 
 async def getItemPriceById(id: str, server: str, all_ids: list, group_id: str):
@@ -97,56 +54,29 @@ async def getItemPriceById(id: str, server: str, all_ids: list, group_id: str):
     '''
     server = server_mapping(server, group_id=group_id)
     if not server:
-        return PROMPT_ServerNotExist
+        return [PROMPT_ServerNotExist, None]
     goods_info: GoodsInfo = CACHE_goods[id] if id in CACHE_goods else GoodsInfo(
     )
     if goods_info.bind_type == GoodsBindType.BindOnPick:
-        return "唔……绑定的物品无法在交易行出售哦~"
+        return ["唔……绑定的物品无法在交易行出售哦~", None]
     final_url = f"https://next2.jx3box.com/api/item-price/{id}/logs?server={server}"
     data = await get_api(final_url)
     logs = data["data"]["logs"]
     if not logs or logs == "null":
-        return "唔……交易行没有此物品哦~"
+        return ["唔……交易行没有此物品哦~", None]
     logs.reverse()
-    chart = []
-    chart.append(["日期", "日最高价", "日均价", "日最低价"])
-    for i in logs:
-        date = i["Date"]
-        LowestPrice = Gold(i["LowestPrice"])
-        AvgPrice = Gold(i["AvgPrice"])
-        HighestPrice = Gold(i["HighestPrice"])
-        new = [date, HighestPrice, AvgPrice, LowestPrice]
-        chart.append(new)
-    header_server = f'<div style="font-size:3rem">交易行·{server}</div>'
-    goods_info.u_popularity += 10  # 被选中则增加其曝光概率
-    header_goods = f'<div style="margin: 0.5rem;font-size:1.8rem;color:{goods_info.color}">物品 {goods_info.name} <img style="vertical-align: middle;width:1.8rem" src="{goods_info.img_url}"/></div>'
-    header = f'{header_server}{header_goods}'
-    table = tabulate(chart, tablefmt="unsafehtml")
-    table = table.replace('<table>', '<table style="margin: auto">')  # 居中显示
-    table = f'<div>{table}</div>'  # 居中表格
-    html = f'<section style="text-align: center;width:50rem;"><div style=\"font-family:Custom\">{header}{table}</div></section>' + css
-    final_path = CACHE + "/" + get_uuid() + ".html"
-    write(final_path, html)
-    img = await generate(final_path, False, 'section')
 
+    goods_info.u_popularity += 10  # 被选中则增加其曝光概率
     # 本轮已曝光物品，日后曝光率应下调
     for id in all_ids:
         x: GoodsInfo = CACHE_goods[id]
         x.u_popularity -= 1
     flush_cache_goods()
-    return [img]
+    return [logs, goods_info]
 
 
 async def getItem(id: str):
     boxdata = await get_api(f"https://helper.jx3box.com/api/wiki/post?type=item&source_id={id}")
     if boxdata["data"]["source"] == None:
         return ["唔……该物品不存在哦~"]
-    async with async_playwright() as p:
-        browser = await p.chromium.launch(headless=True, slow_mo=0)
-        context = await browser.new_context()
-        page = await context.new_page()
-        await page.goto(f"https://www.jx3box.com/item/view/{id}")
-        await page.add_style_tag(content=css_fixed)
-        path = CACHE + "/" + get_uuid() + ".png"
-        await page.locator(".c-item-wrapper").first.screenshot(path=path)
-        return path
+    return id

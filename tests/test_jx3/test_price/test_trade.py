@@ -1,12 +1,11 @@
 from ... import *
 
 import src.plugins.jx3
-from src.plugins.jx3 import price_goods
-
+from src.plugins.jx3.price_goods.lib import coin, Golds
+from src.plugins.jx3.price_goods import v1
 
 def test_trade_gold():
-    Gold = price_goods.Gold
-    coin = price_goods.coin
+    Gold = Golds.Gold
     assert Gold(1).__repr__() == '1 铜'
     assert Gold(200).__repr__() == '2 银'
     assert Gold(80000).__repr__() == '8 金'
@@ -22,7 +21,7 @@ def test_trade_gold():
 
 def test_trade_record():
     mc = MessageCallback()
-    price_goods.jx3_cmd_trade = mc
+    v1.jx3_cmd_trade = mc
 
     jx3_trade = src.plugins.jx3.jx3_trade
     state = {}
@@ -36,7 +35,7 @@ def test_trade_record():
 
 def test_default_server():
     mc = MessageCallback()
-    price_goods.jx3_cmd_trade = mc
+    v1.jx3_cmd_trade = mc
 
     jx3_trade = src.plugins.jx3.jx3_trade
     state = {}
@@ -62,7 +61,7 @@ def test_not_exist():
     def handle_send(msg: str):
         assert False, f'expected finish but get send:{msg}'
     mc = MessageCallback(cb_finish=handle_finish, cb_send=handle_send)
-    price_goods.jx3_cmd_trade = mc
+    v1.jx3_cmd_trade = mc
 
     jx3_trade = src.plugins.jx3.jx3_trade
     state = {}
@@ -75,7 +74,7 @@ def test_not_exist():
 
 def test_trade_price():
     mc = MessageCallback()
-    price_goods.jx3_cmd_trade = mc
+    v1.jx3_cmd_trade = mc
 
     price_num_selected = src.plugins.jx3.price_num_selected
     state = {'id': ['5_47116'], 'server': '唯我独尊'}  # 武技殊影图·上将
@@ -98,7 +97,7 @@ def test_trade_bound_good():
     def cb_send(msg: str):
         assert False, w_tip
     mc = MessageCallback(cb_finish=cb_finish, cb_send=cb_send)
-    price_goods.jx3_cmd_trade = mc
+    v1.jx3_cmd_trade = mc
 
     price_num_selected = src.plugins.jx3.price_num_selected
     state = {'id': ['5_24447'], 'server': '唯我独尊'}  # 五行石五级（拾绑）
