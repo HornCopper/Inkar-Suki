@@ -1,0 +1,35 @@
+<template>
+  <div id="chart" style="width: 500px;height:500px;"></div>
+</template>
+<script src="https://cdn.staticfile.org/echarts/5.4.2/echarts.min.js"></script>
+<script>
+  const { defineComponent, reactive, toRefs, onMounted } = Vue
+  const component = defineComponent({
+    components: {},
+    setup () {
+      onMounted(() => {
+        const Chart = echarts.init(document.getElementById('chart'));
+        const option = {
+          title: {
+            text: 'Chart Test'
+          },
+          legend: {
+            data: ['TestItemSeries']
+          },
+          xAxis: {
+            data: ["A", "B", "C", "D", "E", "F"]
+          },
+          yAxis: {},
+          series: [{
+            name: 'RATE',
+            type: 'bar',
+            data: [10, 20, 50, 30, 15, 25]
+          }]
+        };
+
+        Chart.setOption(option);
+      })
+      return {}
+    },
+  })
+</script>
