@@ -2,82 +2,113 @@ import random
 import json
 import sys
 import nonebot
+import os
+from nonebot.adapters.onebot.v11 import MessageSegment as ms
+from sgtpyutils.extensions import find 
+
+from src.tools.file import read, write
+
+from nonebot.adapters.onebot.v11 import MessageSegment as ms
+
+from src.tools.file import read, write
 
 TOOLS = nonebot.get_driver().config.tools_path
 sys.path.append(str(TOOLS))
 CLOCK = TOOLS[:-5] + "clock"
 
-from src.tools.file import read, write
+
+class SignInRecord:
+    def init_lucky(self, luck: int = None):
+        if not luck:
+            luck = random.randint(0, 10000)
+        if luck < 1000:
+            return 0
+        elif luck < 7500:
+            return 1
+        elif luck < 9000:
+            return 2
+        return 3
+
+    def __init__(self) -> None:
+        self.user_id: str = None
+        self.continuous: int = 0
+        self.coin: int = 0
+        self.luck: int = self.init_lucky()
+        self.msg:str = None
+
 
 class Sign:
-    def lucky_level(luck: int):
-        if 0 <= luck < 2500:
-            return 0
-        elif 2500 <= luck < 5000:
-            return 1
-        elif 5000 <= luck < 7500:
-            return 2
-        elif 5000 <= luck < 10000:
-            return 3
-    def generate_everyday_reward():
-        coin = random.randint(1,100)
-        luck = Sign.lucky_level(random.randint(0,10000))
-        coin = coin * (luck + 1)
-        lottery = random.randint(0,100)
+
+    def generate_everyday_reward(qq: str):
+        signed_list = json.loads(read(CLOCK + "/signed.json")) or []
+        rank = len(signed_list)
+        s = SignInRecord()
+        continious = Sign.get_continuity(qq)
+        s.coin = random.randint(1, 100) * (s.luck + 1)
+        lottery = random.randint(0, 100)
         wlottery = False
         if lottery % 10 == 0:
-            coin = coin + 100
+            s.coin += 100
             wlottery = True
-        signed_list = json.loads(read(CLOCK + "/signed.json"))
-        signed_people = len(signed_list)
-        data = {
-            "coin": coin,
-            "luck": luck,
-            "wlottery": wlottery,
-            "signed":signed_people
-        }
-        return data
+            s.wlottery = 1
+        luck_desc = ['末吉签', '中吉签', '上吉签', '上上签'][s.luck]
+        luck_desc = f'{luck_desc}(x{s.luck+1})'
+        msg = f'\n签到成功！\n金币：+{s.coin}\n今日运势：{luck_desc}'
+        if wlottery:
+            msg = f"{msg}\n触发额外奖励！已帮你额外添加了100枚金币！"
+        msg = f"{msg}\n已连续签到{continious + 1}天！"
+        msg = f"{msg}\n您是第{rank + 1}位签到的哦~"
+        s.msg = ms.at(qq) + msg
+        return s
+
     def wsigned(qq: int):
-        signed = json.loads(read(CLOCK + "/signed.json"))
+        signed = json.loads(read(CLOCK + "/signed.json")) or []
         if str(qq) in signed:
             return True
         return False
-    def save_data(data, qq):
+
+    def save_data(data:SignInRecord, qq):
         qq = str(qq)
-        signed_list = json.loads(read(CLOCK + "/signed.json"))
+        signed_list = json.loads(read(CLOCK + "/signed.json")) or []
         signed_list.append(qq)
         write(CLOCK + "/signed.json", json.dumps(signed_list, ensure_ascii=False))
-        accounts = json.loads(read(CLOCK + "/account.json"))
+        accounts = json.loads(read(CLOCK + "/account.json")) or []
         for i in accounts:
             if i["id"] == qq:
                 nc = i["coin"]
-                fc = nc + data["coin"]
+                fc = nc + data.coin
                 i["coin"] = fc
                 nt = i["continuity"]
                 ft = nt + 1
                 i["continuity"] = ft
-                write(CLOCK + "/account.json", json.dumps(accounts, ensure_ascii=False))
+                write(CLOCK + "/account.json",
+                      json.dumps(accounts, ensure_ascii=False))
                 return
         accounts.append(
             {
-                "id":qq,
-                "coin": 0 + data["coin"],
-                "continuity":1
+                "id": qq,
+                "coin": 0 + data.coin,
+                "continuity": 1
             }
         )
         write(CLOCK + "/account.json", json.dumps(accounts, ensure_ascii=False))
         return
+    def get_user_record(qq:str)->dict:
+        '''
+        获取用户签到信息
+        '''
+        qq = str(qq)
+        accounts = json.loads(read(f"{CLOCK}{os.sep}account.json"))
+        return find(accounts,lambda x:x['id'] == qq) or {}
+
     def get_continuity(qq):
-        qq = str(qq)
-        accounts = json.loads(read(CLOCK + "/account.json"))
-        for i in accounts:
-            if i["id"] == qq:
-                return i["continuity"]
-        return False
+        '''
+        获取用户连续登录天数
+        '''
+        return Sign.get_user_record(qq).get('continuity') or 0
+
     def get_coin(qq):
-        qq = str(qq)
-        accounts = json.loads(read(CLOCK + "/account.json"))
-        for i in accounts:
-            if i["id"] == qq:
-                return i["coin"]
-        return False
+        '''
+        获取用户当前金币数
+        '''
+        return Sign.get_user_record(qq).get('coin') or 0
