@@ -1,11 +1,10 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-import nonebot
 import sys
 from src.tools.config import Config
 import os
 from nonebot.adapters.onebot.v11 import Adapter as ONEBOT_V11Adapter
-from sgtpyutils import logger
+from src.tools.dep.bot import *
 
 botpy = os.getcwd()
 tools_path = botpy + "/src/tools"
@@ -30,7 +29,7 @@ def check_folders(folder_nest: dict, parent_path: str = None):
         parent_path = ""
     else:
         parent_path = f"{parent_path}{os.sep}"
-    logger.logger.info(f"初始化系统文件夹:{parent_path}")
+    logger.info(f"初始化系统文件夹:{parent_path}")
     for f in folder_nest:
         new_parent = f"{parent_path}{f}"
         check_folder(new_parent)
@@ -50,6 +49,7 @@ init_folders = {
                     "achievement": None,
                     "talents": None,
                     "adventure": None,
+                    "serendipity": None,
                 }
             },
             "plugins": None
