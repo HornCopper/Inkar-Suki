@@ -1,3 +1,7 @@
+/src/tools/config.py
+/src/assets/jx3/
+/src/assets/arcaea/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -6,10 +10,6 @@ __pycache__/
 # C extensions
 *.so
 
-/src/tools/config.py
-
-/src/assets/jx3/
-/src/assets/arcaea/
 
 # Distribution / packaging
 .Python
@@ -154,3 +154,6 @@ dmypy.json
 
 # PyCharm(IDEA) files
 .idea/
+
+
+!src/plugins/jx3/price_goods/lib*
