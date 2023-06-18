@@ -133,3 +133,4 @@ async def jx3_serendipity_recipe(event: GroupMessageEvent, args: Message = Comma
         image.write(image_content)
         image.close()
         await preposition.finish(ms.image(Path(filepath).as_uri()))
+
