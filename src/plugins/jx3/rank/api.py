@@ -4,11 +4,11 @@ from src.tools.utils import post_url
 from src.tools.config import Config
 from src.plugins.help import css
 from src.tools.generate import generate, get_uuid
+from src.tools.dep.path import CACHE
 
 from tabulate import tabulate
 
 from .top100 import *
-from . import CACHE
 
 import datetime
 import hashlib
