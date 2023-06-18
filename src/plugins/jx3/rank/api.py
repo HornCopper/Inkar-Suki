@@ -102,6 +102,7 @@ async def zlrank(server: str = None, school: str = None, group_id: str = None):
             "x-sk": xsk
     }
     data = await post_url(url="https://m.pvp.xoyo.com/user/list-jx3-topn-roles-info", data=param, headers=headers)
+    data = json.loads(data)
     lank = data["data"]["roles"]
     chart = []
     chart.append(["排行","推栏头像","门派","推栏昵称","游戏角色","资历","区服"])
