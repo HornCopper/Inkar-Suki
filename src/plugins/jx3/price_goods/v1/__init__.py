@@ -43,7 +43,7 @@ async def price_num_selected(state: T_State, event: GroupMessageEvent, num: Mess
     server = state["server"]
     data, goods_info = await getItemPriceById(id, server, all_ids, group_id=event.group_id)
 
-    if type(data) != type([]):
+    if goods_info is None :
         return await jx3_cmd_trade.finish(data)
     else:
         img = await render_price(data, server, goods_info)
