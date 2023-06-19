@@ -1,13 +1,5 @@
-
+from src.tools.dep.api import *
 from enum import Enum
-import json
-from src.tools.utils import get_api
-from src.tools.file import write, read
-from sgtpyutils.extensions.clazz import dict2obj
-import nonebot
-import pathlib2
-TOOLS = nonebot.get_driver().config.tools_path
-ASSETS = pathlib2.Path(TOOLS).parent.joinpath("assets").__str__()
 
 
 async def check_bind(id: str):
@@ -41,11 +33,14 @@ class GoodsInfo(dict):
         '''被使用的次数，次数多的优先前置'''
         self.u_popularity = 0
         super().__init__()
+
     def __str__(self) -> str:
         x = '※' * (self.quality + 1)
         return f'{x}{self.name}({self.id}){self.bind_type_str}'
+
     def __repr__(self) -> str:
         return self.__str__()
+
     @property
     def priority(self) -> int:
         v_bind = 1 if self.bind_type == GoodsBindType.BindOnPick else 0
@@ -92,21 +87,9 @@ class GoodsInfo(dict):
     def __repr__(self) -> str:
         return json.dumps(self.__dict__)
 
-
-cache_file = ASSETS + "/jx3/info_tradegoods.json"
-CACHE_goods = json.loads(read(cache_file))  # 每次重启后从磁盘加载缓存
-CACHE_goods = dict([[x, dict2obj(GoodsInfo(), CACHE_goods[x])]
-                   for x in CACHE_goods])  # 转换为类
-
-
-class GoodsEncoder(json.JSONEncoder):
-    def default(self, o) -> str:
-        if isinstance(o, Enum):
-            return o.value
-        return super().default(o)
-
-
-def flush_cache_goods():
-    data = json.dumps(dict([key, CACHE_goods[key].__dict__]
-                      for key in CACHE_goods), cls=GoodsEncoder)
-    write(cache_file, data)
+    def to_dict(self) -> dict:
+        r = self.__dict__
+        r['img_url'] = self.img_url
+        r['color'] = self.color
+        r['bind_type_str'] = self.bind_type_str
+        return r
