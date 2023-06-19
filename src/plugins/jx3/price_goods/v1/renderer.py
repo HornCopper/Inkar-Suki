@@ -5,8 +5,7 @@ from src.plugins.help import css
 from src.tools.dep.server import *
 from src.tools.dep.path import *
 from src.tools.dep.api import *
-from ..lib.GoodsInfo import GoodsBindType, GoodsInfo, CACHE_goods, flush_cache_goods, check_bind
-from ..lib.Golds import Gold
+from ..api import *
 '''
 交易行物品查询。
 
