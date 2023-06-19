@@ -15,6 +15,8 @@ async def search_item_local(item_name: str) -> list:
 
 
 async def search_item_info(item_name: str, pageIndex: int = 0, pageSize: int = 20):
+    if not item_name:
+        return "请输入物品的名称哦~"
     pageIndex = pageIndex or 0
     final_url = f"https://helper.jx3box.com/api/item/search?keyword={item_name}&limit=1000&page=1"
     box_data = await get_api(final_url)
