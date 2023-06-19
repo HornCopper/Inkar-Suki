@@ -10,7 +10,8 @@
           <template #default="scope">
             <div style="display: flex">
               <img :src="scope.row.img_url" :style="{height: '1.4rem'}" />
-              <div :style="{'font-size':font_size,color:scope.row.color,'margin-left':'0.5rem'}">{{ scope.row.name }}
+              <div :style="{'font-size':font_size,color:scope.row.color,'margin-left':'0.5rem'}">{{ scope.row.name
+                }}
               </div>
             </div>
           </template>
@@ -43,16 +44,16 @@
         </el-table-column>
       </el-table>
     </el-row>
+    <el-pagination v-model:current-page="page.pageIndex" v-model:page-size="page.pageSize" :small="small"
+      :disabled="false" :background="false" layout="total, sizes, prev, pager, next, jumper" :total="page.totalCount" />
   </div>
 </template>
-<script src="../../src/views/js/utils/index.js" ></script>
-<script src="../../src/views/js/utils/jx3.js" ></script>
 <script>
-  
   const { defineComponent, reactive, toRefs, ref, onMounted, computed } = Vue
   const component = defineComponent({
     components: {},
     setup () {
+      const locale = computed(() => window.zhCn)
       onMounted(() => {
       })
       const methods = {
@@ -72,6 +73,11 @@
         server: '', // 唯我独尊
         item_name: '', // 五行石
         goods_items,
+        page: {
+          pageIndex: 1,
+          pageSize: 20,
+          totalCount: 231
+        },
         font_size,
         ...methods,
       }

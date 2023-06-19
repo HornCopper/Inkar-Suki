@@ -7,10 +7,11 @@ from ..trade import *
 async def search_item_info_for_price(item_name: str, server: str, pageIndex: int = 0, pageSize: int = 20):
     '''
     搜索物品，并排除拾绑物品及无销售的物品
+    @return list[goods],totalCount
     '''
     data = await search_item_info(item_name, pageIndex=0, pageSize=1000)
     if not isinstance(data, List):
-        return data  # 未返回正确数据
+        return [data, None]  # 未返回正确数据
     data = [x for x in data if x.bind_type != GoodsBindType.BindOnPick]
     prices = await get_goods_current_price(data, server)
     result = []
@@ -19,8 +20,9 @@ async def search_item_info_for_price(item_name: str, server: str, pageIndex: int
             x.price = prices[x.id]
             result.append(x)
     page_start = pageIndex * pageSize
+    total = len(result)
     query_items = result[page_start:page_start+pageSize]
-    return query_items
+    return [query_items, total]
 
 
 async def get_good_current_price(id: str, server: str) -> list:
