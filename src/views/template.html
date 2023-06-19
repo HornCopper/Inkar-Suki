@@ -9,18 +9,23 @@
   <script src="https://unpkg.com/vue@3"></script>
   <!-- Import component library -->
   <script src="https://unpkg.com/element-plus"></script>
+  <script src="https://cdn.staticfile.org/echarts/5.4.2/echarts.min.js"></script>
   <script_files />
 </head>
 
 <body>
   <section style="display: inline-block;  width: auto;  height: auto;">
     <div id="app" class="primary">
-      <template />
+      <template.HERE />
     </div>
   </section>
-
   <script>
-    <component />
+    window.params_data = {}
+    window.component.HERE
+    window.component.data.HERE
+    const app = Vue.createApp(component)
+    app.use(ElementPlus)
+    app.mount('#app')
   </script>
 </body>
 

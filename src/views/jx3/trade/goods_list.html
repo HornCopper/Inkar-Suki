@@ -1,0 +1,80 @@
+<template>
+  <div :style="{'text-align': 'center','font-size':font_size,width:'1000px'}">
+    <div style="font-size:2rem;font-weight:600;">交易行 · {{ server }} · {{ item_name }}</div>
+    <el-row>
+      <el-table :data="goods_items" stripe style="width: 100%">
+        <el-table-column label="序号" width="60px">
+          <template #default="scope">{{ scope.row.index }}</template>
+        </el-table-column>
+        <el-table-column label="物品">
+          <template #default="scope">
+            <div style="display: flex">
+              <img :src="scope.row.img_url" :style="{height: '1.4rem'}" />
+              <div :style="{'font-size':font_size,color:scope.row.color,'margin-left':'0.5rem'}">{{ scope.row.name }}
+              </div>
+            </div>
+          </template>
+        </el-table-column>
+        <el-table-column label="绑定" width="80px">
+          <template #default="scope">{{ scope.row.bind_type_str }}</template>
+        </el-table-column>
+        <el-table-column label="更新时间" width="180px">
+          <template #default="scope">{{ parseTime(scope.row.price.UpdatedAt) }}</template>
+        </el-table-column>
+        <el-table-column label="均价" width="100px">
+          <template #default="scope">
+            <span>{{ convertGold(scope.row.price.AvgPrice)[0] }}</span>
+            <img :src="convertGold(scope.row.price.AvgPrice)[1]" />
+          </template>
+        </el-table-column>
+        <el-table-column label="底价" width="100px">
+          <template #default="scope">
+            <span>{{ convertGold(scope.row.price.LowestPrice)[0] }}</span>
+            <img :src="convertGold(scope.row.price.LowestPrice)[1]" />
+          </template>
+        </el-table-column>
+        <el-table-column label="总量" width="100px">
+          <template #default="scope">{{ convertSci(scope.row.price.SampleSize) }}</template>
+        </el-table-column>
+        <el-table-column label="热度" width="150px">
+          <template #default="scope">
+            <el-rate :model-value="convertPop(scope.row.u_popularity)" disabled />
+          </template>
+        </el-table-column>
+      </el-table>
+    </el-row>
+  </div>
+</template>
+<script src="../../src/views/js/utils/index.js" ></script>
+<script src="../../src/views/js/utils/jx3.js" ></script>
+<script>
+  
+  const { defineComponent, reactive, toRefs, ref, onMounted, computed } = Vue
+  const component = defineComponent({
+    components: {},
+    setup () {
+      onMounted(() => {
+      })
+      const methods = {
+        parseTime,
+        convertGold,
+        convertSci,
+        convertPop
+      }
+      const goods_items = computed(() => {
+        const items = Object.keys(params_data.items)
+        return items.map((x, index) => Object.assign({ id: x, index }, params_data.items[x]))
+      })
+
+      const font_size = ref('0.8rem')
+      return {
+        items: [], // {id:'',price:0}
+        server: '', // 唯我独尊
+        item_name: '', // 五行石
+        goods_items,
+        font_size,
+        ...methods,
+      }
+    },
+  })
+</script>
