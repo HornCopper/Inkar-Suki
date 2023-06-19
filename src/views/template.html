@@ -9,18 +9,36 @@
   <script src="https://unpkg.com/vue@3"></script>
   <!-- Import component library -->
   <script src="https://unpkg.com/element-plus"></script>
+  <script src="https://cdn.staticfile.org/echarts/5.4.2/echarts.min.js"></script>
+  <script src="../../src/views/js/utils/index.js"></script>
+  <script src="../../src/views/js/utils/jx3.js"></script>
   <script_files />
 </head>
 
 <body>
   <section style="display: inline-block;  width: auto;  height: auto;">
     <div id="app" class="primary">
-      <template />
+      <el-config-provider :locale="locale">
+        <template.HERE />
+      </el-config-provider>
     </div>
   </section>
-
-  <script>
-    <component />
+  <script type="module">
+    import zhCn from 'https://unpkg.com/element-plus@2.3.6/dist/locale/zh-cn.mjs'
+    window.zhCn = zhCn
+    window.params_data = {}
+    window.component.HERE
+    window.component.data.HERE
+    const _raw_setup_attach = component.setup
+    component.setup = () => {
+      const result = Object.assign({}, _raw_setup_attach())
+      const locale = computed(() => window.zhCn)
+      result.locale = locale
+      return result
+    }
+    const app = Vue.createApp(component)
+    app.use(ElementPlus)
+    app.mount('#app')
   </script>
 </body>
 
