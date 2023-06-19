@@ -44,8 +44,11 @@
         </el-table-column>
       </el-table>
     </el-row>
-    <el-pagination v-model:current-page="page.pageIndex" v-model:page-size="page.pageSize" :small="small"
-      :disabled="false" :background="false" layout="total, sizes, prev, pager, next, jumper" :total="page.totalCount" />
+    <div style="width: 100%;display: flex;justify-content: center;margin: 1.2rem;">
+      <el-pagination v-model:current-page="page.pageIndex" v-model:page-size="page.pageSize" :small="small"
+        :disabled="false" :background="false" layout="total, sizes, prev, pager, next, jumper"
+        :total="page.totalCount" />
+    </div>
   </div>
 </template>
 <script>
