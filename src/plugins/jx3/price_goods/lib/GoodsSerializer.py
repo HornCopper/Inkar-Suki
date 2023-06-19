@@ -18,10 +18,11 @@ class GoodsSerializerEncoder(GoodsEncoder):
         if isinstance(o, GoodsInfo):
             o = o.__dict__
             o['img_url'] = o.img_url
+            return o
         elif isinstance(o, GoodsPriceDetail):
-            o = o.__dict__
+            return o.__dict__
         elif isinstance(o, GoodsPriceSummary):
-            o = o.__dict__
+            return o.__dict__
 
         return super().default(o)
 
