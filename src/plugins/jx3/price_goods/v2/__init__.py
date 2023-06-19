@@ -30,7 +30,7 @@ async def jx3_trade2(state: T_State, event: GroupMessageEvent, args: Message = C
     id = [x.id for x in data]  # 取到的是id列表
     result = await render_items(arg_server, data)
     state["id"] = id
-    return await jx3_cmd_trade2.send(ms.image(Path(result[1]).as_uri()))
+    return await jx3_cmd_trade2.send(ms.image(Path(result).as_uri()))
 
 
 # @jx3_cmd_trade2.got("num2")
