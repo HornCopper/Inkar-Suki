@@ -93,7 +93,7 @@ def __init_data(data: dict):
       const data = {{data}}
       window.params_data = data
       const result = Object.assign({}, _raw_setup())
-      v_result = Object.assign(result, data)
+      const v_result = Object.assign(result, data)
       return v_result
     }
     '''.replace('{{data}}', json.dumps(data))

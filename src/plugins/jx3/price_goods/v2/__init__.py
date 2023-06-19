@@ -23,12 +23,13 @@ async def jx3_trade2(state: T_State, event: GroupMessageEvent, args: Message = C
     if not arg_server:
         return await jx3_cmd_trade2.finish(PROMPT_ServerNotExist)
     state["server"] = arg_server
-    data = await search_item_info_for_price(arg_item, arg_server, pageIndex=arg_page)
+    pageSize = 20
+    data, totalCount = await search_item_info_for_price(arg_item, arg_server, pageIndex=arg_page, pageSize=pageSize)
     if not isinstance(data, List):
         return await jx3_cmd_trade2.finish(data)
 
     id = [x.id for x in data]  # 取到的是id列表
-    result = await render_items(arg_server, data)
+    result = await render_items(arg_server, arg_item, arg_page, pageSize, totalCount, data)
     state["id"] = id
     return await jx3_cmd_trade2.send(ms.image(Path(result).as_uri()))
 
