@@ -18,5 +18,5 @@ async def render_items(server: str, arg_item: str, arg_page: int, pageSize: int,
             'totalCount': totalCount
         }
 
-    }, delay=1000)
+    }, delay=200)
     return img
