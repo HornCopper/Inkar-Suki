@@ -10,8 +10,8 @@ async def jx3_flower(state: T_State, event: GroupMessageEvent, args: Message = C
     '''
     获取当前花价
     花价 [区服]
-    Example：-交易行 幽月轮 帝骖龙翔 1
-    Example：-交易行 帝骖龙翔 2
+    Example：花价
+    Example：花价 唯满侠
     '''
     template = [Jx3Arg(Jx3ArgsType.server)]
     arg = get_args(args, template)

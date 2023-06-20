@@ -19,6 +19,7 @@ from .daily import *
 from .dungeon import *
 from .exam import *
 from .fireworks import *
+from .flower import *
 from .horse import *
 from .jxjoy import *
 from .matrix import *
