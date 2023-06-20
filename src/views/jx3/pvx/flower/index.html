@@ -67,7 +67,9 @@
             x.line[map] = item.line // 为花的分线设置数据，考虑到不同分线同一种花属性一致，故仅记录分线号
           })
         })
-        return Object.values(result).map((x, index) => Object.assign({ index }, x)).sort((a, b) => item_order[a.name] - item_order[b.name])
+        return Object.values(result)
+          .sort((a, b) => item_order[a.name] - item_order[b.name])
+          .map((x, index) => Object.assign({ index }, x))
       })
       const font_size = ref('0.8rem')
       return {
