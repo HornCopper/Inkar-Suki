@@ -5,7 +5,7 @@ from src.tools.dep.path import *
 from src.tools.generate import *
 from src.plugins.help import css
 jx3_cmd_jx3_rare_gain = on_command(
-    "jx3_rare_gain", aliases={"cd", "掉落"}, priority=5)
+    "jx3_rare_gain", aliases={"cd"}, priority=5)
 
 
 @jx3_cmd_jx3_rare_gain.handle()
