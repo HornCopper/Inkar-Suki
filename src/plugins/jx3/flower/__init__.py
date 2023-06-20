@@ -16,6 +16,7 @@ async def jx3_flower(state: T_State, event: GroupMessageEvent, args: Message = C
     template = [Jx3Arg(Jx3ArgsType.server)]
     arg = get_args(args, template)
     arg_server = arg[0]
+    arg_server = server_mapping(arg_server, group_id=str(event.group_id))
     data = await get_flower(arg_server)
     if isinstance(data, str):
         return await jx3_cmd_flower.finish(data)
