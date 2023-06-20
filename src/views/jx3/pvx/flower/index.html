@@ -52,20 +52,22 @@
       const items = computed(() => {
         const data = params_data.data
         const result = {}
+        const item_order = {}
         Object.keys(data).map(map => {
           const item_list = data[map]
-          item_list.map(item => {
+          item_list.map((item, index) => {
             if (!result[item.name]) result[item.name] = {
               name: item.name,
               color: item.color && item.color.split('，'),
               price: item.price,
               line: {} // 地图:分线
             }
+            item_order[item.name] = index
             const x = result[item.name]
             x.line[map] = item.line // 为花的分线设置数据，考虑到不同分线同一种花属性一致，故仅记录分线号
           })
         })
-        return Object.values(result).map((x, index) => Object.assign({ index }, x))
+        return Object.values(result).map((x, index) => Object.assign({ index }, x)).sort((a, b) => item_order[a.name] - item_order[b.name])
       })
       const font_size = ref('0.8rem')
       return {
