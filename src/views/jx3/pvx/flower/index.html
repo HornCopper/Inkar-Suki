@@ -1,0 +1,80 @@
+<template>
+  <div :style="{'text-align': 'center','font-size':font_size,width:'1000px'}">
+    <div style="font-size:2rem;font-weight:600;">花价 · {{ server }}</div>
+    <el-row>
+      <el-table :data="items" stripe style="width: 100%">
+        <el-table-column label="序号" width="60px">
+          <template #default="scope">{{ scope.row.index }}</template>
+        </el-table-column>
+        <el-table-column label="物品">
+          <template #default="scope">
+            <div style="display: flex">
+              <img :src="scope.row.img_url" :style="{height: '1.4rem'}" />
+              <span :style="{'font-size':font_size,color:scope.row.color,'margin-left':'0.5rem'}">{{
+                scope.row.name
+                }}
+              </span>
+              <span>
+                <span>（</span>
+                <span v-if="scope.row.color">{{ scope.row.color.join(' ') }}</span>
+                <span v-else style="color:#cccccc">无色</span>
+                <span>）</span>
+              </span>
+            </div>
+          </template>
+        </el-table-column>
+        <el-table-column label="售价" width="100px">
+          <template #default="scope">{{ scope.row.price }}倍 </template>
+        </el-table-column>
+        <el-table-column v-for="(x,index) in Object.keys(items[0].line)" :key="x" :label="`分线·${x}`" width="150px">
+          <template #default="scope">
+            <div v-if="scope.row.line[x]" :style="{color:['#2a6e3f','#e18a3b','#945635','#108b96'][index]}">{{
+              scope.row.line[x].join(' | ') }}</div>
+            <div v-else style="color:#cccccc">无</div>
+          </template>
+        </el-table-column>
+      </el-table>
+    </el-row>
+  </div>
+</template>
+<script>
+  const { defineComponent, reactive, toRefs, ref, onMounted, computed } = Vue
+  const component = defineComponent({
+    components: {},
+    setup () {
+      const locale = computed(() => window.zhCn)
+      onMounted(() => {
+      })
+      const methods = {
+        parseTime,
+        convertSci,
+      }
+      const items = computed(() => {
+        const data = params_data.data
+        const result = {}
+        Object.keys(data).map(map => {
+          const item_list = data[map]
+          item_list.map(item => {
+            if (!result[item.name]) result[item.name] = {
+              name: item.name,
+              color: item.color && item.color.split('，'),
+              price: item.price,
+              line: {} // 地图:分线
+            }
+            const x = result[item.name]
+            x.line[map] = item.line // 为花的分线设置数据，考虑到不同分线同一种花属性一致，故仅记录分线号
+          })
+        })
+        return Object.values(result).map((x, index) => Object.assign({ index }, x))
+      })
+      const font_size = ref('0.8rem')
+      return {
+        data: [], // {id:'',price:0}
+        server: '', // 唯我独尊
+        font_size,
+        items,
+        ...methods,
+      }
+    },
+  })
+</script>
