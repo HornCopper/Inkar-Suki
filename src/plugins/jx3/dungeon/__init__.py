@@ -1,6 +1,6 @@
 from src.tools.dep.bot import *
 from .api import *
-from .xuanjin import *
+from .xuanjing import *
 
 zones = on_command("jx3_zones", aliases={"副本"}, priority=5)
 @zones.handle()
