@@ -22,16 +22,16 @@ async def jx3_rare_gain(event: GroupMessageEvent, args: Message = CommandArg()):
     msg = await get_cd(arg_server, arg_name)
     return await jx3_cmd_jx3_rare_gain.finish(msg)
 
-xuanjing = on_command("jx3_xuanjing", aliases={"玄晶"}, priority=5)
+jx3_cmd_xuanjing = on_command("jx3_xuanjing", aliases={"玄晶"}, priority=5)
 
 
-@xuanjing.handle()
-async def _(event: GroupMessageEvent, args: Message = CommandArg()):
+@jx3_cmd_xuanjing.handle()
+async def jx3_xuanjing(event: GroupMessageEvent, args: Message = CommandArg()):
     server = args.extract_plain_text()
     group_server = getGroupServer(str(event.group_id))
     if server == "":
         if group_server == False:
-            return await xuanjing.finish("没有绑定服务器，请携带服务器参数使用！")
+            return await jx3_cmd_xuanjing.finish("没有绑定服务器，请携带服务器参数使用！")
         server = group_server
     else:
         server = server
@@ -39,7 +39,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     for i in dt:
         if i["server"] == server:
             if len(i["records"]) == 0:
-                await xuanjing.finish("唔……尚未检测到玄晶哦~")
+                return await jx3_cmd_xuanjing.finish("唔……尚未检测到玄晶哦~")
             table = []
             table.append(["时间", "地图", "角色", "名称"])
             for x in i["records"]:
@@ -52,5 +52,5 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
             write(path, html)
             img = await generate(path, False, "table")
             if type(img) != type("sb"):
-                return await xuanjing.finish("唔，图片生成失败了哦~请联系机器人管理员解决此问题，附带以下信息：\n" + img)
-            return await xuanjing.finish(ms.image(Path(img).as_uri()))
+                return await jx3_cmd_xuanjing.finish("唔，图片生成失败了哦~请联系机器人管理员解决此问题，附带以下信息：\n" + img)
+            return await jx3_cmd_xuanjing.finish(ms.image(Path(img).as_uri()))
