@@ -112,7 +112,11 @@ def get_render_content(view_file_path: str, data: dict) -> str:
         view_content = f.read()
     content_template = get_tag_content(view_content, 'template')
     content = content.replace('<template.HERE />', content_template)
+    # 注入css
+    content_style = get_tag_content(view_content,'style')
+    content = content.replace('.window.style.HERE', content_style)
 
+    
     # 注入脚本
     content_script = get_tag_content(view_content, 'script')
     content = content.replace('window.component.HERE', content_script)
