@@ -4,7 +4,8 @@ import sys
 import nonebot
 import os
 from nonebot.adapters.onebot.v11 import MessageSegment as ms
-from sgtpyutils.extensions import find 
+import datetime
+from sgtpyutils.extensions import find
 
 from src.tools.file import read, write
 
@@ -34,7 +35,7 @@ class SignInRecord:
         self.continuous: int = 0
         self.coin: int = 0
         self.luck: int = self.init_lucky()
-        self.msg:str = None
+        self.msg: str = None
 
 
 class Sign:
@@ -67,39 +68,59 @@ class Sign:
             return True
         return False
 
-    def save_data(data:SignInRecord, qq):
+    def save_data(data: SignInRecord, qq):
         qq = str(qq)
         signed_list = json.loads(read(CLOCK + "/signed.json")) or []
         signed_list.append(qq)
         write(CLOCK + "/signed.json", json.dumps(signed_list, ensure_ascii=False))
-        accounts = json.loads(read(CLOCK + "/account.json")) or []
-        for i in accounts:
-            if i["id"] == qq:
-                nc = i["coin"]
-                fc = nc + data.coin
-                i["coin"] = fc
-                nt = i["continuity"]
-                ft = nt + 1
-                i["continuity"] = ft
-                write(CLOCK + "/account.json",
-                      json.dumps(accounts, ensure_ascii=False))
-                return
-        accounts.append(
-            {
-                "id": qq,
-                "coin": 0 + data.coin,
-                "continuity": 1
-            }
-        )
-        write(CLOCK + "/account.json", json.dumps(accounts, ensure_ascii=False))
+        user = Sign.get_user_record(qq)
+
+        user['coin'] = user.get('coin') + data.coin
+        last = user.get('last')
+        now = datetime.datetime.now()
+        dateformat = '%Y-%m-%d %H:%M:%S'
+        is_continued = not last  # 如无记录，则延续用户数据
+        if not is_continued:
+            last_date = datetime.datetime.strptime(last, dateformat).date()
+            judge_date = last_date + datetime.timedelta(days=1)
+            is_continued = judge_date == now.date()
+        if is_continued:
+            user['continuity'] += 1
+        user['coin'] += data.coin
+        user['last'] = datetime.datetime.strftime(now, dateformat)
+        Sign._flush_accounts()
         return
-    def get_user_record(qq:str)->dict:
+
+    def get_user_record(qq: str) -> dict:
         '''
         获取用户签到信息
         '''
         qq = str(qq)
-        accounts = json.loads(read(f"{CLOCK}{os.sep}account.json"))
-        return find(accounts,lambda x:x['id'] == qq) or {}
+        accounts = json.loads(read(f"{CLOCK}{os.sep}account.json")) or {}
+        need_convert = isinstance(accounts, list)
+        if need_convert:
+            accounts = dict([[x['id'], x] for x in accounts])
+            for x in accounts:
+                del accounts[x]['id']
+
+
+        user = accounts.get(qq)
+        if not user:
+            user = {'coin': 0, 'continuity': 0, 'last': None}
+            accounts[qq] = user
+
+
+        Sign.accounts = accounts
+        if need_convert:
+            Sign._flush_accounts()
+        return user
+
+    def _flush_accounts():
+        x = getattr(Sign, 'accounts')
+        if x is None:
+            return
+        write(f"{CLOCK}{os.sep}account.json",
+              json.dumps(Sign.accounts, ensure_ascii=False))
 
     def get_continuity(qq):
         '''
