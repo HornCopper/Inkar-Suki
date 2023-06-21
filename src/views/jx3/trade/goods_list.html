@@ -1,56 +1,130 @@
 <template>
   <div :style="{'text-align': 'center','font-size':font_size,width:'1000px'}">
-    <div style="font-size:2rem;font-weight:600;">交易行 · {{ server }} · {{ item_name }}</div>
-    <el-row>
-      <el-table :data="goods_items" stripe style="width: 100%">
-        <el-table-column label="序号" width="60px">
-          <template #default="scope">{{ scope.row.index }}</template>
-        </el-table-column>
-        <el-table-column label="物品">
-          <template #default="scope">
-            <div style="display: flex">
-              <img :src="scope.row.img_url" :style="{height: '1.4rem'}" />
-              <div :style="{'font-size':font_size,color:scope.row.color,'margin-left':'0.5rem'}">{{ scope.row.name
-                }}
+    <el-card shadow="never">
+      <div style="font-size:2rem;font-weight:600;">交易行 · {{ server }} · {{ item_name }}</div>
+      <el-row>
+        <el-card style="width: 100%;margin: 1rem;">
+          <el-row>
+            <el-col :span="12">
+              <el-row>
+                <el-col class="primary-icon" :span="4">
+                  <div>命令</div>
+                  <div class="ver-line"></div>
+                </el-col>
+                <el-col :span="20">
+                  <div class="primary-title">
+                    <div>
+                      <span style="color:#999">查看概要价格：</span>
+                      <span>价格 [服务器] 物品名称 [页码]</span>
+                    </div>
+                    <div>
+                      <span style="color:#999">然后详细价格：</span>
+                      <span>[序号]</span>
+                      <span style="color:#999">（还没写好）</span>
+                    </div>
+                  </div>
+                </el-col>
+              </el-row>
+            </el-col>
+            <el-col :span="12">
+              <el-row>
+                <el-col class="primary-icon" :span="4">
+                  <div style="color: #999999;">说明</div>
+                  <div class="ver-line"></div>
+                </el-col>
+                <el-col :span="20">
+                  <div class="primary-content">
+                    <div>1. 概要价格每天更新1次，详细价格每10分钟更新1次。</div>
+                    <div>2. 一页默认显示20个物品，可以输入页码来选择不同页。</div>
+                    <div>3. 每次访问将给物品人气+1，人气越高越靠前。</div>
+                  </div>
+                </el-col>
+              </el-row>
+            </el-col>
+          </el-row>
+        </el-card>
+      </el-row>
+      <el-row>
+        <el-table v-if="goods_items && goods_items.length" :data="goods_items" stripe style="width: 100%">
+          <el-table-column label="序号" width="60px">
+            <template #default="scope">{{ scope.row.index }}</template>
+          </el-table-column>
+          <el-table-column label="物品">
+            <template #default="scope">
+              <div style="display: flex">
+                <img :src="scope.row.img_url" :style="{height: '1.4rem'}" />
+                <div :style="{'font-size':font_size,color:scope.row.color,'margin-left':'0.5rem'}">{{
+                  scope.row.name
+                  }}
+                </div>
               </div>
-            </div>
-          </template>
-        </el-table-column>
-        <el-table-column label="绑定" width="80px">
-          <template #default="scope">{{ scope.row.bind_type_str }}</template>
-        </el-table-column>
-        <el-table-column label="更新时间" width="120px">
-          <template #default="scope">{{ formatTime(scope.row.price.UpdatedAt) }}</template>
-        </el-table-column>
-        <el-table-column label="均价" width="100px">
-          <template #default="scope">
-            <span>{{ convertGold(scope.row.price.AvgPrice)[0] }}</span>
-            <img :src="convertGold(scope.row.price.AvgPrice)[1]" />
-          </template>
-        </el-table-column>
-        <el-table-column label="底价" width="100px">
-          <template #default="scope">
-            <span>{{ convertGold(scope.row.price.LowestPrice)[0] }}</span>
-            <img :src="convertGold(scope.row.price.LowestPrice)[1]" />
-          </template>
-        </el-table-column>
-        <el-table-column label="总量" width="100px">
-          <template #default="scope">{{ convertSci(scope.row.price.SampleSize) }}</template>
-        </el-table-column>
-        <el-table-column label="热度" width="150px">
-          <template #default="scope">
-            <el-rate :model-value="convertPop(scope.row.u_popularity)" disabled />
-          </template>
-        </el-table-column>
-      </el-table>
-    </el-row>
-    <div style="width: 100%;display: flex;justify-content: center;margin: 1.2rem;">
-      <el-pagination v-model:current-page="page.pageIndex + 1" v-model:page-size="page.pageSize" :small="small"
-        :disabled="false" :background="false" layout="total, sizes, prev, pager, next, jumper"
-        :total="page.totalCount" />
-    </div>
+            </template>
+          </el-table-column>
+          <el-table-column label="绑定" width="80px">
+            <template #default="scope">{{ scope.row.bind_type_str }}</template>
+          </el-table-column>
+          <el-table-column label="更新时间" width="150px">
+            <template #default="scope">{{ formatTime(scope.row.price.UpdatedAt) }}</template>
+          </el-table-column>
+          <el-table-column label="均价" width="100px">
+            <template #default="scope">
+              <span>{{ convertGold(scope.row.price.AvgPrice)[0] }}</span>
+              <img :src="convertGold(scope.row.price.AvgPrice)[1]" />
+            </template>
+          </el-table-column>
+          <el-table-column label="底价" width="100px">
+            <template #default="scope">
+              <span>{{ convertGold(scope.row.price.LowestPrice)[0] }}</span>
+              <img :src="convertGold(scope.row.price.LowestPrice)[1]" />
+            </template>
+          </el-table-column>
+          <el-table-column label="总量" width="100px">
+            <template #default="scope">{{ convertSci(scope.row.price.SampleSize) }}</template>
+          </el-table-column>
+          <el-table-column label="热度" width="150px">
+            <template #default="scope">
+              <el-rate :model-value="convertPop(scope.row.u_popularity)" disabled />
+            </template>
+          </el-table-column>
+        </el-table>
+        <el-empty v-else style="margin:auto" description="没有内容" />
+      </el-row>
+      <div style="width: 100%;display: flex;justify-content: center;margin: 1.2rem;">
+        <el-pagination :default-current-page="page.pageIndex + 1" v-model:page-size="page.pageSize" :small="small"
+          :disabled="false" :background="false" layout="total, sizes, prev, pager, next, jumper"
+          :total="page.totalCount" />
+      </div>
+    </el-card>
   </div>
 </template>
+<style lang="scss">
+  .ver-line {
+    height: 3rem;
+    border: 1px solid #aaaaaa;
+  }
+
+  .primary-icon {
+    font-weight: 600;
+    font-size: 1.2rem;
+    line-height: 1.4rem;
+    display: flex;
+    justify-content: space-evenly;
+  }
+
+  .primary-title {
+    color: #ff0000;
+    font-weight: 400;
+    text-align: left;
+    line-height: 1.4rem;
+    font-size: 1.12rem;
+  }
+
+  .primary-content {
+    color: #999;
+    text-align: left;
+    line-height: 1rem;
+  }
+</style>
 <script>
   const { defineComponent, reactive, toRefs, ref, onMounted, computed } = Vue
   const component = defineComponent({
