@@ -45,7 +45,7 @@
       </el-table>
     </el-row>
     <div style="width: 100%;display: flex;justify-content: center;margin: 1.2rem;">
-      <el-pagination v-model:current-page="page.pageIndex" v-model:page-size="page.pageSize" :small="small"
+      <el-pagination v-model:current-page="page.pageIndex + 1" v-model:page-size="page.pageSize" :small="small"
         :disabled="false" :background="false" layout="total, sizes, prev, pager, next, jumper"
         :total="page.totalCount" />
     </div>
@@ -77,7 +77,7 @@
         item_name: '', // 五行石
         goods_items,
         page: {
-          pageIndex: 1,
+          pageIndex: 0,
           pageSize: 20,
           totalCount: 231
         },

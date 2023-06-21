@@ -9,14 +9,14 @@ async def jx3_trade2(state: T_State, event: GroupMessageEvent, args: Message = C
     '''
     获取交易行物品价格：
     交易行 [区服] 名称 [页码]
-    Example：-交易行 幽月轮 帝骖龙翔 1
-    Example：-交易行 帝骖龙翔 2
+    Example：价格 幽月轮 帝骖龙翔 1
+    Example：价格 帝骖龙翔 2
     '''
     template = [Jx3Arg(Jx3ArgsType.server), Jx3Arg(
         Jx3ArgsType.default), Jx3Arg(Jx3ArgsType.pageIndex)]
     arg = get_args(args, template)
     if isinstance(arg, InvalidArgumentException):
-        return await jx3_cmd_trade2.finish(f"{PROMPT_ArgumentInvalid}如 交易行 帝骖龙翔 1")
+        return await jx3_cmd_trade2.finish(f"{PROMPT_ArgumentInvalid}如 价格 帝骖龙翔 1")
     arg_server, arg_item, arg_page = arg
     arg_server = server_mapping(arg_server, group_id=str(event.group_id))
     arg_page = 0 if arg_page is None or arg_page <= 1 else arg_page - 1  # 从第0页起算
