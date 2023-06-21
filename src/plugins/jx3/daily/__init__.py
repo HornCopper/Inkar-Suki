@@ -1,9 +1,9 @@
 from src.tools.dep.bot import *
 from .api import *
      
-daily = on_command("jx3_daily", aliases={"日常","周常"}, priority=5)
-@daily.handle()
-async def _(event: GroupMessageEvent, args: Message = CommandArg()):
+jx3_cmd_daily = on_command("jx3_daily", aliases={"日常","周常"}, priority=5)
+@jx3_cmd_daily.handle()
+async def jx3_daily(event: GroupMessageEvent, args: Message = CommandArg()):
     '''
     查询日常。
 
@@ -14,4 +14,4 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     Example：-日常 幽月轮
     '''
     img = await daily_(args.extract_plain_text(),group_id=event.group_id)
-    await daily.finish(ms.image(img))
+    return await jx3_cmd_daily.finish(ms.image(img))
