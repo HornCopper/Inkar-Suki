@@ -19,8 +19,8 @@
         <el-table-column label="绑定" width="80px">
           <template #default="scope">{{ scope.row.bind_type_str }}</template>
         </el-table-column>
-        <el-table-column label="更新时间" width="180px">
-          <template #default="scope">{{ parseTime(scope.row.price.UpdatedAt) }}</template>
+        <el-table-column label="更新时间" width="120px">
+          <template #default="scope">{{ formatTime(scope.row.price.UpdatedAt) }}</template>
         </el-table-column>
         <el-table-column label="均价" width="100px">
           <template #default="scope">
@@ -61,6 +61,7 @@
       })
       const methods = {
         parseTime,
+        formatTime,
         convertGold,
         convertSci,
         convertPop
