@@ -28,25 +28,32 @@ async def jx3_trade2(state: T_State, event: GroupMessageEvent, args: Message = C
     if not isinstance(data, List):
         return await jx3_cmd_trade2.finish(data)
 
-    id = [x.id for x in data]  # 取到的是id列表
+    all_id = [x.id for x in data]  # 取到的是id列表
+    state["id"] = all_id
+    if len(all_id) == 1:  # 仅有一个物品的话，则直接显示更加详细的信息
+        jx3_cmd_trade2.set_arg('user_select_index', 0)
+        return
     result = await render_items(arg_server, arg_item, arg_page, pageSize, totalCount, data)
-    state["id"] = id
+
     return await jx3_cmd_trade2.send(ms.image(Path(result).as_uri()))
 
 
-# @jx3_cmd_trade2.got("num2")
-# async def price_num_selected2(state: T_State, event: GroupMessageEvent, num: Message = Arg()):
-#     num = num.extract_plain_text()
-#     num = get_number(num)
-#     all_ids = state["id"]
-#     if num >= len(all_ids):
-#         return await jx3_cmd_trade2.finish(f'无效的序号，有效范围:0-{len(all_ids)}')
+@jx3_cmd_trade2.got("user_select_index")
+async def price_num_selected2(state: T_State, event: GroupMessageEvent, user_select_index: Message = Arg()):
+    num = get_number(user_select_index.extract_plain_text())
+    all_ids = state["id"]
+    if num >= len(all_ids):
+        return await jx3_cmd_trade2.finish(f'无效的序号，有效范围:0-{len(all_ids)}')
+    target_id = all_ids[num]
+    server = server_mapping(state["server"], event.group_id)
 
-#     id = all_ids[num]
-#     server = state["server"]
-#     data = await getItemPriceById(id, server, all_ids, group_id=event.group_id)
-#     if type(data) != type([]):
-#         return await jx3_cmd_trade2.finish(data)
-#     else:
-#         img = data[0]
-#         return await jx3_cmd_trade2.send(ms.image(Path(img).as_uri()))
+    goods_price_log = await getItemPriceById(target_id, server)
+    await update_goods_popularity(target_id, all_ids)
+    if type(goods_price_log) != type([]):
+        return await jx3_cmd_trade2.finish(goods_price_log)
+
+    logs, _ = goods_price_log
+    good_info = await GoodsInfoFull.from_id(target_id)
+    goods_price_current_detail = await get_goods_current_detail_price(target_id, server)
+    result = await render_detail_item(server, good_info, goods_price_current_detail, logs)
+    return await jx3_cmd_trade2.send(ms.image(Path(result).as_uri()))

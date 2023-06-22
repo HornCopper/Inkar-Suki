@@ -1,12 +1,20 @@
+from __future__ import annotations
 from src.tools.dep.api import *
 from enum import Enum
 
 
 async def check_bind(id: str):
-    final_url = f"https://helper.jx3box.com/api/wiki/post?type=item&source_id={id}"
-    data = await get_api(final_url)
-    bind_type = data["data"]["source"]["BindType"] or 0
+    data = await get_item_info_by_id(id)
+    bind_type = data.get('BindType') or 0
     return bind_type
+
+
+async def get_item_info_by_id(id: str):
+    item_info_url = f"https://helper.jx3box.com/api/wiki/post?type=item&source_id={id}"
+    raw_data = await get_api(item_info_url)
+    if raw_data.get('code') != 200:
+        return f'获取物品信息失败了：{raw_data.get("message")}'
+    return raw_data.get('data').get('source')
 
 GoodsBindTypeBindTypes = ["未知", "不绑定", "装备后绑定", "拾取后绑定"]
 
@@ -93,3 +101,22 @@ class GoodsInfo(dict):
         r['color'] = self.color
         r['bind_type_str'] = self.bind_type_str
         return r
+
+
+class GoodsInfoFull(GoodsInfo):
+    def __init__(self, data: dict = None) -> None:
+        super().__init__(data)
+        self.typeLabel = data.get('TypeLabel')  # 分类
+        self.desc = data.get('Desc')  # 描述
+        self.maxDurability = data.get('MaxDurability')  # 最大耐久
+        self.maxExistAmount = get_number(data.get('MaxExistAmount')) or None # 最大拥有数
+        self.attributes = json.loads(data.get('attributes') or '[]')  # 包含属性
+        self.recovery_price = data.get('Price')  # 回收价
+        self.level = data.get('Level')  # 品数（仅武器才有）
+
+    async def from_id(id: str) -> GoodsInfoFull:
+        '''
+        通过id初始化
+        '''
+        data = await get_item_info_by_id(id)
+        return GoodsInfoFull(data)
