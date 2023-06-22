@@ -110,8 +110,11 @@
               <el-row>
                 <div>
                   <span class="sub-title">回收价</span>
-                  <span>{{ convertGold(item.recovery_price)[0] }}</span>
-                  <img :src="convertGold(item.recovery_price)[1]" />
+                  <span v-if="item.recovery_price">
+                    <span>{{ convertGold(item.recovery_price)[0] }}</span>
+                    <img :src="convertGold(item.recovery_price)[1]" />
+                  </span>
+                  <span v-else>杂货商不收</span>
                 </div>
               </el-row>
               <el-row v-if="item.maxExistAmount">
@@ -294,7 +297,13 @@
           seriesName: '数量',
           data: logs.map(x => [x.Date, x.SampleSize]),
           series_option: {
-            label: { show: true },
+            label: {
+              show: true,
+              formatter: value => {
+                v = convertSci(value.data[1])
+                return v
+              }
+            },
             smooth: true,
           }
         })
