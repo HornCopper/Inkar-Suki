@@ -50,7 +50,7 @@
           </template>
 
           <el-row class="goods-info-card">
-            <el-col :span="8">
+            <el-col :span="8" style="border: solid 1px #cccccc;padding:0.5rem;margin: 0.5rem;">
               <el-row>
                 <el-col :span="4">
                   <img :src="item.img_url" :style="{height: '3rem'}" />
@@ -94,17 +94,17 @@
               </el-row>
             </el-col>
 
-            <el-col :span="12">
+            <el-col :span="14" style="border: solid 1px #cccccc;padding:0.5rem;margin: 0.5rem;">
               <el-divider content-position="left">更多信息</el-divider>
               <el-row>
                 <span class="sub-title">标签</span>
                 <el-tag v-if="item.typeLabel" type="danger">{{ item.typeLabel }}</el-tag>
                 <div v-else>无</div>
               </el-row>
-              <el-row>
+              <el-row style="text-align: left;">
                 <span class="sub-title">描述</span>
                 <span>
-                  <div v-for="(x,index) in item_description" :key="index">{{ x }}</div>
+                  <div v-for="(x,index) in item_description" :key="index" style="width: 500px;">{{ x }}</div>
                 </span>
               </el-row>
               <el-row>
