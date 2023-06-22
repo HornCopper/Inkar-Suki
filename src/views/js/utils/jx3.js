@@ -16,18 +16,25 @@ function _get_sci(value, rank, preserve = 2) {
   v = value / Math.pow(10, rank - preserve)
   return Math.ceil(v) / Math.pow(10, preserve)
 }
+
+/**
+ * 将金额转换为游戏货币
+ *
+ * @param {*} value 原始金额
+ * @return {*} [格式化后数值,图标base64,需除数]
+ */
 function convertGold(value) {
-  if (value > 1e4 * 1e4) return [_get_sci(value, 8, 2), img_gold.brick]
-  if (value > 1 * 1e4) return [_get_sci(value, 4, 1), img_gold.gold]
-  if (value > 1e2) return [_get_sci(value, 2, 1), img_gold.silver]
-  return [value, img_gold.copper]
+  if (value >= 1e4 * 1e4) return [_get_sci(value, 8, 3), img_gold.brick, 1e8]
+  if (value >= 1 * 1e4) return [_get_sci(value, 4, 2), img_gold.gold, 1e4]
+  if (value >= 1e2) return [_get_sci(value, 2, 1), img_gold.silver, 1e2]
+  return [value, img_gold.copper, 1]
 }
 function convertSci(value) {
   if (value > 1e6) return `${_get_sci(value, 6)}M`
   if (value > 1e3) return `${_get_sci(value, 3)}K`
   return value
 }
-function convertPop (value) {
+function convertPop(value) {
   if (!value) value = 0
   if (value < 0) return Math.pow(1.1, value)
   const r = 1 + 4 * (1 - Math.pow(1.01, -value))
