@@ -1,7 +1,6 @@
 from sgtpyutils.extensions.clazz import get_fields
 from typing import List
-from ..lib.GoodsInfo import GoodsBindType, GoodsInfo, CACHE_goods, flush_cache_goods, check_bind
-from ..lib.Golds import Gold
+from ..Caches import *
 
 from src.tools.dep.server import *
 from src.tools.dep.path import *
@@ -9,13 +8,15 @@ from src.tools.dep.api import *
 
 
 async def search_item_local(item_name: str) -> list:
-    v = [CACHE_goods[x]
-         for x in CACHE_goods if item_name in CACHE_goods[x].name]
+    v = [CACHE_Goods[x]
+         for x in CACHE_Goods if item_name in CACHE_Goods[x].name]
     v = [get_fields(x) for x in v]
     return v
 
 
 async def search_item_info(item_name: str, pageIndex: int = 0, pageSize: int = 20):
+    if not item_name:
+        return "请输入物品的名称哦~"
     pageIndex = pageIndex or 0
     final_url = f"https://helper.jx3box.com/api/item/search?keyword={item_name}&limit=1000&page=1"
     box_data = await get_api(final_url)
@@ -28,14 +29,14 @@ async def search_item_info(item_name: str, pageIndex: int = 0, pageSize: int = 2
     new_goods = False
     for item in items:
         id = item['id']
-        if not id in CACHE_goods:
+        if not id in CACHE_Goods:
             item['bind_type'] = await check_bind(id)
-            CACHE_goods[id] = GoodsInfo(item)
+            CACHE_Goods[id] = GoodsInfo(item)
             new_goods = True
-        item: GoodsInfo = CACHE_goods[id]
+        item: GoodsInfo = CACHE_Goods[id]
         query_items.append(item)
     if new_goods:
-        flush_cache_goods()
+        flush_CACHE_Goods()
 
     query_items.sort(key=lambda x: -x.priority)  # 按热门程度排序，拾绑的放后面
     page_start = pageIndex * pageSize
@@ -43,19 +44,15 @@ async def search_item_info(item_name: str, pageIndex: int = 0, pageSize: int = 2
     return query_items
 
 
-async def getItemPriceById(id: str, server: str, all_ids: list, group_id: str):
+async def getItemPriceById(id: str, server: str):
     '''
     通过物品id获取交易行价格
     @param id:物品id
     @param server:服务器名称
-    @param all_ids:本次选中的所有id。出现过的id应将其人气降1，以更好排序
 
     @return [image] | str: 正确处理则返回[]，否则返回错误原因
     '''
-    server = server_mapping(server, group_id=group_id)
-    if not server:
-        return [PROMPT_ServerNotExist, None]
-    goods_info: GoodsInfo = CACHE_goods[id] if id in CACHE_goods else GoodsInfo(
+    goods_info: GoodsInfo = CACHE_Goods[id] if id in CACHE_Goods else GoodsInfo(
     )
     if goods_info.bind_type == GoodsBindType.BindOnPick:
         return ["唔……绑定的物品无法在交易行出售哦~", None]
@@ -64,14 +61,9 @@ async def getItemPriceById(id: str, server: str, all_ids: list, group_id: str):
     logs = data["data"]["logs"]
     if not logs or logs == "null":
         return ["唔……交易行没有此物品哦~", None]
+    logs = [GoodsPriceSummary(x) for x in logs]
     logs.reverse()
 
-    goods_info.u_popularity += 10  # 被选中则增加其曝光概率
-    # 本轮已曝光物品，日后曝光率应下调
-    for id in all_ids:
-        x: GoodsInfo = CACHE_goods[id]
-        x.u_popularity -= 1
-    flush_cache_goods()
     return [logs, goods_info]
 
 
@@ -80,3 +72,16 @@ async def getItem(id: str):
     if boxdata["data"]["source"] == None:
         return ["唔……该物品不存在哦~"]
     return id
+
+
+async def update_goods_popularity(target_id: str, all_ids: list):
+    '''
+    更新物品人气，注意物品需要先入库，否则缓存中不存在
+    @param all_ids:本次选中的所有id。出现过的id应将其人气降1，以更好排序
+    '''
+    CACHE_Goods[target_id].u_popularity += 10  # 被选中则增加其曝光概率
+    # 本轮已曝光物品，日后曝光率应下调
+    for id in all_ids:
+        x: GoodsInfo = CACHE_Goods[id]
+        x.u_popularity -= 1
+    flush_CACHE_Goods()

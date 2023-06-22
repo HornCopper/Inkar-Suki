@@ -1,14 +1,9 @@
 import uuid
 from playwright.async_api import async_playwright
-import sys
-import nonebot
 from pathlib import Path
 from nonebot.log import logger
 import time
-import asyncio
-TOOLS = nonebot.get_driver().config.tools_path
-sys.path.append(str(TOOLS))
-CACHE = TOOLS.replace("tools", "cache")
+from src.tools.dep.path import *
 
 
 def get_uuid():
@@ -37,7 +32,7 @@ async def generate(html: str, web: bool = False, locate: str = None, first: bool
             if delay > 0:
                 time.sleep(delay / 1000)
             uuid_ = get_uuid()
-            img = CACHE + "/" + uuid_ + ".png"
+            img = f"{CACHE}/{uuid_}.png"
             if locate != None:
                 if first:
                     await page.locator(locate).first.screenshot(path=img)

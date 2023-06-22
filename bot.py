@@ -11,6 +11,7 @@ tools_path = botpy + "/src/tools"
 
 print(tools_path)
 
+
 def check_folder(path: str, can_retry: bool = True):
     if os.path.isdir(path):
         return True
@@ -23,8 +24,9 @@ def check_folder(path: str, can_retry: bool = True):
     os.mkdir(path)
     return True
 
+
 def check_folders(folder_nest: dict, parent_path: str = None):
-    
+
     if not parent_path:
         parent_path = ""
     else:
@@ -37,24 +39,28 @@ def check_folders(folder_nest: dict, parent_path: str = None):
         if isinstance(children, dict):
             check_folders(children, new_parent)
 
+
 init_folders = {
-        "./src": {
-            "data": None,
-            "cache": None,
-            "sign": None,
-            "assets": {
-                "jx3": {
-                    "skills": None,
-                    "icons": None,
-                    "achievement": None,
-                    "talents": None,
-                    "adventure": None,
-                    "serendipity": None,
+    "./src": {
+        "data": None,
+        "cache": None,
+        "sign": None,
+        "assets": {
+            "jx3": {
+                "skills": None,
+                "icons": None,
+                "achievement": None,
+                "talents": None,
+                "adventure": None,
+                "serendipity": None,
+                "pvx": {
+                    "flower": None
                 }
-            },
-            "plugins": None
-        }
+            }
+        },
+        "plugins": None
     }
+}
 
 check_folders(init_folders)
 
