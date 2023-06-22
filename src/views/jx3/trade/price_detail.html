@@ -1,7 +1,10 @@
 <template>
   <div :style="{'text-align': 'center','font-size':font_size,width:'1000px'}">
     <el-card shadow="never">
-      <div style="font-size:2rem;font-weight:600;">交易行 · {{ server }} · {{ item.name }}</div>
+      <div style="font-size:2rem;font-weight:600;">
+        <span>交易行 · {{ server }} · </span>
+        <span :style="color:item.color">{{ item.name }}</span>
+      </div>
       <el-row class="help-tip-card">
         <el-card style="width: 100%;margin: 1rem;">
           <el-row>
@@ -60,6 +63,7 @@
                     <span class="sub-title">名称</span>
                     <span :style="{'font-size':font_size,color:item.color,'margin-left':'0.5rem'}">
                       <span>{{ item.name }}</span>
+                      <span>（id:{{ item.id }}）</span>
                     </span>
                   </div>
                   <div>
@@ -70,10 +74,12 @@
               </el-row>
               <el-row v-if="item.level || (item_attributes && item_attributes.length)">
                 <el-row v-if="item.level">
-                  <div>
-                    <span class="sub-title">品质</span>
-                    <span>{{ item.level }}</span>
-                  </div>
+                  <el-row>
+                    <div>
+                      <span class="sub-title">品质</span>
+                      <span>{{ item.level }}</span>
+                    </div>
+                  </el-row>
                   <el-row>
                     <div>
                       <span class="sub-title">最大耐久</span>
