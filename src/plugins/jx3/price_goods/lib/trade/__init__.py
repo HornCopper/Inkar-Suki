@@ -30,7 +30,7 @@ async def search_item_info(item_name: str, pageIndex: int = 0, pageSize: int = 2
     for item in items:
         id = item['id']
         if not id in CACHE_Goods:
-            item['bind_type'] = await check_bind(id)
+            item['bind_type'], item['Level'] = await check_bind(id)
             CACHE_Goods[id] = GoodsInfo(item)
             new_goods = True
         item: GoodsInfo = CACHE_Goods[id]
