@@ -25,13 +25,18 @@ async def search_item_info_for_price(item_name: str, server: str, pageIndex: int
     return [query_items, total]
 
 
-async def get_good_current_price(id: str, server: str) -> list:
+async def get_goods_current_detail_price(id: str, server: str) -> list:
     '''
     获取单个物品当前详细价格
     '''
     url = f'https://next2.jx3box.com/api/item-price/{id}/detail?server={server}'
-
-    pass
+    raw_data = await get_api(url)
+    if not raw_data.get('code') == 0:
+        return f'获取价格失败了：{raw_data.get("msg")}'
+    data = raw_data.get('data') or {}
+    prices = data.get('prices') or []
+    price_detail = GoodsPriceDetail(prices)
+    return price_detail
 
 
 @overload
