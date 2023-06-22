@@ -150,7 +150,7 @@
           <el-row class="goods-current-price">
             <el-table v-if="price_detail.prices && price_detail.prices.length"
               :data="price_detail.prices.sort((a,b)=>a[2]-b[2])" stripe style="width: 100%">
-              <el-table-column label="挂售时间">
+              <el-table-column label="数据时间">
                 <template #default="scope">
                   <span>{{ parseTime(scope.row[0] * 1e3) }}</span>
                   <span>({{ formatTime(scope.row[0] * 1e3) }})</span>
