@@ -38,5 +38,5 @@ function convertPop(value) {
   if (!value) value = 0
   if (value < 0) return Math.pow(1.1, value)
   const r = 1 + 4 * (1 - Math.pow(1.01, -value))
-  return r
+  return Number(r).toFixed(1)
 }
