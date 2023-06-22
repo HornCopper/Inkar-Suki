@@ -39,7 +39,7 @@ class GoodsInfo(dict):
         self.ui_id = data.get('UiID')
         self.name = data.get('Name') or '未知物品'
         '''被使用的次数，次数多的优先前置'''
-        self.u_popularity = 0
+        self.u_popularity = data.get('u_popularity', 0)
         super().__init__()
 
     def __str__(self) -> str:
@@ -109,7 +109,8 @@ class GoodsInfoFull(GoodsInfo):
         self.typeLabel = data.get('TypeLabel')  # 分类
         self.desc = data.get('Desc')  # 描述
         self.maxDurability = data.get('MaxDurability')  # 最大耐久
-        self.maxExistAmount = get_number(data.get('MaxExistAmount')) or None # 最大拥有数
+        self.maxExistAmount = get_number(
+            data.get('MaxExistAmount')) or None  # 最大拥有数
         self.attributes = json.loads(data.get('attributes') or '[]')  # 包含属性
         self.recovery_price = data.get('Price')  # 回收价
         self.level = data.get('Level')  # 品数（仅武器才有）
