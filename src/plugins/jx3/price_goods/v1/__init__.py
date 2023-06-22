@@ -1,16 +1,16 @@
 from src.tools.dep.bot import *
 from ..api import *
 from .renderer import *
-jx3_cmd_trade = on_command("jx3_trade", aliases={"交易行"}, priority=5)
+jx3_cmd_trade = on_command("jx3_trade", aliases={"交易行v1"}, priority=5)
 
 
 @jx3_cmd_trade.handle()
 async def jx3_trade(state: T_State, event: GroupMessageEvent, args: Message = CommandArg()):
     '''
     获取交易行物品价格：
-    交易行 [区服] 名称 [页码]
-    Example：-交易行 幽月轮 帝骖龙翔 1
-    Example：-交易行 帝骖龙翔 2
+    交易行v1 [区服] 名称 [页码]
+    Example：交易行v1 幽月轮 帝骖龙翔 1
+    Example：交易行v1 帝骖龙翔 2
     '''
     template = [Jx3Arg(Jx3ArgsType.server), Jx3Arg(
         Jx3ArgsType.default), Jx3Arg(Jx3ArgsType.pageIndex)]
