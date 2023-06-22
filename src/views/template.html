@@ -12,6 +12,7 @@
   <script src="https://cdn.staticfile.org/echarts/5.4.2/echarts.min.js"></script>
   <script src="../../src/views/js/utils/index.js"></script>
   <script src="../../src/views/js/utils/jx3.js"></script>
+  <script src="../../src/views/js/utils/dashboard.js"></script>
   <script_files />
   <style lang="scss">
     .window.style.HERE
@@ -35,6 +36,7 @@
     const _raw_setup_attach = component.setup
     component.setup = () => {
       const result = Object.assign({}, _raw_setup_attach())
+      result.name = result.name || 'SPAComponent'
       const locale = computed(() => window.zhCn)
       result.locale = locale
       return result
