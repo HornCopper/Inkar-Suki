@@ -1,7 +1,10 @@
 <template>
   <div :style="{'text-align': 'center','font-size':font_size,width:'1000px'}">
     <el-card shadow="never">
-      <div style="font-size:2rem;font-weight:600;">交易行 · {{ server }} · {{ item.name }}</div>
+      <div style="font-size:2rem;font-weight:600;">
+        <span>交易行 · {{ server }} · </span>
+        <span :style="{color:item.color}">{{ item.name }}</span>
+      </div>
       <el-row class="help-tip-card">
         <el-card style="width: 100%;margin: 1rem;">
           <el-row>
@@ -46,9 +49,11 @@
       <el-collapse v-model="expanded_items">
         <el-collapse-item name="1">
           <template #title>
-            <div class="global-title">基本信息</div>
+            <div class="global-title">
+              <span>基本信息</span>
+              <span>（id:{{ item.id }}）</span>
+            </div>
           </template>
-
           <el-row class="goods-info-card">
             <el-col :span="8" style="border: solid 1px #cccccc;padding:0.5rem;margin: 0.5rem;">
               <el-row>
@@ -60,6 +65,7 @@
                     <span class="sub-title">名称</span>
                     <span :style="{'font-size':font_size,color:item.color,'margin-left':'0.5rem'}">
                       <span>{{ item.name }}</span>
+
                     </span>
                   </div>
                   <div>
@@ -70,20 +76,18 @@
               </el-row>
               <el-row v-if="item.level || (item_attributes && item_attributes.length)">
                 <el-row v-if="item.level">
-                  <div>
+                  <div style="margin-right:1rem">
                     <span class="sub-title">品质</span>
                     <span>{{ item.level }}</span>
                   </div>
-                  <el-row>
-                    <div>
-                      <span class="sub-title">最大耐久</span>
-                      <span>{{ item.maxDurability }}</span>
-                    </div>
-                  </el-row>
+                  <div>
+                    <span class="sub-title">最大耐久</span>
+                    <span>{{ item.maxDurability }}</span>
+                  </div>
                 </el-row>
                 <el-row v-if="item_attributes && item_attributes.length">
                   <span class="sub-title">特性</span>
-                  <span style="width: 25rem;text-align: left;">
+                  <span style="text-align: left;">
                     <el-tree :data="item_attributes">
                       <template #default="{ node, data }">
                         <span :style="{color:data.color}">{{ data.label }}</span>
