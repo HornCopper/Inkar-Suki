@@ -6,29 +6,24 @@ class GoodsPriceSummary:
     def __init__(self, data: dict = None) -> None:
         if data is None:
             data = {}
-        self.id = data.get('id')
-        self.price = data.get('price')
-        self.SampleSize = data.get('SampleSize')
+        self.Date = data.get('Date')
+        self.CreatedAt = data.get('CreatedAt')
         self.UpdatedAt = data.get('UpdatedAt')
-        self.Server = data.get('Server')
+        self.SampleSize = data.get('SampleSize')
         self.LowestPrice = data.get('LowestPrice')
         self.HighestPrice = data.get('HighestPrice')
         self.AvgPrice = data.get('AvgPrice')
-        self.ItemId = data.get('ItemId')
-    
+
 
 class GoodsPriceDetail:
     Price_Valid_TotalPrice = Gold.price_by_gold(100)  # 总价在100金以上则有效
     InvalidPrice = -1
 
-    def __init__(self, data: dict = None) -> None:
-        if data is None:
-            data = {}
-        prices = [x for x in data.get('prices', [])]
-        self.prices = [
-            [x['created'], x['n_count'], x['unit_price']
-             ]  # 创建时间 数量 单价
-            for x in prices]
+    def __init__(self, prices: list = None) -> None:
+        if prices is None:
+            prices = []
+        key = ['created', 'n_count', 'unit_price']
+        self.prices = [[x.get(k) for k in key] for x in prices]  # 创建时间 数量 单价
         self.valid_price = self.get_valid_price()
 
     def get_valid_price(self, prices: list = None):
@@ -41,7 +36,7 @@ class GoodsPriceDetail:
             self.price_lowest = GoodsPriceDetail.InvalidPrice
             self.price_valid = GoodsPriceDetail.InvalidPrice
             return self.price_valid
-        prices.sort(key=lambda x: x[2]) # 按价格升序排列
+        prices.sort(key=lambda x: x[2])  # 按价格升序排列
 
         total_price = 0
         self.price_lowest = prices[0][2]
@@ -51,4 +46,7 @@ class GoodsPriceDetail:
                 self.price_valid = x[2]
                 return self.price_valid
         self.price_valid = GoodsPriceDetail.InvalidPrice
-        return self.price_valid 
+        return self.price_valid
+
+    def to_dict(self):
+        return self.__dict__

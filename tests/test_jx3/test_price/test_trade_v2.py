@@ -4,7 +4,6 @@ import src.plugins.jx3
 from src.plugins.jx3.price_goods import v2
 
 
-
 def test_trade_record():
     mc = MessageCallback()
     v2.jx3_cmd_trade2 = mc
@@ -58,41 +57,22 @@ def test_not_exist():
     mc.check_counter()
 
 
-# def test_trade_price():
-#     mc = MessageCallback()
-#     v2.jx3_cmd_trade2 = mc
+def test_trade_price():
+    mc = MessageCallback()
+    v2.jx3_cmd_trade2 = mc
 
-#     price_num_selected = src.plugins.jx3.price_num_selected2
-#     state = {'id': ['5_47116'], 'server': '唯我独尊'}  # 武技殊影图·上将
-#     event = SFGroupMessageEvent()
+    price_num_selected = src.plugins.jx3.price_num_selected2
+    state = {'id': ['5_47116'], 'server': '唯我独尊'}  # 武技殊影图·上将
+    event = SFGroupMessageEvent()
 
-#     task = price_num_selected(state, event, obMessage('0'))
-#     asyncio.run(task)
-#     mc.check_counter()
+    task = price_num_selected(state, event, obMessage('0'))
+    asyncio.run(task)
+    mc.check_counter()
 
-
-# def test_trade_bound_good():
-
-#     import src.plugins.jx3
-
-#     w_tip = 'bound goods should show alert.'
-
-#     def cb_finish(msg: str):
-#         assert '绑定' in msg, w_tip
-
-#     def cb_send(msg: str):
-#         assert False, f'send is called unexpectly:{w_tip}'
-#     mc = MessageCallback(cb_finish=cb_finish, cb_send=cb_send)
-#     v2.jx3_cmd_trade2 = mc
-
-#     price_num_selected = src.plugins.jx3.price_num_selected
-#     state = {'id': ['5_24447'], 'server': '唯我独尊'}  # 五行石五级（拾绑）
-
-#     event = SFGroupMessageEvent()
-
-#     task = price_num_selected(state, event, obMessage('0'))
-#     asyncio.run(task)
-#     mc.check_counter()
+    state = {'id': ['6_34768'], 'server': '唯我独尊'}  # 度飞囊
+    task = price_num_selected(state, event, obMessage('0'))
+    asyncio.run(task)
+    mc.check_counter()
 
 
 def test_goods_info_db():

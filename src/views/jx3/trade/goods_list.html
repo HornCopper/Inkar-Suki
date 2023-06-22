@@ -20,7 +20,6 @@
                     <div>
                       <span style="color:#999">然后详细价格：</span>
                       <span>[序号]</span>
-                      <span style="color:#999">（还没写好）</span>
                     </div>
                   </div>
                 </el-col>
@@ -46,7 +45,7 @@
       </el-row>
       <el-row>
         <el-table v-if="goods_items && goods_items.length" :data="goods_items" stripe style="width: 100%">
-          <el-table-column label="序号" width="60px">
+          <el-table-column label="序号" width="40px">
             <template #default="scope">{{ scope.row.index }}</template>
           </el-table-column>
           <el-table-column label="物品">
@@ -66,19 +65,19 @@
           <el-table-column label="更新时间" width="150px">
             <template #default="scope">{{ formatTime(scope.row.price.UpdatedAt) }}</template>
           </el-table-column>
-          <el-table-column label="均价" width="100px">
+          <el-table-column label="均价" width="120px">
             <template #default="scope">
               <span>{{ convertGold(scope.row.price.AvgPrice)[0] }}</span>
               <img :src="convertGold(scope.row.price.AvgPrice)[1]" />
             </template>
           </el-table-column>
-          <el-table-column label="底价" width="100px">
+          <el-table-column label="底价" width="120px">
             <template #default="scope">
               <span>{{ convertGold(scope.row.price.LowestPrice)[0] }}</span>
               <img :src="convertGold(scope.row.price.LowestPrice)[1]" />
             </template>
           </el-table-column>
-          <el-table-column label="总量" width="100px">
+          <el-table-column label="总量" width="90px">
             <template #default="scope">{{ convertSci(scope.row.price.SampleSize) }}</template>
           </el-table-column>
           <el-table-column label="热度" width="150px">
@@ -97,6 +96,11 @@
     </el-card>
   </div>
 </template>
+<style lang="scss">
+  .el-table .cell {
+    padding: 0 !important;
+  }
+</style>
 <style lang="scss">
   .ver-line {
     height: 3rem;
