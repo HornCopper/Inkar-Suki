@@ -6,7 +6,8 @@ from enum import Enum
 async def check_bind(id: str):
     data = await get_item_info_by_id(id)
     bind_type = data.get('BindType') or 0
-    return bind_type
+    level = data.get('Level')
+    return bind_type, level
 
 
 async def get_item_info_by_id(id: str):
@@ -38,6 +39,7 @@ class GoodsInfo(dict):
         self.quality = data.get('Quality')
         self.ui_id = data.get('UiID')
         self.name = data.get('Name') or '未知物品'
+        self.level = data.get('Level')  # 品数（仅武器才有）
         '''被使用的次数，次数多的优先前置'''
         self.u_popularity = data.get('u_popularity') or 0
         super().__init__()
@@ -114,4 +116,3 @@ class GoodsInfoFull(GoodsInfo):
         self.attributes = json.loads(data.get('attributes') or '[]')  # 包含属性
         self.recovery_price = data.get('Price')  # 回收价
         self.level = data.get('Level')  # 品数（仅武器才有）
-
