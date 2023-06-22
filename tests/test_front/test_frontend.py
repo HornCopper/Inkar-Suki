@@ -7,11 +7,13 @@ test_echart_path = 'src/views/test/echart.html'
 
 def test_echart():
     img = get_render_image(test_echart_path, delay=1000)
+    img = asyncio.run(img)
     assert img.endswith('.png')
 
 
 def test_vue():
     img = get_render_image(test_base_path)
+    img = asyncio.run(img)
     assert img.endswith('.png')
 
 

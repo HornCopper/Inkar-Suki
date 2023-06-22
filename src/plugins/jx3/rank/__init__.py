@@ -65,3 +65,21 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
         await rank.finish(data[0])
     else:
         await rank.finish(ms.image(data))
+
+zlrank_ = on_command("jx3_zlrank", aliases={"资历排行"}, priority=5)
+@zlrank_.handle()
+async def _(event: GroupMessageEvent, args: Message = CommandArg()):
+    arg = args.extract_plain_text().split(" ")
+    if len(arg) not in [1, 2]:
+        return await zlrank_.finish("唔……参数不正确哦，请检查后重试~")
+    if len(arg) == 1:
+        server = None
+        school = arg[0]
+    elif len(arg) == 2:
+        server = arg[0]
+        school = arg[1]
+    data = await zlrank(server, school, str(event.group_id))
+    if type(data) == type([]):
+        return await zlrank_.finish(data[0])
+    else:
+        return await zlrank_.finish(ms.image(Path(data).as_uri()))

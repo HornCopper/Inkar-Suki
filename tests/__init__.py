@@ -28,6 +28,12 @@ class MessageCallback:
         assert len(msg) > 10, self.to_warning(
             f'fail run by message too short:{msg}')
 
+    def set_arg(self, key: str, value: str):
+        '''
+        暂不使用
+        '''
+        self.callback_counter += 1
+
     def __init__(self, cb_finish: callable = None, cb_send: callable = None) -> None:
         self.cb_finish = cb_finish or self.default_cb_finish
         self.cb_send = cb_send or self.default_cb_send
@@ -39,8 +45,6 @@ class MessageCallback:
         assert self.callback_counter, self.to_warning(
             'no answer to tester till test completed')
         self.callback_counter = 0  # reset after round check
-
-
 
     async def send(self, msg: str):
         self.callback_counter += 1
