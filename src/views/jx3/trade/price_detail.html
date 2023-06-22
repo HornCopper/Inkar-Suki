@@ -76,22 +76,18 @@
               </el-row>
               <el-row v-if="item.level || (item_attributes && item_attributes.length)">
                 <el-row v-if="item.level">
-                  <el-row>
-                    <div>
-                      <span class="sub-title">品质</span>
-                      <span>{{ item.level }}</span>
-                    </div>
-                  </el-row>
-                  <el-row>
-                    <div>
-                      <span class="sub-title">最大耐久</span>
-                      <span>{{ item.maxDurability }}</span>
-                    </div>
-                  </el-row>
+                  <div style="margin-right:1rem">
+                    <span class="sub-title">品质</span>
+                    <span>{{ item.level }}</span>
+                  </div>
+                  <div>
+                    <span class="sub-title">最大耐久</span>
+                    <span>{{ item.maxDurability }}</span>
+                  </div>
                 </el-row>
                 <el-row v-if="item_attributes && item_attributes.length">
                   <span class="sub-title">特性</span>
-                  <span style="width: 25rem;text-align: left;">
+                  <span style="text-align: left;">
                     <el-tree :data="item_attributes">
                       <template #default="{ node, data }">
                         <span :style="{color:data.color}">{{ data.label }}</span>
