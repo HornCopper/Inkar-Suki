@@ -49,14 +49,14 @@ async def render_items(query_items: list):
     return [[i.id for i in query_items], img]
 
 
-async def render_price(logs: list, server: str, goods_info: GoodsInfo):
+async def render_price(logs: List[GoodsPriceSummary], server: str, goods_info: GoodsInfo):
     chart = []
     chart.append(["日期", "日最高价", "日均价", "日最低价"])
     for i in logs:
-        date = i["Date"]
-        LowestPrice = Gold(i["LowestPrice"])
-        AvgPrice = Gold(i["AvgPrice"])
-        HighestPrice = Gold(i["HighestPrice"])
+        date = i.Date
+        LowestPrice = Gold(i.LowestPrice)
+        AvgPrice = Gold(i.AvgPrice)
+        HighestPrice = Gold(i.HighestPrice)
         new = [date, HighestPrice, AvgPrice, LowestPrice]
         chart.append(new)
     header_server = f'<div style="font-size:3rem">交易行·{server}</div>'

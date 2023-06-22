@@ -1,0 +1,350 @@
+<template>
+  <div :style="{'text-align': 'center','font-size':font_size,width:'1000px'}">
+    <el-card shadow="never">
+      <div style="font-size:2rem;font-weight:600;">交易行 · {{ server }} · {{ item.name }}</div>
+      <el-row class="help-tip-card">
+        <el-card style="width: 100%;margin: 1rem;">
+          <el-row>
+            <el-col :span="12">
+              <el-row>
+                <el-col class="primary-icon" :span="4">
+                  <div>命令</div>
+                  <div class="ver-line"></div>
+                </el-col>
+                <el-col :span="20">
+                  <div class="primary-title">
+                    <div>
+                      <span style="color:#999">查看概要价格：</span>
+                      <span>价格 [服务器] 物品名称 [页码]</span>
+                    </div>
+                    <div>
+                      <span style="color:#999">然后详细价格：</span>
+                      <span>[序号]</span>
+                    </div>
+                  </div>
+                </el-col>
+              </el-row>
+            </el-col>
+            <el-col :span="12">
+              <el-row>
+                <el-col class="primary-icon" :span="4">
+                  <div style="color: #999999;">说明</div>
+                  <div class="ver-line"></div>
+                </el-col>
+                <el-col :span="20">
+                  <div class="primary-content">
+                    <div>1. 概要价格每天更新1次，详细价格每10分钟更新1次。</div>
+                    <div>2. 一页默认显示20个物品，可以输入页码来选择不同页。</div>
+                    <div>3. 每次访问将给物品人气+1，人气越高越靠前。</div>
+                  </div>
+                </el-col>
+              </el-row>
+            </el-col>
+          </el-row>
+        </el-card>
+      </el-row>
+      <el-collapse v-model="expanded_items">
+        <el-collapse-item name="1">
+          <template #title>
+            <div class="global-title">基本信息</div>
+          </template>
+
+          <el-row class="goods-info-card">
+            <el-col :span="8">
+              <el-row>
+                <el-col :span="4">
+                  <img :src="item.img_url" :style="{height: '3rem'}" />
+                </el-col>
+                <el-col :span="20" style="text-align: left;">
+                  <div>
+                    <span class="sub-title">名称</span>
+                    <span :style="{'font-size':font_size,color:item.color,'margin-left':'0.5rem'}">
+                      <span>{{ item.name }}</span>
+                    </span>
+                  </div>
+                  <div>
+                    <span class="sub-title">热度</span>
+                    <el-rate :model-value="convertPop(item.u_popularity)" disabled show-score text-color="#cccccc" />
+                  </div>
+                </el-col>
+              </el-row>
+              <el-row v-if="item.level || (item_attributes && item_attributes.length)">
+                <el-row v-if="item.level">
+                  <div>
+                    <span class="sub-title">品质</span>
+                    <span>{{ item.level }}</span>
+                  </div>
+                  <el-row>
+                    <div>
+                      <span class="sub-title">最大耐久</span>
+                      <span>{{ item.maxDurability }}</span>
+                    </div>
+                  </el-row>
+                </el-row>
+                <el-row v-if="item_attributes && item_attributes.length">
+                  <span class="sub-title">特性</span>
+                  <span style="width: 25rem;text-align: left;">
+                    <el-tree :data="item_attributes">
+                      <template #default="{ node, data }">
+                        <span :style="{color:data.color}">{{ data.label }}</span>
+                      </template>
+                    </el-tree>
+                  </span>
+                </el-row>
+              </el-row>
+            </el-col>
+
+            <el-col :span="12">
+              <el-divider content-position="left">更多信息</el-divider>
+              <el-row>
+                <span class="sub-title">标签</span>
+                <el-tag v-if="item.typeLabel" type="danger">{{ item.typeLabel }}</el-tag>
+                <div v-else>无</div>
+              </el-row>
+              <el-row>
+                <span class="sub-title">描述</span>
+                <span>
+                  <div v-for="(x,index) in item_description" :key="index">{{ x }}</div>
+                </span>
+              </el-row>
+              <el-row>
+                <div>
+                  <span class="sub-title">回收价</span>
+                  <span>{{ convertGold(item.recovery_price)[0] }}</span>
+                  <img :src="convertGold(item.recovery_price)[1]" />
+                </div>
+              </el-row>
+              <el-row v-if="item.maxExistAmount">
+                <div>
+                  <span class="sub-title">最大拥有数</span>
+                  <span>{{ item.maxExistAmount }}</span>
+                </div>
+              </el-row>
+
+              <el-row>
+                <div>
+                  <span class="sub-title">绑定类型</span>
+                  <span>{{ item.bind_type_str }}</span>
+                </div>
+              </el-row>
+            </el-col>
+          </el-row>
+        </el-collapse-item>
+        <el-collapse-item name="2">
+          <template #title>
+            <div class="global-title">
+              <span style="margin-right:1rem;">实时价格</span>
+              <span v-if="price_detail.price_lowest" style="margin-right:1rem;">
+                <span>底价</span>
+                <span v-if="price_detail.price_lowest == price_detail.price_valid">(有效)</span>
+                <span>{{ convertGold(price_detail.price_lowest)[0] }}</span>
+                <img :src="convertGold(price_detail.price_lowest)[1]" />
+              </span>
+              <span v-if="price_detail.price_valid && price_detail.price_lowest != price_detail.price_valid">
+                <span>有效底价</span>
+                <span>{{ convertGold(price_detail.price_valid)[0] }}</span>
+                <img :src="convertGold(price_detail.price_valid)[1]" />
+              </span>
+            </div>
+          </template>
+          <el-row class="goods-current-price">
+            <el-table v-if="price_detail.prices && price_detail.prices.length"
+              :data="price_detail.prices.sort((a,b)=>a[2]-b[2])" stripe style="width: 100%">
+              <el-table-column label="挂售时间">
+                <template #default="scope">
+                  <span>{{ parseTime(scope.row[0] * 1e3) }}</span>
+                  <span>({{ formatTime(scope.row[0] * 1e3) }})</span>
+                </template>
+              </el-table-column>
+              <el-table-column label="价格">
+                <template #default="scope">
+                  <span>{{ convertGold(scope.row[2])[0] }}</span>
+                  <img :src="convertGold(scope.row[2])[1]" />
+                </template>
+              </el-table-column>
+              <el-table-column label="数量">
+                <template #default="scope">{{ convertSci(scope.row[1]) }}</template>
+              </el-table-column>
+            </el-table>
+            <el-empty v-else style="margin:auto" description="没有内容" />
+          </el-row>
+        </el-collapse-item>
+        <el-collapse-item name="3">
+          <template #title>
+            <div class="global-title">价格趋势</div>
+          </template>
+          <el-row class="goods-price-trend">
+            <div id="chart-goods-price-trend" style="height:400px;width:1000px"></div>
+          </el-row>
+        </el-collapse-item>
+      </el-collapse>
+    </el-card>
+  </div>
+</template>
+
+<style lang="scss">
+  .ver-line {
+    height: 3rem;
+    border: 1px solid #aaaaaa;
+  }
+
+  .primary-icon {
+    font-weight: 600;
+    font-size: 1.2rem;
+    line-height: 1.4rem;
+    display: flex;
+    justify-content: space-evenly;
+  }
+
+  .primary-title {
+    color: #ff0000;
+    font-weight: 400;
+    text-align: left;
+    line-height: 1.4rem;
+    font-size: 1.12rem;
+  }
+
+  .primary-content {
+    color: #999;
+    text-align: left;
+    line-height: 1rem;
+  }
+
+  .sub-title {
+    margin-right: 0.5rem;
+    font-weight: 600;
+  }
+
+  .global-title {
+    font-weight: 600;
+    font-size: 1.2rem;
+  }
+</style>
+<script>
+  const { defineComponent, reactive, toRefs, ref, onMounted, computed } = Vue
+  const component = defineComponent({
+    name: 'SPAComponent',
+    components: {},
+    setup () {
+      const methods = {
+        parseTime,
+        formatTime,
+        convertGold,
+        convertSci,
+        convertPop
+      }
+
+      const price_logs_converted = computed(() => {
+        const raw = params_data.price_logs
+        const result = []
+        let min_price = 10000 * 1e4 // 默认以砖计算
+        raw.sort((a, b) => new Date(a.Date) - new Date(b.Date))
+        raw.map(x => {
+          const v = x.AvgPrice
+          if (v < min_price && v > 0) min_price = v
+        })
+        const icon = convertGold(min_price)
+        raw.map(x => {
+          let v = x.AvgPrice / icon[2] // 转换为标准值
+          v = Math.ceil(v * 100) / 100
+          result.push(Object.assign(x, { AvgPrice: v }))
+        })
+        return [result, icon[1]]
+      })
+
+      methods.init_chart_trend = () => {
+        const [logs, icon] = price_logs_converted.value
+        const chart = echarts.init(document.getElementById('chart-goods-price-trend'))
+        const option = {
+          animation: false,
+          tooltip: {
+            trigger: 'axis'
+          },
+          xAxis: {
+            type: 'category',
+            boundaryGap: false
+          },
+          yAxis: [],
+          series: []
+        }
+        appendSeriesYAxisItem({
+          option,
+          index: 0,
+          seriesName: '{a|均价 / 单位}{b|}',
+          data: logs.map(x => [x.Date, x.AvgPrice]),
+          series_option: {
+            label: { show: true },
+            markLine: {
+              data: [{ type: 'average', name: 'Avg' }]
+            },
+            smooth: true,
+          },
+          yAxis_option: {
+            nameTextStyle: {
+              rich: {
+                a: {},
+                b: { backgroundColor: { image: icon }, height: 25 }
+              }
+            }
+          }
+        })
+        appendSeriesYAxisItem({
+          option,
+          index: 1,
+          seriesName: '数量',
+          data: logs.map(x => [x.Date, x.SampleSize]),
+          series_option: {
+            label: { show: true },
+            smooth: true,
+          }
+        })
+        chart.setOption(option)
+      }
+      onMounted(() => {
+        methods.init_chart_trend()
+      })
+
+
+
+      const item_description = computed(() => {
+        let v = params_data.item.desc
+        if (!v) return ['暂时还没有任何信息']
+        v = v.toLowerCase()
+        v = v.replaceAll('<text>', '')
+        v = v.replaceAll('</text>', '')
+        v = v.replaceAll('\\n', '')
+        v = v.replaceAll('\\', '')
+        v = v.replace(/font\=\d*/g, '')
+        const result = v.match(/text="[^ \f\n\r\t\v!"]*"/gm).map(x => x.substring(6, x.length - 1))
+        return result || []
+      })
+      const item_attributes = computed(() => {
+        const v = params_data.item.attributes
+        if (!v) return []
+        const color_dict = {
+          'green': '#00c848',
+          'white': '#000000'
+        }
+        v.map(x => {
+          // 更改游戏颜色
+          if (color_dict[x.color]) x.color = color_dict[x.color]
+          x.children = [{ label: 'x' }] // 为了显示icon
+        })
+        return v
+      })
+
+      const expanded_items = reactive(['1', '2', '3'])
+      return {
+        item: {}, // 物品详情
+        server: '', // 唯我独尊
+        price_detail: {}, // 当前实时价格详情
+        price_logs: [], // 价格历史
+        item_description,
+        item_attributes,
+        price_logs_converted,
+        expanded_items,
+        ...methods,
+      }
+    },
+  })
+</script>

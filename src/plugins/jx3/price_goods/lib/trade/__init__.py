@@ -43,18 +43,15 @@ async def search_item_info(item_name: str, pageIndex: int = 0, pageSize: int = 2
     query_items = query_items[page_start:page_start+pageSize]
     return query_items
 
-async def getItemPriceById(id: str, server: str, all_ids: list, group_id: str):
+
+async def getItemPriceById(id: str, server: str):
     '''
     通过物品id获取交易行价格
     @param id:物品id
     @param server:服务器名称
-    @param all_ids:本次选中的所有id。出现过的id应将其人气降1，以更好排序
 
     @return [image] | str: 正确处理则返回[]，否则返回错误原因
     '''
-    server = server_mapping(server, group_id=group_id)
-    if not server:
-        return [PROMPT_ServerNotExist, None]
     goods_info: GoodsInfo = CACHE_Goods[id] if id in CACHE_Goods else GoodsInfo(
     )
     if goods_info.bind_type == GoodsBindType.BindOnPick:
@@ -64,14 +61,9 @@ async def getItemPriceById(id: str, server: str, all_ids: list, group_id: str):
     logs = data["data"]["logs"]
     if not logs or logs == "null":
         return ["唔……交易行没有此物品哦~", None]
+    logs = [GoodsPriceSummary(x) for x in logs]
     logs.reverse()
 
-    goods_info.u_popularity += 10  # 被选中则增加其曝光概率
-    # 本轮已曝光物品，日后曝光率应下调
-    for id in all_ids:
-        x: GoodsInfo = CACHE_Goods[id]
-        x.u_popularity -= 1
-    flush_CACHE_Goods()
     return [logs, goods_info]
 
 
@@ -80,3 +72,16 @@ async def getItem(id: str):
     if boxdata["data"]["source"] == None:
         return ["唔……该物品不存在哦~"]
     return id
+
+
+async def update_goods_popularity(target_id: str, all_ids: list):
+    '''
+    更新物品人气，注意物品需要先入库，否则缓存中不存在
+    @param all_ids:本次选中的所有id。出现过的id应将其人气降1，以更好排序
+    '''
+    CACHE_Goods[target_id].u_popularity += 10  # 被选中则增加其曝光概率
+    # 本轮已曝光物品，日后曝光率应下调
+    for id in all_ids:
+        x: GoodsInfo = CACHE_Goods[id]
+        x.u_popularity -= 1
+    flush_CACHE_Goods()
