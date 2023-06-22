@@ -31,7 +31,7 @@ async def jx3_trade2(state: T_State, event: GroupMessageEvent, args: Message = C
     all_id = [x.id for x in data]  # 取到的是id列表
     state["id"] = all_id
     if len(all_id) == 1:  # 仅有一个物品的话，则直接显示更加详细的信息
-        jx3_cmd_trade2.set_arg('user_select_index', Message('0'))
+        jx3_cmd_trade2.set_arg('user_select_index', obMessage('0'))
         return
     result = await render_items(arg_server, arg_item, arg_page, pageSize, totalCount, data)
 
