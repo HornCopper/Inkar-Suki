@@ -39,11 +39,12 @@ async def price_num_selected(state: T_State, event: GroupMessageEvent, num: Mess
     if num[0] >= len(all_ids):
         return await jx3_cmd_trade.finish(f'无效的序号，有效范围:0-{len(all_ids) - 1}')
 
-    id = all_ids[num[0]]
-    server = state["server"]
-    data, goods_info = await getItemPriceById(id, server, all_ids, group_id=event.group_id)
+    target_id = all_ids[num[0]]
+    server = server_mapping(state["server"], group_id=event.group_id)
+    data, goods_info = await getItemPriceById(target_id, server)
+    await update_goods_popularity(target_id, all_ids)
 
-    if type(data) != type([]):
+    if goods_info is None:
         return await jx3_cmd_trade.finish(data)
     else:
         img = await render_price(data, server, goods_info)
