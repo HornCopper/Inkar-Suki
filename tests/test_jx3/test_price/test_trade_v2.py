@@ -13,7 +13,7 @@ def test_trade_record():
     event = SFGroupMessageEvent()
 
     mc.tag = '唯满侠 五行石'
-    task = jx3_trade(state, event, obMessage(mc.tag))
+    task = jx3_trade(mc, state, event, obMessage(mc.tag))
     asyncio.run(task)
     mc.check_counter()
 
@@ -29,11 +29,11 @@ def test_default_server():
     server_bind(event.group_id, '唯满侠')
 
     mc.tag = '武技殊影图'
-    task = jx3_trade(state, event, obMessage(mc.tag))
+    task = jx3_trade(mc, state, event, obMessage(mc.tag))
     asyncio.run(task)
     mc.check_counter()
     mc.tag = '武技殊影图 2'  # 第二页
-    task = jx3_trade(state, event, obMessage(mc.tag))
+    task = jx3_trade(mc, state, event, obMessage(mc.tag))
     asyncio.run(task)
     mc.check_counter()
     server_bind(event.group_id, '')
@@ -52,7 +52,7 @@ def test_not_exist():
     state = {}
     event = SFGroupMessageEvent()
     mc.tag = '唯满侠 不存在哈哈哈'
-    task = jx3_trade(state, event, obMessage(mc.tag))
+    task = jx3_trade(mc, state, event, obMessage(mc.tag))
     asyncio.run(task)
     mc.check_counter()
 
