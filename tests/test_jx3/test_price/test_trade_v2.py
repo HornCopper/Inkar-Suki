@@ -80,3 +80,26 @@ def test_goods_info_db():
     test by run test_trade_record twice for load cache_file
     '''
     test_trade_record()
+
+
+def test_goods_level():
+    mc = MessageCallback()
+    v2.jx3_cmd_trade2 = mc
+
+    jx3_trade = src.plugins.jx3.jx3_trade2
+    state = {}
+    event = SFGroupMessageEvent()
+
+    mc.tag = '唯满侠 无封裤'
+    task = jx3_trade(mc, state, event, obMessage(mc.tag))
+    asyncio.run(task)
+    mc.check_counter()
+
+
+    price_num_selected = src.plugins.jx3.price_num_selected2
+    state = {'id': ['7_94556'], 'server': '唯我独尊'}  # 无封裤（12100）
+    event = SFGroupMessageEvent()
+
+    task = price_num_selected(state, event, obMessage('0'))
+    asyncio.run(task)
+    mc.check_counter()
