@@ -69,7 +69,7 @@ def test_trade_price():
     asyncio.run(task)
     mc.check_counter()
 
-    state = {'id': ['6_34768'], 'server': '唯我独尊'}  # 度飞囊
+    state = {'id': ['5_47116'], 'server': '唯我独尊'}  # 武技殊影图·上将
     task = price_num_selected(state, event, obMessage('0'))
     asyncio.run(task)
     mc.check_counter()
