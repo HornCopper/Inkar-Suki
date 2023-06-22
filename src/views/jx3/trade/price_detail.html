@@ -3,7 +3,7 @@
     <el-card shadow="never">
       <div style="font-size:2rem;font-weight:600;">
         <span>交易行 · {{ server }} · </span>
-        <span :style="color:item.color">{{ item.name }}</span>
+        <span :style="{color:item.color}">{{ item.name }}</span>
       </div>
       <el-row class="help-tip-card">
         <el-card style="width: 100%;margin: 1rem;">
@@ -49,9 +49,11 @@
       <el-collapse v-model="expanded_items">
         <el-collapse-item name="1">
           <template #title>
-            <div class="global-title">基本信息</div>
+            <div class="global-title">
+              <span>基本信息</span>
+              <span>（id:{{ item.id }}）</span>
+            </div>
           </template>
-
           <el-row class="goods-info-card">
             <el-col :span="8" style="border: solid 1px #cccccc;padding:0.5rem;margin: 0.5rem;">
               <el-row>
@@ -63,7 +65,7 @@
                     <span class="sub-title">名称</span>
                     <span :style="{'font-size':font_size,color:item.color,'margin-left':'0.5rem'}">
                       <span>{{ item.name }}</span>
-                      <span>（id:{{ item.id }}）</span>
+
                     </span>
                   </div>
                   <div>
