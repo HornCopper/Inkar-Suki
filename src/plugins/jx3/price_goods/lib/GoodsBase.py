@@ -39,7 +39,7 @@ class GoodsInfo(dict):
         self.ui_id = data.get('UiID')
         self.name = data.get('Name') or '未知物品'
         '''被使用的次数，次数多的优先前置'''
-        self.u_popularity = data.get('u_popularity', 0)
+        self.u_popularity = data.get('u_popularity') or 0
         super().__init__()
 
     def __str__(self) -> str:
@@ -115,9 +115,3 @@ class GoodsInfoFull(GoodsInfo):
         self.recovery_price = data.get('Price')  # 回收价
         self.level = data.get('Level')  # 品数（仅武器才有）
 
-    async def from_id(id: str) -> GoodsInfoFull:
-        '''
-        通过id初始化
-        '''
-        data = await get_item_info_by_id(id)
-        return GoodsInfoFull(data)
