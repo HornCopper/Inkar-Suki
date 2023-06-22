@@ -2,7 +2,7 @@ from nonebot.matcher import Matcher
 from src.tools.dep.bot import *
 from ..api import *
 from .renderer import *
-jx3_cmd_trade2 = on_command("jx3_trade2", aliases={"价格"}, priority=5)
+jx3_cmd_trade2 = on_command("jx3_trade2", aliases={"交易行"}, priority=5)
 
 
 @jx3_cmd_trade2.handle()
