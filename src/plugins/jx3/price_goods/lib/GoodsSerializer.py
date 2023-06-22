@@ -28,6 +28,7 @@ class GoodsSerializerEncoder(GoodsEncoder):
 
 
 def flush_CACHE_Goods_Common(cache_file: str, target_dict: dict):
-    d = dict([key, target_dict[key].__dict__] for key in target_dict)
+    d = dict([key, target_dict[key].__dict__ if not type(
+        target_dict[key]) == dict else target_dict[key]] for key in target_dict)
     data = json.dumps(d, cls=GoodsSerializerEncoder)
     write(cache_file, data)

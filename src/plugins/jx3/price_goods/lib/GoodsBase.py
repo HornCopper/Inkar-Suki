@@ -54,7 +54,7 @@ class GoodsInfo(dict):
     @property
     def priority(self) -> int:
         v_bind = 1 if self.bind_type == GoodsBindType.BindOnPick else 0
-        v_create_id = self.ui_id
+        v_create_id = self.ui_id or 0
         return 1e8 * self.u_popularity - v_bind * 1e12 + v_create_id
 
     @property
