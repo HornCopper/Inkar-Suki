@@ -186,14 +186,11 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
         await web.finish("获取图片成功！\n"
         + MessageSegment.image(Path(image).as_uri()))
 
-apply = on_command("apply", aliases={"-申请","+申请"}, priority=5) # 申请使用机器人的命令，`repo`地址来源于`config.py`。
+apply = on_command("apply", aliases={"-申请"}, priority=5) # 申请使用机器人的命令，`repo`地址来源于`config.py`。
 @apply.handle()
-async def _(matcher:Matcher ,state: T_State, event: Event, group: Message = Arg()):
+async def _(state: T_State, event: Event):
     applier = str(event.user_id)
     state["user"] = applier
-    group = group.extract_plain_text()
-    if group:
-        matcher.set_arg('group', group)
     return
 
 @apply.got("group", prompt="感谢您申请使用Inkar Suki，接下来请发送您所为之申请的群聊的群号。")
