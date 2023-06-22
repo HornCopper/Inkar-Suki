@@ -1,3 +1,4 @@
+from nonebot.matcher import Matcher
 from src.tools.dep.bot import *
 from ..api import *
 from .renderer import *
@@ -5,7 +6,7 @@ jx3_cmd_trade2 = on_command("jx3_trade2", aliases={"价格"}, priority=5)
 
 
 @jx3_cmd_trade2.handle()
-async def jx3_trade2(state: T_State, event: GroupMessageEvent, args: Message = CommandArg()):
+async def jx3_trade2(matcher: Matcher, state: T_State, event: GroupMessageEvent, args: Message = CommandArg()):
     '''
     获取交易行物品价格：
     交易行 [区服] 名称 [页码]
@@ -31,7 +32,7 @@ async def jx3_trade2(state: T_State, event: GroupMessageEvent, args: Message = C
     all_id = [x.id for x in data]  # 取到的是id列表
     state["id"] = all_id
     if len(all_id) == 1:  # 仅有一个物品的话，则直接显示更加详细的信息
-        jx3_cmd_trade2.set_arg('user_select_index', obMessage('0'))
+        matcher.set_arg('user_select_index', obMessage('0'))
         return
     result = await render_items(arg_server, arg_item, arg_page, pageSize, totalCount, data)
 
