@@ -120,7 +120,7 @@ class WucaiProperty:
     DICT_value = [
         '提高'
     ]
-    DICT_value_desc = [
+    DICT_value_desc = {
         '内功':'内',
         '外功':'外',
         '等级':'',
@@ -132,7 +132,7 @@ class WucaiProperty:
         '阳性':'阳',
         '阴性':'阴',
         '混元性':'混元',
-    ]
+    }
     RE_filter_number = re.compile('\d*')
 
     def __init__(self, values: List[str], filters: List[str]) -> None:
