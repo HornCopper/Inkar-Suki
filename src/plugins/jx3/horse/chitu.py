@@ -4,7 +4,7 @@ from bs4 import BeautifulSoup
 import nonebot
 import time
 import sys
-from src.tools.dep.api import *
+from src.tools.dep import *
 
 
 async def get_chitu(server: str, group_id: str):  # 数据来源@jw3cx.com

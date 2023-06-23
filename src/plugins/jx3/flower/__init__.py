@@ -1,4 +1,3 @@
-from src.tools.dep.bot import *
 from .api import *
 from .renderer import renderer as x_renderer
 from .Caches import *

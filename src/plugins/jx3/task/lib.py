@@ -1,11 +1,4 @@
-import sys
-import nonebot
-
-TOOLS = nonebot.get_driver().config.tools_path
-sys.path.append(TOOLS)
-ASSETS = TOOLS[:-5] + "assets"
-
-from src.tools.utils import get_api
+from src.tools.dep import *
 
 async def getTask(Task: str):
     info = await get_api(f"https://node.jx3box.com/quests?keyword={Task}&chain=false&client=std&page=1&per=20") # 任务搜索器 数据来源@JX3BOX

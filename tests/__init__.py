@@ -5,7 +5,7 @@ import time as sys_time
 import random
 import asyncio
 from typing import Literal
-from src.tools.dep.api import *
+from src.tools.dep import *
 
 import src.plugins.jx3
 

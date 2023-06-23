@@ -1,4 +1,3 @@
-from src.tools.dep.bot import *
 from .api import *
 
 jx3_cmd_saohua_random = on_command("jx3_random", aliases={'骚话', '烧话'}, priority=5)

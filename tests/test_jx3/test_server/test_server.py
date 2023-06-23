@@ -1,5 +1,5 @@
 from ... import *
-from src.tools.dep.server import *
+from src.tools.dep.data_server import *
 
 
 def test_server_map():
@@ -19,7 +19,7 @@ def test_server_status():
     mc = MessageCallback(cb_finish=default_cb_finish)
 
     import src.plugins.jx3.server
-    jx3_server = src.plugins.jx3.jx3_server
+    jx3_server = src.plugins.jx3.server.jx3_server
     src.plugins.jx3.server.cmd_jx3_server = mc
     event = SFGroupMessageEvent()
 

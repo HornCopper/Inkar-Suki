@@ -1,4 +1,4 @@
-from src.tools.dep.api import *
+from src.tools.dep import *
 from enum import Enum
 from .GoodsBase import GoodsInfo
 from .GoodsPrice import GoodsPriceSummary, GoodsPriceDetail

@@ -1,4 +1,3 @@
-from src.tools.dep.bot import *
 from .api import *
 
 adventure_ = on_command("jx3_adventure", aliases={"成就"}, priority=5)

@@ -2,9 +2,7 @@ from sgtpyutils.extensions.clazz import get_fields
 from typing import List
 from ..Caches import *
 
-from src.tools.dep.server import *
-from src.tools.dep.path import *
-from src.tools.dep.api import *
+from src.tools.dep import *
 
 
 async def search_item_local(item_name: str) -> list:

@@ -4,13 +4,7 @@ import sys
 from src.tools.config import Config
 import os
 from nonebot.adapters.onebot.v11 import Adapter as ONEBOT_V11Adapter
-from src.tools.dep.bot import *
-
-botpy = os.getcwd()
-tools_path = botpy + "/src/tools"
-
-print(tools_path)
-
+from src.tools.dep import *
 
 def check_folder(path: str, can_retry: bool = True):
     if os.path.isdir(path):
@@ -64,6 +58,7 @@ init_folders = {
 
 check_folders(init_folders)
 
+logger.debug('check plugins document')
 plugins = os.listdir("./src/plugins")
 for i in plugins:
     if not os.path.exists(f"./src/plugins/{i}/info.json"):
@@ -71,7 +66,7 @@ for i in plugins:
             f"Plugin `{i}` required a `info.json` but not found. Please check and try again.")
         sys.exit(1)
 
-nonebot.init(tools_path=tools_path, log_level="INFO")
+logger.debug('start nonebot...')
 app = nonebot.get_asgi()
 driver = nonebot.get_driver()
 driver.register_adapter(ONEBOT_V11Adapter)

@@ -16,7 +16,7 @@ TOOLS = nonebot.get_driver().config.tools_path
 sys.path.append(str(TOOLS))
 ASSETS = TOOLS[:-5] + "assets"
 
-from src.tools.file import read, write
+from src.tools.file import *
 
 '''
 感谢友情提供代码@白师傅

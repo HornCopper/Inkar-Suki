@@ -1,12 +1,14 @@
 from __future__ import annotations
 from sgtpyutils import extensions
+from sgtpyutils.logger import logger
+logger.debug(f'load dependence:{__name__}')
 from src.tools.utils import *
-from src.constant.jx3 import *
-from ..server import *
+from ..data_server import *
 from ..exceptions import *
-from src.tools.dep.bot import *
 from typing import List, Literal, Tuple
 from enum import IntEnum
+from nonebot.adapters import Message, MessageSegment
+from nonebot.adapters.onebot.v11.message import Message as v11Message
 
 
 def convert_to_str(msg: MessageSegment):

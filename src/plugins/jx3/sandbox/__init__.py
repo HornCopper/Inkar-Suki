@@ -1,4 +1,3 @@
-from src.tools.dep.bot import *
 from .api import *
 
 sandbox = on_command("jx3_sandbox", aliases={"沙盘"}, priority=5)
