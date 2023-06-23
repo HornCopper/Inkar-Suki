@@ -27,3 +27,14 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
     else:
         await zones.finish(ms.image(data))
 
+drops = on_command("jx3_drops", aliases={"掉落列表"}, priority=5)
+@drops.handle()
+async def _(event: GroupMessageEvent, args: Message = CommandArg()):
+    arg = args.extract_plain_text().split(" ")
+    if len(arg) != 3:
+        await drops.finish("唔……参数不正确哦~")
+    map = arg[0]
+    mode = arg[1]
+    boss = arg[2]
+    data = await genderater(map, mode, boss)
+    await drops.finish(ms.image(Path(data).as_uri()))
