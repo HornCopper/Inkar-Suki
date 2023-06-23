@@ -142,7 +142,7 @@ async def genderater(map, mode, boss):
             final = final + "<br>" + "|".join(ads)
         new.append(final)
         num = num + 1
-        if num == 6:
+        if num == 8:
             chart.append(new)
             new = []
             num = 0
@@ -178,7 +178,7 @@ async def genderater(map, mode, boss):
         final = icon + "<br>" + name + "<br>" + force + "<br>" + ad
         new.append(final)
         num = num + 1
-        if num == 6:
+        if num == 8:
             chart.append(new)
             new = []
             num = 0
@@ -193,7 +193,7 @@ async def genderater(map, mode, boss):
         final = icon + "<br>" + name
         new.append(final)
         num = num + 1
-        if num == 6:
+        if num == 8:
             chart.append(new)
             new = []
             num = 0
