@@ -28,5 +28,4 @@ async def from_id(id: str) -> GoodsInfoFull:
         data = x
 
     return GoodsInfoFull(data)
-
 GoodsInfoFull.from_id = from_id

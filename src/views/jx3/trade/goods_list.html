@@ -59,19 +59,25 @@
               </div>
             </template>
           </el-table-column>
-          <el-table-column label="绑定" width="80px">
-            <template #default="scope">{{ scope.row.bind_type_str }}</template>
-          </el-table-column>
           <el-table-column label="更新时间" width="150px">
             <template #default="scope">{{ formatTime(scope.row.price.UpdatedAt) }}</template>
           </el-table-column>
-          <el-table-column label="均价" width="120px">
+          <el-table-column label="均价" width="100px">
             <template #default="scope">
               <span>{{ convertGold(scope.row.price.AvgPrice)[0] }}</span>
               <img :src="convertGold(scope.row.price.AvgPrice)[1]" />
             </template>
           </el-table-column>
-          <el-table-column label="底价" width="120px">
+          <el-table-column v-if="any_price_current_available" label="实时" width="100px">
+            <template #default="scope">
+              <span v-if="scope.row.current_price&&scope.row.current_price.price_valid">
+                <span>{{ convertGold(scope.row.current_price.price_valid)[0] }}</span>
+                <img :src="convertGold(scope.row.current_price.price_valid)[1]" />
+              </span>
+              <span v-else style="color:#cccccc">暂无</span>
+            </template>
+          </el-table-column>
+          <el-table-column label="底价" width="100px">
             <template #default="scope">
               <span>{{ convertGold(scope.row.price.LowestPrice)[0] }}</span>
               <img :src="convertGold(scope.row.price.LowestPrice)[1]" />
@@ -149,12 +155,18 @@
         return items.map((x, index) => Object.assign({ id: x, index }, params_data.items[x]))
       })
 
+      const any_price_current_available = computed(() => {
+        const items = goods_items.value
+        if (!items) return false
+        return !!items.find(x => x.current_price && x.current_price.price_valid)
+      })
       const font_size = ref('0.8rem')
       return {
         items: [], // {id:'',price:0}
         server: '', // 唯我独尊
         item_name: '', // 五行石
         goods_items,
+        any_price_current_available,
         page: {
           pageIndex: 0,
           pageSize: 20,
