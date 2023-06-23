@@ -17,6 +17,13 @@ async def search_item_info_for_price(item_name: str, server: str, pageIndex: int
     if not isinstance(data, List):
         return [data, None]  # 未返回正确数据
     data = [x for x in data if x.bind_type != GoodsBindType.BindOnPick]
+    return await get_prices_by_items(data, server, pageIndex, pageSize)
+
+
+async def get_prices_by_items(data: list, server: str, pageIndex: int = 0, pageSize: int = 20):
+    '''
+    通过物品列表获取其价格
+    '''
     prices = await get_goods_current_price(data, server)
 
     current_prices: List[GoodsPriceDetail] = [[x.id, await get_goods_current_detail_price(x.id, server, only_cache=True)] for x in data]
@@ -90,15 +97,27 @@ async def get_goods_current_price(goods, server: str) -> dict:
     return data
 
 
-async def refresh_favoritest_goods_current_price():
-    logger.debug('refresh_favoritest_goods_current_price start')
+def get_favoritest_by_top(top: int = 20):
     goods = [x for x in CACHE_Goods.values() if x.bind_type.value !=
              GoodsBindType.BindOnUse]
     goods.sort(key=lambda x: -x.u_popularity)
-    goods = goods[0:20]
+    goods = goods[0:top]
+    return goods
+
+
+def get_favoritest_by_predict(predict: callable):
+    goods = [x for x in CACHE_Goods.values() if x.bind_type.value !=
+             GoodsBindType.BindOnUse]
+    goods.sort(key=lambda x: -x.u_popularity)
+    return [x for index, x in enumerate(goods) if predict(index, x)]
+
+
+async def refresh_favoritest_goods_current_price():
+    logger.debug('refresh_favoritest_goods_current_price start')
+
     all_servers = distinct(server_map.values())
     tasks = []
-
+    goods = get_favoritest_by_top()
     for server in all_servers:
         for x in goods:
             tasks.append([x.id, server])
