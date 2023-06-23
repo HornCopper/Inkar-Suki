@@ -1,4 +1,3 @@
-from src.tools.dep.bot import *
 from ..api import *
 from .renderer import *
 jx3_cmd_trade = on_command("jx3_trade", aliases={"交易行v1"}, priority=5)

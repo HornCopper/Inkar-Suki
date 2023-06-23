@@ -1,9 +1,5 @@
 import sys
-import nonebot
-
-TOOLS = nonebot.get_driver().config.tools_path
-sys.path.append(TOOLS)
-ASSETS = TOOLS[:-5] + "assets"
+from src.tools.dep import *
 
 from src.tools.utils import get_api
 

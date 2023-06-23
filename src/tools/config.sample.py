@@ -3,9 +3,8 @@
 ###############################
 
 from src.tools.local_version import ikv, nbv
-import nonebot
-import sys
 from src.tools.file import get_resource_path
+from pathlib import Path
 import os
 class Config:
     '''
@@ -29,7 +28,7 @@ class Config:
     html_path = global_path+"/plugins/help/help.html"
     chromedriver_path = global_path+"/tools/chromedriver"
     help_image_save_to = global_path+"/plugins/help/help.png"
-    font_path = get_resource_path(f'font{os.sep}custom.ttf')
+    font_path = Path(get_resource_path(f'font{os.sep}custom.ttf')).as_uri()
 
     cqhttp = ""  # CQHTTP地址，参考`https://go-cqhttp.org`。
 
@@ -53,6 +52,6 @@ class Config:
 
     ght = ""  # GitHub Personal Access Token
 
-    jx3_token = ""  # 推栏Token，抓包可得
+    jx3_token = "123"  # 推栏Token，抓包可得
 
     repo_name = ""  # 该`Inkar-Suki`的副本的来源，若从主仓库克隆，则填写`codethink-cn/Inkar-Suki`，若为fork之后克隆的仓库，则填写`<你的GitHub用户名>/Inkar-Suki`

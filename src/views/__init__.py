@@ -2,7 +2,7 @@ import asyncio
 import json
 import pathlib2
 from src.tools.generate import get_uuid, generate
-from src.tools.dep.path import *
+from src.tools.dep import *
 template_root = pathlib2.Path(__file__).parent
 template_path = template_root.joinpath('template.html')
 

@@ -1,5 +1,3 @@
-from src.tools.dep.bot import *
-from src.tools.dep.path import ASSETS
 from .api import *
 
 jx3_cmd_serendipity = on_command("jx3_serendipity", aliases={"奇遇"}, priority=5)

@@ -86,6 +86,12 @@ class Jx3Tieba(threading.Thread):
             time.sleep(Jx3Tieba.get_interval())
 
     async def run_once(self) -> list:
+        if not self.is_alive():
+            self.stop()
+            return []
+        return await self.__run_once()
+
+    async def __run_once(self):
         s: SubjectStatus = self.current_status
         s.last_fetch = time.time()
         pn = 1

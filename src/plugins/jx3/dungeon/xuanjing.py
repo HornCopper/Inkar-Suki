@@ -1,7 +1,5 @@
 from .api import *
-from src.tools.dep.bot import *
-from src.tools.file import *
-from src.tools.dep.path import *
+from src.tools.dep import *
 from src.tools.generate import *
 from src.plugins.help import css
 jx3_cmd_jx3_rare_gain = on_command(

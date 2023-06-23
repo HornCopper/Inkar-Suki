@@ -1,5 +1,4 @@
-from src.tools.dep.api import *
-from src.tools.dep.server import *
+from src.tools.dep import *
 
 async def pendant(name: str):
     final_url = f"https://www.jx3api.com/data/other/pendant?name={name}&token={token}"

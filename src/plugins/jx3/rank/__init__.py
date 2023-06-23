@@ -1,4 +1,3 @@
-from src.tools.dep.bot import *
 from .api import *
 
 jx3_cmd_top100_ = on_command("jx3_top100", aliases={"百强"}, priority=5)
