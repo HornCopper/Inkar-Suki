@@ -22,7 +22,7 @@ async def render_items(server: str, arg_item: str, arg_page: int, pageSize: int,
     return img
 
 
-async def render_detail_item(server: str, arg_item: GoodsInfo, arg_price: GoodsPriceDetail, price_logs: List):
+async def render_detail_item(server: str, arg_item: GoodsInfoFull, arg_price: GoodsPriceDetail, price_logs: List):
     '''
     渲染单个物品价格详情
     '''
