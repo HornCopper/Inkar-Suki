@@ -182,8 +182,9 @@ class WucaiProperty:
 
     @staticmethod
     def convert_value_desc(raw: str) -> str:
-        for x in WucaiProperty.DICT_value_desc:
-            raw = raw.replace(x[0], x[1])
+        d = WucaiProperty.DICT_value_desc
+        for x in d:
+            raw = raw.replace(x, d[x])
         return raw
 
     @staticmethod
