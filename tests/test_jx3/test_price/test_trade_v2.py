@@ -103,3 +103,9 @@ def test_goods_level():
     task = price_num_selected(state, event, obMessage('0'))
     asyncio.run(task)
     mc.check_counter()
+
+def test_price_updater():
+    func = src.plugins.jx3.refresh_favoritest_goods_current_price
+    task = func()
+    asyncio.run(task)
+    
