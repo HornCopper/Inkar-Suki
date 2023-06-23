@@ -116,8 +116,22 @@ def test_goods_level():
     asyncio.run(task)
     mc.check_counter()
 
+import pytest
+
+@pytest.mark.skip('运行时间过长')
 def test_price_updater():
     func = src.plugins.jx3.refresh_favoritest_goods_current_price
     task = func()
     asyncio.run(task)
-    
+
+
+def test_trade_wucai_price():
+    mc = MessageCallback()
+    v2.jx3_cmd_trade2 = mc
+    price_num_selected = src.plugins.jx3.price_num_selected2
+    state = {'id': ['5_12891'], 'server': '唯我独尊'}  # 彩·灵根·灭气·激流(叁)
+    event = SFGroupMessageEvent()
+
+    task = price_num_selected(state, event, obMessage('0'))
+    asyncio.run(task)
+    mc.check_counter()

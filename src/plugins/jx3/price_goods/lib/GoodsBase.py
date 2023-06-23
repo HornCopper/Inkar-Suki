@@ -1,4 +1,6 @@
 from __future__ import annotations
+import re
+from src.views import *
 from src.tools.dep import *
 from enum import Enum
 
@@ -30,8 +32,8 @@ class GoodsBindType(Enum):
 
 class GoodsInfo(dict):
     def init_computed_props(self):
-        self.price = None # PriceSummary
-        self.current_price = None # PriceDetail
+        self.price = None  # PriceSummary
+        self.current_price = None  # PriceDetail
 
     def __init__(self, data: dict = None) -> None:
         self.init_computed_props()
@@ -110,6 +112,74 @@ class GoodsInfo(dict):
         return r
 
 
+class WucaiProperty:
+    DICT_filter = [
+        ['全身(五行石)大于等于', '个数'],
+        ['(五行石)等级和大于等于', '等级'],
+    ]
+    DICT_value = [
+        '提高'
+    ]
+    RE_filter_number = re.compile('\d*')
+
+    def __init__(self, values: List[str], filters: List[str]) -> None:
+        self.values = [WucaiProperty.convert_value(x) for x in values]
+        self.filters = [WucaiProperty.convert_filter(x) for x in filters]
+
+    def __str__(self) -> str:
+        v = [f'{x[0]}+{x[1]}' for x in self.values]
+        f = [f'{x[0]}>={x[1]}' for x in self.filters]
+        r = v+f
+        return str.join('\n', r)
+
+    def __repr__(self) -> str:
+        return self.__str__()
+
+    def to_dict(self):
+        return self.__dict__
+
+    def convert_filter(raw: str) -> Tuple[str, int]:
+        '''
+        将条件标准化
+        '''
+        for x in WucaiProperty.DICT_filter:
+            if not raw.startswith(x[0]):
+                continue
+            r = raw[len(x[0]):]
+            re_result = WucaiProperty.RE_filter_number.match(r)
+            pos = re_result.regs[0]
+            return [x[1], int(r[pos[0]: pos[1]])]
+        return [f'未知:{raw}', 0]
+
+    def convert_value(raw: str) -> Tuple[str, int]:
+        '''
+        将属性标准化
+        '''
+        for x in WucaiProperty.DICT_value:
+            v = raw.split(x)
+            if len(v) <= 1:
+                continue
+            re_result = WucaiProperty.RE_filter_number.match(v[1])
+            pos = re_result.regs[0]
+            return [v[0], int(v[1][pos[0]:pos[1]])]
+        return [f'未知:{raw}', 0]
+
+    @staticmethod
+    def from_html(raw_content: str) -> List[WucaiProperty]:
+        '''
+        通过原始html转换为五彩石属性
+        '''
+        items = get_tag_content_list(raw_content, 'div')
+        properties = [get_tag_content_list(x, 'span') for x in items]
+        result: List[WucaiProperty] = []
+        for x in range(0, len(properties), 2):
+            prop = [x[1] for x in properties[x:x+2]]  # 每2个形成一对儿属性:条件
+            prop_values = prop[0].split('<br>')
+            prop_filters = prop[1].split('<br>')
+            result.append(WucaiProperty(prop_values, prop_filters))
+        return result
+
+
 class GoodsInfoFull(GoodsInfo):
     def __init__(self, data: dict = None) -> None:
         super().__init__(data)
@@ -121,3 +191,12 @@ class GoodsInfoFull(GoodsInfo):
         self.attributes = json.loads(data.get('attributes') or '[]')  # 包含属性
         self.recovery_price = data.get('Price')  # 回收价
         self.level = data.get('Level')  # 品数（仅武器才有）
+
+        data = data.get('WuCaiHtml') or ''  # 五彩石属性
+        self.wucai_properties = WucaiProperty.from_html(
+            data)  # convert to wucai-properties
+
+    def to_dict(self) -> dict:
+        r = super().to_dict()
+        r['wucai_properties'] = [x.to_dict() for x in self.wucai_properties]
+        return r
