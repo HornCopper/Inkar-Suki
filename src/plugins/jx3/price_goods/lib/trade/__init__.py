@@ -77,9 +77,12 @@ async def update_goods_popularity(target_id: str, all_ids: list):
     更新物品人气，注意物品需要先入库，否则缓存中不存在
     @param all_ids:本次选中的所有id。出现过的id应将其人气降1，以更好排序
     '''
-    CACHE_Goods[target_id].u_popularity += 10  # 被选中则增加其曝光概率
+    if not CACHE_Goods.get(target_id) is None:
+        CACHE_Goods[target_id].u_popularity += 10  # 被选中则增加其曝光概率
     # 本轮已曝光物品，日后曝光率应下调
     for id in all_ids:
+        if CACHE_Goods.get(id) is None:
+            continue
         x: GoodsInfo = CACHE_Goods[id]
         x.u_popularity -= 1
     flush_CACHE_Goods()
