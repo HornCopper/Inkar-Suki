@@ -1,3 +1,4 @@
+from typing import List
 import asyncio
 import json
 import pathlib2
@@ -27,7 +28,7 @@ class InvalidTagException(Exception):
         super().__init__(*args)
 
 
-def get_tag_content(data: str, tag: str) -> str:
+def get_tag_content_list(data: str, tag: str) -> List[str]:
     tag_start = f'<{tag}>'
     tag_start2 = f'<{tag} '
     len_start = len(tag_start)
@@ -41,7 +42,8 @@ def get_tag_content(data: str, tag: str) -> str:
     while True:
         pos_start = find_str(data, tag_start, pos)
         pos_start2 = find_str(data, tag_start2, pos)
-        is_partial = pos_start == -1 or (pos_start > pos_start2 and pos_start2 != -1)
+        is_partial = pos_start == - \
+            1 or (pos_start > pos_start2 and pos_start2 != -1)
         if is_partial:
             pos_start = pos_start2
         pos_end = find_str(data, tag_end, pos)
@@ -60,11 +62,15 @@ def get_tag_content(data: str, tag: str) -> str:
             continue
         pos = pos_start + len_start
         if is_partial:
-            pos = find_str(data, '>', pos) + 1 # 忽略attr
+            pos = find_str(data, '>', pos) + 1  # 忽略attr
         if stack_len == 0:
             stack_tag = pos
         stack_len += 1
+    return result
 
+
+def get_tag_content(data: str, tag: str) -> str:
+    result = get_tag_content_list(data, tag)
     return f'\n'.join(result)
 
 
@@ -113,10 +119,9 @@ def get_render_content(view_file_path: str, data: dict) -> str:
     content_template = get_tag_content(view_content, 'template')
     content = content.replace('<template.HERE />', content_template)
     # 注入css
-    content_style = get_tag_content(view_content,'style')
+    content_style = get_tag_content(view_content, 'style')
     content = content.replace('.window.style.HERE', content_style)
 
-    
     # 注入脚本
     content_script = get_tag_content(view_content, 'script')
     content = content.replace('window.component.HERE', content_script)
