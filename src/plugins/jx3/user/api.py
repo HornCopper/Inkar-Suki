@@ -1,5 +1,4 @@
-from src.tools.dep.api import *
-from src.tools.dep.server import *
+from src.tools.dep import *
 
 
 async def addritube_(server: str = None, name: str = None, group_id: str = None):  # 查装 <服务器> <ID>

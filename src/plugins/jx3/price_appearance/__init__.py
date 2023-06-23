@@ -1,4 +1,3 @@
-from src.tools.dep.bot import *
 from .api import *
 
 item_price = on_command("jx3_price", aliases={"物价"}, priority=5)

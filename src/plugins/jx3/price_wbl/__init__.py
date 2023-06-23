@@ -1,4 +1,3 @@
-from src.tools.dep.bot import *
 from .api import *
 
 wbl = on_command("jx3_wbl", aliases={"万宝楼"}, priority=5)

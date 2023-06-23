@@ -1,4 +1,3 @@
-from src.tools.dep.bot import *
 from .api import *
 
 dh_ = on_command("jx3_dh", aliases={"蹲号"}, priority=5)

@@ -1,4 +1,3 @@
-from src.tools.dep.bot import *
 from .api import *
      
 jx3_cmd_daily = on_command("jx3_daily", aliases={"日常","周常"}, priority=5)

@@ -1,4 +1,3 @@
-from src.tools.dep.bot import *
 from .api import *
 
 news = on_command("jx3_news", aliases={"新闻"}, priority=5)

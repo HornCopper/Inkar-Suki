@@ -1,4 +1,3 @@
-from src.tools.dep.bot import *
 from .api import *
      
 exam = on_command("jx3_exam", aliases={"科举"}, priority=5)

@@ -1,4 +1,4 @@
-from src.tools.dep.api import *
+from src.tools.dep import *
 async def renderer(server: str, data: list) -> str:
     img = await get_render_image('src/views/jx3/pvx/flower/index.html', {
         'data': data,

@@ -1,5 +1,5 @@
 from __future__ import annotations
-from src.tools.dep.api import *
+from src.tools.dep import *
 from enum import Enum
 
 

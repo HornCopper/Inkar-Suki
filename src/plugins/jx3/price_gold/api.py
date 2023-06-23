@@ -1,5 +1,4 @@
-from src.tools.dep.api import *
-from src.tools.dep.server import *
+from src.tools.dep import *
 
 
 async def demon_(server: str = None, group_id: str = None):  # 金价 <服务器>
