@@ -6,9 +6,7 @@ from src.tools.utils import checknumber
 from src.tools.permission import checker, error
 
 from .wikilib import wiki as wiki_
-from src.tools.dep.bot import *
-from src.tools.dep.path import *
-from src.constant.jx3 import *
+from src.tools.dep import *
 
 wiki = on_command("wiki", priority=5)
 @wiki.handle()

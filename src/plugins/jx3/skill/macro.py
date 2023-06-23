@@ -1,11 +1,5 @@
-import nonebot
-import sys
-import json
 
-TOOLS = nonebot.get_driver().config.tools_path
-sys.path.append(TOOLS)
-
-from src.tools.utils import get_api
+from src.tools.dep import *
 
 icon_to_xf = {
     "10175":"毒经",

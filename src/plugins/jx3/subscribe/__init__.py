@@ -1,5 +1,3 @@
-from src.tools.dep.bot import *
-from src.tools.file import *
 from .api import *
 
 subscribe = on_command("jx3_subscribe", aliases={"订阅"}, priority=5)

@@ -1,4 +1,3 @@
-from src.tools.dep.bot import *
 from .api import *
 
 demon = on_command("jx3_demon", aliases={"金价"}, priority=5)

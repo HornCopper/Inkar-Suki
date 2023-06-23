@@ -1,5 +1,4 @@
-from src.tools.dep.api import *
-from src.tools.dep.server import *
+from src.tools.dep import *
 
 async def zone(server, id):
     server = server_mapping(server)

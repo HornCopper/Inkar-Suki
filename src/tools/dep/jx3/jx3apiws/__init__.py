@@ -7,8 +7,6 @@ from typing import Optional
 
 from websockets.legacy.client import WebSocketClientProtocol
 from websockets.exceptions import ConnectionClosedError, ConnectionClosedOK
-
-
 from src.tools.config import Config
 
 from src.tools.dep.bot import *
@@ -20,6 +18,7 @@ from .jx3_event import *
 原链接：
 https://github.com/JustUndertaker/mini_jx3_bot
 '''
+
 
 class Jx3WebSocket(object):
     """
@@ -137,5 +136,6 @@ class Jx3WebSocket(object):
         if self.connect:
             return self.connect.closed
         return True
+
 
 ws_client = Jx3WebSocket()

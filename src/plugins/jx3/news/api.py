@@ -1,5 +1,4 @@
-from src.tools.dep.api import *
-from src.tools.dep.server import *
+from src.tools.dep import *
 
 async def news_():
     full_link = "https://www.jx3api.com/data/web/news?limit=5"

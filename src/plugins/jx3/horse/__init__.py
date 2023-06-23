@@ -1,4 +1,3 @@
-from src.tools.dep.bot import *
 from .api import *
 
 ct = on_command("jx3_ct", aliases={"赤兔"}, priority=5)

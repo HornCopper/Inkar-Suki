@@ -1,4 +1,3 @@
-from src.tools.dep.bot import *
 from .api import *
 
 task_ = on_command("jx3_task", aliases={"任务"}, priority=5)

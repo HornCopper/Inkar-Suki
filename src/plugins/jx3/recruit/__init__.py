@@ -1,4 +1,3 @@
-from src.tools.dep.bot import *
 from .api import *
 jx3_cmd_recruit = on_command("jx3_recruit", aliases={"招募"}, priority=5)
 @jx3_cmd_recruit.handle()

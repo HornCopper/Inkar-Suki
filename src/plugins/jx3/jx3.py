@@ -1,15 +1,6 @@
-import nonebot
-import sys
-import json
-
-from nonebot.adapters.onebot.v11 import MessageSegment as ms
-from src.tools.utils import get_api
-from src.tools.file import read
 from sgtpyutils.logger import logger
-from src.tools.dep.bot import *
-from src.tools.dep.api import *
-from src.tools.dep.path import *
-from src.constant.jx3.skilldatalib import aliases
+logger.info(f'start load botjx3 plugins.')
+from src.tools.dep import *
 
 from .achievement import *
 from .arena import *

@@ -1,4 +1,3 @@
-from src.tools.dep.bot import *
 from .api import *
 
 jx3_cmd_pet = on_command("jx3_pet", aliases={"宠物"}, priority=5)
