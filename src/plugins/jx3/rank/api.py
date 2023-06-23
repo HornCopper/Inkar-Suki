@@ -51,6 +51,12 @@ def gen_xsk(data: str) -> str:
     secret = "MaYoaMQ3zpWJFWtN9mqJqKpHrkdFwLd9DDlFWk2NnVR1mChVRI6THVe6KsCnhpoR"
     return hmac.new(secret.encode(), msg=data.encode(), digestmod=hashlib.sha256).hexdigest()
 
+async def post_url(url, proxy: dict = None, headers: str = None, timeout: int = 300, data: dict = None):
+    async with httpx.AsyncClient(proxies=proxy, follow_redirects = True) as client:
+        resp = await client.post(url, timeout = timeout, headers = headers, data = data)
+        result = resp.text
+        return result
+
 async def zlrank(server: str = None, school: str = None, group_id: str = None):
     school_data = await get_api("https://inkar-suki.codethink.cn/jx3boxdata")
     if school != None:
@@ -106,7 +112,7 @@ async def zlrank(server: str = None, school: str = None, group_id: str = None):
     for i in lank:
         num = 1
         tuilan_avatar = "<img src=\"" + i["avatarUrl"] + "\", height=\"50\", width=\"50\"></img>"
-        school_name = school_data[i["forceId"]]
+        school_name = school_data[str(i["forceId"])]
         nickname = i["nickName"]
         roleName = i["roleName"]
         value = str(i["Value"])
