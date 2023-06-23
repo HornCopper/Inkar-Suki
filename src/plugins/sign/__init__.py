@@ -1,13 +1,5 @@
 import sys
-import nonebot
-from nonebot import on_command, require
-from nonebot.adapters.onebot.v11 import Event, MessageSegment as ms
-from nonebot.log import logger as l
-
-TOOLS = nonebot.get_driver().config.tools_path
-sys.path.append(str(TOOLS))
-CLOCK = TOOLS[:-5] + "clock"
-
+from src.tools.dep import *
 from src.tools.file import read, write
 
 from .manage import Sign
@@ -38,18 +30,14 @@ async def check_balance(event: Event):
         return await coin.finish("唔……您没有签到过哦，没有任何金币余额呢！")
     return await coin.finish(ms.at(event.user_id) + f"\n您的金币余额为：\n{coin_}枚")
 
-require("nonebot_plugin_apscheduler")
-
-from nonebot_plugin_apscheduler import scheduler
-
 @scheduler.scheduled_job("cron", hour="7")
 async def clean_data():
     write(CLOCK + "/signed.json","[]")
-    l.info("Signed.json has been cleaned.")
+    logger.info("Signed.json has been cleaned.")
     try:
         for i in os.listdir(CACHE):
             os.remove(CACHE + "/" + i)
-        l.info("已清理所有缓存文件。")
+        logger.info("已清理所有缓存文件。")
     except:
-        l.info("缓存清理失败，请检查后重试！！！")
+        logger.info("缓存清理失败，请检查后重试！！！")
     
