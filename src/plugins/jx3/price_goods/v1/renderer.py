@@ -2,9 +2,7 @@ from src.tools.generate import generate, get_uuid, async_playwright
 from tabulate import tabulate
 from src.tools.file import write
 from src.plugins.help import css
-from src.tools.dep.server import *
-from src.tools.dep.path import *
-from src.tools.dep.api import *
+from src.tools.dep import *
 from ..api import *
 '''
 交易行物品查询。

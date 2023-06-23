@@ -3,8 +3,7 @@ from playwright.async_api import async_playwright
 from pathlib import Path
 from nonebot.log import logger
 import time
-from src.tools.dep.path import *
-
+from src.tools.dep.bot.path import *
 
 def get_uuid():
     return str(uuid.uuid1()).replace("-", "")

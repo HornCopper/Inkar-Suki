@@ -1,4 +1,3 @@
-from src.tools.dep.bot import *
 from .api import *
 
 announce = on_command("jx3_announce", aliases={"维护公告"}, priority=5)
