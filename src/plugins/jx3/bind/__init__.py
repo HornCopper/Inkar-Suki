@@ -1,5 +1,4 @@
 from src.tools.permission import checker, error
-from src.tools.dep.bot import *
 from .api import *
 
 

@@ -1,6 +1,10 @@
+'''
+网络请求相关组件
+'''
+import json
+from sgtpyutils.logger import logger
 from src.tools.config import Config
-from src.plugins.jx3.jx3apiws import ws_client, Jx3WebSocket, RecvEvent
-from src.constant.jx3 import *
+logger.debug('start load web renderer')
 from .argparser import *
 from .renderer import *
 token = Config.jx3api_globaltoken

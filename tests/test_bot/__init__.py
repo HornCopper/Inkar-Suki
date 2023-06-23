@@ -1,5 +1,4 @@
 from .. import *
-from src.tools.dep.api import *
 
 
 def test_args():

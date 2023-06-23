@@ -1,4 +1,3 @@
-from src.tools.dep.bot import *
 from .api import *
 
 firework__ = on_command("jx3-firework", aliases={"_烟花"}, priority=5)

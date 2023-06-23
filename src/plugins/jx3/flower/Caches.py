@@ -1,4 +1,4 @@
-from src.tools.dep.api import *
+from src.tools.dep import *
 
 cache_file_goods = f"{ASSETS}/jx3/pvx_flower.json"
 CACHE_flower: dict = json.loads(read(cache_file_goods)) or {}

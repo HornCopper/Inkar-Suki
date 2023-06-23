@@ -1,4 +1,3 @@
-from src.tools.dep.bot import *
 from .api import *
 
 cmd_jx3_server = on_command("jx3_server", aliases={"服务器","开服"}, priority=5)

@@ -3,8 +3,7 @@ import time
 
 from nonebot.adapters.onebot.v11 import MessageSegment as ms
 
-from src.tools.dep.server import *
-from src.tools.dep.api import *
+from src.tools.dep import *
 
 def boss_mapping(boss:str):
     xjd_num = 10369

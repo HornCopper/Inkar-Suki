@@ -1,4 +1,3 @@
-from src.tools.dep.bot import *
 from .api import *
 
 kungfu = on_command("jx3_kungfu", aliases={"心法"}, priority=5)
