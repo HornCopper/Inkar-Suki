@@ -29,7 +29,12 @@ class GoodsBindType(Enum):
 
 
 class GoodsInfo(dict):
+    def init_computed_props(self):
+        self.price = None # PriceSummary
+        self.current_price = None # PriceDetail
+
     def __init__(self, data: dict = None) -> None:
+        self.init_computed_props()
         if data is None:
             data = {}
         self.id = data.get('id')

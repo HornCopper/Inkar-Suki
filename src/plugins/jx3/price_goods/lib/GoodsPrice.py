@@ -1,8 +1,15 @@
 from .Golds import *
 from sgtpyutils.extensions.clazz import dict2obj
+import time
 
 
-class GoodsPriceSummary:
+class GoodsPriceRecord:
+    def __init__(self) -> None:
+        self.updated: int = 0
+    def updated_time(self):
+        self.updated = time.time()
+
+class GoodsPriceSummary(GoodsPriceRecord):
     def __init__(self, data: dict = None) -> None:
         if data is None:
             data = {}
@@ -13,9 +20,10 @@ class GoodsPriceSummary:
         self.LowestPrice = data.get('LowestPrice')
         self.HighestPrice = data.get('HighestPrice')
         self.AvgPrice = data.get('AvgPrice')
+        super().__init__()
 
 
-class GoodsPriceDetail:
+class GoodsPriceDetail(GoodsPriceRecord):
     Price_Valid_TotalPrice = Gold.price_by_gold(100)  # 总价在100金以上则有效
     InvalidPrice = -1
 
@@ -25,6 +33,7 @@ class GoodsPriceDetail:
         key = ['created', 'n_count', 'unit_price']
         self.prices = [[x.get(k) for k in key] for x in prices]  # 创建时间 数量 单价
         self.valid_price = self.get_valid_price()
+        super().__init__()
 
     def get_valid_price(self, prices: list = None):
         '''

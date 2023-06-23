@@ -1,3 +1,7 @@
+from concurrent.futures.thread import ThreadPoolExecutor
+from sgtpyutils.extensions import distinct
+import random
+import asyncio
 from typing import overload, List
 from ..GoodsBase import *
 from ..GoodsPrice import *
@@ -14,21 +18,34 @@ async def search_item_info_for_price(item_name: str, server: str, pageIndex: int
         return [data, None]  # 未返回正确数据
     data = [x for x in data if x.bind_type != GoodsBindType.BindOnPick]
     prices = await get_goods_current_price(data, server)
+
+    current_prices: List[GoodsPriceDetail] = [[x.id, await get_goods_current_detail_price(x.id, server, only_cache=True)] for x in data]
+    current_prices_dict = dict([[v[0], v[1]] for v in current_prices])
+
     result = []
     for x in data:
-        if x.id in prices:
-            x.price = prices[x.id]
-            result.append(x)
+        if not x.id in prices:
+            continue
+        x.price = prices[x.id]
+        x.current_price = current_prices_dict.get(x.id)
+        result.append(x)
+
     page_start = pageIndex * pageSize
     total = len(result)
     query_items = result[page_start:page_start+pageSize]
     return [query_items, total]
 
 
-async def get_goods_current_detail_price(id: str, server: str) -> list:
+async def get_goods_current_detail_price(id: str, server: str, only_cache: bool = False) -> list:
     '''
     获取单个物品当前详细价格
     '''
+    key = f'{server}:{id}'
+    price_detail: GoodsPriceDetail = CACHE_Goods_PriceDetail.get(key)
+    if (not price_detail is None) and (time.time() - price_detail.updated < 600):
+        return price_detail
+    if only_cache:
+        return price_detail
     url = f'https://next2.jx3box.com/api/item-price/{id}/detail?server={server}'
     raw_data = await get_api(url)
     if not raw_data.get('code') == 0:
@@ -36,11 +53,15 @@ async def get_goods_current_detail_price(id: str, server: str) -> list:
     data = raw_data.get('data') or {}
     prices = data.get('prices') or []
     price_detail = GoodsPriceDetail(prices)
+
+    price_detail.updated_time()
+    CACHE_Goods_PriceDetail[key] = price_detail
+    flush_CACHE_PriceDetail()
     return price_detail
 
 
 @overload
-async def get_goods_current_price(goods: List[str], server: str) -> List[dict]:
+async def get_goods_current_price(goods: List[str], server: str) -> dict[str, GoodsPriceSummary]:
     '''
     基于id批量加载当日价格
     '''
@@ -48,7 +69,7 @@ async def get_goods_current_price(goods: List[str], server: str) -> List[dict]:
 
 
 @overload
-async def get_goods_current_price(goods: List[GoodsInfo], server: str) -> List[GoodsInfo]:
+async def get_goods_current_price(goods: List[GoodsInfo], server: str) -> dict[str, GoodsPriceSummary]:
     '''
     基于商品信息批量加载当日价格
     '''
@@ -67,3 +88,33 @@ async def get_goods_current_price(goods, server: str) -> dict:
     for x in data:
         data[x] = GoodsPriceSummary(data[x])
     return data
+
+
+async def refresh_favoritest_goods_current_price():
+    logger.debug('refresh_favoritest_goods_current_price start')
+    goods = [x for x in CACHE_Goods.values() if x.bind_type.value !=
+             GoodsBindType.BindOnUse]
+    goods.sort(key=lambda x: -x.u_popularity)
+    goods = goods[0:20]
+    all_servers = distinct(server_map.values())
+    tasks = []
+
+    for server in all_servers:
+        for x in goods:
+            tasks.append([x.id, server])
+    result: List = []
+    pool = ThreadPoolExecutor(max_workers=5)
+
+    def run_single(a, b):
+        return asyncio.run(get_goods_current_detail_price(a, b))
+    while len(tasks):
+        x = tasks.pop()
+        r = pool.submit(run_single, x[0], x[1])
+        result.append(r)
+        time.sleep(0.5+random.random())  # 每1秒添加1个任务直到运行完成
+    for x in result:
+        x.result()
+    logger.debug('refresh_favoritest_goods_current_price complete')
+
+scheduler.add_job(func=refresh_favoritest_goods_current_price,
+                  trigger=IntervalTrigger(minutes=60), misfire_grace_time=300)
