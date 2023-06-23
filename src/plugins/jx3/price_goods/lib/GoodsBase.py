@@ -120,6 +120,19 @@ class WucaiProperty:
     DICT_value = [
         '提高'
     ]
+    DICT_value_desc = [
+        '内功':'内',
+        '外功':'外',
+        '等级':'',
+        '毒性':'毒',
+        '效果':'效',
+        '会心':'会',
+        '攻击':'攻',
+        '招式产生威胁':'威胁',
+        '阳性':'阳',
+        '阴性':'阴',
+        '混元性':'混元',
+    ]
     RE_filter_number = re.compile('\d*')
 
     def __init__(self, values: List[str], filters: List[str]) -> None:
@@ -138,6 +151,7 @@ class WucaiProperty:
     def to_dict(self):
         return self.__dict__
 
+    @staticmethod
     def convert_filter(raw: str) -> Tuple[str, int]:
         '''
         将条件标准化
@@ -151,6 +165,7 @@ class WucaiProperty:
             return [x[1], int(r[pos[0]: pos[1]])]
         return [f'未知:{raw}', 0]
 
+    @staticmethod
     def convert_value(raw: str) -> Tuple[str, int]:
         '''
         将属性标准化
@@ -161,8 +176,15 @@ class WucaiProperty:
                 continue
             re_result = WucaiProperty.RE_filter_number.match(v[1])
             pos = re_result.regs[0]
-            return [v[0], int(v[1][pos[0]:pos[1]])]
+            value = WucaiProperty.convert_value_desc(v[0])
+            return [value, int(v[1][pos[0]:pos[1]])]
         return [f'未知:{raw}', 0]
+
+    @staticmethod
+    def convert_value_desc(raw: str) -> str:
+        for x in WucaiProperty.DICT_value_desc:
+            raw = raw.replace(x[0], x[1])
+        return raw
 
     @staticmethod
     def from_html(raw_content: str) -> List[WucaiProperty]:
