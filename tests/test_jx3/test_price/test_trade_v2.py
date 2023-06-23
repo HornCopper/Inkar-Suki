@@ -38,6 +38,18 @@ def test_default_server():
     mc.check_counter()
     server_bind(event.group_id, '')
 
+def jx3_trade_favoritest():
+    mc = MessageCallback()
+    v2.jx3_cmd_favouritest = mc
+
+    func = src.plugins.jx3.jx3_trade_favoritest
+    state = {}
+    event = SFGroupMessageEvent()
+    mc.tag = '唯满侠'
+    task = func(mc, state, event, obMessage(mc.tag))
+    asyncio.run(task)
+    mc.check_counter()
+
 
 def test_not_exist():
     def handle_finish(msg: str):
