@@ -30,7 +30,6 @@ CACHE_Goods_PriceDetail: Dict[str, GoodsPriceDetail] = json.loads(
     read(cache_file_detail))  # 每次重启后从磁盘加载缓存
 CACHE_Goods_PriceDetail = dict([[x, dict2obj(GoodsPriceDetail(), CACHE_Goods_PriceDetail[x])]
                                 for x in CACHE_Goods_PriceDetail])  # 转换为类
-# CACHE_Goods_PriceDetail: dict([id , datetime_hour] : GoodsPrice)
 
 
 def flush_CACHE_PriceDetail():
