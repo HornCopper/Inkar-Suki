@@ -5,8 +5,33 @@ from nonebot.log import logger
 import time
 from src.tools.dep.bot.path import *
 
+
 def get_uuid():
     return str(uuid.uuid1()).replace("-", "")
+
+
+async def generate_by_url(url: str, locate: str = None, first: bool = False, delay: int = 0):
+    try:
+        async with async_playwright() as p:
+            browser = await p.chromium.launch(headless=True, slow_mo=0)
+            context = await browser.new_context()
+            page = await context.new_page()
+            await page.goto(url)
+            if delay > 0:
+                time.sleep(delay / 1000)
+            uuid_ = get_uuid()
+            img = f"{CACHE}/{uuid_}.png"
+            if locate != None:
+                if first:
+                    await page.locator(locate).first.screenshot(path=img)
+                else:
+                    await page.locator(locate).screenshot(path=img)
+            else:
+                await page.screenshot(path=img)
+            return img
+    except Exception as ex:
+        logger.info(f"音卡的图片生成失败啦！请尝试执行`playwright install`！:{ex}")
+        return None
 
 
 async def generate(html: str, web: bool = False, locate: str = None, first: bool = False, delay: int = 0):
@@ -22,24 +47,7 @@ async def generate(html: str, web: bool = False, locate: str = None, first: bool
     if web:
         pass
     html = Path(html).as_uri()
-    try:
-        async with async_playwright() as p:
-            browser = await p.chromium.launch(headless=True, slow_mo=0)
-            context = await browser.new_context()
-            page = await context.new_page()
-            await page.goto(html)
-            if delay > 0:
-                time.sleep(delay / 1000)
-            uuid_ = get_uuid()
-            img = f"{CACHE}/{uuid_}.png"
-            if locate != None:
-                if first:
-                    await page.locator(locate).first.screenshot(path=img)
-                else:
-                    await page.locator(locate).screenshot(path=img)
-            else:
-                await page.screenshot(path=img)
-            return img
-    except Exception as ex:
-        logger.info(f"音卡的图片生成失败啦！请尝试执行`playwright install`！:{ex}")
+    result = generate_by_url(html, locate, first, delay)
+    if result is None:
         return False
+    return result
