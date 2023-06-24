@@ -1,3 +1,4 @@
+import threading
 from concurrent.futures.thread import ThreadPoolExecutor
 from sgtpyutils.extensions import distinct
 import random
@@ -111,7 +112,7 @@ def get_favoritest_by_predict(predict: callable):
     goods.sort(key=lambda x: -x.u_popularity)
     return [x for index, x in enumerate(goods) if predict(index, x)]
 
-import threading
+
 class FavoritestGoodsPriceRefreshThread(threading.Thread):
     def run(self) -> None:
         logger.debug('refresh_favoritest_goods_current_price start')
@@ -135,7 +136,11 @@ class FavoritestGoodsPriceRefreshThread(threading.Thread):
             x.result()
         logger.debug('refresh_favoritest_goods_current_price complete')
         return super().run()
-thread_fav_prices_refresher:FavoritestGoodsPriceRefreshThread = None
+
+
+thread_fav_prices_refresher: FavoritestGoodsPriceRefreshThread = None
+
+
 async def refresh_favoritest_goods_current_price():
     global thread_fav_prices_refresher
     if thread_fav_prices_refresher is None or not thread_fav_prices_refresher.is_alive():
