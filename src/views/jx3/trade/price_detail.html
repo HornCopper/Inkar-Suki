@@ -375,7 +375,7 @@
       })
       const wucai_desc = computed(() => {
         const properties = params_data.item.wucai_properties
-        if (!properties) return null
+        if (!properties || !properties.length) return null
         const brief = properties.map(x => x.values.map(x1 => x1[0]).join('|'))
         const r = {
           brief,
