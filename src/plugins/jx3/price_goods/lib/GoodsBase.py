@@ -132,6 +132,8 @@ class WucaiProperty:
         '阳性':'阳',
         '阴性':'阴',
         '混元性':'混元',
+        '内破防':'内破',
+        '外破防':'外破',
     }
     RE_filter_number = re.compile('\d*')
 
