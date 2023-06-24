@@ -37,4 +37,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     mode = arg[1]
     boss = arg[2]
     data = await genderater(map, mode, boss)
-    await drops.finish(ms.image(Path(data).as_uri()))
+    if type(data) != type([]):
+        await drops.finish(ms.image(Path(data).as_uri()))
+    else:
+        await drops.finish(data[0])
