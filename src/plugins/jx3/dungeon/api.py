@@ -197,6 +197,9 @@ async def genderater(map, mode, boss):
             chart.append(new)
             new = []
             num = 0
+    num = 0
+    if len(new) != 0:
+        chart.append(new)
     html = css + tabulate(chart, tablefmt="unsafehtml")
     final_path = CACHE + "/" + get_uuid() + ".html"
     write(final_path, html)
