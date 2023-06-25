@@ -1,0 +1,212 @@
+<template>
+  <div :style="{'text-align': 'center','font-size':font_size,width:'1000px'}">
+    <el-card shadow="never">
+      <div style="font-size:2rem;font-weight:600;">接引人【{{ keyword }}】</div>
+      <el-row>
+        <el-card style="width: 100%;margin: 1rem;">
+          <el-row>
+            <el-col :span="12">
+              <el-row>
+                <el-col class="primary-icon" :span="4">
+                  <div>命令</div>
+                  <div class="ver-line"></div>
+                </el-col>
+                <el-col :span="20">
+                  <div class="primary-title">
+                    <div>
+                      <span style="color:#999">提问：</span>
+                      <span>接引人 问题</span>
+                    </div>
+                    <div>
+                      <span style="color:#999">查看相关问：</span>
+                      <span>XG0/YY0（还没做）</span>
+                    </div>
+                  </div>
+                </el-col>
+              </el-row>
+            </el-col>
+            <el-col :span="12">
+              <el-row>
+                <el-col class="primary-icon" :span="4">
+                  <div style="color: #999999;">说明</div>
+                  <div class="ver-line"></div>
+                </el-col>
+                <el-col :span="20">
+                  <div class="primary-content">
+                    <div>萌新百科功能 提问想要了解的内容以得到答案</div>
+                    <div>1. 提问后会回答参考回答及相关问题、引用词</div>
+                    <div>2. 可以通过回复 XG+序号 来查看相关问题答案</div>
+                    <div>3. 可以通过回复 YY+序号 来查看引用词答案</div>
+                  </div>
+                </el-col>
+              </el-row>
+            </el-col>
+          </el-row>
+        </el-card>
+      </el-row>
+      <el-row>
+        <el-collapse v-model="expanded_items">
+          <el-collapse-item name="1">
+            <template #title>
+              <div class="global-title">
+                <span>参考回答</span>
+              </div>
+            </template>
+            <el-row class="answer-card">
+              <div v-for="(result,index) in question.results" :key="result">
+                <div v-for="(paras,index_ps) in result" :key="index_ps">
+                  <span v-for="(p,index_p) in paras" :key="index_p">
+                    <span v-if="p.find">
+                      <img v-if="p[0]=='IMG'" :src="p[1]" />
+                      <el-tag v-else-if="p[0]=='RELA'" effect="dark" round class="rela-tag">{{
+                        `[${reference_dict[p[1]]}]${p[1]}` }}</el-tag>
+                    </span>
+                    <span v-else>{{ p }}</span>
+                  </span>
+                </div>
+              </div>
+            </el-row>
+          </el-collapse-item>
+          <el-collapse-item name="2">
+            <template #title>
+              <div class="global-title">
+                <span>相关问题</span>
+              </div>
+            </template>
+            <el-row class="related-questions-card">
+              <div v-for="(question,index) in tip.results" :key="index" class="related-question-single">
+                <div class="related-banner">【XG{{ index }}】</div>
+                <div>{{ question }}</div>
+              </div>
+            </el-row>
+          </el-collapse-item>
+          <el-collapse-item name="3">
+            <template #title>
+              <div class="global-title">
+                <span>引用</span>
+              </div>
+            </template>
+            <el-row class="reference-keywords-card">
+              <div v-for="(question,index) in all_references" :key="index" class="related-question-single">
+                <div class="related-banner">【YY{{ index }}】</div>
+                <div>{{ question }}</div>
+              </div>
+            </el-row>
+          </el-collapse-item>
+        </el-collapse>
+      </el-row>
+    </el-card>
+  </div>
+</template>
+<style lang="scss">
+  .el-table .cell {
+    padding: 0 !important;
+  }
+
+
+  .ver-line {
+    height: 3rem;
+    border: 1px solid #aaaaaa;
+  }
+
+  .primary-icon {
+    font-weight: 600;
+    font-size: 1.2rem;
+    line-height: 1.4rem;
+    display: flex;
+    justify-content: space-evenly;
+  }
+
+  .primary-title {
+    color: #ff0000;
+    font-weight: 400;
+    text-align: left;
+    line-height: 1.4rem;
+    font-size: 1.12rem;
+  }
+
+  .primary-content {
+    color: #999;
+    text-align: left;
+    line-height: 1rem;
+  }
+
+  .answer-card {
+    text-align: left;
+  }
+
+  .rela-tag {
+    margin-right: 0.2rem;
+  }
+
+  .related-questions-card {
+    display: flex;
+  }
+
+  .related-question-single {
+    color: #ffffff;
+    background-color: #1e88e5;
+    margin: 0.5rem;
+    padding: 0.5rem;
+    border-radius: 0.8rem;
+    font-size: 1rem;
+    max-width: 15rem;
+  }
+
+  .related-banner {
+    font-size: 1.2rem;
+  }
+</style>
+<script>
+  const { defineComponent, reactive, toRefs, ref, onMounted, computed } = Vue
+  const component = defineComponent({
+    components: {},
+    setup () {
+      const locale = computed(() => window.zhCn)
+      onMounted(() => {
+      })
+      const methods = {
+        parseTime,
+        formatTime,
+      }
+      const all_references = computed(() => {
+        const items = params_data.question.results
+        const result = []
+        items.map(item => { // 最外层
+          item.map(paras => { // 各段落
+            paras.map(p => { // 各段
+              if (!p.find) return // 检查是否是数组
+              if (p[0] === 'RELA') result.push(p[1]) // 如果是关联项则加入
+            })
+          })
+        })
+        return result
+      })
+      const reference_dict = computed(() => {
+        // 将相关项目转为字典
+        const d = all_references.value
+        const result = {}
+        d.map((x, index) => {
+          result[x] = index
+        })
+        return result
+      })
+      return {
+        keyword: '', // 提问关键词
+        question: { // 回答
+          results: [], // 级联渲染结果
+          items: [] // 原始数据
+        },
+        tip: { // 相关提问
+          results: ['xxxx'], // 相关提问列表
+          items: [{}]
+        },
+        font_size: '1rem',
+        expanded_items: ['1', '2', '3'],
+        all_references,
+        reference_dict,
+        ...methods,
+      }
+    },
+  })
+</script>
