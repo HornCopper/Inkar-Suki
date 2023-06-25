@@ -32,3 +32,4 @@ from .subscribe import *
 from .task import *
 from .user import *
 from .venture import *
+from .wiki import *
