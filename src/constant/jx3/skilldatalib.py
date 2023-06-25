@@ -11,37 +11,37 @@ from src.tools.config import Config
 def kftosh(kf: str) -> str:
     if kf in ["隐龙决"]:
         return "凌雪"
-    elif kf in ["花间游","离经易道"]:
+    elif kf in ["花间游","离经易道","花间","奶花"]:
         return "万花"
-    elif kf in ["傲血战意","铁牢律"]:
+    elif kf in ["傲血战意","铁牢律","马男","傲血","铁牢"]:
         return "天策"
     elif kf in ["紫霞功","太虚剑意"]:
         return "纯阳"
-    elif kf in ["云裳心经","冰心诀"]:
+    elif kf in ["云裳心经","冰心诀","bx","qx","nx","奶秀","冰心"]:
         return "七秀"
-    elif kf in ["毒经","补天诀"]:
+    elif kf in ["毒经","补天诀","补天","奶毒","毒姐","dj"]:
         return "五毒"
-    elif kf in ["惊羽诀","天罗诡道"]:
+    elif kf in ["惊羽诀","天罗诡道","田螺","鲸鱼","惊羽"]:
         return "唐门"
-    elif kf in ["问水诀","山居剑意"]:
+    elif kf in ["问水诀","山居剑意","二少","叽哥"]:
         return "藏剑"
-    elif kf in ["焚影圣诀","明尊琉璃体"]:
+    elif kf in ["焚影圣诀","明尊琉璃体","喵哥"]:
         return "明教"
-    elif kf in ["分山劲","铁骨衣"]:
+    elif kf in ["分山劲","铁骨衣","岔劲"]:
         return "苍云"
-    elif kf in ["莫问","相知"]:
+    elif kf in ["莫问","相知","咕咕"]:
         return "长歌"
     elif kf in ["北傲诀"]:
         return "霸刀"
-    elif kf in ["凌海诀"]:
+    elif kf in ["凌海诀","伞爹","伞宗"]:
         return "蓬莱"
-    elif kf in ["洗髓经","易筋经"]:
+    elif kf in ["洗髓经","易筋经","和尚","大师"]:
         return "少林"
-    elif kf in ["太玄经"]:
+    elif kf in ["太玄经","衍天宗","灯皇"]:
         return "衍天"
-    elif kf in ["无方","灵素"]:
+    elif kf in ["无方","灵素","狍子"]:
         return "药宗"
-    elif kf in ["孤锋诀"]:
+    elif kf in ["孤锋诀","刀爹","呆宗"]:
         return "刀宗"
     else:
         return False
