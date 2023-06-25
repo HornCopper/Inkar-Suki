@@ -30,6 +30,7 @@ kf_dict = {}
 for x in __kf_dict:
     for y in __kf_dict[x]:
         kf_dict[y] = x
+    kf_dict[x] = x
 
 
 def kftosh(kf: str) -> str:
