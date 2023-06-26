@@ -50,12 +50,16 @@ class QuesResponse(Response):
             self.results = None
             return
         self.results = [x.get('answerContent') for x in self.items]
+        # 当没有回答时返回该列表
+        self.confirm_list = [x.get('confirmList') for x in self.items]
+        self.relateds = [] # 相关问题
 
     def to_dict(self):
         return {
             'results': self.results,
             'items': self.items,
             'relateds': self.relateds,
+            'confirm_list': self.confirm_list
         }
 
 
@@ -72,7 +76,8 @@ class Jx3GuidResult:
 
 
 class Jx3Guide:
-    API_host = 'https://chatrobot.xoyo.com/chatbot/'
+    API_web_host = 'https://chatrobot.xoyo.com/'
+    API_host = f'{API_web_host}chatbot/'
     # 初始化
     API_init = 'web/init/{channel}?sysNum={channel}&sourceId={source}&lang=zh_CN&_={timestamp}'
     # 获取提示
@@ -143,6 +148,8 @@ class Jx3Guide:
             src = img.attrs.get('src')
             if not src:
                 continue
+            if not src.startswith(Jx3Guide.API_web_host):
+                src = f'{Jx3Guide.API_web_host}{src}'
             img_data = await self.session.get(src)
             if not img_data.status_code == 200:
                 img.attrs['src'] = ''  # 错误
@@ -180,10 +187,10 @@ class Jx3Guide:
         return [result, relateds]
 
     async def handle_answer(self, res: QuesResponse):
-        pass
-        r = [await self.handle_single_res(x) for x in res.results]
+        r = [await self.handle_single_res(x) for x in res.results if x]
         res.results = [[x for x in paras[0] if x] for paras in r if paras]
-        res.relateds = extensions.flat([[x for x in paras[1] if x] for paras in r if paras])
+        res.relateds = extensions.flat(
+            [[x for x in paras[1] if x] for paras in r if paras])
         # logger.debug(f'answers handled:{res.results},{res.relateds}')
 
     async def run_async(self):
