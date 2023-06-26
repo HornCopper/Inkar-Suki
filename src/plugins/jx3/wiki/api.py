@@ -32,7 +32,6 @@ class TipResponse(Response):
             self.results = None
             return
         self.results = [x.get('content') for x in self.items]
-        pass
 
     def to_dict(self):
         return {'results': self.results, 'items': self.items}
@@ -41,18 +40,23 @@ class TipResponse(Response):
 class QuesResponse(Response):
     def __init__(self, data: dict) -> None:
         super().__init__(data)
+        # logger.debug(f'question response loaded(success:{self.success})')
         if not self.success:
             self.results = None
             return
         self.items = self._data.get('robotResults')
+        # logger.debug(f'question response items:{self.items}')
         if self.items is None:
             self.results = None
             return
         self.results = [x.get('answerContent') for x in self.items]
-        pass
 
     def to_dict(self):
-        return {'results': self.results, 'items': self.items}
+        return {
+            'results': self.results,
+            'items': self.items,
+            'relateds': self.relateds,
+        }
 
 
 class Jx3GuidResult:
@@ -111,7 +115,9 @@ class Jx3Guide:
         url = url.replace('{channel}', Jx3Guide.CHANNEL_Init)
         url = url.replace('{question}', self.question)
         data = await self.session.get(url)
-        return TipResponse(data)
+        res = TipResponse(data)
+
+        return res
 
     async def _step_ques(self):
         url = Jx3Guide.get_url(Jx3Guide.API_ques)
@@ -120,12 +126,15 @@ class Jx3Guide:
         headers = {
             'Content-Type': 'application/json'
         }
+        # logger.debug(f'wiki question set:{self.question}')
         data = await self.session.post(url, json=payload, headers=self.with_headers(headers))
         res = QuesResponse(data)
         await self.handle_answer(res)
         return res
 
     async def handle_single_res(self, res: str):
+        if not res:
+            return
         doc = BeautifulSoup(res)
         ##############处理图片#################
         imgs = doc.find_all('img')
@@ -148,6 +157,7 @@ class Jx3Guide:
         ##############处理段落#################
         paras = doc.find_all('p')
         result = []
+        relateds = []
         for p in paras:
             contents = p.contents
             r = []
@@ -155,20 +165,26 @@ class Jx3Guide:
                 data = contents[index]
                 if not type(data) == element.Tag:
                     r.append(data.get_text())
-                    continue # 非标签则直接添加文字
+                    continue  # 非标签则直接添加文字
                 if data.has_attr('src'):
                     r.append(['IMG', data.attrs.get("src")])
-                    continue # 图片
+                    continue  # 图片
                 if data.has_attr('data-question'):
-                    x = ['RELA', data.attrs.get("data-question")]
-                    r.append(x) # 关联问题
+                    related_ques = data.attrs.get("data-question")
+                    x = ['RELA', related_ques]
+                    relateds.append(related_ques)
+                    r.append(x)  # 关联问题
                 r.append(data.get_text())
             result.append([x for x in r if x])  # 加入并排除空数据
         ##############处理段落#################
-        return result
+        return [result, relateds]
 
     async def handle_answer(self, res: QuesResponse):
-        res.results = [await self.handle_single_res(x) for x in res.results]
+        pass
+        r = [await self.handle_single_res(x) for x in res.results]
+        res.results = [[x for x in paras[0] if x] for paras in r if paras]
+        res.relateds = extensions.flat([[x for x in paras[1] if x] for paras in r if paras])
+        # logger.debug(f'answers handled:{res.results},{res.relateds}')
 
     async def run_async(self):
         await self._step_init()
@@ -182,6 +198,7 @@ async def get_guide(submit: str) -> Jx3GuidResult:
     获取jx3萌新指引的截图
     '''
     r = await Jx3Guide(submit).run_async()
+    # logger.debug(f'guide completed:{r.to_dict()}')
     return r
 
 if __name__ == '__main__':
