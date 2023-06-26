@@ -23,16 +23,18 @@ async def jx3_wiki(state: T_State, event: GroupMessageEvent, args: Message = Com
 
 
 @jx3_cmd_wiki.got('reference')
-async def jx3_next_ques(state: T_State, event: GroupMessageEvent, reference: Message = CommandArg()):
+async def jx3_next_ques(state: T_State, event: GroupMessageEvent, reference: Message = Arg()):
     '''
     提交相关项查询
     '''
     template = [Jx3Arg(Jx3ArgsType.default)]
     [arg_reference] = get_args(
         reference.extract_plain_text(), template_args=template)
+    logger.debug(f'next_ques:{arg_reference}')
     if not arg_reference:
         return
     arg_cmd = arg_reference[0:2].lower()
+    logger.debug(f'next_ques cmd:{arg_cmd}')
     result = state.get('result')
     arg_index = get_number(arg_reference[2:])
     if arg_cmd == 'xg' or arg_cmd == '相关':  # 相关问题
@@ -41,4 +43,5 @@ async def jx3_next_ques(state: T_State, event: GroupMessageEvent, reference: Mes
         arg_keyword = result.question.relateds[arg_index]
     else:
         return
+    logger.debug(f'next_ques ({arg_index}) cmd:{arg_keyword}')
     return await jx3_wiki(state, event, obMessage(arg_keyword))
