@@ -150,7 +150,8 @@
     padding: 0.5rem;
     border-radius: 0.8rem;
     font-size: 1rem;
-    max-width: 15rem;
+    max-width: 20rem;
+    line-height: 1.1rem;
   }
 
   .related-banner {
@@ -170,17 +171,8 @@
         formatTime,
       }
       const all_references = computed(() => {
-        const items = params_data.question.results
-        const result = []
-        items.map(item => { // 最外层
-          item.map(paras => { // 各段落
-            paras.map(p => { // 各段
-              if (!p.find) return // 检查是否是数组
-              if (p[0] === 'RELA') result.push(p[1]) // 如果是关联项则加入
-            })
-          })
-        })
-        return result
+        const items = params_data.question
+        return items.relateds
       })
       const reference_dict = computed(() => {
         // 将相关项目转为字典
