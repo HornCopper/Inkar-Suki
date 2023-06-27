@@ -1,8 +1,15 @@
 import httpx
 import datetime
 import time
-
+def get_number(number):
+    if not checknumber(number):
+        return 0
+    return int(number)
 def checknumber(number):
+    if number is None:
+        return False
+    if isinstance(number,int):
+        return True
     return number.isdecimal()
 
 async def get_url(url, proxy: dict = None, args: dict = None, headers: str = None, timeout: int = 300):
