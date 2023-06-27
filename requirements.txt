@@ -1,6 +1,7 @@
 beautifulsoup4
 nb-cli
 nonebot2
+nonebot2[fastapi]
 nonebot-adapter-onebot
 psutil
 tabulate
@@ -8,3 +9,7 @@ xpinyin
 numpy
 nonebot_plugin_apscheduler
 playwright
+sgtpyutils >= 1.15.23
+pydantic
+pathlib2
+aiotieba

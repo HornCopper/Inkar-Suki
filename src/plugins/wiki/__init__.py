@@ -1,23 +1,12 @@
 import json
 import sys
-import nonebot
-
-from nonebot import on_command
-from nonebot.adapters import Message
-from nonebot.adapters.onebot.v11 import GroupMessageEvent
-from nonebot.params import CommandArg, Arg
-from nonebot.log import logger
-from nonebot.typing import T_State
-
-TOOLS = nonebot.get_driver().config.tools_path
-sys.path.append(str(TOOLS))
-DATA = TOOLS[:-5] + "data"
 
 from src.tools.file import read, write
 from src.tools.utils import checknumber
 from src.tools.permission import checker, error
 
 from .wikilib import wiki as wiki_
+from src.tools.dep import *
 
 wiki = on_command("wiki", priority=5)
 @wiki.handle()
@@ -66,7 +55,6 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
         link = api["data"]
         now = json.loads(read(DATA + "/" + str(event.group_id) + "/wiki.json"))
         now["startwiki"] = link
-        logger.info(now)
         write(DATA + "/" + str(event.group_id) + "/wiki.json", json.dumps(now))
         await setwiki.finish("初始Wiki修改成功！")
 
@@ -85,7 +73,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     args = args.extract_plain_text().split(" ")
     if args[0] == "add":
         if len(args) != 3:
-            await interwiki.finish("唔……参数有误。")
+            await interwiki.finish(PROMPT_ArgumentInvalid)
         prefix = args[1]
         if check_interwiki_prefix(str(event.group_id), prefix) == True:
             await interwiki.finish("唔……该前缀已被使用，请删除或更新此前缀~")
@@ -102,7 +90,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
         await interwiki.finish("成功添加Interwiki：\n" + site_name)
     elif args[0] == "del":
         if len(args) != 2:
-            await interwiki.finish("唔……参数有误。")
+            await interwiki.finish(PROMPT_ArgumentInvalid)
         prefix = args[1]
         if check_interwiki_prefix(str(event.group_id), prefix) == False:
             await interwiki.finish("唔……该前缀未被使用，请检查后重试~")
@@ -114,7 +102,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
         await interwiki.finish("Interwiki移除成功！")
     elif args[0] == "upd":
         if len(args) != 3:
-            await interwiki.finish("唔……参数有误。")
+            await interwiki.finish(PROMPT_ArgumentInvalid)
         prefix = args[1]
         link = args[2]
         api = await wiki_.get_api(link)
@@ -131,7 +119,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
         site_name = await wiki_.get_site_info(api)
         await interwiki.finish("成功更新Interwiki：\n" + site_name)
     else:
-        await interwiki.finish("唔……参数不正确。")
+        await interwiki.finish(PROMPT_ArgumentInvalid)
 
 def get_local_api(group, prefix):
     local_data = json.loads(read(DATA+"/"+group+"/wiki.json"))
@@ -197,7 +185,7 @@ async def __(state: T_State, num: Message = Arg()):
         api = state["wiki"]
         results = state["results"]
         if int(num) not in range(len(results)):
-            await wiki.finish("唔……序号不存在，取消搜索。")
+            await wiki.finish(PROMPT_NumberNotExist)
         else:
             title = results[int(num)]
             info = await wiki_.simple(api,title)
@@ -206,4 +194,4 @@ async def __(state: T_State, num: Message = Arg()):
             msg = f"查询到「{title}」：\n{link}{desc}"
             await wiki.finish(msg)
     else:
-        await wiki.finish("唔……输入的不是数字哦，取消搜索。")
+        await wiki.finish(PROMPT_NumberInvalid)

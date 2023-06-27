@@ -1,0 +1,174 @@
+<template>
+  <div :style="{'text-align': 'center','font-size':font_size,width:'1000px'}">
+    <el-card shadow="never">
+      <div style="font-size:2rem;font-weight:600;">交易行 · {{ server }} · {{ item_name }}</div>
+      <el-row>
+        <el-card style="width: 100%;margin: 1rem;">
+          <el-row>
+            <el-col :span="12">
+              <el-row>
+                <el-col class="primary-icon" :span="4">
+                  <div>命令</div>
+                  <div class="ver-line"></div>
+                </el-col>
+                <el-col :span="20">
+                  <div class="primary-title">
+                    <div>
+                      <span style="color:#999">查看近期热门：</span>
+                      <span>交易行热门 [页码]</span>
+                    </div>
+                  </div>
+                </el-col>
+              </el-row>
+            </el-col>
+            <el-col :span="12">
+              <el-row>
+                <el-col class="primary-icon" :span="4">
+                  <div style="color: #999999;">说明</div>
+                  <div class="ver-line"></div>
+                </el-col>
+                <el-col :span="20">
+                  <div class="primary-content">
+                    <div>1. 概要价格每天更新1次，详细价格每10分钟更新1次。</div>
+                    <div>2. 一页默认显示20个物品，可以输入页码来选择不同页。</div>
+                    <div>3. 每次访问将给物品人气+1，人气越高越靠前。</div>
+                  </div>
+                </el-col>
+              </el-row>
+            </el-col>
+          </el-row>
+        </el-card>
+      </el-row>
+      <el-row>
+        <el-table v-if="goods_items && goods_items.length" :data="goods_items" stripe style="width: 100%">
+          <el-table-column label="序号" width="40px">
+            <template #default="scope">{{ scope.row.index }}</template>
+          </el-table-column>
+          <el-table-column label="物品">
+            <template #default="scope">
+              <div style="display: flex">
+                <img :src="scope.row.img_url" :style="{height: '1.4rem'}" />
+                <div :style="{'font-size':font_size,color:scope.row.color,'margin-left':'0.5rem'}">
+                  <span>{{ scope.row.name }}</span>
+                  <span v-if="scope.row.level && scope.row.level>0">({{ scope.row.level }}品)</span>
+                </div>
+              </div>
+            </template>
+          </el-table-column>
+          <el-table-column label="均价" width="100px">
+            <template #default="scope">
+              <span>{{ convertGold(scope.row.price.AvgPrice)[0] }}</span>
+              <img :src="convertGold(scope.row.price.AvgPrice)[1]" />
+            </template>
+          </el-table-column>
+          <el-table-column v-if="any_price_current_available" label="实时" width="100px">
+            <template #default="scope">
+              <span v-if="scope.row.current_price&&scope.row.current_price.price_valid">
+                <span>{{ convertGold(scope.row.current_price.price_valid)[0] }}</span>
+                <img :src="convertGold(scope.row.current_price.price_valid)[1]" />
+                <span v-if="scope.row.current_price.latest">({{ parseTime(scope.row.current_price.latest) }})</span>
+              </span>
+              <span v-else style="color:#cccccc">暂无统计</span>
+            </template>
+          </el-table-column>
+          <el-table-column label="底价" width="100px">
+            <template #default="scope">
+              <span>{{ convertGold(scope.row.price.LowestPrice)[0] }}</span>
+              <img :src="convertGold(scope.row.price.LowestPrice)[1]" />
+            </template>
+          </el-table-column>
+          <el-table-column label="总量" width="90px">
+            <template #default="scope">{{ convertSci(scope.row.price.SampleSize) }}</template>
+          </el-table-column>
+          <el-table-column label="热度" width="150px">
+            <template #default="scope">
+              <el-rate :model-value="convertPop(scope.row.u_popularity)" disabled />
+            </template>
+          </el-table-column>
+        </el-table>
+        <el-empty v-else style="margin:auto" description="没有内容" />
+      </el-row>
+      <div style="width: 100%;display: flex;justify-content: center;margin: 1.2rem;">
+        <el-pagination :default-current-page="page.pageIndex + 1" v-model:page-size="page.pageSize" :small="small"
+          :disabled="false" :background="false" layout="total, sizes, prev, pager, next, jumper"
+          :total="page.totalCount" />
+      </div>
+    </el-card>
+  </div>
+</template>
+<style lang="scss">
+  .el-table .cell {
+    padding: 0 !important;
+  }
+</style>
+<style lang="scss">
+  .ver-line {
+    height: 3rem;
+    border: 1px solid #aaaaaa;
+  }
+
+  .primary-icon {
+    font-weight: 600;
+    font-size: 1.2rem;
+    line-height: 1.4rem;
+    display: flex;
+    justify-content: space-evenly;
+  }
+
+  .primary-title {
+    color: #ff0000;
+    font-weight: 400;
+    text-align: left;
+    line-height: 1.4rem;
+    font-size: 1.12rem;
+  }
+
+  .primary-content {
+    color: #999;
+    text-align: left;
+    line-height: 1rem;
+  }
+</style>
+<script>
+  const { defineComponent, reactive, toRefs, ref, onMounted, computed } = Vue
+  const component = defineComponent({
+    components: {},
+    setup () {
+      const locale = computed(() => window.zhCn)
+      onMounted(() => {
+      })
+      const methods = {
+        parseTime,
+        formatTime,
+        convertGold,
+        convertSci,
+        convertPop
+      }
+      const goods_items = computed(() => {
+        const items = Object.keys(params_data.items)
+        return items.map((x, index) => Object.assign({ id: x, index }, params_data.items[x]))
+      })
+
+      const any_price_current_available = computed(() => {
+        const items = goods_items.value
+        if (!items) return false
+        return !!items.find(x => x.current_price && x.current_price.price_valid)
+      })
+      const font_size = ref('0.8rem')
+      return {
+        items: [], // {id:'',price:0}
+        server: '', // 唯我独尊
+        item_name: '', // 五行石
+        goods_items,
+        any_price_current_available,
+        page: {
+          pageIndex: 0,
+          pageSize: 20,
+          totalCount: 231
+        },
+        font_size,
+        ...methods,
+      }
+    },
+  })
+</script>

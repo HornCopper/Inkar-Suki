@@ -1,2 +1,2 @@
-import tests.test_server
-tests.test_server.test_server_map()
+import tests.test_jx3.test_joy
+tests.test_jx3.test_joy.test_tiangou()

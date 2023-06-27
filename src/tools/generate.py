@@ -1,36 +1,53 @@
 import uuid
 from playwright.async_api import async_playwright
-import sys
-import nonebot
 from pathlib import Path
 from nonebot.log import logger
-TOOLS = nonebot.get_driver().config.tools_path
-sys.path.append(str(TOOLS))
-CACHE = TOOLS.replace("tools","cache")
+import time
+from src.tools.dep.bot.path import *
+
 
 def get_uuid():
-    return str(uuid.uuid1()).replace("-","")
+    return str(uuid.uuid1()).replace("-", "")
 
-async def generate(html: str, web: bool, locate: str = None, first: bool = False):
-    if web:
-        pass
-    else:
-        html = Path(html).as_uri()
+
+async def generate_by_url(url: str, locate: str = None, first: bool = False, delay: int = 0):
     try:
         async with async_playwright() as p:
-            browser = await p.chromium.launch(headless = True, slow_mo = 0)
+            browser = await p.chromium.launch(headless=True, slow_mo=0)
             context = await browser.new_context()
             page = await context.new_page()
-            await page.goto(html)
+            await page.goto(url)
+            if delay > 0:
+                time.sleep(delay / 1000)
             uuid_ = get_uuid()
-            img = CACHE + "/" + uuid_ + ".png"
+            img = f"{CACHE}/{uuid_}.png"
             if locate != None:
                 if first:
-                    await page.locator(locate).first.screenshot(path = img)
+                    await page.locator(locate).first.screenshot(path=img)
                 else:
-                    await page.locator(locate).screenshot(path = img)
+                    await page.locator(locate).screenshot(path=img)
             else:
-                await page.screenshot(path = img)
+                await page.screenshot(path=img)
             return img
-    except:
-        logger.info("音卡的图片生成失败啦！请尝试执行`playwright install`！")
+    except Exception as ex:
+        logger.info(f"音卡的图片生成失败啦！请尝试执行`playwright install`！:{ex}")
+        return None
+
+
+async def generate(html: str, web: bool = False, locate: str = None, first: bool = False, delay: int = 0):
+    '''
+    生成指定路径下html文件的截图
+    @param html: html文件路径
+    @param web: 仅可填False，否则返回空
+    @param locate: 填写指定标签以仅截图该标签
+    @param first: 是否选取首个元素截图
+    @param delay: 打开网页后延迟时间，单位ms
+    @return : 返回生成的图片路径
+    '''
+    if web:
+        pass
+    html = Path(html).as_uri()
+    result = await generate_by_url(html, locate, first, delay)
+    if result is None:
+        return False
+    return result
