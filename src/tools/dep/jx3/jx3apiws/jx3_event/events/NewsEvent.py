@@ -1,7 +1,7 @@
 from ..dep import *
 
 
-@EventRister.rister(action=2002)
+@EventRegister.rister(action=2002)
 class NewsRecvEvent(RecvEvent):
     """新闻推送事件"""
 
