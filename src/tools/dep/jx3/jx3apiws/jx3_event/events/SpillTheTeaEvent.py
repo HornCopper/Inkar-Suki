@@ -31,6 +31,8 @@ class SpillTheTeaEvent(RecvEvent):
 
     @overrides(RecvEvent)
     def render_message(self, group) -> str:
+        if not self.check_server(group):
+            return None
         return self.get_message()
 
     @overrides(RecvEvent)
