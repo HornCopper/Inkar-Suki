@@ -2,7 +2,7 @@ from ..dep import *
 from sgtpyutils.logger import logger
 
 
-@EventRegister.rister(action=1007)
+@EventRegister.register(action=1007)
 class XuanJingEvent(RecvEvent):
     """玄晶获取事件"""
 

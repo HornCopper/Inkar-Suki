@@ -1,7 +1,7 @@
 from ..dep import *
 
 
-@EventRegister.rister(action=1001)
+@EventRegister.register(action=1001)
 class SerendipityEvent(RecvEvent):
     """奇遇播报事件"""
 
