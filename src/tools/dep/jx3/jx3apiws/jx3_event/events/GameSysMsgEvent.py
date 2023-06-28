@@ -1,7 +1,7 @@
 from ..dep import *
 
 
-@EventRegister.rister(action=1008)
+@EventRegister.register(action=1008)
 class GameSysMsgEvent(RecvEvent):
     """游戏系统频道消息推送"""
 
