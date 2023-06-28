@@ -6,8 +6,10 @@ import time
 class GoodsPriceRecord:
     def __init__(self) -> None:
         self.updated: int = 0
+
     def updated_time(self):
         self.updated = time.time()
+
 
 class GoodsPriceSummary(GoodsPriceRecord):
     def __init__(self, data: dict = None) -> None:
@@ -33,6 +35,7 @@ class GoodsPriceDetail(GoodsPriceRecord):
         key = ['created', 'n_count', 'unit_price']
         self.prices = [[x.get(k) for k in key] for x in prices]  # 创建时间 数量 单价
         self.valid_price = self.get_valid_price()
+        self.latest = 0  # 最新数据时时间戳
         super().__init__()
 
     def get_valid_price(self, prices: list = None):
@@ -46,6 +49,7 @@ class GoodsPriceDetail(GoodsPriceRecord):
             self.price_valid = GoodsPriceDetail.InvalidPrice
             return self.price_valid
         prices.sort(key=lambda x: x[2])  # 按价格升序排列
+        self.latest = int(max(prices, key=lambda x: x[1])[0]) * 1e3
 
         total_price = 0
         self.price_lowest = prices[0][2]

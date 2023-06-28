@@ -55,9 +55,6 @@
               </div>
             </template>
           </el-table-column>
-          <el-table-column label="更新时间" width="150px">
-            <template #default="scope">{{ formatTime(scope.row.price.UpdatedAt) }}</template>
-          </el-table-column>
           <el-table-column label="均价" width="100px">
             <template #default="scope">
               <span>{{ convertGold(scope.row.price.AvgPrice)[0] }}</span>
@@ -69,8 +66,9 @@
               <span v-if="scope.row.current_price&&scope.row.current_price.price_valid">
                 <span>{{ convertGold(scope.row.current_price.price_valid)[0] }}</span>
                 <img :src="convertGold(scope.row.current_price.price_valid)[1]" />
+                <span v-if="scope.row.current_price.latest">({{ parseTime(scope.row.current_price.latest) }})</span>
               </span>
-              <span v-else style="color:#cccccc">暂无</span>
+              <span v-else style="color:#cccccc">暂无统计</span>
             </template>
           </el-table-column>
           <el-table-column label="底价" width="100px">

@@ -93,12 +93,36 @@ async def get_drops(map, mode, boss):
     data = await post_url(url="https://m.pvp.xoyo.com/dungeon/boss-drop", data=param, headers=headers)
     return json.loads(data)
 
+def mode_mapping(mode):
+    if mode in ["25yx","yx","YX","Yx","yX","25人YX","25人英雄","英雄","25Yx","25人yX","25人yx","25英雄"]:
+        return "25人英雄"
+    elif mode in ["25pt","PT","pt","pT","25人PT","25人Pt","25人pt","25普通","普通","25人普通","25pt","铂"]:
+        return "25人普通"
+    elif mode in ["10人","10","10人普通","10PT","10pt"]:
+        return "10人普通"
+    elif mode in ["10人yx","10人英雄","10YX","10yx"]:
+        return "10人英雄"
+    elif mode in ["10人tz","10tz","10TZ","10Tz","10人挑战","10挑战"]:
+        return "10人挑战"
+    elif mode in ["25人tz","tz","TZ","Tz","25挑战","25人挑战","25TZ","25tz"]:
+        return "25人挑战"
+    else:
+        return False
+
 async def genderater(map, mode, boss):
-    data = await get_drops(map, mode, boss)
+    mode = mode_mapping(mode)
+    if mode == False:
+        return ["唔……难度似乎音卡不能理解哦~"]
+    try:    
+        data = await get_drops(map, mode, boss)
+    except KeyError:
+        return ["唔……没有找到该掉落列表，请检查副本名称、BOSS名称或难度~"]
     data = data["data"]
     armors = data["armors"]
     others = data["others"]
     weapons = data["weapons"]
+    if len(armors) == 0 and len(others) == 0 and len(weapons) == 0:
+        return ["唔……没有找到该boss的掉落哦~\n您确定" + f"{boss}住在{mode}{map}吗？"]
     chart = [["装备"]]
     if armors == None:
         chart.append(["无"])
@@ -197,9 +221,13 @@ async def genderater(map, mode, boss):
             chart.append(new)
             new = []
             num = 0
+    num = 0
+    if len(new) != 0:
+        chart.append(new)
     html = css + tabulate(chart, tablefmt="unsafehtml")
     final_path = CACHE + "/" + get_uuid() + ".html"
     write(final_path, html)
     img = await generate(final_path, False, "table", False)
-    print(img)
+    if img == False:
+        return ["唔……生成失败，请联系音卡管理员！"]
     return img
