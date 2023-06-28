@@ -1,7 +1,7 @@
 from ..dep import *
 
 
-@EventRegister.rister(action=2004)
+@EventRegister.register(action=2004)
 class SpillTheTeaEvent(RecvEvent):
     """818推送事件"""
 

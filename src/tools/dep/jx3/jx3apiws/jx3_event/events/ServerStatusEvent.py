@@ -1,7 +1,7 @@
 from ..dep import *
 
 
-@EventRegister.rister(action=2001)
+@EventRegister.register(action=2001)
 class ServerStatusEvent(RecvEvent):
     """服务器状态推送事件"""
 
