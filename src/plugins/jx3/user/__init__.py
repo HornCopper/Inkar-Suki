@@ -38,14 +38,7 @@ async def jx3_player(event: GroupMessageEvent, args: Message = CommandArg()):
 
     Example：-玩家信息 幽月轮 哭包猫@唯我独尊
     '''
-    arg = args.extract_plain_text().split(" ")
-    if len(arg) not in [1, 2]:
-        await jx3_cmd_roleInfo.finish("唔……参数不正确哦，请检查后重试~")
-    if len(arg) == 1:
-        server = None
-        id = arg[0]
-    elif len(arg) == 2:
-        server = arg[0]
-        id = arg[1]
-    msg = await roleInfo_(server=server, player=id, group_id=event.group_id)
+    template = [Jx3Arg(Jx3ArgsType.server), Jx3Arg(Jx3ArgsType.default)]
+    [arg_server, arg_user] = get_args(args.extract_plain_text(), template)
+    msg = await roleInfo_(server=arg_server, player=arg_user, group_id=event.group_id)
     await jx3_cmd_roleInfo.finish(msg)
