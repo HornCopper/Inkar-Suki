@@ -1,7 +1,7 @@
 from ..dep import *
 
 
-@EventRegister.rister(action=10002)
+@EventRegister.register(action=10002)
 class DisSubscribeEvent(RecvEvent):
     """取消订阅回执"""
 

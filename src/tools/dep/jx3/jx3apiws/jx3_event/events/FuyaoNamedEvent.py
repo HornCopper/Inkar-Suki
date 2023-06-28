@@ -1,7 +1,7 @@
 from ..dep import *
 
 
-@EventRegister.rister(action=1005)
+@EventRegister.register(action=1005)
 class FuyaoNamedEvent(RecvEvent):
     """扶摇点名事件"""
 
