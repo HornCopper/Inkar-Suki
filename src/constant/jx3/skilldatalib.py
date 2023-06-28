@@ -3,6 +3,8 @@ from src.tools.dep.bot import *
 from urllib.error import HTTPError
 from pathlib import Path
 
+from nonebot.adapters.onebot.v11 import MessageSegment
+
 
 from src.tools.utils import get_url, get_status, nodetemp, get_content, get_api
 from src.tools.file import read, write
