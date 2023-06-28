@@ -18,7 +18,7 @@
                   <div class="primary-title">
                     <div>
                       <span style="color:#999">查看概要价格：</span>
-                      <span>价格 [服务器] 物品名称 [页码]</span>
+                      <span>交易行 [服务器] 物品名称 [页码]</span>
                     </div>
                     <div>
                       <span style="color:#999">然后详细价格：</span>
@@ -96,8 +96,29 @@
                   </span>
                 </el-row>
               </el-row>
-            </el-col>
 
+              <el-row v-else-if="wucai_desc" style="display: block">
+                <el-row>
+                  <div style="margin-right:1rem">
+                    <span class="sub-title">五彩石</span>
+                    <span>{{ wucai_desc.brief.join('|') }}</span>
+                  </div>
+                </el-row>
+                <el-row>
+                  <span class="sub-title">属性</span>
+                  <span style="text-align: left;">
+                    <el-tree v-for="(prop,index) in wucai_desc.props" :key="index" :data="prop">
+                      <template #default="{ node, data }">
+                        <span style="color:#38b48b;margin-right:0.5rem;">{{ data.v[0].join('+') }}</span>
+                        <span style="color:#7b7c7d">{{
+                          data.f.map(x=>`${x[0]}>=${x[1]}`).join('|')
+                          }}</span>
+                      </template>
+                    </el-tree>
+                  </span>
+                </el-row>
+              </el-row>
+            </el-col>
             <el-col :span="14" style="border: solid 1px #cccccc;padding:0.5rem;margin: 0.5rem;">
               <el-divider content-position="left">更多信息</el-divider>
               <el-row>
@@ -135,6 +156,8 @@
                 </div>
               </el-row>
             </el-col>
+          </el-row>
+
           </el-row>
         </el-collapse-item>
         <el-collapse-item name="2">
@@ -350,7 +373,20 @@
         })
         return v
       })
-
+      const wucai_desc = computed(() => {
+        const properties = params_data.item.wucai_properties
+        if (!properties || !properties.length) return null
+        const brief = properties.map(x => x.values.map(x1 => x1[0]).join('|'))
+        const r = {
+          brief,
+          props: properties.map(x => {
+            const f = x.filters
+            const v = x.values
+            return [{ label: v.map(x => x[0]).join('|'), v, f, children: [{}] }]
+          })
+        }
+        return r
+      })
       const expanded_items = reactive(['1', '2', '3'])
       return {
         item: {}, // 物品详情
@@ -360,6 +396,7 @@
         item_description,
         item_attributes,
         price_logs_converted,
+        wucai_desc, // 五彩石属性
         expanded_items,
         ...methods,
       }

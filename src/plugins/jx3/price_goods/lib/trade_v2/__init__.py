@@ -1,3 +1,4 @@
+import threading
 from concurrent.futures.thread import ThreadPoolExecutor
 from sgtpyutils.extensions import distinct
 import random
@@ -112,28 +113,39 @@ def get_favoritest_by_predict(predict: callable):
     return [x for index, x in enumerate(goods) if predict(index, x)]
 
 
+class FavoritestGoodsPriceRefreshThread(threading.Thread):
+    def run(self) -> None:
+        logger.debug('refresh_favoritest_goods_current_price start')
+        all_servers = distinct(server_map.values())
+        tasks = []
+        goods = get_favoritest_by_top()
+        for server in all_servers:
+            for x in goods:
+                tasks.append([x.id, server])
+        result: List = []
+        pool = ThreadPoolExecutor(max_workers=5)
+
+        def run_single(a, b):
+            return asyncio.run(get_goods_current_detail_price(a, b))
+        while len(tasks):
+            x = tasks.pop()
+            r = pool.submit(run_single, x[0], x[1])
+            result.append(r)
+            time.sleep(0.5+random.random())  # 每1秒添加1个任务直到运行完成
+        for x in result:
+            x.result()
+        logger.debug('refresh_favoritest_goods_current_price complete')
+        return super().run()
+
+
+thread_fav_prices_refresher: FavoritestGoodsPriceRefreshThread = None
+
+
 async def refresh_favoritest_goods_current_price():
-    logger.debug('refresh_favoritest_goods_current_price start')
-
-    all_servers = distinct(server_map.values())
-    tasks = []
-    goods = get_favoritest_by_top()
-    for server in all_servers:
-        for x in goods:
-            tasks.append([x.id, server])
-    result: List = []
-    pool = ThreadPoolExecutor(max_workers=5)
-
-    def run_single(a, b):
-        return asyncio.run(get_goods_current_detail_price(a, b))
-    while len(tasks):
-        x = tasks.pop()
-        r = pool.submit(run_single, x[0], x[1])
-        result.append(r)
-        time.sleep(0.5+random.random())  # 每1秒添加1个任务直到运行完成
-    for x in result:
-        x.result()
-    logger.debug('refresh_favoritest_goods_current_price complete')
+    global thread_fav_prices_refresher
+    if thread_fav_prices_refresher is None or not thread_fav_prices_refresher.is_alive():
+        thread_fav_prices_refresher = FavoritestGoodsPriceRefreshThread()
+        thread_fav_prices_refresher.start()
 
 scheduler.add_job(func=refresh_favoritest_goods_current_price,
                   trigger=IntervalTrigger(minutes=60), misfire_grace_time=300)
