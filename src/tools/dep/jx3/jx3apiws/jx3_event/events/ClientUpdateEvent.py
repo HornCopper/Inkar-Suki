@@ -1,7 +1,7 @@
 from ..dep import *
 
 
-@EventRister.rister(action=2003)
+@EventRegister.rister(action=2003)
 class ClientUpdateRecEvent(RecvEvent):
     """更新推送事件"""
 

@@ -1,7 +1,7 @@
 from ..dep import *
 
 
-@EventRister.rister(action=10001)
+@EventRegister.rister(action=10001)
 class SubscribeEvent(RecvEvent):
     """订阅回执"""
 

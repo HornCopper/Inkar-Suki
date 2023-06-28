@@ -1,7 +1,7 @@
 from ..dep import *
 
 
-@EventRister.rister(action=1006)
+@EventRegister.rister(action=1006)
 class FireworksEvent(RecvEvent):
     """烟花播报事件"""
 

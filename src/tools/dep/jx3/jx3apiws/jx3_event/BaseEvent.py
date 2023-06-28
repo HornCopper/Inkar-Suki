@@ -26,19 +26,19 @@ https://github.com/JustUndertaker/mini_jx3_bot
 '''
 
 
-class EventRister:
+class EventRegister:
     """事件注册器"""
 
     event_dict: dict[int, "RecvEvent"] = {}
     """事件映射字典"""
 
     @classmethod
-    def rister(cls, action: int):
-        def _rister(event: "RecvEvent"):
+    def register(cls, action: int):
+        def _register(event: "RecvEvent"):
             cls.event_dict[action] = event
             return event
 
-        return _rister
+        return _register
 
     @classmethod
     def get_event(cls, ws_data: "WsData") -> Optional["RecvEvent"]:
