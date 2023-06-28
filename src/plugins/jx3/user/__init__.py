@@ -40,5 +40,7 @@ async def jx3_player(event: GroupMessageEvent, args: Message = CommandArg()):
     '''
     template = [Jx3Arg(Jx3ArgsType.server), Jx3Arg(Jx3ArgsType.default)]
     [arg_server, arg_user] = get_args(args.extract_plain_text(), template)
+    if not arg_server:
+        arg_server = server_mapping(group_id=event.group_id)
     msg = await roleInfo_(server=arg_server, player=arg_user, group_id=event.group_id)
     await jx3_cmd_roleInfo.finish(msg)
