@@ -138,7 +138,7 @@ class RecvEvent(BaseEvent, extra=Extra.ignore):
         return '[render message]'
 
     def check_server(self, group) -> bool:
-        return getGroupServer(group) == self.server
+        return server_mapping(group_id=group) == server_mapping(self.server)
 
     @overrides(BaseEvent)
     def get_plaintext(self) -> str:
