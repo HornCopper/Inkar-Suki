@@ -1,7 +1,7 @@
 from ..dep import *
 
 
-@EventRister.rister(action=1002)
+@EventRegister.rister(action=1002)
 class HorseRefreshEvent(RecvEvent):
     """马驹刷新事件"""
 

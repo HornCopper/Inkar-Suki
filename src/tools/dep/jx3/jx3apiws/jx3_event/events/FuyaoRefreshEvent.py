@@ -1,7 +1,7 @@
 from ..dep import *
 
 
-@EventRister.rister(action=1004)
+@EventRegister.rister(action=1004)
 class FuyaoRefreshEvent(RecvEvent):
 
     __event__ = "WsRecv.FuyaoRefresh"
