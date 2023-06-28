@@ -100,7 +100,7 @@ class Assistance:
         except:
             return "无法获取到UID！"
         if job != "老板":
-            if player_data["data"]["forceName"] != get_xinfa_belong(job):
+            if get_xinfa_belong(player_data["data"]["forceName"]) != get_xinfa_belong(job):
                 return "检测到自身预定职业和角色职业冲突，预定失败。"
         new = {
             "uid": uid,
