@@ -75,9 +75,9 @@ class Jx3WebSocket(object):
         try:
             ws_obj = json.loads(message)
             data = WsData.parse_obj(ws_obj)
-            event = EventRegister.get_event(data)
+            event = EventRister.get_event(data)
             if event:
-                logger.debug(f'ws_event:{event.log}')
+                logger.debug(event.log)
                 bots = get_bots()
                 for _, one_bot in bots.items():
                     await handle_event(one_bot, event)
