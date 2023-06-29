@@ -9,7 +9,6 @@ from nonebot.utils import escape_tag
 from pydantic import BaseModel, Extra, validator
 
 import json
-
 import nonebot
 import sys
 
@@ -42,9 +41,9 @@ class EventRister:
     @classmethod
     def get_event(cls, ws_data: "WsData") -> Optional["RecvEvent"]:
         event = cls.event_dict.get(ws_data.action)
-        if not event:
-            return None
-        return event.parse_obj(ws_data.data)
+        if event:
+            return event.parse_obj(ws_data.data)
+        return None
 
 
 class WsData(BaseModel):
@@ -79,7 +78,7 @@ class WsNotice(BaseEvent):
         return escape_tag(str(self.dict()))
 
     @overrides(BaseEvent)
-    def get_message(self) -> Message:
+    def get_message(self) -> dict:
         raise ValueError("Event has no message!")
 
     @overrides(BaseEvent)
@@ -128,24 +127,20 @@ class RecvEvent(BaseEvent, extra=Extra.ignore):
         return escape_tag(str(self.dict()))
 
     @overrides(BaseEvent)
-    def get_message(self) -> str:
-        return '[get message]'
-
-    @overrides(BaseEvent)
-    def render_message(self, group) -> str:
-        return '[render message]'
+    def get_message(self) -> dict:
+        raise ValueError("Event has no message!")
 
     @overrides(BaseEvent)
     def get_plaintext(self) -> str:
-        return '[get_plaintext]'
+        raise ValueError("Event has no message!")
 
     @overrides(BaseEvent)
     def get_user_id(self) -> str:
-        return '[get_user_id]'
+        raise ValueError("Event has no message!")
 
     @overrides(BaseEvent)
     def get_session_id(self) -> str:
-        return '[get_session_id]'
+        raise ValueError("Event has no message!")
 
     @overrides(BaseEvent)
     def is_tome(self) -> bool:
@@ -167,17 +162,20 @@ class ServerStatusEvent(RecvEvent):
 
     @property
     def log(self) -> str:
-        status = self.get_message()
+        status = "已开服" if self.status else "已维护"
         log = f"开服推送事件：[{self.server}]状态-{status}"
         return log
 
     @overrides(RecvEvent)
     def get_message(self) -> dict:
-        return "已开服~" if self.status else "已维护~"
+        time_now = datetime.now().strftime("%H时%M分")
+        if self.status and str(self.server) == "幽月轮":
+            return {"type":"开服","msg":f"{time_now}：{self.server}已开服~"}
+        elif self.status == False and str(self.server) == "幽月轮":
+            return {"type":"开服","msg":f"{time_now}：{self.server}已维护~"}
+        else:
+            return False
 
-    @overrides(RecvEvent)
-    def render_message(self,group):
-        return group
 
 @EventRister.rister(action=2002)
 class NewsRecvEvent(RecvEvent):
@@ -203,7 +201,6 @@ class NewsRecvEvent(RecvEvent):
     def get_message(self) -> dict:
         return {"type":"公告","msg":f"{self.type}来啦！\n标题：{self.title}\n链接：{self.url}\n日期：{self.date}"}
 
-
 @EventRister.rister(action=2003)
 class ClientUpdateRecEvent(RecvEvent):
     """更新推送事件"""
@@ -227,6 +224,7 @@ class ClientUpdateRecEvent(RecvEvent):
     @overrides(RecvEvent)
     def get_message(self) -> dict:
         return {"type":"更新","msg":f"检测到客户端有更新哦~\n当前版本：{self.old_version}\n更新版本：{self.new_version}\n共计{self.package_num}个更新包，总大小为{self.package_size}。"}
+
 @EventRister.rister(action=2004)
 class SpillTheTeaEvent(RecvEvent):
     """818推送事件"""
@@ -277,7 +275,7 @@ class SerendipityEvent(RecvEvent):
         return log
 
     @overrides(RecvEvent)
-    def get_message(self) -> Message:
+    def get_message(self) -> dict:
         return Message(f"奇遇推送 {self.time}\n{self.serendipity} 被 {self.name} 抱走惹。")
 
 
@@ -307,7 +305,7 @@ class HorseRefreshEvent(RecvEvent):
         return log
 
     @overrides(RecvEvent)
-    def get_message(self) -> Message:
+    def get_message(self) -> dict:
         return Message(
             f"[抓马监控] 时间：{self.time}\n{self.map} 将在[{self.min} - {self.max}分]后刷新马驹。"
         )
@@ -339,7 +337,7 @@ class HorseCatchedEvent(RecvEvent):
         return log
 
     @overrides(RecvEvent)
-    def get_message(self) -> Message:
+    def get_message(self) -> dict:
         return Message(
             f"[抓马监控] 时间：{self.time}\n{self.map} 的 {self.horse} 被 {self.name} 抓走了~"
         )
@@ -363,7 +361,7 @@ class FuyaoRefreshEvent(RecvEvent):
         return log
 
     @overrides(RecvEvent)
-    def get_message(self) -> Message:
+    def get_message(self) -> dict:
         return Message(f"[扶摇监控]\n扶摇九天在 {self.time} 开启了。")
 
 
@@ -390,7 +388,7 @@ class FuyaoNamedEvent(RecvEvent):
         return log
 
     @overrides(RecvEvent)
-    def get_message(self) -> Message:
+    def get_message(self) -> dict:
         name = ",".join(self.names)
         return Message(f"[扶摇监控] 时间：{self.time}\n唐文羽点名了[{name}]。")
 
@@ -423,7 +421,7 @@ class FireworksEvent(RecvEvent):
         return log
 
     @overrides(RecvEvent)
-    def get_message(self) -> Message:
+    def get_message(self) -> dict:
         return Message(
             f"[烟花监控] 时间：{self.time}\n{self.sender} 在 {self.map} 对 {self.name} 使用了烟花：{self.recipient}。"
         )
@@ -443,6 +441,7 @@ class XuanJingEvent(RecvEvent):
     """玄晶名"""
     time: str
     """获取时间"""
+    server: str
 
     @validator("time", pre=True)
     def check_time(cls, v):
@@ -492,7 +491,7 @@ class GameSysMsgEvent(RecvEvent):
         return log
 
     @overrides(RecvEvent)
-    def get_message(self) -> Message:
+    def get_message(self) -> dict:
         return Message(f"[系统频道推送]\n时间：{self.time}\n{self.message}。")
 
 
@@ -522,9 +521,8 @@ class SubscribeEvent(RecvEvent):
         return log
 
     @overrides(RecvEvent)
-    def get_message(self) -> Message:
+    def get_message(self) -> dict:
         return Message(f"[订阅回执]\n类型：{self.action}。")
-
 
 @EventRister.rister(action=10002)
 class DisSubscribeEvent(RecvEvent):
@@ -552,5 +550,5 @@ class DisSubscribeEvent(RecvEvent):
         return log
 
     @overrides(RecvEvent)
-    def get_message(self) -> Message:
+    def get_message(self) -> dict:
         return Message(f"[取消订阅回执]\n类型：{self.action}。")
