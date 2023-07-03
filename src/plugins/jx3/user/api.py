@@ -3,10 +3,10 @@ from src.tools.dep import *
 
 async def addritube_(server: str = None, name: str = None, group_id: str = None):  # 查装 <服务器> <ID>
     if token == None or ticket == None:
-        return ["Bot尚未填写Ticket或Token，请联系Bot主人~"]
+        return [PROMPT_NoTicket]
     server = server_mapping(server, group_id)
     if not server:
-        return [PROMPT_ServerNotexists]
+        return [PROMPT_ServerNotExist]
     final_url = f"https://www.jx3api.com/view/role/attribute?ticket={ticket}&token={token}&robot={bot}&server={server}&name={name}&scale=1"
     data = await get_api(final_url, proxy=proxies)
     if data["code"] == 404:
@@ -18,11 +18,12 @@ async def addritube_(server: str = None, name: str = None, group_id: str = None)
     return data["data"]["url"]
 
 
-async def roleInfo_(server, player, group_id: str = None):
-    server = server_mapping(server)
+async def roleInfo_(server, player):
+    if not token:
+        return PROMPT_NoToken
     final_url = f"https://www.jx3api.com/data/role/roleInfo?token={token}&name={player}&server={server}"
     if not server:
-        return PROMPT_ServerNotexists
+        return PROMPT_ServerNotExist
     data = await get_api(final_url, proxy=proxies)
     if data["code"] == 404:
         return "没有找到该玩家哦~\n需要该玩家在世界频道发言后方可查询。"
