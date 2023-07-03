@@ -11,15 +11,18 @@ jx3_cmd_flower = on_command("jx3_flower", aliases={"花价"}, priority=5)
 async def jx3_flower(state: T_State, event: GroupMessageEvent, args: Message = CommandArg()):
     '''
     获取当前花价
-    花价 [区服]
+    花价 [区服] [地图] [品种]
     Example：花价
     Example：花价 唯满侠
+    Example：花价 唯满侠 广陵邑
+    Example：花价 唯满侠 广陵邑 牵牛花
     '''
-    template = [Jx3Arg(Jx3ArgsType.server), Jx3Arg(Jx3ArgsType.default)]
+    template = [Jx3Arg(Jx3ArgsType.server), Jx3Arg(Jx3ArgsType.default), Jx3Arg(
+        Jx3ArgsType.default)]
     arg = get_args(args, template)
-    arg_server, arg_map = arg
+    arg_server, arg_map, arg_species = arg
     arg_server = server_mapping(arg_server, group_id=str(event.group_id))
-    data = await get_flower(arg_server)
+    data = await get_flower(arg_server, arg_map, arg_species)
     code = sgtpyutils.hash.get_hash(json.dumps(data))  # 检查是否有变化
     prev_code = CACHE_flower.get(arg_server) or [None, None]
     if isinstance(data, str):
