@@ -167,6 +167,8 @@ async def _(event: GroupMessageEvent):
 shutup = on_command("shutup", aliases={"-闭嘴"}, priority=5)
 @shutup.handle()
 async def _(event: GroupMessageEvent):
+    if event.sender.role not in ["owner","admin"]:
+        await shutup.finish("唔……只有群主或管理员可以使用该命令！")
     subscribe_file_path = DATA + "/" + str(event.group_id) + "/subscribe.json"
     subscribe = json.loads(read(subscribe_file_path))
     if "闭嘴" in subscribe:
@@ -176,7 +178,7 @@ async def _(event: GroupMessageEvent):
         write(subscribe_file_path, json.dumps(subscribe, ensure_ascii=False))
         await shutup.finish("已开启禁言开关，除`reg`、`speak`以外的命令均不会被触发。\n推送为正常推送，若有需要，请自行退订哦~\n机器人全域公告正常推送。")
 
-shutup_filter = on_message(priority=1)
+shutup_filter = on_message(priority=1, block=False)
 @shutup_filter.handle()
 async def _(matcher: Matcher, event: GroupMessageEvent):
     subscribe = json.loads(read(DATA + "/" + str(event.group_id) + "/subscribe.json"))
@@ -188,6 +190,8 @@ async def _(matcher: Matcher, event: GroupMessageEvent):
 speak = on_command("unshutup", aliases={"speak","-解除闭嘴"}, priority=1)
 @speak.handle()
 async def _(event: GroupMessageEvent):
+    if event.sender.role not in ["owner","admin"]:
+        await speak.finish("唔……只有群主或管理员可以使用该命令！")
     subscribe = json.loads(read(DATA + "/" + str(event.group_id) + "/subscribe.json"))
     if "闭嘴" not in subscribe:
         await speak.finish("音卡没有自主禁言哦，请检查后重试~")

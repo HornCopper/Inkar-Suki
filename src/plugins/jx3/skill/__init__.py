@@ -58,51 +58,29 @@ _talent = on_command("jx3_talent", aliases={"奇穴"}, priority=5)
 @_talent.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     arg = args.extract_plain_text().split(" ")
+    versions = await get_api("https://data.jx3box.com/talent/index.json")
     if len(arg) not in [2,3]:
         await _talent.finish("唔……参数不正确哦~")
     if len(arg) == 2:
         kf = arg[0]
         tl = arg[1]
-        ver = "20230427"
+        ver = versions[0]["version"]
     else:
         kf = arg[0]
         tl = arg[1]
         ver = arg[2]
-        if ver == "怒海争锋":
-            ver = "20190926"
-        elif ver == "凌雪藏锋":
-            ver = "20191128"
-        elif ver == "结庐在江湖":
-            ver = "20200522"
-        elif ver == "同筑山水居":
-            ver = "20200805"
-        elif ver == "奉天证道":
-            ver = "20201030"
-        elif ver == "月满归乡":
-            ver = "20201130"
-        elif ver == "白帝风云":
-            ver = "20210830"
-        elif ver == "北天药宗":
-            ver = "20220118"
-        elif ver == "江湖无限":
-            ver = "20220706"
-        elif ver == "横刀断浪":
-            ver = "20230206"
-        elif ver == "群侠万变":
-            ver = "20230427"
-        elif ver == "群侠万变一改":
-            ver = "20230515"
-        else:
-            ver = "20230515"
+        for i in versions:
+            if ver == i["name"]:
+                ver = i["version"]
     name = aliases(kf)
     if name == False:
         await _talent.finish("未找到该心法，请检查后重试~")
-    if os.path.exists(ASSETS + "/jx3/" + f"v{ver}.json") == False:
-        final_url = f"https://data.jx3box.com/talent/v{ver}.json"
+    if os.path.exists(ASSETS + "/jx3/" + f"{ver}.json") == False:
+        final_url = f"https://data.jx3box.com/talent/{ver}.json"
         data = await get_api(final_url)
         write(ASSETS + "/jx3/" + f"v{ver}.json", json.dumps(data, ensure_ascii=False))
     else:
-        data = json.loads(read(ASSETS + "/jx3/" + f"v{ver}.json"))
+        data = json.loads(read(ASSETS + "/jx3/" + f"{ver}.json"))
     try:
         real_data = data[name]
     except:
