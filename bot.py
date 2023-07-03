@@ -41,6 +41,8 @@ init_folders = {
         "sign": None,
         "assets": {
             "jx3": {
+                "bg": None,
+                "kungfu": None,
                 "skills": None,
                 "icons": None,
                 "achievement": None,
@@ -50,7 +52,8 @@ init_folders = {
                 "pvx": {
                     "flower": None
                 }
-            }
+            },
+            "wuxingshi": None
         },
         "plugins": None
     }
