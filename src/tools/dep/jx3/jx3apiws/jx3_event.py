@@ -168,13 +168,11 @@ class ServerStatusEvent(RecvEvent):
 
     @overrides(RecvEvent)
     def get_message(self) -> dict:
-        time_now = datetime.now().strftime("%H时%M分")
-        if self.status and str(self.server) == "幽月轮":
-            return {"type":"开服","msg":f"{time_now}：{self.server}已开服~"}
-        elif self.status == False and str(self.server) == "幽月轮":
-            return {"type":"开服","msg":f"{time_now}：{self.server}已维护~"}
-        else:
-            return False
+        time_now = datetime.now().strftime("%H:%M")
+        if self.status:
+            return {"type":"开服","server":self.server,"msg":f"{time_now} {self.server} 开服 (/≧▽≦)/"}
+        elif self.status == False:
+            return {"type":"开服","server":self.server,"msg":f"{time_now}：{self.server} 维护 ヘ(~ω~ヘ) "}
 
 
 @EventRister.rister(action=2002)
