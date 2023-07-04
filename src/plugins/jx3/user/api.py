@@ -3,10 +3,10 @@ from src.tools.dep import *
 
 async def addritube_(server: str = None, name: str = None, group_id: str = None):  # 查装 <服务器> <ID>
     if token == None or ticket == None:
-        return ["Bot尚未填写Ticket或Token，请联系Bot主人~"]
+        return [PROMPT_NoTicket]
     server = server_mapping(server, group_id)
     if not server:
-        return [PROMPT_ServerNotexists]
+        return [PROMPT_ServerNotExist]
     final_url = f"https://www.jx3api.com/view/role/attribute?ticket={ticket}&token={token}&robot={bot}&server={server}&name={name}&scale=1"
     data = await get_api(final_url, proxy=proxies)
     if data["code"] == 404:
@@ -18,11 +18,12 @@ async def addritube_(server: str = None, name: str = None, group_id: str = None)
     return data["data"]["url"]
 
 
-async def roleInfo_(server, player, group_id: str = None):
-    server = server_mapping(server)
+async def roleInfo_(server, player):
+    if not token:
+        return PROMPT_NoToken
     final_url = f"https://www.jx3api.com/data/role/roleInfo?token={token}&name={player}&server={server}"
     if not server:
-        return PROMPT_ServerNotexists
+        return PROMPT_ServerNotExist
     data = await get_api(final_url, proxy=proxies)
     if data["code"] == 404:
         return "没有找到该玩家哦~\n需要该玩家在世界频道发言后方可查询。"
@@ -603,9 +604,12 @@ async def get_attr(kungfu: str, maxjl_list: list, jl_list: list, equip_list: lis
     # 心法图标
     background.alpha_composite(Image.open(await get_kf_icon(kungfu)).resize((50,50)), (61,62))
 
+    special_weapons = ["雪凤冰王笛","血影天宇舞姬","炎枪重黎","腾空","画影","金刚","岚尘金蛇","苌弘化碧","蝎心忘情","抱朴狩天","八相连珠","圆月双角","九龙升景","斩马刑天","风雷瑶琴剑","五相斩","雪海散华"]
     # 武器图标
     if kungfu not in ["问水诀","山居剑意"]:
         if equip_icon_list[11] != "":
+            if equip_list[11] in special_weapons:
+                background.alpha_composite(precious, (687, init - 1))
             background.alpha_composite(Image.open(await local_save(equip_icon_list[11])).resize((38,38)), (708, 587))
             if maxjl_list[11] in ["3","4","8"]:
                 background.alpha_composite(precious, (688, 586))
@@ -621,6 +625,8 @@ async def get_attr(kungfu: str, maxjl_list: list, jl_list: list, equip_list: lis
                     background.alpha_composite(un_full_jinglian, (708, 587))
     else:
         if equip_icon_list[11] != "":
+            if equip_list[12] in special_weapons:
+                background.alpha_composite(precious, (687, init - 1))
             background.alpha_composite(Image.open(await local_save(equip_icon_list[11])).resize((38,38)), (708, 587))
             if maxjl_list[11] in ["3","4","8"]:
                 background.alpha_composite(precious, (688, 586))
@@ -635,6 +641,8 @@ async def get_attr(kungfu: str, maxjl_list: list, jl_list: list, equip_list: lis
                 else:
                     background.alpha_composite(un_full_jinglian, (708, 587))
         if equip_icon_list[12] != "":
+            if equip_list[12] in special_weapons:
+                background.alpha_composite(precious, (687, init - 1))
             background.alpha_composite(Image.open(await local_save(equip_icon_list[12])).resize((38,38)), (708, 636))
             if maxjl_list[12] in ["3","4","8"]:
                 background.alpha_composite(precious, (688, 635))
@@ -666,6 +674,8 @@ async def get_attr(kungfu: str, maxjl_list: list, jl_list: list, equip_list: lis
     if kungfu in ["问水诀","山居剑意"]:
         range_time = range_time + 1
     for i in range(range_time):
+        if equip_list[i] in special_weapons:
+            background.alpha_composite(precious, (687, init - 1))
         if maxjl_list[i] in ["3","4","8"]:
             background.alpha_composite(precious, (687, init - 1))
         if jl_list[i] == maxjl_list[i]:
@@ -761,7 +771,7 @@ async def get_attr(kungfu: str, maxjl_list: list, jl_list: list, equip_list: lis
 
     # 五行石
     
-    positions = [(940, 65),(960, 65),(940, 114),(960, 114),(940, 163),(960, 163),(940, 212),(960, 212),(940, 261),(960, 261),(940, 310),(960, 310),(940, 359),(940, 408),(940, 604),(940, 555),(960, 604),(980, 604)]
+    positions = [(940, 65),(960, 65),(940, 114),(960, 114),(940, 163),(960, 163),(940, 212),(960, 212),(940, 261),(960, 261),(940, 310),(960, 310),(940, 359),(940, 408),(940, 555),(940, 604),(960, 604),(980, 604)]
     range_time = 18
     if kungfu in ["问水诀","山居剑意"]:
         range_time = range_time + 3
