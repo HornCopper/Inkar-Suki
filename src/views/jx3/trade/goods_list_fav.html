@@ -66,7 +66,7 @@
               <span v-if="scope.row.current_price&&scope.row.current_price.price_valid">
                 <span>{{ convertGold(scope.row.current_price.price_valid)[0] }}</span>
                 <img :src="convertGold(scope.row.current_price.price_valid)[1]" />
-                <span v-if="scope.row.current_price.latest">({{ parseTime(scope.row.current_price.latest) }})</span>
+                <span v-if="scope.row.current_price.latest">({{ formatTime(scope.row.current_price.latest) }})</span>
               </span>
               <span v-else style="color:#cccccc">暂无统计</span>
             </template>
