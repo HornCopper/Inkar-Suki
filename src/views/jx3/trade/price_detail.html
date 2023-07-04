@@ -204,6 +204,9 @@
           <el-row class="goods-price-trend">
             <div id="chart-goods-price-trend" style="height:400px;width:1000px"></div>
           </el-row>
+          <el-row class="goods-price-trend">
+            <div id="chart-goods-price-low-trend" style="height:400px;width:1000px"></div>
+          </el-row>
         </el-collapse-item>
       </el-collapse>
     </el-card>
@@ -299,28 +302,28 @@
         convertSci,
         convertPop
       }
-
-      const price_logs_converted = computed(() => {
+      // const price_handle = ['AvgPrice','LowestPrice','HighestPrice']
+      const price_logs_converted = (field_name) => {
         const raw = params_data.price_logs
         const result = []
         let min_price = 10000 * 1e4 // 默认以砖计算
         raw.sort((a, b) => new Date(a.Date) - new Date(b.Date))
         raw.map(x => {
-          const v = x.AvgPrice
+          const v = x[field_name]
           if (v < min_price && v > 0) min_price = v
         })
         const icon = convertGold(min_price)
         raw.map(x => {
-          let v = x.AvgPrice / icon[2] // 转换为标准值
+          let v = x[field_name] / icon[2] // 转换为标准值
           v = Math.ceil(v * 100) / 100
-          result.push(Object.assign(x, { AvgPrice: v }))
+          result.push(Object.assign(x, { [field_name]: v }))
         })
         return [result, icon[1]]
-      })
+      }
 
-      methods.init_chart_trend = () => {
-        const [logs, icon] = price_logs_converted.value
-        const chart = echarts.init(document.getElementById('chart-goods-price-trend'))
+      const init_single_chart = (chart_element, chart_data_name, seriesName) => {
+        const [avg_logs, avg_icon] = price_logs_converted(chart_data_name)
+        const chart = echarts.init(document.getElementById(chart_element))
         const option = {
           animation: false,
           tooltip: {
@@ -336,8 +339,8 @@
         appendSeriesYAxisItem({
           option,
           index: 0,
-          seriesName: '{a|均价 / 单位}{b|}',
-          data: logs.map(x => [x.Date, x.AvgPrice]),
+          seriesName,
+          data: avg_logs.map(x => [x.Date, x[chart_data_name]]),
           series_option: {
             label: { show: true },
             markLine: {
@@ -350,40 +353,16 @@
             nameTextStyle: {
               rich: {
                 a: {},
-                b: { backgroundColor: { image: icon }, height: 25 }
+                b: { backgroundColor: { image: avg_icon }, height: 25 }
               }
             }
           }
         })
-        
-        appendSeriesYAxisItem({
-          option,
-          index: 0,
-          seriesName: '{a|底价 / 单位}{b|}',
-          data: logs.map(x => [x.Date, x.LowestPrice]),
-          series_option: {
-            label: { show: true },
-            markLine: {
-              data: [{ type: 'average', name: 'Avg2' }]
-            },
-            smooth: true,
-          },
-          yAxis_option: {
-            scale: true,
-            nameTextStyle: {
-              rich: {
-                a: {},
-                b: { backgroundColor: { image: icon }, height: 25 }
-              }
-            }
-          }
-        })
-
         appendSeriesYAxisItem({
           option,
           index: 1,
           seriesName: '数量',
-          data: logs.map(x => [x.Date, x.SampleSize]),
+          data: avg_logs.map(x => [x.Date, x.SampleSize]),
           series_option: {
             label: {
               show: true,
@@ -399,6 +378,10 @@
           },
         })
         chart.setOption(option)
+      }
+      methods.init_chart_trend = () => {
+        init_single_chart('chart-goods-price-trend', 'AvgPrice', '{a|均价 / 单位}{b|}')
+        init_single_chart('chart-goods-price-low-trend', 'LowestPrice', '{a|底价 / 单位}{b|}')
       }
       onMounted(() => {
         methods.init_chart_trend()
