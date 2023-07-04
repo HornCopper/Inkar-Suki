@@ -355,6 +355,30 @@
             }
           }
         })
+        
+        appendSeriesYAxisItem({
+          option,
+          index: 0,
+          seriesName: '{a|底价 / 单位}{b|}',
+          data: logs.map(x => [x.Date, x.LowestPrice]),
+          series_option: {
+            label: { show: true },
+            markLine: {
+              data: [{ type: 'average', name: 'Avg2' }]
+            },
+            smooth: true,
+          },
+          yAxis_option: {
+            scale: true,
+            nameTextStyle: {
+              rich: {
+                a: {},
+                b: { backgroundColor: { image: icon }, height: 25 }
+              }
+            }
+          }
+        })
+
         appendSeriesYAxisItem({
           option,
           index: 1,
