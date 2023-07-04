@@ -28,6 +28,12 @@ async def _(bot: Bot, event: RecvEvent):
                 group_info = json.loads(read(DATA + "/" + str(group) + "/jx3group.json"))
                 if group_info["server"] != message["server"] and group_info["server"] != "":
                     continue
+            elif message["type"] == "开服":
+                group_info = json.loads(read(DATA + "/" + str(group) + "/jx3group.json"))
+                if group_info["server"] != message["server"] and group_info["server"] != "":
+                    continue
+                elif group_info["server"] == "":
+                    continue
             elif message["type"] == "818":
                 group_info = json.loads(read(DATA + "/" + str(group) + "/jx3group.json"))
                 if group_info["server"] != "" and group_info["server"] != message["server"] and message["name"] != "剑网3":
@@ -36,12 +42,3 @@ async def _(bot: Bot, event: RecvEvent):
                 await bot.call_api("send_group_msg", group_id = group, message = message["msg"])
             except:
                 logger.info(f"向群({i})推送失败，可能是因为风控、禁言或者未加入该群。")
-
-# if message["type"] == "玄晶":
-#     group_info = json.loads(read(DATA + "/" + str(group) + "/jx3group.json"))
-#     if group_info["server"] != message["server"] and group_info["server"] != "":
-#         continue
-# elif message["type"] == "818":
-#     group_info = json.loads(read(DATA + "/" + str(group) + "/jx3group.json"))
-#     if group_info["server"] != "" and group_info["server"] != message["server"] and message["name"] != "剑网3":
-#         continue
