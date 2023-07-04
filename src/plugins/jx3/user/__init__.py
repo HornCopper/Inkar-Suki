@@ -1,4 +1,5 @@
 from .api import *
+from src.tools.permission import checker, error
 
 jx3_cmd_addritube = on_command("jx3_addritube", aliases={
                                "属性", "查装"}, priority=5)
@@ -31,11 +32,15 @@ addritube_v2 = on_command("jx3_addritube_v2",aliases={"属性v2"}, priority=5)
 @addritube_v2.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     arg = args.extract_plain_text().split(" ")
-    if len(arg) != 2:
+    if len(arg) not in [1, 2]:
         await addritube_v2.finish("唔……参数不正确哦，请检查后重试~")
-    server = arg[0]
-    id = arg[1]
-    data = await get_attr_main(server, id)
+    if len(arg) == 1:
+        server = None
+        id = arg[0]
+    elif len(arg) == 2:
+        server = arg[0]
+        id = arg[1]
+    data = await get_attr_main(server, id, str(event.group_id))
     if type(data) == type([]):
         await addritube_v2.finish(data[0])
     else:

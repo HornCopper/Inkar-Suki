@@ -100,7 +100,7 @@ def gen_xsk(data: str) -> str:
     return hmac.new(secret.encode(), msg=data.encode(), digestmod=hashlib.sha256).hexdigest()
 
 def zone_mapping(server):
-    if server == ["绝代天骄"]:
+    if server == "绝代天骄":
         return "电信八区"
     elif server in ["斗转星移","唯我独尊","乾坤一掷","横刀断浪","剑胆琴心","幽月轮","梦江南"]:
         return "电信五区"
@@ -130,6 +130,8 @@ async def get_personal_kf(kfid):
     return False
 
 def find_qx(data, kf, qx):
+    if qx == "蒹山":
+        qx = "兼山"
     real_data = data[kf]
     for i in range(1,13):
         for x in range(1,6):
@@ -144,6 +146,7 @@ def data_process(kf, data):
     final = ["","","","","","","","","","","",""]
     if kf in ["问水诀","山居剑意"]:
         final.append("")
+    flag = False
     for i in data["data"]["Equips"]:
         if i["Icon"]["SubKind"] == "帽子":
             final[0] = i
@@ -162,9 +165,12 @@ def data_process(kf, data):
         if i["Icon"]["SubKind"] == "腰坠":
             final[7] = i
         if i["Icon"]["SubKind"] == "戒指":
+            if flag:
+                final[9] = i
+                continue
             final[8] = i
-        if i["Icon"]["SubKind"] == "戒指":
-            final[9] = i
+            flag = True
+            continue
         if i["Icon"]["SubKind"] in "投掷囊":
             final[10] = i
         if i["Icon"]["SubKind"] != "投掷囊" and i["Icon"]["SubKind"] != "重剑" and i["Icon"]["Kind"] == "武器":
@@ -258,13 +264,13 @@ async def get_kf_icon(kf):
         return final_path
 
 def kungfu_mapping(kf):
-    if kf in ["紫霞功","莫问","毒经","无方","冰心"]:
+    if kf in ["紫霞功","莫问","毒经","无方","冰心诀"]:
         return "根骨"
-    elif kf in ["花间游","易筋经","焚影圣诀","太玄经"]:
+    elif kf in ["花间游","易筋经","焚影圣诀","太玄经","天罗诡道"]:
         return "元气"
     elif kf in ["太虚剑意","问水诀","山居剑意","凌海诀","隐龙诀","分山劲"]:
         return "身法"
-    elif kf in ["傲血战意","惊羽诀","北傲决","孤锋诀","笑尘诀"]:
+    elif kf in ["傲血战意","惊羽诀","北傲诀","孤锋诀","笑尘诀"]:
         return "力道"
     elif kf in ["相知","离经易道","灵素","补天诀","云裳心经"]:
         return "治疗"
@@ -273,7 +279,10 @@ def kungfu_mapping(kf):
     else:
         return False    
 
-async def get_attr_main(server, id):
+async def get_attr_main(server, id, group_id):
+    server = server_mapping(server, group_id)
+    if not server:
+        return [PROMPT_ServerNotexists]
     uid = await get_uid(server, id)
     if uid == False:
         return ["唔……未找到该玩家。"]
@@ -292,6 +301,7 @@ async def get_attr_main(server, id):
     data = json.loads(data)
     kfid = data["data"]["Kungfu"]["KungfuID"]
     kf = await get_personal_kf(kfid)
+    kf = kf.replace("决","诀")
     if kf == "山居剑意":
         kf = "问水诀"
     att = kungfu_mapping(kf)
@@ -313,6 +323,8 @@ async def get_attr_main(server, id):
     basic = [score, id, school_body, uid]
     messyqx = []
     for i in data["data"]["Person"]["qixueList"]:
+        if i["name"] == "红绡倩风·收":
+            continue
         messyqx.append(i["name"])
     qx = ["未知","未知","未知","未知","未知","未知","未知","未知","未知","未知","未知","未知"]
     unknown = PLUGINS + "/jx3/user/unknown.png"
@@ -326,7 +338,6 @@ async def get_attr_main(server, id):
     qxdata = await get_api(f"https://data.jx3box.com/talent/{ver}.json")
     for i in messyqx:
         index = find_qx(qxdata, kf, i)
-        logger.info(index)
         qx[index] = i
     for i in range(12):
         for x in data["data"]["Person"]["qixueList"]:
@@ -363,6 +374,12 @@ async def get_attr_main(server, id):
             equip_list.append(i["Name"] + "(" + i["StrengthLevel"] + "/" + i["MaxStrengthLevel"] + ")")
             equip_icon_list.append(i["Icon"]["FileName"])
     for i in equip_data:
+        try:
+            i["Icon"]["SubKind"]
+        except:
+            if equip_data.index(i) in [0,1,2,3,4]:
+                henchant[equip_data.index(i)] = ""
+                continue
         if i["Icon"]["SubKind"] == "帽子":
             if "WCommonEnchant" in list(i):
                 attrs_ = json.dumps(i["ModifyType"], ensure_ascii=False)
@@ -548,6 +565,7 @@ async def get_attr_main(server, id):
     return img
 
 async def local_save(webpath):
+    logger.info(webpath)
     file_name = webpath.split("/")[-1].split("?")[0]
     final_path = ASSETS + "/jx3/kungfu/" + file_name + ".png"
     if os.path.exists(final_path):
@@ -583,7 +601,7 @@ async def get_attr(kungfu: str, maxjl_list: list, jl_list: list, equip_list: lis
     little_enchant = Image.open(PLUGINS + "/jx3/user/lenchant.png").resize((20, 20))
 
     # 心法图标
-    background.alpha_composite(Image.open(await get_kf_icon(kungfu)), (61,62))
+    background.alpha_composite(Image.open(await get_kf_icon(kungfu)).resize((50,50)), (61,62))
 
     # 武器图标
     if kungfu not in ["问水诀","山居剑意"]:
@@ -593,19 +611,43 @@ async def get_attr(kungfu: str, maxjl_list: list, jl_list: list, equip_list: lis
                 background.alpha_composite(precious, (688, 586))
                 if maxjl_list[11] == "8":
                     background.alpha_composite(flickering, (707, 586))
+                else:
+                    if maxjl_list[11] == jl_list[11]:
+                        background.alpha_composite(full_jinglian, (708, 587))
+            else:
+                if maxjl_list[11] == jl_list[11]:
+                    background.alpha_composite(full_jinglian, (708, 587))
+                else:
+                    background.alpha_composite(un_full_jinglian, (708, 587))
     else:
         if equip_icon_list[11] != "":
             background.alpha_composite(Image.open(await local_save(equip_icon_list[11])).resize((38,38)), (708, 587))
             if maxjl_list[11] in ["3","4","8"]:
                 background.alpha_composite(precious, (688, 586))
                 if maxjl_list[11] == "8":
-                    background.alpha_composite(flickering, (707, 586))
+                    background.alpha_composite(flickering, (708, 587))
+                else:
+                    if maxjl_list[11] == jl_list[11]:
+                        background.alpha_composite(full_jinglian, (708, 587))
+            else:
+                if maxjl_list[11] == jl_list[11]:
+                    background.alpha_composite(full_jinglian, (708, 587))
+                else:
+                    background.alpha_composite(un_full_jinglian, (708, 587))
         if equip_icon_list[12] != "":
             background.alpha_composite(Image.open(await local_save(equip_icon_list[12])).resize((38,38)), (708, 636))
             if maxjl_list[12] in ["3","4","8"]:
                 background.alpha_composite(precious, (688, 635))
                 if maxjl_list[12] == "8":
-                    background.alpha_composite(flickering, (707, 635))
+                    background.alpha_composite(flickering, (708, 636))
+                else:
+                    if maxjl_list[12] == jl_list[12]:
+                        background.alpha_composite(full_jinglian, (708, 636))
+            else:
+                if maxjl_list[12] == jl_list[12]:
+                    background.alpha_composite(full_jinglian, (708, 636))
+                else:
+                    background.alpha_composite(un_full_jinglian, (708, 636))
 
     # 装备图标
     init = 48
@@ -631,6 +673,8 @@ async def get_attr(kungfu: str, maxjl_list: list, jl_list: list, equip_list: lis
         else:
             if equip_list[i] != "":
                 background.alpha_composite(un_full_jinglian, (707, init))
+        if maxjl_list[i] == "8":
+            background.alpha_composite(flickering, (709, init + 2))
         init = init + 49
 
     # 装备名称
