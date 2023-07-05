@@ -1,5 +1,5 @@
 from ... import *
-
+from . import test_group_id
 
 def test_subscribe_schedule():
     def check_sub(raw: str):
@@ -7,7 +7,7 @@ def test_subscribe_schedule():
     mc = MessageCallback(cb_finish=check_sub)
     src.plugins.jx3.subscribe.jx3_cmd_subscribe = mc
     func = src.plugins.jx3.subscribe.jx3_subscribe
-    event = SFGroupMessageEvent()
+    event = SFGroupMessageEvent(group_id=test_group_id)
     mc.tag = '大攻防'
     task = func(event, obMessage(mc.tag))
     asyncio.run(task)
