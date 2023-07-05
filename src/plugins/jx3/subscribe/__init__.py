@@ -16,6 +16,7 @@ async def jx3_subscribe(event: GroupMessageEvent, args: Message = CommandArg()):
     now = load_or_write_subscribe(event.group_id)
     template = [Jx3Arg(Jx3ArgsType.default), Jx3Arg(Jx3ArgsType.default)]
     arg_sub, arg_info = get_args(args.extract_plain_text(), template)
+    arg_sub = arg_sub.lower() if arg_sub else None
     if arg_sub not in VALID_Subjects:
         return await jx3_cmd_subscribe.finish("请不要订阅一些很奇怪的东西，我可是无法理解的哦~")
     if arg_sub in now:
@@ -38,6 +39,7 @@ async def jx3_unsubscribe(event: GroupMessageEvent, args: Message = CommandArg()
     now = load_or_write_subscribe(event.group_id)
     template = [Jx3Arg(Jx3ArgsType.default), Jx3Arg(Jx3ArgsType.default)]
     arg_sub, arg_info = get_args(args.extract_plain_text(), template)
+    arg_sub = arg_sub.lower() if arg_sub else None
     if arg_sub not in VALID_Subjects:
         return await jx3_cmd_unsubscribe.finish("请不要取消订阅一些很奇怪的东西，我可是无法理解的哦~")
     if arg_sub not in now:
