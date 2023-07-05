@@ -8,9 +8,7 @@ from nonebot.adapters.onebot.v11 import Event, Bot, GroupMessageEvent
 from nonebot.matcher import Matcher
 from nonebot.log import logger
 
-TOOLS = nonebot.get_driver().config.tools_path
-sys.path.append(str(TOOLS))
-DATA = TOOLS[:-5] + "data"
+from src.tools.dep import *
 
 from src.tools.permission import checker, error
 from src.tools.file import write, read
@@ -169,19 +167,18 @@ shutup = on_command("shutup", aliases={"-闭嘴"}, priority=5)
 async def _(event: GroupMessageEvent):
     if event.sender.role not in ["owner","admin"]:
         await shutup.finish("唔……只有群主或管理员可以使用该命令！")
-    subscribe_file_path = DATA + "/" + str(event.group_id) + "/subscribe.json"
-    subscribe = json.loads(read(subscribe_file_path))
+    subscribe = load_or_write_subscribe(event.group_id)
     if "闭嘴" in subscribe:
         await shutup.finish("音卡已经暂时自主禁言啦！请不要重复调用。")
     else:
-        subscribe.append("闭嘴")
-        write(subscribe_file_path, json.dumps(subscribe, ensure_ascii=False))
+        subscribe['闭嘴'] = {}
+        load_or_write_subscribe(event.group_id,subscribe)
         await shutup.finish("已开启禁言开关，除`reg`、`speak`以外的命令均不会被触发。\n推送为正常推送，若有需要，请自行退订哦~\n机器人全域公告正常推送。")
 
 shutup_filter = on_message(priority=1, block=False)
 @shutup_filter.handle()
 async def _(matcher: Matcher, event: GroupMessageEvent):
-    subscribe = json.loads(read(DATA + "/" + str(event.group_id) + "/subscribe.json"))
+    subscribe = load_or_write_subscribe(event.group_id)
     if "闭嘴" in subscribe:
         matcher.stop_propagation()
     else:
@@ -192,12 +189,12 @@ speak = on_command("unshutup", aliases={"speak","-解除闭嘴"}, priority=1)
 async def _(event: GroupMessageEvent):
     if event.sender.role not in ["owner","admin"]:
         await speak.finish("唔……只有群主或管理员可以使用该命令！")
-    subscribe = json.loads(read(DATA + "/" + str(event.group_id) + "/subscribe.json"))
+    subscribe = load_or_write_subscribe(event.group_id)
     if "闭嘴" not in subscribe:
         await speak.finish("音卡没有自主禁言哦，请检查后重试~")
     else:
-        subscribe.remove("闭嘴")
-        write(DATA + "/" + str(event.group_id) + "/subscribe.json", json.dumps(subscribe, ensure_ascii=False))
+        del subscribe["闭嘴"]
+        load_or_write_subscribe(event.group_id,subscribe)
         await speak.finish("已解除音卡的自主禁言！")
 
 fix = on_command("fix", priority=5) # 修补数据，用于数据文件残缺时
