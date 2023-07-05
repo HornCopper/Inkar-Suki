@@ -7,6 +7,7 @@ from src.tools.config import Config
 logger.debug('start load web renderer')
 from .argparser import *
 from .renderer import *
+from .subscriber import *
 token = Config.jx3api_globaltoken
 bot = "Inkar-Suki"
 ticket = Config.jx3_token
