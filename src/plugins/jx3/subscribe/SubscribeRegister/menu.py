@@ -28,6 +28,7 @@ def __init_subjects(__subjects: list[__X]):
             SubjectCron('20 18 * * 6',
                         '攻防排队18:30要开始啦，快去主城准备排浩气盟吧~奇袭战场可以提前排队哦'),
         ],
+        callback=OnGfBig,
     ))
 
     __subjects.append(__X(
@@ -37,6 +38,7 @@ def __init_subjects(__subjects: list[__X]):
             SubjectCron('20 19 * * 1', '攻防排队18:30要开始啦，快去过图点准备卡图吧'),
             SubjectCron('20 19 * * 3', '攻防排队18:30要开始啦，快去过图点准备卡图吧'),
         ],
+        callback=OnGfSmall,
     ))
 
     tip_world_boss = '世界boss活动将在20:00开始，按下ctrl+z去烂柯山或者前尘地图看看吧'
@@ -50,6 +52,7 @@ def __init_subjects(__subjects: list[__X]):
             SubjectCron('0 20 * * 2', tip_world_boss_start),
             SubjectCron('0 20 * * 4', tip_world_boss_start),
         ],
+        callback=OnWorldBoss,
     ))
 
 
@@ -68,6 +71,11 @@ def __init_cron(sub: __X):
         scheduler.add_job(OnCallback, c, id=name, kwargs=kwargs)
 
 
+# 订阅 主题 订阅等级
+__subjects: list[SubscribeSubject] = []
+VALID_Subjects: dict[str, SubscribeSubject] = {}
+
+
 def load_subjects(__subjects: list[__X], target: dict[str, __X]):
     '''
     从预设逻辑中初始化
@@ -78,3 +86,43 @@ def load_subjects(__subjects: list[__X], target: dict[str, __X]):
     for sub in __subjects:
         target[sub.name] = sub
         __init_cron(sub)
+
+
+def check_subscribed(sub: SubscribeSubject, user_subs: list[str]) -> bool:
+    '''
+    检查当前订阅是否已包含
+    '''
+    if sub.name in user_subs:
+        return True
+    for s in user_subs:
+        u_sub = VALID_Subjects.get(s)
+        if not u_sub:
+            continue
+        if check_subscribed(sub, u_sub.children):
+            return True
+    return False
+
+
+def get_subscribe_items(user_subs: list[str]):
+    '''
+    将当前订阅转换为实体
+    '''
+    r = [VALID_Subjects.get(x) for x in user_subs]
+    return [x for x in r if x]
+
+
+async def OnCallback(sub: SubscribeSubject, cron: SubjectCron):
+    if not sub.callback:
+        logger.warn(f'subscribe callback of [{sub.name}] not defined.')
+        return
+    bots = get_driver().bots
+    for botname in bots:
+        bot = bots.get(botname)
+        for group in bot.call_api('get_group_list'):
+            group_id = group.get('group_id')
+            g_subscribe = load_or_write_subscribe(group_id)
+            if not check_subscribed(g_subscribe):
+                continue
+            sub.callback(bot, group_id, sub, cron)
+
+load_subjects(__subjects, VALID_Subjects)
