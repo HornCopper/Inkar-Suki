@@ -440,7 +440,7 @@
         let last = -1
         p.prices.map(x => {
           const cur = x[2]
-          if (last <= 0 || (cur - last) / last > 1e-4) {
+          if (last <= 0 || Math.abs((cur - last) / last) > 1e-4) {
             last = cur
             result.push(x)
           }
