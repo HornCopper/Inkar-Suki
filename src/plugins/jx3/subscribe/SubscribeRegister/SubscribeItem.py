@@ -19,8 +19,9 @@ class SubjectCron:
 
 
 class SubscribeSubject:
-    def __init__(self, name: str, description: str = None, children_subjects: list = None, cron: list[SubjectCron] = None) -> None:
+    def __init__(self, name: str, description: str = None, children_subjects: list = None, cron: list[SubjectCron] = None, callback: callable = None) -> None:
         self.name = name
         self.description = description
         self.children = [] if not children_subjects else children_subjects
         self.cron = cron
+        self.callback = callback
