@@ -22,7 +22,7 @@ async def _(bot: Bot, event: RecvEvent):
     groups = await bot.call_api("get_group_list")
     for i in groups:
         group = i["group_id"]
-        subscribe = json.loads(read(DATA + "/" + str(group) + "/subscribe.json"))
+        subscribe = load_or_write_subscribe(group)
         if message["type"] in subscribe:
             if message["type"] == "玄晶":
                 group_info = json.loads(read(DATA + "/" + str(group) + "/jx3group.json"))
