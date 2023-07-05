@@ -28,7 +28,7 @@ from .recruit import *
 from .sandbox import *
 from .server import *
 from .skill import *
-from ...tools.dep.api.subscriber import *
+from .subscribe import *
 from .task import *
 from .user import *
 from .venture import *
