@@ -1,6 +1,5 @@
 from src.tools.dep import *
 from .SubscribeItem import *
-from .callback import *
 from .events import *
 # 订阅 主题 订阅等级
 __subjects: list[SubscribeSubject] = []
