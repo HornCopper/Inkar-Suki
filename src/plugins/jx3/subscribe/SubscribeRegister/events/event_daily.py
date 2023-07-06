@@ -7,7 +7,8 @@ daily_lock = threading.Lock()
 
 
 async def CallbackDaily(bot: Bot, group_id: str, sub: SubscribeSubject, cron: SubjectCron):
-    t = time.localtime() - 7 * 3600  # 每天早上7点前均按前一天算
+    global CACHE_Daily
+    t = time.localtime(time.time() - 7 * 3600)   # 每天早上7点前均按前一天算
     date = time.strftime('%Y%m%d', t)
     s = ''  # 每个服日常一样，故不区分了 # getGroupServer(group_id) or "唯满侠"
 
@@ -23,16 +24,15 @@ async def CallbackDaily(bot: Bot, group_id: str, sub: SubscribeSubject, cron: Su
                 pass
         CACHE_Daily = {}
 
-        url = daily_('唯满侠', group_id, 1)  # 向后预测1天的
+        url = await daily_('唯满侠', group_id, 1)  # 向后预测1天的
         img_data = httpx.get(url).content
         path_cache_daily = f'{CACHE}{os.sep}{key}.png'
         with open(path_cache_daily, 'wb') as f:
             f.write(img_data)
         CACHE_Daily[key] = path_cache_daily
     daily_lock.release()
-
-    message = f'{ms.image(path_cache_daily)}{cron.notify_content}'
-    await bot.call_api("send_group_msg", group_id=group_id, message=message)
+    message = f'{ms.image(Path(path_cache_daily).as_uri())}{cron.notify_content}'
+    await bot.call_api('send_group_msg', group_id=group_id, message=message)
 
 CallbackDailyToday = CallbackDaily
 CallbackDailyTomorow = CallbackDaily
