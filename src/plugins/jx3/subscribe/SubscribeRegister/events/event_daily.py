@@ -44,6 +44,7 @@ def run(__subjects: list):
         description='每天早上和晚上推送日常任务',
         children_subjects=['今日日常', '明日日常']
     )
+    __subjects.append(v)
     v = SubscribeSubject(
         name='今日日常',
         description='每天一大早推送今天的日常任务',
@@ -52,6 +53,7 @@ def run(__subjects: list):
         ],
         callback=CallbackDailyToday
     )
+    __subjects.append(v)
     v = SubscribeSubject(
         name='明日日常',
         description='每天晚上10点推送次日的日常任务',
