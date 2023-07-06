@@ -17,7 +17,7 @@ def init_subjects(__subjects: list[SubscribeSubject]):
     events_world_boss.run(__subjects, OnWorldBoss)
 
 
-def init_cron(sub: SubscribeSubject):
+def init_cron(sub: SubscribeSubject, OnCallback: callable):
     if not sub.cron:
         return
 
