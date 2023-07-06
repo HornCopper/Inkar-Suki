@@ -324,8 +324,6 @@ async def get_attr_main(server, id, group_id):
     basic = [score, id, school_body, uid]
     messyqx = []
     for i in data["data"]["Person"]["qixueList"]:
-        if i["name"] == "红绡倩风·收":
-            continue
         messyqx.append(i["name"])
     qx = ["未知","未知","未知","未知","未知","未知","未知","未知","未知","未知","未知","未知"]
     unknown = PLUGINS + "/jx3/user/unknown.png"
@@ -339,6 +337,8 @@ async def get_attr_main(server, id, group_id):
     qxdata = await get_api(f"https://data.jx3box.com/talent/{ver}.json")
     for i in messyqx:
         index = find_qx(qxdata, kf, i)
+        if index == None:
+            continue
         qx[index] = i
     for i in range(12):
         for x in data["data"]["Person"]["qixueList"]:
@@ -368,7 +368,7 @@ async def get_attr_main(server, id, group_id):
             maxjl_list.append(6)
             jl_list.append(0)
             equip_list.append("")
-            equip_icon_list.append("")
+            equip_icon_list.append(unknown)
         else:
             maxjl_list.append(i["MaxStrengthLevel"])
             jl_list.append(i["StrengthLevel"])
@@ -459,7 +459,21 @@ async def get_attr_main(server, id, group_id):
             num = num + 1
             continue
     fs = []
+    num = 0
     for i in equip_data:
+        num = num + 1
+        if i == "" and num in [7,8,11]:
+            fs.append(0)
+            continue
+        elif i == "" and num in [1,2,3,4,5,6]:
+            fs.append(0)
+            fs.append(0)
+            continue
+        elif i == "" and num in [12,13]:
+            fs.append(0)
+            fs.append(0)
+            fs.append(0)
+            continue
         try:
             i["FiveStone"]
         except:
@@ -469,6 +483,7 @@ async def get_attr_main(server, id, group_id):
                 fs.append(int(x["Level"]))
             else:
                 fs.append(0)
+    logger.info(fs)
     try:
         wcs = equip_data[11]["ColorStone"]["Name"]
         wcs_icon = equip_data[11]["ColorStone"]["Icon"]["FileName"]
@@ -566,18 +581,27 @@ async def get_attr_main(server, id, group_id):
     return img
 
 async def local_save(webpath):
-    logger.info(webpath)
     file_name = webpath.split("/")[-1].split("?")[0]
     final_path = ASSETS + "/jx3/kungfu/" + file_name + ".png"
     if os.path.exists(final_path):
         return final_path
     else:
-        main = await get_content(webpath)
+        try:
+            main = await get_content(webpath)
+        except:
+            return webpath
         cache = open(final_path, mode="wb")
         cache.write(main)
         cache.close()
         return final_path
-    
+
+def judge_special_weapon(name):
+    special_weapons = ["雪凤冰王笛","血影天宇舞姬","炎枪重黎","腾空","画影","金刚","岚尘金蛇","苌弘化碧","蝎心忘情","抱朴狩天","八相连珠","圆月双角","九龙升景","斩马刑天","风雷瑶琴剑","五相斩","雪海散华"]
+    for i in special_weapons:
+        if name.split("(")[0] in special_weapons:
+            return True
+    return False
+
 async def get_attr(kungfu: str, maxjl_list: list, jl_list: list, equip_list: list, equip_icon_list: list, equip_quailty: list, basic: list, qx: list, qx_icon: list, henchant: list, lenchant: list, fs: list, wcs_icon: str, wcs: str, attrs: list, wcs1, wcs_icon1):
     attr = kungfu_mapping(kungfu)
     syst_bold = ASSETS + "/font/syst-bold.ttf"
@@ -604,12 +628,12 @@ async def get_attr(kungfu: str, maxjl_list: list, jl_list: list, equip_list: lis
     # 心法图标
     background.alpha_composite(Image.open(await get_kf_icon(kungfu)).resize((50,50)), (61,62))
 
-    special_weapons = ["雪凤冰王笛","血影天宇舞姬","炎枪重黎","腾空","画影","金刚","岚尘金蛇","苌弘化碧","蝎心忘情","抱朴狩天","八相连珠","圆月双角","九龙升景","斩马刑天","风雷瑶琴剑","五相斩","雪海散华"]
     # 武器图标
+    logger.info(equip_list)
     if kungfu not in ["问水诀","山居剑意"]:
         if equip_icon_list[11] != "":
-            if equip_list[11] in special_weapons:
-                background.alpha_composite(precious, (687, init - 1))
+            if judge_special_weapon(equip_list[11]):
+                background.alpha_composite(precious, (688, 586))
             background.alpha_composite(Image.open(await local_save(equip_icon_list[11])).resize((38,38)), (708, 587))
             if maxjl_list[11] in ["3","4","8"]:
                 background.alpha_composite(precious, (688, 586))
@@ -625,8 +649,8 @@ async def get_attr(kungfu: str, maxjl_list: list, jl_list: list, equip_list: lis
                     background.alpha_composite(un_full_jinglian, (708, 587))
     else:
         if equip_icon_list[11] != "":
-            if equip_list[12] in special_weapons:
-                background.alpha_composite(precious, (687, init - 1))
+            if judge_special_weapon(equip_list[11]):
+                background.alpha_composite(precious, (688, 586))
             background.alpha_composite(Image.open(await local_save(equip_icon_list[11])).resize((38,38)), (708, 587))
             if maxjl_list[11] in ["3","4","8"]:
                 background.alpha_composite(precious, (688, 586))
@@ -641,8 +665,8 @@ async def get_attr(kungfu: str, maxjl_list: list, jl_list: list, equip_list: lis
                 else:
                     background.alpha_composite(un_full_jinglian, (708, 587))
         if equip_icon_list[12] != "":
-            if equip_list[12] in special_weapons:
-                background.alpha_composite(precious, (687, init - 1))
+            if judge_special_weapon(equip_list[12]):
+                background.alpha_composite(precious, (688, 635))
             background.alpha_composite(Image.open(await local_save(equip_icon_list[12])).resize((38,38)), (708, 636))
             if maxjl_list[12] in ["3","4","8"]:
                 background.alpha_composite(precious, (688, 635))
@@ -674,7 +698,7 @@ async def get_attr(kungfu: str, maxjl_list: list, jl_list: list, equip_list: lis
     if kungfu in ["问水诀","山居剑意"]:
         range_time = range_time + 1
     for i in range(range_time):
-        if equip_list[i] in special_weapons:
+        if judge_special_weapon(equip_list[i]):
             background.alpha_composite(precious, (687, init - 1))
         if maxjl_list[i] in ["3","4","8"]:
             background.alpha_composite(precious, (687, init - 1))
