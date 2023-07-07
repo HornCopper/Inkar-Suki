@@ -349,7 +349,12 @@ async def get_attr_main(server, id, group_id):
             equip_quailty.append("")
         else:
             msg = i["Quality"]
-            for x in i["ModifyType"]:
+            try:
+                modify = i["ModifyType"]
+            except:
+                equip_quailty.append(msg)
+                continue
+            for x in modify:
                 content = x["Attrib"]["GeneratedMagic"].split("提高")
                 if len(content) == 1:
                     content = content[0].split("增加")
@@ -375,10 +380,16 @@ async def get_attr_main(server, id, group_id):
             equip_list.append(i["Name"] + "(" + i["StrengthLevel"] + "/" + i["MaxStrengthLevel"] + ")")
             equip_icon_list.append(i["Icon"]["FileName"])
     for i in equip_data:
+        logger.info(i)
+        logger.info(type(i))
+        if i == "":
+            if equip_data.index(i) in [0,1,2,3,5]:
+                henchant[equip_data.index(i)] = ""
+                continue
         try:
             i["Icon"]["SubKind"]
         except:
-            if equip_data.index(i) in [0,1,2,3,4]:
+            if equip_data.index(i) in [0,1,2,3,5]:
                 henchant[equip_data.index(i)] = ""
                 continue
         if i["Icon"]["SubKind"] == "帽子":
