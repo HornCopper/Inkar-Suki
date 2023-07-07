@@ -8,7 +8,7 @@ from src.tools.dep import *
 from src.tools.config import Config
 from src.tools.generate import get_uuid
 
-from ..user.api import kungfu_mapping, get_fs, local_save, PLUGINS, get_kf_icon, get_bg, data_process, find_qx, enchant_mapping
+from ..user.api import kungfu_mapping, get_fs, local_save, PLUGINS, get_kf_icon, get_bg, data_process, enchant_mapping, logger, judge_special_weapon
 
 from PIL import Image, ImageFont, ImageDraw
 
@@ -31,12 +31,13 @@ async def post_url(url, proxy: dict = None, headers: str = None, timeout: int = 
         result = resp.text
         return result
 
-async def get_recommended_equips_list(forceId: str):
+async def get_recommended_equips_list(forceId: str, condition):
     param = {
         "Kungfu": forceId,
-        "EquipTags": [],
+        "EquipTags": condition,
         "Size": 10,
         "cursor": 0,
+        "matchSeasonId":"644a3378ba3129001872bdd2",
         "ts": gen_ts()
     }
     param = format_body(param)
@@ -64,13 +65,15 @@ async def get_recommended_equips_list(forceId: str):
     data = []
     name = []
     tag = []
+    like = []
     author = []
-    for i in info:
+    for i in info["data"]["data"]:
         data.append(json.loads(i["matchEquip"]["equips"]))
         name.append(i["matchEquip"]["name"])
         tag.append(i["matchEquip"]["tags"][0])
         author.append(i["nickname"])
-    return [data, name, tag, author] # 数据，配装名称，标签，作者
+        like.append(str(i["likeCount"]))
+    return [data, name, tag, author, like] # 数据，配装名称，标签，作者
 
 def att_mapping(att):
     if att == "根骨":
@@ -83,7 +86,7 @@ def att_mapping(att):
         return "atAgilityBase"
 
 async def get_single_recequips(data: dict, author: str, name: str, tag: str, kf: str):
-    score = str(data["moreDetail"])
+    score = str(data["matchDetail"]["score"])
     basic = [score, name, author, tag]
     if kf == "山居剑意":
         kf = "问水诀"
@@ -94,34 +97,17 @@ async def get_single_recequips(data: dict, author: str, name: str, tag: str, kf:
         flag = 2
     elif att == "防御":
         flag = 3
-    uid = uid[0]
-    equip_data = data_process(kf, data)
+    equip_data = data_process(kf, data, False)
     maxjl_list = []
     jl_list = []
     equip_list = []
     equip_icon_list = []
     equip_quailty = []
-    messyqx = []
-    for i in data["data"]["Person"]["qixueList"]:
-        messyqx.append(i)
-    qx = ["未知","未知","未知","未知","未知","未知","未知","未知","未知","未知","未知","未知"]
     unknown = PLUGINS + "/jx3/user/unknown.png"
-    qx_icon = [unknown, unknown, unknown, unknown, unknown, unknown, unknown, unknown, unknown, unknown, unknown, unknown]
     henchant = ["","","","","",""]
     lenchant = ["","","","","","","","","","","",""]
     if kf in ["问水诀","山居剑意"]:
         lenchant.append("")
-    versions = await get_api("https://data.jx3box.com/talent/index.json")
-    ver = versions[0]["version"]
-    qxdata = await get_api(f"https://data.jx3box.com/talent/{ver}.json")
-    for i in messyqx:
-        index = find_qx(qxdata, kf, i)
-        logger.info(index)
-        qx[index] = i
-    for i in range(12):
-        for x in data["data"]["Person"]["qixueList"]:
-            if x["name"] == qx[i]:
-                qx_icon[i] = x["icon"]["FileName"]
     for i in equip_data:
         if i == "":
             equip_quailty.append("")
@@ -237,7 +223,7 @@ async def get_single_recequips(data: dict, author: str, name: str, tag: str, kf:
         except:
             continue
         for x in i["FiveStone"]:
-            if x["Name"] != "":
+            if x["Name"] != "" or int(x["Level"]) >= 1:
                 fs.append(int(x["Level"]))
             else:
                 fs.append(0)
@@ -255,7 +241,7 @@ async def get_single_recequips(data: dict, author: str, name: str, tag: str, kf:
         wcs_icon1 = ""
     values = [0,0,0,0,0,0,0,0,0,0,0,0]
     if flag == 1:
-        panel = data["data"]["matchDetail"]
+        panel = data["matchDetail"]
         for i in list(panel):
             if i == "totalAttack":
                 values[0] = str(panel[i])
@@ -282,7 +268,7 @@ async def get_single_recequips(data: dict, author: str, name: str, tag: str, kf:
             if i == "atDecriticalDamagePowerBaseLevel":
                 values[11] = str(panel[i]) + "%"
     elif flag == 2:
-        panel = data["data"]["matchDetail"]
+        panel = data["matchDetail"]
         for i in list(panel):
             if i == "totaltherapyPowerBase":
                 values[0] = str(panel[i])
@@ -309,7 +295,7 @@ async def get_single_recequips(data: dict, author: str, name: str, tag: str, kf:
             if i == "atDecriticalDamagePowerBaseLevel":
                 values[11] = str(panel[i]) + "%"
     else:
-        panel = data["data"]["matchDetail"]
+        panel = data["matchDetail"]
         for i in list(panel):
             if i == "atPhysicsShieldBaseLevel":
                 values[0] = str(panel[i]) + "%"
@@ -361,29 +347,59 @@ async def get_attr(kungfu: str, maxjl_list: list, jl_list: list, equip_list: lis
     little_enchant = Image.open(PLUGINS + "/jx3/user/lenchant.png").resize((20, 20))
 
     # 心法图标
-    background.alpha_composite(Image.open(await get_kf_icon(kungfu)), (61,62))
+    background.alpha_composite(Image.open(await get_kf_icon(kungfu)).resize((50,50)), (61,62))
 
     # 武器图标
     if kungfu not in ["问水诀","山居剑意"]:
         if equip_icon_list[11] != "":
+            if judge_special_weapon(equip_list[11]):
+                background.alpha_composite(precious, (688, 586))
             background.alpha_composite(Image.open(await local_save(equip_icon_list[11])).resize((38,38)), (708, 587))
             if maxjl_list[11] in ["3","4","8"]:
                 background.alpha_composite(precious, (688, 586))
                 if maxjl_list[11] == "8":
                     background.alpha_composite(flickering, (707, 586))
+                else:
+                    if maxjl_list[11] == jl_list[11]:
+                        background.alpha_composite(full_jinglian, (708, 587))
+            else:
+                if maxjl_list[11] == jl_list[11]:
+                    background.alpha_composite(full_jinglian, (708, 587))
+                else:
+                    background.alpha_composite(un_full_jinglian, (708, 587))
     else:
         if equip_icon_list[11] != "":
+            if judge_special_weapon(equip_list[11]):
+                background.alpha_composite(precious, (688, 586))
             background.alpha_composite(Image.open(await local_save(equip_icon_list[11])).resize((38,38)), (708, 587))
             if maxjl_list[11] in ["3","4","8"]:
                 background.alpha_composite(precious, (688, 586))
                 if maxjl_list[11] == "8":
-                    background.alpha_composite(flickering, (707, 586))
+                    background.alpha_composite(flickering, (708, 587))
+                else:
+                    if maxjl_list[11] == jl_list[11]:
+                        background.alpha_composite(full_jinglian, (708, 587))
+            else:
+                if maxjl_list[11] == jl_list[11]:
+                    background.alpha_composite(full_jinglian, (708, 587))
+                else:
+                    background.alpha_composite(un_full_jinglian, (708, 587))
         if equip_icon_list[12] != "":
+            if judge_special_weapon(equip_list[12]):
+                background.alpha_composite(precious, (688, 635))
             background.alpha_composite(Image.open(await local_save(equip_icon_list[12])).resize((38,38)), (708, 636))
             if maxjl_list[12] in ["3","4","8"]:
                 background.alpha_composite(precious, (688, 635))
                 if maxjl_list[12] == "8":
-                    background.alpha_composite(flickering, (707, 635))
+                    background.alpha_composite(flickering, (708, 636))
+                else:
+                    if maxjl_list[12] == jl_list[12]:
+                        background.alpha_composite(full_jinglian, (708, 636))
+            else:
+                if maxjl_list[12] == jl_list[12]:
+                    background.alpha_composite(full_jinglian, (708, 636))
+                else:
+                    background.alpha_composite(un_full_jinglian, (708, 636))
 
     # 装备图标
     init = 48
@@ -402,6 +418,8 @@ async def get_attr(kungfu: str, maxjl_list: list, jl_list: list, equip_list: lis
     if kungfu in ["问水诀","山居剑意"]:
         range_time = range_time + 1
     for i in range(range_time):
+        if judge_special_weapon(equip_list[i]):
+            background.alpha_composite(precious, (687, init - 1))
         if maxjl_list[i] in ["3","4","8"]:
             background.alpha_composite(precious, (687, init - 1))
         if jl_list[i] == maxjl_list[i]:
@@ -409,6 +427,8 @@ async def get_attr(kungfu: str, maxjl_list: list, jl_list: list, equip_list: lis
         else:
             if equip_list[i] != "":
                 background.alpha_composite(un_full_jinglian, (707, init))
+        if maxjl_list[i] == "8":
+            background.alpha_composite(flickering, (709, init + 2))
         init = init + 49
 
     # 装备名称
