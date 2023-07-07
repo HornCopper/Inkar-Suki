@@ -283,7 +283,7 @@ def kungfu_mapping(kf):
 async def get_attr_main(server, id, group_id):
     server = server_mapping(server, group_id)
     if not server:
-        return [PROMPT_ServerNotexists]
+        return [PROMPT_ServerNotExist]
     uid = await get_uid(server, id)
     if uid == False:
         return ["唔……未找到该玩家。"]
