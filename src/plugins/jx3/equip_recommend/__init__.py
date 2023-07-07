@@ -2,6 +2,8 @@ from .api import *
 
 from src.plugins.help import css
 from src.tools.generate import generate, get_uuid
+from src.tools.permission import checker, error
+from src.constant.jx3 import aliases
 
 school_mapping = {
     "傲血战意": 10026,
@@ -37,21 +39,31 @@ school_mapping = {
 }
 
 equip_recmd = on_command("jx3_eqrec", aliases={"配装v2"}, priority=5)
-@equip_recmd.hanle()
+@equip_recmd.handle()
 async def eqrec(event: GroupMessageEvent, state: T_State, args: Message = CommandArg()):
-    if args.extract_plain_text() not in list(school_mapping):
+    if checker(str(event.user_id),9) == False:
+        await equip_recmd.finish("唔……该功能尚在内测中，您暂未获得内测资格，请稍等哦，很快就要公测了！")
+    arg = args.extract_plain_text().split(" ")
+    if len(arg) not in [1,2]:
+        await equip_recmd.finish("唔……参数数量有问题哦，请检查后重试~\n或查看帮助文件（+help）获得更详细的信息哦~")
+    kf = aliases(arg[0])
+    condition = []
+    if len(arg) == 2:
+        condition = arg[1].split(";")
+    if kf not in list(school_mapping):
         await equip_recmd.finish("唔……未找到该心法，请检查后重试~")
-    forceId = school_mapping[args.extract_plain_text()]
-    data = await get_recommended_equips_list(forceId)
+    forceId = school_mapping[kf]
+    data = await get_recommended_equips_list(str(forceId), condition)
     state["data"] = data[0]
     state["name"] = data[1]
     state["tag"] = data[2]
     state["author"] = data[3]
-    state["kungfu"] = args.extract_plain_text()
+    state["condition"] = condition
+    state["kungfu"] = kf
     chart = []
-    chart.append(["作者","名称","标签"])
+    chart.append(["序号","作者","名称","标签","点赞"])
     for i in range(len(data[1])):
-        chart.append(str(i), [data[3][i], data[1][i], data[2][i]])
+        chart.append([str(i), data[3][i], data[1][i], data[2][i], data[4][i]])
     html = css + tabulate(chart, tablefmt="unsafehtml")
     final_path = f"{CACHE}/{get_uuid()}.html"
     write(final_path, html)
@@ -63,6 +75,7 @@ async def eqrec(event: GroupMessageEvent, state: T_State, args: Message = Comman
 
 @equip_recmd.got("index", prompt="请选择配装查看哦，回复我只需要数字就行啦！")
 async def equip_recmded(state: T_State, index: Message = Arg()):
+    index = index.extract_plain_text()
     if checknumber(index) == False:
         await equip_recmd.finish(PROMPT_NumberInvalid)
     data = state["data"][int(index)]
@@ -74,4 +87,4 @@ async def equip_recmded(state: T_State, index: Message = Arg()):
     if type(data) == type([]):
         await equip_recmd.finish(data[0])
     else:
-        await equip_recmd.finish(MessageSegment.image(data).as_uri())
+        await equip_recmd.finish(MessageSegment.image(Path(data).as_uri()))

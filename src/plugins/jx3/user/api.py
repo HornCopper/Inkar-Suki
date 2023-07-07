@@ -143,12 +143,14 @@ def find_qx(data, kf, qx):
             if each["name"] == qx:
                 return i-1
 
-def data_process(kf, data):
+def data_process(kf, data, f):
     final = ["","","","","","","","","","","",""]
     if kf in ["问水诀","山居剑意"]:
         final.append("")
     flag = False
-    for i in data["data"]["Equips"]:
+    if f:
+        data = data["data"]
+    for i in data["Equips"]:
         if i["Icon"]["SubKind"] == "帽子":
             final[0] = i
         if i["Icon"]["SubKind"] == "上衣":
@@ -314,7 +316,7 @@ async def get_attr_main(server, id, group_id):
         flag = 3
     school_body = uid[2] + "·" + uid[1]
     uid = uid[0]
-    equip_data = data_process(kf, data)
+    equip_data = data_process(kf, data, True)
     maxjl_list = []
     jl_list = []
     equip_list = []
