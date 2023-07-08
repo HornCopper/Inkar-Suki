@@ -5,16 +5,16 @@ def run(__subjects: list, OnGfBig: callable, OnGfSmall: callable):
     __subjects.append(SubscribeSubject('攻防', '含大攻防和小攻防', ['大攻防', '小攻防']))
     __subjects.append(SubscribeSubject(
         name='大攻防',
-        description='每周六日中午12:30，晚上18:30分别排恶人谷和浩气盟主战场。',
+        description='每周六日中午12:30，晚上18:30分别排浩气盟和恶人谷主战场。',
         cron=[
             SubjectCron('20 12 * * 5',
-                        '攻防排队12:30要开始啦，快去主城准备排恶人谷吧~奇袭战场可以提前排队哦'),
-            SubjectCron('20 18 * * 5',
-                        '攻防排队18:30要开始啦，快去主城准备排恶人谷吧~奇袭战场可以提前排队哦'),
-            SubjectCron('20 12 * * 6',
                         '攻防排队12:30要开始啦，快去主城准备排浩气盟吧~奇袭战场可以提前排队哦'),
-            SubjectCron('20 18 * * 6',
+            SubjectCron('20 18 * * 5',
                         '攻防排队18:30要开始啦，快去主城准备排浩气盟吧~奇袭战场可以提前排队哦'),
+            SubjectCron('20 12 * * 6',
+                        '攻防排队12:30要开始啦，快去主城准备排恶人谷吧~奇袭战场可以提前排队哦'),
+            SubjectCron('20 18 * * 6',
+                        '攻防排队18:30要开始啦，快去主城准备排恶人谷吧~奇袭战场可以提前排队哦'),
         ],
         callback=OnGfBig,
     ))
