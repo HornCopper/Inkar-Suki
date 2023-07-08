@@ -26,7 +26,7 @@ async def jx3_subscribe(event: GroupMessageEvent, args: Message = CommandArg()):
 
     Notice：一次只可订阅一个。
     '''
-    now, subject, msg = get_jx3_subscribe(event, args)
+    now, subject, msg = await get_jx3_subscribe(event, args)
 
     result = await render_subscribe(VALID_Subjects, now, subject, msg)
     return await jx3_cmd_subscribe.finish(ms.image(Path(result).as_uri()))
