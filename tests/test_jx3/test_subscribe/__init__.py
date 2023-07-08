@@ -10,7 +10,7 @@ def test_subscribe():
     src.plugins.jx3.subscribe.jx3_cmd_subscribe = mc
     func = src.plugins.jx3.subscribe.jx3_subscribe
     event = SFGroupMessageEvent(group_id=rnd_group)
-    mc.tag = '玄晶'
+    mc.tag = '大攻防'
     task = func(event, obMessage(mc.tag))
     asyncio.run(task)
     mc.check_counter()
