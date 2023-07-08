@@ -72,13 +72,13 @@
                   <span>{{ subject.callback }}</span>
                   </span>
                 </div>
-                <div>
+                <div v-if="subject_time[0]">
                   <span class="sub-title">上次触发</span>
                   <span>{{ formatTime(subject_time[0]) }}</span>
                   <span style="color:#999999;font-size:0.8rem">({{ parseTime(subject_time[0]) }})</span>
                   </span>
                 </div>
-                <div>
+                <div v-if="subject_time[1]">
                   <span class="sub-title">下次触发</span>
                   <span>{{ formatTime(subject_time[1]) }}</span>
                   <span style="color:#999999;font-size:0.8rem">({{ parseTime(subject_time[1]) }})</span>
