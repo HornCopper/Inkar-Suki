@@ -1,3 +1,4 @@
+import copy
 from .Golds import *
 from sgtpyutils.extensions.clazz import dict2obj
 import time
@@ -62,4 +63,4 @@ class GoodsPriceDetail(GoodsPriceRecord):
         return self.price_valid
 
     def to_dict(self):
-        return self.__dict__
+        return copy.deepcopy(self.__dict__)
