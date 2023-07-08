@@ -1,4 +1,5 @@
 from __future__ import annotations
+import copy
 import re
 from src.views import *
 from src.tools.dep import *
@@ -105,7 +106,7 @@ class GoodsInfo(dict):
         return json.dumps(self.__dict__)
 
     def to_dict(self) -> dict:
-        r = self.__dict__
+        r = copy.deepcopy(self.__dict__)
         r['img_url'] = self.img_url
         r['color'] = self.color
         r['bind_type_str'] = self.bind_type_str
@@ -121,19 +122,19 @@ class WucaiProperty:
         '提高'
     ]
     DICT_value_desc = {
-        '内功':'内',
-        '外功':'外',
-        '等级':'',
-        '毒性':'毒',
-        '效果':'效',
-        '会心':'会',
-        '攻击':'攻',
-        '招式产生威胁':'威胁',
-        '阳性':'阳',
-        '阴性':'阴',
-        '混元性':'混元',
-        '内破防':'内破',
-        '外破防':'外破',
+        '内功': '内',
+        '外功': '外',
+        '等级': '',
+        '毒性': '毒',
+        '效果': '效',
+        '会心': '会',
+        '攻击': '攻',
+        '招式产生威胁': '威胁',
+        '阳性': '阳',
+        '阴性': '阴',
+        '混元性': '混元',
+        '内破防': '内破',
+        '外破防': '外破',
     }
     RE_filter_number = re.compile('\d*')
 
@@ -151,7 +152,7 @@ class WucaiProperty:
         return self.__str__()
 
     def to_dict(self):
-        return self.__dict__
+        return copy.deepcopy(self.__dict__)
 
     @staticmethod
     def convert_filter(raw: str) -> Tuple[str, int]:
