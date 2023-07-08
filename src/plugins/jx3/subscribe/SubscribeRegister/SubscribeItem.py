@@ -1,6 +1,7 @@
 import copy
 from typing import overload, Callable
 from cron_descriptor import Options, CasingTypeEnum, DescriptionTypeEnum, ExpressionDescriptor
+import croniter
 
 
 def convert_keywords(raw: str) -> str:
@@ -9,7 +10,7 @@ def convert_keywords(raw: str) -> str:
                     'Thursday', 'Friday', 'Saturday', 'Sunday']
     seri_len = len(week_seriers)
     for index, x in enumerate(i18n_seriers):
-        target = index + 1 # 似乎i18n将0认为是周日了
+        target = index + 1  # 似乎i18n将0认为是周日了
         raw = raw.replace(x, week_seriers[target % seri_len])
     return raw
 
@@ -60,10 +61,21 @@ class SubjectCron:
         result = descriptor.get_description(DescriptionTypeEnum.FULL)
         return convert_keywords(result)
 
+    @property
+    def cron_get_time(self) -> tuple[int, int]:
+        '''
+        获取上次和下次执行的时间戳
+        '''
+        cron = croniter.croniter(self.expression)
+        return (cron.get_prev() * 1e3, cron.get_next() * 1e3)
+
     def to_dict(self):
         r = copy.deepcopy(self.__dict__)
         r['cron_description'] = self.cron_description
         r['notify_content'] = self.notify_content
+        x_time = self.cron_get_time
+        r['next_time'] = x_time[1]
+        r['prev_time'] = x_time[0]
         return r
 
 
