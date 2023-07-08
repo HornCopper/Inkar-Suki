@@ -1,2 +1,2 @@
-from tests.test_jx3.test_subscribe.test_schedule import test_subscribe_schedule as func
+from tests.test_jx3.test_subscribe import test_subscribe as func
 func()
