@@ -1,5 +1,4 @@
 from .... import *
-import pytest
 
 @pytest.mark.skip('没有token')
 def test_user():
