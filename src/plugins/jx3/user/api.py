@@ -44,7 +44,8 @@ async def roleInfo_(server, player):
 
 import os
 import json
-import datetime
+from datetime import datetime, timezone
+from zoneinfo import ZoneInfo
 import hashlib
 import hmac
 import httpx
@@ -93,7 +94,7 @@ def format_body(data: dict) -> str:
     return json.dumps(data, separators=(',', ':'))
 
 def gen_ts() -> str:
-    return f"{datetime.datetime.now():%Y%m%d%H%M%S%f}"[:-3]
+    return f"{datetime.now(timezone.utc):%Y%m%d%H%M%S%f}"[:-3]
 
 def gen_xsk(data: str) -> str:
     data += "@#?.#@"
