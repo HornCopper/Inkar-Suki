@@ -1,7 +1,10 @@
 import websockets
 import asyncio
+import nest_asyncio
+nest_asyncio.apply()
 import json
 import sys
+import random
 
 from typing import Optional
 
