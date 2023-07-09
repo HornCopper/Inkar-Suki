@@ -73,7 +73,7 @@ def stop_playwright():
     __client.IsRunning = False
 
 
-def generate_by_url(url: str, locate: str = None, first: bool = False, delay: int = 0):
+async def generate_by_url(url: str, locate: str = None, first: bool = False, delay: int = 0):
     global __is_finished
     global __result
 
@@ -104,7 +104,7 @@ async def generate(html: str, web: bool = False, locate: str = None, first: bool
     if web:
         pass
     html = Path(html).as_uri()
-    result = generate_by_url(html, locate, first, delay)
+    result = await generate_by_url(html, locate, first, delay)
     if result is None:
         return False
     return result

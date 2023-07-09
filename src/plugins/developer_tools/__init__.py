@@ -179,7 +179,7 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
     if await get_status(url) not in [200,301,302]:
         await web.finish("唔……网站图片获取失败。\n原因：响应码非200，请检查是否能正常访问。")
     else:
-        image = generate_by_url(url)
+        image = await generate_by_url(url)
         await web.finish("获取图片成功！\n"
         + MessageSegment.image(Path(image).as_uri()))
 
