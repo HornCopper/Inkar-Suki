@@ -2,7 +2,6 @@ from .api import *
 
 ct = on_command("jx3_ct", aliases={"赤兔"}, priority=5)
 
-
 @ct.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     '''
@@ -15,7 +14,6 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     await ct.finish(msg)
 
 horse = on_command("jx3_horse", aliases={"抓马", "马场"}, priority=5)
-
 
 @horse.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
