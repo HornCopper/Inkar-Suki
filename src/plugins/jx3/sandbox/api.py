@@ -6,7 +6,7 @@ async def sandbox_(server: str = None, group_id: str = None):  # 沙盘 <服务�
     if not server:
         return [PROMPT_ServerNotExist]
     if server != None:
-        final_url = f"https://www.jx3api.com/view/server/sand?token={token}&scale=1&robot={bot}&server=" + server
+        final_url = f"{Config.jx3api_link}/view/server/sand?token={token}&scale=1&robot={bot}&server=" + server
     data = await get_api(final_url, proxy=proxies)
     if data["code"] == 400:
         return [PROMPT_ServerInvalid]

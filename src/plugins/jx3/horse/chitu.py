@@ -6,7 +6,6 @@ import time
 import sys
 from src.tools.dep import *
 
-
 async def get_chitu(server: str, group_id: str):  # 数据来源@jw3cx.com
     api = "https://jw3cx.com/"
     data = await get_url(api)
@@ -19,7 +18,6 @@ async def get_chitu(server: str, group_id: str):  # 数据来源@jw3cx.com
         if i.get_text().find(server) != -1:
             return f"{i.get_text()}：" + i["value"]
     return PROMPT_ServerNotExist
-
 
 async def get_horse_reporter(server: str, group_id: str = None):  # 数据来源@JX3BOX
     server = server_mapping(server, group_id)
