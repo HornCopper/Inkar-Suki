@@ -1,4 +1,3 @@
-import datetime
 import hashlib
 import hmac
 import json
@@ -11,6 +10,8 @@ from src.tools.generate import get_uuid
 from ..user.api import kungfu_mapping, get_fs, local_save, PLUGINS, get_kf_icon, get_bg, data_process, enchant_mapping, logger, judge_special_weapon
 
 from PIL import Image, ImageFont, ImageDraw
+from datetime import datetime, timezone
+from zoneinfo import ZoneInfo
 
 token = Config.jx3_token
 
@@ -18,7 +19,7 @@ def format_body(data: dict) -> str:
     return json.dumps(data, separators=(',', ':'))
 
 def gen_ts() -> str:
-    return str(int(f"{datetime.datetime.now():%Y%m%d%H%M%S%f}"[:-3])-80000000)
+    return f"{datetime.now(timezone.utc):%Y%m%d%H%M%S%f}"[:-3]
 
 def gen_xsk(data: str) -> str:
     data += "@#?.#@"
