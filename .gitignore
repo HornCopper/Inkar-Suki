@@ -1,6 +1,7 @@
 /src/tools/config.py
 /src/assets/jx3/
 /src/assets/arcaea/
+/src/plugins/grab/eat_pic/*
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
