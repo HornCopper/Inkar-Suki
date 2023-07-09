@@ -1,7 +1,7 @@
 from src.tools.dep import *
 
 async def pendant(name: str):
-    final_url = f"https://www.jx3api.com/data/other/pendant?name={name}&token={token}"
+    final_url = f"{Config.jx3api_link}/data/other/pendant?name={name}&token={token}"
     data = await get_api(final_url)
     if data["code"] == 404:
         return "没有找到该挂件哦~"

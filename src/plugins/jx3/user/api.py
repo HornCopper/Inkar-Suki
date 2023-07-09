@@ -7,7 +7,7 @@ async def addritube_(server: str = None, name: str = None, group_id: str = None)
     server = server_mapping(server, group_id)
     if not server:
         return [PROMPT_ServerNotExist]
-    final_url = f"https://www.jx3api.com/view/role/attribute?ticket={ticket}&token={token}&robot={bot}&server={server}&name={name}&scale=1"
+    final_url = f"{Config.jx3api_link}/view/role/attribute?ticket={ticket}&token={token}&robot={bot}&server={server}&name={name}&scale=1"
     data = await get_api(final_url, proxy=proxies)
     if data["code"] == 404:
         return ["唔……玩家不存在。"]
@@ -21,7 +21,7 @@ async def addritube_(server: str = None, name: str = None, group_id: str = None)
 async def roleInfo_(server, player):
     if not token:
         return PROMPT_NoToken
-    final_url = f"https://www.jx3api.com/data/role/roleInfo?token={token}&name={player}&server={server}"
+    final_url = f"{Config.jx3api_link}/data/role/roleInfo?token={token}&name={player}&server={server}"
     if not server:
         return PROMPT_ServerNotExist
     data = await get_api(final_url, proxy=proxies)
@@ -117,7 +117,7 @@ def zone_mapping(server):
 
 async def get_uid(server, id):
     token = Config.jx3api_globaltoken
-    url = f"https://www.jx3api.com/data/role/roleInfo?token={token}&server={server}&name={id}"
+    url = f"{Config.jx3api_link}/data/role/roleInfo?token={token}&server={server}&name={id}"
     data = await get_api(url)
     if data["code"] != 200:
         return False
