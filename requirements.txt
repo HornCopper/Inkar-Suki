@@ -16,4 +16,3 @@ aiotieba
 pillow
 cron-descriptor
 croniter
-nest_asyncio
