@@ -1,2 +1,2 @@
-from tests.test_jx3.test_price.test_trade_v2 import test_trade_record as func
+from tests.test_jx3.test_event.test_ws_event import test_server_status as func
 func()
