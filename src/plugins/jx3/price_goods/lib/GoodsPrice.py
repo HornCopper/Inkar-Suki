@@ -1,3 +1,4 @@
+import copy
 from .Golds import *
 from sgtpyutils.extensions.clazz import dict2obj
 import time
@@ -32,10 +33,10 @@ class GoodsPriceDetail(GoodsPriceRecord):
     def __init__(self, prices: list = None) -> None:
         if prices is None:
             prices = []
+        self.latest = 0  # 最新数据时时间戳
         key = ['created', 'n_count', 'unit_price']
         self.prices = [[x.get(k) for k in key] for x in prices]  # 创建时间 数量 单价
         self.valid_price = self.get_valid_price()
-        self.latest = None  # 最新数据时间
         super().__init__()
 
     def get_valid_price(self, prices: list = None):
@@ -49,7 +50,7 @@ class GoodsPriceDetail(GoodsPriceRecord):
             self.price_valid = GoodsPriceDetail.InvalidPrice
             return self.price_valid
         prices.sort(key=lambda x: x[2])  # 按价格升序排列
-        self.latest = max(prices, key=lambda x: x[1])
+        self.latest = int(max(prices, key=lambda x: x[0])[0]) * 1e3
 
         total_price = 0
         self.price_lowest = prices[0][2]
@@ -62,4 +63,4 @@ class GoodsPriceDetail(GoodsPriceRecord):
         return self.price_valid
 
     def to_dict(self):
-        return self.__dict__
+        return copy.deepcopy(self.__dict__)

@@ -2,6 +2,7 @@ import websockets
 import asyncio
 import json
 import sys
+import random
 
 from typing import Optional
 
@@ -116,7 +117,7 @@ class Jx3WebSocket(object):
                 break
             except Exception as e:
                 logger.error(f"<r>链接到ws服务器时发生错误：{str(e)}</r>")
-                asyncio.sleep(1)
+                await asyncio.sleep(1)
 
         if not self.connect:
             # 未连接成功，发送消息给bot，如果有

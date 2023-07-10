@@ -8,12 +8,10 @@ from nonebot.adapters.onebot.v11 import Event, Bot, GroupMessageEvent
 from nonebot.matcher import Matcher
 from nonebot.log import logger
 
-TOOLS = nonebot.get_driver().config.tools_path
-sys.path.append(str(TOOLS))
-DATA = TOOLS[:-5] + "data"
+from src.tools.dep import *
 
 from src.tools.permission import checker, error
-from src.tools.file import write
+from src.tools.file import write, read
 from src.tools.config import Config
 from src.tools.utils import get_url
 
@@ -25,7 +23,7 @@ from src.tools.utils import get_url
 目的是防止滥用。
 '''
 
-unregistered = on_message(block=False, priority=1) # 未注册的群聊无法调用命令！
+unregistered = on_message(block=False, priority=0) # 未注册的群聊无法调用命令！
 @unregistered.handle()
 async def _(matcher: Matcher, event: GroupMessageEvent):
     directorys=os.listdir(TOOLS.replace("tools","data"))
@@ -34,7 +32,7 @@ async def _(matcher: Matcher, event: GroupMessageEvent):
     else:
         return
     
-register = on_command("register", aliases={"reg"}, priority=0) # 注册
+register = on_command("register", aliases={"reg"}, priority=-1) # 注册
 @register.handle()
 async def _(event: GroupMessageEvent):
     if checker(str(event.user_id),8) == False:
@@ -163,6 +161,41 @@ async def _(event: GroupMessageEvent):
             logger.info("删除文件夹" + i + "失败，未知错误。")
     dlt_count = len(groups)
     await flushdata.finish("好啦，刷新完成！\n删除了" + str(dlt_count) + "个文件夹。")
+
+shutup = on_command("shutup", aliases={"-闭嘴"}, priority=5)
+@shutup.handle()
+async def _(event: GroupMessageEvent):
+    if event.sender.role not in ["owner","admin"]:
+        await shutup.finish("唔……只有群主或管理员可以使用该命令！")
+    subscribe = load_or_write_subscribe(event.group_id)
+    if "闭嘴" in subscribe:
+        await shutup.finish("音卡已经暂时自主禁言啦！请不要重复调用。")
+    else:
+        subscribe['闭嘴'] = {}
+        load_or_write_subscribe(event.group_id,subscribe)
+        await shutup.finish("已开启禁言开关，除`reg`、`speak`以外的命令均不会被触发。\n推送为正常推送，若有需要，请自行退订哦~\n机器人全域公告正常推送。")
+
+shutup_filter = on_message(priority=1, block=False)
+@shutup_filter.handle()
+async def _(matcher: Matcher, event: GroupMessageEvent):
+    subscribe = load_or_write_subscribe(event.group_id)
+    if "闭嘴" in subscribe:
+        matcher.stop_propagation()
+    else:
+        return
+    
+speak = on_command("unshutup", aliases={"speak","-解除闭嘴"}, priority=1)
+@speak.handle()
+async def _(event: GroupMessageEvent):
+    if event.sender.role not in ["owner","admin"]:
+        await speak.finish("唔……只有群主或管理员可以使用该命令！")
+    subscribe = load_or_write_subscribe(event.group_id)
+    if "闭嘴" not in subscribe:
+        await speak.finish("音卡没有自主禁言哦，请检查后重试~")
+    else:
+        del subscribe["闭嘴"]
+        load_or_write_subscribe(event.group_id,subscribe)
+        await speak.finish("已解除音卡的自主禁言！")
 
 fix = on_command("fix", priority=5) # 修补数据，用于数据文件残缺时
 @fix.handle()

@@ -1,12 +1,10 @@
 from typing import List
-import asyncio
-import json
 import pathlib2
+import json
 from src.tools.generate import get_uuid, generate
 from src.tools.dep import *
 template_root = pathlib2.Path(__file__).parent
 template_path = template_root.joinpath('template.html')
-
 
 def get_template_path(resources_path: str):
     '''
@@ -120,6 +118,7 @@ def get_render_content(view_file_path: str, data: dict) -> str:
     content = content.replace('<template.HERE />', content_template)
     # 注入css
     content_style = get_tag_content(view_content, 'style')
+    content_style = f'<style lang="scss">{content_style}</style>'
     content = content.replace('.window.style.HERE', content_style)
 
     # 注入脚本

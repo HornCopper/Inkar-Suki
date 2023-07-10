@@ -72,7 +72,7 @@ class wiki:
 
     async def get_api(init_link: str) -> str:
         page_info = await get_url(init_link, headers=headers)
-        api_links = re.findall(r"(?im)<\s*link\s*rel=\"EditURI\"\s*type=\"application/rsd\+xml\"\s*href=\"([^>]+?)\?action=rsd\"\s*/\s*>",page_info)
+        api_links = re.findall(r"(?im)<\s*link\s*rel=\"EditURI\"\s*type=\"application/rsd\+xml\"\s*href=\"([^>]+?)\?action=rsd\"\s*/?\s*>",page_info)
         api_link = api_links[0]
         try:
             await get_url(api_link)

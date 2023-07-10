@@ -1,0 +1,281 @@
+<template>
+  <div :style="{'text-align': 'center','font-size':font_size,width:'1000px'}">
+    <el-card shadow="never">
+      <div style="font-size:2rem;font-weight:600;">
+        <div v-if="subject">
+          <span>订阅 · </span>
+          <span :style="{color:subject.color}">{{ subject.name }}</span>
+        </div>
+        <div v-else>订阅无效</div>
+      </div>
+      <el-row class="help-tip-card">
+        <el-card style="width: 100%;margin: 1rem;">
+          <el-row>
+            <el-col :span="12">
+              <el-row>
+                <el-col class="primary-icon" :span="4">
+                  <div>命令</div>
+                  <div class="ver-line"></div>
+                </el-col>
+                <el-col :span="20">
+                  <div class="primary-title">
+                    <div>
+                      <span style="color:#999">查看或新增订阅：</span>
+                      <span>订阅 [主题] [等级]</span>
+                    </div>
+                    <div>
+                      <span style="color:#999">退订：</span>
+                      <span>退订 主题</span>
+                    </div>
+                  </div>
+                </el-col>
+              </el-row>
+            </el-col>
+            <el-col :span="12">
+              <el-row>
+                <el-col class="primary-icon" :span="4">
+                  <div style="color: #999999;">说明</div>
+                  <div class="ver-line"></div>
+                </el-col>
+                <el-col :span="20">
+                  <div class="primary-content">
+                    <div>1. 订阅后当有事件触发将会发消息到群里。</div>
+                    <div>2. 主题等级越高，事件发消息越详细。</div>
+                    <div>3. 当订阅1个事件后，它的子事件也会生效。</div>
+                  </div>
+                </el-col>
+              </el-row>
+            </el-col>
+          </el-row>
+        </el-card>
+      </el-row>
+      <div v-if="message" class="banner-notice">{{ message }}</div>
+      <el-collapse v-model="expanded_items">
+        <el-collapse-item v-if="subject" name="1">
+          <template #title>
+            <div class="global-title">
+              <span>基本信息</span>
+            </div>
+          </template>
+          <el-row style="font-size:1rem">
+            <el-col :span="8">
+              <div style="border: solid 1px #cccccc;padding:0.5rem;margin: 0.5rem;text-align: left;">
+                <div>
+                  <span class="sub-title">名称</span>
+                  <span :style="{color:subject.color}">{{ subject.name }}</span>
+                  </span>
+                </div>
+                <div>
+                  <span class="sub-title">别称</span>
+                  <span>{{ subject.alias }}</span>
+                  </span>
+                </div>
+                <div>
+                  <span class="sub-title">事件代码</span>
+                  <span>{{ subject.callback }}</span>
+                  </span>
+                </div>
+                <div v-if="subject_time[0]">
+                  <span class="sub-title">上次触发</span>
+                  <span>{{ formatTime(subject_time[0]) }}</span>
+                  <span style="color:#999999;font-size:0.8rem">({{ parseTime(subject_time[0]) }})</span>
+                  </span>
+                </div>
+                <div v-if="subject_time[1]">
+                  <span class="sub-title">下次触发</span>
+                  <span>{{ formatTime(subject_time[1]) }}</span>
+                  <span style="color:#999999;font-size:0.8rem">({{ parseTime(subject_time[1]) }})</span>
+                  </span>
+                </div>
+              </div>
+            </el-col>
+            <el-col :span="14" style="border: solid 1px #cccccc;padding:0.5rem;margin: 0.5rem;text-align: left;">
+              <el-divider content-position="left">更多信息</el-divider>
+              <el-row v-if="subject.description" style="text-align: left;">
+                <span class="sub-title">描述</span>
+                <span>
+                  <div v-for="(x,index) in subject.description.split('\n')" :key="index" style="width: 500px;">{{
+                    x }}</div>
+                </span>
+              </el-row>
+              <el-row v-if="subject.children && subject.children.length">
+                <div>
+                  <span class="sub-title">子事件</span>
+                  <el-tag v-for="(x,index) in subject.children">{{ x }}
+                  </el-tag>
+                </div>
+              </el-row>
+              <el-row v-if="subject.cron && subject.cron.length">
+                <div>
+                  <span class="sub-title">定时任务</span>
+                  <div v-for="(x,index) in subject.cron">
+                    <span>
+                      <span>[等级{{ x.level }}]</span>
+                      <span>{{ x.cron_description }}。</span>
+                    </span>
+                    <span>上次:{{ formatTime(x.prev_time) }}</span>
+                    <span>下次:{{ formatTime(x.next_time) }}</span>
+                    <div v-if="x.notify_content" style="font-size:0.8rem;color:#999999;">{{ x.notify_content }}</div>
+                  </div>
+                </div>
+              </el-row>
+            </el-col>
+          </el-row>
+        </el-collapse-item>
+        <el-collapse-item name="2">
+          <template #title>
+            <div class="global-title">
+              <span style="margin-right:1rem;">当前订阅</span>
+            </div>
+          </template>
+          <el-row>
+            <el-table v-if="subscribe_status && subscribe_status.length" :data="subscribe_status" stripe
+              style="width: 100%">
+              <el-table-column label="序号" width="40px">
+                <template #default="scope">{{ scope.row.index }}</template>
+              </el-table-column>
+              <el-table-column label="事件">
+                <template #default="scope">
+                  <div style="display: flex">
+                    <div :style="{color:scope.row.color}">
+                      <span>{{ scope.row.name }}</span>
+                    </div>
+                  </div>
+                </template>
+              </el-table-column>
+              <el-table-column label="子事件" width="150rem">
+                <template #default="scope">
+                  <el-tag v-for="(x,index) in scope.row.children
+                    " :key="index">{{ x }}</el-tag>
+                </template>
+              </el-table-column>
+              <el-table-column label="订阅">
+                <template #default="scope">
+                  <el-switch v-model="scope.row.subscribed" inline-prompt active-text="订阅" inactive-text="未订" />
+                </template>
+              </el-table-column>
+              <el-table-column label="级别" width="50rem">
+                <template #default="scope">
+                  <span v-if="scope.row.user_args">{{ scope.row.user_args.arg || 0 }}</span>
+                </template>
+              </el-table-column>
+              <el-table-column label="事件内容" width="500rem">
+                <template #default="scope">
+                  {{ scope.row.description }}
+                </template>
+              </el-table-column>
+            </el-table>
+          </el-row>
+        </el-collapse-item>
+      </el-collapse>
+    </el-card>
+  </div>
+</template>
+
+
+<style lang="scss">
+  .ver-line {
+    height: 3rem;
+    border: 1px solid #aaaaaa;
+  }
+
+  .primary-icon {
+    font-weight: 600;
+    font-size: 1.2rem;
+    line-height: 1.4rem;
+    display: flex;
+    justify-content: space-evenly;
+  }
+
+  .primary-title {
+    color: #ff0000;
+    font-weight: 400;
+    text-align: left;
+    line-height: 1.4rem;
+    font-size: 1.12rem;
+  }
+
+  .primary-content {
+    color: #999;
+    text-align: left;
+    line-height: 1rem;
+    font-size: 0.8rem;
+  }
+
+  .sub-title {
+    margin-right: 0.5rem;
+    font-weight: 600;
+  }
+
+  .global-title {
+    font-weight: 600;
+    font-size: 1.2rem;
+  }
+
+  .banner-notice {
+    margin: 0.5rem;
+    background-color: #006cdb;
+    box-shadow: 0px 0px 2px 0px rgba(0, 0, 0, 1);
+    padding: 0.5rem;
+    color: #ffffff;
+    font-size: 1.1rem;
+    border-radius: 0.5rem;
+  }
+</style>
+
+<script>
+  const { defineComponent, reactive, toRefs, ref, onMounted, computed } = Vue
+  const component = defineComponent({
+    name: 'SPAComponent',
+    components: {},
+    setup () {
+      const methods = {
+        parseTime,
+        formatTime,
+        convertGold,
+        convertSci,
+        convertPop
+      }
+      const subscribe_status = computed(() => {
+        const all = params_data.all_subjects
+        const user = params_data.subscribe_info
+        const result = {}
+        all.map(x => {
+          result[x.name] = x
+        })
+        Object.keys(user).map(x => {
+          if (!result[x]) return
+          const item = result[x]
+          item.user_args = user[x] || {}
+          item.subscribed = ref(true)
+        })
+        return Object.values(result)
+          .map((v, index) => Object.assign({ index }, v))
+          .sort((a, b) => a.priority - b.priority)
+      })
+      const subject_time = computed(() => {
+        const data = params_data.subject.cron
+        const result = [0, 0]
+        if (!data || !data.length) return result
+        data.map(x => {
+          const { next_time, prev_time } = x
+          if (result[0] === 0 || result[0] < prev_time) result[0] = prev_time // 取最晚的时间
+          if (result[1] === 0 || result[1] < next_time) result[1] = next_time // 取最早的时间
+        })
+        return result
+      })
+      const expanded_items = reactive(['1', '2', '3'])
+      console.log(subscribe_status.value)
+      return {
+        all_subjects: [], //所有可用的主题
+        message: '', //提示信息
+        subscribe_info: '', //本次订阅主题的基本信息
+        subject: '', //本次订阅主题的用户配置
+        subscribe_status, // 用户订阅状态
+        subject_time, // 触发时间
+        expanded_items,
+        ...methods,
+      }
+    },
+  })
+</script>

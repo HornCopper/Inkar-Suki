@@ -1,4 +1,5 @@
 from .api import *
+from src.tools.permission import checker, error
 
 jx3_cmd_addritube = on_command("jx3_addritube", aliases={
                                "属性", "查装"}, priority=5)
@@ -12,21 +13,36 @@ async def jx3_addritube(event: GroupMessageEvent, args: Message = CommandArg()):
     Example：-属性 幽月轮 哭包猫@唯我独尊
     Example：-查装 幽月轮 哭包猫@唯我独尊
     '''
+    template = [Jx3Arg(Jx3ArgsType.server), Jx3Arg(Jx3ArgsType.default)]
+    arg_server, arg_user = get_args(args.extract_plain_text(), template)
+    if not arg_user:
+        return await jx3_cmd_addritube.finish(PROMPT_ArgumentCountInvalid)
+    arg_server = server_mapping(arg_server, event.group_id)
+    data = await addritube_(arg_server, arg_user, group_id=event.group_id)
+    if type(data) == type([]):
+        await jx3_cmd_addritube.finish(data[0])
+    else:
+        await jx3_cmd_addritube.finish(ms.image(data))
+
+addritube_v2 = on_command("jx3_addritube_v2", aliases={"属性v2"}, priority=5)
+
+
+@addritube_v2.handle()
+async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     arg = args.extract_plain_text().split(" ")
     if len(arg) not in [1, 2]:
-        await jx3_cmd_addritube.finish("唔……参数不正确哦，请检查后重试~")
+        await addritube_v2.finish("唔……参数不正确哦，请检查后重试~")
     if len(arg) == 1:
         server = None
         id = arg[0]
     elif len(arg) == 2:
         server = arg[0]
         id = arg[1]
-    data = await addritube_(server, id, group_id=event.group_id)
+    data = await get_attr_main(server, id, str(event.group_id))
     if type(data) == type([]):
-        await jx3_cmd_addritube.finish(data[0])
+        await addritube_v2.finish(data[0])
     else:
-        await jx3_cmd_addritube.finish(ms.image(data))
-
+        await addritube_v2.finish(ms.image(data))
 
 jx3_cmd_roleInfo = on_command("jx3_player", aliases={"玩家信息"}, priority=5)
 
@@ -38,14 +54,9 @@ async def jx3_player(event: GroupMessageEvent, args: Message = CommandArg()):
 
     Example：-玩家信息 幽月轮 哭包猫@唯我独尊
     '''
-    arg = args.extract_plain_text().split(" ")
-    if len(arg) not in [1, 2]:
-        await jx3_cmd_roleInfo.finish("唔……参数不正确哦，请检查后重试~")
-    if len(arg) == 1:
-        server = None
-        id = arg[0]
-    elif len(arg) == 2:
-        server = arg[0]
-        id = arg[1]
-    msg = await roleInfo_(server=server, player=id, group_id=event.group_id)
+    template = [Jx3Arg(Jx3ArgsType.server), Jx3Arg(Jx3ArgsType.default)]
+    [arg_server, arg_user] = get_args(args.extract_plain_text(), template)
+    if not arg_server:
+        arg_server = server_mapping(group_id=event.group_id)
+    msg = await roleInfo_(server=arg_server, player=arg_user)
     await jx3_cmd_roleInfo.finish(msg)

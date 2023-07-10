@@ -157,45 +157,41 @@
               </el-row>
             </el-col>
           </el-row>
-
-          </el-row>
         </el-collapse-item>
         <el-collapse-item name="2">
           <template #title>
             <div class="global-title">
               <span style="margin-right:1rem;">实时价格</span>
-              <span v-if="price_detail.price_lowest" style="margin-right:1rem;">
+              <span v-if="P_detail.price_lowest" style="margin-right:1rem;">
                 <span>底价</span>
-                <span v-if="price_detail.price_lowest == price_detail.price_valid">(有效)</span>
-                <span>{{ convertGold(price_detail.price_lowest)[0] }}</span>
-                <img :src="convertGold(price_detail.price_lowest)[1]" />
+                <span v-if="P_detail.price_lowest == P_detail.price_valid">(有效)</span>
+                <span>{{ convertGold(P_detail.price_lowest)[0] }}</span>
+                <img :src="convertGold(P_detail.price_lowest)[1]" />
               </span>
-              <span v-if="price_detail.price_valid && price_detail.price_lowest != price_detail.price_valid">
+              <span v-if="P_detail.price_valid && P_detail.price_lowest != P_detail.price_valid">
                 <span>有效底价</span>
-                <span>{{ convertGold(price_detail.price_valid)[0] }}</span>
-                <img :src="convertGold(price_detail.price_valid)[1]" />
+                <span>{{ convertGold(P_detail.price_valid)[0] }}</span>
+                <img :src="convertGold(P_detail.price_valid)[1]" />
               </span>
             </div>
           </template>
           <el-row class="goods-current-price">
-            <el-table v-if="price_detail.prices && price_detail.prices.length"
-              :data="price_detail.prices.sort((a,b)=>a[2]-b[2])" stripe style="width: 100%">
-              <el-table-column label="数据时间">
-                <template #default="scope">
-                  <span>{{ parseTime(scope.row[0] * 1e3) }}</span>
-                  <span>({{ formatTime(scope.row[0] * 1e3) }})</span>
-                </template>
-              </el-table-column>
-              <el-table-column label="价格">
-                <template #default="scope">
-                  <span>{{ convertGold(scope.row[2])[0] }}</span>
-                  <img :src="convertGold(scope.row[2])[1]" />
-                </template>
-              </el-table-column>
-              <el-table-column label="数量">
-                <template #default="scope">{{ convertSci(scope.row[1]) }}</template>
-              </el-table-column>
-            </el-table>
+            <div v-if="P_detail.prices && P_detail.prices.length" class="detail-price-container">
+              <div v-for="(x,index) in P_detail.prices" :key="index" class="detail-price-single-card">
+                <div class="detail-price-title">
+                  <span>数量</span>
+                  <span>{{ convertSci(x[1]) }}</span>
+                  <span>({{ formatTime(x[0] * 1e3) }})</span>
+                </div>
+                <div class="detail-price-value">
+                  <span>{{ convertGold(x[2])[0] }}</span>
+                  <img :src="convertGold(x[2])[1]" />
+                </div>
+                <div class="detail-price-description">
+                  <div>{{ parseTime(x[0] * 1e3) }}</div>
+                </div>
+              </div>
+            </div>
             <el-empty v-else style="margin:auto" description="没有内容" />
           </el-row>
         </el-collapse-item>
@@ -206,10 +202,14 @@
           <el-row class="goods-price-trend">
             <div id="chart-goods-price-trend" style="height:400px;width:1000px"></div>
           </el-row>
+          <el-row class="goods-price-trend">
+            <div id="chart-goods-price-low-trend" style="height:400px;width:1000px"></div>
+          </el-row>
         </el-collapse-item>
       </el-collapse>
     </el-card>
   </div>
+
 </template>
 
 <style lang="scss">
@@ -251,6 +251,42 @@
     font-size: 1.2rem;
   }
 </style>
+
+
+<style lang="scss">
+  .detail-price-container {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+  }
+
+  .detail-price-single-card {
+    overflow: hidden;
+    white-space: nowrap;
+    margin: 0.2rem;
+    background: #4ce6ff;
+    font-size: 1.2rem;
+    max-width: 15rem;
+    min-width: 10rem;
+    border-radius: 0.5rem;
+    color: #ffffff;
+    box-shadow: 0px 0px 2px 0px rgba(0, 0, 0, 1);
+  }
+
+  .detail-price-title {
+    background: #0490e1;
+    font-size: 1rem;
+  }
+
+  .detail-price-value {
+    color: #1f0000;
+    text-shadow: 0 1px #000, 1px 0 #000, -1px 0 #000, 0 -1px #000;
+  }
+
+  .detail-price-description {
+    font-size: 0.8rem;
+  }
+</style>
 <script>
   const { defineComponent, reactive, toRefs, ref, onMounted, computed } = Vue
   const component = defineComponent({
@@ -264,28 +300,28 @@
         convertSci,
         convertPop
       }
-
-      const price_logs_converted = computed(() => {
+      // const price_handle = ['AvgPrice','LowestPrice','HighestPrice']
+      const price_logs_converted = (field_name) => {
         const raw = params_data.price_logs
         const result = []
         let min_price = 10000 * 1e4 // 默认以砖计算
         raw.sort((a, b) => new Date(a.Date) - new Date(b.Date))
         raw.map(x => {
-          const v = x.AvgPrice
+          const v = x[field_name]
           if (v < min_price && v > 0) min_price = v
         })
         const icon = convertGold(min_price)
         raw.map(x => {
-          let v = x.AvgPrice / icon[2] // 转换为标准值
+          let v = x[field_name] / icon[2] // 转换为标准值
           v = Math.ceil(v * 100) / 100
-          result.push(Object.assign(x, { AvgPrice: v }))
+          result.push(Object.assign(x, { [field_name]: v }))
         })
         return [result, icon[1]]
-      })
+      }
 
-      methods.init_chart_trend = () => {
-        const [logs, icon] = price_logs_converted.value
-        const chart = echarts.init(document.getElementById('chart-goods-price-trend'))
+      const init_single_chart = (chart_element, chart_data_name, seriesName) => {
+        const [avg_logs, avg_icon] = price_logs_converted(chart_data_name)
+        const chart = echarts.init(document.getElementById(chart_element))
         const option = {
           animation: false,
           tooltip: {
@@ -301,8 +337,8 @@
         appendSeriesYAxisItem({
           option,
           index: 0,
-          seriesName: '{a|均价 / 单位}{b|}',
-          data: logs.map(x => [x.Date, x.AvgPrice]),
+          seriesName,
+          data: avg_logs.map(x => [x.Date, x[chart_data_name]]),
           series_option: {
             label: { show: true },
             markLine: {
@@ -315,7 +351,7 @@
             nameTextStyle: {
               rich: {
                 a: {},
-                b: { backgroundColor: { image: icon }, height: 25 }
+                b: { backgroundColor: { image: avg_icon }, height: 25 }
               }
             }
           }
@@ -324,7 +360,7 @@
           option,
           index: 1,
           seriesName: '数量',
-          data: logs.map(x => [x.Date, x.SampleSize]),
+          data: avg_logs.map(x => [x.Date, x.SampleSize]),
           series_option: {
             label: {
               show: true,
@@ -340,6 +376,10 @@
           },
         })
         chart.setOption(option)
+      }
+      methods.init_chart_trend = () => {
+        init_single_chart('chart-goods-price-trend', 'AvgPrice', '{a|均价 / 单位}{b|}')
+        init_single_chart('chart-goods-price-low-trend', 'LowestPrice', '{a|底价 / 单位}{b|}')
       }
       onMounted(() => {
         methods.init_chart_trend()
@@ -387,6 +427,25 @@
         }
         return r
       })
+      const P_detail = computed(() => {
+        const p = params_data.price_detail
+        if (!p) return {}
+        if (!p.prices) {
+          p.prices = []
+          return p
+        }
+        const result = [] // 针对价格实施去重，发现价格变化少于0.01%则合并
+        let last = -1
+        p.prices.map(x => {
+          const cur = x[2]
+          if (last <= 0 || Math.abs((cur - last) / last) > 1e-4) {
+            last = cur
+            result.push(x)
+          }
+        })
+        p.prices = result
+        return p
+      })
       const expanded_items = reactive(['1', '2', '3'])
       return {
         item: {}, // 物品详情
@@ -397,6 +456,7 @@
         item_attributes,
         price_logs_converted,
         wucai_desc, // 五彩石属性
+        P_detail, // 处理后的详细价格
         expanded_items,
         ...methods,
       }

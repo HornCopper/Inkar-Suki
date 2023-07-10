@@ -13,3 +13,6 @@ sgtpyutils >= 1.15.23
 pydantic
 pathlib2
 aiotieba
+pillow
+cron-descriptor
+croniter
