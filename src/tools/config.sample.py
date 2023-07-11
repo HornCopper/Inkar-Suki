@@ -50,6 +50,10 @@ class Config:
     jx3api_globaltoken = ""  # JX3API API Token
     # 以上三者都请访问：“https://vip.jx3api.com”
 
+    sfapi_wslink = ""  # SFAPI WebSocket地址
+
+    sfapi_wstoken = ""  # SFAPI WebSocket Token
+
     ght = ""  # GitHub Personal Access Token
 
     jx3_token = "123"  # 推栏Token，抓包可得

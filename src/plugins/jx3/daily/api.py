@@ -10,5 +10,5 @@ async def daily_(server: str = None, group_id: str = None, predict_day_num: int 
     if not server:
         return [PROMPT_ServerNotExist]
     full_link = f"{Config.jx3api_link}/view/active/current?robot={bot}&server={server}&num={predict_day_num}"
-    data = await get_api(full_link, proxy=proxies)
+    data = await get_api(full_link)
     return data["data"]["url"]

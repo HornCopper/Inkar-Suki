@@ -1,4 +1,5 @@
 beautifulsoup4
+httpx[http2]
 nb-cli
 nonebot2
 nonebot2[fastapi]
