@@ -56,7 +56,7 @@ class Config:
 
     ght = ""  # GitHub Personal Access Token
 
-    jx3_token = "123"  # 推栏Token，抓包可得
+    jx3_token = ""  # 推栏Token，抓包可得
 
     repo_name = ""  # 该`Inkar-Suki`的副本的来源，若从主仓库克隆，则填写`codethink-cn/Inkar-Suki`，若为fork之后克隆的仓库，则填写`<你的GitHub用户名>/Inkar-Suki`
 
