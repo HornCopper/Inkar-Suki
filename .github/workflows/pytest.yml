@@ -32,7 +32,7 @@ jobs:
           playwright install
       - name: Init Config.py
         run: |
-          python ./init_config.py ${{ secrets.JX3Token }}
+          python ./init_config.py ${{ secrets.JX3Token }} ${{ secrets.jx3api_link }}
       - name: Test with pytest
         run: |
           pytest -v --full-trace --durations 10
