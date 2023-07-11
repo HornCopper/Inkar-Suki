@@ -23,8 +23,10 @@ def run(__subjects: list, OnGfBig: callable, OnGfSmall: callable):
         name='小攻防',
         description='每周二周四晚上18:30排队争夺的地图，可输入[沙盘 区服]查看当前争夺图。',
         cron=[
-            SubjectCron('20 19 * * 1', '攻防排队18:30要开始啦，快去过图点准备卡图吧'),
-            SubjectCron('20 19 * * 3', '攻防排队18:30要开始啦，快去过图点准备卡图吧'),
+            SubjectCron('20 19 * * 1', '攻防排队19:30要开始啦，快去过图点准备卡图吧'),
+            SubjectCron('20 19 * * 3', '攻防排队19:30要开始啦，快去过图点准备卡图吧'),
+            SubjectCron('0 19 * * 1', '攻防排队19:30要开始啦，快去过图点准备卡图吧',1),
+            SubjectCron('0 19 * * 3', '攻防排队19:30要开始啦，快去过图点准备卡图吧',1),
         ],
         callback=OnGfSmall,
     ))
