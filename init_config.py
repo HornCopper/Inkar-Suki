@@ -8,7 +8,7 @@ def replacer(raw: str, target_field: str, value: str) -> str:
 
 if __name__ == '__main__':
     argv = sys.argv
-    expected_args_count = 5
+    expected_args_count = 4
     if len(argv) < expected_args_count:
         params = ['invalid'] * expected_args_count
     else:
@@ -28,7 +28,6 @@ if __name__ == '__main__':
     with open(target_src_config, 'r', encoding='utf-8') as f:
         data = f.read()
         data = replacer(data, 'jx3_token', token)
-        data = replacer(data, 'jx3api_link', jx3api_link)
         data = replacer(data, 'jx3api_link', jx3api_link)
         data = replacer(data, 'sfapi_wslink', sfapi_wslink)
         data = replacer(data, 'sfapi_wstoken', sfapi_wstoken)
