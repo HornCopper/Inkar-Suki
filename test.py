@@ -1,2 +1,2 @@
-from tests.test_jx3.test_event.test_ws_event import test_server_status as func
+from tests.test_jx3.test_subscribe.test_schedule import test_subscribe_lower as func
 func()
