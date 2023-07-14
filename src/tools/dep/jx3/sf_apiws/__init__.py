@@ -1,10 +1,16 @@
 from ..jx3apiws import *
+import time
 import websockets
 
 from typing import Optional
 from websockets.legacy.client import WebSocketClientProtocol
 from websockets.exceptions import ConnectionClosedError, ConnectionClosedOK
+import asyncio
+from sgtpyutils.logger import logger
 from src.tools.config import Config
+
+import json
+
 
 class SfWebSocket(object):
     connect: Optional[WebSocketClientProtocol] = None
@@ -17,25 +23,40 @@ class SfWebSocket(object):
             cls._instance = orig.__new__(cls, *args, **kwargs)
         return cls._instance
 
+    async def ping(self):
+        data = json.dumps({'action': 'ping', 'msg': '2333'}).encode('utf-8')
+        await self.connect.send(data)
+
+    async def ping_cycle(self):
+        while True:
+            await self.ping()
+            await asyncio.sleep(10)
+
     async def _task(self):
         """
         说明:
             循环等待ws接受并分发任务
         """
         try:
+            logger.debug(f'start msg recyle')
+            asyncio.create_task(self.ping_cycle())
             while True:
                 msg = await self.connect.recv()
+                logger.debug(f'recv:{msg}')
                 asyncio.create_task(self._handle_msg(msg))
 
         except ConnectionClosedOK:
             logger.debug("<g>sfapi > ws链接已主动关闭！</g>")
-            await self._raise_notice("sfapi > ws已正常关闭！")
 
         except ConnectionClosedError as e:
             logger.error(f"<r>sfapi > ws链接异常关闭：{e.reason}</r>")
             # 自启动
             self.connect = None
             await self.init()
+        except Exception as ex:
+            logger.error(f'其他错误:{ex}')
+
+        logger.debug('ws event loop exit')
 
     async def _raise_notice(self, message: str):
         """
@@ -56,7 +77,6 @@ class SfWebSocket(object):
         """
         content = message.decode('utf-8')
         ws_client._handle_msg(content)
-        
 
     async def init(self) -> Optional[bool]:
         """
@@ -75,16 +95,16 @@ class SfWebSocket(object):
         for i in range(1, 101):
             try:
                 logger.debug(f"<g>ws_server</g> | 正在开始第 {i} 次尝试")
-                self.connect = await websockets.connect(
+                async with websockets.connect(
                     uri=ws_path,
                     extra_headers=headers,
-                    ping_interval=20,
-                    ping_timeout=20,
+                    ping_interval=5,
+                    ping_timeout=5,
                     close_timeout=10,
-                )
-                asyncio.create_task(self._task())
-                logger.debug("<g>ws_server</g> | ws连接成功！")
-                # await self._raise_notice("sfapi > ws已连接！")
+                ) as websocket:
+                    self.connect = websocket
+                    logger.debug("<g>ws_server</g> | ws连接成功！")
+                    await self._task()
                 break
             except Exception as e:
                 logger.error(f"<r>链接到ws服务器时发生错误：{str(e)}</r>")
@@ -92,7 +112,7 @@ class SfWebSocket(object):
 
         if not self.connect:
             # 未连接成功，发送消息给bot，如果有
-            await self._raise_notice("sfapi > ws服务器连接失败，请查看日志或者重连。")
+            logger.warn("sfapi > ws服务器连接失败，请查看日志或者重连。")
             return False
         return True
 
@@ -110,4 +130,11 @@ class SfWebSocket(object):
         return True
 
 
-sf_ws_client = SfWebSocket()
+sf_ws_client = None
+if __name__ == '__main__':
+    sf_ws_client = SfWebSocket()
+    asyncio.run(sf_ws_client.init())
+    while True:
+        time.sleep(1)
+else:
+    sf_ws_client = SfWebSocket()
