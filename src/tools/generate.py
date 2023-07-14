@@ -19,7 +19,7 @@ class PlaywrightThread(threading.Thread):
         self.tasks = []
         self.IsRunning = True
         self._player = None
-        super().__init__()
+        super().__init__(daemon=True)
 
     def init(self):
         player = sync_playwright().start()
