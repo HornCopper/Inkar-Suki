@@ -38,14 +38,12 @@ school_mapping = {
     "孤锋诀": 10698
 }
 
-equip_recmd = on_command("jx3_eqrec", aliases={"配装v2"}, priority=5)
+equip_recmd = on_command("jx3_eqrec", aliases={"配装"}, priority=5)
 @equip_recmd.handle()
 async def eqrec(event: GroupMessageEvent, state: T_State, args: Message = CommandArg()):
-    if checker(str(event.user_id),9) == False:
-        await equip_recmd.finish("唔……该功能尚在内测中，您暂未获得内测资格，请稍等哦，很快就要公测了！")
     arg = args.extract_plain_text().split(" ")
     if len(arg) not in [1,2]:
-        await equip_recmd.finish("唔……参数数量有问题哦，请检查后重试~\n或查看帮助文件（+help）获得更详细的信息哦~")
+        await equip_recmd.finish("唔……参数数量有问题哦，请检查后重试~\n命令格式：配装 心法 条件\n提示：条件例如PVE/PVP。")
     kf = aliases(arg[0])
     condition = []
     if len(arg) == 2:
@@ -62,6 +60,8 @@ async def eqrec(event: GroupMessageEvent, state: T_State, args: Message = Comman
     state["kungfu"] = kf
     chart = []
     chart.append(["序号","作者","名称","标签","点赞"])
+    if len(data[1]) == 0:
+        await equip_recmd.finish("唔……换个条件试试呗？")
     for i in range(len(data[1])):
         chart.append([str(i), data[3][i], data[1][i], data[2][i], data[4][i]])
     html = css + tabulate(chart, tablefmt="unsafehtml")
