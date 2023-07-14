@@ -10,7 +10,7 @@ if __name__ == '__main__':
     argv = sys.argv
     expected_args_count = 4
     if len(argv) < expected_args_count:
-        params = ['invalid'] * expected_args_count
+        params = ['invalid'] * (expected_args_count + 1)
     else:
         params = sys.argv
 
