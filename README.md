@@ -43,6 +43,8 @@ _基于Nonebot 2的多功能的 QQ 群聊机器人_
 欢迎[投喂](https://afdian.net/a/Inkar-Suki)。
 
 支持扫一扫：
+
+
 <img src="https://inkar-suki.codethink.cn/assets/img/wechat_donate.png" height="300" alt="微信收款码">
 <img src="https://inkar-suki.codethink.cn/assets/img/alipay_donate.png" height="300" alt="支付宝收款码">
 
