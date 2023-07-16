@@ -1,12 +1,10 @@
 import nonebot
 import json
-import sys
 import re
 from urllib import parse
 from bs4 import BeautifulSoup
 TOOLS = nonebot.get_driver().config.tools_path
-sys.path.append(TOOLS)
-from utils import get_api, get_url
+from src.tools.utils import get_api, get_url
 DATA = TOOLS.replace("tools","data")
 '''
 状态码：
