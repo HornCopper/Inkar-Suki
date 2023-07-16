@@ -43,12 +43,11 @@ _基于Nonebot 2的多功能的 QQ 群聊机器人_
 欢迎[投喂](https://afdian.net/a/Inkar-Suki)。
 
 支持扫一扫：
-![](https://inkar-suki.codethink.cn/assets/img/wechat_donate.png)
-![](https://inkar-suki.codethink.cn/assets/img/alipay_donate.png)
+
+
+<img src="https://inkar-suki.codethink.cn/assets/img/wechat_donate.png" height="300" alt="微信收款码">
+<img src="https://inkar-suki.codethink.cn/assets/img/alipay_donate.png" height="300" alt="支付宝收款码">
 
 # 友情链接
-- [Nonebot 2](https://v2.nonebot.dev/) - 跨平台 Python 异步机器人框架；
-- [go-cqhttp](https://docs.go-cqhttp.org/) - 基于 Mirai 以及 MiraiGo 的 OneBot Golang 原生实现；
 - [小可·Akaribot](https://github.com/Teahouse-Studios/akari-bot) - 茶馆群内QQ机器人（小可）by @OasisAkari；
 - [团子机器人](https://github.com/JustUndertaker/mini_jx3_bot) - 基于nonebot2的剑网三群聊机器人，采用jx3api作为数据源 by @JustUndertaker；
-- [资源酒肆](https://jq.qq.com/?_wv=1027&k=urh2dqal) - 欢迎来这里畅聊`Minecraft`相关内容；
