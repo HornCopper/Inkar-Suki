@@ -1,40 +1,36 @@
+from ..jx3apiws import *
+import time
 import websockets
-import asyncio
-import json
-import sys
-import random
 
 from typing import Optional
-
 from websockets.legacy.client import WebSocketClientProtocol
 from websockets.exceptions import ConnectionClosedError, ConnectionClosedOK
+import asyncio
+from sgtpyutils.logger import logger
 from src.tools.config import Config
 
-from src.tools.dep.bot import *
-from .jx3_event import *
+import json
 
 
-'''
-感谢友情提供代码@白师傅
-原链接：
-https://github.com/JustUndertaker/mini_jx3_bot
-'''
-
-
-class Jx3WebSocket(object):
-    """
-    jx3_api的ws链接封装
-    """
-
+class SfWebSocket(object):
     connect: Optional[WebSocketClientProtocol] = None
     """ws链接"""
 
     def __new__(cls, *args, **kwargs):
         """单例"""
         if not hasattr(cls, "_instance"):
-            orig = super(Jx3WebSocket, cls)
+            orig = super(SfWebSocket, cls)
             cls._instance = orig.__new__(cls, *args, **kwargs)
         return cls._instance
+
+    async def ping(self):
+        data = json.dumps({'action': 'ping', 'msg': '2333'}).encode('utf-8')
+        await self.connect.send(data)
+
+    async def ping_cycle(self):
+        while True:
+            await self.ping()
+            await asyncio.sleep(10)
 
     async def _task(self):
         """
@@ -42,19 +38,25 @@ class Jx3WebSocket(object):
             循环等待ws接受并分发任务
         """
         try:
+            logger.debug(f'start msg recyle')
+            asyncio.create_task(self.ping_cycle())
             while True:
                 msg = await self.connect.recv()
+                logger.debug(f'recv:{msg}')
                 asyncio.create_task(self._handle_msg(msg))
 
         except ConnectionClosedOK:
-            logger.debug("<g>jx3api > ws链接已主动关闭！</g>")
-            await self._raise_notice("jx3api > ws已正常关闭！")
+            logger.debug("<g>sfapi > ws链接已主动关闭！</g>")
 
         except ConnectionClosedError as e:
-            logger.error(f"<r>jx3api > ws链接异常关闭：{e.reason}</r>")
+            logger.error(f"<r>sfapi > ws链接异常关闭：{e.reason}</r>")
             # 自启动
             self.connect = None
             await self.init()
+        except Exception as ex:
+            logger.error(f'其他错误:{ex}')
+
+        logger.debug('ws event loop exit')
 
     async def _raise_notice(self, message: str):
         """
@@ -68,24 +70,13 @@ class Jx3WebSocket(object):
         for _, one_bot in bots.items():
             await handle_event(one_bot, event)
 
-    async def _handle_msg(self, message: str):
+    async def _handle_msg(self, message: bytes):
         """
         说明:
             处理收到的ws数据，分发给机器人
         """
-        try:
-            ws_obj = json.loads(message)
-            data = WsData.parse_obj(ws_obj)
-            event = EventRister.get_event(data)
-            if event:
-                logger.debug(event.log)
-                bots = get_bots()
-                for _, one_bot in bots.items():
-                    await handle_event(one_bot, event)
-            else:
-                logger.error(f"<r>未知的ws消息类型：{data}</r>")
-        except Exception:
-            logger.error(f"未知ws消息：<g>{ws_obj}</g>")
+        content = message.decode('utf-8')
+        ws_client._handle_msg(content)
 
     async def init(self) -> Optional[bool]:
         """
@@ -95,25 +86,25 @@ class Jx3WebSocket(object):
         if self.connect:
             return None
 
-        ws_path = Config.jx3api_wslink
-        ws_token = Config.jx3api_wstoken
+        ws_path = Config.sfapi_wslink
+        ws_token = Config.sfapi_wstoken
         if ws_token is None:
             ws_token = ""
         headers = {"token": ws_token}
-        logger.debug(f"<g>ws_server</g> | 正在链接jx3api的ws服务器：{ws_path}")
+        logger.debug(f"<g>ws_server</g> | 正在链接sfapi的ws服务器：{ws_path}")
         for i in range(1, 101):
             try:
                 logger.debug(f"<g>ws_server</g> | 正在开始第 {i} 次尝试")
-                self.connect = await websockets.connect(
+                async with websockets.connect(
                     uri=ws_path,
                     extra_headers=headers,
-                    ping_interval=20,
-                    ping_timeout=20,
+                    ping_interval=5,
+                    ping_timeout=5,
                     close_timeout=10,
-                )
-                asyncio.create_task(self._task())
-                logger.debug("<g>ws_server</g> | ws连接成功！")
-                # await self._raise_notice("jx3api > ws已连接！")
+                ) as websocket:
+                    self.connect = websocket
+                    logger.debug("<g>ws_server</g> | ws连接成功！")
+                    await self._task()
                 break
             except Exception as e:
                 logger.error(f"<r>链接到ws服务器时发生错误：{str(e)}</r>")
@@ -121,7 +112,7 @@ class Jx3WebSocket(object):
 
         if not self.connect:
             # 未连接成功，发送消息给bot，如果有
-            await self._raise_notice("jx3api > ws服务器连接失败，请查看日志或者重连。")
+            logger.warn("sfapi > ws服务器连接失败，请查看日志或者重连。")
             return False
         return True
 
@@ -139,4 +130,11 @@ class Jx3WebSocket(object):
         return True
 
 
-ws_client = Jx3WebSocket()
+sf_ws_client = None
+if __name__ == '__main__':
+    sf_ws_client = SfWebSocket()
+    asyncio.run(sf_ws_client.init())
+    while True:
+        time.sleep(1)
+else:
+    sf_ws_client = SfWebSocket()
