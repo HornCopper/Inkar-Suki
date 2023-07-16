@@ -3,7 +3,7 @@ from typing import Literal, Tuple
 
 async def saohua_primary(subject: Literal["random", "content"]) -> Tuple[str, str]:
     full_link = f"{Config.jx3api_link}/data/saohua/{subject}"
-    info = await get_api(full_link, proxy=proxies)
+    info = await get_api(full_link)
     data = info["data"]
     return data["text"], data["id"]
 
