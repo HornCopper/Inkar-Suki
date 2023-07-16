@@ -2,7 +2,6 @@ from bs4 import BeautifulSoup, element
 from src.tools.dep import *
 import uuid
 import httpx
-import asyncio
 import time
 from src.tools.utils import get_api, post_url
 import json
