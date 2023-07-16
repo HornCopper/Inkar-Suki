@@ -36,7 +36,7 @@ class Jx3Tieba(threading.Thread):
         self.subject_status = {}
         self._current_index = 0
         self.is_stop = True
-        super().__init__(name=Jx3Tieba.name)
+        super().__init__(name=Jx3Tieba.name, daemon=True)
 
     def start(self) -> None:
         logger.info(f'{self.name} is going to start')
