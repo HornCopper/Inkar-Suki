@@ -1,1 +1,8 @@
-{"author":"HornCopper","version":"1.0-Snapshot","name":"黑名单/封锁系统(ban)","admin":"全域封禁(10)$全域解封(10)","aliases":"N/A","desc":"封禁指定用户$添加：+ban <user>$移除：+unban <user>"}
+{
+    "author": "HornCopper",
+    "version": "1.0-Snapshot",
+    "name": "黑名单/封锁系统(ban)",
+    "admin": "全域封禁(10)$全域解封(10)",
+    "aliases": "N/A",
+    "desc": "封禁指定用户$添加：+ban <user>$移除：+unban <user>"
+}
