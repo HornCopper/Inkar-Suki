@@ -13,6 +13,10 @@ async def _():
     await ws_client.init()
     logger.info("Connected to JX3API successfully.")
 
+    logger.info("Connecting to SFAPI...Please wait.")
+    await sf_ws_client.init()
+    logger.info("Connected to SFAPI successfully.")
+
 ws_recev = on(type="WsRecv", priority=5, block=False)
 @ws_recev.handle()
 async def _(bot: Bot, event: RecvEvent):
