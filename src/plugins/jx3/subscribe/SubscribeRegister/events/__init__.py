@@ -5,7 +5,7 @@ from ..callback import *
 
 def init_subjects(__subjects: list[SubscribeSubject]):
     '''
-    注意cron表达式中星期x范围是0-6
+    注意cron表达式中星期x范围是0-6或直接使用 SUN, MON, TUE, WED, THU, FRI , SAT
     '''
     from . import events_base
     events_base.run(__subjects)
@@ -17,7 +17,6 @@ def init_subjects(__subjects: list[SubscribeSubject]):
     events_world_boss.run(__subjects, OnWorldBoss)
     from . import event_daily
     event_daily.run(__subjects)
-
 
 def init_cron(sub: SubscribeSubject, OnCallback: callable):
     if not sub.cron:
@@ -31,4 +30,5 @@ def init_cron(sub: SubscribeSubject, OnCallback: callable):
         v = f'subscriber register:{name} on cron-exp:[{cron.expression}]'
         logger.info(v)
         kwargs = {'sub': sub, 'cron': cron, }
-        scheduler.add_job(OnCallback, c, id=name, kwargs=kwargs)
+        job = scheduler.add_job(OnCallback, c, id=name, kwargs=kwargs)
+        pass
