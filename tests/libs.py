@@ -1,10 +1,9 @@
-<<<<<<< HEAD
+import pytest
 
 from bot import *
 from sgtpyutils.logger import logger
 import time as sys_time
 import random
-import asyncio
 from typing import Literal
 from src.tools.dep import *
 
@@ -98,6 +97,3 @@ class SFGroupMessageEvent(GroupMessageEvent):
         group_id = group_id or 0
         super().__init__(time=time, self_id=self_id, post_type=post_type, sub_type=sub_type, user_id=user_id, message_type=message_type, message_id=message_id,
                          message=message, original_message=original_message, raw_message=raw_message, font=font, sender=sender, to_me=to_me, reply=reply, group_id=group_id, anonymous=anonymous)
-=======
-from .libs import *
->>>>>>> 14476fd734b56a647406dd0ab8bdf37d6f6707a0

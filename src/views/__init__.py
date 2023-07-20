@@ -1,13 +1,21 @@
 from typing import List
+<<<<<<< HEAD
 import asyncio
 import json
 import pathlib2
+=======
+import pathlib2
+import json
+>>>>>>> 14476fd734b56a647406dd0ab8bdf37d6f6707a0
 from src.tools.generate import get_uuid, generate
 from src.tools.dep import *
 template_root = pathlib2.Path(__file__).parent
 template_path = template_root.joinpath('template.html')
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 14476fd734b56a647406dd0ab8bdf37d6f6707a0
 def get_template_path(resources_path: str):
     '''
     获取资源目录
