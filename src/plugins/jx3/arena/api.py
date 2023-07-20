@@ -10,11 +10,7 @@ async def arena_(object: str, server: str = None, name: str = None, mode: str = 
         if not server:
             return [PROMPT_ServerNotExist]
         final_url = f"{Config.jx3api_link}/view/match/recent?token={token}&name={name}&server={server}&robot={bot}&ticket={ticket}&mode={mode}&scale=1"
-<<<<<<< HEAD
-        data = await get_api(final_url, proxy=proxies)
-=======
         data = await get_api(final_url)
->>>>>>> 14476fd734b56a647406dd0ab8bdf37d6f6707a0
         if data["code"] == 400:
             return [PROMPT_ServerInvalid]
         if data["code"] == 404:
@@ -22,21 +18,13 @@ async def arena_(object: str, server: str = None, name: str = None, mode: str = 
         return data["data"]["url"]
     elif object == "排行":
         final_url = f"{Config.jx3api_link}/view/match/awesome?token={token}&robot={bot}&ticket={ticket}&mode={mode}&scale=1"
-<<<<<<< HEAD
-        data = await get_api(final_url, proxy=proxies)
-=======
         data = await get_api(final_url)
->>>>>>> 14476fd734b56a647406dd0ab8bdf37d6f6707a0
         if data["code"] == 400:
             return ["唔……名剑模式输入错误。"]
         return data["data"]["url"]
     elif object == "统计":
         final_url = f"{Config.jx3api_link}/data/match/schools?token={token}&robot={bot}&ticket={ticket}&mode={mode}&scale=1"
-<<<<<<< HEAD
-        data = await get_api(final_url, proxy=proxies)
-=======
         data = await get_api(final_url)
->>>>>>> 14476fd734b56a647406dd0ab8bdf37d6f6707a0
         if data["code"] == 400:
             return ["唔……名剑模式输入错误。"]
         return data["data"]["url"]
