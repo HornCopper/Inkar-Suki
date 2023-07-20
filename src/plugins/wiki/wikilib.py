@@ -1,19 +1,12 @@
 import nonebot
 import json
-<<<<<<< HEAD
-=======
 import sys
->>>>>>> 14476fd734b56a647406dd0ab8bdf37d6f6707a0
 import re
 from urllib import parse
 from bs4 import BeautifulSoup
 TOOLS = nonebot.get_driver().config.tools_path
-<<<<<<< HEAD
-from src.tools.utils import get_api, get_url
-=======
 sys.path.append(TOOLS)
 from utils import get_api, get_url
->>>>>>> 14476fd734b56a647406dd0ab8bdf37d6f6707a0
 DATA = TOOLS.replace("tools","data")
 '''
 状态码：

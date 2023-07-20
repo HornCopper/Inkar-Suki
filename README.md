@@ -19,31 +19,15 @@ _基于Nonebot 2的多功能的 QQ 群聊机器人_
 </div>
     
 # 简介
-<<<<<<< HEAD
-
-各种功能于一体的[QQ](https://im.qq.com)群聊机器人，基于[Nonebot 2](https://v2.nonebot.dev)。
-
-欢迎借鉴，代码禁止商用，严禁兔兔等低质机器人使用或修改并使用本仓库的任何自主源代码。
-
-# 功能
-
-=======
 各种功能于一体的[QQ](https://im.qq.com)群聊机器人，基于[Nonebot 2](https://v2.nonebot.dev)。
 
 # 功能
->>>>>>> 14476fd734b56a647406dd0ab8bdf37d6f6707a0
 **由于功能设计初衷是为群聊服务，以下大部分功能将在私聊不可用，食用方法请移步[文档](https://inkar-suki.codethink.cn)。**
 
 **2022年11月27日更新文档：已同步最新版本，迁移至[此](https://inkar-suki.codethink.cn)，原域名将在2023年4月-7月失效，不再跳转至现有域名。**
 
 ~~u1s1，作者有点摆烂，不知道文档和GitHub哪个才是最新的（手动狗头）~~
 
-<<<<<<< HEAD
-* [参考功能](/applications.md)
-
-# 公共实例
-
-=======
 - [剑网3](https://jx3.xoyo.com)相关功能。
     - 以下功能数据来源为[JX3BOX](https://www.jx3box.com)。
         - [x] 查看心法下所有技能（由于某公司对聊天记录把控比较严格，此功能比较看脸，~~但不知道为什么莫问心法一般都不会吃风控~~）；
@@ -149,34 +133,15 @@ _基于Nonebot 2的多功能的 QQ 群聊机器人_
     - [x] 推送机器人代码至GitHub，或拉取GitHub代码至本地（非常推荐您fork主仓库并克隆自己的仓库，这样可以让此功能**正常工作**，直接克隆主仓库**仅可使用拉取**，若直接下载，则此功能**均不可使用**）。
 
 # 公共实例
->>>>>>> 14476fd734b56a647406dd0ab8bdf37d6f6707a0
 - 目前作者的公共实例位于香港，QQ号为`3438531564`，想要使用请加入群聊Inkar-Suki用户群并发送`+申请`，
 - 或者在本仓库发起[issue](https://github.com/codethink-cn/Inkar-Suki/issues)或联系作者QQ（`3349104868`）
 
 # 机器人交流群
-<<<<<<< HEAD
-
-=======
->>>>>>> 14476fd734b56a647406dd0ab8bdf37d6f6707a0
 - 欢迎加入`Inkar-Suki用户群`，群号为[650495414](https://jq.qq.com/?_wv=1027&k=JazIPJxf)，您可以在这里与其他使用机器人的用户交流。
 
 感谢您使用`Inkar Suki`，幸甚有您！
 
 # 赞助
-<<<<<<< HEAD
-
-欢迎[投喂](https://afdian.net/a/Inkar-Suki)。
-
-支持扫一扫：
-
-
-<img src="https://inkar-suki.codethink.cn/assets/img/wechat_donate.png" height="300" alt="微信收款码">
-<img src="https://inkar-suki.codethink.cn/assets/img/alipay_donate.png" height="300" alt="支付宝收款码">
-
-# 友情链接
-- [小可·Akaribot](https://github.com/Teahouse-Studios/akari-bot) - 茶馆群内QQ机器人（小可）by @OasisAkari；
-- [团子机器人](https://github.com/JustUndertaker/mini_jx3_bot) - 基于nonebot2的剑网三群聊机器人，采用jx3api作为数据源 by @JustUndertaker；
-=======
 欢迎[投喂](https://afdian.net/a/Inkar-Suki)。
 
 # 友情链接
@@ -185,4 +150,3 @@ _基于Nonebot 2的多功能的 QQ 群聊机器人_
 - [小可·Akaribot](https://github.com/Teahouse-Studios/akari-bot) - 茶馆群内QQ机器人（小可）by @OasisAkari；
 - [团子机器人](https://github.com/JustUndertaker/mini_jx3_bot) - 基于nonebot2的剑网三群聊机器人，采用jx3api作为数据源 by @JustUndertaker；
 - [资源酒肆](https://jq.qq.com/?_wv=1027&k=urh2dqal) - 欢迎来这里畅聊`Minecraft`相关内容；
->>>>>>> 14476fd734b56a647406dd0ab8bdf37d6f6707a0

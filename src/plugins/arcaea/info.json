@@ -1,12 +1,1 @@
-<<<<<<< HEAD
-{
-    "author": "HornCopper",
-    "version": "1.0-Snapshot",
-    "name": "韵律源点(arcaea)",
-    "admin": "N/A",
-    "aliases": "N/A",
-    "desc": "查询用户信息和最近一次游玩记录：+arcuser <usercode|username>$绑定Arcaea账号：+arcbind <usercode|username>$解绑Arcaea账号：+arcunbind$查询个人单曲最佳成绩：+arcbest <songname> <difficulty>"
-}
-=======
 {"author": "HornCopper","version": "1.0-Snapshot","name": "韵律源点(arcaea)","admin": "N/A","aliases": "N/A","desc": "查询用户信息和最近一次游玩记录：+arcuser <usercode|username>$绑定Arcaea账号：+arcbind <usercode|username>$解绑Arcaea账号：+arcunbind$查询个人单曲最佳成绩：+arcbest <songname> <difficulty>"}
->>>>>>> 14476fd734b56a647406dd0ab8bdf37d6f6707a0
