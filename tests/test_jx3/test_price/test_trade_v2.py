@@ -116,10 +116,6 @@ def test_goods_level():
     asyncio.run(task)
     mc.check_counter()
 
-<<<<<<< HEAD
-import pytest
-=======
->>>>>>> 14476fd734b56a647406dd0ab8bdf37d6f6707a0
 
 @pytest.mark.skip('运行时间过长')
 def test_price_updater():

@@ -50,11 +50,6 @@ class Config:
     jx3api_globaltoken = ""  # JX3API API Token
     # 以上三者都请访问：“https://vip.jx3api.com”
 
-<<<<<<< HEAD
-    ght = ""  # GitHub Personal Access Token
-
-    jx3_token = "123"  # 推栏Token，抓包可得
-=======
     sfapi_wslink = ""  # SFAPI WebSocket地址
 
     sfapi_wstoken = ""  # SFAPI WebSocket Token
@@ -62,7 +57,6 @@ class Config:
     ght = ""  # GitHub Personal Access Token
 
     jx3_token = ""  # 推栏Token，抓包可得
->>>>>>> 14476fd734b56a647406dd0ab8bdf37d6f6707a0
 
     repo_name = ""  # 该`Inkar-Suki`的副本的来源，若从主仓库克隆，则填写`codethink-cn/Inkar-Suki`，若为fork之后克隆的仓库，则填写`<你的GitHub用户名>/Inkar-Suki`
 

@@ -4,11 +4,7 @@ from src.tools.dep import *
 async def server_status(server: str = None):
     server = server_mapping(server)
     full_link = f"{Config.jx3api_link}/data/server/check?server=" + server
-<<<<<<< HEAD
-    info = await get_api(full_link, proxy=proxies)
-=======
     info = await get_api(full_link)
->>>>>>> 14476fd734b56a647406dd0ab8bdf37d6f6707a0
     try:
         all_servers = info["data"]
         if str(type(all_servers)).find("list") != -1:

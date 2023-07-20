@@ -2,10 +2,7 @@ import websockets
 import asyncio
 import json
 import sys
-<<<<<<< HEAD
-=======
 import random
->>>>>>> 14476fd734b56a647406dd0ab8bdf37d6f6707a0
 
 from typing import Optional
 
