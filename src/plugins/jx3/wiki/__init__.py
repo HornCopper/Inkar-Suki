@@ -38,10 +38,22 @@ async def jx3_next_ques(state: T_State, event: GroupMessageEvent, reference: Mes
     result = state.get('result')
     arg_index = get_number(arg_reference[2:])
     if arg_cmd == 'xg' or arg_cmd == '相关':  # 相关问题
+<<<<<<< HEAD
         arg_keyword = result.tip.results[arg_index]
     elif arg_cmd == 'yy' or arg_cmd == '引用':  # 引用词
         arg_keyword = result.question.relateds[arg_index]
     else:
         return
+=======
+        arg_sets = result.tip.results
+
+    elif arg_cmd == 'yy' or arg_cmd == '引用':  # 引用词
+        arg_sets = result.question.relateds
+    else:
+        return
+    if len(arg_sets) <= arg_index:
+        return await jx3_cmd_wiki.send(f'没有相关的引用哦,最多有{len(arg_sets)}项可选,但你选了第{arg_index+1}项')
+    arg_keyword = arg_sets[arg_index]
+>>>>>>> 14476fd734b56a647406dd0ab8bdf37d6f6707a0
     logger.debug(f'next_ques ({arg_index}) cmd:{arg_keyword}')
     return await jx3_wiki(state, event, obMessage(arg_keyword))
