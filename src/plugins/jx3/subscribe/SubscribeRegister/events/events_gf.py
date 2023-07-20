@@ -28,3 +28,5 @@ def run(__subjects: list, OnGfBig: callable, OnGfSmall: callable):
             SubjectCron('0 19 * * TUE', '攻防排队19:30要开始啦，快去过图点准备卡图吧',1),
             SubjectCron('0 19 * * THU', '攻防排队19:30要开始啦，快去过图点准备卡图吧',1),
         ],
+        callback=OnGfSmall,
+    ))
