@@ -1,8 +1,11 @@
 import threading
 from concurrent.futures.thread import ThreadPoolExecutor
 from sgtpyutils.extensions import distinct
+<<<<<<< HEAD
 import random
 import asyncio
+=======
+>>>>>>> 14476fd734b56a647406dd0ab8bdf37d6f6707a0
 from typing import overload, List
 from ..GoodsBase import *
 from ..GoodsPrice import *
@@ -14,7 +17,12 @@ async def search_item_info_for_price(item_name: str, server: str, pageIndex: int
     搜索物品，并排除拾绑物品及无销售的物品
     @return list[goods],totalCount
     '''
+<<<<<<< HEAD
     logger.debug(f'search_item_info_for_price:{item_name}[{server}]@page:{pageIndex}(pageSize:{pageSize})')
+=======
+    logger.debug(
+        f'search_item_info_for_price:{item_name}[{server}]@page:{pageIndex}(pageSize:{pageSize})')
+>>>>>>> 14476fd734b56a647406dd0ab8bdf37d6f6707a0
     data = await search_item_info(item_name, pageIndex=0, pageSize=1000)
     if not isinstance(data, List):
         return [data, None]  # 未返回正确数据
@@ -115,6 +123,12 @@ def get_favoritest_by_predict(predict: callable):
 
 
 class FavoritestGoodsPriceRefreshThread(threading.Thread):
+<<<<<<< HEAD
+=======
+    def __init__(self) -> None:
+        super().__init__(daemon=True)
+
+>>>>>>> 14476fd734b56a647406dd0ab8bdf37d6f6707a0
     def run(self) -> None:
         logger.debug('refresh_favoritest_goods_current_price start')
         all_servers = distinct(server_map.values())

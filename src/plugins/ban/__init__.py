@@ -23,7 +23,11 @@ def in_it(qq: str):
             return True
     return False
 
+<<<<<<< HEAD
 ban = on_command("ban", priority=5) # 封禁，≥10的用户无视封禁。
+=======
+ban = on_command("ban",priority=5) # 封禁，≥10的用户无视封禁。
+>>>>>>> 14476fd734b56a647406dd0ab8bdf37d6f6707a0
 @ban.handle()
 async def _(bot: Bot, event: Event, args: Message = CommandArg()):
     sb = args.extract_plain_text()
@@ -53,7 +57,11 @@ async def _(bot: Bot, event: Event, args: Message = CommandArg()):
             return
         await ban.finish(f"好的，已经全域封禁{sb_name}({sb})。")
 
+<<<<<<< HEAD
 unban = on_command("unban", priority=5) # 解封
+=======
+unban = on_command("unban" ,priority=5) # 解封
+>>>>>>> 14476fd734b56a647406dd0ab8bdf37d6f6707a0
 @unban.handle()
 async def _(bot: Bot, event: Event, args: Message = CommandArg()):
     if checker(str(event.user_id),10) == False:

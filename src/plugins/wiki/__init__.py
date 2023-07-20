@@ -67,12 +67,18 @@ def check_interwiki_prefix(group, prefix):
 
 interwiki = on_command("interwiki", aliases={"iw"}, priority=5)
 @interwiki.handle()
+<<<<<<< HEAD
 async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
     personal_data = await bot.call_api("get_group_member_info", group_id=event.group_id, user_id=event.user_id, no_cache=True)
     group_admin = personal_data["role"] in ["owner", "admin"]
     robot_admin = checker(str(event.user_id), 8)
     if not group_admin and not robot_admin:
         return await interwiki.finish("唔……只有群主或管理员才可以修改哦！")
+=======
+async def _(event: GroupMessageEvent, args: Message = CommandArg()):
+    if checker(str(event.user_id),5) == False:
+        await interwiki.finish(error(5))
+>>>>>>> 14476fd734b56a647406dd0ab8bdf37d6f6707a0
     args = args.extract_plain_text().split(" ")
     if args[0] == "add":
         if len(args) != 3:
