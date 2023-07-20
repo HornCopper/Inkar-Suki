@@ -11,11 +11,7 @@ async def achievements_(server: str = None, name: str = None, achievement: str =
     if not server:
         return [PROMPT_ServerNotExist]
     final_url = f"{Config.jx3api_link}/view/role/achievement?server={server}&name={achievement}&role={name}&robot={bot}&ticket={ticket}&token={token}&scale=1"
-<<<<<<< HEAD
-    data = await get_api(final_url, proxy=proxies)
-=======
     data = await get_api(final_url)
->>>>>>> 14476fd734b56a647406dd0ab8bdf37d6f6707a0
     if data["code"] == 400:
         return [PROMPT_ServerInvalid]
     if data["data"] == {}:

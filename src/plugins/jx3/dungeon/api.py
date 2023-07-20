@@ -224,11 +224,7 @@ async def genderater(map, mode, boss):
     num = 0
     if len(new) != 0:
         chart.append(new)
-<<<<<<< HEAD
-    html = css + "<div style=\"font-family:Custom\">" + tabulate(chart, tablefmt="unsafehtml") + "</div>"
-=======
     html = css + tabulate(chart, tablefmt="unsafehtml")
->>>>>>> 14476fd734b56a647406dd0ab8bdf37d6f6707a0
     final_path = CACHE + "/" + get_uuid() + ".html"
     write(final_path, html)
     img = await generate(final_path, False, "table", False)
