@@ -7,6 +7,7 @@ def run(__subjects: list, OnGfBig: callable, OnGfSmall: callable):
         name='大攻防',
         description='每周六日中午12:30，晚上18:30分别排浩气盟和恶人谷主战场。',
         cron=[
+<<<<<<< HEAD
             SubjectCron('20 12 * * 5',
                         '攻防排队12:30要开始啦，快去主城准备排浩气盟吧~奇袭战场可以提前排队哦'),
             SubjectCron('20 18 * * 5',
@@ -14,6 +15,15 @@ def run(__subjects: list, OnGfBig: callable, OnGfSmall: callable):
             SubjectCron('20 12 * * 6',
                         '攻防排队12:30要开始啦，快去主城准备排恶人谷吧~奇袭战场可以提前排队哦'),
             SubjectCron('20 18 * * 6',
+=======
+            SubjectCron('20 12 * * SAT',
+                        '攻防排队12:30要开始啦，快去主城准备排浩气盟吧~奇袭战场可以提前排队哦'),
+            SubjectCron('20 18 * * SAT',
+                        '攻防排队18:30要开始啦，快去主城准备排浩气盟吧~奇袭战场可以提前排队哦'),
+            SubjectCron('20 12 * * SUN',
+                        '攻防排队12:30要开始啦，快去主城准备排恶人谷吧~奇袭战场可以提前排队哦'),
+            SubjectCron('20 18 * * SUN',
+>>>>>>> 14476fd734b56a647406dd0ab8bdf37d6f6707a0
                         '攻防排队18:30要开始啦，快去主城准备排恶人谷吧~奇袭战场可以提前排队哦'),
         ],
         callback=OnGfBig,
@@ -23,8 +33,15 @@ def run(__subjects: list, OnGfBig: callable, OnGfSmall: callable):
         name='小攻防',
         description='每周二周四晚上18:30排队争夺的地图，可输入[沙盘 区服]查看当前争夺图。',
         cron=[
+<<<<<<< HEAD
             SubjectCron('20 19 * * 1', '攻防排队18:30要开始啦，快去过图点准备卡图吧'),
             SubjectCron('20 19 * * 3', '攻防排队18:30要开始啦，快去过图点准备卡图吧'),
+=======
+            SubjectCron('20 19 * * TUE', '攻防排队19:30要开始啦，快去过图点准备卡图吧'),
+            SubjectCron('20 19 * * THU', '攻防排队19:30要开始啦，快去过图点准备卡图吧'),
+            SubjectCron('0 19 * * TUE', '攻防排队19:30要开始啦，快去过图点准备卡图吧',1),
+            SubjectCron('0 19 * * THU', '攻防排队19:30要开始啦，快去过图点准备卡图吧',1),
+>>>>>>> 14476fd734b56a647406dd0ab8bdf37d6f6707a0
         ],
         callback=OnGfSmall,
     ))

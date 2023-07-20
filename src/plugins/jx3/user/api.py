@@ -8,7 +8,11 @@ async def addritube_(server: str = None, name: str = None, group_id: str = None)
     if not server:
         return [PROMPT_ServerNotExist]
     final_url = f"{Config.jx3api_link}/view/role/attribute?ticket={ticket}&token={token}&robot={bot}&server={server}&name={name}&scale=1"
+<<<<<<< HEAD
     data = await get_api(final_url, proxy=proxies)
+=======
+    data = await get_api(final_url)
+>>>>>>> 14476fd734b56a647406dd0ab8bdf37d6f6707a0
     if data["code"] == 404:
         return ["唔……玩家不存在。"]
     if data["code"] == 403 and data["msg"] == "侠客隐藏了游戏信息":
@@ -24,7 +28,11 @@ async def roleInfo_(server, player):
     final_url = f"{Config.jx3api_link}/data/role/roleInfo?token={token}&name={player}&server={server}"
     if not server:
         return PROMPT_ServerNotExist
+<<<<<<< HEAD
     data = await get_api(final_url, proxy=proxies)
+=======
+    data = await get_api(final_url)
+>>>>>>> 14476fd734b56a647406dd0ab8bdf37d6f6707a0
     if data["code"] == 404:
         return "没有找到该玩家哦~\n需要该玩家在世界频道发言后方可查询。"
     msg = "以下信息仅供参考！\n数据可能已经过期，但UID之类的仍可参考。"
