@@ -1,5 +1,4 @@
 from .. import *
-import asyncio
 
 
 def test_fetch_threads():
