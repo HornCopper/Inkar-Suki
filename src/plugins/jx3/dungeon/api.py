@@ -166,7 +166,7 @@ async def genderater(map, mode, boss):
             final = final + "<br>" + "|".join(ads)
         new.append(final)
         num = num + 1
-        if num == 8:
+        if num == 6:
             chart.append(new)
             new = []
             num = 0
@@ -187,8 +187,10 @@ async def genderater(map, mode, boss):
                 adc = ctt.split("增加")[0]
             ado.append(adc)
         for x in ado:
-            for y in ["阴性","阳性","全","阴阳","体质","等级","混元性","攻击","成效","值","毒性","御","招式产生威胁","功"]:
-                x = x.replace(y, "")
+            filter_string = ["全","阴性","阳性","阴阳","毒性","攻击","值","成效","内功","外功","体质","根骨","力道","元气","身法","等级","混元性","招式产生威胁","水下呼吸时间","抗摔系数","马术气力上限"]
+            for y in filter_string:
+                if y in x:
+                    x.remove(y)
             ads.append(x)
         while True:
             try:
@@ -202,7 +204,7 @@ async def genderater(map, mode, boss):
         final = icon + "<br>" + name + "<br>" + force + "<br>" + ad
         new.append(final)
         num = num + 1
-        if num == 8:
+        if num == 6:
             chart.append(new)
             new = []
             num = 0
@@ -217,7 +219,7 @@ async def genderater(map, mode, boss):
         final = icon + "<br>" + name
         new.append(final)
         num = num + 1
-        if num == 8:
+        if num == 6:
             chart.append(new)
             new = []
             num = 0
