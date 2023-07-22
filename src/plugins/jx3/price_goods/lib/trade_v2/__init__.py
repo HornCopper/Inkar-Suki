@@ -98,22 +98,30 @@ async def get_goods_current_price(goods, server: str) -> dict:
     return data
 
 
-def get_favoritest_by_top(top: int = 20):
+def get_goods_unbind():
     goods = [x for x in CACHE_Goods.values() if x.bind_type.value !=
              GoodsBindType.BindOnUse]
+    return goods
+
+
+def get_favoritest_by_top(top: int = 20):
+    goods = get_goods_unbind()
     goods.sort(key=lambda x: -x.u_popularity)
     goods = goods[0:top]
     return goods
 
 
 def get_favoritest_by_predict(predict: callable):
-    goods = [x for x in CACHE_Goods.values() if x.bind_type.value !=
-             GoodsBindType.BindOnUse]
+    goods = get_goods_unbind()
     goods.sort(key=lambda x: -x.u_popularity)
     return [x for index, x in enumerate(goods) if predict(index, x)]
 
 
 class FavoritestGoodsPriceRefreshThread(threading.Thread):
+    '''
+    定时获取热门商品价格
+    '''
+
     def __init__(self) -> None:
         super().__init__(daemon=True)
 
@@ -121,7 +129,7 @@ class FavoritestGoodsPriceRefreshThread(threading.Thread):
         logger.debug('refresh_favoritest_goods_current_price start')
         all_servers = distinct(server_map.values())
         tasks = []
-        goods = get_favoritest_by_top()
+        goods = get_favoritest_by_top(20)
         for server in all_servers:
             for x in goods:
                 tasks.append([x.id, server])
@@ -151,4 +159,20 @@ async def refresh_favoritest_goods_current_price():
         thread_fav_prices_refresher.start()
 
 scheduler.add_job(func=refresh_favoritest_goods_current_price,
+                  trigger=IntervalTrigger(minutes=60), misfire_grace_time=300)
+
+
+async def refresh_goods_popularity():
+    '''
+    降低商品人气
+    '''
+    logger.debug('start refresh_goods_popularity')
+    def exp(index, x): return abs(x.u_popularity) > 10
+    goods = get_favoritest_by_predict(exp)  # 获取所有有一定记录的物品
+    for g in goods:
+        g.u_popularity *= 0.995  # 每次降低5‰
+    flush_CACHE_Goods()
+    logger.debug(f'completed refresh_goods_popularity count:{len(goods)}')
+
+scheduler.add_job(func=refresh_goods_popularity,
                   trigger=IntervalTrigger(minutes=60), misfire_grace_time=300)
