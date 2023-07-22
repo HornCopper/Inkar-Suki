@@ -28,6 +28,8 @@ def convert_data(raw: dict):
     将tuilan数据转换为标准数据
     '''
     result = {}
+    if not raw:
+        return result
     for x in raw:
         x_map = x.get('map')
         x_name = x.get('name').split('(')
