@@ -15,14 +15,12 @@ async def get_flower_by_jx3api(server: str, map: str = None, species: str = None
 async def get_flower_by_tuilan(server: str, map: str = None, species: str = None):
     url = f'https://w.pvp.xoyo.com:31727/api/h5/jx3/flower/get-flowers-info'
     data = {"server": server, "map": map, "species": species}
-    headers = {
-        'Content-Type': 'application/json',
-    }
-    data = await post_url(url, data=data, headers=headers)
-    data = json.loads(data)
-    if not data.get('code') == 0:
-        return f'获取花价失败了,{data["msg"]}'
-    result = data.get('data')
+    result = await post_url(url, json=data)
+    result = json.loads(result)
+    if not result.get("code") == 0:
+        return f'获取花价失败了,{result.get("msg")}'
+    result = result.get("data")
+    # logger.debug(f'flower-result[server{server}:map{map}:species{species}]\n{data}')
     return convert_data(result)
 
 def convert_data(raw: dict):
