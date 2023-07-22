@@ -2,6 +2,8 @@ from src.tools.utils import get_url
 
 from bs4 import BeautifulSoup
 
+words = ["避雷","骗子"]
+
 async def verify_cheater(content):
     url = f"https://tieba.baidu.com/f/search/res?ie=utf-8&qw={content}"
     dt = await get_url(url)
@@ -19,6 +21,7 @@ async def verify_cheater(content):
         content = i.find(class_ = "p_content").get_text()
         title = i.find(class_ = "bluelink").string
         url = "https://tieba.baidu.com" + i.find(class_ = "bluelink")["href"]
-        if content.find("骗子") != -1 or title.find("骗子") != -1:
-            return url
+        for x in words:
+            if content.find(x) != -1 or title.find(x) != -1:
+                return url
     return False
