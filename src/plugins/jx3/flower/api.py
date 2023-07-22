@@ -12,31 +12,37 @@ async def get_flower_by_jx3api(server: str, map: str = None, species: str = None
         return f'获取花价失败了,{data["msg"]}'
     return data.get('data')
 
+
 async def get_flower_by_tuilan(server: str, map: str = None, species: str = None):
     url = f'https://w.pvp.xoyo.com:31727/api/h5/jx3/flower/get-flowers-info'
     data = {"server": server, "map": map, "species": species}
-    headers = {
-        'Content-Type': 'application/json',
-    }
-    data = await post_url(url, data=data, headers=headers)
-    data = json.loads(data)
-    if not data.get('code') == 0:
-        return f'获取花价失败了,{data["msg"]}'
-    result = data.get('data')
-    return convert_data(result)
+    result = await post_url(url, json=data)
+    result = json.loads(result)
+    if not result.get("code") == 0:
+        return f'获取花价失败了,{result.get("msg")}'
+    result = result.get("data")
+    result = convert_data(result)
+    arg_desc = f'flower-result[server={server},map={map},species={species}]'
+    first_item = list(result)[0] if list(result) else []
+    result_desc = f'map_count={len(result)},flower_count={len(first_item) }'
+    logger.debug(f'{arg_desc}{result_desc}')
+    return result
+
 
 def convert_data(raw: dict):
     '''
     将tuilan数据转换为标准数据
     '''
     result = {}
+    if not raw:
+        return result
     for x in raw:
         x_map = x.get('map')
         x_name = x.get('name').split('(')
         x_color = None
-        if len(x_name) > 1: # 无色花则直接返回
+        if len(x_name) > 1:  # 有色花则变更花色
             x_color = x_name[1][:-1]  # .split('，')
-            x_name = x_name[0]
+        x_name = x_name[0]  # 无色花则直接返回
         x_species = x.get('species')
         x_line = [line.get('number') for line in x.get('branch')]
         x_price = 1.5
