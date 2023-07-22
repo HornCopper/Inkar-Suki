@@ -35,8 +35,8 @@
                 <div class="primary-content">
                   <div>1. 不输入区服时默认为当前群绑定的区服。</div>
                   <div>2. 如花价 唯满侠 广陵邑</div>
-                  <div>   如花价 唯满侠</div>
-                  <div>   如花价</div>
+                  <div> 如花价 唯满侠</div>
+                  <div> 如花价</div>
                 </div>
               </el-col>
             </el-row>
@@ -45,7 +45,7 @@
       </el-card>
     </el-row>
     <el-row>
-      <el-table :data="items" stripe style="width: 100%">
+      <el-table v-if="items && items.length" :data="items" stripe style="width: 100%">
         <el-table-column label="序号" width="60px">
           <template #default="scope">{{ scope.row.index }}</template>
         </el-table-column>
@@ -68,7 +68,8 @@
         <el-table-column label="售价" width="100px">
           <template #default="scope">{{ scope.row.price }}倍 </template>
         </el-table-column>
-        <el-table-column v-for="(x,index) in Object.keys(items[0].line)" :key="x" :label="`分线·${x}`" width="150px">
+        <el-table-column v-for="(x,index) in Object.keys((items && items[0] && items[0].line) || {})" :key="x"
+          :label="`分线·${x}`" width="150px">
           <template #default="scope">
             <div v-if="scope.row.line[x]" :style="{color:['#2a6e3f','#e18a3b','#945635','#108b96'][index]}">{{
               scope.row.line[x].join(' | ') }}</div>
@@ -76,6 +77,7 @@
           </template>
         </el-table-column>
       </el-table>
+      <el-empty v-else style="margin:auto" description="没有内容" />
     </el-row>
   </div>
 </template>
