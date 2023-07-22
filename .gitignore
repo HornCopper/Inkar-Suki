@@ -1,6 +1,7 @@
 /src/tools/config.py
 /src/assets/jx3/
 /src/assets/arcaea/
+/src/plugins/grab/eat_pic/*
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -41,7 +42,8 @@ MANIFEST
 #  before PyInstaller builds the exe, so as to inject date/other infos into it.
 *.manifest
 *.spec
-
+logs/*
+log.lo*
 firework.py
 special_application.py
 agl.json
