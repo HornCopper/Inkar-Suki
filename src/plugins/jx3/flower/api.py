@@ -23,7 +23,8 @@ async def get_flower_by_tuilan(server: str, map: str = None, species: str = None
     result = result.get("data")
     result = convert_data(result)
     arg_desc = f'flower-result[server={server},map={map},species={species}]'
-    result_desc = f'map_count={len(result)},flower_count={len(result[0] or []) }'
+    first_item = list(result)[0] if list(result) else []
+    result_desc = f'map_count={len(result)},flower_count={len(first_item) }'
     logger.debug(f'{arg_desc}{result_desc}')
     return result
 
