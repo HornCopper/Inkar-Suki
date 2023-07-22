@@ -43,6 +43,7 @@ MANIFEST
 *.manifest
 *.spec
 logs/*
+log.lo*
 firework.py
 special_application.py
 agl.json
