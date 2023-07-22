@@ -20,7 +20,7 @@ async def get_flower_by_tuilan(server: str, map: str = None, species: str = None
     if not result.get("code") == 0:
         return f'获取花价失败了,{result.get("msg")}'
     result = result.get("data")
-    # logger.debug(f'flower-result[server{server}:map{map}:species{species}]\n{data}')
+    logger.debug(f'flower-result[server{server}:map{map}:species{species}]\n{len(data)}')
     return convert_data(result)
 
 def convert_data(raw: dict):
