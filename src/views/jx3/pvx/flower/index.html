@@ -1,6 +1,49 @@
 <template>
   <div :style="{'text-align': 'center','font-size':font_size,width:'1000px'}">
-    <div style="font-size:2rem;font-weight:600;">花价 · {{ server }}</div>
+    <div style="font-size:2rem;font-weight:600;">
+      <span>花价</span>
+      <span v-if="server">· {{ server }}</span>
+      <span v-if="map">· {{ map }}</span>
+      <span v-if="species">· {{ species }}</span>
+    </div>
+    <el-row>
+      <el-card style="width: 100%;margin: 1rem;">
+        <el-row>
+          <el-col :span="12">
+            <el-row>
+              <el-col class="primary-icon" :span="4">
+                <div>命令</div>
+                <div class="ver-line"></div>
+              </el-col>
+              <el-col :span="20">
+                <div class="primary-title">
+                  <div>
+                    <span style="color:#999">查看花价：</span>
+                    <span>花价 [区服] [地图] [种类]</span>
+                  </div>
+                </div>
+              </el-col>
+            </el-row>
+          </el-col>
+          <el-col :span="12">
+            <el-row>
+              <el-col class="primary-icon" :span="4">
+                <div style="color: #999999;">说明</div>
+                <div class="ver-line"></div>
+              </el-col>
+              <el-col :span="20">
+                <div class="primary-content">
+                  <div>1. 不输入区服时默认为当前群绑定的区服。</div>
+                  <div>2. 如花价 唯满侠 广陵邑</div>
+                  <div>   如花价 唯满侠</div>
+                  <div>   如花价</div>
+                </div>
+              </el-col>
+            </el-row>
+          </el-col>
+        </el-row>
+      </el-card>
+    </el-row>
     <el-row>
       <el-table :data="items" stripe style="width: 100%">
         <el-table-column label="序号" width="60px">
@@ -10,9 +53,8 @@
           <template #default="scope">
             <div style="display: flex">
               <img :src="scope.row.img_url" :style="{height: '1.4rem'}" />
-              <span :style="{'font-size':font_size,color:scope.row.color,'margin-left':'0.5rem'}">{{
-                scope.row.name
-                }}
+              <span :style="{'font-size':font_size,color:scope.row.color,'margin-left':'0.5rem'}">
+                <span>{{ scope.row.name }}</span>
               </span>
               <span>
                 <span>（</span>
@@ -37,6 +79,34 @@
     </el-row>
   </div>
 </template>
+<style lang="scss">
+  .ver-line {
+    height: 3rem;
+    border: 1px solid #aaaaaa;
+  }
+
+  .primary-icon {
+    font-weight: 600;
+    font-size: 1.2rem;
+    line-height: 1.4rem;
+    display: flex;
+    justify-content: space-evenly;
+  }
+
+  .primary-title {
+    color: #ff0000;
+    font-weight: 400;
+    text-align: left;
+    line-height: 1.4rem;
+    font-size: 1.12rem;
+  }
+
+  .primary-content {
+    color: #999;
+    text-align: left;
+    line-height: 1rem;
+  }
+</style>
 <script>
   const { defineComponent, reactive, toRefs, ref, onMounted, computed } = Vue
   const component = defineComponent({
@@ -62,7 +132,7 @@
               price: item.price,
               line: {} // 地图:分线
             }
-            item_order[item.name] = index
+            item_order[item.name] = index + 1 // 从1开始
             const x = result[item.name]
             x.line[map] = item.line // 为花的分线设置数据，考虑到不同分线同一种花属性一致，故仅记录分线号
           })
@@ -75,6 +145,8 @@
       return {
         data: [], // {id:'',price:0}
         server: '', // 唯我独尊
+        map: '', // 广陵邑
+        species: '', // 百合
         font_size,
         items,
         ...methods,

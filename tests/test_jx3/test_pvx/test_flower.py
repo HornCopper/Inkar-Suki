@@ -12,3 +12,7 @@ def test_flower_price():
     task = func(state, event, obMessage('唯满侠'))
     asyncio.run(task)
     mc.check_counter()
+
+    task = func(state, event, obMessage('唯满侠 广陵邑'))
+    asyncio.run(task)
+    mc.check_counter()
