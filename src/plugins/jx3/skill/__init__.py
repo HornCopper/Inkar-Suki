@@ -1,6 +1,6 @@
 from .api import *
 
-kungfu = on_command("jx3_kungfu", aliases={"心法"}, priority=5)
+kungfu = on_command("jx3_kungfu", aliases = {"心法"}, priority = 5)
 @kungfu.handle()
 async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
     '''
@@ -14,7 +14,7 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
         await kungfu.finish("此心法不存在哦，请检查后重试~")
     await bot.call_api("send_group_forward_msg", group_id = event.group_id, messages = node)
 
-skill = on_command("jx3_skill", aliases={"技能"}, priority=5)
+skill = on_command("jx3_skill", aliases = {"技能"}, priority = 5)
 @skill.handle()
 async def _(args: Message = CommandArg()):
     '''
@@ -33,7 +33,7 @@ async def _(args: Message = CommandArg()):
         await skill.finish("此心法不存在哦，请检查后重试~")
     await skill.finish(msg)
 
-talent = on_command("_jx3_talent", aliases={"_奇穴"}, priority=5)
+talent = on_command("_jx3_talent", aliases = {"_奇穴"}, priority = 5)
 @talent.handle()
 async def _(args: Message = CommandArg()):
     '''
@@ -54,7 +54,7 @@ async def _(args: Message = CommandArg()):
         await talent.finish(msg)
 
 
-_talent = on_command("jx3_talent", aliases={"奇穴"}, priority=5)
+_talent = on_command("jx3_talent", aliases = {"奇穴"}, priority = 5)
 @_talent.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     arg = args.extract_plain_text().split(" ")
@@ -78,7 +78,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     if os.path.exists(ASSETS + "/jx3/" + f"{ver}.json") == False:
         final_url = f"https://data.jx3box.com/talent/{ver}.json"
         data = await get_api(final_url)
-        write(ASSETS + "/jx3/" + f"v{ver}.json", json.dumps(data, ensure_ascii=False))
+        write(ASSETS + "/jx3/" + f"v{ver}.json", json.dumps(data, ensure_ascii = False))
     else:
         data = json.loads(read(ASSETS + "/jx3/" + f"{ver}.json"))
     try:
@@ -106,7 +106,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     await _talent.finish("唔……未找到该奇穴哦~")
 
 
-macro_ = on_command("jx3_macro", aliases={"宏"}, priority=5)
+macro_ = on_command("jx3_macro", aliases = {"宏"}, priority = 5)
 @macro_.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     xf = args.extract_plain_text()

@@ -5,7 +5,7 @@ from nonebot import on_command
 from nonebot.adapters import Message
 from nonebot.params import CommandArg, Arg
 from nonebot.adapters.onebot.v11 import MessageSegment as ms
-from nonebot.adapters.onebot.v11 import Bot, GroupMessageEvent
+from nonebot.adapters.onebot.v11 import GroupMessageEvent
 from nonebot.typing import T_State
 
 TOOLS = nonebot.get_driver().config.tools_path
@@ -24,6 +24,7 @@ from .music import get, search
 '''
 
 search_music = on_command("search_music", aliases={"搜歌"}, priority=5)
+
 @search_music.handle()
 async def _(state: T_State, event: GroupMessageEvent, args: Message = CommandArg()):
     data = args.extract_plain_text().split(" ")
@@ -63,10 +64,11 @@ async def __(state: T_State, num: Message = Arg()):
         return
 
 get_music = on_command("get_music", aliases={"点歌"}, priority=5)
+
 @get_music.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     data = args.extract_plain_text().split(" ")
-    if len(data) not in [2,3]:
+    if len(data) not in [2, 3]:
         await get_music.finish("唔……参数只能有2或3个哦~")
     singer = None
     if len(data) == 3:

@@ -1,6 +1,4 @@
-import sys
 from src.tools.dep import *
-
 from src.tools.utils import get_api
 
 async def get_buff(buffName: str):

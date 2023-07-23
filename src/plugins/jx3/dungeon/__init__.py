@@ -1,14 +1,14 @@
 from .api import *
 from .xuanjing import *
 
-zones = on_command("jx3_zones", aliases={"副本"}, priority=5)
+zones = on_command("jx3_zones", aliases = {"副本"}, priority = 5)
 @zones.handle()
 async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
-    '''
+    """
     获取玩家副本通关记录：
 
     Example：-副本 幽月轮 哭包猫@唯我独尊
-    '''
+    """
     group_server = getGroupServer(str(event.group_id))
     arg = args.extract_plain_text().split(" ")
     if len(arg) not in [1,2]:
@@ -27,7 +27,7 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
     else:
         await zones.finish(ms.image(data))
 
-drops = on_command("jx3_drops", aliases={"掉落列表"}, priority=5)
+drops = on_command("jx3_drops", aliases = {"掉落列表"}, priority = 5)
 @drops.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     arg = args.extract_plain_text().split(" ")

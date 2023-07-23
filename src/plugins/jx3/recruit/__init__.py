@@ -1,5 +1,7 @@
 from .api import *
-jx3_cmd_recruit = on_command("jx3_recruit", aliases={"招募"}, priority=5)
+
+jx3_cmd_recruit = on_command("jx3_recruit", aliases = {"招募"}, priority = 5)
+
 @jx3_cmd_recruit.handle()
 async def jx3_recruit(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
     '''
