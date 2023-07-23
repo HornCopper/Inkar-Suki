@@ -1,8 +1,6 @@
 import nonebot
 import sys
 
-from pathlib import Path
-
 TOOLS = nonebot.get_driver().config.tools_path
 sys.path.append(TOOLS)
 ASSETS = TOOLS[:-5] + "assets"

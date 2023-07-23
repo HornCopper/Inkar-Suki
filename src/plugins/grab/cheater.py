@@ -1,6 +1,6 @@
-from src.tools.utils import get_url
-
 from bs4 import BeautifulSoup
+
+from src.tools.utils import get_url
 
 async def verify_cheater(content):
     url = f"https://tieba.baidu.com/f/search/res?ie=utf-8&qw={content}"
@@ -11,10 +11,6 @@ async def verify_cheater(content):
         objects = list_.find_all(class_ = "s_post")
     except:
         return False
-    contents = []
-    titles = []
-    urls = []
-    flag = False
     for i in objects:
         content = i.find(class_ = "p_content").get_text()
         title = i.find(class_ = "bluelink").string

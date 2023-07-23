@@ -1,11 +1,11 @@
-from src.tools.dep import *
-from src.tools.generate import generate, get_uuid
-from src.plugins.help import css
+import hmac
+import hashlib
 
 from tabulate import tabulate
 
-import hmac
-import hashlib
+from src.tools.dep import *
+from src.tools.generate import generate, get_uuid
+from src.plugins.help import css
 
 async def zone(server, id):
     server = server_mapping(server)
@@ -18,7 +18,7 @@ async def zone(server, id):
 async def get_cd(server: str, sep: str):
     url = f"https://pull.j3cx.com/api/serendipity?server={server}&serendipity={sep}&pageSize=1"
     data = await get_api(url)
-    data = data.get("data").get('data')
+    data = data.get("data").get("data")
     if not data:
         return "没有记录哦~"
     data = data[0]
@@ -27,7 +27,7 @@ async def get_cd(server: str, sep: str):
     return msg
 
 def format_body(data: dict) -> str:
-    return json.dumps(data, separators=(',', ':'))
+    return json.dumps(data, separators=(",", ":"))
 
 def gen_ts() -> str:
     return f"{datetime.datetime.now():%Y%m%d%H%M%S%f}"[:-3]
@@ -53,7 +53,7 @@ async def get_map(name, mode):
     headers = {
             "x-sk": xsk
     }
-    data = await post_url(url="https://m.pvp.xoyo.com/dungeon/list", data=param, headers=headers)
+    data = await post_url(url="https://m.pvp.xoyo.com/dungeon/list", data = param, headers = headers)
     data = json.loads(data)
     for i in data["data"]:
         for x in i["dungeon_infos"]:
@@ -73,7 +73,7 @@ async def get_boss(map, mode, boss):
     headers = {
             "x-sk": xsk
     }
-    data = await post_url(url="https://m.pvp.xoyo.com/dungeon/info", data=param, headers=headers)
+    data = await post_url(url="https://m.pvp.xoyo.com/dungeon/info", data = param, headers = headers)
     data = json.loads(data)
     for i in data["data"]["info"]["boss_infos"]:
         if i["name"] == boss:
@@ -90,7 +90,7 @@ async def get_drops(map, mode, boss):
     headers = {
             "x-sk": xsk
     }
-    data = await post_url(url="https://m.pvp.xoyo.com/dungeon/boss-drop", data=param, headers=headers)
+    data = await post_url(url="https://m.pvp.xoyo.com/dungeon/boss-drop", data = param, headers = headers)
     return json.loads(data)
 
 def mode_mapping(mode):
@@ -226,7 +226,7 @@ async def genderater(map, mode, boss):
     num = 0
     if len(new) != 0:
         chart.append(new)
-    html = css + tabulate(chart, tablefmt="unsafehtml")
+    html = css + tabulate(chart, tablefmt = "unsafehtml")
     final_path = CACHE + "/" + get_uuid() + ".html"
     write(final_path, html)
     img = await generate(final_path, False, "table", False)
