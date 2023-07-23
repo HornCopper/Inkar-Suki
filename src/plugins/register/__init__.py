@@ -52,7 +52,6 @@ async def _(event: GroupMessageEvent):
         write(new_path + "/arcaea.json","{}")
         write(new_path + "/record.json","[]")
         write(new_path + "/subscribe.json","[]")
-        write(new_path + "/blacklist.json","[]")
         await register.finish("注册成功！")
 
 flushdata = on_command("flushdata", priority=5) # 刷新
@@ -82,7 +81,6 @@ async def _(event: Event):
             os.remove(DATA + "/" + i + "/record.json")
             os.remove(DATA + "/" + i + "/record.json")
             os.remove(DATA + "/" + i + "/subscribe.json")
-            os.remove(DATA + "/" + i + "/blacklist.json")
             os.rmdir(DATA + "/"+i)
         except:
             logger.info("删除文件夹" + i + "失败，未知错误。")
@@ -108,7 +106,6 @@ async def _(bot: Bot, event: GroupMessageEvent):
             os.remove(DATA + "/" + group + "/opening.json")
             os.remove(DATA + "/" + group + "/arcaea.json")
             os.remove(DATA + "/" + group + "/subscribe.json")
-            os.remove(DATA + "/" + group + "/blacklist.json")
             os.rmdir(DATA + "/" + group)
         except:
             logger.info("删除文件夹"+group+"失败，未知错误。")
@@ -134,7 +131,6 @@ async def _(event: GroupMessageEvent):
             os.remove(DATA + "/" + group + "/wiki.json")
             os.remove(DATA + "/" + group + "/arcaea.json")
             os.remove(DATA + "/" + group + "/subscribe.json")
-            os.remove(DATA + "/" + group + "/blacklist.json")
             os.rmdir(DATA + "/" + group)
         except:
             logger.info("删除文件夹" + group + "失败，未知错误。")
@@ -158,7 +154,6 @@ async def _(event: GroupMessageEvent):
             os.remove(DATA + "/" + i + "/opening.json")
             os.remove(DATA + "/" + i + "/arcaea.json")
             os.remove(DATA + "/" + i + "/subscribe.json")
-            os.remove(DATA + "/" + i + "/blacklist.json")
             os.rmdir(DATA + "/" + i)
         except:
             logger.info("删除文件夹" + i + "失败，未知错误。")
@@ -205,8 +200,8 @@ fix = on_command("fix", priority=5) # 修补数据，用于数据文件残缺时
 async def _(event: GroupMessageEvent):
     files = os.listdir(DATA + "/" + str(event.group_id))
     missing = []
-    right = ["webhook.json","marry.json","welcome.txt","banword.json","wiki.json","arcaea.json","opening.json","record.json","jx3group.json","subscribe.json","blacklist.json"]
-    fix_data = {"webhook.json":"[]","marry.json":"[]","welcome.txt":"欢迎入群！","banword.json":"[]","wiki.json":"{\"startwiki\":\"\",\"interwiki\":[]}","arcaea.json":"{}","opening.json":"[]","record.json":"[]","jx3group.json":"{\"group\":\"" + str(event.group_id) + "\",\"server\":\"\",\"leader\":\"\",\"leaders\":[],\"name\":\"\",\"status\":false}","subscribe.json":"[]","blacklist.json":"[]"}
+    right = ["webhook.json","marry.json","welcome.txt","banword.json","wiki.json","arcaea.json","opening.json","record.json","jx3group.json","subscribe.json"]
+    fix_data = {"webhook.json":"[]","marry.json":"[]","welcome.txt":"欢迎入群！","banword.json":"[]","wiki.json":"{\"startwiki\":\"\",\"interwiki\":[]}","arcaea.json":"{}","opening.json":"[]","record.json":"[]","jx3group.json":"{\"group\":\"" + str(event.group_id) + "\",\"server\":\"\",\"leader\":\"\",\"leaders\":[],\"name\":\"\",\"status\":false}","subscribe.json":"[]"}
     for i in right:
         if i not in files:
             missing.append(i)
