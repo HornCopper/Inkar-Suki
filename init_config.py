@@ -47,7 +47,8 @@ class ArgumentInfo:
         target_str = template[pos_start:pos_end]
         new_value = self.value if self.value is not None else "None"
         evaluate_str = f"{self.name} = {new_value}"
-        logger.info(f'replace "{target_str}" to "******"')
+        # logger.info(f'replace "{target_str}" to "******"')
+        logger.info(f'replace "{target_str}" to "{new_value}"')
         return f'{template[:pos_start]}{evaluate_str}{template[pos_end:]}'
 
     @value.setter
@@ -82,7 +83,12 @@ def init_arguments(args: list[str], template: list[ArgumentInfo] = None) -> list
     if template is None:
         template = DEFAULT_expected_args
     for index, arg in enumerate(args):
-        template[index].value = get_from_encoded(arg)
+        target = template[index]
+        v = get_from_encoded(arg)
+        if v is None:
+            # print(arg)
+            logger.warn(f'fail while parse argument "{target.name}"')
+        target.value = v
     return template
 
 
@@ -105,10 +111,12 @@ def export_args_to_config(arguments: list[ArgumentInfo]):
 def get_user_input() -> list[str]:
     argv = sys.argv
     expected_args_count = len(DEFAULT_expected_args)
-    if len(argv) < expected_args_count:
+    if len(argv) < expected_args_count - 1:
+        logger.warning(f"argument count not enough({len(argv)}),switch to None.")
         params = [None] * expected_args_count
     else:
         params = sys.argv
+    
     return params
 
 
