@@ -46,7 +46,7 @@ css = """
                 src: url("ctft");
             }
 </style>"""
-path = Path(get_resource_path(f'font{os.sep}fzht.ttf'))
+path = Path(get_resource_path(f"font{os.sep}custom.ttf"))
 css = css.replace("ctft", path.as_uri())
 
 
@@ -77,7 +77,7 @@ class Assistance:
         now = json.loads(read(f"{DATA}/{group}/opening.json"))
         now.append(new)
         write(f"{DATA}/{group}/opening.json",
-              json.dumps(now, ensure_ascii=False))
+              json.dumps(now, ensure_ascii = False))
         return "开团成功，团员可通过以下命令进行预定：\n预定 <团队关键词> <ID> <职业>\n上述命令使用时请勿带尖括号，职业请使用准确些的词语，避免使用“长歌”，“万花”等模棱两可的职业字眼，也可以是“躺拍”“老板”等词语。\n特别注意：团长请给自己预定，否则预定总人数将为26人！"
 
     async def apply_for_place(group: str, description: str, id: str, job: str, applyer: str):
@@ -130,8 +130,7 @@ class Assistance:
                             if y["apply"] != actor:
                                 return "请勿修改他人留坑！"
                             x.remove(y)
-                            write(f"{DATA}/{group}/opening.json",
-                                  json.dumps(now, ensure_ascii=False))
+                            write(f"{DATA}/{group}/opening.json", json.dumps(now, ensure_ascii = False))
                             return "成功取消留坑！"
         return "取消失败，未知错误。"
 
@@ -142,8 +141,7 @@ class Assistance:
                 if i["creator"] != actor:
                     return "非创建者无法解散团队哦~"
                 now.remove(i)
-                write(f"{DATA}/{group}/opening.json",
-                      json.dumps(now, ensure_ascii=False))
+                write(f"{DATA}/{group}/opening.json", json.dumps(now, ensure_ascii = False))
                 return "解散团队成功！"
 
     async def storge(group: str, description: str, info: dict):
@@ -155,7 +153,7 @@ class Assistance:
                     if len(x) != 5:
                         x.append(info)
                         write(f"{DATA}/{group}/opening.json",
-                              json.dumps(now, ensure_ascii=False))
+                              json.dumps(now, ensure_ascii = False))
                         return True
                     else:
                         continue
