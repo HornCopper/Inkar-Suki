@@ -1,3 +1,8 @@
+from .parse import main
+from src.tools.config import Config
+from src.tools.file import read
+from src.tools.utils import get_status
+from src.tools.permission import checker, error
 import json
 import sys
 import nonebot
@@ -15,12 +20,6 @@ TOOLS = nonebot.get_driver().config.tools_path
 DATA = TOOLS[:-5] + "data"
 sys.path.append(str(TOOLS))
 
-from src.tools.permission import checker, error
-from src.tools.utils import get_status
-from src.tools.file import read
-from src.tools.config import Config
-
-from .parse import main
 
 def already(reponame: str, group) -> bool:
     final_path = DATA + "/" + group + "/" + "webhook.json"
@@ -30,7 +29,9 @@ def already(reponame: str, group) -> bool:
             return True
     return False
 
-repo = on_command("repo", priority = 5)
+
+repo = on_command("repo", priority=5)
+
 
 @repo.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
@@ -42,64 +43,68 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     if status_code != 200:
         await repo.finish(f"仓库获取失败，请检查后重试哦~\n错误码：{status_code}")
     else:
-        img = ms.image("https://opengraph.githubassets.com/c9f4179f4d560950b2355c82aa2b7750bffd945744f9b8ea3f93cc24779745a0/"+reponame)
+        img = ms.image(
+            "https://opengraph.githubassets.com/c9f4179f4d560950b2355c82aa2b7750bffd945744f9b8ea3f93cc24779745a0/"+reponame)
         await repo.finish(img)
 
-webhook = on_command("bindrepo", aliases = {"webhook"}, priority = 5)
+webhook = on_command("bindrepo", aliases={"webhook"}, priority=5)
+
 
 @webhook.handle()
 async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
     """
     添加群聊响应的`Webhook`仓库。
     """
-    personal_data = await bot.call_api("get_group_member_info", group_id = event.group_id, user_id = event.user_id, no_cache = True)
+    personal_data = await bot.call_api("get_group_member_info", group_id=event.group_id, user_id=event.user_id, no_cache=True)
     group_admin = personal_data["role"] in ["owner", "admin"]
-    if not group_admin and checker(str(event.user_id),9) == False:
+    if not group_admin and checker(str(event.user_id), 9) == False:
         await unbind.finish(error(9))
     repo_name = args.extract_plain_text()
     status_code = await get_status("https://github.com/" + repo_name)
     if status_code != 200:
         await repo.finish(f"唔……绑定失败。\n错误码：{status_code}")
     else:
-        group=str(event.group_id)
+        group = str(event.group_id)
         if already(repo_name, group) == False:
-            cache = open(DATA + "/" + group + "/" + "webhook.json", mode = "r")
+            cache = open(DATA + "/" + group + "/" + "webhook.json", mode="r")
             now = json.loads(cache.read())
             now.append(repo_name)
             cache.close()
-            cache = open(DATA + "/" + group + "/" + "webhook.json", mode = "w")
+            cache = open(DATA + "/" + group + "/" + "webhook.json", mode="w")
             cache.write(json.dumps(now))
             cache.close()
             await webhook.finish("绑定成功！")
         else:
             await webhook.finish("唔……绑定失败：已经绑定过了。")
 
-unbind = on_command("unbindrepo", aliases = {"unbind_webhook"}, priority = 5)
+unbind = on_command("unbindrepo", aliases={"unbind_webhook"}, priority=5)
+
 
 @unbind.handle()
 async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
     """
     与上一个函数功能相反。
     """
-    personal_data = await bot.call_api("get_group_member_info", group_id = event.group_id, user_id = event.user_id, no_cache = True)
+    personal_data = await bot.call_api("get_group_member_info", group_id=event.group_id, user_id=event.user_id, no_cache=True)
     group_admin = personal_data["role"] in ["owner", "admin"]
-    if not group_admin and checker(str(event.user_id),9) == False:
+    if not group_admin and checker(str(event.user_id), 9) == False:
         await unbind.finish(error(9))
     repo = args.extract_plain_text()
     group = str(event.group_id)
     if already(repo, group) == False:
         await unbind.finish("唔……解绑失败：尚未绑定此仓库。")
     else:
-        cache = open(DATA + "/" + group + "/webhook.json", mode = "r")
+        cache = open(DATA + "/" + group + "/webhook.json", mode="r")
         now = json.loads(cache.read())
         now.remove(repo)
         cache.close()
-        cache = open(DATA + "/" + group + "/webhook.json", mode = "w")
+        cache = open(DATA + "/" + group + "/webhook.json", mode="w")
         cache.write(json.dumps(now))
         cache.close()
         await unbind.finish("解绑成功！")
 
 app: FastAPI = nonebot.get_app()
+
 
 @app.post(Config.web_path)
 async def recWebHook(req: Request):
@@ -111,15 +116,16 @@ async def recWebHook(req: Request):
     event = req.headers.get("X-GitHub-Event")
     try:
         message = "[GitHub] " + getattr(main, event)(body)
-        message = message.replace("codethink-cn","CodeThink-CN")
+        message = message.replace("codethink-cn", "CodeThink-CN")
     except Exception as e:
         msg = f"Event {event} has not been supported."
-        return {"status":"500","message":msg, "error":e}
+        return {"status": "500", "message": msg, "error": e}
     bots: list = Config.bot
     for i in bots:
         bot = get_bot(i)
         await sendm(bot, message, repo)
-    return {"status":200}
+    return {"status": 200}
+
 
 async def sendm(bot, message, repo):
     """
@@ -131,5 +137,5 @@ async def sendm(bot, message, repo):
         if repo in json.loads(read(DATA + "/" + i + "/webhook.json")):
             send_group.append(int(i))
     for i in send_group:
-        response = await bot.call_api("send_group_msg", group_id = int(i), message = message)
+        response = await bot.call_api("send_group_msg", group_id=int(i), message=message)
         logger.info("Webhook推送成功：消息ID为" + str(response["message_id"]))

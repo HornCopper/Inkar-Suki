@@ -30,19 +30,22 @@ async def CallbackDaily(bot: Bot, group_id: str, sub: SubscribeSubject, cron: Su
         CACHE_Daily[key] = path_cache_daily
     daily_lock.release()
     message = f"{ms.image(Path(path_cache_daily).as_uri())}{cron.notify_content}"
-    await bot.call_api("send_group_msg", group_id = group_id, message = message)
+    await bot.call_api("send_group_msg", group_id=group_id, message=message)
 
 CallbackDailyToday = CallbackDaily
 CallbackDailyTomorow = CallbackDaily
 
+
 def run(__subjects: list):
     v = SubscribeSubject(
-        name = "日常",
-        description = "每天早上和晚上推送日常任务",
-        children_subjects = ["今日日常", "明日日常"]
+        name="日常",
+        description="每天早上和晚上推送日常任务",
+        children_subjects=["今日日常", "明日日常"]
     )
     __subjects.append(v)
-    v = SubscribeSubject(name = "今日日常", description = "每天一大早推送今天的日常任务", cron = [SubjectCron("50 6 * * *", "早~今天的日常来啦")], callback = CallbackDailyToday)
+    v = SubscribeSubject(name="今日日常", description="每天一大早推送今天的日常任务", cron=[
+                         SubjectCron("50 6 * * *", "早~今天的日常来啦")], callback=CallbackDailyToday)
     __subjects.append(v)
-    v = SubscribeSubject(name = "明日日常", description = "每天晚上10点推送次日的日常任务", cron = [SubjectCron("0 22 * * *", "这是明天的日常哦~晚安！")], callback = CallbackDailyTomorow)
+    v = SubscribeSubject(name="明日日常", description="每天晚上10点推送次日的日常任务", cron=[
+                         SubjectCron("0 22 * * *", "这是明天的日常哦~晚安！")], callback=CallbackDailyTomorow)
     __subjects.append(v)

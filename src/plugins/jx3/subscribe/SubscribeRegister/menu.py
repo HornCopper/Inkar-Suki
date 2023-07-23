@@ -7,6 +7,7 @@ from .events import *
 __subjects: list[SubscribeSubject] = []
 VALID_Subjects: dict[str, SubscribeSubject] = {}
 
+
 def load_subjects(__subjects: list[SubscribeSubject], target: dict[str, SubscribeSubject]):
     """
     从预设逻辑中初始化
@@ -18,6 +19,7 @@ def load_subjects(__subjects: list[SubscribeSubject], target: dict[str, Subscrib
     for sub in __subjects:
         target[sub.name] = sub
         init_cron(sub, OnCallback)
+
 
 def check_subscribed(sub: SubscribeSubject, user_subs: dict[str, dict]) -> bool:
     """
@@ -45,6 +47,7 @@ def check_subscribed(sub: SubscribeSubject, user_subs: dict[str, dict]) -> bool:
             result = v
     return result
 
+
 def get_subscribe_items(user_subs: dict[str, dict]):
     """
     将当前订阅转换为实体
@@ -57,6 +60,7 @@ def get_subscribe_items(user_subs: dict[str, dict]):
         v.set_user_args(user_subs.get(x))
         r.append(v)
     return r
+
 
 async def OnCallback(sub: SubscribeSubject, cron: SubjectCron):
     result = []
