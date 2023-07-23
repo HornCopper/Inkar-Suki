@@ -23,7 +23,7 @@ def convert_to_str(msg: MessageSegment):
 
     if isinstance(msg, str):
         return msg
-    logger.warn(f'message cant convert to str:{msg}')
+    logger.warning(f'message cant convert to str:{msg}')
     return msg
 
 
