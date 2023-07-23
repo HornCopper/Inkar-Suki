@@ -42,11 +42,13 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
 
 webhook = on_command("bindrepo", aliases={"webhook"}, priority=5)
 @webhook.handle()
-async def _(event: GroupMessageEvent, args: Message = CommandArg()):
+async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
     '''
     添加群聊响应的`Webhook`仓库。
     '''
-    if checker(str(event.user_id),9) == False:
+    personal_data = await bot.call_api("get_group_member_info", group_id=event.group_id, user_id=event.user_id, no_cache=True)
+    group_admin = personal_data["role"] in ["owner", "admin"]
+    if not group_admin and checker(str(event.user_id),9) == False:
         await unbind.finish(error(9))
     repo_name = args.extract_plain_text()
     status_code = await get_status("https://github.com/"+repo_name)
@@ -67,11 +69,13 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
             await webhook.finish("唔……绑定失败：已经绑定过了。")
 unbind = on_command("unbindrepo",aliases={"unbind_webhook"},priority=5)
 @unbind.handle()
-async def _(event: GroupMessageEvent, args: Message = CommandArg()):
+async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
     '''
     与上一个函数功能相反。
     '''
-    if checker(str(event.user_id),9) == False:
+    personal_data = await bot.call_api("get_group_member_info", group_id=event.group_id, user_id=event.user_id, no_cache=True)
+    group_admin = personal_data["role"] in ["owner", "admin"]
+    if not group_admin and checker(str(event.user_id),9) == False:
         await unbind.finish(error(9))
     repo = args.extract_plain_text()
     group = str(event.group_id)
@@ -115,11 +119,11 @@ async def sendm(bot, message, repo):
     '''
     推送`Webhook`。
     '''
-    groups = os.listdir("./src/data")
+    groups = os.listdir(DATA)
     send_group = []
     for i in groups:
         if repo in json.loads(read(DATA + "/" + i + "/webhook.json")):
             send_group.append(int(i))
     for i in send_group:
         response = await bot.call_api("send_group_msg", group_id=int(i), message=message)
-        logger.info("Webhook推送成功：消息ID为"+str(response["message_id"]))
+        logger.info("Webhook推送成功：消息ID为" + str(response["message_id"]))

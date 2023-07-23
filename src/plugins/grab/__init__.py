@@ -35,8 +35,8 @@ what_eat = on_regex(
     r"^(/)?[今|明|后]?[天|日]?(早|中|晚)?(上|午|餐|饭|夜宵|宵夜)吃(什么|啥|点啥)$", priority=5)
 what_drink = on_regex(
     r"^(/)?[今|明|后]?[天|日]?(早|中|晚)?(上|午|餐|饭|夜宵|宵夜)喝(什么|啥|点啥)$", priority=5)
-view_all_dishes = on_regex(r"^(/)?查[看|寻]?全部(菜[单|品]|饮[料|品])$", priority=5)
-view_dish = on_regex(r"^(/)?查[看|寻]?(菜[单|品]|饮[料|品])[\s]?(.*)?", priority=5)
+view_all_dishes = on_regex(r"^(/)?查[看|询]?全部(菜[单|品]|饮[料|品])$", priority=5)
+view_dish = on_regex(r"^(/)?查[看|询]?(菜[单|品]|饮[料|品])[\s]?(.*)?", priority=5)
 add_dish = on_regex(r"^(/)?添[加]?(菜[品|单]|饮[品|料])[\s]?(.*)?",
                     priority=99, permission=GROUP_ADMIN | GROUP_OWNER | SUPERUSER)
 del_dish = on_regex(r"^(/)?删[除]?(菜[品|单]|饮[品|料])[\s]?(.*)?",
@@ -69,7 +69,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     msg = await get_tieba(int(tid))
     await tieba.finish(msg)
 
-cheater_ = on_command("jx3_cheater", aliases={"-骗子"}, priority=5)
+cheater_ = on_command("jx3_cheater", aliases={"-骗子","-查人"}, priority=5)
 @cheater_.handle()
 async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
     content = args.extract_plain_text()
