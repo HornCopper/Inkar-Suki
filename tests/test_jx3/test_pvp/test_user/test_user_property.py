@@ -1,5 +1,6 @@
 from .... import *
 
+
 @pytest.mark.skipif(not token, reason="无token时不测试")
 def test_user_property():
     import src.plugins.jx3.user

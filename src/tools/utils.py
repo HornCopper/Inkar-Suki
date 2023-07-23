@@ -46,7 +46,8 @@ async def send_with_async(method: str, url: str, proxy: dict = None, **kwargs) -
     except TimeoutError:
         max_try_time -= 1
         if max_try_time < 0:
-            logger.error(f"max_try_time(count={max_try_time}) exceeded to request in httpx({method} -> {url})")
+            logger.error(
+                f"max_try_time(count={max_try_time}) exceeded to request in httpx({method} -> {url})")
             return None
     except Exception as ex:
         logger.error(f"fail to request in httpx({method} -> {url}):\n{ex}")
