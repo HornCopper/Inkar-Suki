@@ -11,6 +11,7 @@ def test_server_map():
     pass
 
 
+@pytest.mark.skipif(not token, reason="无token时不测试")
 def test_server_status():
     def default_cb_finish(msg: str):
         if '开服状态：' in msg:
