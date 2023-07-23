@@ -1,7 +1,5 @@
-import sys
 import nonebot
 import json
-# sys用于添加新的path，方便导入src/tools下的工具包
 
 from nonebot import on_command # on_command响应器
 from nonebot.adapters import Message 
@@ -9,14 +7,13 @@ from nonebot.adapters.onebot.v11 import GroupMessageEvent # 只处理群消息�
 from nonebot.params import CommandArg
 
 TOOLS = nonebot.get_driver().config.tools_path # 获取工具包路径
-sys.path.append(TOOLS) # 导入工具包路径
 DATA = TOOLS[:-5] + "data" # 拼接数据路径
 
 from .arcaea import getUserBestBySongName, getUserInfo, judgeWhetherPlayer, getUserCode
 from src.tools.utils import checknumber # 导入检测是否为数字的函数，来自src/tools/utils.py
 from src.tools.file import read, write # 导入文件操作函数，来自src/tools/file.py
 
-arcaea_userinfo = on_command("arcuser",priority=5)
+arcaea_userinfo = on_command("arcuser", priority = 5)
 @arcaea_userinfo.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     
@@ -46,16 +43,16 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
         info = getUserCode(event.group_id, event.user_id) # 通过群聊获取用户绑定的UserCode
         if info == False:
             await arcaea_userinfo.finish("未绑定Arcaea账号且未给出任何信息，没办法找啦！") # 若没绑定则告知
-        msg = await getUserInfo(usercode=info)
+        msg = await getUserInfo(usercode = info)
         await arcaea_userinfo.finish(msg)
     else:
         if checknumber(arg):
-            msg = await getUserInfo(usercode=int(arg))
+            msg = await getUserInfo(usercode = int(arg))
         else:
-            msg = await getUserInfo(nickname=arg)
+            msg = await getUserInfo(nickname = arg)
         await arcaea_userinfo.finish(msg)
 
-arcaea_binduser = on_command("arcbind",priority=5)
+arcaea_binduser = on_command("arcbind", priority = 5)
 @arcaea_binduser.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     '''
@@ -66,9 +63,9 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
         await arcaea_binduser.finish("未给出任何信息，没办法绑定哦~")
     present_data = json.loads(read(DATA + "/" + str(event.group_id) + "/arcaea.json"))
     if checknumber(arg):
-        resp = await judgeWhetherPlayer(usercode=int(arg))
+        resp = await judgeWhetherPlayer(usercode = int(arg))
     else:
-        resp = await judgeWhetherPlayer(nickname=arg)
+        resp = await judgeWhetherPlayer(nickname = arg)
     if resp:
         present_data[str(event.user_id)] = resp[1]
         write(DATA + "/" + str(event.group_id) + "/arcaea.json", json.dumps(present_data))
@@ -76,7 +73,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     else:
         await arcaea_binduser.finish("您输入的好友码/用户名查不到哦，请检查后重试~")
         
-arcaea_unbind = on_command("arcunbind",priority=5)
+arcaea_unbind = on_command("arcunbind", priority = 5)
 @arcaea_unbind.handle()
 async def _(event: GroupMessageEvent):
     '''
@@ -90,7 +87,7 @@ async def _(event: GroupMessageEvent):
     else:
         await arcaea_unbind.finish("唔……尚未绑定过Arcaea，无法解绑啦！")
 
-arcaea_best = on_command("arcbest", priority=5)
+arcaea_best = on_command("arcbest", priority = 5)
 @arcaea_best.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     '''

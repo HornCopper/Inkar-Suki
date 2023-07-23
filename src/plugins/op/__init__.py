@@ -16,7 +16,7 @@ from src.tools.config import Config
 from src.tools.utils import checknumber
 
 # 机器人管理员权限设置
-op = on_command("setop", aliases={"admin", "setadmin"}, priority=5)
+op = on_command("setop", aliases = {"admin", "setadmin"}, priority = 5)
 @op.handle()
 async def handle_first_receive(bot: Bot, event: Event, args: Message = CommandArg()):
     if checker(str(event.user_id), 10) == False:
@@ -40,7 +40,7 @@ async def handle_first_receive(bot: Bot, event: Event, args: Message = CommandAr
                 await op.finish("你这设置的什么鬼权限啊？！")
             if arguments[1] == "10" and str(event.user_id) not in Config.owner:
                 await op.finish("这么高的权限还是请后台修改吧。")
-            nickname_data = await bot.call_api("get_stranger_info",user_id=int(arguments[0]))
+            nickname_data = await bot.call_api("get_stranger_info",user_id = int(arguments[0]))
             nickname = nickname_data["nickname"]
             if arguments[0] in adminlist:
                 if arguments[1] == "0":

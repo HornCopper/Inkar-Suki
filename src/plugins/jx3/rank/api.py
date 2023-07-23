@@ -1,16 +1,14 @@
+import hashlib
+import hmac
+
+from tabulate import tabulate
+from datetime import datetime, timezone
+
 from src.tools.dep import *
 from src.plugins.help import css
 from src.tools.generate import generate, get_uuid
 
-from tabulate import tabulate
-
 from .top100 import *
-
-from datetime import datetime, timezone
-from zoneinfo import ZoneInfo
-
-import hashlib
-import hmac
 
 jx3_token = Config.jx3_token
 
@@ -51,10 +49,10 @@ def gen_ts() -> str:
 def gen_xsk(data: str) -> str:
     data += "@#?.#@"
     secret = "MaYoaMQ3zpWJFWtN9mqJqKpHrkdFwLd9DDlFWk2NnVR1mChVRI6THVe6KsCnhpoR"
-    return hmac.new(secret.encode(), msg=data.encode(), digestmod=hashlib.sha256).hexdigest()
+    return hmac.new(secret.encode(), msg = data.encode(), digestmod = hashlib.sha256).hexdigest()
 
 async def post_url(url, proxy: dict = None, headers: str = None, timeout: int = 300, data: dict = None):
-    async with httpx.AsyncClient(proxies=proxy, follow_redirects = True) as client:
+    async with httpx.AsyncClient(proxies = proxy, follow_redirects = True) as client:
         resp = await client.post(url, timeout = timeout, headers = headers, data = data)
         result = resp.text
         return result
@@ -105,7 +103,7 @@ async def zlrank(server: str = None, school: str = None, group_id: str = None):
             "user-agent": "okhttp/3.12.2",
             "x-sk": xsk
     }
-    data = await post_url(url="https://m.pvp.xoyo.com/user/list-jx3-topn-roles-info", data=param, headers=headers)
+    data = await post_url(url="https://m.pvp.xoyo.com/user/list-jx3-topn-roles-info", data = param, headers = headers)
     data = json.loads(data)
     lank = data["data"]["roles"]
     chart = []
@@ -122,7 +120,7 @@ async def zlrank(server: str = None, school: str = None, group_id: str = None):
         new = [str(num), tuilan_avatar, school_name, nickname, roleName, value, server_name]
         chart.append(new)
         num = num + 1
-    final_html = css + tabulate(chart, tablefmt="unsafehtml")
+    final_html = css + tabulate(chart, tablefmt = "unsafehtml")
     final_path = CACHE + "/" + get_uuid() + ".html"
     write(final_path, final_html)
     img = await generate(final_path, False, "table", False)
