@@ -2,6 +2,14 @@ import sys
 import os
 import re
 from sgtpyutils.logger import logger
+from sgtpyutils.encode.basexx import base64_decode
+
+
+def get_from_encoded(raw: str) -> str:
+    try:
+        return base64_decode(raw).decode('utf-8')
+    except:
+        return None
 
 
 class ArgumentInfo:
@@ -34,10 +42,10 @@ class ArgumentInfo:
             logger.warn(f'argument "{self.name}" not found in template.')
             return template  # 失配 警告并返回
         pos_span = result.span()
-        pos_start = pos_span[0] + 1 # 取消第一个空格
+        pos_start = pos_span[0] + 1  # 取消第一个空格
         pos_end = pos_span[1]
         target_str = template[pos_start:pos_end]
-        new_value = f'"{self.value}"' if self.value is not None else "None"
+        new_value = self.value if self.value is not None else "None"
         evaluate_str = f"{self.name} = {new_value}"
         logger.info(f'replace "{target_str}" to "******"')
         return f'{template[:pos_start]}{evaluate_str}{template[pos_end:]}'
@@ -61,7 +69,7 @@ DEFAULT_expected_args: list[ArgumentInfo] = [
     ArgumentInfo("runner", enable=False, desc="程序启动路径"),
     ArgumentInfo("proxy", desc="全局使用的代理"),
     ArgumentInfo("jx3_token", desc="推栏token"),
-    ArgumentInfo("jx3api_link", "https://v7.jx3api.com", desc="jx3api的api地址"),
+    ArgumentInfo("jx3api_link", desc="jx3api的api地址"),
     ArgumentInfo("jx3api_globaltoken", desc="jx3api的token"),
     ArgumentInfo("jx3api_wslink", desc="jx3api的ws地址"),
     ArgumentInfo("jx3api_wstoken", desc="jx3api的wstoken"),
@@ -74,7 +82,7 @@ def init_arguments(args: list[str], template: list[ArgumentInfo] = None) -> list
     if template is None:
         template = DEFAULT_expected_args
     for index, arg in enumerate(args):
-        template[index].value = arg
+        template[index].value = get_from_encoded(arg)
     return template
 
 
