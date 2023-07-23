@@ -39,7 +39,7 @@ class ArgumentInfo:
         target_str = template[pos_start:pos_end]
         new_value = f'"{self.value}"' if self.value is not None else "None"
         evaluate_str = f"{self.name} = {new_value}"
-        logger.info(f'replce "{target_str}" to "******"')
+        logger.info(f'replace "{target_str}" to "******"')
         return f'{template[:pos_start]}{evaluate_str}{template[pos_end:]}'
 
     @value.setter
