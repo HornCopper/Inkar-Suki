@@ -1,7 +1,6 @@
 from .api import *
 
-cmd_jx3_server = on_command("jx3_server", aliases={"服务器", "开服"}, priority=5)
-
+cmd_jx3_server = on_command("jx3_server", aliases = {"服务器", "开服"}, priority = 5)
 
 @cmd_jx3_server.handle()
 async def jx3_server(event: GroupMessageEvent, args: Message = CommandArg()):
@@ -13,5 +12,5 @@ async def jx3_server(event: GroupMessageEvent, args: Message = CommandArg()):
     '''
     server = args.extract_plain_text()
     server = server_mapping(server, event.group_id)
-    msg = await server_status(server=server)
+    msg = await server_status(server = server)
     await cmd_jx3_server.finish(msg)

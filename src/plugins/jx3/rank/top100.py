@@ -75,7 +75,7 @@ async def get_top100(server: str, boss: str, team: str = None): # 数据来源@J
         return msg + "小提示：团牌后方为团长的ID哦~\n使用“+百强 <服务器> <BOSS名称> <团牌>”可以获得更详细的信息。"
     if found == False:
         return "唔……未找到该团，您可以点击下方链接查看该团是否上榜。\nhttps://www.jx3box.com/rank/race/#/"
-    people = "、".join(people).replace("\n、","\n")
+    people = "、".join(people).replace("\n、", "\n")
     msg = ms.image(team_logo) + f"\n团长：{leader}\n队员：" + people + f"\n开始时间：{start_time}\n通关时间：{finish_time}"
     return msg
     

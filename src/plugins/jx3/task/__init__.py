@@ -3,11 +3,11 @@ from .api import *
 task_ = on_command("jx3_task", aliases={"任务"}, priority=5)
 @task_.handle()
 async def _(state: T_State, args: Message = CommandArg()):
-    '''
+    """
     查询任务及任务链：
 
     Example：-任务 十万火急
-    '''
+    """
     task__ = args.extract_plain_text()
     data = await getTask(task__)
     if data["status"] == 404:
