@@ -1,6 +1,6 @@
 from .... import *
 
-@pytest.mark.skipif(not token)
+@pytest.mark.skipif(not token, reason="无token时不测试")
 def test_user_property():
     import src.plugins.jx3.user
     func = src.plugins.jx3.user.jx3_addritube
@@ -15,7 +15,7 @@ def test_user_property():
     mc.check_counter()
 
 
-@pytest.mark.skipif(not token)
+@pytest.mark.skipif(not token, reason="无token时不测试")
 def test_user_property_v2():
     import src.plugins.jx3.user
     func = src.plugins.jx3.user.jx3_addritube_v2
