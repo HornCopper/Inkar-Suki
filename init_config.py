@@ -110,9 +110,10 @@ def export_args_to_config(arguments: list[ArgumentInfo]):
 
 def get_user_input() -> list[str]:
     argv = sys.argv
+    # print(argv)
     expected_args_count = len(DEFAULT_expected_args)
-    if len(argv) < expected_args_count - 1:
-        logger.warning(f"argument count not enough({len(argv)}),switch to None.")
+    if len(argv) < expected_args_count: # runner是自带的不用另外带
+        logger.warning(f"argument count not enough({len(argv)}/{expected_args_count}),switch to None.")
         params = [None] * expected_args_count
     else:
         params = sys.argv
