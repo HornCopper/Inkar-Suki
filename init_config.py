@@ -39,7 +39,7 @@ class ArgumentInfo:
         pattern = re.compile(f'[ |\t]({self.name})[ ]*=[ ]*"(\w*)"')
         result = pattern.search(template)
         if result is None:
-            logger.warn(f'argument "{self.name}" not found in template.')
+            logger.warning(f'argument "{self.name}" not found in template.')
             return template  # 失配 警告并返回
         pos_span = result.span()
         pos_start = pos_span[0] + 1  # 取消第一个空格
@@ -87,7 +87,7 @@ def init_arguments(args: list[str], template: list[ArgumentInfo] = None) -> list
         v = get_from_encoded(arg)
         if v is None:
             # print(arg)
-            logger.warn(f'fail while parse argument "{target.name}"')
+            logger.warning(f'fail while parse argument "{target.name}"')
         target.value = v
     return template
 
