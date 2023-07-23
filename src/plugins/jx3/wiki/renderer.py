@@ -1,5 +1,6 @@
 from src.tools.dep import *
 
+
 async def render_items(keyword: str, data: dict, template: str = "question"):
     """
     渲染萌新接引

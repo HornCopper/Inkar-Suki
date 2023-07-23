@@ -4,6 +4,7 @@ import src.plugins.jx3
 from src.plugins.jx3.price_goods.lib import coin, Golds
 from src.plugins.jx3.price_goods import v1
 
+
 def test_trade_gold():
     Gold = Golds.Gold
     assert Gold(1).__repr__() == '1 铜'

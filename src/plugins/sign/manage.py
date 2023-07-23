@@ -1,3 +1,4 @@
+from src.tools.file import read, write
 import random
 import json
 import sys
@@ -12,8 +13,6 @@ TOOLS = nonebot.get_driver().config.tools_path
 sys.path.append(str(TOOLS))
 CLOCK = TOOLS[:-5] + "clock"
 
-from src.tools.file import read, write
-from src.tools.file import read, write
 
 class SignInRecord:
     def init_lucky(self, luck: int = None):
@@ -100,12 +99,10 @@ class Sign:
             for x in accounts:
                 del accounts[x]['id']
 
-
         user = accounts.get(qq)
         if not user:
             user = {'coin': 0, 'continuity': 0, 'last': None}
             accounts[qq] = user
-
 
         Sign.accounts = accounts
         if need_convert:

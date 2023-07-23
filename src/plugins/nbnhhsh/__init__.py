@@ -7,6 +7,7 @@ from nonebot.params import CommandArg
 
 nbnhhsh = on_command("nbnhhsh", aliases={"能不能好好说话"}, priority=5)
 
+
 @nbnhhsh.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     content = args.extract_plain_text()
