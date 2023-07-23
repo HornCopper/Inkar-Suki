@@ -113,7 +113,7 @@
                       <span>[等级{{ x.level }}]</span>
                       <span>{{ x.cron_description }}。</span>
                     </span>
-                    <span>上次:{{ formatTime(x.prev_time) }}</span>
+                    <span>上次:{{ formatTime(x.prev_time) }},</span>
                     <span>下次:{{ formatTime(x.next_time) }}</span>
                     <div v-if="x.notify_content" style="font-size:0.8rem;color:#999999;">{{ x.notify_content }}</div>
                   </div>

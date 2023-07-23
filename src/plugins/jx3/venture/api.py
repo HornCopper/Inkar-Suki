@@ -13,7 +13,7 @@ async def serendipity_(server: str = None, name: str = None, group_id: str = Non
     if not server:
         return [PROMPT_ServerNotExist]
     final_url = f"{Config.jx3api_link}/view/luck/adventure?token={token}&robot={bot}&ticket={ticket}&server={server}&name={name}&scale=1"
-    data = await get_api(final_url, proxy=proxies)
+    data = await get_api(final_url)
     return data["data"]["url"]
 
 
@@ -28,7 +28,7 @@ async def statistical_(server: str = None, serendipity: str = None, group_id: st
         final_url = f"{Config.jx3api_link}/view/luck/collect?token={token}&robot={bot}&server={server}&scale=1"
     else:
         final_url = f"{Config.jx3api_link}/view/luck/statistical?token={token}&robot={bot}&ticket={ticket}&server={server}&name={serendipity}&scale=1"
-    data = await get_api(final_url, proxy=proxies)
+    data = await get_api(final_url)
     return data["data"]["url"]
 
 
@@ -37,7 +37,7 @@ async def global_serendipity(name: str = None):  # 全服奇遇 [奇遇]
         return [PROMPT_NoToken]
     if name != None:
         final_url = f"{Config.jx3api_link}/view/luck/server/adventure?name={name}&token={token}&robot={bot}&scale=1"
-    data = await get_api(final_url, proxy=proxies)
+    data = await get_api(final_url)
     return data["data"]["url"]
 
 
@@ -46,7 +46,7 @@ async def global_statistical(name: str = None):  # 全服统计 [奇遇]
         return [PROMPT_NoToken]
     if name != None:
         final_url = f"{Config.jx3api_link}/view/luck/server/statistical?name={name}&token={token}&robot={bot}"
-    data = await get_api(final_url, proxy=proxies)
+    data = await get_api(final_url)
     return data["data"]["url"]
 
 async def get_preposition_page_url(name: str = None):
