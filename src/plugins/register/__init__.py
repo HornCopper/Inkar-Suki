@@ -35,8 +35,6 @@ async def _(matcher: Matcher, event: GroupMessageEvent):
 register = on_command("register", aliases={"reg"}, priority=-1) # 注册
 @register.handle()
 async def _(event: GroupMessageEvent):
-    if checker(str(event.user_id),8) == False:
-        await register.finish(error(8))
     group = str(event.group_id)
     directorys=os.listdir("./src/data")
     if group in directorys:
