@@ -17,7 +17,7 @@ def test_question():
     asyncio.run(task)
     mc.check_counter()
 
-    func = src.plugins.jx3.jx3_next_ques # 转到相关问题
+    func = src.plugins.jx3.jx3_next_ques  # 转到相关问题
     mc.tag = 'xg0'  # 相关项
     task = func(state, event, obMessage(mc.tag))
     asyncio.run(task)

@@ -17,6 +17,7 @@ def init_subjects(__subjects: list[SubscribeSubject]):
     from . import event_daily
     event_daily.run(__subjects)
 
+
 def init_cron(sub: SubscribeSubject, OnCallback: callable):
     if not sub.cron:
         return

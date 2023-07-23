@@ -2,6 +2,7 @@ import math
 
 from .coin import copperl, silverl, goldl, brickl
 
+
 class Gold:
     base_OOM = [2, 2, 4]  # base order of magnitude
     base_des = ["铜", "银", "金", "砖"]

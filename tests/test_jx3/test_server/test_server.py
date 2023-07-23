@@ -33,5 +33,5 @@ def test_server_bind():
     event = SFGroupMessageEvent()
     from src.plugins.jx3.bind import server_bind
     server_bind(event.group_id, '唯满侠')
-    x = server_mapping(None,group_id=event.group_id)
+    x = server_mapping(None, group_id=event.group_id)
     assert x == '唯我独尊'

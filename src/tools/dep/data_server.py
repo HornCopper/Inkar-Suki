@@ -22,7 +22,7 @@ server_map = {}
 for x in __map:
     for srv in __map[x]:
         server_map[srv] = x
-    server_map[x] = x # 绑定自身
+    server_map[x] = x  # 绑定自身
 
 
 def server_mapping(server: str = None, group_id: str = None):
