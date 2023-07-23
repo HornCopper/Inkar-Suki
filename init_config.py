@@ -34,7 +34,7 @@ class ArgumentInfo:
             logger.warn(f'argument "{self.name}" not found in template.')
             return template  # 失配 警告并返回
         pos_span = result.span()
-        pos_start = pos_span[0]
+        pos_start = pos_span[0] + 1 # 取消第一个空格
         pos_end = pos_span[1]
         target_str = template[pos_start:pos_end]
         new_value = f'"{self.value}"' if self.value is not None else "None"
