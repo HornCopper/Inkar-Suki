@@ -1,5 +1,25 @@
-from src.tools.dep import *
+import os
+import json
+import hashlib
+import hmac
+import httpx
 
+from pathlib import Path
+from PIL import Image, ImageDraw, ImageFont
+from nonebot import get_driver
+from nonebot.log import logger
+from datetime import datetime, timezone
+
+TOOLS = get_driver().config.tools_path
+ASSETS = TOOLS[:-5] + "assets"
+PLUGINS = TOOLS[:-5] + "plugins"
+
+from src.tools.dep.bot.path import CACHE
+from src.tools.utils import get_api, get_content
+from src.constant.jx3.skilldatalib import kftosh
+from src.tools.config import Config
+from src.tools.generate import get_uuid
+from src.tools.dep import *
 
 async def addritube_(server: str = None, name: str = None, group_id: str = None):  # 查装 <服务器> <ID>
     if token == None or ticket == None:
@@ -7,7 +27,7 @@ async def addritube_(server: str = None, name: str = None, group_id: str = None)
     server = server_mapping(server, group_id)
     if not server:
         return [PROMPT_ServerNotExist]
-    final_url = f"{Config.jx3api_link}/view/role/attribute?ticket={ticket}&token={token}&robot={bot}&server={server}&name={name}&scale=1"
+    final_url = f"{Config.jx3api_link}/view/role/attribute?ticket ={ticket}&token={token}&robot ={bot}&server={server}&name={name}&scale=1"
     data = await get_api(final_url)
     if data["code"] == 404:
         return ["唔……玩家不存在。"]
@@ -16,7 +36,6 @@ async def addritube_(server: str = None, name: str = None, group_id: str = None)
     if data["code"] == 403 and data["msg"] == "仅互关好友可见":
         return ["仅互关好友可见哦~"]
     return data["data"]["url"]
-
 
 async def roleInfo_(server, player):
     if not token:
@@ -36,62 +55,17 @@ async def roleInfo_(server, player):
     bd = data["data"]["bodyName"]
     tg = data["data"]["tongName"]
     cp = data["data"]["campName"]
-    msg = msg + \
-        f"\n服务器：{zone} - {srv}\n角色名称：{nm}\nUID：{uid}\n体型：{fc}·{bd}\n帮会：{cp} - {tg}"
+    msg = msg + f"\n服务器：{zone} - {srv}\n角色名称：{nm}\nUID：{uid}\n体型：{fc}·{bd}\n帮会：{cp} - {tg}"
     return msg
 
-# 属性v2
-
-import os
-import json
-from datetime import datetime, timezone
-from zoneinfo import ZoneInfo
-import hashlib
-import hmac
-import httpx
-
-from pathlib import Path
-from PIL import Image, ImageDraw, ImageFont
-from nonebot import get_driver
-from nonebot.log import logger
-
-TOOLS = get_driver().config.tools_path
-ASSETS = TOOLS[:-5] + "assets"
-PLUGINS = TOOLS[:-5] + "plugins"
-
-from src.tools.dep.bot.path import CACHE
-from src.tools.utils import get_api, get_content
-from src.constant.jx3.skilldatalib import kftosh
-from src.tools.config import Config
-from src.tools.generate import get_uuid
-
-# 预计需要的参数
-"""
-kungfu 心法，映射 根骨、身法、元气、力道，同时映射T奶DPS
-maxjl_list 最大精炼等级 列表 12个int元素
-jl_list 当前精炼等级 列表 12个int元素，若值均与maxjl_list每一个值相等，使用满精炼框，反之用未满精炼框
-equip_list 装备列表，第12个元素为武器（总12个），若school=藏剑，则总元素数为13，12为轻剑，13为重剑
-equip_icon_list 装备图标列表，元素均为str，内容为图片路径，不能使用网络图片。
-equip_quailty 装备属性列表，元素均为str，内容为`品级 属性1 属性2 ...`
-basic 基础信息列表，元素1为装分 2为ID 3为门派+体型 4为UID
-qx 奇穴列表，12个元素，为奇穴名称，若该层奇穴未点，则为None
-qx_icon 奇穴图标列表，元素为奇穴图标的图片路径，若未点，则为`未知奇穴`的图片路径
-henchant 大附魔列表，共5个元素，若未打，则为None，每一项为小附魔名称。
-lenchant 小附魔列表，共12个元素，若未打，则为None，每一项为大附魔名称。
-fs 五行石列表，共18个元素，前12个每2个对应帽子、衣服、腰带、护手、下装、鞋子中的一项，13、14对应项链、腰坠，15-18对应武器，若未打，为0，打了为int值，范围1-8
-wcs_icon 五彩石图标
-wcs 五彩石名称
-attrs 属性，list，无双等数值均传计算后的数值，例如百分比等，每一个元素均为str
-"""
-
 async def post_url(url, proxy: dict = None, headers: str = None, timeout: int = 300, data: dict = None):
-    async with httpx.AsyncClient(proxies=proxy, follow_redirects = True) as client:
+    async with httpx.AsyncClient(proxies = proxy, follow_redirects = True) as client:
         resp = await client.post(url, timeout = timeout, headers = headers, data = data)
         result = resp.text
         return result
 
 def format_body(data: dict) -> str:
-    return json.dumps(data, separators=(',', ':'))
+    return json.dumps(data, separators= (",", ":"))
 
 def gen_ts() -> str:
     return f"{datetime.now(timezone.utc):%Y%m%d%H%M%S%f}"[:-3]
@@ -99,7 +73,7 @@ def gen_ts() -> str:
 def gen_xsk(data: str) -> str:
     data += "@#?.#@"
     secret = "MaYoaMQ3zpWJFWtN9mqJqKpHrkdFwLd9DDlFWk2NnVR1mChVRI6THVe6KsCnhpoR"
-    return hmac.new(secret.encode(), msg=data.encode(), digestmod=hashlib.sha256).hexdigest()
+    return hmac.new(secret.encode(), msg = data.encode(), digestmod = hashlib.sha256).hexdigest()
 
 def zone_mapping(server):
     if server == "绝代天骄":
@@ -262,7 +236,7 @@ async def get_kf_icon(kf):
         return final_path
     else:
         data = await get_content(f"https://img.jx3box.com/image/xf/{num}.png")
-        cache = open(final_path, mode="wb")
+        cache = open(final_path, mode = "wb")
         cache.write(data)
         cache.close()
         return final_path
@@ -291,8 +265,8 @@ async def get_attr_main(server, id, group_id):
     if uid == False:
         return ["唔……未找到该玩家。"]
     param = {
-        "zone":zone_mapping(server),
-        "server":server,
+        "zone": zone_mapping(server),
+        "server": server,
         "game_role_id": uid[0],
         "ts": gen_ts()
     }
@@ -301,7 +275,7 @@ async def get_attr_main(server, id, group_id):
     headers = {
             "x-sk": xsk
     }
-    data = await post_url(url="https://m.pvp.xoyo.com/mine/equip/get-role-equip", data=param, headers=headers)
+    data = await post_url(url = "https://m.pvp.xoyo.com/mine/equip/get-role-equip", data = param, headers = headers)
     data = json.loads(data)
     kfid = data["data"]["Kungfu"]["KungfuID"]
     kf = await get_personal_kf(kfid)
@@ -640,7 +614,7 @@ async def get_attr(kungfu: str, maxjl_list: list, jl_list: list, equip_list: lis
     little_enchant = Image.open(PLUGINS + "/jx3/user/lenchant.png").resize((20, 20))
 
     # 心法图标
-    background.alpha_composite(Image.open(await get_kf_icon(kungfu)).resize((50,50)), (61,62))
+    background.alpha_composite(Image.open(await get_kf_icon(kungfu)).resize((50, 50)), (61, 62))
 
     # 武器图标
     logger.info(equip_list)
@@ -648,7 +622,7 @@ async def get_attr(kungfu: str, maxjl_list: list, jl_list: list, equip_list: lis
         if equip_icon_list[11] != "":
             if judge_special_weapon(equip_list[11]):
                 background.alpha_composite(precious, (688, 586))
-            background.alpha_composite(Image.open(await local_save(equip_icon_list[11])).resize((38,38)), (708, 587))
+            background.alpha_composite(Image.open(await local_save(equip_icon_list[11])).resize((38, 38)), (708, 587))
             if maxjl_list[11] in ["3","4","8"]:
                 background.alpha_composite(precious, (688, 586))
                 if maxjl_list[11] == "8":
@@ -665,7 +639,7 @@ async def get_attr(kungfu: str, maxjl_list: list, jl_list: list, equip_list: lis
         if equip_icon_list[11] != "":
             if judge_special_weapon(equip_list[11]):
                 background.alpha_composite(precious, (688, 586))
-            background.alpha_composite(Image.open(await local_save(equip_icon_list[11])).resize((38,38)), (708, 587))
+            background.alpha_composite(Image.open(await local_save(equip_icon_list[11])).resize((38, 38)), (708, 587))
             if maxjl_list[11] in ["3","4","8"]:
                 background.alpha_composite(precious, (688, 586))
                 if maxjl_list[11] == "8":
@@ -681,7 +655,7 @@ async def get_attr(kungfu: str, maxjl_list: list, jl_list: list, equip_list: lis
         if equip_icon_list[12] != "":
             if judge_special_weapon(equip_list[12]):
                 background.alpha_composite(precious, (688, 635))
-            background.alpha_composite(Image.open(await local_save(equip_icon_list[12])).resize((38,38)), (708, 636))
+            background.alpha_composite(Image.open(await local_save(equip_icon_list[12])).resize((38, 38)), (708, 636))
             if maxjl_list[12] in ["3","4","8"]:
                 background.alpha_composite(precious, (688, 635))
                 if maxjl_list[12] == "8":
@@ -729,50 +703,50 @@ async def get_attr(kungfu: str, maxjl_list: list, jl_list: list, equip_list: lis
     init = 50
     for i in equip_list:
         if i != "":
-            draw.text((752, init), i, fill =(255, 255, 255), font=ImageFont.truetype(syst_bold, size=14), anchor="lt")
+            draw.text((752, init), i, fill = (255, 255, 255), font = ImageFont.truetype(syst_bold, size = 14), anchor = "lt")
         init = init + 49
 
     # 装备品级 + 属性
     init = 71
     for i in equip_quailty:
         if i != "":
-            draw.text((752, init), i, fill =(255, 255, 255), font=ImageFont.truetype(syst_bold, size=14), anchor="lt")
+            draw.text((752, init), i, fill = (255, 255, 255), font = ImageFont.truetype(syst_bold, size = 14), anchor = "lt")
         init = init + 49
 
     # 个人基本信息
-    draw.text((85, 127), str(basic[0]), fill =(0, 0, 0), font=ImageFont.truetype(calibri, size=18), anchor="mt")
-    draw.text((370, 70), basic[1], fill =(255, 255, 255), font=ImageFont.truetype(msyh, size=32), anchor="mm")
-    draw.text((370, 120), basic[2], fill =(255, 255, 255), font=ImageFont.truetype(msyh, size=20), anchor="mm")
-    draw.text((450, 120), basic[3], fill =(127, 127, 127), font=ImageFont.truetype(calibri, size=18), anchor="mm")
+    draw.text((85, 127), str(basic[0]), fill = (0, 0, 0), font = ImageFont.truetype(calibri, size = 18), anchor = "mt")
+    draw.text((370, 70), basic[1], fill = (255, 255, 255), font = ImageFont.truetype(msyh, size = 32), anchor = "mm")
+    draw.text((370, 120), basic[2], fill = (255, 255, 255), font = ImageFont.truetype(msyh, size = 20), anchor = "mm")
+    draw.text((450, 120), basic[3], fill = (127, 127, 127), font = ImageFont.truetype(calibri, size = 18), anchor = "mm")
 
     # 面板内容
     positions = [(127, 226),(258, 226),(385, 226),(514, 226),(127, 303),(258, 303),(385, 303),(514, 303),(127, 380),(258, 380),(385, 380),(514, 380)]
     range_time = 12
     for i in range(range_time):
-        draw.text(positions[i], objects[i], fill =(255, 255, 255), font=ImageFont.truetype(syst_bold, size=20), anchor="mm")
+        draw.text(positions[i], objects[i], fill = (255, 255, 255), font = ImageFont.truetype(syst_bold, size = 20), anchor = "mm")
 
     # 面板数值
-    draw.text((129, 201), attrs[0], fill =(255, 255, 255), font=ImageFont.truetype(syst_mid, size=20), anchor="mm")
-    draw.text((258, 201), attrs[1], fill =(255, 255, 255), font=ImageFont.truetype(syst_mid, size=20), anchor="mm")
-    draw.text((385, 201), attrs[2], fill =(255, 255, 255), font=ImageFont.truetype(syst_mid, size=20), anchor="mm")
-    draw.text((514, 201), attrs[3], fill =(255, 255, 255), font=ImageFont.truetype(syst_mid, size=20), anchor="mm")
-    draw.text((129, 278), attrs[4], fill =(255, 255, 255), font=ImageFont.truetype(syst_mid, size=20), anchor="mm")
-    draw.text((258, 278), attrs[5], fill =(255, 255, 255), font=ImageFont.truetype(syst_mid, size=20), anchor="mm")
-    draw.text((385, 278), attrs[6], fill =(255, 255, 255), font=ImageFont.truetype(syst_mid, size=20), anchor="mm")
-    draw.text((514, 278), attrs[7], fill =(255, 255, 255), font=ImageFont.truetype(syst_mid, size=20), anchor="mm")
-    draw.text((129, 355), attrs[8], fill =(255, 255, 255), font=ImageFont.truetype(syst_mid, size=20), anchor="mm")
-    draw.text((258, 355), attrs[9], fill =(255, 255, 255), font=ImageFont.truetype(syst_mid, size=20), anchor="mm")
-    draw.text((385, 355), attrs[10], fill =(255, 255, 255), font=ImageFont.truetype(syst_mid, size=20), anchor="mm")
-    draw.text((514, 355), attrs[11], fill =(255, 255, 255), font=ImageFont.truetype(syst_mid, size=20), anchor="mm")
+    draw.text((129, 201), attrs[0], fill = (255, 255, 255), font = ImageFont.truetype(syst_mid, size = 20), anchor = "mm")
+    draw.text((258, 201), attrs[1], fill = (255, 255, 255), font = ImageFont.truetype(syst_mid, size = 20), anchor = "mm")
+    draw.text((385, 201), attrs[2], fill = (255, 255, 255), font = ImageFont.truetype(syst_mid, size = 20), anchor = "mm")
+    draw.text((514, 201), attrs[3], fill = (255, 255, 255), font = ImageFont.truetype(syst_mid, size = 20), anchor = "mm")
+    draw.text((129, 278), attrs[4], fill = (255, 255, 255), font = ImageFont.truetype(syst_mid, size = 20), anchor = "mm")
+    draw.text((258, 278), attrs[5], fill = (255, 255, 255), font = ImageFont.truetype(syst_mid, size = 20), anchor = "mm")
+    draw.text((385, 278), attrs[6], fill = (255, 255, 255), font = ImageFont.truetype(syst_mid, size = 20), anchor = "mm")
+    draw.text((514, 278), attrs[7], fill = (255, 255, 255), font = ImageFont.truetype(syst_mid, size = 20), anchor = "mm")
+    draw.text((129, 355), attrs[8], fill = (255, 255, 255), font = ImageFont.truetype(syst_mid, size = 20), anchor = "mm")
+    draw.text((258, 355), attrs[9], fill = (255, 255, 255), font = ImageFont.truetype(syst_mid, size = 20), anchor = "mm")
+    draw.text((385, 355), attrs[10], fill = (255, 255, 255), font = ImageFont.truetype(syst_mid, size = 20), anchor = "mm")
+    draw.text((514, 355), attrs[11], fill = (255, 255, 255), font = ImageFont.truetype(syst_mid, size = 20), anchor = "mm")
 
     # 奇穴
-    draw.text((320, 435), "奇穴", fill =(255, 255, 255), font=ImageFont.truetype(syst_mid, size=20), anchor="mm")
+    draw.text((320, 435), "奇穴", fill = (255, 255, 255), font = ImageFont.truetype(syst_mid, size = 20), anchor = "mm")
     init = 179
     limit = 0
     y = 479
     done_time = 0
     for i in qx_icon:
-        qximg = Image.open(await local_save(i)).resize((39,39))
+        qximg = Image.open(await local_save(i)).resize((39, 39))
         background.alpha_composite(qximg, (init, y))
         init = init + 48
         limit = limit + 1
@@ -789,7 +763,7 @@ async def get_attr(kungfu: str, maxjl_list: list, jl_list: list, equip_list: lis
     limit = 0
     done_time = 0
     for i in qx:
-        draw.text((init, y), i, file = (255, 255,255), font=ImageFont.truetype(msyh, size=12), anchor="mm")
+        draw.text((init, y), i, file = (255, 255,255), font = ImageFont.truetype(msyh, size = 12), anchor = "mm")
         init = init + 48
         limit = limit + 1
         if limit == 6:
@@ -804,11 +778,10 @@ async def get_attr(kungfu: str, maxjl_list: list, jl_list: list, equip_list: lis
     init = 50
     equips = ["帽子","上衣","腰带","护手","下装","鞋子","项链","腰坠","戒指","戒指","远程武器","近身武器"]
     for i in equips:
-        draw.text((940, init), i, file = (255, 255, 255), font=ImageFont.truetype(msyh, size=12), anchor="lt")
+        draw.text((940, init), i, file = (255, 255, 255), font = ImageFont.truetype(msyh, size = 12), anchor = "lt")
         init = init + 49
 
     # 五行石
-    
     positions = [(940, 65),(960, 65),(940, 114),(960, 114),(940, 163),(960, 163),(940, 212),(960, 212),(940, 261),(960, 261),(940, 310),(960, 310),(940, 359),(940, 408),(940, 555),(940, 604),(960, 604),(980, 604)]
     range_time = 18
     if kungfu in ["问水诀","山居剑意"]:
@@ -817,7 +790,7 @@ async def get_attr(kungfu: str, maxjl_list: list, jl_list: list, equip_list: lis
         positions.append((960, 653))
         positions.append((980, 653))
     for i in range(range_time):
-        background.alpha_composite(Image.open(get_fs(fs[i])).resize((20,20)), positions[i])
+        background.alpha_composite(Image.open(get_fs(fs[i])).resize((20, 20)), positions[i])
 
     # 小附魔
     init = 45
@@ -827,7 +800,7 @@ async def get_attr(kungfu: str, maxjl_list: list, jl_list: list, equip_list: lis
             continue
         else:
             background.alpha_composite(little_enchant, (1044, init))
-            draw.text((1068, init + 4), i, file = (255, 255, 255), font=ImageFont.truetype(msyh, size=12), anchor="lt")
+            draw.text((1068, init + 4), i, file = (255, 255, 255), font = ImageFont.truetype(msyh, size = 12), anchor = "lt")
             init = init + 49
 
     # 大附魔
@@ -837,17 +810,17 @@ async def get_attr(kungfu: str, maxjl_list: list, jl_list: list, equip_list: lis
             continue
         else:
             background.alpha_composite(heavy_enchant, (1044, y[i]))
-            draw.text((1068, y[i] + 4), henchant[i], file = (255, 255,255), font=ImageFont.truetype(msyh, size=12), anchor="lt")
+            draw.text((1068, y[i] + 4), henchant[i], file = (255, 255,255), font = ImageFont.truetype(msyh, size = 12), anchor = "lt")
 
     # 五彩石
     if wcs_icon != "":
-        background.alpha_composite(Image.open(await local_save(wcs_icon)).resize((20,20)), (1044, 604))
+        background.alpha_composite(Image.open(await local_save(wcs_icon)).resize((20, 20)), (1044, 604))
     if wcs != "":
-        draw.text((1068, 608), wcs, file=(255,255,255), font=ImageFont.truetype(msyh, size=12), anchor="lt")
+        draw.text((1068, 608), wcs, file= (255,255,255), font = ImageFont.truetype(msyh, size = 12), anchor = "lt")
     if wcs_icon1 != "":
-        background.alpha_composite(Image.open(await local_save(wcs_icon1)).resize((20,20)), (1044, 654))
+        background.alpha_composite(Image.open(await local_save(wcs_icon1)).resize((20, 20)), (1044, 654))
     if wcs1 != "":
-        draw.text((1068, 657), wcs1, file=(255,255,255), font=ImageFont.truetype(msyh, size=12), anchor="lt")
+        draw.text((1068, 657), wcs1, file= (255,255,255), font = ImageFont.truetype(msyh, size = 12), anchor = "lt")
 
     final_path = CACHE + "/" + get_uuid() + ".png"
     background.save(final_path)

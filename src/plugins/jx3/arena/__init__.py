@@ -1,7 +1,6 @@
 from .api import *
 
-arena = on_command("jx3_arena", aliases={"名剑"}, priority=5)
-
+arena = on_command("jx3_arena", aliases = {"名剑"}, priority = 5)
 
 @arena.handle()
 async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
@@ -17,7 +16,7 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
         else:
             server = arg[1]
             name = arg[2]
-        data = await arena_(object="战绩", server=server, name=name, group_id=event.group_id)
+        data = await arena_(object = "战绩", server = server, name = name, group_id = event.group_id)
         if type(data) == type([]):
             await arena.finish(data[0])
         else:
@@ -25,7 +24,7 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
     elif arg[0] == "排行":
         if len(arg) != 2:
             await arena.finish(PROMPT_ArgumentCountInvalid)
-        data = await arena_(object="排行", mode=arg[1], group_id=event.group_id)
+        data = await arena_(object = "排行", mode = arg[1], group_id = event.group_id)
         if type(data) == type([]):
             await arena.finish(data[0])
         else:
@@ -33,7 +32,7 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
     elif arg[0] == "统计":
         if len(arg) != 2:
             await arena.finish(PROMPT_ArgumentCountInvalid)
-        data = await arena_(object="统计", mode=arg[1], group_id=event.group_id)
+        data = await arena_(object = "统计", mode = arg[1], group_id = event.group_id)
         if type(data) == type([]):
             await arena.finish(data[0])
         else:

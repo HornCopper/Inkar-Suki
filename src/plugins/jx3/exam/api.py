@@ -11,6 +11,6 @@ async def exam_(question):
         msg = ""
     msg = "找到下列相似的题目：\n"
     for i in info["data"]:
-        msg = msg + qa(i["question"],i["answer"]) + "\n"
+        msg = msg + qa(i["question"], i["answer"]) + "\n"
     return msg
     

@@ -18,15 +18,15 @@ PLUGINS = TOOLS[:-5] + "plugins"
 from src.tools.file import read, write
 from src.tools.config import Config
 from src.tools.generate import generate, get_uuid
-'''
+"""
 帮助文件生成函数。
 
 包含文字 + 图片信息。
 
 文字来源于内置，图片由每个`plugin`文件夹下的`info.json`中的内容整合，再以`selenium`进行渲染所得。
-'''
+"""
 
-help = on_command("help", aliases={"帮助","功能"}, priority=5)
+help = on_command("help", aliases = {"帮助","功能"}, priority = 5)
 css = """
 <style>
             ::-webkit-scrollbar 
@@ -122,7 +122,7 @@ async def help_(args: Message = CommandArg()):
         table.append(["插件名称","插件版本","插件介绍","插件作者","权限等级","别名"])
         for i in all_module:
             table.append([name[i],version[i],desc[i],author[i],admin[i],aliases[i]])
-        msg = str(tabulate(table,headers="firstrow",tablefmt="html"))
+        msg = str(tabulate(table,headers = "firstrow",tablefmt = "html"))
         table.clear()
         html = "<div style=\"font-family:Custom\">" + msg.replace("$", "<br>") + "</div>"+css
         final_path = CACHE + "/" + get_uuid() + ".html"
