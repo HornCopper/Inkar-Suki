@@ -32,15 +32,7 @@ jobs:
           playwright install
       - name: Init Config.py
         run: |
-          python ./init_config.py \
-            ${{ secrets.proxy }} \
-            ${{ secrets.jx3_token }} \
-            ${{ secrets.jx3api_link }} \
-            ${{ secrets.jx3api_globaltoken }} \
-            ${{ secrets.jx3api_wslink }} \
-            ${{ secrets.jx3api_wstoken }} \
-            ${{ secrets.sfapi_wslink }} \
-            ${{ secrets.sfapi_wstoken }} \
+          python ./init_config.py ${{ secrets.proxy }} ${{ secrets.jx3_token }} ${{ secrets.jx3api_link }} ${{ secrets.jx3api_globaltoken }} ${{ secrets.jx3api_wslink }} ${{ secrets.jx3api_wstoken }} ${{ secrets.sfapi_wslink }} ${{ secrets.sfapi_wstoken }}
             
       - name: Test with pytest
         run: |
