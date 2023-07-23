@@ -10,7 +10,8 @@ def convert_keywords(raw: str) -> str:
                     'Thursday', 'Friday', 'Saturday', 'Sunday']
     seri_len = len(week_seriers)
     for index, x in enumerate(i18n_seriers):
-        target = index + 1  # 似乎i18n将0认为是周日了
+        # target = index + 1  # 似乎i18n将0认为是周日了
+        target = index # 全文需要注意已通过cron表达式dayofweek为mon,tue等字符串
         raw = raw.replace(x, week_seriers[target % seri_len])
     return raw
 
