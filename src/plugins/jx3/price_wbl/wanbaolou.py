@@ -12,13 +12,13 @@ async def get_wanbaolou(product_number: int, product_type: bool):
     
     def price_to_text(price: int):
         return f"￥{price / 100}"
-    '''
+    """
     万宝楼外观/角色查询，使用18位商品编号。
 
     :product_type:
 
     `True`为外观；`False`为角色。
-    '''
+    """
     if product_type:
         _good_type = 3
     else:

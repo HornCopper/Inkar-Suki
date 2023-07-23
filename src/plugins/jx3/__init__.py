@@ -1,9 +1,10 @@
+from nonebot import get_driver
+
 try:
     from .special_application import * # 公共实例独有功能，闭源
 except:
     pass
 from .jx3 import *
-from nonebot import get_driver
 
 driver = get_driver()
 

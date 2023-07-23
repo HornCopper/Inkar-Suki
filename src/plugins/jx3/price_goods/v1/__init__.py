@@ -5,12 +5,12 @@ jx3_cmd_trade = on_command("jx3_trade", aliases={"交易行v1"}, priority=5)
 
 @jx3_cmd_trade.handle()
 async def jx3_trade(state: T_State, event: GroupMessageEvent, args: Message = CommandArg()):
-    '''
+    """
     获取交易行物品价格：
     交易行v1 [区服] 名称 [页码]
     Example：交易行v1 幽月轮 帝骖龙翔 1
     Example：交易行v1 帝骖龙翔 2
-    '''
+    """
     template = [Jx3Arg(Jx3ArgsType.server), Jx3Arg(
         Jx3ArgsType.default), Jx3Arg(Jx3ArgsType.pageIndex)]
     arg = get_args(args, template)
@@ -36,7 +36,7 @@ async def price_num_selected(state: T_State, event: GroupMessageEvent, num: Mess
     num = get_args(num, [Jx3Arg(Jx3ArgsType.number)])
     all_ids = state["id"]
     if num[0] >= len(all_ids):
-        return await jx3_cmd_trade.finish(f'无效的序号，有效范围:0-{len(all_ids) - 1}')
+        return await jx3_cmd_trade.finish(f"无效的序号，有效范围:0-{len(all_ids) - 1}")
 
     target_id = all_ids[num[0]]
     server = server_mapping(state["server"], group_id=event.group_id)

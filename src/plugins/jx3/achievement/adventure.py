@@ -10,7 +10,6 @@ sys.path.append(TOOLS)
 ASSETS = TOOLS[:-5] + "assets"
 
 from src.tools.utils import get_api, get_content
-from src.tools.config import Config
 
 async def getAdventure(adventure: str):
     info = await get_api(f"https://helper.jx3box.com/api/achievement/search?keyword={adventure}&page=1&limit=15&client=std") # 数据来源@JX3BOX

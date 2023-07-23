@@ -1,5 +1,3 @@
-from sgtpyutils.logger import logger
-logger.info(f'start load botjx3 plugins.')
 from src.tools.dep import *
 
 from .achievement import *
@@ -9,7 +7,6 @@ from .buff import *
 from .daily import *
 from .dungeon import *
 from .exam import *
-from .fireworks import *
 from .flower import *
 from .horse import *
 from .jxjoy import *

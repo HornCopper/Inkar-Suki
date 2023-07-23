@@ -13,4 +13,3 @@ async def pendant(name: str):
         source = data["source"]
         msg = f"{pendant_name} - {pendant_type}\n{desc}\n获取线索：{source}"
         return msg
-

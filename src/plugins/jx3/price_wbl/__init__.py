@@ -1,6 +1,6 @@
 from .api import *
 
-wbl = on_command("jx3_wbl", aliases={"万宝楼"}, priority=5)
+wbl = on_command("jx3_wbl", aliases = {"万宝楼"}, priority = 5)
 @wbl.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     arg = args.extract_plain_text().split(" ")
