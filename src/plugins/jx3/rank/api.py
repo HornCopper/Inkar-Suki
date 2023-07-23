@@ -35,7 +35,7 @@ async def rank_(type_1: str, type_2: str, server: str, group_id: str):
             return ["唔……门派不正确哦，请检查后重试~"]
     else:
         return ["未知类型，只能是个人/帮会/战功/试炼哦！"]
-    data = await get_api(final_url, proxy=proxies)
+    data = await get_api(final_url)
     if data["code"] == 400:
         return [PROMPT_ArgumentInvalid]
     if data["code"] == 404:

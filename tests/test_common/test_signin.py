@@ -1,5 +1,4 @@
 from .. import *
-import asyncio
 from src.tools.file import write
 def test_cron_signin():
     import src.plugins.sign

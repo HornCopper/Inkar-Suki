@@ -1,8 +1,1 @@
-{
-    "author": "HornCopper",
-    "version": "1.0-Snapshot",
-    "name": "签到(sign)",
-    "admin": "N/A",
-    "aliases": "+签到 -> +打卡$+金币 -> +余额",
-    "desc": "签到：+签到$获取金币余额：+金币"
-}
+{"author":"HornCopper","version":"1.0-Snapshot","name":"签到(sign)","admin":"N/A","aliases":"+签到 -> +打卡$+金币 -> +余额","desc":"签到：+签到$获取金币余额：+金币"}

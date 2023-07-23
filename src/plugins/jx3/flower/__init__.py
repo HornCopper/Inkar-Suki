@@ -23,16 +23,17 @@ async def jx3_flower(state: T_State, event: GroupMessageEvent, args: Message = C
     arg_server = server_mapping(arg_server, group_id=str(event.group_id))
     data = await get_flower(arg_server, arg_map, arg_species)
     code = sgtpyutils.hash.get_hash(json.dumps(data))  # 检查是否有变化
-    prev_code = CACHE_flower.get(arg_server) or [None, None]
+    cache_key = f'{arg_server}-{arg_map}-{arg_species}'
+    prev_code = CACHE_flower.get(cache_key) or [None, None]
     if isinstance(data, str):
         return await jx3_cmd_flower.finish(data)
     if len(prev_code) == 2 and prev_code[0] == code and os.path.exists(prev_code[1]):
         img = prev_code[1]
     else:
-        img = await x_renderer(arg_server, data)
+        img = await x_renderer(arg_server, arg_map, arg_species, data)
         import shutil
         persisted_path = f"{ASSETS}{os.sep}jx3{os.sep}pvx{os.sep}flower{os.sep}{os.path.basename(img)}"
         shutil.copy2(img, persisted_path)
-        CACHE_flower[arg_server] = [code, persisted_path]
+        CACHE_flower[cache_key] = [code, persisted_path]
         flush_CACHE_flower()
     return await jx3_cmd_flower.send(ms.image(Path(img).as_uri()))

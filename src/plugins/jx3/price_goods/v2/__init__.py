@@ -66,7 +66,7 @@ async def jx3_trade_favoritest(matcher: Matcher, state: T_State, event: GroupMes
     if not isinstance(arg, List):
         return jx3_cmd_favouritest.finish(arg)
     arg_server, _, arg_page = arg
-    items = get_favoritest_by_predict(lambda index, x: x.u_popularity > 10)
+    items = get_favoritest_by_predict(lambda index, x: x.u_popularity > 100)
     pageSize = 20
     data, totalCount = await get_prices_by_items(items, arg_server, pageIndex=arg_page, pageSize=pageSize)
     if not isinstance(data, List):
