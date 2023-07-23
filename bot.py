@@ -6,6 +6,7 @@ import os
 from nonebot.adapters.onebot.v11 import Adapter as ONEBOT_V11Adapter
 from src.tools.dep import *
 
+
 def check_folder(path: str, can_retry: bool = True):
     if os.path.isdir(path):
         return True

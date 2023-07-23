@@ -1,6 +1,7 @@
 from .api import *
 
-jx3_cmd_top100_ = on_command("jx3_top100", aliases = {"百强"}, priority = 5)
+jx3_cmd_top100_ = on_command("jx3_top100", aliases={"百强"}, priority=5)
+
 
 @jx3_cmd_top100_.handle()
 async def jx3_top100(event: GroupMessageEvent, args: Message = CommandArg()):
@@ -34,7 +35,8 @@ async def jx3_top100(event: GroupMessageEvent, args: Message = CommandArg()):
     data = await get_top100(server, boss, team)
     return await jx3_cmd_top100_.finish(data)
 
-jx3_cmd_rank = on_command("jx3_rank", aliases = {"榜单"}, priority = 5)
+jx3_cmd_rank = on_command("jx3_rank", aliases={"榜单"}, priority=5)
+
 
 @jx3_cmd_rank.handle()
 async def jx3_rank(event: GroupMessageEvent, args: Message = CommandArg()):
@@ -57,13 +59,14 @@ async def jx3_rank(event: GroupMessageEvent, args: Message = CommandArg()):
         type1 = arg[0]
         server = arg[1]
         type2 = arg[2]
-    data = await rank_(type_1 = type1, server = server, type_2 = type2, group_id = event.group_id)
+    data = await rank_(type_1=type1, server=server, type_2=type2, group_id=event.group_id)
     if type(data) == type([]):
         return await jx3_cmd_rank.finish(data[0])
     else:
         return await jx3_cmd_rank.finish(ms.image(data))
 
-jx3_cmd_zlrank = on_command("jx3_zlrank", aliases = {"资历排行"}, priority = 5)
+jx3_cmd_zlrank = on_command("jx3_zlrank", aliases={"资历排行"}, priority=5)
+
 
 @jx3_cmd_zlrank.handle()
 async def jx3_zlrank(event: GroupMessageEvent, args: Message = CommandArg()):

@@ -6,6 +6,7 @@ from .api import *
 
 jx3_cmd_jx3_rare_gain = on_command("jx3_rare_gain", aliases={"cd"}, priority=5)
 
+
 @jx3_cmd_jx3_rare_gain.handle()
 async def jx3_rare_gain(event: GroupMessageEvent, args: Message = CommandArg()):
     """
@@ -46,7 +47,7 @@ async def jx3_xuanjing(event: GroupMessageEvent, args: Message = CommandArg()):
             table.append(["时间", "地图", "角色", "名称"])
             for x in i["records"]:
                 table.append([x["time"], x["map"], x["role"], x["name"]])
-            msg = str(tabulate(table, headers = "firstrow", tablefmt = "html"))
+            msg = str(tabulate(table, headers="firstrow", tablefmt="html"))
             table.clear()
             html = "<div style=\"font-family:Custom\">" + \
                 msg.replace("$", "<br>") + "</div>" + css

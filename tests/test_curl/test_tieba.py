@@ -12,9 +12,10 @@ def test_fetch_threads():
     assert len(threads2) > threads_count, 'thread count of 2 page should more than 1 page\'s'
     client.stop()
 
+
 def longrun_fetcher_test():
     from src.tools.tieba import client
     client.start()
     import time
-    time.sleep(60) # 等待多轮运行
+    time.sleep(60)  # 等待多轮运行
     client.stop()

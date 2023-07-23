@@ -1,6 +1,6 @@
 from .api import *
 
-adventure_ = on_command("jx3_adventure", aliases = {"成就"}, priority = 5)
+adventure_ = on_command("jx3_adventure", aliases={"成就"}, priority=5)
 
 
 @adventure_.handle()
@@ -38,7 +38,8 @@ async def _(state: T_State, args: Message = CommandArg()):
         await adventure_.send(msg)
         return
 
-@adventure_.got("num", prompt = "发送序号以搜索，发送其他内容则取消搜索。")
+
+@adventure_.got("num", prompt="发送序号以搜索，发送其他内容则取消搜索。")
 async def _(state: T_State, num: Message = Arg()):
     num = num.extract_plain_text()
     if checknumber(num):
@@ -56,7 +57,8 @@ async def _(state: T_State, num: Message = Arg()):
     else:
         await adventure_.finish("唔……输入的不是数字哦，取消搜索。")
 
-achievements = on_command("jx3_machi", aliases = {"进度"}, priority = 5)
+achievements = on_command("jx3_machi", aliases={"进度"}, priority=5)
+
 
 @achievements.handle()
 async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):

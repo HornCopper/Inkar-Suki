@@ -49,6 +49,7 @@ async def global_statistical(name: str = None):  # 全服统计 [奇遇]
     data = await get_api(final_url)
     return data["data"]["url"]
 
+
 async def get_preposition_page_url(name: str = None):
     api = "http://jx3yymj.com/index.php?mid=qy"
     data = await get_url(api)
@@ -60,19 +61,21 @@ async def get_preposition_page_url(name: str = None):
         if singlen.find(name) != -1:
             return singleu
     return False
-        
+
+
 async def get_preposition(name: str = None):
     url = await get_preposition_page_url(name)
     if url == False:
         return False
     data = await get_url(url)
     bs = BeautifulSoup(data, "html.parser")
-    table = bs.find(class_ = "et_vars bd_tb")
+    table = bs.find(class_="et_vars bd_tb")
     table = css + str(table).replace("<caption class=\"blind\">Extra Form</caption>", "")
     path = CACHE + "/" + get_uuid() + ".html"
     html = write(path, table)
     img = await generate(path, False, "table", False)
     return Path(img).as_uri()
+
 
 async def get_image(name: str = None):
     url = await get_preposition_page_url(name)

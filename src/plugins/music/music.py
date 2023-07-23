@@ -1,5 +1,6 @@
 from src.tools.utils import get_api
 
+
 async def search(platform_: str, song: str):
     '''
     搜索型函数。

@@ -2,6 +2,7 @@ from .api import *
 
 jx3_cmd_serendipity = on_command("jx3_serendipity", aliases={"奇遇"}, priority=5)
 
+
 @jx3_cmd_serendipity.handle()
 async def jx3_serendipity(event: GroupMessageEvent, args: Message = CommandArg()):
     '''
@@ -24,7 +25,8 @@ async def jx3_serendipity(event: GroupMessageEvent, args: Message = CommandArg()
     else:
         return await jx3_cmd_serendipity.finish(ms.image(data))
 
-jx3_cmd_statistical = on_command("jx3_lstatistical", aliases = {"近期奇遇"}, priority = 5)
+jx3_cmd_statistical = on_command("jx3_lstatistical", aliases={"近期奇遇"}, priority=5)
+
 
 @jx3_cmd_statistical.handle()
 async def jx3_lstatistical(event: GroupMessageEvent, args: Message = CommandArg()):
@@ -48,7 +50,7 @@ async def jx3_lstatistical(event: GroupMessageEvent, args: Message = CommandArg(
     else:
         return await jx3_cmd_statistical.finish(ms.image(data))
 
-jx3_cmd_gserendipity = on_command("jx3_gserendipity", aliases = {"全服奇遇"}, priority = 5)
+jx3_cmd_gserendipity = on_command("jx3_gserendipity", aliases={"全服奇遇"}, priority=5)
 
 
 @jx3_cmd_gserendipity.handle()
@@ -67,7 +69,8 @@ async def jx3_gserendipity(event: GroupMessageEvent, args: Message = CommandArg(
     else:
         return await jx3_cmd_gserendipity.finish(ms.image(data))
 
-jx3_cmd_gstatistical = on_command("jx3_gstatistical", aliases = {"全服统计"}, priority = 5)
+jx3_cmd_gstatistical = on_command("jx3_gstatistical", aliases={"全服统计"}, priority=5)
+
 
 @jx3_cmd_gstatistical.handle()
 async def jx3_gstatistical(event: GroupMessageEvent, args: Message = CommandArg()):
@@ -85,7 +88,8 @@ async def jx3_gstatistical(event: GroupMessageEvent, args: Message = CommandArg(
     else:
         return await jx3_cmd_gstatistical.finish(ms.image(data))
 
-preposition = on_command("jx3_preposition", aliases = {"前置"}, priority = 5)
+preposition = on_command("jx3_preposition", aliases={"前置"}, priority=5)
+
 
 @preposition.handle()
 async def jx3_preposition(event: GroupMessageEvent, args: Message = CommandArg()):
@@ -102,8 +106,9 @@ async def jx3_preposition(event: GroupMessageEvent, args: Message = CommandArg()
         await preposition.finish("唔……没有找到相关信息~")
     else:
         await preposition.finish(ms.image(data))
-    
-recipe = on_command("jx3_recipe", aliases = {"攻略"}, priority = 5)
+
+recipe = on_command("jx3_recipe", aliases={"攻略"}, priority=5)
+
 
 @recipe.handle()
 async def jx3_serendipity_recipe(event: GroupMessageEvent, args: Message = CommandArg()):
@@ -131,4 +136,3 @@ async def jx3_serendipity_recipe(event: GroupMessageEvent, args: Message = Comma
         image.write(image_content)
         image.close()
         await preposition.finish(ms.image(Path(filepath).as_uri()))
-
