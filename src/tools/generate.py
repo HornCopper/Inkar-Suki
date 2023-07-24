@@ -16,9 +16,10 @@ def get_uuid():
 
 class PlaywrightThread(threading.Thread):
     def __init__(self) -> None:
-        self.tasks = []
+        self.tasks: list[tuple[str, str, bool, int, asyncio.Future]] = []
         self.IsRunning = True
         self._player = None
+        self.locker = threading.Lock()
         super().__init__(daemon=True)
 
     def init(self):
@@ -34,11 +35,14 @@ class PlaywrightThread(threading.Thread):
         if self._player is None:
             self._player = self.init()
         while self.IsRunning:
+            self.locker.acquire()
             if len(self.tasks) == 0:
                 time.sleep(0.1)
+                self.locker.release()
                 continue
             task = self.tasks.pop()
-            url, locate, first, delay, callback = task
+            self.locker.release()
+            url, locate, first, delay, future = task
             player = self._player
             try:
                 player.goto(url)
@@ -53,42 +57,36 @@ class PlaywrightThread(threading.Thread):
                         player.locator(locate).screenshot(path=img)
                 else:
                     player.screenshot(path=img)
-                callback(img)
+
+                def callback(img: str):
+                    future.set_result(img)
+                future.get_loop().call_soon_threadsafe(callback, img)
             except Exception as ex:
-                logger.info(f"音卡的图片生成失败啦！请尝试执行`playwright install`！:{ex}")
-                callback(None)
+                reason = f"音卡的图片[{url}]生成失败啦！请尝试执行`playwright install`！:{ex}"
+                logger.warning(reason)
+                future.set_exception(ex)
         return super().run()
 
-    def generate_by_url(self, callback: callable, url: str, locate: str = None, first: bool = False, delay: int = 0):
-        self.tasks.append([url, locate, first, delay, callback])
+    async def generate_by_url(self, url: str, locate: str = None, first: bool = False, delay: int = 0) -> str:
+        future = asyncio.Future()
+        self.locker.acquire()
+        self.tasks.append([url, locate, first, delay, future])
+        self.locker.release()
+        result = await future
+        return result
 
 
 __client = PlaywrightThread()
 __client.start()
-__is_finished = False
-__result = None
 
 
 def stop_playwright():
     __client.IsRunning = False
 
 
-def generate_by_url(url: str, locate: str = None, first: bool = False, delay: int = 0):
-    global __is_finished
-    global __result
-
-    def callback(img: str):
-        global __is_finished
-        global __result
-        __result = img
-        __is_finished = True
-    __client.generate_by_url(callback, url, locate, first, delay)
-    while True:
-        time.sleep(0.1)  # TODO implement for `ts-PROMISE``
-        if not __is_finished:
-            continue
-        __is_finished = False
-        return __result
+async def generate_by_url(url: str, locate: str = None, first: bool = False, delay: int = 0):
+    result = await __client.generate_by_url(url, locate, first, delay)
+    return result
 
 
 async def generate(html: str, web: bool = False, locate: str = None, first: bool = False, delay: int = 0):
@@ -104,7 +102,7 @@ async def generate(html: str, web: bool = False, locate: str = None, first: bool
     if web:
         pass
     html = Path(html).as_uri()
-    result = generate_by_url(html, locate, first, delay)
+    result = await generate_by_url(html, locate, first, delay)
     if result is None:
         return False
     return result
