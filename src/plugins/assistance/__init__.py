@@ -1,19 +1,5 @@
+from src.tools.dep import *
 from .assistance import Assistance
-from src.tools.file import read
-from src.constant.jx3.image import skill_icons
-from src.tools.generate import generate
-import nonebot
-
-from nonebot.adapters.onebot.v11 import MessageSegment as ms
-from nonebot import on_command
-from nonebot.adapters import Message
-from nonebot.adapters.onebot.v11 import GroupMessageEvent
-from nonebot.params import CommandArg
-from pathlib import Path
-
-TOOLS = nonebot.get_driver().config.tools_path
-DATA = TOOLS[:-5] + "data"
-
 
 aic = Assistance
 
