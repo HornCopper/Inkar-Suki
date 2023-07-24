@@ -1,14 +1,16 @@
 from .api import *
 
-buff_ = on_command("jx3_buff", aliases={"debuff","buff"}, priority=5)
+buff_ = on_command("jx3_buff", aliases={"debuff", "buff"}, priority=5)
+
+
 @buff_.handle()
 async def _(event: GroupMessageEvent, state: T_State, args: Message = CommandArg()):
-    '''
+    """
     获取Buff信息：
 
     Example：-buff 躺在冰冷的地上
     Example：-debuff 耐力受损
-    '''
+    """
     buff = args.extract_plain_text()
     data = await get_buff(buff)
     if type(data) != type("sb"):
@@ -24,6 +26,7 @@ async def _(event: GroupMessageEvent, state: T_State, args: Message = CommandArg
         return
     else:
         await buff_.finish(data)
+
 
 @buff_.got("num", prompt="输入数字搜索状态效果，输入其他内容则无视。")
 async def _(event: GroupMessageEvent, state: T_State, num: Message = Arg()):

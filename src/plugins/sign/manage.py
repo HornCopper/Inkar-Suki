@@ -1,17 +1,13 @@
+from src.tools.file import read, write
 import random
 import json
 import sys
 import nonebot
 import os
-from nonebot.adapters.onebot.v11 import MessageSegment as ms
 import datetime
-from sgtpyutils.extensions import find
-
-from src.tools.file import read, write
 
 from nonebot.adapters.onebot.v11 import MessageSegment as ms
-
-from src.tools.file import read, write
+from nonebot.adapters.onebot.v11 import MessageSegment as ms
 
 TOOLS = nonebot.get_driver().config.tools_path
 sys.path.append(str(TOOLS))
@@ -103,12 +99,10 @@ class Sign:
             for x in accounts:
                 del accounts[x]['id']
 
-
         user = accounts.get(qq)
         if not user:
             user = {'coin': 0, 'continuity': 0, 'last': None}
             accounts[qq] = user
-
 
         Sign.accounts = accounts
         if need_convert:

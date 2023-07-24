@@ -1,11 +1,13 @@
 import re
 from nonebot.log import logger
 from nonebot.adapters.onebot.v11 import MessageSegment as ms
-'''
+"""
 解析类，没什么好看的。
 
 建议自行查阅文档或者发起一些用于测试的`Webhook`以便于观察数据结构，欢迎`Pull Request`，此处仅解析部分常见`Event`。
-'''
+"""
+
+
 class main:
     def push(body):
         pusher = body["pusher"]["name"]
@@ -13,7 +15,7 @@ class main:
         if body["ref"].find("tags") != -1:
             tag = body["ref"]
             tag = tag[tag.find("refs/tags/")+10:]
-            msg =  f"{pusher} pushed to {repo_name}(Tag {tag})."
+            msg = f"{pusher} pushed to {repo_name}(Tag {tag})."
             return msg
         branch = body["ref"]
         branch = branch[branch.find("refs/heads/")+11:]
@@ -21,6 +23,7 @@ class main:
         ver = body["commits"][0]["id"][0:7]
         msg = f"{pusher} pushed to {repo_name}:{branch}.\n[{ver}]{commit}"
         return msg
+
     def pull_request(body):
         action = body["action"]
         if action == "opened":
@@ -46,6 +49,7 @@ class main:
             else:
                 msg = f"{sender} closed the pull request on {repo}#{num}.\nFrom {source} to {goal}.\nTitle:{title}\nDescription:{comment}"
         return msg
+
     def issues(body):
         action = body["action"]
         if action == "opened" or action == "closed" or action == "reopened":
@@ -84,6 +88,7 @@ class main:
             user = body["issue"]["user"]["login"]
             msg = f"{sender} {action} the comment by {user} on {repo_name}#{issue_num}.\nTitle:{issue_title}\nSource Commment:{from_}\nChanged Comment:{to_}"
             return msg
+
     def issue_comment(body):
         action = body["action"]
         if action == "created":
@@ -96,14 +101,15 @@ class main:
             msg = body["comment"]["body"]
             msg_regex = re.compile(r"!\[.*\]\((.*)\)")
             images = msg_regex.findall(msg)
-            msg = re.sub(r"!\[.*\]\((.*)\)","[图片]",msg)
+            msg = re.sub(r"!\[.*\]\((.*)\)", "[图片]", msg)
             for i in images:
-                msg = msg + ms.image(i)          
+                msg = msg + ms.image(i)
             repo_name = body["repository"]["full_name"]
             issue_num = str(body["issue"]["number"])
             issue_title = body["issue"]["title"]
             msg = f"{sender} commented on {itype} on {repo_name}#{issue_num}.\nTitle:{issue_title}\nDescription:{msg}"
             return msg
+
     def commit_comment(body):
         action = body["action"]
         if action == "created":
@@ -111,13 +117,14 @@ class main:
             msg = body["comment"]["body"]
             msg_regex = re.compile(r"!\[.*\]\((.*)\)")
             images = msg_regex.findall(msg)
-            msg = re.sub(r"!\[.*\]\((.*)\)","[图片]",msg)
+            msg = re.sub(r"!\[.*\]\((.*)\)", "[图片]", msg)
             for i in images:
-                msg = msg + ms.image(i)          
+                msg = msg + ms.image(i)
             repo_name = body["repository"]["full_name"]
             commit = body["comment"]["commit_id"][0:7]
             msg = f"{sender} commented on {repo_name} commit {commit}.\n{msg}"
             return msg
+
     def release(body):
         action = body["action"]
         if action == "created":
@@ -142,6 +149,7 @@ class main:
             tag_name = body["release"]["tag_name"]
             msg = f"{sender} released a release on {repo_name}.\n{tag_name} - {release_name}"
             return msg
+
     def fork(body):
         to_ = body["forkee"]["full_name"]
         from_ = body["repository"]["full_name"]
@@ -149,9 +157,11 @@ class main:
         total = body["repository"]["forks_count"]
         msg = f"{forker} forked from {from_} to {to_}.\n(total {total} forks)"
         return msg
+
     def ping(body):
         repo_name = body["repository"]["full_name"]
         return f"{repo_name} has already binded successfully."
+
     def watch(body):
         if body["action"] == "started":
             repo = body["repository"]["full_name"]
@@ -159,6 +169,7 @@ class main:
             total = body["repository"]["watchers_count"]
             msg = f"{sender} started watching {repo}.\n(total {total} watchers)"
         return msg
+
     def star(body):
         if body["action"] == "created":
             sender = body["sender"]["login"]

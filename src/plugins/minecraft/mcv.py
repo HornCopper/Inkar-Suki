@@ -1,3 +1,4 @@
+from src.tools.utils import get_api
 import sys
 import nonebot
 import re
@@ -5,9 +6,8 @@ import re
 TOOLS = nonebot.get_driver().config.tools_path
 sys.path.append(TOOLS)
 
-from src.tools.utils import get_api
 
-async def mcbedrockv(): # Minecraft 基岩版 最新版本获取，数据来源@Mojira
+async def mcbedrockv():  # Minecraft 基岩版 最新版本获取，数据来源@Mojira
     data = await get_api("https://bugs.mojang.com/rest/api/2/project/10200/versions")
     beta = []
     preview = []
@@ -25,12 +25,15 @@ async def mcbedrockv(): # Minecraft 基岩版 最新版本获取，数据来源@
     msg = f"Beta: {fix.join(beta)}\nPreview: {fix.join(preview)}\nRelease: {fix.join(release)}"
     return f"目前最新版本为：{msg}（数据来自Mojira，商店尚未更新属正常情况）"
 
-async def mcjavav(): # Minecraft Java版最新版本获取
-    data = await get_api("https://piston-meta.mojang.com/mc/game/version_manifest.json") # 数据来源@Minecraft-启动器
+
+async def mcjavav():  # Minecraft Java版最新版本获取
+    # 数据来源@Minecraft-启动器
+    data = await get_api("https://piston-meta.mojang.com/mc/game/version_manifest.json")
     release = data["latest"]["release"]
     snapshot = data["latest"]["snapshot"]
     msg = f"最新版：{release}，最新快照：{snapshot}"
-    mojira = await get_api("https://bugs.mojang.com/rest/api/2/project/10400/versions") # 数据来源@Mojira
+    # 数据来源@Mojira
+    mojira = await get_api("https://bugs.mojang.com/rest/api/2/project/10400/versions")
     releases = []
     prefix = " | "
     for v in mojira:
