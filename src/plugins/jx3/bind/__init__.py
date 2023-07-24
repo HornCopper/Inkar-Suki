@@ -1,4 +1,5 @@
-from src.tools.permission import checker, error
+from src.tools.permission import checker
+
 from .api import *
 
 

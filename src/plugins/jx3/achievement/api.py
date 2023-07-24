@@ -2,6 +2,7 @@ from src.tools.dep import *
 
 from .adventure import *
 
+
 async def achievements_(server: str = None, name: str = None, achievement: str = None, group_id: str = None):
     if token == None:
         return [PROMPT_NoToken]

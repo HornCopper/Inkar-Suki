@@ -1,4 +1,7 @@
-import json
+from .assistance import Assistance
+from src.tools.file import read
+from src.constant.jx3.image import skill_icons
+from src.tools.generate import generate
 import nonebot
 
 from nonebot.adapters.onebot.v11 import MessageSegment as ms
@@ -11,21 +14,20 @@ from pathlib import Path
 TOOLS = nonebot.get_driver().config.tools_path
 DATA = TOOLS[:-5] + "data"
 
-from src.tools.generate import generate
-from src.constant.jx3.image import skill_icons
-from src.tools.file import read
-
-from .assistance import Assistance
 
 aic = Assistance
 
 create = on_command("创建团队", priority=5)
+
+
 @create.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     resp = await aic.create_group(str(event.group_id), args.extract_plain_text(), str(event.user_id))
     await create.finish(resp)
 
-apply = on_command("预定", aliases={"预订","报名"}, priority=5)
+apply = on_command("预定", aliases={"预订", "报名"}, priority=5)
+
+
 @apply.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     args = args.extract_plain_text().split(" ")
@@ -38,7 +40,9 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
         resp = await aic.apply_for_place(str(event.group_id), keyword, id, job, str(event.user_id))
         await apply.finish(resp)
 
-disapply = on_command("取消预定",aliases={"取消预订","取消报名"}, priority=5)
+disapply = on_command("取消预定", aliases={"取消预订", "取消报名"}, priority=5)
+
+
 @disapply.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     args = args.extract_plain_text().split(" ")
@@ -51,6 +55,8 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
         await disapply.finish(resp)
 
 dissolve = on_command("解散团队", aliases={"取消开团"}, priority=5)
+
+
 @dissolve.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     keyword = args.extract_plain_text()
@@ -60,6 +66,8 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     await dissolve.finish(resp)
 
 team = on_command("查看团队", priority=5)
+
+
 @team.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     keyword = args.extract_plain_text()
@@ -70,6 +78,8 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     await team.finish(ms.image(Path(img).as_uri()))
 
 rd = on_command("随机抽取", priority=5)
+
+
 @rd.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     keyword = args.extract_plain_text()

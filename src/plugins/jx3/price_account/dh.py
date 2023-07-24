@@ -1,17 +1,16 @@
+from src.tools.config import Config
+from src.tools.utils import nodetemp, get_api
 import nonebot
 import sys
-
-from pathlib import Path
 
 TOOLS = nonebot.get_driver().config.tools_path
 sys.path.append(TOOLS)
 ASSETS = TOOLS[:-5] + "assets"
 
-from src.tools.utils import nodetemp, get_api
-from src.tools.config import Config
 
 async def get_dh(type_: str):
-    url = f"https://www.j3dh.com/v1/h/data/hero?ifKnownDaishou=false&exterior={type_}&school=0&figure=0&page=0" # 数据来源 @盆栽蹲号
+    # 数据来源 @盆栽蹲号
+    url = f"https://www.j3dh.com/v1/h/data/hero?ifKnownDaishou=false&exterior={type_}&school=0&figure=0&page=0"
     data = await get_api(url)
     if data["Code"] != 0:
         return "唔……API访问失败！"

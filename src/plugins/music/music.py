@@ -1,10 +1,5 @@
-import nonebot
-import sys
-
-TOOLS = nonebot.get_driver().config.tools_path
-sys.path.append(TOOLS)
-
 from src.tools.utils import get_api
+
 
 async def search(platform_: str, song: str):
     '''
@@ -14,16 +9,16 @@ async def search(platform_: str, song: str):
 
     第一个参数是平台，类型为`str`，自动判断。
     '''
-    if platform_ in ["QQ","QQ音乐","qq","q","Q","tx","tc","tencent","腾讯","腾讯音乐","qq音乐","Qq","Qq音乐","qQ","qQ音乐"]:
-        platform = 1 # 1 QQ 2 网易
-    elif platform_ in ["网易","163","网抑云","网抑","网","netease","n","网易云音乐","网抑云音乐","网易云","wy","w"]:
+    if platform_ in ["QQ", "QQ音乐", "qq", "q", "Q", "tx", "tc", "tencent", "腾讯", "腾讯音乐", "qq音乐", "Qq", "Qq音乐", "qQ", "qQ音乐"]:
+        platform = 1  # 1 QQ 2 网易
+    elif platform_ in ["网易", "163", "网抑云", "网抑", "网", "netease", "n", "网易云音乐", "网抑云音乐", "网易云", "wy", "w"]:
         platform = 2
     else:
         platform = 1
     keyword = song
     if platform == 1:
         api = "https://c.y.qq.com/splcloud/fcgi-bin/smartbox_new.fcg?format=json&key=" + keyword
-        data = await get_api(url = api)
+        data = await get_api(url=api)
         id = []
         song_ = []
         for i in data["data"]["song"]["itemlist"]:
@@ -35,7 +30,7 @@ async def search(platform_: str, song: str):
         return [song_, id, platform]
     elif platform == 2:
         api = "https://music.163.com/api/cloudsearch/pc?type=1&offset=1&s=" + keyword
-        data = await get_api(url = api)
+        data = await get_api(url=api)
         id = []
         song_ = []
         for i in data["result"]["songs"]:
@@ -46,6 +41,7 @@ async def search(platform_: str, song: str):
             return "404"
         return [song_, id, platform]
 
+
 async def get(platform_: str, song: str, singer: str = None):
     '''
     请求型函数。
@@ -54,20 +50,21 @@ async def get(platform_: str, song: str, singer: str = None):
 
     第一个参数是平台，类型为`str`，自动判断。
     '''
-    if platform_ in ["QQ","QQ音乐","qq","q","Q","tx","tc","tencent","腾讯","腾讯音乐","qq音乐","Qq","Qq音乐","qQ","qQ音乐"]:
-        platform = 1 # 1 QQ 2 网易
-    elif platform_ in ["网易","163","网抑云","网抑","网","netease","n","网易云音乐","网抑云音乐","网易云","w","wy"]:
+    if platform_ in ["QQ", "QQ音乐", "qq", "q", "Q", "tx", "tc", "tencent", "腾讯", "腾讯音乐", "qq音乐", "Qq", "Qq音乐", "qQ", "qQ音乐"]:
+        platform = 1  # 1 QQ 2 网易
+    elif platform_ in ["网易", "163", "网抑云", "网抑", "网", "netease", "n", "网易云音乐", "网抑云音乐", "网易云", "w", "wy"]:
         platform = 2
     else:
         platform = 1
     keyword = song
     if platform == 1:
         api = "https://c.y.qq.com/splcloud/fcgi-bin/smartbox_new.fcg?format=json&key=" + keyword
-        data = await get_api(url = api)
+        data = await get_api(url=api)
         if len(data["data"]["song"]) == 0:
             return "404"
         if singer == None:
-            song_name = data["data"]["song"]["itemlist"][0]["name"] + " - " + data["data"]["song"]["itemlist"][0]["singer"]
+            song_name = data["data"]["song"]["itemlist"][0]["name"] + \
+                " - " + data["data"]["song"]["itemlist"][0]["singer"]
             id = data["data"]["song"]["itemlist"][0]["id"]
             return [song_name, id, platform]
         else:
@@ -79,11 +76,12 @@ async def get(platform_: str, song: str, singer: str = None):
             return "404"
     elif platform == 2:
         api = "https://music.163.com/api/cloudsearch/pc?type=1&offset=1&s=" + keyword
-        data = await get_api(url = api)
+        data = await get_api(url=api)
         if len(data["result"]["songs"]) == 0:
             return "404"
         if singer == None:
-            song_name = data["result"]["songs"][0]["name"] + " - " + data["result"]["songs"][0]["ar"][0]["name"]
+            song_name = data["result"]["songs"][0]["name"] + \
+                " - " + data["result"]["songs"][0]["ar"][0]["name"]
             id = data["result"]["songs"][0]["id"]
             return [song_name, id, platform]
         else:

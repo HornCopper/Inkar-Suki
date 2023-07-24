@@ -46,7 +46,7 @@ css = """
                 src: url("ctft");
             }
 </style>"""
-path = Path(get_resource_path(f'font{os.sep}fzht.ttf'))
+path = Path(get_resource_path(f"font{os.sep}custom.ttf"))
 css = css.replace("ctft", path.as_uri())
 
 
@@ -142,8 +142,7 @@ class Assistance:
                 if i["creator"] != actor:
                     return "非创建者无法解散团队哦~"
                 now.remove(i)
-                write(f"{DATA}/{group}/opening.json",
-                      json.dumps(now, ensure_ascii=False))
+                write(f"{DATA}/{group}/opening.json", json.dumps(now, ensure_ascii=False))
                 return "解散团队成功！"
 
     async def storge(group: str, description: str, info: dict):

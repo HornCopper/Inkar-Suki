@@ -1,5 +1,6 @@
 from src.tools.dep import *
 
+
 async def api_recruit(server: str, copy: str = ""):  # 团队招募 <服务器> [关键词]
     if token == None:
         return [PROMPT_NoToken]

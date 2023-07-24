@@ -1,3 +1,4 @@
+from src.tools.utils import get_api
 import nonebot
 import sys
 import re
@@ -5,10 +6,11 @@ import re
 TOOLS = nonebot.get_driver().config.tools_path
 sys.path.append(TOOLS)
 
-from src.tools.utils import get_api
 
 def clean(string: str) -> str:
     return re.sub(r"§.", "", string)
+
+
 async def jes(ip: str) -> str:
     ip = ip.split(":")
     if len(ip) > 2:
@@ -37,6 +39,8 @@ async def jes(ip: str) -> str:
         maxp = infomation["players"]["max"]
         onlp = infomation["players"]["online"]
         return f"已经查到Java版服务器啦：\n地址：{ip}:{port}\n在线人数：{onlp}/{maxp}\n介绍：{desc}"
+
+
 async def bes(ip: str) -> str:
     ip = ip.split(":")
     if len(ip) > 2:
