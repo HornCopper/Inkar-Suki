@@ -30,6 +30,7 @@ def checker(qqnumber: str, score: int):
 def error(score):
     return f"唔……你权限不够哦，这条命令要至少{score}的权限哦~"
 
+
 def block(sb: str) -> bool:
     with open(TOOLS+"/ban.json", mode="r") as cache:
         for i in json.loads(cache.read()):

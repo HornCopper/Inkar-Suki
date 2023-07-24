@@ -1,6 +1,8 @@
 from .api import *
 
 kungfu = on_command("jx3_kungfu", aliases={"心法"}, priority=5)
+
+
 @kungfu.handle()
 async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
     '''
@@ -12,9 +14,11 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
     node = await getAllSkillsInfo(kungfu_)
     if node == False:
         await kungfu.finish("此心法不存在哦，请检查后重试~")
-    await bot.call_api("send_group_forward_msg", group_id = event.group_id, messages = node)
+    await bot.call_api("send_group_forward_msg", group_id=event.group_id, messages=node)
 
 skill = on_command("jx3_skill", aliases={"技能"}, priority=5)
+
+
 @skill.handle()
 async def _(args: Message = CommandArg()):
     '''
@@ -34,6 +38,8 @@ async def _(args: Message = CommandArg()):
     await skill.finish(msg)
 
 talent = on_command("_jx3_talent", aliases={"_奇穴"}, priority=5)
+
+
 @talent.handle()
 async def _(args: Message = CommandArg()):
     '''
@@ -55,11 +61,13 @@ async def _(args: Message = CommandArg()):
 
 
 _talent = on_command("jx3_talent", aliases={"奇穴"}, priority=5)
+
+
 @_talent.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     arg = args.extract_plain_text().split(" ")
     versions = await get_api("https://data.jx3box.com/talent/index.json")
-    if len(arg) not in [2,3]:
+    if len(arg) not in [2, 3]:
         await _talent.finish("唔……参数不正确哦~")
     if len(arg) == 2:
         kf = arg[0]
@@ -85,8 +93,8 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
         real_data = data[name]
     except:
         await _talent.finish("唔……该赛季没有此心法~")
-    for i in range(1,13):
-        for x in range(1,6):
+    for i in range(1, 13):
+        for x in range(1, 6):
             try:
                 each = real_data[str(i)][str(x)]
             except:
@@ -97,7 +105,8 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
                     desc = each["desc"]
                     extend = each["extend"]
                     icon = "https://icon.jx3box.com/icon/" + str(each["icon"]) + ".png"
-                    msg = f"第{i}重·第{x}层：{tl}\n" + ms.image(icon) + f"\n{special_desc}\n{desc}\n{extend}"
+                    msg = f"第{i}重·第{x}层：{tl}\n" + \
+                        ms.image(icon) + f"\n{special_desc}\n{desc}\n{extend}"
                 else:
                     desc = each["desc"]
                     icon = "https://icon.jx3box.com/icon/" + str(each["icon"]) + ".png"
@@ -107,6 +116,8 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
 
 
 macro_ = on_command("jx3_macro", aliases={"宏"}, priority=5)
+
+
 @macro_.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     xf = args.extract_plain_text()

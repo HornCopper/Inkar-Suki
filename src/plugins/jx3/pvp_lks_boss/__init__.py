@@ -3,14 +3,18 @@ from src.plugins.help import css
 from src.tools.generate import generate, get_uuid
 
 lks = on_command("jx3_leader", aliases={"-烂柯山"}, priority=5)
+
+
 @lks.handle()
 async def _(event: GroupMessageEvent):
     bad = "https://jx3wbl.xoyocdn.com/img/icon-camp-bad.07567e9f.png"
     good = "https://jx3wbl.xoyocdn.com/img/icon-camp-good.0db444fe.png"
+
     def convert_time(timestamp: int):
         time_local = time.localtime(timestamp)
         dt = time.strftime("%Y年%m月%d日 %H:%M:%S", time_local)
         return dt
+
     def RestTime(GoalTime: int, StartTime: int = int(time.time())):
         target_date = datetime.datetime.utcfromtimestamp(GoalTime)
         delta = target_date - StartTime
@@ -18,6 +22,7 @@ async def _(event: GroupMessageEvent):
         hours, remainder = divmod(delta.seconds, 3600)
         minutes, seconds = divmod(remainder, 60)
         return f"f{days}天{hours}时{minutes}分{seconds}秒"
+
     def Parse(data: dict):
         pic = bad if data["camp_name"] == "恶人谷" else good
         castle = data["castle"]

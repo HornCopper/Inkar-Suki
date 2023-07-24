@@ -66,6 +66,8 @@ async def jx3_rank(event: GroupMessageEvent, args: Message = CommandArg()):
         return await jx3_cmd_rank.finish(ms.image(data))
 
 jx3_cmd_zlrank = on_command("jx3_zlrank", aliases={"资历排行"}, priority=5)
+
+
 @jx3_cmd_zlrank.handle()
 async def jx3_zlrank(event: GroupMessageEvent, args: Message = CommandArg()):
     arg = args.extract_plain_text().split(" ")

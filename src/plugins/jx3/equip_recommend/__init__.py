@@ -1,9 +1,8 @@
-from .api import *
-
 from src.plugins.help import css
 from src.tools.generate import generate, get_uuid
-from src.tools.permission import checker, error
 from src.constant.jx3 import aliases
+
+from .api import *
 
 school_mapping = {
     "傲血战意": 10026,
@@ -38,13 +37,13 @@ school_mapping = {
     "孤锋诀": 10698
 }
 
-equip_recmd = on_command("jx3_eqrec", aliases={"配装v2"}, priority=5)
+equip_recmd = on_command("jx3_eqrec", aliases={"配装"}, priority=5)
+
+
 @equip_recmd.handle()
 async def eqrec(event: GroupMessageEvent, state: T_State, args: Message = CommandArg()):
-    if checker(str(event.user_id),9) == False:
-        await equip_recmd.finish("唔……该功能尚在内测中，您暂未获得内测资格，请稍等哦，很快就要公测了！")
     arg = args.extract_plain_text().split(" ")
-    if len(arg) not in [1,2]:
+    if len(arg) not in [1, 2]:
         await equip_recmd.finish("唔……参数数量有问题哦，请检查后重试~\n或查看帮助文件（+help）获得更详细的信息哦~")
     kf = aliases(arg[0])
     condition = []
@@ -61,7 +60,7 @@ async def eqrec(event: GroupMessageEvent, state: T_State, args: Message = Comman
     state["condition"] = condition
     state["kungfu"] = kf
     chart = []
-    chart.append(["序号","作者","名称","标签","点赞"])
+    chart.append(["序号", "作者", "名称", "标签", "点赞"])
     for i in range(len(data[1])):
         chart.append([str(i), data[3][i], data[1][i], data[2][i], data[4][i]])
     html = css + tabulate(chart, tablefmt="unsafehtml")
@@ -72,6 +71,7 @@ async def eqrec(event: GroupMessageEvent, state: T_State, args: Message = Comman
         await equip_recmd.finish("唔……音卡的配装列表图生成失败了捏，请联系作者~")
     else:
         await equip_recmd.send(MessageSegment.image(Path(img).as_uri()))
+
 
 @equip_recmd.got("index", prompt="请选择配装查看哦，回复我只需要数字就行啦！")
 async def equip_recmded(state: T_State, index: Message = Arg()):
