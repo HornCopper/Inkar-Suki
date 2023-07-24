@@ -6,6 +6,7 @@ from src.tools.dep import *
 template_root = pathlib2.Path(__file__).parent
 template_path = template_root.joinpath('template.html')
 
+
 def get_template_path(resources_path: str):
     '''
     获取资源目录

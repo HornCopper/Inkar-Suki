@@ -1,8 +1,9 @@
 from sgtpyutils.extensions.clazz import get_fields
 from typing import List
-from ..Caches import *
 
 from src.tools.dep import *
+
+from ..Caches import *
 
 
 async def search_item_local(item_name: str) -> list:
@@ -26,16 +27,15 @@ async def search_item_info(item_name: str, pageIndex: int = 0, pageSize: int = 2
     query_items: List[GoodsInfo] = []
     new_goods = False
     for item in items:
-        id = item['id']
+        id = item["id"]
         if not id in CACHE_Goods:
-            item['bind_type'], item['Level'] = await check_bind(id)
+            item["bind_type"], item["Level"] = await check_bind(id)
             CACHE_Goods[id] = GoodsInfo(item)
             new_goods = True
         item: GoodsInfo = CACHE_Goods[id]
         query_items.append(item)
     if new_goods:
         flush_CACHE_Goods()
-
     query_items.sort(key=lambda x: -x.priority)  # 按热门程度排序，拾绑的放后面
     page_start = pageIndex * pageSize
     query_items = query_items[page_start:page_start+pageSize]
@@ -43,15 +43,14 @@ async def search_item_info(item_name: str, pageIndex: int = 0, pageSize: int = 2
 
 
 async def getItemPriceById(id: str, server: str):
-    '''
+    """
     通过物品id获取交易行价格
     @param id:物品id
     @param server:服务器名称
 
     @return [image] | str: 正确处理则返回[]，否则返回错误原因
-    '''
-    goods_info: GoodsInfo = CACHE_Goods[id] if id in CACHE_Goods else GoodsInfo(
-    )
+    """
+    goods_info: GoodsInfo = CACHE_Goods[id] if id in CACHE_Goods else GoodsInfo()
     if goods_info.bind_type == GoodsBindType.BindOnPick:
         return ["唔……绑定的物品无法在交易行出售哦~", None]
     final_url = f"https://next2.jx3box.com/api/item-price/{id}/logs?server={server}"
@@ -61,7 +60,6 @@ async def getItemPriceById(id: str, server: str):
         return ["唔……交易行没有此物品哦~", None]
     logs = [GoodsPriceSummary(x) for x in logs]
     logs.reverse()
-
     return [logs, goods_info]
 
 
@@ -73,10 +71,10 @@ async def getItem(id: str):
 
 
 async def update_goods_popularity(target_id: str, all_ids: list):
-    '''
+    """
     更新物品人气，注意物品需要先入库，否则缓存中不存在
     @param all_ids:本次选中的所有id。出现过的id应将其人气降1，以更好排序
-    '''
+    """
     if not CACHE_Goods.get(target_id) is None:
         CACHE_Goods[target_id].u_popularity += 10  # 被选中则增加其曝光概率
     # 本轮已曝光物品，日后曝光率应下调

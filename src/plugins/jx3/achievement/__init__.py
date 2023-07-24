@@ -5,13 +5,11 @@ adventure_ = on_command("jx3_adventure", aliases={"成就"}, priority=5)
 
 @adventure_.handle()
 async def _(state: T_State, args: Message = CommandArg()):
-    '''
+    """
     查询成就信息：
 
     Example：-成就 好久不见
-
-    Notice：还有一个会发送聊天记录的功能，可以查询自身是否完成该成就，同时也会提供成就信息。
-    '''
+    """
     achievement_name = args.extract_plain_text()
     data = await getAdventure(achievement_name)
     if data["status"] == 404:
@@ -64,14 +62,14 @@ achievements = on_command("jx3_machi", aliases={"进度"}, priority=5)
 
 @achievements.handle()
 async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
-    '''
+    """
     查询玩家成就完成进度以及成就信息：
 
     Example：-进度 幽月轮 哭包猫@唯我独尊 好久不见
     Example：-进度 幽月轮 哭包猫@唯我独尊 25人英雄范阳夜变
     Example：-进度 幽月轮 哭包猫@唯我独尊 扶摇九天
     Example：-进度 哭包猫@唯我独尊 扶摇九天
-    '''
+    """
     achievement = args.extract_plain_text().split(" ")
     if len(achievement) not in [2, 3]:
         await achievements.finish(PROMPT_ArgumentInvalid)

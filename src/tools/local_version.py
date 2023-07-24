@@ -3,6 +3,7 @@ import sys
 
 from src.tools.utils import get_api
 
+
 async def ikv():
     all_rls = await get_api("https://api.github.com/repos/codethink-cn/Inkar-Suki/releases")
     lst_rls = all_rls[0]["name"]

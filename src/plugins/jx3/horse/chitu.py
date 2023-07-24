@@ -1,10 +1,12 @@
-from ..jx3 import server_mapping
-from src.tools.utils import get_url, get_api
-from bs4 import BeautifulSoup
-import nonebot
 import time
-import sys
+
+from bs4 import BeautifulSoup
+
+from src.tools.utils import get_url, get_api
 from src.tools.dep import *
+
+from ..jx3 import server_mapping
+
 
 async def get_chitu(server: str, group_id: str):  # 数据来源@jw3cx.com
     api = "https://jw3cx.com/"
@@ -19,6 +21,7 @@ async def get_chitu(server: str, group_id: str):  # 数据来源@jw3cx.com
             return f"{i.get_text()}：" + i["value"]
     return PROMPT_ServerNotExist
 
+
 async def get_horse_reporter(server: str, group_id: str = None):  # 数据来源@JX3BOX
     server = server_mapping(server, group_id)
     if not server:
@@ -29,8 +32,7 @@ async def get_horse_reporter(server: str, group_id: str = None):  # 数据来源
         return "没有找到该服务器信息哦，请检查后重试~"
     for i in data["data"]["list"]:
         if i["subtype"] == "npc_chat":
-            time_ = time.strftime("%Y年%m月%d日 %H:%M:%S",
-                                  time.localtime(i["time"]))
+            time_ = time.strftime("%Y年%m月%d日 %H:%M:%S", time.localtime(i["time"]))
             content = i["content"]
             map = i["map_name"]
             msg = f"{content}\n刷新时间：{time_}\n地图：{map}"

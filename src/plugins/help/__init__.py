@@ -1,3 +1,6 @@
+from src.tools.generate import generate, get_uuid
+from src.tools.config import Config
+from src.tools.file import read, write
 import json
 import os
 import sys
@@ -15,18 +18,15 @@ sys.path.append(str(TOOLS))
 CACHE = TOOLS[:-5] + "cache"
 PLUGINS = TOOLS[:-5] + "plugins"
 
-from src.tools.file import read, write
-from src.tools.config import Config
-from src.tools.generate import generate, get_uuid
-'''
+"""
 帮助文件生成函数。
 
 包含文字 + 图片信息。
 
 文字来源于内置，图片由每个`plugin`文件夹下的`info.json`中的内容整合，再以`selenium`进行渲染所得。
-'''
+"""
 
-help = on_command("help", aliases={"帮助","功能"}, priority=5)
+help = on_command("help", aliases={"帮助", "功能"}, priority=5)
 css = """
 <style>
             ::-webkit-scrollbar 
@@ -56,6 +56,8 @@ css = """
 </style>"""
 css = css.replace("customfont", Config.font_path)
 path = PLUGINS
+
+
 @help.handle()
 async def help_(args: Message = CommandArg()):
     module = args.extract_plain_text()
@@ -79,7 +81,7 @@ async def help_(args: Message = CommandArg()):
             desc = plugin_info["desc"]
             admin = plugin_info["admin"]
             aliases = plugin_info["aliases"]
-            table.append(["插件名称","插件版本","插件介绍","插件作者","权限等级","别名"])
+            table.append(["插件名称", "插件版本", "插件介绍", "插件作者", "权限等级", "别名"])
             table.append([name, version, desc, author, admin, aliases])
             msg = str(tabulate(table, headers="firstrow", tablefmt="html"))
             table.clear()
@@ -92,10 +94,10 @@ async def help_(args: Message = CommandArg()):
             else:
                 picture_message = ms.image(Path(image).as_uri())
                 await help.finish("查询到插件"
-                + module
-                + "的帮助文件啦~\n"
-                + picture_message
-                + "还有文档可以找哦~\nhttps://inkar-suki.codethink.cn\n如果你觉得有帮助的话，欢迎来给作者赞助哦~\n链接：https://inkar-suki.codethink.cn/donate.html")
+                                  + module
+                                  + "的帮助文件啦~\n"
+                                  + picture_message
+                                  + "还有文档可以找哦~\nhttps://inkar-suki.codethink.cn\n如果你觉得有帮助的话，欢迎来给作者赞助哦~\n链接：https://inkar-suki.codethink.cn/donate.html")
     else:
         final_plugin_information_file_path = {}
         name = {}
@@ -119,19 +121,19 @@ async def help_(args: Message = CommandArg()):
             desc[plugin] = cache["desc"]
             admin[plugin] = cache["admin"]
             aliases[plugin] = cache["aliases"]
-        table.append(["插件名称","插件版本","插件介绍","插件作者","权限等级","别名"])
+        table.append(["插件名称", "插件版本", "插件介绍", "插件作者", "权限等级", "别名"])
         for i in all_module:
-            table.append([name[i],version[i],desc[i],author[i],admin[i],aliases[i]])
-        msg = str(tabulate(table,headers="firstrow",tablefmt="html"))
+            table.append([name[i], version[i], desc[i], author[i], admin[i], aliases[i]])
+        msg = str(tabulate(table, headers="firstrow", tablefmt="html"))
         table.clear()
         html = "<div style=\"font-family:Custom\">" + msg.replace("$", "<br>") + "</div>"+css
         final_path = CACHE + "/" + get_uuid() + ".html"
-        write(final_path,html)
+        write(final_path, html)
         image = await generate(final_path, False, "table", False)
         if type(image) != type("sb"):
             await help.finish("唔，帮助文件生成失败了哦~请联系机器人管理员解决此问题，附带以下信息：\n"+image)
         else:
             picture_message = ms.image(Path(image).as_uri())
             await help.finish("帮助信息来啦！输入+help <module>可快速定位你要查找的模块哦~\n"
-                + picture_message
-                + "还有文档可以找哦~\nhttps://inkar-suki.codethink.cn/\n如果你觉得有帮助的话，欢迎来给作者赞助哦~\n链接：https://inkar-suki.codethink.cn/donate.html")
+                              + picture_message
+                              + "还有文档可以找哦~\nhttps://inkar-suki.codethink.cn/\n如果你觉得有帮助的话，欢迎来给作者赞助哦~\n链接：https://inkar-suki.codethink.cn/donate.html")

@@ -4,11 +4,11 @@ from src.tools.file import write
 from src.plugins.help import css
 from src.tools.dep import *
 from ..api import *
-'''
+"""
 交易行物品查询。
 
 数据来源@JX3BOX
-'''
+"""
 
 css_fixed = """
 .c-header
@@ -57,16 +57,16 @@ async def render_price(logs: List[GoodsPriceSummary], server: str, goods_info: G
         HighestPrice = Gold(i.HighestPrice)
         new = [date, HighestPrice, AvgPrice, LowestPrice]
         chart.append(new)
-    header_server = f'<div style="font-size:3rem">交易行·{server}</div>'
-    header_goods = f'<div style="margin: 0.5rem;font-size:1.8rem;color:{goods_info.color}">物品 {goods_info.name} <img style="vertical-align: middle;width:1.8rem" src="{goods_info.img_url}"/></div>'
-    header = f'{header_server}{header_goods}'
+    header_server = f"<div style=\"font-size:3rem\">交易行·{server}</div>"
+    header_goods = f"<div style=\"margin: 0.5rem;font-size:1.8rem;color:{goods_info.color}\">物品 {goods_info.name} <img style=\"vertical-align: middle;width:1.8rem\" src=\"{goods_info.img_url}\"/></div>"
+    header = f"{header_server}{header_goods}"
     table = tabulate(chart, tablefmt="unsafehtml")
-    table = table.replace('<table>', '<table style="margin: auto">')  # 居中显示
-    table = f'<div>{table}</div>'  # 居中表格
-    html = f'<section style="text-align: center;width:50rem;"><div style=\"font-family:Custom\">{header}{table}</div></section>' + css
+    table = table.replace("<table>", "<table style=\"margin: auto\">")  # 居中显示
+    table = f"<div>{table}</div>"  # 居中表格
+    html = f"<section style=\"text-align: center;width:50rem;\"><div style=\"font-family:Custom\">{header}{table}</div></section>" + css
     final_path = CACHE + "/" + get_uuid() + ".html"
     write(final_path, html)
-    img = await generate(final_path, False, 'section')
+    img = await generate(final_path, False, "section")
     return img
 
 

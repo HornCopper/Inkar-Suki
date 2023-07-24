@@ -1,14 +1,14 @@
 from __future__ import annotations
+from nonebot.adapters.onebot.v11.message import Message as v11Message
+from nonebot.adapters import Message, MessageSegment
+from enum import IntEnum
+from typing import List, Literal, Tuple
+from ..exceptions import *
+from ..data_server import *
+from src.tools.utils import *
 from sgtpyutils import extensions
 from sgtpyutils.logger import logger
 logger.debug(f'load dependence:{__name__}')
-from src.tools.utils import *
-from ..data_server import *
-from ..exceptions import *
-from typing import List, Literal, Tuple
-from enum import IntEnum
-from nonebot.adapters import Message, MessageSegment
-from nonebot.adapters.onebot.v11.message import Message as v11Message
 
 
 def convert_to_str(msg: MessageSegment):
@@ -23,7 +23,7 @@ def convert_to_str(msg: MessageSegment):
 
     if isinstance(msg, str):
         return msg
-    logger.warn(f'message cant convert to str:{msg}')
+    logger.warning(f'message cant convert to str:{msg}')
     return msg
 
 

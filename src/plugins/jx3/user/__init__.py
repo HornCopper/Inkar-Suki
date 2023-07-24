@@ -1,18 +1,23 @@
 from .api import *
-from src.tools.permission import checker, error
+__base_cmd = ["属性", "查装"]
 
-jx3_cmd_addritube = on_command("jx3_addritube", aliases={
-                               "属性", "查装"}, priority=5)
+
+def __get_cmd(suffix: str = ""):
+    r = [f"{x}{suffix}" for x in __base_cmd]
+    return set(r)
+
+
+jx3_cmd_addritube = on_command("jx3_addritube", aliases=__get_cmd(), priority=5)
 
 
 @jx3_cmd_addritube.handle()
 async def jx3_addritube(event: GroupMessageEvent, args: Message = CommandArg()):
-    '''
+    """
     查询某玩家的装备：
 
     Example：-属性 幽月轮 哭包猫@唯我独尊
     Example：-查装 幽月轮 哭包猫@唯我独尊
-    '''
+    """
     template = [Jx3Arg(Jx3ArgsType.server), Jx3Arg(Jx3ArgsType.default)]
     arg_server, arg_user = get_args(args.extract_plain_text(), template)
     if not arg_user:
@@ -20,18 +25,17 @@ async def jx3_addritube(event: GroupMessageEvent, args: Message = CommandArg()):
     arg_server = server_mapping(arg_server, event.group_id)
     data = await addritube_(arg_server, arg_user, group_id=event.group_id)
     if type(data) == type([]):
-        await jx3_cmd_addritube.finish(data[0])
-    else:
-        await jx3_cmd_addritube.finish(ms.image(data))
+        return await jx3_cmd_addritube.finish(data[0])
+    return await jx3_cmd_addritube.finish(ms.image(data))
 
-addritube_v2 = on_command("jx3_addritube_v2", aliases={"属性v2"}, priority=5)
+jx3_cmd_addritube_v2 = on_command("jx3_addritube_v2", aliases=__get_cmd("v2"), priority=5)
 
 
-@addritube_v2.handle()
-async def _(event: GroupMessageEvent, args: Message = CommandArg()):
+@jx3_cmd_addritube_v2.handle()
+async def jx3_addritube_v2(event: GroupMessageEvent, args: Message = CommandArg()):
     arg = args.extract_plain_text().split(" ")
     if len(arg) not in [1, 2]:
-        await addritube_v2.finish("唔……参数不正确哦，请检查后重试~")
+        return await jx3_cmd_addritube_v2.finish("唔……参数不正确哦，请检查后重试~")
     if len(arg) == 1:
         server = None
         id = arg[0]
@@ -40,20 +44,19 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
         id = arg[1]
     data = await get_attr_main(server, id, str(event.group_id))
     if type(data) == type([]):
-        await addritube_v2.finish(data[0])
-    else:
-        await addritube_v2.finish(ms.image(data))
+        return await jx3_cmd_addritube_v2.finish(data[0])
+    return await jx3_cmd_addritube_v2.finish(ms.image(data))
 
 jx3_cmd_roleInfo = on_command("jx3_player", aliases={"玩家信息"}, priority=5)
 
 
 @jx3_cmd_roleInfo.handle()
 async def jx3_player(event: GroupMessageEvent, args: Message = CommandArg()):
-    '''
+    """
     获取玩家信息：
 
     Example：-玩家信息 幽月轮 哭包猫@唯我独尊
-    '''
+    """
     template = [Jx3Arg(Jx3ArgsType.server), Jx3Arg(Jx3ArgsType.default)]
     [arg_server, arg_user] = get_args(args.extract_plain_text(), template)
     if not arg_server:

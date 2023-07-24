@@ -62,7 +62,7 @@ async def jx3_gserendipity(event: GroupMessageEvent, args: Message = CommandArg(
     '''
     arg = args.extract_plain_text()
     if arg == "":
-        return await jx3_cmd_gserendipity.finish("唔，缺少奇遇名称，没有办法找哦~")
+        return await jx3_cmd_gserendipity.finish("唔……缺少奇遇名称，没有办法找哦~")
     data = await global_serendipity(arg)
     if type(data) == type([]):
         return await jx3_cmd_gserendipity.finish(data[0])
@@ -70,6 +70,7 @@ async def jx3_gserendipity(event: GroupMessageEvent, args: Message = CommandArg(
         return await jx3_cmd_gserendipity.finish(ms.image(data))
 
 jx3_cmd_gstatistical = on_command("jx3_gstatistical", aliases={"全服统计"}, priority=5)
+
 
 @jx3_cmd_gstatistical.handle()
 async def jx3_gstatistical(event: GroupMessageEvent, args: Message = CommandArg()):
@@ -80,7 +81,7 @@ async def jx3_gstatistical(event: GroupMessageEvent, args: Message = CommandArg(
     '''
     arg = args.extract_plain_text()
     if arg == "":
-        return await jx3_cmd_gstatistical.finish("唔，缺少奇遇名称，没有办法找哦~")
+        return await jx3_cmd_gstatistical.finish("唔……缺少奇遇名称，没有办法找哦~")
     data = await global_statistical(arg)
     if type(data) == type([]):
         return await jx3_cmd_gstatistical.finish(data[0])
@@ -88,6 +89,8 @@ async def jx3_gstatistical(event: GroupMessageEvent, args: Message = CommandArg(
         return await jx3_cmd_gstatistical.finish(ms.image(data))
 
 preposition = on_command("jx3_preposition", aliases={"前置"}, priority=5)
+
+
 @preposition.handle()
 async def jx3_preposition(event: GroupMessageEvent, args: Message = CommandArg()):
     '''
@@ -103,8 +106,10 @@ async def jx3_preposition(event: GroupMessageEvent, args: Message = CommandArg()
         await preposition.finish("唔……没有找到相关信息~")
     else:
         await preposition.finish(ms.image(data))
-    
+
 recipe = on_command("jx3_recipe", aliases={"攻略"}, priority=5)
+
+
 @recipe.handle()
 async def jx3_serendipity_recipe(event: GroupMessageEvent, args: Message = CommandArg()):
     '''
@@ -131,4 +136,3 @@ async def jx3_serendipity_recipe(event: GroupMessageEvent, args: Message = Comma
         image.write(image_content)
         image.close()
         await preposition.finish(ms.image(Path(filepath).as_uri()))
-
