@@ -17,3 +17,4 @@ aiotieba
 pillow
 cron-descriptor
 croniter
+pre-commit

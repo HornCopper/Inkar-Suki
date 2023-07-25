@@ -23,11 +23,13 @@ async def get_item_info_by_id(id: str):
 
 GoodsBindTypeBindTypes = ["未知", "不绑定", "装备后绑定", "拾取后绑定"]
 
+
 class GoodsBindType(Enum):
     UnKnown = 0
     UnBind = 1
     BindOnUse = 2
     BindOnPick = 3
+
 
 class GoodsInfo(dict):
     def init_computed_props(self):
@@ -202,6 +204,7 @@ class WucaiProperty:
             prop_filters = prop[1].split("<br>")
             result.append(WucaiProperty(prop_values, prop_filters))
         return result
+
 
 class GoodsInfoFull(GoodsInfo):
     def __init__(self, data: dict = None) -> None:

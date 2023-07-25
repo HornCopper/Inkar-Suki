@@ -6,11 +6,12 @@ import os
 from nonebot.adapters.onebot.v11 import Adapter as ONEBOT_V11Adapter
 from src.tools.dep import *
 
+
 def check_folder(path: str, can_retry: bool = True):
     if os.path.isdir(path):
         return True
     if os.path.exists(path):
-        logger.logger.warn(f"{path}被文件占用，将其强行移除。")
+        logger.logger.warning(f"{path}被文件占用，将其强行移除。")
         os.remove(path)
         if not can_retry:
             return False

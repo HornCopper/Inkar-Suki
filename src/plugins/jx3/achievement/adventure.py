@@ -1,3 +1,4 @@
+from src.tools.utils import get_api, get_content
 import os
 import sys
 import nonebot
@@ -9,13 +10,13 @@ TOOLS = nonebot.get_driver().config.tools_path
 sys.path.append(TOOLS)
 ASSETS = TOOLS[:-5] + "assets"
 
-from src.tools.utils import get_api, get_content
 
 async def getAdventure(adventure: str):
-    info = await get_api(f"https://helper.jx3box.com/api/achievement/search?keyword={adventure}&page=1&limit=15&client=std") # 数据来源@JX3BOX
+    # 数据来源@JX3BOX
+    info = await get_api(f"https://helper.jx3box.com/api/achievement/search?keyword={adventure}&page=1&limit=15&client=std")
     data = info["data"]["achievements"]
     if len(data) == 0:
-        return {"status":404}
+        return {"status": 404}
     achievement_list = []
     icon_list = []
     id_list = []
@@ -43,7 +44,8 @@ async def getAdventure(adventure: str):
             map.append("未知")
         else:
             map.append(i["LayerName"] + i["SceneName"])
-    return {"status":200, "point": point, "achievements": achievement_list, "icon": icon_list, "id": id_list, "simpDesc": simpleDesc, "Desc": fullDesc, "subAchievements": subAchievements, "map": map}
+    return {"status": 200, "point": point, "achievements": achievement_list, "icon": icon_list, "id": id_list, "simpDesc": simpleDesc, "Desc": fullDesc, "subAchievements": subAchievements, "map": map}
+
 
 async def getAchievementsIcon(IconID: str):
     final_path = ASSETS + "/jx3/adventure/" + IconID + ".png"
@@ -51,8 +53,7 @@ async def getAchievementsIcon(IconID: str):
         return MessageSegment.image(Path(final_path).as_uri())
     else:
         image_url = f"https://icon.jx3box.com/icon/{IconID}.png"
-        cache = open(ASSETS + "/jx3/adventure/" + IconID + ".png", mode = "wb")
+        cache = open(ASSETS + "/jx3/adventure/" + IconID + ".png", mode="wb")
         cache.write(await get_content(image_url))
         cache.close()
         return MessageSegment.image(Path(final_path).as_uri())
-        

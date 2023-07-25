@@ -4,13 +4,14 @@ import copy
 from typing import overload, Callable
 from cron_descriptor import Options, CasingTypeEnum, DescriptionTypeEnum, ExpressionDescriptor
 
+
 def convert_keywords(raw: str) -> str:
     week_seriers = ["周一", "周二", "周三", "周四", "周五", "周六", "周日"]
     i18n_seriers = ["Monday", "Tuesday", "Wednesday",
                     "Thursday", "Friday", "Saturday", "Sunday"]
     seri_len = len(week_seriers)
     for index, x in enumerate(i18n_seriers):
-        target = index # 全文需要注意已通过cron表达式dayofweek为mon,tue等字符串
+        target = index  # 全文需要注意已通过cron表达式dayofweek为mon,tue等字符串
         raw = raw.replace(x, week_seriers[target % seri_len])
     return raw
 
