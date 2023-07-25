@@ -8,6 +8,7 @@ import uuid
 from playwright.async_api import async_playwright
 from pathlib import Path
 from sgtpyutils.logger import logger
+from sgtpyutils.timer import create_timer
 from src.tools.dep.bot.path import *
 
 import asyncio
@@ -81,11 +82,14 @@ class PlaywrightRunner(threading.Thread):
             future.set_exception(ex)
 
     async def generate_by_url(self, url: str, locate: str = None, first: bool = False, delay: int = 0) -> str:
+        t = create_timer()
+        t.start()
         future = asyncio.Future()
         self.locker.acquire()
         self.tasks.append([url, locate, first, delay, future])
         self.locker.release()
         result = await future
+        logger.info(f"completed image render [{url}] to [{result}],spent:{t.spent:.2f}s")
         return result
 
 
