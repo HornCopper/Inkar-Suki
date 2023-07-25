@@ -6,18 +6,7 @@ from tabulate import tabulate
 from pathlib import Path
 from random import randint
 
-from src.tools.file import get_resource_path
-from src.tools.file import read, write
-from src.constant.jx3.skilldatalib import aliases as get_job_aliases, kftosh as get_xinfa_belong
-from src.tools.config import Config
-from src.tools.utils import get_api
-from src.tools.generate import get_uuid
-
-from . import DATA, skill_icons, TOOLS
-
-CACHE = TOOLS[:-5] + "cache"
-
-token = Config.jx3api_globaltoken
+from src.tools.dep import *
 
 css = """
 <style>
@@ -89,7 +78,7 @@ class Assistance:
         if job in ["老板", "躺", "躺拍"]:
             job = "老板"
         else:
-            job = get_job_aliases(job)
+            job = aliases(job)
             if job == False:
                 return "唔……音卡暂时没办法识别您的职业，请检查一下呗？\n避免使用“长歌”“万花”“天策”等字眼，您可以使用“天策t”“奶咕”“qc”等准确些的词语方便理解哦~\n如果您使用的词语实在无法识别，请使用标准名称，例如“离经易道”。"
         job_icon = await Assistance.get_icon(job)
@@ -100,7 +89,7 @@ class Assistance:
         except:
             return "无法获取到UID！"
         if job != "老板":
-            if get_xinfa_belong(player_data["data"]["forceName"]) != get_xinfa_belong(job):
+            if kftosh(player_data["data"]["forceName"]) != kftosh(job):
                 return "检测到自身预定职业和角色职业冲突，预定失败。"
         new = {
             "uid": uid,
