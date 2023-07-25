@@ -1,10 +1,13 @@
+"""
+@description: 用于使用playwright组件（浏览器模拟型爬虫）将网页转换为截图
+@date: 2023-07-25
+"""
+import time
 import threading
 import uuid
-from playwright.sync_api import sync_playwright
 from playwright.async_api import async_playwright
 from pathlib import Path
-from nonebot.log import logger
-import time
+from sgtpyutils.logger import logger
 from src.tools.dep.bot.path import *
 
 import asyncio
@@ -14,7 +17,7 @@ def get_uuid():
     return str(uuid.uuid1()).replace("-", "")
 
 
-class PlaywrightThread(threading.Thread):
+class PlaywrightRunner(threading.Thread):
     def __init__(self) -> None:
         self.tasks: list[tuple[str, str, bool, int, asyncio.Future]] = []
         self.IsRunning = True
@@ -22,50 +25,60 @@ class PlaywrightThread(threading.Thread):
         self.locker = threading.Lock()
         super().__init__(daemon=True)
 
-    def init(self):
-        player = sync_playwright().start()
-        browser = player.chromium.launch(headless=True, slow_mo=0)
-        page = browser.new_page()
+    async def init(self):
+        player = await async_playwright().start()
+        browser = await player.chromium.launch(headless=True, slow_mo=0)
+        page = await browser.new_page()
         return page
 
     def stop(self):
         self.IsRunning = False
+        for x in self.tasks:
+            x[4].set_exception('thread stopped')
 
-    def run(self) -> None:
-        if self._player is None:
-            self._player = self.init()
-        while self.IsRunning:
-            self.locker.acquire()
-            if len(self.tasks) == 0:
-                time.sleep(0.1)
-                self.locker.release()
-                continue
-            task = self.tasks.pop()
-            self.locker.release()
-            url, locate, first, delay, future = task
-            player = self._player
-            try:
-                player.goto(url)
-                if delay > 0:
-                    time.sleep(delay / 1000)
-                uuid_ = get_uuid()
-                img = f"{CACHE}/{uuid_}.png"
-                if locate != None:
-                    if first:
-                        player.locator(locate).first.screenshot(path=img)
-                    else:
-                        player.locator(locate).screenshot(path=img)
-                else:
-                    player.screenshot(path=img)
-
-                def callback(img: str):
-                    future.set_result(img)
-                future.get_loop().call_soon_threadsafe(callback, img)
-            except Exception as ex:
-                reason = f"音卡的图片[{url}]生成失败啦！请尝试执行`playwright install`！:{ex}"
-                logger.warning(reason)
-                future.set_exception(ex)
+    def run(self):
+        asyncio.run(self.run_loop_async())
         return super().run()
+
+    async def run_loop_async(self):
+        while self.IsRunning:
+            await self.run_async()
+            time.sleep(0.1)
+        logger.warning("rendering thread stopped.")
+
+    async def run_async(self) -> None:
+        if self._player is None:
+            logger.warning("loading player")
+            self._player = await self.init()
+            logger.warning(f"completed load player:{self._player}")
+
+        if len(self.tasks) == 0:
+            return
+
+        task = self.tasks.pop()
+        url, locate, first, delay, future = task
+        logger.info(f"rendering start new task:[{url}]")
+        player = self._player
+        try:
+            await player.goto(url)
+            if delay > 0:
+                time.sleep(delay / 1000)
+            uuid_ = get_uuid()
+            img = f"{CACHE}/{uuid_}.png"
+            loc = player
+            if locate != None:
+                loc = loc.locator(locate)
+                if first:
+                    loc = loc.first
+            await loc.screenshot(path=img)
+
+            def callback(img: str):
+                future.set_result(img)
+            future.get_loop().call_soon_threadsafe(callback, img)
+        except Exception as ex:
+            reason = f"图片[{url}]生成失败，请尝试执行`playwright install`！:{ex}"
+            logger.warning(reason)
+            future.set_exception(ex)
 
     async def generate_by_url(self, url: str, locate: str = None, first: bool = False, delay: int = 0) -> str:
         future = asyncio.Future()
@@ -76,12 +89,12 @@ class PlaywrightThread(threading.Thread):
         return result
 
 
-__client = PlaywrightThread()
+__client = PlaywrightRunner()
 __client.start()
 
 
 def stop_playwright():
-    __client.IsRunning = False
+    __client.stop()
 
 
 async def generate_by_url(url: str, locate: str = None, first: bool = False, delay: int = 0):
@@ -100,6 +113,7 @@ async def generate(html: str, web: bool = False, locate: str = None, first: bool
     @return : 返回生成的图片路径
     '''
     if web:
+        logger.warning(f"render stopped for `web` options is set to True")
         pass
     html = Path(html).as_uri()
     result = await generate_by_url(html, locate, first, delay)
