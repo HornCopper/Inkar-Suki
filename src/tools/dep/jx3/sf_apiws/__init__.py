@@ -89,7 +89,7 @@ class SfWebSocket(object):
         ws_path = Config.sfapi_wslink
         ws_token = Config.sfapi_wstoken
         if not (ws_token or ws_path):
-            return logger.warn(f'fail to load {__name__} config invalid')
+            return logger.warning(f'fail to load {__name__} config invalid')
         headers = {"token": ws_token}
         logger.debug(f"<g>ws_server</g> | 正在链接sfapi的ws服务器：{ws_path}")
         for i in range(1, 101):
@@ -112,7 +112,7 @@ class SfWebSocket(object):
 
         if not self.connect:
             # 未连接成功，发送消息给bot，如果有
-            logger.warn("sfapi > ws服务器连接失败，请查看日志或者重连。")
+            logger.warning("sfapi > ws服务器连接失败，请查看日志或者重连。")
             return False
         return True
 

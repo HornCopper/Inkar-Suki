@@ -7,6 +7,7 @@ from src.tools.dep import *
 from src.tools.generate import generate, get_uuid
 from src.plugins.help import css
 
+
 async def zone(server, id):
     server = server_mapping(server)
     final_url = f"{Config.jx3api_link}/view/role/teamCdList?token={token}&server={server}&name={id}&ticket={ticket}&robot={bot}&scale=1"
@@ -14,6 +15,7 @@ async def zone(server, id):
     if data["code"] == 404:
         return ["玩家不存在或尚未在世界频道发言哦~"]
     return data["data"]["url"]
+
 
 async def get_cd(server: str, sep: str):
     url = f"https://pull.j3cx.com/api/serendipity?server={server}&serendipity={sep}&pageSize=1"
@@ -26,22 +28,27 @@ async def get_cd(server: str, sep: str):
     msg = f"「{server}」服务器上一次记录「{sep}」：\n{time}\n数据来源：@茗伊插件集"
     return msg
 
+
 def format_body(data: dict) -> str:
     return json.dumps(data, separators=(",", ":"))
 
+
 def gen_ts() -> str:
     return f"{datetime.datetime.now():%Y%m%d%H%M%S%f}"[:-3]
+
 
 def gen_xsk(data: str) -> str:
     data += "@#?.#@"
     secret = "MaYoaMQ3zpWJFWtN9mqJqKpHrkdFwLd9DDlFWk2NnVR1mChVRI6THVe6KsCnhpoR"
     return hmac.new(secret.encode(), msg=data.encode(), digestmod=hashlib.sha256).hexdigest()
 
+
 async def post_url(url, proxy: dict = None, headers: str = None, timeout: int = 300, data: dict = None):
-    async with httpx.AsyncClient(proxies=proxy, follow_redirects = True) as client:
-        resp = await client.post(url, timeout = timeout, headers = headers, data = data)
+    async with httpx.AsyncClient(proxies=proxy, follow_redirects=True) as client:
+        resp = await client.post(url, timeout=timeout, headers=headers, data=data)
         result = resp.text
         return result
+
 
 async def get_map(name, mode):
     param = {
@@ -51,9 +58,9 @@ async def get_map(name, mode):
     param = format_body(param)
     xsk = gen_xsk(param)
     headers = {
-            "x-sk": xsk
+        "x-sk": xsk
     }
-    data = await post_url(url="https://m.pvp.xoyo.com/dungeon/list", data = param, headers = headers)
+    data = await post_url(url="https://m.pvp.xoyo.com/dungeon/list", data=param, headers=headers)
     data = json.loads(data)
     for i in data["data"]:
         for x in i["dungeon_infos"]:
@@ -61,6 +68,7 @@ async def get_map(name, mode):
                 for y in x["maps"]:
                     if y["mode"] == mode:
                         return y["map_id"]
+
 
 async def get_boss(map, mode, boss):
     map_id = await get_map(map, mode)
@@ -71,14 +79,15 @@ async def get_boss(map, mode, boss):
     param = format_body(param)
     xsk = gen_xsk(param)
     headers = {
-            "x-sk": xsk
+        "x-sk": xsk
     }
-    data = await post_url(url="https://m.pvp.xoyo.com/dungeon/info", data = param, headers = headers)
+    data = await post_url(url="https://m.pvp.xoyo.com/dungeon/info", data=param, headers=headers)
     data = json.loads(data)
     for i in data["data"]["info"]["boss_infos"]:
         if i["name"] == boss:
             return i["index"]
-        
+
+
 async def get_drops(map, mode, boss):
     boss_id = await get_boss(map, mode, boss)
     param = {
@@ -88,32 +97,34 @@ async def get_drops(map, mode, boss):
     param = format_body(param)
     xsk = gen_xsk(param)
     headers = {
-            "x-sk": xsk
+        "x-sk": xsk
     }
-    data = await post_url(url="https://m.pvp.xoyo.com/dungeon/boss-drop", data = param, headers = headers)
+    data = await post_url(url="https://m.pvp.xoyo.com/dungeon/boss-drop", data=param, headers=headers)
     return json.loads(data)
 
+
 def mode_mapping(mode):
-    if mode in ["25yx","yx","YX","Yx","yX","25人YX","25人英雄","英雄","25Yx","25人yX","25人yx","25英雄"]:
+    if mode in ["25yx", "yx", "YX", "Yx", "yX", "25人YX", "25人英雄", "英雄", "25Yx", "25人yX", "25人yx", "25英雄"]:
         return "25人英雄"
-    elif mode in ["25pt","PT","pt","pT","25人PT","25人Pt","25人pt","25普通","普通","25人普通","25pt","铂"]:
+    elif mode in ["25pt", "PT", "pt", "pT", "25人PT", "25人Pt", "25人pt", "25普通", "普通", "25人普通", "25pt", "铂"]:
         return "25人普通"
-    elif mode in ["10人","10","10人普通","10PT","10pt"]:
+    elif mode in ["10人", "10", "10人普通", "10PT", "10pt"]:
         return "10人普通"
-    elif mode in ["10人yx","10人英雄","10YX","10yx"]:
+    elif mode in ["10人yx", "10人英雄", "10YX", "10yx"]:
         return "10人英雄"
-    elif mode in ["10人tz","10tz","10TZ","10Tz","10人挑战","10挑战"]:
+    elif mode in ["10人tz", "10tz", "10TZ", "10Tz", "10人挑战", "10挑战"]:
         return "10人挑战"
-    elif mode in ["25人tz","tz","TZ","Tz","25挑战","25人挑战","25TZ","25tz"]:
+    elif mode in ["25人tz", "tz", "TZ", "Tz", "25挑战", "25人挑战", "25TZ", "25tz"]:
         return "25人挑战"
     else:
         return False
+
 
 async def genderater(map, mode, boss):
     mode = mode_mapping(mode)
     if mode == False:
         return ["唔……难度似乎音卡不能理解哦~"]
-    try:    
+    try:
         data = await get_drops(map, mode, boss)
     except KeyError:
         return ["唔……没有找到该掉落列表，请检查副本名称、BOSS名称或难度~"]
@@ -146,7 +157,7 @@ async def genderater(map, mode, boss):
                     adc = ctt.split("增加")[0]
                 ado.append(adc)
             for x in ado:
-                for y in ["阴性","阳性","全","阴阳","体质","等级","混元性","攻击","成效","值","毒性","御","招式产生威胁","功"]:
+                for y in ["阴性", "阳性", "全", "阴阳", "体质", "等级", "混元性", "攻击", "成效", "值", "毒性", "御", "招式产生威胁", "功"]:
                     x = x.replace(y, "")
                 ads.append(x)
             while True:
@@ -156,10 +167,12 @@ async def genderater(map, mode, boss):
                     break
         else:
             pass
-        if i["Icon"]["SubKind"] in ["腰部挂件","背部挂件","披风"]:
-            name = "<span style=\"text-align: center;\">" + i["Name"] + "<br>（" + i["Icon"]["SubKind"] + "）" + "</span>"
+        if i["Icon"]["SubKind"] in ["腰部挂件", "背部挂件", "披风"]:
+            name = "<span style=\"text-align: center;\">" + \
+                i["Name"] + "<br>（" + i["Icon"]["SubKind"] + "）" + "</span>"
         else:
-            name = "<span style=\"text-align: center;\">" + i["Name"] + "<br>（" + i["MaxStrengthLevel"] + "·" + i["Quality"] +"）" + "</span>"
+            name = "<span style=\"text-align: center;\">" + \
+                i["Name"] + "<br>（" + i["MaxStrengthLevel"] + "·" + i["Quality"] + "）" + "</span>"
         icon = "<img src=\"" + i["Icon"]["FileName"] + "\"></img>"
         final = icon + "<br>" + name
         if flag:
@@ -187,7 +200,8 @@ async def genderater(map, mode, boss):
                 adc = ctt.split("增加")[0]
             ado.append(adc)
         for x in ado:
-            filter_string = ["全","阴性","阳性","阴阳","毒性","攻击","值","成效","内功","外功","体质","根骨","力道","元气","身法","等级","混元性","招式产生威胁","水下呼吸时间","抗摔系数","马术气力上限"]
+            filter_string = ["全", "阴性", "阳性", "阴阳", "毒性", "攻击", "值", "成效", "内功", "外功", "体质",
+                             "根骨", "力道", "元气", "身法", "等级", "混元性", "招式产生威胁", "水下呼吸时间", "抗摔系数", "马术气力上限"]
             for y in filter_string:
                 if y in x:
                     x.remove(y)
@@ -198,7 +212,8 @@ async def genderater(map, mode, boss):
             except ValueError:
                 break
         ad = "|".join(ads)
-        name = "<span style=\"text-align: center;\">" + i["Name"] + "<br>（" + i["MaxStrengthLevel"] + "·" + i["Quality"] + "）" + "</span>"
+        name = "<span style=\"text-align: center;\">" + \
+            i["Name"] + "<br>（" + i["MaxStrengthLevel"] + "·" + i["Quality"] + "）" + "</span>"
         force = i["BelongForce"]
         icon = "<img src=\"" + i["Icon"]["FileName"] + "\"></img>"
         final = icon + "<br>" + name + "<br>" + force + "<br>" + ad
@@ -226,7 +241,7 @@ async def genderater(map, mode, boss):
     num = 0
     if len(new) != 0:
         chart.append(new)
-    html = css + tabulate(chart, tablefmt = "unsafehtml")
+    html = css + tabulate(chart, tablefmt="unsafehtml")
     final_path = CACHE + "/" + get_uuid() + ".html"
     write(final_path, html)
     img = await generate(final_path, False, "table", False)

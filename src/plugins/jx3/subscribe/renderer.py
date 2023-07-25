@@ -1,6 +1,7 @@
 from src.tools.dep import *
 from src.plugins.jx3.subscribe.SubscribeRegister import *
 
+
 async def render_subscribe(VALID_Subjects: dict[str, SubscribeSubject], subscribe_info: dict[str, dict], subject: SubscribeSubject, message: str = None):
     """
     渲染订阅信息

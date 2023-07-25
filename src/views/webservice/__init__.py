@@ -5,10 +5,12 @@ from sgtpyutils.logger import logger
 host = ('localhost', 35080)
 _directory = None
 
+
 class FrontWebHandler(SimpleHTTPRequestHandler):
     def __init__(self, request, client_address, server) -> None:
         super().__init__(request, client_address, server, directory=_directory)
         self.extensions_map['.vue'] = 'text/html'
+
 
 class FrontWebServices(threading.Thread):
     def run(self) -> None:
@@ -21,7 +23,7 @@ class FrontWebServices(threading.Thread):
 client: FrontWebServices = None
 
 
-def start(directory:str):
+def start(directory: str):
     global client
     global _directory
     _directory = directory

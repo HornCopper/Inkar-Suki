@@ -1,6 +1,7 @@
 from ... import *
 from . import rnd_group
 
+
 def test_subscribe_schedule():
     def check_sub(raw: str):
         assert '已开启' in raw
@@ -10,6 +11,7 @@ def test_subscribe_schedule():
     result = asyncio.run(task)
     msg = result[2]
     check_sub(msg)
+
 
 def test_subscribe_lower():
     def check_sub(raw: str):

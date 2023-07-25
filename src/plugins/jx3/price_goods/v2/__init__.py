@@ -2,7 +2,8 @@ from nonebot.matcher import Matcher
 
 from ..api import *
 from .renderer import *
-jx3_cmd_trade2 = on_command("jx3_trade2", aliases = {"交易行"}, priority = 5)
+jx3_cmd_trade2 = on_command("jx3_trade2", aliases={"交易行"}, priority=5)
+
 
 @jx3_cmd_trade2.handle()
 async def jx3_trade2(matcher: Matcher, state: T_State, event: GroupMessageEvent, args: Message = CommandArg()):
@@ -18,6 +19,7 @@ async def jx3_trade2(matcher: Matcher, state: T_State, event: GroupMessageEvent,
     arg_server, arg_item, arg_page = arg
     return await handle_trade2(matcher, state, arg_server, arg_item, arg_page)
 
+
 def get_trade2_args(event: GroupMessageEvent, args: Message = CommandArg()):
     template = [Jx3Arg(Jx3ArgsType.server), Jx3Arg(
         Jx3ArgsType.default), Jx3Arg(Jx3ArgsType.pageIndex)]
@@ -26,16 +28,17 @@ def get_trade2_args(event: GroupMessageEvent, args: Message = CommandArg()):
     if isinstance(arg, InvalidArgumentException):
         return f"{PROMPT_ArgumentInvalid}如 价格 帝骖龙翔 1"
     arg_server, arg_item, arg_page = arg
-    arg_server = server_mapping(arg_server, group_id = str(event.group_id))
+    arg_server = server_mapping(arg_server, group_id=str(event.group_id))
     arg_page = 0 if arg_page is None or arg_page <= 1 else arg_page - 1  # 从第0页起算
     if not arg_server:
         return PROMPT_ServerNotExist
     return [arg_server, arg_item, arg_page]
 
+
 async def handle_trade2(matcher: Matcher, state: T_State, arg_server: str, arg_item: str, arg_page: int):
     state["server"] = arg_server
     pageSize = 20
-    data, totalCount = await search_item_info_for_price(arg_item, arg_server, pageIndex = arg_page, pageSize = pageSize)
+    data, totalCount = await search_item_info_for_price(arg_item, arg_server, pageIndex=arg_page, pageSize=pageSize)
     if not isinstance(data, List):
         return await jx3_cmd_trade2.finish(data)
     all_id = [x.id for x in data]  # 取到的是id列表
@@ -46,7 +49,8 @@ async def handle_trade2(matcher: Matcher, state: T_State, arg_server: str, arg_i
     result = await render_items(arg_server, arg_item, arg_page, pageSize, totalCount, data)
     return await jx3_cmd_trade2.send(ms.image(Path(result).as_uri()))
 
-jx3_cmd_favouritest = on_command("jx3_trade_favoritest", aliases = {"交易行热门"}, priority = 5)
+jx3_cmd_favouritest = on_command("jx3_trade_favoritest", aliases={"交易行热门"}, priority=5)
+
 
 @jx3_cmd_favouritest.handle()
 async def jx3_trade_favoritest(matcher: Matcher, state: T_State, event: GroupMessageEvent, args: Message = CommandArg()):
@@ -62,11 +66,12 @@ async def jx3_trade_favoritest(matcher: Matcher, state: T_State, event: GroupMes
     arg_server, _, arg_page = arg
     items = get_favoritest_by_predict(lambda index, x: x.u_popularity > 100)
     pageSize = 20
-    data, totalCount = await get_prices_by_items(items, arg_server, pageIndex = arg_page, pageSize = pageSize)
+    data, totalCount = await get_prices_by_items(items, arg_server, pageIndex=arg_page, pageSize=pageSize)
     if not isinstance(data, List):
         return await jx3_cmd_favouritest.finish(data)
-    result = await render_items(arg_server, "热门物品", arg_page, pageSize, totalCount, data, template = "goods_list_fav")
+    result = await render_items(arg_server, "热门物品", arg_page, pageSize, totalCount, data, template="goods_list_fav")
     return await jx3_cmd_favouritest.send(ms.image(Path(result).as_uri()))
+
 
 @jx3_cmd_trade2.got("user_select_index")
 async def price_num_selected2(state: T_State, event: GroupMessageEvent, user_select_index: Message = Arg()):

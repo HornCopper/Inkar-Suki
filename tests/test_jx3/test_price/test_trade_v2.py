@@ -38,6 +38,7 @@ def test_default_server():
     mc.check_counter()
     server_bind(event.group_id, '')
 
+
 def jx3_trade_favoritest():
     mc = MessageCallback()
     v2.jx3_cmd_favouritest = mc
@@ -106,7 +107,6 @@ def test_goods_level():
     task = jx3_trade(mc, state, event, obMessage(mc.tag))
     asyncio.run(task)
     mc.check_counter()
-
 
     price_num_selected = src.plugins.jx3.price_num_selected2
     state = {'id': ['7_94556'], 'server': '唯我独尊'}  # 无封裤（12100）
