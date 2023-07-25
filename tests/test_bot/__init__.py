@@ -25,4 +25,3 @@ def test_args():
 
     args = get_args('唯满侠', templates)
     assert isinstance(args, Exception)
-    

@@ -1,3 +1,4 @@
+from sgtpyutils.logger import logger
 import httpx
 import time
 
@@ -37,9 +38,20 @@ async def send_with_async(method: str, url: str, proxy: dict = None, **kwargs) -
     以指定方式发出请求，并返回请求结果的Response对象
     '''
     kwargs = get_default_args(**kwargs)
-    async with httpx.AsyncClient(proxies=proxy, follow_redirects=True,verify=False) as client:
-        req = await client.request(method, url, **kwargs)
-        return req
+    max_try_time = 3
+    try:
+        async with httpx.AsyncClient(proxies=proxy, follow_redirects=True, verify=False) as client:
+            req = await client.request(method, url, **kwargs)
+            return req
+    except TimeoutError:
+        max_try_time -= 1
+        if max_try_time < 0:
+            logger.error(
+                f"max_try_time(count={max_try_time}) exceeded to request in httpx({method} -> {url})")
+            return None
+    except Exception as ex:
+        logger.error(f"fail to request in httpx({method} -> {url}):\n{ex}")
+        return None
 
 
 async def get_url(url: str, proxy: dict = None, **kwargs) -> str:
