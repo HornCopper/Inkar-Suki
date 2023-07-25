@@ -1,7 +1,7 @@
 from bs4 import BeautifulSoup
 from src.tools.utils import get_url
 
-words = ["避雷","骗子","818","跑单"]
+words = ["避雷","骗子","【818】","跑单"]
 
 async def verify_cheater(content):
     url = f"https://tieba.baidu.com/f/search/res?ie=utf-8&qw={content}"
