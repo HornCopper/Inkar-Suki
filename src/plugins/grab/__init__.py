@@ -152,7 +152,7 @@ async def handle(state: T_State, img: Message = Arg()):
         f.write(dish_img.content)
     name = state["name"]
     type_ = state["type"]
-    await add_dish.finish(f"成功添加{type_}:{name}\n" + MessageSegment.image(img_url))
+    await add_dish.finish(f"成功添加{type_}:{name}\n" + ms.image(img_url))
 
 
 @view_dish.handle()
@@ -175,7 +175,7 @@ async def handle(state: T_State, name: Message = Arg()):
     elif state["type"] == "喝的":
         img = img_drink_path / (str(name)+".jpg")
     try:
-        await view_dish.send(MessageSegment.image(img))
+        await view_dish.send(ms.image(img))
     except ActionFailed:
         await view_dish.finish("没有找到你所说的，请检查一下菜单吧", at_sender=True)
 
@@ -200,7 +200,7 @@ async def handle(bot: Bot, event: MessageEvent, state: T_State):
             img_bytes = im.read()
         base64_str = "base64://" + base64.b64encode(img_bytes).decode()
         name = re.sub(".jpg", "", name)
-        msg_list.append(f"{N}.{name}\n{MessageSegment.image(base64_str)}")
+        msg_list.append(f"{N}.{name}\n{ms.image(base64_str)}")
     await send_forward_msg(bot, event, Bot_NICKNAME, bot.self_id, msg_list)
 
 # 初始化内置时间的last_time
@@ -226,7 +226,7 @@ async def wtd(msg: MessageEvent):
         with open(img, "rb") as im:
             img_bytes = im.read()
         base64_str = "base64://" + base64.b64encode(img_bytes).decode()
-        msg = (f"{Bot_NICKNAME}建议你喝: \n⭐{img.stem}⭐\n" + MessageSegment.image(base64_str))
+        msg = (f"{Bot_NICKNAME}建议你喝: \n⭐{img.stem}⭐\n" + ms.image(base64_str))
         try:
             await what_drink.send("正在为你找好喝的……")
             await what_drink.send(msg, at_sender=True)
@@ -251,7 +251,7 @@ async def wte(msg: MessageEvent):
         with open(img, "rb") as im:
             img_bytes = im.read()
         base64_str = "base64://" + base64.b64encode(img_bytes).decode()
-        msg = (f"{Bot_NICKNAME}建议你吃: \n⭐{img.stem}⭐\n" + MessageSegment.image(base64_str))
+        msg = (f"{Bot_NICKNAME}建议你吃: \n⭐{img.stem}⭐\n" + ms.image(base64_str))
         try:
             await what_eat.send("正在为你找好吃的……")
             await what_eat.send(msg, at_sender=True)
