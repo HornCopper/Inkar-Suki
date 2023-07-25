@@ -149,7 +149,7 @@ async def get_icon(skillName: str, type_: str, api_icon: str = None, kungfu: str
         if type_ == "cq":
             return "[CQ:image,file=" + Path(final_path).as_uri() + "]"
         else:
-            return MessageSegment.image(Path(final_path).as_uri())
+            return ms.image(Path(final_path).as_uri())
     else:
         api_icon_url = api_icon
         try:
@@ -163,7 +163,7 @@ async def get_icon(skillName: str, type_: str, api_icon: str = None, kungfu: str
         if type_ == "cq":
             return "[CQ:image,file=" + Path(final_path).as_uri() + "]"
         else:
-            return MessageSegment.image(Path(final_path).as_uri())
+            return ms.image(Path(final_path).as_uri())
 
 
 async def getAllSkillsInfo(Kungfu: str) -> str:

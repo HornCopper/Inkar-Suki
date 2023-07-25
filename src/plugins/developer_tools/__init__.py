@@ -204,7 +204,7 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
     else:
         image = generate_by_url(url)
         await web.finish("获取图片成功！\n"
-                         + MessageSegment.image(Path(image).as_uri()))
+                         + ms.image(Path(image).as_uri()))
 
 apply = on_command("apply", aliases={"-申请"}, priority=5)  # 申请使用机器人的命令，`repo`地址来源于`config.py`。
 
