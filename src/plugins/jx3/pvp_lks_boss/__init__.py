@@ -45,4 +45,4 @@ async def _(event: GroupMessageEvent):
     if img == False:
         await lks.finish("唔……音卡的烂柯山图片生成失败了捏，请联系作者~")
     else:
-        await lks.finish(MessageSegment.image(Path(img).as_uri()))
+        await lks.finish(ms.image(Path(img).as_uri()))
