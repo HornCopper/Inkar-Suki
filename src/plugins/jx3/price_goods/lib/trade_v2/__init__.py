@@ -8,6 +8,7 @@ from ..GoodsBase import *
 from ..GoodsPrice import *
 from ..trade import *
 
+
 async def search_item_info_for_price(item_name: str, server: str, pageIndex: int = 0, pageSize: int = 20):
     """
     搜索物品，并排除拾绑物品及无销售的物品
@@ -20,6 +21,7 @@ async def search_item_info_for_price(item_name: str, server: str, pageIndex: int
         return [data, None]  # 未返回正确数据
     data = [x for x in data if x.bind_type != GoodsBindType.BindOnPick]
     return await get_prices_by_items(data, server, pageIndex, pageSize)
+
 
 async def get_prices_by_items(data: list, server: str, pageIndex: int = 0, pageSize: int = 20):
     """
@@ -40,6 +42,7 @@ async def get_prices_by_items(data: list, server: str, pageIndex: int = 0, pageS
     total = len(result)
     query_items = result[page_start:page_start+pageSize]
     return [query_items, total]
+
 
 async def get_goods_current_detail_price(id: str, server: str, only_cache: bool = False) -> list:
     """
@@ -64,6 +67,7 @@ async def get_goods_current_detail_price(id: str, server: str, only_cache: bool 
     flush_CACHE_PriceDetail()
     return price_detail
 
+
 @overload
 async def get_goods_current_price(goods: List[str], server: str) -> dict[str, GoodsPriceSummary]:
     """
@@ -71,12 +75,14 @@ async def get_goods_current_price(goods: List[str], server: str) -> dict[str, Go
     """
     ...
 
+
 @overload
 async def get_goods_current_price(goods: List[GoodsInfo], server: str) -> dict[str, GoodsPriceSummary]:
     """
     基于商品信息批量加载当日价格
     """
     ...
+
 
 async def get_goods_current_price(goods, server: str) -> dict:
     if not goods:
@@ -91,27 +97,32 @@ async def get_goods_current_price(goods, server: str) -> dict:
         data[x] = GoodsPriceSummary(data[x])
     return data
 
+
 def get_goods_unbind():
     goods = [x for x in CACHE_Goods.values() if x.bind_type.value != GoodsBindType.BindOnUse]
     return goods
 
+
 def get_favoritest_by_top(top: int = 20):
     goods = get_goods_unbind()
-    goods.sort(key = lambda x: -x.u_popularity)
+    goods.sort(key=lambda x: -x.u_popularity)
     goods = goods[0:top]
     return goods
 
+
 def get_favoritest_by_predict(predict: callable):
     goods = get_goods_unbind()
-    goods.sort(key = lambda x: -x.u_popularity)
+    goods.sort(key=lambda x: -x.u_popularity)
     return [x for index, x in enumerate(goods) if predict(index, x)]
+
 
 class FavoritestGoodsPriceRefreshThread(threading.Thread):
     """
     定时获取热门商品价格
     """
+
     def __init__(self) -> None:
-        super().__init__(daemon = True)
+        super().__init__(daemon=True)
 
     def run(self) -> None:
         logger.debug("refresh_favoritest_goods_current_price start")
@@ -122,7 +133,7 @@ class FavoritestGoodsPriceRefreshThread(threading.Thread):
             for x in goods:
                 tasks.append([x.id, server])
         result: List = []
-        pool = ThreadPoolExecutor(max_workers = 5)
+        pool = ThreadPoolExecutor(max_workers=5)
 
         def run_single(a, b):
             return asyncio.run(get_goods_current_detail_price(a, b))
@@ -136,7 +147,9 @@ class FavoritestGoodsPriceRefreshThread(threading.Thread):
         logger.debug("refresh_favoritest_goods_current_price complete")
         return super().run()
 
+
 thread_fav_prices_refresher: FavoritestGoodsPriceRefreshThread = None
+
 
 async def refresh_favoritest_goods_current_price():
     global thread_fav_prices_refresher
@@ -144,7 +157,9 @@ async def refresh_favoritest_goods_current_price():
         thread_fav_prices_refresher = FavoritestGoodsPriceRefreshThread()
         thread_fav_prices_refresher.start()
 
-scheduler.add_job(func = refresh_favoritest_goods_current_price, trigger = IntervalTrigger(minutes = 60), misfire_grace_time = 300)
+scheduler.add_job(func=refresh_favoritest_goods_current_price,
+                  trigger=IntervalTrigger(minutes=60), misfire_grace_time=300)
+
 
 async def refresh_goods_popularity():
     """
@@ -158,4 +173,5 @@ async def refresh_goods_popularity():
     flush_CACHE_Goods()
     logger.debug(f"completed refresh_goods_popularity count:{len(goods)}")
 
-scheduler.add_job(func = refresh_goods_popularity, trigger = IntervalTrigger(minutes = 60), misfire_grace_time = 300)
+scheduler.add_job(func=refresh_goods_popularity,
+                  trigger=IntervalTrigger(minutes=60), misfire_grace_time=300)

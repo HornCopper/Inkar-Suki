@@ -2,6 +2,7 @@ import copy
 
 from .Caches import *
 
+
 def check_cache_integrity(current_cache: dict, new_data: dict):
     # 当前缓存没有缓存品数，应为其缓存
     cached_level = not current_cache.get("level") is None
@@ -11,6 +12,7 @@ def check_cache_integrity(current_cache: dict, new_data: dict):
     current_cache["level"] = new_data.get("Level")
     CACHE_Goods[current_cache["id"]] = dict2obj(GoodsInfo(), current_cache)
     flush_CACHE_Goods()
+
 
 async def from_id(id: str) -> GoodsInfoFull:
     """

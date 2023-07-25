@@ -1,6 +1,8 @@
 from .api import *
 
-matrix = on_command("jx3_matrix", aliases = {"阵眼"}, priority = 5)
+matrix = on_command("jx3_matrix", aliases={"阵眼"}, priority=5)
+
+
 @matrix.handle()
 async def _(args: Message = CommandArg()):
     """

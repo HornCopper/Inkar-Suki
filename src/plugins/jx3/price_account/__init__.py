@@ -1,6 +1,8 @@
 from .api import *
 
-dh_ = on_command("jx3_dh", aliases = {"蹲号"}, priority = 5)
+dh_ = on_command("jx3_dh", aliases={"蹲号"}, priority=5)
+
+
 @dh_.handle()
 async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
     """
@@ -19,4 +21,4 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
     if type(data) != type([]):
         await dh_.finish(data)
     else:
-        await bot.call_api("send_group_forward_msg", group_id = event.group_id, messages = data)
+        await bot.call_api("send_group_forward_msg", group_id=event.group_id, messages=data)

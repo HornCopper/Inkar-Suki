@@ -3,12 +3,14 @@ import time
 
 from .Golds import *
 
+
 class GoodsPriceRecord:
     def __init__(self) -> None:
         self.updated: int = 0
 
     def updated_time(self):
         self.updated = time.time()
+
 
 class GoodsPriceSummary(GoodsPriceRecord):
     def __init__(self, data: dict = None) -> None:
@@ -22,6 +24,7 @@ class GoodsPriceSummary(GoodsPriceRecord):
         self.HighestPrice = data.get("HighestPrice")
         self.AvgPrice = data.get("AvgPrice")
         super().__init__()
+
 
 class GoodsPriceDetail(GoodsPriceRecord):
     Price_Valid_TotalPrice = Gold.price_by_gold(100)  # 总价在100金以上则有效
@@ -46,8 +49,8 @@ class GoodsPriceDetail(GoodsPriceRecord):
             self.price_lowest = GoodsPriceDetail.InvalidPrice
             self.price_valid = GoodsPriceDetail.InvalidPrice
             return self.price_valid
-        prices.sort(key = lambda x: x[2])  # 按价格升序排列
-        self.latest = int(max(prices, key = lambda x: x[0])[0]) * 1e3
+        prices.sort(key=lambda x: x[2])  # 按价格升序排列
+        self.latest = int(max(prices, key=lambda x: x[0])[0]) * 1e3
         total_price = 0
         self.price_lowest = prices[0][2]
         for x in prices:
