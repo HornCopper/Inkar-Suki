@@ -1,11 +1,6 @@
-<<<<<<< HEAD
-import json
-
-=======
 from .GoodsSerializer import *
 from .GoodsPrice import *
 from .GoodsBase import *
->>>>>>> 373c826e40363761fc1455e30b8c8d0d6ef1d5d0
 from sgtpyutils.extensions.clazz import dict2obj
 from typing import Dict
 

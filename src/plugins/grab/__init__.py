@@ -68,13 +68,9 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     msg = await get_tieba(int(tid))
     await tieba.finish(msg)
 
-<<<<<<< HEAD
-cheater_ = on_command("jx3_cheater", aliases={"-骗子", "查人"}, priority=5)
-=======
 cheater_ = on_command("jx3_cheater", aliases={"-骗子", "-查人"}, priority=5)
 
 
->>>>>>> 373c826e40363761fc1455e30b8c8d0d6ef1d5d0
 @cheater_.handle()
 async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
     content = args.extract_plain_text()
@@ -94,14 +90,9 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
             msg = f"此人应该不是骗子？音卡在贴吧没有找到哦~\n{basic_info}"
         else:
             url = data
-<<<<<<< HEAD
             msg = f"此人可能是骗子？在贴吧已有记录！\n{url}\n{basic_info}\n仅供参考！请以实际内容为准！"
-        await cheater_.finish(msg) 
-=======
-            msg = f"此人是骗子！在贴吧已有记录！\n{url}\n{basic_info}"
         await cheater_.finish(msg)
 
->>>>>>> 373c826e40363761fc1455e30b8c8d0d6ef1d5d0
 
 @del_dish.handle()
 async def got_dish_name(matcher: Matcher, state: T_State):
