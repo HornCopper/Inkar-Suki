@@ -1,7 +1,7 @@
 from ... import *
 
 
-@pytest.mark.skipif(not Config.token, reason="无token时不测试")
+@pytest.mark.skipif(not Config.jx3_token, reason="无token时不测试")
 def test_recruit():
     import src.plugins.jx3.recruit
     func = src.plugins.jx3.recruit.jx3_recruit
