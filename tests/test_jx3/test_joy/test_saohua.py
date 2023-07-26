@@ -2,6 +2,7 @@ from ... import *
 from src.plugins.jx3 import jxjoy
 
 
+@pytest.mark.skipif(not Config.jx3api_link, reason=f"无jx3api_link时不测试")
 def test_saohua():
     def cb_finish(msg: str):
         assert len(msg) > 10
@@ -14,6 +15,7 @@ def test_saohua():
     mc.check_counter()
 
 
+@pytest.mark.skipif(not Config.jx3api_link, reason="无jx3api_link时不测试")
 def test_tiangou():
     def cb_finish(msg: str):
         assert len(msg) > 10
