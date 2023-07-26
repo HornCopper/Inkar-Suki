@@ -77,8 +77,8 @@ async def jx3_trade_favoritest(matcher: Matcher, state: T_State, event: GroupMes
 async def price_num_selected2(state: T_State, event: GroupMessageEvent, user_select_index: Message = Arg()):
     good_index = get_number(user_select_index.extract_plain_text())
     all_ids = state["id"]
-    if good_index >= len(all_ids) or good_index <= 0:
-        return await jx3_cmd_trade2.finish(f"无效的序号，有效范围:1-{len(all_ids)}")
+    if good_index > len(all_ids) or good_index <= 0:
+        return await jx3_cmd_trade2.finish(f"无效的序号[{good_index}]，有效范围:1-{len(all_ids)}")
     target_id = all_ids[good_index-1]
     server = server_mapping(state["server"], event.group_id)
     goods_price_log = await getItemPriceById(target_id, server)
