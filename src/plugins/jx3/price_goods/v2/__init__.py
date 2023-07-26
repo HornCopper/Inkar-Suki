@@ -44,7 +44,7 @@ async def handle_trade2(matcher: Matcher, state: T_State, arg_server: str, arg_i
     all_id = [x.id for x in data]  # 取到的是id列表
     state["id"] = all_id
     if len(all_id) == 1:  # 仅有一个物品的话，则直接显示更加详细的信息
-        matcher.set_arg("user_select_index", obMessage("0"))
+        matcher.set_arg("user_select_index", obMessage("1"))
         return
     result = await render_items(arg_server, arg_item, arg_page, pageSize, totalCount, data)
     return await jx3_cmd_trade2.send(ms.image(Path(result).as_uri()))
@@ -74,12 +74,12 @@ async def jx3_trade_favoritest(matcher: Matcher, state: T_State, event: GroupMes
 
 
 @jx3_cmd_trade2.got("user_select_index")
-async def price_num_selected2(state: T_State, event: GroupMessageEvent, user_select_index: Message = Arg()):
-    num = get_number(user_select_index.extract_plain_text())
+async def price_num_selected2(matcher: Matcher, state: T_State, event: GroupMessageEvent, user_select_index: Message = Arg()):
+    good_index = get_number(user_select_index.extract_plain_text())
     all_ids = state["id"]
-    if num >= len(all_ids):
-        return await jx3_cmd_trade2.finish(f"无效的序号，有效范围:0-{len(all_ids)}")
-    target_id = all_ids[num]
+    if good_index >= len(all_ids) or good_index <= 0:
+        return await jx3_cmd_trade2.finish(f"无效的序号，有效范围:1-{len(all_ids)}")
+    target_id = all_ids[good_index-1]
     server = server_mapping(state["server"], event.group_id)
     goods_price_log = await getItemPriceById(target_id, server)
     await update_goods_popularity(target_id, all_ids)
