@@ -1,7 +1,7 @@
 from .... import *
 
 
-@pytest.mark.skipif(not Config.jx3_token, reason="无token时不测试")
+@pytest.mark.skipif(not Config.jx3api_globaltoken, reason="无apitoken时不测试")
 def test_user():
     import src.plugins.jx3.user
     func = src.plugins.jx3.user.jx3_player
