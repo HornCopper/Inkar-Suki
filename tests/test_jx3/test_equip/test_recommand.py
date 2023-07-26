@@ -2,7 +2,7 @@ from ... import *
 
 from src.plugins.jx3 import equip_recommend
 
-
+@pytest.mark.skipif(not Config.jx3_token, reason="无token时不测试")
 def test_recommend_menu():
     mc = MessageCallback()
     equip_recommend.jx3_cmd_equip_recommend = mc
