@@ -74,7 +74,7 @@ async def jx3_trade_favoritest(matcher: Matcher, state: T_State, event: GroupMes
 
 
 @jx3_cmd_trade2.got("user_select_index")
-async def price_num_selected2(matcher: Matcher, state: T_State, event: GroupMessageEvent, user_select_index: Message = Arg()):
+async def price_num_selected2(state: T_State, event: GroupMessageEvent, user_select_index: Message = Arg()):
     good_index = get_number(user_select_index.extract_plain_text())
     all_ids = state["id"]
     if good_index >= len(all_ids) or good_index <= 0:
