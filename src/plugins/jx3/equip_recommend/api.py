@@ -17,9 +17,6 @@ try:
 except:
     pass
 
-token = Config.jx3_token
-
-
 def format_body(data: dict) -> str:
     return json.dumps(data, separators=(",", ":"))
 
@@ -51,7 +48,7 @@ async def get_recommended_equips_list(forceId: str, condition):
         "ts": gen_ts()
     }
     param = format_body(param)
-    device_id = token.split("::")[1]
+    device_id = ticket.split("::")[1]
     xsk = gen_xsk(param)
     headers = {
         "Host": "m.pvp.xoyo.com",
@@ -64,7 +61,7 @@ async def get_recommended_equips_list(forceId: str, condition):
         "cache-control": "no-cache",
         "apiversion": "3",
         "sign": "true",
-        "token": token,
+        "token": ticket,
         "content-Type": "application/json",
         "accept-encoding": "gzip",
         "user-agent": "okhttp/3.12.2",

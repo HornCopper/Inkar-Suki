@@ -4,7 +4,6 @@ from src.tools.generate import generate, get_uuid
 
 lks = on_command("jx3_leader", aliases={"-烂柯山"}, priority=5)
 
-
 @lks.handle()
 async def _(event: GroupMessageEvent):
     bad = "https://jx3wbl.xoyocdn.com/img/icon-camp-bad.07567e9f.png"
