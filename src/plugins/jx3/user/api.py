@@ -70,24 +70,6 @@ async def post_url(url, proxy: dict = None, headers: str = None, timeout: int = 
         result = resp.text
         return result
 
-<<<<<<< HEAD
-=======
-
-def format_body(data: dict) -> str:
-    return json.dumps(data, separators=(",", ":"))
-
-
-def gen_ts() -> str:
-    return f"{datetime.now(timezone.utc):%Y%m%d%H%M%S%f}"[:-3]
-
-
-def gen_xsk(data: str) -> str:
-    data += "@#?.#@"
-    secret = "MaYoaMQ3zpWJFWtN9mqJqKpHrkdFwLd9DDlFWk2NnVR1mChVRI6THVe6KsCnhpoR"
-    return hmac.new(secret.encode(), msg=data.encode(), digestmod=hashlib.sha256).hexdigest()
-
-
->>>>>>> 8177636a87b825441ec9d90e1bf024203df64c67
 def zone_mapping(server):
     if server == "绝代天骄":
         return "电信八区"
@@ -297,7 +279,6 @@ async def get_attr_main(server, id, group_id):
     xsk = gen_xsk(param)
     device_id = ticket.split("::")[1]
     headers = {
-<<<<<<< HEAD
         "Host" : "m.pvp.xoyo.com",
         "Accept" : "application/json",
         "Accept-Language" : "zh-cn",
@@ -313,8 +294,6 @@ async def get_attr_main(server, id, group_id):
         "token" : token,
         "deviceid" : device_id,
         "User-Agent" : "SeasunGame/193 CFNetwork/1240.0.4 Darwin/20.6.0",
-=======
->>>>>>> 8177636a87b825441ec9d90e1bf024203df64c67
         "x-sk": xsk
     }
     data = await post_url(url="https://m.pvp.xoyo.com/mine/equip/get-role-equip", data=param, headers=headers)
