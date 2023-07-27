@@ -12,14 +12,13 @@ from .top100 import *
 
 jx3_token = Config.jx3_token
 
-
 async def rank_(type_1: str, type_2: str, server: str, group_id: str):
     server = server_mapping(server, group_id)
     if not server:
         return [PROMPT_ServerNotExist]
     if token == None:
         return [PROMPT_NoToken]
-    final_url = f"{Config.jx3api_link}/view/rank/excellent?token={token}&robot={bot}&server={server}&table={type_1}&name={type_2}&scale=1"
+    final_url = f"{Config.jx3api_link}/data/rank/statistical?token={token}&robot={bot}&server={server}&table={type_1}&name={type_2}&scale=1"
     if type_1 == "个人":
         if type_2 not in ["名士五十强", "老江湖五十强", "兵甲藏家五十强", "名师五十强", "阵营英雄五十强", "薪火相传五十强", "庐园广记一百强"]:
             return ["唔……类型不正确，请检查后重试~"]
@@ -40,7 +39,6 @@ async def rank_(type_1: str, type_2: str, server: str, group_id: str):
     if data["code"] == 404:
         return ["唔……未收录！"]
     return data["data"]["url"]
-
 
 def format_body(data: dict) -> str:
     return json.dumps(data, separators=(',', ':'))

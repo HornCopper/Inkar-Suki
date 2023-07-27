@@ -1,6 +1,5 @@
 from src.tools.dep import *
 
-
 async def item_(name: str = None):  # 物价 <物品>
     if token == None:
         return [PROMPT_NoToken]

@@ -2,7 +2,7 @@ from src.tools.dep import *
 from src.plugins.help import css
 from src.tools.generate import generate, get_uuid
 
-lks = on_command("jx3_leader", aliases={"-烂柯山"}, priority=5)
+lks = on_command("jx3_leader", aliases={"烂柯山","关隘","关隘首领"}, priority=5)
 
 @lks.handle()
 async def _(event: GroupMessageEvent):
@@ -31,6 +31,7 @@ async def _(event: GroupMessageEvent):
         rest = RestTime(time_)
         msg = f"<img src={pic}></img>{castle}<br><font color=\"darkgrey\">{leader}<br>{status}<br>{convert_time(time_)}（{rest}）</font>"
         return msg
+
     url = f"{Config.jx3api_link}/data/server/leader?token={token}"
     data = await get_api(url)
     chart = []

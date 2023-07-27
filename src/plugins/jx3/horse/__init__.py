@@ -16,7 +16,6 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
 
 horse = on_command("jx3_horse", aliases={"抓马", "马场"}, priority=5)
 
-
 @horse.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     server = args.extract_plain_text()

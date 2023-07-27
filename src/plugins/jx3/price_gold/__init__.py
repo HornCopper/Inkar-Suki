@@ -2,7 +2,6 @@ from .api import *
 
 demon = on_command("jx3_demon", aliases={"金价"}, priority=5)
 
-
 @demon.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     """

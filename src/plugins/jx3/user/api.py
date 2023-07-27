@@ -45,7 +45,7 @@ async def addritube_(server: str = None, name: str = None, group_id: str = None)
 async def roleInfo_(server, player):
     if not token:
         return PROMPT_NoToken
-    final_url = f"{Config.jx3api_link}/data/role/roleInfo?token={token}&name={player}&server={server}"
+    final_url = f"{Config.jx3api_link}/data/role/detailed?token={token}&name={player}&server={server}"
     if not server:
         return PROMPT_ServerNotExist
     data = await get_api(final_url)
@@ -87,7 +87,7 @@ def zone_mapping(server):
 
 async def get_uid(server, id):
     token = Config.jx3api_globaltoken
-    url = f"{Config.jx3api_link}/data/role/roleInfo?token={token}&server={server}&name={id}"
+    url = f"{Config.jx3api_link}/data/role/detailed?token={token}&server={server}&name={id}"
     data = await get_api(url)
     if data["code"] != 200:
         return False
