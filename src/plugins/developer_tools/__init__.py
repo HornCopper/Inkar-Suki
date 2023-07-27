@@ -107,29 +107,7 @@ async def _(event: Event):
     msg = f"来啦！\n\系统信息如下：\nCPU占用：{str(per_cpu_status()[0])}%\n内存占用：{str(memory_status())}%\n"
     await ping.finish(msg + times)
 
-back = on_command("back", priority=5)  # 后台执行命令。
-
-
-@back.handle()
-async def back_(event: Event, args: Message = CommandArg()):
-    if checker(str(event.user_id), 10) == False:
-        await back.finish(error(10))
-    os.system(args.extract_plain_text())
-    await back.finish("好啦，执行完毕！")
-
-front = on_command("front", priority=5)  # 执行命令并给予输出。
-
-
-@front.handle()
-async def front_(event: Event, args: Message = CommandArg()):
-    if checker(str(event.user_id), 10) == False:
-        await front.finish(error(10))
-    msg = os.popen(args.extract_plain_text()).read()
-    if msg == "":
-        msg = "执行完成，但没有输出哦~"
-    await front.finish(f"{msg}")
-
-post = on_command("post", aliases={"-公告"}, priority=5)  # 发送全域公告至每一个机器人加入的QQ群。
+post = on_command("post", priority=5)  # 发送全域公告至每一个机器人加入的QQ群。
 
 
 @post.handle()
