@@ -11,6 +11,7 @@ def test_server_map():
     pass
 
 
+@pytest.mark.skipif(not Config.jx3api_link, reason="无jx3api_link时不测试")
 def test_server_status():
     def default_cb_finish(msg: str):
         if '开服状态：' in msg:
@@ -33,5 +34,5 @@ def test_server_bind():
     event = SFGroupMessageEvent()
     from src.plugins.jx3.bind import server_bind
     server_bind(event.group_id, '唯满侠')
-    x = server_mapping(None,group_id=event.group_id)
+    x = server_mapping(None, group_id=event.group_id)
     assert x == '唯我独尊'

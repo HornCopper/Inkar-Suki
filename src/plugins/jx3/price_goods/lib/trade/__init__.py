@@ -5,11 +5,13 @@ from src.tools.dep import *
 
 from ..Caches import *
 
+
 async def search_item_local(item_name: str) -> list:
     v = [CACHE_Goods[x]
          for x in CACHE_Goods if item_name in CACHE_Goods[x].name]
     v = [get_fields(x) for x in v]
     return v
+
 
 async def search_item_info(item_name: str, pageIndex: int = 0, pageSize: int = 20):
     if not item_name:
@@ -34,7 +36,7 @@ async def search_item_info(item_name: str, pageIndex: int = 0, pageSize: int = 2
         query_items.append(item)
     if new_goods:
         flush_CACHE_Goods()
-    query_items.sort(key = lambda x: -x.priority)  # 按热门程度排序，拾绑的放后面
+    query_items.sort(key=lambda x: -x.priority)  # 按热门程度排序，拾绑的放后面
     page_start = pageIndex * pageSize
     query_items = query_items[page_start:page_start+pageSize]
     return query_items
@@ -60,11 +62,13 @@ async def getItemPriceById(id: str, server: str):
     logs.reverse()
     return [logs, goods_info]
 
+
 async def getItem(id: str):
     boxdata = await get_api(f"https://helper.jx3box.com/api/wiki/post?type=item&source_id={id}")
     if boxdata["data"]["source"] == None:
         return ["唔……该物品不存在哦~"]
     return id
+
 
 async def update_goods_popularity(target_id: str, all_ids: list):
     """

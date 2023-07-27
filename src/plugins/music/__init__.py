@@ -1,3 +1,5 @@
+from .music import get, search
+from src.tools.utils import checknumber
 import nonebot
 import sys
 
@@ -11,9 +13,6 @@ from nonebot.typing import T_State
 TOOLS = nonebot.get_driver().config.tools_path
 sys.path.append(TOOLS)
 
-from src.tools.utils import checknumber
-
-from .music import get, search
 
 '''
 搜歌可查询歌曲，点歌直接根据歌曲名和作者（若有）推出歌曲。
@@ -24,6 +23,7 @@ from .music import get, search
 '''
 
 search_music = on_command("search_music", aliases={"搜歌"}, priority=5)
+
 
 @search_music.handle()
 async def _(state: T_State, event: GroupMessageEvent, args: Message = CommandArg()):
@@ -46,6 +46,7 @@ async def _(state: T_State, event: GroupMessageEvent, args: Message = CommandArg
     await search_music.send(msg[1:])
     return
 
+
 @search_music.got("num", prompt="输入序号即可搜索搜索歌曲，其他内容则无视~")
 async def __(state: T_State, num: Message = Arg()):
     num = num.extract_plain_text()
@@ -64,6 +65,7 @@ async def __(state: T_State, num: Message = Arg()):
         return
 
 get_music = on_command("get_music", aliases={"点歌"}, priority=5)
+
 
 @get_music.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):

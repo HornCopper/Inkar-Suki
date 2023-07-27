@@ -1,6 +1,8 @@
 from .api import *
 
-buff_ = on_command("jx3_buff", aliases = {"debuff","buff"}, priority = 5)
+buff_ = on_command("jx3_buff", aliases={"debuff", "buff"}, priority=5)
+
+
 @buff_.handle()
 async def _(event: GroupMessageEvent, state: T_State, args: Message = CommandArg()):
     """
@@ -25,7 +27,8 @@ async def _(event: GroupMessageEvent, state: T_State, args: Message = CommandArg
     else:
         await buff_.finish(data)
 
-@buff_.got("num", prompt = "输入数字搜索状态效果，输入其他内容则无视。")
+
+@buff_.got("num", prompt="输入数字搜索状态效果，输入其他内容则无视。")
 async def _(event: GroupMessageEvent, state: T_State, num: Message = Arg()):
     num = num.extract_plain_text()
     if checknumber(num):

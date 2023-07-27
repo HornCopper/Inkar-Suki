@@ -7,6 +7,7 @@ from httpx import Response as XResponse
 from src.tools.dep import *
 from src.tools.generate import get_uuid
 
+
 class Response:
     def __init__(self, data: dict) -> None:
         if isinstance(data, XResponse):
@@ -50,7 +51,7 @@ class QuesResponse(Response):
         self.results = [x.get("answerContent") for x in self.items]
         # 当没有回答时返回该列表
         self.confirm_list = [x.get("confirmList") for x in self.items]
-        self.relateds = [] # 相关问题
+        self.relateds = []  # 相关问题
 
     def to_dict(self):
         return {
