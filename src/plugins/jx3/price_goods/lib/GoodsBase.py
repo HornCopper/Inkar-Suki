@@ -16,8 +16,8 @@ async def check_bind(id: str):
 async def get_item_info_by_id(id: str):
     item_info_url = f"https://helper.jx3box.com/api/wiki/post?type=item&source_id={id}"
     raw_data = await get_api(item_info_url)
-    if raw_data.get("code") != 200:
-        msg = raw_data.get("message")
+    if not raw_data or raw_data.get("code") != 200:
+        msg = (raw_data and raw_data.get("message")) or "无数据"
         return f"获取物品信息失败了：{msg}"
     return raw_data.get("data").get("source")
 
