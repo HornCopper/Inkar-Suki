@@ -150,7 +150,7 @@
       }
       const goods_items = computed(() => {
         const items = Object.keys(params_data.items)
-        return items.map((x, index) => Object.assign({ id: x, index }, params_data.items[x]))
+        return items.map((x, index) => Object.assign({ id: x, index: index + 1 }, params_data.items[x]))
       })
 
       const any_price_current_available = computed(() => {

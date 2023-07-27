@@ -1,7 +1,9 @@
 from src.tools.dep import *
 
+
 async def get_flower(server: str, map: str = None, species: str = None):
     return await get_flower_by_tuilan(server, map, species)
+
 
 async def get_flower_by_jx3api(server: str, map: str = None, species: str = None):
     url = f"{Config.jx3api_link}/data/home/flower?scale=2&server={server}&robot={bot}"
@@ -11,10 +13,11 @@ async def get_flower_by_jx3api(server: str, map: str = None, species: str = None
         return f"获取花价失败了，{msg}"
     return data.get("data")
 
+
 async def get_flower_by_tuilan(server: str, map: str = None, species: str = None):
     url = f"https://w.pvp.xoyo.com:31727/api/h5/jx3/flower/get-flowers-info"
     data = {"server": server, "map": map, "species": species}
-    result = await post_url(url, json = data)
+    result = await post_url(url, json=data)
     result = json.loads(result)
     if not result.get("code") == 0:
         msg = result.get("msg")
@@ -26,6 +29,7 @@ async def get_flower_by_tuilan(server: str, map: str = None, species: str = None
     result_desc = f"map_count={len(result)},flower_count={len(first_item) }"
     logger.debug(f"{arg_desc}{result_desc}")
     return result
+
 
 def convert_data(raw: dict):
     """

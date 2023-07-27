@@ -10,21 +10,21 @@ from src.tools.utils import get_url, get_status, nodetemp, get_content, get_api
 from src.tools.file import read, write
 from src.tools.config import Config
 __kf_dict = {
-    '凌雪': ["隐龙决","隐龙诀","凌雪","凌雪阁"],
+    '凌雪': ["隐龙决", "隐龙诀", "凌雪", "凌雪阁"],
     '万花': ["花间游", "离经易道", "花间", "奶花"],
     '天策': ["傲血战意", "铁牢律", "马男", "傲血", "铁牢"],
     '纯阳': ["紫霞功", "太虚剑意"],
     '七秀': ["云裳心经", "冰心诀", "bx", "qx", "nx", "奶秀", "冰心"],
     '五毒': ["毒经", "补天诀", "补天", "奶毒", "毒姐", "dj"],
     '唐门': ["惊羽诀", "天罗诡道", "田螺", "鲸鱼", "惊羽"],
-    '藏剑': ["问水诀", "山居剑意", "二少", "叽哥","KFC","藏剑"],
+    '藏剑': ["问水诀", "山居剑意", "二少", "叽哥", "KFC", "藏剑"],
     '明教': ["焚影圣诀", "明尊琉璃体", "喵哥"],
     '苍云': ["分山劲", "铁骨衣", "岔劲"],
     '长歌': ["莫问", "相知", "咕咕"],
-    '霸刀': ["北傲诀","霸刀"],
-    '蓬莱': ["凌海诀", "伞爹", "伞宗","蓬莱"],
+    '霸刀': ["北傲诀", "霸刀"],
+    '蓬莱': ["凌海诀", "伞爹", "伞宗", "蓬莱"],
     '少林': ["洗髓经", "易筋经", "和尚", "大师"],
-    '衍天': ["太玄经", "衍天宗", "灯皇","衍天"],
+    '衍天': ["太玄经", "衍天宗", "灯皇", "衍天"],
     '药宗': ["无方", "灵素", "狍子"],
     '刀宗': ["孤锋诀", "刀爹", "呆宗", "刀宗"],
     '丐帮': ["丐帮", "笑尘决", "笑尘诀", "笑尘"]
@@ -149,7 +149,7 @@ async def get_icon(skillName: str, type_: str, api_icon: str = None, kungfu: str
         if type_ == "cq":
             return "[CQ:image,file=" + Path(final_path).as_uri() + "]"
         else:
-            return MessageSegment.image(Path(final_path).as_uri())
+            return ms.image(Path(final_path).as_uri())
     else:
         api_icon_url = api_icon
         try:
@@ -163,7 +163,7 @@ async def get_icon(skillName: str, type_: str, api_icon: str = None, kungfu: str
         if type_ == "cq":
             return "[CQ:image,file=" + Path(final_path).as_uri() + "]"
         else:
-            return MessageSegment.image(Path(final_path).as_uri())
+            return ms.image(Path(final_path).as_uri())
 
 
 async def getAllSkillsInfo(Kungfu: str) -> str:

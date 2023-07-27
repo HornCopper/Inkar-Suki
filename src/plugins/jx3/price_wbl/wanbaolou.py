@@ -1,15 +1,15 @@
+from src.tools.utils import get_api
 import nonebot
 import sys
 
 TOOLS = nonebot.get_driver().config.tools_path
 sys.path.append(TOOLS)
 
-from src.tools.utils import get_api
 
 async def get_wanbaolou(product_number: int, product_type: bool):
     def strange_time_number_to_person_s_message(strange_time_number: int):
         return f"{int(strange_time_number / 3600)}时{int((strange_time_number - int(strange_time_number / 3600) * 3600) /60)}分"
-    
+
     def price_to_text(price: int):
         return f"￥{price / 100}"
     """

@@ -1,13 +1,13 @@
 '''
 网络请求相关组件
 '''
-import json
-from sgtpyutils.logger import logger
-from src.tools.config import Config
-logger.debug('start load web renderer')
-from .argparser import *
-from .renderer import *
 from .subscriber import *
+from sgtpyutils.logger import logger
+import time
+from .img_renderer import *
+from .argparser import *
+import json
+from src.tools.config import Config
 token = Config.jx3api_globaltoken
 bot = "Inkar-Suki"
 ticket = Config.jx3_token
