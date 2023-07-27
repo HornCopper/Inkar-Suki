@@ -1,14 +1,11 @@
 import os
 import json
-import hashlib
-import hmac
 import httpx
 
 from pathlib import Path
 from PIL import Image, ImageDraw, ImageFont
 from nonebot import get_driver
 from nonebot.log import logger
-from datetime import datetime, timezone
 
 TOOLS = get_driver().config.tools_path
 ASSETS = TOOLS[:-5] + "assets"
@@ -21,13 +18,20 @@ from src.tools.config import Config
 from src.tools.generate import get_uuid
 from src.tools.dep import *
 
+try:
+    from src.tools.dep.jx3.tuilan import gen_ts, gen_xsk, format_body, dungeon_sign # 收到热心网友举报，我们已对推栏的算法进行了隐藏。
+except:
+    pass
+
+ticket = Config.jx3_token
+
 async def addritube_(server: str = None, name: str = None, group_id: str = None):  # 查装 <服务器> <ID>
     if token == None or ticket == None:
         return [PROMPT_NoTicket]
     server = server_mapping(server, group_id)
     if not server:
         return [PROMPT_ServerNotExist]
-    final_url = f"{Config.jx3api_link}/view/role/attribute?ticket ={ticket}&token={token}&robot ={bot}&server={server}&name={name}&scale=1"
+    final_url = f"{Config.jx3api_link}/view/role/attribute?ticket={ticket}&token={token}&robot={bot}&server={server}&name={name}&scale=1"
     data = await get_api(final_url)
     if data["code"] == 404:
         return ["唔……玩家不存在。"]
@@ -63,17 +67,6 @@ async def post_url(url, proxy: dict = None, headers: str = None, timeout: int = 
         resp = await client.post(url, timeout = timeout, headers = headers, data = data)
         result = resp.text
         return result
-
-def format_body(data: dict) -> str:
-    return json.dumps(data, separators= (",", ":"))
-
-def gen_ts() -> str:
-    return f"{datetime.now(timezone.utc):%Y%m%d%H%M%S%f}"[:-3]
-
-def gen_xsk(data: str) -> str:
-    data += "@#?.#@"
-    secret = "MaYoaMQ3zpWJFWtN9mqJqKpHrkdFwLd9DDlFWk2NnVR1mChVRI6THVe6KsCnhpoR"
-    return hmac.new(secret.encode(), msg = data.encode(), digestmod = hashlib.sha256).hexdigest()
 
 def zone_mapping(server):
     if server == "绝代天骄":
@@ -272,8 +265,24 @@ async def get_attr_main(server, id, group_id):
     }
     param = format_body(param)
     xsk = gen_xsk(param)
+    device_id = ticket.split("::")[1]
     headers = {
-            "x-sk": xsk
+        "Host" : "m.pvp.xoyo.com",
+        "Accept" : "application/json",
+        "Accept-Language" : "zh-cn",
+        "Connection" : "keep-alive",
+        "Content-Type" : "application/json",
+        "cache-control" : "no-cache",
+        "fromsys" : "APP",
+        "clientkey" : "1",
+        "apiversion" : "3",
+        "gamename" : "jx3",
+        "platform" : "ios",
+        "sign" : "true",
+        "token" : token,
+        "deviceid" : device_id,
+        "User-Agent" : "SeasunGame/193 CFNetwork/1240.0.4 Darwin/20.6.0",
+        "x-sk": xsk
     }
     data = await post_url(url = "https://m.pvp.xoyo.com/mine/equip/get-role-equip", data = param, headers = headers)
     data = json.loads(data)

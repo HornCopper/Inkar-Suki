@@ -1,11 +1,13 @@
-import hmac
-import hashlib
-
 from tabulate import tabulate
 
 from src.tools.dep import *
 from src.tools.generate import generate, get_uuid
 from src.plugins.help import css
+
+try:
+    from src.tools.dep.jx3.tuilan import gen_ts, gen_xsk, format_body # 收到热心网友举报，我们已对推栏的算法进行了隐藏。
+except:
+    pass
 
 async def zone(server, id):
     server = server_mapping(server)
@@ -25,17 +27,6 @@ async def get_cd(server: str, sep: str):
     time = data["date_str"]
     msg = f"「{server}」服务器上一次记录「{sep}」：\n{time}\n数据来源：@茗伊插件集"
     return msg
-
-def format_body(data: dict) -> str:
-    return json.dumps(data, separators=(",", ":"))
-
-def gen_ts() -> str:
-    return f"{datetime.datetime.now():%Y%m%d%H%M%S%f}"[:-3]
-
-def gen_xsk(data: str) -> str:
-    data += "@#?.#@"
-    secret = "MaYoaMQ3zpWJFWtN9mqJqKpHrkdFwLd9DDlFWk2NnVR1mChVRI6THVe6KsCnhpoR"
-    return hmac.new(secret.encode(), msg=data.encode(), digestmod=hashlib.sha256).hexdigest()
 
 async def post_url(url, proxy: dict = None, headers: str = None, timeout: int = 300, data: dict = None):
     async with httpx.AsyncClient(proxies=proxy, follow_redirects = True) as client:
