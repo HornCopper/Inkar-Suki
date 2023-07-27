@@ -82,7 +82,7 @@ class Assistance:
             if job == False:
                 return "唔……音卡暂时没办法识别您的职业，请检查一下呗？\n避免使用“长歌”“万花”“天策”等字眼，您可以使用“天策t”“奶咕”“qc”等准确些的词语方便理解哦~\n如果您使用的词语实在无法识别，请使用标准名称，例如“离经易道”。"
         job_icon = await Assistance.get_icon(job)
-        final_url = f"{Config.jx3api_link}/data/role/roleInfo?token={token}&server={server}&name={id}"
+        final_url = f"{Config.jx3api_link}/data/role/detailed?token={token}&server={server}&name={id}"
         player_data = await get_api(final_url)
         try:
             uid = player_data["data"]["roleId"]

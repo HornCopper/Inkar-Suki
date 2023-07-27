@@ -1,6 +1,5 @@
 from src.tools.dep import *
 
-
 async def demon_(server: str = None, group_id: str = None):  # 金价 <服务器>
     if token == None:
         return [PROMPT_NoToken]

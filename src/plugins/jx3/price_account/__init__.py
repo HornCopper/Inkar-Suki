@@ -2,7 +2,6 @@ from .api import *
 
 dh_ = on_command("jx3_dh", aliases={"蹲号"}, priority=5)
 
-
 @dh_.handle()
 async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
     """
