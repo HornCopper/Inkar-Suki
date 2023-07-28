@@ -12,6 +12,7 @@ from .top100 import *
 
 jx3_token = Config.jx3_token
 
+
 async def rank_(type_1: str, type_2: str, server: str, group_id: str):
     server = server_mapping(server, group_id)
     if not server:
@@ -39,6 +40,7 @@ async def rank_(type_1: str, type_2: str, server: str, group_id: str):
     if data["code"] == 404:
         return ["唔……未收录！"]
     return data["data"]["url"]
+
 
 def format_body(data: dict) -> str:
     return json.dumps(data, separators=(",", ":"))

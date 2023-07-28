@@ -1,6 +1,7 @@
 from sgtpyutils.logger import logger
 import httpx
 
+
 def get_default_args(**kwargs):
     kwargs["timeout"] = kwargs.get("timeout") or 5
     return kwargs
