@@ -16,7 +16,7 @@ def test_trade_gold():
     assert Gold(100000000).__repr__() == "1 砖"
     assert len(str(Gold(100888800))) > 1e3, "image of b64 should be very long"
 
-    t = f"98 <img src="{coin.brickl}" /> 12 <img src="{coin.goldl}" /> 34 <img src="{coin.silverl}" /> 56 <img src="{coin.copperl}" />"
+    t = f"98 <img src=\"{coin.brickl}\" /> 12 <img src=\"{coin.goldl}\" /> 34 <img src=\"{coin.silverl}\" /> 56 <img src=\"{coin.copperl}\" />"
     assert str(Gold(9800123456)) == t, "convert image maybe wrong"
 
 
