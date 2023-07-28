@@ -48,9 +48,9 @@ class Sign:
             s.coin += 100
             wlottery = True
             s.wlottery = 1
-        luck_desc = ['末吉签', '中吉签', '上吉签', '上上签'][s.luck]
-        luck_desc = f'{luck_desc}(x{s.luck+1})'
-        msg = f'\n签到成功！\n金币：+{s.coin}\n今日运势：{luck_desc}'
+        luck_desc = ["末吉签", "中吉签", "上吉签", "上上签"][s.luck]
+        luck_desc = f"{luck_desc}(x{s.luck+1})"
+        msg = f"\n签到成功！\n金币：+{s.coin}\n今日运势：{luck_desc}"
         if wlottery:
             msg = f"{msg}\n触发额外奖励！已帮你额外添加了100枚金币！"
         msg = f"{msg}\n已连续签到{continious + 1}天！"
@@ -71,37 +71,37 @@ class Sign:
         write(CLOCK + "/signed.json", json.dumps(signed_list, ensure_ascii=False))
         user = Sign.get_user_record(qq)
 
-        user['coin'] = user.get('coin') + data.coin
-        last = user.get('last')
+        user["coin"] = user.get("coin") + data.coin
+        last = user.get("last")
         now = datetime.datetime.now()
-        dateformat = '%Y-%m-%d %H:%M:%S'
+        dateformat = "%Y-%m-%d %H:%M:%S"
         is_continued = not last  # 如无记录，则延续用户数据
         if not is_continued:
             last_date = datetime.datetime.strptime(last, dateformat).date()
             judge_date = last_date + datetime.timedelta(days=1)
             is_continued = judge_date == now.date()
         if is_continued:
-            user['continuity'] += 1
-        user['coin'] += data.coin
-        user['last'] = datetime.datetime.strftime(now, dateformat)
+            user["continuity"] += 1
+        user["coin"] += data.coin
+        user["last"] = datetime.datetime.strftime(now, dateformat)
         Sign._flush_accounts()
         return
 
     def get_user_record(qq: str) -> dict:
-        '''
+        """
         获取用户签到信息
-        '''
+        """
         qq = str(qq)
         accounts = json.loads(read(f"{CLOCK}{os.sep}account.json")) or {}
         need_convert = isinstance(accounts, list)
         if need_convert:
-            accounts = dict([[x['id'], x] for x in accounts])
+            accounts = dict([[x["id"], x] for x in accounts])
             for x in accounts:
-                del accounts[x]['id']
+                del accounts[x]["id"]
 
         user = accounts.get(qq)
         if not user:
-            user = {'coin': 0, 'continuity': 0, 'last': None}
+            user = {"coin": 0, "continuity": 0, "last": None}
             accounts[qq] = user
 
         Sign.accounts = accounts
@@ -110,20 +110,20 @@ class Sign:
         return user
 
     def _flush_accounts():
-        x = getattr(Sign, 'accounts')
+        x = getattr(Sign, "accounts")
         if x is None:
             return
         write(f"{CLOCK}{os.sep}account.json",
               json.dumps(Sign.accounts, ensure_ascii=False))
 
     def get_continuity(qq):
-        '''
+        """
         获取用户连续登录天数
-        '''
-        return Sign.get_user_record(qq).get('continuity') or 0
+        """
+        return Sign.get_user_record(qq).get("continuity") or 0
 
     def get_coin(qq):
-        '''
+        """
         获取用户当前金币数
-        '''
-        return Sign.get_user_record(qq).get('coin') or 0
+        """
+        return Sign.get_user_record(qq).get("coin") or 0

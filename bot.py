@@ -62,7 +62,7 @@ init_folders = {
 
 check_folders(init_folders)
 
-logger.debug('check plugins document')
+logger.debug("check plugins document")
 plugins = os.listdir("./src/plugins")
 for i in plugins:
     if not os.path.exists(f"./src/plugins/{i}/info.json"):
@@ -70,7 +70,7 @@ for i in plugins:
             f"Plugin `{i}` required a `info.json` but not found. Please check and try again.")
         sys.exit(1)
 
-logger.debug('start nonebot...')
+logger.debug("start nonebot...")
 app = nonebot.get_asgi()
 driver = nonebot.get_driver()
 driver.register_adapter(ONEBOT_V11Adapter)

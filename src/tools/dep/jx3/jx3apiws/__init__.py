@@ -14,11 +14,11 @@ from src.tools.dep.bot import *
 from .jx3_event import *
 
 
-'''
+"""
 感谢友情提供代码@白师傅
 原链接：
 https://github.com/JustUndertaker/mini_jx3_bot
-'''
+"""
 
 
 class Jx3WebSocket(object):

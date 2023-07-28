@@ -9,12 +9,12 @@ import os
 
 
 class Config:
-    '''
+    """
     这里是`Inkar Suki`的配置文件，从`V0.8.3-Hotfix-3起，我们删除了`initialization.py`。
     取消了问答式配置，改为了用户自己填写。
     需要您填写的是末尾有注释的行，其他行请勿改动，感谢使用！
     此处的内容填写完毕后，请将文件名称改为`config.py`~
-    '''
+    """
     config_py_path = __file__[:-10]
     global_path = config_py_path[:-6]+"/"
 
@@ -30,7 +30,7 @@ class Config:
     html_path = global_path+"/plugins/help/help.html"
     chromedriver_path = global_path+"/tools/chromedriver"
     help_image_save_to = global_path+"/plugins/help/help.png"
-    font_path = Path(get_resource_path(f'font{os.sep}custom.ttf')).as_uri()
+    font_path = Path(get_resource_path(f"font{os.sep}custom.ttf")).as_uri()
 
     cqhttp = ""  # CQHTTP地址，参考`https://go-cqhttp.org`。
 

@@ -10,6 +10,6 @@ def test_serendipity():
     mc = MessageCallback(cb_finish=finish)
     src.plugins.jx3.dungeon.xuanjing.jx3_cmd_jx3_rare_gain = mc
     event = SFGroupMessageEvent()
-    task = func(event, obMessage('唯满侠 太一玄晶'))
+    task = func(event, obMessage("唯满侠 太一玄晶"))
     asyncio.run(task)
     mc.check_counter()

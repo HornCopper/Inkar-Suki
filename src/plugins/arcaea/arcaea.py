@@ -26,30 +26,30 @@ clear_statuses = ["Track Lost", "Track Complete", "Full Recall",
 
 
 def judgeLevelByScore(score: int):  # 来自Arcaea的评分标准 @OasisAkari
-    '''
+    """
     使用分数进行等级判定。 @OasisAkari
-    '''
+    """
     if score >= 9900000:
-        scoretype = 'EX+'
+        scoretype = "EX+"
     elif score >= 9800000:
-        scoretype = 'EX'
+        scoretype = "EX"
     elif score >= 9500000:
-        scoretype = 'AA'
+        scoretype = "AA"
     elif score >= 9200000:
-        scoretype = 'A'
+        scoretype = "A"
     elif score >= 8900000:
-        scoretype = 'B'
+        scoretype = "B"
     elif score >= 8600000:
-        scoretype = 'C'
+        scoretype = "C"
     else:
-        scoretype = 'D'
+        scoretype = "D"
     return scoretype
 
 
 async def getUserInfo(nickname: str = None, usercode: int = None) -> str:
-    '''
+    """
     获取用户信息，使用用户码或者昵称。
-    '''
+    """
     info = ""
     if nickname:  # 如果使用昵称
         info = await get_api(api + f"user/info?user={nickname}&withsonginfo=true", headers=headers)
@@ -86,9 +86,9 @@ async def getUserInfo(nickname: str = None, usercode: int = None) -> str:
 
 
 async def judgeWhetherPlayer(usercode: int = None, nickname: str = None):
-    '''
+    """
     判断玩家是否存在，使用用户码或者昵称。
-    '''
+    """
     if nickname:
         info = await get_api(api + f"user/info?user={nickname}&withsonginfo=true", headers=headers)
     elif usercode:
@@ -104,9 +104,9 @@ async def judgeWhetherPlayer(usercode: int = None, nickname: str = None):
 
 
 def getUserCode(groupid: int, user: int):
-    '''
+    """
     获取所在群聊某用户的绑定信息，需要的数据是群号和用户账号。
-    '''
+    """
     userid = str(user)
     group = str(groupid)
     data = json.loads(read(DATA + "/" + group + "/arcaea.json"))
@@ -118,11 +118,11 @@ def getUserCode(groupid: int, user: int):
 
 
 async def get_char(char: int):
-    '''
+    """
     获取搭档的照片，根据`account_info`的`character`获取，若本地有缓存，则优先使用本地的内容。
 
     具体实现可参考`get_song`的代码。
-    '''
+    """
     if os.path.exists(ASSETS + f"/arcaea/char/{char}.png"):
         return Path(ASSETS + f"/arcaea/char/{char}.png").as_uri()
     else:
@@ -137,11 +137,11 @@ async def get_char(char: int):
 
 
 async def get_song(song: str):
-    '''
+    """
     获取歌曲的图片，根据发送给机器人的命令中的歌曲名，获取数据。
 
     若本地有缓存，则优先使用本地的内容。
-    '''
+    """
     if os.path.exists(ASSETS + f"/arcaea/song/{song}.png"):  # 判断是否存在本地文件
         return Path(ASSETS + f"/arcaea/song/{song}.png").as_uri()  # 如果有，直接返回url。
     else:
@@ -156,9 +156,9 @@ async def get_song(song: str):
 
 
 async def getUserBestBySongName(usercode: int, songname: str, difficulty: str) -> str:
-    '''
+    """
     获取用户最佳成绩，使用了用户码、歌曲名和难度。
-    '''
+    """
     if difficulty in ["ftr", "FTR", "FUTURE", "future", "2", "Future", "Ftr"]:  # 各种离谱的缩写，这里尽可能多地识别了。
         difficulty = "ftr"
     elif difficulty in ["pst", "PST", "past", "Past", "0", "PAST", "Pst"]:

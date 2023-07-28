@@ -8,7 +8,7 @@ from ..data_server import *
 from src.tools.utils import *
 from sgtpyutils import extensions
 from sgtpyutils.logger import logger
-logger.debug(f'load dependence:{__name__}')
+logger.debug(f"load dependence:{__name__}")
 
 
 def convert_to_str(msg: MessageSegment):
@@ -23,7 +23,7 @@ def convert_to_str(msg: MessageSegment):
 
     if isinstance(msg, str):
         return msg
-    logger.warning(f'message cant convert to str:{msg}')
+    logger.warning(f"message cant convert to str:{msg}")
     return msg
 
 
@@ -51,9 +51,9 @@ class Jx3Arg:
         }
 
     def data(self, arg_value: str):
-        '''
+        """
         获取当前参数的值，获取失败则返回None
-        '''
+        """
         return self.callback[self.arg_type](arg_value)
 
     def _convert_string(self, arg_value: str) -> str:
@@ -79,8 +79,8 @@ class Jx3Arg:
 def get_args(raw_input: str, template_args: List[Jx3Arg]) -> Tuple:
     raw_input = convert_to_str(raw_input)
     template_len = len(template_args)
-    raw_input = raw_input or ''  # 默认传入空参数
-    user_args = extensions.list2dict(raw_input.split(' '))
+    raw_input = raw_input or ""  # 默认传入空参数
+    user_args = extensions.list2dict(raw_input.split(" "))
     result = []
     user_index = 0  # 当前用户输入
     template_index = 0  # 被匹配参数
@@ -92,7 +92,7 @@ def get_args(raw_input: str, template_args: List[Jx3Arg]) -> Tuple:
         result.append(x)  # 无论是否解析成功都将该位置参数填入
         if x is None:
             if not match_value.is_optional:
-                return InvalidArgumentException(f'{match_value.name}参数无效')
+                return InvalidArgumentException(f"{match_value.name}参数无效")
             continue  # 该参数去匹配下一个参数
 
         user_index += 1  # 输出参数位成功才+1

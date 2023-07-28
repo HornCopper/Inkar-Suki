@@ -32,9 +32,9 @@ notice = on_notice(priority=5)
 
 @notice.handle()
 async def _(bot: Bot, event: NoticeEvent):
-    '''
+    """
     入群自动发送帮助信息。
-    '''
+    """
     if event.notice_type == "group_increase":
         obj = event.user_id
         group = event.group_id
@@ -60,9 +60,9 @@ welcome_msg_edit = on_command("welcome", priority=5)
 
 @welcome_msg_edit.handle()
 async def __(event: GroupMessageEvent, args: Message = CommandArg()):
-    '''
+    """
     欢迎语的修改。
-    '''
+    """
     if checker(str(event.user_id), 5) == False:
         await welcome_msg_edit.finish(error(5))
     msg = args.extract_plain_text()

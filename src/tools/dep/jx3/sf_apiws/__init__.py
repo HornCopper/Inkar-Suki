@@ -24,7 +24,7 @@ class SfWebSocket(object):
         return cls._instance
 
     async def ping(self):
-        data = json.dumps({'action': 'ping', 'msg': '2333'}).encode('utf-8')
+        data = json.dumps({"action": "ping", "msg": "2333"}).encode("utf-8")
         await self.connect.send(data)
 
     async def ping_cycle(self):
@@ -38,11 +38,11 @@ class SfWebSocket(object):
             循环等待ws接受并分发任务
         """
         try:
-            logger.debug(f'start msg recyle')
+            logger.debug(f"start msg recyle")
             asyncio.create_task(self.ping_cycle())
             while True:
                 msg = await self.connect.recv()
-                logger.debug(f'recv:{msg}')
+                logger.debug(f"recv:{msg}")
                 asyncio.create_task(self._handle_msg(msg))
 
         except ConnectionClosedOK:
@@ -54,9 +54,9 @@ class SfWebSocket(object):
             self.connect = None
             await self.init()
         except Exception as ex:
-            logger.error(f'其他错误:{ex}')
+            logger.error(f"其他错误:{ex}")
 
-        logger.debug('ws event loop exit')
+        logger.debug("ws event loop exit")
 
     async def _raise_notice(self, message: str):
         """
@@ -75,7 +75,7 @@ class SfWebSocket(object):
         说明:
             处理收到的ws数据，分发给机器人
         """
-        content = message.decode('utf-8')
+        content = message.decode("utf-8")
         ws_client._handle_msg(content)
 
     async def init(self) -> Optional[bool]:
@@ -89,7 +89,7 @@ class SfWebSocket(object):
         ws_path = Config.sfapi_wslink
         ws_token = Config.sfapi_wstoken
         if not (ws_token or ws_path):
-            return logger.warning(f'fail to load {__name__} config invalid')
+            return logger.warning(f"fail to load {__name__} config invalid")
         headers = {"token": ws_token}
         logger.debug(f"<g>ws_server</g> | 正在链接sfapi的ws服务器：{ws_path}")
         for i in range(1, 101):
@@ -131,7 +131,7 @@ class SfWebSocket(object):
 
 
 sf_ws_client = None
-if __name__ == '__main__':
+if __name__ == "__main__":
     sf_ws_client = SfWebSocket()
     asyncio.run(sf_ws_client.init())
     while True:

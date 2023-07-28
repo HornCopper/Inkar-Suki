@@ -1,11 +1,11 @@
-'''
+"""
 机器人相关组件
-'''
+"""
 import sys
 import os
 from sgtpyutils.logger import logger
 try:
-    logger.debug(f'load dependence:{__name__}')
+    logger.debug(f"load dependence:{__name__}")
 except:
     pass
 from ...file import *

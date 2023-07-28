@@ -12,12 +12,12 @@ def test_pet():
     state = {}
     event = SFGroupMessageEvent()
 
-    mc.tag = '静静'
+    mc.tag = "静静"
     task = func(state, obMessage(mc.tag))
     asyncio.run(task)
     mc.check_counter()
 
-    mc.tag = '小'
+    mc.tag = "小"
     task = func(state, obMessage(mc.tag))
     asyncio.run(task)
     mc.check_counter()

@@ -7,7 +7,7 @@ from sgtpyutils.encode.basexx import base64_decode
 
 def get_from_encoded(raw: str) -> str:
     try:
-        return base64_decode(raw).decode('utf-8')
+        return base64_decode(raw).decode("utf-8")
     except:
         return None
 
@@ -36,10 +36,10 @@ class ArgumentInfo:
         if not self.enable:
             return template
         # 以空格或\t开头的变量赋值内容
-        pattern = re.compile(f'[ |\t]({self.name})[ ]*=[ ]*"(\w*)"')
+        pattern = re.compile(f"[ |	]({self.name})[ ]*=[ ]*\"(\w*)\"")
         result = pattern.search(template)
         if result is None:
-            logger.warning(f'argument "{self.name}" not found in template.')
+            logger.warning(f"argument \"{self.name}\" not found in template.")
             return template  # 失配 警告并返回
         pos_span = result.span()
         pos_start = pos_span[0] + 1  # 取消第一个空格
@@ -47,22 +47,22 @@ class ArgumentInfo:
         target_str = template[pos_start:pos_end]
         new_value = self.value if self.value is not None else "None"
         evaluate_str = f"{self.name} = {new_value}"
-        logger.info(f'replace "{target_str}" to "******"')
-        # logger.info(f'replace "{target_str}" to "{new_value}"')
-        return f'{template[:pos_start]}{evaluate_str}{template[pos_end:]}'
+        logger.info(f"replace \"{target_str}\" to \"******\"")
+        # logger.info(f"replace "{target_str}" to "{new_value}"")
+        return f"{template[:pos_start]}{evaluate_str}{template[pos_end:]}"
 
     @value.setter
     def value(self, val: str):
         self.initial_value = val
 
     def __repr__(self) -> str:
-        return f'{self.name}:{self.value}'
+        return f"{self.name}:{self.value}"
 
 
 def get_config_path() -> tuple[str, str]:
-    target_path = f'src{os.sep}tools{os.sep}'
-    target_src_config = f'{target_path}config.sample.py'
-    target_config = f'{target_path}config.py'
+    target_path = f"src{os.sep}tools{os.sep}"
+    target_src_config = f"{target_path}config.sample.py"
+    target_config = f"{target_path}config.py"
     return (target_src_config, target_config)
 
 
@@ -87,7 +87,7 @@ def init_arguments(args: list[str], template: list[ArgumentInfo] = None) -> list
         v = get_from_encoded(arg)
         if v is None:
             # print(arg)
-            logger.warning(f'fail while parse argument "{target.name}"')
+            logger.warning(f"fail while parse argument \"{target.name}\"")
         target.value = v
     return template
 
@@ -100,11 +100,11 @@ def replace_arguments(data: str, arguments: list[ArgumentInfo]) -> str:
 
 def export_args_to_config(arguments: list[ArgumentInfo]):
     target_src_config, target_config = get_config_path()
-    with open(target_src_config, 'r', encoding='utf-8') as f:
+    with open(target_src_config, "r", encoding="utf-8") as f:
         data = f.read()
         data = replace_arguments(data, arguments)
 
-    with open(target_config, 'w', encoding='utf-8') as f:
+    with open(target_config, "w", encoding="utf-8") as f:
         f.write(data)
 
 
@@ -123,7 +123,7 @@ def get_user_input() -> list[str]:
     return params
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     params = get_user_input()
     arguments = init_arguments(params)
     export_args_to_config(arguments)

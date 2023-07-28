@@ -9,10 +9,10 @@ def test_flower_price():
     src.plugins.jx3.flower.jx3_cmd_flower = mc
     state = dict()
     event = SFGroupMessageEvent()
-    task = func(state, event, obMessage('唯满侠'))
+    task = func(state, event, obMessage("唯满侠"))
     asyncio.run(task)
     mc.check_counter()
 
-    task = func(state, event, obMessage('唯满侠 不存在地图'))
+    task = func(state, event, obMessage("唯满侠 不存在地图"))
     asyncio.run(task)
     mc.check_counter()

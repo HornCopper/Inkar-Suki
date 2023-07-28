@@ -26,18 +26,18 @@ for x in __map:
 
 
 def server_mapping(server: str = None, group_id: str = None):
-    '''
+    """
     根据服务器别名匹配服务器，若未输入则获取当前群所绑定的服务器
-    '''
+    """
     return server_map.get(server, getGroupServer(group_id=group_id))
 
 
 def getGroupServer(group_id: str):
-    '''
+    """
     获取当前群所绑定的服务器，若未绑定则返回None
-    '''
+    """
     if not group_id:
         return None
     data = json.loads(read(f"{DATA}/{group_id}/jx3group.json"))
     data = data or {}
-    return data.get('server', None)
+    return data.get("server", None)

@@ -19,7 +19,7 @@ arcaea_userinfo = on_command("arcuser", priority=5)
 @arcaea_userinfo.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
 
-    '''
+    """
     `arcaea_userinfo`，用于获取`Arcaea`用户信息。
     示例：
     ```
@@ -38,7 +38,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
         单曲PTT：6.792009999999999
         搭档：
         [搭档图片]
-    '''
+    """
     arg = args.extract_plain_text()
     info = ""
     if arg == "":
@@ -59,9 +59,9 @@ arcaea_binduser = on_command("arcbind", priority=5)
 
 @arcaea_binduser.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
-    '''
+    """
     在用户所在群聊绑定群聊用户和`Arcaea`用户。
-    '''
+    """
     arg = args.extract_plain_text()
     if arg == False:
         await arcaea_binduser.finish("未给出任何信息，没办法绑定哦~")
@@ -82,9 +82,9 @@ arcaea_unbind = on_command("arcunbind", priority=5)
 
 @arcaea_unbind.handle()
 async def _(event: GroupMessageEvent):
-    '''
+    """
     与上一个函数相反操作，解绑。
-    '''
+    """
     present_data = json.loads(read(DATA + "/" + str(event.group_id) + "/arcaea.json"))
     if present_data[str(event.user_id)]:
         present_data.pop(str(event.user_id))  # 删除用户键值
@@ -98,9 +98,9 @@ arcaea_best = on_command("arcbest", priority=5)
 
 @arcaea_best.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
-    '''
+    """
     获取用户单曲最佳成绩，需要指定歌曲以及难度。
-    '''
+    """
     arg = args.extract_plain_text()
     arg = arg.split(" ")
     if len(arg) < 2:

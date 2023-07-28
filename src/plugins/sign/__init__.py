@@ -3,11 +3,11 @@ from src.tools.file import write
 
 from .manage import Sign
 
-'''
+"""
 签到功能，仅供娱乐。
 
 原理：定时任务 + 文件操作
-'''
+"""
 
 sign_main = Sign
 

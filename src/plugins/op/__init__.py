@@ -26,7 +26,7 @@ async def handle_first_receive(bot: Bot, event: Event, args: Message = CommandAr
     info = args.extract_plain_text()
     if info:
         try:
-            arguments = info.split(' ')
+            arguments = info.split(" ")
         except:
             pass
         try:

@@ -14,13 +14,13 @@ TOOLS = nonebot.get_driver().config.tools_path
 sys.path.append(TOOLS)
 
 
-'''
+"""
 搜歌可查询歌曲，点歌直接根据歌曲名和作者（若有）推出歌曲。
 
 数据来源：
 @网易云音乐
 @QQ音乐
-'''
+"""
 
 search_music = on_command("search_music", aliases={"搜歌"}, priority=5)
 

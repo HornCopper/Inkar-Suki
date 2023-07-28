@@ -1,6 +1,6 @@
 from sgtpyutils.logger import logger
 try:
-    logger.debug(f'load dependence:{__name__}')
+    logger.debug(f"load dependence:{__name__}")
 except:
     pass
 from src.tools.generate import *

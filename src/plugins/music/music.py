@@ -2,13 +2,13 @@ from src.tools.utils import get_api
 
 
 async def search(platform_: str, song: str):
-    '''
+    """
     搜索型函数。
 
     返回搜索结果。
 
     第一个参数是平台，类型为`str`，自动判断。
-    '''
+    """
     if platform_ in ["QQ", "QQ音乐", "qq", "q", "Q", "tx", "tc", "tencent", "腾讯", "腾讯音乐", "qq音乐", "Qq", "Qq音乐", "qQ", "qQ音乐"]:
         platform = 1  # 1 QQ 2 网易
     elif platform_ in ["网易", "163", "网抑云", "网抑", "网", "netease", "n", "网易云音乐", "网抑云音乐", "网易云", "wy", "w"]:
@@ -43,13 +43,13 @@ async def search(platform_: str, song: str):
 
 
 async def get(platform_: str, song: str, singer: str = None):
-    '''
+    """
     请求型函数。
 
     不经过选择直接推送。
 
     第一个参数是平台，类型为`str`，自动判断。
-    '''
+    """
     if platform_ in ["QQ", "QQ音乐", "qq", "q", "Q", "tx", "tc", "tencent", "腾讯", "腾讯音乐", "qq音乐", "Qq", "Qq音乐", "qQ", "qQ音乐"]:
         platform = 1  # 1 QQ 2 网易
     elif platform_ in ["网易", "163", "网抑云", "网抑", "网", "netease", "n", "网易云音乐", "网抑云音乐", "网易云", "w", "wy"]:

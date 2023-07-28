@@ -9,7 +9,7 @@ from bs4 import BeautifulSoup
 TOOLS = nonebot.get_driver().config.tools_path
 DATA = TOOLS.replace("tools", "data")
 
-'''
+"""
 状态码：
 200 - 正常，含 status(int) 、 link(str) 、 decription(str) 三个参数
 201 - 特殊正常，含 status(int) 、 link(str) 两个参数
@@ -18,22 +18,22 @@ DATA = TOOLS.replace("tools", "data")
 404 - 未找到，含 status(int) 一个参数
 500 - 网站问题，含 status(int) 一个参数
 502 - 网站问题，含 status(int) 、 reason(str) 两个参数
-'''
+"""
 
 headers = {
-    'Connection': 'keep-alive',
-    'Cache-Control': 'max-age=0',
-    'sec-ch-ua': '"Google Chrome";v="89", "Chromium";v="89", ";Not A Brand";v="99"',
-    'sec-ch-ua-mobile': '?0',
-    'Upgrade-Insecure-Requests': '1',
-    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.114 Safari/537.36',
-    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
-    'Sec-Fetch-Site': 'same-origin',
-    'Sec-Fetch-Mode': 'navigate',
-    'Sec-Fetch-User': '?1',
-    'Sec-Fetch-Dest': 'document',
-    'Referer': 'https://bj.ke.com/',
-    'Accept-Language': 'zh-CN,zh;q=0.9',
+    "Connection": "keep-alive",
+    "Cache-Control": "max-age=0",
+    "sec-ch-ua": "\"Google Chrome\";v=\"89\", \"Chromium\";v=\"89\", \";Not A Brand\";v=\"99\"",
+    "sec-ch-ua-mobile": "?0",
+    "Upgrade-Insecure-Requests": "1",
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.114 Safari/537.36",
+    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
+    "Sec-Fetch-Site": "same-origin",
+    "Sec-Fetch-Mode": "navigate",
+    "Sec-Fetch-User": "?1",
+    "Sec-Fetch-Dest": "document",
+    "Referer": "https://bj.ke.com/",
+    "Accept-Language": "zh-CN,zh;q=0.9",
 }
 
 
@@ -42,10 +42,10 @@ def convert(source_string: str):
 
 
 class wiki:
-    '''
+    """
     `wiki`插件的核心部分。
     包含了获取API、简单搜索、跨维搜索等。
-    '''
+    """
     async def get_site_info(api: str):
         final_link = api + "?action=query&meta=siteinfo&siprop=general&format=json"
         info = await get_api(final_link, headers=headers)
@@ -53,9 +53,9 @@ class wiki:
         return sitename
 
     async def get_iw_url(api: str, iwprefix: str):
-        '''
+        """
         工具型函数：不参与对话
-        '''
+        """
         final_link = api + "?action=query&meta=siteinfo&siprop=interwikimap&sifilteriw=local&format=json"
         data = await get_api(final_link, headers=headers)
         for i in data["query"]["interwikimap"]:
@@ -64,9 +64,9 @@ class wiki:
         return {"status": 404}
 
     async def extension_checker(api: str, extension: str) -> bool:
-        '''
+        """
         工具型函数：不参与对话
-        '''
+        """
         final_link = api + "?action=query&meta=siteinfo&siprop=extensions&format=json"
         data = await get_api(final_link, headers=headers)
         for i in data["query"]["extensions"]:

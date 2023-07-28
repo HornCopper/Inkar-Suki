@@ -3,18 +3,18 @@ import time
 
 
 def get_number(number):
-    '''
+    """
     返回参数的数值，默认返回0
-    '''
+    """
     if not checknumber(number):
         return 0
     return int(number)
 
 
 def checknumber(number):
-    '''
+    """
     检查参数是否是数值
-    '''
+    """
     if number is None:
         return False
     if isinstance(number, int):

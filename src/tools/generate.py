@@ -35,7 +35,7 @@ class PlaywrightRunner(threading.Thread):
     def stop(self):
         self.IsRunning = False
         for x in self.tasks:
-            x[4].set_exception('thread stopped')
+            x[4].set_exception("thread stopped")
 
     def run(self):
         asyncio.run(self.run_loop_async())
@@ -107,7 +107,7 @@ async def generate_by_url(url: str, locate: str = None, first: bool = False, del
 
 
 async def generate(html: str, web: bool = False, locate: str = None, first: bool = False, delay: int = 0):
-    '''
+    """
     生成指定路径下html文件的截图
     @param html: html文件路径
     @param web: 仅可填False，否则返回空
@@ -115,7 +115,7 @@ async def generate(html: str, web: bool = False, locate: str = None, first: bool
     @param first: 是否选取首个元素截图
     @param delay: 打开网页后延迟时间，单位ms
     @return : 返回生成的图片路径
-    '''
+    """
     if web:
         logger.warning(f"render stopped for `web` options is set to True")
         pass

@@ -5,11 +5,11 @@ kungfu = on_command("jx3_kungfu", aliases={"心法"}, priority=5)
 
 @kungfu.handle()
 async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
-    '''
+    """
     查询心法下所有技能：
 
     Example：-心法 莫问
-    '''
+    """
     kungfu_ = args.extract_plain_text()
     node = await getAllSkillsInfo(kungfu_)
     if node == False:
@@ -21,11 +21,11 @@ skill = on_command("jx3_skill", aliases={"技能"}, priority=5)
 
 @skill.handle()
 async def _(args: Message = CommandArg()):
-    '''
+    """
     查询心法下某技能：
 
     Example：-技能 莫问 徵
-    '''
+    """
     info = args.extract_plain_text().split(" ")
     if len(info) != 2:
         await skill.finish("信息不正确哦，只能有2个参数，请检查后重试~")
@@ -42,13 +42,13 @@ talent = on_command("_jx3_talent", aliases={"_奇穴"}, priority=5)
 
 @talent.handle()
 async def _(args: Message = CommandArg()):
-    '''
+    """
     查询心法下某奇穴：
 
     Example：-_奇穴 莫问 流照
 
     Notice：此功能会显示秘籍，而另外一个不会（参考事件响应器为`_talent`的函数）
-    '''
+    """
     data = args.extract_plain_text()
     data = data.split(" ")
     if len(data) != 2:

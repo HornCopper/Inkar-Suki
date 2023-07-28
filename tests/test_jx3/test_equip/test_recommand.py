@@ -11,7 +11,7 @@ def test_recommend_menu():
     state = {}
     event = SFGroupMessageEvent()
 
-    mc.tag = '刀宗'
+    mc.tag = "刀宗"
     task = func(event, state, obMessage(mc.tag))
     asyncio.run(task)
     mc.check_counter()

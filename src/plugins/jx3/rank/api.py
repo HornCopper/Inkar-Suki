@@ -41,7 +41,7 @@ async def rank_(type_1: str, type_2: str, server: str, group_id: str):
     return data["data"]["url"]
 
 def format_body(data: dict) -> str:
-    return json.dumps(data, separators=(',', ':'))
+    return json.dumps(data, separators=(",", ":"))
 
 
 def gen_ts() -> str:
