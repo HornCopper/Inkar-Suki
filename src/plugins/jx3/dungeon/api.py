@@ -302,6 +302,7 @@ available_ = """
 """
 
 async def zone_v2(server, id):
+    server = server_mapping(server)
     details_request = f"https://www.jx3api.com/data/role/detailed?token={token}&server={server}&name={id}"
     details_data = await get_api(details_request)
     if details_data["code"] != 200:
@@ -353,7 +354,7 @@ async def zone_v2(server, id):
         font = ASSETS + "/font/custom.ttf"
         saohua = await get_api("https://www.jx3api.com/data/saohua/random")
         saohua = saohua["data"]["text"]
-        html = html.replace("$customfont", font).replace("$tablecontent", content).replace("$randomsaohua", saohua)
+        html = html.replace("$customfont", font).replace("$tablecontent", content).replace("$randomsaohua", saohua).replace("$appinfo", f" · 副本记录 · {server} · {id}")
         final_html = CACHE + "/" + get_uuid() + ".html"
         write(final_html, html)
         final_path = await generate(final_html, False, "table", False)
