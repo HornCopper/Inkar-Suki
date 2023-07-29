@@ -4,8 +4,11 @@ from src.tools.dep import *
 from src.tools.generate import generate, get_uuid
 from src.plugins.help import css
 
+ASSETS = TOOLS[:-5] + "assets"
+VIEWS = TOOLS[:-5] + "views"
+
 try:
-    from src.tools.dep.jx3.tuilan import gen_ts, gen_xsk, format_body  # 收到热心网友举报，我们已对推栏的算法进行了隐藏。
+    from src.tools.dep.jx3.tuilan import gen_ts, gen_xsk, format_body, dungeon_sign # 收到热心网友举报，我们已对推栏的算法进行了隐藏。
 except:
     pass
 
@@ -84,21 +87,21 @@ async def get_boss(map, mode, boss):
     param = format_body(param)
     xsk = gen_xsk(param)
     headers = {
-        "Host": "m.pvp.xoyo.com",
-        "Accept": "application/json",
-        "Accept-Language": "zh-cn",
-        "Connection": "keep-alive",
-        "Content-Type": "application/json",
-        "cache-control": "no-cache",
-        "fromsys": "APP",
-        "clientkey": "1",
-        "apiversion": "3",
-        "gamename": "jx3",
-        "platform": "ios",
-        "sign": "true",
-        "token": token,
-        "deviceid": device_id,
-        "User-Agent": "SeasunGame/193 CFNetwork/1240.0.4 Darwin/20.6.0",
+        "Host" : "m.pvp.xoyo.com",
+        "Accept" : "application/json",
+        "Accept-Language" : "zh-cn",
+        "Connection" : "keep-alive",
+        "Content-Type" : "application/json",
+        "cache-control" : "no-cache",
+        "fromsys" : "APP",
+        "clientkey" : "1",
+        "apiversion" : "3",
+        "gamename" : "jx3",
+        "platform" : "ios",
+        "sign" : "true",
+        "token" : ticket,
+        "deviceid" : device_id,
+        "User-Agent" : "SeasunGame/193 CFNetwork/1240.0.4 Darwin/20.6.0",
         "x-sk": xsk
     }
     data = await post_url(url="https://m.pvp.xoyo.com/dungeon/info", data=param, headers=headers)
@@ -117,21 +120,21 @@ async def get_drops(map, mode, boss):
     param = format_body(param)
     xsk = gen_xsk(param)
     headers = {
-        "Host": "m.pvp.xoyo.com",
-        "Accept": "application/json",
-        "Accept-Language": "zh-cn",
-        "Connection": "keep-alive",
-        "Content-Type": "application/json",
-        "cache-control": "no-cache",
-        "fromsys": "APP",
-        "clientkey": "1",
-        "apiversion": "3",
-        "gamename": "jx3",
-        "platform": "ios",
-        "sign": "true",
-        "token": token,
-        "deviceid": device_id,
-        "User-Agent": "SeasunGame/193 CFNetwork/1240.0.4 Darwin/20.6.0",
+        "Host" : "m.pvp.xoyo.com",
+        "Accept" : "application/json",
+        "Accept-Language" : "zh-cn",
+        "Connection" : "keep-alive",
+        "Content-Type" : "application/json",
+        "cache-control" : "no-cache",
+        "fromsys" : "APP",
+        "clientkey" : "1",
+        "apiversion" : "3",
+        "gamename" : "jx3",
+        "platform" : "ios",
+        "sign" : "true",
+        "token" : ticket,
+        "deviceid" : device_id,
+        "User-Agent" : "SeasunGame/193 CFNetwork/1240.0.4 Darwin/20.6.0",
         "x-sk": xsk
     }
     data = await post_url(url="https://m.pvp.xoyo.com/dungeon/boss-drop", data=param, headers=headers)
@@ -283,3 +286,80 @@ async def genderater(map, mode, boss):
     if img == False:
         return ["唔……生成失败，请联系音卡管理员！"]
     return img
+
+template = """
+<tr>
+    <td class="short-column">$zonename</td>
+    <td class="short-column">$zonemode</td>
+    <td>
+    $images
+    </td>
+</tr>
+"""
+
+unable_ = """
+<img src="$imagepath", height="20",width="20"></img>
+"""
+
+available_ = """
+<img src="$imagepath", height="20",width="20"></img>
+"""
+
+async def zone_v2(server, id):
+    server = server_mapping(server)
+    details_request = f"https://www.jx3api.com/data/role/detailed?token={token}&server={server}&name={id}"
+    details_data = await get_api(details_request)
+    if details_data["code"] != 200:
+        guid = ""
+        return ["唔……获取玩家信息失败。"]
+    else:
+        guid = details_data["data"]["globalRoleId"]
+    ts = gen_ts()
+    param = {
+        "globalRoleId": guid,
+        "sign": dungeon_sign(f"globalRoleId={guid}&ts={ts}"),
+        "ts": ts
+    }
+    param = format_body(param)
+    headers = {
+        "Accept": "application/json, text/plain, */*",
+        "Accept-Encoding": "gzip",
+        "Accept-Language": "zh-cn",
+        "Connection": "keep-alive",
+        "Content-Type": "application/json",
+        "Host": "m.pvp.xoyo.com",
+        "Origin": "https://w.pvp.xoyo.com:31727",
+        "User-Agent": "SeasunGame/178 CFNetwork/1240.0.2 Darwin/20.5.0",
+        "token": ticket,
+        "X-Sk": gen_xsk(param)
+    }
+    data = await post_url("https://m.pvp.xoyo.com/h5/parser/cd-process/get-by-role", headers=headers, data=param)
+    unable = unable_.replace("$imagepath", ASSETS + "/image/grey.png")
+    available = available_.replace("$imagepath", ASSETS + "/image/gold.png")
+    data = json.loads(data)
+    if data["data"] == []:
+        return ["该玩家目前尚未打过任何副本哦~\n注意：10人普通副本会在周五刷新一次。"]
+    else:
+        contents = []
+        for i in data["data"]:
+            images = []
+            map_name = i["mapName"]
+            map_type = i["mapType"]
+            for x in i["bossProgress"]:
+                if x["finished"] == True:
+                    images.append(unable)
+                else:
+                    images.append(available)
+            image_content = "\n".join(images)
+            temp = template.replace("$zonename", map_name).replace("$zonemode", map_type).replace("$images", image_content)
+            contents.append(temp)
+        content = "\n".join(contents)
+        html = read(VIEWS + "/jx3/teamcd/teamcd.html")
+        font = ASSETS + "/font/custom.ttf"
+        saohua = await get_api("https://www.jx3api.com/data/saohua/random")
+        saohua = saohua["data"]["text"]
+        html = html.replace("$customfont", font).replace("$tablecontent", content).replace("$randomsaohua", saohua).replace("$appinfo", f" · 副本记录 · {server} · {id}")
+        final_html = CACHE + "/" + get_uuid() + ".html"
+        write(final_html, html)
+        final_path = await generate(final_html, False, "table", False)
+        return Path(final_path).as_uri()
