@@ -331,6 +331,7 @@ async def zone_v2(server, id):
     data = await post_url("https://m.pvp.xoyo.com/h5/parser/cd-process/get-by-role", headers=headers, data=param)
     unable = unable_.replace("$imagepath", ASSETS + "/image/grey.png")
     available = available_.replace("$imagepath", ASSETS + "/image/gold.png")
+    data = json.loads(data)
     if len(data["data"]) == 0:
         return ["该玩家目前尚未打过任何副本哦~\n注意：10人普通副本会在周五刷新一次。"]
     else:
