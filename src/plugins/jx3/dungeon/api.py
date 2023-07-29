@@ -325,7 +325,7 @@ async def zone_v2(server, id):
         "Host": "m.pvp.xoyo.com",
         "Origin": "https://w.pvp.xoyo.com:31727",
         "User-Agent": "SeasunGame/178 CFNetwork/1240.0.2 Darwin/20.5.0",
-        "token": token,
+        "token": ticket,
         "X-Sk": gen_xsk(param)
     }
     data = await post_url("https://m.pvp.xoyo.com/h5/parser/cd-process/get-by-role", headers=headers, data=param)
