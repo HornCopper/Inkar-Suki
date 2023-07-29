@@ -13,9 +13,10 @@ from src.tools.generate import get_uuid
 from ..user.api import kungfu_mapping, get_fs, local_save, PLUGINS, get_kf_icon, get_bg, data_process, enchant_mapping, logger, judge_special_weapon
 
 try:
-    from src.tools.dep.jx3.tuilan import gen_ts, gen_xsk, format_body # 收到热心网友举报，我们已对推栏的算法进行了隐藏。
+    from src.tools.dep.jx3.tuilan import gen_ts, gen_xsk, format_body  # 收到热心网友举报，我们已对推栏的算法进行了隐藏。
 except:
     pass
+
 
 def format_body(data: dict) -> str:
     return json.dumps(data, separators=(",", ":"))

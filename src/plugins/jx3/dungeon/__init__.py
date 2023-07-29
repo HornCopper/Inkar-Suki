@@ -3,6 +3,7 @@ from .xuanjing import *
 
 zones = on_command("jx3_zones", aliases={"副本"}, priority=5)
 
+
 @zones.handle()
 async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
     """
@@ -30,6 +31,7 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
 
 zonesv2 = on_command("jx3_zones_v2", aliases={"副本v2"}, priority=5)
 
+
 @zonesv2.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     group_server = getGroupServer(str(event.group_id))
@@ -51,6 +53,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
         await zonesv2.finish(ms.image(data))
 
 drops = on_command("jx3_drops", aliases={"掉落列表"}, priority=5)
+
 
 @drops.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
