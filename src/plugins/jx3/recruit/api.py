@@ -41,7 +41,7 @@ template = """
 </tr>
 """
 
-async def recruit_v2(server: str, name: str = "")
+async def recruit_v2(server: str, name: str = ""):
     if token == None:
         return [PROMPT_NoToken]
     server = server_mapping(server)
