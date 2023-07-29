@@ -349,7 +349,7 @@ async def zone_v2(server, id):
             temp = template.replace("$zonename", map_name).replace("$zonemode", map_type).replace("$images", image_content)
             contents.append(temp)
         content = "\n".join(contents)
-        html = read(VIEWS + "/teamcd/teamcd.html")
+        html = read(VIEWS + "/jx3/teamcd/teamcd.html")
         font = ASSETS + "/font/custom.ttf"
         saohua = await get_api("https://www.jx3api.com/data/saohua/random")
         saohua = saohua["data"]["text"]
