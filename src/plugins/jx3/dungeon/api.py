@@ -336,7 +336,7 @@ async def zone_v2(server, id):
         return ["该玩家目前尚未打过任何副本哦~\n注意：10人普通副本会在周五刷新一次。"]
     else:
         contents = []
-        for i in data:
+        for i in data["data"]:
             images = []
             map_name = i["mapName"]
             map_type = i["mapType"]
