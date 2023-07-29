@@ -49,7 +49,7 @@ async def recruit_v2(server: str, name: str = ""):
         return [PROMPT_ServerNotExist]
     final_url = f"https://www.jx3api.com/data/member/recruit?token={token}&server={server}"
     data = await get_api(final_url)
-    time_now = data["data"]["time"]
+    time_now = convert_time(data["data"]["time"])
     appinfo = f" · 招募信息 · {server} · {time_now}"
     font = ASSETS + "/font/custom.ttf"
     data = data["data"]["data"]
