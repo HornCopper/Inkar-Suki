@@ -293,11 +293,11 @@ template = """
 </tr>
 """
 
-unable = """
+unable_ = """
 <img src="$imagepath", height="20",width="20"></img>
 """
 
-available = """
+available_ = """
 <img src="$imagepath", height="20",width="20"></img>
 """
 
@@ -329,8 +329,8 @@ async def zone_v2(server, id):
         "X-Sk": gen_xsk(param)
     }
     data = await post_url("https://m.pvp.xoyo.com/h5/parser/cd-process/get-by-role", headers=headers, data=param)
-    unable = unable.replace("$imagepath", ASSETS + "/image/grey.png")
-    available = available.replace("$imagepath", ASSETS + "/image/gold.png")
+    unable = unable_.replace("$imagepath", ASSETS + "/image/grey.png")
+    available = available_.replace("$imagepath", ASSETS + "/image/gold.png")
     if len(data["data"]) == 0:
         return ["该玩家目前尚未打过任何副本哦~\n注意：10人普通副本会在周五刷新一次。"]
     else:
