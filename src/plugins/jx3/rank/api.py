@@ -88,7 +88,6 @@ async def zlrank(server: str = None, school: str = None, group_id: str = None):
         "forceId": int(school_id)
     }
     param = format_body(param)
-    device_id = jx3_token.split("::")[1]
     xsk = gen_xsk(param)
     headers = {
         "Host": "m.pvp.xoyo.com",

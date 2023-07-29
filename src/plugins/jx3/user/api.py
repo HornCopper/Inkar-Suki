@@ -277,7 +277,6 @@ async def get_attr_main(server, id, group_id):
     }
     param = format_body(param)
     xsk = gen_xsk(param)
-    device_id = ticket.split("::")[1]
     headers = {
         "Host" : "m.pvp.xoyo.com",
         "Accept" : "application/json",

@@ -48,7 +48,6 @@ async def get_recommended_equips_list(forceId: str, condition):
         "ts": gen_ts()
     }
     param = format_body(param)
-    device_id = ticket.split("::")[1]
     xsk = gen_xsk(param)
     headers = {
         "Host": "m.pvp.xoyo.com",
