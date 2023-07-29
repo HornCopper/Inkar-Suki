@@ -23,7 +23,7 @@ async def send_with_async(method: str, url: str, proxy: dict = None, **kwargs) -
             async with httpx.AsyncClient(proxies=proxy, follow_redirects=True, verify=False) as client:
                 req = await client.request(method, url, **kwargs)
                 return req
-        except TimeoutError:
+        except (httpx.ConnectTimeout, TimeoutError):
             max_try_time -= 1
             if max_try_time > 0:
                 continue
