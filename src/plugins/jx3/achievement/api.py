@@ -96,7 +96,7 @@ async def achi_v2(server: str = None, name: str = None, achievement: str = None,
             new = template.replace("$image", icon).replace("$type", type_).replace("$desc", desc).replace("$value", value).replace("$status", status).replace("$flag", flag)
             contents.append(new)
         content = "\n".join(contents)
-        html = read(VIEWS + "/achievement/achievement.html")
+        html = read(VIEWS + "/jx3/achievement/achievement.html")
         font = ASSETS + "/font/custom.ttf"
         saohua = await get_api("https://www.jx3api.com/data/saohua/random")
         saohua = saohua["data"]["text"]
