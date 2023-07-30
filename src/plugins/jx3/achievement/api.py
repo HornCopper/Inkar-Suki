@@ -88,7 +88,7 @@ async def achi_v2(server: str = None, name: str = None, achievement: str = None,
             icon = i["icon"]
             type_ = i["detail"]
             desc = i["desc"]
-            value = i["reward_point"]
+            value = str(i["reward_point"])
             status = "correct" if i["isFinished"] else "incorrect"
             flag = "✔" if i["isFinished"] else "✖"
             new = template.replace("$image", icon).replace("$type", type_).replace("$desc", desc).replace("$value", value).replace("$status", status).replace("$flag", flag)
