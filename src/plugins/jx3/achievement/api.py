@@ -81,7 +81,8 @@ async def achi_v2(server: str = None, name: str = None, achievement: str = None,
         "sign": "true"
     }
     data = await post_url("https://m.pvp.xoyo.com/achievement/list/achievements", headers=headers, data=param)
-    data = json.loads(data)["data"]["data"]
+    data = json.loads(data)
+    data = data["data"]["data"]
     if len(data) == 0:
         return ["唔……未找到相关成就。"]
     else:
