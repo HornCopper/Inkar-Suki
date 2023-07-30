@@ -74,7 +74,6 @@ async def achi_v2(server: str = None, name: str = None, achievement: str = None,
         "deviceid": device_id,
         "Cache-Control": "no-cache",
         "clientkey": "1",
-        "Content-Length": "92",
         "Accept-Encoding": "gzip, deflate, br",
         "User-Agent": "SeasunGame/197 CFNetwork/1408.0.4 Darwin/22.5.0",
         "sign": "true"
