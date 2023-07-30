@@ -100,7 +100,7 @@ async def achi_v2(server: str = None, name: str = None, achievement: str = None,
         font = ASSETS + "/font/custom.ttf"
         saohua = await get_api("https://www.jx3api.com/data/saohua/random")
         saohua = saohua["data"]["text"]
-        html = html.replace("$customfont", font).replace("$tablecontent", content).replace("$randomsaohua", saohua).replace("$appinfo", f" · 成就百科 · {server} · {id} · {achievement}")
+        html = html.replace("$customfont", font).replace("$tablecontent", content).replace("$randomsaohua", saohua).replace("$appinfo", f" · 成就百科 · {server} · {name} · {achievement}")
         final_html = CACHE + "/" + get_uuid() + ".html"
         write(final_html, html)
         final_path = await generate(final_html, False, "table", False)
