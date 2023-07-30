@@ -303,7 +303,7 @@ available_ = """
 
 async def zone_v2(server, id):
     server = server_mapping(server)
-    details_request = f"https://www.jx3api.com/data/role/detailed?token={token}&server={server}&name={id}"
+    details_request = f"{Config.jx3api_link}/data/role/detailed?token={token}&server={server}&name={id}"
     details_data = await get_api(details_request)
     if details_data["code"] != 200:
         guid = ""
