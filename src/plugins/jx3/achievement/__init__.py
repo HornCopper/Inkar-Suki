@@ -101,7 +101,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
         server = achievement[0]
         id = achievement[1]
         achi = achievement[2]
-    data = await achi_v2(server, id, achi, event.group_id)
+    data = await achi_v2(server, id, achi, str(event.group_id))
     if type(data) == type([]):
         await achievement_v2.finish(data[0])
     else:
@@ -111,7 +111,6 @@ zone_achievement = on_command("jx3_zoneachi", aliases={"团本成就"}, priority
 
 @zone_achievement.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
-    return # 施工中
     arg = args.extract_plain_text().split(" ")
     if len(arg) not in [2,3,4]:
         await zone_achievement.finish(PROMPT_ArgumentInvalid)
