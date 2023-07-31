@@ -38,6 +38,7 @@ async def achievements_(server: str = None, name: str = None, achievement: str =
 template = """
 <tr>
     <td class="icon-column"><img src="$image" alt="icon" width="30"></td>
+    <td class="name-column">$name</td>
     <td class="type-column">$type</td>
     <td class="description-column">$desc</td>
     <td class="qualification-column">$value</td>
@@ -62,23 +63,22 @@ async def achi_v2(server: str = None, name: str = None, achievement: str = None,
     param = format_body(param)
     xsk = gen_xsk(param)
     headers = {
-        "Host": "m.pvp.xoyo.com",
-        "Connection": "keep-alive",
-        "Content-Type": "application/json",
-        "Accept": "application/json",
-        "fromsys": "APP",
-        "gamename": "jx3",
-        "X-Sk": xsk,
-        "Accept-Language": "zh-CN,zh-Hans;q=0.9",
-        "apiversion": "3",
-        "platform": "ios",
-        "token": ticket,
-        "deviceid": device_id,
-        "Cache-Control": "no-cache",
-        "clientkey": "1",
-        "Accept-Encoding": "gzip, deflate, br",
-        "User-Agent": "SeasunGame/197 CFNetwork/1408.0.4 Darwin/22.5.0",
-        "sign": "true"
+        "Host" : "m.pvp.xoyo.com",
+        "Accept" : "application/json",
+        "Accept-Language" : "zh-cn",
+        "Connection" : "keep-alive",
+        "Content-Type" : "application/json",
+        "cache-control" : "no-cache",
+        "fromsys" : "APP",
+        "clientkey" : "1",
+        "apiversion" : "3",
+        "gamename" : "jx3",
+        "platform" : "ios",
+        "sign" : "true",
+        "token" : ticket,
+        "deviceid" : device_id,
+        "User-Agent" : "SeasunGame/193 CFNetwork/1240.0.4 Darwin/20.6.0",
+        "x-sk": xsk
     }
     data = await post_url("https://m.pvp.xoyo.com/achievement/list/achievements", headers=headers, data=param)
     data = json.loads(data)
@@ -94,7 +94,8 @@ async def achi_v2(server: str = None, name: str = None, achievement: str = None,
             value = str(i["reward_point"])
             status = "correct" if i["isFinished"] else "incorrect"
             flag = "✔" if i["isFinished"] else "✖"
-            new = template.replace("$image", icon).replace("$type", type_).replace("$desc", desc).replace("$value", value).replace("$status", status).replace("$flag", flag)
+            aname = i["name"]
+            new = template.replace("$image", icon).replace("$name", aname).replace("$type", type_).replace("$desc", desc).replace("$value", value).replace("$status", status).replace("$flag", flag)
             contents.append(new)
         content = "\n".join(contents)
         html = read(VIEWS + "/jx3/achievement/achievement.html")
