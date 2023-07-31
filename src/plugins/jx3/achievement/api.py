@@ -1,4 +1,5 @@
 from src.tools.dep import *
+from src.plugins.jx3.dungeon.api import get_map
 
 from .adventure import *
 
@@ -109,4 +110,65 @@ async def achi_v2(server: str = None, name: str = None, achievement: str = None,
         return Path(final_path).as_uri()
 
 async def zone_achi(server: str = None, name: str = None, zone: str = None, mode: str = None, group_id: str = None):
-    ...
+    personal_data_request = f"{Config.jx3api_link}/data/role/detailed?token={token}&server={server}&name={name}"
+    personal_data = await get_api(personal_data_request)
+    if personal_data["code"] != 200:
+        guid = ""
+        return ["唔……未找到该玩家。"]
+    else:
+        guid = personal_data["data"]["globalRoleId"]
+    map_id = await get_map(zone, mode)
+    param = {
+        "cursor": 0,
+        "size": 200,
+        "dungeon_map_id": map_id,
+        "gameRoleId": guid,
+        "ts": gen_ts()
+    }
+    param = format_body(param)
+    xsk = gen_xsk(param)
+    headers = {
+        "Host" : "m.pvp.xoyo.com",
+        "Accept" : "application/json",
+        "Accept-Language" : "zh-cn",
+        "Connection" : "keep-alive",
+        "Content-Type" : "application/json",
+        "cache-control" : "no-cache",
+        "fromsys" : "APP",
+        "clientkey" : "1",
+        "apiversion" : "3",
+        "gamename" : "jx3",
+        "platform" : "ios",
+        "sign" : "true",
+        "token" : ticket,
+        "deviceid" : device_id,
+        "User-Agent" : "SeasunGame/193 CFNetwork/1240.0.4 Darwin/20.6.0",
+        "x-sk": xsk
+    }
+    data = await post_url("https://m.pvp.xoyo.com/achievement/list/achievements", headers=headers, data=param)
+    data = json.loads(data)
+    data = data["data"]["data"]
+    if len(data) == 0:
+        return ["唔……未找到相关成就。"]
+    else:
+        contents = []
+        for i in data:
+            icon = i["icon"]
+            type_ = i["detail"]
+            desc = i["desc"]
+            value = str(i["reward_point"])
+            status = "correct" if i["isFinished"] else "incorrect"
+            flag = "✔" if i["isFinished"] else "✖"
+            aname = i["name"]
+            new = template.replace("$image", icon).replace("$name", aname).replace("$type", type_).replace("$desc", desc).replace("$value", value).replace("$status", status).replace("$flag", flag)
+            contents.append(new)
+        content = "\n".join(contents)
+        html = read(VIEWS + "/jx3/achievement/achievement.html")
+        font = ASSETS + "/font/custom.ttf"
+        saohua = await get_api("https://www.jx3api.com/data/saohua/random")
+        saohua = saohua["data"]["text"]
+        html = html.replace("$customfont", font).replace("$tablecontent", content).replace("$randomsaohua", saohua).replace("$appinfo", f" · 成就百科 · {server} · {name} · {achievement}")
+        final_html = CACHE + "/" + get_uuid() + ".html"
+        write(final_html, html)
+        final_path = await generate(final_html, False, "table", False)
+        return Path(final_path).as_uri()
