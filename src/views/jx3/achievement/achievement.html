@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <!--
+        该代码协议与Inkar Suki仓库协议相同。
+
+        禁止帝君和兔兔使用。
+
+        禁止任何人商用。
+
+        欢迎借鉴或用于开源项目。
+
+        ——HornCopper
+     -->
+    <style>
+        table {
+            width: 900px;
+            border-collapse: separate;
+            border-spacing: 0;
+            border: 1px solid #000;
+        }
+
+        th {
+            background-color: #333;
+            color: #fff;
+            padding: 8px;
+            text-align: center;
+        }
+
+        td {
+            padding: 20px;
+            text-align: center;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            border-bottom: 1px solid #D3D3D3;
+            margin-bottom: 1px;
+        }
+
+        .icon-column {
+            width: 60px;
+        }
+
+        .name-column {
+            width: 200px;
+        }
+
+        .description-column {
+            width: 400px;
+        }
+
+        .qualification-column {
+            width: 80px;
+        }
+
+        .type-column {
+            width: 120px;
+        }
+
+        .status-column {
+            width: 60px;
+        }
+
+        .correct {
+            font-size: 20px;
+            color: #008b8b;
+        }
+
+        .incorrect {
+            font-size: 20px;
+            color: #b90000;
+        }
+
+        tfoot {
+            text-align: center;
+            font-style: italic;
+            font-size: 12px;
+        }
+
+        @font-face {
+            font-family: Harmony;
+            src: url($customfont);
+        }
+
+        body {
+            font-family: Harmony, sans-serif;
+        }
+    </style>
+</head>
+<body>
+    <table style="background-color: #eaf7ed;">
+        <thead>
+            <tr>
+                <th class="icon-column">图标</th>
+                <th class="name-column">名称</th>
+                <th class="type-column">类型</th>
+                <th class="description-column">描述</th>
+                <th class="qualification-column">资历</th>
+                <th class="status-column">状态</th>
+            </tr>
+        </thead>
+        <tbody>     
+            $tablecontent
+        </tbody>
+        <tfoot>
+            <tr>
+                <td colspan="4">&copy; Inkar Suki$appinfo<br>$randomsaohua</td>
+            </tr>
+        </tfoot>
+    </table>
+</body>
+</html>
