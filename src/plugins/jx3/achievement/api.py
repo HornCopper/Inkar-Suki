@@ -167,7 +167,7 @@ async def zone_achi(server: str = None, name: str = None, zone: str = None, mode
         font = ASSETS + "/font/custom.ttf"
         saohua = await get_api("https://www.jx3api.com/data/saohua/random")
         saohua = saohua["data"]["text"]
-        html = html.replace("$customfont", font).replace("$tablecontent", content).replace("$randomsaohua", saohua).replace("$appinfo", f" · 成就百科 · {server} · {name} · {achievement}")
+        html = html.replace("$customfont", font).replace("$tablecontent", content).replace("$randomsaohua", saohua).replace("$appinfo", f" · 成就百科 · {server} · {name} · {mode}{zone}")
         final_html = CACHE + "/" + get_uuid() + ".html"
         write(final_html, html)
         final_path = await generate(final_html, False, "table", False)
