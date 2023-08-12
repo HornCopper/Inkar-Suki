@@ -9,15 +9,20 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
     if len(arg) not in [2, 3]:
         await arena.finish(PROMPT_ArgumentCountInvalid)
     if arg[0] == "战绩":
-        if len(arg) not in [2, 3]:
+        if len(arg) not in [2, 3, 4]:
             await arena.finish(PROMPT_ArgumentCountInvalid)
+        mode = "22"
         if len(arg) == 2:
             server = None
             name = arg[1]
+        elif len(arg) == 3:
+            server = arg[1]
+            name = arg[2]
         else:
             server = arg[1]
             name = arg[2]
-        data = await arena_(object="战绩", server=server, name=name, group_id=event.group_id)
+            mode = arg[3]
+        data = await arena_(object="战绩", server=server, name=name, group_id=event.group_id, mode=mode)
         if type(data) == type([]):
             await arena.finish(data[0])
         else:

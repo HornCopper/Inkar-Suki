@@ -54,7 +54,7 @@ Bot_NICKNAME = "音卡"
 TOOLS = nonebot.get_driver().config.tools_path
 sys.path.append(TOOLS)
 
-tieba = on_command("-tieba", aliases={"-贴吧"}, priority=5)
+tieba = on_command("-tieba", aliases={"-帖子"}, priority=5)
 
 
 @tieba.handle()

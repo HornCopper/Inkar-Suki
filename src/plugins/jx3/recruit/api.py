@@ -41,13 +41,15 @@ template = """
 </tr>
 """
 
-async def recruit_v2(server: str, name: str = ""):
+async def recruit_v2(server: str, actvt: str = ""):
     if token == None:
         return [PROMPT_NoToken]
     server = server_mapping(server)
     if not server:
         return [PROMPT_ServerNotExist]
     final_url = f"https://www.jx3api.com/data/member/recruit?token={token}&server={server}"
+    if actvt != "":
+        final_url = final_url + "&keyword=" + actvt
     data = await get_api(final_url)
     time_now = convert_time(data["data"]["time"])
     appinfo = f" · 招募信息 · {server} · {time_now}"
