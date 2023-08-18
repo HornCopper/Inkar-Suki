@@ -2,7 +2,6 @@ from .api import *
 
 kungfu = on_command("jx3_kungfu", aliases={"心法"}, priority=5)
 
-
 @kungfu.handle()
 async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
     '''
@@ -17,7 +16,6 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
     await bot.call_api("send_group_forward_msg", group_id=event.group_id, messages=node)
 
 skill = on_command("jx3_skill", aliases={"技能"}, priority=5)
-
 
 @skill.handle()
 async def _(args: Message = CommandArg()):
@@ -39,7 +37,6 @@ async def _(args: Message = CommandArg()):
 
 talent = on_command("_jx3_talent", aliases={"_奇穴"}, priority=5)
 
-
 @talent.handle()
 async def _(args: Message = CommandArg()):
     '''
@@ -59,9 +56,7 @@ async def _(args: Message = CommandArg()):
         msg = await getSingleTalent(kungfu, talent_)
         await talent.finish(msg)
 
-
 _talent = on_command("jx3_talent", aliases={"奇穴"}, priority=5)
-
 
 @_talent.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
@@ -114,9 +109,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
                 await _talent.finish(msg)
     await _talent.finish("唔……未找到该奇穴哦~")
 
-
-macro_ = on_command("jx3_macro", aliases={"宏"}, priority=5)
-
+macro_ = on_command("jx3_macro_v2", aliases={"宏v2"}, priority=5)
 
 @macro_.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
@@ -126,3 +119,14 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
         await macro_.finish("唔……心法输入有误，请检查后重试~")
     data = await get_macro(xf)
     await macro_.finish(data)
+
+macro_v1 = on_command("jx3_macro", aliases={"宏"}, priority=5)
+
+@macro_v1.handle()
+async def _(event: GroupMessageEvent, args: Message = CommandArg()):
+    xf = aliases(args.extract_plain_text())
+    if xf == False:
+        await macro_v1.finish("唔……心法输入有误，请检查后重试~")
+    data = await get_api(f"https://www.jx3api.com/data/school/macro?name={xf}")
+    data = data["data"]["context"]
+    await macro_v1.finish(data)
