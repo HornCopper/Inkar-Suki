@@ -9,6 +9,6 @@ async def daily_(server: str = None, group_id: str = None, predict_day_num: int 
     server = server_mapping(server, group_id)
     if not server:
         return [PROMPT_ServerNotExist]
-    full_link = f"{Config.jx3api_link}/view/active/current?robot={bot}&server={server}&num={predict_day_num}"
+    full_link = f"{Config.jx3api_link}/view/active/current?robot={bot}&server={server}&num={predict_day_num}&token={token}"
     data = await get_api(full_link)
     return data["data"]["url"]

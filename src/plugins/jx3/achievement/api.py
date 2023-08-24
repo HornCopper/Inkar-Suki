@@ -121,7 +121,7 @@ async def zone_achi(server: str = None, name: str = None, zone: str = None, mode
     param = {
         "cursor": 0,
         "size": 200,
-        "dungeon_map_id": map_id,
+        "dungeon_map_id": int(map_id),
         "gameRoleId": guid,
         "ts": gen_ts()
     }
