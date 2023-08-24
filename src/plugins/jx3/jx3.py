@@ -9,7 +9,7 @@ from .dungeon import *
 from .exam import *
 from .flower import *
 from .horse import *
-from .jxjoy import *
+from .joy import *
 from .matrix import *
 from .news import *
 from .notice import *

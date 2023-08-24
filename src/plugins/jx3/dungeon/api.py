@@ -153,7 +153,6 @@ def mode_mapping(mode):
     else:
         return False
 
-
 async def genderater(map, mode, boss):
     mode = mode_mapping(mode)
     if mode == False:
