@@ -6,7 +6,7 @@ async def get_flower(server: str, map: str = None, species: str = None):
 
 
 async def get_flower_by_jx3api(server: str, map: str = None, species: str = None):
-    url = f"{Config.jx3api_link}/data/home/flower?scale=2&server={server}&robot={bot}"
+    url = f"{Config.jx3api_link}/data/home/flower?scale=2&server={server}&robot={bot}&token={token}"
     data = await get_api(url)
     if not data.get("code") == 200:
         msg = data["msg"]

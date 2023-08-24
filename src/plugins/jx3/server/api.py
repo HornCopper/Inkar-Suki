@@ -3,7 +3,7 @@ from src.tools.dep import *
 
 async def server_status(server: str = None):
     server = server_mapping(server)
-    full_link = f"{Config.jx3api_link}/data/server/check?server=" + server
+    full_link = f"{Config.jx3api_link}/data/server/check?server=" + server + f"&token={token}"
     info = await get_api(full_link)
     try:
         all_servers = info["data"]
