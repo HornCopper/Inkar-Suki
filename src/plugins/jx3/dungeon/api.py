@@ -352,7 +352,7 @@ async def zone_v2(server, id):
         content = "\n".join(contents)
         html = read(VIEWS + "/jx3/teamcd/teamcd.html")
         font = ASSETS + "/font/custom.ttf"
-        saohua = await get_api("https://www.jx3api.com/data/saohua/random")
+        saohua = await get_api(f"https://www.jx3api.com/data/saohua/random?token={token}")
         saohua = saohua["data"]["text"]
         html = html.replace("$customfont", font).replace("$tablecontent", content).replace("$randomsaohua", saohua).replace("$appinfo", f" · 副本记录 · {server} · {id}")
         final_html = CACHE + "/" + get_uuid() + ".html"

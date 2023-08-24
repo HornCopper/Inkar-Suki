@@ -101,7 +101,7 @@ async def achi_v2(server: str = None, name: str = None, achievement: str = None,
         content = "\n".join(contents)
         html = read(VIEWS + "/jx3/achievement/achievement.html")
         font = ASSETS + "/font/custom.ttf"
-        saohua = await get_api("https://www.jx3api.com/data/saohua/random")
+        saohua = await get_api(f"https://www.jx3api.com/data/saohua/random?token={token}")
         saohua = saohua["data"]["text"]
         html = html.replace("$customfont", font).replace("$tablecontent", content).replace("$randomsaohua", saohua).replace("$appinfo", f" · 成就百科 · {server} · {name} · {achievement}")
         final_html = CACHE + "/" + get_uuid() + ".html"
@@ -165,7 +165,7 @@ async def zone_achi(server: str = None, name: str = None, zone: str = None, mode
         content = "\n".join(contents)
         html = read(VIEWS + "/jx3/achievement/achievement.html")
         font = ASSETS + "/font/custom.ttf"
-        saohua = await get_api("https://www.jx3api.com/data/saohua/random")
+        saohua = await get_api(f"https://www.jx3api.com/data/saohua/random?token={token}")
         saohua = saohua["data"]["text"]
         html = html.replace("$customfont", font).replace("$tablecontent", content).replace("$randomsaohua", saohua).replace("$appinfo", f" · 成就百科 · {server} · {name} · {mode}{zone}")
         final_html = CACHE + "/" + get_uuid() + ".html"
