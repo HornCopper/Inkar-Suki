@@ -191,6 +191,9 @@ async def genderater(map, mode, boss):
     mode = mode_mapping(mode)
     if mode == False:
         return ["唔……难度似乎音卡不能理解哦~"]
+    zone = zone_mapping(map)
+    if zone == False:
+        return ["唔……副本名称似乎音卡不能理解哦~"]
     try:
         data = await get_drops(map, mode, boss)
     except KeyError:
