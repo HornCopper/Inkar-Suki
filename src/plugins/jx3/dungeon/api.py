@@ -159,6 +159,90 @@ def mode_mapping(mode):
     else:
         return False
 
+def zone_mapping(zone):
+    if zone in ["战宝迦兰","战宝"]:
+        return "战宝迦兰"
+    elif zone in ["荻花宫后山","荻花后山","后山"]:
+        return "荻花宫后山"
+    elif zone in ["宫中神武遗迹","宫中神武","宫中"]:
+        return "宫中神武遗迹"
+    elif zone in ["持国天王殿","持国"]:
+        return "持国天王殿"
+    elif zone in ["荻花圣殿","荻花","dh"]:
+        return "荻花圣殿"
+    elif zone in ["持国天王回忆录","持国回忆录"]:
+        return "持国天王回忆录"
+    elif zone in ["荻花洞窟","洞窟"]:
+        return "荻花洞窟"
+    elif zone in ["烛龙殿","烛龙","zld","猪笼"]:
+        return "烛龙殿"
+    elif zone in ["会战唐门","会战"]:
+        return "会战唐门"
+    elif zone in ["南诏皇宫","皇宫"]:
+        return "南诏皇宫"
+    elif zone in ["龙渊泽","lyz"]:
+        return "龙渊泽"
+    elif zone in ["太原之战·逐虎驱狼","逐虎","逐虎驱狼"]:
+        return "太原之战·逐虎驱狼"
+    elif zone in ["太原之战·夜守孤城","野兽","夜守孤城","夜守"]:
+        return "太原之战·夜守孤城"
+    elif zone in ["秦皇陵","盗墓","qhl"]:
+        return "秦皇陵"
+    elif zone in ["风雪稻香村","稻香村"]:
+        return "风雪稻香村"
+    elif zone in ["血战天策","血战"]:
+        return "血战天策"
+    elif zone in ["大明宫","dmg"]:
+        return "大明宫"
+    elif zone in ["战宝军械库","军械库"]:
+        return "战宝军械库"
+    elif zone in ["永王行宫·花月别院","花月别院","花月"]:
+        return "永王行宫·花月别院"
+    elif zone in ["永王行宫·仙侣庭院","仙侣庭院","仙侣","仙女"]:
+        return "永王行宫·仙侣庭院"
+    elif zone in ["上阳宫·双曜亭","双曜","双曜亭","双耀"]:
+        return "上阳宫·双曜亭"
+    elif zone in ["上阳宫·观风殿","观风","观风殿","gfd"]:
+        return "上阳宫·观风殿"
+    elif zone in ["风雷刀谷·锻刀厅","锻刀厅","ddt"]:
+        return "风雷刀谷·锻刀厅"
+    elif zone in ["风雷刀谷·千雷殿","千雷","千雷殿"]:
+        return "风雷刀谷·千雷殿"
+    elif zone in ["狼牙堡·战兽山","战兽山","战兽"]:
+        return "狼牙堡·战兽山"
+    elif zone in ["狼牙堡·燕然峰","燕然","嫣然","燕然峰"]:
+        return "狼牙堡·燕然峰"
+    elif zone in ["狼牙堡·辉天堑","辉天","辉天堑","htq"]:
+        return "狼牙堡·辉天堑"
+    elif zone in ["狼牙堡·狼神殿","狼神","lsd","狼神殿"]:
+        return "狼牙堡·狼神殿"
+    elif zone in ["冰火岛·荒血路","hxl","荒血路"]:
+        return "冰火岛·荒血路"
+    elif zone in ["冰火岛·青莲狱","青莲狱","qly"]:
+        return "冰火岛·青莲狱"
+    elif zone in ["尘归海·巨冥湾","jmw","巨冥湾","追须"]:
+        return "尘归海·巨冥湾"
+    elif zone in ["尘归海·饕餮洞","饕餮洞","饕餮","ttd"]:
+        return "尘归海·饕餮洞"
+    elif zone in ["敖龙岛","奥比岛","ald"]:
+        return "敖龙岛"
+    elif zone in ["范阳夜变","夜店","范阳夜店","范阳书店"]:
+        return "范阳夜变"
+    elif zone in ["达摩洞","dmd","达","达摩"]:
+        return "达摩洞"
+    elif zone in ["白帝江关","白帝","白帝江棺","白"]:
+        return "白帝江关"
+    elif zone in ["雷域大泽","雷域","雷狱","瘤子","大泽","雷"]:
+        return "雷域大泽"
+    elif zone in ["河阳之战","河阳","河"]:
+        return "河阳之战"
+    elif zone in ["西津渡","码头","西西西","xjd"]:
+        return "西津渡"
+    elif zone in ["武狱黑牢","黑牢","武狱","牢","武牢"]:
+        return "武狱黑牢"
+    else:
+        return False
+
 star = """
 <svg width="20" height="20">
     <polygon points="10,0 13,7 20,7 14,12 16,19 10,15 4,19 6,12 0,7 7,7" style="fill:gold; stroke:gold; stroke-width:1px;" />
@@ -310,87 +394,6 @@ async def genderater(map, mode, boss):
         write(final_html, html)
         final_path = await generate(final_html, False, "table", False)
         return Path(final_path).as_uri()
-def zone_mapping(zone):
-    if zone in ["风起稻香","团队副本","战宝迦兰","战宝"]:
-        return "战宝迦兰"
-    elif zone in ["荻花宫后山","荻花后山","后山"]:
-        return "荻花宫后山"
-    elif zone in ["宫中神武遗迹","宫中神武","宫中"]:
-        return "宫中神武遗迹"
-    elif zone in ["持国天王殿","持国"]:
-        return "持国天王殿"
-    elif zone in ["荻花圣殿","荻花","dh"]:
-        return "荻花圣殿"
-    elif zone in ["持国天王回忆录","持国回忆录"]:
-        return "持国天王回忆录"
-    elif zone in ["荻花洞窟","洞窟"]:
-        return "荻花洞窟"
-    elif zone in ["烛龙殿","烛龙","zld","猪笼"]:
-        return "烛龙殿"
-    elif zone in ["会战唐门","会战南诏皇宫","皇宫"]:
-        return "会战唐门"
-    elif zone in ["龙渊泽","lyz"]:
-        return "龙渊泽"
-    elif zone in ["太原之战·逐虎驱狼","逐虎","逐虎驱狼"]:
-        return "太原之战·逐虎驱狼"
-    elif zone in ["太原之战·夜守孤城","野兽","夜守孤城","夜守"]:
-        return "太原之战·夜守孤城"
-    elif zone in ["秦皇陵","盗墓","qhl"]:
-        return "秦皇陵"
-    elif zone in ["风雪稻香村","稻香村"]:
-        return "风雪稻香村"
-    elif zone in ["血战天策","血战"]:
-        return "血战天策"
-    elif zone in ["大明宫","dmg"]:
-        return "大明宫"
-    elif zone in ["战宝军械库","军械库"]:
-        return "战宝军械库"
-    elif zone in ["永王行宫·花月别院","花月别院","花月"]:
-        return "永王行宫·花月别院"
-    elif zone in ["永王行宫·仙侣庭院","仙侣庭院","仙侣","仙女"]:
-        return "永王行宫·仙侣庭院"
-    elif zone in ["上阳宫·双曜亭","双曜","双曜亭","双耀"]:
-        return "上阳宫·双曜亭"
-    elif zone in ["上阳宫·观风殿","观风","观风殿","gfd"]:
-        return "上阳宫·观风殿"
-    elif zone in ["风雷刀谷·锻刀厅","锻刀厅","ddt"]:
-        return "风雷刀谷·锻刀厅"
-    elif zone in ["风雷刀谷·千雷殿","千雷","千雷殿"]:
-        return "风雷刀谷·千雷殿"
-    elif zone in ["狼牙堡·战兽山","战兽山","战兽"]:
-        return "狼牙堡·战兽山"
-    elif zone in ["狼牙堡·燕然峰","燕然","嫣然","燕然峰"]:
-        return "狼牙堡·燕然峰"
-    elif zone in ["狼牙堡·辉天堑","辉天","辉天堑","htq"]:
-        return "狼牙堡·辉天堑"
-    elif zone in ["狼牙堡·狼神殿","狼神","lsd","狼神殿"]:
-        return "狼牙堡·狼神殿"
-    elif zone in ["冰火岛·荒血路","hxl","荒血路"]:
-        return "冰火岛·荒血路"
-    elif zone in ["冰火岛·青莲狱","青莲狱","qly"]:
-        return "冰火岛·青莲狱"
-    elif zone in ["尘归海·巨冥湾","jmw","巨冥湾","追须"]:
-        return "尘归海·巨冥湾"
-    elif zone in ["尘归海·饕餮洞","饕餮洞","饕餮","ttd"]:
-        return "尘归海·饕餮洞"
-    elif zone in ["敖龙岛","奥比岛","ald"]:
-        return "敖龙岛"
-    elif zone in ["范阳夜变","夜店","范阳夜店","范阳书店"]:
-        return "范阳夜变"
-    elif zone in ["达摩洞","dmd","达","达摩"]:
-        return "达摩洞"
-    elif zone in ["白帝江关","白帝","白帝江棺","白"]:
-        return "白帝江关"
-    elif zone in ["雷域大泽","雷域","雷狱","瘤子","大泽","雷"]:
-        return "雷域大泽"
-    elif zone in ["河阳之战","河阳","河"]:
-        return "河阳之战"
-    elif zone in ["西津渡","码头","西西西","xjd"]:
-        return "西津渡"
-    elif zone in ["武狱黑牢","黑牢","武狱","牢","武牢"]:
-        return "武狱黑牢"
-    else:
-        return False
 
 # async def generater(map, mode, boss):
 #     mode = mode_mapping(mode)
