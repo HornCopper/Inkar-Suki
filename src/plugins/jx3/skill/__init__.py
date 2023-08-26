@@ -127,6 +127,6 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     xf = aliases(args.extract_plain_text())
     if xf == False:
         await macro_v1.finish("唔……心法输入有误，请检查后重试~")
-    data = await get_api(f"https://www.jx3api.com/data/school/macro?name={xf}")
+    data = await get_api(f"https://www.jx3api.com/data/school/macro?name={xf}&token={token}")
     data = data["data"]["context"]
     await macro_v1.finish(data)
