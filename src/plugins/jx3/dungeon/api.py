@@ -286,6 +286,12 @@ async def generater(map, mode, boss):
     armors = data["armors"]
     others = data["others"]
     weapons = data["weapons"]
+    if armors == None:
+        armors = []
+    if others == None:
+        others = []
+    if weapons == None:
+        weapons = []
     if len(armors) == 0 and len(others) == 0 and len(weapons) == 0:
         return ["唔……没有找到该boss的掉落哦~\n您确定" + f"{boss}住在{mode}{map}吗？"]
     else:
