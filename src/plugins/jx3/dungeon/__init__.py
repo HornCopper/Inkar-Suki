@@ -60,8 +60,10 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     map = arg[0]
     mode = arg[1]
     boss = arg[2]
-    data = await generate(map, mode, boss)
+    data = await generater(map, mode, boss)
+    from nonebot.log import logger
+    logger.info(data)
     if type(data) != type([]):
-        await drops.finish(ms.image(Path(data).as_uri()))
+        await drops.finish(ms.image(data))
     else:
         await drops.finish(data[0])

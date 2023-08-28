@@ -6,7 +6,7 @@ import random
 import base64
 import sys
 
-from nonebot.adapters.onebot.v11 import MessageSegment, MessageEvent, Bot, Message, GroupMessageEvent
+from nonebot.adapters.onebot.v11 import MessageSegment as ms, MessageEvent, Bot, Message, GroupMessageEvent
 from nonebot.adapters.onebot.v11.permission import GROUP_ADMIN, GROUP_OWNER
 from nonebot.permission import SUPERUSER
 from nonebot.adapters.onebot.v11.helpers import extract_image_urls

@@ -116,26 +116,31 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
         await zone_achievement.finish(PROMPT_ArgumentInvalid)
     group = str(event.group_id)
     if len(arg) == 2:
-        server = None
+        server = getGroupServer(group)
+        if server == None:
+            await zone_achievement.finish("唔……尚未绑定任何服务器，请携带服务器参数或先联系管理员绑定群聊服务器！")
         id = arg[0]
-        zone = arg[1]
+        zone = zone_mapping(arg[1])
         mode = "10人普通"
     elif len(arg) == 3:
-        server = arg[0] if server_mapping(arg[0], group) != None else ""
-        if server != "":
-            id = arg[1]
-            zone = arg[2]
-            mode = "10人普通"
-        else:
+        server = arg[0] if server_mapping(arg[0]) != None else ""
+        if server == "":
+            server = getGroupServer(group)
+            if server == None:
+                await zone_achievement.finish("唔……尚未绑定任何服务器，请携带服务器参数或先联系管理员绑定群聊服务器！")
             id = arg[0]
-            zone = arg[1]
+            zone = zone_mapping(arg[1])
             mode = mode_mapping(arg[2])
+        else:
+            id = arg[1]
+            zone = zone_mapping(arg[2])
+            mode = "10人普通"
     elif len(arg) == 4:
-        server = arg[0]
+        server = server_mapping(arg[0], group)
         id = arg[1]
-        zone = arg[2]
+        zone = zone_mapping(arg[2])
         mode = mode_mapping(arg[3])
-    data = await zone_achi(server ,id, zone, mode, group)
+    data = await zone_achi(server, id, zone, mode)
     if type(data) == type([]):
         await zone_achievement.finish(data[0])
     else:
