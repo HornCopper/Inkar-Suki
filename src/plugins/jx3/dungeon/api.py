@@ -249,7 +249,7 @@ star = """
 </svg>
 """
 
-template = """
+template_drop = """
 <tr>
     <td class="short-column">
         <img src="$icon"></img>
@@ -271,7 +271,7 @@ equip_types = ["帽子","上衣","腰带","护臂","裤子","鞋","项链","腰�
 
 filter_words = ["根骨","力道","元气","身法","体质"]
 
-async def genderater(map, mode, boss):
+async def generater(map, mode, boss):
     mode = mode_mapping(mode)
     if mode == False:
         return ["唔……难度似乎音卡不能理解哦~"]
@@ -279,7 +279,7 @@ async def genderater(map, mode, boss):
     if zone == False:
         return ["唔……副本名称似乎音卡不能理解哦~"]
     try:
-        data = await get_drops(map, mode, boss)
+        data = await get_drops(zone, mode, boss)
     except KeyError:
         return ["唔……没有找到该掉落列表，请检查副本名称、BOSS名称或难度~"]
     data = data["data"]
@@ -293,57 +293,84 @@ async def genderater(map, mode, boss):
         for i in armors:
             name = i["Name"]
             icon = i["Icon"]["FileName"]
-            if i["Icon"]["SubKind"] in equip_types and i["Type"] != "Act_运营及版本道具":
-                type_ = "装备"
-                attrs_data = i["ModifyType"]
-                attrs_list = []
-                for x in attrs_data:
-                    string = x["Attrib"]["GeneratedMagic"]
-                    flag = False
-                    for y in filter_words:
-                        if string.find(y) != -1:
-                            flag = True
-                    if flag:
-                        continue
-                    attrs_list.append(string)
-                attrs = "<br>".join(attrs_list)
-                if i["type"] != "戒指":
-                    diamon_data = i["DiamonAttribute"]
-                    diamon_list = []
-                    for x in diamon_data:
-                        string = re.sub(r"\b+", "", x["Attrib"]["GeneratedMagic"]) + "?"
-                        diamon_list.append(string)
-                    fivestone = "<br>".join(diamon_list)
+            if i["Icon"]["SubKind"] in equip_types:
+                if "Type" in list(i):
+                    if i["Type"] == "Act_运营及版本道具":
+                        type_ = "外观"
+                        attrs = "不适用"
+                        fivestone = "不适用"
+                        max = "不适用"
+                        quailty = "不适用"
+                        score = "不适用"
+                        type_ = "装备"
+                    else:
+                        type_ = re.sub(r"\d+", "", i["Icon"]["SubKind"])
+                        attrs = "不适用"
+                        fivestone = "不适用"
+                        max = "不适用"
+                        quailty = "不适用"
+                        score = "不适用"
                 else:
-                    fivestone = "不适用"
-                max = i["MaxStrengthLevel"]
-                stars = []
-                for x in range(int(max)):
-                    stars.append(star)
-                stars = "\n".join(stars)
-                quailty = i["Quality"]
-                equip_type = i["Icon"]["SubKind"]
-                if equip_type == "帽子":
-                    score = str(int(quailty)*1.62)
-                elif equip_type in ["上衣","裤子"]:
-                    score = str(int(quailty)*1.8)
-                elif equip_type in ["腰带","护臂","鞋"]:
-                    score = str(int(quailty)*1.26)
-                elif equip_type in ["项链","腰坠","戒指"]:
-                    score = str(int(quailty)*0.9)
-                elif equip_type in ["投掷囊"]:
-                    score = str(int(quailty)*1.08)
+                    type_ = i["Icon"]["SubKind"]
+                    attrs_data = i["ModifyType"]
+                    attrs_list = []
+                    for x in attrs_data:
+                        string = x["Attrib"]["GeneratedMagic"]
+                        flag = False
+                        for y in filter_words:
+                            if string.find(y) != -1:
+                                flag = True
+                        if flag:
+                            continue
+                        attrs_list.append(string)
+                    attrs = "<br>".join(attrs_list)
+                    if i["Icon"]["SubKind"] != "戒指":
+                        diamon_data = i["DiamonAttribute"]
+                        diamon_list = []
+                        logger.info(diamon_data)
+                        for x in diamon_data:
+                            if x["Desc"] == "atInvalid":
+                                continue
+                            diamon_string = re.sub(r"\d+", "?", x["Attrib"]["GeneratedMagic"])
+                            diamon_list.append(diamon_string)
+                        fivestone = "<br>".join(diamon_list)
+                    else:
+                        fivestone = "不适用"
+                    max = i["MaxStrengthLevel"]
+                    stars = []
+                    if max != "":
+                        for x in range(int(max)):
+                            stars.append(star)
+                        stars = "\n".join(stars)
+                    else:
+                        stars = "<p>不适用</p>"
+                    quailty = i["Quality"]
+                    equip_type = i["Icon"]["SubKind"]
+                    if equip_type == "帽子":
+                        score = str(int(int(quailty)*1.62))
+                    elif equip_type in ["上衣","裤子"]:
+                        score = str(int(int(quailty)*1.8))
+                    elif equip_type in ["腰带","护臂","鞋"]:
+                        score = str(int(int(quailty)*1.26))
+                    elif equip_type in ["项链","腰坠","戒指"]:
+                        score = str(int(int(quailty)*0.9))
+                    elif equip_type in ["投掷囊"]:
+                        score = str(int(int(quailty)*1.08))
             else:
-                if i["Type"] == "Act_运营及版本道具":
-                    type_ = "外观"
-                else:
+                type_ = "未知"
+                flag = False
+                if "Type" in list(i):
+                    if i["Type"] == "Act_运营及版本道具":
+                        type_ = "外观"
+                        flag = True
+                if flag == False:
                     type_ = re.sub(r"\d+", "", i["Icon"]["SubKind"])
                 attrs = "不适用"
                 fivestone = "不适用"
-                max = "不适用"
+                stars = "不适用"
                 quailty = "不适用"
                 score = "不适用"
-            tablecontent.append(template.replace("$icon", icon).replace("$name", name).replace("$attrs", attrs).replace("$type", type_).replace("$stars", stars).replace("$quailty", quailty).replace("$score", score).replace("$fivestone", fivestone))
+            tablecontent.append(template_drop.replace("$icon", icon).replace("$name", name).replace("$attrs", attrs).replace("$type", type_).replace("$stars", stars).replace("$quailty", quailty).replace("$score", score).replace("$fivestone", fivestone))
         for i in weapons:
             name = i["Name"]
             icon = i["Icon"]["FileName"]
@@ -363,17 +390,22 @@ async def genderater(map, mode, boss):
             diamon_data = i["DiamonAttribute"]
             diamon_list = []
             for x in diamon_data:
-                string = re.sub(r"\b+", "", x["Attrib"]["GeneratedMagic"]) + "?"
+                if x["Desc"] == "atInvalid":
+                    continue
+                string = re.sub(r"\d+", "?", x["Attrib"]["GeneratedMagic"])
                 diamon_list.append(string)
             fivestone = "<br>".join(diamon_list)
             max = i["MaxStrengthLevel"]
             stars = []
-            for x in range(int(max)):
-                stars.append(star)
-            stars = "\n".join(stars)
+            if max != "":
+                for x in range(int(max)):
+                    stars.append(star)
+                stars = "\n".join(stars)
+            else:
+                stars = "<p>不适用</p>"
             quailty = i["Quality"]
-            score = str(int(quailty)*2.16)
-            tablecontent.append(template.replace("$icon", icon).replace("$name", name).replace("$attrs", attrs).replace("$type", type_).replace("$stars", stars).replace("$quailty", quailty).replace("$score", score).replace("$fivestone", fivestone))
+            score = str(int(int(quailty)*2.16))
+            tablecontent.append(template_drop.replace("$icon", icon).replace("$name", name).replace("$attrs", attrs).replace("$type", type_).replace("$stars", stars).replace("$quailty", quailty).replace("$score", score).replace("$fivestone", fivestone))
         for i in others:
             type_ = "不适用"
             icon = i["Icon"]["FileName"]
@@ -383,37 +415,17 @@ async def genderater(map, mode, boss):
             score = "不适用"
             quailty = "不适用"
             fivestone = "不适用"
-            tablecontent.append(template.replace("$icon", icon).replace("$name", name).replace("$attrs", attrs).replace("$type", type_).replace("$stars", stars).replace("$quailty", quailty).replace("$score", score).replace("$fivestone", fivestone))
+            tablecontent.append(template_drop.replace("$icon", icon).replace("$name", name).replace("$attrs", attrs).replace("$type", type_).replace("$stars", stars).replace("$quailty", quailty).replace("$score", score).replace("$fivestone", fivestone))
         final_table = "\n".join(tablecontent)
         html = read(VIEWS + "/jx3/drop/drop.html")
         font = ASSETS + "/font/custom.ttf"
         saohua = await get_api(f"https://www.jx3api.com/data/saohua/random?token={token}")
         saohua = saohua["data"]["text"]
-        html = html.replace("$customfont", font).replace("$tablecontent", final_table).replace("$randomsaohua", saohua).replace("$appinfo", f" · 掉落列表 · {mode}{map} · {boss}")
+        html = html.replace("$font", font).replace("$tablecontent", final_table).replace("$saohua", saohua).replace("$appinfo", f" · 掉落列表 · {mode}{zone} · {boss}")
         final_html = CACHE + "/" + get_uuid() + ".html"
         write(final_html, html)
         final_path = await generate(final_html, False, "table", False)
         return Path(final_path).as_uri()
-
-# async def generater(map, mode, boss):
-#     mode = mode_mapping(mode)
-#     if mode == False:
-#         return ["唔……难度似乎音卡不能理解哦~"]
-#     zone = zone_mapping(map)
-#     if zone == False:
-#         return ["唔……副本似乎音卡不能理解哦~"]
-#     try:
-#         data = await get_drops(zone, mode, boss)
-#     except KeyError:
-#         return ["唔……没有找到该掉落列表，请检查副本名称、BOSS名称或难度~"]
-#     data = data["data"]
-#     armors = data["armors"]
-#     others = data["others"]
-#     weapons = data["weapons"]
-#     if len(armors) == 0 and len(others) == 0 and len(weapons) == 0:
-#         return ["唔……没有找到该boss的掉落哦~\n您确定" + f"{boss}住在{mode}{map}吗？"]
-    
-# Working
 
 template = """
 <tr>

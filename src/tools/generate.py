@@ -7,7 +7,7 @@ import threading
 import uuid
 from playwright.async_api import async_playwright
 from pathlib import Path
-from sgtpyutils.logger import logger
+from nonebot.log import logger
 from sgtpyutils.timer import create_timer
 from src.tools.dep.bot.path import *
 
@@ -119,6 +119,7 @@ async def generate(html: str, web: bool = False, locate: str = None, first: bool
     if web:
         logger.warning(f"render stopped for `web` options is set to True")
         pass
+    logger.info(html)
     html = Path(html).as_uri()
     result = await generate_by_url(html, locate, first, delay)
     if result is None:
