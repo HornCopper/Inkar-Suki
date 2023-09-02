@@ -20,7 +20,7 @@ async def get_typhoon_path(name):
     for i in typhoon_list:
         if i.get_text() == name:
             try:
-                if i["class"] == "actived":
+                if i.a["class"] == "actived":
                     return ["该台风近期已被中央气象台停止编号，搜索失败。"]
             except KeyError:
                 pass
