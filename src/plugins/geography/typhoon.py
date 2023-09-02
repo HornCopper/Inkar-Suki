@@ -1,3 +1,5 @@
+import re
+
 from bs4 import BeautifulSoup as bs
 
 from src.tools.dep import *
@@ -33,4 +35,17 @@ async def get_typhoon_path(name):
     imgblock = new_bs_obj.find_all(class_="imgblock")[0]
     imgblock_bs = bs(imgblock, "html.parser")
     img = imgblock_bs.div.img["src"]
-    return img 
+    return img
+
+async def get_typhoon_news():
+    api = "http://www.nmc.cn/dataservice/typhoon/news.json"
+    data = await get_api(api)
+    msg = ""
+    for i in data["data"]["list"]:
+        if i["label"] not in ["","风圈半径"]:
+            info = i["label"] + "：" + i["text"]
+            msg += info
+        if i["label"] == "风圈半径":
+            round = "风圈半径：\n" + re.sub(r" +", "\n", re.sub(r"：+", "：", re.sub(r"半径 +", "半径：", i["text"]).replace("\u3000","："))).replace("；","；\n")
+            msg += round
+    return msg
