@@ -19,8 +19,11 @@ async def get_typhoon_path(name):
     flag = False
     for i in typhoon_list:
         if i.get_text() == name:
-            if i["class"] == "actived":
-                return ["该台风近期已被中央气象台停止编号，搜索失败。"]
+            try:
+                if i["class"] == "actived":
+                    return ["该台风近期已被中央气象台停止编号，搜索失败。"]
+            except KeyError:
+                pass
             url = "http://nmc.cn" + i["href"]
             flag = True
     if not flag:
