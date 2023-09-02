@@ -21,3 +21,10 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
         await tyPath.finish(data[0])
     else:
         await tyPath.finish(ms.image(data))
+
+tyNews = on_command("typhoon_news", aliases={"台风快讯"}, priority=5)
+
+@tyNews.handle()
+async def _(event: GroupMessageEvent):
+    msg = await get_typhoon_news()
+    await tyNews.finish(msg)
