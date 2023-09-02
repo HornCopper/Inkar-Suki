@@ -31,6 +31,6 @@ async def get_typhoon_path(name):
     obj_data = await get_url(url)
     new_bs_obj = bs(obj_data, "html.parser")
     imgblock = new_bs_obj.find_all(class_="imgblock")[0]
-    imgblock_bs = bs(imgblock, "html.parser")
+    imgblock_bs = bs(str(imgblock), "html.parser")
     img = imgblock_bs.div.img["src"]
     return img 
