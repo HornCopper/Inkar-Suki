@@ -1,0 +1,1 @@
+{"author":"HornCopper","version":"1.0-Snapshot","name":"地理类搜索工具(geography)","admin":"N/A","aliases":"+typhoon_list -> +台风列表$+typhoon_news -> +台风快讯$+typhoon_path -> +台风路径$+typhoon_outside -> +全球气旋","desc":"查询当前台风列表：+typhoon_list$查询某台风路径图，限近期：+typhoon_path <台风名称>$查看台风快讯：+typhoon_news$查看西北太平洋以外海域热带气旋信息：+typhoon_outside"}
