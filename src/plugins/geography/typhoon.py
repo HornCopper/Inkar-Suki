@@ -24,7 +24,7 @@ async def get_typhoon_path(name):
                     return ["该台风近期已被中央气象台停止编号，搜索失败。"]
             except KeyError:
                 pass
-            url = "http://nmc.cn" + i["href"]
+            url = "http://nmc.cn" + i.a["href"]
             flag = True
     if not flag:
         return ["未找到您要搜索的台风，请检查名称后重试，或是是否处在近期。"]
