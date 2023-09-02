@@ -43,7 +43,7 @@ async def get_typhoon_news():
     msg = ""
     for i in data["data"]["list"]:
         if i["label"] not in ["","风圈半径"]:
-            info = i["label"] + "：" + i["text"]
+            info = i["label"] + "：" + i["text"] + "\n"
             msg += info
         if i["label"] == "风圈半径":
             round = "风圈半径：\n" + re.sub(r" +", "\n", re.sub(r"：+", "：", re.sub(r"半径 +", "半径：", i["text"]).replace("\u3000","："))).replace("；","；\n")
