@@ -30,5 +30,7 @@ async def get_typhoon_path(name):
         return ["未找到您要搜索的台风，请检查名称后重试，或是是否处在近期。"]
     obj_data = await get_url(url)
     new_bs_obj = bs(obj_data, "html.parser")
-    img = new_bs_obj.find_all(class_="imgblock")[0].div.img["src"]
+    imgblock = new_bs_obj.find_all(class_="imgblock")[0]
+    imgblock_bs = bs(imgblock, "html.parser")
+    img = imgblock_bs.div.img["src"]
     return img 
