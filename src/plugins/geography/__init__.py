@@ -5,7 +5,7 @@ tyList = on_command("typhoon_list", aliases={"台风列表"}, priority=5)
 @tyList.handle()
 async def _(event: GroupMessageEvent):
     data = await get_typhoon_list()
-    if not data:
+    if data:
         msg = "、".join(data)
         await tyList.finish(f"当前西北太平洋有以下台风：\n{msg}")
     else:
