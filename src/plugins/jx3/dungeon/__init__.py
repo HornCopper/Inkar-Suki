@@ -67,3 +67,25 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
         await drops.finish(ms.image(data))
     else:
         await drops.finish(data[0])
+
+item = on_command("jx3_itemdrop", aliases={"掉落v2"}, priority=5)
+
+@item.handle()
+async def _(event: GroupMessageEvent, args: Message = CommandArg()):
+    group_server = getGroupServer(str(event.group_id))
+    arg = args.extract_plain_text().split(" ")
+    if len(arg) not in [1, 2]:
+        await item.finish("唔……参数不正确哦，请检查后重试~")
+    if len(arg) == 1:
+        if group_server == False:
+            await item.finish("没有绑定服务器，请携带服务器参数使用！")
+        server = group_server
+        name = arg[0]
+    elif len(arg) == 2:
+        server = arg[0]
+        name = arg[1]
+    data = await get_item_record(server, name)
+    if type(data) == type([]):
+        await item.finish(data[0])
+    else:
+        await item.finish(ms.image(data))
