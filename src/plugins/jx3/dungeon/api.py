@@ -562,6 +562,7 @@ async def get_item_record(server: str, name: str):
     known_id = []
     tablecontents = []
     font = ASSETS + "/font/custom.ttf"
+    num = 0
     for i in data["rows"]:
         if i["Tm"] in known_time and i["Nike"] in known_id:
             continue
@@ -569,7 +570,7 @@ async def get_item_record(server: str, name: str):
         known_id.append(i["Nike"])
         id = i["Nike"]
         item_name = i["Droppedi"]
-        if i["Copyname"][0:1] in ["英雄","普通"]:
+        if i["Copyname"][0:2] in ["英雄","普通"]:
             zone = "25人" + i["Copyname"]
         else:
             zone = i["Copyname"]
@@ -578,13 +579,16 @@ async def get_item_record(server: str, name: str):
         timeGet_int = int(i["Tm"])
         datetime_1 = datetime.fromtimestamp(timeGet_int)
         datetime_2 = datetime.fromtimestamp(current_time)
-        timedelta = datetime_1 - datetime_2
+        timedelta = datetime_2 - datetime_1
         days = int(timedelta.total_seconds() // 86400)
         hours = int((timedelta.total_seconds() - days*86400) // 3600)
         minutes = int((timedelta.total_seconds() - days*86400 - hours*3600) // 60)
         relateTime = f"{days}天{hours}时{minutes}分前"
         server = i["Srv"]
         tablecontents.append(template_item.replace("$server", server).replace("$name", item_name).replace("$map", zone).replace("$id", id).replace("$time", timeGet).replace("$relate", relateTime))
+        num += 1
+        if num == 30:
+            break # 不限？不限给你鲨了
     saohua = await get_api(f"https://www.jx3api.com/data/saohua/random?token={token}")
     saohua = saohua["data"]["text"]
     appinfo_time = time.strftime("%H:%M:%S",time.localtime(time.time()))
