@@ -590,6 +590,7 @@ async def get_item_record(server: str, name: str):
     appinfo_time = time.strftime("%H:%M:%S",time.localtime(time.time()))
     appinfo = f"掉落统计 · {server} · {name} · {appinfo_time}"
     final_table = "\n".join(tablecontents)
+    html = read(VIEWS + "/jx3/item/item.html")
     html = html.replace("$customfont", font).replace("$tablecontent", final_table).replace("$randomsaohua", saohua).replace("$appinfo", appinfo)
     final_html = CACHE + "/" + get_uuid() + ".html"
     write(final_html, html)
