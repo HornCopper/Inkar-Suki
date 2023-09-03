@@ -28,3 +28,10 @@ tyNews = on_command("typhoon_news", aliases={"台风快讯"}, priority=5)
 async def _(event: GroupMessageEvent):
     msg = await get_typhoon_news()
     await tyNews.finish(msg)
+
+fy4a = on_command("fy4a", aliases={"卫星云图"}, priority=5)
+# 数据源：中央气象台 风云四号卫星 真彩图
+@fy4a.handle()
+async def _(event: GroupMessageEvent, args: Message = CommandArg()):
+    img = await fy4a_true_color()
+    await fy4a.finish(ms.image(img))

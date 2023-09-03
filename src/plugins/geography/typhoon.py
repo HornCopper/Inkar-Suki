@@ -49,3 +49,11 @@ async def get_typhoon_news():
             round = "风圈半径：\n" + re.sub(r" +", "\n", re.sub(r"：+", "：", re.sub(r"半径 +", "半径：", i["text"]).replace("\u3000","："))).replace("；","；\n") + "\n"
             msg += round
     return msg
+
+async def fy4a_true_color():
+    api = "http://nmc.cn/publish/satellite/FY4A-true-color.htm"
+    fy4a_data = await get_url(api)
+    fy4a_bs = bs(fy4a_data, "htm.parser")
+    imgblock = bs(str(fy4a_bs.find_all(class_="imgblock")[0]), "html.parser")
+    img = imgblock.div.img["src"]
+    return img
