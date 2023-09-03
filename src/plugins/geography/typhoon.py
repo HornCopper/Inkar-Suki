@@ -53,7 +53,7 @@ async def get_typhoon_news():
 async def fy4a_true_color():
     api = "http://nmc.cn/publish/satellite/FY4A-true-color.htm"
     fy4a_data = await get_url(api)
-    fy4a_bs = bs(fy4a_data, "htm.parser")
+    fy4a_bs = bs(fy4a_data, "html.parser")
     imgblock = bs(str(fy4a_bs.find_all(class_="imgblock")[0]), "html.parser")
     img = imgblock.div.img["src"]
     return img
