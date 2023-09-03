@@ -1,10 +1,12 @@
 import re
 
 from tabulate import tabulate
+from datetime import datetime, timedelta
 
 from src.tools.dep import *
 from src.tools.generate import generate, get_uuid
 from src.plugins.help import css
+from src.plugins.jx3.user import Zone_mapping
 
 ASSETS = TOOLS[:-5] + "assets"
 VIEWS = TOOLS[:-5] + "views"
@@ -509,3 +511,87 @@ async def zone_v2(server, id):
         write(final_html, html)
         final_path = await generate(final_html, False, "table", False)
         return Path(final_path).as_uri()
+
+template_item = """
+<tr>
+    <td class="short-column">$server</td>
+    <td class="short-column">$name</td>
+    <td class="short-column">$map</td>
+    <td class="short-column">$id</td>
+    <td class="short-column">$time</td>
+    <td class="short-column">$relate</td>
+</tr>
+"""
+
+async def get_item_record(server: str, name: str):
+    server = server_mapping(server)
+    zone = Zone_mapping(server)
+    headers = {
+        "Accept": "application/json, text/javascript, */*; q=0.01",
+        "Accept-Language": "zh-CN,zh;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6",
+        "Cache-Control": "no-cache",
+        "Connection": "keep-alive",
+        "Content-Type": "application/json",
+        "Pragma": "no-cache",
+        "Sec-Fetch-Dest": "empty",
+        "Sec-Fetch-Mode": "cors",
+        "Sec-Fetch-Site": "same-origin",
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36 Edg/114.0.1823.82",
+        "X-Requested-With": "XMLHttpRequest",
+        "sec-ch-ua": "\"Not.A/Brand\";v=\"8\", \"Chromium\";v=\"114\", \"Microsoft Edge\";v=\"114\"",
+        "sec-ch-ua-mobile": "?0",
+        "sec-ch-ua-platform": "\"Windows\"",
+        "Referer": "https://www.jx3mm.com/jx3fun/jevent/jcitem.html"
+    }
+    filter = {
+        "Zone": zone,
+        "Srv": server,
+        "Droppedi": name
+    }
+    base_params = {
+        "sort": "Tm",
+        "order": "desc",
+        "limit": "500",
+        "offset": "0",
+        "_": int(time.time() * 1000),
+        "filter": json.dumps(filter, ensure_ascii=False),
+        "op": "{\"Zone\":\"LIKE\",\"Srv\":\"LIKE\"}"
+    }
+    data = await get_api(url="https://www.jx3mm.com/jx3fun/jevent/jcitem", headers=headers, params=base_params)
+    known_time = []
+    known_id = []
+    tablecontents = []
+    font = ASSETS + "/font/custom.ttf"
+    for i in data["rows"]:
+        if i["Tm"] in known_time and i["Nike"] in known_id:
+            continue
+        known_time.append(i["Tm"])
+        known_id.append(i["Nike"])
+        id = i["Nike"]
+        item_name = i["Droppedi"]
+        if i["Copyname"][0:1] in ["英雄","普通"]:
+            zone = "25人" + i["Copyname"]
+        else:
+            zone = i["Copyname"]
+        timeGet = convert_time(i["Tm"])
+        current_time = int(datetime.now().timestamp())
+        timeGet_int = int(i["Tm"])
+        datetime_1 = datetime.fromtimestamp(timeGet_int)
+        datetime_2 = datetime.fromtimestamp(current_time)
+        timedelta = datetime_1 - datetime_2
+        days = int(timedelta.total_seconds() // 86400)
+        hours = int((timedelta.total_seconds() - days*86400) // 3600)
+        minutes = int((timedelta.total_seconds() - days*86400 - hours*3600) // 60)
+        relateTime = f"{days}天{hours}时{minutes}分前"
+        server = i["Srv"]
+        tablecontents.append(template_item.replace("$server", server).replace("$name", item_name).replace("$map", zone).replace("$id", id).replace("$time", timeGet).replace("$relate", relateTime))
+    saohua = await get_api(f"https://www.jx3api.com/data/saohua/random?token={token}")
+    saohua = saohua["data"]["text"]
+    appinfo_time = time.strftime("%H:%M:%S",time.localtime(time.time()))
+    appinfo = f"掉落统计 · {server} · {name} · {appinfo_time}"
+    final_table = "\n".join(tablecontents)
+    html = html.replace("$customfont", font).replace("$tablecontent", final_table).replace("$randomsaohua", saohua).replace("$appinfo", appinfo)
+    final_html = CACHE + "/" + get_uuid() + ".html"
+    write(final_html, html)
+    final_path = await generate(final_html, False, "table", False)
+    return Path(final_path).as_uri()
