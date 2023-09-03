@@ -70,7 +70,7 @@ async def post_url(url, proxy: dict = None, headers: str = None, timeout: int = 
         result = resp.text
         return result
 
-def zone_mapping(server):
+def Zone_mapping(server):
     if server == "绝代天骄":
         return "电信八区"
     elif server in ["斗转星移", "唯我独尊", "乾坤一掷", "横刀断浪", "剑胆琴心", "幽月轮", "梦江南"]:
@@ -270,7 +270,7 @@ async def get_attr_main(server, id, group_id):
     if uid == False:
         return ["唔……未找到该玩家。"]
     param = {
-        "zone": zone_mapping(server),
+        "zone": Zone_mapping(server),
         "server": server,
         "game_role_id": uid[0],
         "ts": gen_ts()
