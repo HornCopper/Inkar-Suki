@@ -1,1 +1,1 @@
-{"author":"HornCopper","version":"1.0-Snapshot","name":"地理类搜索工具(geography)","admin":"N/A","aliases":"+typhoon_list -> +台风列表$+typhoon_news -> +台风快讯$+typhoon_path -> +台风路径$+typhoon_outside -> +全球气旋","desc":"查询当前台风列表：+typhoon_list$查询某台风路径图，限近期：+typhoon_path <台风名称>$查看台风快讯：+typhoon_news"}
+{"author":"HornCopper","version":"1.0-Snapshot","name":"地理类搜索工具(geography)","admin":"N/A","aliases":"+typhoon_list -> +台风列表$+typhoon_news -> +台风快讯$+typhoon_path -> +台风路径$+fy4a -> +卫星云图","desc":"查询当前台风列表：+typhoon_list$查询某台风路径图，限近期：+typhoon_path <台风名称>$查看台风快讯：+typhoon_news$查看风云四号卫星当前云图：+fy4a-tc"}
