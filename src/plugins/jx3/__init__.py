@@ -36,6 +36,12 @@ async def _(bot: Bot, event: RecvEvent):
                 group_info = json.loads(read(DATA + "/" + str(group) + "/jx3group.json"))
                 if group_info["server"] != message["server"] and group_info["server"] != "":
                     continue
+            elif message["type"] == "诛恶":
+                group_info = json.loads(read(DATA + "/" + str(group) + "/jx3group.json"))
+                if group_info["server"] != message["server"] and group_info["server"] != "":
+                    continue
+                elif group_info["server"] == "":
+                    continue
             elif message["type"] == "开服":
                 group_info = json.loads(read(DATA + "/" + str(group) + "/jx3group.json"))
                 if group_info["server"] != message["server"] and group_info["server"] != "":
