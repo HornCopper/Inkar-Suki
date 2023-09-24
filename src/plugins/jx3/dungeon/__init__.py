@@ -68,7 +68,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     else:
         await drops.finish(data[0])
 
-item = on_command("jx3_itemdrop", aliases={"掉落v2"}, priority=5)
+item = on_command("jx3_itemdrop", aliases={"掉落"}, priority=5)
 
 @item.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
