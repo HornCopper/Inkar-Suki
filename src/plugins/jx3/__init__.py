@@ -27,9 +27,9 @@ async def _(bot: Bot, event: RecvEvent):
     message = event.get_message()
     if message == "False":
         return
-    groups = await bot.call_api("get_group_list")
+    groups = os.listdir(DATA)
     for i in groups:
-        group = i["group_id"]
+        group = i
         subscribe = load_or_write_subscribe(group)
         if message["type"] in subscribe:
             if message["type"] == "玄晶":
