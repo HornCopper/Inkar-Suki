@@ -173,7 +173,7 @@ class ServerStatusEvent(RecvEvent):
         if self.status:
             return {"type": "开服", "server": self.server, "msg": f"{time_now} {self.server} 开服 (/≧▽≦)/"}
         elif self.status == False:
-            return {"type": "开服", "server": self.server, "msg": f"{time_now}：{self.server} 维护 ヘ(~ω~ヘ) "}
+            return {"type": "开服", "server": self.server, "msg": f"{time_now} {self.server} 维护 ヘ(~ω~ヘ) "}
 
 
 @EventRister.rister(action=2002)
@@ -521,7 +521,7 @@ class ZhuEEvent(RecvEvent):
 
     @overrides(RecvEvent)
     def get_message(self) -> dict:
-        return {"type": "诛恶", "server": f"{self.server}", "msg": f"现在是{self.time}了！音卡提醒各位：\n{self.server} 的 诛恶事件 在 {self.map_name} 触发啦，快前往该地图吧！"}
+        return {"type": "诛恶", "server": self.server, "msg": f"现在是{self.time}了！音卡提醒各位：\n{self.server} 的 诛恶事件 在 {self.map_name} 触发啦，快前往该地图吧！"}
 
 @EventRister.rister(action=10001)
 class SubscribeEvent(RecvEvent):
