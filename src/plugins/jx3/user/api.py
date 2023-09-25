@@ -17,6 +17,7 @@ TOOLS = get_driver().config.tools_path
 ASSETS = TOOLS[:-5] + "assets"
 PLUGINS = TOOLS[:-5] + "plugins"
 
+now = "群侠万变(7.31三改)"
 
 try:
     from src.tools.dep.jx3.tuilan import gen_ts, gen_xsk, format_body, dungeon_sign # 收到热心网友举报，我们已对推栏的算法进行了隐藏。
@@ -332,7 +333,10 @@ async def get_attr_main(server, id, group_id):
     if kf in ["问水诀", "山居剑意"]:
         lenchant.append("")
     versions = await get_api("https://data.jx3box.com/talent/index.json")
-    ver = versions[0]["version"]
+    for i in versions:
+        if i["name"].find("体服") != -1:
+            continue
+        ver = i["version"]
     qxdata = await get_api(f"https://data.jx3box.com/talent/{ver}.json")
     for i in messyqx:
         index = find_qx(qxdata, kf, i)
