@@ -336,7 +336,9 @@ async def get_attr_main(server, id, group_id):
     for i in versions:
         if i["name"].find("体服") != -1:
             continue
-        ver = i["version"]
+        else:
+            ver = i["version"]
+            break
     qxdata = await get_api(f"https://data.jx3box.com/talent/{ver}.json")
     for i in messyqx:
         index = find_qx(qxdata, kf, i)
