@@ -1,6 +1,8 @@
 from src.tools.config import Config
 from src.tools.file import read, write
 from src.tools.permission import checker, error
+from src.tools.utils import checknumber
+
 import nonebot
 import json
 
@@ -13,11 +15,6 @@ from nonebot.params import CommandArg
 TOOLS = nonebot.get_driver().config.tools_path
 DATA = TOOLS[:-5] + "data"
 
-
-def checknumber(number):  # 检查参数是否为`int`。
-    number.isdecimal()
-
-
 def banned(sb):  # 检测某个人是否被封禁。
     with open(TOOLS + "/ban.json") as cache:
         banlist = json.loads(cache.read())
@@ -26,9 +23,7 @@ def banned(sb):  # 检测某个人是否被封禁。
                 return True
         return False
 
-
 notice = on_notice(priority=5)
-
 
 @notice.handle()
 async def _(bot: Bot, event: NoticeEvent):
@@ -46,6 +41,21 @@ async def _(bot: Bot, event: NoticeEvent):
         await bot.call_api("send_group_msg", group_id=group, message=msg)
     elif event.notice_type == "group_decrease":
         if event.sub_type == "kick_me":
+            for i in Config.notice_to:
+                await bot.call_api("send_group_msg", group_id = int(i), message = f"唔……音卡在群聊（{str(event.group_id)}）被移出啦！\n操作者：{str(event.operator_id)}，已自动封禁！")
+            kicker = str(event.operator_id)
+            if banned(kicker) == False:
+                banlist = json.loads(read(TOOLS + "/ban.json"))
+                banlist.append(kicker)
+                write(TOOLS + "/ban.json", json.dumps(banlist))
+                return
+            else:
+                return
+    elif event.notice_type == "group_ban":
+        if event.user_id in Config.bot:
+            await bot.call_api("set_group_leave", group_id = event.group_id)
+            for i in Config.notice_to:
+                await bot.call_api("send_group_msg", group_id = int(i), message = f"唔……音卡在群聊（{str(event.group_id)}）检测到被禁言啦，已自动退群！\n操作者：{str(event.operator_id)}，已自动封禁！")
             kicker = str(event.operator_id)
             if banned(kicker) == False:
                 banlist = json.loads(read(TOOLS + "/ban.json"))
@@ -56,7 +66,6 @@ async def _(bot: Bot, event: NoticeEvent):
                 return
 
 welcome_msg_edit = on_command("welcome", priority=5)
-
 
 @welcome_msg_edit.handle()
 async def __(event: GroupMessageEvent, args: Message = CommandArg()):

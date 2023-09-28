@@ -1,5 +1,6 @@
 import json
 import os
+import shutil
 
 from nonebot import on_command, on_message
 from nonebot.adapters.onebot.v11 import Event, Bot, GroupMessageEvent
@@ -22,7 +23,6 @@ from src.tools.utils import get_url
 
 unregistered = on_message(block=False, priority=0)  # 未注册的群聊无法调用命令！
 
-
 @unregistered.handle()
 async def _(matcher: Matcher, event: GroupMessageEvent):
     directorys = os.listdir(TOOLS.replace("tools", "data"))
@@ -32,7 +32,6 @@ async def _(matcher: Matcher, event: GroupMessageEvent):
         return
 
 register = on_command("register", aliases={"reg"}, priority=-1)  # 注册
-
 
 @register.handle()
 async def _(event: GroupMessageEvent):
@@ -58,7 +57,6 @@ async def _(event: GroupMessageEvent):
         await register.finish("注册成功！")
 
 flushdata = on_command("flushdata", priority=5)  # 刷新
-
 
 @flushdata.handle()
 async def _(event: Event):
@@ -95,7 +93,6 @@ async def _(event: Event):
 
 leave = on_command("leave", priority=5)  # 退群
 
-
 @leave.handle()
 async def _(bot: Bot, event: GroupMessageEvent):
     if checker(str(event.user_id), 8) == False:
@@ -103,53 +100,11 @@ async def _(bot: Bot, event: GroupMessageEvent):
     groups = os.listdir(DATA)
     group = str(event.group_id)
     if group in groups:
-        try:
-            os.remove(DATA + "/" + group + "/jx3group.json")
-            os.remove(DATA + "/" + group + "/webhook.json")
-            os.remove(DATA + "/" + group + "/marry.json")
-            os.remove(DATA + "/" + group + "/welcome.txt")
-            os.remove(DATA + "/" + group + "/banword.json")
-            os.remove(DATA + "/" + group + "/record.json")
-            os.remove(DATA + "/" + group + "/wiki.json")
-            os.remove(DATA + "/" + group + "/opening.json")
-            os.remove(DATA + "/" + group + "/arcaea.json")
-            os.remove(DATA + "/" + group + "/subscribe.json")
-            os.remove(DATA + "/" + group + "/blacklist.json")
-            os.rmdir(DATA + "/" + group)
-        except:
-            logger.info("删除文件夹" + group + "失败，未知错误。")
+        shutil.rmtree(DATA + "/" + group)
     await leave.send("已清除本群数据，正在退出群聊~")
     await bot.call_api("set_group_leave", group_id=event.group_id)
 
-cleardata = on_command("cleardata", priority=5)  # 清除本群群聊数据，使之恢复到未注册状态
-
-
-@cleardata.handle()
-async def _(event: GroupMessageEvent):
-    if checker(str(event.user_id), 9) == False:
-        await cleardata.finish(error(9))
-    groups = os.listdir(DATA)
-    group = str(event.group_id)
-    if group in groups:
-        try:
-            os.remove(DATA + "/" + group + "/jx3group.json")
-            os.remove(DATA + "/" + group + "/webhook.json")
-            os.remove(DATA + "/" + group + "/marry.json")
-            os.remove(DATA + "/" + group + "/welcome.txt")
-            os.remove(DATA + "/" + group + "/opening.json")
-            os.remove(DATA + "/" + group + "/banword.json")
-            os.remove(DATA + "/" + group + "/record.json")
-            os.remove(DATA + "/" + group + "/wiki.json")
-            os.remove(DATA + "/" + group + "/arcaea.json")
-            os.remove(DATA + "/" + group + "/subscribe.json")
-            os.remove(DATA + "/" + group + "/blacklist.json")
-            os.rmdir(DATA + "/" + group)
-        except:
-            logger.info("删除文件夹" + group + "失败，未知错误。")
-    await cleardata.finish("已清除本群数据。")
-
 shutup = on_command("shutup", aliases={"-闭嘴"}, priority=5)
-
 
 @shutup.handle()
 async def _(event: GroupMessageEvent):
@@ -165,7 +120,6 @@ async def _(event: GroupMessageEvent):
 
 shutup_filter = on_message(priority=1, block=False)
 
-
 @shutup_filter.handle()
 async def _(matcher: Matcher, event: GroupMessageEvent):
     subscribe = load_or_write_subscribe(event.group_id)
@@ -175,7 +129,6 @@ async def _(matcher: Matcher, event: GroupMessageEvent):
         return
 
 speak = on_command("unshutup", aliases={"speak", "-解除闭嘴"}, priority=1)
-
 
 @speak.handle()
 async def _(event: GroupMessageEvent):
@@ -190,7 +143,6 @@ async def _(event: GroupMessageEvent):
         await speak.finish("已解除音卡的自主禁言！")
 
 fix = on_command("fix", priority=5)  # 修补数据，用于数据文件残缺时
-
 
 @fix.handle()
 async def _(event: GroupMessageEvent):

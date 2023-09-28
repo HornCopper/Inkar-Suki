@@ -395,26 +395,6 @@ async def genderater(map, mode, boss):
         final_path = await generate(final_html, False, "table", False)
         return Path(final_path).as_uri()
 
-# async def generater(map, mode, boss):
-#     mode = mode_mapping(mode)
-#     if mode == False:
-#         return ["唔……难度似乎音卡不能理解哦~"]
-#     zone = zone_mapping(map)
-#     if zone == False:
-#         return ["唔……副本似乎音卡不能理解哦~"]
-#     try:
-#         data = await get_drops(zone, mode, boss)
-#     except KeyError:
-#         return ["唔……没有找到该掉落列表，请检查副本名称、BOSS名称或难度~"]
-#     data = data["data"]
-#     armors = data["armors"]
-#     others = data["others"]
-#     weapons = data["weapons"]
-#     if len(armors) == 0 and len(others) == 0 and len(weapons) == 0:
-#         return ["唔……没有找到该boss的掉落哦~\n您确定" + f"{boss}住在{mode}{map}吗？"]
-    
-# Working
-
 template = """
 <tr>
     <td class="short-column">$zonename</td>
