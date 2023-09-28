@@ -6,7 +6,7 @@ arena = on_command("jx3_arena", aliases={"名剑"}, priority=5)
 @arena.handle()
 async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
     arg = args.extract_plain_text().split(" ")
-    if len(arg) not in [2, 3]:
+    if len(arg) not in [2, 3, 4]:
         await arena.finish(PROMPT_ArgumentCountInvalid)
     if arg[0] == "战绩":
         if len(arg) not in [2, 3, 4]:

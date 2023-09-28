@@ -39,6 +39,7 @@ async def get_url(url: str, proxy: dict = None, **kwargs) -> str:
     以get方式发出请求，并将返回的结果以plaintext方式处理
     '''
     r = await send_with_async('get', url, proxy, **kwargs)
+    r.encoding="utf8"
     return r.text
 
 
@@ -47,6 +48,7 @@ async def get_api(url, proxy: dict = None, **kwargs) -> dict:
     以get方式发出请求，并将返回的结果以json方式处理
     '''
     r = await send_with_async('get', url, proxy, **kwargs)
+    r.encoding="utf8"
     return r.json()
 
 
@@ -55,6 +57,7 @@ async def post_url(url, proxy: dict = None, **kwargs) -> str:
     以post方式发出请求，data为form-url-encoded,json为application/json
     '''
     r = await send_with_async('post', url, proxy, **kwargs)
+    r.encoding="utf8"
     return r.text
 
 

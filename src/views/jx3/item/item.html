@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html>
 <head>
@@ -15,7 +14,7 @@
      -->
     <style>
         table {
-            width: 100px;
+            width: 800px;
             border-collapse: separate;
             border-spacing: 0;
             border: 1px solid #000;
@@ -44,7 +43,7 @@
         }
 
         .short-column {
-            width: 350px;
+            width: 150px;
         }
 
         tfoot {
@@ -55,31 +54,24 @@
 
         @font-face {
             font-family: Harmony;
-            src: url($font);
+            src: url($customfont);
         }
 
         body {
             font-family: Harmony, sans-serif;
         }
-
-        .attrs
-        {
-            color: #059f3d
-        }
     </style>
 </head>
 <body>
-    <table style="background-color: #fff4f4;">
+    <table style="background-color: #d6b6f6    ;">
         <thead>
             <tr>
-                <th class="short-column">图鉴</th>
-                <th class="short-column">名称</th>
-                <th class="short-column">属性</th>
-                <th class="short-column">类型</th>
-                <th class="short-column">最大精炼等级</th>
-                <th class="short-column">品质等级</th>
-                <th class="short-column">装备分数</th>
-                <th class="short-column">熔嵌孔属性</th>
+                <th class="short-column">区服</th>
+                <th class="short-column">物品</th>
+                <th class="short-column">地图</th>
+                <th class="short-column">角色</th>
+                <th class="short-column">时间</th>
+                <th class="short-column">参考</th>
             </tr>
         </thead>
         <tbody>
@@ -87,7 +79,7 @@
         </tbody>
         <tfoot>
             <tr>
-                <td colspan="7">&copy; Inkar Suki$appinfo<br>$saohua</td>
+                <td colspan="7">&copy; Inkar Suki · $appinfo<br>$randomsaohua</td>
             </tr>
         </tfoot>
     </table>
