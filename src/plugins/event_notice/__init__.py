@@ -52,7 +52,7 @@ async def _(bot: Bot, event: NoticeEvent):
             else:
                 return
     elif event.notice_type == "group_ban":
-        if event.user_id in Config.bot:
+        if str(event.user_id) in Config.bot:
             await bot.call_api("set_group_leave", group_id = event.group_id)
             for i in Config.notice_to:
                 await bot.call_api("send_group_msg", group_id = int(i), message = f"唔……音卡在群聊（{str(event.group_id)}）检测到被禁言啦，已自动退群！\n操作者：{str(event.operator_id)}，已自动封禁！")
