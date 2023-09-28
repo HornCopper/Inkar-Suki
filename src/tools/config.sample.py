@@ -63,3 +63,5 @@ class Config:
     repo_name = ""  # 该`Inkar-Suki`的副本的来源，若从主仓库克隆，则填写`codethink-cn/Inkar-Suki`，若为fork之后克隆的仓库，则填写`<你的GitHub用户名>/Inkar-Suki`
 
     jx3api_link = ""  # JX3API API链接
+
+    notice_to = [""] # 机器人的部分日志将发送到这些群聊，每个元素类型为`str`
