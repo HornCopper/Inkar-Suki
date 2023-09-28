@@ -37,12 +37,16 @@ async def get_monsters_map():
             desc = details[0]
             coin = details[1]
         elif len(details) == 1:
-            if details[0][0] == "+":
-                desc = ""
-                coin = details[0]
+            if details[0] == "":
+               desc = ""
+               coin = ""
             else:
-                desc = details[0]
-                coin = ""
+                if details[0][0] == "+":
+                    desc = ""
+                    coin = details[0]
+                else:
+                    desc = details[0]
+                    coin = ""
         else:
             desc = ""
             coin = ""
