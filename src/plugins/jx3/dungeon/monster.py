@@ -57,6 +57,8 @@ async def get_monsters_map():
         if count % 10 == 0:
             content.append(new)
             content.append("</div>\n<div class=\"u-row\">")
+        else:
+            content.append(new)
     start = re.sub(r"\..+\Z", "", map_data["data"]["start"].replace("T"," ")).split(" ")[0]
     html = read(VIEWS + "/jx3/monster/monster.html")
     font = ASSETS + "/font/custom.ttf"
