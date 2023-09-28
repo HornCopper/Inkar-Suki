@@ -56,7 +56,10 @@ async def get_monsters_map():
         new = template.replace("$Flag", flag).replace("$Icon", icon).replace("$Count", str(count)).replace("$bossName", name).replace("$Desc", desc).replace("$Coin", coin)
         if count % 10 == 0:
             content.append(new)
-            content.append("</div>\n<div class=\"u-row\">")
+            if count / 10 in [1,2,3,4,5]:
+                content.append("</div>\n<div class=\"u-row\">")
+            elif count / 10 == 6:
+                content.append("</div>")
         else:
             content.append(new)
     start = re.sub(r"\..+\Z", "", map_data["data"]["start"].replace("T"," ")).split(" ")[0]
@@ -66,7 +69,7 @@ async def get_monsters_map():
     saohua = saohua["data"]["text"]
     appinfo_time = time.strftime("%H:%M:%S",time.localtime(time.time()))
     appinfo = f"自{start}起7天 · 当前时间：{appinfo_time}<br>{saohua}"
-    html = html.replace("$content", "\n".join(content)).replace("customfont", font).replace("$appinfo", appinfo)
+    html = html.replace("$content", "\n".join(content)).replace("$customfont", font).replace("$appinfo", appinfo)
     final_html = CACHE + "/" + get_uuid() + ".html"
     write(final_html, html)
     final_path = await generate(final_html, False, ".m-bmap.is-map-phone", False)
