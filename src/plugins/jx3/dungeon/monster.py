@@ -58,7 +58,7 @@ async def get_monsters_map():
             content.append(new)
             content.append("</div>\n<div class=\"u-row\">")
     start = re.sub(r"\..+\Z", "", map_data["data"]["start"].replace("T"," ")).split(" ")[0]
-    html = read(VIEWS + "/monster/monster.html")
+    html = read(VIEWS + "/jx3/monster/monster.html")
     font = ASSETS + "/font/custom.ttf"
     saohua = await get_api(f"https://www.jx3api.com/data/saohua/random?token={token}")
     saohua = saohua["data"]["text"]
