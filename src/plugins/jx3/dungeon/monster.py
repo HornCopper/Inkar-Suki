@@ -53,7 +53,7 @@ async def get_monsters_map():
         count = i + 1
         if count % 10 == 0:
             flag = flag + " is-elite" # 勿除空格
-        new = template.replace("$Flag", flag).replace("$Icon", icon).replace("$Count", count).replace("$bossName", name).replace("$Desc", desc).replace("$Coin", coin)
+        new = template.replace("$Flag", flag).replace("$Icon", icon).replace("$Count", str(count)).replace("$bossName", name).replace("$Desc", desc).replace("$Coin", coin)
         if count % 10 == 0:
             content.append(new)
             content.append("</div>\n<div class=\"u-row\">")
