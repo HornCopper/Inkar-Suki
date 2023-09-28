@@ -1,5 +1,6 @@
 from .api import *
 from .xuanjing import *
+from .monster import *
 
 zones = on_command("jx3_zones_v1", aliases={"副本v1"}, priority=5)
 
@@ -89,3 +90,9 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
         await item.finish(data[0])
     else:
         await item.finish(ms.image(data))
+
+monsters = on_command("jx3_monsters_v2", aliases={"百战v2"}, priority=5)
+@monsters.handle()
+async def _(event: GroupMessageEvent, args: Message = CommandArg()):
+    img = await get_monsters_map()
+    await monsters.finish(ms.image(img))
