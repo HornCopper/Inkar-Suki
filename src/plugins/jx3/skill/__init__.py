@@ -67,7 +67,12 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     if len(arg) == 2:
         kf = arg[0]
         tl = arg[1]
-        ver = versions[0]["version"]
+        for i in versions:
+            if i["name"].find("体服") != -1:
+                continue
+            else:
+                ver = i["version"]
+                break
     else:
         kf = arg[0]
         tl = arg[1]

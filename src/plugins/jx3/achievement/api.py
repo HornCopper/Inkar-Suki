@@ -1,5 +1,5 @@
 from src.tools.dep import *
-from src.plugins.jx3.dungeon.api import get_map
+from src.plugins.jx3.dungeon.api import get_map, zone_mapping, mode_mapping
 
 from .adventure import *
 
@@ -109,12 +109,18 @@ async def achi_v2(server: str = None, name: str = None, achievement: str = None,
         final_path = await generate(final_html, False, "table", False)
         return Path(final_path).as_uri()
 
-async def zone_achi(server: str = None, name: str = None, zone: str = None, mode: str = None, group_id: str = None):
+async def zone_achi(server: str = None, name: str = None, zone: str = None, mode: str = None):
+    zone = zone_mapping(zone)
+    mode = mode_mapping(mode)
+    logger.info(name)
+    if zone == False or mode == False:
+        return ["唔……难度或名称输入有误。"]
     personal_data_request = f"{Config.jx3api_link}/data/role/detailed?token={token}&server={server}&name={name}"
     personal_data = await get_api(personal_data_request)
+    logger.info(personal_data_request)
     if personal_data["code"] != 200:
         guid = ""
-        return ["唔……未找到该玩家。"]
+        return [f"唔……未找到该玩家。\n请检查玩家[{name}]是否在本群聊所绑定的服务器中，以及本群聊是否绑定服务器。"]
     else:
         guid = personal_data["data"]["globalRoleId"]
     map_id = await get_map(zone, mode)

@@ -17,6 +17,7 @@ TOOLS = get_driver().config.tools_path
 ASSETS = TOOLS[:-5] + "assets"
 PLUGINS = TOOLS[:-5] + "plugins"
 
+now = "群侠万变(7.31三改)"
 
 try:
     from src.tools.dep.jx3.tuilan import gen_ts, gen_xsk, format_body, dungeon_sign # 收到热心网友举报，我们已对推栏的算法进行了隐藏。
@@ -70,7 +71,7 @@ async def post_url(url, proxy: dict = None, headers: str = None, timeout: int = 
         result = resp.text
         return result
 
-def zone_mapping(server):
+def Zone_mapping(server):
     if server == "绝代天骄":
         return "电信八区"
     elif server in ["斗转星移", "唯我独尊", "乾坤一掷", "横刀断浪", "剑胆琴心", "幽月轮", "梦江南"]:
@@ -270,7 +271,7 @@ async def get_attr_main(server, id, group_id):
     if uid == False:
         return ["唔……未找到该玩家。"]
     param = {
-        "zone": zone_mapping(server),
+        "zone": Zone_mapping(server),
         "server": server,
         "game_role_id": uid[0],
         "ts": gen_ts()
@@ -332,7 +333,12 @@ async def get_attr_main(server, id, group_id):
     if kf in ["问水诀", "山居剑意"]:
         lenchant.append("")
     versions = await get_api("https://data.jx3box.com/talent/index.json")
-    ver = versions[0]["version"]
+    for i in versions:
+        if i["name"].find("体服") != -1:
+            continue
+        else:
+            ver = i["version"]
+            break
     qxdata = await get_api(f"https://data.jx3box.com/talent/{ver}.json")
     for i in messyqx:
         index = find_qx(qxdata, kf, i)

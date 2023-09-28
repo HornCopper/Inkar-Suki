@@ -27,14 +27,20 @@ async def _(bot: Bot, event: RecvEvent):
     message = event.get_message()
     if message == "False":
         return
-    groups = await bot.call_api("get_group_list")
+    groups = os.listdir(DATA)
     for i in groups:
-        group = i["group_id"]
+        group = i
         subscribe = load_or_write_subscribe(group)
         if message["type"] in subscribe:
             if message["type"] == "玄晶":
                 group_info = json.loads(read(DATA + "/" + str(group) + "/jx3group.json"))
                 if group_info["server"] != message["server"] and group_info["server"] != "":
+                    continue
+            elif message["type"] == "诛恶":
+                group_info = json.loads(read(DATA + "/" + str(group) + "/jx3group.json"))
+                if group_info["server"] != message["server"] and group_info["server"] != "":
+                    continue
+                elif group_info["server"] == "":
                     continue
             elif message["type"] == "开服":
                 group_info = json.loads(read(DATA + "/" + str(group) + "/jx3group.json"))
