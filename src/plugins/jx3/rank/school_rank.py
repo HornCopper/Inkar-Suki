@@ -65,7 +65,7 @@ async def get_school_rank(season_key):
         color = colors[i["xf"]]
         contents.append(template.replace("$width", width).replace("$color", color).replace("$name", name).replace("$dps", dps).replace("$img", icon))
     contents = "\n".join(contents)
-    html = read(VIEWS + "/jx3/school_rank/school_rank.html")
+    html = read(VIEWS + "/jx3/schoolrank/schoolrank.html")
     font = ASSETS + "/font/custom.ttf"
     saohua = await get_api(f"https://www.jx3api.com/data/saohua/random?token={token}")
     saohua = saohua["data"]["text"]
