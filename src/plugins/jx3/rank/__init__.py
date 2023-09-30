@@ -102,3 +102,5 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
         else:
             img = await get_school_rank(season_key)
             await rank.finish(ms.image(img))
+    img = await get_school_rank(season_key)
+    await rank.finish(ms.image(img))
