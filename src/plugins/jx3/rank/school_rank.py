@@ -61,7 +61,7 @@ async def get_school_rank(season_key):
         width = str(round(int(i["dps"].split(".")[0]) / int(standard.split(".")[0] * 100), 2)) + "%"
         icon = await get_school_icon(i["xf"])
         name = i["xf"]
-        dps = str(int(i["dps"]))
+        dps = str(int(i["dps"].split(".")[0]))
         color = colors[i["xf"]]
         contents.append(template.replace("$width", width).replace("$color", color).replace("$name", name).replace("$dps", dps).replace("$img", icon))
     contents = "\n".join(contents)
