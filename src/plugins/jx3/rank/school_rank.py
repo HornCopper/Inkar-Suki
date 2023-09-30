@@ -3,7 +3,7 @@ from src.plugins.jx3.dungeon.api import VIEWS
 
 template = """
 <li>
-    <div class="u-item" style="width: $width%; background-color: $color;"><img
+    <div class="u-item" style="width: $width; background-color: $color;"><img
             src="$img" class="u-pic"><span class="u-text"> $name
         </span><span class="u-dps">$dps</span></div>
 </li>
@@ -58,7 +58,7 @@ async def get_school_rank(season_key):
     standard = rank_data["data"]["items"][0]["dps"]
     contents = []
     for i in rank_data["data"]["items"]:
-        width = str(round(int(i["dps"].split(".")[0]) / int(standard.split(".")[0] * 100), 2)) + "%"
+        width = str(round(int(i["dps"].split(".")[0]) / int(standard.split(".")[0]) * 100, 2)) + "%"
         icon = await get_school_icon(i["xf"])
         name = i["xf"]
         dps = str(int(i["dps"].split(".")[0]))
