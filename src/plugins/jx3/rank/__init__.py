@@ -1,4 +1,5 @@
 from .api import *
+from .school_rank import *
 
 jx3_cmd_top100_ = on_command("jx3_top100", aliases={"百强"}, priority=5)
 
@@ -81,3 +82,23 @@ async def jx3_zlrank(event: GroupMessageEvent, args: Message = CommandArg()):
         return await jx3_cmd_zlrank.finish(data[0])
     else:
         return await jx3_cmd_zlrank.finish(ms.image(Path(data).as_uri()))
+
+rank = on_command("jx3_schoolrank", aliases={"门派天梯"}, priority=5)
+
+@rank.handle()
+async def _(event: GroupMessageEvent, args: Message = CommandArg()):
+    season = args.extract_plain_text()
+    season_data = await get_api("https://cms.jx3box.com/api/cms/bps/dps/group?client=std")
+    if season == "":
+        season_key = season_data["data"][0]["key"]
+    else:
+        flag = False
+        for i in season_data["data"]:
+            if i["label"] == season:
+                season_key = i["key"]
+                flag = True
+        if flag == False:
+            await rank.finish("唔……您所提供的赛季暂时无法找到，您可以留空，这样音卡将提供最新赛季的天梯榜。")
+        else:
+            img = await get_school_rank(season_key)
+            await rank.finish(ms.image(img))
