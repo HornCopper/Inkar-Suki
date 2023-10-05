@@ -10,7 +10,8 @@ def javascript(server, name):
         let a = await window.grecaptcha.execute(window.xconfig.extend.reCaptchaToken)
         let b = await fetch('https://www.jx3pet.com/api/firework?server=$server&name=$name&response=' + a)
         return b.json()}    
-    """.replace("$server", server).replace("name", name)
+    """
+    return js.replace("$server", server).replace("name", name)
 
 async def get_firework_data(server, name):
     async with async_playwright() as p:
