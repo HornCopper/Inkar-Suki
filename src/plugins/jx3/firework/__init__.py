@@ -12,7 +12,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     elif len(arg) == 2:
         server = arg[0]
         id = arg[1]
-    data = await get_firework_image(server, id, group_id=event.group_id)
+    data = await get_firework_image(server, id, group=event.group_id)
     if type(data) == type([]):
         return await firework.finish(data[0])
     else:
