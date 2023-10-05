@@ -117,7 +117,7 @@ async def generate(html: str, web: bool = False, locate: str = None, first: bool
     @return : 返回生成的图片路径
     '''
     if web:
-        logger.warning(f"render stopped for `web` options is set to True")
+        logger.warning(f"render stopped for that `web` options is set to True")
         pass
     logger.info(html)
     html = Path(html).as_uri()
