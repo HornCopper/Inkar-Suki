@@ -47,7 +47,7 @@ async def get_firework_image(server, name):
     appinfo_time = time.strftime("%H:%M:%S",time.localtime(time.time()))
     appinfo = f" · 烟花记录 · {server} · {name} · 当前时间：{appinfo_time}"
     font = ASSETS + "/font/custom.ttf"
-    html = html.replace("$customfont", font).replace("$appinfo", appinfo).replace("$recruitcontent", tablecontent).replace("$randomsaohua", saohua)
+    html = html.replace("$customfont", font).replace("$appinfo", appinfo).replace("$tablecontent", tablecontent).replace("$randomsaohua", saohua)
     final_html = CACHE + "/" + get_uuid() + ".html"
     write(final_html, html)
     final_path = await generate(final_html, False, "table", False)
