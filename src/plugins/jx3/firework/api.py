@@ -33,8 +33,10 @@ template = """
 </tr>
 """
 
-async def get_firework_image(server, name):
-    server = server_mapping(server)
+async def get_firework_image(server, name, group):
+    server = server_mapping(server, group)
+    if not server:
+        return [PROMPT_ServerNotExist]
     data = await get_firework_data(server, name)
     tablecontent = []
     data = data["data"]
