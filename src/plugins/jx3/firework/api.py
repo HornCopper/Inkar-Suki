@@ -11,7 +11,7 @@ def javascript(server, name):
         let b = await fetch('https://www.jx3pet.com/api/firework?server=$server&name=$name&response=' + a)
         return b.json()}    
     """
-    return js.replace("$server", server).replace("name", name)
+    return js.replace("$server", server).replace("$name", name)
 
 async def get_firework_data(server, name):
     async with async_playwright() as p:
@@ -45,7 +45,7 @@ async def get_firework_image(server, name):
     saohua = await get_api(f"https://www.jx3api.com/data/saohua/random?token={token}")
     saohua = saohua["data"]["text"]
     appinfo_time = time.strftime("%H:%M:%S",time.localtime(time.time()))
-    appinfo = f" · 烟花记录 · {server} · {name} · 当前时间：{appinfo_time}"
+    appinfo = f"烟花记录 · {server} · {name} · 当前时间：{appinfo_time}"
     font = ASSETS + "/font/custom.ttf"
     html = html.replace("$customfont", font).replace("$appinfo", appinfo).replace("$tablecontent", tablecontent).replace("$randomsaohua", saohua)
     final_html = CACHE + "/" + get_uuid() + ".html"
