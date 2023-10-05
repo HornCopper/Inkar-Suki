@@ -39,7 +39,7 @@ async def get_firework_image(server, name):
     tablecontent = []
     data = data["data"]
     for i in range(len(data)):
-        tablecontent.append(template.replace("$count", str(i)).replace("$map", data[i]["map_name"]).replace("$sed", data[i]["sender"]).replace("$rec", data[i]["recipient"]).replace("$time", convert_time(data[i]["time"]).replace("$firework", data[i]["name"])))
+        tablecontent.append(template.replace("$count", str(i)).replace("$map", data[i]["map_name"]).replace("$sed", data[i]["sender"]).replace("$rec", data[i]["recipient"]).replace("$time", convert_time(data[i]["time"])).replace("$firework", data[i]["name"]))
     tablecontent = "\n".join(tablecontent)
     html = read(VIEWS + "/jx3/firework/firework.html")
     saohua = await get_api(f"https://www.jx3api.com/data/saohua/random?token={token}")
