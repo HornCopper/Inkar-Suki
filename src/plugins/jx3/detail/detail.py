@@ -115,13 +115,13 @@ def judge_relate(proportion: str):
     else:
         raise ValueError(f"Unsupport value {num} appeared in the proportion!")
 
-async def generate_zd_image(server: str, name: str):
+async def generate_zd_image(server: str, id: str):
     # 暂时锁死秘境总览
     # 地图总览后面再做
     detail = await get_menu()
     if not detail:
         return ["唔……获取目录失败！"]
-    guid = await get_guid(server, name)
+    guid = await get_guid(server, id)
     if not guid:
         return ["唔……未查找到该玩家！"]
     content = []
@@ -144,7 +144,7 @@ async def generate_zd_image(server: str, name: str):
     saohua = await get_api(f"https://www.jx3api.com/data/saohua/random?token={token}")
     saohua = saohua["data"]["text"]
     appinfo_time = time.strftime("%H:%M:%S",time.localtime(time.time()))
-    html = html.replace("$customfont", font).replace("$tablecontent", content).replace("$randomsaohua", saohua).replace("$appinfo", f" · 副本总览 · {server} · {name} · {appinfo_time}")
+    html = html.replace("$customfont", font).replace("$tablecontent", content).replace("$randomsaohua", saohua).replace("$appinfo", f" · 副本总览 · {server} · {id} · {appinfo_time}")
     final_html = CACHE + "/" + get_uuid() + ".html"
     write(final_html, html)
     final_path = await generate(final_html, False, "table", False)
