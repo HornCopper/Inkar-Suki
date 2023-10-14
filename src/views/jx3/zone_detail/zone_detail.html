@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <!--
+        该代码协议与Inkar Suki仓库协议相同。
+
+        禁止帝君和兔兔使用。
+
+        禁止任何人商用。
+
+        欢迎借鉴或用于开源项目。
+
+        ——HornCopper
+     -->
+    <style>
+        table {
+            width: 800px;
+            border-collapse: separate;
+            border-spacing: 0;
+            border: 1px solid #000;
+        }
+
+        th {
+            background-color: #333;
+            color: #fff;
+            padding: 8px;
+            text-align: center;
+        }
+
+        td {
+            padding: 20px;
+            text-align: center;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            border-bottom: 1px solid #D3D3D3;
+            margin-bottom: 1px;
+        }
+
+        tbody tr:not(:first-child) {
+            /* border-top: 1px solid #000; */
+            border: 1px solid black;
+        }
+
+        .short-column {
+            width: 150px;
+        }
+
+        tfoot {
+            text-align: center;
+            font-style: italic;
+            font-size: 12px;
+        }
+
+        @font-face {
+            font-family: Harmony;
+            src: url($customfont);
+        }
+
+        body {
+            font-family: Harmony, sans-serif;
+        }
+        .progress-bar {
+            width: 300px;
+            height: 20px;
+            background-color: #cfcfcf;
+            position: relative;
+            border-radius: 10px;
+        }
+
+        .progress-0 {
+            height: 100%;
+            background-color: #5ebfd7;
+            border-radius: 10px;
+        }
+
+        .progress-25 {
+            height: 100%;
+            background-color: #4caf50;
+            border-radius: 10px;
+        }
+
+        .progress-50 {
+            height: 100%;
+            background-color: #ece44a;
+            border-radius: 10px;
+        }
+
+        .progress-75 {
+            height: 100%;
+            background-color: #ff8929;
+            border-radius: 10px;
+        }
+
+        .progress-100 {
+            height: 100%;
+            background-color: #ff2929;
+            border-radius: 10px;
+        }
+
+        .progress-text {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            line-height: 20px;
+            color: black;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <table style="background-color: #f3f3db    ;">
+        <thead>
+            <tr>
+                <th class="short-column" style="height:20px">名称</th>
+                <th class="short-column" style="height:20px">进度</th>
+                <th class="short-column" style="height:20px">资历</th>
+            </tr>
+        </thead>
+        <tbody>
+            $tablecontent
+        </tbody>
+        <tfoot>
+            <tr>
+                <td colspan="7">&copy; Inkar Suki · $appinfo<br>$randomsaohua</td>
+            </tr>
+        </tfoot>
+    </table>
+</body>
+</html>
