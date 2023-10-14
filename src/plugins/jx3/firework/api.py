@@ -35,9 +35,14 @@ template = """
 
 async def get_firework_image(server, name, group):
     server = server_mapping(server, group)
+    logger.info(server)
     if not server:
         return [PROMPT_ServerNotExist]
-    data = await get_firework_data(server, name)
+    while True:
+        data = await get_firework_data(server, name)
+        if data["code"] == 200:
+            break
+    logger.info(data)
     tablecontent = []
     data = data["data"]
     for i in range(len(data)):
