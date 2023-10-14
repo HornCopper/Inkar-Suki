@@ -38,7 +38,7 @@ async def get_guid(server: str, name: str):
     if data["code"] != 200:
         return False
     else:
-        return data["globalRoleId"]
+        return data["data"]["globalRoleId"]
 
 async def get_menu(): # 获取总览分类
     menu_data = await get_tuilan_data("https://m.pvp.xoyo.com/achievement/list/menu")
