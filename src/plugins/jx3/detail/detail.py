@@ -64,7 +64,7 @@ async def get_total_data(guid: str, detail: str): # 获取单项分类的数值
         "detail": detail,
         "ts": gen_ts()
     }
-    data = get_tuilan_data("https://m.pvp.xoyo.com/achievement/list/achievements", param)
+    data = await get_tuilan_data("https://m.pvp.xoyo.com/achievement/list/achievements", param)
     finished = await get_value(data, guid)
     return finished
 
