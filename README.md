@@ -2,7 +2,7 @@
 
 # [Inkar Suki](https://www.inkar-suki.xyz)
 
-_基于Nonebot 2的多功能的 QQ 群聊机器人_
+_基于Nonebot 2的多功能的群聊机器人_
 
 ![Nonebot2](https://img.shields.io/badge/Nonebot2-Release_v2.0.0_beta.5-brightgreen)
 ![go-cqhttp](https://img.shields.io/badge/go--cqhttp-v1.0.0_rc3-brightgreen)
@@ -20,18 +20,16 @@ _基于Nonebot 2的多功能的 QQ 群聊机器人_
     
 # 简介
 
-各种功能于一体的[QQ](https://im.qq.com)群聊机器人，基于[Nonebot 2](https://v2.nonebot.dev)。
+各种功能于一体的群聊机器人，基于[Nonebot 2](https://v2.nonebot.dev)。
 
 项目基于`GPL-3.0`开源，欢迎借鉴，不欢迎商用，不欢迎帝君以任何形式使用本仓库任何源码，有声明的除外。
+
+本项目与`QQ`无关，请勿用于搭建QQ机器人等服务。仅供娱乐与学习，下载后请于24小时内删除。
 
 # 功能
 **由于功能设计初衷是为群聊服务，以下大部分功能将在私聊不可用，食用方法请移步[文档](https://inkar-suki.codethink.cn)。**
 
 * [功能](/applications.md)
-
-# 公共实例
-- 目前作者的公共实例位于香港，QQ号为`3438531564`，想要使用请加入群聊Inkar-Suki用户群并发送`+申请`，
-- 或者在本仓库发起[issue](https://github.com/codethink-cn/Inkar-Suki/issues)或联系作者QQ（`3349104868`）
 
 # 机器人交流群
 - 欢迎加入`Inkar-Suki用户群`，群号为[650495414](https://jq.qq.com/?_wv=1027&k=JazIPJxf)，您可以在这里与其他使用机器人的用户交流。
