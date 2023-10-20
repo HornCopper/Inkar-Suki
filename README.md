@@ -29,6 +29,8 @@ _基于Nonebot 2的多功能的群聊机器人_
 # 功能
 **由于功能设计初衷是为群聊服务，以下大部分功能将在私聊不可用，食用方法请移步[文档](https://inkar-suki.codethink.cn)。**
 
+如果你需要购买`JX3API`服务，[传送门](http://qm.qq.com/cgi-bin/qm/qr?_wv=1027&k=fyJEB9swedG7abcaKu0VV1Fr2L21n2SU&authKey=cwtMy5glj33EZGIeZjIrJf5x%2FM73rRo4%2FRNeYeD7%2BTv%2B2y2F4WwDyrlGjOkENgV1&noverify=0&group_code=119032235)。
+
 * [功能](/applications.md)
 
 # 机器人交流群
