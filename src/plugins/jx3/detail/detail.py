@@ -42,6 +42,7 @@ async def get_guid(server: str, name: str):
 
 async def get_menu(): # 获取总览分类
     menu_data = await get_tuilan_data("https://m.pvp.xoyo.com/achievement/list/menu")
+    logger.info(menu_data)
     for i in menu_data["data"]:
         if i["name"] == "江湖行":
             for x in i["subClass"]:
