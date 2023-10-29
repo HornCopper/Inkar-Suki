@@ -242,6 +242,8 @@ def zone_mapping(zone):
         return "西津渡"
     elif zone in ["武狱黑牢","黑牢","武狱","牢","武牢"]:
         return "武狱黑牢"
+    elif zone in ["jld","九老洞","老九","老九洞","洞"]:
+        return "九老洞"
     else:
         return False
 
