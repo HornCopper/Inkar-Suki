@@ -27,7 +27,8 @@ __kf_dict = {
     '衍天': ["太玄经", "衍天宗", "灯皇", "衍天"],
     '药宗': ["无方", "灵素", "狍子"],
     '刀宗': ["孤锋诀", "刀爹", "呆宗", "刀宗"],
-    '丐帮': ["丐帮", "笑尘决", "笑尘诀", "笑尘"]
+    '丐帮': ["丐帮", "笑尘决", "笑尘诀", "笑尘"],
+    '万灵': ["万灵山庄","万灵","万0","万零","100000"]
 }
 kf_dict = {}
 for x in __kf_dict:
@@ -99,7 +100,7 @@ def aliases(SkillName: str) -> str:
         return "无方"
     elif SkillName in ["刀宗", "孤锋诀", "孤锋"]:
         return "孤锋诀"
-    elif SkillName in ["万灵山庄","万灵","山海","山海心经","山海心诀","山海心决"]:
+    elif SkillName in ["万灵山庄","万灵","山海","山海心经","山海心诀","山海心决","万0","100000","万零","万灵当歌","万0当哥"]:
         return "山海心诀"
     else:
         return False
@@ -218,7 +219,7 @@ async def getAllSkillsInfo(Kungfu: str) -> str:
 async def getSingleSkill(kungfu: str, skillName: str):
     kungfu = aliases(kungfu)
     if kungfu == "隐龙诀":
-        kungfu == "隐龙决"  # 由于`JX3Box`的`API`的数据错误问题，目前只能这样适配，等到数据纠正后删除这块代码。
+        kungfu == "隐龙决"  # 由于`JX3Box`的`API`的数据错误问题，目前只能这样适配，等到数据纠正后删除这块代码。其实是推栏的代码错了笑死。
     if kungfu == False:
         return False
     try:
