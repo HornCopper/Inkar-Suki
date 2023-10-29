@@ -5,6 +5,7 @@ from src.tools.utils import checknumber
 
 import nonebot
 import json
+import os
 
 from nonebot.adapters.onebot.v11 import MessageSegment as ms
 from nonebot import on_notice, on_command
@@ -34,8 +35,27 @@ async def _(bot: Bot, event: NoticeEvent):
         obj = event.user_id
         group = event.group_id
         bots = Config.bot
-        if str(obj) == bots[0]:
+        if str(obj) in bots:
             msg = "欢迎使用Inkar Suki！如需帮助请发送+help或查询文档哦~\nhttps://inkar-suki.codethink.cn\n若为初次使用，请申请人在本群发送+reg进行注册方可使用哦~"
+            if event.sub_type == "approve":
+                new_path = DATA + "/" + str(event.group_id)
+                if os.path.exists(new_path):
+                    return
+                else:
+                    os.mkdir(new_path)
+                    write(new_path + "/jx3group.json", "{\"group\":\"" + str(event.group_id) +
+                          "\",\"server\":\"\",\"leader\":\"\",\"leaders\":[],\"name\":\"\",\"status\":false}")
+                    write(new_path + "/webhook.json", "[]")
+                    write(new_path + "/marry.json", "[]")
+                    write(new_path + "/welcome.txt", "欢迎入群！")
+                    write(new_path + "/banword.json", "[]")
+                    write(new_path + "/opening.json", "[]")
+                    write(new_path + "/wiki.json", "{\"startwiki\":\"\",\"interwiki\":[]}")
+                    write(new_path + "/arcaea.json", "{}")
+                    write(new_path + "/record.json", "[]")
+                    write(new_path + "/subscribe.json", "[]")
+                    write(new_path + "/blacklist.json", "[]")
+                    await bot.call_api("send_group_msg", group_id = event.group_id, message ="检测到本群为新群聊，音卡已经自动补全所需要的文件啦！")
         else:
             msg = ms.at(obj) + read(DATA + "/" + str(group) + "/welcome.txt")
         await bot.call_api("send_group_msg", group_id=group, message=msg)
