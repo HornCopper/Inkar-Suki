@@ -91,3 +91,15 @@ async def get(platform_: str, song: str, singer: str = None):
                     id = i["id"]
                     return [song_name, id, platform]
             return "404"
+
+async def getLyricBelongToMusicInfo(lyric: str):
+    data = await get_api(f"https://mobileservice.kugou.com/api/v3/lyric/search?keyword={lyric}")
+    data = data["data"]["info"]
+    if len(data) != 0:
+        data = data[0]
+    else:
+        return "没有找到关于该歌词的歌曲！"
+    file = data["filename"]
+    lyric_ = data["lyric"]
+    msg = f"音卡为您匹配到最相似的结果是：\n歌曲：{file}\n{lyric_}\n数据来源：酷狗音乐"
+    return msg
