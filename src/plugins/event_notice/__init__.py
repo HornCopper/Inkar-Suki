@@ -8,7 +8,7 @@ import json
 import os
 
 from nonebot.adapters.onebot.v11 import MessageSegment as ms
-from nonebot import on_notice, on_command
+from nonebot import on_notice, on_command, on_request
 from nonebot.adapters import Message
 from nonebot.adapters.onebot.v11 import Bot, GroupMessageEvent, NoticeEvent, RequestEvent
 from nonebot.params import CommandArg
@@ -85,9 +85,9 @@ async def _(bot: Bot, event: NoticeEvent):
             else:
                 return
     
-notice2 = on_notice(priority=5)
+request = on_request(priority=5)
 
-@notice2.handle()
+@request.handle()
 async def _(bot: Bot, event: RequestEvent):
     if event.request_type == "group" and event.sub_type == "invite":
         msg = event.comment
