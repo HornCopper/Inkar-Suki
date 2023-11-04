@@ -1,16 +1,13 @@
 from src.tools.dep import *
 from src.plugins.jx3.dungeon.api import post_url, VIEWS
 
-try:
-    from src.tools.dep.jx3.tuilan import gen_ts, gen_xsk, format_body
-except:
-    pass
 
-async def get_tuilan_data(url: str, params: dict = {"ts": gen_ts()}):
+async def get_tuilan_data(url: str, params: dict = None):
+    if params is None:
+        params = {"ts": gen_ts()}
     ticket = Config.jx3_token
     params = format_body(params)
     xsk = gen_xsk(params)
-    device_id = ticket.split("::")[1]
     basic_headers = {
         "Host": "m.pvp.xoyo.com",
         "Connection": "keep-alive",
@@ -32,6 +29,7 @@ async def get_tuilan_data(url: str, params: dict = {"ts": gen_ts()}):
     data = await post_url(url, headers=basic_headers, data=params)
     return json.loads(data)
 
+
 async def get_guid(server: str, name: str):
     url = f"{Config.jx3api_link}/data/role/detailed?token={Config.jx3api_globaltoken}&server={server}&name={name}"
     data = await get_api(url)
@@ -40,7 +38,8 @@ async def get_guid(server: str, name: str):
     else:
         return data["data"]["globalRoleId"]
 
-async def get_menu(): # 获取总览分类
+
+async def get_menu():  # 获取总览分类
     menu_data = await get_tuilan_data("https://m.pvp.xoyo.com/achievement/list/menu")
     logger.info(menu_data)
     for i in menu_data["data"]:
@@ -53,9 +52,9 @@ async def get_menu(): # 获取总览分类
                     return categories
             return False
     return False
-                        
 
-async def get_total_data(guid: str, detail: str): # 获取单项分类的数值
+
+async def get_total_data(guid: str, detail: str):  # 获取单项分类的数值
     param = {
         "gameRoleId": guid,
         "cursor": 0,
@@ -69,6 +68,7 @@ async def get_total_data(guid: str, detail: str): # 获取单项分类的数值
     finished = await get_value(data, guid)
     return finished
 
+
 async def get_value(data: dict, guid):
     ids = []
     for i in data["data"]["data"]:
@@ -78,8 +78,8 @@ async def get_value(data: dict, guid):
                 ids.append(int((x["id"])))
     param = {
         "gameRoleId": guid,
-        "ts":gen_ts(),
-        "ids":ids
+        "ts": gen_ts(),
+        "ids": ids
     }
     data = await get_tuilan_data("https://m.pvp.xoyo.com/achievement/detail/achievement", param)
     total = 0
@@ -101,6 +101,7 @@ template = """
 </tr>
 """
 
+
 def judge_relate(proportion: str):
     num = int(proportion[0:-1])
     if 0 <= num < 25:
@@ -115,6 +116,7 @@ def judge_relate(proportion: str):
         return "100"
     else:
         raise ValueError(f"Unsupport value {num} appeared in the proportion!")
+
 
 async def generate_zd_image(server: str, id: str):
     # 暂时锁死秘境总览
@@ -144,8 +146,9 @@ async def generate_zd_image(server: str, id: str):
     font = ASSETS + "/font/custom.ttf"
     saohua = await get_api(f"https://www.jx3api.com/data/saohua/random?token={token}")
     saohua = saohua["data"]["text"]
-    appinfo_time = time.strftime("%H:%M:%S",time.localtime(time.time()))
-    html = html.replace("$customfont", font).replace("$tablecontent", content).replace("$randomsaohua", saohua).replace("$appinfo", f" 副本总览 · {server} · {id} · {appinfo_time}")
+    appinfo_time = time.strftime("%H:%M:%S", time.localtime(time.time()))
+    html = html.replace("$customfont", font).replace("$tablecontent", content).replace(
+        "$randomsaohua", saohua).replace("$appinfo", f" 副本总览 · {server} · {id} · {appinfo_time}")
     final_html = CACHE + "/" + get_uuid() + ".html"
     write(final_html, html)
     final_path = await generate(final_html, False, "table", False)

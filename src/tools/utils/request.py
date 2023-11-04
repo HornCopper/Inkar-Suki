@@ -21,6 +21,7 @@ async def send_with_async(method: str, url: str, proxy: dict = None, **kwargs) -
         try:
             async with httpx.AsyncClient(proxies=proxy, follow_redirects=True, verify=False) as client:
                 req = await client.request(method, url, **kwargs)
+                req.encoding = 'utf-8'
                 return req
         except TimeoutError:
             max_try_time -= 1
@@ -39,8 +40,7 @@ async def get_url(url: str, proxy: dict = None, **kwargs) -> str:
     以get方式发出请求，并将返回的结果以plaintext方式处理
     '''
     r = await send_with_async('get', url, proxy, **kwargs)
-    r.encoding="utf8"
-    return r.text
+    return r and r.text
 
 
 async def get_api(url, proxy: dict = None, **kwargs) -> dict:
@@ -48,8 +48,7 @@ async def get_api(url, proxy: dict = None, **kwargs) -> dict:
     以get方式发出请求，并将返回的结果以json方式处理
     '''
     r = await send_with_async('get', url, proxy, **kwargs)
-    r.encoding="utf8"
-    return r.json()
+    return r and r.json()
 
 
 async def post_url(url, proxy: dict = None, **kwargs) -> str:
@@ -57,8 +56,7 @@ async def post_url(url, proxy: dict = None, **kwargs) -> str:
     以post方式发出请求，data为form-url-encoded,json为application/json
     '''
     r = await send_with_async('post', url, proxy, **kwargs)
-    r.encoding="utf8"
-    return r.text
+    return r and r.text
 
 
 async def data_post(url, proxy: dict = None, **kwargs) -> str:
@@ -73,7 +71,7 @@ async def get_status(url, proxy: dict = None, **kwargs) -> int:
      以get方式发出请求，获取请求结果的status_code
     '''
     r = await send_with_async('get', url, proxy, **kwargs)
-    return r.status_code
+    return r and r.status_code
 
 
 async def get_content(url, proxy: dict = None, **kwargs) -> bytes:
@@ -81,4 +79,4 @@ async def get_content(url, proxy: dict = None, **kwargs) -> bytes:
      以get方式发出请求，获取请求结果的直接内容
     '''
     r = await send_with_async('get', url, proxy, **kwargs)
-    return r.content
+    return r and r.content
