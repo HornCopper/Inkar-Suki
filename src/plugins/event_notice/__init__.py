@@ -84,6 +84,12 @@ async def _(bot: Bot, event: NoticeEvent):
                 return
             else:
                 return
+    elif event.request_type == "group" and event.sub_type == "invite":
+        msg = event.comment
+        group = event.group_id
+        user = event.user_id
+        for i in Config.notice_to:
+            await bot.call_api("send_group_msg", group_id = int(i), message = f"收到新的加群申请：\n邀请人：{user}\n群号：{group}\n消息：{msg}")
 
 welcome_msg_edit = on_command("welcome", priority=5)
 
