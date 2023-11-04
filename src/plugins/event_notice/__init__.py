@@ -10,7 +10,7 @@ import os
 from nonebot.adapters.onebot.v11 import MessageSegment as ms
 from nonebot import on_notice, on_command
 from nonebot.adapters import Message
-from nonebot.adapters.onebot.v11 import Bot, GroupMessageEvent, NoticeEvent
+from nonebot.adapters.onebot.v11 import Bot, GroupMessageEvent, NoticeEvent, RequestEvent
 from nonebot.params import CommandArg
 
 TOOLS = nonebot.get_driver().config.tools_path
@@ -84,7 +84,12 @@ async def _(bot: Bot, event: NoticeEvent):
                 return
             else:
                 return
-    elif event.request_type == "group" and event.sub_type == "invite":
+    
+notice2 = on_notice(priority=5)
+
+@notice2.handle()
+async def _(bot: Bot, event: RequestEvent):
+    if event.request_type == "group" and event.sub_type == "invite":
         msg = event.comment
         group = event.group_id
         user = event.user_id
