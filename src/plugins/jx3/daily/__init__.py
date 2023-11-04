@@ -15,4 +15,6 @@ async def jx3_daily(event: GroupMessageEvent, args: Message = CommandArg()):
     Example：-日常 幽月轮
     """
     img = await daily_(args.extract_plain_text(), group_id=event.group_id)
+    if isinstance(img, list):
+        return jx3_cmd_daily.finish(img[0])
     return await jx3_cmd_daily.finish(ms.image(img))
