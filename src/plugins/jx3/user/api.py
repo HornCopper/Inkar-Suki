@@ -19,10 +19,6 @@ PLUGINS = TOOLS[:-5] + "plugins"
 
 now = "万灵当歌"
 
-try:
-    from src.tools.dep.jx3.tuilan import gen_ts, gen_xsk, format_body, dungeon_sign # 收到热心网友举报，我们已对推栏的算法进行了隐藏。
-except:
-    pass
 
 ticket = Config.jx3_token
 
@@ -283,7 +279,6 @@ async def get_attr_main(server, id, group_id):
     }
     param = format_body(param)
     xsk = gen_xsk(param)
-    device_id = ticket.split("::")[1]
     headers = {
         "Host" : "m.pvp.xoyo.com",
         "Accept" : "application/json",
