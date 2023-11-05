@@ -1,6 +1,7 @@
 from sgtpyutils.logger import logger
 import httpx
 
+
 def get_default_args(**kwargs):
     kwargs['timeout'] = kwargs.get('timeout') or 5
     return kwargs
@@ -23,11 +24,11 @@ async def send_with_async(method: str, url: str, proxy: dict = None, **kwargs) -
                 req = await client.request(method, url, **kwargs)
                 req.encoding = 'utf-8'
                 return req
-        except TimeoutError:
+        except httpx.TimeoutException as ex:
             max_try_time -= 1
             if max_try_time > 0:
                 continue
-            msg = f"max_try_time(count={max_try_time}) exceeded to request in httpx({method} -> {url})"
+            msg = f"max_try_time(count={max_try_time}) exceeded to request in httpx({method} -> {url}):[{type(ex).__name__}]{ex}"
             logger.error(msg)
             return None
         except Exception as ex:
