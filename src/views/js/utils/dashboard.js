@@ -151,7 +151,7 @@ const render_watermark = ({
 }
 const render_watermark_default = (content) => {
   render_watermark({
-    content: content || '音卡用户群\n650495414',
+    content: content || '音卡\n剑网三数据查询',
     font: '2rem "Helvetica"',
   })
 }
