@@ -41,7 +41,7 @@ const appendSeriesYAxisItem = ({
   data,
   yAxis_option,
   series_option,
-  formatter
+  formatter,
 }) => {
   yAxis_option = yAxis_option || {}
   series_option = series_option || {}
@@ -99,4 +99,59 @@ const appendSeriesYAxisItem = ({
     series_option
   )
   option.series.push(series_opt)
+}
+
+const render_watermark = ({
+  content,
+  rotate,
+  dense,
+  fillStyle,
+  font,
+  line_height,
+  offset_x,
+  offset_y,
+}) => {
+  if (!rotate) rotate = 30
+  if (!fillStyle) fillStyle = 'rgba(0, 0, 0, 0.1)'
+  if (!font) font = '3rem "Times New Roman"'
+  if (!dense) dense = 5
+  if (!line_height) line_height = 50
+  if (!offset_x) offset_x = 20
+  if (!offset_y) offset_y = 10
+  const id = 'comp-glo-watermark'
+  if (document.getElementById(id) !== null)
+    document.body.removeChild(document.getElementById(id))
+  const client_width = document.documentElement.clientWidth
+  const client_height = document.documentElement.clientHeight
+  const can = document.createElement('canvas')
+  can.width = client_width / dense
+  can.height = client_height / dense
+  const cans = can.getContext('2d')
+  cans.rotate((rotate * Math.PI) / 180)
+  cans.font = font
+  cans.fillStyle = fillStyle
+  cans.textBaseline = 'Middle'
+  cans.textAlign = 'center'
+  content.split('\n').map((x, line) => {
+    cans.fillText(x, offset_x + can.width / 2, offset_y + line * line_height)
+  })
+
+  const div = document.createElement('div')
+  div.id = id
+  div.style.pointerEvents = 'none'
+  div.style.top = `-${client_height / 2}px`
+  div.style.left = `-${client_width / 2}px`
+  div.style.position = 'fixed'
+  div.style.zIndex = 1e8
+  div.style.width = `${8 * client_width}px`
+  div.style.height = `${8 * client_height}px`
+  div.style.background = `url(${can.toDataURL('image/png')}) left top repeat`
+  document.body.appendChild(div)
+  return id
+}
+const render_watermark_default = (content) => {
+  render_watermark({
+    content: content || 'Inkar Suki',
+    font: '2rem "Helvetica"',
+  })
 }
