@@ -44,7 +44,7 @@
       const locale = computed(() => window.zhCn)
       result.locale = locale
       onMounted(() => {
-        render_watermark_default(result.watermark)
+        setTimeout(() => { render_watermark_default(result.watermark) })
       })
       return result
     }
