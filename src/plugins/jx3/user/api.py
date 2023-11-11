@@ -325,10 +325,9 @@ async def get_attr_main(server, id, group_id):
     for i in data["data"]["Person"]["qixueList"]:
         messyqx.append(i["name"])
     qx = ["未知", "未知", "未知", "未知", "未知", "未知", "未知", "未知", "未知", "未知", "未知", "未知"]
-    unknown = PLUGINS + "/jx3/user/unknown"
+    unknown = PLUGINS + "/jx3/user/unknown.png"
     qx_icon = [unknown, unknown, unknown, unknown, unknown, unknown,
                unknown, unknown, unknown, unknown, unknown, unknown]
-    unknown = PLUGINS + "/jx3/user/unknown.png"
     henchant = ["", "", "", "", "", ""]
     lenchant = ["", "", "", "", "", "", "", "", "", "", "", ""]
     if kf in ["问水诀", "山居剑意"]:
