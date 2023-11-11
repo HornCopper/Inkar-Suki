@@ -325,9 +325,10 @@ async def get_attr_main(server, id, group_id):
     for i in data["data"]["Person"]["qixueList"]:
         messyqx.append(i["name"])
     qx = ["未知", "未知", "未知", "未知", "未知", "未知", "未知", "未知", "未知", "未知", "未知", "未知"]
-    unknown = PLUGINS + "/jx3/user/unknown.png"
+    unknown = PLUGINS + "/jx3/user/unknown"
     qx_icon = [unknown, unknown, unknown, unknown, unknown, unknown,
                unknown, unknown, unknown, unknown, unknown, unknown]
+    unknown = PLUGINS + "/jx3/user/unknown.png"
     henchant = ["", "", "", "", "", ""]
     lenchant = ["", "", "", "", "", "", "", "", "", "", "", ""]
     if kf in ["问水诀", "山居剑意"]:
@@ -806,8 +807,7 @@ async def get_attr(kungfu: str, maxjl_list: list, jl_list: list, equip_list: lis
     y = 479
     done_time = 0
     for i in qx_icon:
-        imgrp = i.replace(".png.png",".png")
-        qximg = Image.open(await local_save(imgrp)).resize((39, 39))
+        qximg = Image.open(await local_save(i)).resize((39, 39))
         background.alpha_composite(qximg, (init, y))
         init = init + 48
         limit = limit + 1
