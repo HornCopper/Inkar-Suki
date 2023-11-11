@@ -607,7 +607,7 @@ async def local_save(webpath):
     final_path = ASSETS + "/jx3/kungfu/" + file_name + ".png"
     if os.path.exists(final_path):
         return final_path
-    else
+    else:
         try:
             main = await get_content(webpath)
         except:
