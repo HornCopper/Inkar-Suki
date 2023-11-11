@@ -602,14 +602,12 @@ async def get_attr_main(server, id, group_id):
 
 async def local_save(webpath):
     file_name = webpath.split("/")[-1].split("?")[0]
-    if webpath[-1:-3] == "png":
+    if webpath.find("unknown.png") != -1:
         return webpath
     final_path = ASSETS + "/jx3/kungfu/" + file_name + ".png"
     if os.path.exists(final_path):
         return final_path
-    else:
-        if webpath[0:1] == "//":
-            return webpath
+    else
         try:
             main = await get_content(webpath)
         except:
