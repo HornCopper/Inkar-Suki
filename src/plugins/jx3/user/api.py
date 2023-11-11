@@ -806,6 +806,7 @@ async def get_attr(kungfu: str, maxjl_list: list, jl_list: list, equip_list: lis
     y = 479
     done_time = 0
     for i in qx_icon:
+        i = i.replace(".png.png", ".png")
         qximg = Image.open(await local_save(i)).resize((39, 39))
         background.alpha_composite(qximg, (init, y))
         init = init + 48
