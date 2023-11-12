@@ -1,7 +1,8 @@
 from .api import *
 from .renderer import *
 
-jx3_cmd_subscribe = on_command("jx3_subscribe", aliases = {"订阅"}, priority = 5)
+jx3_cmd_subscribe = on_command("jx3_subscribe", aliases={"订阅"}, priority=5)
+
 
 async def get_jx3_subscribe(event: GroupMessageEvent, args: Message = CommandArg()):
     now = load_or_write_subscribe(event.group_id)
@@ -17,6 +18,7 @@ async def get_jx3_subscribe(event: GroupMessageEvent, args: Message = CommandArg
         msg = f"已开启本群的[{arg_sub}(级别{arg_info or 0})]订阅！\n当收到事件时会自动推送，如需取消推送，请发送：退订 {arg_sub}"
     return now, subject, msg
 
+
 @jx3_cmd_subscribe.handle()
 async def jx3_subscribe(event: GroupMessageEvent, args: Message = CommandArg()):
     """
@@ -30,7 +32,8 @@ async def jx3_subscribe(event: GroupMessageEvent, args: Message = CommandArg()):
     result = await render_subscribe(VALID_Subjects, now, subject, msg)
     return await jx3_cmd_subscribe.finish(ms.image(Path(result).as_uri()))
 
-jx3_cmd_unsubscribe = on_command("jx3_unsubscribe", aliases = {"退订"}, priority = 5)
+jx3_cmd_unsubscribe = on_command("jx3_unsubscribe", aliases={"退订"}, priority=5)
+
 
 async def get_jx3_unsubscribe(event: GroupMessageEvent, args: Message = CommandArg()):
     now = load_or_write_subscribe(event.group_id)

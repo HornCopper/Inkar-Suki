@@ -1,10 +1,11 @@
 from typing import List
 import pathlib2
 import json
-from src.tools.generate import get_uuid, generate
-from src.tools.dep import *
+import time
+from src.tools.generate import *
 template_root = pathlib2.Path(__file__).parent
 template_path = template_root.joinpath('template.html')
+
 
 def get_template_path(resources_path: str):
     '''

@@ -1,3 +1,4 @@
+from src.tools.file import *
 from abc import abstractmethod
 from datetime import datetime
 from typing import Literal, Optional
@@ -16,13 +17,13 @@ TOOLS = nonebot.get_driver().config.tools_path
 sys.path.append(str(TOOLS))
 ASSETS = TOOLS[:-5] + "assets"
 
-from src.tools.file import *
 
 '''
 感谢友情提供代码@白师傅
 原链接：
 https://github.com/JustUndertaker/mini_jx3_bot
 '''
+
 
 class EventRister:
     """事件注册器"""
@@ -170,9 +171,9 @@ class ServerStatusEvent(RecvEvent):
     def get_message(self) -> dict:
         time_now = datetime.now().strftime("%H:%M")
         if self.status:
-            return {"type":"开服","server":self.server,"msg":f"{time_now} {self.server} 开服 (/≧▽≦)/"}
+            return {"type": "开服", "server": self.server, "msg": f"{time_now} {self.server} 开服 (/≧▽≦)/"}
         elif self.status == False:
-            return {"type":"开服","server":self.server,"msg":f"{time_now}：{self.server} 维护 ヘ(~ω~ヘ) "}
+            return {"type": "开服", "server": self.server, "msg": f"{time_now} {self.server} 维护 ヘ(~ω~ヘ) "}
 
 
 @EventRister.rister(action=2002)
@@ -197,7 +198,8 @@ class NewsRecvEvent(RecvEvent):
 
     @overrides(RecvEvent)
     def get_message(self) -> dict:
-        return {"type":"公告","msg":f"{self.type}来啦！\n标题：{self.title}\n链接：{self.url}\n日期：{self.date}"}
+        return {"type": "公告", "msg": f"{self.type}来啦！\n标题：{self.title}\n链接：{self.url}\n日期：{self.date}"}
+
 
 @EventRister.rister(action=2003)
 class ClientUpdateRecEvent(RecvEvent):
@@ -218,10 +220,11 @@ class ClientUpdateRecEvent(RecvEvent):
     def log(self) -> str:
         log = f"客户端版本更新事件，更新至：{self.new_version}"
         return log
-    
+
     @overrides(RecvEvent)
     def get_message(self) -> dict:
-        return {"type":"更新","msg":f"检测到客户端有更新哦~\n当前版本：{self.old_version}\n更新版本：{self.new_version}\n共计{self.package_num}个更新包，总大小为{self.package_size}。"}
+        return {"type": "更新", "msg": f"检测到客户端有更新哦~\n当前版本：{self.old_version}\n更新版本：{self.new_version}\n共计{self.package_num}个更新包，总大小为{self.package_size}。"}
+
 
 @EventRister.rister(action=2004)
 class SpillTheTeaEvent(RecvEvent):
@@ -242,10 +245,11 @@ class SpillTheTeaEvent(RecvEvent):
     def log(self) -> str:
         log = f"吃瓜推送事件：[{self.title}]"
         return log
-    
+
     @overrides(RecvEvent)
     def get_message(self) -> dict:
-        return {"type":"818", "server": self.server, "name": self.name, "msg":f"有新的八卦推送来啦！\n{self.title}\n{self.url}\n来源：{self.name}吧"}
+        return {"type": "818", "server": self.server, "name": self.name, "msg": f"有新的八卦推送来啦！\n{self.title}\n{self.url}\n来源：{self.name}吧"}
+
 
 @EventRister.rister(action=1001)
 class SerendipityEvent(RecvEvent):
@@ -397,7 +401,7 @@ class FireworksEvent(RecvEvent):
 
     __event__ = "WsRecv.Fireworks"
     message_type = "Fireworks"
-    role: str
+    role_name: str
     """烟花地图"""
     name: str
     """接受烟花的角色"""
@@ -431,9 +435,9 @@ class XuanJingEvent(RecvEvent):
 
     __event__ = "WsRecv.XuanJing"
     message_type = "XuanJing"
-    role: str
+    role_name: str
     """角色名"""
-    map: str
+    map_name: str
     """地图名"""
     name: str
     """玄晶名"""
@@ -448,7 +452,7 @@ class XuanJingEvent(RecvEvent):
 
     @property
     def log(self) -> str:
-        log = f"玄晶事件：【{self.server}】[{self.time}] 侠士 {self.role} 在 {self.map} 获取了 {self.name}。"
+        log = f"玄晶事件：【{self.server}】[{self.time}] 侠士 {self.role_name} 在 {self.map_name} 获取了 {self.name}。"
         return log
 
     @overrides(RecvEvent)
@@ -459,12 +463,12 @@ class XuanJingEvent(RecvEvent):
         for i in correct:
             if i["server"] == self.server:
                 found = True
-                new = {"time":self.time, "map":self.map, "role":self.role, "name":self.name}
+                new = {"time": self.time, "map": self.map_name, "role": self.role_name, "name": self.name}
                 i["records"].append(new)
         if found == False:
             return
         write(xuanjing_record_file, json.dumps(correct, ensure_ascii=False))
-        return {"type":"玄晶","server":f"{self.server}","msg":f"{self.time}\n【{self.server}】恭喜侠士[{self.role}]在{self.map}获得稀有掉落[{self.name}]！"}
+        return {"type": "玄晶", "server": f"{self.server}", "msg": f"{self.time}\n【{self.server}】恭喜侠士[{self.role_name}]在{self.map_name}获得稀有掉落[{self.name}]！"}
 
 
 @EventRister.rister(action=1008)
@@ -492,6 +496,32 @@ class GameSysMsgEvent(RecvEvent):
     def get_message(self) -> dict:
         return Message(f"[系统频道推送]\n时间：{self.time}\n{self.message}。")
 
+@EventRister.rister(action=1009)
+class ZhuEEvent(RecvEvent):
+    """
+    诛恶事件推送
+    """
+    __event__ = "WsRecv.ZhuE"
+    message_type = "ZhuE"
+    map_name: str
+    """地图名"""
+    time: str
+    """获取时间"""
+    server: str
+
+    @validator("time", pre=True)
+    def check_time(cls, v):
+        start_trans = datetime.fromtimestamp(int(v))
+        return start_trans.strftime("%Y-%m-%d %H:%M:%S")
+
+    @property
+    def log(self) -> str:
+        log = f"诛恶事件：{self.time} {self.server} 的 诛恶事件 在 {self.map_name}触发了！"
+        return log
+
+    @overrides(RecvEvent)
+    def get_message(self) -> dict:
+        return {"type": "诛恶", "server": self.server, "msg": f"现在是{self.time}了！音卡提醒各位：\n{self.server} 的 诛恶事件 在 {self.map_name} 触发啦，快前往该地图吧！"}
 
 @EventRister.rister(action=10001)
 class SubscribeEvent(RecvEvent):
@@ -521,6 +551,7 @@ class SubscribeEvent(RecvEvent):
     @overrides(RecvEvent)
     def get_message(self) -> dict:
         return Message(f"[订阅回执]\n类型：{self.action}。")
+
 
 @EventRister.rister(action=10002)
 class DisSubscribeEvent(RecvEvent):

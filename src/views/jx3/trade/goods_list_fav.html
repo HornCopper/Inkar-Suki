@@ -3,7 +3,7 @@
     <el-card shadow="never">
       <div style="font-size:2rem;font-weight:600;">交易行 · {{ server }} · {{ item_name }}</div>
       <el-row>
-        <el-card style="width: 100%;margin: 1rem;">
+        <el-card style="width: 100%;margin: 0.2rem;">
           <el-row>
             <el-col :span="12">
               <el-row>
@@ -146,7 +146,7 @@
       }
       const goods_items = computed(() => {
         const items = Object.keys(params_data.items)
-        return items.map((x, index) => Object.assign({ id: x, index }, params_data.items[x]))
+        return items.map((x, index) => Object.assign({ id: x, index: index + 1 }, params_data.items[x]))
       })
 
       const any_price_current_available = computed(() => {

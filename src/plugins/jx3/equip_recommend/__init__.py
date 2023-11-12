@@ -13,9 +13,6 @@ jx3_cmd_equip_recommend = on_command(
 async def jx3_equip_recommend_menu(event: GroupMessageEvent, state: T_State, args: Message = CommandArg()):
     template = [Jx3Arg(Jx3ArgsType.kunfu), Jx3Arg(Jx3ArgsType.default)]
     arg = get_args(args.extract_plain_text(), template)
-    arg = args.extract_plain_text().split(" ")
-    if len(arg) not in [1, 2]:
-        return await jx3_cmd_equip_recommend.finish("唔……参数数量有问题哦，请检查后重试~\n或查看帮助文件（+help）获得更详细的信息哦~")
     kf = std_kunfu(arg[0])
     condition = []
     if len(arg) == 2:

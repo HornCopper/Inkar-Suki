@@ -18,7 +18,7 @@ async def rank_(type_1: str, type_2: str, server: str, group_id: str):
         return [PROMPT_ServerNotExist]
     if token == None:
         return [PROMPT_NoToken]
-    final_url = f"{Config.jx3api_link}/view/rank/excellent?token={token}&robot={bot}&server={server}&table={type_1}&name={type_2}&scale=1"
+    final_url = f"{Config.jx3api_link}/data/rank/statistical?token={token}&robot={bot}&server={server}&table={type_1}&name={type_2}&scale=1"
     if type_1 == "个人":
         if type_2 not in ["名士五十强", "老江湖五十强", "兵甲藏家五十强", "名师五十强", "阵营英雄五十强", "薪火相传五十强", "庐园广记一百强"]:
             return ["唔……类型不正确，请检查后重试~"]
@@ -29,7 +29,7 @@ async def rank_(type_1: str, type_2: str, server: str, group_id: str):
         if type_2 not in ["赛季恶人五十强", "赛季浩气五十强", "上周恶人五十强", "上周浩气五十强", "本周恶人五十强", "本周浩气五十强"]:
             return ["唔……类型不正确，请检查后重试~"]
     elif type_1 == "试炼":
-        if type_2 not in ["万花", "七秀", "少林", "纯阳", "天策", "五毒", "唐门", "明教", "苍云", "长歌", "藏剑", "丐帮", "霸刀", "蓬莱", "凌雪", "衍天", "药宗", "刀宗"]:
+        if type_2 not in ["万花", "七秀", "少林", "纯阳", "天策", "五毒", "唐门", "明教", "苍云", "长歌", "藏剑", "丐帮", "霸刀", "蓬莱", "凌雪", "衍天", "药宗", "刀宗","万灵山庄"]:
             return ["唔……门派不正确哦，请检查后重试~"]
     else:
         return ["未知类型，只能是个人/帮会/战功/试炼哦！"]
@@ -43,19 +43,23 @@ async def rank_(type_1: str, type_2: str, server: str, group_id: str):
 def format_body(data: dict) -> str:
     return json.dumps(data, separators=(',', ':'))
 
+
 def gen_ts() -> str:
     return f"{datetime.now(timezone.utc):%Y%m%d%H%M%S%f}"[:-3]
+
 
 def gen_xsk(data: str) -> str:
     data += "@#?.#@"
     secret = "MaYoaMQ3zpWJFWtN9mqJqKpHrkdFwLd9DDlFWk2NnVR1mChVRI6THVe6KsCnhpoR"
-    return hmac.new(secret.encode(), msg = data.encode(), digestmod = hashlib.sha256).hexdigest()
+    return hmac.new(secret.encode(), msg=data.encode(), digestmod=hashlib.sha256).hexdigest()
+
 
 async def post_url(url, proxy: dict = None, headers: str = None, timeout: int = 300, data: dict = None):
-    async with httpx.AsyncClient(proxies = proxy, follow_redirects = True) as client:
-        resp = await client.post(url, timeout = timeout, headers = headers, data = data)
+    async with httpx.AsyncClient(proxies=proxy, follow_redirects=True) as client:
+        resp = await client.post(url, timeout=timeout, headers=headers, data=data)
         result = resp.text
         return result
+
 
 async def zlrank(server: str = None, school: str = None, group_id: str = None):
     school_data = await get_api("https://inkar-suki.codethink.cn/jx3boxdata")
@@ -76,38 +80,37 @@ async def zlrank(server: str = None, school: str = None, group_id: str = None):
         if not server:
             return [PROMPT_ServerNotExist]
     param = {
-        "pageId":"5f3a6654de993800113bd1cc",
-        "cursor":0,
-        "size":50,
-        "ts":gen_ts(),
+        "pageId": "5f3a6654de993800113bd1cc",
+        "cursor": 0,
+        "size": 50,
+        "ts": gen_ts(),
         "serverName": server,
         "forceId": int(school_id)
-        }
+    }
     param = format_body(param)
-    device_id = jx3_token.split("::")[1]
     xsk = gen_xsk(param)
     headers = {
-            "Host": "m.pvp.xoyo.com",
-            "accept": "application/json",
-            "deviceid": device_id,
-            "platform": "android",
-            "gamename": "jx3",
-            "fromsys": "APP",
-            "clientkey": "1",
-            "cache-control": "no-cache",
-            "apiversion": "3",
-            "sign": "true",
-            "token": jx3_token,
-            "content-type": "application/json",
-            "accept-encoding": "gzip",
-            "user-agent": "okhttp/3.12.2",
-            "x-sk": xsk
+        "Host": "m.pvp.xoyo.com",
+        "accept": "application/json",
+        "deviceid": device_id,
+        "platform": "android",
+        "gamename": "jx3",
+        "fromsys": "APP",
+        "clientkey": "1",
+        "cache-control": "no-cache",
+        "apiversion": "3",
+        "sign": "true",
+        "token": jx3_token,
+        "content-type": "application/json",
+        "accept-encoding": "gzip",
+        "user-agent": "okhttp/3.12.2",
+        "x-sk": xsk
     }
-    data = await post_url(url="https://m.pvp.xoyo.com/user/list-jx3-topn-roles-info", data = param, headers = headers)
+    data = await post_url(url="https://m.pvp.xoyo.com/user/list-jx3-topn-roles-info", data=param, headers=headers)
     data = json.loads(data)
     lank = data["data"]["roles"]
     chart = []
-    chart.append(["排行","推栏头像","门派","推栏昵称","游戏角色","资历","区服"])
+    chart.append(["排行", "推栏头像", "门派", "推栏昵称", "游戏角色", "资历", "区服"])
     num = 1
     for i in lank:
         num = 1
@@ -120,7 +123,7 @@ async def zlrank(server: str = None, school: str = None, group_id: str = None):
         new = [str(num), tuilan_avatar, school_name, nickname, roleName, value, server_name]
         chart.append(new)
         num = num + 1
-    final_html = css + tabulate(chart, tablefmt = "unsafehtml")
+    final_html = css + tabulate(chart, tablefmt="unsafehtml")
     final_path = CACHE + "/" + get_uuid() + ".html"
     write(final_path, final_html)
     img = await generate(final_path, False, "table", False)
@@ -128,4 +131,3 @@ async def zlrank(server: str = None, school: str = None, group_id: str = None):
         return ["唔……图片生成失败，请联系机器人管理员解决此问题！"]
     else:
         return img
-    

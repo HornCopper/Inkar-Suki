@@ -1,6 +1,7 @@
 from .api import *
 
-kungfu = on_command("jx3_kungfu", aliases = {"心法"}, priority = 5)
+kungfu = on_command("jx3_kungfu", aliases={"心法"}, priority=5)
+
 @kungfu.handle()
 async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
     '''
@@ -12,9 +13,10 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
     node = await getAllSkillsInfo(kungfu_)
     if node == False:
         await kungfu.finish("此心法不存在哦，请检查后重试~")
-    await bot.call_api("send_group_forward_msg", group_id = event.group_id, messages = node)
+    await bot.call_api("send_group_forward_msg", group_id=event.group_id, messages=node)
 
-skill = on_command("jx3_skill", aliases = {"技能"}, priority = 5)
+skill = on_command("jx3_skill", aliases={"技能"}, priority=5)
+
 @skill.handle()
 async def _(args: Message = CommandArg()):
     '''
@@ -33,7 +35,8 @@ async def _(args: Message = CommandArg()):
         await skill.finish("此心法不存在哦，请检查后重试~")
     await skill.finish(msg)
 
-talent = on_command("_jx3_talent", aliases = {"_奇穴"}, priority = 5)
+talent = on_command("_jx3_talent", aliases={"_奇穴"}, priority=5)
+
 @talent.handle()
 async def _(args: Message = CommandArg()):
     '''
@@ -53,18 +56,23 @@ async def _(args: Message = CommandArg()):
         msg = await getSingleTalent(kungfu, talent_)
         await talent.finish(msg)
 
+_talent = on_command("jx3_talent", aliases={"奇穴"}, priority=5)
 
-_talent = on_command("jx3_talent", aliases = {"奇穴"}, priority = 5)
 @_talent.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     arg = args.extract_plain_text().split(" ")
     versions = await get_api("https://data.jx3box.com/talent/index.json")
-    if len(arg) not in [2,3]:
+    if len(arg) not in [2, 3]:
         await _talent.finish("唔……参数不正确哦~")
     if len(arg) == 2:
         kf = arg[0]
         tl = arg[1]
-        ver = versions[0]["version"]
+        for i in versions:
+            if i["name"].find("体服") != -1:
+                continue
+            else:
+                ver = i["version"]
+                break
     else:
         kf = arg[0]
         tl = arg[1]
@@ -78,15 +86,15 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     if os.path.exists(ASSETS + "/jx3/" + f"{ver}.json") == False:
         final_url = f"https://data.jx3box.com/talent/{ver}.json"
         data = await get_api(final_url)
-        write(ASSETS + "/jx3/" + f"v{ver}.json", json.dumps(data, ensure_ascii = False))
+        write(ASSETS + "/jx3/" + f"v{ver}.json", json.dumps(data, ensure_ascii=False))
     else:
         data = json.loads(read(ASSETS + "/jx3/" + f"{ver}.json"))
     try:
         real_data = data[name]
     except:
         await _talent.finish("唔……该赛季没有此心法~")
-    for i in range(1,13):
-        for x in range(1,6):
+    for i in range(1, 13):
+        for x in range(1, 6):
             try:
                 each = real_data[str(i)][str(x)]
             except:
@@ -97,7 +105,8 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
                     desc = each["desc"]
                     extend = each["extend"]
                     icon = "https://icon.jx3box.com/icon/" + str(each["icon"]) + ".png"
-                    msg = f"第{i}重·第{x}层：{tl}\n" + ms.image(icon) + f"\n{special_desc}\n{desc}\n{extend}"
+                    msg = f"第{i}重·第{x}层：{tl}\n" + \
+                        ms.image(icon) + f"\n{special_desc}\n{desc}\n{extend}"
                 else:
                     desc = each["desc"]
                     icon = "https://icon.jx3box.com/icon/" + str(each["icon"]) + ".png"
@@ -105,8 +114,8 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
                 await _talent.finish(msg)
     await _talent.finish("唔……未找到该奇穴哦~")
 
+macro_ = on_command("jx3_macro_v2", aliases={"宏v2"}, priority=5)
 
-macro_ = on_command("jx3_macro", aliases = {"宏"}, priority = 5)
 @macro_.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     xf = args.extract_plain_text()
@@ -115,3 +124,14 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
         await macro_.finish("唔……心法输入有误，请检查后重试~")
     data = await get_macro(xf)
     await macro_.finish(data)
+
+macro_v1 = on_command("jx3_macro", aliases={"宏"}, priority=5)
+
+@macro_v1.handle()
+async def _(event: GroupMessageEvent, args: Message = CommandArg()):
+    xf = aliases(args.extract_plain_text())
+    if xf == False:
+        await macro_v1.finish("唔……心法输入有误，请检查后重试~")
+    data = await get_api(f"https://www.jx3api.com/data/school/macro?name={xf}&token={token}")
+    data = data["data"]["context"]
+    await macro_v1.finish(data)

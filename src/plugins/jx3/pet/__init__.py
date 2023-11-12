@@ -1,6 +1,6 @@
 from .api import *
 
-jx3_cmd_pet = on_command("jx3_pet", aliases = {"宠物"}, priority = 5)
+jx3_cmd_pet = on_command("jx3_pet", aliases={"宠物"}, priority=5)
 
 @jx3_cmd_pet.handle()
 async def jx3_pet(state: T_State, args: Message = CommandArg()):
@@ -20,7 +20,7 @@ async def jx3_pet(state: T_State, args: Message = CommandArg()):
     msg = str.join("\n", [f"{index}.{x.name}" for index, x in enumerate(pets)])
     return await jx3_cmd_pet.send(msg)
 
-@jx3_cmd_pet.got("num", prompt = "发送序号以搜索，发送其他内容则取消搜索。")
+@jx3_cmd_pet.got("num", prompt="发送序号以搜索，发送其他内容则取消搜索。")
 async def num(state: T_State, num: Message = Arg()):
     num = num.extract_plain_text()
     return await __handle_number(state, num)
@@ -31,6 +31,6 @@ async def __handle_number(state: T_State, num: int):
     pets = state["pets"]
     if len(state["pets"]) <= num:
         return await jx3_cmd_pet.finish(PROMPT_NumberNotExist)
-    pet:PetInfo = pets[num]
+    pet: PetInfo = pets[num]
     msg = f"查询到「{pet.name}」：\n参考:{pet.url}\n线索:{pet.clue}\n描述:{pet.desc}"
     return await jx3_cmd_pet.finish(msg)

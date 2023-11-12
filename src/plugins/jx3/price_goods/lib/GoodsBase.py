@@ -16,18 +16,20 @@ async def check_bind(id: str):
 async def get_item_info_by_id(id: str):
     item_info_url = f"https://helper.jx3box.com/api/wiki/post?type=item&source_id={id}"
     raw_data = await get_api(item_info_url)
-    if raw_data.get("code") != 200:
-        msg = raw_data.get("message")
+    if not raw_data or raw_data.get("code") != 200:
+        msg = (raw_data and raw_data.get("message")) or "无数据"
         return f"获取物品信息失败了：{msg}"
     return raw_data.get("data").get("source")
 
 GoodsBindTypeBindTypes = ["未知", "不绑定", "装备后绑定", "拾取后绑定"]
+
 
 class GoodsBindType(Enum):
     UnKnown = 0
     UnBind = 1
     BindOnUse = 2
     BindOnPick = 3
+
 
 class GoodsInfo(dict):
     def init_computed_props(self):
@@ -134,7 +136,7 @@ class WucaiProperty:
         "内破防": "内破",
         "外破防": "外破",
     }
-    RE_filter_number = re.compile("\d*")
+    RE_filter_number = re.compile("\\d*")
 
     def __init__(self, values: List[str], filters: List[str]) -> None:
         self.values = [WucaiProperty.convert_value(x) for x in values]
@@ -202,6 +204,7 @@ class WucaiProperty:
             prop_filters = prop[1].split("<br>")
             result.append(WucaiProperty(prop_values, prop_filters))
         return result
+
 
 class GoodsInfoFull(GoodsInfo):
     def __init__(self, data: dict = None) -> None:

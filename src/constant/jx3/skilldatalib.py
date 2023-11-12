@@ -94,7 +94,7 @@ async def get_icon(skillName: str, type_: str, api_icon: str = None, kungfu: str
         if type_ == "cq":
             return "[CQ:image,file=" + Path(final_path).as_uri() + "]"
         else:
-            return MessageSegment.image(Path(final_path).as_uri())
+            return ms.image(Path(final_path).as_uri())
     else:
         api_icon_url = api_icon
         try:
@@ -108,7 +108,7 @@ async def get_icon(skillName: str, type_: str, api_icon: str = None, kungfu: str
         if type_ == "cq":
             return "[CQ:image,file=" + Path(final_path).as_uri() + "]"
         else:
-            return MessageSegment.image(Path(final_path).as_uri())
+            return ms.image(Path(final_path).as_uri())
 
 
 async def getAllSkillsInfo(Kungfu: str) -> str:
@@ -161,7 +161,7 @@ async def getAllSkillsInfo(Kungfu: str) -> str:
 async def getSingleSkill(kungfu: str, skillName: str):
     kungfu = aliases(kungfu)
     if kungfu == "隐龙诀":
-        kungfu == "隐龙决"  # 由于`JX3Box`的`API`的数据错误问题，目前只能这样适配，等到数据纠正后删除这块代码。
+        kungfu == "隐龙决"  # 由于`JX3Box`的`API`的数据错误问题，目前只能这样适配，等到数据纠正后删除这块代码。其实是推栏的代码错了笑死。
     if kungfu == False:
         return False
     try:

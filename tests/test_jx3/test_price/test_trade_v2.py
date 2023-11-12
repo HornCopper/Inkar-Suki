@@ -38,6 +38,7 @@ def test_default_server():
     mc.check_counter()
     server_bind(event.group_id, '')
 
+
 def jx3_trade_favoritest():
     mc = MessageCallback()
     v2.jx3_cmd_favouritest = mc
@@ -77,12 +78,12 @@ def test_trade_price():
     state = {'id': ['5_47116'], 'server': '唯我独尊'}  # 武技殊影图·上将
     event = SFGroupMessageEvent()
 
-    task = price_num_selected(state, event, obMessage('0'))
+    task = price_num_selected(state, event, obMessage('1'))
     asyncio.run(task)
     mc.check_counter()
 
     state = {'id': ['5_47116'], 'server': '唯我独尊'}  # 武技殊影图·上将
-    task = price_num_selected(state, event, obMessage('0'))
+    task = price_num_selected(state, event, obMessage('1'))
     asyncio.run(task)
     mc.check_counter()
 
@@ -107,12 +108,11 @@ def test_goods_level():
     asyncio.run(task)
     mc.check_counter()
 
-
     price_num_selected = src.plugins.jx3.price_num_selected2
     state = {'id': ['7_94556'], 'server': '唯我独尊'}  # 无封裤（12100）
     event = SFGroupMessageEvent()
 
-    task = price_num_selected(state, event, obMessage('0'))
+    task = price_num_selected(state, event, obMessage('1'))
     asyncio.run(task)
     mc.check_counter()
 
@@ -131,6 +131,6 @@ def test_trade_wucai_price():
     state = {'id': ['5_12891'], 'server': '唯我独尊'}  # 彩·灵根·灭气·激流(叁)
     event = SFGroupMessageEvent()
 
-    task = price_num_selected(state, event, obMessage('0'))
+    task = price_num_selected(state, event, obMessage('1'))
     asyncio.run(task)
     mc.check_counter()
