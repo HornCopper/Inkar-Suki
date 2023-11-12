@@ -10,25 +10,44 @@ from src.tools.utils import get_url, get_status, nodetemp, get_content, get_api
 from src.tools.file import read, write
 from src.tools.config import Config
 from .Kunfu import Kunfu
+from .School import School
 from sgtpyutils.extensions.clazz import *
 
-db_school = filebase_database.Database('./config.school').value  # 心法冗余数据，暂时用不上
-db_kunfu = filebase_database.Database('./config.kunfu').value  # 心法数据
+
+current = pathlib2.Path(__file__).parent
+db_school = filebase_database.Database(str(current.joinpath('./config.school'))).value  # 门派数据
+dict_school: dict[str, Kunfu] = dict([[x.get('name'), dict2obj(School(), x)]
+                                     for x in db_school])  # 门派字典
+dict_alias_school: dict[str, str] = {}  # 门派对应别称
+for x in dict_school:
+    alias = dict_school[x].alias
+    for a in alias:
+        dict_alias_school[a] = x
+
+
+db_kunfu = filebase_database.Database(str(current.joinpath('./config.kunfu'))).value  # 心法数据
 dict_kunfu: dict[str, Kunfu] = dict([[x.get('name'), dict2obj(Kunfu(), x)]
                                      for x in db_kunfu])  # 心法字典
 dict_alias_kunfu: dict[str, str] = {}  # 心法对应别称
 for x in dict_kunfu:
-    alias = x.get('alias')
+    alias = dict_kunfu[x].alias
     for a in alias:
         dict_alias_kunfu[a] = x
 
 
 def kftosh(kf: str) -> str:
     '''
-    将标准心法转换为门派
+    将门派别名转换为门派名称
     '''
-    kunfu = aliases(kf)
-    return kunfu and kunfu.get('belong')
+    return dict_alias_school.get(kf)
+
+
+def kftoschool(kf: str) -> School:
+    '''
+    将门派别名转换为门派
+    '''
+    x = kftosh(kf)
+    return x and dict_school[x]
 
 
 def std_kunfu(kf_alias: str) -> Kunfu:
