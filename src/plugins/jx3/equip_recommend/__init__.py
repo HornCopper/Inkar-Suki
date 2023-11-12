@@ -38,7 +38,7 @@ async def jx3_equip_recommend_menu(event: GroupMessageEvent, state: T_State, arg
 
 
 @jx3_cmd_equip_recommend.got("index", prompt="请选择配装查看哦，回复我只需要数字就行啦！")
-async def equip_recmded(state: T_State, index: Message = Arg()):
+async def equip_recmded(event: GroupMessageEvent, state: T_State, index: Message = Arg()):
     index = index.extract_plain_text()
     if checknumber(index) == False:
         await jx3_cmd_equip_recommend.finish(PROMPT_NumberInvalid)
