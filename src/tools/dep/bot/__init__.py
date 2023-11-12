@@ -8,6 +8,7 @@ try:
     logger.debug(f'load dependence:{__name__}')
 except:
     pass
+from sgtpyutils.database import filebase_database
 from ...file import *
 
 import nonebot
