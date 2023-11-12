@@ -1,11 +1,11 @@
 class Kunfu:
     '''心法'''
 
-    '''归属的门派'''
     belong: str
-    '''别称'''
+    '''归属的门派'''
     alias: list[str]
-    '''名称'''
+    '''别称'''
     name: str
-    '''游戏id'''
+    '''名称'''
     gameid: int
+    '''游戏id'''
