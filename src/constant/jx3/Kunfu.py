@@ -9,3 +9,9 @@ class Kunfu:
     '''名称'''
     gameid: int
     '''游戏id'''
+    color: str
+    '''主色调'''
+
+    @property
+    def icon(self):
+        return f"https://img.jx3box.com/image/xf/{self.gameid}.png"
