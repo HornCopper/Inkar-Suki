@@ -6,6 +6,7 @@ from typing import List, Literal, Tuple
 from ..exceptions import *
 from ..data_server import *
 from src.tools.utils import *
+from src.constant.jx3.skilldatalib import *
 from sgtpyutils import extensions
 from sgtpyutils.logger import logger
 logger.debug(f'load dependence:{__name__}')
@@ -34,6 +35,8 @@ class Jx3ArgsType(IntEnum):
     server = 3
     pageIndex = 4
     pageSize = 5
+    kunfu = 6
+    school = 7
 
 
 class Jx3Arg:
@@ -47,7 +50,9 @@ class Jx3Arg:
             Jx3ArgsType.number: self._convert_number,
             Jx3ArgsType.pageIndex: self._convert_pageIndex,
             Jx3ArgsType.string: self._convert_string,
-            Jx3ArgsType.server: self._convert_server
+            Jx3ArgsType.server: self._convert_server,
+            Jx3ArgsType.kunfu: self._convert_kunfu,
+            Jx3ArgsType.school: self._convert_school,
         }
 
     def data(self, arg_value: str):
@@ -55,6 +60,16 @@ class Jx3Arg:
         获取当前参数的值，获取失败则返回None
         '''
         return self.callback[self.arg_type](arg_value)
+
+    def _convert_school(self, arg_value: str) -> str:
+        if not arg_value:
+            return None
+        return kftosh(arg_value)
+
+    def _convert_kunfu(self, arg_value: str) -> str:
+        if not arg_value:
+            return None
+        return std_kunfu(arg_value)
 
     def _convert_string(self, arg_value: str) -> str:
         if not arg_value:

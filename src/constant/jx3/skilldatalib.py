@@ -9,101 +9,62 @@ from nonebot.adapters.onebot.v11 import MessageSegment
 from src.tools.utils import get_url, get_status, nodetemp, get_content, get_api
 from src.tools.file import read, write
 from src.tools.config import Config
-__kf_dict = {
-    '凌雪': ["隐龙决", "隐龙诀", "凌雪", "凌雪阁"],
-    '万花': ["花间游", "离经易道", "花间", "奶花"],
-    '天策': ["傲血战意", "铁牢律", "马男", "傲血", "铁牢"],
-    '纯阳': ["紫霞功", "太虚剑意"],
-    '七秀': ["云裳心经", "冰心诀", "bx", "qx", "nx", "奶秀", "冰心"],
-    '五毒': ["毒经", "补天诀", "补天", "奶毒", "毒姐", "dj"],
-    '唐门': ["惊羽诀", "天罗诡道", "田螺", "鲸鱼", "惊羽"],
-    '藏剑': ["问水诀", "山居剑意", "二少", "叽哥", "KFC", "藏剑"],
-    '明教': ["焚影圣诀", "明尊琉璃体", "喵哥"],
-    '苍云': ["分山劲", "铁骨衣", "岔劲"],
-    '长歌': ["莫问", "相知", "咕咕"],
-    '霸刀': ["北傲诀", "霸刀"],
-    '蓬莱': ["凌海诀", "伞爹", "伞宗", "蓬莱"],
-    '少林': ["洗髓经", "易筋经", "和尚", "大师"],
-    '衍天': ["太玄经", "衍天宗", "灯皇", "衍天"],
-    '药宗': ["无方", "灵素", "狍子"],
-    '刀宗': ["孤锋诀", "刀爹", "呆宗", "刀宗"],
-    '丐帮': ["丐帮", "笑尘决", "笑尘诀", "笑尘"],
-    '万灵': ["万灵山庄","万灵","万0","万零","100000","山海心诀","山海"]
-}
-kf_dict = {}
-for x in __kf_dict:
-    for y in __kf_dict[x]:
-        kf_dict[y] = x
-    kf_dict[x] = x
+from .Kunfu import Kunfu
+from .School import School
+from sgtpyutils.extensions.clazz import *
+
+
+current = pathlib2.Path(__file__).parent
+db_school = filebase_database.Database(str(current.joinpath('./config.school'))).value  # 门派数据
+dict_school: dict[str, Kunfu] = dict([[x.get('name'), dict2obj(School(), x)]
+                                     for x in db_school])  # 门派字典
+dict_alias_school: dict[str, str] = {}  # 门派对应别称
+for x in dict_school:
+    alias = dict_school[x].alias
+    for a in alias:
+        dict_alias_school[a] = x
+
+
+db_kunfu = filebase_database.Database(str(current.joinpath('./config.kunfu'))).value  # 心法数据
+dict_kunfu: dict[str, Kunfu] = dict([[x.get('name'), dict2obj(Kunfu(), x)]
+                                     for x in db_kunfu])  # 心法字典
+dict_alias_kunfu: dict[str, str] = {}  # 心法对应别称
+for x in dict_kunfu:
+    alias = dict_kunfu[x].alias
+    for a in alias:
+        dict_alias_kunfu[a] = x
 
 
 def kftosh(kf: str) -> str:
-    return kf_dict.get(kf) or False
+    '''
+    将门派别名转换为门派名称
+    '''
+    return dict_alias_school.get(kf)
+
+
+def kftoschool(kf: str) -> School:
+    '''
+    将门派别名转换为门派
+    '''
+    x = kftosh(kf)
+    return x and dict_school[x]
+
+
+def std_kunfu(kf_alias: str) -> Kunfu:
+    '''
+    将心法别称转换为标准心法
+    '''
+    name = aliases(kf_alias)
+    if not name:
+        return None
+    return dict_kunfu.get(name)
 
 
 def aliases(SkillName: str) -> str:
-    if SkillName in ["隐龙诀", "隐龙决", "隐龙", "凌雪", "凌雪阁"]:
-        return "隐龙诀"
-    elif SkillName in ["花间", "花间游"]:
-        return "花间游"
-    elif SkillName in ["奶花", "花奶", "离经", "离经易道"]:
-        return "离经易道"
-    elif SkillName in ["傲雪", "傲血", "傲血战意"]:
-        return "傲血战意"
-    elif SkillName in ["天策T", "策T", "铁牢", "铁牢律", "策t", "天策t", "TCT", "tct"]:
-        return "铁牢律"
-    elif SkillName in ["气纯", "紫霞功", "紫霞", "qc", "QC"]:
-        return "紫霞功"
-    elif SkillName in ["剑纯", "太虚剑意", "jc", "JC"]:
-        return "太虚剑意"
-    elif SkillName in ["奶秀", "秀奶", "云裳心经", "云裳"]:
-        return "云裳心经"
-    elif SkillName in ["冰心", "冰心诀", "冰心决", "BX", "bx"]:
-        return "冰心诀"
-    elif SkillName in ["毒经", "dj", "DJ", "Dj"]:
-        return "毒经"
-    elif SkillName in ["奶毒", "毒奶", "补天诀", "补天决", "补天"]:
-        return "补天诀"
-    elif SkillName in ["惊羽诀", "惊羽决", "鲸鱼", "惊羽"]:
-        return "惊羽诀"
-    elif SkillName in ["天罗诡道", "田螺", "天罗", "tl", "TL"]:
-        return "天罗诡道"
-    elif SkillName in ["问水诀", "问水决", "问水", "轻剑", "山居剑意", "山居", "重剑", "叽", "KFC", "kfc", "肯德基", "疯狂星期四", "v我50", "二少", "二小姐", "黄鸡", "鸡", "鲲", "坤", "叽哥", "鸡哥"]:
-        return "问水诀"
-    elif SkillName in ["丐帮", "笑尘决", "笑尘诀", "笑尘"]:
-        return "笑尘诀"
-    elif SkillName in ["焚影圣诀", "焚影圣决", "焚影"]:
-        return "焚影圣诀"
-    elif SkillName in ["明教T", "喵T", "明尊", "明尊琉璃体", "明教t", "明尊t", "喵t", "mt", "MT"]:
-        return "明尊琉璃体"
-    elif SkillName in ["苍云T", "铁骨", "铁骨衣", "铁骨1", "苍t", "苍云t", "盾T", "盾t", "cyt", "CYT"]:
-        return "铁骨衣"
-    elif SkillName in ["分山劲", "分山", "岔劲"]:
-        return "分山劲"
-    elif SkillName in ["莫问"]:
-        return "莫问"
-    elif SkillName in ["奶歌", "歌奶", "相知", "奶咕"]:
-        return "相知"
-    elif SkillName in ["北傲决", "北傲诀", "霸刀", "北傲"]:
-        return "北傲诀"
-    elif SkillName in ["蓬莱", "凌海", "凌海诀"]:
-        return "凌海诀"
-    elif SkillName in ["洗髓经", "洗髓", "和尚T", "秃T", "和尚t", "大师t", "大师T"]:
-        return "洗髓经"
-    elif SkillName in ["易筋经", "易筋"]:
-        return "易筋经"
-    elif SkillName in ["衍天", "衍天宗", "太玄经", "太玄"]:
-        return "太玄经"
-    elif SkillName in ["奶药", "药奶", "灵素"]:
-        return "灵素"
-    elif SkillName in ["无方"]:
-        return "无方"
-    elif SkillName in ["刀宗", "孤锋诀", "孤锋"]:
-        return "孤锋诀"
-    elif SkillName in ["万灵山庄","万灵","山海","山海心经","山海心诀","山海心决","万0","100000","万零","万灵当歌","万0当哥"]:
-        return "山海心诀"
-    else:
-        return False
+    '''
+    将心法别称转换为标准心法名
+    '''
+    return dict_alias_kunfu.get(SkillName)
 
 
 async def getTalents():

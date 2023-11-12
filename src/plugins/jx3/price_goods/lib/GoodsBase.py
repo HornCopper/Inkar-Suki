@@ -136,7 +136,7 @@ class WucaiProperty:
         "内破防": "内破",
         "外破防": "外破",
     }
-    RE_filter_number = re.compile("\d*")
+    RE_filter_number = re.compile("\\d*")
 
     def __init__(self, values: List[str], filters: List[str]) -> None:
         self.values = [WucaiProperty.convert_value(x) for x in values]
