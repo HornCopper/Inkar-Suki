@@ -1,65 +1,76 @@
 [
   {
+    "color": "#EC4B2C",
     "belong": "天策",
     "alias": ["傲雪", "傲血", "傲血战意"],
     "name": "傲血战意",
     "gameid": 10026
   },
   {
+    "color": "#d43618",
     "belong": "天策",
     "alias": ["天策T", "策T", "铁牢", "铁牢律", "策t", "天策t", "TCT", "tct"],
     "name": "铁牢律",
     "gameid": 10062
   },
   {
+    "color": "#BA9BE4",
     "belong": "万花",
     "alias": ["花间", "花间游"],
     "name": "花间游",
     "gameid": 10021
   },
   {
+    "color": "#d8c4ff",
     "belong": "万花",
     "alias": ["奶花", "花奶", "离经", "离经易道"],
     "name": "离经易道",
     "gameid": 10028
   },
   {
+    "color": "#37C0E2",
     "belong": "纯阳",
     "alias": ["气纯", "紫霞功", "紫霞", "qc", "QC"],
     "name": "紫霞功",
     "gameid": 10014
   },
   {
+    "color": "#48d6f9",
     "belong": "纯阳",
     "alias": ["剑纯", "太虚剑意", "jc", "JC"],
     "name": "太虚剑意",
     "gameid": 10015
   },
   {
+    "color": "#FF7DAD",
     "belong": "七秀",
     "alias": ["冰心", "冰心诀", "冰心决", "BX", "bx"],
     "name": "冰心诀",
     "gameid": 10081
   },
   {
+    "color": "#ffadcb",
     "belong": "七秀",
     "alias": ["奶秀", "秀奶", "云裳心经", "云裳"],
     "name": "云裳心经",
     "gameid": 10080
   },
   {
+    "color": "#E6BC31",
     "belong": "少林",
     "alias": ["易筋经", "易筋"],
     "name": "易筋经",
     "gameid": 10003
   },
   {
+    "color": "#b58f12",
     "belong": "少林",
     "alias": ["洗髓经", "洗髓", "和尚T", "秃T", "和尚t", "大师t", "大师T"],
     "name": "洗髓经",
     "gameid": 10002
   },
   {
+    "color": "#FDDD70",
     "belong": "藏剑",
     "alias": [
       "问水诀",
@@ -87,20 +98,29 @@
     "name": "问水诀",
     "gameid": 10144
   },
-  { "belong": "藏剑", "name": "山居剑意", "gameid": 10145, "alias": [] },
   {
+    "color": "#FDDD70",
+    "belong": "藏剑",
+    "name": "山居剑意",
+    "gameid": 10145,
+    "alias": []
+  },
+  {
+    "color": "#D6A16F",
     "belong": "丐帮",
     "alias": ["丐帮", "笑尘决", "笑尘诀", "笑尘"],
     "name": "笑尘诀",
     "gameid": 10268
   },
   {
+    "color": "#f16040",
     "belong": "明教",
     "alias": ["焚影圣诀", "焚影圣决", "焚影"],
     "name": "焚影圣诀",
     "gameid": 10242
   },
   {
+    "color": "#c55036",
     "belong": "明教",
     "alias": [
       "明教T",
@@ -117,30 +137,35 @@
     "gameid": 10243
   },
   {
+    "color": "#4B9BFB",
     "belong": "五毒",
     "alias": ["毒经", "dj", "DJ", "Dj"],
     "name": "毒经",
     "gameid": 10175
   },
   {
+    "color": "#7db8ff",
     "belong": "五毒",
     "alias": ["奶毒", "毒奶", "补天诀", "补天决", "补天"],
     "name": "补天诀",
     "gameid": 10176
   },
   {
+    "color": "#a2e05f",
     "belong": "唐门",
     "alias": ["惊羽诀", "惊羽决", "鲸鱼", "惊羽"],
     "name": "惊羽诀",
     "gameid": 10224
   },
   {
+    "color": "#90CC50",
     "belong": "唐门",
     "alias": ["天罗诡道", "田螺", "天罗", "tl", "TL"],
     "name": "天罗诡道",
     "gameid": 10225
   },
   {
+    "color": "#4f5186",
     "belong": "苍云",
     "alias": [
       "苍云T",
@@ -158,59 +183,80 @@
     "gameid": 10389
   },
   {
+    "color": "#6568ad",
     "belong": "苍云",
     "alias": ["分山劲", "分山", "岔劲"],
     "name": "分山劲",
     "gameid": 10390
   },
-  { "belong": "长歌", "alias": ["莫问"], "name": "莫问", "gameid": 10447 },
   {
+    "color": "#6DDFE2",
+    "belong": "长歌",
+    "alias": ["莫问"],
+    "name": "莫问",
+    "gameid": 10447
+  },
+  {
+    "color": "#78f0f3",
     "belong": "长歌",
     "alias": ["奶歌", "歌奶", "相知", "奶咕"],
     "name": "相知",
     "gameid": 10448
   },
   {
+    "color": "#8D90D8",
     "belong": "霸刀",
     "alias": ["北傲决", "北傲诀", "霸刀", "北傲"],
     "name": "北傲诀",
     "gameid": 10464
   },
   {
+    "color": "#94C7DC",
     "belong": "蓬莱",
     "alias": ["蓬莱", "凌海", "凌海诀"],
     "name": "凌海诀",
     "gameid": 10533
   },
   {
+    "color": "#872F37",
     "belong": "凌雪",
     "alias": ["隐龙诀", "隐龙决", "隐龙", "凌雪", "凌雪阁"],
     "name": "隐龙诀",
     "gameid": 10585
   },
   {
+    "color": "#b9c1ff",
     "belong": "衍天",
     "alias": ["衍天", "衍天宗", "太玄经", "太玄"],
     "name": "太玄经",
     "gameid": 10615
   },
-  { "belong": "药宗", "alias": ["无方"], "name": "无方", "gameid": 10627 },
   {
+    "color": "#16708a",
+    "belong": "药宗",
+    "alias": ["无方"],
+    "name": "无方",
+    "gameid": 10627
+  },
+  {
+    "color": "#39bf9b",
     "belong": "药宗",
     "alias": ["奶药", "药奶", "灵素"],
     "name": "灵素",
     "gameid": 10626
   },
   {
+    "color": "#6bb7f2",
     "belong": "刀宗",
     "alias": ["刀宗", "孤锋诀", "孤锋"],
     "name": "孤锋诀",
     "gameid": 10698
   },
   {
+    "color": "#E1C855",
     "belong": "万灵",
     "alias": ["万灵", "万灵当歌", "万灵山庄", "山海诀", "山海心诀"],
-    "name": "山海心",
+    "name": "山海心诀",
     "gameid": 10756
   }
 ]
