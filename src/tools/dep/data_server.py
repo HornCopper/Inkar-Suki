@@ -7,7 +7,7 @@ __map = {
     "梦江南": ["梦江南", "双梦", "如梦令", "枫泾古镇", "双梦镇"],
     "斗转星移": ["斗转星移", "金戈铁马", "风雨同舟", "大唐万象", "姨妈", "风雨", "风雨大姨妈"],
     "长安城": ["长安城"],
-    "绝代天骄": ["电八", "电信八区", "绝代天骄", "风骨霸刀", "绝代双骄"],
+    "绝代天骄": ["电八", "电信八区", "绝代天骄", "风骨霸刀", "绝代双骄","绝代"],
     "龙争虎斗": ["龙虎", "龙争虎斗"],
     "唯我独尊": ["唯满侠", "唯我独尊", "wmx", "唯我", "WMX"],
     "乾坤一掷": ["华山论剑", "乾坤一掷", "花钱", "华乾"],
@@ -22,7 +22,7 @@ server_map = {}
 for x in __map:
     for srv in __map[x]:
         server_map[srv] = x
-    server_map[x] = x # 绑定自身
+    server_map[x] = x  # 绑定自身
 
 
 def server_mapping(server: str = None, group_id: str = None):
@@ -36,7 +36,7 @@ def getGroupServer(group_id: str):
     '''
     获取当前群所绑定的服务器，若未绑定则返回None
     '''
-    if not group_id:
+    if bool(group_id) == False:
         return None
     data = json.loads(read(f"{DATA}/{group_id}/jx3group.json"))
     data = data or {}

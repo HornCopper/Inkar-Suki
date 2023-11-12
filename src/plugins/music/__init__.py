@@ -1,5 +1,4 @@
 import nonebot
-import sys
 
 from nonebot import on_command
 from nonebot.adapters import Message
@@ -9,11 +8,11 @@ from nonebot.adapters.onebot.v11 import GroupMessageEvent
 from nonebot.typing import T_State
 
 TOOLS = nonebot.get_driver().config.tools_path
-sys.path.append(TOOLS)
 
 from src.tools.utils import checknumber
 
-from .music import get, search
+from .music import get, search, getLyricBelongToMusicInfo
+
 
 '''
 搜歌可查询歌曲，点歌直接根据歌曲名和作者（若有）推出歌曲。
@@ -24,6 +23,7 @@ from .music import get, search
 '''
 
 search_music = on_command("search_music", aliases={"搜歌"}, priority=5)
+
 
 @search_music.handle()
 async def _(state: T_State, event: GroupMessageEvent, args: Message = CommandArg()):
@@ -46,6 +46,7 @@ async def _(state: T_State, event: GroupMessageEvent, args: Message = CommandArg
     await search_music.send(msg[1:])
     return
 
+
 @search_music.got("num", prompt="输入序号即可搜索搜索歌曲，其他内容则无视~")
 async def __(state: T_State, num: Message = Arg()):
     num = num.extract_plain_text()
@@ -64,6 +65,7 @@ async def __(state: T_State, num: Message = Arg()):
         return
 
 get_music = on_command("get_music", aliases={"点歌"}, priority=5)
+
 
 @get_music.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
@@ -85,3 +87,13 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
         p = "163"
     msg = ms.music(p, info[1])
     await get_music.finish(msg)
+
+get_lyrics = on_command("get_lyrics", aliases={"搜歌词"}, priority=5)
+
+@get_lyrics.handle()
+async def _(event: GroupMessageEvent, args: Message = CommandArg()):
+    lyrics = args.extract_plain_text()
+    if lyrics == "":
+        await get_lyrics.finish("唔……没有告诉我歌词哦~")
+    else:
+        await get_lyrics.finish(await getLyricBelongToMusicInfo(lyrics))

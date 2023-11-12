@@ -9,7 +9,7 @@ from .dungeon import *
 from .exam import *
 from .flower import *
 from .horse import *
-from .jxjoy import *
+from .joy import *
 from .matrix import *
 from .news import *
 from .notice import *
@@ -31,3 +31,6 @@ from .user import *
 from .venture import *
 from .wiki import *
 from .equip_recommend import *
+from .emoji import *
+from .firework import *
+from .detail import *

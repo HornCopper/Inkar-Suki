@@ -1,6 +1,7 @@
 from .api import *
 
-news = on_command("jx3_news", aliases = {"新闻"}, priority = 5)
+news = on_command("jx3_news", aliases={"新闻"}, priority=5)
+
 @news.handle()
 async def _():
     """

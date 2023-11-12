@@ -2,15 +2,18 @@ from src.tools.dep import *
 from src.plugins.help import css
 from src.tools.generate import generate, get_uuid
 
-lks = on_command("jx3_leader", aliases={"-烂柯山"}, priority=5)
+lks = on_command("jx3_leader", aliases={"烂柯山","关隘","关隘首领"}, priority=5)
+
 @lks.handle()
 async def _(event: GroupMessageEvent):
     bad = "https://jx3wbl.xoyocdn.com/img/icon-camp-bad.07567e9f.png"
     good = "https://jx3wbl.xoyocdn.com/img/icon-camp-good.0db444fe.png"
+
     def convert_time(timestamp: int):
         time_local = time.localtime(timestamp)
         dt = time.strftime("%Y年%m月%d日 %H:%M:%S", time_local)
         return dt
+
     def RestTime(GoalTime: int, StartTime: int = int(time.time())):
         target_date = datetime.datetime.utcfromtimestamp(GoalTime)
         delta = target_date - StartTime
@@ -18,6 +21,7 @@ async def _(event: GroupMessageEvent):
         hours, remainder = divmod(delta.seconds, 3600)
         minutes, seconds = divmod(remainder, 60)
         return f"f{days}天{hours}时{minutes}分{seconds}秒"
+
     def Parse(data: dict):
         pic = bad if data["camp_name"] == "恶人谷" else good
         castle = data["castle"]
@@ -27,6 +31,7 @@ async def _(event: GroupMessageEvent):
         rest = RestTime(time_)
         msg = f"<img src={pic}></img>{castle}<br><font color=\"darkgrey\">{leader}<br>{status}<br>{convert_time(time_)}（{rest}）</font>"
         return msg
+
     url = f"{Config.jx3api_link}/data/server/leader?token={token}"
     data = await get_api(url)
     chart = []
@@ -40,4 +45,4 @@ async def _(event: GroupMessageEvent):
     if img == False:
         await lks.finish("唔……音卡的烂柯山图片生成失败了捏，请联系作者~")
     else:
-        await lks.finish(MessageSegment.image(Path(img).as_uri()))
+        await lks.finish(ms.image(Path(img).as_uri()))

@@ -1,6 +1,8 @@
 from .api import *
 
-announce = on_command("jx3_announce", aliases = {"维护公告"}, priority = 5)
+announce = on_command("jx3_announce", aliases={"维护公告","更新公告","公告","更新"}, priority=5)
+
+
 @announce.handle()
 async def _(event: GroupMessageEvent):
     """

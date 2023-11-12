@@ -1,0 +1,118 @@
+<html>
+
+<head>
+    <style>
+        @font-face {
+            font-family: Harmony;
+            src: url("$customfont");
+        }
+        
+        .copyright {
+            text-align: center;
+            font-size: 10px;
+            font-style: italic;
+            padding: 10px;
+            transform-origin: bottom top;
+        }
+
+        .m-ladder-rank {
+            position: relative;
+        }
+
+        .m-ladder-rank ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            margin-left: 30px
+        }
+
+        .m-ladder-rank .u-item {
+            display: block;
+            font-size: 12px;
+            line-height: 16px;
+            margin-bottom: 8px;
+            color: #fff;
+            position: relative;
+            border-radius: 2px
+        }
+
+        .m-ladder-rank .u-item a {
+            color: #fff
+        }
+
+        .m-ladder-rank .u-pic {
+            width: 22px;
+            height: 22px;
+            vertical-align: middle;
+            margin-right: 5px;
+            position: absolute;
+            left: -25px;
+            top: 2px
+        }
+
+        .m-ladder-rank .u-text {
+            padding: 5px 8px;
+            display: block;
+            font-weight: 700
+        }
+
+        .m-ladder-rank .u-desc {
+            color: #eee;
+            margin-left: 5px;
+            font-weight: 400
+        }
+
+        .m-ladder-rank .u-dps {
+            position: absolute;
+            right: 5px;
+            bottom: 0;
+            font-size: 13px;
+            line-height: 2;
+            font-weight: 700
+        }
+
+
+        .m-bps-ladder-mini .m-ladder-rank {
+            max-height: 300px;
+            overflow: hidden auto;
+            padding-right: 5px
+        }
+
+        .m-bps-ladder-mini .m-ladder-rank::-webkit-scrollbar {
+            width: 4px
+        }
+
+        .m-bps-ladder-mini .m-ladder-rank::-webkit-scrollbar-track,
+        .m-bps-ladder-mini .m-ladder-rank::-webkit-scrollbar-track-piece {
+            background-color: #fafafa;
+            border-radius: 6px
+        }
+
+        .m-bps-ladder-mini .m-ladder-rank::-webkit-scrollbar-thumb {
+            background-color: #eee;
+            border-radius: 6px
+        }
+
+        .m-bps-ladder-mini .m-ladder-rank::-webkit-resizer,
+        .m-bps-ladder-mini .m-ladder-rank::-webkit-scrollbar-button,
+        .m-bps-ladder-mini .m-ladder-rank::-webkit-scrollbar-corner {
+            display: none
+        }
+    </style>
+</head>
+
+<body>
+    <div class="m-ladder-rank" style="font-family: Harmony;">
+        <ul>
+            $content
+        </ul>
+        <div class="el-loading-mask" style="display: none;">
+            <div class="el-loading-spinner"><svg viewBox="25 25 50 50" class="circular">
+                    <circle cx="50" cy="50" r="20" fill="none" class="path"></circle>
+                </svg></div>
+        </div>
+        <span class="copyright">&copy; Inkar Suki · 门派天梯 · $appinfo</span>
+    </div>
+</body>
+
+</html>

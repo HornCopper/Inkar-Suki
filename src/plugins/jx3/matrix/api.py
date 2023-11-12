@@ -4,8 +4,8 @@ async def matrix_(name):
     name = aliases(name)
     if name == False:
         return "此心法不存在哦~请检查后重试。"
-    full_link = "{Config.jx3api_link}/data/school/matrix?name=" + name
-    info = await get_api(full_link, proxy = proxies)
+    full_link = f"{Config.jx3api_link}/data/school/matrix?name=" + name + f"&token={token}"
+    info = await get_api(full_link, proxy=proxies)
     if info["code"] == 400:
         return "此心法不存在哦~请检查后重试。"
     else:

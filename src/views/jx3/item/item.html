@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <!--
+        该代码协议与Inkar Suki仓库协议相同。
+
+        禁止帝君和兔兔使用。
+
+        禁止任何人商用。
+
+        欢迎借鉴或用于开源项目。
+
+        ——HornCopper
+     -->
+    <style>
+        table {
+            width: 800px;
+            border-collapse: separate;
+            border-spacing: 0;
+            border: 1px solid #000;
+        }
+
+        th {
+            background-color: #333;
+            color: #fff;
+            padding: 8px;
+            text-align: center;
+        }
+
+        td {
+            padding: 20px;
+            text-align: center;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            border-bottom: 1px solid #D3D3D3;
+            margin-bottom: 1px;
+        }
+
+        tbody tr:not(:first-child) {
+            /* border-top: 1px solid #000; */
+            border: 1px solid black;
+        }
+
+        .short-column {
+            width: 150px;
+        }
+
+        tfoot {
+            text-align: center;
+            font-style: italic;
+            font-size: 12px;
+        }
+
+        @font-face {
+            font-family: Harmony;
+            src: url($customfont);
+        }
+
+        body {
+            font-family: Harmony, sans-serif;
+        }
+    </style>
+</head>
+<body>
+    <table style="background-color: #d6b6f6    ;">
+        <thead>
+            <tr>
+                <th class="short-column">区服</th>
+                <th class="short-column">物品</th>
+                <th class="short-column">地图</th>
+                <th class="short-column">角色</th>
+                <th class="short-column">时间</th>
+                <th class="short-column">参考</th>
+            </tr>
+        </thead>
+        <tbody>
+            $tablecontent
+        </tbody>
+        <tfoot>
+            <tr>
+                <td colspan="7">&copy; Inkar Suki · $appinfo<br>$randomsaohua</td>
+            </tr>
+        </tfoot>
+    </table>
+</body>
+</html>
