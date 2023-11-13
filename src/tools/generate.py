@@ -44,7 +44,7 @@ class PlaywrightRunner(threading.Thread):
     async def run_loop_async(self):
         while self.IsRunning:
             await self.run_async()
-            time.sleep(0.1)
+            await asyncio.sleep(0.1)
         logger.warning("rendering thread stopped.")
 
     async def run_async(self) -> None:
@@ -63,7 +63,7 @@ class PlaywrightRunner(threading.Thread):
         try:
             await player.goto(url)
             if delay > 0:
-                time.sleep(delay / 1000)
+                await asyncio.sleep(delay / 1000)
             uuid_ = get_uuid()
             img = f"{CACHE}/{uuid_}.png"
             loc = player
