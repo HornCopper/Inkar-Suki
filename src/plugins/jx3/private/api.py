@@ -54,7 +54,7 @@ async def get_dilu_data():
             bidder_camp = data_["auction_camp_name"]
             ci = good if capturer_camp == "浩气盟" else bad
             bi = good if bidder_camp == "浩气盟" else bad
-            price = data_["auction_amount"].replace("砖", brickl).replace("金", goldl)
+            price = data_["auction_amount"].replace("砖", f"<img src=\"{brickl}\">").replace("金", f"<img src=\"{goldl}\">")
             replace_string = [["$server", server], ["$flush", flush], ["$captured", capture], ["$sell", auction], ["$map", map], ["$captured", capture], ["$bi", bi], ["$ci", ci], ["$price", price]]
             t = template
             for x in replace_string:
