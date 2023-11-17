@@ -17,13 +17,18 @@ async def send_with_async(method: str, url: str, proxy: dict = None, **kwargs) -
     以指定方式发出请求，并返回请求结果的Response对象
     '''
     kwargs = get_default_args(**kwargs)
+    client = kwargs.get('client')
+    if client:
+        del kwargs['client']
+    else:
+        client = httpx.AsyncClient(proxies=proxy, follow_redirects=True, verify=False)
+
     max_try_time = 3
     while True:
         try:
-            async with httpx.AsyncClient(proxies=proxy, follow_redirects=True, verify=False) as client:
-                req = await client.request(method, url, **kwargs)
-                req.encoding = 'utf-8'
-                return req
+            req = await client.request(method, url, **kwargs)
+            req.encoding = 'utf-8'
+            return req
         except httpx.TimeoutException as ex:
             max_try_time -= 1
             if max_try_time > 0:
