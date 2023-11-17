@@ -25,8 +25,8 @@ template = """
     <td class="short-column">$server</td>
     <td class="short-column">刷新：$flush<br>捕获：$captured<br>竞拍：$sell</td>
     <td class="short-column">$map</td>
-    <td class="short-column">$captured<br>$img<span style="color: grey;font-size:small">$ci</span></td>
-    <td class="short-column">$bidder<br>$img<span style="color: grey;font-size:small">$bi</span></td>
+    <td class="short-column">$capturer<br>$ci<span style="color: grey;font-size:small">$cc</span></td>
+    <td class="short-column">$bidder<br>$bi<span style="color: grey;font-size:small">$bc</span></td>
     <td class="short-column">$price</td>
 </tr>
 """
@@ -54,8 +54,8 @@ async def get_dilu_data():
             bidder_camp = data_["auction_camp_name"]
             ci = good if capturer_camp == "浩气盟" else bad
             bi = good if bidder_camp == "浩气盟" else bad
-            price = data_["auction_amount"].replace("砖", f"<img src=\"{brickl}\">").replace("金", f"<img src=\"{goldl}\">")
-            replace_string = [["$server", server], ["$flush", flush], ["$captured", capture], ["$sell", auction], ["$map", map], ["$captured", capture], ["$bi", bi], ["$ci", ci], ["$price", price]]
+            price = data_["auction_amount"].replace("万", f"<img src=\"{brickl}\">").replace("金", f"<img src=\"{goldl}\">")
+            replace_string = [["$server", server], ["$flush", flush], ["$captured", capture], ["$sell", auction], ["$map", map], ["$capturer", capturer], ["$bi", bi], ["$ci", ci], ["$price", price], ["$bidder", bidder], ["$bc", bidder_camp], ["$cc", capturer_camp]]
             t = template
             for x in replace_string:
                 t = t.replace(x[0], x[1])
