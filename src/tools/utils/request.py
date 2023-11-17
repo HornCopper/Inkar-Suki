@@ -54,7 +54,7 @@ async def get_api(url, proxy: dict = None, **kwargs) -> dict:
 
 async def post_url(url, proxy: dict = None, **kwargs) -> str:
     '''
-    以post方式发出请求，data为form-url-encoded,json为application/json
+    以post方式发出请求，data为form-url-encoded, json为application/json
     '''
     r = await send_with_async('post', url, proxy, **kwargs)
     return r and r.text
