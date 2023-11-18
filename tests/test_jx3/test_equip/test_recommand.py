@@ -44,5 +44,7 @@ def test_kunfu():
 
 def test_school():
     assert kftosh('KFC') == '藏剑'
+    assert kftosh('莫问') == '长歌'
+    assert kftosh('长歌') == '长歌'
     assert kftoschool('衍天宗')
     assert kftoschool('衍天宗').name == '衍天'
