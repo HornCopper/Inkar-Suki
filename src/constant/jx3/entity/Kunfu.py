@@ -1,12 +1,12 @@
-class Kunfu:
+from __future__ import annotations
+from .Base import *
+
+
+class Kunfu(Aliasable):
     '''心法'''
 
     belong: str
     '''归属的门派'''
-    alias: list[str]
-    '''别称'''
-    name: str
-    '''名称'''
     gameid: int
     '''游戏id'''
     color: str
