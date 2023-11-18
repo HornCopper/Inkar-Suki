@@ -3,68 +3,44 @@ from src.tools.dep.bot import *
 from urllib.error import HTTPError
 from pathlib import Path
 
+
 from nonebot.adapters.onebot.v11 import MessageSegment
 
 
 from src.tools.utils import get_url, get_status, nodetemp, get_content, get_api
 from src.tools.file import read, write
 from src.tools.config import Config
-from .Kunfu import Kunfu
-from .School import School
-from sgtpyutils.extensions.clazz import *
-
-
-current = pathlib2.Path(__file__).parent
-db_school = filebase_database.Database(str(current.joinpath('./config.school'))).value  # 门派数据
-dict_school: dict[str, Kunfu] = dict([[x.get('name'), dict2obj(School(), x)]
-                                     for x in db_school])  # 门派字典
-dict_alias_school: dict[str, str] = {}  # 门派对应别称
-for x in dict_school:
-    alias = dict_school[x].alias
-    for a in alias:
-        dict_alias_school[a] = x
-
-
-db_kunfu = filebase_database.Database(str(current.joinpath('./config.kunfu'))).value  # 心法数据
-dict_kunfu: dict[str, Kunfu] = dict([[x.get('name'), dict2obj(Kunfu(), x)]
-                                     for x in db_kunfu])  # 心法字典
-dict_alias_kunfu: dict[str, str] = {}  # 心法对应别称
-for x in dict_kunfu:
-    alias = dict_kunfu[x].alias
-    for a in alias:
-        dict_alias_kunfu[a] = x
+from .entity import *
 
 
 def kftosh(kf: str) -> str:
     '''
     将门派别名转换为门派名称
     '''
-    return dict_alias_school.get(kf)
+    x = kftoschool(kf)
+    return x and x.name
 
 
 def kftoschool(kf: str) -> School:
     '''
     将门派别名转换为门派
     '''
-    x = kftosh(kf)
-    return x and dict_school[x]
+    return School.from_alias(kf)
 
 
 def std_kunfu(kf_alias: str) -> Kunfu:
     '''
     将心法别称转换为标准心法
     '''
-    name = aliases(kf_alias)
-    if not name:
-        return None
-    return dict_kunfu.get(name)
+    return Kunfu.from_alias(kf_alias)
 
 
 def aliases(SkillName: str) -> str:
     '''
     将心法别称转换为标准心法名
     '''
-    return dict_alias_kunfu.get(SkillName)
+    x = std_kunfu(SkillName)
+    return x and x.name
 
 
 async def getTalents():
