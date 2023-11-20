@@ -7,6 +7,10 @@ from nonebot.adapters.onebot.v11 import Adapter as ONEBOT_V11Adapter
 from src.tools.dep import *
 
 
+def check_pkgs():
+    os.system('pip install -r requirements.txt --upgrade')
+
+
 def check_folder(path: str, can_retry: bool = True):
     if os.path.isdir(path):
         return True
@@ -60,8 +64,8 @@ init_folders = {
     }
 }
 
+check_pkgs()
 check_folders(init_folders)
-
 logger.debug('check plugins document')
 plugins = os.listdir("./src/plugins")
 for i in plugins:
