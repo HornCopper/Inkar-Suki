@@ -45,6 +45,8 @@ class Config:
     auatok = ""  # Arcaea Unlimited API Token
     # 以上两者都请进群：“574250621”
 
+    inkarsuki_offical_apitoken = '' # 音卡官方api_token，一些隐藏api需要使用该token
+
     jx3api_wslink = ""  # JX3API WebSocket地址
 
     jx3api_wstoken = ""  # JX3API WebSocket Token

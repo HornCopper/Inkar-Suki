@@ -1,20 +1,5 @@
 from .api import *
 
-kungfu = on_command("jx3_kungfu", aliases={"心法"}, priority=5)
-
-@kungfu.handle()
-async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
-    '''
-    查询心法下所有技能：
-
-    Example：-心法 莫问
-    '''
-    kungfu_ = args.extract_plain_text()
-    node = await getAllSkillsInfo(kungfu_)
-    if node == False:
-        await kungfu.finish("此心法不存在哦，请检查后重试~")
-    await bot.call_api("send_group_forward_msg", group_id=event.group_id, messages=node)
-
 skill = on_command("jx3_skill", aliases={"技能"}, priority=5)
 
 @skill.handle()
@@ -34,27 +19,6 @@ async def _(args: Message = CommandArg()):
     if msg == False:
         await skill.finish("此心法不存在哦，请检查后重试~")
     await skill.finish(msg)
-
-talent = on_command("_jx3_talent", aliases={"_奇穴"}, priority=5)
-
-@talent.handle()
-async def _(args: Message = CommandArg()):
-    '''
-    查询心法下某奇穴：
-
-    Example：-_奇穴 莫问 流照
-
-    Notice：此功能会显示秘籍，而另外一个不会（参考事件响应器为`_talent`的函数）
-    '''
-    data = args.extract_plain_text()
-    data = data.split(" ")
-    if len(data) != 2:
-        await talent.finish("信息不正确哦，只能有2个参数，请检查后重试~")
-    else:
-        kungfu = data[0]
-        talent_ = data[1]
-        msg = await getSingleTalent(kungfu, talent_)
-        await talent.finish(msg)
 
 _talent = on_command("jx3_talent", aliases={"奇穴"}, priority=5)
 

@@ -5,13 +5,6 @@ from .adventure import *
 
 VIEWS = TOOLS[:-5] + "views"
 
-try:
-    from src.tools.dep.jx3.tuilan import gen_ts, gen_xsk, format_body # 收到热心网友举报，我们已对推栏的算法进行了隐藏。
-except:
-    pass
-
-device_id = ticket.split("::")[1]
-
 async def post_url(url, proxy: dict = None, headers: str = None, timeout: int = 300, data: dict = None):
     async with httpx.AsyncClient(proxies=proxy, follow_redirects=True) as client:
         resp = await client.post(url, timeout=timeout, headers=headers, data=data)

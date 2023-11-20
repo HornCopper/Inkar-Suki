@@ -43,6 +43,9 @@
       result.name = result.name || 'SPAComponent'
       const locale = computed(() => window.zhCn)
       result.locale = locale
+      onMounted(() => {
+        setTimeout(() => { render_watermark_default(result.watermark) })
+      })
       return result
     }
     const app = Vue.createApp(component)
