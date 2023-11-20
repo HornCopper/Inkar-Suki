@@ -11,11 +11,6 @@ from src.plugins.jx3.user import Zone_mapping
 ASSETS = TOOLS[:-5] + "assets"
 VIEWS = TOOLS[:-5] + "views"
 
-try:
-    from src.tools.dep.jx3.tuilan import gen_ts, gen_xsk, format_body, dungeon_sign # 收到热心网友举报，我们已对推栏的算法进行了隐藏。
-except:
-    pass
-
 async def zone(server, id):
     server = server_mapping(server)
     final_url = f"{Config.jx3api_link}/view/role/teamCdList?token={token}&server={server}&name={id}&ticket={ticket}&robot={bot}&scale=1"
@@ -41,7 +36,6 @@ async def post_url(url, proxy: dict = None, headers: str = None, timeout: int = 
         result = resp.text
         return result
 
-device_id = ticket.split("::")[1]
 
 async def get_map(name, mode):
     param = {
@@ -242,6 +236,8 @@ def zone_mapping(zone):
         return "西津渡"
     elif zone in ["武狱黑牢","黑牢","武狱","牢","武牢"]:
         return "武狱黑牢"
+    elif zone in ["jld","九老洞","老九","老九洞","洞"]:
+        return "九老洞"
     else:
         return False
 

@@ -1,15 +1,4 @@
-from src.tools.utils import get_api, get_content
-import os
-import sys
-import nonebot
-
-from pathlib import Path
-from nonebot.adapters.onebot.v11 import MessageSegment
-
-TOOLS = nonebot.get_driver().config.tools_path
-sys.path.append(TOOLS)
-ASSETS = TOOLS[:-5] + "assets"
-
+from src.tools.dep import *
 
 async def getAdventure(adventure: str):
     # 数据来源@JX3BOX

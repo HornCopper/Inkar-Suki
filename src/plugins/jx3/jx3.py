@@ -32,3 +32,6 @@ from .venture import *
 from .wiki import *
 from .equip_recommend import *
 from .emoji import *
+from .firework import *
+from .detail import *
+from .private import *

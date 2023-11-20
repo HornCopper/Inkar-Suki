@@ -10,8 +10,13 @@ from src.tools.generate import get_uuid
 
 class Response:
     def __init__(self, data: dict) -> None:
+        if data is None:
+            data = '{}'
         if isinstance(data, XResponse):
             data = data.json()
+        if isinstance(data, str):
+            data = json.loads(data)
+
         self.code = data.get("code")
         self._data = data.get("data")
 
@@ -110,7 +115,7 @@ class Jx3Guide:
     async def _step_init(self):
         url = Jx3Guide.get_url(Jx3Guide.API_init)
         url = url.replace("{channel}", Jx3Guide.CHANNEL_Init)
-        data = await self.session.get(url)
+        data = await get_api(url, client=self.session)
         r = Response(data)
         return r
 
@@ -118,7 +123,7 @@ class Jx3Guide:
         url = Jx3Guide.get_url(Jx3Guide.API_tip)
         url = url.replace("{channel}", Jx3Guide.CHANNEL_Init)
         url = url.replace("{question}", self.question)
-        data = await self.session.get(url)
+        data = await get_api(url, client=self.session)
         res = TipResponse(data)
 
         return res
@@ -131,7 +136,7 @@ class Jx3Guide:
             "Content-Type": "application/json"
         }
         # logger.debug(f"wiki question set:{self.question}")
-        data = await self.session.post(url, json=payload, headers=self.with_headers(headers))
+        data = await post_url(url, json=payload, headers=self.with_headers(headers), client=self.session)
         res = QuesResponse(data)
         await self.handle_answer(res)
         return res
@@ -149,7 +154,7 @@ class Jx3Guide:
                 continue
             if not src.startswith(Jx3Guide.API_web_host):
                 src = f"{Jx3Guide.API_web_host}{src}"
-            img_data = await self.session.get(src)
+            img_data = await get_api(src, client=self.session)
             if not img_data.status_code == 200:
                 img.attrs["src"] = ""  # 错误
                 continue

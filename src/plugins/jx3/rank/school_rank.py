@@ -93,10 +93,11 @@ async def get_school_rank(season_key):
     contents = []
     for i in rank_data["data"]["items"]:
         width = str(round(int(i["dps"].split(".")[0]) / int(standard.split(".")[0]) * 100, 2)) + "%"
-        icon = await get_school_icon(i["xf"])
-        name = i["xf"]
+        kunfu = std_kunfu(i["xf"])
+        icon = kunfu.icon
+        name = kunfu.name
         dps = str(int(i["dps"].split(".")[0]))
-        color = colors[i["xf"]]
+        color = kunfu.color
         contents.append(template.replace("$width", width).replace("$color", color).replace("$name", name).replace("$dps", dps).replace("$img", icon))
     contents = "\n".join(contents)
     html = read(VIEWS + "/jx3/schoolrank/schoolrank.html")

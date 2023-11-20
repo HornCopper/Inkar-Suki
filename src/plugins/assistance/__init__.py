@@ -71,4 +71,4 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     keyword = args.extract_plain_text()
     if keyword == "":
         await rd.finish("唔……没有输入关键词哦，请检查后重试~")
-    await rd.finish(aic.random_member(str(event.group_id), keyword))
+    await rd.finish(await aic.random_member(str(event.group_id), keyword))

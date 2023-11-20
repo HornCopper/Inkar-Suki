@@ -18,12 +18,8 @@ TOOLS = get_driver().config.tools_path
 ASSETS = TOOLS[:-5] + "assets"
 PLUGINS = TOOLS[:-5] + "plugins"
 
-now = "群侠万变(7.31三改)"
+now = "万灵当歌"
 
-try:
-    from src.tools.dep.jx3.tuilan import gen_ts, gen_xsk, format_body, dungeon_sign # 收到热心网友举报，我们已对推栏的算法进行了隐藏。
-except:
-    pass
 
 ticket = Config.jx3_token
 
@@ -161,6 +157,11 @@ def data_process(kf, data, f):
 
 def enchant_mapping(quailty):
     data = {
+        "天堑奇玿":
+        {
+            "min": 12800,
+            "max": 14150
+        },
         "天堑奇瑛": {
             "min": 11500,
             "max": 12600
@@ -252,7 +253,7 @@ def kungfu_mapping(kf):
         return "根骨"
     elif kf in ["花间游", "易筋经", "焚影圣诀", "太玄经", "天罗诡道"]:
         return "元气"
-    elif kf in ["太虚剑意", "问水诀", "山居剑意", "凌海诀", "隐龙诀", "分山劲"]:
+    elif kf in ["太虚剑意", "问水诀", "山居剑意", "凌海诀", "隐龙诀", "分山劲","山海心诀"]:
         return "身法"
     elif kf in ["傲血战意", "惊羽诀", "北傲诀", "孤锋诀", "笑尘诀"]:
         return "力道"
@@ -279,7 +280,6 @@ async def get_attr_main(server, id, group_id):
     }
     param = format_body(param)
     xsk = gen_xsk(param)
-    device_id = ticket.split("::")[1]
     headers = {
         "Host" : "m.pvp.xoyo.com",
         "Accept" : "application/json",
@@ -602,6 +602,8 @@ async def get_attr_main(server, id, group_id):
 
 async def local_save(webpath):
     file_name = webpath.split("/")[-1].split("?")[0]
+    if webpath.find("unknown.png") != -1:
+        return PLUGINS + "/jx3/user/unknown.png"
     final_path = ASSETS + "/jx3/kungfu/" + file_name + ".png"
     if os.path.exists(final_path):
         return final_path
