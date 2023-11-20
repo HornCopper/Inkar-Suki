@@ -83,7 +83,7 @@ async def jx3_zlrank(event: GroupMessageEvent, args: Message = CommandArg()):
     else:
         return await jx3_cmd_zlrank.finish(ms.image(Path(data).as_uri()))
 
-rank = on_command("jx3_schoolrank", aliases={"门派天梯","天梯"}, priority=5)
+rank = on_command("jx3_schoolrank", aliases={"门派天梯","天梯   "}, priority=5)
 
 @rank.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):

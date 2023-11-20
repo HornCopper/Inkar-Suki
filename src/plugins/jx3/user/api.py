@@ -4,6 +4,7 @@ from src.tools.config import Config
 from src.constant.jx3.skilldatalib import kftosh
 from src.tools.utils import get_api, get_content
 from src.tools.dep.bot.path import CACHE
+from src.plugins.jx3.rank.school_rank import school_mapping as gkfdt
 import os
 import json
 import httpx
@@ -97,7 +98,7 @@ async def get_uid(server, id):
 
 
 async def get_personal_kf(kfid):
-    kfdt = await get_api("https://inkar-suki.codethink.cn/schoolmapping")
+    kfdt = gkfdt
     for i in list(kfdt):
         if str(kfdt[i]) == str(kfid):
             return i
@@ -233,7 +234,7 @@ async def get_bg(sc):
 
 
 async def get_kf_icon(kf):
-    school_mapping = await get_api("https://inkar-suki.codethink.cn/schoolmapping")
+    school_mapping = gkfdt
     num = school_mapping[kf]
     final_path = ASSETS + "/jx3/kungfu/" + kf + ".png"
     if os.path.exists(final_path):
