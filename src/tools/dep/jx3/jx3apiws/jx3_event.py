@@ -1,4 +1,4 @@
-from src.tools.file import *
+from src.tools.dep import *
 from abc import abstractmethod
 from datetime import datetime
 from typing import Literal, Optional
@@ -12,11 +12,6 @@ from pydantic import BaseModel, Extra, validator
 import json
 import nonebot
 import sys
-
-TOOLS = nonebot.get_driver().config.tools_path
-sys.path.append(str(TOOLS))
-ASSETS = TOOLS[:-5] + "assets"
-
 
 '''
 感谢友情提供代码@白师傅

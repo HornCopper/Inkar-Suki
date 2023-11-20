@@ -1,3 +1,4 @@
+from src.tools.dep import *
 from src.tools.utils import get_api, convert_time, get_content
 from src.tools.file import read
 from src.tools.config import Config
@@ -10,12 +11,6 @@ from urllib.parse import quote
 from pathlib import Path
 from urllib.error import HTTPError
 from nonebot.adapters.onebot.v11 import MessageSegment as ms
-
-TOOLS = nonebot.get_driver().config.tools_path
-sys.path.append(TOOLS)
-DATA = TOOLS[:-5] + "data"
-ASSETS = TOOLS[:-5] + "assets"
-
 
 api = Config.auaurl
 token = "Bearer " + Config.auatok

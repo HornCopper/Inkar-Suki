@@ -1,7 +1,6 @@
 from playwright.async_api import async_playwright
 
 from src.tools.dep import *
-from src.plugins.jx3.recruit.api import VIEWS
 
 def javascript(server, name):
     js = """

@@ -1,5 +1,4 @@
 from src.tools.dep import *
-from src.plugins.jx3.dungeon.api import VIEWS
 
 template = """
 <li>

@@ -1,3 +1,4 @@
+from src.tools.dep import *
 from src.tools.file import read, write
 from src.tools.permission import checker, error
 import json
@@ -11,10 +12,6 @@ from nonebot.adapters import Message
 from nonebot.matcher import Matcher
 from nonebot.adapters.onebot.v11 import Bot, GroupMessageEvent
 from nonebot.params import CommandArg
-
-TOOLS = nonebot.get_driver().config.tools_path
-DATA = TOOLS[:-5] + "data"
-
 
 global flag
 

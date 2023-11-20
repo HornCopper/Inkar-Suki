@@ -1,3 +1,4 @@
+from src.tools.dep import *
 from src.tools.generate import generate, get_uuid
 from src.tools.config import Config
 from src.tools.file import read, write
@@ -13,10 +14,6 @@ from nonebot import on_command
 from nonebot.adapters.onebot.v11 import Message
 from tabulate import tabulate
 
-TOOLS = nonebot.get_driver().config.tools_path
-sys.path.append(str(TOOLS))
-CACHE = TOOLS[:-5] + "cache"
-PLUGINS = TOOLS[:-5] + "plugins"
 
 """
 帮助文件生成函数。
