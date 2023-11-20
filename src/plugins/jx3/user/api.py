@@ -20,6 +20,7 @@ now = "万灵当歌"
 
 ticket = Config.jx3_token
 
+
 async def addritube_(server: str = None, name: str = None, group_id: str = None):  # 查装 <服务器> <ID>
     if token == None or ticket == None:
         return [PROMPT_NoTicket]
@@ -64,6 +65,7 @@ async def post_url(url, proxy: dict = None, headers: str = None, timeout: int = 
         resp = await client.post(url, timeout=timeout, headers=headers, data=data)
         result = resp.text
         return result
+
 
 def Zone_mapping(server):
     if server == "绝代天骄":
@@ -250,7 +252,7 @@ def kungfu_mapping(kf):
         return "根骨"
     elif kf in ["花间游", "易筋经", "焚影圣诀", "太玄经", "天罗诡道"]:
         return "元气"
-    elif kf in ["太虚剑意", "问水诀", "山居剑意", "凌海诀", "隐龙诀", "分山劲","山海心诀"]:
+    elif kf in ["太虚剑意", "问水诀", "山居剑意", "凌海诀", "隐龙诀", "分山劲", "山海心诀"]:
         return "身法"
     elif kf in ["傲血战意", "惊羽诀", "北傲诀", "孤锋诀", "笑尘诀"]:
         return "力道"
@@ -278,21 +280,21 @@ async def get_attr_main(server, id, group_id):
     param = format_body(param)
     xsk = gen_xsk(param)
     headers = {
-        "Host" : "m.pvp.xoyo.com",
-        "Accept" : "application/json",
-        "Accept-Language" : "zh-cn",
-        "Connection" : "keep-alive",
-        "Content-Type" : "application/json",
-        "cache-control" : "no-cache",
-        "fromsys" : "APP",
-        "clientkey" : "1",
-        "apiversion" : "3",
-        "gamename" : "jx3",
-        "platform" : "ios",
-        "sign" : "true",
-        "token" : token,
-        "deviceid" : device_id,
-        "User-Agent" : "SeasunGame/193 CFNetwork/1240.0.4 Darwin/20.6.0",
+        "Host": "m.pvp.xoyo.com",
+        "Accept": "application/json",
+        "Accept-Language": "zh-cn",
+        "Connection": "keep-alive",
+        "Content-Type": "application/json",
+        "cache-control": "no-cache",
+        "fromsys": "APP",
+        "clientkey": "1",
+        "apiversion": "3",
+        "gamename": "jx3",
+        "platform": "ios",
+        "sign": "true",
+        "token": token,
+        "deviceid": device_id,
+        "User-Agent": "SeasunGame/193 CFNetwork/1240.0.4 Darwin/20.6.0",
         "x-sk": xsk
     }
     data = await post_url(url="https://m.pvp.xoyo.com/mine/equip/get-role-equip", data=param, headers=headers)

@@ -2,6 +2,7 @@ from .api import *
 
 jx3_cmd_recruit = on_command("jx3_recruit_v1", aliases={"招募v1"}, priority=5)
 
+
 @jx3_cmd_recruit.handle()
 async def jx3_recruit(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
     """
@@ -30,6 +31,7 @@ async def jx3_recruit(bot: Bot, event: GroupMessageEvent, args: Message = Comman
     await jx3_cmd_recruit.finish(ms.image(data))
 
 recruitv2 = on_command("jx3_recruit", aliases={"招募"}, priority=5)
+
 
 @recruitv2.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):

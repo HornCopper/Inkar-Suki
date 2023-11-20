@@ -2,7 +2,8 @@ from src.tools.dep import *
 
 import re
 
-level_desc = ["","+300","秒杀首领;+80","稀有提高;+80","随机前进;+80","后六翻倍;+50","前六减半;+50","+100","后跃三步;+100","+300","逆向前进"]
+level_desc = ["", "+300", "秒杀首领;+80", "稀有提高;+80", "随机前进;+80",
+              "后六翻倍;+50", "前六减半;+50", "+100", "后跃三步;+100", "+300", "逆向前进"]
 level_icon = [18505, 4533, 13548, 13547, 3313, 4577, 4543, 4558, 4576, 4573]
 
 template = """
@@ -17,6 +18,7 @@ template = """
 
 # $Flag 特殊层标识 ; $Icon 图标 ; $Count 层数 ; $bossName 首领名称 ; $Desc 描述 ; $Coin 修罗之印
 
+
 async def get_monsters_map():
     map_data = await get_api("https://cms.jx3box.com/api/cms/app/monster/map")
     boss = await get_api("https://node.jx3box.com/monster/boss")
@@ -29,15 +31,15 @@ async def get_monsters_map():
         level = map_data["data"]["data"][i]["nEffectID"]
         info = level_desc[level]
         icon = f"https://icon.jx3box.com/icon/{level_icon[level]}.png"
-        flag = " is-effect" if level != 0 else "" # 勿除空格
+        flag = " is-effect" if level != 0 else ""  # 勿除空格
         details = info.split(";")
         if len(details) == 2:
             desc = details[0]
             coin = details[1]
         elif len(details) == 1:
             if details[0] == "":
-               desc = ""
-               coin = ""
+                desc = ""
+                coin = ""
             else:
                 if details[0][0] == "+":
                     desc = ""
@@ -50,27 +52,27 @@ async def get_monsters_map():
             coin = ""
         count = i + 1
         if count % 10 == 0:
-            flag = flag + " is-elite" # 勿除空格
-        new = template.replace("$Flag", flag).replace("$Icon", icon).replace("$Count", str(count)).replace("$bossName", name).replace("$Desc", desc).replace("$Coin", coin)
+            flag = flag + " is-elite"  # 勿除空格
+        new = template.replace("$Flag", flag).replace("$Icon", icon).replace("$Count", str(
+            count)).replace("$bossName", name).replace("$Desc", desc).replace("$Coin", coin)
         if count % 10 == 0:
             content.append(new)
-            if count / 10 in [1,2,3,4,5]:
+            if count / 10 in [1, 2, 3, 4, 5]:
                 content.append("</div>\n<div class=\"u-row\">")
             elif count / 10 == 6:
                 content.append("</div>")
         else:
             content.append(new)
-    start = re.sub(r"\..+\Z", "", map_data["data"]["start"].replace("T"," ")).split(" ")[0]
+    start = re.sub(r"\..+\Z", "", map_data["data"]["start"].replace("T", " ")).split(" ")[0]
     html = read(VIEWS + "/jx3/monster/monster.html")
     font = ASSETS + "/font/custom.ttf"
     saohua = await get_api(f"https://www.jx3api.com/data/saohua/random?token={token}")
     saohua = saohua["data"]["text"]
-    appinfo_time = time.strftime("%H:%M:%S",time.localtime(time.time()))
+    appinfo_time = time.strftime("%H:%M:%S", time.localtime(time.time()))
     appinfo = f"自{start}起7天 · 当前时间：{appinfo_time}<br>{saohua}"
-    html = html.replace("$content", "\n".join(content)).replace("$customfont", font).replace("$appinfo", appinfo)
+    html = html.replace("$content", "\n".join(content)).replace(
+        "$customfont", font).replace("$appinfo", appinfo)
     final_html = CACHE + "/" + get_uuid() + ".html"
     write(final_html, html)
     final_path = await generate(final_html, False, ".m-bmap.is-map-phone", False)
     return Path(final_path).as_uri()
-    
-        

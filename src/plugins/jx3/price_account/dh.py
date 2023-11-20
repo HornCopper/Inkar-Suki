@@ -4,6 +4,7 @@ from src.tools.dep import *
 from src.tools.config import Config
 from src.tools.utils import nodetemp, get_api
 
+
 async def get_dh(type_: str):
     # 数据来源 @盆栽蹲号
     url = f"https://www.j3dh.com/v1/h/data/hero?ifKnownDaishou=false&exterior={type_}&school=0&figure=0&page=0"

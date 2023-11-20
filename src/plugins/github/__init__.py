@@ -18,7 +18,6 @@ from nonebot.log import logger
 from nonebot.params import CommandArg
 
 
-
 def already(reponame: str, group) -> bool:
     final_path = DATA + "/" + group + "/" + "webhook.json"
     repos = json.loads(read(final_path))

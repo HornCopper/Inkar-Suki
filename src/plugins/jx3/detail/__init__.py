@@ -4,6 +4,7 @@ from src.tools.permission import checker, error
 
 zone_detail = on_command("jx3_zone_detail", aliases={"副本总览"}, priority=5)
 
+
 @zone_detail.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     if checker(str(event.user_id), 9) == False:

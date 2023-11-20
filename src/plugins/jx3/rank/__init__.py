@@ -3,6 +3,7 @@ from .school_rank import *
 
 jx3_cmd_top100_ = on_command("jx3_top100", aliases={"百强"}, priority=5)
 
+
 @jx3_cmd_top100_.handle()
 async def jx3_top100(event: GroupMessageEvent, args: Message = CommandArg()):
     '''
@@ -37,6 +38,7 @@ async def jx3_top100(event: GroupMessageEvent, args: Message = CommandArg()):
 
 jx3_cmd_rank = on_command("jx3_rank", aliases={"榜单"}, priority=5)
 
+
 @jx3_cmd_rank.handle()
 async def jx3_rank(event: GroupMessageEvent, args: Message = CommandArg()):
     '''
@@ -66,6 +68,7 @@ async def jx3_rank(event: GroupMessageEvent, args: Message = CommandArg()):
 
 jx3_cmd_zlrank = on_command("jx3_zlrank", aliases={"资历排行"}, priority=5)
 
+
 @jx3_cmd_zlrank.handle()
 async def jx3_zlrank(event: GroupMessageEvent, args: Message = CommandArg()):
     arg = args.extract_plain_text().split(" ")
@@ -83,7 +86,8 @@ async def jx3_zlrank(event: GroupMessageEvent, args: Message = CommandArg()):
     else:
         return await jx3_cmd_zlrank.finish(ms.image(Path(data).as_uri()))
 
-rank = on_command("jx3_schoolrank", aliases={"门派天梯","天梯   "}, priority=5)
+rank = on_command("jx3_schoolrank", aliases={"门派天梯", "天梯   "}, priority=5)
+
 
 @rank.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
