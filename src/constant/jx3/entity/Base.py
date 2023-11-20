@@ -1,11 +1,31 @@
 from __future__ import annotations
 from sgtpyutils.logger import logger
+from sgtpyutils.database import filebase_database
+
+from sgtpyutils.extensions.clazz import *
+import pathlib2
+current = pathlib2.Path(__file__).parent
 
 
-class Aliasable:
+class Databased:
+    database: str = 'not implement'
+
+    @classmethod
+    def _register_type(cls):
+        logger.info(f'database init for [{cls.__name__}] path:{cls.database}')
+        target = str(current.joinpath(cls.database))
+        db_entity = filebase_database.Database(target).value  # 心法数据
+        def func(x): return [x.get('name'), dict2obj(cls(), x)]
+        dict_entity = dict([func(x) for x in db_entity])  # 心法字典
+        for x in dict_entity:
+            dict_entity[x].register_alias()
+
+
+class Aliasable(Databased):
     '''
     基础
     '''
+
     __static_dict: dict[str, str, any] = {}
 
     alias: list[str]
