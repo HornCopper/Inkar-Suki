@@ -1,4 +1,5 @@
 <div align="center">
+  <img width="256" src="https://inkar-suki.codethink.cn/Inkar-Suki-Docs/img/Logo.jpg" alt="logo">
 
 # [Inkar Suki](https://www.inkar-suki.xyz)
 
