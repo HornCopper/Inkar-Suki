@@ -3,7 +3,6 @@ from src.plugins.jx3.dungeon.api import get_map, zone_mapping, mode_mapping
 
 from .adventure import *
 
-VIEWS = TOOLS[:-5] + "views"
 
 async def post_url(url, proxy: dict = None, headers: str = None, timeout: int = 300, data: dict = None):
     async with httpx.AsyncClient(proxies=proxy, follow_redirects=True) as client:

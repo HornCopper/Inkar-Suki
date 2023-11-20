@@ -1,13 +1,9 @@
+from src.tools.dep import *
 from typing import List
 from src.tools.utils import get_api
 import sys
 import nonebot
 import re
-
-TOOLS = nonebot.get_driver().config.tools_path
-ASSETS = TOOLS[:-5] + "assets"
-PLUGINS = TOOLS[:-5] + "plugins"
-
 class PetInfo:
     basic = "https://www.jx3box.com/pet/"
     def __init__(self, pet: dict) -> None:

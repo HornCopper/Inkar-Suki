@@ -1,3 +1,4 @@
+from src.tools.dep import *
 from src.tools.config import Config
 from src.tools.file import read, write
 from src.tools.permission import checker, error
@@ -13,8 +14,6 @@ from nonebot.adapters import Message
 from nonebot.adapters.onebot.v11 import Bot, GroupMessageEvent, NoticeEvent, RequestEvent
 from nonebot.params import CommandArg
 
-TOOLS = nonebot.get_driver().config.tools_path
-DATA = TOOLS[:-5] + "data"
 
 def banned(sb):  # 检测某个人是否被封禁。
     with open(TOOLS + "/ban.json") as cache:

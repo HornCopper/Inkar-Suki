@@ -1,7 +1,5 @@
 from src.tools.dep import *
 from src.plugins.jx3.price_goods.lib.coin import brickl, goldl
-from src.plugins.jx3.dungeon import VIEWS
-
 import re
 
 ikst = Config.inkarsuki_offical_apitoken

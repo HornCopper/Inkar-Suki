@@ -8,9 +8,6 @@ from src.tools.generate import generate, get_uuid
 from src.plugins.help import css
 from src.plugins.jx3.user import Zone_mapping
 
-ASSETS = TOOLS[:-5] + "assets"
-VIEWS = TOOLS[:-5] + "views"
-
 async def zone(server, id):
     server = server_mapping(server)
     final_url = f"{Config.jx3api_link}/view/role/teamCdList?token={token}&server={server}&name={id}&ticket={ticket}&robot={bot}&scale=1"

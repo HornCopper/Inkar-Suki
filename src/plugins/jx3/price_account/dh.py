@@ -1,10 +1,8 @@
-import nonebot
+from src.tools.dep import *
+
 
 from src.tools.config import Config
 from src.tools.utils import nodetemp, get_api
-
-TOOLS = nonebot.get_driver().config.tools_path
-ASSETS = TOOLS[:-5] + "assets"
 
 async def get_dh(type_: str):
     # 数据来源 @盆栽蹲号

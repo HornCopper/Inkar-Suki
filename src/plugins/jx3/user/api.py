@@ -14,9 +14,6 @@ from PIL import Image, ImageDraw, ImageFont
 from nonebot import get_driver
 from nonebot.log import logger
 
-TOOLS = get_driver().config.tools_path
-ASSETS = TOOLS[:-5] + "assets"
-PLUGINS = TOOLS[:-5] + "plugins"
 
 now = "万灵当歌"
 
