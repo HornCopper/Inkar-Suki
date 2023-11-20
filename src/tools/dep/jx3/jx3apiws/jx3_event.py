@@ -458,7 +458,8 @@ class XuanJingEvent(RecvEvent):
         for i in correct:
             if i["server"] == self.server:
                 found = True
-                new = {"time": self.time, "map": self.map_name, "role": self.role_name, "name": self.name}
+                new = {"time": self.time, "map": self.map_name,
+                       "role": self.role_name, "name": self.name}
                 i["records"].append(new)
         if found == False:
             return
@@ -491,6 +492,7 @@ class GameSysMsgEvent(RecvEvent):
     def get_message(self) -> dict:
         return Message(f"[系统频道推送]\n时间：{self.time}\n{self.message}。")
 
+
 @EventRister.rister(action=1009)
 class ZhuEEvent(RecvEvent):
     """
@@ -517,6 +519,7 @@ class ZhuEEvent(RecvEvent):
     @overrides(RecvEvent)
     def get_message(self) -> dict:
         return {"type": "诛恶", "server": self.server, "msg": f"现在是{self.time}了！音卡提醒各位：\n{self.server} 的 诛恶事件 在 {self.map_name} 触发啦，快前往该地图吧！"}
+
 
 @EventRister.rister(action=10001)
 class SubscribeEvent(RecvEvent):

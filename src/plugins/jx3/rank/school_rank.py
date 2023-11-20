@@ -74,8 +74,9 @@ school_mapping = {
     "隐龙诀": "10585",
     "太玄经": "10615",
     "孤锋诀": "10698",
-    "山海心诀":"10756"
+    "山海心诀": "10756"
 }
+
 
 async def get_school_icon(name):
     school_data = school_mapping
@@ -84,6 +85,7 @@ async def get_school_icon(name):
     else:
         icon_id = school_data[name]
         return f"https://img.jx3box.com/image/xf/{icon_id}.png"
+
 
 async def get_school_rank(season_key):
     rank_data = await get_api(f"https://cms.jx3box.com/api/cms/bps/dps/group/{season_key}")
@@ -97,15 +99,17 @@ async def get_school_rank(season_key):
         name = kunfu.name
         dps = str(int(i["dps"].split(".")[0]))
         color = kunfu.color
-        contents.append(template.replace("$width", width).replace("$color", color).replace("$name", name).replace("$dps", dps).replace("$img", icon))
+        contents.append(template.replace("$width", width).replace("$color", color).replace(
+            "$name", name).replace("$dps", dps).replace("$img", icon))
     contents = "\n".join(contents)
     html = read(VIEWS + "/jx3/schoolrank/schoolrank.html")
     font = ASSETS + "/font/custom.ttf"
     saohua = await get_api(f"https://www.jx3api.com/data/saohua/random?token={token}")
     saohua = saohua["data"]["text"]
-    appinfo_time = time.strftime("%H:%M:%S",time.localtime(time.time()))
+    appinfo_time = time.strftime("%H:%M:%S", time.localtime(time.time()))
     appinfo = f"{season} · 当前时间：{appinfo_time}<br>{saohua}"
-    html = html.replace("$content", contents).replace("$customfont", font).replace("$appinfo", appinfo)
+    html = html.replace("$content", contents).replace(
+        "$customfont", font).replace("$appinfo", appinfo)
     final_html = CACHE + "/" + get_uuid() + ".html"
     write(final_html, html)
     final_path = await generate(final_html, False, ".m-ladder-rank", False)

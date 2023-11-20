@@ -31,7 +31,8 @@ def convert_time(timestamp: int):
     elif len(str(timestamp)) == 10:
         time_local = time.localtime(timestamp)
     else:
-        class TimeLengthError(OSError): ...
+        class TimeLengthError(OSError):
+            ...
         raise TimeLengthError("Length of timestamp cannot be approved!")
     dt = time.strftime("%Y年%m月%d日 %H:%M:%S", time_local)
     return dt

@@ -1,3 +1,5 @@
+from .music import get, search, getLyricBelongToMusicInfo
+from src.tools.utils import checknumber
 import nonebot
 
 from nonebot import on_command
@@ -8,10 +10,6 @@ from nonebot.adapters.onebot.v11 import GroupMessageEvent
 from nonebot.typing import T_State
 
 TOOLS = nonebot.get_driver().config.tools_path
-
-from src.tools.utils import checknumber
-
-from .music import get, search, getLyricBelongToMusicInfo
 
 
 '''
@@ -89,6 +87,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     await get_music.finish(msg)
 
 get_lyrics = on_command("get_lyrics", aliases={"搜歌词"}, priority=5)
+
 
 @get_lyrics.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):

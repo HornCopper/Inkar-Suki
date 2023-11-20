@@ -4,6 +4,7 @@ from nonebot.adapters.onebot.v11 import MessageSegment as ms
 
 from src.tools.dep import *
 
+
 def boss_mapping(boss: str):
     xjd_num = 10369
     wyhl_num = 10907
@@ -33,6 +34,7 @@ def boss_mapping(boss: str):
         return wyhl_num + 5
     else:
         return False
+
 
 async def get_top100(server: str, boss: str, team: str = None):  # 数据来源@JX3BOX
     server = server_mapping(server)

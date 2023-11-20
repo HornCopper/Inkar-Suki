@@ -8,7 +8,6 @@ from bs4 import BeautifulSoup
 from random import randint
 
 
-
 async def get_tieba(thread: int):
     """
     贴吧内容获取。

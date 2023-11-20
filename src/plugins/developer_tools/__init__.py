@@ -182,7 +182,7 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
         await web.finish("获取图片成功！\n"
                          + ms.image(Path(image).as_uri()))
 
-apply = on_command("apply", aliases={"-申请","领养"}, priority=5)  # 申请使用机器人的命令，`repo`地址来源于`config.py`。
+apply = on_command("apply", aliases={"-申请", "领养"}, priority=5)  # 申请使用机器人的命令，`repo`地址来源于`config.py`。
 
 
 @apply.handle()

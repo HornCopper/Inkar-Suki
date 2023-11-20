@@ -8,6 +8,7 @@ from src.tools.generate import generate, get_uuid
 from src.plugins.help import css
 from src.plugins.jx3.user import Zone_mapping
 
+
 async def zone(server, id):
     server = server_mapping(server)
     final_url = f"{Config.jx3api_link}/view/role/teamCdList?token={token}&server={server}&name={id}&ticket={ticket}&robot={bot}&scale=1"
@@ -15,6 +16,7 @@ async def zone(server, id):
     if data["code"] == 404:
         return ["玩家不存在或尚未在世界频道发言哦~"]
     return data["data"]["url"]
+
 
 async def get_cd(server: str, sep: str):
     url = f"https://pull.j3cx.com/api/serendipity?server={server}&serendipity={sep}&pageSize=1"
@@ -26,6 +28,7 @@ async def get_cd(server: str, sep: str):
     time = data["date_str"]
     msg = f"「{server}」服务器上一次记录「{sep}」：\n{time}\n数据来源：@茗伊插件集"
     return msg
+
 
 async def post_url(url, proxy: dict = None, headers: str = None, timeout: int = 300, data: dict = None):
     async with httpx.AsyncClient(proxies=proxy, follow_redirects=True) as client:
@@ -42,21 +45,21 @@ async def get_map(name, mode):
     param = format_body(param)
     xsk = gen_xsk(param)
     headers = {
-        "Host" : "m.pvp.xoyo.com",
-        "Accept" : "application/json",
-        "Accept-Language" : "zh-cn",
-        "Connection" : "keep-alive",
-        "Content-Type" : "application/json",
-        "cache-control" : "no-cache",
-        "fromsys" : "APP",
-        "clientkey" : "1",
-        "apiversion" : "3",
-        "gamename" : "jx3",
-        "platform" : "ios",
-        "sign" : "true",
-        "token" : ticket,
-        "deviceid" : device_id,
-        "User-Agent" : "SeasunGame/193 CFNetwork/1240.0.4 Darwin/20.6.0",
+        "Host": "m.pvp.xoyo.com",
+        "Accept": "application/json",
+        "Accept-Language": "zh-cn",
+        "Connection": "keep-alive",
+        "Content-Type": "application/json",
+        "cache-control": "no-cache",
+        "fromsys": "APP",
+        "clientkey": "1",
+        "apiversion": "3",
+        "gamename": "jx3",
+        "platform": "ios",
+        "sign": "true",
+        "token": ticket,
+        "deviceid": device_id,
+        "User-Agent": "SeasunGame/193 CFNetwork/1240.0.4 Darwin/20.6.0",
         "x-sk": xsk
     }
     data = await post_url(url="https://m.pvp.xoyo.com/dungeon/list", data=param, headers=headers)
@@ -78,21 +81,21 @@ async def get_boss(map, mode, boss):
     param = format_body(param)
     xsk = gen_xsk(param)
     headers = {
-        "Host" : "m.pvp.xoyo.com",
-        "Accept" : "application/json",
-        "Accept-Language" : "zh-cn",
-        "Connection" : "keep-alive",
-        "Content-Type" : "application/json",
-        "cache-control" : "no-cache",
-        "fromsys" : "APP",
-        "clientkey" : "1",
-        "apiversion" : "3",
-        "gamename" : "jx3",
-        "platform" : "ios",
-        "sign" : "true",
-        "token" : ticket,
-        "deviceid" : device_id,
-        "User-Agent" : "SeasunGame/193 CFNetwork/1240.0.4 Darwin/20.6.0",
+        "Host": "m.pvp.xoyo.com",
+        "Accept": "application/json",
+        "Accept-Language": "zh-cn",
+        "Connection": "keep-alive",
+        "Content-Type": "application/json",
+        "cache-control": "no-cache",
+        "fromsys": "APP",
+        "clientkey": "1",
+        "apiversion": "3",
+        "gamename": "jx3",
+        "platform": "ios",
+        "sign": "true",
+        "token": ticket,
+        "deviceid": device_id,
+        "User-Agent": "SeasunGame/193 CFNetwork/1240.0.4 Darwin/20.6.0",
         "x-sk": xsk
     }
     data = await post_url(url="https://m.pvp.xoyo.com/dungeon/info", data=param, headers=headers)
@@ -111,21 +114,21 @@ async def get_drops(map, mode, boss):
     param = format_body(param)
     xsk = gen_xsk(param)
     headers = {
-        "Host" : "m.pvp.xoyo.com",
-        "Accept" : "application/json",
-        "Accept-Language" : "zh-cn",
-        "Connection" : "keep-alive",
-        "Content-Type" : "application/json",
-        "cache-control" : "no-cache",
-        "fromsys" : "APP",
-        "clientkey" : "1",
-        "apiversion" : "3",
-        "gamename" : "jx3",
-        "platform" : "ios",
-        "sign" : "true",
-        "token" : ticket,
-        "deviceid" : device_id,
-        "User-Agent" : "SeasunGame/193 CFNetwork/1240.0.4 Darwin/20.6.0",
+        "Host": "m.pvp.xoyo.com",
+        "Accept": "application/json",
+        "Accept-Language": "zh-cn",
+        "Connection": "keep-alive",
+        "Content-Type": "application/json",
+        "cache-control": "no-cache",
+        "fromsys": "APP",
+        "clientkey": "1",
+        "apiversion": "3",
+        "gamename": "jx3",
+        "platform": "ios",
+        "sign": "true",
+        "token": ticket,
+        "deviceid": device_id,
+        "User-Agent": "SeasunGame/193 CFNetwork/1240.0.4 Darwin/20.6.0",
         "x-sk": xsk
     }
     data = await post_url(url="https://m.pvp.xoyo.com/dungeon/boss-drop", data=param, headers=headers)
@@ -135,6 +138,7 @@ async def get_drops(map, mode, boss):
 # 10人/25人：https://m.pvp.xoyo.com/dungeon/list
 # 5人：https://m.pvp.xoyo.com/dungeon/list-all
 # 暂时未知数据是否相同，后续考虑是否添加。
+
 
 def mode_mapping(mode):
     if mode in ["25yx", "yx", "YX", "Yx", "yX", "25人YX", "25人英雄", "英雄", "25Yx", "25人yX", "25人yx", "25英雄"]:
@@ -152,91 +156,93 @@ def mode_mapping(mode):
     else:
         return False
 
+
 def zone_mapping(zone):
-    if zone in ["战宝迦兰","战宝"]:
+    if zone in ["战宝迦兰", "战宝"]:
         return "战宝迦兰"
-    elif zone in ["荻花宫后山","荻花后山","后山"]:
+    elif zone in ["荻花宫后山", "荻花后山", "后山"]:
         return "荻花宫后山"
-    elif zone in ["宫中神武遗迹","宫中神武","宫中"]:
+    elif zone in ["宫中神武遗迹", "宫中神武", "宫中"]:
         return "宫中神武遗迹"
-    elif zone in ["持国天王殿","持国"]:
+    elif zone in ["持国天王殿", "持国"]:
         return "持国天王殿"
-    elif zone in ["荻花圣殿","荻花","dh"]:
+    elif zone in ["荻花圣殿", "荻花", "dh"]:
         return "荻花圣殿"
-    elif zone in ["持国天王回忆录","持国回忆录"]:
+    elif zone in ["持国天王回忆录", "持国回忆录"]:
         return "持国天王回忆录"
-    elif zone in ["荻花洞窟","洞窟"]:
+    elif zone in ["荻花洞窟", "洞窟"]:
         return "荻花洞窟"
-    elif zone in ["烛龙殿","烛龙","zld","猪笼"]:
+    elif zone in ["烛龙殿", "烛龙", "zld", "猪笼"]:
         return "烛龙殿"
-    elif zone in ["会战唐门","会战"]:
+    elif zone in ["会战唐门", "会战"]:
         return "会战唐门"
-    elif zone in ["南诏皇宫","皇宫"]:
+    elif zone in ["南诏皇宫", "皇宫"]:
         return "南诏皇宫"
-    elif zone in ["龙渊泽","lyz"]:
+    elif zone in ["龙渊泽", "lyz"]:
         return "龙渊泽"
-    elif zone in ["太原之战·逐虎驱狼","逐虎","逐虎驱狼"]:
+    elif zone in ["太原之战·逐虎驱狼", "逐虎", "逐虎驱狼"]:
         return "太原之战·逐虎驱狼"
-    elif zone in ["太原之战·夜守孤城","野兽","夜守孤城","夜守"]:
+    elif zone in ["太原之战·夜守孤城", "野兽", "夜守孤城", "夜守"]:
         return "太原之战·夜守孤城"
-    elif zone in ["秦皇陵","盗墓","qhl"]:
+    elif zone in ["秦皇陵", "盗墓", "qhl"]:
         return "秦皇陵"
-    elif zone in ["风雪稻香村","稻香村"]:
+    elif zone in ["风雪稻香村", "稻香村"]:
         return "风雪稻香村"
-    elif zone in ["血战天策","血战"]:
+    elif zone in ["血战天策", "血战"]:
         return "血战天策"
-    elif zone in ["大明宫","dmg"]:
+    elif zone in ["大明宫", "dmg"]:
         return "大明宫"
-    elif zone in ["战宝军械库","军械库"]:
+    elif zone in ["战宝军械库", "军械库"]:
         return "战宝军械库"
-    elif zone in ["永王行宫·花月别院","花月别院","花月"]:
+    elif zone in ["永王行宫·花月别院", "花月别院", "花月"]:
         return "永王行宫·花月别院"
-    elif zone in ["永王行宫·仙侣庭院","仙侣庭院","仙侣","仙女"]:
+    elif zone in ["永王行宫·仙侣庭院", "仙侣庭院", "仙侣", "仙女"]:
         return "永王行宫·仙侣庭院"
-    elif zone in ["上阳宫·双曜亭","双曜","双曜亭","双耀"]:
+    elif zone in ["上阳宫·双曜亭", "双曜", "双曜亭", "双耀"]:
         return "上阳宫·双曜亭"
-    elif zone in ["上阳宫·观风殿","观风","观风殿","gfd"]:
+    elif zone in ["上阳宫·观风殿", "观风", "观风殿", "gfd"]:
         return "上阳宫·观风殿"
-    elif zone in ["风雷刀谷·锻刀厅","锻刀厅","ddt"]:
+    elif zone in ["风雷刀谷·锻刀厅", "锻刀厅", "ddt"]:
         return "风雷刀谷·锻刀厅"
-    elif zone in ["风雷刀谷·千雷殿","千雷","千雷殿"]:
+    elif zone in ["风雷刀谷·千雷殿", "千雷", "千雷殿"]:
         return "风雷刀谷·千雷殿"
-    elif zone in ["狼牙堡·战兽山","战兽山","战兽"]:
+    elif zone in ["狼牙堡·战兽山", "战兽山", "战兽"]:
         return "狼牙堡·战兽山"
-    elif zone in ["狼牙堡·燕然峰","燕然","嫣然","燕然峰"]:
+    elif zone in ["狼牙堡·燕然峰", "燕然", "嫣然", "燕然峰"]:
         return "狼牙堡·燕然峰"
-    elif zone in ["狼牙堡·辉天堑","辉天","辉天堑","htq"]:
+    elif zone in ["狼牙堡·辉天堑", "辉天", "辉天堑", "htq"]:
         return "狼牙堡·辉天堑"
-    elif zone in ["狼牙堡·狼神殿","狼神","lsd","狼神殿"]:
+    elif zone in ["狼牙堡·狼神殿", "狼神", "lsd", "狼神殿"]:
         return "狼牙堡·狼神殿"
-    elif zone in ["冰火岛·荒血路","hxl","荒血路"]:
+    elif zone in ["冰火岛·荒血路", "hxl", "荒血路"]:
         return "冰火岛·荒血路"
-    elif zone in ["冰火岛·青莲狱","青莲狱","qly"]:
+    elif zone in ["冰火岛·青莲狱", "青莲狱", "qly"]:
         return "冰火岛·青莲狱"
-    elif zone in ["尘归海·巨冥湾","jmw","巨冥湾","追须"]:
+    elif zone in ["尘归海·巨冥湾", "jmw", "巨冥湾", "追须"]:
         return "尘归海·巨冥湾"
-    elif zone in ["尘归海·饕餮洞","饕餮洞","饕餮","ttd"]:
+    elif zone in ["尘归海·饕餮洞", "饕餮洞", "饕餮", "ttd"]:
         return "尘归海·饕餮洞"
-    elif zone in ["敖龙岛","奥比岛","ald"]:
+    elif zone in ["敖龙岛", "奥比岛", "ald"]:
         return "敖龙岛"
-    elif zone in ["范阳夜变","夜店","范阳夜店","范阳书店"]:
+    elif zone in ["范阳夜变", "夜店", "范阳夜店", "范阳书店"]:
         return "范阳夜变"
-    elif zone in ["达摩洞","dmd","达","达摩"]:
+    elif zone in ["达摩洞", "dmd", "达", "达摩"]:
         return "达摩洞"
-    elif zone in ["白帝江关","白帝","白帝江棺","白"]:
+    elif zone in ["白帝江关", "白帝", "白帝江棺", "白"]:
         return "白帝江关"
-    elif zone in ["雷域大泽","雷域","雷狱","瘤子","大泽","雷"]:
+    elif zone in ["雷域大泽", "雷域", "雷狱", "瘤子", "大泽", "雷"]:
         return "雷域大泽"
-    elif zone in ["河阳之战","河阳","河"]:
+    elif zone in ["河阳之战", "河阳", "河"]:
         return "河阳之战"
-    elif zone in ["西津渡","码头","西西西","xjd"]:
+    elif zone in ["西津渡", "码头", "西西西", "xjd"]:
         return "西津渡"
-    elif zone in ["武狱黑牢","黑牢","武狱","牢","武牢"]:
+    elif zone in ["武狱黑牢", "黑牢", "武狱", "牢", "武牢"]:
         return "武狱黑牢"
-    elif zone in ["jld","九老洞","老九","老九洞","洞"]:
+    elif zone in ["jld", "九老洞", "老九", "老九洞", "洞"]:
         return "九老洞"
     else:
         return False
+
 
 star = """
 <svg width="20" height="20">
@@ -262,9 +268,10 @@ template_drop = """
 </tr>
 """
 
-equip_types = ["帽子","上衣","腰带","护臂","裤子","鞋","项链","腰坠","戒指","投掷囊"]
+equip_types = ["帽子", "上衣", "腰带", "护臂", "裤子", "鞋", "项链", "腰坠", "戒指", "投掷囊"]
 
-filter_words = ["根骨","力道","元气","身法","体质"]
+filter_words = ["根骨", "力道", "元气", "身法", "体质"]
+
 
 async def generater(map, mode, boss):
     mode = mode_mapping(mode)
@@ -349,11 +356,11 @@ async def generater(map, mode, boss):
                     equip_type = i["Icon"]["SubKind"]
                     if equip_type == "帽子":
                         score = str(int(int(quailty)*1.62))
-                    elif equip_type in ["上衣","裤子"]:
+                    elif equip_type in ["上衣", "裤子"]:
                         score = str(int(int(quailty)*1.8))
-                    elif equip_type in ["腰带","护臂","鞋"]:
+                    elif equip_type in ["腰带", "护臂", "鞋"]:
                         score = str(int(int(quailty)*1.26))
-                    elif equip_type in ["项链","腰坠","戒指"]:
+                    elif equip_type in ["项链", "腰坠", "戒指"]:
                         score = str(int(int(quailty)*0.9))
                     elif equip_type in ["投掷囊"]:
                         score = str(int(int(quailty)*1.08))
@@ -371,7 +378,8 @@ async def generater(map, mode, boss):
                 stars = "不适用"
                 quailty = "不适用"
                 score = "不适用"
-            tablecontent.append(template_drop.replace("$icon", icon).replace("$name", name).replace("$attrs", attrs).replace("$type", type_).replace("$stars", stars).replace("$quailty", quailty).replace("$score", score).replace("$fivestone", fivestone))
+            tablecontent.append(template_drop.replace("$icon", icon).replace("$name", name).replace("$attrs", attrs).replace(
+                "$type", type_).replace("$stars", stars).replace("$quailty", quailty).replace("$score", score).replace("$fivestone", fivestone))
         for i in weapons:
             name = i["Name"]
             icon = i["Icon"]["FileName"]
@@ -406,7 +414,8 @@ async def generater(map, mode, boss):
                 stars = "<p>不适用</p>"
             quailty = i["Quality"]
             score = str(int(int(quailty)*2.16))
-            tablecontent.append(template_drop.replace("$icon", icon).replace("$name", name).replace("$attrs", attrs).replace("$type", type_).replace("$stars", stars).replace("$quailty", quailty).replace("$score", score).replace("$fivestone", fivestone))
+            tablecontent.append(template_drop.replace("$icon", icon).replace("$name", name).replace("$attrs", attrs).replace(
+                "$type", type_).replace("$stars", stars).replace("$quailty", quailty).replace("$score", score).replace("$fivestone", fivestone))
         for i in others:
             type_ = "不适用"
             icon = i["Icon"]["FileName"]
@@ -416,13 +425,15 @@ async def generater(map, mode, boss):
             score = "不适用"
             quailty = "不适用"
             fivestone = "不适用"
-            tablecontent.append(template_drop.replace("$icon", icon).replace("$name", name).replace("$attrs", attrs).replace("$type", type_).replace("$stars", stars).replace("$quailty", quailty).replace("$score", score).replace("$fivestone", fivestone))
+            tablecontent.append(template_drop.replace("$icon", icon).replace("$name", name).replace("$attrs", attrs).replace(
+                "$type", type_).replace("$stars", stars).replace("$quailty", quailty).replace("$score", score).replace("$fivestone", fivestone))
         final_table = "\n".join(tablecontent)
         html = read(VIEWS + "/jx3/drop/drop.html")
         font = ASSETS + "/font/custom.ttf"
         saohua = await get_api(f"https://www.jx3api.com/data/saohua/random?token={token}")
         saohua = saohua["data"]["text"]
-        html = html.replace("$font", font).replace("$tablecontent", final_table).replace("$saohua", saohua).replace("$appinfo", f" · 掉落列表 · {mode}{zone} · {boss}")
+        html = html.replace("$font", font).replace("$tablecontent", final_table).replace(
+            "$saohua", saohua).replace("$appinfo", f" · 掉落列表 · {mode}{zone} · {boss}")
         final_html = CACHE + "/" + get_uuid() + ".html"
         write(final_html, html)
         final_path = await generate(final_html, False, "table", False)
@@ -445,6 +456,7 @@ unable_ = """
 available_ = """
 <img src="$imagepath", height="20",width="20"></img>
 """
+
 
 async def zone_v2(server, id):
     server = server_mapping(server)
@@ -492,14 +504,16 @@ async def zone_v2(server, id):
                 else:
                     images.append(available)
             image_content = "\n".join(images)
-            temp = template.replace("$zonename", map_name).replace("$zonemode", map_type).replace("$images", image_content)
+            temp = template.replace("$zonename", map_name).replace(
+                "$zonemode", map_type).replace("$images", image_content)
             contents.append(temp)
         content = "\n".join(contents)
         html = read(VIEWS + "/jx3/teamcd/teamcd.html")
         font = ASSETS + "/font/custom.ttf"
         saohua = await get_api(f"https://www.jx3api.com/data/saohua/random?token={token}")
         saohua = saohua["data"]["text"]
-        html = html.replace("$customfont", font).replace("$tablecontent", content).replace("$randomsaohua", saohua).replace("$appinfo", f" · 副本记录 · {server} · {id}")
+        html = html.replace("$customfont", font).replace("$tablecontent", content).replace(
+            "$randomsaohua", saohua).replace("$appinfo", f" · 副本记录 · {server} · {id}")
         final_html = CACHE + "/" + get_uuid() + ".html"
         write(final_html, html)
         final_path = await generate(final_html, False, "table", False)
@@ -515,6 +529,7 @@ template_item = """
     <td class="short-column">$relate</td>
 </tr>
 """
+
 
 async def get_item_record(server: str, name: str):
     server = server_mapping(server)
@@ -563,7 +578,7 @@ async def get_item_record(server: str, name: str):
         known_id.append(i["Nike"])
         id = i["Nike"]
         item_name = i["Droppedi"]
-        if i["Copyname"][0:2] in ["英雄","普通"]:
+        if i["Copyname"][0:2] in ["英雄", "普通"]:
             zone = "25人" + i["Copyname"]
         else:
             zone = i["Copyname"]
@@ -578,17 +593,19 @@ async def get_item_record(server: str, name: str):
         minutes = int((timedelta.total_seconds() - days*86400 - hours*3600) // 60)
         relateTime = f"{days}天{hours}时{minutes}分前"
         server = i["Srv"]
-        tablecontents.append(template_item.replace("$server", server).replace("$name", item_name).replace("$map", zone).replace("$id", id).replace("$time", timeGet).replace("$relate", relateTime))
+        tablecontents.append(template_item.replace("$server", server).replace("$name", item_name).replace(
+            "$map", zone).replace("$id", id).replace("$time", timeGet).replace("$relate", relateTime))
         num += 1
         if num == 30:
-            break # 不限？不限给你鲨了
+            break  # 不限？不限给你鲨了
     saohua = await get_api(f"https://www.jx3api.com/data/saohua/random?token={token}")
     saohua = saohua["data"]["text"]
-    appinfo_time = time.strftime("%H:%M:%S",time.localtime(time.time()))
+    appinfo_time = time.strftime("%H:%M:%S", time.localtime(time.time()))
     appinfo = f"掉落统计 · {server} · {name} · {appinfo_time}"
     final_table = "\n".join(tablecontents)
     html = read(VIEWS + "/jx3/item/item.html")
-    html = html.replace("$customfont", font).replace("$tablecontent", final_table).replace("$randomsaohua", saohua).replace("$appinfo", appinfo)
+    html = html.replace("$customfont", font).replace("$tablecontent", final_table).replace(
+        "$randomsaohua", saohua).replace("$appinfo", appinfo)
     final_html = CACHE + "/" + get_uuid() + ".html"
     write(final_html, html)
     final_path = await generate(final_html, False, "table", False)

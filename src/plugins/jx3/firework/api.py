@@ -2,6 +2,7 @@ from playwright.async_api import async_playwright
 
 from src.tools.dep import *
 
+
 def javascript(server, name):
     js = """
     // OA神的JavaScript代码 XD
@@ -12,9 +13,10 @@ def javascript(server, name):
     """
     return js.replace("$server", server).replace("$name", name)
 
+
 async def get_firework_data(server, name):
     async with async_playwright() as p:
-        browser = await p.chromium.launch(headless = True, slow_mo = 900)
+        browser = await p.chromium.launch(headless=True, slow_mo=900)
         context = await browser.new_context()
         page = await context.new_page()
         await page.goto("https://www.jx3pet.com/firework")
@@ -32,6 +34,7 @@ template = """
 </tr>
 """
 
+
 async def get_firework_image(server, name, group):
     server = server_mapping(server, group)
     logger.info(server)
@@ -45,15 +48,17 @@ async def get_firework_image(server, name, group):
     tablecontent = []
     data = data["data"]
     for i in range(len(data)):
-        tablecontent.append(template.replace("$count", str(i)).replace("$map", data[i]["map_name"]).replace("$sed", data[i]["sender"]).replace("$rec", data[i]["recipient"]).replace("$time", convert_time(data[i]["time"])).replace("$firework", data[i]["name"]))
+        tablecontent.append(template.replace("$count", str(i)).replace("$map", data[i]["map_name"]).replace("$sed", data[i]["sender"]).replace(
+            "$rec", data[i]["recipient"]).replace("$time", convert_time(data[i]["time"])).replace("$firework", data[i]["name"]))
     tablecontents = "\n".join(tablecontent)
     html = read(VIEWS + "/jx3/firework/firework.html")
     saohua = await get_api(f"https://www.jx3api.com/data/saohua/random?token={token}")
     saohua = saohua["data"]["text"]
-    appinfo_time = time.strftime("%H:%M:%S",time.localtime(time.time()))
+    appinfo_time = time.strftime("%H:%M:%S", time.localtime(time.time()))
     appinfo = f"烟花记录 · {server} · {name} · 当前时间：{appinfo_time}"
     font = ASSETS + "/font/custom.ttf"
-    html = html.replace("$customfont", font).replace("$appinfo", appinfo).replace("$tablecontent", tablecontents).replace("$randomsaohua", saohua)
+    html = html.replace("$customfont", font).replace("$appinfo", appinfo).replace(
+        "$tablecontent", tablecontents).replace("$randomsaohua", saohua)
     final_html = CACHE + "/" + get_uuid() + ".html"
     write(final_html, html)
     final_path = await generate(final_html, False, "table", False)

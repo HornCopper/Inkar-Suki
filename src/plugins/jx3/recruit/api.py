@@ -2,6 +2,7 @@ import time
 
 from src.tools.dep import *
 
+
 async def api_recruit(server: str, copy: str = ""):  # 团队招募 <服务器> [关键词]
     if token == None:
         return [PROMPT_NoToken]
@@ -22,10 +23,12 @@ async def api_recruit(server: str, copy: str = ""):  # 团队招募 <服务器> 
 
     return url
 
+
 def convert_time(timestamp: int):
     time_local = time.localtime(timestamp)
     dt = time.strftime("%H:%M:%S", time_local)
     return dt
+
 
 template = """
 <tr>
@@ -38,6 +41,7 @@ template = """
     <td class="short-column">$time</td>
 </tr>
 """
+
 
 async def recruit_v2(server: str, actvt: str = ""):
     if token == None:
@@ -63,13 +67,15 @@ async def recruit_v2(server: str, actvt: str = ""):
         count = str(detail["number"]) + "/" + str(detail["maxNumber"])
         content = detail["content"]
         create_time = convert_time(detail["createTime"])
-        new = template.replace("$sort", num).replace("$name", name).replace("$level", level).replace("$leader", leader).replace("$count", count).replace("$content", content).replace("$time", create_time)
+        new = template.replace("$sort", num).replace("$name", name).replace("$level", level).replace(
+            "$leader", leader).replace("$count", count).replace("$content", content).replace("$time", create_time)
         contents.append(new)
-    table ="\n".join(contents)
+    table = "\n".join(contents)
     html = read(VIEWS + "/jx3/recruit/recruit.html")
     saohua = await get_api(f"https://www.jx3api.com/data/saohua/random?token={token}")
     saohua = saohua["data"]["text"]
-    html = html.replace("$customfont", font).replace("$appinfo", appinfo).replace("$recruitcontent", table).replace("$randomsaohua", saohua)
+    html = html.replace("$customfont", font).replace("$appinfo", appinfo).replace(
+        "$recruitcontent", table).replace("$randomsaohua", saohua)
     final_html = CACHE + "/" + get_uuid() + ".html"
     write(final_html, html)
     final_path = await generate(final_html, False, "table", False)

@@ -92,6 +92,7 @@ async def get(platform_: str, song: str, singer: str = None):
                     return [song_name, id, platform]
             return "404"
 
+
 async def getLyricBelongToMusicInfo(lyric: str):
     data = await get_api(f"https://mobileservice.kugou.com/api/v3/lyric/search?keyword={lyric}")
     data = data["data"]["info"]

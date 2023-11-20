@@ -1,5 +1,6 @@
 from src.tools.dep import *
 
+
 async def getAdventure(adventure: str):
     # 数据来源@JX3BOX
     info = await get_api(f"https://helper.jx3box.com/api/achievement/search?keyword={adventure}&page=1&limit=15&client=std")

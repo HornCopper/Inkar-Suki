@@ -4,6 +4,7 @@ import re
 
 ikst = Config.inkarsuki_offical_apitoken
 
+
 def get_headers(application_type: str) -> dict:
     headers = {
         "token": ikst,
@@ -11,11 +12,12 @@ def get_headers(application_type: str) -> dict:
     }
     return headers
 
+
 async def get_url_with_token(app: str) -> dict:
     if ikst == "":
         raise KeyError("Unmatched the token to Inkar-Suki offical API.")
     api = "https://inkar-suki.codethink.cn/api"
-    data = await post_url(url = api, headers=get_headers(app))
+    data = await post_url(url=api, headers=get_headers(app))
     return json.loads(data)["url"]
 
 template = """
@@ -32,13 +34,15 @@ template = """
 bad = "<img src=\"https://jx3wbl.xoyocdn.com/img/icon-camp-bad.07567e9f.png\">"
 good = "<img src=\"https://jx3wbl.xoyocdn.com/img/icon-camp-good.0db444fe.png\">"
 
+
 async def get_dilu_data():
     url = await get_url_with_token("dilu")
     data = await get_api(url)
     table = []
     for i in data["data"]:
         if i["data"] == []:
-            table.append(re.sub(r"\$.+<", "暂无信息<", template.replace("$server", i["server"]).replace("$img", "")))
+            table.append(re.sub(r"\$.+<", "暂无信息<",
+                         template.replace("$server", i["server"]).replace("$img", "")))
         else:
             data_ = i["data"]
             server = i["server"]
@@ -52,8 +56,10 @@ async def get_dilu_data():
             bidder_camp = data_["auction_camp_name"]
             ci = good if capturer_camp == "浩气盟" else bad
             bi = good if bidder_camp == "浩气盟" else bad
-            price = data_["auction_amount"].replace("万金","万0金").replace("万", f"<img src=\"{brickl}\">").replace("金", f"<img src=\"{goldl}\">")
-            replace_string = [["$server", server], ["$flush", flush], ["$captured", capture], ["$sell", auction], ["$map", map], ["$capturer", capturer], ["$bi", bi], ["$ci", ci], ["$price", price], ["$auctioner", bidder], ["$bc", bidder_camp], ["$cc", capturer_camp]]
+            price = data_["auction_amount"].replace("万金", "万0金").replace(
+                "万", f"<img src=\"{brickl}\">").replace("金", f"<img src=\"{goldl}\">")
+            replace_string = [["$server", server], ["$flush", flush], ["$captured", capture], ["$sell", auction], ["$map", map], [
+                "$capturer", capturer], ["$bi", bi], ["$ci", ci], ["$price", price], ["$auctioner", bidder], ["$bc", bidder_camp], ["$cc", capturer_camp]]
             t = template
             for x in replace_string:
                 t = t.replace(x[0], x[1])
@@ -63,8 +69,9 @@ async def get_dilu_data():
     font = ASSETS + "/font/custom.ttf"
     saohua = await get_api(f"https://www.jx3api.com/data/saohua/random?token={token}")
     saohua = saohua["data"]["text"]
-    appinfo_time = time.strftime("%H:%M:%S",time.localtime(time.time()))
-    html = html.replace("$customfont", font).replace("$tablecontent", content).replace("$randomsaohua", saohua).replace("$appinfo", f"的卢统计 · {appinfo_time}")
+    appinfo_time = time.strftime("%H:%M:%S", time.localtime(time.time()))
+    html = html.replace("$customfont", font).replace("$tablecontent", content).replace(
+        "$randomsaohua", saohua).replace("$appinfo", f"的卢统计 · {appinfo_time}")
     final_html = CACHE + "/" + get_uuid() + ".html"
     write(final_html, html)
     final_path = await generate(final_html, False, "table", False)
