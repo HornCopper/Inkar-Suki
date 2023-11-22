@@ -46,20 +46,18 @@ async def get_dilu_data():
         else:
             data_ = i["data"]
             server = i["server"]
-            flush = convert_time(data_["refresh_time"])
-            capture = convert_time(data_["capture_time"])
-            auction = convert_time(data_["auction_time"])
+            flush = "尚未刷新" if data_["refresh_time"] == None else convert_time(data_["refresh_time"])
+            capture = "尚未捕捉" if data_["capture_time"] == None else convert_time(data_["capture_time"])
+            auction = "尚未竞拍" if data_["auction_time"] == None else convert_time(data_["auction_time"])
             map = data_["map_name"]
-            capturer = data_["capture_role_name"]
-            capturer_camp = data_["capture_camp_name"]
-            bidder = data_["auction_role_name"]
-            bidder_camp = data_["auction_camp_name"]
+            capturer = "尚未捕捉" if data_["capture_role_name"] == None else data_["capture_role_name"]
+            capturer_camp = "未知" if data_["capture_camp_name"] == None else data_["capture_camp_name"]
+            bidder = "尚未竞拍" if data_["auction_role_name"] == None else data_["auction_role_name"]
+            bidder_camp = "未知" if data_["auction_camp_name"] == None else data_["auction_camp_name"]
             ci = good if capturer_camp == "浩气盟" else bad
             bi = good if bidder_camp == "浩气盟" else bad
-            price = data_["auction_amount"].replace("万金", "万0金").replace(
-                "万", f"<img src=\"{brickl}\">").replace("金", f"<img src=\"{goldl}\">")
-            replace_string = [["$server", server], ["$flush", flush], ["$captured", capture], ["$sell", auction], ["$map", map], [
-                "$capturer", capturer], ["$bi", bi], ["$ci", ci], ["$price", price], ["$auctioner", bidder], ["$bc", bidder_camp], ["$cc", capturer_camp]]
+            price = "尚未竞拍" if data_["auction_amount"] == None else data_["auction_amount"].replace("万金","万0金").replace("万", f"<img src=\"{brickl}\">").replace("金", f"<img src=\"{goldl}\">")
+            replace_string = [["$server", server], ["$flush", flush], ["$captured", capture], ["$sell", auction], ["$map", map], ["$capturer", capturer], ["$bi", bi], ["$ci", ci], ["$price", price], ["$auctioner", bidder], ["$bc", bidder_camp], ["$cc", capturer_camp]]
             t = template
             for x in replace_string:
                 t = t.replace(x[0], x[1])
