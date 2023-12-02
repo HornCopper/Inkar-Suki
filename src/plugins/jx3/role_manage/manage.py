@@ -8,8 +8,8 @@ async def getPersonInfo(server: str, name: str, string: str = ""):
     if data["data"]["personId"] in [None, ""]:
         return False
     data = data["data"]
-    data["status"] == False
-    data["verify"] == string
+    data["status"] = False
+    data["verify"] = string
     return data
 
 async def check_sign(personid, special_string: str = "", localtion: bool = False):
