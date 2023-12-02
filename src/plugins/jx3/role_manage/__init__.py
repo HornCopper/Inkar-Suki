@@ -13,6 +13,7 @@ bind_role = on_command("jx3_bindrole", aliases={"绑定角色"}, priority=5)
 
 @bind_role.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
+    init_folder()
     arg = args.extract_plain_text().split(" ")
     if len(arg) != 2:
         await bind_role.finish(error_argument_count)
