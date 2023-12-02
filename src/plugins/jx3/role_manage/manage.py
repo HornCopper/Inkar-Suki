@@ -51,7 +51,7 @@ def init_folder():
         write(TOOLS + "/bindrole.json", "[]")
 
 def readData():
-    data = json.loads(TOOLS + "/bindrole.json")
+    data = json.loads(read(TOOLS + "/bindrole.json"))
     return data
 
 def checkWtrIn(server: str = "", name: str = "", user: str = ""):
