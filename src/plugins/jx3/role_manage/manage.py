@@ -117,8 +117,9 @@ def getData(server: str, name: str, user: str):
     data = readData()
     for i in data:
         if i["user_id"] == user:
-            if x["serverName"] == server and x["roleName"] == name:
-                return x
+            for x in i["roles"]:
+                if x["serverName"] == server and x["roleName"] == name:
+                    return x
     return False
 
 def getRoleList(user):
