@@ -12,7 +12,7 @@ async def getPersonInfo(server: str, name: str, string: str = ""):
     data["verify"] = string
     return data
 
-async def check_sign(personid, special_string: str = "", localtion: bool = False):
+async def check_sign(personid, special_string: str = "", location: bool = False):
     param = {
         "personId": personid,
         "ts": gen_ts()
@@ -40,7 +40,7 @@ async def check_sign(personid, special_string: str = "", localtion: bool = False
     data = await post_url("https://m.pvp.xoyo.com/user/home-page/basic", headers=headers, data=param)
     data = json.loads(data)
     if data["data"]["personInfo"]["signature"].find(special_string) != -1:
-        if localtion:
+        if location:
             return data["data"]["personInfo"]["ipLocation"]
         else:
             return True
