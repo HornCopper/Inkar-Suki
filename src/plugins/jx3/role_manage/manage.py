@@ -96,7 +96,7 @@ def passVerify(server: str, name: str, user: str):
         if i["user_id"] == user:
             for x in i["roles"]:
                 if x["serverName"] == server and x["roleName"] == name:
-                    x["status"] == True
+                    x["status"] = True
                     write(TOOLS + "/bindrole.json", json.dumps(data, ensure_ascii=False))
                     return 1 #成功
                 
