@@ -10,8 +10,6 @@ from nonebot.utils import escape_tag
 from pydantic import BaseModel, Extra, validator
 
 import json
-import nonebot
-import sys
 
 '''
 感谢友情提供代码@白师傅
