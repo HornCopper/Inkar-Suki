@@ -140,4 +140,4 @@ def createRecord(user):
     }
     data = readData()
     data.append(new)
-    write(TOOLS + "/bindrole.json", ensure_ascii=False)
+    write(TOOLS + "/bindrole.json", json.dumps(data, ensure_ascii=False))
