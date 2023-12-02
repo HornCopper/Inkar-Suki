@@ -1,6 +1,7 @@
 from src.tools.dep import *
 
 async def getPersonInfo(server: str, name: str, string: str = ""):
+    init_folder()
     url = f"https://www.jx3api.com/data/role/detailed?token={token}&server={server}&name={name}"
     data = await get_api(url)
     if data["code"] != 200:
