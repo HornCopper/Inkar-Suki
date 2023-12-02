@@ -132,3 +132,12 @@ def getRoleList(user):
                 role.append(x["serverName"] + "|" + x["roleName"] + "|" + "已验证" if x["status"] else "未验证")
             return role
     return -1
+    
+def createRecord(user):
+    new = {
+        "user_id": user,
+        "roles": []
+    }
+    data = readData()
+    data.append(new)
+    write(TOOLS + "/bindrole.json", ensure_ascii=False)

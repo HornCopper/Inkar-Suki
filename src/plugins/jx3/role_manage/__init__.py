@@ -19,10 +19,13 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
         await bind_role.finish(error_argument_count)
     srv = arg[0]
     id = arg[1]
+    print(1)
     if checkWtrIn(srv, id, str(event.user_id)):
         await bind_role.finish(error_already_binded)
     else:
         uuid = get_uuid()
+        if getRoleList(str(event.user_id)) == -1:
+            createRecord(str(event.user_id))
         sts = await addRole(srv, id, str(event.user_id), uuid)
         if sts == 1:
             await bind_role.finish(f"({srv})[{id}]绑定成功！\n请将该角色推栏账号的签名改为以下内容：\n{uuid}\n“验证角色”通过后即可改回来哦~")
