@@ -69,7 +69,6 @@ async def addRole(server: str = "", name: str = "", user: str = "", string: str 
     role_data = await getPersonInfo(server, name, string)
     if role_data == False:
         return 0 #未找到角色
-    role_data = role_data["data"]
     data = readData()
     for i in data:
         if i["user_id"] == user:
