@@ -8,6 +8,13 @@ from src.tools.dep import *
 
 
 def check_pkgs():
+    db = filebase_database.Database('pip_update')
+    last = DateTime(db.value.get('update'))
+    db.value['update'] = DateTime().tostring()
+    db.save()
+    if (DateTime() - last).total_seconds() < 86400 * 30:
+        # 每月最多更新一次
+        return
     os.system('pip install -r requirements.txt --upgrade')
 
 
