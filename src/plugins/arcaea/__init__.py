@@ -1,3 +1,4 @@
+from src.tools.dep import *
 from src.tools.file import read, write  # 导入文件操作函数，来自src/tools/file.py
 from src.tools.utils import checknumber  # 导入检测是否为数字的函数，来自src/tools/utils.py
 from .arcaea import getUserBestBySongName, getUserInfo, judgeWhetherPlayer, getUserCode
@@ -8,9 +9,6 @@ from nonebot import on_command  # on_command响应器
 from nonebot.adapters import Message
 from nonebot.adapters.onebot.v11 import GroupMessageEvent  # 只处理群消息事件，因为数据要从群内的数据中获取，所以不处理私聊。
 from nonebot.params import CommandArg
-
-TOOLS = nonebot.get_driver().config.tools_path  # 获取工具包路径
-DATA = TOOLS[:-5] + "data"  # 拼接数据路径
 
 
 arcaea_userinfo = on_command("arcuser", priority=5)

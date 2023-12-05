@@ -24,16 +24,17 @@ async def send_with_async(method: str, url: str, proxy: dict = None, **kwargs) -
         client = httpx.AsyncClient(proxies=proxy, follow_redirects=True, verify=False)
 
     max_try_time = 3
+    current_try_time = 0
     while True:
         try:
             req = await client.request(method, url, **kwargs)
             req.encoding = 'utf-8'
             return req
         except httpx.TimeoutException as ex:
-            max_try_time -= 1
-            if max_try_time > 0:
+            current_try_time += 1
+            if max_try_time < current_try_time:
                 continue
-            msg = f"max_try_time(count={max_try_time}) exceeded to request in httpx({method} -> {url}):[{type(ex).__name__}]{ex}"
+            msg = f"max_try_time(count={current_try_time}) exceeded to request in httpx({method} -> {url}):[{type(ex).__name__}]{ex}"
             logger.error(msg)
             return None
         except Exception as ex:

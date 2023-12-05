@@ -2,7 +2,8 @@ from src.tools.dep import *
 from src.plugins.help import css
 from src.tools.generate import generate, get_uuid
 
-lks = on_command("jx3_leader", aliases={"烂柯山","关隘","关隘首领"}, priority=5)
+lks = on_command("jx3_leader", aliases={"烂柯山", "关隘", "关隘首领"}, priority=5)
+
 
 @lks.handle()
 async def _(event: GroupMessageEvent):

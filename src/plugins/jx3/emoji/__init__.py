@@ -4,6 +4,7 @@ from src.tools.dep import *
 
 rdemoji = on_command("jx3_emoji", aliases={"随机表情"}, priority=5)
 
+
 @rdemoji.handle()
 async def _(event: GroupMessageEvent):
     api = "https://cms.jx3box.com/api/cms/post/emotions?type=&search=&star=&original=&page=1&per=50"

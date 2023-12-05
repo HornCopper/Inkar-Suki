@@ -1,3 +1,4 @@
+from src.tools.dep import *
 from src.tools.utils import get_url
 import nonebot
 import sys
@@ -5,10 +6,6 @@ import sys
 from datetime import datetime
 from bs4 import BeautifulSoup
 from random import randint
-
-TOOLS = nonebot.get_driver().config.tools_path
-sys.path.append(TOOLS)
-ASSETS = TOOLS[:-5] + "assets"
 
 
 async def get_tieba(thread: int):

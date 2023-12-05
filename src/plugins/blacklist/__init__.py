@@ -1,3 +1,4 @@
+from src.tools.dep import *
 from src.tools.config import Config
 from src.tools.utils import nodetemp
 from src.tools.permission import checker
@@ -10,9 +11,6 @@ from nonebot import on_command
 from nonebot.adapters import Message
 from nonebot.adapters.onebot.v11 import Bot, Event, GroupMessageEvent
 from nonebot.params import CommandArg
-
-TOOLS = nonebot.get_driver().config.tools_path
-DATA = TOOLS[:-5] + "data"
 
 
 block = on_command("block", aliases={"加黑", "避雷"}, priority=5)  # 综合避雷名单-添加

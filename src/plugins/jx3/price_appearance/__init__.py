@@ -2,6 +2,7 @@ from .api import *
 
 item_price = on_command("jx3_price", aliases={"物价"}, priority=5)
 
+
 @item_price.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     """

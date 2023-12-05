@@ -1,3 +1,4 @@
+from src.tools.dep import *
 from src.tools.file import read, write
 import random
 import json
@@ -8,10 +9,6 @@ import datetime
 
 from nonebot.adapters.onebot.v11 import MessageSegment as ms
 from nonebot.adapters.onebot.v11 import MessageSegment as ms
-
-TOOLS = nonebot.get_driver().config.tools_path
-sys.path.append(str(TOOLS))
-CLOCK = TOOLS[:-5] + "clock"
 
 
 class SignInRecord:

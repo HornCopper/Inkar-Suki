@@ -2,6 +2,7 @@ from .api import *
 
 skill = on_command("jx3_skill", aliases={"技能"}, priority=5)
 
+
 @skill.handle()
 async def _(args: Message = CommandArg()):
     '''
@@ -21,6 +22,7 @@ async def _(args: Message = CommandArg()):
     await skill.finish(msg)
 
 _talent = on_command("jx3_talent", aliases={"奇穴"}, priority=5)
+
 
 @_talent.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
@@ -80,6 +82,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
 
 macro_ = on_command("jx3_macro_v2", aliases={"宏v2"}, priority=5)
 
+
 @macro_.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     xf = args.extract_plain_text()
@@ -90,6 +93,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     await macro_.finish(data)
 
 macro_v1 = on_command("jx3_macro", aliases={"宏"}, priority=5)
+
 
 @macro_v1.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):

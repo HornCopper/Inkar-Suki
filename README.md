@@ -1,4 +1,5 @@
 <div align="center">
+  <img width="256" src="https://inkar-suki.codethink.cn/Inkar-Suki-Docs/img/Logo.jpg" alt="logo">
 
 # [Inkar Suki](https://www.inkar-suki.xyz)
 
@@ -40,8 +41,8 @@ _基于Nonebot 2的多功能的群聊机器人_
 
 # 赞助
 
-<img src="https://inkar-suki.codethink.cn/assets/img/wechat_donate.png" height="500" alt="支付宝收款码">
-<img src="https://inkar-suki.codethink.cn/assets/img/alipay_donate.png" height="500" alt="微信收款码">
+<img src="https://inkar-suki.codethink.cn/Inkar-Suki-Docs/img/wechat_donate.png" height="500" alt="支付宝收款码">
+<img src="https://inkar-suki.codethink.cn/Inkar-Suki-Docs/img/alipay_donate.png" height="500" alt="微信收款码">
 
 # 友情链接
 - [Nonebot 2](https://v2.nonebot.dev/) - 跨平台 Python 异步机器人框架；

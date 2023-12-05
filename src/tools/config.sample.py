@@ -45,7 +45,7 @@ class Config:
     auatok = ""  # Arcaea Unlimited API Token
     # 以上两者都请进群：“574250621”
 
-    inkarsuki_offical_apitoken = '' # 音卡官方api_token，一些隐藏api需要使用该token
+    inkarsuki_offical_apitoken = ''  # 音卡官方api_token，一些隐藏api需要使用该token
 
     jx3api_wslink = ""  # JX3API WebSocket地址
 
@@ -66,4 +66,4 @@ class Config:
 
     jx3api_link = ""  # JX3API API链接
 
-    notice_to = [""] # 机器人的部分日志将发送到这些群聊，每个元素类型为`str`
+    notice_to = [""]  # 机器人的部分日志将发送到这些群聊，每个元素类型为`str`

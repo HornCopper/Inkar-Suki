@@ -122,10 +122,11 @@ class FavoritestGoodsPriceRefreshThread(threading.Thread):
     """
 
     def __init__(self) -> None:
+        self.id = DateTime().getTime()
         super().__init__(daemon=True)
 
     def run(self) -> None:
-        logger.debug("refresh_favoritest_goods_current_price start")
+        logger.debug(f"{self.getName()}refresh_favoritest_goods_current_price start")
         all_servers = distinct(server_map.values())
         tasks = []
         goods = get_favoritest_by_top(20)
@@ -144,18 +145,18 @@ class FavoritestGoodsPriceRefreshThread(threading.Thread):
             time.sleep(0.5+random.random())  # 每1秒添加1个任务直到运行完成
         for x in result:
             x.result()
-        logger.debug("refresh_favoritest_goods_current_price complete")
+        logger.debug(f"{self.getName()}refresh_favoritest_goods_current_price complete")
         return super().run()
-
-
-thread_fav_prices_refresher: FavoritestGoodsPriceRefreshThread = None
-
+    def getName(self) -> str:
+        parent = super().getName()
+        return f"{parent}_{self.id}" 
 
 async def refresh_favoritest_goods_current_price():
-    global thread_fav_prices_refresher
-    if thread_fav_prices_refresher is None or not thread_fav_prices_refresher.is_alive():
-        thread_fav_prices_refresher = FavoritestGoodsPriceRefreshThread()
-        thread_fav_prices_refresher.start()
+    '''
+    开启一个新的采集线程
+    '''
+    thread_fav_prices_refresher = FavoritestGoodsPriceRefreshThread()
+    thread_fav_prices_refresher.start()
 
 scheduler.add_job(func=refresh_favoritest_goods_current_price,
                   trigger=IntervalTrigger(minutes=60), misfire_grace_time=300)

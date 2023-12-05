@@ -1,6 +1,8 @@
 from .api import *
 
 firework = on_command("jx3_firework_v2", aliases={"烟花v2"}, priority=5)
+
+
 @firework.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     arg = args.extract_plain_text().split(" ")

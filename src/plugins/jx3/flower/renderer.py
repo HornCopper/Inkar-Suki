@@ -1,5 +1,6 @@
 from src.tools.dep import *
 
+
 async def renderer(server: str, arg_map: str, arg_species: str, data: list) -> str:
     args = {
         "data": data,
