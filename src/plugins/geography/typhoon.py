@@ -4,6 +4,7 @@ from bs4 import BeautifulSoup as bs
 
 from src.tools.dep import *
 
+
 async def get_typhoon_list():
     api = "http://typhoon.nmc.cn/weatherservice/typhoon/jsons/list_default"
     typhoon_list = []
@@ -12,6 +13,7 @@ async def get_typhoon_list():
         if "start" in i:
             typhoon_list.append(i[2])
     return typhoon_list if len(typhoon_list) != 0 else False
+
 
 async def get_typhoon_path(name):
     api = "http://nmc.cn/publish/typhoon/probability.html"
@@ -37,18 +39,21 @@ async def get_typhoon_path(name):
     img = imgblock_bs.div.img["src"]
     return img
 
+
 async def get_typhoon_news():
     api = "http://www.nmc.cn/dataservice/typhoon/news.json"
     data = await get_api(api)
     msg = ""
     for i in data["data"]["list"]:
-        if i["label"] not in ["","风圈半径"]:
+        if i["label"] not in ["", "风圈半径"]:
             info = i["label"] + "：" + i["text"] + "\n"
             msg += info
         if i["label"] == "风圈半径":
-            round = "风圈半径：\n" + re.sub(r" +", "\n", re.sub(r"：+", "：", re.sub(r"半径 +", "半径：", i["text"]).replace("\u3000","："))).replace("；","；\n") + "\n"
+            round = "风圈半径：\n" + re.sub(r" +", "\n", re.sub(r"：+", "：", re.sub(r"半径 +",
+                                       "半径：", i["text"]).replace("\u3000", "："))).replace("；", "；\n") + "\n"
             msg += round
     return msg
+
 
 async def fy4a_true_color():
     api = "http://nmc.cn/publish/satellite/FY4A-true-color.htm"

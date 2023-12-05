@@ -4,6 +4,7 @@ from .api import *
 
 adventure_ = on_command("jx3_adventure", aliases={"成就"}, priority=5)
 
+
 @adventure_.handle()
 async def _(state: T_State, args: Message = CommandArg()):
     """
@@ -39,6 +40,7 @@ async def _(state: T_State, args: Message = CommandArg()):
         await adventure_.send(msg)
         return
 
+
 @adventure_.got("num", prompt="发送序号以搜索，发送其他内容则取消搜索。")
 async def _(state: T_State, num: Message = Arg()):
     num = num.extract_plain_text()
@@ -58,6 +60,7 @@ async def _(state: T_State, num: Message = Arg()):
         await adventure_.finish("唔……输入的不是数字哦，取消搜索。")
 
 achievements = on_command("jx3_machi", aliases={"进度"}, priority=5)
+
 
 @achievements.handle()
 async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
@@ -88,6 +91,7 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
 
 achievement_v2 = on_command("jx3_achievement_v2", aliases={"进度v2"}, priority=5)
 
+
 @achievement_v2.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     achievement = args.extract_plain_text().split(" ")
@@ -109,10 +113,11 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
 
 zone_achievement = on_command("jx3_zoneachi", aliases={"团本成就"}, priority=5)
 
+
 @zone_achievement.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     arg = args.extract_plain_text().split(" ")
-    if len(arg) not in [2,3,4]:
+    if len(arg) not in [2, 3, 4]:
         await zone_achievement.finish(PROMPT_ArgumentInvalid)
     group = str(event.group_id)
     if len(arg) == 2:

@@ -1,3 +1,4 @@
+from src.tools.dep import *
 from .parse import main
 from src.tools.config import Config
 from src.tools.file import read
@@ -15,10 +16,6 @@ from nonebot.adapters.onebot.v11 import Bot, GroupMessageEvent
 from nonebot.adapters.onebot.v11 import MessageSegment as ms
 from nonebot.log import logger
 from nonebot.params import CommandArg
-
-TOOLS = nonebot.get_driver().config.tools_path
-DATA = TOOLS[:-5] + "data"
-sys.path.append(str(TOOLS))
 
 
 def already(reponame: str, group) -> bool:

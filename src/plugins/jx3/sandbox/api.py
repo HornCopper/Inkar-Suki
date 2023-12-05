@@ -1,5 +1,6 @@
 from src.tools.dep import *
 
+
 async def sandbox_(server: str = None, group_id: str = None):  # 沙盘 <服务器>
     server = server_mapping(server, group_id=group_id)
     if not server:

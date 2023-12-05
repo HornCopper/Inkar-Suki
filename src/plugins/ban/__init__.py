@@ -1,3 +1,4 @@
+from src.tools.dep import *
 from src.tools.config import Config
 from src.tools.utils import checknumber
 from src.tools.file import read, write
@@ -11,9 +12,6 @@ from nonebot.adapters import Message
 from nonebot.adapters.onebot.v11 import Event, Bot
 from nonebot.matcher import Matcher
 from nonebot.params import CommandArg
-
-TOOLS = nonebot.get_driver().config.tools_path
-DATA = TOOLS[:-7] + "data"
 
 
 def in_it(qq: str):

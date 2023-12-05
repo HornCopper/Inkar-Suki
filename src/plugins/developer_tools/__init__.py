@@ -1,3 +1,4 @@
+from src.tools.dep import *
 from .example import *
 from src.tools.local_version import nbv
 from src.tools.generate import *
@@ -19,9 +20,6 @@ from nonebot.typing import T_State
 from typing import List
 from pathlib import Path
 from functools import reduce
-
-TOOLS = nonebot.get_driver().config.tools_path
-CACHE = TOOLS[:-5] + "cache"
 
 
 purge = on_command("purge", priority=5)  # 清除所有`help`生成的缓存图片
@@ -184,7 +182,7 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
         await web.finish("获取图片成功！\n"
                          + ms.image(Path(image).as_uri()))
 
-apply = on_command("apply", aliases={"-申请","领养"}, priority=5)  # 申请使用机器人的命令，`repo`地址来源于`config.py`。
+apply = on_command("apply", aliases={"-申请", "领养"}, priority=5)  # 申请使用机器人的命令，`repo`地址来源于`config.py`。
 
 
 @apply.handle()

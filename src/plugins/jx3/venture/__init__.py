@@ -106,8 +106,9 @@ async def jx3_preposition(event: GroupMessageEvent, args: Message = CommandArg()
         await preposition.finish("唔……没有找到相关信息~")
     else:
         await preposition.finish(ms.image(data) + "\n数据来自隐元秘鉴，请在合理范围内使用本图片。")
-    
-recipe = on_command("jx3_recipe", aliases = {"攻略"}, priority = 5)
+
+recipe = on_command("jx3_recipe", aliases={"攻略"}, priority=5)
+
 
 @recipe.handle()
 async def jx3_serendipity_recipe(event: GroupMessageEvent, args: Message = CommandArg()):

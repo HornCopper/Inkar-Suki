@@ -4,6 +4,7 @@ from .monster import *
 
 zones = on_command("jx3_zones_v1", aliases={"副本v1"}, priority=5)
 
+
 @zones.handle()
 async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
     """
@@ -31,6 +32,7 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
 
 zonesv2 = on_command("jx3_zones", aliases={"副本"}, priority=5)
 
+
 @zonesv2.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     group_server = getGroupServer(str(event.group_id))
@@ -53,6 +55,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
 
 drops = on_command("jx3_drops", aliases={"掉落列表"}, priority=5)
 
+
 @drops.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     arg = args.extract_plain_text().split(" ")
@@ -70,6 +73,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
         await drops.finish(data[0])
 
 item = on_command("jx3_itemdrop", aliases={"掉落"}, priority=5)
+
 
 @item.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
@@ -92,6 +96,8 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
         await item.finish(ms.image(data))
 
 monsters = on_command("jx3_monsters_v2", aliases={"百战"}, priority=5)
+
+
 @monsters.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     img = await get_monsters_map()
