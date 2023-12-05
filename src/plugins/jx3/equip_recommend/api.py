@@ -40,7 +40,7 @@ async def get_recommended_equips_list(forceId: str, condition):
         "EquipTags": condition,
         "Size": 10,
         "cursor": 0,
-        "matchSeasonId": "644a3378ba3129001872bdd2",
+        "matchSeasonId": "653a2852de993800140a41f8",
         "ts": gen_ts()
     }
     param = format_body(param)
