@@ -1,5 +1,5 @@
 from .api import *
-from .xuanjing import *
+from .cd import *
 from .monster import *
 
 zones = on_command("jx3_zones_v1", aliases={"副本v1"}, priority=5)
