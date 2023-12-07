@@ -125,8 +125,7 @@ class FavoritestGoodsPriceRefreshThread(threading.Thread):
         self.id = DateTime().getTime()
         super().__init__(daemon=True)
 
-    def run(self) -> None:
-        logger.debug(f"{self.getName()}refresh_favoritest_goods_current_price start")
+    async def run_single(self):
         all_servers = distinct(server_map.values())
         tasks = []
         goods = get_favoritest_by_top(20)
@@ -142,14 +141,20 @@ class FavoritestGoodsPriceRefreshThread(threading.Thread):
             x = tasks.pop()
             r = pool.submit(run_single, x[0], x[1])
             result.append(r)
-            time.sleep(0.5+random.random())  # 每1秒添加1个任务直到运行完成
+            await asyncio.sleep(0.5+random.random())  # 每1秒添加1个任务直到运行完成
         for x in result:
             x.result()
+
+    def run(self) -> None:
+        logger.debug(f"{self.getName()}refresh_favoritest_goods_current_price start")
+        asyncio.run(self.run_single())
         logger.debug(f"{self.getName()}refresh_favoritest_goods_current_price complete")
         return super().run()
+
     def getName(self) -> str:
         parent = super().getName()
-        return f"{parent}_{self.id}" 
+        return f"{parent}_{self.id}"
+
 
 async def refresh_favoritest_goods_current_price():
     '''
