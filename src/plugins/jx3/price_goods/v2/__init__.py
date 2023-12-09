@@ -90,3 +90,16 @@ async def price_num_selected2(state: T_State, event: GroupMessageEvent, user_sel
     goods_price_current_detail = await get_goods_current_detail_price(target_id, server)
     result = await render_detail_item(server, good_info, goods_price_current_detail, logs)
     return await jx3_cmd_trade2.send(ms.image(Path(result).as_uri()))
+
+
+jx3_cmd_trade2_refresh_job = on_command("jx3_cmd_trade2_refresh_job", aliases={"更新热门"}, priority=5)
+
+
+@jx3_cmd_trade2_refresh_job.handle()
+def jx3_trade2_refresh_job(event: GroupMessageEvent):
+    permit, p_level, p_msg = permission_judge(event.user_id, 10, '刷新交易行热门')
+    if not permit:
+        return jx3_cmd_trade2_refresh_job.finish(p_msg)
+    t = refresh_favoritest_goods_current_price()
+    jx3_cmd_trade2_refresh_job.send(f'已开始新的任务:{t.id}')
+    

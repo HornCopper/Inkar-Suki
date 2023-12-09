@@ -162,6 +162,7 @@ def refresh_favoritest_goods_current_price():
     '''
     thread_fav_prices_refresher = FavoritestGoodsPriceRefreshThread()
     thread_fav_prices_refresher.start()
+    return thread_fav_prices_refresher
 
 scheduler.add_job(func=refresh_favoritest_goods_current_price,
                   trigger=IntervalTrigger(minutes=60), misfire_grace_time=300)
@@ -178,6 +179,7 @@ def refresh_goods_popularity():
         g.u_popularity *= 0.995  # 每次降低5‰
     flush_CACHE_Goods()
     logger.debug(f"completed refresh_goods_popularity count:{len(goods)}")
+
 
 scheduler.add_job(func=refresh_goods_popularity,
                   trigger=IntervalTrigger(minutes=60), misfire_grace_time=300)
