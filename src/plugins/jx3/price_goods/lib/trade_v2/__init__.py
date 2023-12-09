@@ -156,7 +156,7 @@ class FavoritestGoodsPriceRefreshThread(threading.Thread):
         return f"{parent}_{self.id}"
 
 
-async def refresh_favoritest_goods_current_price():
+def refresh_favoritest_goods_current_price():
     '''
     开启一个新的采集线程
     '''
@@ -167,7 +167,7 @@ scheduler.add_job(func=refresh_favoritest_goods_current_price,
                   trigger=IntervalTrigger(minutes=60), misfire_grace_time=300)
 
 
-async def refresh_goods_popularity():
+def refresh_goods_popularity():
     """
     降低商品人气
     """
