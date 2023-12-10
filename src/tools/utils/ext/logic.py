@@ -3,7 +3,7 @@ import functools
 from sgtpyutils.logger import logger
 
 
-def use_log(template: callable = lambda func, args, result: f'{func} call complete with result:{result}'):
+def use_log(template: callable = lambda func, args, result: f'{func} call [{args}] complete with result:{result}'):
     def decorator(func: callable):
         @functools.wraps(func)
         def wrapper(*args, **kwargs):
