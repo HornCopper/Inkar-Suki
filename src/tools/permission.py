@@ -1,3 +1,4 @@
+from src.tools.file import read
 import json
 from src.tools.utils import *
 from src.tools.dep.bot.path import *
@@ -14,26 +15,54 @@ def judge(qqnumber):
         return True
 
 
-def checker(qqnumber: str, score: int) -> bool:
-    x = permission_judge(qqnumber, score)
-    return x[0]
+class PermissionResult:
+    success: bool
+    user_level: int
+    description: str
 
-@ext.use_log()
+    def __init__(self, success: bool, user_level: int, description: str) -> None:
+        self.success = success
+        self.user_level = user_level
+        self.description = description
+
+
+class Permission:
+    # TODO 使用sql
+    # TODO 记录授权日志
+    # TODO 按permission.types功能点授权
+    # TODO use AOP to auto-reply by judgement.
+    def __init__(self, user_id: str) -> None:
+        self.user_id = str(user_id)
+        self.u_level = self.init_permission()
+
+    def init_permission(self) -> int:
+        file = read(TOOLS+"/permission.json", mode="r")
+        self.permissions = json.loads(file)
+        if self.user_id not in self.permissions:
+            return None
+        return int(self.permissions[self.user_id])
+
+    @ext.use_log()
+    def judge(self, score: int, action: str = '该操作') -> PermissionResult:
+        if not isinstance(score, int):
+            score = int(score)
+        u_level = self.u_level
+        prefix = f'唔……{action}需要授权,但你'
+        if not self.valid:
+            return PermissionResult(False, None, f'{prefix}没有任何授权哦~')
+        if u_level < score:
+            return PermissionResult(False, u_level, f'{prefix}的权限只有{u_level}级，要求{score}级~')
+        return PermissionResult(True, u_level, None)
+
+
+def checker(qqnumber: str, score: int) -> bool:
+    x = Permission(qqnumber).judge(score)
+    return x.success
+
+
 def permission_judge(qqnumber: str, score: int, action: str = '该操作') -> tuple[bool, int, str]:
-    file = open(TOOLS+"/permission.json", mode="r")
-    json_ = json.loads(file.read())
-    file.close()
-    if not isinstance(qqnumber, str):
-        qqnumber = str(qqnumber)
-    if not isinstance(score, int):
-        score = int(score)
-    prefix = f'唔……{action}需要授权,但你'
-    if qqnumber not in json_:
-        return (False, None, f'{prefix}没有任何授权哦~')
-    u_level = int(json_[qqnumber])
-    if u_level < score:
-        return (False, u_level, f'{prefix}的权限只有{u_level}级，要求{score}级~')
-    return (True, u_level, None)
+    x = Permission(qqnumber).judge(score, action)
+    return (x.success, x.user_level, x.description)
 
 
 def error(score):
