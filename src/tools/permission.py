@@ -48,7 +48,7 @@ class Permission:
             score = int(score)
         u_level = self.u_level
         prefix = f'唔……{action}需要授权,但你'
-        if not self.valid:
+        if u_level is None:
             return PermissionResult(False, None, f'{prefix}没有任何授权哦~')
         if u_level < score:
             return PermissionResult(False, u_level, f'{prefix}的权限只有{u_level}级，要求{score}级~')
