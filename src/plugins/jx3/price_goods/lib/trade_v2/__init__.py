@@ -123,9 +123,11 @@ class FavoritestGoodsPriceRefreshThread(threading.Thread):
 
     def __init__(self) -> None:
         self.id = DateTime().getTime()
+        self.__running = False
+        self.running = True
         super().__init__(daemon=True)
 
-    async def run_single(self):
+    def run_single(self):
         all_servers = distinct(server_map.values())
         tasks = []
         goods = get_favoritest_by_top(20)
@@ -141,14 +143,31 @@ class FavoritestGoodsPriceRefreshThread(threading.Thread):
             x = tasks.pop()
             r = pool.submit(run_single, x[0], x[1])
             result.append(r)
-            await asyncio.sleep(0.5+random.random())  # 每1秒添加1个任务直到运行完成
+            time.sleep(0.5+random.random())  # 每1秒添加1个任务直到运行完成
         for x in result:
             x.result()
 
+    @property
+    def running(self):
+        return self.__running
+
+    @running.setter
+    def running(self, v: bool):
+        if v == self.__running:
+            return
+        self.__running = v
+        if not v:
+            return
+        self.transition_id = f'{self.__class__.name}{DateTime()}'
+
     def run(self) -> None:
-        logger.debug(f"{self.getName()}refresh_favoritest_goods_current_price start")
-        asyncio.run(self.run_single())
-        logger.debug(f"{self.getName()}refresh_favoritest_goods_current_price complete")
+        while True:
+            if not self.running:
+                continue
+            logger.debug(f"{self.getName()}refresh_favoritest_goods_current_price start")
+            self.run_single()
+            logger.debug(f"{self.getName()}refresh_favoritest_goods_current_price complete")
+            self.running = False
         return super().run()
 
     def getName(self) -> str:
@@ -156,13 +175,16 @@ class FavoritestGoodsPriceRefreshThread(threading.Thread):
         return f"{parent}_{self.id}"
 
 
+thread_fav_prices_refresher = FavoritestGoodsPriceRefreshThread()
+
+
 def refresh_favoritest_goods_current_price():
     '''
     开启一个新的采集线程
     '''
-    thread_fav_prices_refresher = FavoritestGoodsPriceRefreshThread()
-    thread_fav_prices_refresher.start()
-    return thread_fav_prices_refresher
+    thread_fav_prices_refresher.running = True
+    return thread_fav_prices_refresher.transition_id
+
 
 scheduler.add_job(func=refresh_favoritest_goods_current_price,
                   trigger=IntervalTrigger(minutes=60), misfire_grace_time=300)
