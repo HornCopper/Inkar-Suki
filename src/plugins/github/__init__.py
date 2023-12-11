@@ -54,8 +54,10 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
     """
     personal_data = await bot.call_api("get_group_member_info", group_id=event.group_id, user_id=event.user_id, no_cache=True)
     group_admin = personal_data["role"] in ["owner", "admin"]
-    if not group_admin and checker(str(event.user_id), 9) == False:
-        await unbind.finish(error(9))
+    if not group_admin:
+        x = Permission(event.user_id).judge(5, '添加群聊响应的wenhook')
+        if not x.success:
+            return await webhook.finish(x.description)
     repo_name = args.extract_plain_text()
     status_code = await get_status("https://github.com/" + repo_name)
     if status_code != 200:
@@ -84,8 +86,11 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
     """
     personal_data = await bot.call_api("get_group_member_info", group_id=event.group_id, user_id=event.user_id, no_cache=True)
     group_admin = personal_data["role"] in ["owner", "admin"]
-    if not group_admin and checker(str(event.user_id), 9) == False:
-        await unbind.finish(error(9))
+    if not group_admin:
+        
+        x = Permission(event.user_id).judge(9, '解封用户')
+        if not x.success:
+            return await unbind.finish(x.description)
     repo = args.extract_plain_text()
     group = str(event.group_id)
     if already(repo, group) == False:

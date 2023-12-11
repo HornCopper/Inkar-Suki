@@ -32,9 +32,10 @@ async def _(bot: Bot, event: Event, args: Message = CommandArg()):
         await ban.send("不能封禁机器人主人，这么玩就不好了，所以我先把你ban了QwQ")
         sb = str(event.user_id)
         self_protection = True
-    if checker(str(event.user_id), 10) == False:
+    x = Permission(event.user_id).judge(10, '拉黑用户')
+    if not x.success:
         if self_protection == False:
-            await ban.finish(error(10))
+            return await ban.finish(x.description)
     if sb == False:
         await ban.finish("您输入了什么？")
     if checknumber(sb) == False:
@@ -58,8 +59,9 @@ unban = on_command("unban", priority=5)  # 解封
 
 @unban.handle()
 async def _(bot: Bot, event: Event, args: Message = CommandArg()):
-    if checker(str(event.user_id), 10) == False:
-        await ban.finish(error(10))
+    x = Permission(event.user_id).judge(10, '解除拉黑用户')
+    if not x.success:
+        return await ban.finish(x.description)
     sb = args.extract_plain_text()
     if checknumber(sb) == False:
         await ban.finish("不能全域封禁不是纯数字的QQ哦~")
@@ -82,7 +84,6 @@ banned = on_message(priority=2, block=False)  # 封禁阻断器
 @banned.handle()
 async def _(matcher: Matcher, event: Event):
     info = json.loads(read(TOOLS + "/ban.json"))
-    if str(event.user_id) in info and checker(str(event.user_id), 10) == False:
+    if str(event.user_id) in info:
         matcher.stop_propagation()
-    else:
-        pass
+    

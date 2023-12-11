@@ -97,8 +97,8 @@ jx3_cmd_trade2_refresh_job = on_command("jx3_cmd_trade2_refresh_job", aliases={"
 
 @jx3_cmd_trade2_refresh_job.handle()
 async def jx3_trade2_refresh_job(event: GroupMessageEvent):
-    permit, p_level, p_msg = permission_judge(event.user_id, 10, '刷新交易行热门')
-    if not permit:
-        return await jx3_cmd_trade2_refresh_job.finish(p_msg)
+    permit = Permission(event.user_id).judge(10, '刷新交易行热门')
+    if not permit.success:
+        return await jx3_cmd_trade2_refresh_job.finish(permit.description)
     t = refresh_favoritest_goods_current_price()
     await jx3_cmd_trade2_refresh_job.send(f'已开始新的任务:{t.id}')

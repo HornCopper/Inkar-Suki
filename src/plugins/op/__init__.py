@@ -1,7 +1,7 @@
 from src.tools.utils import checknumber
 from src.tools.config import Config
 from src.tools.file import write, read
-from src.tools.permission import checker, error
+from src.tools.permission import *
 import json
 import sys
 import nonebot
@@ -21,8 +21,9 @@ op = on_command("setop", aliases={"admin", "setadmin"}, priority=5)
 
 @op.handle()
 async def handle_first_receive(bot: Bot, event: Event, args: Message = CommandArg()):
-    if checker(str(event.user_id), 10) == False:
-        await op.finish(error(10))
+    x = Permission(event.user_id).judge(10, '设置管理员')
+    if not x.success:
+        return await op.finish(x.description)
     info = args.extract_plain_text()
     if info:
         try:
