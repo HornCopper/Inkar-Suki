@@ -27,8 +27,9 @@ purge = on_command("purge", priority=5)  # 清除所有`help`生成的缓存图�
 
 @purge.handle()
 async def ___(event: Event):
-    if checker(str(event.user_id), 1) == False:
-        await purge.finish(error(1))
+    x = Permission(event.user_id).judge(1, '清除缓存')
+    if not x.success:
+        return await purge.finish(x.description)
     try:
         for i in os.listdir(CACHE):
             os.remove(CACHE + "/" + i)
@@ -42,8 +43,10 @@ shutdown = on_command("shutdown", aliases={"poweroff"}, priority=5)  # 关掉`In
 
 @shutdown.handle()
 async def ____(event: Event):
-    if checker(str(event.user_id), 10) == False:
-        await shutdown.finish(error(10))
+    
+    x = Permission(event.user_id).judge(10, '关闭机器人')
+    if not x.success:
+        return await shutdown.finish(x.description)
     await shutdown.send("请稍候，正在关闭中……")
     await shutdown.send("关闭成功！请联系Owner到后台手动开启哦~")
     sys.exit(0)
@@ -54,8 +57,9 @@ restart = on_command("restart", priority=5)  # 重启`Inkar-Suki`，原理为`Fa
 @restart.handle()
 async def _(event: Event):
     with open("./src/plugins/developer_tools/example.py", mode="w") as cache:
-        if checker(str(event.user_id), 5) == False:
-            await restart.finish(error(5))
+        x = Permission(event.user_id).judge(5, '重启机器人')
+        if not x.success:
+            return await restart.finish(x.description)
         await restart.send("好啦，开始重启，整个过程需要些许时间，还请等我一下哦~")
         cache.write("status=\"OK\"")
 
@@ -64,8 +68,9 @@ echo = on_command("echo", priority=5)  # 复读只因功能
 
 @echo.handle()
 async def echo_(event: Event, args: Message = CommandArg()):
-    if checker(str(event.user_id), 9) == False:
-        await echo.finish(error(9))
+    x = Permission(event.user_id).judge(9, '复读说话')
+    if not x.success:
+        return await echo.finish(x.description)
     await echo.finish(args)
 
 say = on_command("say", priority=5)  # 复读只因 + CQ码转换（mix：没有CQ码）
@@ -77,8 +82,10 @@ async def say_(event: Event, args: Message = CommandArg()):
         if segment.is_text():
             return message.append(unescape(str(segment)))
         return message.append(segment)
-    if checker(str(event.user_id), 9) == False:
-        await say.finish(error(9))
+    
+    x = Permission(event.user_id).judge(10, '高级复读说话')
+    if not x.success:
+        return await say.finish(x.description)
     message = reduce(_unescape, args, Message())
     await say.finish(message)
 
@@ -87,11 +94,12 @@ ping = on_command("ping", aliases={"-测试"}, priority=5)  # 测试机器人是
 
 @ping.handle()
 async def _(event: Event):
-    if checker(str(event.user_id), 1) == False:
+    x = Permission(event.user_id).judge(1, '运行状态详细')
+    if not x.success:
         times = str("现在是"
                     + time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
                     + f"\nNonebot {nbv}")
-        await ping.finish(times)
+        return await ping.finish(times)
 
     def per_cpu_status() -> List[float]:
         return psutil.cpu_percent(interval=1, percpu=True)
@@ -125,8 +133,9 @@ call_api = on_command("call_api", aliases={"api"}, priority=5)  # 调用`go-cqht
 
 @call_api.handle()
 async def _(event: Event, args: Message = CommandArg()):
-    if checker(str(event.user_id), 10) == False:
-        await call_api.finish(error(10))
+    x = Permission(event.user_id).judge(10, '调用nb-api')
+    if not x.success:
+        return await call_api.finish(x.description)
     cmd = args.extract_plain_text()
     await get_url(f"{Config.cqhttp}{cmd}")
 
@@ -135,8 +144,9 @@ git = on_command("-git", priority=5)  # 调用`Git`，~~别问意义是什么~~
 
 @git.handle()
 async def _(event: Event, args: Message = CommandArg()):
-    if checker(str(event.user_id), 10) == False:
-        await call_api.finish(error(10))
+    x = Permission(event.user_id).judge(10, '调用git')
+    if not x.success:
+        return await call_api.finish(x.description)
     output = ""
     commit = args.extract_plain_text()
     if commit == "pull":
@@ -158,8 +168,10 @@ voice = on_command("voice", priority=5)  # 调用腾讯的语音TTS接口，生�
 
 @voice.handle()
 async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
-    if checker(str(event.user_id), 10) == False:
-        await call_api.finish(error(10))
+    
+    x = Permission(event.user_id).judge(10, '调用nb-api')
+    if not x.success:
+        return await call_api.finish(x.description)
     sth = args.extract_plain_text()
     final_msg = f"[CQ:tts,text={sth}]"
     await bot.call_api("send_group_msg",
@@ -172,8 +184,9 @@ web = on_command("web", priority=5)  # 网页截图，需要网址。
 
 @web.handle()
 async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
-    if checker(str(event.user_id), 10) == False:
-        await call_api.finish(error(10))
+    x = Permission(event.user_id).judge(10, '调用网页截图')
+    if not x.success:
+        return await web.finish(x.description)
     url = args.extract_plain_text()
     if await get_status(url) not in [200, 301, 302]:
         await web.finish("唔……网站图片获取失败。\n原因：响应码非200，请检查是否能正常访问。")
