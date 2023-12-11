@@ -36,7 +36,7 @@ class Permission:
         self.u_level = self.init_permission()
 
     def init_permission(self) -> int:
-        file = read(TOOLS+"/permission.json", mode="r")
+        file = read(TOOLS+"/permission.json")
         self.permissions = json.loads(file)
         if self.user_id not in self.permissions:
             return None
