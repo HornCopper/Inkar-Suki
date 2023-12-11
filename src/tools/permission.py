@@ -20,10 +20,21 @@ class PermissionResult:
     user_level: int
     description: str
 
-    def __init__(self, success: bool, user_level: int, description: str) -> None:
+    def __init__(self, success: bool, user_level: int, description: str, required: any = None) -> None:
         self.success = success
         self.user_level = user_level
         self.description = description
+        self.required = required
+
+    def __str__(self) -> str:
+        status = '授权' if self.success else '拒绝访问'
+        x = f'{status}:{self.description},u_level:{self.user_level}'
+        if self.required:
+            x = f'{x}{self.required}'
+        return x
+
+    def __repr__(self) -> str:
+        return self.__str__()
 
 
 class Permission:
