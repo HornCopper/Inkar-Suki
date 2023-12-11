@@ -21,8 +21,10 @@ async def _(bot: Bot, event: Event, args: Message = CommandArg()):
     arg = args.extract_plain_text().split(" ")
     personal_data = await bot.call_api("get_group_member_info", group_id=event.group_id, user_id=event.user_id, no_cache=True)
     group_admin = personal_data["role"] in ["owner", "admin"]
-    if checker(str(event.user_id), 5) == False and not group_admin:
-        await block.finish("唔……只有群主或管理员才能修改哦~")
+    
+    x = Permission(event.user_id).judge(5, '添加避雷')
+    if not x.success and not group_admin:
+        return await block.finish("唔……只有群主或管理员才能修改哦~")
     if len(arg) != 2:
         await block.finish("唔……需要2个参数，第一个参数为玩家名，第二个参数是原因~\n提示：理由中请勿包含空格。")
     sb = arg[0]
@@ -44,8 +46,10 @@ async def _(bot: Bot, event: Event, args: Message = CommandArg()):
     arg = args.extract_plain_text().split(" ")
     personal_data = await bot.call_api("get_group_member_info", group_id=event.group_id, user_id=event.user_id, no_cache=True)
     group_admin = personal_data["role"] in ["owner", "admin"]
-    if checker(str(event.user_id), 5) == False and not group_admin:
-        await unblock.finish("唔……只有群主或管理员才能修改哦~")
+    
+    x = Permission(event.user_id).judge(5, '移除避雷')
+    if not x.success and not group_admin:
+        return await block.finish("唔……只有群主或管理员才能修改哦~")
     if len(arg) != 1:
         await unblock.finish("参数仅为玩家名，请勿附带任何信息！")
     sb = arg[0]

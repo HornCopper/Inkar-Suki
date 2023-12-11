@@ -106,8 +106,10 @@ async def __(event: GroupMessageEvent, args: Message = CommandArg()):
     '''
     欢迎语的修改。
     '''
-    if checker(str(event.user_id), 5) == False:
-        await welcome_msg_edit.finish(error(5))
+    
+    x = Permission(event.user_id).judge(5, '修改欢迎语')
+    if not x.success:
+        return await welcome_msg_edit.finish(x.description)
     msg = args.extract_plain_text()
     if msg:
         write(DATA + "/" + str(event.group_id) + "/welcome.txt", msg)
