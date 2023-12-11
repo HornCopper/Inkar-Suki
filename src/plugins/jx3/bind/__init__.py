@@ -29,9 +29,10 @@ async def jx3_server_bind(bot: Bot, event: GroupMessageEvent, args: Message = Co
     # TODO 判别权限，应提取为专有函数
     personal_data = await bot.call_api("get_group_member_info", group_id=event.group_id, user_id=event.user_id, no_cache=True)
     group_admin = personal_data["role"] in ["owner", "admin"]
-    robot_admin = checker(str(event.user_id), 8)
-    if not group_admin and not robot_admin:
-        return await jx3_cmd_server_bind.finish("唔……只有群主或管理员才可以修改哦！")
+    if not group_admin:
+        x = Permission(event.user_id).judge(8, '绑定服务器')
+        if not x.success:
+            return await jx3_cmd_server_bind.finish("唔……只有群主或管理员才可以修改哦！")
 
     template = [Jx3Arg(Jx3ArgsType.server)]
     server, = get_args(args.extract_plain_text(), template)
@@ -48,9 +49,10 @@ async def jx3_server_bind(bot: Bot, event: GroupMessageEvent, args: Message = Co
     # TODO 判别权限，应提取为专有函数
     personal_data = await bot.call_api("get_group_member_info", group_id=event.group_id, user_id=event.user_id, no_cache=True)
     group_admin = personal_data["role"] in ["owner", "admin"]
-    robot_admin = checker(str(event.user_id), 8)
-    if not group_admin and not robot_admin:
-        return await jx3_cmd_server_unbind.finish("唔……只有群主或管理员才可以修改哦！")
+    if not group_admin:
+        x = Permission(event.user_id).judge(8, '解绑服务器')
+        if not x.success:
+            return await jx3_cmd_server_unbind.finish("唔……只有群主或管理员才可以修改哦！")
 
     server = server_bind(group_id=event.group_id, server=None)
     return await jx3_cmd_server_unbind.finish("已解绑")

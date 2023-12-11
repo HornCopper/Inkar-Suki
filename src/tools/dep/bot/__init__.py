@@ -33,6 +33,6 @@ try:
     # 子依赖应后加载
     from .path import *
     from .bot_plugins import *
-    from src.tools.permission import checker as permission_check, error as permission_error, permission_judge
+    from src.tools.permission import checker as permission_check, error as permission_error, permission_judge, Permission, PermissionResult
 except:
     pass

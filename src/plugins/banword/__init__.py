@@ -21,8 +21,9 @@ banword = on_command("banword", priority=5)
 @banword.handle()
 async def __(event: GroupMessageEvent, args: Message = CommandArg()):  # 违禁词封锁
     bw = args.extract_plain_text()
-    if checker(str(event.user_id), 5) == False:
-        await banword.finish(error(5))
+    x = Permission(event.user_id).judge(5, '添加违禁词')
+    if not x.success:
+        return await banword.finish(x.description)
     if bw:
         now = json.loads(read(DATA + "/" + str(event.group_id) + "/banword.json"))
         if bw in now:
@@ -38,8 +39,10 @@ unbanword = on_command("unbanword", priority=5)  # 违禁词解封
 
 @unbanword.handle()
 async def ___(event: GroupMessageEvent, args: Message = CommandArg()):
-    if checker(str(event.user_id), 5) == False:
-        await unbanword.finish(error(5))
+    
+    x = Permission(event.user_id).judge(5, '删除违禁词')
+    if not x.success:
+        return await unbanword.finish(x.description)
     cmd = args.extract_plain_text()
     if cmd:
         now = json.loads(read(DATA + "/" + str(event.group_id) + "/banword.json"))
@@ -68,10 +71,10 @@ async def _(matcher: Matcher, bot: Bot, event: GroupMessageEvent):
             break
     if not flag:
         return
-    permit, p_level, p_msg = permission_judge(str(event.user_id), 5, '免除违禁词禁言')
-    if permit:
+    permit = Permission(event.user_id).judge(5, '免除违禁词禁言')
+    if permit.success:
         return
-        
+
     sb = event.user_id
     try:
         group = event.group_id

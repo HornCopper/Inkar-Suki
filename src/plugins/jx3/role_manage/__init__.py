@@ -86,8 +86,9 @@ location = on_command("jx3_iplocation", aliases={"属地查询"}, priority=5)
 
 @location.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
-    if checker(str(event.user_id), 10) == False:
-        await location.finish(error(10))
+    x = Permission(event.user_id).judge(10, '玩家属地查询')
+    if not x.success:
+        return await location.finish(x.description)
     arg = args.extract_plain_text().split(" ")
     if len(arg) != 2:
         await bind_role.finish(error_argument_count)
