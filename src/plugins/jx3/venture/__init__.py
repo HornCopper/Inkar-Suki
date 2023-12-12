@@ -1,6 +1,6 @@
 from .api import *
 
-jx3_cmd_serendipity = on_command("jx3_serendipity", aliases={"奇遇"}, priority=5)
+jx3_cmd_serendipity = on_command("jx3_serendipity", aliases={"奇遇","查询"}, priority=5)
 
 
 @jx3_cmd_serendipity.handle()
