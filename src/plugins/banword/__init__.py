@@ -56,11 +56,8 @@ async def ___(event: GroupMessageEvent, args: Message = CommandArg()):
     else:
         await unbanword.finish("您解封了什么？")
 
-banned_word = on_message(priority=3, block=False)  # 违禁词阻断器
-
-
-@banned_word.handle()
-async def _(matcher: Matcher, bot: Bot, event: GroupMessageEvent):
+@matcher_common_run.handle()
+async def common_match_ban_words(matcher: Matcher, bot: Bot, event: GroupMessageEvent):
     flag = False
     banwordlist = json.loads(read(DATA + "/" + str(event.group_id) + "/banword.json"))
     msg = event.get_plaintext()
