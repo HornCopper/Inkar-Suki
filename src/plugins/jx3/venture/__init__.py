@@ -103,9 +103,9 @@ async def jx3_preposition(event: GroupMessageEvent, args: Message = CommandArg()
     serendipity = args.extract_plain_text()
     data = await get_preposition(serendipity)
     if data == False:
-        await preposition.finish("唔……没有找到相关信息~")
+        return await preposition.finish("唔……没有找到相关信息~")
     else:
-        await preposition.finish(ms.image(data) + "\n数据来自隐元秘鉴，请在合理范围内使用本图片。")
+        return await preposition.finish(ms.image(data) + "\n数据来自隐元秘鉴，请在合理范围内使用本图片。")
 
 recipe = on_command("jx3_recipe", aliases={"攻略"}, priority=5)
 
@@ -126,13 +126,13 @@ async def jx3_serendipity_recipe(event: GroupMessageEvent, args: Message = Comma
     filename = serendipity + ".png"
     filepath = ASSETS + "/jx3/serendipity/" + filename
     if filename in imgs:
-        await preposition.finish(ms.image(Path(filepath).as_uri()))
+        return await preposition.finish(ms.image(Path(filepath).as_uri()))
     data = await get_image(serendipity)
     if data == False:
-        await preposition.finish("唔……没有找到相关信息~")
+        return await preposition.finish("唔……没有找到相关信息~")
     else:
         image_content = await get_content(data)
         image = open(filepath, mode="wb")
         image.write(image_content)
         image.close()
-        await preposition.finish(ms.image(Path(filepath).as_uri()))
+        return await preposition.finish(ms.image(Path(filepath).as_uri()))

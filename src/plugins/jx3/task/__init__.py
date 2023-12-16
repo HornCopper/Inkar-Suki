@@ -13,7 +13,7 @@ async def _(state: T_State, args: Message = CommandArg()):
     task__ = args.extract_plain_text()
     data = await getTask(task__)
     if data["status"] == 404:
-        await task_.finish("未找到该任务，请检查后重试~")
+        return await task_.finish("未找到该任务，请检查后重试~")
     map = data["map"]
     id = data["id"]
     task___ = data["task"]
@@ -28,8 +28,7 @@ async def _(state: T_State, args: Message = CommandArg()):
     for i in range(len(map)):
         msg = msg + f"{i}.{map[i]}：{task___[i]}\n"
     msg = msg[:-1]
-    await task_.send(msg)
-    return
+    return await task_.send(msg)
 
 
 @task_.got("num", prompt="发送序号以搜索，发送其他内容则取消搜索。")
@@ -45,6 +44,6 @@ async def _(state: T_State, num: Message = Arg()):
         msg = f"查询到「{task__}」：\nhttps://www.jx3box.com/quest/view/{id}\n开始等级：{level}\n地图：{map}\n任务目标：{target}"
         chain = await getTaskChain(id)
         msg = msg + f"\n任务链：{chain}"
-        await task_.finish(msg)
+        return await task_.finish(msg)
     else:
-        await task_.finish(PROMPT_NumberInvalid)
+        return await task_.finish(PROMPT_NumberInvalid)

@@ -13,6 +13,6 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     server = args.extract_plain_text()
     data = await sandbox_(server, group_id=event.group_id)
     if type(data) == type([]):
-        await sandbox.finish(data[0])
+        return await sandbox.finish(data[0])
     else:
-        await sandbox.finish(ms.image(data))
+        return await sandbox.finish(ms.image(data))

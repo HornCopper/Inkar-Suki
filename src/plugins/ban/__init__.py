@@ -37,12 +37,12 @@ async def _(bot: Bot, event: Event, args: Message = CommandArg()):
         if self_protection == False:
             return await ban.finish(x.description)
     if sb == False:
-        await ban.finish("您输入了什么？")
+        return await ban.finish("您输入了什么？")
     if checknumber(sb) == False:
-        await ban.finish("不能全域封禁不是纯数字的QQ哦~")
+        return await ban.finish("不能全域封禁不是纯数字的QQ哦~")
     info = await bot.call_api("get_stranger_info", user_id=int(sb))
     if info["user_id"] == 0:
-        await ban.finish("唔……全域封禁失败，没有这个人哦~")
+        return await ban.finish("唔……全域封禁失败，没有这个人哦~")
     elif in_it(sb):
         return ban.finish("唔……全域封禁失败，这个人已经被封禁了。")
     else:
@@ -52,7 +52,7 @@ async def _(bot: Bot, event: Event, args: Message = CommandArg()):
         sb_name = info["nickname"]
         if self_protection:
             return
-        await ban.finish(f"好的，已经全域封禁{sb_name}({sb})。")
+        return await ban.finish(f"好的，已经全域封禁{sb_name}({sb})。")
 
 unban = on_command("unban", priority=5)  # 解封
 
@@ -64,19 +64,19 @@ async def _(bot: Bot, event: Event, args: Message = CommandArg()):
         return await ban.finish(x.description)
     sb = args.extract_plain_text()
     if checknumber(sb) == False:
-        await ban.finish("不能全域封禁不是纯数字的QQ哦~")
+        return await ban.finish("不能全域封禁不是纯数字的QQ哦~")
     info = await bot.call_api("get_stranger_info", user_id=int(sb))
     sb_name = info["nickname"]
     if sb == False:
-        await unban.finish("您输入了什么？")
+        return await unban.finish("您输入了什么？")
     if in_it(sb) == False:
-        await unban.finish("全域解封失败，并没有封禁此人哦~")
+        return await unban.finish("全域解封失败，并没有封禁此人哦~")
     now = json.loads(read(TOOLS + "/ban.json"))
     for i in now:
         if i == sb:
             now.remove(i)
     write(TOOLS + "/ban.json", json.dumps(now))
-    await ban.finish(f"好的，已经全域解封{sb_name}({sb})。")
+    return await ban.finish(f"好的，已经全域解封{sb_name}({sb})。")
 
 
 @matcher_common_run.handle()

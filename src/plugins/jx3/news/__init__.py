@@ -10,4 +10,4 @@ async def _():
 
     Example：-新闻
     """
-    await news.finish(await news_())
+    return await news.finish(await news_())
