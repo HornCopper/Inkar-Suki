@@ -22,10 +22,9 @@ async def _(event: GroupMessageEvent, state: T_State, args: Message = CommandArg
         msg = ""
         for i in range(len(data["icon"])):
             msg = msg + "\n" + str(i) + "." + data["name"][i] + "（技能ID：" + data["id"][i] + "）"
-        await buff_.send(msg[1:])
-        return
+        return await buff_.send(msg[1:])
     else:
-        await buff_.finish(data)
+        return await buff_.finish(data)
 
 
 @buff_.got("num", prompt="输入数字搜索状态效果，输入其他内容则无视。")
@@ -38,10 +37,10 @@ async def _(event: GroupMessageEvent, state: T_State, num: Message = Arg()):
         name = state["name"]
         id = state["id"]
         if int(num) not in list(range(len(icon))):
-            await buff_.finish("唔，输入的数字不对哦，取消搜索~")
+            return await buff_.finish("唔，输入的数字不对哦，取消搜索~")
         else:
             num = int(num)
             msg = ms.image(icon[num]) + f"\nBUFF名称：{name[num]}\n{desc[num]}\n特殊描述：{remark[num]}"
-            await buff_.finish(msg)
+            return await buff_.finish(msg)
     else:
         return

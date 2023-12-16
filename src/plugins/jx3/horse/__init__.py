@@ -12,7 +12,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     """
     server = args.extract_plain_text()
     msg = await get_chitu(server, group_id=event.group_id)
-    await ct.finish(msg)
+    return await ct.finish(msg)
 
 horse = on_command("jx3_horse", aliases={"抓马", "马场"}, priority=5)
 
@@ -21,4 +21,4 @@ horse = on_command("jx3_horse", aliases={"抓马", "马场"}, priority=5)
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     server = args.extract_plain_text()
     msg = await get_horse_reporter(server, group_id=event.group_id)
-    await horse.finish(msg)
+    return await horse.finish(msg)

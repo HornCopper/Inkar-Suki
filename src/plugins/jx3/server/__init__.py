@@ -14,4 +14,4 @@ async def jx3_server(event: GroupMessageEvent, args: Message = CommandArg()):
     server = args.extract_plain_text()
     server = server_mapping(server, event.group_id)
     msg = await server_status(server=server)
-    await cmd_jx3_server.finish(msg)
+    return await cmd_jx3_server.finish(msg)

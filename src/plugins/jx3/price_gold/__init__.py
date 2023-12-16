@@ -13,6 +13,6 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     server = args.extract_plain_text()
     data = await demon_(server, group_id=event.group_id)
     if type(data) == type([]):
-        await demon.finish(data[0])
+        return await demon.finish(data[0])
     else:
-        await demon.finish(ms.image(data))
+        return await demon.finish(ms.image(data))

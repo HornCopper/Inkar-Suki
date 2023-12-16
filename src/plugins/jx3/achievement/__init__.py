@@ -15,7 +15,7 @@ async def _(state: T_State, args: Message = CommandArg()):
     achievement_name = args.extract_plain_text()
     data = await getAdventure(achievement_name)
     if data["status"] == 404:
-        await adventure_.finish("没有找到任何相关成就哦，请检查后重试~")
+        return await adventure_.finish("没有找到任何相关成就哦，请检查后重试~")
     elif data["status"] == 200:
         achievement_list = data["achievements"]
         icon_list = data["icon"]
@@ -37,7 +37,7 @@ async def _(state: T_State, args: Message = CommandArg()):
         for i in range(len(achievement_list)):
             msg = msg + f"{i}." + achievement_list[i] + "\n"
         msg = msg[:-1]
-        await adventure_.send(msg)
+        return await adventure_.send(msg)
         return
 
 
@@ -55,9 +55,9 @@ async def _(state: T_State, num: Message = Arg()):
         fullDesc = state["fullDesc"][num]
         subAchievement = state["subAchievements"][num]
         msg = f"查询到「{achievement}」：\n" + await getAchievementsIcon(icon) + f"\nhttps://www.jx3box.com/cj/view/{id}\n{simpleDesc}\n{fullDesc}\n地图：{map}\n资历：{point}点\n附属成就：{subAchievement}"
-        await adventure_.finish(msg)
+        return await adventure_.finish(msg)
     else:
-        await adventure_.finish("唔……输入的不是数字哦，取消搜索。")
+        return await adventure_.finish("唔……输入的不是数字哦，取消搜索。")
 
 achievements = on_command("jx3_machi", aliases={"进度"}, priority=5)
 
@@ -74,7 +74,7 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
     """
     achievement = args.extract_plain_text().split(" ")
     if len(achievement) not in [2, 3]:
-        await achievements.finish(PROMPT_ArgumentInvalid)
+        return await achievements.finish(PROMPT_ArgumentInvalid)
     if len(achievement) == 2:
         server = None
         id = achievement[0]
@@ -85,9 +85,9 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
         achi = achievement[2]
     data = await achievements_(server, id, achi, event.group_id)
     if type(data) == type([]):
-        await achievements.finish(data[0])
+        return await achievements.finish(data[0])
     else:
-        await achievements.finish(ms.image(data))
+        return await achievements.finish(ms.image(data))
 
 achievement_v2 = on_command("jx3_achievement_v2", aliases={"进度v2"}, priority=5)
 
@@ -96,7 +96,7 @@ achievement_v2 = on_command("jx3_achievement_v2", aliases={"进度v2"}, priority
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     achievement = args.extract_plain_text().split(" ")
     if len(achievement) not in [2, 3]:
-        await achievement_v2.finish(PROMPT_ArgumentInvalid)
+        return await achievement_v2.finish(PROMPT_ArgumentInvalid)
     if len(achievement) == 2:
         server = None
         id = achievement[0]
@@ -107,9 +107,9 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
         achi = achievement[2]
     data = await achi_v2(server, id, achi, str(event.group_id))
     if type(data) == type([]):
-        await achievement_v2.finish(data[0])
+        return await achievement_v2.finish(data[0])
     else:
-        await achievement_v2.finish(ms.image(data))
+        return await achievement_v2.finish(ms.image(data))
 
 zone_achievement = on_command("jx3_zoneachi", aliases={"团本成就"}, priority=5)
 
@@ -118,12 +118,12 @@ zone_achievement = on_command("jx3_zoneachi", aliases={"团本成就"}, priority
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     arg = args.extract_plain_text().split(" ")
     if len(arg) not in [2, 3, 4]:
-        await zone_achievement.finish(PROMPT_ArgumentInvalid)
+        return await zone_achievement.finish(PROMPT_ArgumentInvalid)
     group = str(event.group_id)
     if len(arg) == 2:
         server = getGroupServer(group)
         if server == None:
-            await zone_achievement.finish("唔……尚未绑定任何服务器，请携带服务器参数或先联系管理员绑定群聊服务器！")
+            return await zone_achievement.finish("唔……尚未绑定任何服务器，请携带服务器参数或先联系管理员绑定群聊服务器！")
         id = arg[0]
         zone = zone_mapping(arg[1])
         mode = "10人普通"
@@ -132,7 +132,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
         if server == "":
             server = getGroupServer(group)
             if server == None:
-                await zone_achievement.finish("唔……尚未绑定任何服务器，请携带服务器参数或先联系管理员绑定群聊服务器！")
+                return await zone_achievement.finish("唔……尚未绑定任何服务器，请携带服务器参数或先联系管理员绑定群聊服务器！")
             id = arg[0]
             zone = zone_mapping(arg[1])
             mode = mode_mapping(arg[2])
@@ -147,6 +147,6 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
         mode = mode_mapping(arg[3])
     data = await zone_achi(server, id, zone, mode)
     if type(data) == type([]):
-        await zone_achievement.finish(data[0])
+        return await zone_achievement.finish(data[0])
     else:
-        await zone_achievement.finish(ms.image(data))
+        return await zone_achievement.finish(ms.image(data))

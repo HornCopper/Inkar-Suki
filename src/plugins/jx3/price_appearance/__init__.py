@@ -13,9 +13,9 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     """
     arg = args.extract_plain_text()
     if arg == "":
-        await item_price.finish("缺少物品名称，没办法找哦~")
+        return await item_price.finish("缺少物品名称，没办法找哦~")
     data = await item_(arg)
     if type(data) == type([]):
-        await item_price.finish(data[0])
+        return await item_price.finish(data[0])
     else:
-        await item_price.finish(ms.image(data))
+        return await item_price.finish(ms.image(data))
