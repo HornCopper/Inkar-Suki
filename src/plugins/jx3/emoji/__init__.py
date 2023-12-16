@@ -15,7 +15,7 @@ async def _(event: GroupMessageEvent):
         rdnum = random.randint(0, len(data) - 1)
         status = await get_status(data[rdnum]["url"])
         if status == 200:
-            await rdemoji.finish(ms.image(data[rdnum]["url"]))
+            return await rdemoji.finish(ms.image(data[rdnum]["url"]))
         else:
             failed_time = failed_time + 1
             if failed_time == 5:

@@ -11,4 +11,4 @@ async def _(event: GroupMessageEvent):
     Example：-维护公告
     """
     url = await announce_()
-    await announce.finish(ms.image(url))
+    return await announce.finish(ms.image(url))

@@ -27,12 +27,12 @@ async def __(event: GroupMessageEvent, args: Message = CommandArg()):  # 违禁�
     if bw:
         now = json.loads(read(DATA + "/" + str(event.group_id) + "/banword.json"))
         if bw in now:
-            await banword.finish("唔……封禁失败，已经封禁过了。")
+            return await banword.finish("唔……封禁失败，已经封禁过了。")
         now.append(bw)
         write(DATA + "/" + str(event.group_id) + "/banword.json", json.dumps(now, ensure_ascii=False))
-        await banword.finish("已成功封禁词语！")
+        return await banword.finish("已成功封禁词语！")
     else:
-        await banword.finish("您封禁了什么？")
+        return await banword.finish("您封禁了什么？")
 
 unbanword = on_command("unbanword", priority=5)  # 违禁词解封
 
@@ -50,11 +50,11 @@ async def ___(event: GroupMessageEvent, args: Message = CommandArg()):
             now.remove(cmd)
             write(DATA + "/" + str(event.group_id) + "/banword.json",
                   json.dumps(now, ensure_ascii=False))
-            await unbanword.finish("成功解封词语！")
+            return await unbanword.finish("成功解封词语！")
         except ValueError:
-            await unbanword.finish("您解封了什么？")
+            return await unbanword.finish("您解封了什么？")
     else:
-        await unbanword.finish("您解封了什么？")
+        return await unbanword.finish("您解封了什么？")
 
 @matcher_common_run.handle()
 async def common_match_ban_words(matcher: Matcher, bot: Bot, event: GroupMessageEvent):
@@ -79,6 +79,6 @@ async def common_match_ban_words(matcher: Matcher, bot: Bot, event: GroupMessage
         await bot.call_api("set_group_ban", group_id=group, user_id=sb, duration=60)
         msg = ms.at(sb) + "唔……你触发了违禁词，已经给你喝了1分钟的红茶哦~"
         matcher.stop_propagation()
-        await banned_word.finish(msg)
+        return await matcher_common_run.finish(msg)
     except:
         pass
