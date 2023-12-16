@@ -1,7 +1,8 @@
 from src.tools.dep import *
 
 
-async def news_():
+# @config.requireConfig(GloConfig.token)
+async def news_(token: str = None):
     full_link = f"{Config.jx3api_link}/data/web/news/allnews?limit=5&token={token}"
     info = await get_api(full_link, proxy=proxies)
 
