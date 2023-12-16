@@ -15,7 +15,7 @@ async def jx3_trade2(matcher: Matcher, state: T_State, event: GroupMessageEvent,
     """
     arg = get_trade2_args(event, args)
     if not isinstance(arg, List):
-        return jx3_cmd_trade2.finish(arg)
+        return await jx3_cmd_trade2.finish(arg)
     arg_server, arg_item, arg_page = arg
     return await handle_trade2(matcher, state, arg_server, arg_item, arg_page)
 
@@ -43,7 +43,7 @@ async def handle_trade2(matcher: Matcher, state: T_State, arg_server: str, arg_i
         return await jx3_cmd_trade2.finish(data)
     all_id = [x.id for x in data]  # 取到的是id列表
     state["id"] = all_id
-    if len(all_id) == 1:  # 仅有一个物品的话，则直接显示更加详细的信息
+    if len(all_id) <= 1:  # 仅有一个物品的话，则直接显示更加详细的信息。如果没有则直接跳过
         matcher.set_arg("user_select_index", obMessage("1"))
         return
     result = await render_items(arg_server, arg_item, arg_page, pageSize, totalCount, data)
@@ -62,7 +62,7 @@ async def jx3_trade_favoritest(matcher: Matcher, state: T_State, event: GroupMes
     """
     arg = get_trade2_args(event, args)
     if not isinstance(arg, List):
-        return jx3_cmd_favouritest.finish(arg)
+        return await jx3_cmd_favouritest.finish(arg)
     arg_server, _, arg_page = arg
     items = get_favoritest_by_predict(lambda index, x: x.u_popularity > 100)
     pageSize = 20
@@ -77,6 +77,8 @@ async def jx3_trade_favoritest(matcher: Matcher, state: T_State, event: GroupMes
 async def price_num_selected2(state: T_State, event: GroupMessageEvent, user_select_index: Message = Arg()):
     good_index = get_number(user_select_index.extract_plain_text())
     all_ids = state["id"]
+    if len(all_ids) == 0:
+        return # 没有项可以选择
     if good_index > len(all_ids) or good_index <= 0:
         return await jx3_cmd_trade2.finish(f"无效的序号[{good_index}]，有效范围:1-{len(all_ids)}")
     target_id = all_ids[good_index-1]

@@ -11,7 +11,7 @@ async def jx3_saohua_random():
     Example：-骚话
     """
     r_text, r_id = await saohua_random()
-    await jx3_cmd_saohua_random.finish(f"推栏之{r_id}：{r_text}")
+    return await jx3_cmd_saohua_random.finish(f"推栏之{r_id}：{r_text}")
 
 jx3_cmd_saohua_tiangou = on_command("jx3_tiangou", aliases={"舔狗"}, priority=5)
 
@@ -24,4 +24,4 @@ async def jx3_saohua_tiangou():
     Example：-舔狗
     """
     r_text, r_id = await saohua_tiangou()
-    await jx3_cmd_saohua_tiangou.finish(f"舔狗日志之{r_id}：\n{r_text}")
+    return await jx3_cmd_saohua_tiangou.finish(f"舔狗日志之{r_id}：\n{r_text}")

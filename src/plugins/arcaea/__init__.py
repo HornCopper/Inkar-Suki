@@ -42,15 +42,15 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     if arg == "":
         info = getUserCode(event.group_id, event.user_id)  # 通过群聊获取用户绑定的UserCode
         if info == False:
-            await arcaea_userinfo.finish("未绑定Arcaea账号且未给出任何信息，没办法找啦！")  # 若没绑定则告知
+            return await arcaea_userinfo.finish("未绑定Arcaea账号且未给出任何信息，没办法找啦！")  # 若没绑定则告知
         msg = await getUserInfo(usercode=info)
-        await arcaea_userinfo.finish(msg)
+        return await arcaea_userinfo.finish(msg)
     else:
         if checknumber(arg):
             msg = await getUserInfo(usercode=int(arg))
         else:
             msg = await getUserInfo(nickname=arg)
-        await arcaea_userinfo.finish(msg)
+        return await arcaea_userinfo.finish(msg)
 
 arcaea_binduser = on_command("arcbind", priority=5)
 
@@ -62,7 +62,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     '''
     arg = args.extract_plain_text()
     if arg == False:
-        await arcaea_binduser.finish("未给出任何信息，没办法绑定哦~")
+        return await arcaea_binduser.finish("未给出任何信息，没办法绑定哦~")
     present_data = json.loads(read(DATA + "/" + str(event.group_id) + "/arcaea.json"))
     if checknumber(arg):
         resp = await judgeWhetherPlayer(usercode=int(arg))
@@ -71,9 +71,9 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     if resp:
         present_data[str(event.user_id)] = resp[1]
         write(DATA + "/" + str(event.group_id) + "/arcaea.json", json.dumps(present_data))
-        await arcaea_binduser.finish("绑定成功：" + resp[0] + "（" + str(resp[1]) + "）")
+        return await arcaea_binduser.finish("绑定成功：" + resp[0] + "（" + str(resp[1]) + "）")
     else:
-        await arcaea_binduser.finish("您输入的好友码/用户名查不到哦，请检查后重试~")
+        return await arcaea_binduser.finish("您输入的好友码/用户名查不到哦，请检查后重试~")
 
 arcaea_unbind = on_command("arcunbind", priority=5)
 
@@ -87,9 +87,9 @@ async def _(event: GroupMessageEvent):
     if present_data[str(event.user_id)]:
         present_data.pop(str(event.user_id))  # 删除用户键值
         write(DATA + "/" + str(event.group_id) + "/arcaea.json", json.dumps(present_data))
-        await arcaea_unbind.finish("已解绑Arcaea账号~以后使用相关命令均需重新绑定哦~")
+        return await arcaea_unbind.finish("已解绑Arcaea账号~以后使用相关命令均需重新绑定哦~")
     else:
-        await arcaea_unbind.finish("唔……尚未绑定过Arcaea，无法解绑啦！")
+        return await arcaea_unbind.finish("唔……尚未绑定过Arcaea，无法解绑啦！")
 
 arcaea_best = on_command("arcbest", priority=5)
 
@@ -102,7 +102,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     arg = args.extract_plain_text()
     arg = arg.split(" ")
     if len(arg) < 2:
-        await arcaea_best.finish("缺少必要信息，没办法搜索，请查看帮助文件。")
+        return await arcaea_best.finish("缺少必要信息，没办法搜索，请查看帮助文件。")
     if len(arg) == 2:
         final = arg[0]
         difficulty = arg[1]
@@ -113,4 +113,4 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
         final = " ".join(arg)
     user_code = getUserCode(event.group_id, event.user_id)
     msg = await getUserBestBySongName(user_code, final, difficulty)
-    await arcaea_best.finish(msg)
+    return await arcaea_best.finish(msg)

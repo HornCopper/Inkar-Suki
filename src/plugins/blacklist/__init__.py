@@ -26,17 +26,17 @@ async def _(bot: Bot, event: Event, args: Message = CommandArg()):
     if not x.success and not group_admin:
         return await block.finish("唔……只有群主或管理员才能修改哦~")
     if len(arg) != 2:
-        await block.finish("唔……需要2个参数，第一个参数为玩家名，第二个参数是原因~\n提示：理由中请勿包含空格。")
+        return await block.finish("唔……需要2个参数，第一个参数为玩家名，第二个参数是原因~\n提示：理由中请勿包含空格。")
     sb = arg[0]
     reason = arg[1]
     new = {"ban": sb, "reason": reason}
     now = json.loads(read(DATA + "/" + str(event.group_id) + "/blacklist.json"))
     for i in now:
         if i["ban"] == sb:
-            await block.finish("该玩家已加入黑名单。")
+            return await block.finish("该玩家已加入黑名单。")
     now.append(new)
     write(DATA + "/" + str(event.group_id) + "/blacklist.json", json.dumps(now, ensure_ascii=False))
-    await block.finish("成功将该玩家加入黑名单！")
+    return await block.finish("成功将该玩家加入黑名单！")
 
 unblock = on_command("unblock", aliases={"删黑"}, priority=5)  # 解除避雷
 
@@ -51,7 +51,7 @@ async def _(bot: Bot, event: Event, args: Message = CommandArg()):
     if not x.success and not group_admin:
         return await block.finish("唔……只有群主或管理员才能修改哦~")
     if len(arg) != 1:
-        await unblock.finish("参数仅为玩家名，请勿附带任何信息！")
+        return await unblock.finish("参数仅为玩家名，请勿附带任何信息！")
     sb = arg[0]
     now = json.loads(read(DATA + "/" + str(event.group_id) + "/blacklist.json"))
     for i in now:
@@ -59,8 +59,8 @@ async def _(bot: Bot, event: Event, args: Message = CommandArg()):
             now.remove(i)
             write(DATA + "/" + str(event.group_id) + "/blacklist.json",
                   json.dumps(now, ensure_ascii=False))
-            await unblock.finish("成功移除该玩家的避雷！")
-    await unblock.finish("移除失败！尚未避雷该玩家！")
+            return await unblock.finish("成功移除该玩家的避雷！")
+    return await unblock.finish("移除失败！尚未避雷该玩家！")
 
 sblock = on_command("sblock", aliases={"查黑"}, priority=5)  # 查询是否在避雷名单
 
@@ -69,15 +69,15 @@ sblock = on_command("sblock", aliases={"查黑"}, priority=5)  # 查询是否在
 async def _(event: Event, args: Message = CommandArg()):
     arg = args.extract_plain_text().split(" ")
     if len(arg) != 1:
-        await sblock.finish("参数仅为玩家名，请勿附带任何信息！")
+        return await sblock.finish("参数仅为玩家名，请勿附带任何信息！")
     sb = arg[0]
     now = json.loads(read(DATA + "/" + str(event.group_id) + "/blacklist.json"))
     for i in now:
         if i["ban"] == sb:
             reason = i["reason"]
             msg = f"玩家[{sb}]被避雷的原因为：\n{reason}"
-            await sblock.finish(msg)
-    await sblock.finish("该玩家尚未被避雷哦~")
+            return await sblock.finish(msg)
+    return await sblock.finish("该玩家尚未被避雷哦~")
 
 lblock = on_command("lblock", aliases={"列黑"}, priority=5)  # 列出所有黑名单
 

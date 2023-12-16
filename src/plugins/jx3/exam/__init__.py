@@ -11,6 +11,6 @@ async def _(args: Message = CommandArg()):
     Example：-科举 古琴有几根弦
     """
     if args.extract_plain_text():
-        await exam.finish(await exam_(args.extract_plain_text()))
+        return await exam.finish(await exam_(args.extract_plain_text()))
     else:
-        await exam.finish("没有提供科举的问题，没办法解答啦。")
+        return await exam.finish("没有提供科举的问题，没办法解答啦。")

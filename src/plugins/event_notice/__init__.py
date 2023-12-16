@@ -113,6 +113,6 @@ async def __(event: GroupMessageEvent, args: Message = CommandArg()):
     msg = args.extract_plain_text()
     if msg:
         write(DATA + "/" + str(event.group_id) + "/welcome.txt", msg)
-        await welcome_msg_edit.finish("喵~已设置入群欢迎！")
+        return await welcome_msg_edit.finish("喵~已设置入群欢迎！")
     else:
-        await welcome_msg_edit.finish("您输入了什么？")
+        return await welcome_msg_edit.finish("您输入了什么？")
