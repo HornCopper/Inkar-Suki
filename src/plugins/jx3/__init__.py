@@ -12,12 +12,12 @@ driver = get_driver()
 @driver.on_startup
 async def _():
     logger.info("Connecting to JX3API...Please wait.")
-    await ws_client.init()
-    logger.info("Connected to JX3API successfully.")
+    if await ws_client.init():
+        logger.info("Connected to JX3API successfully.")
 
     logger.info("Connecting to SFAPI...Please wait.")
-    await sf_ws_client.init()
-    logger.info("Connected to SFAPI successfully.")
+    if await sf_ws_client.init():
+        logger.info("Connected to SFAPI successfully.")
 
 ws_recev = on(type="WsRecv", priority=5, block=False)
 
