@@ -75,12 +75,33 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
 listrole = on_command("jx3_listrole", aliases={"角色列表"}, priority=5)
 
 @listrole.handle()
-async def _(event: GroupMessageEvent, args: Message = CommandArg()):
+async def _(event: GroupMessageEvent):
     ans = getRoleList(str(event.user_id))
     if ans in [-1,0]:
         await listrole.finish("您没有绑定任何角色哦~")
     else:
         await listrole.finish("您绑定了以下角色：\n" + "\n".join(ans))
+
+cd_list = on_command("jx3_cdlist", aliases={"角色副本"}, priority=5)
+
+@cd_list.handle()
+async def _(event: GroupMessageEvent):
+    roles = getAllRole(event.user_id, False, True)
+    data = []
+    for i in roles:
+        info = i.split("|")
+        cdDt = await getRoleCd(info[2])
+        cdDt = cdDt["data"]
+        cdDt["guid"] = info[2]
+        data.append(cdDt)
+    zones = []
+    for i in data:
+        mapFullName = i["mapType"] + i["mapName"]
+        if mapFullName not in zones:
+            zones.append(mapFullName)
+    for i in zones:
+        for x in 
+        
 
 location = on_command("jx3_iplocation", aliases={"属地查询"}, priority=5)
 
