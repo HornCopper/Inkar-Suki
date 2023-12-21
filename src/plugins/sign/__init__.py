@@ -21,7 +21,7 @@ async def sign(event: Event):
     data = sign_main.generate_everyday_reward(event.user_id)
 
     sign_main.save_data(data, event.user_id)
-    await sign_.finish(data.msg)
+    return await sign_.finish(data.msg)
 
 coin = on_command("金币", aliases={"余额"}, priority=5)
 

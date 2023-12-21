@@ -32,16 +32,17 @@ async def _(bot: Bot, event: Event, args: Message = CommandArg()):
         await ban.send("不能封禁机器人主人，这么玩就不好了，所以我先把你ban了QwQ")
         sb = str(event.user_id)
         self_protection = True
-    if checker(str(event.user_id), 10) == False:
+    x = Permission(event.user_id).judge(10, '拉黑用户')
+    if not x.success:
         if self_protection == False:
-            await ban.finish(error(10))
+            return await ban.finish(x.description)
     if sb == False:
-        await ban.finish("您输入了什么？")
+        return await ban.finish("您输入了什么？")
     if checknumber(sb) == False:
-        await ban.finish("不能全域封禁不是纯数字的QQ哦~")
+        return await ban.finish("不能全域封禁不是纯数字的QQ哦~")
     info = await bot.call_api("get_stranger_info", user_id=int(sb))
     if info["user_id"] == 0:
-        await ban.finish("唔……全域封禁失败，没有这个人哦~")
+        return await ban.finish("唔……全域封禁失败，没有这个人哦~")
     elif in_it(sb):
         return ban.finish("唔……全域封禁失败，这个人已经被封禁了。")
     else:
@@ -51,38 +52,41 @@ async def _(bot: Bot, event: Event, args: Message = CommandArg()):
         sb_name = info["nickname"]
         if self_protection:
             return
-        await ban.finish(f"好的，已经全域封禁{sb_name}({sb})。")
+        return await ban.finish(f"好的，已经全域封禁{sb_name}({sb})。")
 
 unban = on_command("unban", priority=5)  # 解封
 
 
 @unban.handle()
 async def _(bot: Bot, event: Event, args: Message = CommandArg()):
-    if checker(str(event.user_id), 10) == False:
-        await ban.finish(error(10))
+    x = Permission(event.user_id).judge(10, '解除拉黑用户')
+    if not x.success:
+        return await ban.finish(x.description)
     sb = args.extract_plain_text()
     if checknumber(sb) == False:
-        await ban.finish("不能全域封禁不是纯数字的QQ哦~")
+        return await ban.finish("不能全域封禁不是纯数字的QQ哦~")
     info = await bot.call_api("get_stranger_info", user_id=int(sb))
     sb_name = info["nickname"]
     if sb == False:
-        await unban.finish("您输入了什么？")
+        return await unban.finish("您输入了什么？")
     if in_it(sb) == False:
-        await unban.finish("全域解封失败，并没有封禁此人哦~")
+        return await unban.finish("全域解封失败，并没有封禁此人哦~")
     now = json.loads(read(TOOLS + "/ban.json"))
     for i in now:
         if i == sb:
             now.remove(i)
     write(TOOLS + "/ban.json", json.dumps(now))
-    await ban.finish(f"好的，已经全域解封{sb_name}({sb})。")
-
-banned = on_message(priority=2, block=False)  # 封禁阻断器
+    return await ban.finish(f"好的，已经全域解封{sb_name}({sb})。")
 
 
-@banned.handle()
-async def _(matcher: Matcher, event: Event):
+@matcher_common_run.handle()
+async def common_match_ban_user(matcher: Matcher, event: Event):
     info = json.loads(read(TOOLS + "/ban.json"))
-    if str(event.user_id) in info and checker(str(event.user_id), 10) == False:
-        matcher.stop_propagation()
-    else:
-        pass
+    if not str(event.user_id) in info:
+        return
+
+    permit = Permission(event.user_id).judge(10, '黑名单用户免除封禁')
+    if permit.success:
+        return
+        
+    matcher.stop_propagation()

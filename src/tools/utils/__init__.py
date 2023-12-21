@@ -1,3 +1,3 @@
 from .common import *
 from .request import *
-from .ext import *
+from . import ext

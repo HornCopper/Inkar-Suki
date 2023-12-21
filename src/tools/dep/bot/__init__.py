@@ -12,7 +12,7 @@ from sgtpyutils.database import filebase_database
 from ...file import *
 
 import nonebot
-from nonebot import on, on_command, require
+from nonebot import on, on_command, require, on_message
 from nonebot import get_driver
 from nonebot.adapters.onebot.v11 import Event, MessageSegment as ms
 from nonebot.adapters import Message, MessageSegment
@@ -25,7 +25,7 @@ from tabulate import tabulate
 from pathlib import Path
 from nonebot.message import handle_event
 from nonebot import get_bots
-
+matcher_common_run = on_message(priority=3, block=False)
 botpy = os.getcwd()
 tools_path = botpy + "/src/tools"
 nonebot.init(tools_path=tools_path, log_level="INFO")
@@ -33,5 +33,6 @@ try:
     # 子依赖应后加载
     from .path import *
     from .bot_plugins import *
+    from src.tools.permission import checker as permission_check, error as permission_error, permission_judge, Permission, PermissionResult
 except:
     pass
