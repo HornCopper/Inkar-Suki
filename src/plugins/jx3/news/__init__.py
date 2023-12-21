@@ -10,4 +10,7 @@ async def _():
 
     Example：-新闻
     """
-    await news.finish(await news_())
+    r = await news_()
+    # if isinstance(r, GloConfigException):
+    #     return await r.finish(news)
+    return await news.finish(r)

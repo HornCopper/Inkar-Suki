@@ -123,10 +123,11 @@ class FavoritestGoodsPriceRefreshThread(threading.Thread):
 
     def __init__(self) -> None:
         self.id = DateTime().getTime()
+        self.__running = False
+        self.running = True
         super().__init__(daemon=True)
 
-    def run(self) -> None:
-        logger.debug(f"{self.getName()}refresh_favoritest_goods_current_price start")
+    def run_single(self):
         all_servers = distinct(server_map.values())
         tasks = []
         goods = get_favoritest_by_top(20)
@@ -145,24 +146,51 @@ class FavoritestGoodsPriceRefreshThread(threading.Thread):
             time.sleep(0.5+random.random())  # 每1秒添加1个任务直到运行完成
         for x in result:
             x.result()
-        logger.debug(f"{self.getName()}refresh_favoritest_goods_current_price complete")
+
+    @property
+    def running(self):
+        return self.__running
+
+    @running.setter
+    def running(self, v: bool):
+        if v == self.__running:
+            return
+        self.__running = v
+        if not v:
+            return
+        self.transition_id = f'{self.__class__.name}{DateTime()}'
+
+    def run(self) -> None:
+        while True:
+            if not self.running:
+                continue
+            logger.debug(f"{self.getName()}refresh_favoritest_goods_current_price start")
+            self.run_single()
+            logger.debug(f"{self.getName()}refresh_favoritest_goods_current_price complete")
+            self.running = False
         return super().run()
+
     def getName(self) -> str:
         parent = super().getName()
-        return f"{parent}_{self.id}" 
+        return f"{parent}_{self.id}"
 
-async def refresh_favoritest_goods_current_price():
+
+thread_fav_prices_refresher = FavoritestGoodsPriceRefreshThread()
+
+
+def refresh_favoritest_goods_current_price():
     '''
     开启一个新的采集线程
     '''
-    thread_fav_prices_refresher = FavoritestGoodsPriceRefreshThread()
-    thread_fav_prices_refresher.start()
+    thread_fav_prices_refresher.running = True
+    return thread_fav_prices_refresher.transition_id
+
 
 scheduler.add_job(func=refresh_favoritest_goods_current_price,
                   trigger=IntervalTrigger(minutes=60), misfire_grace_time=300)
 
 
-async def refresh_goods_popularity():
+def refresh_goods_popularity():
     """
     降低商品人气
     """
@@ -173,6 +201,7 @@ async def refresh_goods_popularity():
         g.u_popularity *= 0.995  # 每次降低5‰
     flush_CACHE_Goods()
     logger.debug(f"completed refresh_goods_popularity count:{len(goods)}")
+
 
 scheduler.add_job(func=refresh_goods_popularity,
                   trigger=IntervalTrigger(minutes=60), misfire_grace_time=300)

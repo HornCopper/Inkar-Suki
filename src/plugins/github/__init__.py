@@ -38,11 +38,11 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     reponame = args.extract_plain_text()
     status_code = await get_status("https://github.com/" + reponame)
     if status_code != 200:
-        await repo.finish(f"仓库获取失败，请检查后重试哦~\n错误码：{status_code}")
+        return await repo.finish(f"仓库获取失败，请检查后重试哦~\n错误码：{status_code}")
     else:
         img = ms.image(
             "https://opengraph.githubassets.com/c9f4179f4d560950b2355c82aa2b7750bffd945744f9b8ea3f93cc24779745a0/"+reponame)
-        await repo.finish(img)
+        return await repo.finish(img)
 
 webhook = on_command("bindrepo", aliases={"webhook"}, priority=5)
 
@@ -54,12 +54,14 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
     """
     personal_data = await bot.call_api("get_group_member_info", group_id=event.group_id, user_id=event.user_id, no_cache=True)
     group_admin = personal_data["role"] in ["owner", "admin"]
-    if not group_admin and checker(str(event.user_id), 9) == False:
-        await unbind.finish(error(9))
+    if not group_admin:
+        x = Permission(event.user_id).judge(5, '添加群聊响应的wenhook')
+        if not x.success:
+            return await webhook.finish(x.description)
     repo_name = args.extract_plain_text()
     status_code = await get_status("https://github.com/" + repo_name)
     if status_code != 200:
-        await repo.finish(f"唔……绑定失败。\n错误码：{status_code}")
+        return await repo.finish(f"唔……绑定失败。\n错误码：{status_code}")
     else:
         group = str(event.group_id)
         if already(repo_name, group) == False:
@@ -70,9 +72,9 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
             cache = open(DATA + "/" + group + "/" + "webhook.json", mode="w")
             cache.write(json.dumps(now))
             cache.close()
-            await webhook.finish("绑定成功！")
+            return await webhook.finish("绑定成功！")
         else:
-            await webhook.finish("唔……绑定失败：已经绑定过了。")
+            return await webhook.finish("唔……绑定失败：已经绑定过了。")
 
 unbind = on_command("unbindrepo", aliases={"unbind_webhook"}, priority=5)
 
@@ -84,12 +86,15 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
     """
     personal_data = await bot.call_api("get_group_member_info", group_id=event.group_id, user_id=event.user_id, no_cache=True)
     group_admin = personal_data["role"] in ["owner", "admin"]
-    if not group_admin and checker(str(event.user_id), 9) == False:
-        await unbind.finish(error(9))
+    if not group_admin:
+        
+        x = Permission(event.user_id).judge(9, '解封用户')
+        if not x.success:
+            return await unbind.finish(x.description)
     repo = args.extract_plain_text()
     group = str(event.group_id)
     if already(repo, group) == False:
-        await unbind.finish("唔……解绑失败：尚未绑定此仓库。")
+        return await unbind.finish("唔……解绑失败：尚未绑定此仓库。")
     else:
         cache = open(DATA + "/" + group + "/webhook.json", mode="r")
         now = json.loads(cache.read())
@@ -98,7 +103,7 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
         cache = open(DATA + "/" + group + "/webhook.json", mode="w")
         cache.write(json.dumps(now))
         cache.close()
-        await unbind.finish("解绑成功！")
+        return await unbind.finish("解绑成功！")
 
 app: FastAPI = nonebot.get_app()
 

@@ -21,8 +21,8 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
         result = resp.json()[0]
         resp = result
         if "trans" not in list(resp):
-            await nbnhhsh.finish("没有任何可能的结果哦~")
-        else:
-            results = resp["trans"]
-            ans = "可能的结果有：\n" + "、".join(results)
-            await nbnhhsh.finish(ans)
+            return await nbnhhsh.finish("没有任何可能的结果哦~")
+
+        results = resp["trans"]
+        ans = "可能的结果有：\n" + "、".join(results)
+        return await nbnhhsh.finish(ans)

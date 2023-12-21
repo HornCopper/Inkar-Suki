@@ -64,9 +64,9 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     """
     tid = args.extract_plain_text()
     if checknumber(tid) == False:
-        await tieba.finish("请给出纯数字的帖子ID哦~")
+        return await tieba.finish("请给出纯数字的帖子ID哦~")
     msg = await get_tieba(int(tid))
-    await tieba.finish(msg)
+    return await tieba.finish(msg)
 
 cheater_ = on_command("jx3_cheater", aliases={"-骗子", "-查人"}, priority=5)
 
@@ -75,11 +75,11 @@ cheater_ = on_command("jx3_cheater", aliases={"-骗子", "-查人"}, priority=5)
 async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
     content = args.extract_plain_text()
     if not checknumber(content):
-        await cheater_.finish("请输入纯数字的QQ哦~")
+        return await cheater_.finish("请输入纯数字的QQ哦~")
     else:
         personal_data = await bot.call_api("get_stranger_info", user_id=int(content))
         if personal_data["user_id"] == 0:
-            await cheater_.finish("唔……该QQ号似乎不存在哦~")
+            return await cheater_.finish("唔……该QQ号似乎不存在哦~")
         else:
             level = personal_data["level"]
             login = personal_data["login_days"]
@@ -91,7 +91,7 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
         else:
             url = data
             msg = f"此人可能是骗子？在贴吧已有记录！\n{url}\n{basic_info}\n仅供参考！请以实际内容为准！"
-        await cheater_.finish(msg)
+        return await cheater_.finish(msg)
 
 
 @del_dish.handle()
@@ -105,7 +105,7 @@ async def got_dish_name(matcher: Matcher, state: T_State):
 @del_dish.got("name", prompt="请告诉我你要删除哪个菜品或饮料,发送“取消”可取消操作")
 async def del_(state: T_State, name: Message = Arg()):
     if str(name) == "取消":
-        await del_dish.finish("已取消")
+        return await del_dish.finish("已取消")
     if state["type"] in ["菜单", "菜品"]:
         img = img_eat_path / (str(name)+".jpg")
     elif state["type"] in ["饮料", "饮品"]:
@@ -114,7 +114,7 @@ async def del_(state: T_State, name: Message = Arg()):
         os.remove(img)
     except OSError:
         msg = state["type"]
-        await del_dish.finish(f"不存在该{msg}，请检查下菜单再重试吧")
+        return await del_dish.finish(f"不存在该{msg}，请检查下菜单再重试吧")
     msg = state["type"]
     await del_dish.send(f"已成功删除{msg}:{name}", at_sender=True)
 
@@ -131,16 +131,16 @@ async def got_dish_name(matcher: Matcher, state: T_State):
 async def got(state: T_State, dish_name: Message = Arg()):
     state["name"] = str(dish_name)
     if str(dish_name) == "取消":
-        await add_dish.finish("已取消")
+        return await add_dish.finish("已取消")
 
 
 @add_dish.got("img", prompt="⭐图片也发给我吧\n发送“取消”可取消添加")
 async def handle(state: T_State, img: Message = Arg()):
     if str(img) == "取消":
-        await add_dish.finish("已取消")
+        return await add_dish.finish("已取消")
     img_url = extract_image_urls(img)
     if not img_url:
-        await add_dish.finish("没有找到图片(╯▔皿▔)╯，请稍后重试", at_sender=True)
+        return await add_dish.finish("没有找到图片(╯▔皿▔)╯，请稍后重试", at_sender=True)
 
     if state["type"] in ["菜品", "菜单"]:
         path = img_eat_path
@@ -152,7 +152,7 @@ async def handle(state: T_State, img: Message = Arg()):
         f.write(dish_img.content)
     name = state["name"]
     type_ = state["type"]
-    await add_dish.finish(f"成功添加{type_}:{name}\n" + ms.image(img_url))
+    return await add_dish.finish(f"成功添加{type_}:{name}\n" + ms.image(img_url))
 
 
 @view_dish.handle()
@@ -175,9 +175,9 @@ async def handle(state: T_State, name: Message = Arg()):
     elif state["type"] == "喝的":
         img = img_drink_path / (str(name)+".jpg")
     try:
-        await view_dish.send(ms.image(img))
+        return await view_dish.send(ms.image(img))
     except ActionFailed:
-        await view_dish.finish("没有找到你所说的，请检查一下菜单吧", at_sender=True)
+        return await view_dish.finish("没有找到你所说的，请检查一下菜单吧", at_sender=True)
 
 
 @view_all_dishes.handle()
@@ -215,11 +215,11 @@ async def wtd(msg: MessageEvent):
     check_result, remain_time, new_last_time = check_cd(time)
     if not check_result:
         time = new_last_time
-        await what_drink.finish(f"cd冷却中,还有{remain_time}秒", at_sender=True)
+        return await what_drink.finish(f"cd冷却中,还有{remain_time}秒", at_sender=True)
     else:
         is_max, user_count = check_max(msg, user_count)
         if is_max:
-            await what_drink.finish(random.choice(max_msg), at_sender=True)
+            return await what_drink.finish(random.choice(max_msg), at_sender=True)
         time = new_last_time
         img_name = random.choice(all_file_drink_name)
         img = img_drink_path / img_name
@@ -229,9 +229,9 @@ async def wtd(msg: MessageEvent):
         msg = (f"{Bot_NICKNAME}建议你喝: \n⭐{img.stem}⭐\n" + ms.image(base64_str))
         try:
             await what_drink.send("正在为你找好喝的……")
-            await what_drink.send(msg, at_sender=True)
+            return await what_drink.send(msg, at_sender=True)
         except ActionFailed:
-            await what_drink.finish("出错啦！没有找到好喝的~")
+            return await what_drink.finish("出错啦！没有找到好喝的~")
 
 
 @what_eat.handle()
@@ -240,11 +240,11 @@ async def wte(msg: MessageEvent):
     check_result, remain_time, new_last_time = check_cd(time)
     if not check_result:
         time = new_last_time
-        await what_eat.finish(f"cd冷却中,还有{remain_time}秒", at_sender=True)
+        return await what_eat.finish(f"cd冷却中,还有{remain_time}秒", at_sender=True)
     else:
         is_max, user_count = check_max(msg, user_count)
         if is_max:
-            await what_eat.finish(random.choice(max_msg), at_sender=True)
+            return await what_eat.finish(random.choice(max_msg), at_sender=True)
         time = new_last_time
         img_name = random.choice(all_file_eat_name)
         img = img_eat_path / img_name
@@ -254,9 +254,9 @@ async def wte(msg: MessageEvent):
         msg = (f"{Bot_NICKNAME}建议你吃: \n⭐{img.stem}⭐\n" + ms.image(base64_str))
         try:
             await what_eat.send("正在为你找好吃的……")
-            await what_eat.send(msg, at_sender=True)
+            return await what_eat.send(msg, at_sender=True)
         except ActionFailed:
-            await what_eat.finish("出错啦！没有找到好吃的~")
+            return await what_eat.finish("出错啦！没有找到好吃的~")
 
 # 每日0点重置用户数据
 
