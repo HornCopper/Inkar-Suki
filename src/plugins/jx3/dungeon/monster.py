@@ -57,9 +57,9 @@ async def get_monsters_map():
             count)).replace("$bossName", name).replace("$Desc", desc).replace("$Coin", coin)
         if count % 10 == 0:
             content.append(new)
-            if count / 10 in [1, 2, 3, 4, 5]:
+            if count / 10 in [1, 2, 3, 4, 5, 6]:
                 content.append("</div>\n<div class=\"u-row\">")
-            elif count / 10 == 6:
+            elif count / 10 == 7:
                 content.append("</div>")
         else:
             content.append(new)

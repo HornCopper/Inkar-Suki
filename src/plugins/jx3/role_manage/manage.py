@@ -133,6 +133,34 @@ def getRoleList(user):
                 role.append(x["serverName"] + "|" + x["roleName"] + "|" + "已验证" if x["status"] else "未验证")
             return role
     return -1
+
+def getAllRole(user, verify, dtype):
+    data = readData()
+    role = []
+    for i in data:
+        if i["user_id"] == user:
+            if len(i["roles"]) == 0:
+                return 0
+            for x in i["roles"]:
+                if verify:
+                    if x["status"]:
+                        if dtype:
+                            msg = [x["serverName"], x["roleName"], x["globalRoleId"]]
+                        else:
+                            msg = [x["serverName"], x["roleName"], x["roleId"]]
+                        msg = "|".join(msg)
+                        role.append(msg)
+                    else:
+                        pass
+                else:
+                    if dtype:
+                        msg = [x["serverName"], x["roleName"], x["globalRoleId"]]
+                    else:
+                        msg = [x["serverName"], x["roleName"], x["roleId"]]
+                    msg = "|".join(msg)
+                    role.append(msg)
+            return role if len(role) > 0 else 0
+    return -1
     
 def createRecord(user):
     new = {
@@ -142,3 +170,35 @@ def createRecord(user):
     data = readData()
     data.append(new)
     write(TOOLS + "/bindrole.json", json.dumps(data, ensure_ascii=False))
+
+async def getRoleCd(guid):
+    ts = gen_ts()
+    param = {
+        "globalRoleId": guid,
+        "sign": dungeon_sign(f"globalRoleId={guid}&ts={ts}"),
+        "ts": ts
+    }
+    param = format_body(param)
+    headers = {
+        "Accept": "application/json, text/plain, */*",
+        "Accept-Encoding": "gzip",
+        "Accept-Language": "zh-cn",
+        "Connection": "keep-alive",
+        "Content-Type": "application/json",
+        "Host": "m.pvp.xoyo.com",
+        "Origin": "https://w.pvp.xoyo.com:31727",
+        "User-Agent": "SeasunGame/178 CFNetwork/1240.0.2 Darwin/20.5.0",
+        "token": ticket,
+        "X-Sk": gen_xsk(param)
+    }
+    data = await post_url("https://m.pvp.xoyo.com/h5/parser/cd-process/get-by-role", headers=headers, data=param)
+    return json.loads(data)["data"]
+
+def searchData(mapName: str, data: dict):
+    for i in data:
+        if mapName == (i["mapType"] + i["mapName"]):
+            status = []
+            for x in i["bossProgress"]:
+                status.append(x["finished"])
+            return status
+    return 0 # 没有打过
