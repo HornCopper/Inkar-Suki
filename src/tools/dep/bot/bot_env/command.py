@@ -2,7 +2,7 @@
 import nonebot
 
 
-def __hook_on_command():
+def __start_hook_on_command():
     def __hook_on_command(
         cmd: nonebot.Union[str, nonebot.Tuple[str, ...]],
         rule: nonebot.Optional[nonebot.Union[nonebot.Rule, nonebot.T_RuleChecker]] = None,
@@ -21,6 +21,6 @@ def __hook_on_command():
 
 
 try:
-    __hook_on_command()
+    __start_hook_on_command()
 except:
     pass
