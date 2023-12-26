@@ -100,11 +100,13 @@ class MenuCallback:
         '''将收集到的结果发送出去'''
         logger.info(f'start send subscribe...{self.statistics}')
         for item in self.valid_result:
-            self.send_msg_single(item)
+            await self.send_msg_single(item)
 
     async def send_msg_single(self, item):
         '''发送单条结果'''
         [botname, group_id, to_send_msg] = item
+        sub_name = self.sub.name
+        to_send_msg = f'{to_send_msg}\n该消息来自[{sub_name}]订阅，如需退订回复 `退订 {sub_name}`'
         try:
             await self.bots.get(botname).call_api("send_group_msg", group_id=group_id, message=to_send_msg)
         except Exception as ex:
@@ -130,7 +132,7 @@ class MenuCallback:
                     to_send_msg = callback_result
                     break
 
-            result.append([botname, group_id, to_send_msg])
+                result.append([botname, group_id, to_send_msg])
         self.result = result
 
 
