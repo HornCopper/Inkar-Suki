@@ -82,6 +82,7 @@ async def OnCallback(sub: SubscribeSubject, cron: SubjectCron):
                     to_send_msg = None
                     break
                 to_send_msg = callback_result
+                break
 
             result.append([botname, group_id, to_send_msg])
 
