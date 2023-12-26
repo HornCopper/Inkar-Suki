@@ -1,7 +1,7 @@
 from ... import *
 
 import src.plugins.jx3
-from src.plugins.jx3 import wiki
+from src.plugins.jx3 import wiki, get_guide
 
 
 def test_question():
@@ -12,7 +12,7 @@ def test_question():
     state = {}
     event = SFGroupMessageEvent()
 
-    mc.tag = '端午节活动'
+    mc.tag = '小药简介'  # 将返回含有图片的项
     task = func(state, event, obMessage(mc.tag))
     asyncio.run(task)
     mc.check_counter()
@@ -27,3 +27,10 @@ def test_question():
     task = func(state, event, obMessage(mc.tag))
     asyncio.run(task)
     mc.check_counter()
+
+
+def test_noanswer():
+    arg_keywords = '小药'
+    task = get_guide(arg_keywords)
+    result = asyncio.run(task)
+    assert '尝试换个方式问问' in result.question.results[0]
