@@ -71,15 +71,32 @@ async def OnCallback(sub: SubscribeSubject, cron: SubjectCron):
             group_id = group.get("group_id")
             g_subscribe = load_or_write_subscribe(group_id)
             u_subscribed_level = check_subscribed(sub, g_subscribe)
-            can_send = u_subscribed_level >= cron.level
-            result.append([botname, group_id, can_send])
-            if not can_send:
-                continue
-            func = sub.callback if sub.callback else OnDefaultCallback
-            await func(bot, group_id, sub, cron)
+            to_send_msg = u_subscribed_level >= cron.level
+
+            while to_send_msg:
+                # 回调获取应发消息
+                func = sub.callback if sub.callback else OnDefaultCallback
+                callback_result = await func(bot, group_id, sub, cron)
+                # 如果有返回值则表示需要发送
+                if not callback_result or not isinstance(callback_result, str):
+                    to_send_msg = None
+                    break
+                to_send_msg = callback_result
+
+            result.append([botname, group_id, to_send_msg])
+
     valid = len([x for x in result if x[2]])
     total = len(result)
     pre = f"send events:{sub.name}[{cron.notify_content}] to "
-    logger.debug(f"{pre}{valid}/{total} groups")
+    statistics = f"{valid}/{total} groups"
+    logger.debug(f'{pre}{statistics}')
+
+    for item in result:
+        [botname, group_id, to_send_msg] = item
+        try:
+            await bots.get(botname).call_api("send_group_msg", group_id=group_id, message=to_send_msg)
+        except Exception as ex:
+            logger.warning(f'{botname} bot fail to send msg -> {group_id}:{ex}')
+
 
 load_subjects(__subjects, VALID_Subjects)
