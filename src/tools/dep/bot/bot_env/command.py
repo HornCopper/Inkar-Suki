@@ -1,26 +1,23 @@
 
 import nonebot
+from nonebot import on_command
+from sgtpyutils.logger import logger
 
 
 def __start_hook_on_command():
+    logger.debug('hooked func on_command')
     def __hook_on_command(
-        cmd: nonebot.Union[str, nonebot.Tuple[str, ...]],
-        rule: nonebot.Optional[nonebot.Union[nonebot.Rule, nonebot.T_RuleChecker]] = None,
-        aliases: nonebot.Optional[nonebot.Set[nonebot.Union[str,
-                                                            nonebot.Tuple[str, ...]]]] = None,
-        force_whitespace: nonebot.Optional[nonebot.Union[str, bool]] = None,
+        cmd,
+        rule=None,
+        aliases=None,
+        force_whitespace=None,
         _depth: int = 0,
         **kwargs,
-    ) -> nonebot.Type[nonebot.Matcher]:
+    ):
         force_whitespace = ' '
-        return nonebot._on_command(cmd, rule, aliases, _depth, force_whitespace, **kwargs)
-    nonebot._on_command = __hook_on_command # 初始化
-    nonebot._on_command.__code__ = nonebot.on_command.__code__ # 保存原始代码
-
-    nonebot.on_command.__code__ = __hook_on_command.__code__ # 覆盖原始代码
+        return nonebot._on_command(cmd, rule, aliases, force_whitespace,  _depth, **kwargs)
+    nonebot._on_command = nonebot.on_command  # 初始化
+    nonebot.on_command = __hook_on_command
 
 
-try:
-    __start_hook_on_command()
-except:
-    pass
+__start_hook_on_command()
