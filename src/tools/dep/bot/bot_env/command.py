@@ -3,8 +3,6 @@ import nonebot
 
 
 def __hook_on_command():
-    __raw_on_command = nonebot.on_command
-
     def __hook_on_command(
         cmd: nonebot.Union[str, nonebot.Tuple[str, ...]],
         rule: nonebot.Optional[nonebot.Union[nonebot.Rule, nonebot.T_RuleChecker]] = None,
@@ -15,8 +13,11 @@ def __hook_on_command():
         **kwargs,
     ) -> nonebot.Type[nonebot.Matcher]:
         force_whitespace = ' '
-        return __raw_on_command(cmd, rule, aliases, _depth, force_whitespace, **kwargs)
-    nonebot.on_command = __hook_on_command
+        return nonebot._on_command(cmd, rule, aliases, _depth, force_whitespace, **kwargs)
+    nonebot._on_command = __hook_on_command # 初始化
+    nonebot._on_command.__code__ = nonebot.on_command.__code__ # 保存原始代码
+
+    nonebot.on_command.__code__ = __hook_on_command.__code__ # 覆盖原始代码
 
 
 try:
