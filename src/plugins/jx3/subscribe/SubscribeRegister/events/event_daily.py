@@ -22,13 +22,14 @@ async def CallbackDaily(bot: Bot, group_id: str, sub: SubscribeSubject, cron: Su
                     pass
             CACHE_Daily = {}
             url = await daily_("唯满侠", group_id, 1)  # 向后预测1天的
-            img_data = send_with_async('get', url).content
+            img_data = (await send_with_async('get', url)).content
             path_cache_daily = f"{CACHE}{os.sep}{key}.png"
             with open(path_cache_daily, "wb") as f:
                 f.write(img_data)
             CACHE_Daily[key] = path_cache_daily
+
     message = f"{ms.image(Path(path_cache_daily).as_uri())}{cron.notify_content}"
-    await bot.call_api("send_group_msg", group_id=group_id, message=message)
+    return message
 
 CallbackDailyToday = CallbackDaily
 CallbackDailyTomorow = CallbackDaily
@@ -42,8 +43,10 @@ def run(__subjects: list):
     )
     __subjects.append(v)
     v = SubscribeSubject(name="今日日常", description="每天一大早推送今天的日常任务", cron=[
-                         SubjectCron("50 6 * * *", "早~今天的日常来啦")], callback=CallbackDailyToday)
+                         SubjectCron("50 6 * * *", "早~今天的日常来啦")
+                         ], callback=CallbackDailyToday)
     __subjects.append(v)
     v = SubscribeSubject(name="明日日常", description="每天晚上10点推送次日的日常任务", cron=[
-                         SubjectCron("0 22 * * *", "这是明天的日常哦~晚安！")], callback=CallbackDailyTomorow)
+                         SubjectCron("0 22 * * *", "这是明天的日常哦~晚安！")
+                         ], callback=CallbackDailyTomorow)
     __subjects.append(v)
