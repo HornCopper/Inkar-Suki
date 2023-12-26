@@ -154,7 +154,7 @@ class Jx3Guide:
                 continue
             if not src.startswith(Jx3Guide.API_web_host):
                 src = f"{Jx3Guide.API_web_host}{src}"
-            img_data = await get_api(src, client=self.session)
+            img_data = await send_with_async('get', src, client=self.session)
             if not img_data.status_code == 200:
                 img.attrs["src"] = ""  # 错误
                 continue
@@ -197,6 +197,9 @@ class Jx3Guide:
         res.relateds = extensions.flat(
             [[x for x in paras[1] if x] for paras in r if paras])
         # logger.debug(f"answers handled:{res.results},{res.relateds}")
+
+        if not res.results:
+            res.results = [['没有找到这个问题的答案，尝试换个方式问问']]
 
     async def run_async(self):
         await self._step_init()
