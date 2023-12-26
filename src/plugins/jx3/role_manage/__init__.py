@@ -99,8 +99,8 @@ async def _(event: GroupMessageEvent):
         mapFullName = i["mapType"] + i["mapName"]
         if mapFullName not in zones:
             zones.append(mapFullName)
-    for i in zones:
-        for x in 
+    # for i in zones:
+    #     for x in 
         
 
 location = on_command("jx3_iplocation", aliases={"属地查询"}, priority=5)
