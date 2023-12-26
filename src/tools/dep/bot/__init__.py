@@ -11,7 +11,7 @@ except:
 from sgtpyutils.database import filebase_database
 from ...file import *
 
-import nonebot
+from .bot_env import *
 from nonebot import on, on_command, require, on_message
 from nonebot import get_driver
 from nonebot.adapters.onebot.v11 import Event, MessageSegment as ms
