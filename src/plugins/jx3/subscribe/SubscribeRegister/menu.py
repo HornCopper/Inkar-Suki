@@ -86,13 +86,14 @@ async def OnCallback(sub: SubscribeSubject, cron: SubjectCron):
 
             result.append([botname, group_id, to_send_msg])
 
-    valid = len([x for x in result if x[2]])
+    valid_result = [x for x in result if x[2]]
     total = len(result)
+    valid = len(valid_result)
     pre = f"send events:{sub.name}[{cron.notify_content}] to "
     statistics = f"{valid}/{total} groups"
     logger.debug(f'{pre}{statistics}')
 
-    for item in result:
+    for item in valid_result:
         [botname, group_id, to_send_msg] = item
         try:
             await bots.get(botname).call_api("send_group_msg", group_id=group_id, message=to_send_msg)
