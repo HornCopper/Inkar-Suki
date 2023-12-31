@@ -1,6 +1,6 @@
 from sgtpyutils.logger import logger
 import functools
-from ...api.argparser import *
+from ...args import *
 
 
 class DocumentItem:

@@ -1,7 +1,6 @@
 from __future__ import annotations
 from nonebot.adapters.onebot.v11.message import Message as v11Message
 from nonebot.adapters import Message, MessageSegment
-from enum import IntEnum
 from typing import List, Literal, Tuple
 from ..exceptions import *
 from ..data_server import *
@@ -9,8 +8,8 @@ from src.tools.utils import *
 from src.constant.jx3.skilldatalib import *
 from sgtpyutils import extensions
 from sgtpyutils.logger import logger
+from ..args import *
 logger.debug(f'load dependence:{__name__}')
-
 
 def convert_to_str(msg: MessageSegment):
     if isinstance(msg, MessageSegment):
@@ -27,26 +26,6 @@ def convert_to_str(msg: MessageSegment):
     logger.warning(f'message cant convert to str:{msg}')
     return msg
 
-
-class Jx3ArgsType(IntEnum):
-    '''任意'''
-    default = 0
-    '''文本'''
-    string = 1
-    '''数值'''
-    number = 2
-    '''区服'''
-    server = 3
-    '''页码'''
-    pageIndex = 4
-    '''每页条数'''
-    pageSize = 5
-    '''心法'''
-    kunfu = 6
-    '''门派'''
-    school = 7
-    '''道具名称'''
-    property = 8
 
 
 class Jx3Arg:
