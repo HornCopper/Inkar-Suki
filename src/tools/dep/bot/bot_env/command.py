@@ -7,17 +7,12 @@ from .document import DocumentGenerator
 import nonebot.matcher
 
 
-def __start_hook_command_handler():
-    logger.debug('hooked func on_command.handle')
-    @DocumentGenerator.counter
-    def __hook_on_command_handle(cls, parameterless):
-        return nonebot.matcher.Matcher._handle(cls, parameterless)
-    nonebot.matcher.Matcher._handle = nonebot.matcher.Matcher.handle  # 初始化
-    nonebot.matcher.Matcher.handle = __hook_on_command_handle
-
-
 def __start_hook_on_command():
     logger.debug('hooked func on_command')
+
+    @DocumentGenerator.counter
+    def __hook_on_command_handle(cls, parameterless=None):
+        return nonebot.matcher.Matcher.handle(parameterless)
 
     @DocumentGenerator.register
     def __hook_on_command(
@@ -29,10 +24,14 @@ def __start_hook_on_command():
         **kwargs,
     ):
         force_whitespace = ' '
-        return nonebot._on_command(cmd, rule, aliases, force_whitespace,  _depth, **kwargs)
+        command_item = nonebot._on_command(cmd, rule, aliases, force_whitespace,  _depth)
+
+        # def on_call_self(*args, **kwargs):
+        #     return __hook_on_command_handle(command_item, *args, **kwargs)
+        # command_item.handle = on_call_self
+        return command_item
     nonebot._on_command = nonebot.on_command  # 初始化
     nonebot.on_command = __hook_on_command
 
 
 __start_hook_on_command()
-__start_hook_command_handler()
