@@ -1,5 +1,6 @@
 from __future__ import annotations
 from nonebot.adapters.onebot.v11.message import Message as v11Message
+from nonebot.adapters.onebot.v11.event import GroupMessageEvent
 from nonebot.adapters import Message, MessageSegment
 from typing import List, Literal, Tuple
 from ..exceptions import *
@@ -44,11 +45,11 @@ class Jx3Arg:
             Jx3ArgsType.school: self._convert_school,
         }
 
-    def data(self, arg_value: str, group_id: str = None):
+    def data(self, arg_value: str, event: GroupMessageEvent = None):
         '''
         获取当前参数的值，获取失败则返回None
         '''
-        return self.callback[self.arg_type](arg_value, group_id=group_id)
+        return self.callback[self.arg_type](arg_value, group_id=event.group_id)
 
     def _convert_school(self, arg_value: str, **kwargs) -> str:
         if not arg_value:
@@ -80,7 +81,7 @@ class Jx3Arg:
         return v
 
 
-def get_args(raw_input: str, template_args: List[Jx3Arg], group_id: str = None) -> Tuple:
+def get_args(raw_input: str, template_args: List[Jx3Arg], event: GroupMessageEvent = None) -> Tuple:
     raw_input = convert_to_str(raw_input)
     template_len = len(template_args)
     raw_input = raw_input or ''  # 默认传入空参数
@@ -92,7 +93,7 @@ def get_args(raw_input: str, template_args: List[Jx3Arg], group_id: str = None) 
         arg_value = user_args.get(user_index)  # 获取当前输入参数
         match_value = template_args[template_index]  # 获取当前待匹配参数
         template_index += 1  # 被匹配位每次+1
-        x = match_value.data(arg_value, group_id)  # 将待匹配参数转换为数值
+        x = match_value.data(arg_value, event)  # 将待匹配参数转换为数值
         result.append(x)  # 无论是否解析成功都将该位置参数填入
         if x is None:
             if not match_value.is_optional:
