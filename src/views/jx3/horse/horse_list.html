@@ -73,10 +73,12 @@
                     </span>
                   </div>
                   <el-steps>
-                    <el-step v-for="(record,index) in group.records" :key="record.id"
-                      :description="parseTime(record.timestamp,'{h}:{i}')" :status="get_record_status(record)">
+                    <el-step v-for="(record,index) in group.records" :key="record.id" description="13">
+                      <template #description>
+                        <div :style="{color:get_record_color(record)}">{{ parseTime(record.timestamp,'{h}:{i}') }}</div>
+                      </template>
                       <template #icon>
-                        <div>{{ parseTime(record.timestamp,'{d}日') }}</div>
+                        <div :style="{color:get_record_color(record)}">{{ parseTime(record.timestamp,'{d}日') }}</div>
                       </template>
                     </el-step>
                   </el-steps>
@@ -177,9 +179,12 @@
         if (!horse) return null
         return `https://img.jx3box.com/horse/std/${horse.id}.png`
       }
-      methods.get_record_status = (record) => {
+      methods.get_record_color = (record) => {
         const date = new Date(record.timestamp * 1e3)
-        return date > new Date() ? 'process' : 'wait'
+        const now = new Date().getTime()
+        if (date > now) return '#2e69ff' // 未来会发生
+        if (date > now - 5 * 60e3) return '#d9272a' // 当前正在发生
+        return '#777777' // 已经结束了
       }
       methods.get_map_translate = item => {
         const percent_x = (item.hp.x - item.x) / item.game_width
