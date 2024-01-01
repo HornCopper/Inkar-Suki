@@ -35,7 +35,6 @@ nonebot.init(tools_path=tools_path, log_level="INFO")
 '''初始调用库'''
 from sgtpyutils.database import filebase_database
 from ...file import *
-
 try:
     # 子依赖应后加载
     from .path import *
