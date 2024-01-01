@@ -6,7 +6,7 @@ data_horse_reporter: dict[str, HorseRecords] = {}  # 记录历史
 async def get_horse_reporter_data(server: str, start: int = 0, end: int = 1):
     records = []
     for i in range(start, end):
-        final_url = f"https://next2.jx3box.com/api/game/reporter/horse?pageIndex={i+1}&pageSize=50&type=horse&server={server}"
+        final_url = f"https://next2.jx3box.com/api/game/reporter/horse?pageIndex={i+1}&pageSize=50&type=horse&server={server}&subtype=npc_chat"
         data = await get_api(final_url)
         tmp_records = data.get('data').get('list') or []
         records += tmp_records
