@@ -1,0 +1,267 @@
+<template>
+  <div :style="{'text-align': 'center','font-size':font_size,width:'1000px'}">
+    <el-card shadow="never">
+      <div style="font-size:2rem;font-weight:600;">马场 · {{ server }}</div>
+      <el-row>
+        <el-card style="width: 100%;margin: 0.2rem;">
+          <el-row>
+            <el-col :span="12">
+              <el-row>
+                <el-col class="primary-icon" :span="4">
+                  <div>命令</div>
+                  <div class="ver-line"></div>
+                </el-col>
+                <el-col :span="20">
+                  <div class="primary-title">
+                    <div>
+                      <span style="color:#999">查看马场记录：</span>
+                      <span>抓马 [服务器]</span>
+                    </div>
+                  </div>
+                </el-col>
+              </el-row>
+            </el-col>
+            <el-col :span="12">
+              <el-row>
+                <el-col class="primary-icon" :span="4">
+                  <div style="color: #999999;">说明</div>
+                  <div class="ver-line"></div>
+                </el-col>
+                <el-col :span="20">
+                  <div class="primary-content">
+                    <div>1. 马场数据提取自npc对话信息。</div>
+                    <div>2. 抓马时间可能有3分钟左右的误差，记得提前进图。</div>
+                    <div>3. 当前为测试版，提建议可以发用户群。</div>
+                  </div>
+                </el-col>
+              </el-row>
+            </el-col>
+          </el-row>
+        </el-card>
+      </el-row>
+      <el-row>
+        <el-card class="item-container">
+          <div v-for="item in map_handled_data" :key="item.map_id" class="item-container">
+            <el-row :gutter="20">
+              <el-col :span="8">
+                <div class="item-map-img-container" :style="{width:`${innerWidth}px`,height:`${innerHeight}px`}">
+                  <img :src="get_map_img(item.map_id)" class="item-map-img" :style="get_map_translate(item)" />
+                </div>
+                <div class="item-map-fields">
+                  <div>
+                    <span class="sub-title">名称</span>
+                    <span :style="{'font-size':font_size,color:item.color,'margin-left':'0.5rem'}">
+                      <span>{{ item.map_name }}</span>
+                    </span>
+                  </div>
+                  <div>
+                    <span class="sub-title">地图尺寸</span>
+                    <span>({{ sci_num(item.game_width,1) }} X {{ sci_num(item.game_height,1) }})</span>
+                  </div>
+                  <div>
+                    <span class="sub-title">马儿坐标</span>
+                    <span v-for="(coord,index) in item.coordinates" :key="index">{{ as_coord(coord) }}</span>
+                  </div>
+                </div>
+              </el-col>
+              <el-col :span="16">
+                <div v-for="group in item.groups" :key="group.name">
+                  <div class="horse-item-container">
+                    <span v-for="(horse,index) in group.horses" :key="index">
+                      <span>{{horse}}</span>
+                      <img :src="get_horse_icon(horse)" class="horse-item-img" />
+                    </span>
+                  </div>
+                  <el-steps>
+                    <el-step v-for="(record,index) in group.records" :key="record.id"
+                      :description="parseTime(record.timestamp,'{h}:{m}')" :status="get_record_status(record)">
+                      <template #icon>
+                        <div>{{ parseTime(record.timestamp,'{d}日') }}</div>
+                      </template>
+                    </el-step>
+                  </el-steps>
+                  <el-divider style="margin:5px" />
+                </div>
+              </el-col>
+              <el-divider />
+            </el-row>
+          </div>
+        </el-card>
+      </el-row>
+    </el-card>
+  </div>
+</template>
+<style lang="scss">
+  .ver-line {
+    height: 3rem;
+    border: 1px solid #aaaaaa;
+  }
+
+  .primary-icon {
+    font-weight: 600;
+    font-size: 1.2rem;
+    line-height: 1.4rem;
+    display: flex;
+    justify-content: space-evenly;
+  }
+
+  .primary-title {
+    color: #ff0000;
+    font-weight: 400;
+    text-align: left;
+    line-height: 1.4rem;
+    font-size: 1.12rem;
+  }
+
+  .primary-content {
+    color: #999;
+    text-align: left;
+    line-height: 1rem;
+    font-size: 0.8rem;
+  }
+
+  .sub-title {
+    margin-right: 0.5rem;
+    font-weight: 600;
+    font-size: 1.2rem;
+  }
+
+  .global-title {
+    font-weight: 600;
+    font-size: 1.2rem;
+  }
+</style>
+<style lang="scss">
+  .item-container {
+    margin-bottom: 1rem;
+    width: 100%;
+    text-align: left;
+  }
+
+  .item-map-img-container {
+    overflow: hidden;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, .3);
+  }
+
+  .item-map-img {
+    position: relative;
+  }
+
+  .horse-item-img {
+    width: 2rem;
+    height: 2rem;
+  }
+</style>
+<script>
+  const { defineComponent, reactive, toRefs, ref, onMounted, computed } = Vue
+  const component = defineComponent({
+    components: {},
+    setup () {
+      const locale = computed(() => window.zhCn)
+      onMounted(() => {
+      })
+      const methods = {
+        parseTime,
+        formatTime,
+        convertSci,
+        convertPop
+      }
+      const font_size = ref('1rem')
+      const innerWidth = 280
+      const innerHeight = 240
+      methods.get_map_img = (id) => `https://img.jx3box.com/map/maps/map_${id}_0.png`
+      methods.sci_num = (x, floor = 1e3) => Math.floor(x * floor) / floor
+      methods.as_coord = (coord) => `(${coord.x} , ${coord.y} , ${coord.z})`
+      methods.get_horse_icon = (x) => {
+        const horse = horse_data_dict.value[x]
+        if (!horse) return null
+        return `https://img.jx3box.com/horse/std/${horse.id}.png`
+      }
+      methods.get_record_status = (record) => {
+        const date = new Date(record.timestamp * 1e3)
+        return date > new Date() ? 'process' : 'wait'
+      }
+      methods.get_map_translate = item => {
+        const percent_x = (item.hp.x - item.x) / item.game_width
+        const offset_x = percent_x * item.width // 判断绘制区域的大小
+
+        const percent_y = (item.hp.y - item.y) / item.game_height
+        const offset_y = (1 - percent_y) * item.height
+
+        const jxbox_offset = { x: 125, y: -70 } // 此处存在偏移
+        const center_x = innerWidth * 0.5 - jxbox_offset.x
+        const center_y = innerHeight * 0.5 - jxbox_offset.y
+        return {
+          left: `${methods.sci_num(center_x - offset_x)}px`,
+          top: `${methods.sci_num(center_y - offset_y)}px`
+        }
+      }
+      const handle_map_info = () => {
+        return params_data.map_data.map(item => {
+          const map_point = item.points[0]
+          item.hp = item.coordinates[0] // horse_point
+          item = Object.assign(item, map_point)
+          item.game_width = item.width / item.scale + item.x
+          item.game_height = item.height / item.scale + item.y
+          return item
+        })
+      }
+      const handle_map_horse = (map_dict) => {
+        Object.values(map_dict).map(x => {
+          x.records = []
+          x.groups_dict = {}
+        })
+        const records = params_data.records
+        records.map(r => {
+          const key = r.horses.join('')
+          const x = map_dict[r.map]
+          if (!x.groups_dict[key]) x.groups_dict[key] = []
+          x.groups_dict[key].push(r)
+          x.records.push(r)
+        })
+
+        Object.values(map_dict).map(x => {
+          x.groups = Object.keys(x.groups_dict).map(g => {
+            const records = x.groups_dict[g]
+            return {
+              name: g,
+              horses: records[0].horses,
+              records: records.slice(0, 10), // 每行最多显示10条记录
+            }
+          })
+        })
+      }
+      const map_handled_data = computed(() => {
+        const map_dict = {}
+        handle_map_info().map(x => {
+          map_dict[x.map_id] = x
+        })
+
+        handle_map_horse(map_dict)
+        const result = Object.values(map_dict)
+        return result
+      })
+      const horse_data_dict = computed(() => {
+        const horse_data = params_data.horse_data
+        const result = {}
+        horse_data.map(x => {
+          result[x.name] = x
+        })
+        return result
+      })
+      return {
+        records: [],
+        map_data: [],
+        map_handled_data,
+        horse_data: [],
+        horse_data_dict,
+        server: '', // 唯我独尊
+        item_name: '', // 的卢
+        font_size,
+        innerWidth,
+        innerHeight,
+        ...methods,
+      }
+    },
+  })
+</script>
