@@ -7,7 +7,7 @@ jx3_cmd_subscribe = on_command("jx3_subscribe", aliases={"订阅"}, priority=5)
 async def get_jx3_subscribe(event: GroupMessageEvent, args: Message = CommandArg()):
     now = load_or_write_subscribe(event.group_id)
     template = [Jx3Arg(Jx3ArgsType.default), Jx3Arg(Jx3ArgsType.default)]
-    arg_sub, arg_info = get_args(args.extract_plain_text(), template, event)
+    arg_sub, arg_info = get_args(args, template, event)
     arg_sub = arg_sub.lower() if arg_sub else None
     subject = VALID_Subjects.get(arg_sub)
     if subject is None:
@@ -38,7 +38,7 @@ jx3_cmd_unsubscribe = on_command("jx3_unsubscribe", aliases={"退订"}, priority
 async def get_jx3_unsubscribe(event: GroupMessageEvent, args: Message = CommandArg()):
     now = load_or_write_subscribe(event.group_id)
     template = [Jx3Arg(Jx3ArgsType.default), Jx3Arg(Jx3ArgsType.default)]
-    arg_sub, arg_info = get_args(args.extract_plain_text(), template, event)
+    arg_sub, arg_info = get_args(args, template, event)
     arg_sub = arg_sub.lower() if arg_sub else None
     subject = VALID_Subjects.get(arg_sub)
     if subject is None:
