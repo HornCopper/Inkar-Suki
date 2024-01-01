@@ -74,7 +74,7 @@
                   </div>
                   <el-steps>
                     <el-step v-for="(record,index) in group.records" :key="record.id"
-                      :description="parseTime(record.timestamp,'{h}:{m}')" :status="get_record_status(record)">
+                      :description="parseTime(record.timestamp,'{h}:{i}')" :status="get_record_status(record)">
                       <template #icon>
                         <div>{{ parseTime(record.timestamp,'{d}日') }}</div>
                       </template>
