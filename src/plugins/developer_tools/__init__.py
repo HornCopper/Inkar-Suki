@@ -43,7 +43,7 @@ shutdown = on_command("shutdown", aliases={"poweroff"}, priority=5)  # 关掉`In
 
 @shutdown.handle()
 async def ____(event: Event):
-    
+
     x = Permission(event.user_id).judge(10, '关闭机器人')
     if not x.success:
         return await shutdown.finish(x.description)
@@ -82,7 +82,7 @@ async def say_(event: Event, args: Message = CommandArg()):
         if segment.is_text():
             return message.append(unescape(str(segment)))
         return message.append(segment)
-    
+
     x = Permission(event.user_id).judge(10, '高级复读说话')
     if not x.success:
         return await say.finish(x.description)
@@ -168,7 +168,7 @@ voice = on_command("voice", priority=5)  # 调用腾讯的语音TTS接口，生�
 
 @voice.handle()
 async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
-    
+
     x = Permission(event.user_id).judge(10, '调用nb-api')
     if not x.success:
         return await call_api.finish(x.description)
@@ -193,16 +193,26 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
     else:
         image = generate_by_url(url)
         return await web.finish("获取图片成功！\n"
-                         + ms.image(Path(image).as_uri()))
+                                + ms.image(Path(image).as_uri()))
 
-apply = on_command("apply", aliases={"-申请", "领养"}, priority=5)  # 申请使用机器人的命令，`repo`地址来源于`config.py`。
+# 申请使用机器人的命令，`repo`地址来源于`config.py`。
+apply = on_command("apply", aliases={"申请", "领养", "购买", "要一个音卡",
+                   "想要一个音卡", "想有一个音卡", "音卡", '机器人'}, priority=5)
 
 
 @apply.handle()
 async def _(state: T_State, event: Event):
     applier = str(event.user_id)
     state["user"] = applier
-    return await apply.finish('领养直接拉，拉完找管理。')
+    steps = [
+        '加我为好友，答案:sin y',
+        '加用户群650495414'，
+        '拉我进想要的群',
+        '拉完找管理说一声'
+    ]
+    steps = [f'{index+1}.{x}' for (index, x) in enumerate(steps)]
+    steps = str.join('\n', steps)
+    return await apply.finish(f'是要领养吗，免费的：\n{steps}')
 
 
 # @apply.got("group", prompt="感谢您申请使用Inkar Suki，接下来请发送您所为之申请的群聊的群号。")
