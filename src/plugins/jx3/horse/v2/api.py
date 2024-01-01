@@ -1,3 +1,4 @@
+from src.tools.dep import *
 from ..api_lib import *
 data_horse_reporter: dict[str, HorseRecords] = {}  # 记录历史
 

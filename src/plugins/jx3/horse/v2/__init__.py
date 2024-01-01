@@ -39,8 +39,12 @@ jx3_cmd_horseinfo_map = on_command(
 @jx3_cmd_horseinfo_map.handle()
 async def jx3_horse(event: GroupMessageEvent, args: Message = CommandArg()):
     templates = [Jx3Arg(Jx3ArgsType.server)]  # TODO 使用DI方式
-    [server] = get_args(args, templates)
-    horse_record, map_data, horse_data = await get_horse_reporter(server)
+    [server] = get_args(args.extract_plain_text(), templates)
+    reporter = await get_horse_reporter(server)
+    if isinstance(reporter, str):
+        return await jx3_cmd_horseinfo_map.finish(reporter)
+
+    horse_record, map_data, horse_data = reporter
     result = await render_items(
         server,
         [x.to_dict() for x in horse_record],
