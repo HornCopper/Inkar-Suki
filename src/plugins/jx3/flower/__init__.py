@@ -20,7 +20,7 @@ async def jx3_flower(state: T_State, event: GroupMessageEvent, args: Message = C
     """
     template = [Jx3Arg(Jx3ArgsType.server), Jx3Arg(
         Jx3ArgsType.default), Jx3Arg(Jx3ArgsType.default)]
-    arg = get_args(args, template)
+    arg = get_args(args, template, event)
     arg_server, arg_map, arg_species = arg
     arg_server = server_mapping(arg_server, group_id=str(event.group_id))
     data = await get_flower(arg_server, arg_map, arg_species)
