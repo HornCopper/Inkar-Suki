@@ -206,7 +206,7 @@ async def _(state: T_State, event: Event):
     state["user"] = applier
     steps = [
         '加我为好友，答案:sin y',
-        '加用户群650495414'，
+        '加用户群650495414',
         '拉我进想要的群',
         '拉完找管理说一声'
     ]
