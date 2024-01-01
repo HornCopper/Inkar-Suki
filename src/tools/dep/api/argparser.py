@@ -45,11 +45,16 @@ class Jx3Arg:
             Jx3ArgsType.school: self._convert_school,
         }
 
-    def data(self, arg_value: str, event: GroupMessageEvent = None):
+    def data(self, arg_value: str, event: GroupMessageEvent = None) -> tuple[str, bool]:
         '''
         获取当前参数的值，获取失败则返回None
+        @return 返回值,是否是默认值
         '''
-        return self.callback[self.arg_type](arg_value, group_id=event.group_id)
+        callback = self.callback[self.arg_type]
+        result = callback(arg_value, event=event)
+        if isinstance(result, tuple):
+            return result
+        return [result, False]
 
     def _convert_school(self, arg_value: str, **kwargs) -> str:
         if not arg_value:
@@ -66,8 +71,12 @@ class Jx3Arg:
             return None
         return str(arg_value)
 
-    def _convert_server(self, arg_value: str, group_id: str = None, **kwargs) -> str:
-        return server_mapping(arg_value, group_id)
+    def _convert_server(self, arg_value: str, event: GroupMessageEvent = None, **kwargs) -> tuple[str, bool]:
+        server = server_mapping(arg_value)
+        if not server and event:
+            server = getGroupServer(event.group_id)
+            return server, True
+        return server, False
 
     def _convert_number(self, arg_value: str, **kwargs) -> int:
         return get_number(arg_value)
@@ -93,10 +102,10 @@ def get_args(raw_input: str, template_args: List[Jx3Arg], event: GroupMessageEve
         arg_value = user_args.get(user_index)  # 获取当前输入参数
         match_value = template_args[template_index]  # 获取当前待匹配参数
         template_index += 1  # 被匹配位每次+1
-        x = match_value.data(arg_value, event)  # 将待匹配参数转换为数值
+        x, is_default = match_value.data(arg_value, event)  # 将待匹配参数转换为数值
         result.append(x)  # 无论是否解析成功都将该位置参数填入
-        if x is None:
-            if not match_value.is_optional:
+        if x is None or is_default:
+            if is_default and not match_value.is_optional:
                 return InvalidArgumentException(f'{match_value.name}参数无效')
             continue  # 该参数去匹配下一个参数
 

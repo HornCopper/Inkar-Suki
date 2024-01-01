@@ -21,3 +21,5 @@ class Jx3ArgsType(IntEnum):
     school = 7
     '''道具名称'''
     property = 8
+    '''玩家id'''
+    user = 9
