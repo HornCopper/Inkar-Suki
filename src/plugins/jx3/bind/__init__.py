@@ -35,7 +35,7 @@ async def jx3_server_bind(bot: Bot, event: GroupMessageEvent, args: Message = Co
             return await jx3_cmd_server_bind.finish("唔……只有群主或管理员才可以修改哦！")
 
     template = [Jx3Arg(Jx3ArgsType.server)]
-    server, = get_args(args.extract_plain_text(), template, event)
+    server, = get_args(args, template, event)
     server = server_bind(group_id=event.group_id, server=server)
     if isinstance(server, list):
         return await jx3_cmd_server_bind.finish(f"绑定失败：{server}")

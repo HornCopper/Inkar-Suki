@@ -19,7 +19,7 @@ async def jx3_addritube(event: GroupMessageEvent, args: Message = CommandArg()):
     Example：-查装 幽月轮 哭包猫@唯我独尊
     """
     template = [Jx3Arg(Jx3ArgsType.server), Jx3Arg(Jx3ArgsType.default)]
-    arg_server, arg_user = get_args(args.extract_plain_text(), template, event)
+    arg_server, arg_user = get_args(args, template, event)
     if not arg_user:
         return await jx3_cmd_addritube.finish(PROMPT_ArgumentCountInvalid)
     arg_server = server_mapping(arg_server, event.group_id)
@@ -58,7 +58,7 @@ async def jx3_player(event: GroupMessageEvent, args: Message = CommandArg()):
     Example：-玩家信息 幽月轮 哭包猫@唯我独尊
     """
     template = [Jx3Arg(Jx3ArgsType.server), Jx3Arg(Jx3ArgsType.default)]
-    [arg_server, arg_user] = get_args(args.extract_plain_text(), template, event)
+    [arg_server, arg_user] = get_args(args, template, event)
     if not arg_server:
         arg_server = server_mapping(group_id=event.group_id)
     msg = await roleInfo_(server=arg_server, player=arg_user)
