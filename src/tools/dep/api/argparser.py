@@ -127,7 +127,7 @@ class Jx3Arg(Jx3ArgCallback, Jx3ArgExt):
         @return 返回值,是否是默认值
         '''
         callback = self.callback[self.arg_type]
-        result = callback(arg_value, event=event)
+        result = callback(self, arg_value, event=event)
         if result is None and self.default:
             return [self.default, True]  # 设置了默认值
 
