@@ -14,6 +14,7 @@ from sgtpyutils import extensions
 from sgtpyutils.logger import logger
 from .prompt import *
 from ..args import *
+import inspect
 
 logger.debug(f'load dependence:{__name__}')
 
@@ -173,4 +174,14 @@ def direct_get_args(raw_input: str, template_args: List[Jx3Arg], event: GroupMes
             continue  # 该参数去匹配下一个参数
 
         user_index += 1  # 输出参数位成功才+1
+
+    caller_name = inspect.stack()[2][3] # 2为往前2层，3为函数名称
+    log = {
+        'name': caller_name,
+        'args': result,
+        'raw': raw_input,
+        'group': event.group_id,
+        'user': event.user_id,
+    }
+    logger.debug(f'func_called:{log}')
     return result
