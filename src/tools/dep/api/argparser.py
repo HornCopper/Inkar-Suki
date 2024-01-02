@@ -49,6 +49,11 @@ class Jx3ArgCallback:
             return None
         return std_kunfu(arg_value)
 
+    def _convert_pvp_mode(self, arg_value: str, **kwargs) -> str:
+        if not arg_value in ['22', '33', '55']:
+            return None
+        return arg_value
+
     def _convert_string(self, arg_value: str, **kwargs) -> str:
         if not arg_value:
             return None
@@ -112,6 +117,7 @@ class Jx3Arg(Jx3ArgCallback, Jx3ArgExt):
             Jx3ArgsType.school: self._convert_school,
             Jx3ArgsType.user: self._convert_user,
             Jx3ArgsType.property: self._convert_string,  # TODO 猜测用户想查的物品
+            Jx3ArgsType.pvp_mode: self._convert_pvp_mode,
         }
 
     def data(self, arg_value: str, event: GroupMessageEvent = None) -> tuple[str, bool]:
@@ -175,7 +181,7 @@ def direct_get_args(raw_input: str, template_args: List[Jx3Arg], event: GroupMes
 
         user_index += 1  # 输出参数位成功才+1
 
-    caller_name = inspect.stack()[2][3] # 2为往前2层，3为函数名称
+    caller_name = inspect.stack()[2][3]  # 2为往前2层，3为函数名称
     log = {
         'name': caller_name,
         'args': result,
