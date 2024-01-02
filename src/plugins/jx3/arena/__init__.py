@@ -25,7 +25,7 @@ async def jx3_carena_records(bot: Bot, event: GroupMessageEvent, args: Message =
 jx3_cmd_arena_rank = on_regex(r"^(/)?(名剑|jjc|竞技场)?[排行|榜单|榜]?)$", priority=5)
 
 
-@jx3_cmd_arena_records.handle()
+@jx3_cmd_arena_rank.handle()
 async def jx3_arena_records(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
     template = [Jx3Arg(Jx3ArgsType.default, default='22')]
     pvp_mode, = get_args(args, template, event)
@@ -37,7 +37,7 @@ async def jx3_arena_records(bot: Bot, event: GroupMessageEvent, args: Message = 
 jx3_cmd_arena_statistics = on_regex(r"^(/)?(名剑|jjc|竞技场)?[统计|日志]?)$", priority=5)
 
 
-@jx3_cmd_arena_records.handle()
+@jx3_cmd_arena_statistics.handle()
 async def jx3_arena_records(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
     template = [Jx3Arg(Jx3ArgsType.default, default='22')]
     pvp_mode, = get_args(args, template, event)
