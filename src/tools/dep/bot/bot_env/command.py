@@ -40,8 +40,9 @@ def __hook_on_regex(
     _depth: int = 0,
     **kwargs,
 ):
-    if pattern[-1] != ' ':
-        pattern = f'{pattern} '
+    # 添加一个精确匹配
+    command_item = nonebot._on_regex(f'{pattern}$', flags, rule, _depth)
+    # 和常规匹配
     command_item = nonebot._on_regex(pattern, flags, rule, _depth)
     return command_item
 
