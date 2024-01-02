@@ -1,4 +1,6 @@
 from __future__ import annotations
+import functools
+from .config import *
 from nonebot.adapters.onebot.v11.message import Message as v11Message
 from nonebot.adapters.onebot.v11.event import GroupMessageEvent
 from nonebot.adapters import Message, MessageSegment
@@ -9,7 +11,9 @@ from src.tools.utils import *
 from src.constant.jx3.skilldatalib import *
 from sgtpyutils import extensions
 from sgtpyutils.logger import logger
+from .prompt import *
 from ..args import *
+
 logger.debug(f'load dependence:{__name__}')
 
 
@@ -29,33 +33,7 @@ def convert_to_str(msg: MessageSegment):
     return msg
 
 
-class Jx3Arg:
-    def __init__(self, arg_type: Jx3ArgsType = Jx3ArgsType.default,  name: str = None, is_optional: bool = True) -> None:
-        self.arg_type = arg_type
-        self.is_optional = is_optional
-        self.name = name or str(arg_type)
-
-        self.callback = {
-            Jx3ArgsType.default: self._convert_string,
-            Jx3ArgsType.number: self._convert_number,
-            Jx3ArgsType.pageIndex: self._convert_pageIndex,
-            Jx3ArgsType.string: self._convert_string,
-            Jx3ArgsType.server: self._convert_server,
-            Jx3ArgsType.kunfu: self._convert_kunfu,
-            Jx3ArgsType.school: self._convert_school,
-        }
-
-    def data(self, arg_value: str, event: GroupMessageEvent = None) -> tuple[str, bool]:
-        '''
-        获取当前参数的值，获取失败则返回None
-        @return 返回值,是否是默认值
-        '''
-        callback = self.callback[self.arg_type]
-        result = callback(arg_value, event=event)
-        if isinstance(result, tuple):
-            return result
-        return [result, False]
-
+class Jx3ArgCallback:
     def _convert_school(self, arg_value: str, **kwargs) -> str:
         if not arg_value:
             return None
@@ -78,6 +56,9 @@ class Jx3Arg:
             return server, True
         return server, False
 
+    def _convert_user(self, arg_value: str, event: GroupMessageEvent = None, **kwargs) -> tuple[str, bool]:
+        return arg_value  # TODO 根据用户当前绑定的玩家自动选择
+
     def _convert_number(self, arg_value: str, **kwargs) -> int:
         return get_number(arg_value)
 
@@ -88,6 +69,59 @@ class Jx3Arg:
         if not v or v < 0:
             v = 0
         return v
+
+
+class Jx3ArgExt:
+    @staticmethod
+    def requireToken(method):
+        @functools.wraps(method)
+        def wrapper(*args, **kwargs):
+            if not token:
+                return [PROMPT_NoToken]
+            return method(*args, **kwargs)
+        return wrapper
+
+    @staticmethod
+    def requireTicket(method):
+        @functools.wraps(method)
+        def wrapper(*args, **kwargs):
+            if not ticket:
+                return [PROMPT_NoTicket]
+            return method(*args, **kwargs)
+        return wrapper
+
+
+class Jx3Arg(Jx3ArgCallback, Jx3ArgExt):
+    def __init__(self, arg_type: Jx3ArgsType = Jx3ArgsType.default,  name: str = None, is_optional: bool = True, default: any = None) -> None:
+        self.arg_type = arg_type
+        self.is_optional = default or is_optional  # 显式设置为可选 或 设置了默认值
+        self.name = name or str(arg_type)
+        self.default = default
+        self.callback = {
+            Jx3ArgsType.default: self._convert_string,
+            Jx3ArgsType.number: self._convert_number,
+            Jx3ArgsType.pageIndex: self._convert_pageIndex,
+            Jx3ArgsType.string: self._convert_string,
+            Jx3ArgsType.server: self._convert_server,
+            Jx3ArgsType.kunfu: self._convert_kunfu,
+            Jx3ArgsType.school: self._convert_school,
+            Jx3ArgsType.user: self._convert_user,
+            Jx3ArgsType.property: self._convert_string,  # TODO 猜测用户想查的物品
+        }
+
+    def data(self, arg_value: str, event: GroupMessageEvent = None) -> tuple[str, bool]:
+        '''
+        获取当前参数的值，获取失败则返回None
+        @return 返回值,是否是默认值
+        '''
+        callback = self.callback[self.arg_type]
+        result = callback(arg_value, event=event)
+        if result is None and self.default:
+            return [self.default, True]  # 设置了默认值
+
+        if isinstance(result, tuple):
+            return result
+        return [result, False]
 
 
 def get_args(raw_input: str, template_args: List[Jx3Arg], event: GroupMessageEvent = None) -> Tuple:
