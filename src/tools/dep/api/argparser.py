@@ -30,10 +30,11 @@ def convert_to_str(msg: MessageSegment):
 
 
 class Jx3Arg:
-    def __init__(self, arg_type: Jx3ArgsType = Jx3ArgsType.default,  name: str = None, is_optional: bool = True) -> None:
+    def __init__(self, arg_type: Jx3ArgsType = Jx3ArgsType.default,  name: str = None, is_optional: bool = True, default: any = None) -> None:
         self.arg_type = arg_type
-        self.is_optional = is_optional
+        self.is_optional = default or is_optional  # 显式设置为可选 或 设置了默认值
         self.name = name or str(arg_type)
+        self.default = default
 
         self.callback = {
             Jx3ArgsType.default: self._convert_string,
@@ -43,6 +44,8 @@ class Jx3Arg:
             Jx3ArgsType.server: self._convert_server,
             Jx3ArgsType.kunfu: self._convert_kunfu,
             Jx3ArgsType.school: self._convert_school,
+            Jx3ArgsType.user: self._convert_user,
+            Jx3ArgsType.property: self._convert_string, # TODO 猜测用户想查的物品
         }
 
     def data(self, arg_value: str, event: GroupMessageEvent = None) -> tuple[str, bool]:
@@ -52,6 +55,9 @@ class Jx3Arg:
         '''
         callback = self.callback[self.arg_type]
         result = callback(arg_value, event=event)
+        if result is None and self.default:
+            return [self.default, True]  # 设置了默认值
+
         if isinstance(result, tuple):
             return result
         return [result, False]
@@ -77,6 +83,9 @@ class Jx3Arg:
             server = getGroupServer(event.group_id)
             return server, True
         return server, False
+
+    def _convert_user(self, arg_value: str, event: GroupMessageEvent = None, **kwargs) -> tuple[str, bool]:
+        return arg_value  # TODO 根据用户当前绑定的玩家自动选择
 
     def _convert_number(self, arg_value: str, **kwargs) -> int:
         return get_number(arg_value)
