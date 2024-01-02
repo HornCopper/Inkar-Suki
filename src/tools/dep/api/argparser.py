@@ -1,4 +1,5 @@
 from __future__ import annotations
+from typing import overload
 import functools
 from .config import *
 from nonebot.adapters.onebot.v11.message import Message as v11Message
@@ -18,6 +19,9 @@ logger.debug(f'load dependence:{__name__}')
 
 
 def convert_to_str(msg: MessageSegment):
+    if isinstance(msg, GroupMessageEvent):
+        x = msg.get_message().extract_plain_text()
+        msg = str.join(' ', x.split(' ')[1:])  # 将命令去除
     if isinstance(msg, MessageSegment):
         msg = msg.data
     if isinstance(msg, v11Message):
@@ -124,7 +128,32 @@ class Jx3Arg(Jx3ArgCallback, Jx3ArgExt):
         return [result, False]
 
 
-def get_args(raw_input: str, template_args: List[Jx3Arg], event: GroupMessageEvent = None) -> Tuple:
+@overload
+def get_args(raw_input: str, template_args: List[Jx3Arg], event: GroupMessageEvent = None) -> list:
+    ...
+
+
+@overload
+def get_args(raw_input: MessageSegment, template_args: List[Jx3Arg], event: GroupMessageEvent = None) -> list:
+    ...
+
+
+@overload
+def get_args(template_args: List[Jx3Arg], event: GroupMessageEvent) -> list:
+    '''如果没有显式提供内容，则从event中提取'''
+    ...
+
+
+def get_args(arg1, arg2, arg3=None) -> list:
+    if isinstance(arg2, GroupMessageEvent):
+        message = convert_to_str(arg2)  # 从事件提取
+        event = arg2  # 事件是第二个参数
+        template_args = arg1
+        return direct_get_args(message, template_args, event)
+    return direct_get_args(arg1, arg2, arg3)
+
+
+def direct_get_args(raw_input: str, template_args: List[Jx3Arg], event: GroupMessageEvent = None) -> list:
     raw_input = convert_to_str(raw_input)
     template_len = len(template_args)
     raw_input = raw_input or ''  # 默认传入空参数
