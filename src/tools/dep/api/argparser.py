@@ -49,9 +49,9 @@ class Jx3ArgCallback:
             return None
         return std_kunfu(arg_value)
 
-    def _convert_pvp_mode(self, arg_value: str, **kwargs) -> str:
+    def _convert_pvp_mode(self, arg_value: str, **kwargs) -> tuple[str, bool]:
         if not arg_value in ['22', '33', '55']:
-            return '22'
+            return '22', True
         return arg_value
 
     def _convert_string(self, arg_value: str, **kwargs) -> str:
@@ -187,8 +187,8 @@ def direct_get_args(raw_input: str, template_args: List[Jx3Arg], event: GroupMes
         'name': caller_name,
         'args': result,
         'raw': raw_input,
-        'group': event.group_id,
-        'user': event.user_id,
+        'group': event and event.group_id,
+        'user': event and event.user_id,
     }
     logger.debug(f'func_called:{log}')
     return result
