@@ -12,7 +12,7 @@ jx3_cmd_equip_recommend = on_command(
 @jx3_cmd_equip_recommend.handle()
 async def jx3_equip_recommend_menu(event: GroupMessageEvent, state: T_State, args: Message = CommandArg()):
     template = [Jx3Arg(Jx3ArgsType.kunfu), Jx3Arg(Jx3ArgsType.default)]
-    arg_kunfu, arg_condition = get_args(args.extract_plain_text(), template)
+    arg_kunfu, arg_condition = get_args(args, template, event)
     condition = arg_condition.split(";") if arg_condition else []
     if not arg_kunfu:
         return await jx3_cmd_equip_recommend.finish("唔……未找到该心法，请检查后重试~")

@@ -8,11 +8,12 @@ try:
     logger.debug(f'load dependence:{__name__}')
 except:
     pass
-from sgtpyutils.database import filebase_database
-from ...file import *
 
-import nonebot
-from nonebot import on, on_command, require, on_message
+'''初始化基础环境'''
+from .bot_env import *
+
+'''初始化nonebot'''
+from nonebot import on, on_command, require, on_message, on_regex
 from nonebot import get_driver
 from nonebot.adapters.onebot.v11 import Event, MessageSegment as ms
 from nonebot.adapters import Message, MessageSegment
@@ -26,9 +27,14 @@ from pathlib import Path
 from nonebot.message import handle_event
 from nonebot import get_bots
 matcher_common_run = on_message(priority=3, block=False)
-botpy = os.getcwd()
-tools_path = botpy + "/src/tools"
+import nonebot
+tools_path = f"{os.getcwd()}/src/tools"
 nonebot.init(tools_path=tools_path, log_level="INFO")
+
+
+'''初始调用库'''
+from sgtpyutils.database import filebase_database
+from ...file import *
 try:
     # 子依赖应后加载
     from .path import *
