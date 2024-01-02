@@ -399,6 +399,8 @@ async def get_attr_main(server, id, group_id):
             if equip_data.index(i) in [0, 1, 2, 3, 5]:
                 henchant[equip_data.index(i)] = ""
                 continue
+        if type(i) != type({}):
+            continue
         if i["Icon"]["SubKind"] == "帽子":
             if "WCommonEnchant" in list(i):
                 attrs_ = json.dumps(i["ModifyType"], ensure_ascii=False)
