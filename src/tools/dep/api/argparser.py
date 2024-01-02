@@ -51,7 +51,7 @@ class Jx3ArgCallback:
 
     def _convert_pvp_mode(self, arg_value: str, **kwargs) -> str:
         if not arg_value in ['22', '33', '55']:
-            return None
+            return '22'
         return arg_value
 
     def _convert_string(self, arg_value: str, **kwargs) -> str:
@@ -102,23 +102,24 @@ class Jx3ArgExt:
 
 
 class Jx3Arg(Jx3ArgCallback, Jx3ArgExt):
+    callback = {
+        Jx3ArgsType.default: Jx3ArgCallback._convert_string,
+        Jx3ArgsType.number: Jx3ArgCallback._convert_number,
+        Jx3ArgsType.pageIndex: Jx3ArgCallback._convert_pageIndex,
+        Jx3ArgsType.string: Jx3ArgCallback._convert_string,
+        Jx3ArgsType.server: Jx3ArgCallback._convert_server,
+        Jx3ArgsType.kunfu: Jx3ArgCallback._convert_kunfu,
+        Jx3ArgsType.school: Jx3ArgCallback._convert_school,
+        Jx3ArgsType.user: Jx3ArgCallback._convert_user,
+        Jx3ArgsType.property: Jx3ArgCallback._convert_string,  # TODO 猜测用户想查的物品
+        Jx3ArgsType.pvp_mode: Jx3ArgCallback._convert_pvp_mode,
+    }
+
     def __init__(self, arg_type: Jx3ArgsType = Jx3ArgsType.default,  name: str = None, is_optional: bool = True, default: any = None) -> None:
         self.arg_type = arg_type
         self.is_optional = default or is_optional  # 显式设置为可选 或 设置了默认值
         self.name = name or str(arg_type)
         self.default = default
-        self.callback = {
-            Jx3ArgsType.default: self._convert_string,
-            Jx3ArgsType.number: self._convert_number,
-            Jx3ArgsType.pageIndex: self._convert_pageIndex,
-            Jx3ArgsType.string: self._convert_string,
-            Jx3ArgsType.server: self._convert_server,
-            Jx3ArgsType.kunfu: self._convert_kunfu,
-            Jx3ArgsType.school: self._convert_school,
-            Jx3ArgsType.user: self._convert_user,
-            Jx3ArgsType.property: self._convert_string,  # TODO 猜测用户想查的物品
-            Jx3ArgsType.pvp_mode: self._convert_pvp_mode,
-        }
 
     def data(self, arg_value: str, event: GroupMessageEvent = None) -> tuple[str, bool]:
         '''
