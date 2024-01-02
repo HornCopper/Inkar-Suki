@@ -208,7 +208,8 @@ async def _(state: T_State, event: Event):
         '加我为好友，答案:sin y',
         '加用户群650495414',
         '拉我进想要的群',
-        '拉完找管理说一声'
+        '拉完找管理说一声',
+        '等管理同意申请'
     ]
     steps = [f'{index+1}.{x}' for (index, x) in enumerate(steps)]
     steps = str.join('\n', steps)
