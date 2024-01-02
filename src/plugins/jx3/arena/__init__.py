@@ -20,7 +20,6 @@ async def jx3_arena_records(bot: Bot, event: GroupMessageEvent):
         Jx3Arg(Jx3ArgsType.default, default='22')
     ]
     server, user, pvp_mode = get_args(template, event)
-    logger.debug(f'jx3_carena_records {[server, user, pvp_mode]}')
     if server is None:
         return await jx3_cmd_arena_records.finish(PROMPT_ServerNotExist)
     if user is None:
