@@ -49,7 +49,10 @@ jx3_cmd_arena_statistics = on_regex(r"^(/)?(名剑|jjc|竞技场)?(统计|日志
 
 @jx3_cmd_arena_statistics.handle()
 async def jx3_arena_statistics(bot: Bot, event: GroupMessageEvent):
-    template = [Jx3Arg(Jx3ArgsType.default, default='22')]
+    template = [
+        Jx3Arg(Jx3ArgsType.default, default='22'),
+        Jx3Arg(Jx3ArgsType.server),
+    ]
     pvp_mode, = get_args(template, event)
     data = await arena_statistics(mode=pvp_mode)
     if type(data) == type([]):

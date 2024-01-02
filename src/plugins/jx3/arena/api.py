@@ -25,8 +25,10 @@ async def arena_rank(mode: str = "33"):
 
 @Jx3Arg.requireToken
 @Jx3Arg.requireTicket
-async def arena_statistics(mode: str = "33"):
+async def arena_statistics(mode: str = "33", server: str = None):
     final_url = f"{Config.jx3api_link}/view/match/schools?token={token}&robot={bot}&ticket={ticket}&mode={mode}&scale=1"
+    if server:
+        final_url = f'{final_url}&server={server}'
     data = await get_api(final_url)
     if data["code"] == 400:
         return ["唔……名剑模式输入错误。"]
