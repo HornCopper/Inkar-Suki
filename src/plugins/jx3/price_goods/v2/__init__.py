@@ -23,8 +23,7 @@ async def jx3_trade2(matcher: Matcher, state: T_State, event: GroupMessageEvent,
 def get_trade2_args(event: GroupMessageEvent, args: Message = CommandArg()):
     template = [Jx3Arg(Jx3ArgsType.server), Jx3Arg(
         Jx3ArgsType.default), Jx3Arg(Jx3ArgsType.pageIndex)]
-    arg = get_args(args, template)
-    logger.debug(f"user trade-input :{arg}")
+    arg = get_args(args, template, event)
     if isinstance(arg, InvalidArgumentException):
         return f"{PROMPT_ArgumentInvalid}如 价格 帝骖龙翔 1"
     arg_server, arg_item, arg_page = arg

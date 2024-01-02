@@ -16,9 +16,8 @@ async def jx3_rare_gain(event: GroupMessageEvent, args: Message = CommandArg()):
     Example：-cd 幽月轮 归墟玄晶
     """
     template = [Jx3Arg(Jx3ArgsType.server), Jx3Arg(Jx3ArgsType.default)]
-    arg = get_args(args.extract_plain_text(), template)
+    arg = get_args(args, template, event)
     arg_server, arg_name = arg
-    arg_server = server_mapping(arg_server, event.group_id)
     if not arg_name:
         return await jx3_cmd_jx3_rare_gain.finish("没有输入物品名称哦")
     msg = await get_cd(arg_server, arg_name)

@@ -36,7 +36,7 @@ def getGroupServer(group_id: str):
     '''
     获取当前群所绑定的服务器，若未绑定则返回None
     '''
-    if bool(group_id) == False:
+    if not group_id:
         return None
     data = json.loads(read(f"{DATA}/{group_id}/jx3group.json"))
     data = data or {}

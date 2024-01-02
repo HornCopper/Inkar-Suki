@@ -12,8 +12,7 @@ async def jx3_wiki(state: T_State, event: GroupMessageEvent, args: Message = Com
     Example：-接引人 五行石
     """
     template = [Jx3Arg(Jx3ArgsType.default)]
-    [arg_keywords] = get_args(
-        args.extract_plain_text(), template_args=template)
+    [arg_keywords] = get_args(args, template, event)
     if not arg_keywords:
         return await jx3_cmd_wiki.finish("没有说出需要接引的问题哦")
     logger.info(f"start wiki {arg_keywords}")
@@ -29,7 +28,7 @@ async def jx3_next_ques(state: T_State, event: GroupMessageEvent, reference: Mes
     提交相关项查询
     """
     template = [Jx3Arg(Jx3ArgsType.default)]
-    [arg_reference] = get_args(reference.extract_plain_text(), template_args=template)
+    [arg_reference] = get_args(reference, template, event)
     logger.debug(f"next_ques:{arg_reference}")
     if not arg_reference:
         return

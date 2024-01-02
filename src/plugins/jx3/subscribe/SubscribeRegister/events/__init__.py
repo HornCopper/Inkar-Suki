@@ -16,6 +16,8 @@ def init_subjects(__subjects: list[SubscribeSubject]):
     events_world_boss.run(__subjects, OnWorldBoss)
     from . import event_daily
     event_daily.run(__subjects)
+    # from . import events_for_debug
+    # events_for_debug.run(__subjects)
 
 
 def init_cron(sub: SubscribeSubject, OnCallback: callable):

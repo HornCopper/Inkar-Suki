@@ -13,7 +13,7 @@ async def jx3_trade(state: T_State, event: GroupMessageEvent, args: Message = Co
     """
     template = [Jx3Arg(Jx3ArgsType.server), Jx3Arg(
         Jx3ArgsType.default), Jx3Arg(Jx3ArgsType.pageIndex)]
-    arg = get_args(args, template)
+    arg = get_args(args, template, event)
     if isinstance(arg, InvalidArgumentException):
         return await jx3_cmd_trade.finish(f"{PROMPT_ArgumentInvalid}如 交易行 帝骖龙翔 1")
     arg_server, arg_item, arg_page = arg
@@ -33,7 +33,7 @@ async def jx3_trade(state: T_State, event: GroupMessageEvent, args: Message = Co
 
 @jx3_cmd_trade.got("num", prompt="输入序号以搜索，其他内容则无视。")
 async def price_num_selected(state: T_State, event: GroupMessageEvent, num: Message = Arg()):
-    num = get_args(num, [Jx3Arg(Jx3ArgsType.number)])
+    num = get_args(num, [Jx3Arg(Jx3ArgsType.number)], event)
     all_ids = state["id"]
     if num[0] >= len(all_ids):
         return await jx3_cmd_trade.finish(f"无效的序号，有效范围:0-{len(all_ids) - 1}")
