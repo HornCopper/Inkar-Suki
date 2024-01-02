@@ -53,8 +53,8 @@ async def jx3_arena_statistics(bot: Bot, event: GroupMessageEvent):
         Jx3Arg(Jx3ArgsType.default, default='22'),
         Jx3Arg(Jx3ArgsType.server),
     ]
-    pvp_mode, = get_args(template, event)
-    data = await arena_statistics(mode=pvp_mode)
+    pvp_mode, server = get_args(template, event)
+    data = await arena_statistics(mode=pvp_mode, server=server)
     if type(data) == type([]):
         return await jx3_cmd_arena_statistics.finish(data[0])
     return await jx3_cmd_arena_statistics.send(ms.image(data))

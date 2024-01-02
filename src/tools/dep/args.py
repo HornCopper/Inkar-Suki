@@ -23,3 +23,7 @@ class Jx3ArgsType(IntEnum):
     property = 8
     '''玩家id'''
     user = 9
+    '''pvp模式'''
+    pvp_mode = 10
+
+    
