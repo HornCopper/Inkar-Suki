@@ -3,12 +3,13 @@ from .api import *
 jx3_cmd_arena_records = on_regex(
     r"^(/)?(名剑|jjc|竞技场)?(战绩|记录|查询)",
     priority=5,
-    # description='获取各个马场刷新信息',
-    # catalog='jx3.pvx.property.horse.chitu',
-    # example=[Jx3ArgsType.server],
-    # document='''数据来源于剑三盒子
-    # 获取当前各个地图马场的数据并整合
-    # 得到马儿所在的地图'''
+    description='获取玩家竞技场的战绩记录',
+    catalog='jx3.pvx.property.horse.chitu',
+    example=[Jx3Arg(Jx3ArgsType.server),
+             Jx3Arg(Jx3ArgsType.user),
+             Jx3Arg(Jx3ArgsType.default, default='22')],
+    document='''战绩 玩家id 模式
+    模式可以写22 33 55'''
 )
 
 
