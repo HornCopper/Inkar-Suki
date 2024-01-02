@@ -147,9 +147,8 @@ def data_process(kf, data, f):
             continue
         if i["Icon"]["SubKind"] in "投掷囊":
             final[10] = i
-        if i["Icon"]["SubKind"] != "投掷囊" and i["Icon"]["SubKind"] != "重剑":
-            if i["Icon"]["Kind"] == "武器" or i["Icon"]["FileName"].find("yuandanhuodong") != -1:
-                final[11] = i
+        if i["Icon"]["SubKind"] != "投掷囊" and i["Icon"]["SubKind"] != "重剑" and (i["Icon"]["Kind"] == "武器" or ("yuandanhuodong" in i["Icon"]["FileName"])):    
+            final[11] = i
         if i["Icon"]["SubKind"] == "重剑":
             final[12] = i
     return final
