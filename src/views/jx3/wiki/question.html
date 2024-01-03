@@ -57,7 +57,7 @@
                 <div v-for="(paras,index_ps) in result" :key="index_ps">
                   <span v-for="(p,index_p) in paras" :key="index_p">
                     <span v-if="p.find">
-                      <img v-if="p[0]=='IMG'" :src="p[1]" />
+                      <img v-if="p[0]=='IMG'" :src="p[1]" style="width:100%" />
                       <el-tag v-else-if="p[0]=='RELA'" effect="dark" round class="rela-tag">{{
                         `[${reference_dict[p[1]]}]${p[1]}` }}</el-tag>
                     </span>

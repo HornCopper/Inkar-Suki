@@ -52,7 +52,7 @@ class QuesResponseHandler:
         '''# TODO 超链接、图像、视频、音频、office文件等'''
         material = x.get('material')
         path = material.get('path')
-        return f'<p><img src="{path}" /></p>'
+        return f'<p><img src="{path}" style="width:100%" /></p>'
 
 
 class QuesResponse(Response):
