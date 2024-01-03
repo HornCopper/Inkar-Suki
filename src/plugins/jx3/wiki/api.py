@@ -1,3 +1,4 @@
+from __future__ import annotations
 import httpx
 import time
 
@@ -41,7 +42,25 @@ class TipResponse(Response):
         return {"results": self.results, "items": self.items}
 
 
+class QuesResponseHandler:
+    @staticmethod
+    def txt_handler(x: dict):
+        return x.get("answerContent")
+
+    @staticmethod
+    def material_handler(x: dict):
+        '''# TODO 超链接、图像、视频、音频、office文件等'''
+        material = x.get('material')
+        path = material.get('path')
+        return f'<img src="{path}“ />'
+
+
 class QuesResponse(Response):
+    msg_type_handler = {
+        'MSG_TXT': QuesResponseHandler.txt_handler,
+        'MSG_MATERIAL': QuesResponseHandler.material_handler,  
+    }
+
     def __init__(self, data: dict) -> None:
         super().__init__(data)
         # logger.debug(f"question response loaded(success:{self.success})")
@@ -53,7 +72,15 @@ class QuesResponse(Response):
         if self.items is None:
             self.results = None
             return
-        self.results = [x.get("answerContent") for x in self.items]
+
+        def filter_content(x: dict):
+            msg_type = x.get('resultFormatType')
+            handler = QuesResponse.msg_type_handler.get(msg_type)
+            if not handler:
+                return f'[未知的消息类型:{msg_type}，请联系管理员]'
+            return handler(x)
+
+        self.results = [filter_content(x) for x in self.items]
         # 当没有回答时返回该列表
         self.confirm_list = [x.get("confirmList") for x in self.items]
         self.relateds = []  # 相关问题
