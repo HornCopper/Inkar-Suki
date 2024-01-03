@@ -396,8 +396,9 @@
         v = v.replaceAll('\\n', '')
         v = v.replaceAll('\\', '')
         v = v.replace(/font\=\d*/g, '')
-        const result = v.match(/text="[^ \f\n\r\t\v!"]*"/gm).map(x => x.substring(6, x.length - 1))
-        return result || []
+        let result = v.match(/text="[^ \f\n\r\t\v!"]*"/gm)
+        result = result || [v]
+        return result.map(x => x.substring(6, x.length - 1))
       })
       const item_attributes = computed(() => {
         const v = params_data.item.attributes
