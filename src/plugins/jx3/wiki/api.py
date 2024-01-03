@@ -48,6 +48,14 @@ class QuesResponseHandler:
         return x.get("answerContent")
 
     @staticmethod
+    def confirm_ak_handler(x: dict):
+        confirmList = x.get("confirmList")
+        confirmListTxt = [x.get('matchQuestionString') for x in confirmList]
+        confirmListTxt = [f'<p data-question="1">{x}</p>' for x in confirmListTxt]
+        confirmListTxt = ['<p>尝试换个方式问问</p>', x.get('guideWords')] + confirmListTxt
+        return f"<p>{str.join('', confirmListTxt)}</p>"
+
+    @staticmethod
     def material_handler(x: dict):
         '''# TODO 超链接、图像、视频、音频、office文件等'''
         material = x.get('material')
@@ -58,7 +66,8 @@ class QuesResponseHandler:
 class QuesResponse(Response):
     msg_type_handler = {
         'MSG_TXT': QuesResponseHandler.txt_handler,
-        'MSG_MATERIAL': QuesResponseHandler.material_handler,  
+        'MSG_MATERIAL': QuesResponseHandler.material_handler,
+        'MSG_CONFIRM_ASK': QuesResponseHandler.confirm_ak_handler,
     }
 
     def __init__(self, data: dict) -> None:
