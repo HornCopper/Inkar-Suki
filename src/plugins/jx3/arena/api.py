@@ -6,11 +6,7 @@ from src.tools.dep import *
 async def arena_records(server: str = None, name: str = None, mode: str = "33"):
     final_url = f"{Config.jx3api_link}/view/match/recent?token={token}&name={name}&server={server}&robot={bot}&ticket={ticket}&mode={mode}&scale=1"
     data = await get_api(final_url)
-    if data["code"] == 400:
-        return [PROMPT_ServerInvalid]
-    if data["code"] == 404:
-        return ["唔……未找到该玩家的记录，请检查玩家名或服务器名。"]
-    return data["data"]["url"]
+    return Jx3ApiResponse(data).output_url
 
 
 @Jx3Arg.requireToken
