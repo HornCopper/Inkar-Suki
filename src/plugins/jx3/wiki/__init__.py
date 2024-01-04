@@ -1,18 +1,31 @@
 from .api import *
 from .renderer import *
 
-jx3_cmd_wiki = on_command("jx3_wiki", aliases={"接引人"}, priority=5)
+jx3_cmd_wiki = on_command(
+    "jx3_wiki",
+    aliases={"接引人"},
+    priority=5,
+    description='查看游戏各种萌新攻略',
+    catalog='jx3.pvp.jjc.rank',
+    example=[
+        Jx3Arg(Jx3ArgsType.default),
+    ],
+    document='''找游戏里面的萌新攻略模块，来回答问题'''
+)
 
 
 @jx3_cmd_wiki.handle()
-async def jx3_wiki(state: T_State, event: GroupMessageEvent, args: Message = CommandArg()):
+async def jx3_wiki(state: T_State, event: GroupMessageEvent, template: list[Jx3Arg] = None):
     """
     搜索剑三百科
 
     Example：-接引人 五行石
     """
-    template = [Jx3Arg(Jx3ArgsType.default)]
-    [arg_keywords] = get_args(args, template, event)
+    return await handle_jx3_wiki(state, event, template)
+
+
+async def handle_jx3_wiki(state: T_State, event: GroupMessageEvent, template: list[Jx3Arg] = None):
+    [arg_keywords] = template
     if not arg_keywords:
         return await jx3_cmd_wiki.finish("没有说出需要接引的问题哦")
     logger.info(f"start wiki {arg_keywords}")
@@ -46,4 +59,4 @@ async def jx3_next_ques(state: T_State, event: GroupMessageEvent, reference: Mes
         return await jx3_cmd_wiki.send(f"没有相关的引用哦,最多有{len(arg_sets)}项可选,但你选了第{arg_index+1}项")
     arg_keyword = arg_sets[arg_index]
     logger.debug(f"next_ques ({arg_index}) cmd:{arg_keyword}")
-    return await jx3_wiki(state, event, obMessage(arg_keyword))
+    return await handle_jx3_wiki(state, event, [arg_keyword])
