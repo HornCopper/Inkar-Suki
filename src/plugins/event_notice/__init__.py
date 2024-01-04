@@ -63,7 +63,7 @@ async def on_new_group_enter(bot: Bot, event: NoticeEvent):
         return
     msg = "欢迎使用Inkar Suki！如需帮助请发送+help或查询文档哦~\nhttps://inkar-suki.codethink.cn"
     await bot.call_api("send_group_msg", group_id=event.group_id, message="检测到本群为新群聊，音卡已经自动补全所需要的文件啦！")
-    check_env_path()
+    check_env_path(event.group_id)
 
 
 @notice.handle()
