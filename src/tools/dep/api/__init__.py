@@ -7,6 +7,7 @@ import time
 from .img_renderer import *
 from .argparser import *
 import json
+from .StaticLoader import *
 
 
 # initilize private api

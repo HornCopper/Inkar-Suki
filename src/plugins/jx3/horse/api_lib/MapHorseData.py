@@ -1,5 +1,4 @@
 from src.tools.dep import *
-from .StaticLoader import *
 from .MapData import *
 
 

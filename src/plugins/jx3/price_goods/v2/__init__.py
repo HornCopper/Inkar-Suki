@@ -18,7 +18,7 @@ jx3_cmd_trade2 = on_command(
 
 
 @jx3_cmd_trade2.handle()
-async def jx3_trade2(matcher: Matcher, state: T_State, event: GroupMessageEvent, template: list[Jx3Arg] = None):
+async def jx3_trade2(matcher: Matcher, state: T_State, event: GroupMessageEvent, template: list[Jx3Arg] = Depends(Jx3Arg.arg_factory)):
     """
     获取交易行物品价格：
     交易行 [区服] 名称 [页码]
@@ -52,7 +52,7 @@ jx3_cmd_favouritest = on_command(
 
 
 @jx3_cmd_favouritest.handle()
-async def jx3_trade_favoritest(matcher: Matcher, state: T_State, event: GroupMessageEvent, template: list[Jx3Arg] = None):
+async def jx3_trade_favoritest(matcher: Matcher, state: T_State, event: GroupMessageEvent, template: list[Jx3Arg] = Depends(Jx3Arg.arg_factory)):
     """
     获取交易行物品价格：
     交易行热门 [区服] [页码]
