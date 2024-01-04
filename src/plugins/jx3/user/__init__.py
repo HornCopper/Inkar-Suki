@@ -24,10 +24,9 @@ async def jx3_addritube(event: GroupMessageEvent, template: list[Any] = Depends(
     Example：-查装 幽月轮 哭包猫@唯我独尊
     """
     arg_server, arg_user = template
-    data = await addritube_(arg_server, arg_user, group_id=event.group_id)
+    data = await addritube_(arg_server, arg_user)
     if type(data) == type([]):
         return await jx3_cmd_addritube.finish(data[0])
-    print(data)
     return await jx3_cmd_addritube.send(ms.image(data))
 
 jx3_cmd_addritube_v2 = on_command(
