@@ -7,7 +7,9 @@ jx3_cmd_horseinfo_chitu = on_command(
     priority=5,
     description='[暂未开放]获取赤兔刷新信息',
     catalog='jx3.pvx.property.horse.chitu',
-    example=[Jx3ArgsType.server],
+    example=[
+        Jx3Arg(Jx3ArgsType.server)
+    ],
     document='''数据来源于剑三盒子
     获取当前各个地图马场的数据并整合
     得到马儿所在的地图'''
@@ -15,7 +17,7 @@ jx3_cmd_horseinfo_chitu = on_command(
 
 
 @jx3_cmd_horseinfo_chitu.handle()
-async def jx3_chitu(event: GroupMessageEvent, args: Message = CommandArg()):
+async def jx3_horseinfo_chitu(event: GroupMessageEvent, template: list[Jx3Arg] = None):
     """
     获取赤兔刷新信息：
 
@@ -28,8 +30,10 @@ jx3_cmd_horseinfo_map = on_command(
     aliases={"马场"},
     priority=5,
     description='获取各个马场刷新信息',
-    catalog='jx3.pvx.property.horse.chitu',
-    example=[Jx3ArgsType.server],
+    catalog='jx3.pvx.property.horse.common',
+    example=[
+        Jx3Arg(Jx3ArgsType.server)
+    ],
     document='''数据来源于剑三盒子
     获取当前各个地图马场的数据并整合
     得到马儿所在的地图'''
@@ -37,9 +41,8 @@ jx3_cmd_horseinfo_map = on_command(
 
 
 @jx3_cmd_horseinfo_map.handle()
-async def jx3_horse(event: GroupMessageEvent, args: Message = CommandArg()):
-    templates = [Jx3Arg(Jx3ArgsType.server)]  # TODO 使用DI方式
-    server, = get_args(args, templates, event)
+async def jx3_horseinfo(event: GroupMessageEvent, template: list[Jx3Arg] = None):
+    server, = template
     reporter = await get_horse_reporter(server)
     if isinstance(reporter, str):
         return await jx3_cmd_horseinfo_map.finish(reporter)

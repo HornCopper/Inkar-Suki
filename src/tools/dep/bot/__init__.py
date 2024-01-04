@@ -13,6 +13,7 @@ except:
 from .bot_env import *
 
 '''初始化nonebot'''
+from nonebot.internal.params import Depends
 from nonebot import on, on_command, require, on_message, on_regex
 from nonebot import get_driver
 from nonebot.adapters.onebot.v11 import Event, MessageSegment as ms
