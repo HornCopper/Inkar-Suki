@@ -15,7 +15,7 @@ jx3_cmd_wiki = on_command(
 
 
 @jx3_cmd_wiki.handle()
-async def jx3_wiki(state: T_State, event: GroupMessageEvent, template: list[Jx3Arg] = Depends(Jx3Arg.arg_factory)):
+async def jx3_wiki(state: T_State, event: GroupMessageEvent, template: list[Any] = Depends(Jx3Arg.arg_factory)):
     """
     搜索剑三百科
 
@@ -24,7 +24,7 @@ async def jx3_wiki(state: T_State, event: GroupMessageEvent, template: list[Jx3A
     return await handle_jx3_wiki(state, event, template)
 
 
-async def handle_jx3_wiki(state: T_State, event: GroupMessageEvent, template: list[Jx3Arg] = Depends(Jx3Arg.arg_factory)):
+async def handle_jx3_wiki(state: T_State, event: GroupMessageEvent, template: list[Any] = Depends(Jx3Arg.arg_factory)):
     [arg_keywords] = template
     if not arg_keywords:
         return await jx3_cmd_wiki.finish("没有说出需要接引的问题哦")

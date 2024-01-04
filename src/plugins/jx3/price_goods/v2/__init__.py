@@ -18,13 +18,14 @@ jx3_cmd_trade2 = on_command(
 
 
 @jx3_cmd_trade2.handle()
-async def jx3_trade2(matcher: Matcher, state: T_State, event: GroupMessageEvent, template: list[Jx3Arg] = Depends(Jx3Arg.arg_factory)):
+async def jx3_trade2(matcher: Matcher, state: T_State, event: GroupMessageEvent, template: list[Any] = Depends(Jx3Arg.arg_factory)):
     """
     获取交易行物品价格：
     交易行 [区服] 名称 [页码]
     Example：交易行 幽月轮 帝骖龙翔 1
     Example：交易行 帝骖龙翔 2
     """
+    print(f'这一行不会被输出')
     arg_server, arg_item, arg_page = template
     logger.debug(f'start trade : {template}')
     state["server"] = arg_server
@@ -53,7 +54,7 @@ jx3_cmd_favouritest = on_command(
 
 
 @jx3_cmd_favouritest.handle()
-async def jx3_trade_favoritest(matcher: Matcher, state: T_State, event: GroupMessageEvent, template: list[Jx3Arg] = Depends(Jx3Arg.arg_factory)):
+async def jx3_trade_favoritest(matcher: Matcher, state: T_State, event: GroupMessageEvent, template: list[Any] = Depends(Jx3Arg.arg_factory)):
     """
     获取交易行物品价格：
     交易行热门 [区服] [页码]
