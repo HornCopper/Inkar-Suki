@@ -146,7 +146,7 @@ class Jx3Arg(Jx3ArgCallback, Jx3ArgExt):
     def arg_factory(matcher: Matcher, event: GroupMessageEvent) -> list[Any]:
         docs = get_cmd_docs(matcher)
         templates = get_args(docs.example, event, method=docs.name)
-        return [templates]
+        return templates
 
 
 @overload
