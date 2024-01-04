@@ -137,7 +137,7 @@ mgr_cmd_remove_robot = on_command(
 
 
 @mgr_cmd_remove_robot.handle()
-async def leave_group(bot: Bot, state: T_State, event: Event, args: Message = CommandArg()):
+async def leave_group(bot: Bot, state: T_State, event: Event, args: list[Any] = Depends(Jx3Arg.arg_factory)):
 
     personal_data = await bot.call_api("get_group_member_info", group_id=event.group_id, user_id=event.user_id, no_cache=True)
     group_admin = personal_data["role"] in ["owner", "admin"]
