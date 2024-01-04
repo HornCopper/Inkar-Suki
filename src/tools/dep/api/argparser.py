@@ -1,4 +1,5 @@
 from __future__ import annotations
+from typing import Any
 from typing import overload
 import functools
 from .config import *
@@ -142,10 +143,10 @@ class Jx3Arg(Jx3ArgCallback, Jx3ArgExt):
         return f'[{self.arg_type.name}]{self.name}(default={self.default})'
 
     @staticmethod
-    def arg_factory(matcher: Matcher, event: GroupMessageEvent) -> list[Jx3Arg]:
+    def arg_factory(matcher: Matcher, event: GroupMessageEvent) -> list[Any]:
         docs = get_cmd_docs(matcher)
         templates = get_args(docs.example, event, method=docs.name)
-        return templates
+        return [templates]
 
 
 @overload
@@ -194,7 +195,6 @@ def direct_get_args(raw_input: str, template_args: List[Jx3Arg], event: GroupMes
 
         user_index += 1  # 输出参数位成功才+1
 
-        
     if method:
         if isinstance(method, str):
             caller_name = method
