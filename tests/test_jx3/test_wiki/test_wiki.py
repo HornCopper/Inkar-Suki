@@ -14,7 +14,8 @@ def test_question():
 
     mc.tag = '接引人 三山四海攻略'  # 将返回含有图片的项
     event.message = obMessage(mc.tag)
-    task = func1(state, event)
+    args = Jx3Arg.arg_factory(src.plugins.jx3.jx3_cmd_wiki, event)
+    task = func1(state, event, args)
     asyncio.run(task)
     mc.check_counter()
 
