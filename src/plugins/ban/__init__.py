@@ -218,4 +218,5 @@ async def cancel_leave_group(event: GroupMessageEvent):
     if not cmd_leave_task.get(event.group_id):
         return
     del cmd_leave_task[event.group_id]
+    logger.info(f'用户取消了注销:group={event.group_id},by:{event.user_id}')
     return await mgr_cmd_remove_robot.send('好哦~')
