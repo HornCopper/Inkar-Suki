@@ -1,6 +1,5 @@
 import abc
 from src.tools.dep import *
-from .StaticLoader import *
 
 
 class HorseItem:
