@@ -27,65 +27,77 @@ def banned(sb):  # 检测某个人是否被封禁。
 notice = on_notice(priority=5)
 
 
-@notice.handle()
-async def _(bot: Bot, event: NoticeEvent):
-    '''
-    入群自动发送帮助信息。
-    '''
-    if event.notice_type == "group_increase":
-        obj = event.user_id
-        group = event.group_id
-        bots = Config.bot
-        if str(obj) in bots:
-            msg = "欢迎使用Inkar Suki！如需帮助请发送+help或查询文档哦~\nhttps://inkar-suki.codethink.cn\n若为初次使用，请申请人在本群发送+reg进行注册方可使用哦~"
-            if event.sub_type == "approve":
-                new_path = DATA + "/" + str(event.group_id)
-                if os.path.exists(new_path):
-                    return
-                else:
-                    os.mkdir(new_path)
-                    write(new_path + "/jx3group.json", "{\"group\":\"" + str(event.group_id) +
-                          "\",\"server\":\"\",\"leader\":\"\",\"leaders\":[],\"name\":\"\",\"status\":false}")
-                    write(new_path + "/webhook.json", "[]")
-                    write(new_path + "/marry.json", "[]")
-                    write(new_path + "/welcome.txt", "欢迎入群！")
-                    write(new_path + "/banword.json", "[]")
-                    write(new_path + "/opening.json", "[]")
-                    write(new_path + "/wiki.json", "{\"startwiki\":\"\",\"interwiki\":[]}")
-                    write(new_path + "/arcaea.json", "{}")
-                    write(new_path + "/record.json", "[]")
-                    write(new_path + "/subscribe.json", "[]")
-                    write(new_path + "/blacklist.json", "[]")
-                    await bot.call_api("send_group_msg", group_id=event.group_id, message="检测到本群为新群聊，音卡已经自动补全所需要的文件啦！")
-        else:
-            msg = ms.at(obj) + read(DATA + "/" + str(group) + "/welcome.txt")
-        await bot.call_api("send_group_msg", group_id=group, message=msg)
-    elif event.notice_type == "group_decrease":
-        if event.sub_type == "kick_me":
-            for i in Config.notice_to:
-                await bot.call_api("send_group_msg", group_id=int(i), message=f"唔……音卡在群聊（{str(event.group_id)}）被移出啦！\n操作者：{str(event.operator_id)}，已自动封禁！")
-            kicker = str(event.operator_id)
-            if banned(kicker) == False:
-                banlist = json.loads(read(TOOLS + "/ban.json"))
-                banlist.append(kicker)
-                write(TOOLS + "/ban.json", json.dumps(banlist))
-                return
-            else:
-                return
-    elif event.notice_type == "group_ban":
-        if str(event.user_id) in Config.bot:
-            await bot.call_api("set_group_leave", group_id=event.group_id)
-            for i in Config.notice_to:
-                await bot.call_api("send_group_msg", group_id=int(i), message=f"唔……音卡在群聊（{str(event.group_id)}）检测到被禁言啦，已自动退群！\n操作者：{str(event.operator_id)}，已自动封禁！")
-            kicker = str(event.operator_id)
-            if banned(kicker) == False:
-                banlist = json.loads(read(TOOLS + "/ban.json"))
-                banlist.append(kicker)
-                write(TOOLS + "/ban.json", json.dumps(banlist))
-                return
-            else:
-                return
+def check_env_path(group_id: str):
+    new_path = f"{DATA}/{str(group_id)}"
+    if os.path.exists(new_path):
+        return True
+    os.mkdir(new_path)
+    write(f"{new_path }/jx3group.json", "{\"group\":\"" + str(group_id) +
+          "\",\"server\":\"\",\"leader\":\"\",\"leaders\":[],\"name\":\"\",\"status\":false}")
+    write(f"{new_path }/webhook.json", "[]")
+    write(f"{new_path }/marry.json", "[]")
+    write(f"{new_path }/welcome.txt", "欢迎入群！")
+    write(f"{new_path }/banword.json", "[]")
+    write(f"{new_path }/opening.json", "[]")
+    write(f"{new_path }/wiki.json", "{\"startwiki\":\"\",\"interwiki\":[]}")
+    write(f"{new_path }/arcaea.json", "{}")
+    write(f"{new_path }/record.json", "[]")
+    write(f"{new_path }/subscribe.json", "[]")
+    write(f"{new_path }/blacklist.json", "[]")
+    return False
 
+
+@notice.handle()
+async def on_new_group_enter(bot: Bot, event: NoticeEvent):
+    '''入群自动发送帮助信息。'''
+    if not event.notice_type == "group_increase":
+        return
+    obj = event.user_id
+    group = event.group_id
+    bots = Config.bot
+    if not str(obj) in bots:
+        msg = ms.at(obj) + read(DATA + "/" + str(group) + "/welcome.txt")
+        return await bot.call_api("send_group_msg", group_id=group, message=msg)
+
+    if event.sub_type != "approve":
+        return
+    msg = "欢迎使用Inkar Suki！如需帮助请发送+help或查询文档哦~\nhttps://inkar-suki.codethink.cn"
+    await bot.call_api("send_group_msg", group_id=event.group_id, message="检测到本群为新群聊，音卡已经自动补全所需要的文件啦！")
+    check_env_path()
+
+
+@notice.handle()
+async def on_group_ban(bot: Bot, event: NoticeEvent):
+    '''被禁言了'''
+    if event.notice_type != "group_ban":
+        return
+    if not str(event.user_id) in Config.bot:
+        return
+
+    await bot.call_api("set_group_leave", group_id=event.group_id)
+    return await notice_and_ban(bot, event, '禁言')
+
+
+@notice.handle()
+async def on_group_decrease(bot: Bot, event: NoticeEvent):
+    '''被踢了'''
+    if not event.notice_type == "group_decrease":
+        return
+    if event.sub_type != "kick_me":
+        return
+    return await notice_and_ban(bot, event, '移出')
+
+
+async def notice_and_ban(bot: Bot, event: NoticeEvent, action: str):
+    message = f"唔……音卡在群聊（{event.group_id}）被{action}啦！\n操作者：{event.operator_id}，已自动封禁！"
+    for i in Config.notice_to:
+        await bot.call_api("send_group_msg", group_id=int(i), message=message)
+    kicker = str(event.operator_id)
+    if banned(kicker):
+        return
+    banlist = json.loads(read(TOOLS + "/ban.json"))
+    banlist.append(kicker)
+    write(TOOLS + "/ban.json", json.dumps(banlist))
 request = on_request(priority=5)
 
 
@@ -106,7 +118,7 @@ async def __(event: GroupMessageEvent, args: Message = CommandArg()):
     '''
     欢迎语的修改。
     '''
-    
+
     x = Permission(event.user_id).judge(5, '修改欢迎语')
     if not x.success:
         return await welcome_msg_edit.finish(x.description)
