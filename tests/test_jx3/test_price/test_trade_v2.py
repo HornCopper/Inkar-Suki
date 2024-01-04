@@ -20,6 +20,22 @@ def test_trade_record():
     mc.check_counter()
 
 
+def test_single_record():
+    mc = MessageCallback()
+    v2.jx3_cmd_trade_detail = mc
+
+    func = src.plugins.jx3.jx3_trade_detail
+    state = {}
+    event = SFGroupMessageEvent()
+
+    mc.tag = '交易行 幽月轮 天绝地灭'
+    event.message = obMessage(mc.tag)
+    args = Jx3Arg.arg_factory(src.plugins.jx3.jx3_cmd_trade_detail, event)
+    task = func(mc, state, event, args)
+    asyncio.run(task)
+    mc.check_counter()
+
+
 def test_default_server():
     mc = MessageCallback()
     v2.jx3_cmd_trade2 = mc
