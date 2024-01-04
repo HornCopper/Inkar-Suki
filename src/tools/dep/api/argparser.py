@@ -86,7 +86,7 @@ class Jx3ArgExt:
     @staticmethod
     def requireToken(method):
         @functools.wraps(method)
-        def wrapper(*args, **kwargs):
+        async def wrapper(*args, **kwargs):
             if not token:
                 return [PROMPT_NoToken]
             return method(*args, **kwargs)
@@ -95,7 +95,7 @@ class Jx3ArgExt:
     @staticmethod
     def requireTicket(method):
         @functools.wraps(method)
-        def wrapper(*args, **kwargs):
+        async def wrapper(*args, **kwargs):
             if not ticket:
                 return [PROMPT_NoTicket]
             return method(*args, **kwargs)
