@@ -204,6 +204,9 @@ async def direct_leave_group(group_id: str):
             await bot.call_api('set_group_leave', group_id=group_id)
             if cmd_leave_task.get(group_id):
                 del cmd_leave_task[group_id]
+
+            for i in Config.notice_to:
+                await bot.call_api("send_group_msg", group_id=int(i), message=f'音卡按他们的要求，离开了{group_id}')
         except:
             pass
 
