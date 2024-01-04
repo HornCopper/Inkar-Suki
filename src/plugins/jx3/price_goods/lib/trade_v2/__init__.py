@@ -164,6 +164,7 @@ class FavoritestGoodsPriceRefreshThread(threading.Thread):
         while True:
             if not self.running:
                 time.sleep(1)
+                continue
             logger.debug(f"{self.getName()}refresh_favoritest_goods_current_price start")
             self.run_single()
             logger.debug(f"{self.getName()}refresh_favoritest_goods_current_price complete")
