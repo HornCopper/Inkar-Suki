@@ -14,7 +14,7 @@ jx3_cmd_sandbox = on_command(
 
 
 @jx3_cmd_sandbox.handle()
-async def jx3_sandbox(event: GroupMessageEvent, template: list[Jx3Arg] = Depends(Jx3Arg.arg_factory)):
+async def jx3_sandbox(event: GroupMessageEvent, template: list[Any] = Depends(Jx3Arg.arg_factory)):
     server, = template
     data = await sandbox_(server)
     if type(data) == type([]):

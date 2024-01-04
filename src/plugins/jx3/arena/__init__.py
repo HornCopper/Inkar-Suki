@@ -16,7 +16,7 @@ jx3_cmd_arena_records = on_regex(
 
 
 @jx3_cmd_arena_records.handle()
-async def jx3_arena_records(bot: Bot, event: GroupMessageEvent, template: list[Jx3Arg] = Depends(Jx3Arg.arg_factory)):
+async def jx3_arena_records(bot: Bot, event: GroupMessageEvent, template: list[Any] = Depends(Jx3Arg.arg_factory)):
     server, user, pvp_mode = template
     if server is None:
         return await jx3_cmd_arena_records.finish(PROMPT_ServerNotExist)
@@ -43,7 +43,7 @@ jx3_cmd_arena_rank = on_regex(
 
 
 @jx3_cmd_arena_rank.handle()
-async def jx3_arena_rank(bot: Bot, event: GroupMessageEvent, template: list[Jx3Arg] = Depends(Jx3Arg.arg_factory)):
+async def jx3_arena_rank(bot: Bot, event: GroupMessageEvent, template: list[Any] = Depends(Jx3Arg.arg_factory)):
     pvp_mode, = template
     data = await arena_rank(mode=pvp_mode)
     if type(data) == type([]):
@@ -64,7 +64,7 @@ jx3_cmd_arena_statistics = on_regex(
 
 
 @jx3_cmd_arena_statistics.handle()
-async def jx3_arena_statistics(bot: Bot, event: GroupMessageEvent, template: list[Jx3Arg] = Depends(Jx3Arg.arg_factory)):
+async def jx3_arena_statistics(bot: Bot, event: GroupMessageEvent, template: list[Any] = Depends(Jx3Arg.arg_factory)):
     pvp_mode, = template
     data = await arena_statistics(mode=pvp_mode)
     if type(data) == type([]):

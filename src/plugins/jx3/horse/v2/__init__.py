@@ -17,7 +17,7 @@ jx3_cmd_horseinfo_chitu = on_command(
 
 
 @jx3_cmd_horseinfo_chitu.handle()
-async def jx3_horseinfo_chitu(event: GroupMessageEvent, template: list[Jx3Arg] = Depends(Jx3Arg.arg_factory)):
+async def jx3_horseinfo_chitu(event: GroupMessageEvent, template: list[Any] = Depends(Jx3Arg.arg_factory)):
     """
     获取赤兔刷新信息：
 
@@ -41,7 +41,7 @@ jx3_cmd_horseinfo_map = on_command(
 
 
 @jx3_cmd_horseinfo_map.handle()
-async def jx3_horseinfo(event: GroupMessageEvent, template: list[Jx3Arg] = Depends(Jx3Arg.arg_factory)):
+async def jx3_horseinfo(event: GroupMessageEvent, template: list[Any] = Depends(Jx3Arg.arg_factory)):
     server, = template
     reporter = await get_horse_reporter(server)
     if isinstance(reporter, str):
