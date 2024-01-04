@@ -1,4 +1,3 @@
-from src.tools.dep import *
 from .MapData import *
 
 

@@ -1,5 +1,5 @@
 from __future__ import annotations
-
+from src.tools.dep import *
 
 class MapPointData:
     '''关键点数据
