@@ -33,4 +33,4 @@ class Jx3ApiResponse:
     @property
     def output_url(self):
         err = self.error_msg
-        return err or self.url
+        return [err] or self.url
