@@ -92,12 +92,52 @@ async def common_match_ban_user(matcher: Matcher, event: Event):
         return
 
     matcher.stop_propagation()
+mgr_cmd_echo_delay = on_command("mgr_cmd_echo_delay", aliases={'echovv'}, priority=5)
 
-mgr_cmd_remove_robot = on_command("mgr_leave_group", aliases={'移除机器人'}, priority=5)
+echo_list = []
+
+
+@mgr_cmd_echo_delay.handle()
+async def echo_delay(bot: Bot, state: T_State, event: GroupMessageEvent):
+    schedule_time = DateTime() + 10e3
+    echo_list.append(event.group_id)
+    try:
+        scheduler.add_job(
+            run_echo_delay,
+            "date",
+            run_date=schedule_time.tostring(),
+            id=f"echo_delay_{get_uuid()}")
+    except ActionFailed as e:
+        logger.warning(f"定时任务添加失败，{repr(e)}")
+
+
+async def run_echo_delay():
+    global echo_list
+    for x in get_bots():
+        bot = get_bot(x)
+        for group in echo_list:
+            await bot.call_api(
+                "send_group_msg",
+                group_id=group,
+                message="延迟测试~"
+            )
+    echo_list = []
+
+mgr_cmd_remove_robot = on_command(
+    "mgr_leave_group",
+    name='移除机器人'
+    aliases={'移除机器人'},
+    priority=5,
+    description='让机器人自己体面',
+    catalog='mgr.group.exit',
+    example=[],
+    document='''退群有冷静期，期间可以取消退群
+    这种退群不会进黑名单'''
+)
 
 
 @mgr_cmd_remove_robot.handle()
-async def leave_group(bot: Bot, state: T_State, event: Event, args: Message = CommandArg()):
+async def leave_group(bot: Bot, state: T_State, event: Event, args: list[Any] = Depends(Jx3Arg.arg_factory)):
 
     personal_data = await bot.call_api("get_group_member_info", group_id=event.group_id, user_id=event.user_id, no_cache=True)
     group_admin = personal_data["role"] in ["owner", "admin"]
@@ -115,33 +155,44 @@ cmd_leave_task: dict[str, DateTime] = {}  # 退群状态
 
 
 @mgr_cmd_remove_robot.got('confirm')
-async def leave_group(bot: Bot, state: T_State, event: GroupMessageEvent, confirm: Message = CommandArg()):
-    if state['code'] != confirm.extract_plain_text():
-        return mgr_cmd_remove_robot.send('没有回复正确的验证码哦~如果需要！重新发一下退出吧！')
+async def leave_group(bot: Bot, state: T_State, event: GroupMessageEvent, confirm: Message = Arg()):
+    global cmd_leave_task
+    u_input = confirm.extract_plain_text()
+    if cmd_cancel_leave == u_input:
+        return await cancel_leave_group(event)
+    if state['code'] != u_input:
+        return await mgr_cmd_remove_robot.send('没有回复正确的验证码哦~如果需要！重新发一下退出吧！')
     counter = 10
-    schdule_time = DateTime() + counter * 60
-    cmd_leave_task[event.group_id] = schdule_time
+    schedule_time = DateTime() + (counter * 60) * 1e3
+    cmd_leave_task[event.group_id] = schedule_time
+    logger.warning(f"用户提交了注销申请:group={event.group_id},by:{event.user_id}")
     try:
         scheduler.add_job(
             run_leave_group,
             "date",
-            next_run_time=schdule_time,
-            id="run_leave_group")
+            run_date=schedule_time.tostring(),
+            id=f"run_leave_group_{get_uuid()}")
     except ActionFailed as e:
         logger.warning(f"定时任务添加失败，{repr(e)}")
-    await mgr_cmd_remove_robot.send(f'[冷静期提醒]好哦~机器人将在{counter}分钟后离开\n取消回复：{cmd_cancel_leave}')
+    prefix = f'[冷静期提醒]好哦~机器人将在{counter}分钟后'
+    suffix = f'离开\n取消回复：{cmd_cancel_leave}'
+    await mgr_cmd_remove_robot.send(f'{prefix}({schedule_time.tostring(DateTime.Format.DEFAULT)}){suffix}')
 
 
 async def run_leave_group():
+    global cmd_leave_task
     for group_id in cmd_leave_task:
-        schdule_time = cmd_leave_task[group_id]
-        if not schdule_time and DateTime() < schdule_time:
+        schedule_time = cmd_leave_task[group_id]
+        if not schedule_time:
+            continue
+        if DateTime() + 5e3 < schedule_time:
             continue
         logger.warning(f"已根据用户要求退出群:{group_id}")
         return await direct_leave_group(group_id)
 
 
 async def direct_leave_group(group_id: str):
+    global cmd_leave_task
     for x in get_bots():
         bot = get_bot(x)
         try:
@@ -150,17 +201,21 @@ async def direct_leave_group(group_id: str):
                 group_id=group_id,
                 message="音卡冷静期已到，有缘再见啦~"
             )
-            bot.call_api('set_group_leave', group_id=group_id)
+            await bot.call_api('set_group_leave', group_id=group_id)
+            if cmd_leave_task.get(group_id):
+                del cmd_leave_task[group_id]
         except:
             pass
 
 
-mgr_cmd_cancel_remove_robot = on_command("mgr_cancel_leave_group", aliases={cmd_cancel_leave}, priority=5)
+mgr_cmd_cancel_remove_robot = on_command("mgr_cancel_leave_group", aliases={
+                                         cmd_cancel_leave}, priority=5)
 
 
 @mgr_cmd_cancel_remove_robot.handle()
-async def cancel_leave_group(bot: Bot, state: T_State, event: GroupMessageEvent, confirm: Message = CommandArg()):
+async def cancel_leave_group(event: GroupMessageEvent):
+    global cmd_leave_task
     if not cmd_leave_task.get(event.group_id):
         return
-    cmd_leave_task[event.group_id] = None
-    return mgr_cmd_remove_robot.send('好哦~')
+    del cmd_leave_task[event.group_id]
+    return await mgr_cmd_remove_robot.send('好哦~')
