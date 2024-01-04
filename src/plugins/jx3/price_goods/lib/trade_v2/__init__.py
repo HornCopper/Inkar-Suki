@@ -163,7 +163,7 @@ class FavoritestGoodsPriceRefreshThread(threading.Thread):
     def run(self) -> None:
         while True:
             if not self.running:
-                continue
+                time.sleep(1)
             logger.debug(f"{self.getName()}refresh_favoritest_goods_current_price start")
             self.run_single()
             logger.debug(f"{self.getName()}refresh_favoritest_goods_current_price complete")
@@ -176,12 +176,13 @@ class FavoritestGoodsPriceRefreshThread(threading.Thread):
 
 
 thread_fav_prices_refresher = FavoritestGoodsPriceRefreshThread()
-
+thread_fav_prices_refresher.start()
 
 def refresh_favoritest_goods_current_price():
     '''
     开启一个新的采集线程
     '''
+    global thread_fav_prices_refresher
     thread_fav_prices_refresher.running = True
     return thread_fav_prices_refresher.transition_id
 
