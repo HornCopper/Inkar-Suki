@@ -1,5 +1,4 @@
 from __future__ import annotations
-from .StaticLoader import *
 
 
 class MapPointData:
