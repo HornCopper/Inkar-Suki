@@ -1,5 +1,9 @@
 from __future__ import annotations
-from src.tools.dep import *
+from typing import Literal
+import threading
+import json
+from src.tools.utils import *
+from src.tools.file import *
 
 
 class StaticLoader:
@@ -35,7 +39,8 @@ class StaticLoader:
 
     @classmethod
     def from_id(cls, key: str):
-        cls.init()
+        if not cls.inited:
+            cls.init()
         result = cls.static_data.get(str(key))
         if not result:
             logger.warning(f'not found resources:{cls.__name__}@{key}')
