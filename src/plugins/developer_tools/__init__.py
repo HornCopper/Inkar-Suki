@@ -137,7 +137,8 @@ async def _(event: Event, args: Message = CommandArg()):
     if not x.success:
         return await call_api.finish(x.description)
     cmd = args.extract_plain_text()
-    await get_url(f"{Config.cqhttp}{cmd}")
+    result = await get_url(f"{Config.cqhttp}{cmd}")
+    return call_api.send(f'已执行{cmd} -> {result}')
 
 git = on_command("-git", priority=5)  # 调用`Git`，~~别问意义是什么~~
 
