@@ -16,7 +16,7 @@ jx3_cmd_arena_records = on_regex(
 
 
 @jx3_cmd_arena_records.handle()
-async def jx3_arena_records(bot: Bot, event: GroupMessageEvent, template: list[Any] = Depends(Jx3Arg.arg_factory)):
+async def jx3_arena_records(event: GroupMessageEvent, template: list[Any] = Depends(Jx3Arg.arg_factory)):
     server, user, pvp_mode = template
     if server is None:
         return await jx3_cmd_arena_records.finish(PROMPT_ServerNotExist)
