@@ -2,7 +2,7 @@ from sgtpyutils.logger import logger
 import functools
 from ...args import *
 from .args_template import *
-
+# from .DocumentCatalog import *
 
 class DocumentItem:
     cmd: str  # 命令
@@ -24,7 +24,7 @@ class DocumentItem:
                 self.aliases.add(self.name)  # 将名称设置为默认命令
                 data['aliases'] = self.aliases
         elif self.aliases:
-            self.name = self.aliases.__iter__().__next__  # 如果没有定义名称则将别名认为是名称
+            self.name = self.aliases.__iter__().__next__()  # 如果没有定义名称则将别名认为是名称
         self.description = data.get('description')
         self.priority = data.get('priority') or 0
         self.example = data.get('example')
