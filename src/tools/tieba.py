@@ -83,12 +83,13 @@ class Jx3Tieba(threading.Thread):
             asyncio.run(self.run_once())
             if self.is_stop:
                 return logger.info(f'{self.name} is stopped')
-            time.sleep(Jx3Tieba.get_interval())
+            
 
     async def run_once(self) -> list:
         if not self.is_alive():
             self.stop()
             return []
+        await asyncio.sleep(Jx3Tieba.get_interval())
         return await self.__run_once()
 
     async def __run_once(self):
