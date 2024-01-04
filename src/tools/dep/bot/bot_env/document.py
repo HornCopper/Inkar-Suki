@@ -18,10 +18,12 @@ class DocumentItem:
         self.cmd = cmd
         self.name = data.get('name')
         self.aliases = data.get('aliases') or []
-        if self.name and not self.name in self.aliases:
-            self.aliases.insert(0, self.name) # 将名称设置为默认命令
-        if not self.name and self.aliases:
-            self.name = self.aliases.__iter__().__next__() # 如果没有定义名称则将别名认为是名称
+        if self.name:
+            if not self.name in self.aliases:
+                self.aliases.insert(0, self.name)  # 将名称设置为默认命令
+                data['aliases'] = self.aliases
+        elif self.aliases:
+            self.name = self.aliases.__iter__().__next__  # 如果没有定义名称则将别名认为是名称
         self.description = data.get('description')
         self.priority = data.get('priority') or 0
         self.example = data.get('example')
