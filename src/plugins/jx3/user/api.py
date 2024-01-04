@@ -136,7 +136,7 @@ def data_process(kf, data, f):
             continue
         if i["Icon"]["SubKind"] in "投掷囊":
             final[10] = i
-        if i["Icon"]["SubKind"] != "投掷囊" and i["Icon"]["SubKind"] != "重剑" and i["Icon"]["Kind"] == "武器":
+        if i["Icon"]["SubKind"] != "投掷囊" and i["Icon"]["SubKind"] != "重剑" and (i["Icon"]["Kind"] == "武器" or (i["Icon"]["Kind"] == "任务特殊" and i["Icon"]["SubKind"] == "活动相关")): 
             final[11] = i
         if i["Icon"]["SubKind"] == "重剑":
             final[12] = i
@@ -388,6 +388,8 @@ async def get_attr_main(server, id, group_id):
             if equip_data.index(i) in [0, 1, 2, 3, 5]:
                 henchant[equip_data.index(i)] = ""
                 continue
+        if type(i) != type({}):
+            continue
         if i["Icon"]["SubKind"] == "帽子":
             if "WCommonEnchant" in list(i):
                 attrs_ = json.dumps(i["ModifyType"], ensure_ascii=False)
