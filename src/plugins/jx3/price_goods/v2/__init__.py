@@ -4,7 +4,7 @@ from ..api import *
 from .renderer import *
 jx3_cmd_trade2 = on_command(
     "jx3_trade2",
-    aliases={"交易行"},
+    name="交易行",
     priority=5,
     catalog='jx3.pvg.price.trade@v2',
     description="获取交易行物品的价格",
@@ -26,6 +26,7 @@ async def jx3_trade2(matcher: Matcher, state: T_State, event: GroupMessageEvent,
     Example：交易行 帝骖龙翔 2
     """
     arg_server, arg_item, arg_page = template
+    logger.debug(f'start trade : {template}')
     state["server"] = arg_server
     pageSize = 20
     data, totalCount = await search_item_info_for_price(arg_item, arg_server, pageIndex=arg_page, pageSize=pageSize)
@@ -41,7 +42,7 @@ async def jx3_trade2(matcher: Matcher, state: T_State, event: GroupMessageEvent,
 
 jx3_cmd_favouritest = on_command(
     "jx3_trade_favoritest",
-    aliases={"交易行热门"},
+    name="交易行热门",
     catalog='jx3.pvg.price.trade-hot',
     example=[
         Jx3Arg(Jx3ArgsType.server),
@@ -92,7 +93,7 @@ async def price_num_selected2(state: T_State, event: GroupMessageEvent, user_sel
 
 jx3_cmd_trade2_refresh_job = on_command(
     "jx3_cmd_trade2_refresh_job",
-    aliases={"更新热门"},
+    name="更新热门",
     catalog='jx3.pvg.price.trade-update',
     example=[],
     priority=5
