@@ -78,7 +78,7 @@ class Jx3ArgCallback:
         v = self._convert_number(arg_value)
         if not v or v < 0:
             v = 0
-        return v
+        return v - 1 # 输入值从1开始，返回值从0开始
 
 
 class Jx3ArgExt:
@@ -115,7 +115,7 @@ class Jx3Arg(Jx3ArgCallback, Jx3ArgExt):
         Jx3ArgsType.pvp_mode: Jx3ArgCallback._convert_pvp_mode,
     }
 
-    def __init__(self, arg_type: Jx3ArgsType = Jx3ArgsType.default,  name: str = None, is_optional: bool = True, default: any = None) -> None:
+    def __init__(self, arg_type: Jx3ArgsType = Jx3ArgsType.default,  name: str = None, is_optional: bool = True, default: any = Ellipsis) -> None:
         self.arg_type = arg_type
         self.is_optional = default or is_optional  # 显式设置为可选 或 设置了默认值
         self.name = name or str(arg_type)
@@ -128,13 +128,17 @@ class Jx3Arg(Jx3ArgCallback, Jx3ArgExt):
         '''
         callback = self.callback[self.arg_type]
         result = callback(self, arg_value, event=event)
-        if result is None and self.default:
+        if result is None and self.default != Ellipsis:
             return [self.default, True]  # 设置了默认值
 
         if isinstance(result, tuple):
             return result
         return [result, False]
 
+    def __repr__(self) -> str:
+        return str(self)
+    def __str__(self) -> str:
+        return f'[{self.arg_type.name}]{self.name}(default={self.default})'
 
 @overload
 def get_args(raw_input: str, template_args: List[Jx3Arg], event: GroupMessageEvent = None) -> list:
@@ -152,16 +156,16 @@ def get_args(template_args: List[Jx3Arg], event: GroupMessageEvent) -> list:
     ...
 
 
-def get_args(arg1, arg2, arg3=None) -> list:
+def get_args(arg1, arg2, arg3=None, method=None) -> list:
     if isinstance(arg2, GroupMessageEvent):
         message = convert_to_str(arg2)  # 从事件提取
         event = arg2  # 事件是第二个参数
         template_args = arg1
-        return direct_get_args(message, template_args, event)
-    return direct_get_args(arg1, arg2, arg3)
+        return direct_get_args(message, template_args, event, method=method)
+    return direct_get_args(arg1, arg2, arg3, method=method)
 
 
-def direct_get_args(raw_input: str, template_args: List[Jx3Arg], event: GroupMessageEvent = None) -> list:
+def direct_get_args(raw_input: str, template_args: List[Jx3Arg], event: GroupMessageEvent = None, method=None) -> list:
     raw_input = convert_to_str(raw_input)
     template_len = len(template_args)
     raw_input = raw_input or ''  # 默认传入空参数
@@ -181,8 +185,13 @@ def direct_get_args(raw_input: str, template_args: List[Jx3Arg], event: GroupMes
             continue  # 该参数去匹配下一个参数
 
         user_index += 1  # 输出参数位成功才+1
+    if method:
+        caller_name = method.__name__
+    else:
+        method_names = [x[3] for x in inspect.stack()]
+        caller_name_pos = extensions.find(enumerate(method_names), lambda x: x[1] == 'get_args')
+        caller_name = method_names[caller_name_pos[0] + 1]
 
-    caller_name = inspect.stack()[2][3]  # 2为往前2层，3为函数名称
     log = {
         'name': caller_name,
         'args': result,

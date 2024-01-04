@@ -12,8 +12,9 @@ def test_trade_record():
     state = {}
     event = SFGroupMessageEvent()
 
-    mc.tag = '唯满侠 五行石'
-    task = jx3_trade(mc, state, event, obMessage(mc.tag))
+    mc.tag = '交易行 唯满侠 五行石'
+    event.message = obMessage(mc.tag)
+    task = jx3_trade(mc, state, event)
     asyncio.run(task)
     mc.check_counter()
 
@@ -28,12 +29,14 @@ def test_default_server():
     from src.plugins.jx3.bind import server_bind
     server_bind(event.group_id, '唯满侠')
 
-    mc.tag = '武技殊影图'
-    task = jx3_trade(mc, state, event, obMessage(mc.tag))
+    mc.tag = '交易行 武技殊影图'
+    event.message = obMessage(mc.tag)
+    task = jx3_trade(mc, state, event)
     asyncio.run(task)
     mc.check_counter()
-    mc.tag = '武技殊影图 2'  # 第二页
-    task = jx3_trade(mc, state, event, obMessage(mc.tag))
+    mc.tag = '交易行 武技殊影图 2'  # 第二页
+    event.message = obMessage(mc.tag)
+    task = jx3_trade(mc, state, event)
     asyncio.run(task)
     mc.check_counter()
     server_bind(event.group_id, '')
@@ -64,8 +67,9 @@ def test_not_exist():
     jx3_trade = src.plugins.jx3.jx3_trade2
     state = {}
     event = SFGroupMessageEvent()
-    mc.tag = '唯满侠 不存在哈哈哈'
-    task = jx3_trade(mc, state, event, obMessage(mc.tag))
+    mc.tag = '交易行 唯满侠 不存在哈哈哈'
+    event.message = obMessage(mc.tag)
+    task = jx3_trade(mc, state, event)
     asyncio.run(task)
     mc.check_counter()
 
@@ -103,8 +107,9 @@ def test_goods_level():
     state = {}
     event = SFGroupMessageEvent()
 
-    mc.tag = '唯满侠 无封裤'
-    task = jx3_trade(mc, state, event, obMessage(mc.tag))
+    mc.tag = '交易行 唯满侠 无封裤'
+    event.message = obMessage(mc.tag)
+    task = jx3_trade(mc, state, event)
     asyncio.run(task)
     mc.check_counter()
 

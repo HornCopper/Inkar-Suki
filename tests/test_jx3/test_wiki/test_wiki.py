@@ -8,23 +8,26 @@ def test_question():
     mc = MessageCallback()
     wiki.jx3_cmd_wiki = mc
 
-    func = src.plugins.jx3.jx3_wiki
+    func1 = src.plugins.jx3.jx3_wiki
     state = {}
     event = SFGroupMessageEvent()
 
-    mc.tag = '小药简介'  # 将返回含有图片的项
-    task = func(state, event, obMessage(mc.tag))
+    mc.tag = '接引人 三山四海攻略'  # 将返回含有图片的项
+    event.message = obMessage(mc.tag)
+    task = func1(state, event)
     asyncio.run(task)
     mc.check_counter()
 
-    func = src.plugins.jx3.jx3_next_ques  # 转到相关问题
+    func2 = src.plugins.jx3.jx3_next_ques  # 转到相关问题
     mc.tag = 'xg0'  # 相关项
-    task = func(state, event, obMessage(mc.tag))
+    event.message = obMessage(mc.tag)
+    task = func2(state, event, event.message)
     asyncio.run(task)
     mc.check_counter()
 
     mc.tag = 'yy0'  # 引用项
-    task = func(state, event, obMessage(mc.tag))
+    event.message = obMessage(mc.tag)
+    task = func2(state, event, event.message)
     asyncio.run(task)
     mc.check_counter()
 
