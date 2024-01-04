@@ -125,7 +125,7 @@ async def run_echo_delay():
 
 mgr_cmd_remove_robot = on_command(
     "mgr_leave_group",
-    name='移除机器人'
+    name='移除机器人',
     aliases={'移除机器人'},
     priority=5,
     description='让机器人自己体面',
