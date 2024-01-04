@@ -1,11 +1,12 @@
 
+from typing import overload
 from nonebot.adapters.onebot.v11 import GroupMessageEvent
 
 from sgtpyutils.functools import AssignableArg
 import functools
 import nonebot
 from sgtpyutils.logger import logger
-from .document import DocumentGenerator
+from .document import DocumentGenerator, DocumentItem
 
 import nonebot.matcher
 from nonebot.matcher import Matcher
@@ -56,18 +57,34 @@ nonebot._on_regex = nonebot.on_regex  # 初始化
 nonebot.on_regex = __hook_on_regex
 
 
+@overload
+def get_cmd_docs(name: str) -> DocumentItem:
+    ...
+
+
+@overload
+def get_cmd_docs(cls) -> DocumentItem:
+    ...
+
 
 def get_cmd_docs(cls):
-    checker = cls.rule.checkers
-    first = checker.__iter__().__next__()
-    cmds = first.call.cmds
-    cmd_tuple = [x[0] for x in cmds]
+    if not isinstance(cls, str):
+        checker = cls.rule.checkers
+        first = checker.__iter__().__next__()
+        call = first.call
+        if hasattr(call, 'cmds'):
+            cmds = call.cmds
+            cmd_tuple = [x[0] for x in cmds]
+        else:
+            cmd_tuple = [first.call.regex]
 
-    result = filter(lambda x: DocumentGenerator.commands.get(x), cmd_tuple)
-    result = list(result)
-    if not result:
-        raise Exception('no suitable docs')
-    return DocumentGenerator.commands.get(result[0])
+        result = filter(lambda x: DocumentGenerator.commands.get(x), cmd_tuple)
+        result = list(result)
+        if not result:
+            raise Exception('no suitable docs')
+        cls = result[0]
+
+    return DocumentGenerator.commands.get(cls)
 
 
 # 覆盖matcher.Matcher.handle实现依赖注入
