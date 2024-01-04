@@ -25,9 +25,7 @@ async def jx3_trade2(matcher: Matcher, state: T_State, event: GroupMessageEvent,
     Example：交易行 幽月轮 帝骖龙翔 1
     Example：交易行 帝骖龙翔 2
     """
-    print(f'这一行不会被输出')
     arg_server, arg_item, arg_page = template
-    logger.debug(f'start trade : {template}')
     state["server"] = arg_server
     pageSize = 20
     data, totalCount = await search_item_info_for_price(arg_item, arg_server, pageIndex=arg_page, pageSize=pageSize)

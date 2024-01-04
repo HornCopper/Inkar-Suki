@@ -9,15 +9,17 @@ def test_horse_loader():
 
 
 def test_horse_list_view():
+    from src.plugins.jx3.horse import v2
     mc = MessageCallback()
-    import src.plugins.jx3.horse.v2
-    src.plugins.jx3.horse.v2.jx3_cmd_horseinfo_map = mc
-    
+    v2.jx3_cmd_horseinfo_map = mc
+
     func = src.plugins.jx3.jx3_horseinfo
     event = SFGroupMessageEvent()
 
     mc.tag = '马场 唯满侠'
     event.message = obMessage(mc.tag)
-    task = func(event)
+    args = Jx3Arg.arg_factory(src.plugins.jx3.jx3_cmd_horseinfo_map, event)
+
+    task = func(event, args)
     asyncio.run(task)
     mc.check_counter()
