@@ -33,7 +33,7 @@ async def jx3_trade2(matcher: Matcher, state: T_State, event: GroupMessageEvent,
         return
     elif len(all_id) == 0:  # 广搜没搜到，则转换为单搜
         matcher.set_arg("user_select_index", obMessage("0"))
-        result = await get_jx3_trade_detail(matcher, state, event, template)
+        result = await get_jx3_trade_detail(matcher, state, event, [arg_server, arg_item])
         if isinstance(result, list):
             return await jx3_cmd_trade2.finish(result[0])
         return await jx3_cmd_trade2.send(result)
@@ -66,7 +66,7 @@ async def jx3_trade_detail(matcher: Matcher, state: T_State, event: GroupMessage
     return await jx3_cmd_trade_detail.send(result)
 
 
-async def get_jx3_trade_detail(matcher: Matcher, state: T_State, event: GroupMessageEvent, template: list[Any] = Depends(Jx3Arg.arg_factory)):
+async def get_jx3_trade_detail(matcher: Matcher, state: T_State, event: GroupMessageEvent, template: list[Any]):
     arg_server, arg_item = template
     data = await search_item_info(arg_item, pageIndex=0, pageSize=1000)
     data = [x for x in data if x.bind_type != GoodsBindType.BindOnPick]
