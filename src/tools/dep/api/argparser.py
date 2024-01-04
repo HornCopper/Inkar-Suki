@@ -78,7 +78,7 @@ class Jx3ArgCallback:
         v = self._convert_number(arg_value)
         if not v or v < 0:
             v = 0
-        return v - 1 # 输入值从1开始，返回值从0开始
+        return v - 1  # 输入值从1开始，返回值从0开始
 
 
 class Jx3ArgExt:
@@ -137,8 +137,16 @@ class Jx3Arg(Jx3ArgCallback, Jx3ArgExt):
 
     def __repr__(self) -> str:
         return str(self)
+
     def __str__(self) -> str:
         return f'[{self.arg_type.name}]{self.name}(default={self.default})'
+
+    @staticmethod
+    def arg_factory(matcher: Matcher, event: GroupMessageEvent) -> list[Jx3Arg]:
+        docs = get_cmd_docs(matcher)
+        templates = get_args(docs.example, event, method=docs.name)
+        return templates
+
 
 @overload
 def get_args(raw_input: str, template_args: List[Jx3Arg], event: GroupMessageEvent = None) -> list:
@@ -185,8 +193,13 @@ def direct_get_args(raw_input: str, template_args: List[Jx3Arg], event: GroupMes
             continue  # 该参数去匹配下一个参数
 
         user_index += 1  # 输出参数位成功才+1
+
+        
     if method:
-        caller_name = method.__name__
+        if isinstance(method, str):
+            caller_name = method
+        else:
+            caller_name = method.__name__
     else:
         method_names = [x[3] for x in inspect.stack()]
         caller_name_pos = extensions.find(enumerate(method_names), lambda x: x[1] == 'get_args')
