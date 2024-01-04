@@ -20,13 +20,10 @@ now = "万灵当歌"
 
 ticket = Config.jx3_token
 
-
-async def addritube_(server: str = None, name: str = None, group_id: str = None):  # 查装 <服务器> <ID>
-    if token == None or ticket == None:
-        return [PROMPT_NoTicket]
-    server = server_mapping(server, group_id)
-    if not server:
-        return [PROMPT_ServerNotExist]
+@Jx3Arg.requireTicket
+@Jx3Arg.requireToken
+async def addritube_(server: str = None, name: str = None):  
+    '''# 查装 <服务器> <ID>'''
     final_url = f"{Config.jx3api_link}/view/role/attribute?ticket={ticket}&token={token}&robot={bot}&server={server}&name={name}&scale=1"
     data = await get_api(final_url)
     if data["code"] == 404:
