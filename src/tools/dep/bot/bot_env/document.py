@@ -17,7 +17,11 @@ class DocumentItem:
     def __init__(self, cmd: str, data: dict) -> None:
         self.cmd = cmd
         self.name = data.get('name')
-        self.aliases = data.get('aliases')
+        self.aliases = data.get('aliases') or []
+        if self.name and not self.name in self.aliases:
+            self.aliases.insert(0, self.name) # 将名称设置为默认命令
+        if not self.name and self.aliases:
+            self.name = self.aliases[0] # 如果没有定义名称则将别名认为是名称
         self.description = data.get('description')
         self.priority = data.get('priority') or 0
         self.example = data.get('example')
