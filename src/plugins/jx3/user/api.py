@@ -18,8 +18,6 @@ from nonebot.log import logger
 now = "万灵当歌"
 
 
-ticket = Config.jx3_token
-
 @Jx3Arg.requireTicket
 @Jx3Arg.requireToken
 async def addritube_(server: str = None, name: str = None):  
@@ -29,9 +27,9 @@ async def addritube_(server: str = None, name: str = None):
     if data["code"] == 404:
         return ["唔……玩家不存在。"]
     if data["code"] == 403 and data["msg"] == "侠客隐藏了游戏信息":
-        return ["唔，该玩家隐藏了信息。"]
+        return ["唔……该玩家隐藏了信息。"]
     if data["code"] == 403 and data["msg"] == "仅互关好友可见":
-        return ["仅互关好友可见哦~"]
+        return ["唔……玩家设置了仅互关好友可见哦~"]
     return data["data"]["url"]
 
 
