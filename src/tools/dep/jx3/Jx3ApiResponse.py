@@ -7,9 +7,10 @@ class Jx3ApiResponse:
         return '这个人不允许查看他的信息'
 
     errors = {
+        400: lambda x: '输入的命令可能有错哦~',
         403: convert_403,
-        404: lambda x: '没有找到这个人',
-        406: lambda x: '获取信息失败了，先别用了',
+        404: lambda x: '没有找到这个人。',
+        406: lambda x: '获取信息失败了，先别用了o(╥﹏╥)o',
     }
 
     def __init__(self, data: dict) -> None:
