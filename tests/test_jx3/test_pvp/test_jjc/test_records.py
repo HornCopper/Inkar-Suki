@@ -1,6 +1,6 @@
 from .... import *
 
-@pytest.mark.skipif(not Config.jx3_token, reason="无token时不测试")
+@pytest.mark.skipif(not Config.jx3api_globaltoken, reason="无token时不测试")
 def test_records():
     from src.plugins.jx3 import arena
     func = src.plugins.jx3.arena.jx3_arena_records
