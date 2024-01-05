@@ -124,7 +124,6 @@ class FavoritestGoodsPriceRefreshThread(threading.Thread):
     def __init__(self) -> None:
         self.id = DateTime().getTime()
         self.__running = False
-        self.running = True
         super().__init__(daemon=True)
 
     def run_single(self):
@@ -138,7 +137,8 @@ class FavoritestGoodsPriceRefreshThread(threading.Thread):
         pool = ThreadPoolExecutor(max_workers=5)
 
         def run_single(a, b):
-            return asyncio.run_coroutine_threadsafe(get_goods_current_detail_price(a, b))
+            task = get_goods_current_detail_price(a, b)
+            return ext.SyncRunner.as_sync_method(task)
 
         while len(tasks):
             x = tasks.pop()
@@ -160,6 +160,8 @@ class FavoritestGoodsPriceRefreshThread(threading.Thread):
         if not v:
             return
         self.transition_id = f'{self.__class__.name}{DateTime()}'
+        if not self.is_alive():
+            self.start()
 
     def run(self) -> None:
         while True:
@@ -178,7 +180,7 @@ class FavoritestGoodsPriceRefreshThread(threading.Thread):
 
 
 thread_fav_prices_refresher = FavoritestGoodsPriceRefreshThread()
-thread_fav_prices_refresher.start()
+
 
 def refresh_favoritest_goods_current_price():
     '''
