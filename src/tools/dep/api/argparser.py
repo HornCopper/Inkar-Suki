@@ -76,7 +76,7 @@ class Jx3ArgCallback:
     def _convert_pageIndex(self, arg_value: str, **kwargs) -> tuple[int, bool]:
         is_default = False
         if arg_value is None:
-            return arg_value, is_default
+            return 0, True
         v = self._convert_number(arg_value)
         if not v or v < 0:
             v = 0
@@ -142,7 +142,7 @@ class Jx3Arg(Jx3ArgCallback, Jx3ArgExt):
         callback = self.callback[self.arg_type]
         result = callback(self, arg_value, event=event)
         if result is None and self.default != Ellipsis:
-            return [self.default, True]  # 设置了默认值
+            return [self.default, True]  # 没有得到有效值，但设置了默认值
 
         if isinstance(result, tuple):
             return result

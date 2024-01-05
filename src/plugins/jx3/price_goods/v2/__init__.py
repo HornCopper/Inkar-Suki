@@ -11,7 +11,7 @@ jx3_cmd_trade2 = on_command(
     description="获取交易行物品的价格",
     example=[
         Jx3Arg(Jx3ArgsType.server),
-        Jx3Arg(Jx3ArgsType.default),
+        Jx3Arg(Jx3ArgsType.property),
         Jx3Arg(Jx3ArgsType.pageIndex, default=0)
     ],
     document='''''',
@@ -51,7 +51,7 @@ jx3_cmd_trade_detail = on_command(
     description="获取交易行单个物品的价格",
     example=[
         Jx3Arg(Jx3ArgsType.server),
-        Jx3Arg(Jx3ArgsType.default),
+        Jx3Arg(Jx3ArgsType.property),
     ],
     document='''获取交易行单个物品的价格
     如果有多个候选项，则默认选取第一个''',
