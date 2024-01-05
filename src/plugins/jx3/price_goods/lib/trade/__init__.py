@@ -15,7 +15,7 @@ async def search_item_local(item_name: str) -> list:
 
 async def search_item_info(item_name: str, pageIndex: int = 0, pageSize: int = 20):
     if not item_name:
-        return "请输入物品的名称哦~"
+        return "没有看清楚要找什么物品"
     pageIndex = pageIndex or 0
     final_url = f"https://helper.jx3box.com/api/item/search?keyword={item_name}&limit=1000&page=1"
     box_data = await get_api(final_url)
@@ -23,7 +23,7 @@ async def search_item_info(item_name: str, pageIndex: int = 0, pageSize: int = 2
     if not items:  # 接口请求失败，从本地读取
         items = await search_item_local(item_name)
     if not items:  # 无数据，返回
-        return "没有找到该物品哦~"
+        return "没有找到该物品，尝试换个说法或者短一点"
     query_items: List[GoodsInfo] = []
     new_goods = False
     for item in items:
