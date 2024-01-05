@@ -5,7 +5,7 @@ jx3_cmd_addritube = on_command(
     name="属性v1",
     aliases={'查装v1'},
     priority=5,
-    catalog='jx3.pvp.user.property@v1',
+    catalog=permission.jx3.pvp.user.property,
     description="查询玩家角色的装备和属性",
     example=[
         Jx3Arg(Jx3ArgsType.server),
@@ -34,7 +34,7 @@ jx3_cmd_addritube_v2 = on_command(
     name="属性",
     aliases={'查装'},
     priority=5,
-    catalog='jx3.pvp.user.property@v2',
+    catalog=permission.jx3.pvp.user.property,
     description="查询玩家角色的装备和属性",
     example=[
         Jx3Arg(Jx3ArgsType.server),

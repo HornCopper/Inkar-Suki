@@ -6,7 +6,7 @@ jx3_cmd_horseinfo_chitu = on_command(
     aliases={},
     priority=5,
     description='[暂未开放]获取赤兔刷新信息',
-    catalog='jx3.pvx.property.horse.chitu',
+    catalog=permission.jx3.pvx.property.horse.chitu,
     example=[
         Jx3Arg(Jx3ArgsType.server)
     ],
@@ -30,7 +30,7 @@ jx3_cmd_horseinfo_map = on_command(
     aliases={"马场"},
     priority=5,
     description='获取各个马场刷新信息',
-    catalog='jx3.pvx.property.horse.common',
+    catalog=permission.jx3.pvx.property.horse.info,
     example=[
         Jx3Arg(Jx3ArgsType.server)
     ],
