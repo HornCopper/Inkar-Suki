@@ -129,7 +129,7 @@ mgr_cmd_remove_robot = on_command(
     aliases={'移除机器人'},
     priority=5,
     description='让机器人自己体面',
-    catalog='mgr.group.exit',
+    catalog=permission.mgr.group.exit,
     example=[],
     document='''退群有冷静期，期间可以取消退群
     这种退群不会进黑名单'''

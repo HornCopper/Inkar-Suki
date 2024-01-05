@@ -1,7 +1,21 @@
 from .api import *
 from .renderer import *
 
-jx3_cmd_subscribe = on_command("jx3_subscribe", aliases={"订阅"}, priority=5)
+jx3_cmd_subscribe = on_command(
+    "jx3_subscribe",
+    aliases={"订阅"},
+    priority=5,
+    catalog=permission.jx3.common.event.subscribe,
+    description="订阅",
+    example=[
+        Jx3Arg(Jx3ArgsType.subscribe), 
+        Jx3Arg(Jx3ArgsType.default),
+    ],
+    document='''订阅内容，可选择订阅的内容：
+    Example：订阅 玄晶 [级别]
+
+    Notice：一次只可订阅一个。''',
+)
 
 
 async def get_jx3_subscribe(event: GroupMessageEvent, args: Message = CommandArg()):
@@ -21,18 +35,10 @@ async def get_jx3_subscribe(event: GroupMessageEvent, args: Message = CommandArg
 
 @jx3_cmd_subscribe.handle()
 async def jx3_subscribe(event: GroupMessageEvent, args: Message = CommandArg()):
-    """
-    订阅内容，可选择订阅的内容：
-    Example：订阅 玄晶 [级别]
-
-    Notice：一次只可订阅一个。
-    """
     now, subject, msg = await get_jx3_subscribe(event, args)
 
     result = await render_subscribe(VALID_Subjects, now, subject, msg)
     return await jx3_cmd_subscribe.finish(ms.image(Path(result).as_uri()))
-
-jx3_cmd_unsubscribe = on_command("jx3_unsubscribe", aliases={"退订"}, priority=5)
 
 
 async def get_jx3_unsubscribe(event: GroupMessageEvent, args: Message = CommandArg()):
@@ -52,15 +58,29 @@ async def get_jx3_unsubscribe(event: GroupMessageEvent, args: Message = CommandA
     return now, subject, msg
 
 
-@jx3_cmd_unsubscribe.handle()
-async def jx3_unsubscribe(event: GroupMessageEvent, args: Message = CommandArg()):
-    """
+jx3_cmd_unsubscribe = on_command(
+    "jx3_unsubscribe",
+    aliases={"退订"},
+    priority=5,
+    catalog=permission.jx3.common.event.subscribe,
+    description="退订",
+    example=[
+        Jx3Arg(Jx3ArgsType.subscribe), 
+        Jx3Arg(Jx3ArgsType.default),
+    ],
+    document="""
     退订某内容，可选择：
 
     同上。
 
     Example：退订 开服
-    """
+    """,
+)
+
+
+@jx3_cmd_unsubscribe.handle()
+async def jx3_unsubscribe(event: GroupMessageEvent, args: Message = CommandArg()):
+
     now, subject, msg = await get_jx3_unsubscribe(event, args)
     result = await render_subscribe(VALID_Subjects, now, subject, msg)
     return await jx3_cmd_unsubscribe.finish(ms.image(Path(result).as_uri()))

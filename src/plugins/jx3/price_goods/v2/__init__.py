@@ -7,7 +7,7 @@ jx3_cmd_trade2 = on_command(
     name="交易行",
     aliases={'交易'},
     priority=5,
-    catalog='jx3.pvg.price.trade@v2',
+    catalog=permission.jx3.pvg.price.trade,
     description="获取交易行物品的价格",
     example=[
         Jx3Arg(Jx3ArgsType.server),
@@ -47,7 +47,7 @@ jx3_cmd_trade_detail = on_command(
     name="交易行详细",
     aliases={'交易详细'},
     priority=5,
-    catalog='jx3.pvg.price.trade@v2',
+    catalog=permission.jx3.pvg.price.trade,
     description="获取交易行单个物品的价格",
     example=[
         Jx3Arg(Jx3ArgsType.server),
@@ -83,7 +83,7 @@ async def get_jx3_trade_detail(matcher: Matcher, state: T_State, event: GroupMes
 jx3_cmd_favouritest = on_command(
     "jx3_trade_favoritest",
     name="交易行热门",
-    catalog='jx3.pvg.price.trade-hot',
+    catalog=permission.jx3.pvg.price.trade,
     example=[
         Jx3Arg(Jx3ArgsType.server),
         Jx3Arg(Jx3ArgsType.pageIndex, default=0)
@@ -144,7 +144,7 @@ async def get_price_num_selected2(state: T_State, event: GroupMessageEvent, user
 jx3_cmd_trade2_refresh_job = on_command(
     "jx3_cmd_trade2_refresh_job",
     name="更新热门",
-    catalog='jx3.pvg.price.trade-update',
+    catalog=permission.jx3.pvg.price.trade,
     example=[],
     priority=5
 )
