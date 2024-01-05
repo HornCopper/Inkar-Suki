@@ -21,5 +21,6 @@ async def dev_show_help(event: Event, args: list[Any] = Depends(Jx3Arg.arg_facto
     data['item_name'] = command
     data['pageIndex'] = pageIndex
 
-    img = await get_render_image("src/views/common/documents.html", data, delay=200)
+    template = 'document-detail' if command else 'documents'
+    img = await get_render_image(f"src/views/common/{template}.html", data, delay=200)
     return await dev_cmd_show_help.send(ms.image(Path(img).as_uri()))
