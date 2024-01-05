@@ -55,4 +55,7 @@ class Aliasable(Databased):
 
     @classmethod
     def from_alias(cls, alias: str):
-        return cls()._get_dict().get(alias)
+        result = cls()._get_dict().get(alias)
+        if not result:
+            logger.warning(f'entity {cls.__name__}@{alias} not found.')
+        return result
