@@ -21,5 +21,5 @@ def test_horse_list_view():
     args = Jx3Arg.arg_factory(src.plugins.jx3.jx3_cmd_horseinfo_map, event)
 
     task = func(event, args)
-    asyncio.run(task)
+    ext.SyncRunner.as_sync_method(task)
     mc.check_counter()

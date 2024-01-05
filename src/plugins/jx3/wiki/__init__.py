@@ -6,7 +6,7 @@ jx3_cmd_wiki = on_command(
     aliases={"接引人"},
     priority=5,
     description='查看游戏各种萌新攻略',
-    catalog='jx3.pvp.jjc.rank',
+    catalog=permission.jx3.common.wiki,
     example=[
         Jx3Arg(Jx3ArgsType.default),
     ],

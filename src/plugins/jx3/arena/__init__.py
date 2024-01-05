@@ -4,7 +4,7 @@ jx3_cmd_arena_records = on_regex(
     r"^(/)?(名剑|jjc|竞技场)?(战绩|记录)",
     priority=5,
     description='获取玩家竞技场的战绩记录',
-    catalog='jx3.pvp.jjc.records',
+    catalog=permission.jx3.pvp.jjc.records,
     example=[
         Jx3Arg(Jx3ArgsType.server),
         Jx3Arg(Jx3ArgsType.user),
@@ -33,7 +33,7 @@ jx3_cmd_arena_rank = on_regex(
     r"^(/)?(名剑|jjc|竞技场)?(排行|榜单|榜)",
     priority=5,
     description='获取竞技场的各Top50',
-    catalog='jx3.pvp.jjc.rank',
+    catalog=permission.jx3.pvp.jjc.rank,
     example=[
         Jx3Arg(Jx3ArgsType.pvp_mode),
     ],
@@ -54,7 +54,7 @@ jx3_cmd_arena_statistics = on_regex(
     r"^(/)?(名剑|jjc|竞技场)?(统计|日志)",
     priority=5,
     description='获取竞技场的各门派统计',
-    catalog='jx3.pvp.jjc.statistics',
+    catalog=permission.jx3.pvp.jjc.statistics,
     example=[
         Jx3Arg(Jx3ArgsType.pvp_mode),
     ],
