@@ -55,7 +55,11 @@ async def get_api(url, proxy: dict = None, **kwargs) -> dict:
     以get方式发出请求，并将返回的结果以json方式处理
     '''
     r = await send_with_async('get', url, proxy, **kwargs)
-    return r and r.json()
+    try:
+        return r and r.json()
+    except Exception as ex:
+        logger.error(f'fail convert response to json:{ex},raw:{r.text}')
+        return None
 
 
 async def post_url(url, proxy: dict = None, **kwargs) -> str:
