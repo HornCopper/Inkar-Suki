@@ -7,8 +7,8 @@ dev_cmd_show_help = on_command(
     description='获取当前公开的命令文档',
     catalog='permission.docs.help',
     example=[
-        Jx3Arg(Jx3ArgsType.command),
-        Jx3Arg(Jx3ArgsType.pageIndex),
+        Jx3Arg(Jx3ArgsType.pageIndex, is_optional=True),
+        Jx3Arg(Jx3ArgsType.command, is_optional=True),
     ],
     document='''新的帮助文档'''
 )
@@ -16,9 +16,9 @@ dev_cmd_show_help = on_command(
 
 @dev_cmd_show_help.handle()
 async def dev_show_help(event: Event, args: list[Any] = Depends(Jx3Arg.arg_factory)):
-    command, pageIndex = args
+    pageIndex, command = args
     data = DocumentGenerator.get_documents()
-    data['command'] = command
+    data['item_name'] = command
     data['pageIndex'] = pageIndex
 
     img = await get_render_image("src/views/common/documents.html", data, delay=200)
