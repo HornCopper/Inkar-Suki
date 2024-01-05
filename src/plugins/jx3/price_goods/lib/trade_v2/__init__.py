@@ -138,7 +138,8 @@ class FavoritestGoodsPriceRefreshThread(threading.Thread):
         pool = ThreadPoolExecutor(max_workers=5)
 
         def run_single(a, b):
-            return asyncio.run(get_goods_current_detail_price(a, b))
+            return asyncio.run_coroutine_threadsafe(get_goods_current_detail_price(a, b))
+
         while len(tasks):
             x = tasks.pop()
             r = pool.submit(run_single, x[0], x[1])
