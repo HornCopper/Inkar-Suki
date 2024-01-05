@@ -49,7 +49,7 @@ def __hook_on_regex(
     if not pattern[-1] == '$':
         command_item = nonebot._on_regex(f'{pattern}$', flags, rule, _depth)
     # 和常规匹配
-    command_item = nonebot._on_regex(f'{pattern}', flags, rule, _depth)
+    command_item = nonebot._on_regex(f'{pattern} ', flags, rule, _depth)
     return command_item
 
 
@@ -76,7 +76,10 @@ def get_cmd_docs(cls):
             cmds = call.cmds
             cmd_tuple = [x[0] for x in cmds]
         else:
-            cmd_tuple = [first.call.regex]
+            reg_content = first.call.regex
+            if str.endswith(reg_content, ' '):
+                reg_content = reg_content[0:-1] # 移除末尾空格
+            cmd_tuple = [reg_content]
 
         result = filter(lambda x: DocumentGenerator.commands.get(x), cmd_tuple)
         result = list(result)
