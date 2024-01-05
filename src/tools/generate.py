@@ -10,7 +10,7 @@ from pathlib import Path
 from nonebot.log import logger
 from sgtpyutils.timer import create_timer
 from src.tools.dep.bot.path import *
-
+from src.tools.utils import *
 import asyncio
 
 
@@ -38,7 +38,7 @@ class PlaywrightRunner(threading.Thread):
             x[4].set_exception('thread stopped')
 
     def run(self):
-        asyncio.run(self.run_loop_async())
+        ext.SyncRunner.as_sync_method(self.run_loop_async())
         return super().run()
 
     async def run_loop_async(self):

@@ -1,6 +1,7 @@
+import asyncio
 import threading
 import time
-import asyncio
+import types
 
 
 class SyncRunner(threading.Thread):
@@ -11,6 +12,12 @@ class SyncRunner(threading.Thread):
         super().__init__(daemon=True)
 
     def run(self):
+        # 创建一个新任务方式
+        # loop = asyncio.new_event_loop()
+        # self.result = loop.run_until_complete(loop.create_task(self.tasks))
+        # self.result = asyncio.run()
+        # loop.close()
+
         self.result = asyncio.run(self.tasks)
         self.semaphore.release()
         return super().run()
@@ -20,4 +27,13 @@ class SyncRunner(threading.Thread):
         x = SyncRunner(async_method)
         x.start()
         x.semaphore.acquire()
-        return x.result
+        result = x.result
+        return result
+
+
+if __name__ == '__main__':
+    async def async_method():
+        await asyncio.sleep(10)
+        return 1
+
+    print(SyncRunner.as_sync_method(async_method))

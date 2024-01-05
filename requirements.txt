@@ -1,8 +1,8 @@
 beautifulsoup4
 httpx[http2]
 nb-cli
-nonebot2
-nonebot2[fastapi]
+nonebot2 >= 2.1.3
+nonebot2[fastapi] >= 1.2.0
 nonebot-adapter-onebot
 psutil
 tabulate
