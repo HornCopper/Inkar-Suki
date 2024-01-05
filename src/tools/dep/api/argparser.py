@@ -73,13 +73,15 @@ class Jx3ArgCallback:
     def _convert_number(self, arg_value: str, **kwargs) -> int:
         return get_number(arg_value)
 
-    def _convert_pageIndex(self, arg_value: str, **kwargs) -> int:
+    def _convert_pageIndex(self, arg_value: str, **kwargs) -> tuple[int, bool]:
+        is_default = False
         if arg_value is None:
-            return arg_value
+            return arg_value, is_default
         v = self._convert_number(arg_value)
         if not v or v < 0:
             v = 0
-        return v - 1  # 输入值从1开始，返回值从0开始
+            is_default = True
+        return v - 1, is_default  # 输入值从1开始，返回值从0开始
 
     def _convert_subscribe(self, arg_value: str, **kwargs) -> str:
         return arg_value  # TODO 经允许注册有效的
