@@ -185,7 +185,7 @@ const render_watermark_default = (content) => {
         background_style: ' left top no-repeat',
         offset_x: rx * client_width * 0.9,
         offset_y: ry * client_height * 0.9,
-        rotate: (Math.random() - 0.5) * 180,
+        rotate: (Math.random() - 0.5) * 90, // 朝向同一面
       })
     )
   }
