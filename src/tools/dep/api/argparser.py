@@ -81,6 +81,12 @@ class Jx3ArgCallback:
             v = 0
         return v - 1  # 输入值从1开始，返回值从0开始
 
+    def _convert_subscribe(self, arg_value: str, **kwargs) -> str:
+        return arg_value  # TODO 经允许注册有效的
+
+    def _convert_command(self, arg_value: str, **kwargs) -> str:
+        return arg_value  # TODO 经允许注册有效的
+
 
 class Jx3ArgExt:
     @staticmethod
@@ -116,6 +122,8 @@ class Jx3Arg(Jx3ArgCallback, Jx3ArgExt):
         Jx3ArgsType.user: Jx3ArgCallback._convert_user,
         Jx3ArgsType.property: Jx3ArgCallback._convert_string,  # TODO 猜测用户想查的物品
         Jx3ArgsType.pvp_mode: Jx3ArgCallback._convert_pvp_mode,
+        Jx3ArgsType.subscribe: Jx3ArgCallback._convert_subscribe,
+        Jx3ArgsType.command: Jx3ArgCallback._convert_command,
     }
 
     def __init__(self, arg_type: Jx3ArgsType = Jx3ArgsType.default,  name: str = None, is_optional: bool = True, default: any = Ellipsis) -> None:

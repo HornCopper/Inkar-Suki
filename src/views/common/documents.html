@@ -1,0 +1,318 @@
+<template>
+  <div :style="{'text-align': 'center','font-size':font_size,width:'1000px'}">
+    <el-card shadow="never">
+      <div style="font-size:2rem;font-weight:600;">机器人使用说明{{ title }} {{ item_name && ` · ${item_name}` }}</div>
+      <el-row>
+        <el-card style="width: 100%;margin: 0.2rem;">
+          <el-row>
+            <el-col :span="12">
+              <el-row>
+                <el-col class="primary-icon" :span="4">
+                  <div>命令</div>
+                  <div class="ver-line"></div>
+                </el-col>
+                <el-col :span="20">
+                  <div class="primary-title">
+                    <div>
+                      <span style="color:#999">查看目录：</span>
+                      <span>帮助 [页码]</span>
+                    </div>
+                    <div>
+                      <span style="color:#999">查看详情：</span>
+                      <span style="color:#ccc">(施工中)帮助 [指令名/目录名] [页码]</span>
+                    </div>
+                  </div>
+                </el-col>
+              </el-row>
+            </el-col>
+            <el-col :span="12">
+              <el-row>
+                <el-col class="primary-icon" :span="4">
+                  <div style="color: #999999;">说明</div>
+                  <div class="ver-line"></div>
+                </el-col>
+                <el-col :span="20">
+                  <div class="primary-content">
+                    <div>1. 欢迎使用机器人，完全免费，别花冤枉钱！</div>
+                    <div>2. 指令按使用热度排序。</div>
+                    <div>3. 当前为测试版，提建议可以发用户群。</div>
+                  </div>
+                </el-col>
+              </el-row>
+            </el-col>
+          </el-row>
+        </el-card>
+      </el-row>
+      <el-card class="item-container">
+
+        <el-row :gutter="20">
+          <el-col :span="6">
+            <div style="text-align: center;font-size:1.5rem">长按扫码加群领养</div>
+            <div class="img-qr-container">
+              <img src="../views/common/group_qr.png" style="width:15rem" />
+            </div>
+          </el-col>
+          <el-col :span="18">
+            <div class="command-card-container">
+              <div v-for="(x,index) in new Array(12).fill(0)" :key="index" class="command-single-card">
+                <div class="command-card-title">
+                  <span>{{index}}指令名称</span>
+                </div>
+                <div class="command-card-value">
+                  <div>这里是描述和别名</div>
+                </div>
+                <div class="command-card-description">
+                  <div>这里是热度</div>
+                </div>
+              </div>
+            </div>
+          </el-col>
+        </el-row>
+      </el-card>
+      <el-card class="item-container">
+        <div>
+          <span>全部指令</span>
+          <span style="color:#999;margin-left:1rem;font-size:0.8rem">{{ command_description }}</span>
+        </div>
+        <el-row>
+          <div class="command-mini-card-container">
+            <div v-for="(x,index) in filter_commands" :key="index" class="command-mini-single-card">
+              <div class="command-mini-card-title">{{ x.name }}</div>
+              <div v-for="(alias,index) in x.labels">{{ alias }}</div>
+            </div>
+          </div>
+        </el-row>
+        <el-row>
+
+          <div style="width: 100%;display: flex;justify-content: center;margin: 1.2rem;">
+            <el-pagination v-model:page-size="page.pageSize" :default-current-page="page.pageIndex + 1" small
+              :disabled="false" :background="false" layout="total, sizes, prev, pager, next, jumper"
+              :total="page.totalCount" :hide-on-single-page="false" :page-sizes="[54,108,216]"></el-pagination>
+          </div>
+        </el-row>
+      </el-card>
+    </el-card>
+  </div>
+</template>
+<style lang="scss">
+  .ver-line {
+    height: 3rem;
+    border: 1px solid #aaaaaa;
+  }
+
+  .primary-icon {
+    font-weight: 600;
+    font-size: 1.2rem;
+    line-height: 1.4rem;
+    display: flex;
+    justify-content: space-evenly;
+  }
+
+  .primary-title {
+    color: #ff0000;
+    font-weight: 400;
+    text-align: left;
+    line-height: 1.4rem;
+    font-size: 1.12rem;
+  }
+
+  .primary-content {
+    color: #999;
+    text-align: left;
+    line-height: 1rem;
+    font-size: 0.8rem;
+  }
+
+  .sub-title {
+    margin-right: 0.5rem;
+    font-weight: 600;
+    font-size: 1.2rem;
+  }
+
+  .global-title {
+    font-weight: 600;
+    font-size: 1.2rem;
+  }
+</style>
+
+<style lang="scss">
+  .ver-line {
+    height: 3rem;
+    border: 1px solid #aaaaaa;
+  }
+
+  .primary-icon {
+    font-weight: 600;
+    font-size: 1.2rem;
+    line-height: 1.4rem;
+    display: flex;
+    justify-content: space-evenly;
+  }
+
+  .primary-title {
+    color: #ff0000;
+    font-weight: 400;
+    text-align: left;
+    line-height: 1.4rem;
+    font-size: 1.12rem;
+  }
+
+  .primary-content {
+    color: #999;
+    text-align: left;
+    line-height: 1rem;
+    font-size: 0.8rem;
+  }
+
+  .sub-title {
+    margin-right: 0.5rem;
+    font-weight: 600;
+    font-size: 1.2rem;
+  }
+
+  .global-title {
+    font-weight: 600;
+    font-size: 1.2rem;
+  }
+
+
+  .command-card-container {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    text-align: center;
+  }
+
+  .command-single-card {
+    overflow: hidden;
+    white-space: nowrap;
+    margin: 0.2rem;
+    background: #4ce6ff;
+    font-size: 1.2rem;
+    max-width: 15rem;
+    min-width: 10rem;
+    border-radius: 0.5rem;
+    color: #ffffff;
+    box-shadow: 0px 0px 2px 0px rgba(0, 0, 0, 1);
+  }
+
+  .command-mini-card-container {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(9, 1fr);
+    grid-template-rows: masonry;
+
+    flex-wrap: wrap;
+    text-align: center;
+  }
+
+  .command-mini-single-card {
+    overflow: hidden;
+    white-space: nowrap;
+    margin: 0.2rem;
+    font-size: 0.8rem;
+    max-width: 10rem;
+    min-width: 5rem;
+    border-radius: 0.05rem;
+    box-shadow: 0px 0px 2px 0px rgba(0, 0, 0, 1);
+  }
+
+  .command-mini-card-title {
+    background: #cccccc;
+  }
+
+  .command-card-title {
+    background: #0490e1;
+    font-size: 1rem;
+  }
+
+  .command-card-value {
+    color: #1f0000;
+    font-size: 0.9rem;
+    height: 4rem;
+  }
+
+  .command-card-description {
+    font-size: 0.8rem;
+  }
+</style>
+<script>
+  const { defineComponent, reactive, toRefs, ref, onMounted, computed } = Vue
+  const component = defineComponent({
+    components: {},
+    setup () {
+      const locale = computed(() => window.zhCn)
+      onMounted(() => {
+      })
+      const methods = {
+        parseTime,
+        formatTime,
+        convertSci,
+        convertPop
+      }
+      const font_size = ref('1rem')
+      const command_description = computed(() => {
+        const commands = params_data.commands
+        const total = `共${commands.length}个`
+
+        const valids = commands.filter(x => x.description)
+        const valid = `${valids.length}个有使用说明`
+        return `${total},${valid}`
+      })
+      const unnest_catalogs = computed(() => {
+        const catalogs = params_data.catalogs
+        const result = {}
+        const extract = (x, path = '') => {
+          const c_path = `${path}.${x.name}`
+          x.path = c_path
+          result[c_path] = x
+          x.children && x.children.map(child => {
+            child.parent = x
+            extract(child, c_path)
+          })
+        }
+        extract(catalogs)
+        return result
+      })
+      const filter_commands = computed(() => {
+        const catalogs = unnest_catalogs.value
+        let commands = params_data.commands
+        commands.map(x => {
+          x.labels = x.aliases.filter(a => a !== x.name).slice(0, 3)
+        })
+        commands = commands.sort((a, b) => b.labels.length - a.labels.length)
+        commands = commands.sort((a, b) => a.priority - b.priority)
+        commands = commands.sort((a, b) => a.hot - b.hot)
+        const pages = page.value
+        const start = pages.pageIndex * pages.pageSize
+        return commands.slice(start, start + pages.pageSize)
+      })
+
+      const page = computed(() => {
+        const { commands, pageIndex } = params_data
+        return {
+          pageIndex,
+          pageSize: 108,
+          totalCount: commands.length
+        }
+      })
+      return {
+        args_template: {},
+        catalogs: {},
+        unnest_catalogs,
+        commands: [],
+        filter_commands,
+        pageIndex: 1,
+        page,
+        item_name: '',
+        title: '',
+
+        command_description,
+        font_size,
+        ...methods,
+      }
+    },
+  })
+
+
+</script>

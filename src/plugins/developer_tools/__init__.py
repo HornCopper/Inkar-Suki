@@ -1,5 +1,5 @@
 from src.tools.dep import *
-from .example import *
+from .help_document import *
 from src.tools.local_version import nbv
 from src.tools.generate import *
 from src.tools.utils import get_url, get_status, checknumber, data_post
