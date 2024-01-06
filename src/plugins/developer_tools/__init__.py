@@ -50,7 +50,7 @@ echo = on_command("echo", priority=5)  # 复读只因功能
 
 
 @echo.handle()
-async def echo_(event: Event, args: Message = CommandArg()):
+async def echo_(event: Event, args: v11Message = CommandArg()):
     x = Permission(event.user_id).judge(9, '复读说话')
     if not x.success:
         return await echo.finish(x.description)
@@ -60,16 +60,17 @@ say = on_command("say", priority=5)  # 复读只因 + CQ码转换（mix：没有
 
 
 @say.handle()
-async def say_(event: Event, args: Message = CommandArg()):
-    def _unescape(message: Message, segment: MessageSegment):
+async def say_(event: Event, args: v11Message = CommandArg()):
+    def _unescape(message: v11Message, segment: MessageSegment):
         if segment.is_text():
-            return message.append(unescape(str(segment)))
+            raw = unescape(str(segment))
+            return message.append(raw)
         return message.append(segment)
 
     x = Permission(event.user_id).judge(10, '高级复读说话')
     if not x.success:
         return await say.finish(x.description)
-    message = extensions.reduce(args, _unescape, Message())
+    message = extensions.reduce(args, _unescape, v11Message())
     return await say.finish(message)
 
 ping = on_command("ping", aliases={"-测试"}, priority=5)  # 测试机器人是否在线
@@ -100,7 +101,7 @@ post = on_command("post", priority=5)  # 发送全域公告至每一个机器人
 
 
 @post.handle()
-async def _(bot: Bot, event: Event, args: Message = CommandArg()):
+async def _(bot: Bot, event: Event, args: v11Message = CommandArg()):
     if str(event.user_id) not in Config.owner:
         return await post.finish("唔……只有机器人主人可以使用该命令哦~")
     cmd = args.extract_plain_text()
@@ -115,7 +116,7 @@ call_api = on_command("call_api", aliases={"api"}, priority=5)  # 调用`go-cqht
 
 
 @call_api.handle()
-async def _(event: Event, args: Message = CommandArg()):
+async def _(event: Event, args: v11Message = CommandArg()):
     x = Permission(event.user_id).judge(10, '调用nb-api')
     if not x.success:
         return await call_api.finish(x.description)
@@ -127,7 +128,7 @@ git = on_command("-git", priority=5)  # 调用`Git`，~~别问意义是什么~~
 
 
 @git.handle()
-async def _(event: Event, args: Message = CommandArg()):
+async def _(event: Event, args: v11Message = CommandArg()):
     x = Permission(event.user_id).judge(10, '调用git')
     if not x.success:
         return await call_api.finish(x.description)
@@ -151,7 +152,7 @@ voice = on_command("voice", priority=5)  # 调用腾讯的语音TTS接口，生�
 
 
 @voice.handle()
-async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
+async def _(bot: Bot, event: GroupMessageEvent, args: v11Message = CommandArg()):
 
     x = Permission(event.user_id).judge(10, '调用nb-api')
     if not x.success:
@@ -184,9 +185,9 @@ async def util_web(bot: Bot, event: GroupMessageEvent, args: list[Any] = Depends
         return await util_cmd_web.finish(x.description)
 
     url, = args
-    image = await generate_by_url(url)
+    image = await generate_by_url(url, delay=1000)
     img = ms.image(Path(image).as_uri())
-    return await util_cmd_web.send(f'{img}\n网页截图完成')
+    return await util_cmd_web.send(v11Message(f'{img}\n网页截图完成'))
 
 # 申请使用机器人的命令，`repo`地址来源于`config.py`。
 apply = on_command("apply", aliases={"申请", "领养", "购买", "要一个音卡",
@@ -210,7 +211,7 @@ async def _(state: T_State, event: Event):
 
 
 # @apply.got("group", prompt="感谢您申请使用Inkar Suki，接下来请发送您所为之申请的群聊的群号。")
-async def _(bot: Bot, state: T_State, group: Message = Arg()):
+async def _(bot: Bot, state: T_State, group: v11Message = Arg()):
     group_id = group.extract_plain_text()
     if checknumber(group_id) == False:
         return await apply.finish("输入的内容有误，申请失败。")
