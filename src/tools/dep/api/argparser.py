@@ -56,7 +56,7 @@ class Jx3ArgCallback:
             return 0, True
         v = self._convert_number(arg_value)
         if not v or v < 0:
-            v = 1 # 默认返回第一页
+            v = 1  # 默认返回第一页
             is_default = True
         return v - 1, is_default  # 输入值从1开始，返回值从0开始
 
@@ -138,6 +138,8 @@ class Jx3Arg(Jx3ArgCallback, Jx3ArgExt):
     def arg_factory(matcher: Matcher, event: GroupMessageEvent) -> list[Any]:
         docs = get_cmd_docs(matcher)
         templates = get_args(docs.example, event, method=docs.name)
+        if templates is None: # 不再继续处理
+            matcher.stop_propagation()
         return templates
 
 
