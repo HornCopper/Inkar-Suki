@@ -1,20 +1,8 @@
 from src.tools.dep import *
 from .help_document import *
 from src.tools.local_version import nbv
+from nonebot.adapters.onebot.v11 import unescape
 import psutil
-import nonebot
-import json
-import time
-
-from nonebot import on_command
-from nonebot.adapters import Message
-from nonebot.params import CommandArg, Arg
-from nonebot.log import logger
-from nonebot.adapters.onebot.v11 import Message, MessageSegment, unescape, Event, Bot, GroupMessageEvent
-from nonebot.typing import T_State
-from typing import List
-from pathlib import Path
-from functools import reduce
 
 
 purge = on_command("purge", priority=5)  # 清除所有`help`生成的缓存图片
@@ -81,7 +69,7 @@ async def say_(event: Event, args: Message = CommandArg()):
     x = Permission(event.user_id).judge(10, '高级复读说话')
     if not x.success:
         return await say.finish(x.description)
-    message = reduce(_unescape, args, Message())
+    message = extensions.reduce(args, _unescape, Message())
     return await say.finish(message)
 
 ping = on_command("ping", aliases={"-测试"}, priority=5)  # 测试机器人是否在线
