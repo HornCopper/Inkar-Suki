@@ -1,11 +1,6 @@
 from src.tools.dep import *
 from .help_document import *
 from src.tools.local_version import nbv
-from src.tools.generate import *
-from src.tools.utils import get_url, get_status, checknumber, data_post
-from src.tools.config import Config
-from src.tools.permission import checker, error
-import os
 import psutil
 import nonebot
 import json
@@ -180,21 +175,31 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
                        message=final_msg
                        )
 
-web = on_command("web", priority=5)  # 网页截图，需要网址。
+util_cmd_web = on_command(
+    "util_web",
+    name="网页截图",
+    aliases={"web"},
+    priority=5,
+    description='网页截图，需要网址',
+    catalog=permission.jx3.pvx.property.horse.chitu,
+    example=[
+        Jx3Arg(Jx3ArgsType.url)
+    ],
+    document='''通过截图'''
+)
 
 
-@web.handle()
-async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
+@util_cmd_web.handle()
+async def util_web(bot: Bot, event: GroupMessageEvent, args: list[Any] = Depends(Jx3Arg.arg_factory)):
+    url, = args
     x = Permission(event.user_id).judge(10, '调用网页截图')
     if not x.success:
-        return await web.finish(x.description)
+        return await util_cmd_web.finish(x.description)
     url = args.extract_plain_text()
-    if await get_status(url) not in [200, 301, 302]:
-        return await web.finish("唔……网站图片获取失败。\n原因：响应码非200，请检查是否能正常访问。")
-    else:
-        image = generate_by_url(url)
-        return await web.finish("获取图片成功！\n"
-                                + ms.image(Path(image).as_uri()))
+
+    image = generate_by_url(url)
+    img = ms.image(Path(image).as_uri())
+    return await util_cmd_web.send(f'{img}\n网页截图完成')
 
 # 申请使用机器人的命令，`repo`地址来源于`config.py`。
 apply = on_command("apply", aliases={"申请", "领养", "购买", "要一个音卡",
