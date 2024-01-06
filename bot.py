@@ -16,6 +16,7 @@ def check_pkgs():
         # 每月最多更新一次
         return
     os.system('pip install -r requirements.txt --upgrade')
+    os.system('playwright install')
 
 
 def check_folder(path: str, can_retry: bool = True):
