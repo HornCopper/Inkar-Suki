@@ -43,6 +43,8 @@ class CommandRecord:
 
         db = CommandRecord.get_db(group)
         if new_sts:
+            if isinstance(new_sts, CommandRecord):
+                new_sts = new_sts.to_dict()
             db.value[caller_name] = new_sts
             return new_sts
 
