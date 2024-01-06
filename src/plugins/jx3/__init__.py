@@ -27,29 +27,29 @@ async def _(bot: Bot, event: RecvEvent):
     message = event.get_message()
     if message == "False":
         return
-    groups = os.listdir(DATA)
+    groups = os.listdir(bot_path.DATA)
     for i in groups:
         group = i
         subscribe = load_or_write_subscribe(group)
         if message["type"] in subscribe:
             if message["type"] == "玄晶":
-                group_info = json.loads(read(DATA + "/" + str(group) + "/jx3group.json"))
+                group_info = json.loads(read(bot_path.DATA + "/" + str(group) + "/jx3group.json"))
                 if group_info["server"] != message["server"] and group_info["server"] != "":
                     continue
             elif message["type"] == "诛恶":
-                group_info = json.loads(read(DATA + "/" + str(group) + "/jx3group.json"))
+                group_info = json.loads(read(bot_path.DATA + "/" + str(group) + "/jx3group.json"))
                 if group_info["server"] != message["server"] and group_info["server"] != "":
                     continue
                 elif group_info["server"] == "":
                     continue
             elif message["type"] == "开服":
-                group_info = json.loads(read(DATA + "/" + str(group) + "/jx3group.json"))
+                group_info = json.loads(read(bot_path.DATA + "/" + str(group) + "/jx3group.json"))
                 if group_info["server"] != message["server"] and group_info["server"] != "":
                     continue
                 elif group_info["server"] == "":
                     continue
             elif message["type"] == "818":
-                group_info = json.loads(read(DATA + "/" + str(group) + "/jx3group.json"))
+                group_info = json.loads(read(bot_path.DATA + "/" + str(group) + "/jx3group.json"))
                 if group_info["server"] != "" and group_info["server"] != message["server"] and message["name"] != "剑网3":
                     continue
             try:

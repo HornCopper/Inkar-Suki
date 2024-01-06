@@ -3,7 +3,6 @@ from src.tools.generate import get_uuid
 from src.tools.config import Config
 from src.constant.jx3.skilldatalib import kftosh
 from src.tools.utils import get_api, get_content
-from src.tools.dep.bot.path import CACHE
 from src.plugins.jx3.rank.school_rank import school_mapping as gkfdt
 import os
 import json
@@ -207,11 +206,11 @@ def enchant_mapping(quailty):
 
 
 def get_fs(level: int):
-    return ASSETS + "/wuxingshi/" + str(level) + ".png"
+    return bot_path.ASSETS + "/wuxingshi/" + str(level) + ".png"
 
 
 async def get_bg(sc):
-    final_path = ASSETS + "/jx3/bg/" + sc + ".png"
+    final_path = bot_path.ASSETS + "/jx3/bg/" + sc + ".png"
     if os.path.exists(final_path):
         return final_path
     else:
@@ -225,7 +224,7 @@ async def get_bg(sc):
 async def get_kf_icon(kf):
     school_mapping = gkfdt
     num = school_mapping[kf]
-    final_path = ASSETS + "/jx3/kungfu/" + kf + ".png"
+    final_path = bot_path.ASSETS + "/jx3/kungfu/" + kf + ".png"
     if os.path.exists(final_path):
         return final_path
     else:
@@ -314,7 +313,7 @@ async def get_attr_main(server, id, group_id):
     for i in data["data"]["Person"]["qixueList"]:
         messyqx.append(i["name"])
     qx = ["未知", "未知", "未知", "未知", "未知", "未知", "未知", "未知", "未知", "未知", "未知", "未知"]
-    unknown = PLUGINS + "/jx3/user/unknown.png"
+    unknown = bot_path.PLUGINS + "/jx3/user/unknown.png"
     qx_icon = [unknown, unknown, unknown, unknown, unknown, unknown,
                unknown, unknown, unknown, unknown, unknown, unknown]
     henchant = ["", "", "", "", "", ""]
@@ -593,8 +592,8 @@ async def get_attr_main(server, id, group_id):
 async def local_save(webpath):
     file_name = webpath.split("/")[-1].split("?")[0]
     if webpath.find("unknown.png") != -1:
-        return PLUGINS + "/jx3/user/unknown.png"
-    final_path = ASSETS + "/jx3/kungfu/" + file_name + ".png"
+        return bot_path.PLUGINS + "/jx3/user/unknown.png"
+    final_path = bot_path.ASSETS + "/jx3/kungfu/" + file_name + ".png"
     if os.path.exists(final_path):
         return final_path
     else:
@@ -619,10 +618,10 @@ def judge_special_weapon(name):
 
 async def get_attr(kungfu: str, maxjl_list: list, jl_list: list, equip_list: list, equip_icon_list: list, equip_quailty: list, basic: list, qx: list, qx_icon: list, henchant: list, lenchant: list, fs: list, wcs_icon: str, wcs: str, attrs: list, wcs1, wcs_icon1):
     attr = kungfu_mapping(kungfu)
-    syst_bold = ASSETS + "/font/syst-bold.ttf"
-    syst_mid = ASSETS + "/font/syst-mid.ttf"
-    msyh = ASSETS + "/font/msyh.ttf"
-    calibri = ASSETS + "/font/calibri.ttf"
+    syst_bold = bot_path.ASSETS + "/font/syst-bold.ttf"
+    syst_mid = bot_path.ASSETS + "/font/syst-mid.ttf"
+    msyh = bot_path.ASSETS + "/font/msyh.ttf"
+    calibri = bot_path.ASSETS + "/font/calibri.ttf"
     if attr in ["根骨", "元气", "力道", "身法"]:
         objects = ["面板攻击", "基础攻击", "会心", "会心效果", "加速", attr, "破防", "无双", "破招", "最大气血值", "御劲", "化劲"]
     elif attr == "治疗":
@@ -634,12 +633,12 @@ async def get_attr(kungfu: str, maxjl_list: list, jl_list: list, equip_list: lis
         raise ValueError("Unknown type of kungfu!")
     background = Image.open(await get_bg(kftosh(kungfu)))
     draw = ImageDraw.Draw(background)
-    flickering = Image.open(PLUGINS + "/jx3/user/flicker.png").resize((38, 38))
-    precious = Image.open(PLUGINS + "/jx3/user/xy.png")
-    full_jinglian = Image.open(PLUGINS + "/jx3/user/jl.png")
-    un_full_jinglian = Image.open(PLUGINS + "/jx3/user/unjl.png")
-    heavy_enchant = Image.open(PLUGINS + "/jx3/user/henchant.png").resize((20, 20))
-    little_enchant = Image.open(PLUGINS + "/jx3/user/lenchant.png").resize((20, 20))
+    flickering = Image.open(bot_path.PLUGINS + "/jx3/user/flicker.png").resize((38, 38))
+    precious = Image.open(bot_path.PLUGINS + "/jx3/user/xy.png")
+    full_jinglian = Image.open(bot_path.PLUGINS + "/jx3/user/jl.png")
+    un_full_jinglian = Image.open(bot_path.PLUGINS + "/jx3/user/unjl.png")
+    heavy_enchant = Image.open(bot_path.PLUGINS + "/jx3/user/henchant.png").resize((20, 20))
+    little_enchant = Image.open(bot_path.PLUGINS + "/jx3/user/lenchant.png").resize((20, 20))
 
     # 心法图标
     background.alpha_composite(Image.open(await get_kf_icon(kungfu)).resize((50, 50)), (61, 62))
@@ -878,6 +877,6 @@ async def get_attr(kungfu: str, maxjl_list: list, jl_list: list, equip_list: lis
         draw.text((1068, 657), wcs1, file=(255, 255, 255),
                   font=ImageFont.truetype(msyh, size=12), anchor="lt")
 
-    final_path = CACHE + "/" + get_uuid() + ".png"
+    final_path = bot_path.CACHE + "/" + get_uuid() + ".png"
     background.save(final_path)
     return Path(final_path).as_uri()

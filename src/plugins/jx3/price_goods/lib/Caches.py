@@ -5,11 +5,9 @@ from sgtpyutils.extensions.clazz import dict2obj
 from typing import Dict
 
 from src.tools.file import read
-
-from ..api import ASSETS
 from .GoodsBase import GoodsInfo
 
-cache_file_goods = ASSETS + "/jx3/info_tradegoods.json"
+cache_file_goods = bot_path.ASSETS + "/jx3/info_tradegoods.json"
 CACHE_Goods: Dict[str, GoodsInfo] = json.loads(read(cache_file_goods))  # 每次重启后从磁盘加载缓存
 CACHE_Goods = dict([[x, dict2obj(GoodsInfo(), CACHE_Goods[x])] for x in CACHE_Goods])  # 转换为类
 
@@ -18,7 +16,7 @@ def flush_CACHE_Goods():
     return flush_CACHE_Goods_Common(cache_file_goods, CACHE_Goods)
 
 
-cache_file_summary = ASSETS + "/jx3/info_tradegoods_price_summary.json"
+cache_file_summary = bot_path.ASSETS + "/jx3/info_tradegoods_price_summary.json"
 CACHE_Goods_PriceSummary: Dict[str, GoodsPriceSummary] = json.loads(
     read(cache_file_summary))  # 每次重启后从磁盘加载缓存
 CACHE_Goods_PriceSummary = dict(
@@ -29,7 +27,7 @@ def flush_CACHE_PriceSummary():
     return flush_CACHE_Goods_Common(cache_file_summary, CACHE_Goods_PriceSummary)
 
 
-cache_file_detail = ASSETS + "/jx3/info_tradegoods_price_detail.json"
+cache_file_detail = bot_path.ASSETS + "/jx3/info_tradegoods_price_detail.json"
 CACHE_Goods_PriceDetail: Dict[str, GoodsPriceDetail] = json.loads(
     read(cache_file_detail))  # 每次重启后从磁盘加载缓存
 CACHE_Goods_PriceDetail = dict(

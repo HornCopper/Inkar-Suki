@@ -30,12 +30,12 @@ async def _(bot: Bot, event: Event, args: Message = CommandArg()):
     sb = arg[0]
     reason = arg[1]
     new = {"ban": sb, "reason": reason}
-    now = json.loads(read(DATA + "/" + str(event.group_id) + "/blacklist.json"))
+    now = json.loads(read(bot_path.DATA + "/" + str(event.group_id) + "/blacklist.json"))
     for i in now:
         if i["ban"] == sb:
             return await block.finish("该玩家已加入黑名单。")
     now.append(new)
-    write(DATA + "/" + str(event.group_id) + "/blacklist.json", json.dumps(now, ensure_ascii=False))
+    write(bot_path.DATA + "/" + str(event.group_id) + "/blacklist.json", json.dumps(now, ensure_ascii=False))
     return await block.finish("成功将该玩家加入黑名单！")
 
 unblock = on_command("unblock", aliases={"删黑"}, priority=5)  # 解除避雷
@@ -53,11 +53,11 @@ async def _(bot: Bot, event: Event, args: Message = CommandArg()):
     if len(arg) != 1:
         return await unblock.finish("参数仅为玩家名，请勿附带任何信息！")
     sb = arg[0]
-    now = json.loads(read(DATA + "/" + str(event.group_id) + "/blacklist.json"))
+    now = json.loads(read(bot_path.DATA + "/" + str(event.group_id) + "/blacklist.json"))
     for i in now:
         if i["ban"] == sb:
             now.remove(i)
-            write(DATA + "/" + str(event.group_id) + "/blacklist.json",
+            write(bot_path.DATA + "/" + str(event.group_id) + "/blacklist.json",
                   json.dumps(now, ensure_ascii=False))
             return await unblock.finish("成功移除该玩家的避雷！")
     return await unblock.finish("移除失败！尚未避雷该玩家！")
@@ -71,7 +71,7 @@ async def _(event: Event, args: Message = CommandArg()):
     if len(arg) != 1:
         return await sblock.finish("参数仅为玩家名，请勿附带任何信息！")
     sb = arg[0]
-    now = json.loads(read(DATA + "/" + str(event.group_id) + "/blacklist.json"))
+    now = json.loads(read(bot_path.DATA + "/" + str(event.group_id) + "/blacklist.json"))
     for i in now:
         if i["ban"] == sb:
             reason = i["reason"]
@@ -84,7 +84,7 @@ lblock = on_command("lblock", aliases={"列黑"}, priority=5)  # 列出所有黑
 
 @lblock.handle()
 async def _(bot: Bot, event: GroupMessageEvent):
-    now = json.loads(read(DATA + "/" + str(event.group_id) + "/blacklist.json"))
+    now = json.loads(read(bot_path.DATA + "/" + str(event.group_id) + "/blacklist.json"))
     f = ""
     for i in now:
         pl = i["ban"]

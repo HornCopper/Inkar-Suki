@@ -1,12 +1,11 @@
 from src.tools.file import read
 import json
 from src.tools.utils import *
-from src.tools.dep.bot.path import *
 from pathlib import Path
 
 
 def judge(qqnumber):
-    file = open(TOOLS+"/permission.json", mode="r")
+    file = open(bot_path.TOOLS+"/permission.json", mode="r")
     json_ = json.loads(file.read())
     file.close()
     if qqnumber not in json_:
@@ -47,7 +46,7 @@ class Permission:
         self.u_level = self.init_permission()
 
     def init_permission(self) -> int:
-        file = read(TOOLS+"/permission.json")
+        file = read(bot_path.TOOLS+"/permission.json")
         self.permissions = json.loads(file)
         if self.user_id not in self.permissions:
             return None
@@ -81,7 +80,7 @@ def error(score):
 
 
 def block(sb: str) -> bool:
-    with open(TOOLS+"/ban.json", mode="r") as cache:
+    with open(bot_path.TOOLS+"/ban.json", mode="r") as cache:
         for i in json.loads(cache.read()):
             if i == sb:
                 return True

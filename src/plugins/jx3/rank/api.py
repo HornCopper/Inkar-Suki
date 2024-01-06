@@ -126,7 +126,7 @@ async def zlrank(server: str = None, school: str = None, group_id: str = None):
         chart.append(new)
         num = num + 1
     final_html = css + tabulate(chart, tablefmt="unsafehtml")
-    final_path = CACHE + "/" + get_uuid() + ".html"
+    final_path = bot_path.CACHE + "/" + get_uuid() + ".html"
     write(final_path, final_html)
     img = await generate(final_path, False, "table", False)
     if img == False:

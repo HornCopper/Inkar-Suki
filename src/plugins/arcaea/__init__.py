@@ -63,14 +63,14 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     arg = args.extract_plain_text()
     if arg == False:
         return await arcaea_binduser.finish("未给出任何信息，没办法绑定哦~")
-    present_data = json.loads(read(DATA + "/" + str(event.group_id) + "/arcaea.json"))
+    present_data = json.loads(read(bot_path.DATA + "/" + str(event.group_id) + "/arcaea.json"))
     if checknumber(arg):
         resp = await judgeWhetherPlayer(usercode=int(arg))
     else:
         resp = await judgeWhetherPlayer(nickname=arg)
     if resp:
         present_data[str(event.user_id)] = resp[1]
-        write(DATA + "/" + str(event.group_id) + "/arcaea.json", json.dumps(present_data))
+        write(bot_path.DATA + "/" + str(event.group_id) + "/arcaea.json", json.dumps(present_data))
         return await arcaea_binduser.finish("绑定成功：" + resp[0] + "（" + str(resp[1]) + "）")
     else:
         return await arcaea_binduser.finish("您输入的好友码/用户名查不到哦，请检查后重试~")
@@ -83,10 +83,10 @@ async def _(event: GroupMessageEvent):
     '''
     与上一个函数相反操作，解绑。
     '''
-    present_data = json.loads(read(DATA + "/" + str(event.group_id) + "/arcaea.json"))
+    present_data = json.loads(read(bot_path.DATA + "/" + str(event.group_id) + "/arcaea.json"))
     if present_data[str(event.user_id)]:
         present_data.pop(str(event.user_id))  # 删除用户键值
-        write(DATA + "/" + str(event.group_id) + "/arcaea.json", json.dumps(present_data))
+        write(bot_path.DATA + "/" + str(event.group_id) + "/arcaea.json", json.dumps(present_data))
         return await arcaea_unbind.finish("已解绑Arcaea账号~以后使用相关命令均需重新绑定哦~")
     else:
         return await arcaea_unbind.finish("唔……尚未绑定过Arcaea，无法解绑啦！")

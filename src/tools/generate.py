@@ -9,7 +9,6 @@ from playwright.async_api import async_playwright
 from pathlib import Path
 from nonebot.log import logger
 from sgtpyutils.timer import create_timer
-from src.tools.dep.bot.path import *
 from src.tools.utils import *
 import asyncio
 
@@ -66,7 +65,7 @@ class PlaywrightRunner(threading.Thread):
             if delay > 0:
                 await asyncio.sleep(delay / 1000)
             uuid_ = get_uuid()
-            img = f"{CACHE}/{uuid_}.png"
+            img = f"{bot_path.CACHE}/{uuid_}.png"
             loc = loc.locator(locate)
             if first:
                 loc = loc.first

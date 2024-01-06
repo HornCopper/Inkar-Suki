@@ -1,10 +1,5 @@
 from src.tools.utils import get_api
-import sys
-import nonebot
 import re
-
-TOOLS = nonebot.get_driver().config.tools_path
-sys.path.append(TOOLS)
 
 
 async def mcbedrockv():  # Minecraft 基岩版 最新版本获取，数据来源@Mojira

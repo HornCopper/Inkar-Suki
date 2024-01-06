@@ -47,11 +47,11 @@ async def check_sign(personid, special_string: str = "", location: bool = False)
     return False
 
 def init_folder():
-    if os.path.exists(TOOLS + "/bindrole.json") == False:
-        write(TOOLS + "/bindrole.json", "[]")
+    if os.path.exists(bot_path.TOOLS + "/bindrole.json") == False:
+        write(bot_path.TOOLS + "/bindrole.json", "[]")
 
 def readData():
-    data = json.loads(read(TOOLS + "/bindrole.json"))
+    data = json.loads(read(bot_path.TOOLS + "/bindrole.json"))
     return data
 
 def checkWtrIn(server: str = "", name: str = "", user: str = ""):
@@ -73,7 +73,7 @@ async def addRole(server: str = "", name: str = "", user: str = "", string: str 
     for i in data:
         if i["user_id"] == user:
             i["roles"].append(role_data)
-            write(TOOLS + "/bindrole.json", json.dumps(data, ensure_ascii=False))
+            write(bot_path.TOOLS + "/bindrole.json", json.dumps(data, ensure_ascii=False))
             return 1 #成功
 
 def delRole(server: str, name: str, user: str):
@@ -85,7 +85,7 @@ def delRole(server: str, name: str, user: str):
             for x in i["roles"]:
                 if x["serverName"] == server and x["roleName"] == name:
                     i["roles"].remove(x)
-                    write(TOOLS + "/bindrole.json", json.dumps(data, ensure_ascii=False))
+                    write(bot_path.TOOLS + "/bindrole.json", json.dumps(data, ensure_ascii=False))
                     return 1 #成功
 
 def passVerify(server: str, name: str, user: str):
@@ -97,7 +97,7 @@ def passVerify(server: str, name: str, user: str):
             for x in i["roles"]:
                 if x["serverName"] == server and x["roleName"] == name:
                     x["status"] = True
-                    write(TOOLS + "/bindrole.json", json.dumps(data, ensure_ascii=False))
+                    write(bot_path.TOOLS + "/bindrole.json", json.dumps(data, ensure_ascii=False))
                     return 1 #成功
                 
 def checkVerify(server: str, name: str, user: str):
@@ -169,7 +169,7 @@ def createRecord(user):
     }
     data = readData()
     data.append(new)
-    write(TOOLS + "/bindrole.json", json.dumps(data, ensure_ascii=False))
+    write(bot_path.TOOLS + "/bindrole.json", json.dumps(data, ensure_ascii=False))
 
 async def getRoleCd(guid):
     ts = gen_ts()
