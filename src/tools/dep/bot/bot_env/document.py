@@ -1,11 +1,37 @@
+import inspect
 import threading
 from sgtpyutils.logger import logger
+from sgtpyutils import extensions
 import functools
 from ...args import *
 from .args_template import *
 
 from . import DocumentCatalog
 from .DocumentCatalog import permission, BaseCatalog
+
+
+from nonebot.adapters.onebot.v11.message import Message as v11Message
+from nonebot.adapters.onebot.v11.event import GroupMessageEvent
+from nonebot.adapters import Message, MessageSegment
+
+
+def convert_to_str(msg: MessageSegment):
+    if isinstance(msg, GroupMessageEvent):
+        x = msg.get_message().extract_plain_text()
+        msg = str.join(' ', x.split(' ')[1:])  # 将命令去除
+    if isinstance(msg, MessageSegment):
+        msg = msg.data
+    if isinstance(msg, v11Message):
+        msg = str(msg)
+        pass
+    if isinstance(msg, dict):
+        import json
+        msg = json.dumps(msg, ensure_ascii=False)
+
+    if isinstance(msg, str):
+        return msg
+    logger.warning(f'message cant convert to str:{msg}')
+    return msg
 
 
 class DocumentItem:
@@ -84,7 +110,7 @@ class DocumentGenerator:
 
     @staticmethod
     def register(method: callable):
-        '''TODO 注册到帮助文档
+        '''注册到帮助文档
         此处注册的名字为命令名称，需要保证名称与函数名一致'''
         @functools.wraps(method)
         def wrapper(*args, **kwargs):
@@ -97,6 +123,47 @@ class DocumentGenerator:
             # logger.debug(f'docs:{docs}') # 显示很慢
             return result
         return wrapper
+
+    @staticmethod
+    def record(method: callable):
+        '''记录每次指令调用'''
+        @functools.wraps(method)
+        def wrapper(*args, **kwargs):
+            args = AssignableArg(args, kwargs, method)
+
+            raw_input, _ = args.check_if_exist('raw_input')
+            raw_input = convert_to_str(raw_input)
+            args.set_args(0, raw_input)
+
+            result = method(*args.args, **args.kwargs)
+            DocumentGenerator._record_log(args, result)
+            return result
+        return wrapper
+
+    @staticmethod
+    def _record_log(args: AssignableArg, result: list[any]):
+        method, _ = args.check_if_exist('method')
+        raw_input, _ = args.check_if_exist('raw_input')
+        event, _ = args.check_if_exist('event')
+
+        if method:
+            if isinstance(method, str):
+                caller_name = method
+            else:
+                caller_name = method.__name__
+        else:
+            method_names = [x[3] for x in inspect.stack()]
+            caller_name_pos = extensions.find(enumerate(method_names), lambda x: x[1] == 'get_args')
+            caller_name = method_names[caller_name_pos[0] + 1]
+
+        log = {
+            'name': caller_name,
+            'args': result,
+            'raw': raw_input,
+            'group': event and event.group_id,
+            'user': event and event.user_id,
+        }
+        logger.debug(f'func_called:{log}')
 
     @staticmethod
     def get_regex(pattern: str):
