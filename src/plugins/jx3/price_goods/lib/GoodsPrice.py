@@ -25,6 +25,18 @@ class GoodsPriceSummary(GoodsPriceRecord):
         self.AvgPrice = data.get("AvgPrice")
         super().__init__()
 
+    def to_dict(self):
+        return {
+            'updated': self.updated,
+            'Date': self.Date,
+            'CreatedAt': self.CreatedAt,
+            'UpdatedAt': self.UpdatedAt,
+            'SampleSize': self.SampleSize,
+            'LowestPrice': self.LowestPrice,
+            'HighestPrice': self.HighestPrice,
+            'AvgPrice': self.AvgPrice,
+        }
+
 
 class GoodsPriceDetail(GoodsPriceRecord):
     Price_Valid_TotalPrice = Gold.price_by_gold(100)  # 总价在100金以上则有效
