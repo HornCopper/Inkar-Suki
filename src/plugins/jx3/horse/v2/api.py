@@ -1,6 +1,7 @@
 from src.tools.dep import *
 from ..api_lib import *
-data_horse_reporter: dict[str, HorseRecords] = {}  # 记录历史
+_horse_db = f'{bot_path.DATA}{os.sep}glo-horse.json'
+data_horse_reporter: dict[str, HorseRecords] = filebase_database.Database(_horse_db).value  # 记录历史
 
 
 async def get_horse_reporter_data(server: str, start: int = 0, end: int = 1):
