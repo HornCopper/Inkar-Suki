@@ -11,11 +11,13 @@ driver = get_driver()
 
 @driver.on_startup
 async def nonebot_on_startup():
-    logger.info("Connecting to JX3API...Please wait.")
+    logger.info('nonebot_on_startup...')
+
+    logger.debug("Connecting to JX3API...Please wait.")
     if await ws_client.init():
         logger.info("Connected to JX3API successfully.")
 
-    logger.info("Connecting to SFAPI...Please wait.")
+    logger.debug("Connecting to SFAPI...Please wait.")
     if await sf_ws_client.init():
         logger.info("Connected to SFAPI successfully.")
 
@@ -23,6 +25,7 @@ async def nonebot_on_startup():
 @scheduler.scheduled_job("interval", id='database_save_all', hours=1)
 @driver.on_shutdown
 async def nonebot_on_shutdown():
+    logger.info('nonebot_on_shutdown...')
     filebase_database.Database.save_all()
 
 ws_recev = on(type="WsRecv", priority=5, block=False)
