@@ -31,7 +31,7 @@ class CommandRecord:
     @staticmethod
     def get_db(group: str = None) -> filebase_database.Database:
         path = bot_path.DATA
-        suffix = 'common' if group is None else group
+        suffix = group or bot_path.common_data
         path = f'{path}/{suffix}/commands.json'
 
         db: filebase_database.Database = filebase_database.Database(path)
@@ -165,6 +165,7 @@ class DocumentGenerator:
         catalogs = permission.to_dict()
         commands = [DocumentGenerator.commands[x].to_dict() for x in DocumentGenerator.commands]
         args_template = dict([[x.name, x.to_dict()] for x in Jx3ArgsType])
+
         return {
             'catalogs': catalogs,
             'commands': commands,
