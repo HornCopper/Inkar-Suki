@@ -29,7 +29,7 @@ def __hook_on_command(
     **kwargs,
 ):
     force_whitespace = ' '  # 参数-必须加空格才匹配
-    command_item = nonebot._on_command(cmd, rule, aliases, force_whitespace,  _depth+1)
+    command_item = nonebot._on_command(cmd, rule, aliases, force_whitespace,  _depth+2)
     return command_item
 
 
@@ -45,7 +45,7 @@ def __hook_on_regex(
     _depth: int = 0,
     **kwargs,
 ):
-    return nonebot._on_regex(pattern, flags, rule, _depth+1)
+    return nonebot._on_regex(pattern, flags, rule, _depth+2)
 
 
 nonebot._on_regex = nonebot.on_regex  # 初始化
