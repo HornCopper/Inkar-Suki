@@ -45,10 +45,6 @@ def __hook_on_regex(
     _depth: int = 0,
     **kwargs,
 ):
-    # 精确匹配
-    if not pattern[-1] == '$':
-        return nonebot._on_regex(f'{pattern}($| )', flags, rule, _depth)
-    # 和常规匹配
     return nonebot._on_regex(pattern, flags, rule, _depth)
 
 
