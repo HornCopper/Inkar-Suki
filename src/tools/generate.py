@@ -86,8 +86,10 @@ class PlaywrightRunner(threading.Thread):
         t.start()
         future = asyncio.Future()
         self.locker.acquire()
-        if not locate:
+        if not locate and 'http:' in url:
+            # 网页未启用定位时，截图整个页面
             locate = 'div'
+            first = True
         self.tasks.append([url, locate, first, delay, future])
         self.locker.release()
         result = await future
