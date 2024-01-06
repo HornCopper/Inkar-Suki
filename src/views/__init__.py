@@ -84,7 +84,7 @@ async def get_render_image(view_file_path: str, data: dict = None, delay: int = 
     if not data:
         data = {}
     content = get_render_content(view_file_path, data)
-    file = pathlib2.Path(CACHE).joinpath(f'tpl_{get_uuid()}.html').as_posix()
+    file = pathlib2.Path(bot_path.CACHE).joinpath(f'tpl_{get_uuid()}.html').as_posix()
     with open(file, 'w', encoding='utf-8') as f:
         f.write(content)
     return await generate(file, delay=delay, locate=target)

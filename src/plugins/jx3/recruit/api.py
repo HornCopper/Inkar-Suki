@@ -55,7 +55,7 @@ async def recruit_v2(server: str, actvt: str = ""):
     data = await get_api(final_url)
     time_now = convert_time(data["data"]["time"])
     appinfo = f" · 招募信息 · {server} · {time_now}"
-    font = ASSETS + "/font/custom.ttf"
+    font = bot_path.ASSETS + "/font/custom.ttf"
     data = data["data"]["data"]
     contents = []
     for i in range(len(data)):
@@ -71,12 +71,12 @@ async def recruit_v2(server: str, actvt: str = ""):
             "$leader", leader).replace("$count", count).replace("$content", content).replace("$time", create_time)
         contents.append(new)
     table = "\n".join(contents)
-    html = read(VIEWS + "/jx3/recruit/recruit.html")
+    html = read(bot_path.VIEWS + "/jx3/recruit/recruit.html")
     saohua = await get_api(f"https://www.jx3api.com/data/saohua/random?token={token}")
     saohua = saohua["data"]["text"]
     html = html.replace("$customfont", font).replace("$appinfo", appinfo).replace(
         "$recruitcontent", table).replace("$randomsaohua", saohua)
-    final_html = CACHE + "/" + get_uuid() + ".html"
+    final_html = bot_path.CACHE + "/" + get_uuid() + ".html"
     write(final_html, html)
     final_path = await generate(final_html, False, "table", False)
     return Path(final_path).as_uri()

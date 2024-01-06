@@ -14,7 +14,7 @@ def server_bind(group_id: str, server: str) -> str:
         server = server_mapping(server)
         if not server:
             return [PROMPT_ServerNotExist]
-    path = f"{DATA}/{group_id}/jx3group.json"
+    path = f"{bot_path.DATA}/{group_id}/jx3group.json"
     now = json.loads(read(path))
     now["server"] = server
     write(path, json.dumps(now, ensure_ascii=False))

@@ -64,15 +64,15 @@ async def get_monsters_map():
         else:
             content.append(new)
     start = re.sub(r"\..+\Z", "", map_data["data"]["start"].replace("T", " ")).split(" ")[0]
-    html = read(VIEWS + "/jx3/monster/monster.html")
-    font = ASSETS + "/font/custom.ttf"
+    html = read(bot_path.VIEWS + "/jx3/monster/monster.html")
+    font = bot_path.ASSETS + "/font/custom.ttf"
     saohua = await get_api(f"https://www.jx3api.com/data/saohua/random?token={token}")
     saohua = saohua["data"]["text"]
     appinfo_time = time.strftime("%H:%M:%S", time.localtime(time.time()))
     appinfo = f"自{start}起7天 · 当前时间：{appinfo_time}<br>{saohua}"
     html = html.replace("$content", "\n".join(content)).replace(
         "$customfont", font).replace("$appinfo", appinfo)
-    final_html = CACHE + "/" + get_uuid() + ".html"
+    final_html = bot_path.CACHE + "/" + get_uuid() + ".html"
     write(final_html, html)
     final_path = await generate(final_html, False, ".m-bmap.is-map-phone", False)
     return Path(final_path).as_uri()

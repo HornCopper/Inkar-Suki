@@ -196,7 +196,7 @@ class Jx3Guide:
                 continue
             img_data = img_data.content
             uuid = get_uuid()
-            img_file = f"{CACHE}{os.sep}{uuid}.png"
+            img_file = f"{bot_path.CACHE}{os.sep}{uuid}.png"
             with open(img_file, "wb") as f:
                 f.write(img_data)
             img.attrs["src"] = Path(img_file).as_uri()

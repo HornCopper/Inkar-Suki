@@ -1,5 +1,5 @@
 from src.tools.dep import *
-from src.plugins.jx3.dungeon.api import post_url, VIEWS
+from src.plugins.jx3.dungeon.api import post_url
 
 
 async def get_tuilan_data(url: str, params: dict = None):
@@ -142,14 +142,14 @@ async def generate_zd_image(server: str, id: str):
             .replace("$value", value)
         )
     content = "\n".join(content)
-    html = read(VIEWS + "/jx3/zone_detail/zone_detail.html")
-    font = ASSETS + "/font/custom.ttf"
+    html = read(bot_path.VIEWS + "/jx3/zone_detail/zone_detail.html")
+    font = bot_path.ASSETS + "/font/custom.ttf"
     saohua = await get_api(f"https://www.jx3api.com/data/saohua/random?token={token}")
     saohua = saohua["data"]["text"]
     appinfo_time = time.strftime("%H:%M:%S", time.localtime(time.time()))
     html = html.replace("$customfont", font).replace("$tablecontent", content).replace(
         "$randomsaohua", saohua).replace("$appinfo", f" 副本总览 · {server} · {id} · {appinfo_time}")
-    final_html = CACHE + "/" + get_uuid() + ".html"
+    final_html = bot_path.CACHE + "/" + get_uuid() + ".html"
     write(final_html, html)
     final_path = await generate(final_html, False, "table", False)
     return Path(final_path).as_uri()

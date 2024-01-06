@@ -1,10 +1,6 @@
 from src.tools.utils import get_api
-import nonebot
 import sys
 import re
-
-TOOLS = nonebot.get_driver().config.tools_path
-sys.path.append(TOOLS)
 
 
 def clean(string: str) -> str:

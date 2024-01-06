@@ -33,7 +33,7 @@ async def jx3_flower(state: T_State, event: GroupMessageEvent, args: Message = C
         img = prev_code[1]
     else:
         img = await x_renderer(arg_server, arg_map, arg_species, data)
-        persisted_path = f"{ASSETS}{os.sep}jx3{os.sep}pvx{os.sep}flower{os.sep}{os.path.basename(img)}"
+        persisted_path = f"{bot_path.ASSETS}{os.sep}jx3{os.sep}pvx{os.sep}flower{os.sep}{os.path.basename(img)}"
         shutil.copy2(img, persisted_path)
         CACHE_flower[cache_key] = [code, persisted_path]
         flush_CACHE_flower()
