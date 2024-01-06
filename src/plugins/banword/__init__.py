@@ -25,11 +25,11 @@ async def __(event: GroupMessageEvent, args: Message = CommandArg()):  # 违禁�
     if not x.success:
         return await banword.finish(x.description)
     if bw:
-        now = json.loads(read(DATA + "/" + str(event.group_id) + "/banword.json"))
+        now = json.loads(read(bot_path.DATA + "/" + str(event.group_id) + "/banword.json"))
         if bw in now:
             return await banword.finish("唔……封禁失败，已经封禁过了。")
         now.append(bw)
-        write(DATA + "/" + str(event.group_id) + "/banword.json", json.dumps(now, ensure_ascii=False))
+        write(bot_path.DATA + "/" + str(event.group_id) + "/banword.json", json.dumps(now, ensure_ascii=False))
         return await banword.finish("已成功封禁词语！")
     else:
         return await banword.finish("您封禁了什么？")
@@ -45,10 +45,10 @@ async def ___(event: GroupMessageEvent, args: Message = CommandArg()):
         return await unbanword.finish(x.description)
     cmd = args.extract_plain_text()
     if cmd:
-        now = json.loads(read(DATA + "/" + str(event.group_id) + "/banword.json"))
+        now = json.loads(read(bot_path.DATA + "/" + str(event.group_id) + "/banword.json"))
         try:
             now.remove(cmd)
-            write(DATA + "/" + str(event.group_id) + "/banword.json",
+            write(bot_path.DATA + "/" + str(event.group_id) + "/banword.json",
                   json.dumps(now, ensure_ascii=False))
             return await unbanword.finish("成功解封词语！")
         except ValueError:
@@ -59,7 +59,7 @@ async def ___(event: GroupMessageEvent, args: Message = CommandArg()):
 @matcher_common_run.handle()
 async def common_match_ban_words(matcher: Matcher, bot: Bot, event: GroupMessageEvent):
     flag = False
-    banwordlist = json.loads(read(DATA + "/" + str(event.group_id) + "/banword.json"))
+    banwordlist = json.loads(read(bot_path.DATA + "/" + str(event.group_id) + "/banword.json"))
     msg = event.get_plaintext()
     id_ = str(event.message_id)
     for i in banwordlist:

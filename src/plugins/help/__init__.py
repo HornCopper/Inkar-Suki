@@ -52,7 +52,7 @@ css = """
             }
 </style>"""
 css = css.replace("customfont", Config.font_path)
-path = PLUGINS
+path = bot_path.PLUGINS
 
 
 @help.handle()
@@ -67,11 +67,11 @@ async def help_(args: Message = CommandArg()):
         admin = {}
         aliases = {}
         table = []
-        modules = os.listdir(PLUGINS)
+        modules = os.listdir(bot_path.PLUGINS)
         if module not in modules:
             return await help.finish("唔……没有找到此模块哦，请使用+help查看所有模块及其帮助。")
         else:
-            plugin_info = json.loads(read(PLUGINS + "/" + module + "/info.json"))
+            plugin_info = json.loads(read(bot_path.PLUGINS + "/" + module + "/info.json"))
             name = plugin_info["name"]
             version = plugin_info["version"]
             author = plugin_info["author"]
@@ -83,7 +83,7 @@ async def help_(args: Message = CommandArg()):
             msg = str(tabulate(table, headers="firstrow", tablefmt="html"))
             table.clear()
             html = "<div style=\"font-family:Custom\">" + msg.replace("$", "<br>") + "</div>" + css
-            final_path = CACHE + "/" + get_uuid() + ".html"
+            final_path = bot_path.CACHE + "/" + get_uuid() + ".html"
             write(final_path, html)
             image = await generate(final_path, False, "table", False)
             if type(image) != type("sb"):
@@ -124,7 +124,7 @@ async def help_(args: Message = CommandArg()):
         msg = str(tabulate(table, headers="firstrow", tablefmt="html"))
         table.clear()
         html = "<div style=\"font-family:Custom\">" + msg.replace("$", "<br>") + "</div>"+css
-        final_path = CACHE + "/" + get_uuid() + ".html"
+        final_path = bot_path.CACHE + "/" + get_uuid() + ".html"
         write(final_path, html)
         image = await generate(final_path, False, "table", False)
         if type(image) != type("sb"):

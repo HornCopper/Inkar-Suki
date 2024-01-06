@@ -3,10 +3,7 @@ from typing import Any
 from typing import overload
 import functools
 from .config import *
-from nonebot.adapters.onebot.v11.message import Message as v11Message
-from nonebot.adapters.onebot.v11.event import GroupMessageEvent
-from nonebot.adapters import Message, MessageSegment
-from typing import List, Literal, Tuple
+
 from ..exceptions import *
 from ..data_server import *
 from src.tools.utils import *
@@ -15,28 +12,8 @@ from sgtpyutils import extensions
 from sgtpyutils.logger import logger
 from .prompt import *
 from ..args import *
-import inspect
 
 logger.debug(f'load dependence:{__name__}')
-
-
-def convert_to_str(msg: MessageSegment):
-    if isinstance(msg, GroupMessageEvent):
-        x = msg.get_message().extract_plain_text()
-        msg = str.join(' ', x.split(' ')[1:])  # 将命令去除
-    if isinstance(msg, MessageSegment):
-        msg = msg.data
-    if isinstance(msg, v11Message):
-        msg = str(msg)
-        pass
-    if isinstance(msg, dict):
-        import json
-        msg = json.dumps(msg, ensure_ascii=False)
-
-    if isinstance(msg, str):
-        return msg
-    logger.warning(f'message cant convert to str:{msg}')
-    return msg
 
 
 class Jx3ArgCallback:
@@ -79,7 +56,7 @@ class Jx3ArgCallback:
             return 0, True
         v = self._convert_number(arg_value)
         if not v or v < 0:
-            v = 0
+            v = 1  # 默认返回第一页
             is_default = True
         return v - 1, is_default  # 输入值从1开始，返回值从0开始
 
@@ -161,6 +138,8 @@ class Jx3Arg(Jx3ArgCallback, Jx3ArgExt):
     def arg_factory(matcher: Matcher, event: GroupMessageEvent) -> list[Any]:
         docs = get_cmd_docs(matcher)
         templates = get_args(docs.example, event, method=docs.name)
+        if templates is None: # 不再继续处理
+            matcher.stop_propagation()
         return templates
 
 
@@ -189,8 +168,8 @@ def get_args(arg1, arg2, arg3=None, method=None) -> list:
     return direct_get_args(arg1, arg2, arg3, method=method)
 
 
+@DocumentGenerator.record
 def direct_get_args(raw_input: str, template_args: List[Jx3Arg], event: GroupMessageEvent = None, method=None) -> list:
-    raw_input = convert_to_str(raw_input)
     template_len = len(template_args)
     raw_input = raw_input or ''  # 默认传入空参数
     user_args = extensions.list2dict(raw_input.split(' '))
@@ -209,23 +188,4 @@ def direct_get_args(raw_input: str, template_args: List[Jx3Arg], event: GroupMes
             continue  # 该参数去匹配下一个参数
 
         user_index += 1  # 输出参数位成功才+1
-
-    if method:
-        if isinstance(method, str):
-            caller_name = method
-        else:
-            caller_name = method.__name__
-    else:
-        method_names = [x[3] for x in inspect.stack()]
-        caller_name_pos = extensions.find(enumerate(method_names), lambda x: x[1] == 'get_args')
-        caller_name = method_names[caller_name_pos[0] + 1]
-
-    log = {
-        'name': caller_name,
-        'args': result,
-        'raw': raw_input,
-        'group': event and event.group_id,
-        'user': event and event.user_id,
-    }
-    logger.debug(f'func_called:{log}')
     return result

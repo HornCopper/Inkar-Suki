@@ -428,13 +428,13 @@ async def generater(map, mode, boss):
             tablecontent.append(template_drop.replace("$icon", icon).replace("$name", name).replace("$attrs", attrs).replace(
                 "$type", type_).replace("$stars", stars).replace("$quailty", quailty).replace("$score", score).replace("$fivestone", fivestone))
         final_table = "\n".join(tablecontent)
-        html = read(VIEWS + "/jx3/drop/drop.html")
-        font = ASSETS + "/font/custom.ttf"
+        html = read(bot_path.VIEWS + "/jx3/drop/drop.html")
+        font = bot_path.ASSETS + "/font/custom.ttf"
         saohua = await get_api(f"https://www.jx3api.com/data/saohua/random?token={token}")
         saohua = saohua["data"]["text"]
         html = html.replace("$font", font).replace("$tablecontent", final_table).replace(
             "$saohua", saohua).replace("$appinfo", f" · 掉落列表 · {mode}{zone} · {boss}")
-        final_html = CACHE + "/" + get_uuid() + ".html"
+        final_html = bot_path.CACHE + "/" + get_uuid() + ".html"
         write(final_html, html)
         final_path = await generate(final_html, False, "table", False)
         return Path(final_path).as_uri()
@@ -487,8 +487,8 @@ async def zone_v2(server, id):
         "X-Sk": gen_xsk(param)
     }
     data = await post_url("https://m.pvp.xoyo.com/h5/parser/cd-process/get-by-role", headers=headers, data=param)
-    unable = unable_.replace("$imagepath", ASSETS + "/image/grey.png")
-    available = available_.replace("$imagepath", ASSETS + "/image/gold.png")
+    unable = unable_.replace("$imagepath", bot_path.ASSETS + "/image/grey.png")
+    available = available_.replace("$imagepath", bot_path.ASSETS + "/image/gold.png")
     data = json.loads(data)
     if data["data"] == []:
         return ["该玩家目前尚未打过任何副本哦~\n注意：10人普通副本会在周五刷新一次。"]
@@ -508,13 +508,13 @@ async def zone_v2(server, id):
                 "$zonemode", map_type).replace("$images", image_content)
             contents.append(temp)
         content = "\n".join(contents)
-        html = read(VIEWS + "/jx3/teamcd/teamcd.html")
-        font = ASSETS + "/font/custom.ttf"
+        html = read(bot_path.VIEWS + "/jx3/teamcd/teamcd.html")
+        font = bot_path.ASSETS + "/font/custom.ttf"
         saohua = await get_api(f"https://www.jx3api.com/data/saohua/random?token={token}")
         saohua = saohua["data"]["text"]
         html = html.replace("$customfont", font).replace("$tablecontent", content).replace(
             "$randomsaohua", saohua).replace("$appinfo", f" · 副本记录 · {server} · {id}")
-        final_html = CACHE + "/" + get_uuid() + ".html"
+        final_html = bot_path.CACHE + "/" + get_uuid() + ".html"
         write(final_html, html)
         final_path = await generate(final_html, False, "table", False)
         return Path(final_path).as_uri()
@@ -569,7 +569,7 @@ async def get_item_record(server: str, name: str):
     known_time = []
     known_id = []
     tablecontents = []
-    font = ASSETS + "/font/custom.ttf"
+    font = bot_path.ASSETS + "/font/custom.ttf"
     num = 0
     for i in data["rows"]:
         if i["Tm"] in known_time and i["Nike"] in known_id:
@@ -603,10 +603,10 @@ async def get_item_record(server: str, name: str):
     appinfo_time = time.strftime("%H:%M:%S", time.localtime(time.time()))
     appinfo = f"掉落统计 · {server} · {name} · {appinfo_time}"
     final_table = "\n".join(tablecontents)
-    html = read(VIEWS + "/jx3/item/item.html")
+    html = read(bot_path.VIEWS + "/jx3/item/item.html")
     html = html.replace("$customfont", font).replace("$tablecontent", final_table).replace(
         "$randomsaohua", saohua).replace("$appinfo", appinfo)
-    final_html = CACHE + "/" + get_uuid() + ".html"
+    final_html = bot_path.CACHE + "/" + get_uuid() + ".html"
     write(final_html, html)
     final_path = await generate(final_html, False, "table", False)
     return Path(final_path).as_uri()

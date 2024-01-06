@@ -1,5 +1,5 @@
 from src.tools.file import *
-from src.tools.dep.bot.path import *
+from src.tools.utils import *
 import json
 __map = {
     "幽月轮": ["二合一", "四合一", "六合一", "七合一", "千岛湖", "圣墓山", "执子之手", "平步青云", "笑傲江湖", "幽月轮", "山雨欲来"],
@@ -38,6 +38,6 @@ def getGroupServer(group_id: str):
     '''
     if not group_id:
         return None
-    data = json.loads(read(f"{DATA}/{group_id}/jx3group.json"))
+    data = json.loads(read(f"{bot_path.DATA}/{group_id}/jx3group.json"))
     data = data or {}
     return data.get('server', None)

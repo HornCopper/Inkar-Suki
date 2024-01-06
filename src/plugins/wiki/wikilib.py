@@ -6,9 +6,6 @@ import re
 from urllib import parse
 from bs4 import BeautifulSoup
 
-TOOLS = nonebot.get_driver().config.tools_path
-DATA = TOOLS.replace("tools", "data")
-
 '''
 状态码：
 200 - 正常，含 status(int) 、 link(str) 、 decription(str) 三个参数

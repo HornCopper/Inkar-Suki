@@ -71,7 +71,7 @@ async def get_preposition(name: str = None):
     bs = BeautifulSoup(data, "html.parser")
     table = bs.find(class_="et_vars bd_tb")
     table = css + str(table).replace("<caption class=\"blind\">Extra Form</caption>", "")
-    path = CACHE + "/" + get_uuid() + ".html"
+    path = bot_path.CACHE + "/" + get_uuid() + ".html"
     html = write(path, table)
     img = await generate(path, False, "table", False)
     return Path(img).as_uri()

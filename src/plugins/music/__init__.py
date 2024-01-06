@@ -1,6 +1,5 @@
 from .music import get, search, getLyricBelongToMusicInfo
 from src.tools.utils import checknumber
-import nonebot
 
 from nonebot import on_command
 from nonebot.adapters import Message
@@ -9,7 +8,6 @@ from nonebot.adapters.onebot.v11 import MessageSegment as ms
 from nonebot.adapters.onebot.v11 import GroupMessageEvent
 from nonebot.typing import T_State
 
-TOOLS = nonebot.get_driver().config.tools_path
 
 
 '''

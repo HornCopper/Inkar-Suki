@@ -17,7 +17,7 @@ from nonebot.params import CommandArg
 
 
 def in_it(qq: str):
-    for i in json.loads(read(TOOLS + "/ban.json")):
+    for i in json.loads(read(bot_path.TOOLS + "/ban.json")):
         if i == qq:
             return True
     return False
@@ -48,9 +48,9 @@ async def _(bot: Bot, event: Event, args: Message = CommandArg()):
     elif in_it(sb):
         return ban.finish("唔……全域封禁失败，这个人已经被封禁了。")
     else:
-        now = json.loads(read(TOOLS + "/ban.json"))
+        now = json.loads(read(bot_path.TOOLS + "/ban.json"))
         now.append(sb)
-        write(TOOLS + "/ban.json", json.dumps(now))
+        write(bot_path.TOOLS + "/ban.json", json.dumps(now))
         sb_name = info["nickname"]
         if self_protection:
             return
@@ -73,17 +73,17 @@ async def _(bot: Bot, event: Event, args: Message = CommandArg()):
         return await unban.finish("您输入了什么？")
     if in_it(sb) == False:
         return await unban.finish("全域解封失败，并没有封禁此人哦~")
-    now = json.loads(read(TOOLS + "/ban.json"))
+    now = json.loads(read(bot_path.TOOLS + "/ban.json"))
     for i in now:
         if i == sb:
             now.remove(i)
-    write(TOOLS + "/ban.json", json.dumps(now))
+    write(bot_path.TOOLS + "/ban.json", json.dumps(now))
     return await ban.finish(f"好的，已经全域解封{sb_name}({sb})。")
 
 
 @matcher_common_run.handle()
 async def common_match_ban_user(matcher: Matcher, event: Event):
-    info = json.loads(read(TOOLS + "/ban.json"))
+    info = json.loads(read(bot_path.TOOLS + "/ban.json"))
     if not str(event.user_id) in info:
         return
 

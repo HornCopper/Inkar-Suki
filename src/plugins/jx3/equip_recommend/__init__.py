@@ -29,7 +29,7 @@ async def jx3_equip_recommend_menu(event: GroupMessageEvent, state: T_State, arg
     for i in range(len(data[1])):
         chart.append([str(i), data[3][i], data[1][i], data[2][i], data[4][i]])
     html = css + tabulate(chart, tablefmt="unsafehtml")
-    final_path = f"{CACHE}/{get_uuid()}.html"
+    final_path = f"{bot_path.CACHE}/{get_uuid()}.html"
     write(final_path, html)
     img = await generate(final_path, False, "table", False)
     if not img:

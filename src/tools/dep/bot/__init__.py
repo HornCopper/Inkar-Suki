@@ -27,10 +27,10 @@ from tabulate import tabulate
 from pathlib import Path
 from nonebot.message import handle_event
 from nonebot import get_bots
+from src.tools.utils import *
 matcher_common_run = on_message(priority=3, block=False)
 import nonebot
-tools_path = f"{os.getcwd()}/src/tools"
-nonebot.init(tools_path=tools_path, log_level="INFO")
+nonebot.init(tools_path=bot_path.tools_path, log_level="INFO")
 
 
 '''初始调用库'''
@@ -38,7 +38,6 @@ from sgtpyutils.database import filebase_database
 from ...file import *
 try:
     # 子依赖应后加载
-    from .path import *
     from .bot_plugins import *
     from src.tools.permission import checker as permission_check, error as permission_error, permission_judge, Permission, PermissionResult
 except:

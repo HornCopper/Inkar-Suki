@@ -51,9 +51,6 @@ all_file_drink_name = os.listdir(str(img_drink_path))
 # 载入bot名字
 Bot_NICKNAME = "音卡"
 
-TOOLS = nonebot.get_driver().config.tools_path
-sys.path.append(TOOLS)
-
 tieba = on_command("-tieba", aliases={"-帖子"}, priority=5)
 
 
