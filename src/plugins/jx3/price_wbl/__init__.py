@@ -10,7 +10,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
         return await wbl.finish("唔……参数有误，请检查后重试~")
     product = arg[0]
     product_num = arg[1]
-    if checknumber(product_num) == False:
+    if checknumber(product_num) is False:
         return await wbl.finish("唔……检测到商品编号出现了非数字的内容！\n请检查后重试~")
     if product not in ["外观", "角色"]:
         return await wbl.finish("唔……第二个参数请填写「外观」或「角色」。")

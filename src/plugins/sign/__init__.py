@@ -29,7 +29,7 @@ coin = on_command("金币", aliases={"余额"}, priority=5)
 @coin.handle()
 async def check_balance(event: Event):
     coin_ = Sign.get_coin(event.user_id)
-    if coin_ == False:
+    if coin_ is False:
         return await coin.finish("唔……您没有签到过哦，没有任何金币余额呢！")
     return await coin.finish(ms.at(event.user_id) + f"\n您的金币余额为：\n{coin_}枚")
 
@@ -42,5 +42,5 @@ async def clean_data():
         for i in os.listdir(bot_path.CACHE):
             os.remove(bot_path.CACHE + "/" + i)
         logger.info("已清理所有缓存文件。")
-    except:
+    except Exception as _:
         logger.info("缓存清理失败，请检查后重试！！！")

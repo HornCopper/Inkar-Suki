@@ -17,7 +17,7 @@ def get_template_path(resources_path: str):
 def find_str(raw: str, find: str, start: int) -> int:
     try:
         r = raw.index(find, start)
-    except Exception as ex:
+    except Exception as _:
         return -1
     return r
 
@@ -49,7 +49,7 @@ def get_tag_content_list(data: str, tag: str) -> List[str]:
         if pos_start == -1 and pos_end == -1:
             break
         if pos_end == -1:
-            raise InvalidTagException(f'cant find end pos.')
+            raise InvalidTagException('cant find end pos.')
         if pos_start > pos_end or pos_start == -1:
             if stack_len == 0:
                 raise InvalidTagException(
@@ -70,7 +70,7 @@ def get_tag_content_list(data: str, tag: str) -> List[str]:
 
 def get_tag_content(data: str, tag: str) -> str:
     result = get_tag_content_list(data, tag)
-    return f'\n'.join(result)
+    return str.join('\n', result)
 
 
 async def get_render_image(view_file_path: str, data: dict = None, delay: int = 0, target: str = 'section') -> bytes:

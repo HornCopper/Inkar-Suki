@@ -36,11 +36,11 @@ async def _(bot: Bot, event: Event, args: Message = CommandArg()):
         self_protection = True
     x = Permission(event.user_id).judge(10, '拉黑用户')
     if not x.success:
-        if self_protection == False:
+        if self_protection is False:
             return await ban.finish(x.description)
-    if sb == False:
+    if sb is False:
         return await ban.finish("您输入了什么？")
-    if checknumber(sb) == False:
+    if checknumber(sb) is False:
         return await ban.finish("不能全域封禁不是纯数字的QQ哦~")
     info = await bot.call_api("get_stranger_info", user_id=int(sb))
     if info["user_id"] == 0:
@@ -65,13 +65,13 @@ async def _(bot: Bot, event: Event, args: Message = CommandArg()):
     if not x.success:
         return await ban.finish(x.description)
     sb = args.extract_plain_text()
-    if checknumber(sb) == False:
+    if checknumber(sb) is False:
         return await ban.finish("不能全域封禁不是纯数字的QQ哦~")
     info = await bot.call_api("get_stranger_info", user_id=int(sb))
     sb_name = info["nickname"]
-    if sb == False:
+    if sb is False:
         return await unban.finish("您输入了什么？")
-    if in_it(sb) == False:
+    if in_it(sb) is False:
         return await unban.finish("全域解封失败，并没有封禁此人哦~")
     now = json.loads(read(bot_path.TOOLS + "/ban.json"))
     for i in now:
@@ -84,7 +84,7 @@ async def _(bot: Bot, event: Event, args: Message = CommandArg()):
 @matcher_common_run.handle()
 async def common_match_ban_user(matcher: Matcher, event: Event):
     info = json.loads(read(bot_path.TOOLS + "/ban.json"))
-    if not str(event.user_id) in info:
+    if str(event.user_id) not in info:
         return
 
     permit = Permission(event.user_id).judge(10, '黑名单用户免除封禁')
@@ -207,7 +207,7 @@ async def direct_leave_group(group_id: str):
 
             for i in Config.notice_to:
                 await bot.call_api("send_group_msg", group_id=int(i), message=f'音卡按他们的要求，离开了{group_id}')
-        except:
+        except Exception as _:
             pass
 
 

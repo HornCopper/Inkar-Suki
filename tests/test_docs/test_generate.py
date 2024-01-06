@@ -12,7 +12,7 @@ def test_docs_generate():
     event = SFGroupMessageEvent()
     event.message = obMessage(mc.tag)
     args = Jx3Arg.arg_factory(raw_matcher, event)
-    task = ext.SyncRunner.as_sync_method(func(event, args))
+    ext.SyncRunner.as_sync_method(func(event, args))
     mc.check_counter()
 
     return state

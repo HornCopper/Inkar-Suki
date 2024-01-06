@@ -13,7 +13,7 @@ async def _(event: GroupMessageEvent, state: T_State, args: Message = CommandArg
     """
     buff = args.extract_plain_text()
     data = await get_buff(buff)
-    if type(data) != type("sb"):
+    if not isinstance(data, str):
         state["icon"] = data["icon"]
         state["remark"] = data["remark"]
         state["desc"] = data["desc"]
@@ -35,7 +35,7 @@ async def _(event: GroupMessageEvent, state: T_State, num: Message = Arg()):
         remark = state["remark"]
         desc = state["desc"]
         name = state["name"]
-        id = state["id"]
+        state["id"]
         if int(num) not in list(range(len(icon))):
             return await buff_.finish("唔，输入的数字不对哦，取消搜索~")
         else:

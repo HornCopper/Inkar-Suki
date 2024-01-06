@@ -275,10 +275,10 @@ filter_words = ["根骨", "力道", "元气", "身法", "体质"]
 
 async def generater(map, mode, boss):
     mode = mode_mapping(mode)
-    if mode == False:
+    if mode is False:
         return ["唔……难度似乎音卡不能理解哦~"]
     zone = zone_mapping(map)
-    if zone == False:
+    if zone is False:
         return ["唔……副本名称似乎音卡不能理解哦~"]
     try:
         data = await get_drops(zone, mode, boss)
@@ -288,11 +288,11 @@ async def generater(map, mode, boss):
     armors = data["armors"]
     others = data["others"]
     weapons = data["weapons"]
-    if armors == None:
+    if armors is None:
         armors = []
-    if others == None:
+    if others is None:
         others = []
-    if weapons == None:
+    if weapons is None:
         weapons = []
     if len(armors) == 0 and len(others) == 0 and len(weapons) == 0:
         return ["唔……没有找到该boss的掉落哦~\n您确定" + f"{boss}住在{mode}{map}吗？"]
@@ -371,7 +371,7 @@ async def generater(map, mode, boss):
                     if i["Type"] == "Act_运营及版本道具":
                         type_ = "外观"
                         flag = True
-                if flag == False:
+                if flag is False:
                     type_ = re.sub(r"\d+", "", i["Icon"]["SubKind"])
                 attrs = "不适用"
                 fivestone = "不适用"
@@ -499,7 +499,7 @@ async def zone_v2(server, id):
             map_name = i["mapName"]
             map_type = i["mapType"]
             for x in i["bossProgress"]:
-                if x["finished"] == True:
+                if x["finished"] is True:
                     images.append(unable)
                 else:
                     images.append(available)

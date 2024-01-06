@@ -96,7 +96,7 @@ def find_qx(data, kf, qx):
         for x in range(1, 6):
             try:
                 each = real_data[str(i)][str(x)]
-            except:
+            except Exception as _:
                 continue
             if each["name"] == qx:
                 return i-1
@@ -257,7 +257,7 @@ async def get_attr_main(server, id, group_id):
     if not server:
         return [PROMPT_ServerNotExist]
     uid = await get_uid(server, id)
-    if uid == False:
+    if uid is False:
         return ["唔……未找到该玩家。"]
     param = {
         "zone": Zone_mapping(server),
@@ -330,7 +330,7 @@ async def get_attr_main(server, id, group_id):
     qxdata = await get_api(f"https://data.jx3box.com/talent/{ver}.json")
     for i in messyqx:
         index = find_qx(qxdata, kf, i)
-        if index == None:
+        if index is None:
             continue
         qx[index] = i
     for i in range(12):
@@ -344,7 +344,7 @@ async def get_attr_main(server, id, group_id):
             msg = i["Quality"]
             try:
                 modify = i["ModifyType"]
-            except:
+            except Exception as _:
                 equip_quailty.append(msg)
                 continue
             for x in modify:
@@ -383,11 +383,11 @@ async def get_attr_main(server, id, group_id):
                 continue
         try:
             i["Icon"]["SubKind"]
-        except:
+        except Exception as _:
             if equip_data.index(i) in [0, 1, 2, 3, 5]:
                 henchant[equip_data.index(i)] = ""
                 continue
-        if type(i) != type({}):
+        if not isinstance(i, list):
             continue
         if i["Icon"]["SubKind"] == "帽子":
             if "WCommonEnchant" in list(i):
@@ -484,7 +484,7 @@ async def get_attr_main(server, id, group_id):
             continue
         try:
             i["FiveStone"]
-        except:
+        except Exception as _:
             continue
         for x in i["FiveStone"]:
             if x["Name"] != "":
@@ -495,13 +495,13 @@ async def get_attr_main(server, id, group_id):
     try:
         wcs = equip_data[11]["ColorStone"]["Name"]
         wcs_icon = equip_data[11]["ColorStone"]["Icon"]["FileName"]
-    except:
+    except Exception as _:
         wcs = ""
         wcs_icon = ""
     try:
         wcs1 = equip_data[12]["ColorStone"]["Name"]
         wcs_icon1 = equip_data[12]["ColorStone"]["Icon"]["FileName"]
-    except:
+    except Exception as _:
         wcs1 = ""
         wcs_icon1 = ""
     values = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
@@ -599,7 +599,7 @@ async def local_save(webpath):
     else:
         try:
             main = await get_content(webpath)
-        except:
+        except Exception as _:
             return webpath
         cache = open(final_path, mode="wb")
         cache.write(main)

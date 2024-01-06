@@ -30,7 +30,7 @@ async def getTaskChain(TaskID: int):
     for i in data:
         try:
             chain.append(i["name"])
-        except:
+        except Exception as _:
             branch = []
             for x in i["quests"]:
                 branch.append(x["name"])

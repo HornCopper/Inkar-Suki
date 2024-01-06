@@ -64,7 +64,7 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
         return await repo.finish(f"唔……绑定失败。\n错误码：{status_code}")
     else:
         group = str(event.group_id)
-        if already(repo_name, group) == False:
+        if already(repo_name, group) is False:
             cache = open(bot_path.DATA + "/" + group + "/" + "webhook.json", mode="r")
             now = json.loads(cache.read())
             now.append(repo_name)
@@ -93,7 +93,7 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
             return await unbind.finish(x.description)
     repo = args.extract_plain_text()
     group = str(event.group_id)
-    if already(repo, group) == False:
+    if already(repo, group) is False:
         return await unbind.finish("唔……解绑失败：尚未绑定此仓库。")
     else:
         cache = open(bot_path.DATA + "/" + group + "/webhook.json", mode="r")

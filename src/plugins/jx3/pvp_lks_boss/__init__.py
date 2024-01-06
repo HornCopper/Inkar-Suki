@@ -43,7 +43,7 @@ async def _(event: GroupMessageEvent):
     final_path = f"{CACHE}/{get_uuid()}.html"
     write(final_path, html)
     img = await generate(final_path, False, "table", False)
-    if img == False:
+    if img is False:
         return await lks.finish("唔……音卡的烂柯山图片生成失败了捏，请联系作者~")
     else:
         return await lks.finish(ms.image(Path(img).as_uri()))

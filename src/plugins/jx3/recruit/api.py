@@ -4,7 +4,7 @@ from src.tools.dep import *
 
 
 async def api_recruit(server: str, copy: str = ""):  # 团队招募 <服务器> [关键词]
-    if token == None:
+    if token is None:
         return [PROMPT_NoToken]
     server = server_mapping(server)
     if not server:
@@ -44,7 +44,7 @@ template = """
 
 
 async def recruit_v2(server: str, actvt: str = ""):
-    if token == None:
+    if token is None:
         return [PROMPT_NoToken]
     server = server_mapping(server)
     if not server:

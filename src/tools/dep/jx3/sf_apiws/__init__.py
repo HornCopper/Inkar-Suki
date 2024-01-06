@@ -38,7 +38,7 @@ class SfWebSocket(object):
             循环等待ws接受并分发任务
         """
         try:
-            logger.debug(f'start msg recyle')
+            logger.debug('start msg recyle')
             asyncio.create_task(self.ping_cycle())
             while True:
                 msg = await self.connect.recv()

@@ -10,7 +10,7 @@ def test_pet():
 
     func = src.plugins.jx3.jx3_pet
     state = {}
-    event = SFGroupMessageEvent()
+    # event = SFGroupMessageEvent()
 
     mc.tag = '静静'
     task = func(state, obMessage(mc.tag))

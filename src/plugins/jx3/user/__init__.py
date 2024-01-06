@@ -25,7 +25,7 @@ async def jx3_addritube(event: GroupMessageEvent, template: list[Any] = Depends(
     """
     arg_server, arg_user = template
     data = await addritube_(arg_server, arg_user)
-    if type(data) == type([]):
+    if isinstance(data, list):
         return await jx3_cmd_addritube.finish(data[0])
     return await jx3_cmd_addritube.send(ms.image(data))
 
@@ -49,7 +49,7 @@ jx3_cmd_addritube_v2 = on_command(
 async def jx3_addritube_v2(event: GroupMessageEvent, template: list[Any] = Depends(Jx3Arg.arg_factory)):
     arg_server, arg_user = template
     data = await get_attr_main(arg_server, arg_user, str(event.group_id))
-    if type(data) == type([]):
+    if isinstance(data, list):
         return await jx3_cmd_addritube_v2.finish(data[0])
     return await jx3_cmd_addritube_v2.send(ms.image(data))
 

@@ -8,7 +8,7 @@ def read(Path):
         msg = cache.read()
         cache.close()
         return msg or "{}"
-    except:
+    finally:
         return "{}"  # 默认返回空对象
 
 

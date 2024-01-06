@@ -11,7 +11,7 @@ async def verify_cheater(content):
     list_ = bs_obj.find(class_="s_post_list")
     try:
         objects = list_.find_all(class_="s_post")
-    except:
+    except Exception as _:
         return False
     for i in objects:
         content = i.find(class_="p_content").get_text()

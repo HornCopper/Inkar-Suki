@@ -31,5 +31,5 @@ def init_cron(sub: SubscribeSubject, OnCallback: callable):
         v = f"subscriber register:{name} on cron-exp:[{cron.expression}]"
         logger.info(v)
         kwargs = {"sub": sub, "cron": cron, }
-        job = scheduler.add_job(OnCallback, c, id=name, kwargs=kwargs)
+        scheduler.add_job(OnCallback, c, id=name, kwargs=kwargs)
         pass
