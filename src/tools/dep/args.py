@@ -49,6 +49,8 @@ class Jx3ArgsType(enum.Enum):
     '''事件订阅'''
     command = IArgDesc(example=['交易行', '战绩', '物价'])
     '''命令'''
+    url = IArgDesc(example=['baidu.com', 'http://bilibili.com', 'https://qq.com'])
+    '''链接'''
 
     def to_dict(self):
         return self.value.to_dict()

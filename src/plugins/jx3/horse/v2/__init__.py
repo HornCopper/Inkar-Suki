@@ -2,7 +2,8 @@ from ..api import *
 from .renderer import *
 from .api import *
 jx3_cmd_horseinfo_chitu = on_command(
-    "赤兔",
+    "jx3_chitu_v2",
+    name="赤兔",
     aliases={},
     priority=5,
     description='[暂未开放]获取赤兔刷新信息',
