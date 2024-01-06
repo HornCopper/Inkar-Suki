@@ -196,7 +196,7 @@ async def util_web(bot: Bot, event: GroupMessageEvent, args: list[Any] = Depends
         return await util_cmd_web.finish(x.description)
 
     url, = args
-    image = generate_by_url(url)
+    image = await generate_by_url(url)
     img = ms.image(Path(image).as_uri())
     return await util_cmd_web.send(f'{img}\n网页截图完成')
 
