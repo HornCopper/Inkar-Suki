@@ -7,7 +7,7 @@ dev_cmd_show_help = on_command(
     description='获取当前公开的命令文档',
     catalog='permission.docs.help',
     example=[
-        Jx3Arg(Jx3ArgsType.pageIndex, is_optional=True, default=0),
+        Jx3Arg(Jx3ArgsType.pageIndex, is_optional=True, default=1),
         Jx3Arg(Jx3ArgsType.command, is_optional=True),
     ],
     document='''新的帮助文档'''
