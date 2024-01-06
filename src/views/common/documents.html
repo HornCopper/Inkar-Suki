@@ -1,4 +1,5 @@
 <template>
+
   <div :style="{'text-align': 'center','font-size':font_size,width:'1000px'}">
     <el-card shadow="never">
       <div style="font-size:2rem;font-weight:600;">机器人使用说明{{ title }} {{ item_name && ` · ${item_name}` }}</div>
@@ -45,8 +46,19 @@
       </el-row>
       <el-card class="item-container">
 
-        <el-row :gutter="20">
+        <el-row :gutter="10">
           <el-col :span="6">
+            <div style="height:18rem">
+              <el-card style="text-align:left">
+                <div style="font-size:1.5rem">群名称</div>
+                <div>群号：XXXXXX</div>
+                <div>机器人：XXXXXX</div>
+                <div>已相处：XXX天</div>
+                <div>绑定区服：XXX</div>
+                <el-divider style="margin:0.5rem"></el-divider>
+                <div>群内TOP：XXX、XXX、XXX、XXX、XXX、XXX、XXX</div>
+              </el-card>
+            </div>
             <div style="text-align: center;font-size:1.5rem">长按扫码加群领养</div>
             <div class="img-qr-container">
               <img src="../views/common/group_qr.png" style="width:15rem" />
@@ -54,15 +66,19 @@
           </el-col>
           <el-col :span="18">
             <div class="command-card-container">
-              <div v-for="(x,index) in new Array(12).fill(0)" :key="index" class="command-single-card">
+              <div v-for="(x,index) in filter_commands.slice(0,12)" :key="index" class="command-single-card">
                 <div class="command-card-title">
-                  <span>{{index}}指令名称</span>
+                  <span>{{ x.name }}</span>
                 </div>
                 <div class="command-card-value">
-                  <div>这里是描述和别名</div>
+                  <div class="command-card-desc-rule">{{ get_example_desc(x).rule }}</div>
+                  <div v-for="exp in get_example_desc(x).examples" :key="exp" class="command-card-desc-example">
+                    <div>例:{{ exp }}</div>
+                  </div>
+                  <div class="command-card-desc-primary">{{ x.description }}</div>
                 </div>
                 <div class="command-card-description">
-                  <div>这里是热度</div>
+                  <el-rate :model-value="convertPop(x.favorite)" show-score disabled />
                 </div>
               </div>
             </div>
@@ -76,7 +92,7 @@
         </div>
         <el-row>
           <div class="command-mini-card-container">
-            <div v-for="(x,index) in filter_commands" :key="index" class="command-mini-single-card">
+            <div v-for="(x,index) in filter_commands_paged" :key="index" class="command-mini-single-card">
               <div class="command-mini-card-title">{{ x.name }}</div>
               <div v-for="(alias,index) in x.labels">{{ alias }}</div>
             </div>
@@ -136,46 +152,6 @@
 </style>
 
 <style lang="scss">
-  .ver-line {
-    height: 3rem;
-    border: 1px solid #aaaaaa;
-  }
-
-  .primary-icon {
-    font-weight: 600;
-    font-size: 1.2rem;
-    line-height: 1.4rem;
-    display: flex;
-    justify-content: space-evenly;
-  }
-
-  .primary-title {
-    color: #ff0000;
-    font-weight: 400;
-    text-align: left;
-    line-height: 1.4rem;
-    font-size: 1.12rem;
-  }
-
-  .primary-content {
-    color: #999;
-    text-align: left;
-    line-height: 1rem;
-    font-size: 0.8rem;
-  }
-
-  .sub-title {
-    margin-right: 0.5rem;
-    font-weight: 600;
-    font-size: 1.2rem;
-  }
-
-  .global-title {
-    font-weight: 600;
-    font-size: 1.2rem;
-  }
-
-
   .command-card-container {
     display: flex;
     justify-content: space-between;
@@ -189,11 +165,26 @@
     margin: 0.2rem;
     background: #4ce6ff;
     font-size: 1.2rem;
-    max-width: 15rem;
-    min-width: 10rem;
+    width: 13.5rem;
     border-radius: 0.5rem;
     color: #ffffff;
     box-shadow: 0px 0px 2px 0px rgba(0, 0, 0, 1);
+  }
+
+  .command-card-desc-example {
+    white-space: wrap;
+    font-size: 0.8rem;
+    text-align: left;
+  }
+
+  .command-card-desc-primary {
+    white-space: wrap;
+    font-size: 0.8rem;
+  }
+
+  .command-card-desc-rule {
+    white-space: wrap;
+    font-size: 1rem;
   }
 
   .command-mini-card-container {
@@ -227,13 +218,24 @@
   }
 
   .command-card-value {
+    padding: 0.2rem 0.5rem;
     color: #1f0000;
     font-size: 0.9rem;
-    height: 4rem;
+    height: 6rem;
   }
 
   .command-card-description {
     font-size: 0.8rem;
+    height: 1.5rem;
+    background: #0490e1;
+  }
+
+  .el-rate__text {
+    color: #ffffff;
+  }
+
+  .el-rate {
+    height: auto;
   }
 </style>
 <script>
@@ -250,16 +252,19 @@
         convertSci,
         convertPop
       }
+      const computes = {}
       const font_size = ref('1rem')
-      const command_description = computed(() => {
+      computes.command_description = computed(() => {
         const commands = params_data.commands
         const total = `共${commands.length}个`
 
+        const enables = computes.filter_commands.value.length
+        const enable = `${enables}有效的`
         const valids = commands.filter(x => x.description)
         const valid = `${valids.length}个有使用说明`
-        return `${total},${valid}`
+        return `${total},${enable},${valid}`
       })
-      const unnest_catalogs = computed(() => {
+      computes.unnest_catalogs = computed(() => {
         const catalogs = params_data.catalogs
         const result = {}
         const extract = (x, path = '') => {
@@ -274,45 +279,90 @@
         extract(catalogs)
         return result
       })
-      const filter_commands = computed(() => {
-        const catalogs = unnest_catalogs.value
+      computes.filter_commands = computed(() => {
+        const { group_status, global_status } = params_data
+        const catalogs = computes.unnest_catalogs.value
         let commands = params_data.commands
+
         commands.map(x => {
           x.labels = x.aliases.filter(a => a !== x.name).slice(0, 3)
+          x.status_grp = group_status[x.name]
+          x.status_glo = global_status[x.name]
+          x.favorite = x.status_glo && x.status_glo.favorite
+          x.favorite = x.favorite || 0
         })
+        // 排除 v1 v2 等的
+        commands = commands.filter(x => x.name && x.name.indexOf('v') === -1)
+        // 排除 纯英文的
+        commands = commands.filter(x => /.*[\u4e00-\u9fa5]+.*$/.exec(x.name))
+
+        // 尽可能每行等宽
         commands = commands.sort((a, b) => b.labels.length - a.labels.length)
         commands = commands.sort((a, b) => a.priority - b.priority)
-        commands = commands.sort((a, b) => a.hot - b.hot)
-        const pages = page.value
+        // 按热度排序
+        commands = commands.sort((a, b) => b.favorite - a.favorite)
+
+        return commands
+      })
+      computes.filter_commands_paged = computed(() => {
+        const commands = computes.filter_commands.value
+        const pages = computes.page.value
         const start = pages.pageIndex * pages.pageSize
         return commands.slice(start, start + pages.pageSize)
       })
+      methods.get_alias_desc = x => {
+        let { aliases } = x
+        if (!aliases) return ''
+        aliases = aliases.slice(0, 3)
+        return aliases.join('|')
+      }
 
-      const page = computed(() => {
+      methods.get_example_desc = x => {
+        const { example } = x
+        if (!example || !example.length) return ''
+        const args = example
+          .map(x => x.split('.'))
+          .map(x => x.length === 1 ? x[0] : x[1])
+          .map(x => params_data.args_template[x])
+        const get_random_exp = item => {
+          const raw = args.map(x => {
+            const index = Math.floor(x.example.length * Math.random())
+            return x.example[index]
+          }).join(' ')
+          return `${x.name} ${raw}`
+        }
+        let examples = new Array(5)
+          .fill(0)
+          .map(x => get_random_exp())
+        examples = distinct(examples, x => x).slice(0, 1)
+        const rule = args.map(x => x.description).join(' ')
+        return { rule, examples }
+      }
+
+      computes.page = computed(() => {
         const { commands, pageIndex } = params_data
         return {
           pageIndex,
           pageSize: 108,
-          totalCount: commands.length
+          totalCount: computes.filter_commands.value.length
         }
       })
       return {
         args_template: {},
         catalogs: {},
-        unnest_catalogs,
         commands: [],
-        filter_commands,
         pageIndex: 1,
-        page,
         item_name: '',
         title: '',
 
-        command_description,
+        ...computes,
         font_size,
         ...methods,
       }
     },
   })
+
+
 
 
 </script>

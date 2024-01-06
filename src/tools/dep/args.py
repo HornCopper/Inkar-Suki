@@ -23,33 +23,33 @@ class IArgDesc:
 class Jx3ArgsType(enum.Enum):
     '''参数类型'''
 
-    default = IArgDesc(example=['苹果', '书本', '火锅'])
+    default = IArgDesc(example=['苹果', '书本', '火锅'], description='默认')
     '''默认'''
-    string = IArgDesc(example=['苹果', '书本', '火锅'])
+    string = IArgDesc(example=['苹果', '书本', '火锅'], description='文本')
     '''文本'''
-    number = IArgDesc(example=[1, 2, 3])
+    number = IArgDesc(example=[1, 2, 3], description='数值')
     '''数值'''
-    server = IArgDesc(example=['唯满侠', '双梦', '煎蛋'])
+    server = IArgDesc(example=['唯满侠', '双梦', '煎蛋'], description='区服')
     '''区服'''
-    pageIndex = IArgDesc(example=[1, 2, 3])
+    pageIndex = IArgDesc(example=[1, 2, 3], description='页码')
     '''页码'''
-    pageSize = IArgDesc(example=[5, 10, 50, 100])
+    pageSize = IArgDesc(example=[5, 10, 50, 100], description='每页条数')
     '''每页条数'''
-    kunfu = IArgDesc(example=['孤锋诀', '莫问', '山海经诀', '相知'])
+    kunfu = IArgDesc(example=['孤锋诀', '莫问', '山海经诀', '相知'], description='心法')
     '''心法'''
-    school = IArgDesc(example=['万宁', '药宗', '蓬莱'])
+    school = IArgDesc(example=['万宁', '药宗', '蓬莱'], description='门派')
     '''门派'''
-    property = IArgDesc(example=['五行石', '太一玄晶', '砂'])
+    property = IArgDesc(example=['五行石', '太一玄晶', '砂'], description='道具名称')
     '''道具名称'''
-    user = IArgDesc(example=['打本本', '锦鲤鲤', '步龄龄'])
+    user = IArgDesc(example=['打本本', '锦鲤鲤', '步龄龄'], description='玩家id')
     '''玩家id'''
-    pvp_mode = IArgDesc(example=['22', '33', '55'])
+    pvp_mode = IArgDesc(example=['22', '33', '55'], description='pvp模式')
     '''pvp模式'''
-    subscribe = IArgDesc(example=['日常', '攻防', '新闻'])
+    subscribe = IArgDesc(example=['日常', '攻防', '新闻'], description='事件订阅')
     '''事件订阅'''
-    command = IArgDesc(example=['交易行', '战绩', '物价'])
+    command = IArgDesc(example=['交易行', '战绩', '物价'], description='命令')
     '''命令'''
-    url = IArgDesc(example=['baidu.com', 'http://bilibili.com', 'https://qq.com'])
+    url = IArgDesc(example=['baidu.com', 'http://xx.com', 'https://qq.com'], description='链接')
     '''链接'''
 
     def to_dict(self):
@@ -60,5 +60,3 @@ for t in Jx3ArgsType:
     if not isinstance(t.value, IArgDesc):
         continue
     t.value.name = t.name
-    if not t.value.description:
-        t.value.description = t.__doc__
