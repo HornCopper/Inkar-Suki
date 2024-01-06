@@ -50,10 +50,12 @@ async def get_goods_current_detail_price(id: str, server: str, only_cache: bool 
     """
     key = f"{server}:{id}"
     price_detail: GoodsPriceDetail = CACHE_Goods_PriceDetail.get(key)
-    if (price_detail is not None) and (time.time() - price_detail.updated < 600):
-        return price_detail
     if only_cache:
-        return price_detail
+        if price_detail is None:
+            pass
+        elif (DateTime() - DateTime(price_detail.updated)).total_seconds() < 86400*7:
+            return price_detail  # 缓存模式下7天内有更新的不再重复加载
+            
     url = f"https://next2.jx3box.com/api/item-price/{id}/detail?server={server}"
     raw_data = await get_api(url)
     if not raw_data.get("code") == 0:
