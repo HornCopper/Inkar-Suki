@@ -10,7 +10,7 @@ def server_bind(group_id: str, server: str) -> str:
     @server:str:服务器名
     """
     # 当server为None表示要清空，否则检查服务器名称有效性
-    if not server == "":
+    if server:
         server = server_mapping(server)
         if not server:
             return [PROMPT_ServerNotExist]
