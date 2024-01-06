@@ -32,8 +32,8 @@ class CommandRecord:
     def get_db(group: str = None) -> filebase_database.Database:
         path = bot_path.DATA
         suffix = group or bot_path.common_data
-        path = f'{path}/{suffix}/commands.json'
-
+        path = f'{path}/{suffix}/commands'
+        
         db: filebase_database.Database = filebase_database.Database(path)
         return db
 
@@ -59,6 +59,7 @@ class CommandRecord:
             'favorite': self.favorite,
             'enable': self.enable,
         }
+
 
 
 class DocumentGenerator:
