@@ -1,3 +1,4 @@
+from __future__ import annotations
 from src.tools.dep.args import Jx3ArgsType
 
 import inspect
@@ -16,6 +17,7 @@ import enum
 
 from src.tools.utils import *
 
+
 class CommandRecordStatus(enum.IntFlag):
     normal = 1
     disabled = 2
@@ -27,17 +29,26 @@ class CommandRecord:
     enable: bool = True  # 是否启用
 
     @staticmethod
-    def record(caller_name: str, group: str = None):
+    def get_db(group: str = None) -> filebase_database.Database:
         path = bot_path.DATA
-        suffix = 'common' if group is None else group
+        suffix = group or bot_path.common_data
         path = f'{path}/{suffix}/commands.json'
 
         db: filebase_database.Database = filebase_database.Database(path)
+        return db
+
+    @staticmethod
+    def get_sts(caller_name: str, group: str = None) -> CommandRecord:
+        db = CommandRecord.get_db(group)
         '''统计功能使用'''
         if not db.value.get(caller_name):
             db.value[caller_name] = CommandRecord().to_dict()
         sts: CommandRecord = clazz.dict2obj(CommandRecord(), db.value.get(caller_name))
+        return sts
 
+    @staticmethod
+    def record(caller_name: str, group: str = None) -> CommandRecordStatus:
+        sts: CommandRecord = CommandRecord.get_sts(caller_name, group)
         sts.favorite += 10
         if not sts.enable:
             return CommandRecordStatus.disabled
@@ -127,7 +138,7 @@ class DocumentGenerator:
         elif s_group & CommandRecordStatus.disabled == CommandRecordStatus.disabled:
             msg_status = '-group-disabled'
         logger.debug(f'func_called{msg_status}:{log}')
-        return CommandRecordStatus.disabled if msg_status else CommandRecordStatus.normal # TODO 策略模式包装
+        return CommandRecordStatus.disabled if msg_status else CommandRecordStatus.normal  # TODO 策略模式包装
 
     @staticmethod
     def get_regex(pattern: str):
@@ -154,6 +165,7 @@ class DocumentGenerator:
         catalogs = permission.to_dict()
         commands = [DocumentGenerator.commands[x].to_dict() for x in DocumentGenerator.commands]
         args_template = dict([[x.name, x.to_dict()] for x in Jx3ArgsType])
+
         return {
             'catalogs': catalogs,
             'commands': commands,

@@ -17,3 +17,6 @@ CLOCK = get_path("clock")
 VIEWS = get_path("views")
 PLUGINS = get_path('plugins')
 TOOLS = tools_path
+
+common_data:str = 'common'
+'''DATA中的数据通用存储'''

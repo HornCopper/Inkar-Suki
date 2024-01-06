@@ -15,11 +15,19 @@ dev_cmd_show_help = on_command(
 
 
 @dev_cmd_show_help.handle()
-async def dev_show_help(event: Event, args: list[Any] = Depends(Jx3Arg.arg_factory)):
+async def dev_show_help(event: GroupMessageEvent, args: list[Any] = Depends(Jx3Arg.arg_factory)):
     pageIndex, command = args
     data = DocumentGenerator.get_documents()
-    data['item_name'] = command
-    data['pageIndex'] = pageIndex
+
+    global_status = CommandRecord.get_db().value
+    group_status = CommandRecord.get_db(event.group_id).value
+    content = {
+        'item_name': command,
+        'pageIndex': pageIndex,
+        'global_status': global_status,
+        'group_status': group_status,
+    }
+    data.update(content)
 
     template = 'document-detail' if command else 'documents'
     img = await get_render_image(f"src/views/common/{template}.html", data, delay=200)
