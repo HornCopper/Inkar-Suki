@@ -4,12 +4,50 @@ import inspect
 import threading
 from sgtpyutils.logger import logger
 from sgtpyutils import extensions
+from sgtpyutils.database import filebase_database
+from sgtpyutils.extensions import clazz
 from sgtpyutils.functools import *
 import functools
 
 from ..DocumentCatalog import permission, BaseCatalog
 from .DocumentItem import DocumentItem
 from .converter import *
+import enum
+
+from src.tools.utils import *
+
+class CommandRecordStatus(enum.IntFlag):
+    normal = 1
+    disabled = 2
+
+
+class CommandRecord:
+    name: str = None  # 名称
+    favorite: int = 0  # 热度
+    enable: bool = True  # 是否启用
+
+    @staticmethod
+    def record(caller_name: str, group: str = None):
+        path = bot_path.DATA
+        suffix = 'common' if group is None else group
+        path = f'{path}/{suffix}/commands.json'
+
+        db: filebase_database.Database = filebase_database.Database(path)
+        '''统计功能使用'''
+        if not db.value.get(caller_name):
+            db.value[caller_name] = CommandRecord().to_dict()
+        sts: CommandRecord = clazz.dict2obj(CommandRecord(), db.value.get(caller_name))
+
+        sts.favorite += 10
+        if not sts.enable:
+            return CommandRecordStatus.disabled
+        return CommandRecordStatus.normal
+
+    def to_dict(self):
+        return {
+            'favorite': self.favorite,
+            'enable': self.enable,
+        }
 
 
 class DocumentGenerator:
@@ -52,34 +90,44 @@ class DocumentGenerator:
             args.set_args(0, raw_input)
 
             result = method(*args.args, **args.kwargs)
-            DocumentGenerator._record_log(args, result)
+            status: CommandRecordStatus = DocumentGenerator._record_log(args, result)
+            if status & status.disabled == status.disabled:
+                return None
             return result
         return wrapper
 
     @staticmethod
-    def _record_log(args: AssignableArg, result: list[any]):
+    def _record_log(args: AssignableArg, result: list[any]) -> CommandRecordStatus:
         method, _ = args.check_if_exist('method')
         raw_input, _ = args.check_if_exist('raw_input')
         event, _ = args.check_if_exist('event')
 
         if method:
-            if isinstance(method, str):
-                caller_name = method
-            else:
-                caller_name = method.__name__
+            caller_name = method if isinstance(method, str) else method.__name__
         else:
             method_names = [x[3] for x in inspect.stack()]
             caller_name_pos = extensions.find(enumerate(method_names), lambda x: x[1] == 'get_args')
             caller_name = method_names[caller_name_pos[0] + 1]
 
+        group = event and event.group_id
         log = {
             'name': caller_name,
             'args': result,
             'raw': raw_input,
-            'group': event and event.group_id,
+            'group': group,
             'user': event and event.user_id,
         }
-        logger.debug(f'func_called:{log}')
+
+        # 记录和检查
+        msg_status = ''
+        s_global = CommandRecord.record(caller_name)
+        s_group = CommandRecord.record(caller_name, group) if group else CommandRecordStatus.normal
+        if s_global & CommandRecordStatus.disabled == CommandRecordStatus.disabled:
+            msg_status = '-global-disabled'
+        elif s_group & CommandRecordStatus.disabled == CommandRecordStatus.disabled:
+            msg_status = '-group-disabled'
+        logger.debug(f'func_called{msg_status}:{log}')
+        return CommandRecordStatus.disabled if msg_status else CommandRecordStatus.normal # TODO 策略模式包装
 
     @staticmethod
     def get_regex(pattern: str):
