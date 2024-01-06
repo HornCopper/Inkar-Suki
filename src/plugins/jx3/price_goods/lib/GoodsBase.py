@@ -5,6 +5,7 @@ from src.views import *
 from src.tools.dep import *
 from enum import Enum
 
+
 @ext.use_retry(max_attempts=3)
 async def check_bind(id: str):
     data = await get_item_info_by_id(id)
@@ -115,7 +116,8 @@ class GoodsInfo(dict):
             'ui_id': self.ui_id,
             'name': self.name,
             'level': self.level,
-            
+            'price': self.price,
+            'current_price': self.current_price,
         }
 
 
