@@ -19,7 +19,7 @@ tyPath = on_command("typhoon_path", aliases={"台风路径"}, priority=5)
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     tyName = args.extract_plain_text()
     data = await get_typhoon_path(tyName)
-    if type(data) == type([]):
+    if isinstance(data, list):
         return await tyPath.finish(data[0])
     else:
         return await tyPath.finish(ms.image(data))

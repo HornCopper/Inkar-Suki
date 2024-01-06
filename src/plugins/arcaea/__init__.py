@@ -41,7 +41,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     info = ""
     if arg == "":
         info = getUserCode(event.group_id, event.user_id)  # 通过群聊获取用户绑定的UserCode
-        if info == False:
+        if info is False:
             return await arcaea_userinfo.finish("未绑定Arcaea账号且未给出任何信息，没办法找啦！")  # 若没绑定则告知
         msg = await getUserInfo(usercode=info)
         return await arcaea_userinfo.finish(msg)
@@ -61,7 +61,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     在用户所在群聊绑定群聊用户和`Arcaea`用户。
     '''
     arg = args.extract_plain_text()
-    if arg == False:
+    if arg is False:
         return await arcaea_binduser.finish("未给出任何信息，没办法绑定哦~")
     present_data = json.loads(read(bot_path.DATA + "/" + str(event.group_id) + "/arcaea.json"))
     if checknumber(arg):

@@ -165,7 +165,7 @@ class ServerStatusEvent(RecvEvent):
         time_now = datetime.now().strftime("%H:%M")
         if self.status:
             return {"type": "开服", "server": self.server, "msg": f"{time_now} {self.server} 开服 (/≧▽≦)/"}
-        elif self.status == False:
+        elif not self.status:
             return {"type": "开服", "server": self.server, "msg": f"{time_now} {self.server} 维护 ヘ(~ω~ヘ) "}
 
 
@@ -450,7 +450,7 @@ class XuanJingEvent(RecvEvent):
 
     @overrides(RecvEvent)
     def get_message(self) -> dict:
-        xuanjing_record_file = ASSETS + "/jx3/xuanjing.json"
+        xuanjing_record_file = f"{bot_path.ASSETS}/jx3/xuanjing.json"
         correct = json.loads(read(xuanjing_record_file))
         found = False
         for i in correct:
@@ -459,7 +459,7 @@ class XuanJingEvent(RecvEvent):
                 new = {"time": self.time, "map": self.map_name,
                        "role": self.role_name, "name": self.name}
                 i["records"].append(new)
-        if found == False:
+        if not found:
             return
         write(xuanjing_record_file, json.dumps(correct, ensure_ascii=False))
         return {"type": "玄晶", "server": f"{self.server}", "msg": f"{self.time}\n【{self.server}】恭喜侠士[{self.role_name}]在{self.map_name}获得稀有掉落[{self.name}]！"}

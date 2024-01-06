@@ -78,7 +78,7 @@ class wiki:
         api_link = api_links[0]
         try:
             await get_url(api_link)
-        except:
+        except Exception as _:
             api_link = "http:"+api_link
         if len(api_links) != 1:
             return {"status": 500}
@@ -91,32 +91,32 @@ class wiki:
         info = await get_url(final_link, headers=headers)
         try:
             page = json.loads(info)
-        except:
+        except Exception as _:
             return {"status": 502, "reason": "该百科的API阻止了我们的连接请求，请过一会儿再试哦~"}
 
         try:
             iw_flag = page["query"]["interwiki"]
             iw = iw_flag[0]["iw"]
             return await wiki.interwiki_search(api, iw, title[len(iw)+1:])
-        except:
+        except Exception as _:
             curid_dict = page["query"]["pages"]
         for i in curid_dict:
             try:
                 if page["query"]["pages"][i]["special"] == "":
                     special = True
-            except:
+            except Exception as _:
                 special = False
             try:
                 if page["query"]["pages"][i]["missing"] == "":
                     missing = True
-            except:
+            except Exception as _:
                 missing = False
 
             if missing and special:
                 return {"status": 404}
-            elif missing and special == False:
+            elif missing and special is False:
                 return await wiki.search(api, title)
-            elif missing == False and special:
+            elif missing is False and special:
                 actually_title = page["query"]["pages"][i]["title"]
                 link = api.replace("/api.php", "/index.php") + "?title=" + convert(actually_title)
                 desc = ""
@@ -130,7 +130,7 @@ class wiki:
                 try:
                     desc = page["query"]["pages"][i]["extract"].split("\n")
                     desc = "\n" + desc[0]
-                except:
+                except Exception as _:
                     desc = await wiki.get_wiki_content(api, actually_title)
                     if desc != "":
                         desc = "\n" + desc
@@ -140,7 +140,7 @@ class wiki:
                     return {"status": 200, "link": link, "desc": desc}
 
     async def interwiki_search(source_wiki: str, interwiki: str, title: str):
-        if await wiki.extension_checker(source_wiki, "Interwiki") == False:
+        if not await wiki.extension_checker(source_wiki, "Interwiki"):
             return {"status": 201, "link": source_wiki + interwiki + f":{title}"}
         iwdata = await wiki.get_iw_url(source_wiki, interwiki)
         iwlink = iwdata["data"]
@@ -181,5 +181,5 @@ class wiki:
                         fans = fans[:-1]
                     return fans
             return ""
-        except:
+        except Exception as _:
             return ""

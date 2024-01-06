@@ -26,7 +26,7 @@ async def jx3_recruit(bot: Bot, event: GroupMessageEvent, args: Message = Comman
         else:
             copy = arg[1]
         data = await api_recruit(server, copy)
-    if type(data) == type([]):
+    if isinstance(data, list):
         return await jx3_cmd_recruit.finish(data[0])
     return await jx3_cmd_recruit.finish(ms.image(data))
 
@@ -51,6 +51,6 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
         else:
             copy = arg[1]
         data = await recruit_v2(server, copy)
-    if type(data) == type([]):
+    if isinstance(data, list):
         return await recruitv2.finish(data[0])
     return await recruitv2.finish(ms.image(data))

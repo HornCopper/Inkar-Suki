@@ -20,7 +20,7 @@ async def jes(ip: str) -> str:
     try:
         final_link = f"http://motd.wd-api.com/v1/java?host={ip}&platform={port}"
         infomation = await get_api(final_link)
-    except:
+    except Exception as _:
         return "唔……获取信息失败：连接API超时。"
     try:
         error = infomation["message"]
@@ -28,7 +28,7 @@ async def jes(ip: str) -> str:
             return "唔……获取信息失败：DNS出错，域名尚未绑定该IP地址。"
         else:
             return "唔……获取信息失败：未知错误。"
-    except:
+    except Exception as _:
         desc = ""
         for i in infomation["description"]["extra"]:
             desc = desc + clean(i["text"])
@@ -50,7 +50,7 @@ async def bes(ip: str) -> str:
     try:
         final_link = f"http://motd.wd-api.com/v1/bedrock?host={ip}&platform={port}"
         infomation = await get_api(final_link)
-    except:
+    except Exception as _:
         return "唔……获取信息失败：连接API超时。"
     try:
         error = infomation["message"]
@@ -58,7 +58,7 @@ async def bes(ip: str) -> str:
             return "唔……域名解析失败。"
         else:
             return "唔……未知错误。"
-    except:
+    except Exception as _:
         unpack_data = infomation["data"].split(";")
         motd_1 = clean(unpack_data[1])
         motd_2 = clean(unpack_data[7])

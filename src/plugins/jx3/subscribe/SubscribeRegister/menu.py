@@ -49,7 +49,7 @@ class MenuCallback:
         def get_user_arg(v):
             return get_number(v.get("arg"))
         v = user_subs.get(sub.name)
-        if not v is None:
+        if v is not None:
             return get_user_arg(v)
         result = -1
         for s in user_subs:

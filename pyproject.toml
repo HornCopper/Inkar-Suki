@@ -24,3 +24,54 @@ build-backend = "poetry.core.masonry.api"
 max_line_length = 100
 ignore = []
 recursive = true
+
+[tool.ruff]
+line-length = 100
+
+# Enable Pyflakes `E` and `F` codes by default.
+# select = ["E", "F"]
+
+# Exclude a variety of commonly ignored directories.
+exclude = [
+    ".bzr",
+    ".direnv",
+    ".eggs",
+    ".git",
+    ".hg",
+    ".mypy_cache",
+    ".nox",
+    ".pants.d",
+    ".ruff_cache",
+    ".svn",
+    ".tox",
+    ".venv",
+    "__pypackages__",
+    "_build",
+    "buck-out",
+    "build",
+    "dist",
+    "node_modules",
+    "venv",
+]
+
+# Allow unused variables when underscore-prefixed.
+dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
+
+# Assume Python 3.10.
+target-version = "py310"
+
+
+
+# Never enforce `E501` (line length violations).
+# Never enforce `F401` (imported but not used).
+# Never enforce `F403` (star imported unable to detect undefined).
+# Never enforce `F405` (star imported make defined fuss).
+# Never enforce `F811` (redefinition of unused xxx).
+ignore = ["E501", "F401", "F403", "F405", "F811"]
+
+# Never try to fix
+unfixable = ["E501", "F401", "F403", "F405", "F811"]
+
+[tool.ruff.per-file-ignores]
+"__init__.py" = ["E402"]
+"path/to/file.py" = ["E402"]

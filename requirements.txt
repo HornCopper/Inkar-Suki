@@ -10,7 +10,7 @@ xpinyin
 numpy
 nonebot_plugin_apscheduler
 playwright
-sgtpyutils >= 1.19.0
+sgtpyutils >= 1.19.1
 pydantic
 pathlib2
 aiotieba
@@ -18,3 +18,4 @@ pillow
 cron-descriptor
 croniter
 pre-commit
+ruff

@@ -32,8 +32,8 @@ class CommandRecord:
     def get_db(group: str = None) -> filebase_database.Database:
         path = bot_path.DATA
         suffix = group or bot_path.common_data
-        path = f'{path}/{suffix}/commands.json'
-
+        path = f'{path}/{suffix}/commands'
+        
         db: filebase_database.Database = filebase_database.Database(path)
         return db
 
@@ -61,6 +61,7 @@ class CommandRecord:
         }
 
 
+
 class DocumentGenerator:
     commands: dict[str, DocumentItem] = {}
     _document: dict = None
@@ -83,7 +84,7 @@ class DocumentGenerator:
             if 'regex' in method.__name__:  # 重写正则
                 x = DocumentGenerator.get_regex(args[0])
                 arg.set_args(0, x)
-            docs = DocumentGenerator.register_single(arg)
+            _ = DocumentGenerator.register_single(arg)
             result = method(*arg.args, **arg.kwargs)
             # logger.debug(f'docs:{docs}') # 显示很慢
             return result

@@ -2,7 +2,7 @@ from nonebot import get_driver
 
 try:
     from .special_application import *  # 公共实例独有功能，闭源
-except:
+except Exception as _:
     pass
 from .jx3 import *
 
@@ -54,5 +54,5 @@ async def _(bot: Bot, event: RecvEvent):
                     continue
             try:
                 await bot.call_api("send_group_msg", group_id=group, message=message["msg"])
-            except:
+            except Exception as _:
                 logger.info(f"向群({i})推送失败，可能是因为风控、禁言或者未加入该群。")

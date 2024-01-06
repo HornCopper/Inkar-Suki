@@ -47,7 +47,7 @@ async def check_sign(personid, special_string: str = "", location: bool = False)
     return False
 
 def init_folder():
-    if os.path.exists(bot_path.TOOLS + "/bindrole.json") == False:
+    if os.path.exists(bot_path.TOOLS + "/bindrole.json") is False:
         write(bot_path.TOOLS + "/bindrole.json", "[]")
 
 def readData():
@@ -67,7 +67,7 @@ async def addRole(server: str = "", name: str = "", user: str = "", string: str 
     if checkWtrIn(server, name, user):
         return 2 #已绑定
     role_data = await getPersonInfo(server, name, string)
-    if role_data == False:
+    if role_data is False:
         return 0 #未找到角色
     data = readData()
     for i in data:
@@ -77,7 +77,7 @@ async def addRole(server: str = "", name: str = "", user: str = "", string: str 
             return 1 #成功
 
 def delRole(server: str, name: str, user: str):
-    if checkWtrIn(server, name, user) == False:
+    if checkWtrIn(server, name, user) is False:
         return 0 #未绑定
     data = readData()
     for i in data:
@@ -89,7 +89,7 @@ def delRole(server: str, name: str, user: str):
                     return 1 #成功
 
 def passVerify(server: str, name: str, user: str):
-    if checkWtrIn(server, name, user) == False:
+    if checkWtrIn(server, name, user) is False:
         return 0 #未绑定
     data = readData()
     for i in data:
@@ -101,7 +101,7 @@ def passVerify(server: str, name: str, user: str):
                     return 1 #成功
                 
 def checkVerify(server: str, name: str, user: str):
-    if checkWtrIn(server, name, user) == False:
+    if checkWtrIn(server, name, user) is False:
         return 0 #未绑定
     data = readData()
     for i in data:
@@ -112,7 +112,7 @@ def checkVerify(server: str, name: str, user: str):
     return False
 
 def getData(server: str, name: str, user: str):
-    if checkWtrIn(server, name, user) == False:
+    if checkWtrIn(server, name, user) is False:
         return 0 #未绑定
     data = readData()
     for i in data:

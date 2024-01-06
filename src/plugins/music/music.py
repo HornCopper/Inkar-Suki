@@ -62,7 +62,7 @@ async def get(platform_: str, song: str, singer: str = None):
         data = await get_api(url=api)
         if len(data["data"]["song"]) == 0:
             return "404"
-        if singer == None:
+        if singer is None:
             song_name = data["data"]["song"]["itemlist"][0]["name"] + \
                 " - " + data["data"]["song"]["itemlist"][0]["singer"]
             id = data["data"]["song"]["itemlist"][0]["id"]
@@ -79,7 +79,7 @@ async def get(platform_: str, song: str, singer: str = None):
         data = await get_api(url=api)
         if len(data["result"]["songs"]) == 0:
             return "404"
-        if singer == None:
+        if singer is None:
             song_name = data["result"]["songs"][0]["name"] + \
                 " - " + data["result"]["songs"][0]["ar"][0]["name"]
             id = data["result"]["songs"][0]["id"]

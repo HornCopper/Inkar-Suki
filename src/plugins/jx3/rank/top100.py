@@ -39,7 +39,7 @@ def boss_mapping(boss: str):
 async def get_top100(server: str, boss: str, team: str = None):  # 数据来源@JX3BOX
     server = server_mapping(server)
     boss_id = boss_mapping(boss)
-    if boss_id == False:
+    if boss_id is False:
         return "唔……没有找到该boss哦~"
     if not server:
         return PROMPT_ServerNotExist
@@ -47,7 +47,7 @@ async def get_top100(server: str, boss: str, team: str = None):  # 数据来源@
     data = await get_api(final_url)
     people = []
     found = False
-    if team != None:
+    if team is not None:
         for i in data["data"]:
             if i["team_name"] == team:
                 found = True
@@ -69,12 +69,12 @@ async def get_top100(server: str, boss: str, team: str = None):  # 数据来源@
         msg = ""
         num = 1
         for i in data["data"]:
-            t = i["team_name"]
-            l = i["leader"]
-            msg = msg + f"{num}. 【{t}】{l}\n"
+            d_team_name = i["team_name"]
+            d_leader = i["leader"]
+            msg = msg + f"{num}. 【{d_team_name}】{d_leader}\n"
             num = num + 1
         return msg + "小提示：团牌后方为团长的ID哦~\n使用“+百强 <服务器> <BOSS名称> <团牌>”可以获得更详细的信息。"
-    if found == False:
+    if found is False:
         return "唔……未找到该团，您可以点击下方链接查看该团是否上榜。\nhttps://www.jx3box.com/rank/race/#/"
     people = "、".join(people).replace("\n、", "\n")
     msg = ms.image(team_logo) + f"\n团长：{leader}\n队员：" + \

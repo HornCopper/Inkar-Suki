@@ -84,7 +84,7 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
         id = achievement[1]
         achi = achievement[2]
     data = await achievements_(server, id, achi, event.group_id)
-    if type(data) == type([]):
+    if isinstance(data, list):
         return await achievements.finish(data[0])
     else:
         return await achievements.finish(ms.image(data))
@@ -106,7 +106,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
         id = achievement[1]
         achi = achievement[2]
     data = await achi_v2(server, id, achi, str(event.group_id))
-    if type(data) == type([]):
+    if isinstance(data, list):
         return await achievement_v2.finish(data[0])
     else:
         return await achievement_v2.finish(ms.image(data))
@@ -122,16 +122,16 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     group = str(event.group_id)
     if len(arg) == 2:
         server = getGroupServer(group)
-        if server == None:
+        if server is None:
             return await zone_achievement.finish("唔……尚未绑定任何服务器，请携带服务器参数或先联系管理员绑定群聊服务器！")
         id = arg[0]
         zone = zone_mapping(arg[1])
         mode = "10人普通"
     elif len(arg) == 3:
-        server = arg[0] if server_mapping(arg[0]) != None else ""
+        server = arg[0] if server_mapping(arg[0]) is not None else ""
         if server == "":
             server = getGroupServer(group)
-            if server == None:
+            if server is None:
                 return await zone_achievement.finish("唔……尚未绑定任何服务器，请携带服务器参数或先联系管理员绑定群聊服务器！")
             id = arg[0]
             zone = zone_mapping(arg[1])
@@ -146,7 +146,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
         zone = zone_mapping(arg[2])
         mode = mode_mapping(arg[3])
     data = await zone_achi(server, id, zone, mode)
-    if type(data) == type([]):
+    if isinstance(data, list):
         return await zone_achievement.finish(data[0])
     else:
         return await zone_achievement.finish(ms.image(data))

@@ -18,7 +18,7 @@ async def CallbackDaily(bot: Bot, group_id: str, sub: SubscribeSubject, cron: Su
             for x in CACHE_Daily:
                 try:
                     os.remove(CACHE_Daily.get(x))
-                except:
+                except Exception as _:
                     pass
             CACHE_Daily = {}
             url = await daily_("唯满侠", group_id, 1)  # 向后预测1天的

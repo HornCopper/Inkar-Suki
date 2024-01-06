@@ -15,7 +15,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     if len(arg) not in [1, 2]:
         return await zone_detail.finish("唔……参数不正确哦，请检查后重试~")
     if len(arg) == 1:
-        if group_server == False:
+        if group_server is False:
             return await zone_detail.finish("没有绑定服务器，请携带服务器参数使用！")
         server = group_server
         id = arg[0]
@@ -23,7 +23,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
         server = arg[0]
         id = arg[1]
     data = await generate_zd_image(server, id)
-    if type(data) == type([]):
+    if isinstance(data, list):
         return await zone_detail.finish(data[0])
     else:
         return await zone_detail.finish(ms.image(data))

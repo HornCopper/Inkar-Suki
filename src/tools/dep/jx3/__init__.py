@@ -1,7 +1,7 @@
 from sgtpyutils.logger import logger
 try:
     logger.debug(f'load dependence:{__name__}')
-except:
+except Exception as _:
     pass
 from src.tools.generate import *
 from src.constant.jx3 import *

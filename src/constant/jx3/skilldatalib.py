@@ -58,7 +58,7 @@ async def getTalents():
             info = await get_url(url=f"https://data.jx3box.com/bps/std/{i}/talent.json")
             data = json.loads(info)
             for a in data:
-                write(ASSETS + "/jx3/talents/" +
+                write(bot_path.ASSETS + "/jx3/talents/" +
                       a["kungfu"] + ".json", json.dumps(a, ensure_ascii=False))
 
 
@@ -77,14 +77,14 @@ async def getSkills():
             info = await get_url(url=f"https://data.jx3box.com/bps/std/{i}/skill.json")
             data = json.loads(info)
             for a in data:
-                write(ASSETS + "/jx3/skills/" +
+                write(bot_path.ASSETS + "/jx3/skills/" +
                       a["kungfuName"] + ".json", json.dumps(a, ensure_ascii=False))
 
 
 async def get_icon(skillName: str, type_: str, api_icon: str = None, kungfu: str = None) -> str:
-    if kungfu == None:
+    if kungfu is None:
         raise ValueError("Key value `kungfu` was not found.")
-    final_path = ASSETS + "/jx3/icons/" + kungfu + "_" + skillName + ".png"
+    final_path = bot_path.ASSETS + "/jx3/icons/" + kungfu + "_" + skillName + ".png"
     if os.path.exists(final_path):
         if type_ == "cq":
             return "[CQ:image,file=" + Path(final_path).as_uri() + "]"
@@ -94,9 +94,9 @@ async def get_icon(skillName: str, type_: str, api_icon: str = None, kungfu: str
         api_icon_url = api_icon
         try:
             icon = await get_content(api_icon_url)
-        except:
+        except Exception as _:
             raise HTTPError(msg="Can't connect to " + api_icon_url + ".")
-        cache = open(ASSETS + "/jx3/icons/" + kungfu +
+        cache = open(bot_path.ASSETS + "/jx3/icons/" + kungfu +
                      "_" + skillName + ".png", mode="wb")
         cache.write(icon)
         cache.close()
@@ -113,11 +113,11 @@ async def getAllSkillsInfo(Kungfu: str) -> str:
     Kungfu = aliases(Kungfu)
     if Kungfu == "隐龙诀":
         Kungfu == "隐龙决"  # 由于`JX3Box`的`API`的数据错误问题，目前只能这样适配，等到数据纠正后删除这块代码。
-    skill = read(ASSETS + "/jx3/skills/" + Kungfu + ".json")
-    if skill == False:
+    skill = read(bot_path.ASSETS + "/jx3/skills/" + Kungfu + ".json")
+    if skill is False:
         await getSkills()
         await getAllSkillsInfo(Kungfu)
-    if Kungfu == False:
+    if Kungfu is False:
         return False
     skills = json.loads(skill)
     node = []
@@ -157,11 +157,11 @@ async def getSingleSkill(kungfu: str, skillName: str):
     kungfu = aliases(kungfu)
     if kungfu == "隐龙诀":
         kungfu == "隐龙决"  # 由于`JX3Box`的`API`的数据错误问题，目前只能这样适配，等到数据纠正后删除这块代码。其实是推栏的代码错了笑死。
-    if kungfu == False:
+    if kungfu is False:
         return False
     try:
-        data = json.loads(read(ASSETS + "/jx3/skills/" + kungfu + ".json"))
-    except:
+        data = json.loads(read(bot_path.ASSETS + "/jx3/skills/" + kungfu + ".json"))
+    except Exception as _:
         await getSkills()
         await getSingleSkill(kungfu, skillName)
     moreInfo = data["remarks"]
@@ -201,12 +201,12 @@ async def getSingleSkill(kungfu: str, skillName: str):
 
 async def getSingleTalent(Kungfu: str, TalentName: str):
     kungfuname = aliases(Kungfu)
-    if kungfuname == False:
+    if kungfuname is False:
         return "此心法不存在哦，请检查后重试~"
     try:
         data = json.loads(
-            read(ASSETS + "/jx3/talents/" + kungfuname + ".json"))
-    except:
+            read(bot_path.ASSETS + "/jx3/talents/" + kungfuname + ".json"))
+    except Exception as _:
         await getTalents()
         await getSingleTalent(kungfuname, TalentName)
     correct = {}

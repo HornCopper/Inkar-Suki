@@ -55,7 +55,7 @@ async def on_new_group_enter(bot: Bot, event: NoticeEvent):
     obj = event.user_id
     group = event.group_id
     bots = Config.bot
-    if not str(obj) in bots:
+    if str(obj) not in bots:
         msg = ms.at(obj) + read(bot_path.DATA + "/" + str(group) + "/welcome.txt")
         return await bot.call_api("send_group_msg", group_id=group, message=msg)
 
@@ -71,7 +71,7 @@ async def on_group_ban(bot: Bot, event: NoticeEvent):
     '''被禁言了'''
     if event.notice_type != "group_ban":
         return
-    if not str(event.user_id) in Config.bot:
+    if str(event.user_id) not in Config.bot:
         return
 
     await bot.call_api("set_group_leave", group_id=event.group_id)
