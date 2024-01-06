@@ -88,7 +88,7 @@ class DocumentGenerator:
         此处注册的名字为命令名称，需要保证名称与函数名一致'''
         @functools.wraps(method)
         def wrapper(*args, **kwargs):
-            arg = AssignableArg(args, kwargs, method)
+            arg = AssignableArg(args=args, kwargs=kwargs, method=method)
             if 'regex' in method.__name__:  # 重写正则
                 x = DocumentGenerator.get_regex(args[0])
                 arg.set_args(0, x)
