@@ -60,17 +60,17 @@ class PlaywrightRunner(threading.Thread):
         url, locate, first, delay, future = task
         logger.info(f"rendering start new task:[{url}]")
         player = self._player
+        loc = player
         try:
             await player.goto(url)
             if delay > 0:
                 await asyncio.sleep(delay / 1000)
             uuid_ = get_uuid()
             img = f"{CACHE}/{uuid_}.png"
-            loc = player
-            if locate != None:
-                loc = loc.locator(locate)
-                if first:
-                    loc = loc.first
+            loc = loc.locator(locate)
+            if first:
+                loc = loc.first
+
             await loc.screenshot(path=img)
 
             def callback(img: str):
@@ -86,6 +86,8 @@ class PlaywrightRunner(threading.Thread):
         t.start()
         future = asyncio.Future()
         self.locker.acquire()
+        if not locate:
+            locate = 'div'
         self.tasks.append([url, locate, first, delay, future])
         self.locker.release()
         result = await future
