@@ -139,10 +139,10 @@ class Jx3Arg(Jx3ArgCallback, Jx3ArgExt):
         获取当前参数的值，获取失败则返回None
         @return 返回值,是否是默认值
         '''
-        callback = self.callback[self.arg_type]
+        callback = self.callback.get(self.arg_type)
         if not callback:
             callback = Jx3ArgCallback._convert_string
-            
+
         result = callback(self, arg_value, event=event)
         if result is None and self.default != Ellipsis:
             return [self.default, True]  # 没有得到有效值，但设置了默认值
