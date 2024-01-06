@@ -60,10 +60,10 @@ def flush_CACHE_Goods_Common(cache_file: str, target_dict: dict, ignore_cache_in
     
     result = {}
     for key in target_dict:
-        if isinstance(target_dict[key], dict):
+        if target_dict[key].__class__ == dict:
             result[key] = target_dict[key]
             continue
-        result[key] = target_dict[key].__dict__
+        result[key] = target_dict[key].to_dict()
 
     d = dict()
     data = json.dumps(d, cls=GoodsSerializerEncoder)
