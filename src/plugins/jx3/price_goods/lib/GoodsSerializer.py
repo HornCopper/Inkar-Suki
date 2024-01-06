@@ -57,7 +57,14 @@ def flush_CACHE_Goods_Common(cache_file: str, target_dict: dict, ignore_cache_in
         if(not __check_last_update(cache_file, n)):
             return
     __update_last_update(cache_file, n)
-    d = dict([key, target_dict[key].__dict__ if not type(target_dict[key])
-             == dict else target_dict[key]] for key in target_dict)
+    
+    result = {}
+    for key in target_dict:
+        if isinstance(target_dict[key], dict):
+            result[key] = target_dict[key]
+            continue
+        result[key] = target_dict[key].__dict__
+
+    d = dict()
     data = json.dumps(d, cls=GoodsSerializerEncoder)
     write(cache_file, data)

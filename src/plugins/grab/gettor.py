@@ -46,6 +46,9 @@ async def what2eat():
     if flag == 0:
         num = randint(0, 59)
         return breakfast[num]
-    else:
+    elif flag == 1:
         num = randint(0, 46)
         return lunch[num]
+    else:
+        num = randint(0, len(supper)-1)
+        return supper[num]

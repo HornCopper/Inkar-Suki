@@ -54,5 +54,5 @@ async def jx3_server_bind(bot: Bot, event: GroupMessageEvent, args: Message = Co
         if not x.success:
             return await jx3_cmd_server_unbind.finish("唔……只有群主或管理员才可以修改哦！")
 
-    server = server_bind(group_id=event.group_id, server=None)
+    server_bind(group_id=event.group_id, server=None)
     return await jx3_cmd_server_unbind.finish("已解绑")

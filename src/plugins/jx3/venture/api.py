@@ -7,7 +7,7 @@ from bs4 import BeautifulSoup
 
 
 async def serendipity_(server: str = None, name: str = None, group_id: str = None):  # 奇遇 <服务器> <ID>
-    if token == None:
+    if token is None:
         return [PROMPT_NoToken]
     server = server_mapping(server, group_id)
     if not server:
@@ -19,12 +19,12 @@ async def serendipity_(server: str = None, name: str = None, group_id: str = Non
 
 # 近期奇遇 <服务器> [奇遇]
 async def statistical_(server: str = None, serendipity: str = None, group_id: str = None):
-    if token == None:
+    if token is None:
         return [PROMPT_NoToken]
     server = server_mapping(server, group_id)
     if not server:
         return [PROMPT_ServerNotExist]
-    if serendipity == None:
+    if serendipity is None:
         final_url = f"{Config.jx3api_link}/view/luck/collect?token={token}&robot={bot}&server={server}&scale=1"
     else:
         final_url = f"{Config.jx3api_link}/view/luck/statistical?token={token}&robot={bot}&ticket={ticket}&server={server}&name={serendipity}&scale=1"
@@ -33,18 +33,18 @@ async def statistical_(server: str = None, serendipity: str = None, group_id: st
 
 
 async def global_serendipity(name: str = None):  # 全服奇遇 [奇遇]
-    if token == None:
+    if token is None:
         return [PROMPT_NoToken]
-    if name != None:
+    if name is not None:
         final_url = f"{Config.jx3api_link}/view/luck/server/adventure?name={name}&token={token}&robot={bot}&scale=1"
     data = await get_api(final_url)
     return data["data"]["url"]
 
 
 async def global_statistical(name: str = None):  # 全服统计 [奇遇]
-    if token == None:
+    if token is None:
         return [PROMPT_NoToken]
-    if name != None:
+    if name is not None:
         final_url = f"{Config.jx3api_link}/view/luck/server/statistical?name={name}&token={token}&robot={bot}"
     data = await get_api(final_url)
     return data["data"]["url"]
@@ -65,21 +65,21 @@ async def get_preposition_page_url(name: str = None):
 
 async def get_preposition(name: str = None):
     url = await get_preposition_page_url(name)
-    if url == False:
+    if url is False:
         return False
     data = await get_url(url)
     bs = BeautifulSoup(data, "html.parser")
     table = bs.find(class_="et_vars bd_tb")
     table = css + str(table).replace("<caption class=\"blind\">Extra Form</caption>", "")
     path = bot_path.CACHE + "/" + get_uuid() + ".html"
-    html = write(path, table)
+    write(path, table)
     img = await generate(path, False, "table", False)
     return Path(img).as_uri()
 
 
 async def get_image(name: str = None):
     url = await get_preposition_page_url(name)
-    if url == False:
+    if url is False:
         return False
     data = await get_url(url)
     bs = BeautifulSoup(data, "html.parser")

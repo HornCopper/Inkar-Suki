@@ -8,7 +8,7 @@ from sgtpyutils.encode.basexx import base64_decode
 def get_from_encoded(raw: str) -> str:
     try:
         return base64_decode(raw).decode('utf-8')
-    except:
+    except Exception as _:
         return None
 
 

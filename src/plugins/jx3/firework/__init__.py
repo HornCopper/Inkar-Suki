@@ -15,7 +15,6 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
         server = arg[0]
         id = arg[1]
     data = await get_firework_image(server, id, group=event.group_id)
-    if type(data) == type([]):
+    if isinstance(data, list):
         return await firework.finish(data[0])
-    else:
-        return await firework.finish(ms.image(data))
+    return await firework.finish(ms.image(data))

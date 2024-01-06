@@ -28,7 +28,7 @@ class Jx3ArgCallback:
         return std_kunfu(arg_value)
 
     def _convert_pvp_mode(self, arg_value: str, **kwargs) -> tuple[str, bool]:
-        if not arg_value in ['22', '33', '55']:
+        if arg_value not in ['22', '33', '55']:
             return '22', True
         return arg_value
 
@@ -138,7 +138,7 @@ class Jx3Arg(Jx3ArgCallback, Jx3ArgExt):
     def arg_factory(matcher: Matcher, event: GroupMessageEvent) -> list[Any]:
         docs = get_cmd_docs(matcher)
         templates = get_args(docs.example, event, method=docs.name)
-        if templates is None: # 不再继续处理
+        if templates is None:  # 不再继续处理
             matcher.stop_propagation()
         return templates
 

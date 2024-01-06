@@ -17,7 +17,7 @@ async def _(args: Message = CommandArg()):
         kungfu = info[0]
         skill_ = info[1]
     msg = await getSingleSkill(kungfu, skill_)
-    if msg == False:
+    if msg is False:
         return await skill.finish("此心法不存在哦，请检查后重试~")
     return await skill.finish(msg)
 
@@ -47,23 +47,23 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
             if ver == i["name"]:
                 ver = i["version"]
     name = aliases(kf)
-    if name == False:
+    if name is False:
         return await _talent.finish("未找到该心法，请检查后重试~")
-    if os.path.exists(ASSETS + "/jx3/" + f"{ver}.json") == False:
+    if os.path.exists(bot_path.ASSETS + "/jx3/" + f"{ver}.json") is False:
         final_url = f"https://data.jx3box.com/talent/{ver}.json"
         data = await get_api(final_url)
-        write(ASSETS + "/jx3/" + f"v{ver}.json", json.dumps(data, ensure_ascii=False))
+        write(bot_path.ASSETS + "/jx3/" + f"v{ver}.json", json.dumps(data, ensure_ascii=False))
     else:
-        data = json.loads(read(ASSETS + "/jx3/" + f"{ver}.json"))
+        data = json.loads(read(bot_path.ASSETS + "/jx3/" + f"{ver}.json"))
     try:
         real_data = data[name]
-    except:
+    except Exception as _:
         return await _talent.finish("唔……该赛季没有此心法~")
     for i in range(1, 13):
         for x in range(1, 6):
             try:
                 each = real_data[str(i)][str(x)]
-            except:
+            except Exception as _:
                 continue
             if each["name"] == tl:
                 if each["is_skill"] == 1:
@@ -87,7 +87,7 @@ macro_ = on_command("jx3_macro_v2", aliases={"宏v2"}, priority=5)
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     xf = args.extract_plain_text()
     xf = aliases(xf)
-    if xf == False:
+    if xf is False:
         return await macro_.finish("唔……心法输入有误，请检查后重试~")
     data = await get_macro(xf)
     return await macro_.finish(data)
@@ -98,7 +98,7 @@ macro_v1 = on_command("jx3_macro", aliases={"宏"}, priority=5)
 @macro_v1.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     xf = aliases(args.extract_plain_text())
-    if xf == False:
+    if xf is False:
         return await macro_v1.finish("唔……心法输入有误，请检查后重试~")
     data = await get_api(f"https://www.jx3api.com/data/school/macro?name={xf}&token={token}")
     data = data["data"]["context"]

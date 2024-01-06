@@ -43,7 +43,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
         return await verify.finish(error_argument_count)
     srv = arg[0]
     id = arg[1]
-    if checkWtrIn(srv, id, str(event.user_id)) == False:
+    if checkWtrIn(srv, id, str(event.user_id)) is False:
         return await verify.finish(error_not_binded)
     if checkVerify(srv, id, str(event.user_id)):
         return await verify.finish(error_already_verified)
@@ -51,7 +51,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     pid = data["personId"]
     uuid = data["verify"]
     sts = await check_sign(pid, uuid, False)
-    if sts == False:
+    if sts is False:
         return await verify.finish("验证失败！该角色的签名与预留的字符串不符合！")
     else:
         passVerify(srv, id, str(event.user_id))
@@ -66,7 +66,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
         return await delete.finish(error_argument_count)
     srv = arg[0]
     id = arg[1]
-    if checkWtrIn(srv, id, str(event.user_id)) == False:
+    if checkWtrIn(srv, id, str(event.user_id)) is False:
         return await delete.finish(error_delete_but_not_binded)
     else:
         delRole(srv, id, str(event.user_id))
@@ -116,7 +116,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     srv = arg[0]
     id = arg[1]
     pd = await getPersonInfo(srv, id)
-    if pd == False:
+    if pd is False:
         return await location.finish("没有找到玩家信息！")
     pid = pd["personId"]
     data = await check_sign(pid, "", location = True)

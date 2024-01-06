@@ -104,7 +104,7 @@ def getUserCode(groupid: int, user: int):
     '''
     userid = str(user)
     group = str(groupid)
-    data = json.loads(read(DATA + "/" + group + "/arcaea.json"))
+    data = json.loads(read(bot_path.DATA + "/" + group + "/arcaea.json"))
     try:
         usercode = data[userid]
         return usercode
@@ -118,17 +118,17 @@ async def get_char(char: int):
 
     具体实现可参考`get_song`的代码。
     '''
-    if os.path.exists(ASSETS + f"/arcaea/char/{char}.png"):
-        return Path(ASSETS + f"/arcaea/char/{char}.png").as_uri()
+    if os.path.exists(bot_path.ASSETS + f"/arcaea/char/{char}.png"):
+        return Path(bot_path.ASSETS + f"/arcaea/char/{char}.png").as_uri()
     else:
         url = f"{api}assets/char?partner={char}"
-        cache = open(ASSETS + f"/arcaea/char/{char}.png", mode="wb")
+        cache = open(bot_path.ASSETS + f"/arcaea/char/{char}.png", mode="wb")
         try:
             cache.write(await get_content(url, headers=headers))
-        except:
+        except Exception as _:
             raise HTTPError(f"Can't connect to {url}.")
         cache.close()
-        return Path(ASSETS + f"/arcaea/char/{char}.png").as_uri()
+        return Path(bot_path.ASSETS + f"/arcaea/char/{char}.png").as_uri()
 
 
 async def get_song(song: str):
@@ -137,17 +137,17 @@ async def get_song(song: str):
 
     若本地有缓存，则优先使用本地的内容。
     '''
-    if os.path.exists(ASSETS + f"/arcaea/song/{song}.png"):  # 判断是否存在本地文件
-        return Path(ASSETS + f"/arcaea/song/{song}.png").as_uri()  # 如果有，直接返回url。
+    if os.path.exists(bot_path.ASSETS + f"/arcaea/song/{song}.png"):  # 判断是否存在本地文件
+        return Path(bot_path.ASSETS + f"/arcaea/song/{song}.png").as_uri()  # 如果有，直接返回url。
     else:
         url = f"{api}assets/arcaea/song?file={song}"  # 如果没有，开始从API下载。
-        cache = open(ASSETS + f"/arcaea/song/{song}.png", mode="wb")  # 以二进制形式开始写入
+        cache = open(bot_path.ASSETS + f"/arcaea/song/{song}.png", mode="wb")  # 以二进制形式开始写入
         try:
             cache.write(await get_content(url, headers=headers))  # 写入
-        except:
+        except Exception as _:
             raise HTTPError(f"Can't connect to {url}.")  # 如果请求失败，则报错。
         cache.close()  # 关闭文件对象
-        return Path(ASSETS + f"/arcaea/song/{song}.png").as_uri()  # 最后返回本地的路径，在assets/arcaea/song中。
+        return Path(bot_path.ASSETS + f"/arcaea/song/{song}.png").as_uri()  # 最后返回本地的路径，在assets/arcaea/song中。
 
 
 async def getUserBestBySongName(usercode: int, songname: str, difficulty: str) -> str:
@@ -163,7 +163,7 @@ async def getUserBestBySongName(usercode: int, songname: str, difficulty: str) -
     elif difficulty in ["byd", "byn", "beyond", "bey", "3", "Beyond", "BEYOND", "Byn", "Byd"]:
         difficulty = "byn"
     else:
-        return f"未找到您要的难度，可以使用0/1/2/3分别代替Past、Present、Future、Beyond哦~"  # 实在离谱的话，来pr吧。
+        return "未找到您要的难度，可以使用0/1/2/3分别代替Past、Present、Future、Beyond哦~"  # 实在离谱的话，来pr吧。
     url = api + \
         f"user/best?usercode={usercode}&songname={songname}&difficulty={difficulty}&withrecent=true&withsonginfo=true"
     info = await get_api(url, headers=headers)
@@ -188,6 +188,6 @@ async def getUserBestBySongName(usercode: int, songname: str, difficulty: str) -
         far = record["near_count"]  # FAR
         lost = record["miss_count"]  # LOST
         pure = record["perfect_count"]  # PURE
-        return f"{player}/{code}：{song_name}（{difficulty}）\n" + song + f"\n" + char + f"分数：{score} {level}\n{clear_status} {memory}（最佳：{best_clear}）\n单曲PTT：{ptt}\nPURE {pure} FAR {far} LOST {lost}\n游玩时间：{time_played}"
+        return f"{player}/{code}：{song_name}（{difficulty}）\n" + song + "\n" + char + f"分数：{score} {level}\n{clear_status} {memory}（最佳：{best_clear}）\n单曲PTT：{ptt}\nPURE {pure} FAR {far} LOST {lost}\n游玩时间：{time_played}"
     else:
         return "歌曲名不对哦，请检查后重试~"

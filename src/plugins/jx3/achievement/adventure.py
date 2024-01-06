@@ -22,7 +22,7 @@ async def getAdventure(adventure: str):
         simpleDesc.append(i["ShortDesc"])
         fullDesc.append(i["Desc"])
         point.append(i["Point"])
-        if i["SubAchievementList"] != None:
+        if i["SubAchievementList"] is not None:
             SubAchievements = []
             for x in i["SubAchievementList"]:
                 SubAchievements.append(x["Name"])
@@ -30,7 +30,7 @@ async def getAdventure(adventure: str):
             subAchievements.append(subAchievementsMsg)
         else:
             subAchievements.append("无")
-        if i["LayerName"] == None or i["SceneName"] == None:
+        if i["LayerName"] is None or i["SceneName"] is None:
             map.append("未知")
         else:
             map.append(i["LayerName"] + i["SceneName"])
@@ -43,7 +43,7 @@ async def getAchievementsIcon(IconID: str):
         return ms.image(Path(final_path).as_uri())
     else:
         image_url = f"https://icon.jx3box.com/icon/{IconID}.png"
-        cache = open(ASSETS + "/jx3/adventure/" + IconID + ".png", mode="wb")
+        cache = open(bot_path.ASSETS + "/jx3/adventure/" + IconID + ".png", mode="wb")
         cache.write(await get_content(image_url))
         cache.close()
         return ms.image(Path(final_path).as_uri())

@@ -28,7 +28,7 @@ async def search_item_info(item_name: str, pageIndex: int = 0, pageSize: int = 2
     new_goods = False
     for item in items:
         id = item["id"]
-        if not id in CACHE_Goods:
+        if id not in CACHE_Goods:
             item["bind_type"], item["Level"] = await check_bind(id)
             CACHE_Goods[id] = GoodsInfo(item)
             new_goods = True
@@ -65,7 +65,7 @@ async def getItemPriceById(id: str, server: str):
 
 async def getItem(id: str):
     boxdata = await get_api(f"https://helper.jx3box.com/api/wiki/post?type=item&source_id={id}")
-    if boxdata["data"]["source"] == None:
+    if boxdata["data"]["source"] is None:
         return ["唔……该物品不存在哦~"]
     return id
 
@@ -75,7 +75,7 @@ async def update_goods_popularity(target_id: str, all_ids: list):
     更新物品人气，注意物品需要先入库，否则缓存中不存在
     @param all_ids:本次选中的所有id。出现过的id应将其人气降1，以更好排序
     """
-    if not CACHE_Goods.get(target_id) is None:
+    if CACHE_Goods.get(target_id) is not None:
         CACHE_Goods[target_id].u_popularity += 10  # 被选中则增加其曝光概率
     # 本轮已曝光物品，日后曝光率应下调
     for id in all_ids:

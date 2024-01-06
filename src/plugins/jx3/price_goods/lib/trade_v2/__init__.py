@@ -33,7 +33,7 @@ async def get_prices_by_items(data: list, server: str, pageIndex: int = 0, pageS
     current_prices_dict = dict([[v[0], v[1]] for v in current_prices])
     result = []
     for x in data:
-        if not x.id in prices:
+        if x.id not in prices:
             continue
         x.price = prices[x.id]
         x.current_price = current_prices_dict.get(x.id)
@@ -50,7 +50,7 @@ async def get_goods_current_detail_price(id: str, server: str, only_cache: bool 
     """
     key = f"{server}:{id}"
     price_detail: GoodsPriceDetail = CACHE_Goods_PriceDetail.get(key)
-    if (not price_detail is None) and (time.time() - price_detail.updated < 600):
+    if (price_detail is not None) and (time.time() - price_detail.updated < 600):
         return price_detail
     if only_cache:
         return price_detail

@@ -18,3 +18,4 @@ pillow
 cron-descriptor
 croniter
 pre-commit
+ruff

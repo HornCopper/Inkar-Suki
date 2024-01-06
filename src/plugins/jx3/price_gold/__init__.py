@@ -12,7 +12,6 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     """
     server = args.extract_plain_text()
     data = await demon_(server, group_id=event.group_id)
-    if type(data) == type([]):
+    if isinstance(data, list):
         return await demon.finish(data[0])
-    else:
-        return await demon.finish(ms.image(data))
+    return await demon.finish(ms.image(data))

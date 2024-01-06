@@ -15,7 +15,7 @@ async def get_flower_by_jx3api(server: str, map: str = None, species: str = None
 
 
 async def get_flower_by_tuilan(server: str, map: str = None, species: str = None):
-    url = f"https://w.pvp.xoyo.com:31727/api/h5/jx3/flower/get-flowers-info"
+    url = "https://w.pvp.xoyo.com:31727/api/h5/jx3/flower/get-flowers-info"
     data = {"server": server, "map": map, "species": species}
     result = await post_url(url, json=data)
     result = json.loads(result)

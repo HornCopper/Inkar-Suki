@@ -61,7 +61,7 @@ async def jx3_rank(event: GroupMessageEvent, args: Message = CommandArg()):
         server = arg[1]
         type2 = arg[2]
     data = await rank_(type_1=type1, server=server, type_2=type2, group_id=event.group_id)
-    if type(data) == type([]):
+    if isinstance(data, list):
         return await jx3_cmd_rank.finish(data[0])
     else:
         return await jx3_cmd_rank.finish(ms.image(data))
@@ -81,7 +81,7 @@ async def jx3_zlrank(event: GroupMessageEvent, args: Message = CommandArg()):
         server = arg[0]
         school = arg[1]
     data = await zlrank(server, school, str(event.group_id))
-    if type(data) == type([]):
+    if isinstance(data, list):
         return await jx3_cmd_zlrank.finish(data[0])
     else:
         return await jx3_cmd_zlrank.finish(ms.image(Path(data).as_uri()))
@@ -101,7 +101,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
             if i["label"] == season:
                 season_key = i["key"]
                 flag = True
-        if flag == False:
+        if flag is False:
             return await rank.finish("唔……您所提供的赛季暂时无法找到，您可以留空，这样音卡将提供最新赛季的天梯榜。")
         else:
             img = await get_school_rank(season_key)

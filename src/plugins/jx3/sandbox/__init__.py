@@ -17,6 +17,6 @@ jx3_cmd_sandbox = on_command(
 async def jx3_sandbox(event: GroupMessageEvent, template: list[Any] = Depends(Jx3Arg.arg_factory)):
     server, = template
     data = await sandbox_(server)
-    if type(data) == type([]):
+    if isinstance(data, list):
         return await jx3_cmd_sandbox.finish(data[0])
     return await jx3_cmd_sandbox.send(ms.image(data))

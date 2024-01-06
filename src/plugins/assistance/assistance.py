@@ -53,7 +53,7 @@ class Assistance:
         if group_info["server"] == "":
             return "开团失败，未绑定服务器的群聊暂无法使用该功能，请先联系群主或管理员进行绑定哦~"
         status = await Assistance.check_description(group, description)
-        if status == False:
+        if status is False:
             return "开团失败，已经有相同的团队关键词！\n使用“团队列表”可查看本群目前正在进行的团队。"
         new = {
             "creator": creator,
@@ -79,14 +79,14 @@ class Assistance:
             job = "老板"
         else:
             job = aliases(job)
-            if job == False:
+            if job is False:
                 return "唔……音卡暂时没办法识别您的职业，请检查一下呗？\n避免使用“长歌”“万花”“天策”等字眼，您可以使用“天策t”“奶咕”“qc”等准确些的词语方便理解哦~\n如果您使用的词语实在无法识别，请使用标准名称，例如“离经易道”。"
         job_icon = await Assistance.get_icon(job)
         final_url = f"{Config.jx3api_link}/data/role/detailed?token={token}&server={server}&name={id}"
         player_data = await get_api(final_url)
         try:
             uid = player_data["data"]["roleId"]
-        except:
+        except Exception as _:
             return "无法获取到UID！"
         if job != "老板":
             if kftosh(player_data["data"]["forceName"]) != kftosh(job):
@@ -101,14 +101,14 @@ class Assistance:
             "server": server
         }
         stg = await Assistance.storge(group, description, new)
-        if stg == False:
+        if stg is False:
             return "唔……该团队似乎已满，申请失败！"
         else:
             return "预定成功！"
 
     async def cancel_apply(group: str, description: str, id: str, actor: str):
         status = await Assistance.check_apply(group, description, id)
-        if status == False:
+        if status is False:
             return "唔……您似乎还没申请呢！"
         now = json.loads(read(f"{bot_path.DATA}/{group}/opening.json"))
         for i in now:

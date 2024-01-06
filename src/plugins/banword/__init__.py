@@ -80,5 +80,5 @@ async def common_match_ban_words(matcher: Matcher, bot: Bot, event: GroupMessage
         msg = ms.at(sb) + "唔……你触发了违禁词，已经给你喝了1分钟的红茶哦~"
         matcher.stop_propagation()
         return await matcher_common_run.finish(msg)
-    except:
+    except Exception as _:
         pass

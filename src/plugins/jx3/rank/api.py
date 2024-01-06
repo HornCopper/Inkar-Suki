@@ -17,7 +17,7 @@ async def rank_(type_1: str, type_2: str, server: str, group_id: str):
     server = server_mapping(server, group_id)
     if not server:
         return [PROMPT_ServerNotExist]
-    if token == None:
+    if token is None:
         return [PROMPT_NoToken]
     final_url = f"{Config.jx3api_link}/data/rank/statistical?token={token}&robot={bot}&server={server}&table={type_1}&name={type_2}&scale=1"
     if type_1 == "个人":
@@ -65,17 +65,17 @@ async def post_url(url, proxy: dict = None, headers: str = None, timeout: int = 
 
 async def zlrank(server: str = None, school: str = None, group_id: str = None):
     school_data = await get_api("https://inkar-suki.codethink.cn/jx3boxdata")
-    if school != None:
+    if school is not None:
         flag = False
         for i in school_data:
             if school_data[i] == school:
                 school_id = i
                 flag = True
-        if flag == False:
+        if flag is False:
             return ["未找到该门派哦，请检查后重试~"]
     else:
         school_id = "-1"
-    if server == None:
+    if server is None:
         server = ""
     else:
         server = server_mapping(server, group_id)
@@ -129,7 +129,7 @@ async def zlrank(server: str = None, school: str = None, group_id: str = None):
     final_path = bot_path.CACHE + "/" + get_uuid() + ".html"
     write(final_path, final_html)
     img = await generate(final_path, False, "table", False)
-    if img == False:
+    if img is False:
         return ["唔……图片生成失败，请联系机器人管理员解决此问题！"]
     else:
         return img

@@ -12,9 +12,9 @@ async def post_url(url, proxy: dict = None, headers: str = None, timeout: int = 
 
 
 async def achievements_(server: str = None, name: str = None, achievement: str = None, group_id: str = None):
-    if token == None:
+    if token is None:
         return [PROMPT_NoToken]
-    if ticket == None:
+    if ticket is None:
         return [PROMPT_NoTicket]
     server = server_mapping(server, group_id)
     if not server:
@@ -110,7 +110,7 @@ async def zone_achi(server: str = None, name: str = None, zone: str = None, mode
     zone = zone_mapping(zone)
     mode = mode_mapping(mode)
     logger.info(name)
-    if zone == False or mode == False:
+    if zone is False or mode is False:
         return ["唔……难度或名称输入有误。"]
     personal_data_request = f"{Config.jx3api_link}/data/role/detailed?token={token}&server={server}&name={name}"
     personal_data = await get_api(personal_data_request)

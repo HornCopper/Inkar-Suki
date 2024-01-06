@@ -6,7 +6,7 @@ import os
 from sgtpyutils.logger import logger
 try:
     logger.debug(f'load dependence:{__name__}')
-except:
+except Exception as _:
     pass
 
 '''初始化基础环境'''
@@ -40,5 +40,5 @@ try:
     # 子依赖应后加载
     from .bot_plugins import *
     from src.tools.permission import checker as permission_check, error as permission_error, permission_judge, Permission, PermissionResult
-except:
+except Exception as _:
     pass

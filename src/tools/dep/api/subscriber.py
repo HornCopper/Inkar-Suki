@@ -8,7 +8,7 @@ def load_or_write_subscribe(group_id: str, data: dict = None) -> dict[str, dict]
     @return {subject:data}
     '''
     path = f"{bot_path.DATA}/{group_id}/subscribe.json"
-    if not data is None:
+    if data is not None:
         write(path, json.dumps(data, ensure_ascii=False))
         return data
     now = json.loads(read(path))

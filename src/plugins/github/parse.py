@@ -44,7 +44,7 @@ class main:
             sender = body["sender"]["login"]
             num = body["pull_request"]["number"]
             merged = body["pull_request"]["merged"]
-            if merged == True:
+            if merged is True:
                 msg = f"{sender} closed the pull request on {repo}#{num}.\nFrom {source} to {goal}.\n(Already merged)\nTitle:{title}\nDescription:{comment}"
             else:
                 msg = f"{sender} closed the pull request on {repo}#{num}.\nFrom {source} to {goal}.\nTitle:{title}\nDescription:{comment}"
@@ -93,9 +93,9 @@ class main:
         action = body["action"]
         if action == "created":
             try:
-                pr = body["issue"]["pull_request"]
+                body["issue"]["pull_request"]
                 itype = "pull request"
-            except:
+            except Exception as _:
                 itype = "issue"
             sender = body["sender"]["login"]
             msg = body["comment"]["body"]

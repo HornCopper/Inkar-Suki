@@ -87,7 +87,7 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
         if len(args) != 3:
             return await interwiki.finish(PROMPT_ArgumentInvalid)
         prefix = args[1]
-        if check_interwiki_prefix(str(event.group_id), prefix) == True:
+        if check_interwiki_prefix(str(event.group_id), prefix) is True:
             return await interwiki.finish("唔……该前缀已被使用，请删除或更新此前缀~")
         link = args[2]
         api = await wiki_.get_api(link)
@@ -104,7 +104,7 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
         if len(args) != 2:
             return await interwiki.finish(PROMPT_ArgumentInvalid)
         prefix = args[1]
-        if check_interwiki_prefix(str(event.group_id), prefix) == False:
+        if check_interwiki_prefix(str(event.group_id), prefix) is False:
             return await interwiki.finish("唔……该前缀未被使用，请检查后重试~")
         now = json.loads(read(bot_path.DATA + "/" + str(event.group_id) + "/wiki.json"))
         for i in now["interwiki"]:
@@ -121,7 +121,7 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
         if api["status"] == 500:
             return await interwiki.finish("唔……此站点非有效的MediaWiki，请检查后重试~")
         api = api["data"]
-        if check_interwiki_prefix(str(event.group_id), prefix) == False:
+        if check_interwiki_prefix(str(event.group_id), prefix) is False:
             return await interwiki.finish("唔……该前缀未被使用，请检查后重试~")
         now = json.loads(read(bot_path.DATA + "/"+str(event.group_id)+"/wiki.json"))
         for i in now["interwiki"]:
@@ -157,7 +157,7 @@ async def _(state: T_State, event: GroupMessageEvent, args: Message = CommandArg
     else:
         search.remove(search[0])
         title = ":".join(search)
-    if api == False:
+    if api is False:
         return await iwiki.finish("唔……该前缀不存在哦，请检查后重试~")
 
     info = await wiki_.simple(api, title)
