@@ -16,3 +16,4 @@ ASSETS = get_path("assets")
 CLOCK = get_path("clock")
 VIEWS = get_path("views")
 PLUGINS = get_path('plugins')
+TOOLS = tools_path
