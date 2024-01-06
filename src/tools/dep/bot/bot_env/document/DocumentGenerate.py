@@ -1,99 +1,15 @@
+from src.tools.dep.args import Jx3ArgsType
+
 import inspect
 import threading
 from sgtpyutils.logger import logger
 from sgtpyutils import extensions
+from sgtpyutils.functools import *
 import functools
-from ...args import *
-from .args_template import *
 
-from . import DocumentCatalog
-from .DocumentCatalog import permission, BaseCatalog
-
-
-from nonebot.adapters.onebot.v11.message import Message as v11Message
-from nonebot.adapters.onebot.v11.event import GroupMessageEvent
-from nonebot.adapters import Message, MessageSegment
-
-
-def convert_to_str(msg: MessageSegment):
-    if isinstance(msg, GroupMessageEvent):
-        x = msg.get_message().extract_plain_text()
-        msg = str.join(' ', x.split(' ')[1:])  # 将命令去除
-    if isinstance(msg, MessageSegment):
-        msg = msg.data
-    if isinstance(msg, v11Message):
-        msg = str(msg)
-        pass
-    if isinstance(msg, dict):
-        import json
-        msg = json.dumps(msg, ensure_ascii=False)
-
-    if isinstance(msg, str):
-        return msg
-    logger.warning(f'message cant convert to str:{msg}')
-    return msg
-
-
-class DocumentItem:
-    cmd: str  # 命令
-    name: str  # 名称
-    aliases: set[str]  # 别名
-    description: str  # 概要描述
-    priority: int  # 命令优先级
-    example: list[Jx3ArgsType]  # 参数类型列表
-    catalog: BaseCatalog  # 目录，用于权限和功能分组
-    document: str  # 详细描述
-
-    def __init__(self, cmd: str, arg: AssignableArg) -> None:
-        self.cmd = cmd
-        data = arg.kwargs
-
-        self.name = data.get('name')
-        self.aliases: set = data.get('aliases') or set()
-        if self.name:
-            if not self.name in self.aliases:
-                self.aliases.add(self.name)  # 将名称设置为默认命令
-                data['aliases'] = self.aliases
-        elif self.aliases:
-            self.name = self.aliases.__iter__().__next__()  # 如果没有定义名称则将别名认为是名称
-        elif self.cmd:  # 否则以命令来命名
-            self.name = self.cmd
-
-        self.description = data.get('description')
-        self.priority = data.get('priority') or 0
-        self.example = data.get('example') or []
-
-        catalog = data.get('catalog')
-        if isinstance(catalog, str):
-            cata = DocumentCatalog.cata_entity_dict.get(catalog)
-            if cata:
-                catalog = cata
-            else:
-                logger.warning(f'[document]invalid catalog name:{catalog}')
-                catalog = None
-        self.catalog = catalog
-
-        self.document = data.get('document')
-
-    def __repr__(self) -> str:
-        return self.__str__()
-
-    def __str__(self) -> str:
-        alias = f',({self.aliases})' if self.aliases else ''
-        return f'{self.name}[{self.catalog}]{self.cmd}{alias}: {self.description}'
-
-    def to_dict(self) -> dict[str, any]:
-        example = [tpl.name for tpl in self.example]
-        return {
-            'name': self.name,
-            'cmd': self.cmd,
-            'aliases': list(self.aliases or {}),
-            'description': self.description,
-            'priority': self.priority,
-            'example': example,
-            'document': self.document,
-            'catalog': self.catalog and self.catalog.path,
-        }
+from ..DocumentCatalog import permission, BaseCatalog
+from .DocumentItem import DocumentItem
+from .converter import *
 
 
 class DocumentGenerator:
