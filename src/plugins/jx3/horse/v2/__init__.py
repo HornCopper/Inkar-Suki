@@ -2,7 +2,7 @@ from ..api import *
 from .renderer import *
 from .api import *
 jx3_cmd_horseinfo_chitu = on_command(
-    "jx3_chitu_v2"
+    "jx3_chitu_v2",
     name="赤兔",
     aliases={},
     priority=5,
