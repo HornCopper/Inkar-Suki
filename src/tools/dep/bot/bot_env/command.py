@@ -28,7 +28,7 @@ def __hook_on_command(
     _depth: int = 0,
     **kwargs,
 ):
-    force_whitespace = ' '
+    force_whitespace = ' ' # 参数-必须加空格才匹配
     command_item = nonebot._on_command(cmd, rule, aliases, force_whitespace,  _depth)
     return command_item
 
