@@ -191,7 +191,7 @@ util_cmd_web = on_command(
 
 @util_cmd_web.handle()
 async def util_web(bot: Bot, event: GroupMessageEvent, args: list[Any] = Depends(Jx3Arg.arg_factory)):
-    x = Permission(event.user_id).judge(10, f'调用网页截图}')
+    x = Permission(event.user_id).judge(10, f'调用网页截图')
     if not x.success:
         return await util_cmd_web.finish(x.description)
 
