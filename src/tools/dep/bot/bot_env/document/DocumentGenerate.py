@@ -33,14 +33,19 @@ class CommandRecord:
         path = bot_path.DATA
         suffix = group or bot_path.common_data
         path = f'{path}/{suffix}/commands'
-        
+
         db: filebase_database.Database = filebase_database.Database(path)
         return db
 
     @staticmethod
-    def get_sts(caller_name: str, group: str = None) -> CommandRecord:
-        db = CommandRecord.get_db(group)
+    def get_sts(caller_name: str, group: str = None, new_sts: CommandRecord = None) -> CommandRecord:
         '''统计功能使用'''
+
+        db = CommandRecord.get_db(group)
+        if new_sts:
+            db.value[caller_name] = new_sts
+            return new_sts
+
         if not db.value.get(caller_name):
             db.value[caller_name] = CommandRecord().to_dict()
         sts: CommandRecord = clazz.dict2obj(CommandRecord(), db.value.get(caller_name))
@@ -50,6 +55,8 @@ class CommandRecord:
     def record(caller_name: str, group: str = None) -> CommandRecordStatus:
         sts: CommandRecord = CommandRecord.get_sts(caller_name, group)
         sts.favorite += 10
+
+        CommandRecord.get_sts(caller_name, group, sts)
         if not sts.enable:
             return CommandRecordStatus.disabled
         return CommandRecordStatus.normal
@@ -59,7 +66,6 @@ class CommandRecord:
             'favorite': self.favorite,
             'enable': self.enable,
         }
-
 
 
 class DocumentGenerator:
