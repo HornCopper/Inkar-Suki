@@ -30,7 +30,7 @@ class DocumentItem:
                 data['aliases'] = self.aliases
         elif self.aliases:
             self.name = self.aliases.__iter__().__next__()  # 如果没有定义名称则将别名认为是名称
-        elif self.cmd: # 否则以命令来命名
+        elif self.cmd:  # 否则以命令来命名
             self.name = self.cmd
 
         self.description = data.get('description')
@@ -46,7 +46,7 @@ class DocumentItem:
                 logger.warning(f'[document]invalid catalog name:{catalog}')
                 catalog = None
         self.catalog = catalog
-        
+
         self.document = data.get('document')
 
     def __repr__(self) -> str:
@@ -88,16 +88,28 @@ class DocumentGenerator:
         此处注册的名字为命令名称，需要保证名称与函数名一致'''
         @functools.wraps(method)
         def wrapper(*args, **kwargs):
-            arg = AssignableArg(args, kwargs)
+            arg = AssignableArg(args, kwargs, method)
+            if 'regex' in method.__name__:  # 重写正则
+                x = DocumentGenerator.get_regex(args[0])
+                arg.set_args(0, x)
             docs = DocumentGenerator.register_single(arg)
             result = method(*arg.args, **arg.kwargs)
             # logger.debug(f'docs:{docs}') # 显示很慢
             return result
         return wrapper
 
-    # TODO 不会写
+    @staticmethod
+    def get_regex(pattern: str):
+        # 精确匹配
+        if not pattern[-1] == '$':
+            return f'{pattern}($| )'
+
+        # 和常规匹配
+        return pattern
+
     @staticmethod
     def counter(method: callable):
+        # TODO 不会写
         '''TODO 用户每次使用时调用'''
         @functools.wraps(method)
         def wrapper(*args, **kwargs):
