@@ -45,12 +45,11 @@ def __hook_on_regex(
     _depth: int = 0,
     **kwargs,
 ):
-    # 添加一个精确匹配
+    # 精确匹配
     if not pattern[-1] == '$':
-        command_item = nonebot._on_regex(f'{pattern}$', flags, rule, _depth)
+        return nonebot._on_regex(f'{pattern}($| )', flags, rule, _depth)
     # 和常规匹配
-    command_item = nonebot._on_regex(f'{pattern} ', flags, rule, _depth)
-    return command_item
+    return nonebot._on_regex(pattern, flags, rule, _depth)
 
 
 nonebot._on_regex = nonebot.on_regex  # 初始化
@@ -78,7 +77,7 @@ def get_cmd_docs(cls):
         else:
             reg_content = first.call.regex
             if str.endswith(reg_content, ' '):
-                reg_content = reg_content[0:-1] # 移除末尾空格
+                reg_content = reg_content[0:-1]  # 移除末尾空格
             cmd_tuple = [reg_content]
 
         result = filter(lambda x: DocumentGenerator.commands.get(x), cmd_tuple)
