@@ -1,7 +1,6 @@
 import asyncio
 import threading
-import time
-import types
+from sgtpyutils.logger import logger
 
 
 class SyncRunner(threading.Thread):
@@ -18,7 +17,11 @@ class SyncRunner(threading.Thread):
         # self.result = asyncio.run()
         # loop.close()
 
-        self.result = asyncio.run(self.tasks)
+        try:
+            self.result = asyncio.run(self.tasks)
+        except Exception as ex:
+            self.result = None
+            logger.warning(f'fail in running{self.tasks}.Exception:{ex}')
         self.semaphore.release()
         return super().run()
 
