@@ -111,7 +111,7 @@ class Jx3Tieba(threading.Thread):
                 if t_index <= s.last_thread_index:
                     break
                 pn += 1
-                time.sleep(Jx3Tieba.get_interval())
+                await asyncio.sleep(Jx3Tieba.get_interval())
         return s.threads
 
 
