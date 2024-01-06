@@ -124,7 +124,7 @@ async def jx3_serendipity_recipe(event: GroupMessageEvent, args: Message = Comma
     serendipity = args.extract_plain_text()
     imgs = os.listdir(bot_path.ASSETS + "/jx3/serendipity")
     filename = serendipity + ".png"
-    filepath = ASSETS + "/jx3/serendipity/" + filename
+    filepath = bot_path.ASSETS + "/jx3/serendipity/" + filename
     if filename in imgs:
         return await preposition.finish(ms.image(Path(filepath).as_uri()))
     data = await get_image(serendipity)
