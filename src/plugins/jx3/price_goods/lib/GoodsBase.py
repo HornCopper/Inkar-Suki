@@ -102,15 +102,21 @@ class GoodsInfo(dict):
     def bind_type_str(self):
         return GoodsBindTypeBindTypes[self.bind_type.value]
 
-    def __repr__(self) -> str:
-        return json.dumps(self.__dict__)
-
     def to_dict(self) -> dict:
-        r = copy.deepcopy(self.__dict__)
-        r["img_url"] = self.img_url
-        r["color"] = self.color
-        r["bind_type_str"] = self.bind_type_str
-        return r
+        return {
+            'bind_type': self.bind_type,
+            'img_url': self.img_url,
+            'color': self.color,
+            'bind_type_str': self.bind_type_str,
+            'bind_type': self.bind_type.value,
+            'html_code': self.html_code,
+            'id': self.id,
+            'quality': self.quality,
+            'ui_id': self.ui_id,
+            'name': self.name,
+            'level': self.level,
+            
+        }
 
 
 class WucaiProperty:
