@@ -5,7 +5,7 @@ from src.views import *
 from src.tools.dep import *
 from enum import Enum
 
-
+@ext.use_retry(max_attempts=3)
 async def check_bind(id: str):
     data = await get_item_info_by_id(id)
     bind_type = data.get("BindType") or 0
