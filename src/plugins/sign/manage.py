@@ -8,7 +8,6 @@ import os
 import datetime
 
 from nonebot.adapters.onebot.v11 import MessageSegment as ms
-from nonebot.adapters.onebot.v11 import MessageSegment as ms
 
 
 class SignInRecord:

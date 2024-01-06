@@ -24,12 +24,12 @@ async def handle_first_receive(bot: Bot, event: Event, args: Message = CommandAr
         return await op.finish("您输入了什么？")
     try:
         arguments = info.split(' ')
-    except:
+    except Exception as _:
         pass
     try:
-        if checknumber(str(arguments[0])) == False or checknumber(str(arguments[1])) == False:
+        if checknumber(str(arguments[0])) is False or checknumber(str(arguments[1])) is False:
             return await op.finish("唔……QQ号和权限等级都必须是数字哦~")
-    except:
+    except Exception as _:
         return await op.finish("唔，你好像少了点参数。")
     adminlist = json.loads(read(bot_path.TOOLS+"/permission.json"))
     if arguments[0] in Config.owner:

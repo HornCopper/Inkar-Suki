@@ -13,7 +13,7 @@ async def get_dh(type_: str):
         return "唔……API访问失败！"
     else:
         node = []
-        if data["Result"]["Heros"] == None:
+        if data["Result"]["Heros"] is None:
             return "唔……没有获取到任何信息！"
         for i in data["Result"]["Heros"]:
             post = i["PostId"]

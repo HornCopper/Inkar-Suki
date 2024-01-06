@@ -107,7 +107,7 @@ async def get_single_recequips(data: dict, author: str, name: str, tag: str, kf:
     equip_list = []
     equip_icon_list = []
     equip_quailty = []
-    unknown = bot_path.PLUGINS + "/jx3/user/unknown.png"
+    bot_path.PLUGINS + "/jx3/user/unknown.png"
     henchant = ["", "", "", "", "", ""]
     lenchant = ["", "", "", "", "", "", "", "", "", "", "", ""]
     if kf in ["问水诀", "山居剑意"]:
@@ -226,7 +226,7 @@ async def get_single_recequips(data: dict, author: str, name: str, tag: str, kf:
     for i in equip_data:
         try:
             i["FiveStone"]
-        except:
+        except Exception as _:
             continue
         for x in i["FiveStone"]:
             if x["Name"] != "" or int(x["Level"]) >= 1:
@@ -236,13 +236,13 @@ async def get_single_recequips(data: dict, author: str, name: str, tag: str, kf:
     try:
         wcs = equip_data[11]["ColorStone"]["Name"]
         wcs_icon = equip_data[11]["ColorStone"]["Icon"]["FileName"]
-    except:
+    except Exception as _:
         wcs = ""
         wcs_icon = ""
     try:
         wcs1 = equip_data[12]["ColorStone"]["Name"]
         wcs_icon1 = equip_data[12]["ColorStone"]["Icon"]["FileName"]
-    except:
+    except Exception as _:
         wcs1 = ""
         wcs_icon1 = ""
     values = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]

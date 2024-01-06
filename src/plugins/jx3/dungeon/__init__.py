@@ -17,7 +17,7 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
     if len(arg) not in [1, 2]:
         return await zones.finish("唔……参数不正确哦，请检查后重试~")
     if len(arg) == 1:
-        if group_server == False:
+        if group_server is False:
             return await zones.finish("没有绑定服务器，请携带服务器参数使用！")
         server = group_server
         id = arg[0]
@@ -25,10 +25,9 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
         server = arg[0]
         id = arg[1]
     data = await zone(server, id)
-    if type(data) == type([]):
+    if isinstance(data, list):
         return await zones.finish(data[0])
-    else:
-        return await zones.finish(ms.image(data))
+    return await zones.finish(ms.image(data))
 
 zonesv2 = on_command("jx3_zones", aliases={"副本"}, priority=5)
 
@@ -40,7 +39,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     if len(arg) not in [1, 2]:
         return await zonesv2.finish("唔……参数不正确哦，请检查后重试~")
     if len(arg) == 1:
-        if group_server == False:
+        if group_server is False:
             return await zonesv2.finish("没有绑定服务器，请携带服务器参数使用！")
         server = group_server
         id = arg[0]
@@ -48,10 +47,9 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
         server = arg[0]
         id = arg[1]
     data = await zone_v2(server, id)
-    if type(data) == type([]):
+    if isinstance(data, list):
         return await zonesv2.finish(data[0])
-    else:
-        return await zonesv2.finish(ms.image(data))
+    return await zonesv2.finish(ms.image(data))
 
 drops = on_command("jx3_drops", aliases={"掉落列表"}, priority=5)
 
@@ -67,10 +65,9 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     data = await generater(map, mode, boss)
     from nonebot.log import logger
     logger.info(data)
-    if type(data) != type([]):
+    if isinstance(data, list):
         return await drops.finish(ms.image(data))
-    else:
-        return await drops.finish(data[0])
+    return await drops.finish(data[0])
 
 item = on_command("jx3_itemdrop", aliases={"掉落"}, priority=5)
 
@@ -82,7 +79,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     if len(arg) not in [1, 2]:
         return await item.finish("唔……参数不正确哦，请检查后重试~")
     if len(arg) == 1:
-        if group_server == False:
+        if group_server is False:
             return await item.finish("没有绑定服务器，请携带服务器参数使用！")
         server = group_server
         name = arg[0]
@@ -90,10 +87,9 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
         server = arg[0]
         name = arg[1]
     data = await get_item_record(server, name)
-    if type(data) == type([]):
+    if isinstance(data, list):
         return await item.finish(data[0])
-    else:
-        return await item.finish(ms.image(data))
+    return await item.finish(ms.image(data))
 
 monsters = on_command("jx3_monsters_v2", aliases={"百战"}, priority=5)
 

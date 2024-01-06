@@ -4,6 +4,7 @@ from sgtpyutils.logger import logger
 from sgtpyutils.functools import *
 from .. import DocumentCatalog
 
+
 class DocumentItem:
     cmd: str  # 命令
     name: str  # 名称
@@ -21,7 +22,7 @@ class DocumentItem:
         self.name = data.get('name')
         self.aliases: set = data.get('aliases') or set()
         if self.name:
-            if not self.name in self.aliases:
+            if self.name not in self.aliases:
                 self.aliases.add(self.name)  # 将名称设置为默认命令
                 data['aliases'] = self.aliases
         elif self.aliases:

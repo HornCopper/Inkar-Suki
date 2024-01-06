@@ -60,7 +60,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     贴吧内容查询，具体实现参考`gettor.py`的`get_tieba`函数。
     """
     tid = args.extract_plain_text()
-    if checknumber(tid) == False:
+    if checknumber(tid) is False:
         return await tieba.finish("请给出纯数字的帖子ID哦~")
     msg = await get_tieba(int(tid))
     return await tieba.finish(msg)
@@ -83,7 +83,7 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
             nickname = personal_data["nickname"]
             basic_info = f"QQ等级：{level}\n登录天数：{login}\n昵称：{nickname}"
         data = await verify_cheater(str(content))
-        if data == False:
+        if data is False:
             msg = f"此人应该不是骗子？音卡在贴吧没有找到哦~\n{basic_info}"
         else:
             url = data

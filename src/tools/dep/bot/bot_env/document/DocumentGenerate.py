@@ -84,7 +84,7 @@ class DocumentGenerator:
             if 'regex' in method.__name__:  # 重写正则
                 x = DocumentGenerator.get_regex(args[0])
                 arg.set_args(0, x)
-            docs = DocumentGenerator.register_single(arg)
+            _ = DocumentGenerator.register_single(arg)
             result = method(*arg.args, **arg.kwargs)
             # logger.debug(f'docs:{docs}') # 显示很慢
             return result

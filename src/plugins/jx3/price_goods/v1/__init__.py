@@ -23,7 +23,7 @@ async def jx3_trade(state: T_State, event: GroupMessageEvent, args: Message = Co
         return await jx3_cmd_trade.finish(PROMPT_ServerNotExist)
     state["server"] = arg_server
     data = await search_item_info(arg_item, pageIndex=arg_page)
-    if type(data) != type([]):
+    if isinstance(data, list):
         return await jx3_cmd_trade.finish(data)
     id = [x.id for x in data]  # 取到的是id列表
     data = await render_items(data)
@@ -45,9 +45,8 @@ async def price_num_selected(state: T_State, event: GroupMessageEvent, num: Mess
 
     if goods_info is None:
         return await jx3_cmd_trade.finish(data)
-    else:
-        img = await render_price(data, server, goods_info)
-        return await jx3_cmd_trade.send(ms.image(Path(img).as_uri()))
+    img = await render_price(data, server, goods_info)
+    return await jx3_cmd_trade.send(ms.image(Path(img).as_uri()))
 
 jx3_cmd_item = on_command("jx3_item", aliases={"物品"}, priority=5)
 
@@ -56,8 +55,7 @@ jx3_cmd_item = on_command("jx3_item", aliases={"物品"}, priority=5)
 async def jx3_item(event: GroupMessageEvent, args: Message = CommandArg()):
     id = args.extract_plain_text()
     info = await getItem(id)
-    if type(info) == type([]):
+    if isinstance(info, list):
         return await jx3_cmd_item.finish(info[0])
-    else:
-        info = await render_item_img(info)
-        return await jx3_cmd_item.finish(ms.image(Path(info).as_uri()))
+    info = await render_item_img(info)
+    return await jx3_cmd_item.finish(ms.image(Path(info).as_uri()))

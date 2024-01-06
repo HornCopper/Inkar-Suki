@@ -71,7 +71,7 @@ class Jx3Tieba(threading.Thread):
 
     @property
     def current_status(self) -> SubjectStatus:
-        if not self.current_subject in self.subject_status:
+        if self.current_subject not in self.subject_status:
             self.subject_status[self.current_subject] = SubjectStatus(
                 self.current_subject)
         return self.subject_status[self.current_subject]
@@ -84,7 +84,6 @@ class Jx3Tieba(threading.Thread):
             time.sleep(Jx3Tieba.get_interval())
             if self.is_stop:
                 return logger.info(f'{self.name} is stopped')
-            
 
     async def run_once(self) -> list:
         if not self.is_alive():

@@ -25,7 +25,7 @@ async def jx3_arena_records(event: GroupMessageEvent, template: list[Any] = Depe
         return await jx3_cmd_arena_records.finish(PROMPT_UserNotExist)
 
     data = await arena_records(server=server, name=user, mode=pvp_mode)
-    if type(data) == type([]):
+    if isinstance(data, list):
         return await jx3_cmd_arena_records.finish(data[0])
     return await jx3_cmd_arena_records.send(ms.image(data))
 
@@ -48,7 +48,7 @@ jx3_cmd_arena_rank = on_regex(
 async def jx3_arena_rank(bot: Bot, event: GroupMessageEvent, template: list[Any] = Depends(Jx3Arg.arg_factory)):
     pvp_mode, = template
     data = await arena_rank(mode=pvp_mode)
-    if type(data) == type([]):
+    if isinstance(data, list):
         return await jx3_cmd_arena_rank.finish(data[0])
     return await jx3_cmd_arena_rank.send(ms.image(data))
 
@@ -70,6 +70,6 @@ jx3_cmd_arena_statistics = on_regex(
 async def jx3_arena_statistics(bot: Bot, event: GroupMessageEvent, template: list[Any] = Depends(Jx3Arg.arg_factory)):
     pvp_mode, = template
     data = await arena_statistics(mode=pvp_mode)
-    if type(data) == type([]):
+    if isinstance(data, list):
         return await jx3_cmd_arena_statistics.finish(data[0])
     return await jx3_cmd_arena_statistics.send(ms.image(data))

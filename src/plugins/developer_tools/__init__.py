@@ -16,7 +16,7 @@ async def ___(event: Event):
     try:
         for i in os.listdir(CACHE):
             os.remove(CACHE + "/" + i)
-    except:
+    except Exception as _:
         return await purge.finish("部分文件并没有找到哦~")
     else:
         return await purge.finish("好的，已帮你清除图片缓存~")
@@ -180,7 +180,7 @@ util_cmd_web = on_command(
 
 @util_cmd_web.handle()
 async def util_web(bot: Bot, event: GroupMessageEvent, args: list[Any] = Depends(Jx3Arg.arg_factory)):
-    x = Permission(event.user_id).judge(10, f'调用网页截图')
+    x = Permission(event.user_id).judge(10, '调用网页截图')
     if not x.success:
         return await util_cmd_web.finish(x.description)
 
@@ -213,12 +213,12 @@ async def _(state: T_State, event: Event):
 # @apply.got("group", prompt="感谢您申请使用Inkar Suki，接下来请发送您所为之申请的群聊的群号。")
 async def _(bot: Bot, state: T_State, group: v11Message = Arg()):
     group_id = group.extract_plain_text()
-    if checknumber(group_id) == False:
+    if checknumber(group_id) is False:
         return await apply.finish("输入的内容有误，申请失败。")
     else:
         try:
             data = json.dumps(await bot.call_api("get_group_info", group_id=int(group_id)), ensure_ascii=False)
-        except:
+        except Exception as _:
             data = "获取失败！"
         if data == "获取失败！":
             return await apply.finish("您的申请没有成功，抱歉！\n请检查该群是否能被搜索到。")
@@ -232,7 +232,7 @@ async def _(bot: Bot, state: T_State, group: v11Message = Arg()):
             "Authorization": bearer,
             "X-GitHub-Api-Version": "2022-11-28"}
         body = {
-            "title": f"Inkar-Suki·使用申请",
+            "title": "Inkar-Suki·使用申请",
             "body": f"申请人QQ：{user}\n申请群聊：{group_id}\n群聊请求数据如下：```{data}```",
             "labels": ["申请"]
         }
