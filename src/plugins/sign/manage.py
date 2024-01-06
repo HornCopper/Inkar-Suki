@@ -34,7 +34,7 @@ class SignInRecord:
 class Sign:
 
     def generate_everyday_reward(qq: str):
-        signed_list = json.loads(read(CLOCK + "/signed.json")) or []
+        signed_list = json.loads(read(bot_path.CLOCK + "/signed.json")) or []
         rank = len(signed_list)
         s = SignInRecord()
         continious = Sign.get_continuity(qq)
@@ -56,16 +56,16 @@ class Sign:
         return s
 
     def wsigned(qq: int):
-        signed = json.loads(read(CLOCK + "/signed.json")) or []
+        signed = json.loads(read(bot_path.CLOCK + "/signed.json")) or []
         if str(qq) in signed:
             return True
         return False
 
     def save_data(data: SignInRecord, qq):
         qq = str(qq)
-        signed_list = json.loads(read(CLOCK + "/signed.json")) or []
+        signed_list = json.loads(read(bot_path.CLOCK + "/signed.json")) or []
         signed_list.append(qq)
-        write(CLOCK + "/signed.json", json.dumps(signed_list, ensure_ascii=False))
+        write(bot_path.CLOCK + "/signed.json", json.dumps(signed_list, ensure_ascii=False))
         user = Sign.get_user_record(qq)
 
         user['coin'] = user.get('coin') + data.coin
@@ -89,7 +89,7 @@ class Sign:
         获取用户签到信息
         '''
         qq = str(qq)
-        accounts = json.loads(read(f"{CLOCK}{os.sep}account.json")) or {}
+        accounts = json.loads(read(f"{bot_path.CLOCK}{os.sep}account.json")) or {}
         need_convert = isinstance(accounts, list)
         if need_convert:
             accounts = dict([[x['id'], x] for x in accounts])
@@ -110,8 +110,8 @@ class Sign:
         x = getattr(Sign, 'accounts')
         if x is None:
             return
-        write(f"{CLOCK}{os.sep}account.json",
-              json.dumps(Sign.accounts, ensure_ascii=False))
+        path = f"{bot_path.CLOCK}{os.sep}account.json"
+        write(path, json.dumps(Sign.accounts, ensure_ascii=False))
 
     def get_continuity(qq):
         '''

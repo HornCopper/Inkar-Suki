@@ -16,7 +16,7 @@ from nonebot.params import CommandArg
 
 
 def banned(sb):  # 检测某个人是否被封禁。
-    with open(TOOLS + "/ban.json") as cache:
+    with open(bot_path.TOOLS + "/ban.json") as cache:
         banlist = json.loads(cache.read())
         for i in banlist:
             if i == sb:
@@ -28,7 +28,7 @@ notice = on_notice(priority=5)
 
 
 def check_env_path(group_id: str):
-    new_path = f"{DATA}/{str(group_id)}"
+    new_path = f"{bot_path.DATA}/{str(group_id)}"
     if os.path.exists(new_path):
         return True
     os.mkdir(new_path)
@@ -56,7 +56,7 @@ async def on_new_group_enter(bot: Bot, event: NoticeEvent):
     group = event.group_id
     bots = Config.bot
     if not str(obj) in bots:
-        msg = ms.at(obj) + read(DATA + "/" + str(group) + "/welcome.txt")
+        msg = ms.at(obj) + read(bot_path.DATA + "/" + str(group) + "/welcome.txt")
         return await bot.call_api("send_group_msg", group_id=group, message=msg)
 
     if event.sub_type != "approve":
@@ -95,9 +95,9 @@ async def notice_and_ban(bot: Bot, event: NoticeEvent, action: str):
     kicker = str(event.operator_id)
     if banned(kicker):
         return
-    banlist = json.loads(read(TOOLS + "/ban.json"))
+    banlist = json.loads(read(bot_path.TOOLS + "/ban.json"))
     banlist.append(kicker)
-    write(TOOLS + "/ban.json", json.dumps(banlist))
+    write(bot_path.TOOLS + "/ban.json", json.dumps(banlist))
 request = on_request(priority=5)
 
 
@@ -124,7 +124,7 @@ async def __(event: GroupMessageEvent, args: Message = CommandArg()):
         return await welcome_msg_edit.finish(x.description)
     msg = args.extract_plain_text()
     if msg:
-        write(DATA + "/" + str(event.group_id) + "/welcome.txt", msg)
+        write(bot_path.DATA + "/" + str(event.group_id) + "/welcome.txt", msg)
         return await welcome_msg_edit.finish("喵~已设置入群欢迎！")
     else:
         return await welcome_msg_edit.finish("您输入了什么？")

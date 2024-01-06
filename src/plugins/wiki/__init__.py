@@ -14,7 +14,7 @@ wiki = on_command("wiki", priority=5)
 @wiki.handle()
 async def _(event: GroupMessageEvent, state: T_State, args: Message = CommandArg()):
     title = args.extract_plain_text()
-    init_api = json.loads(read(DATA + "/"+str(event.group_id)+"/wiki.json"))["startwiki"]
+    init_api = json.loads(read(bot_path.DATA + "/"+str(event.group_id)+"/wiki.json"))["startwiki"]
     info = await wiki_.simple(init_api, title)
     if info["status"] == 202:
         msg = ""
@@ -57,14 +57,14 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
         return await setwiki.finish("唔……此站点非有效的MediaWiki，请检查后重试~")
     else:
         link = api["data"]
-        now = json.loads(read(DATA + "/" + str(event.group_id) + "/wiki.json"))
+        now = json.loads(read(bot_path.DATA + "/" + str(event.group_id) + "/wiki.json"))
         now["startwiki"] = link
-        write(DATA + "/" + str(event.group_id) + "/wiki.json", json.dumps(now))
+        write(bot_path.DATA + "/" + str(event.group_id) + "/wiki.json", json.dumps(now))
         return await setwiki.finish("初始Wiki修改成功！")
 
 
 def check_interwiki_prefix(group, prefix):
-    data = json.loads(read(DATA + "/" + group + "/wiki.json"))
+    data = json.loads(read(bot_path.DATA + "/" + group + "/wiki.json"))
     for i in data["interwiki"]:
         if i["prefix"] == prefix:
             return True
@@ -95,9 +95,9 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
             return await interwiki.finish("唔……此站点非有效的MediaWiki，请检查后重试~")
         api = api["data"]
         new = {"prefix": prefix, "link": api}
-        now = json.loads(read(DATA + "/" + str(event.group_id) + "/wiki.json"))
+        now = json.loads(read(bot_path.DATA + "/" + str(event.group_id) + "/wiki.json"))
         now["interwiki"].append(new)
-        write(DATA + "/" + str(event.group_id) + "/wiki.json", json.dumps(now))
+        write(bot_path.DATA + "/" + str(event.group_id) + "/wiki.json", json.dumps(now))
         site_name = await wiki_.get_site_info(api)
         return await interwiki.finish("成功添加Interwiki：\n" + site_name)
     elif args[0] == "del":
@@ -106,11 +106,11 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
         prefix = args[1]
         if check_interwiki_prefix(str(event.group_id), prefix) == False:
             return await interwiki.finish("唔……该前缀未被使用，请检查后重试~")
-        now = json.loads(read(DATA + "/" + str(event.group_id) + "/wiki.json"))
+        now = json.loads(read(bot_path.DATA + "/" + str(event.group_id) + "/wiki.json"))
         for i in now["interwiki"]:
             if i["prefix"] == prefix:
                 now["interwiki"].remove(i)
-        write(DATA + "/" + str(event.group_id) + "/wiki.json", json.dumps(now))
+        write(bot_path.DATA + "/" + str(event.group_id) + "/wiki.json", json.dumps(now))
         return await interwiki.finish("Interwiki移除成功！")
     elif args[0] == "upd":
         if len(args) != 3:
@@ -123,11 +123,11 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
         api = api["data"]
         if check_interwiki_prefix(str(event.group_id), prefix) == False:
             return await interwiki.finish("唔……该前缀未被使用，请检查后重试~")
-        now = json.loads(read(DATA + "/"+str(event.group_id)+"/wiki.json"))
+        now = json.loads(read(bot_path.DATA + "/"+str(event.group_id)+"/wiki.json"))
         for i in now["interwiki"]:
             if i["prefix"] == prefix:
                 i["link"] = api
-        write(DATA + "/" + str(event.group_id) + "/wiki.json", json.dumps(now))
+        write(bot_path.DATA + "/" + str(event.group_id) + "/wiki.json", json.dumps(now))
         site_name = await wiki_.get_site_info(api)
         return await interwiki.finish("成功更新Interwiki：\n" + site_name)
 
@@ -135,7 +135,7 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
 
 
 def get_local_api(group, prefix):
-    local_data = json.loads(read(DATA + "/" + group + "/wiki.json"))
+    local_data = json.loads(read(bot_path.DATA + "/" + group + "/wiki.json"))
     for i in local_data["interwiki"]:
         if i["prefix"] == prefix:
             return i["link"]

@@ -1,12 +1,12 @@
+import os
 import pathlib2
 import sys
-import nonebot
-TOOLS = nonebot.get_driver().config.tools_path
-sys.path.append(TOOLS)
+tools_path = f"{os.getcwd()}/src/tools"
+sys.path.append(tools_path)
 
 
 def get_path(path: str) -> str:
-    t = pathlib2.Path(TOOLS)
+    t = pathlib2.Path(tools_path)
     return t.parent.joinpath(path).__str__()
 
 

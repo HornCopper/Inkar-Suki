@@ -36,11 +36,11 @@ async def check_balance(event: Event):
 
 @scheduler.scheduled_job("cron", hour="7")
 async def clean_data():
-    write(CLOCK + "/signed.json", "[]")
+    write(bot_path.CLOCK + "/signed.json", "[]")
     logger.info("Signed.json has been cleaned.")
     try:
-        for i in os.listdir(CACHE):
-            os.remove(CACHE + "/" + i)
+        for i in os.listdir(bot_path.CACHE):
+            os.remove(bot_path.CACHE + "/" + i)
         logger.info("已清理所有缓存文件。")
     except:
         logger.info("缓存清理失败，请检查后重试！！！")

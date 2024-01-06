@@ -41,7 +41,7 @@ async def render_items(query_items: list):
     html = f"{html}"
     html = f"<div style=\"font-family:Custom\">{html_table}</div>"
     html = f"{html}{css}"
-    final_path = CACHE + "/" + get_uuid() + ".html"
+    final_path = bot_path.CACHE + "/" + get_uuid() + ".html"
     write(final_path, html)
     img = await generate(final_path, False, "table", False)
     return [[i.id for i in query_items], img]
@@ -64,7 +64,7 @@ async def render_price(logs: List[GoodsPriceSummary], server: str, goods_info: G
     table = table.replace("<table>", "<table style=\"margin: auto\">")  # 居中显示
     table = f"<div>{table}</div>"  # 居中表格
     html = f"<section style=\"text-align: center;width:50rem;\"><div style=\"font-family:Custom\">{header}{table}</div></section>" + css
-    final_path = CACHE + "/" + get_uuid() + ".html"
+    final_path = bot_path.CACHE + "/" + get_uuid() + ".html"
     write(final_path, html)
     img = await generate(final_path, False, "section")
     return img
@@ -77,6 +77,6 @@ async def render_item_img(id: str):
         page = await context.new_page()
         await page.goto(f"https://www.jx3box.com/item/view/{id}")
         await page.add_style_tag(content=css_fixed)
-        path = CACHE + "/" + get_uuid() + ".png"
+        path = bot_path.CACHE + "/" + get_uuid() + ".png"
         await page.locator(".c-item-wrapper").first.screenshot(path=path)
         return path
