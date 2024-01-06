@@ -116,12 +116,8 @@ async def generate(html: str, web: bool = False, locate: str = None, first: bool
     @param delay: 打开网页后延迟时间，单位ms
     @return : 返回生成的图片路径
     '''
-    if web:
-        logger.warning(f"render stopped for that `web` options is set to True")
-        pass
-    logger.info(html)
-    html = Path(html).as_uri()
-    result = await generate_by_url(html, locate, first, delay)
+    file_uri = html if web else Path(html).as_uri()
+    result = await generate_by_url(file_uri, locate, first, delay)
     if result is None:
         return False
     return result
