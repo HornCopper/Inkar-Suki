@@ -2,12 +2,12 @@ from .. import *
 
 
 def test_docs_generate():
-    import src.plugins.developer_tools.help_document
-    raw_matcher = src.plugins.developer_tools.help_document.dev_cmd_show_help
+    from src.plugins.developer_tools import help_document
+    raw_matcher = help_document.dev_cmd_show_help
     mc = MessageCallback()
-    src.plugins.developer_tools.help_document.dev_cmd_show_help = mc
+    help_document.dev_cmd_show_help = mc
 
-    func = src.plugins.developer_tools.help_document.dev_show_help
+    func = help_document.dev_show_help
     state = {}
     event = SFGroupMessageEvent()
     event.message = obMessage(mc.tag)
