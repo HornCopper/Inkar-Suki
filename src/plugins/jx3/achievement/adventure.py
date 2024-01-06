@@ -38,7 +38,7 @@ async def getAdventure(adventure: str):
 
 
 async def getAchievementsIcon(IconID: str):
-    final_path = ASSETS + "/jx3/adventure/" + IconID + ".png"
+    final_path = bot_path.ASSETS + "/jx3/adventure/" + IconID + ".png"
     if os.path.exists(final_path):
         return ms.image(Path(final_path).as_uri())
     else:

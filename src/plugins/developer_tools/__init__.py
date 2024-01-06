@@ -14,8 +14,8 @@ async def ___(event: Event):
     if not x.success:
         return await purge.finish(x.description)
     try:
-        for i in os.listdir(CACHE):
-            os.remove(CACHE + "/" + i)
+        for i in os.listdir(bot_path.CACHE):
+            os.remove(bot_path.CACHE + "/" + i)
     except Exception as _:
         return await purge.finish("部分文件并没有找到哦~")
     else:

@@ -29,7 +29,10 @@ def server_mapping(server: str = None, group_id: str = None):
     '''
     根据服务器别名匹配服务器，若未输入则获取当前群所绑定的服务器
     '''
-    return server_map.get(server, getGroupServer(group_id=group_id))
+    result = server_map.get(server)
+    if result:
+        return result
+    return getGroupServer(group_id=group_id)
 
 
 def getGroupServer(group_id: str):
