@@ -2,7 +2,7 @@ from src.tools.dep import *
 
 dev_cmd_show_help = on_command(
     "show_help",
-    aliases={"帮助v2"},
+    aliases={"帮助", "功能", "文档", "说明", "怎么用", "使用说明", "菜单", "开关", "授权"},
     priority=5,
     description='获取当前公开的命令文档',
     catalog='permission.docs.help',
@@ -10,7 +10,7 @@ dev_cmd_show_help = on_command(
         Jx3Arg(Jx3ArgsType.pageIndex, is_optional=True, default=1),
         Jx3Arg(Jx3ArgsType.command, is_optional=True),
     ],
-    document='''新的帮助文档'''
+    document='''帮助文档'''
 )
 
 
