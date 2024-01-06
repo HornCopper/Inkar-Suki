@@ -93,7 +93,13 @@ class GoodsInfo(dict):
         """
         根据品质返回 老灰、灰、绿、蓝、紫、金、红
         """
-        return ["rgb(220,220,220)", "rgb(190,190,190)", "rgb(0, 210, 75)", "rgb(0, 126, 255)", "rgb(254, 45, 254)", "rgb(255, 165, 0)", "#ff0000"][self.quality]
+        if not self.quality:
+            return 'rgb(0,0,0)'
+        rng = ["rgb(220,220,220)", "rgb(190,190,190)", "rgb(0, 210, 75)",
+               "rgb(0, 126, 255)", "rgb(254, 45, 254)", "rgb(255, 165, 0)", "#ff0000"]
+        if len(rng) <= self.quality:
+            return 'rgb(255,0,0)'
+        return rng[self.quality]
 
     def to_row(self):
         new = [self.id, self.name, self.bind_type_str, self.html_code]
