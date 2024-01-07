@@ -201,7 +201,8 @@ async def add_schedule_of_leave(group_id: str, schedule_time: DateTime):
 
 async def run_leave_group():
     global cmd_leave_task
-    for group_id in cmd_leave_task:
+    to_leaves = [x for x in cmd_leave_task]
+    for group_id in to_leaves:
         schedule_time = cmd_leave_task[group_id]
         if not schedule_time:
             continue
