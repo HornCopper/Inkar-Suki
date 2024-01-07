@@ -64,7 +64,7 @@ class Permission:
             result = PermissionResult(False, u_level, f'{prefix}的权限只有{u_level}级，要求{score}级~')
 
         if log:
-            logger.debug(f'permission check:{result}')
+            logger.debug(f'permission check@{action}:{result}')
         return result
 
 
