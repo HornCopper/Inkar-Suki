@@ -87,7 +87,7 @@ async def common_match_ban_user(matcher: Matcher, event: Event):
     if str(event.user_id) not in info:
         return
 
-    permit = Permission(event.user_id).judge(10, '黑名单用户免除封禁')
+    permit = Permission(event.user_id).judge(10, '黑名单用户免除封禁', log=False)
     if permit.success:
         return
 
@@ -172,7 +172,7 @@ async def leave_group(bot: Bot, state: T_State, event: GroupMessageEvent, confir
         counter = 0
     if counter > 365 * 86400:
         counter = 365 * 86400
-        
+
     schedule_time = DateTime(DateTime() + counter * 1e3)
     cmd_leave_task[event.group_id] = schedule_time.timestamp()
     logger.warning(f"用户提交了注销申请:group={event.group_id},by:{event.user_id}")

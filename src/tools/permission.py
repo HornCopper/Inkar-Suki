@@ -52,17 +52,20 @@ class Permission:
             return None
         return int(self.permissions[self.user_id])
 
-    @ext.use_log()
-    def judge(self, score: int, action: str = '该操作') -> PermissionResult:
+    def judge(self, score: int, action: str = '该操作', log: bool = True) -> PermissionResult:
         if not isinstance(score, int):
             score = int(score)
         u_level = self.u_level
         prefix = f'唔……{action}需要授权,但你'
+        result = PermissionResult(True, u_level, None)
         if u_level is None:
-            return PermissionResult(False, None, f'{prefix}没有任何授权哦~')
-        if u_level < score:
-            return PermissionResult(False, u_level, f'{prefix}的权限只有{u_level}级，要求{score}级~')
-        return PermissionResult(True, u_level, None)
+            result = PermissionResult(False, None, f'{prefix}没有任何授权哦~')
+        elif u_level < score:
+            result = PermissionResult(False, u_level, f'{prefix}的权限只有{u_level}级，要求{score}级~')
+
+        if log:
+            logger.debug(f'permission check:{result}')
+        return result
 
 
 def checker(qqnumber: str, score: int) -> bool:
