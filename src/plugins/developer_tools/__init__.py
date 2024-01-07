@@ -222,7 +222,7 @@ async def handle_request(bot: Bot, user_id: str, group_id: str, accept: bool, re
 
     if not request_info:
         return await util_cmd_handle_request.finish(f'当前没有群号{group_id}的申请')
-    del request_info[group_id]
+    del current_requests[group_id] # 处理完成，移除本记录
     try:
         await bot.set_group_add_request(
             flag=request_info.get('flag'),
