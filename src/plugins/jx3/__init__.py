@@ -22,7 +22,7 @@ async def nonebot_on_startup():
         logger.info("Connected to SFAPI successfully.")
 
 
-@scheduler.scheduled_job("interval", id='database_save_all', hours=1)
+@scheduler.scheduled_job("interval", id='database_save_all', seconds=3600*(1-0.05*random.random()))
 @driver.on_shutdown
 async def nonebot_on_shutdown():
     logger.info('nonebot_on_shutdown...')

@@ -57,3 +57,10 @@ async def jx3_horseinfo(event: GroupMessageEvent, template: list[Any] = Depends(
     )
     img = ms.image(Path(result).as_uri())
     return await jx3_cmd_horseinfo_map.send(img)
+
+
+@scheduler.scheduled_job("interval", id='jx3_update_horseinfo', seconds=3600*(1-0.05*random.random()))
+async def jx3_update_horseinfo():
+    servers = list(server_map)
+    server = random.choice(servers)
+    await get_horse_reporter(server)
