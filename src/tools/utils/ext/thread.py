@@ -8,6 +8,7 @@ class SyncRunner(threading.Thread):
     def __init__(self, async_task) -> None:
         self.tasks = async_task
         self.semaphore = threading.Semaphore(0)
+        self.exception = None
         super().__init__(daemon=True)
 
     def run(self):
@@ -22,7 +23,9 @@ class SyncRunner(threading.Thread):
         except Exception as ex:
             self.result = None
             logger.warning(f'fail in running{self.tasks}.Exception:{ex}')
-        self.semaphore.release()
+            self.exception = ex
+        finally:
+            self.semaphore.release()
         return super().run()
 
     @staticmethod
@@ -31,6 +34,8 @@ class SyncRunner(threading.Thread):
         x.start()
         x.semaphore.acquire()
         result = x.result
+        if x.exception:
+            raise x.exception
         return result
 
 

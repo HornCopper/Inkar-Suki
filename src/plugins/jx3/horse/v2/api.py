@@ -1,7 +1,7 @@
 from src.tools.dep import *
 from ..api_lib import *
-_horse_db = f'{bot_path.DATA}{os.sep}glo-horse.json'
-data_horse_reporter: dict[str, HorseRecords] = filebase_database.Database(_horse_db).value  # 记录历史
+_horse_db = f'{bot_path.DATA}{os.sep}glo-horse'
+data_horse_reporter: dict[str, ] = filebase_database.Database(_horse_db).value  # 记录历史
 
 
 async def get_horse_reporter_data(server: str, start: int = 0, end: int = 1):
@@ -14,16 +14,27 @@ async def get_horse_reporter_data(server: str, start: int = 0, end: int = 1):
     return records
 
 
+async def load_horse_records(server: str):
+    '''从缓存加载，如果无数据，则从网站加载'''
+    prev_records = data_horse_reporter.get(server)
+    if prev_records:
+        prev_records = HorseRecords.from_dict(prev_records)
+        return prev_records
+
+    # 首次加载时多加载2页的
+    records = await get_horse_reporter_data(server, 1, 5)
+    prev_records = HorseRecords(server, records)
+    return prev_records
+
+
 async def get_horse_reporter_raw(server: str) -> list[HorseEventRecord]:
     records = await get_horse_reporter_data(server)
     new_records = HorseRecords(server, records)
-    prev_records = data_horse_reporter.get(server)
-    if not prev_records:
-        # 首次加载时多加载2页的
-        records = await get_horse_reporter_data(server, 1, 5)
-        prev_records = HorseRecords(server, records)
-    data_horse_reporter[server] = new_records.merge_records(prev_records)
-    valids = data_horse_reporter[server].valid_records
+    prev_records = await load_horse_records(server)
+
+    export_records = new_records.merge_records(prev_records)
+    data_horse_reporter[server] = export_records.to_dict()
+    valids = export_records.valid_records
     return valids
 
 
