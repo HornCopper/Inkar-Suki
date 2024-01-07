@@ -181,7 +181,7 @@ util_cmd_handle_request = on_command(
     document='''获取当前待处理的申请，选择要处理领养申请处理'''
 )
 
-current_requests: dict[int, dict[int, dict]] = filebase_database.Database(
+current_requests: dict[str, dict[str, dict]] = filebase_database.Database(
     f'{bot_path.common_data_full}group_requests').value
 
 
@@ -190,29 +190,35 @@ async def util_handle_request(bot: Bot, event: GroupMessageEvent, args: list[Any
     group_id, accept, reason = args
     user_id = event.user_id
     if not group_id:
-        return await view_requests(bot.self_id)
-    return await handle_request(user_id, bot.self_id, group_id, accept, reason)
+        return await view_requests(str(bot.self_id))
+    return await handle_request(str(user_id), str(bot.self_id), str(group_id), accept, reason)
 
 
-async def view_requests(self_id: int):
-    cur_items = current_requests.get(self_id) or {}
+async def view_requests(self_id: str):
+    self_id = str(self_id)  # 似乎nb传回的类型不稳定
+
+    cur_items = current_requests.get(str(self_id)) or {}
     cur_items = [cur_items[x] for x in list(cur_items)]
     cur_items.sort(key=lambda x: -DateTime(x.get('time')).timestamp())  # 看最近的
 
     result = ['当前待处理的群：']
-    result += [f'{DateTime(x.get("time"))}:{x.get("group_id")} {x.get("comment")}' for x in cur_items]
+    result += [f'{DateTime(x.get("time")).toRelativeTime()},群{x.get("group_id")} {x.get("comment")}' for x in cur_items]
 
     return await util_cmd_handle_request.send(str.join('\n', result))
 
 
-async def handle_request(user_id: int, self_id: int, group_id: int, accept: bool, reason: str):
+async def handle_request(user_id: str, self_id: str, group_id: str, accept: bool, reason: str):
+    self_id = str(self_id)  # 似乎nb传回的类型不稳定
+    group_id = str(group_id)
+    user_id = str(user_id)
+
     x = Permission(user_id).judge(10, '处理加群申请')
     if not x.success:
         return await util_cmd_handle_request.finish(x.description)
     request_info = None
-    cur_items = current_requests.get(self_id)
+    cur_items = current_requests.get(str(self_id))
     if cur_items:
-        request_info = cur_items.get(group_id)
+        request_info = cur_items.get(str(group_id))
 
     if not request_info:
         return await util_cmd_handle_request.finish(f'当前没有群号{group_id}的申请')
