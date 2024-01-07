@@ -20,10 +20,12 @@ class Jx3ApiResponse:
     }
 
     def __init__(self, data: dict) -> None:
+        logger.debug(f'api response with {data}')
         self.code: int = data.get('code')
-        self.data: dict = data
-        self.url: str = data.get('url')
         self.msg: str = data.get('msg')
+
+        self.data: dict = data.get('data') or {}
+        self.url: str = self.data.get('url')
 
     @property
     def success(self):
@@ -40,7 +42,11 @@ class Jx3ApiResponse:
     @property
     def output_url(self):
         err = self.error_msg
-        return [err] if err else self.url
+        if err:
+            return [err]
+        if not self.url:
+            return [PROMPT_NODataAvailable]
+        return self.url
 
 
 class ArgRequire(enum.Enum):
@@ -61,4 +67,4 @@ class Jx3ApiRequest:
     @classmethod
     def request(cls, x: Jx3ApiRequest):
         '''TODO AOP generate'''
-        return 
+        return
