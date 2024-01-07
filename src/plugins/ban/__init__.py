@@ -159,6 +159,11 @@ cmd_leave_task: dict[str, int] = filebase_database.Database(
     f'{bot_path.common_data_full}leave_tasks').value  # 退群状态
 
 
+async def reschedule():
+    '''TODO 初始化时加载历史计划'''
+    pass
+
+
 @mgr_cmd_remove_robot.got('confirm')
 async def leave_group(bot: Bot, state: T_State, event: GroupMessageEvent, confirm: Message = Arg()):
     global cmd_leave_task
@@ -167,15 +172,23 @@ async def leave_group(bot: Bot, state: T_State, event: GroupMessageEvent, confir
         return await cancel_leave_group(event)
     if state['code'] != u_input:
         return await mgr_cmd_remove_robot.send('没有回复正确的验证码哦~如果需要！重新发一下退出吧！')
+    logger.warning(f"用户提交了注销申请:group={event.group_id},by:{event.user_id}")
     counter = state['delay'] or 10 * 60
+
     if counter < 0:
         counter = 0
     if counter > 365 * 86400:
         counter = 365 * 86400
-
     schedule_time = DateTime(DateTime() + counter * 1e3)
-    cmd_leave_task[event.group_id] = schedule_time.timestamp()
-    logger.warning(f"用户提交了注销申请:group={event.group_id},by:{event.user_id}")
+
+    await add_schedule_of_leave(event.group_id, schedule_time)
+    prefix = f'[冷静期提醒]好哦~机器人将在{schedule_time.toRelativeTime()}'
+    suffix = f'离开\n取消回复：{cmd_cancel_leave}'
+    await mgr_cmd_remove_robot.send(f'{prefix}({schedule_time.tostring(DateTime.Format.DEFAULT)}){suffix}')
+
+
+async def add_schedule_of_leave(group_id: str, schedule_time: DateTime):
+    cmd_leave_task[group_id] = schedule_time.timestamp()
     try:
         scheduler.add_job(
             run_leave_group,
@@ -184,9 +197,6 @@ async def leave_group(bot: Bot, state: T_State, event: GroupMessageEvent, confir
             id=f"run_leave_group_{get_uuid()}")
     except ActionFailed as e:
         logger.warning(f"定时任务添加失败，{repr(e)}")
-    prefix = f'[冷静期提醒]好哦~机器人将在{schedule_time.toRelativeTime()}'
-    suffix = f'离开\n取消回复：{cmd_cancel_leave}'
-    await mgr_cmd_remove_robot.send(f'{prefix}({schedule_time.tostring(DateTime.Format.DEFAULT)}){suffix}')
 
 
 async def run_leave_group():
@@ -195,7 +205,7 @@ async def run_leave_group():
         schedule_time = cmd_leave_task[group_id]
         if not schedule_time:
             continue
-        if DateTime() + 5e3 < int(schedule_time):
+        if DateTime() + 5e3 < DateTime(schedule_time):
             continue
         logger.warning(f"已根据用户要求退出群:{group_id}")
         return await direct_leave_group(group_id)
