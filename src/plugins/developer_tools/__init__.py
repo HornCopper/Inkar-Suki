@@ -195,6 +195,7 @@ async def util_handle_request(bot: Bot, event: GroupMessageEvent, args: list[Any
 
 
 async def view_requests(self_id: str):
+    global current_requests
     self_id = str(self_id)  # 似乎nb传回的类型不稳定
 
     cur_items = current_requests.get(str(self_id)) or {}
@@ -208,6 +209,7 @@ async def view_requests(self_id: str):
 
 
 async def handle_request(bot: Bot, user_id: str, group_id: str, accept: bool, reason: str):
+    global current_requests
     self_id = str(bot.self_id)  # 似乎nb传回的类型不稳定
     group_id = str(group_id)
     user_id = str(user_id)
@@ -215,14 +217,13 @@ async def handle_request(bot: Bot, user_id: str, group_id: str, accept: bool, re
     x = Permission(user_id).judge(10, '处理加群申请')
     if not x.success:
         return await util_cmd_handle_request.finish(x.description)
-    request_info = None
     cur_items = current_requests.get(str(self_id))
-    if cur_items:
-        request_info = cur_items.get(str(group_id))
-
+    request_info = None if cur_items is None else cur_items.get(group_id)
+    logger.debug(f'request_info:{request_info}')
+    # logger.debug(f'current_requests:{current_requests}\ncur_items:{cur_items}\nrequest_info:{request_info}')
     if not request_info:
         return await util_cmd_handle_request.finish(f'当前没有群号{group_id}的申请')
-    del current_requests[group_id] # 处理完成，移除本记录
+    del cur_items[group_id]  # 处理完成，移除本记录
     try:
         await bot.set_group_add_request(
             flag=request_info.get('flag'),
@@ -231,22 +232,28 @@ async def handle_request(bot: Bot, user_id: str, group_id: str, accept: bool, re
             reason=reason,
         )
     except Exception as ex:
-        util_cmd_handle_request.send(f'处理失败：{ex}')
-    return util_cmd_handle_request.send('已处理')
+        await util_cmd_handle_request.send(f'处理失败：{ex}')
+    msg = f'已[{"同意" if accept else "拒绝"}]加群申请'
+    msg_reason = f',附言:{reason}' if reason else ''
+    return await util_cmd_handle_request.send(f'{msg}{msg_reason}')
 
 util_cmd_on_group_invite = on_request(priority=5)
 
 
 @util_cmd_on_group_invite.handle()
 async def util_on_group_invite(bot: Bot, event: RequestEvent):
-    '''入群自动发送帮助信息。'''
+    '''申请入群记录到待处理'''
+    global current_requests
     if not event.request_type == "group":
         return
     if not event.sub_type == "invite":
         return
+    group_id = str(event.group_id)
+    self_id = str(event.self_id)
+
     data = {
         'self_id': event.self_id,
-        'group_id': event.group_id,
+        'group_id': group_id,
 
         'flag': event.flag,
         'sub_type': event.sub_type,
@@ -254,10 +261,11 @@ async def util_on_group_invite(bot: Bot, event: RequestEvent):
         'comment': event.comment,
         'time': event.time,
     }
-    if not current_requests.get(event.self_id):
-        current_requests[event.self_id] = {}
-    cur_items = current_requests[event.self_id]
-    cur_items[event.group_id] = data
+    if not current_requests.get(self_id):
+        current_requests[self_id] = {}
+    cur_items = current_requests[self_id]
+    cur_items[group_id] = data
+    logger.info(f'加群申请:已加入待处理列表:{data}')
 
 
 util_cmd_web = on_command(
