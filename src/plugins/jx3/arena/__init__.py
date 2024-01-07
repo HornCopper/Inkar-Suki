@@ -1,7 +1,7 @@
 from .api import *
 
 jx3_cmd_arena_records = on_regex(
-    r"^(/)?(名剑|jjc|竞技场)?( )?(战绩|记录)",
+    r"^(/)?(名剑|jjc|竞技场)?(战绩|记录)",
     name='名剑战绩',
     priority=5,
     description='获取玩家竞技场的战绩记录',
@@ -32,7 +32,7 @@ async def jx3_arena_records(event: GroupMessageEvent, template: list[Any] = Depe
 
 
 jx3_cmd_arena_rank = on_regex(
-    r"^(/)?(名剑|jjc|竞技场)?( )?(排行|榜单|榜)",
+    r"^(/)?(名剑|jjc|竞技场)?(排行|榜单|榜)",
     name='名剑排行',
     priority=5,
     description='获取竞技场的各Top50',
@@ -54,7 +54,7 @@ async def jx3_arena_rank(bot: Bot, event: GroupMessageEvent, template: list[Any]
     return await jx3_cmd_arena_rank.send(ms.image(data))
 
 jx3_cmd_arena_statistics = on_regex(
-    r"^(/)?(名剑|jjc|竞技场)?( )?(统计|日志)",
+    r"^(/)?(名剑|jjc|竞技场)?(统计|日志)",
     name='名剑统计',
     priority=5,
     description='获取竞技场的各门派统计',
