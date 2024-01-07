@@ -207,7 +207,7 @@ async def run_leave_group():
             continue
         if DateTime() + 5e3 < DateTime(schedule_time):
             continue
-        return await direct_leave_group(group_id)
+        await direct_leave_group(group_id)
 
 
 async def direct_leave_group(group_id: str):
