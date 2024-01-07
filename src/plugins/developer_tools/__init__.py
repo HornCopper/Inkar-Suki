@@ -191,7 +191,7 @@ async def util_handle_request(bot: Bot, event: GroupMessageEvent, args: list[Any
     user_id = event.user_id
     if not group_id:
         return await view_requests(str(bot.self_id))
-    return await handle_request(str(user_id), str(bot.self_id), str(group_id), accept, reason)
+    return await handle_request(bot, str(user_id),  str(group_id), accept, reason)
 
 
 async def view_requests(self_id: str):
@@ -207,8 +207,8 @@ async def view_requests(self_id: str):
     return await util_cmd_handle_request.send(str.join('\n', result))
 
 
-async def handle_request(user_id: str, self_id: str, group_id: str, accept: bool, reason: str):
-    self_id = str(self_id)  # 似乎nb传回的类型不稳定
+async def handle_request(bot: Bot, user_id: str, group_id: str, accept: bool, reason: str):
+    self_id = str(bot.self_id)  # 似乎nb传回的类型不稳定
     group_id = str(group_id)
     user_id = str(user_id)
 
