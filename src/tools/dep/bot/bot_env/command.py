@@ -1,5 +1,5 @@
 
-from typing import overload
+from typing import overload, Type
 from nonebot.adapters.onebot.v11 import GroupMessageEvent
 
 from sgtpyutils.functools import AssignableArg
@@ -27,7 +27,7 @@ def __hook_on_command(
     force_whitespace=None,
     _depth: int = 0,
     **kwargs,
-):
+) -> Type[Matcher]:
     force_whitespace = ' '  # 参数-必须加空格才匹配
     command_item = nonebot._on_command(cmd, rule, aliases, force_whitespace,  _depth+2)
     return command_item
@@ -44,7 +44,7 @@ def __hook_on_regex(
     rule=None,
     _depth: int = 0,
     **kwargs,
-):
+) -> Type[Matcher]:
     return nonebot._on_regex(pattern, flags, rule, _depth+2)
 
 

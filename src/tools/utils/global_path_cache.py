@@ -18,5 +18,6 @@ VIEWS = get_path("views")
 PLUGINS = get_path('plugins')
 TOOLS = tools_path
 
-common_data:str = 'common'
+common_data: str = 'common'
+common_data_full: str = f'{DATA}{os.sep}{common_data}{os.sep}'
 '''DATA中的数据通用存储'''
