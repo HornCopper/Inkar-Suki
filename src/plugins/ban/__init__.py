@@ -135,7 +135,7 @@ mgr_cmd_remove_robot = on_command(
     ],
     document='''退群有冷静期，期间可以取消退群
     这种退群不会进黑名单
-    可以明确退群的时间，默认为10分钟'''
+    可以明确退群的时间，默认为10分钟(但参数的单位为妙)'''
 )
 
 
@@ -168,6 +168,11 @@ async def leave_group(bot: Bot, state: T_State, event: GroupMessageEvent, confir
     if state['code'] != u_input:
         return await mgr_cmd_remove_robot.send('没有回复正确的验证码哦~如果需要！重新发一下退出吧！')
     counter = state['delay'] or 10 * 60
+    if counter < 0:
+        counter = 0
+    if counter > 365 * 86400:
+        counter = 365 * 86400
+        
     schedule_time = DateTime(DateTime() + counter * 1e3)
     cmd_leave_task[event.group_id] = schedule_time.timestamp()
     logger.warning(f"用户提交了注销申请:group={event.group_id},by:{event.user_id}")
@@ -190,7 +195,7 @@ async def run_leave_group():
         schedule_time = cmd_leave_task[group_id]
         if not schedule_time:
             continue
-        if DateTime() + 5e3 < schedule_time:
+        if DateTime() + 5e3 < int(schedule_time):
             continue
         logger.warning(f"已根据用户要求退出群:{group_id}")
         return await direct_leave_group(group_id)
