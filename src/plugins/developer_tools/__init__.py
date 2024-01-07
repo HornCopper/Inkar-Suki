@@ -222,13 +222,16 @@ async def handle_request(bot: Bot, user_id: str, group_id: str, accept: bool, re
 
     if not request_info:
         return await util_cmd_handle_request.finish(f'当前没有群号{group_id}的申请')
-    await bot.set_group_add_request(
-        flag=request_info.get('flag'),
-        sub_type=request_info.get('sub_type'),
-        approve=accept,
-        reason=reason,
-    )
     del request_info[group_id]
+    try:
+        await bot.set_group_add_request(
+            flag=request_info.get('flag'),
+            sub_type=request_info.get('sub_type'),
+            approve=accept,
+            reason=reason,
+        )
+    except Exception as ex:
+        util_cmd_handle_request.send(f'处理失败：{ex}')
     return util_cmd_handle_request.send('已处理')
 
 util_cmd_on_group_invite = on_request(priority=5)
