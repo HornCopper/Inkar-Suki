@@ -76,7 +76,7 @@ async def get_jx3_trade_detail(matcher: Matcher, state: T_State, event: GroupMes
     state['id'] = [first_item.id]
     state['server'] = arg_server
 
-    result = await get_price_num_selected2(state, event, obMessage("1"))
+    result = await get_price_num_selected2(state, event, "1")
     return result
 
 
@@ -112,7 +112,7 @@ async def jx3_trade_favoritest(matcher: Matcher, state: T_State, event: GroupMes
 
 @jx3_cmd_trade2.got("user_select_index")
 async def price_num_selected2(state: T_State, event: GroupMessageEvent, user_select_index: Message = Arg()):
-    data = await get_price_num_selected2(state, event, user_select_index)
+    data = await get_price_num_selected2(state, event, user_select_index.extract_plain_text())
     if data is None:
         return
     if isinstance(data, list):
@@ -120,8 +120,8 @@ async def price_num_selected2(state: T_State, event: GroupMessageEvent, user_sel
     return await jx3_cmd_trade2.send(data)
 
 
-async def get_price_num_selected2(state: T_State, event: GroupMessageEvent, user_select_index: Message = Arg()):
-    good_index = get_number(user_select_index.extract_plain_text())
+async def get_price_num_selected2(state: T_State, event: GroupMessageEvent, user_select_index: str):
+    good_index = get_number(user_select_index)
     all_ids = state["id"]
     logger.debug(f'price_num_selected2:{good_index}@{event.group_id},all={all_ids}')
     if good_index > len(all_ids) or good_index <= 0:
