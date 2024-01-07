@@ -16,6 +16,8 @@ def get_number_with_default(number) -> tuple[int, bool]:
     返回参数的数值，默认返回0
     如果是默认值，则返回True
     '''
+    if isinstance(number, str):
+        number = number.strip()
     if not checknumber(number):
         return 0, True
     return int(number), False
