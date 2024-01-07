@@ -29,6 +29,8 @@ class Jx3ArgsType(enum.Enum):
     '''文本'''
     number = IArgDesc(example=[1, 2, 3], description='数值')
     '''数值'''
+    bool = IArgDesc(example=[0, 1], description='真假')
+    '''真假'''
     server = IArgDesc(example=['唯满侠', '双梦', '煎蛋'], description='区服')
     '''区服'''
     pageIndex = IArgDesc(example=[1, 2, 3], description='页码')
