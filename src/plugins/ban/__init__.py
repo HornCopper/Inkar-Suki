@@ -151,7 +151,8 @@ async def leave_group(bot: Bot, state: T_State, event: Event, args: list[Any] = 
     await mgr_cmd_remove_robot.send(f'确定要让机器人离开吗，回复确认码\n{confirm_code}')
 
 cmd_cancel_leave = '取消移除机器人'
-cmd_leave_task: dict[str, DateTime] = {}  # 退群状态
+cmd_leave_task: dict[str, int] = filebase_database.Database(
+    f'{bot_path.common_data_full}leave_tasks').value  # 退群状态
 
 
 @mgr_cmd_remove_robot.got('confirm')
@@ -163,8 +164,8 @@ async def leave_group(bot: Bot, state: T_State, event: GroupMessageEvent, confir
     if state['code'] != u_input:
         return await mgr_cmd_remove_robot.send('没有回复正确的验证码哦~如果需要！重新发一下退出吧！')
     counter = 10
-    schedule_time = DateTime() + (counter * 60) * 1e3
-    cmd_leave_task[event.group_id] = schedule_time
+    schedule_time = DateTime(DateTime() + (counter * 60) * 1e3)
+    cmd_leave_task[event.group_id] = schedule_time.timestamp()
     logger.warning(f"用户提交了注销申请:group={event.group_id},by:{event.user_id}")
     try:
         scheduler.add_job(
