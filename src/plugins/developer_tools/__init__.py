@@ -1,3 +1,5 @@
+from nonebot import on_notice, on_command, on_request
+from nonebot.adapters.onebot.v11 import Bot, GroupMessageEvent, NoticeEvent, RequestEvent
 from src.tools.dep import *
 from .help_document import *
 from src.tools.local_version import nbv
@@ -164,13 +166,92 @@ async def _(bot: Bot, event: GroupMessageEvent, args: v11Message = CommandArg())
                        message=final_msg
                        )
 
+util_cmd_handle_request = on_command(
+    "util_handle_request",
+    name="处理领养申请",
+    aliases={"处理申请"},
+    priority=5,
+    description='',
+    catalog=permission.bot.group.apply,
+    example=[
+        Jx3Arg(Jx3ArgsType.number),
+        Jx3Arg(Jx3ArgsType.bool),
+        Jx3Arg(Jx3ArgsType.string),
+    ],
+    document='''获取当前待处理的申请，选择要处理领养申请处理'''
+)
+
+current_requests: dict[int, dict[int, dict]] = filebase_database.Database(
+    f'{bot_path.common_data_full}group_requests').value
+
+
+@util_cmd_handle_request.handle()
+async def util_handle_request(bot: Bot, event: GroupMessageEvent, args: list[Any] = Depends(Jx3Arg.arg_factory)):
+    group_id, accept, reason = args
+    if not group_id:
+        return await view_requests(bot.self_id)
+    return await handle_request(bot.self_id, group_id, accept, reason)
+
+
+async def view_requests(self_id: int):
+    cur_items = current_requests.get(self_id) or {}
+    cur_items = [cur_items[x] for x in list(cur_items)]
+    cur_items.sort(key=lambda x: -DateTime(x.get('time')).timestamp()) # 看最近的
+
+    result = ['当前待处理的群：']
+    result += [f'{DateTime(x.get("time"))}:{x.get("group_id")} {x.get("comment")}' for x in cur_items]
+
+
+async def handle_request(self_id: int, group_id: int, accept: bool, reason: str):
+    request_info = None
+    cur_items = current_requests.get(self_id)
+    if cur_items:
+        request_info = cur_items.get(group_id)
+
+    if not request_info:
+        return await util_cmd_handle_request.finish(f'当前没有群号{group_id}的申请')
+    await bot.set_group_add_request(
+        flag=request_info.get('flag'),
+        sub_type=request_info.get('sub_type'),
+        approve=accept,
+        reason=reason,
+    )
+    del request_info[group_id]
+    return util_cmd_handle_request.send('已处理')
+
+util_cmd_on_group_invite = on_request(priority=5)
+
+
+@util_cmd_on_group_invite.handle()
+async def util_on_group_invite(bot: Bot, event: RequestEvent):
+    '''入群自动发送帮助信息。'''
+    if not event.request_type == "group":
+        return
+    if not event.sub_type == "invite":
+        return
+    data = {
+        'self_id': event.self_id,
+        'group_id': event.group_id,
+
+        'flag': event.flag,
+        'sub_type': event.sub_type,
+
+        'comment': event.comment,
+        'time': event.time,
+    }
+    if not current_requests.get(event.self_id):
+        current_requests[event.self_id] = {}
+    cur_items = current_requests[event.self_id]
+    cur_items[event.group_id] = data
+
+
 util_cmd_web = on_command(
     "util_web",
     name="网页截图",
     aliases={"web"},
     priority=5,
     description='网页截图，需要网址',
-    catalog=permission.jx3.pvx.property.horse.chitu,
+    catalog=permission.bot.docs,
     example=[
         Jx3Arg(Jx3ArgsType.url)
     ],
@@ -188,6 +269,7 @@ async def util_web(bot: Bot, event: GroupMessageEvent, args: list[Any] = Depends
     image = await generate_by_url(url, delay=1000)
     img = ms.image(Path(image).as_uri())
     return await util_cmd_web.send(v11Message(f'{img}\n网页截图完成'))
+
 
 apply = on_command(
     "apply",

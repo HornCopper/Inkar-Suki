@@ -75,3 +75,7 @@ class permission(BaseCatalog):
             '''文档配置'''
             class help(BaseCatalog):
                 '''帮助文档'''
+        class group(BaseCatalog):
+            '''机器人群'''
+            class apply(BaseCatalog):
+                '''处理申请'''

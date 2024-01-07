@@ -50,6 +50,16 @@ class Jx3ArgCallback:
     def _convert_number(self, arg_value: str, **kwargs) -> int:
         return get_number(arg_value)
 
+    def _convert_bool(self, arg_value: str, **kwargs) -> int:
+        if arg_value in {'同意', '可', '真', '好', '批准', '准许'}:
+            return True
+        if arg_value in {'不同意', '不可', '假', '差', '拒绝', '否决'}:
+            return False
+        x = get_number(arg_value)
+        if x == 0:
+            return False
+        return True
+
     def _convert_pageIndex(self, arg_value: str, **kwargs) -> tuple[int, bool]:
         is_default = False
         if arg_value is None:
@@ -93,6 +103,7 @@ class Jx3Arg(Jx3ArgCallback, Jx3ArgExt):
     callback = {
         Jx3ArgsType.default: Jx3ArgCallback._convert_string,
         Jx3ArgsType.number: Jx3ArgCallback._convert_number,
+        Jx3ArgsType.bool: Jx3ArgCallback._convert_bool,
         Jx3ArgsType.pageIndex: Jx3ArgCallback._convert_pageIndex,
         Jx3ArgsType.string: Jx3ArgCallback._convert_string,
         Jx3ArgsType.server: Jx3ArgCallback._convert_server,
