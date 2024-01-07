@@ -235,5 +235,15 @@ class GoodsInfoFull(GoodsInfo):
 
     def to_dict(self) -> dict:
         r = super().to_dict()
-        r["wucai_properties"] = [x.to_dict() for x in self.wucai_properties]
+        self_dict = {
+            'typeLabel': self.typeLabel,
+            'desc': self.desc,
+            'maxDurability': self.maxDurability,
+            'maxExistAmount': self.maxExistAmount,
+            'attributes': self.attributes,
+            'recovery_price': self.recovery_price,
+            'level': self.level,
+            'wucai_properties': [x.to_dict() for x in self.wucai_properties],
+        }
+        r.update(self_dict)
         return r
