@@ -207,11 +207,11 @@ async def run_leave_group():
             continue
         if DateTime() + 5e3 < DateTime(schedule_time):
             continue
-        logger.warning(f"已根据用户要求退出群:{group_id}")
         return await direct_leave_group(group_id)
 
 
 async def direct_leave_group(group_id: str):
+    logger.warning(f"根据用户要求退出群:{group_id}")
     global cmd_leave_task
     for x in get_bots():
         bot = get_bot(x)
@@ -227,8 +227,9 @@ async def direct_leave_group(group_id: str):
 
             for i in Config.notice_to:
                 await bot.call_api("send_group_msg", group_id=int(i), message=f'音卡按他们的要求，离开了{group_id}')
-        except Exception as _:
-            pass
+        except Exception as ex:
+            logger.warning(f'退群时操作失败:{ex}')
+    logger.warning(f"完成：根据用户要求退出群:{group_id}")
 
 
 mgr_cmd_cancel_remove_robot = on_command("mgr_cancel_leave_group", aliases={
