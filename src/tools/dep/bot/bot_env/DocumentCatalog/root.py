@@ -63,7 +63,15 @@ class permission(BaseCatalog):
             '''群管理'''
             class exit(BaseCatalog):
                 '''退群'''
+            class apply(BaseCatalog):
+                '''申请'''
     class user(BaseCatalog):
         '''用户管理'''
         class group(BaseCatalog):
             '''群管理'''
+    class bot(BaseCatalog):
+        '''机器人配置'''
+        class docs(BaseCatalog):
+            '''文档配置'''
+            class help(BaseCatalog):
+                '''帮助文档'''

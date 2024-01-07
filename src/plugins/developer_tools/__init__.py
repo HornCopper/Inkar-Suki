@@ -189,9 +189,18 @@ async def util_web(bot: Bot, event: GroupMessageEvent, args: list[Any] = Depends
     img = ms.image(Path(image).as_uri())
     return await util_cmd_web.send(v11Message(f'{img}\n网页截图完成'))
 
-# 申请使用机器人的命令，`repo`地址来源于`config.py`。
-apply = on_command("apply", aliases={"申请", "领养", "购买", "要一个音卡",
-                   "想要一个音卡", "想有一个音卡", "音卡", '机器人'}, priority=5)
+apply = on_command(
+    "apply",
+    aliases={
+        "申请", "领养", "购买", f"要一个{bot}",
+        f"想要一个{bot}", f"想有一个{bot}", f"{bot}", '机器人',
+    },
+    priority=5,
+    description='获取如何拉机器人入群',
+    catalog=permission.mgr.group.apply,
+    example=[],
+    document=''''''
+)
 
 
 @apply.handle()
@@ -207,7 +216,7 @@ async def _(state: T_State, event: Event):
     ]
     steps = [f'{index+1}.{x}' for (index, x) in enumerate(steps)]
     steps = str.join('\n', steps)
-    return await apply.finish(f'是要领养吗，免费的：\n{steps}')
+    return await apply.finish(f'是要领养{bot}吗，免费的：\n{steps}')
 
 
 # @apply.got("group", prompt="感谢您申请使用Inkar Suki，接下来请发送您所为之申请的群聊的群号。")
