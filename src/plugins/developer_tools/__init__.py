@@ -188,21 +188,27 @@ current_requests: dict[int, dict[int, dict]] = filebase_database.Database(
 @util_cmd_handle_request.handle()
 async def util_handle_request(bot: Bot, event: GroupMessageEvent, args: list[Any] = Depends(Jx3Arg.arg_factory)):
     group_id, accept, reason = args
+    user_id = event.user_id
     if not group_id:
         return await view_requests(bot.self_id)
-    return await handle_request(bot.self_id, group_id, accept, reason)
+    return await handle_request(user_id, bot.self_id, group_id, accept, reason)
 
 
 async def view_requests(self_id: int):
     cur_items = current_requests.get(self_id) or {}
     cur_items = [cur_items[x] for x in list(cur_items)]
-    cur_items.sort(key=lambda x: -DateTime(x.get('time')).timestamp()) # 看最近的
+    cur_items.sort(key=lambda x: -DateTime(x.get('time')).timestamp())  # 看最近的
 
     result = ['当前待处理的群：']
     result += [f'{DateTime(x.get("time"))}:{x.get("group_id")} {x.get("comment")}' for x in cur_items]
 
+    return await util_cmd_handle_request.send(str.join('\n', result))
 
-async def handle_request(self_id: int, group_id: int, accept: bool, reason: str):
+
+async def handle_request(user_id: int, self_id: int, group_id: int, accept: bool, reason: str):
+    x = Permission(user_id).judge(10, '处理加群申请')
+    if not x.success:
+        return await util_cmd_handle_request.finish(x.description)
     request_info = None
     cur_items = current_requests.get(self_id)
     if cur_items:
