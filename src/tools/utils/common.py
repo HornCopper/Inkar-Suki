@@ -1,4 +1,5 @@
 from sgtpyutils.datetime import DateTime
+import re
 
 
 def get_number(number):
@@ -10,15 +11,18 @@ def get_number(number):
     return int(number)
 
 
-def checknumber(number):
+def checknumber(value):
     '''
     检查参数是否是数值
     '''
-    if number is None:
+    if value is None:
         return False
-    if isinstance(number, int):
+    if isinstance(value, str):
+        pattern = r'^[+-]?(\d+(\.\d*)?|\.\d+)([eE][+-]?\d+)?$'
+        return bool(re.match(pattern, value))
+    if isinstance(value, int):
         return True
-    return number.isdecimal()
+    return value.isdecimal()
 
 
 def convert_time(timestamp: int, format: str = '%Y年%m月%d日 %H:%M:%S'):
