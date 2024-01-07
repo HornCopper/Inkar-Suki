@@ -50,7 +50,6 @@ class Jx3ArgCallback:
     def _convert_number(self, arg_value: str, **kwargs) -> tuple[str, bool]:
         x, is_default = get_number_with_default(arg_value)
         return x, is_default
-        return x, False
 
     def _convert_bool(self, arg_value: str, **kwargs) -> int:
         if arg_value in {'同意', '可', '真', '好', '批准', '准许'}:
