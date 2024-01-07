@@ -130,15 +130,19 @@ mgr_cmd_remove_robot = on_command(
     priority=5,
     description='让机器人自己体面',
     catalog=permission.mgr.group.exit,
-    example=[],
+    example=[
+        Jx3Arg(Jx3ArgsType.number, default=600),
+    ],
     document='''退群有冷静期，期间可以取消退群
-    这种退群不会进黑名单'''
+    这种退群不会进黑名单
+    可以明确退群的时间，默认为10分钟'''
 )
 
 
 @mgr_cmd_remove_robot.handle()
 async def leave_group(bot: Bot, state: T_State, event: Event, args: list[Any] = Depends(Jx3Arg.arg_factory)):
-
+    delay, = args
+    state['delay'] = delay
     personal_data = await bot.call_api("get_group_member_info", group_id=event.group_id, user_id=event.user_id, no_cache=True)
     group_admin = personal_data["role"] in ["owner", "admin"]
 
@@ -151,7 +155,8 @@ async def leave_group(bot: Bot, state: T_State, event: Event, args: list[Any] = 
     await mgr_cmd_remove_robot.send(f'确定要让机器人离开吗，回复确认码\n{confirm_code}')
 
 cmd_cancel_leave = '取消移除机器人'
-cmd_leave_task: dict[str, DateTime] = {}  # 退群状态
+cmd_leave_task: dict[str, int] = filebase_database.Database(
+    f'{bot_path.common_data_full}leave_tasks').value  # 退群状态
 
 
 @mgr_cmd_remove_robot.got('confirm')
@@ -162,9 +167,9 @@ async def leave_group(bot: Bot, state: T_State, event: GroupMessageEvent, confir
         return await cancel_leave_group(event)
     if state['code'] != u_input:
         return await mgr_cmd_remove_robot.send('没有回复正确的验证码哦~如果需要！重新发一下退出吧！')
-    counter = 10
-    schedule_time = DateTime() + (counter * 60) * 1e3
-    cmd_leave_task[event.group_id] = schedule_time
+    counter = state['delay'] or 10 * 60
+    schedule_time = DateTime(DateTime() + counter * 1e3)
+    cmd_leave_task[event.group_id] = schedule_time.timestamp()
     logger.warning(f"用户提交了注销申请:group={event.group_id},by:{event.user_id}")
     try:
         scheduler.add_job(
@@ -174,7 +179,7 @@ async def leave_group(bot: Bot, state: T_State, event: GroupMessageEvent, confir
             id=f"run_leave_group_{get_uuid()}")
     except ActionFailed as e:
         logger.warning(f"定时任务添加失败，{repr(e)}")
-    prefix = f'[冷静期提醒]好哦~机器人将在{counter}分钟后'
+    prefix = f'[冷静期提醒]好哦~机器人将在{schedule_time.toRelativeTime()}'
     suffix = f'离开\n取消回复：{cmd_cancel_leave}'
     await mgr_cmd_remove_robot.send(f'{prefix}({schedule_time.tostring(DateTime.Format.DEFAULT)}){suffix}')
 
