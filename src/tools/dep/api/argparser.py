@@ -47,8 +47,10 @@ class Jx3ArgCallback:
     def _convert_user(self, arg_value: str, event: GroupMessageEvent = None, **kwargs) -> tuple[str, bool]:
         return arg_value  # TODO 根据用户当前绑定的玩家自动选择
 
-    def _convert_number(self, arg_value: str, **kwargs) -> int:
-        return get_number(arg_value)
+    def _convert_number(self, arg_value: str, **kwargs) -> tuple[str, bool]:
+        x, is_default = get_number_with_default(arg_value)
+        return x, is_default
+        return x, False
 
     def _convert_bool(self, arg_value: str, **kwargs) -> int:
         if arg_value in {'同意', '可', '真', '好', '批准', '准许'}:
