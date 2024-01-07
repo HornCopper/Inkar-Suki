@@ -65,7 +65,7 @@ class Jx3ArgCallback:
         is_default = False
         if arg_value is None:
             return 0, True
-        v = self._convert_number(arg_value)
+        v, page_is_default = self._convert_number(arg_value)
         if not v or v < 0:
             v = 1  # 默认返回第一页
             is_default = True
