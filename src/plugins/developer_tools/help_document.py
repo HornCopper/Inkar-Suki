@@ -46,9 +46,9 @@ async def get_group_config(bot: Bot, group_id: str):
     member_count = group_info.get('member_count') or 0
     max_member_count = group_info.get('max_member_count') or 0
 
-    labels.insert({'content': f'{member_count}/{max_member_count}',
+    labels.insert(0, {'content': group_name, 'style': 'font-size:1.2rem', 'element': 'span'})
+    labels.insert(1, {'content': f'{member_count}/{max_member_count}',
                   'style': 'font-size:0.6rem', 'element': 'span'})
-    labels.insert({'content': group_name, 'style': 'font-size:1.2rem', 'element': 'span'})
     return {
         'name': group_info.get('name'),
         'labels': labels
