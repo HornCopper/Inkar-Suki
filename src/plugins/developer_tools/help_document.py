@@ -42,7 +42,13 @@ async def get_group_config(bot: Bot, group_id: str):
     group_info = {'name': '未知的群名'}
     if bot:
         group_info = await bot.get_group_info(group_id=int(group_id))
+    group_name = group_info.get('group_name') or '未知的群名'
+    member_count = group_info.get('member_count') or 0
+    max_member_count = group_info.get('max_member_count') or 0
 
+    labels.insert({'content': f'{member_count}/{max_member_count}',
+                  'style': 'font-size:0.6rem', 'element': 'span'})
+    labels.insert({'content': group_name, 'style': 'font-size:1.2rem', 'element': 'span'})
     return {
         'name': group_info.get('name'),
         'labels': labels
