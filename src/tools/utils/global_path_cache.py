@@ -21,3 +21,7 @@ TOOLS = tools_path
 common_data: str = 'common'
 common_data_full: str = f'{DATA}{os.sep}{common_data}{os.sep}'
 '''DATA中的数据通用存储'''
+
+
+def get_group_config(group_id: str, config_name: str = 'jx3group') -> str:
+    return f'{DATA}{os.sep}{group_id}{os.sep}{config_name}'
