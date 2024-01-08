@@ -44,6 +44,9 @@ def check_env_path(group_id: str):
     write(f"{new_path }/record.json", "[]")
     write(f"{new_path }/subscribe.json", "[]")
     write(f"{new_path }/blacklist.json", "[]")
+
+    # 设置开始日期
+    GroupConfig(group_id).mgr_property('auth.start', DateTime().timestamp())
     return False
 
 
@@ -62,8 +65,9 @@ async def on_new_group_enter(bot: Bot, event: NoticeEvent):
     if event.sub_type != "approve":
         return
     msg = "欢迎使用Inkar Suki！如需帮助请发送+help或查询文档哦~\nhttps://inkar-suki.codethink.cn"
+    if check_env_path(event.group_id):
+        return
     await bot.call_api("send_group_msg", group_id=event.group_id, message="检测到本群为新群聊，音卡已经自动补全所需要的文件啦！")
-    check_env_path(event.group_id)
 
 
 @notice.handle()
