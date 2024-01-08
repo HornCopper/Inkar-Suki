@@ -17,7 +17,7 @@ class GroupConfigInfo:
 
 
 groupConfigAuth: dict[str, GroupConfigInfo] = {
-    'start': GroupConfigInfo('首次使用', default=DateTime('2023-01-01').timestamp()),
+    'start': GroupConfigInfo('首次使用', default=DateTime('2024-01-08').timestamp()),
     'uses': GroupConfigInfo('使用记录', '记录每个授权区间', default=[]),
     'allow_server': GroupConfigInfo('可绑区服', '若无内容，则可任意绑定', default=[]),
     'allow_bot': GroupConfigInfo('可绑机器人', '若无内容，则可任意绑定', default=[]),
