@@ -29,7 +29,7 @@ class Jx3ArgsType(enum.Enum):
     '''文本'''
     number = IArgDesc(example=[1, 2, 3], description='数值')
     '''数值'''
-    bool = IArgDesc(example=[0, 1], description='真假')
+    bool = IArgDesc(example=["同意", "否定", "确定"], description='是否')
     '''真假'''
     server = IArgDesc(example=['唯满侠', '双梦', '煎蛋'], description='区服')
     '''区服'''
@@ -53,6 +53,10 @@ class Jx3ArgsType(enum.Enum):
     '''命令'''
     url = IArgDesc(example=['baidu.com', 'http://xx.com', 'https://qq.com'], description='链接')
     '''链接'''
+    group_id = IArgDesc(example=["123456", "111111", "654321"], description='群号')
+    '''群号'''
+    remark = IArgDesc(example=["yesyes", "来啦", "备注"], description='备注')
+    '''备注'''
 
     def to_dict(self):
         return self.value.to_dict()
