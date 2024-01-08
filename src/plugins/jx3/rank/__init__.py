@@ -102,7 +102,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
                 season_key = i["key"]
                 flag = True
         if flag is False:
-            return await rank.finish("唔……您所提供的赛季暂时无法找到，您可以留空，这样音卡将提供最新赛季的天梯榜。")
+            return await rank.finish(f"唔……您所提供的赛季暂时无法找到，您可以留空，这样{Config.name}将提供最新赛季的天梯榜。")
         else:
             img = await get_school_rank(season_key)
             return await rank.finish(ms.image(img))
