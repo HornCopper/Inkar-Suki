@@ -32,7 +32,7 @@ class DocumentItem:
 
         self.description = data.get('description')
         self.priority = data.get('priority') or 0
-        self.example = data.get('example') or []
+        self.example: list = data.get('example') or []
 
         catalog = data.get('catalog')
         if isinstance(catalog, str):
@@ -54,7 +54,7 @@ class DocumentItem:
         return f'{self.name}[{self.catalog}]{self.cmd}{alias}: {self.description}'
 
     def to_dict(self) -> dict[str, any]:
-        example = [tpl.name for tpl in self.example]
+        example = [tpl.to_dict() for tpl in self.example]
         return {
             'name': self.name,
             'cmd': self.cmd,

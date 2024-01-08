@@ -3,6 +3,7 @@ from src.tools.dep import *
 
 dev_cmd_show_help = on_command(
     "show_help",
+    name="帮助",
     aliases={
         "帮助", "功能", "文档", "说明", "怎么用", "使用说明",
         "菜单", "开关", "授权", "咋用", "方法", "教程",

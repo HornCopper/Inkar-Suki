@@ -51,6 +51,11 @@ class Jx3ArgCallback:
         x, is_default = get_number_with_default(arg_value)
         return x, is_default
 
+    def _convert_group_id(self, arg_value: str, **kwargs) -> tuple[str, bool]:
+        '''TODO 群有效性判断'''
+        x, is_default = self._convert_number(arg_value, **kwargs)
+        return x, is_default
+
     def _convert_bool(self, arg_value: str, **kwargs) -> int:
         if arg_value in {'同意', '可', '真', '好', '批准', '准许'}:
             return True
@@ -115,11 +120,13 @@ class Jx3Arg(Jx3ArgCallback, Jx3ArgExt):
         Jx3ArgsType.pvp_mode: Jx3ArgCallback._convert_pvp_mode,
         Jx3ArgsType.subscribe: Jx3ArgCallback._convert_subscribe,
         Jx3ArgsType.command: Jx3ArgCallback._convert_command,
+        Jx3ArgsType.group_id: Jx3ArgCallback._convert_group_id,
+        Jx3ArgsType.remark: Jx3ArgCallback._convert_string,
     }
 
     def __init__(self, arg_type: Jx3ArgsType = Jx3ArgsType.default,  name: str = None, is_optional: bool = True, default: any = Ellipsis) -> None:
         self.arg_type = arg_type
-        self.is_optional = default or is_optional  # 显式设置为可选 或 设置了默认值
+        self.is_optional = bool(False or is_optional is not Ellipsis)  # 显式设置为可选 或 设置了默认值
         self.name = name or str(arg_type)
         self.default = default
 
@@ -153,6 +160,14 @@ class Jx3Arg(Jx3ArgCallback, Jx3ArgExt):
         if templates is None:  # 不再继续处理
             matcher.stop_propagation()
         return templates
+
+    def to_dict(self):
+        return {
+            'name': self.name,
+            'arg_type': self.arg_type.name,
+            'is_optional': self.is_optional,
+            'default': None if self.default is Ellipsis else self.default,
+        }
 
 
 @overload
