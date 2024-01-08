@@ -50,13 +50,10 @@
           <el-col :span="6">
             <div style="height:18rem">
               <el-card style="text-align:left">
-                <div style="font-size:1.5rem">群名称</div>
-                <div>群号：XXXXXX</div>
-                <div>机器人：XXXXXX</div>
-                <div>已相处：XXX天</div>
-                <div>绑定区服：XXX</div>
-                <el-divider style="margin:0.5rem"></el-divider>
-                <div>群内TOP：XXX、XXX、XXX、XXX、XXX、XXX、XXX</div>
+                <div style="font-size:1.2rem">{{ group_config.name }}</div>
+                <div v-for="(x,index) in group_config.labels" :key="index">
+                  <component :is="x.element||'div'" :style="x.style">{{ x.content }}</component>
+                </div>
               </el-card>
             </div>
             <div style="text-align: center;font-size:1.5rem">长按扫码加群领养</div>
@@ -351,6 +348,7 @@
         args_template: {},
         catalogs: {},
         commands: [],
+        group_config: {},
         pageIndex: 1,
         item_name: '',
         title: '',
