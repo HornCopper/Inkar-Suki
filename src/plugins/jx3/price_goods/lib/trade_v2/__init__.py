@@ -56,8 +56,8 @@ async def get_goods_current_detail_price(id: str, server: str, only_cache: bool 
         elif (DateTime() - DateTime(price_detail.updated)).total_seconds() < 86400*7:
             # 缓存模式下7天内有更新的不再重复加载
             return price_detail
-        elif random.random() > 0.95:
-            # 超过7天的则有5%概率重新加载
+        elif random.random() > 0.99:
+            # 超过7天的则有1%概率重新加载
             return price_detail
 
     url = f"https://next2.jx3box.com/api/item-price/{id}/detail?server={server}"
