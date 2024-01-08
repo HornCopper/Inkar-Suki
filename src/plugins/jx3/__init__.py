@@ -61,4 +61,4 @@ async def on_jx3_event_recv(bot: Bot, event: RecvEvent):
         try:
             await bot.call_api("send_group_msg", group_id=group_id, message=message["msg"])
         except Exception as ex:
-            logger.info(f"向群({group_id})推送失败，可能是因为风控、禁言或者未加入该群。ex={ex}")
+            logger.error(f"向群({group_id})推送失败，可能是因为风控、禁言或者未加入该群。ex={ex}")
