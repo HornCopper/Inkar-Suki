@@ -18,6 +18,8 @@ def get_uuid():
 
 
 class PlaywrightRunner(threading.Thread):
+    match_chars = re.compile(r'[a-z|A-Z|0-9| |_|\-|\+|\.]+')
+
     def __init__(self) -> None:
         self.tasks: list[tuple[str, str, bool, int, asyncio.Future]] = []
         self.IsRunning = True
@@ -60,16 +62,20 @@ class PlaywrightRunner(threading.Thread):
         logger.info(f"rendering start new task:[{url}]")
         player = self._player
         loc = player
+
+        file_url = url.replace(Path(bot_path.CACHE).as_uri(), '')[1:]
+        file_url = str.join('_', PlaywrightRunner.match_chars.findall(file_url))
+        file_url = file_url[0:124]
+
+        img = f"{bot_path.CACHE}/{file_url}.png"
         try:
             await player.goto(url)
             if delay > 0:
                 await asyncio.sleep(delay / 1000)
-            uuid_ = get_uuid()
-            img = f"{bot_path.CACHE}/{uuid_}.png"
+
             loc = loc.locator(locate)
             if first:
                 loc = loc.first
-
             await loc.screenshot(path=img)
 
             def callback(img: str):
@@ -79,6 +85,7 @@ class PlaywrightRunner(threading.Thread):
             reason = f"图片[{url}]生成失败，请尝试执行`playwright install`！:{ex}"
             logger.warning(reason)
             future.set_exception(ex)
+            raise ex
 
     async def generate_by_url(self, url: str, locate: str = None, first: bool = False, delay: int = 0) -> str:
         t = create_timer()
