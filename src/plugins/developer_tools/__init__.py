@@ -174,9 +174,9 @@ util_cmd_handle_request = on_command(
     description='',
     catalog=permission.bot.group.apply,
     example=[
-        Jx3Arg(Jx3ArgsType.number),
+        Jx3Arg(Jx3ArgsType.group_id),
         Jx3Arg(Jx3ArgsType.bool),
-        Jx3Arg(Jx3ArgsType.string),
+        Jx3Arg(Jx3ArgsType.remark),
     ],
     document='''获取当前待处理的申请，选择要处理领养申请处理'''
 )
