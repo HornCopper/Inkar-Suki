@@ -81,6 +81,7 @@ class Jx3ArgCallback:
 class Jx3ArgExt:
     @staticmethod
     def requireToken(method):
+        '''要求有jx3api的token'''
         @functools.wraps(method)
         async def wrapper(*args, **kwargs):
             from .config import token
@@ -91,6 +92,7 @@ class Jx3ArgExt:
 
     @staticmethod
     def requireTicket(method):
+        '''要求有推栏的token'''
         @functools.wraps(method)
         async def wrapper(*args, **kwargs):
             from .config import ticket
