@@ -51,9 +51,9 @@
             <div style="height:18rem">
               <el-card style="text-align:left">
                 <div style="font-size:1.2rem">{{ group_config.name }}</div>
-                <div v-for="(x,index) in group_config.labels" :key="index">
+                <span v-for="(x,index) in group_config.labels" :key="index">
                   <component :is="x.element||'div'" :style="x.style">{{ x.content }}</component>
-                </div>
+                </span>
               </el-card>
             </div>
             <div style="text-align: center;font-size:1.5rem">长按扫码加群领养</div>
