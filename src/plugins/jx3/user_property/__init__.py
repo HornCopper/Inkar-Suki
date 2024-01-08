@@ -1,5 +1,5 @@
 from .api import *
-
+from .UserProperty import *
 # jx3_cmd_property = on_command("jx3_property", aliases={"属性v2"}, priority=5)
 
 
