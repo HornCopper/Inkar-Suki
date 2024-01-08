@@ -40,10 +40,10 @@ async def _(event: GroupMessageEvent):
         new = [i["server"], Parse(i["data"][0]), Parse(i["data"][1]), Parse(i["data"][2])]
         chart.append(new)
     html = css + tabulate(chart, tablefmt="unsafehtml")
-    final_path = f"{CACHE}/{get_uuid()}.html"
+    final_path = f"{bot_path.CACHE}/{get_uuid()}.html"
     write(final_path, html)
     img = await generate(final_path, False, "table", False)
     if img is False:
-        return await lks.finish("唔……音卡的烂柯山图片生成失败了捏，请联系作者~")
+        return await lks.finish(f"唔……{Config.name}的烂柯山图片生成失败了捏，请联系作者~")
     else:
         return await lks.finish(ms.image(Path(img).as_uri()))

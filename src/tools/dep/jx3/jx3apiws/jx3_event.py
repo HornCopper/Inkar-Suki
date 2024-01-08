@@ -516,7 +516,7 @@ class ZhuEEvent(RecvEvent):
 
     @overrides(RecvEvent)
     def get_message(self) -> dict:
-        return {"type": "诛恶", "server": self.server, "msg": f"现在是{self.time}了！音卡提醒各位：\n{self.server} 的 诛恶事件 在 {self.map_name} 触发啦，快前往该地图吧！"}
+        return {"type": "诛恶", "server": self.server, "msg": f"现在是{self.time}了！{Config.name}提醒各位：\n{self.server} 的 诛恶事件 在 {self.map_name} 触发啦，快前往该地图吧！"}
 
 
 @EventRister.rister(action=10001)

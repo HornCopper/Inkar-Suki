@@ -20,6 +20,8 @@ class Config:
 
     web_path = ""  # GitHub Webhook的地址，填写`/a`，则内网地址为`http://127.0.0.1:<NB端口>/a`，`NB端口`在`.env.dev`中的`PORT`
 
+    name = '音卡' # 机器人名字
+    
     bot = [""]  # Bot的QQ号，此处请只填写一个，用`str`存在`list`中。
 
     platform = True  # 平台标识，`True`为Linux，`False`为`Windows`
