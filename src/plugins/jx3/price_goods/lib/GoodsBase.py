@@ -118,7 +118,6 @@ class GoodsInfo(dict):
 
     def to_dict(self) -> dict:
         return {
-            'bind_type': self.bind_type,
             'img_url': self.img_url,
             'color': self.color,
             'bind_type_str': self.bind_type_str,

@@ -4,10 +4,21 @@ from src.plugins.help import css
 
 from .api import *
 
-jx3_cmd_jx3_rare_gain = on_command("jx3_rare_gain", aliases={"cd"}, priority=5)
+jx3_cmd_jx3_rare_gain = on_command(
+    "特殊掉落",
+    aliases={
+        "cd"
+    },
+    example=[
+        Jx3Arg(Jx3ArgsType.server, is_optional=True),
+        Jx3Arg(Jx3ArgsType.property),
+    ],
+    priority=5
+)
+
 
 @jx3_cmd_jx3_rare_gain.handle()
-async def jx3_rare_gain(event: GroupMessageEvent, args: Message = CommandArg()):
+async def jx3_rare_gain(event: GroupMessageEvent, args: list[Any] = Depends(Jx3Arg.arg_factory)):
     """
     获取部分特殊物品的上次记录：
 
@@ -15,9 +26,7 @@ async def jx3_rare_gain(event: GroupMessageEvent, args: Message = CommandArg()):
 
     Example：-cd 幽月轮 归墟玄晶
     """
-    template = [Jx3Arg(Jx3ArgsType.server), Jx3Arg(Jx3ArgsType.default)]
-    arg = get_args(args, template, event)
-    arg_server, arg_name = arg
+    arg_server, arg_name = args
     if not arg_name:
         return await jx3_cmd_jx3_rare_gain.finish("没有输入物品名称哦")
     msg = await get_cd(arg_server, arg_name)

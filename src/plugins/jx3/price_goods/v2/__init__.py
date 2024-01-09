@@ -85,7 +85,7 @@ jx3_cmd_favouritest = on_command(
     name="交易行热门",
     catalog=permission.jx3.pvg.price.trade,
     example=[
-        Jx3Arg(Jx3ArgsType.server),
+        Jx3Arg(Jx3ArgsType.server, is_optional=True),
         Jx3Arg(Jx3ArgsType.pageIndex, default=0)
     ],
     priority=5
