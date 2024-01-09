@@ -7,7 +7,7 @@ jx3_cmd_arena_records = on_regex(
     description='获取玩家竞技场的战绩记录',
     catalog=permission.jx3.pvp.jjc.records,
     example=[
-        Jx3Arg(Jx3ArgsType.server),
+        Jx3Arg(Jx3ArgsType.server, is_optional=True),
         Jx3Arg(Jx3ArgsType.user),
         Jx3Arg(Jx3ArgsType.pvp_mode, default='33')
     ],
@@ -38,7 +38,7 @@ jx3_cmd_arena_rank = on_regex(
     description='获取竞技场的各Top50',
     catalog=permission.jx3.pvp.jjc.rank,
     example=[
-        Jx3Arg(Jx3ArgsType.pvp_mode),
+        Jx3Arg(Jx3ArgsType.pvp_mode, is_optional=True),
     ],
     document='''排行 模式
     模式可以写22 33 55'''
@@ -60,7 +60,7 @@ jx3_cmd_arena_statistics = on_regex(
     description='获取竞技场的各门派统计',
     catalog=permission.jx3.pvp.jjc.statistics,
     example=[
-        Jx3Arg(Jx3ArgsType.pvp_mode),
+        Jx3Arg(Jx3ArgsType.pvp_mode, is_optional=True),
     ],
     document='''统计 模式
     模式可以写22 33 55'''

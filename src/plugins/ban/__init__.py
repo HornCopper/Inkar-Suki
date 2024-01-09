@@ -131,7 +131,7 @@ mgr_cmd_remove_robot = on_command(
     description='让机器人自己体面',
     catalog=permission.mgr.group.exit,
     example=[
-        Jx3Arg(Jx3ArgsType.number, default=600),
+        Jx3Arg(Jx3ArgsType.number, default=600, alias='延迟秒数'),
     ],
     document='''退群有冷静期，期间可以取消退群
     这种退群不会进黑名单

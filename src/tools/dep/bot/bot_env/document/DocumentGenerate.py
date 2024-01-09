@@ -54,9 +54,9 @@ class CommandRecord:
         return sts
 
     @staticmethod
-    def record(caller_name: str, group: str = None) -> CommandRecordStatus:
+    def record(caller_name: str, group: str = None, favorite: int = 10) -> CommandRecordStatus:
         sts: CommandRecord = CommandRecord.get_sts(caller_name, group)
-        sts.favorite += 10
+        sts.favorite += favorite
 
         CommandRecord.get_sts(caller_name, group, sts)
         if not sts.enable:

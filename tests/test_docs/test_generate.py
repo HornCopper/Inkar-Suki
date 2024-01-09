@@ -32,7 +32,7 @@ def test_docs_generate_detail():
     state = {}
     event = SFGroupMessageEvent()
     event.group_id = 776484255
-    mc.tag = '属性'
+    mc.tag = '帮助 属性'
     event.message = obMessage(mc.tag)
     args = Jx3Arg.arg_factory(raw_matcher, event)
     ext.SyncRunner.as_sync_method(func(None, event, args))

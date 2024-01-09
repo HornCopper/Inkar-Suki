@@ -124,7 +124,7 @@ class Jx3Arg(Jx3ArgCallback, Jx3ArgExt):
         Jx3ArgsType.remark: Jx3ArgCallback._convert_string,
     }
 
-    def __init__(self, arg_type: Jx3ArgsType = Jx3ArgsType.default,  name: str = None, is_optional: bool = True, default: any = Ellipsis, alias: str = None) -> None:
+    def __init__(self, arg_type: Jx3ArgsType = Jx3ArgsType.default,  name: str = None, is_optional: bool = Ellipsis, default: any = Ellipsis, alias: str = None) -> None:
         self.arg_type = arg_type
         # 显式设置为可选 或 设置了默认值
         if is_optional is not Ellipsis:

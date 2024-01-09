@@ -10,7 +10,7 @@ jx3_cmd_trade2 = on_command(
     catalog=permission.jx3.pvg.price.trade,
     description="获取交易行物品的价格",
     example=[
-        Jx3Arg(Jx3ArgsType.server),
+        Jx3Arg(Jx3ArgsType.server, is_optional=True),
         Jx3Arg(Jx3ArgsType.property),
         Jx3Arg(Jx3ArgsType.pageIndex, default=0)
     ],
@@ -50,7 +50,7 @@ jx3_cmd_trade_detail = on_command(
     catalog=permission.jx3.pvg.price.trade,
     description="获取交易行单个物品的价格",
     example=[
-        Jx3Arg(Jx3ArgsType.server),
+        Jx3Arg(Jx3ArgsType.server, is_optional=True),
         Jx3Arg(Jx3ArgsType.property),
     ],
     document='''获取交易行单个物品的价格
