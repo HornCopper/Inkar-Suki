@@ -1,4 +1,5 @@
 <template>
+
   <div :style="{'text-align': 'center','font-size':font_size,width:'1000px'}">
     <el-card shadow="never">
       <div style="font-size:2rem;font-weight:600;">机器人使用说明{{ title }} {{ item_name && ` · ${item_name}` }}</div>
@@ -45,13 +46,62 @@
           </el-row>
         </el-card>
       </el-row>
-      <el-card class="item-container">
+      <el-card v-for="(cmd,index) in filter_commands_paged" :key="index" class="item-container">
+        <template #header>
+          <span>{{ index+1 }}.</span>
+          <span>{{ cmd.name }}</span>
+          <span v-if="cmd.aliases && cmd.aliases.length" style="margin-left:0.5rem;color:#999999">
+            <span>别称(</span>
+            <span>{{ cmd.aliases.join(' | ') }}</span>
+            <span>)</span>
+          </span>
+          <span style="float:right">
+            热度
+            <el-rate :model-value="convertPop(cmd.favorite)" show-score disabled />
+          </span>
+        </template>
         <el-row :gutter="10">
-          这里显示详情
+          <el-col :span="8">
+            <div v-if="cmd.description || cmd.document">
+              <div style="font-size:1.1rem">{{ cmd.description }}</div>
+              <el-divider v-if="cmd.description && cmd.document" style="margin:0.5rem"></el-divider>
+              <div v-if="cmd.document">
+                <div v-for="(docs,docindex) in cmd.document.split('\n')" :key="docsindex">{{ docs }}</div>
+              </div>
+            </div>
+            <div v-else style="font-size:1.2rem">暂无详细说明</div>
+          </el-col>
+          <el-col :span="8">
+            <el-form label-width="5rem">
+              <el-form-item label="是否启用">
+                <el-switch v-model="cmd.status_grp.enable"></el-switch>
+              </el-form-item>
+              <el-form-item label="目录">
+                {{ cmd.catalog }}
+              </el-form-item>
+              <el-form-item label="用法">
+                {{ get_example_desc(cmd).rule }}
+              </el-form-item>
+              <el-form-item label="示例">
+                <div v-for="(exp,expindex) in get_example_desc(cmd).examples" :key="index">{{ exp }}</div>
+              </el-form-item>
+            </el-form>
+          </el-col>
+          <el-col :span="8">
+            <div class="item-example-img-container">
+              <div class="item-example-img">暂无截图</div>
+            </div>
+          </el-col>
         </el-row>
       </el-card>
+      <div style="width: 100%;display: flex;justify-content: center;margin: 1.2rem;">
+        <el-pagination v-model:page-size="page.pageSize" :default-current-page="page.pageIndex + 1" small
+          :disabled="false" :background="false" layout="total, sizes, prev, pager, next, jumper"
+          :total="page.totalCount" :hide-on-single-page="false" :page-sizes="[5,10,20,50,100]"></el-pagination>
+      </div>
     </el-card>
   </div>
+
 </template>
 <style lang="scss">
   .ver-line {
@@ -95,34 +145,25 @@
 </style>
 
 <style lang="scss">
+  .item-container {
+    text-align: left;
+    margin-bottom: 0.5rem;
+  }
 
-  .command-mini-card-container {
+
+  .item-example-img-container {
     width: 100%;
-    display: grid;
-    grid-template-columns: repeat(9, 1fr);
-    grid-template-rows: masonry;
-
-    flex-wrap: wrap;
-    text-align: center;
+    height: 20rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0px 1px 15px 1px rgba(0, 0, 0, 0.3);
+    color: #cccccc;
   }
 
-  .command-mini-single-card {
-    overflow: hidden;
-    white-space: nowrap;
-    margin: 0.2rem;
-    font-size: 0.8rem;
-    max-width: 10rem;
-    min-width: 5rem;
-    border-radius: 0.05rem;
-    box-shadow: 0px 0px 2px 0px rgba(0, 0, 0, 1);
-  }
-
-  .command-mini-card-title {
-    background: #cccccc;
-  }
-
-  .el-rate__text {
-    color: #ffffff;
+  .item-example-img {
+    position: absolute;
+    margin: auto;
   }
 
   .el-rate {
@@ -149,7 +190,7 @@
         const catalogs = params_data.catalogs
         const result = {}
         const extract = (x, path = '') => {
-          const c_path = `${path}.${x.name}`
+          const c_path = `${path}${path ? '.' : ''}${x.name}`
           x.path = c_path
           result[c_path] = x
           x.children && x.children.map(child => {
@@ -160,10 +201,18 @@
         extract(catalogs)
         return result
       })
+      console.log(computes.unnest_catalogs)
       computes.filter_commands = computed(() => {
-        const { group_status, global_status } = params_data
+        const { group_status, global_status, item_name } = params_data
         const catalogs = computes.unnest_catalogs.value
         let commands = params_data.commands
+
+        // 模糊搜索匹配的指令
+        commands = commands.filter(x => {
+          if (x.name && x.name.indexOf(item_name) > -1) return true
+          if (x.aliases && x.aliases.find(ali => ali.indexOf(item_name) > -1)) return true
+          return false
+        })
 
         commands.map(x => {
           x.labels = x.aliases.filter(a => a !== x.name).slice(0, 3)
@@ -224,7 +273,7 @@
         let examples = new Array(5)
           .fill(0)
           .map(x => get_random_exp())
-        examples = distinct(examples, x => x).slice(0, 1)
+        examples = distinct(examples, x => x).slice(0, 3)
         const rule = args.map(x => {
           const { tpl, is_optional } = x
           return is_optional ? `[${tpl.description}]` : tpl.description
@@ -233,10 +282,10 @@
       }
 
       computes.page = computed(() => {
-        const { commands, pageIndex } = params_data
+        const { pageIndex } = params_data
         return {
           pageIndex,
-          pageSize: 108,
+          pageSize: 5,
           totalCount: computes.filter_commands.value.length
         }
       })
@@ -255,9 +304,4 @@
       }
     },
   })
-
-
-
-
-
 </script>
