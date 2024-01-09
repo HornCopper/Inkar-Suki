@@ -77,7 +77,7 @@
                 <el-switch v-model="cmd.status_grp.enable"></el-switch>
               </el-form-item>
               <el-form-item label="目录">
-                {{ cmd.catalog }}
+                {{ unnest_catalogs[cmd.catalog].cpath }}
               </el-form-item>
               <el-form-item label="用法">
                 {{ get_example_desc(cmd).rule }}
@@ -193,8 +193,8 @@
         const result = {}
         const extract = (x, path = '') => {
           const c_path = `${path}${path ? '.' : ''}${x.name}`
-          x.path = c_path
-          result[c_path] = x
+          x.cpath = c_path
+          result[x.path] = x
           x.children && x.children.map(child => {
             child.parent = x
             extract(child, c_path)
@@ -203,7 +203,6 @@
         extract(catalogs)
         return result
       })
-      console.log(computes.unnest_catalogs)
       computes.filter_commands = computed(() => {
         const { group_status, global_status, item_name } = params_data
         const catalogs = computes.unnest_catalogs.value
