@@ -174,7 +174,7 @@ util_cmd_handle_request = on_command(
     description='',
     catalog=permission.bot.group.apply,
     example=[
-        Jx3Arg(Jx3ArgsType.group_id),
+        Jx3Arg(Jx3ArgsType.group_id, is_optional=True),
         Jx3Arg(Jx3ArgsType.bool, is_optional=True),
         Jx3Arg(Jx3ArgsType.remark, is_optional=True),
     ],
