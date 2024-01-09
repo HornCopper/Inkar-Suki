@@ -15,9 +15,9 @@ async def _(event: GroupMessageEvent):
         dt = time.strftime("%Y年%m月%d日 %H:%M:%S", time_local)
         return dt
 
-    def RestTime(GoalTime: int, StartTime: int = int(time.time())):
-        target_date = datetime.datetime.utcfromtimestamp(GoalTime)
-        delta = target_date - StartTime
+    def RestTime(GoalTime: int, StartTime: int = None):
+        target_date = DateTime(GoalTime)
+        delta = target_date - DateTime(StartTime)
         days = delta.days
         hours, remainder = divmod(delta.seconds, 3600)
         minutes, seconds = divmod(remainder, 60)
