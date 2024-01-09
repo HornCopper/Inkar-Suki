@@ -9,7 +9,7 @@ def test_group_config():
     config.mgr_property('server', '幽月轮')
 
     next_time = DateTime('2024-05-01').timestamp()
-    start_time = DateTime('2023-01-01').timestamp()
+    start_time = DateTime('2024-01-08').timestamp()
     assert config.mgr_property('auth.start') == start_time
     assert config.mgr_property('auth.start', next_time) == start_time
     assert config.mgr_property('auth.start') == next_time
