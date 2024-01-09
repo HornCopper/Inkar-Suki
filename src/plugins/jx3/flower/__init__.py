@@ -3,10 +3,10 @@ import shutil
 
 from .api import *
 from .renderer import renderer as x_renderer
-from .Caches import *
 
 jx3_cmd_flower = on_command("jx3_flower", aliases={"花价"}, priority=5)
 
+CACHE_flower = filebase_database.Database(f'{bot_path.common_data_full}pvx_flower')
 
 @jx3_cmd_flower.handle()
 async def jx3_flower(state: T_State, event: GroupMessageEvent, args: Message = CommandArg()):
@@ -35,6 +35,5 @@ async def jx3_flower(state: T_State, event: GroupMessageEvent, args: Message = C
         img = await x_renderer(arg_server, arg_map, arg_species, data)
         persisted_path = f"{bot_path.ASSETS}{os.sep}jx3{os.sep}pvx{os.sep}flower{os.sep}{os.path.basename(img)}"
         shutil.copy2(img, persisted_path)
-        CACHE_flower[cache_key] = [code, persisted_path]
-        flush_CACHE_flower()
+        CACHE_flower.value[cache_key] = [code, persisted_path]
     return await jx3_cmd_flower.send(ms.image(Path(img).as_uri()))
