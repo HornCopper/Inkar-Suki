@@ -129,6 +129,7 @@ class GoodsInfo(dict):
             'ui_id': self.ui_id,
             'name': self.name,
             'level': self.level,
+            'u_popularity': self.u_popularity,
             'price': (self.price.to_dict() if hasattr(self.price, 'to_dict') else self.price) if self.price else None,
             'current_price': (self.current_price.to_dict() if hasattr(self.current_price, 'to_dict') else self.current_price) if self.current_price else None,
         }
