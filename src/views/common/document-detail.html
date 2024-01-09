@@ -14,12 +14,12 @@
                 <el-col :span="20">
                   <div class="primary-title">
                     <div>
-                      <span style="color:#999">查看目录：</span>
-                      <span>帮助 [页码]</span>
+                      <span style="color:#999">查看详情：</span>
+                      <span style="color:#ccc">[施工中]帮助 指令名 [页码]</span>
                     </div>
                     <div>
-                      <span style="color:#999">查看详情：</span>
-                      <span style="color:#ccc">(施工中)帮助 [指令名/目录名] [页码]</span>
+                      <span style="color:#999">查看目录：</span>
+                      <span style="color:#ccc">[施工中]帮助 目录名 [页码]</span>
                     </div>
                   </div>
                 </el-col>
@@ -46,63 +46,8 @@
         </el-card>
       </el-row>
       <el-card class="item-container">
-
         <el-row :gutter="10">
-          <el-col :span="6">
-            <div style="height:18rem">
-              <el-card style="text-align:left">
-                <div style="font-size:1.2rem">{{ group_config.name }}</div>
-                <span v-for="(x,index) in group_config.labels" :key="index">
-                  <component :is="x.element||'div'" :style="x.style">{{ x.content }}</component>
-                </span>
-              </el-card>
-            </div>
-            <div style="text-align: center;font-size:1.5rem">长按扫码加群领养</div>
-            <div class="img-qr-container">
-              <img src="../views/common/group_qr.png" style="width:15rem" />
-            </div>
-          </el-col>
-          <el-col :span="18">
-            <div class="command-card-container">
-              <div v-for="(x,index) in filter_commands.slice(0,12)" :key="index" class="command-single-card">
-                <div class="command-card-title">
-                  <span>{{ x.name }}</span>
-                </div>
-                <div class="command-card-value">
-                  <div class="command-card-desc-rule">{{ get_example_desc(x).rule }}</div>
-                  <div v-for="exp in get_example_desc(x).examples" :key="exp" class="command-card-desc-example">
-                    <div>例:{{ exp }}</div>
-                  </div>
-                  <div class="command-card-desc-primary">{{ x.description }}</div>
-                </div>
-                <div class="command-card-description">
-                  <el-rate :model-value="convertPop(x.favorite)" show-score disabled />
-                </div>
-              </div>
-            </div>
-          </el-col>
-        </el-row>
-      </el-card>
-      <el-card class="item-container">
-        <div>
-          <span>全部指令</span>
-          <span style="color:#999;margin-left:1rem;font-size:0.8rem">{{ command_description }}</span>
-        </div>
-        <el-row>
-          <div class="command-mini-card-container">
-            <div v-for="(x,index) in filter_commands_paged" :key="index" class="command-mini-single-card">
-              <div class="command-mini-card-title">{{ x.name }}</div>
-              <div v-for="(alias,index) in x.labels">{{ alias }}</div>
-            </div>
-          </div>
-        </el-row>
-        <el-row>
-
-          <div style="width: 100%;display: flex;justify-content: center;margin: 1.2rem;">
-            <el-pagination v-model:page-size="page.pageSize" :default-current-page="page.pageIndex + 1" small
-              :disabled="false" :background="false" layout="total, sizes, prev, pager, next, jumper"
-              :total="page.totalCount" :hide-on-single-page="false" :page-sizes="[54,108,216]"></el-pagination>
-          </div>
+          这里显示详情
         </el-row>
       </el-card>
     </el-card>
@@ -150,40 +95,6 @@
 </style>
 
 <style lang="scss">
-  .command-card-container {
-    display: flex;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    text-align: center;
-  }
-
-  .command-single-card {
-    overflow: hidden;
-    white-space: nowrap;
-    margin: 0.2rem;
-    background: #4ce6ff;
-    font-size: 1.2rem;
-    width: 13.5rem;
-    border-radius: 0.5rem;
-    color: #ffffff;
-    box-shadow: 0px 0px 2px 0px rgba(0, 0, 0, 1);
-  }
-
-  .command-card-desc-example {
-    white-space: wrap;
-    font-size: 0.8rem;
-    text-align: left;
-  }
-
-  .command-card-desc-primary {
-    white-space: wrap;
-    font-size: 0.8rem;
-  }
-
-  .command-card-desc-rule {
-    white-space: wrap;
-    font-size: 1rem;
-  }
 
   .command-mini-card-container {
     width: 100%;
@@ -210,24 +121,6 @@
     background: #cccccc;
   }
 
-  .command-card-title {
-    background: #0490e1;
-    font-size: 1rem;
-  }
-
-  .command-card-value {
-    padding: 0.2rem 0.5rem;
-    color: #1f0000;
-    font-size: 0.9rem;
-    height: 6rem;
-  }
-
-  .command-card-description {
-    font-size: 0.8rem;
-    height: 1.5rem;
-    background: #0490e1;
-  }
-
   .el-rate__text {
     color: #ffffff;
   }
@@ -252,16 +145,6 @@
       }
       const computes = {}
       const font_size = ref('1rem')
-      computes.command_description = computed(() => {
-        const commands = params_data.commands
-        const total = `共${commands.length}个`
-
-        const enables = computes.filter_commands.value.length
-        const enable = `${enables}有效的`
-        const valids = commands.filter(x => x.description)
-        const valid = `${valids.length}个有使用说明`
-        return `${total},${enable},${valid}`
-      })
       computes.unnest_catalogs = computed(() => {
         const catalogs = params_data.catalogs
         const result = {}
