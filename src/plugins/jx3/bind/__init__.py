@@ -21,11 +21,18 @@ def server_bind(group_id: str, server: str) -> str:
     return server
 
 
-jx3_cmd_server_bind = on_command("jx3_bind", aliases={"绑定"}, priority=5)
+jx3_cmd_server_bind = on_command(
+    "绑定",
+    aliases={},
+    priority=5,
+    example=[
+        Jx3Arg(Jx3ArgsType.server, is_optional=False)
+    ]
+)
 
 
 @jx3_cmd_server_bind.handle()
-async def jx3_server_bind(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
+async def jx3_server_bind(bot: Bot, event: GroupMessageEvent, args: list[Any] = Depends(Jx3Arg.arg_factory)):
     # TODO 判别权限，应提取为专有函数
     personal_data = await bot.call_api("get_group_member_info", group_id=event.group_id, user_id=event.user_id, no_cache=True)
     group_admin = personal_data["role"] in ["owner", "admin"]
@@ -34,8 +41,7 @@ async def jx3_server_bind(bot: Bot, event: GroupMessageEvent, args: Message = Co
         if not x.success:
             return await jx3_cmd_server_bind.finish("唔……只有群主或管理员才可以修改哦！")
 
-    template = [Jx3Arg(Jx3ArgsType.server)]
-    server, = get_args(args, template, event)
+    server, = args
     server = server_bind(group_id=event.group_id, server=server)
     if isinstance(server, list):
         return await jx3_cmd_server_bind.finish(f"绑定失败：{server}")
