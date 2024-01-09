@@ -76,8 +76,11 @@
               <el-form-item label="是否启用">
                 <el-switch v-model="cmd.status_grp.enable"></el-switch>
               </el-form-item>
-              <el-form-item label="目录">
-                {{ unnest_catalogs[cmd.catalog].cpath }}
+              <el-form-item v-if="unnest_catalogs[cmd.catalog]" label="目录">
+                <div>
+                  <div>{{ unnest_catalogs[cmd.catalog].cpath }}</div>
+                  <div>{{ unnest_catalogs[cmd.catalog].description }}</div>
+                </div>
               </el-form-item>
               <el-form-item label="用法">
                 {{ get_example_desc(cmd).rule }}
@@ -203,6 +206,7 @@
         extract(catalogs)
         return result
       })
+      console.log(computes.unnest_catalogs)
       computes.filter_commands = computed(() => {
         const { group_status, global_status, item_name } = params_data
         const catalogs = computes.unnest_catalogs.value
