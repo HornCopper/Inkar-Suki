@@ -33,7 +33,7 @@ jx3_cmd_horseinfo_map = on_command(
     description='获取各个马场刷新信息',
     catalog=permission.jx3.pvx.property.horse.info,
     example=[
-        Jx3Arg(Jx3ArgsType.server)
+        Jx3Arg(Jx3ArgsType.server, is_optional=True)
     ],
     document='''数据来源于剑三盒子
     获取当前各个地图马场的数据并整合

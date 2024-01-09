@@ -344,7 +344,8 @@
         examples = distinct(examples, x => x).slice(0, 1)
         const rule = args.map(x => {
           const { tpl, is_optional } = x
-          return is_optional ? `[${tpl.description}]` : tpl.description
+          const show_name = x.alias || tpl.description // 优先使用参数别名
+          return is_optional ? `[${show_name}]` : show_name
         }).join(' ')
         return { rule, examples }
       }
