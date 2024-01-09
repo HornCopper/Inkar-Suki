@@ -9,7 +9,7 @@ jx3_cmd_horseinfo_chitu = on_command(
     description='[暂未开放]获取赤兔刷新信息',
     catalog=permission.jx3.pvx.property.horse.chitu,
     example=[
-        Jx3Arg(Jx3ArgsType.server)
+        Jx3Arg(Jx3ArgsType.server, is_optional=True)
     ],
     document='''数据来源于剑三盒子
     获取当前各个地图马场的数据并整合

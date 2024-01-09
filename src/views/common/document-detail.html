@@ -77,13 +77,15 @@
                 <el-switch v-model="cmd.status_grp.enable"></el-switch>
               </el-form-item>
               <el-form-item label="目录">
-                {{ cmd.catalog }}
+                {{ unnest_catalogs[cmd.catalog].cpath }}
               </el-form-item>
               <el-form-item label="用法">
                 {{ get_example_desc(cmd).rule }}
               </el-form-item>
               <el-form-item label="示例">
-                <div v-for="(exp,expindex) in get_example_desc(cmd).examples" :key="index">{{ exp }}</div>
+                <div>
+                  <div v-for="(exp,expindex) in get_example_desc(cmd).examples" :key="index">{{ exp }}</div>
+                </div>
               </el-form-item>
             </el-form>
           </el-col>
@@ -191,8 +193,8 @@
         const result = {}
         const extract = (x, path = '') => {
           const c_path = `${path}${path ? '.' : ''}${x.name}`
-          x.path = c_path
-          result[c_path] = x
+          x.cpath = c_path
+          result[x.path] = x
           x.children && x.children.map(child => {
             child.parent = x
             extract(child, c_path)
@@ -201,7 +203,6 @@
         extract(catalogs)
         return result
       })
-      console.log(computes.unnest_catalogs)
       computes.filter_commands = computed(() => {
         const { group_status, global_status, item_name } = params_data
         const catalogs = computes.unnest_catalogs.value
@@ -270,10 +271,11 @@
           const name = x.aliases && x.aliases.length ? methods.choice(x.aliases) : x.name
           return `${name} ${raw}`
         }
-        let examples = new Array(5)
+        const MAX_Count = 5
+        let examples = new Array(MAX_Count)
           .fill(0)
           .map(x => get_random_exp())
-        examples = distinct(examples, x => x).slice(0, 3)
+        examples = distinct(examples, x => x)
         const rule = args.map(x => {
           const { tpl, is_optional } = x
           return is_optional ? `[${tpl.description}]` : tpl.description
