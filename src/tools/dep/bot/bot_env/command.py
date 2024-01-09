@@ -62,26 +62,32 @@ def get_cmd_docs(cls) -> DocumentItem:
     ...
 
 
+def get_matcher_name(cls: Matcher):
+    checker = cls.rule.checkers
+    first = checker.__iter__().__next__()
+    call = first.call
+    if hasattr(call, 'cmds'):
+        cmds = call.cmds
+        cmd_tuple = [x[0] for x in cmds]
+    else:
+        reg_content = first.call.regex
+        if str.endswith(reg_content, ' '):
+            reg_content = reg_content[0:-1]  # 移除末尾空格
+        cmd_tuple = [reg_content]
+
+    result = filter(lambda x: DocumentGenerator.commands.get(x), cmd_tuple)
+    result = list(result)
+    if not result:
+        raise Exception('no suitable docs')
+    return result[0]
+
+
 def get_cmd_docs(cls):
     if not isinstance(cls, str):
-        checker = cls.rule.checkers
-        first = checker.__iter__().__next__()
-        call = first.call
-        if hasattr(call, 'cmds'):
-            cmds = call.cmds
-            cmd_tuple = [x[0] for x in cmds]
+        if not hasattr(cls, 'rule'):
+            cls = cls.name
         else:
-            reg_content = first.call.regex
-            if str.endswith(reg_content, ' '):
-                reg_content = reg_content[0:-1]  # 移除末尾空格
-            cmd_tuple = [reg_content]
-
-        result = filter(lambda x: DocumentGenerator.commands.get(x), cmd_tuple)
-        result = list(result)
-        if not result:
-            raise Exception('no suitable docs')
-        cls = result[0]
-
+            cls = get_matcher_name(cls)
     return DocumentGenerator.commands.get(cls)
 
 

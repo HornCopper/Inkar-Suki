@@ -32,10 +32,10 @@ class Jx3ArgCallback:
             return '22', True
         return arg_value
 
-    def _convert_string(self, arg_value: str, **kwargs) -> str:
+    def _convert_string(self, arg_value: str, **kwargs) -> tuple[str, bool]:
         if not arg_value:
-            return None
-        return str(arg_value)
+            return None, True
+        return str(arg_value), False
 
     def _convert_server(self, arg_value: str, event: GroupMessageEvent = None, **kwargs) -> tuple[str, bool]:
         server = server_mapping(arg_value)
@@ -126,7 +126,12 @@ class Jx3Arg(Jx3ArgCallback, Jx3ArgExt):
 
     def __init__(self, arg_type: Jx3ArgsType = Jx3ArgsType.default,  name: str = None, is_optional: bool = True, default: any = Ellipsis, alias: str = None) -> None:
         self.arg_type = arg_type
-        self.is_optional = bool(False or is_optional is not Ellipsis)  # 显式设置为可选 或 设置了默认值
+        # 显式设置为可选 或 设置了默认值
+        if is_optional is not Ellipsis:
+            self.is_optional = is_optional
+        else:
+            self.is_optional = default is not Ellipsis
+
         self.name = name or str(arg_type)
         self.default = default
         self.alias = alias
