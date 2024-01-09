@@ -12,7 +12,7 @@ jx3_cmd_flower = on_command(
         Jx3Arg(Jx3ArgsType.server, is_optional=True),
         Jx3Arg(Jx3ArgsType.string, alias='地图'),
         Jx3Arg(Jx3ArgsType.string, alias='花名'),
-    ]
+    ],
     document='''获取当前花价
     花价 [区服] [地图] [品种]
     Example：花价

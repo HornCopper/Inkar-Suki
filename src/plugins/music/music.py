@@ -1,4 +1,4 @@
-from src.tools.utils import get_api
+from src.tools.dep import *
 
 
 async def search(platform_: str, song: str):
