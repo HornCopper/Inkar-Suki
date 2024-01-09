@@ -40,6 +40,7 @@ class MessageCallback:
         self.callback_counter = 0
         self.ignore_convert = False  # 是否忽视字符转换
         self.tag = 'default test'
+        self.name = None
 
     def check_counter(self):
         assert self.callback_counter, self.to_warning(

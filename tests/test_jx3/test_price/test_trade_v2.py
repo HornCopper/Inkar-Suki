@@ -61,6 +61,7 @@ def test_default_server():
     server_bind(event.group_id, '')
 
 
+
 def jx3_trade_favoritest():
     mc = MessageCallback()
     v2.jx3_cmd_favouritest = mc

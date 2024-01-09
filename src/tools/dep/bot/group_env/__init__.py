@@ -64,7 +64,7 @@ class GroupConfig:
             assert isinstance(next_options, dict), 'options非属性集合'
             return self.enter_property(cur_data, next_options, keys, new_val)
 
-        if not new_val is Ellipsis:
+        if new_val is not Ellipsis:
             # 更新属性
             data[cur] = new_val
         return cur_data

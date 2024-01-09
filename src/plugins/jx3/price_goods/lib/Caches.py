@@ -6,33 +6,34 @@ from typing import Dict
 
 from src.tools.file import read
 from .GoodsBase import GoodsInfo
-
-cache_file_goods = bot_path.ASSETS + "/jx3/info_tradegoods.json"
-CACHE_Goods: Dict[str, GoodsInfo] = json.loads(read(cache_file_goods))  # 每次重启后从磁盘加载缓存
-CACHE_Goods = dict([[x, dict2obj(GoodsInfo(), CACHE_Goods[x])] for x in CACHE_Goods])  # 转换为类
+from .GoodsFullInfo import GoodsInfoFull
 
 
-def flush_CACHE_Goods():
-    return flush_CACHE_Goods_Common(cache_file_goods, CACHE_Goods)
+def deserilizer_Goods(data): return dict([[x, GoodsInfoFull.from_dict(data[x])] for x in data])
 
 
-cache_file_summary = bot_path.ASSETS + "/jx3/info_tradegoods_price_summary.json"
-CACHE_Goods_PriceSummary: Dict[str, GoodsPriceSummary] = json.loads(
-    read(cache_file_summary))  # 每次重启后从磁盘加载缓存
-CACHE_Goods_PriceSummary = dict(
-    [[x, dict2obj(GoodsPriceSummary(), CACHE_Goods_PriceSummary[x])] for x in CACHE_Goods_PriceSummary])  # 转换为类
+def deserilizer_GoodsSummary(data): return dict(
+    [[x, dict2obj(GoodsPriceSummary(), data[x])] for x in data])
+def deserilizer_GoodsDetail(data): return dict(
+    [[x, dict2obj(GoodsPriceDetail(), data[x])] for x in data])
 
 
-def flush_CACHE_PriceSummary():
-    return flush_CACHE_Goods_Common(cache_file_summary, CACHE_Goods_PriceSummary)
+def serilizer_Goods(obj_dict): return dict([[x, obj_dict[x].to_dict()] for x in obj_dict])
 
 
-cache_file_detail = bot_path.ASSETS + "/jx3/info_tradegoods_price_detail.json"
-CACHE_Goods_PriceDetail: Dict[str, GoodsPriceDetail] = json.loads(
-    read(cache_file_detail))  # 每次重启后从磁盘加载缓存
-CACHE_Goods_PriceDetail = dict(
-    [[x, dict2obj(GoodsPriceDetail(), CACHE_Goods_PriceDetail[x])] for x in CACHE_Goods_PriceDetail])  # 转换为类
+__db=filebase_database.Database
 
 
-def flush_CACHE_PriceDetail():
-    return flush_CACHE_Goods_Common(cache_file_detail, CACHE_Goods_PriceDetail)
+base_goods=f'{bot_path.common_data_full}pvg_trade_goods'
+CACHE_GoodsDb=__db(base_goods, serilizer_Goods, deserilizer_Goods)
+CACHE_Goods: dict[str, GoodsInfo]=CACHE_GoodsDb.value
+
+
+__name=f'{base_goods}_price_summary'
+CACHE_Goods_PriceSummaryDb=__db(__name, serilizer_Goods, deserilizer_GoodsSummary)
+CACHE_Goods_PriceSummary: dict[str, GoodsPriceSummary]=CACHE_Goods_PriceSummaryDb.value
+
+
+__name=f'{base_goods}_price_detail'
+CACHE_Goods_PriceSummaryDb=__db(__name, serilizer_Goods, deserilizer_GoodsDetail)
+CACHE_Goods_PriceDetail: dict[str, GoodsPriceDetail]=CACHE_Goods_PriceSummaryDb.value

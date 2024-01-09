@@ -32,7 +32,7 @@ class SyncRunner(threading.Thread):
     def as_sync_method(async_method):
         x = SyncRunner(async_method)
         x.start()
-        x.semaphore.acquire()
+        x.semaphore.acquire(timeout=30e3) # 默认最多等待30秒
         result = x.result
         if x.exception:
             raise x.exception
