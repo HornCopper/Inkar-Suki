@@ -41,10 +41,10 @@ restart = on_command("restart", priority=5)  # 重启`Inkar-Suki`，原理为`Fa
 
 @restart.handle()
 async def _(event: Event):
+    x = Permission(event.user_id).judge(5, '重启机器人')
+    if not x.success:
+        return await restart.finish(x.description)
     with open("./src/plugins/developer_tools/example.py", mode="w") as cache:
-        x = Permission(event.user_id).judge(5, '重启机器人')
-        if not x.success:
-            return await restart.finish(x.description)
         await restart.send("好啦，开始重启，整个过程需要些许时间，还请等我一下哦~")
         cache.write("status=\"OK\"")
 

@@ -125,7 +125,7 @@ class MenuCallback:
                 to_send_msg = u_subscribed_level >= self.cron.level
 
                 while to_send_msg:
-                    callback_result = await self.callback(bot, group_id, self.sub, self.cron)
+                    callback_result = await self.callback(group_id, self.sub, self.cron)
                     # 如果有返回值则表示需要发送
                     if not callback_result or not isinstance(callback_result, str):
                         to_send_msg = None
