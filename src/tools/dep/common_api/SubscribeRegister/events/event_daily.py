@@ -5,13 +5,14 @@ import threading
 import time
 import os
 from src.tools.dep.bot import *
+from src.tools.dep.data_server import *
 
 
 class IDailyMessage:
     lock = threading.RLock()
     CACHE_Daily: dict[str, str]  # day -> url_local
 
-    def __init__(self, date: str, group_id: str, cron: SubjectCron, offset: int = 1) -> None:
+    def __init__(self, date: str, group_id: str, cron: SubjectCron, offset: int = 0) -> None:
         server = server_mapping(None, group_id)
         key = f"daily_{date}@{server}"
         self.key = key
@@ -68,19 +69,20 @@ class PlainTxtDailyMessage(IDailyMessage):
         if not path_cache_daily:
             # 注意销毁今天以前的缓存
             content = await daily_txt(self.server, self.group_id, self.offset)  # 向后预测1天的
-            PlainTxtDailyMessage.CACHE_Daily[self.key] = content.text
+            PlainTxtDailyMessage.CACHE_Daily[self.key] = content
 
         data_daily = PlainTxtDailyMessage.CACHE_Daily[self.key]
         prefix = self.cron.notify_content
-        message = f"{data_daily}{prefix}\n{saohua()}"
+        message = f"{data_daily}\n{'-'*10}{prefix}\n{await saohua()}"
         return message
 
 
 async def CallbackDaily(group_id: str, sub: SubscribeSubject, cron: SubjectCron):
-    t = time.localtime(time.time() - 7 * 3600)   # 每天早上7点前均按前一天算
-    date = time.strftime("%Y%m%d", t)
-    message = await PlainTxtDailyMessage(date, group_id, cron)
-    return message
+    now = DateTime()
+    offset = 1 if now.hour >= 22 else 0  # 每晚10点后响应次日的
+    now += 2 * 3600e3  # 向后2小时
+    message = PlainTxtDailyMessage(now.tostring(DateTime.Format.YMD), group_id, cron, offset=offset)
+    return await message.get_message()
 
 CallbackDailyToday = CallbackDaily
 CallbackDailyTomorow = CallbackDaily
@@ -93,11 +95,21 @@ def run(__subjects: list):
         children_subjects=["今日日常", "明日日常"]
     )
     __subjects.append(v)
-    v = SubscribeSubject(name="今日日常", description="每天一大早推送今天的日常任务", cron=[
-                         SubjectCron("45 6 * * *", "早~今天的日常来啦")
-                         ], callback=CallbackDailyToday)
+    v = SubscribeSubject(
+        name="今日日常",
+        description="每天一大早推送今天的日常任务",
+        cron=[
+            SubjectCron("20 7 * * *", "早~今天的日常来啦")
+        ],
+        callback=CallbackDailyToday
+    )
     __subjects.append(v)
-    v = SubscribeSubject(name="明日日常", description="每天晚上10点推送次日的日常任务", cron=[
-                         SubjectCron("55 21 * * *", "这是明天的日常哦~晚安！")
-                         ], callback=CallbackDailyTomorow)
+    v = SubscribeSubject(
+        name="明日日常",
+        description="每天晚上10点推送次日的日常任务",
+        cron=[
+            SubjectCron("55 21 * * *", "这是明天的日常哦~晚安！")
+        ],
+        callback=CallbackDailyTomorow
+    )
     __subjects.append(v)
