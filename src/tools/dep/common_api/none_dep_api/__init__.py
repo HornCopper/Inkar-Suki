@@ -98,7 +98,6 @@ class DailyResponse:
         if not self._data:
             return logger.warning(f'invalid data on daily:{data}')
 
-
 async def daily_txt(server: str = None, group_id: str = None, predict_day_num: int = 0):
     """
     获取日常
@@ -109,5 +108,4 @@ async def daily_txt(server: str = None, group_id: str = None, predict_day_num: i
         return [PROMPT_ServerNotExist]
     full_link = f"{Config.jx3api_link}/data/active/current?server={server}&num={predict_day_num}"
     data = await get_api(full_link)
-    print(data)
-    return DailyResponse(server, data).text
+    return DailyResponse(server, data)

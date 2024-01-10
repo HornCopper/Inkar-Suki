@@ -5,33 +5,79 @@ import threading
 import time
 import os
 from src.tools.dep.bot import *
-CACHE_Daily: dict[str, str] = {}  # day -> url_local
+
+
+class IDailyMessage:
+    lock = threading.RLock()
+    CACHE_Daily: dict[str, str]  # day -> url_local
+
+    def __init__(self, date: str, group_id: str, cron: SubjectCron, offset: int = 1) -> None:
+        server = server_mapping(None, group_id)
+        key = f"daily_{date}@{server}"
+        self.key = key
+        self.date = date
+        self.group_id = group_id
+        self.server = server
+        self.cron = cron
+        self.offset = offset
+
+    async def get_message(self):
+        with PlainTxtDailyMessage.lock:
+            return await self._get_daily_message()
+
+    async def _get_daily_message(self):
+        ...
+
+
+class ImgDailyMessage(IDailyMessage):
+    CACHE_Daily: dict[str, str] = filebase_database.Database(
+        f'{bot_path.common_data_full}daily-img').value
+
+    def get_path(self, filename: str) -> str:
+        return f'{bot_path.DATA}{os.sep}res{os.sep}daily{filename}'
+
+    async def _get_daily_message(self):
+        path_cache_daily = ImgDailyMessage.CACHE_Daily.get(self.key)
+        target = None
+        has_cache = bool(path_cache_daily)
+        if not has_cache:
+            # 注意销毁今天以前的缓存
+            url = await daily_(self.server, self.group_id, self.offset)  # 向后预测1天的
+            img_data = (await send_with_async('get', url)).content
+            path_cache_daily = f"{self.key}.png"
+
+        target = Path(self.get_path(path_cache_daily))
+
+        if not has_cache:
+            if not os.path.exists(target.parent.as_posix()):
+                os.makedirs(target.parent.as_posix())
+            with open(target.as_posix(), "wb") as f:
+                f.write(img_data)
+            ImgDailyMessage.CACHE_Daily[self.key] = path_cache_daily
+
+        message = f"{ms.image(target.as_uri())}{self.cron.notify_content}"
+        return message
+
+
+class PlainTxtDailyMessage(IDailyMessage):
+    CACHE_Daily: dict[str, str] = filebase_database.Database(
+        f'{bot_path.common_data_full}daily-txt').value
+
+    async def _get_daily_message(self):
+        path_cache_daily = PlainTxtDailyMessage.CACHE_Daily.get(self.key)
+        if not path_cache_daily:
+            # 注意销毁今天以前的缓存
+            content = await daily_txt(self.server, self.group_id, self.offset)  # 向后预测1天的
+            PlainTxtDailyMessage.CACHE_Daily[self.key] = content.text
+
+        message = f"{PlainTxtDailyMessage.CACHE_Daily[self.key]}{self.cron.notify_content}"
+        return message
 
 
 async def CallbackDaily(group_id: str, sub: SubscribeSubject, cron: SubjectCron):
-    global CACHE_Daily
     t = time.localtime(time.time() - 7 * 3600)   # 每天早上7点前均按前一天算
     date = time.strftime("%Y%m%d", t)
-    s = ""  # 每个服日常一样，故不区分了 # getGroupServer(group_id) or "唯满侠"
-    key = f"daily_{date}{s}"
-    with threading.RLock():
-        path_cache_daily = CACHE_Daily.get(key)
-        if not path_cache_daily:
-            # 注意销毁今天以前的缓存
-            for x in CACHE_Daily:
-                try:
-                    os.remove(CACHE_Daily.get(x))
-                except Exception as _:
-                    pass
-            CACHE_Daily = {}
-            url = await daily_("唯满侠", group_id, 1)  # 向后预测1天的
-            img_data = (await send_with_async('get', url)).content
-            path_cache_daily = f"{bot_path.CACHE}{os.sep}{key}.png"
-            with open(path_cache_daily, "wb") as f:
-                f.write(img_data)
-            CACHE_Daily[key] = path_cache_daily
-
-    message = f"{ms.image(Path(path_cache_daily).as_uri())}{cron.notify_content}"
+    message = await PlainTxtDailyMessage(date, group_id, cron)
     return message
 
 CallbackDailyToday = CallbackDaily

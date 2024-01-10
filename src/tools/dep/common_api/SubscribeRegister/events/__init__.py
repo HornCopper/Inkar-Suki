@@ -2,20 +2,23 @@
 from ..SubscribeItem import *
 from ..callback import *
 from src.tools.dep.bot.bot_plugins import *
+from . import events_base
+from . import events_gf
+from . import events_world_boss
+from . import event_daily
+from . import events_for_debug
+
+from .event_daily import *
+
 
 def init_subjects(__subjects: list[SubscribeSubject]):
     """
     注意cron表达式中星期x范围是0-6或直接使用 SUN, MON, TUE, WED, THU, FRI , SAT
     """
-    from . import events_base
     events_base.run(__subjects)
-    from . import events_gf
     events_gf.run(__subjects, OnGfBig, OnGfSmall)
-    from . import events_world_boss
     events_world_boss.run(__subjects, OnWorldBoss)
-    from . import event_daily
     event_daily.run(__subjects)
-    # from . import events_for_debug
     # events_for_debug.run(__subjects)
 
 
