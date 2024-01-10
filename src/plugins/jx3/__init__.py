@@ -26,14 +26,34 @@ async def nonebot_on_startup():
 @driver.on_shutdown
 async def nonebot_on_shutdown():
     logger.info('nonebot_on_shutdown...')
-    await flush_database()
+    await global_flush_database()
 
 global_cmd_flush_database = on_command('flush_database')
 
 
 @global_cmd_flush_database.handle()
-async def flush_database():
+async def global_flush_database():
+    total = filebase_database.Database.cache
     filebase_database.Database.save_all()
+    return await global_cmd_flush_database.send(f'已完成更新,此次可能更新配置项:{len(list(total))}条')
+
+global_cmd_update_grp_config = on_command(
+    'update_grp_config',
+    example=[
+        Jx3Arg(Jx3ArgsType.group_id),
+        Jx3Arg(Jx3ArgsType.string, alias='配置路径'),
+        Jx3Arg(Jx3ArgsType.string, alias='配置值', default='VIEW'),
+    ]
+)
+
+
+@global_cmd_update_grp_config.handle()
+async def global_update_grp_config(args: list[Any] = Depends(Jx3Arg.arg_factory)):
+    arg_group, arg_path, arg_value = args
+    new_val = Ellipsis if arg_value == 'VIEW' else arg_value
+    result = GroupConfig(arg_group).mgr_property(arg_path, new_val)
+    return await global_update_grp_config.send(f'已管理更新@{arg_path},result={result}')
+
 
 ws_recev = on(type="WsRecv", priority=5, block=False)
 

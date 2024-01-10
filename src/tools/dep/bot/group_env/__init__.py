@@ -43,10 +43,11 @@ class GroupConfig:
         if isinstance(keys, str):
             keys = keys.split('.')  # 转为属性组
         action = 'fetch' if new_val is Ellipsis else f'= {new_val}'
-        logger.debug(f'mgr_property@{self.group_id}:{self.config} {str.join(".",keys)} {action}')
         data = self.value
         root = groupConfigInfos
-        return self.enter_property(data, root, keys, new_val)
+        result = self.enter_property(data, root, keys, new_val)
+        logger.debug(f'mgr_property@{self.group_id}:{self.config} {str.join(".",keys)} {action},result={result}')
+        return result
 
     def enter_property(self, data: dict, option: dict[str, GroupConfigInfo], keys: list[str], new_val: any = Ellipsis):
         cur = keys[0]
