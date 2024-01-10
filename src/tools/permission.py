@@ -1,6 +1,7 @@
 from src.tools.file import read
 import json
 from src.tools.utils import *
+from src.tools.dep.bot.group_env import GroupUserConfig
 from pathlib import Path
 
 
@@ -43,14 +44,11 @@ class Permission:
     # TODO use AOP to auto-reply by judgement.
     def __init__(self, user_id: str) -> None:
         self.user_id = str(user_id)
-        self.u_level = self.init_permission()
+        self.config = GroupUserConfig(self.user_id)
+        self.init_permission()
 
     def init_permission(self) -> int:
-        file = read(bot_path.TOOLS+"/permission.json")
-        self.permissions = json.loads(file)
-        if self.user_id not in self.permissions:
-            return None
-        return int(self.permissions[self.user_id])
+        self.u_level = self.config.mgr_property('permission.level')
 
     def judge(self, score: int, action: str = '该操作', log: bool = True) -> PermissionResult:
         if not isinstance(score, int):
