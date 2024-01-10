@@ -26,7 +26,7 @@ async def nonebot_on_startup():
 @driver.on_shutdown
 async def nonebot_on_shutdown():
     logger.info('nonebot_on_shutdown...')
-    await global_flush_database()
+    filebase_database.Database.save_all()
 
 global_cmd_flush_database = on_command('flush_database')
 
@@ -55,7 +55,8 @@ async def global_update_grp_config(args: list[Any] = Depends(Jx3Arg.arg_factory)
     gc = GroupConfig(arg_group)
     result = gc.mgr_property(arg_path, new_val)
     update_path = gc._db.database_filename
-    update_result = f'已管理更新@{arg_path},result=\n{result}'
+    db_instance = hex(id(gc._db))
+    update_result = f'已管理更新{db_instance}@{arg_path},result=\n{result}'
     msg = f'{update_path}\n{update_result}'
     return await global_cmd_update_grp_config.send(msg)
 
