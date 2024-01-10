@@ -51,8 +51,13 @@ global_cmd_update_grp_config = on_command(
 async def global_update_grp_config(args: list[Any] = Depends(Jx3Arg.arg_factory)):
     arg_group, arg_path, arg_value = args
     new_val = Ellipsis if arg_value == 'VIEW' else arg_value
-    result = GroupConfig(arg_group).mgr_property(arg_path, new_val)
-    return await global_cmd_update_grp_config.send(f'已管理更新@{arg_path},result={result}')
+
+    gc = GroupConfig(arg_group)
+    result = gc.mgr_property(arg_path, new_val)
+    update_path = gc._db.database_filename
+    update_result = f'已管理更新@{arg_path},result=\n{result}'
+    msg = f'{update_path}\n{update_result}'
+    return await global_cmd_update_grp_config.send(msg)
 
 
 ws_recev = on(type="WsRecv", priority=5, block=False)
