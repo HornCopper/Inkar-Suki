@@ -36,12 +36,14 @@ class GroupConfig:
         self.group_id = str(group_id)
         self.config = config
 
-        p = bot_path.get_group_config(group_id, config)
+        p = bot_path.get_group_config(self.group_id, self.config)
         self.value = filebase_database.Database(p).value
 
     def mgr_property(self, keys: list[str], new_val: any = Ellipsis) -> any:
         if isinstance(keys, str):
             keys = keys.split('.')  # 转为属性组
+        action = 'fetch' if new_val is Ellipsis else f'= {new_val}'
+        logger.debug(f'mgr_property@{self.group_id}:{self.config} {str.join(".",keys)} {action}')
         data = self.value
         root = groupConfigInfos
         return self.enter_property(data, root, keys, new_val)
