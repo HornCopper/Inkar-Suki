@@ -1,6 +1,7 @@
 from ... import *
 
 from src.plugins.jx3 import equip_recommend
+import src.plugins.jx3
 
 
 @pytest.mark.skipif(not Config.jx3_token, reason="无token时不测试")
@@ -12,8 +13,10 @@ def test_recommend_menu():
     state = {}
     event = SFGroupMessageEvent()
 
-    mc.tag = '刀宗'
-    task = func(event, state, obMessage(mc.tag))
+    mc.tag = '配装 刀宗'
+    event.message = obMessage(mc.tag)
+    args = Jx3Arg.arg_factory(src.plugins.jx3.jx3_cmd_equip_recommend, event)
+    task = func(event, state, args)
     asyncio.run(task)
     mc.check_counter()
 
