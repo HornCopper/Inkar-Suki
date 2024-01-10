@@ -41,7 +41,7 @@ class GoodsInfoFull(GoodsInfo):
     @classmethod
     def from_dict(cls, data: dict):
         target = GoodsInfoFull()
-        target.load_data(data)
+        target.load_local_data(data)
         if data.get('price'):
             target.price = dict2obj(GoodsPriceSummary(), data.get('price'))
         if data.get('current_price'):
