@@ -154,12 +154,13 @@ class Jx3Arg(Jx3ArgCallback, Jx3ArgExt):
             callback = Jx3ArgCallback._convert_string
 
         result = callback(self, arg_value, event=event)
-        if result is None and self.default != Ellipsis:
-            return [self.default, True]  # 没有得到有效值，但设置了默认值
+        if not isinstance(result, tuple):
+            result = result, False  # 若直接返回值，则视为有效值
 
-        if isinstance(result, tuple):
-            return result
-        return [result, False]
+        result, is_default = result
+        if (result is None and is_default) and self.default is not Ellipsis:
+            return self.default, True  # 没有得到有效值，但设置了默认值
+        return result, is_default # 默认返回
 
     def __repr__(self) -> str:
         return str(self)
