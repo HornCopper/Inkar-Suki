@@ -74,7 +74,10 @@
           <el-col :span="8">
             <el-form label-width="5rem">
               <el-form-item label="是否启用">
-                <el-switch v-model="cmd.status_grp.enable"></el-switch>
+                <div v-if="cmd.status_grp">
+                  <el-switch v-model="cmd.status_grp.enable"></el-switch>
+                </div>
+                <div v-else>从未使用过</div>
               </el-form-item>
               <el-form-item v-if="unnest_catalogs[cmd.catalog]" label="目录">
                 <div>
