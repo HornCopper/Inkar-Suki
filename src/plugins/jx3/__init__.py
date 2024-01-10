@@ -47,7 +47,7 @@ async def on_jx3_event_recv(bot: Bot, event: RecvEvent):
     }
 
     for group_id in groups:
-        subscribe = load_or_write_subscribe(group_id)
+        subscribe = GroupConfig(group_id).mgr_property('subscribe')
         msg_type = message["type"]
         if msg_type not in subscribe:
             continue
