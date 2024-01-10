@@ -51,9 +51,8 @@ async def on_jx3_event_recv(bot: Bot, event: RecvEvent):
         msg_type = message["type"]
         if msg_type not in subscribe:
             continue
-        group_config = f"{bot_path.DATA}{os.sep}{group_id}{os.sep}jx3group.json"
-        group_info = json.loads(read(group_config))
-        group_srv = group_info["server"]
+        group_config = GroupConfig(group_id)
+        group_srv = group_config.mgr_property('server')
         callback = type_callback.get(message["type"])
         if callback and not callback(message):
             continue
