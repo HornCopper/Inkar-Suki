@@ -23,6 +23,7 @@ async def get_jx3_subscribe(event: GroupMessageEvent, args: list[Any]):
         msg = f"没有[{arg_sub}]这样的主题可以订阅，请检查一下哦。"
     else:
         subscribe_dict[arg_sub] = {"arg": arg_info} if arg_info else {}
+        GroupConfig(event.group_id).mgr_property('subscribe', subscribe_dict)  # 需要初始化
         msg = f"已开启本群的[{arg_sub}(级别{arg_info or 0})]订阅！\n当收到事件时会自动推送，如需取消推送，请发送：退订 {arg_sub}"
     return subscribe_dict, arg_sub, msg
 
