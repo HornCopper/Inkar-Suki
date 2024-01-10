@@ -42,6 +42,7 @@ class GroupConfig:
         cur_data = data.get(cur)
         if cur_data is None:
             cur_data = copy.deepcopy(cur_opt.default)
+            data[cur] = cur_data # 将默认值写入
 
         if len(keys):
             assert cur_data is not None, 'data无下一级属性'
