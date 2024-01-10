@@ -18,13 +18,13 @@ jx3_cmd_arena_records = on_regex(
 
 @jx3_cmd_arena_records.handle()
 async def jx3_arena_records(event: GroupMessageEvent, template: list[Any] = Depends(Jx3Arg.arg_factory)):
-    server, user, pvp_mode = template
-    if server is None:
+    arg_server, arg_user, arg_pvp_mode = template
+    if arg_server is None:
         return await jx3_cmd_arena_records.finish(PROMPT_ServerNotExist)
-    if user is None:
+    if arg_user is None:
         return await jx3_cmd_arena_records.finish(PROMPT_UserNotExist)
 
-    data = await arena_records(server=server, name=user, mode=pvp_mode)
+    data = await arena_records(server=arg_server, name=arg_user, mode=arg_pvp_mode)
     print(data)
     if isinstance(data, list):
         return await jx3_cmd_arena_records.finish(data[0])
