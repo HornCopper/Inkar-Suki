@@ -70,7 +70,9 @@ class PlainTxtDailyMessage(IDailyMessage):
             content = await daily_txt(self.server, self.group_id, self.offset)  # 向后预测1天的
             PlainTxtDailyMessage.CACHE_Daily[self.key] = content.text
 
-        message = f"{PlainTxtDailyMessage.CACHE_Daily[self.key]}{self.cron.notify_content}"
+        data_daily = PlainTxtDailyMessage.CACHE_Daily[self.key]
+        prefix = self.cron.notify_content
+        message = f"{data_daily}{prefix}\n{saohua()}"
         return message
 
 
