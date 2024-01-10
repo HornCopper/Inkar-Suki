@@ -33,7 +33,7 @@ groupConfigInfos: dict[str, GroupConfigInfo] = {
 
 class GroupConfig:
     def __init__(self, group_id: str, config: str = 'jx3group') -> None:
-        self.group_id = group_id
+        self.group_id = str(group_id)
         self.config = config
 
         p = bot_path.get_group_config(group_id, config)
