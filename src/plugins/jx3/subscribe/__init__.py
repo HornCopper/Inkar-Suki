@@ -18,20 +18,20 @@ jx3_cmd_subscribe = on_command(
 
 async def get_jx3_subscribe(event: GroupMessageEvent, args: list[Any]):
     arg_sub, arg_info = args
-    subscribe = GroupConfig(event.group_id).mgr_property('subscribe')
+    subscribe_dict = GroupConfig(event.group_id).mgr_property('subscribe')
     if arg_sub is None:
         msg = f"没有[{arg_sub}]这样的主题可以订阅，请检查一下哦。"
     else:
-        subscribe[arg_sub] = {"arg": arg_info} if arg_info else {}
+        subscribe_dict[arg_sub] = {"arg": arg_info} if arg_info else {}
         msg = f"已开启本群的[{arg_sub}(级别{arg_info or 0})]订阅！\n当收到事件时会自动推送，如需取消推送，请发送：退订 {arg_sub}"
-    return subscribe, arg_sub, msg
+    return subscribe_dict, arg_sub, msg
 
 
 @jx3_cmd_subscribe.handle()
 async def jx3_subscribe(event: GroupMessageEvent, args: list[Any] = Depends(Jx3Arg.arg_factory)):
-    now, subject, msg = await get_jx3_subscribe(event, args)
-
-    result = await render_subscribe(VALID_Subjects, now, subject, msg)
+    subscribe_dict, subject_name, msg = await get_jx3_subscribe(event, args)
+    subject = VALID_Subjects.get(subject_name)
+    result = await render_subscribe(VALID_Subjects, subscribe_dict, subject, msg)
     return await jx3_cmd_subscribe.finish(ms.image(Path(result).as_uri()))
 
 
