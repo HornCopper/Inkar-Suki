@@ -41,6 +41,26 @@ class GoodsInfo(dict):
         self.load_data(data)
         super().__init__()
 
+    def load_remote_data(self, data: dict):
+        if data is None:
+            return
+
+        self.icon = data.get("IconID") or 18888  # 默认给个小兔兔
+        self.quality = data.get("Quality")
+        self.ui_id = data.get("UiID")
+        self.name = data.get("Name") or "未知物品"
+        self.level = data.get("Level")  # 品数（仅武器才有）
+
+    def load_local_data(self, data: dict):
+        if data is None:
+            return
+
+        self.icon = data.get("icon") or 18888  # 默认给个小兔兔
+        self.quality = data.get("quality")
+        self.ui_id = data.get("ui_id")
+        self.name = data.get("name") or "未知物品"
+        self.level = data.get("level")  # 品数（仅武器才有）
+
     def __str__(self) -> str:
         x = "※" * (self.quality + 1)
         return f"{x}{self.name}({self.id}){self.bind_type_str}"
@@ -102,11 +122,6 @@ class GoodsInfo(dict):
         self.id = data.get("id")
         self._bind_type: GoodsBindType = GoodsBindType.BindOnPick
         self.bind_type = data.get("bind_type") or GoodsBindType.UnKnown
-        self.icon = data.get("IconID") or 18888  # 默认给个小兔兔
-        self.quality = data.get("Quality")
-        self.ui_id = data.get("UiID")
-        self.name = data.get("Name") or "未知物品"
-        self.level = data.get("Level")  # 品数（仅武器才有）
         """被使用的次数，次数多的优先前置"""
         self.u_popularity = data.get("u_popularity") or 0
 
@@ -124,6 +139,7 @@ class GoodsInfo(dict):
             'bind_type': self.bind_type.value,
             'html_code': self.html_code,
             'id': self.id,
+            'icon': self.icon,
             'quality': self.quality,
             'ui_id': self.ui_id,
             'name': self.name,
