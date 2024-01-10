@@ -37,7 +37,8 @@ class GroupConfig:
         self.config = config
 
         p = bot_path.get_group_config(self.group_id, self.config)
-        self.value = filebase_database.Database(p).value
+        self._db = filebase_database.Database(p)
+        self.value = self._db.value
 
     def mgr_property(self, keys: list[str], new_val: any = Ellipsis) -> any:
         if isinstance(keys, str):
