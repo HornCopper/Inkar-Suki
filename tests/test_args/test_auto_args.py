@@ -54,3 +54,9 @@ def test_auto_args_server_and_str_args():
 
     args = get_args('唯满侠', templates, event)
     assert isinstance(args, Exception)
+
+    templates = [
+        Jx3Arg(Jx3ArgsType.subscribe),
+    ]
+    arg_sub, = get_args('日常', templates, event)
+    assert isinstance(arg_sub, str)

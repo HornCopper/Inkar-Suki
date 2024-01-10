@@ -83,7 +83,9 @@ class Jx3ArgCallback:
             return None, True
         arg_sub = arg_value.lower() if arg_value else None
         subject = VALID_Subjects.get(arg_sub)
-        return subject, False
+        if not subject:
+            return None, True
+        return subject.name, False
 
     def _convert_command(self, arg_value: str, **kwargs) -> str:
         return arg_value  # TODO 经允许注册有效的
