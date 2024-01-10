@@ -28,6 +28,10 @@ jx3_cmd_daily_txt = on_command(
     "jx3_daily_txt",
     aliases={"日常", "周常"},
     priority=5,
+    example=[
+        Jx3Arg(Jx3ArgsType.server, is_optional=True),
+        Jx3Arg(Jx3ArgsType.bool, is_optional=True, alias='要不要骚话'),
+    ],
     document="""
     查询日常。
 
@@ -41,7 +45,8 @@ jx3_cmd_daily_txt = on_command(
 
 
 @jx3_cmd_daily_txt.handle()
-async def jx3_daily_txt(event: GroupMessageEvent, args: Message = CommandArg()):
-    content = await daily_txt(args.extract_plain_text(), group_id=event.group_id)
-    return await jx3_cmd_daily_txt.finish(content.text)
-
+async def jx3_daily_txt(event: GroupMessageEvent, args: list[Any] = Depends(Jx3Arg.arg_factory)):
+    arg_server, arg_need_saohua = args
+    content = await daily_txt(arg_server, group_id=event.group_id)
+    suffix = (await saohua()) if arg_need_saohua else ''
+    return await jx3_cmd_daily_txt.finish(f'{content.text}{suffix}')

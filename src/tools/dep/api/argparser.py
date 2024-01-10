@@ -57,9 +57,9 @@ class Jx3ArgCallback:
         return x, is_default
 
     def _convert_bool(self, arg_value: str, **kwargs) -> int:
-        if arg_value in {'同意', '可', '真', '好', '批准', '准许'}:
+        if arg_value in {'同意', '可', '真', '好', '批准', '准许', '要'}:
             return True
-        if arg_value in {'不同意', '不可', '假', '差', '拒绝', '否决'}:
+        if arg_value in {'不同意', '不可', '假', '差', '拒绝', '否决', '不要'}:
             return False
         x = get_number(arg_value)
         if x == 0:
@@ -160,7 +160,7 @@ class Jx3Arg(Jx3ArgCallback, Jx3ArgExt):
         result, is_default = result
         if (result is None and is_default) and self.default is not Ellipsis:
             return self.default, True  # 没有得到有效值，但设置了默认值
-        return result, is_default # 默认返回
+        return result, is_default  # 默认返回
 
     def __repr__(self) -> str:
         return str(self)
