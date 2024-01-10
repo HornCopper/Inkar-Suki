@@ -119,7 +119,7 @@ class MenuCallback:
             bot = self.bots.get(botname)
             for group in await bot.call_api("get_group_list"):
                 group_id = group.get("group_id")
-                g_subscribe = load_or_write_subscribe(group_id)
+                g_subscribe = GroupConfig(group_id).mgr_property('subscribe')
                 u_subscribed_level = MenuCallback.check_subscribed(self.sub, g_subscribe)
                 to_send_msg = u_subscribed_level >= self.cron.level
 

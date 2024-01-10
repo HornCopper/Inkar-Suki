@@ -1,6 +1,5 @@
 from src.tools.dep import *
 from src.tools.generate import get_uuid
-from src.tools.config import Config
 from src.constant.jx3.skilldatalib import kftosh
 from src.tools.utils import get_api, get_content
 from src.plugins.jx3.rank.school_rank import school_mapping as gkfdt
