@@ -25,3 +25,6 @@ common_data_full: str = f'{DATA}{os.sep}{common_data}{os.sep}'
 
 def get_group_config(group_id: str, config_name: str = 'jx3group') -> str:
     return f'{DATA}{os.sep}{group_id}{os.sep}{config_name}'
+
+def get_user_config(user_id: str, config_name: str = 'jx3user') -> str:
+    return f'{DATA}{os.sep}users{os.sep}{user_id}{os.sep}{config_name}'
