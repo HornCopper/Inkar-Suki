@@ -27,6 +27,7 @@ groupConfigInfos: dict[str, GroupConfigInfo] = {
     'auth': GroupConfigInfo('授权', default={}, infos=groupConfigAuth),
     'server': GroupConfigInfo('当前绑定服务器'),
     'bot': GroupConfigInfo('当前机器人'),
+    'subscribe': GroupConfigInfo('当前订阅的事件', default={}),
 }
 
 

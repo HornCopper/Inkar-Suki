@@ -18,6 +18,10 @@ class Kunfu(Aliasable):
         d[self.gameid] = self  # 将id也注册到缓存
         return super().register_alias()
 
+    @classmethod
+    def from_alias(cls, alias: str):
+        return super().from_alias(alias)
+
     @property
     def icon(self):
         return f"https://img.jx3box.com/image/xf/{self.gameid}.png"

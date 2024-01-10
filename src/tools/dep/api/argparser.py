@@ -12,20 +12,20 @@ from sgtpyutils import extensions
 from sgtpyutils.logger import logger
 from .prompt import *
 from ..args import *
-
+from src.tools.dep.common_api import *
 logger.debug(f'load dependence:{__name__}')
 
 
 class Jx3ArgCallback:
-    def _convert_school(self, arg_value: str, **kwargs) -> str:
+    def _convert_school(self, arg_value: str, **kwargs) -> tuple[str, bool]:
         if not arg_value:
-            return None
-        return kftosh(arg_value)
+            return None, True
+        return kftosh(arg_value), False
 
-    def _convert_kunfu(self, arg_value: str, **kwargs) -> str:
+    def _convert_kunfu(self, arg_value: str, **kwargs) -> tuple[str, bool]:
         if not arg_value:
-            return None
-        return std_kunfu(arg_value)
+            return None, True
+        return std_kunfu(arg_value), False
 
     def _convert_pvp_mode(self, arg_value: str, **kwargs) -> tuple[str, bool]:
         if arg_value not in ['22', '33', '55']:
@@ -76,8 +76,14 @@ class Jx3ArgCallback:
             is_default = True
         return v - 1, is_default  # 输入值从1开始，返回值从0开始
 
-    def _convert_subscribe(self, arg_value: str, **kwargs) -> str:
-        return arg_value  # TODO 经允许注册有效的
+    def _convert_subscribe(self, arg_value: str, **kwargs) -> tuple[str, bool]:
+        if arg_value is None:
+            return None, True
+        if not isinstance(arg_value, str):
+            return None, True
+        arg_sub = arg_value.lower() if arg_value else None
+        subject = VALID_Subjects.get(arg_sub)
+        return subject, False
 
     def _convert_command(self, arg_value: str, **kwargs) -> str:
         return arg_value  # TODO 经允许注册有效的
@@ -165,6 +171,8 @@ class Jx3Arg(Jx3ArgCallback, Jx3ArgExt):
         templates = get_args(docs.example, event, method=docs.name)
         if templates is None:  # 不再继续处理
             matcher.stop_propagation()
+        if templates is InvalidArgumentException:
+            ext.SyncRunner.as_sync_method(matcher.finish(f'{docs.name}指令错误，{ex}'))
         return templates
 
     def to_dict(self):
@@ -218,7 +226,7 @@ def direct_get_args(raw_input: str, template_args: List[Jx3Arg], event: GroupMes
         result.append(x)  # 无论是否解析成功都将该位置参数填入
         if x is None or is_default:
             if is_default and not match_value.is_optional:
-                return InvalidArgumentException(f'{match_value.name}参数无效')
+                return InvalidArgumentException(f'[{match_value.alias}]参数无效')
             continue  # 该参数去匹配下一个参数
 
         user_index += 1  # 输出参数位成功才+1

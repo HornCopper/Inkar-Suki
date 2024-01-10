@@ -9,7 +9,7 @@ def test_subscribe():
         assert '已开启' in raw
     func = src.plugins.jx3.subscribe.get_jx3_subscribe
     event = SFGroupMessageEvent(group_id=rnd_group)
-    task = func(event, obMessage('大攻防'))
+    task = func(event, ['大攻防', None])
     result = asyncio.run(task)
     msg = result[2]
     check_sub(msg)
@@ -21,7 +21,7 @@ def test_duplicate_subscripe():
 
     func = src.plugins.jx3.subscribe.get_jx3_subscribe
     event = SFGroupMessageEvent(group_id=rnd_group)
-    task = func(event, obMessage('玄晶'))
+    task = func(event, ['玄晶', None])
     result = asyncio.run(task)
     msg = result[2]
     check_sub(msg)
@@ -33,7 +33,7 @@ def test_notexist_subscripe():
 
     func = src.plugins.jx3.subscribe.get_jx3_unsubscribe
     event = SFGroupMessageEvent(group_id=rnd_group)
-    task = func(event, obMessage('不存在'))
+    task = func(event, [None, None])
     result = asyncio.run(task)
     msg = result[2]
     check_unsub(msg)
@@ -44,7 +44,7 @@ def test_unsubscribe():
         assert '已开启' in raw
     func = src.plugins.jx3.subscribe.get_jx3_unsubscribe
     event = SFGroupMessageEvent(group_id=rnd_group)
-    task = func(event, obMessage('玄晶'))
+    task = func(event, ['玄晶'])
     result = asyncio.run(task)
     msg = result[2]
     check_unsub(msg)
@@ -53,7 +53,7 @@ def test_unsubscribe():
         assert '尚未订阅' in raw
     func = src.plugins.jx3.subscribe.get_jx3_unsubscribe
     event = SFGroupMessageEvent(group_id=rnd_group)
-    task = func(event, obMessage('玄晶'))
+    task = func(event, ['玄晶'])
     result = asyncio.run(task)
     msg = result[2]
     check_unsub(msg)
