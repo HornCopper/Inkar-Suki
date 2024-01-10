@@ -14,7 +14,8 @@ class GroupConfig:
     def get_db_path(self) -> str:
         return bot_path.get_group_config(self.group_id, self.config)
 
-    def __init__(self, group_id: str, config: str = 'jx3group', config_root: dict[str, GroupConfigInfo] = None) -> None:
+    def __init__(self, group_id: str, config: str = 'jx3group', config_root: dict[str, GroupConfigInfo] = None, log: bool = True) -> None:
+        self.log = log  # 是否记录日志
         self.group_id = str(group_id)
         self.config = config
         self.root = config_root if config_root else config_dict.get(config)
@@ -28,8 +29,10 @@ class GroupConfig:
         action = 'fetch' if new_val is Ellipsis else f'= {new_val}'
         data = self.value
         result = self.enter_property(data, self.root, keys, new_val)
-        logger.debug(
-            f'mgr_property@{self.group_id}:{self.config} {str.join(".",keys)} {action},result={result}')
+        if self.log:
+            msg = f'mgr_property@{self.group_id}:{self.config}'
+            msg = f'{str.join(".",keys)} {action},result={result}'
+            logger.debug(msg)
         return result
 
     def enter_property(self, data: dict, option: dict[str, GroupConfigInfo], keys: list[str], new_val: any = Ellipsis):
@@ -42,7 +45,7 @@ class GroupConfig:
         cur_data = data.get(cur)
         if cur_data is None:
             cur_data = copy.deepcopy(cur_opt.default)
-            data[cur] = cur_data # 将默认值写入
+            data[cur] = cur_data  # 将默认值写入
 
         if len(keys):
             assert cur_data is not None, 'data无下一级属性'
@@ -62,5 +65,5 @@ class GroupUserConfig(GroupConfig):
     def get_db_path(self) -> str:
         return bot_path.get_user_config(self.group_id, self.config)
 
-    def __init__(self, group_id: str, config: str = 'jx3user', config_root: dict[str, GroupConfigInfo] = None) -> None:
+    def __init__(self, group_id: str, config: str = 'jx3user', config_root: dict[str, GroupConfigInfo] = None, log: bool = True) -> None:
         super().__init__(group_id, config, config_root)
