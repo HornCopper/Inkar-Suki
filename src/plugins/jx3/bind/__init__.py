@@ -39,11 +39,14 @@ async def jx3_server_bind(bot: Bot, event: GroupMessageEvent, args: list[Any] = 
         if not x.success:
             return await jx3_cmd_server_bind.finish("唔……只有群主或管理员才可以修改哦！")
 
-    server, = args
-    server = server_bind(group_id=event.group_id, server=server)
-    if isinstance(server, list):
-        return await jx3_cmd_server_bind.finish(f"绑定失败：{server}")
-    return await jx3_cmd_server_bind.finish("绑定成功！\n当前区服为：" + server)
+    arg_server, = args
+    if not arg_server:
+        return await jx3_cmd_server_bind.finish(PROMPT_ServerNotExist)
+        
+    arg_server = server_bind(group_id=event.group_id, server=arg_server)
+    if isinstance(arg_server, list):
+        return await jx3_cmd_server_bind.finish(f"绑定失败：{arg_server}")
+    return await jx3_cmd_server_bind.finish("绑定成功！\n当前区服为：" + arg_server)
 
 jx3_cmd_server_unbind = on_command("jx3_unbind", aliases={"解绑"}, priority=5)
 

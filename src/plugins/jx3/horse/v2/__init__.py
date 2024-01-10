@@ -43,14 +43,16 @@ jx3_cmd_horseinfo_map = on_command(
 
 @jx3_cmd_horseinfo_map.handle()
 async def jx3_horseinfo(event: GroupMessageEvent, template: list[Any] = Depends(Jx3Arg.arg_factory)):
-    server, = template
-    reporter = await get_horse_reporter(server)
+    arg_server, = template
+    if not arg_server:
+        return await jx3_cmd_horseinfo_map.finish(PROMPT_ServerNotExist)
+    reporter = await get_horse_reporter(arg_server)
     if isinstance(reporter, str):
         return await jx3_cmd_horseinfo_map.finish(reporter)
 
     horse_record, map_data, horse_data = reporter
     result = await render_items(
-        server,
+        arg_server,
         [x.to_dict() for x in horse_record],
         [x.to_dict() for x in map_data],
         [x.to_dict() for x in horse_data],
