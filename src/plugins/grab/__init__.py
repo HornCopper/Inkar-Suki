@@ -4,6 +4,8 @@ from nonebot.permission import SUPERUSER
 from nonebot.adapters.onebot.v11.helpers import extract_image_urls
 from nonebot.exception import ActionFailed
 from src.tools.dep import *
+import requests
+import base64
 try:
     scheduler = require("nonebot_plugin_apscheduler").scheduler
 except Exception:
