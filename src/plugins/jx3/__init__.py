@@ -32,7 +32,10 @@ global_cmd_flush_database = on_command('flush_database')
 
 
 @global_cmd_flush_database.handle()
-async def global_flush_database():
+async def global_flush_database(event: GroupMessageEvent):
+    x = Permission(event.user_id).judge(10, '查询和更新配置')
+    if not x.success:
+        return await global_cmd_update_grp_config.finish(x.description)
     total = filebase_database.Database.cache
     filebase_database.Database.save_all()
     return await global_cmd_flush_database.send(f'已完成更新,此次可能更新配置项:{len(list(total))}条')
@@ -48,7 +51,10 @@ global_cmd_update_grp_config = on_command(
 
 
 @global_cmd_update_grp_config.handle()
-async def global_update_grp_config(args: list[Any] = Depends(Jx3Arg.arg_factory)):
+async def global_update_grp_config(event: GroupMessageEvent, args: list[Any] = Depends(Jx3Arg.arg_factory)):
+    x = Permission(event.user_id).judge(10, '查询和更新配置')
+    if not x.success:
+        return await global_cmd_update_grp_config.finish(x.description)
     arg_group, arg_path, arg_value = args
     new_val = Ellipsis if arg_value == 'VIEW' else arg_value
 
