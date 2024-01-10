@@ -1,4 +1,5 @@
 from __future__ import annotations
+import copy
 from sgtpyutils.database import filebase_database
 from src.tools.utils import *
 
@@ -27,7 +28,7 @@ groupConfigInfos: dict[str, GroupConfigInfo] = {
     'auth': GroupConfigInfo('授权', default={}, infos=groupConfigAuth),
     'server': GroupConfigInfo('当前绑定服务器'),
     'bot': GroupConfigInfo('当前机器人'),
-    'subscribe': GroupConfigInfo('当前订阅的事件', default={}),
+    'subscribe': GroupConfigInfo('当前订阅的事件', default={'日常': {}}),
 }
 
 
@@ -47,7 +48,8 @@ class GroupConfig:
         data = self.value
         root = groupConfigInfos
         result = self.enter_property(data, root, keys, new_val)
-        logger.debug(f'mgr_property@{self.group_id}:{self.config} {str.join(".",keys)} {action},result={result}')
+        logger.debug(
+            f'mgr_property@{self.group_id}:{self.config} {str.join(".",keys)} {action},result={result}')
         return result
 
     def enter_property(self, data: dict, option: dict[str, GroupConfigInfo], keys: list[str], new_val: any = Ellipsis):
@@ -59,7 +61,7 @@ class GroupConfig:
 
         cur_data = data.get(cur)
         if cur_data is None:
-            cur_data = cur_opt.default
+            cur_data = copy.deepcopy(cur_opt.default)
 
         if len(keys):
             assert cur_data is not None, 'data无下一级属性'
