@@ -30,7 +30,7 @@ jx3_cmd_daily_txt = on_command(
     priority=5,
     example=[
         Jx3Arg(Jx3ArgsType.server, is_optional=True),
-        Jx3Arg(Jx3ArgsType.bool, is_optional=True, alias='要不要骚话'),
+        Jx3Arg(Jx3ArgsType.number, default=-1, alias='新话百分比'),
     ],
     document="""
     查询日常。
@@ -46,7 +46,7 @@ jx3_cmd_daily_txt = on_command(
 
 @jx3_cmd_daily_txt.handle()
 async def jx3_daily_txt(event: GroupMessageEvent, args: list[Any] = Depends(Jx3Arg.arg_factory)):
-    arg_server, arg_need_saohua = args
+    arg_server,  arg_rate = args
     content = await daily_txt(arg_server, group_id=event.group_id)
-    suffix = (await saohua()) if arg_need_saohua else ''
+    suffix = (await saohua(arg_rate)) if arg_rate > 0 else ''
     return await jx3_cmd_daily_txt.finish(f'{content.text}{suffix}')
