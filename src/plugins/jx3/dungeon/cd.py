@@ -27,6 +27,8 @@ async def jx3_rare_gain(event: GroupMessageEvent, args: list[Any] = Depends(Jx3A
     Example：-cd 幽月轮 归墟玄晶
     """
     arg_server, arg_name = args
+    if not arg_server:
+        return await jx3_cmd_jx3_rare_gain.finish(PROMPT_ServerNotExist)
     if not arg_name:
         return await jx3_cmd_jx3_rare_gain.finish("没有输入物品名称哦")
     msg = await get_cd(arg_server, arg_name)
