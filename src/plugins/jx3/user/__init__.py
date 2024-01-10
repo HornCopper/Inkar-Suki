@@ -24,6 +24,8 @@ async def jx3_addritube(event: GroupMessageEvent, template: list[Any] = Depends(
     Example：-查装 幽月轮 哭包猫@唯我独尊
     """
     arg_server, arg_user = template
+    if not arg_server:
+        return await jx3_cmd_addritube.finish(PROMPT_ServerNotExist)
     data = await addritube_(arg_server, arg_user)
     if isinstance(data, list):
         return await jx3_cmd_addritube.finish(data[0])
@@ -48,6 +50,8 @@ jx3_cmd_addritube_v2 = on_command(
 @jx3_cmd_addritube_v2.handle()
 async def jx3_addritube_v2(event: GroupMessageEvent, template: list[Any] = Depends(Jx3Arg.arg_factory)):
     arg_server, arg_user = template
+    if not arg_server:
+        return await jx3_cmd_addritube_v2.finish(PROMPT_ServerNotExist)
     data = await get_attr_main(arg_server, arg_user, str(event.group_id))
     if isinstance(data, list):
         return await jx3_cmd_addritube_v2.finish(data[0])
@@ -73,6 +77,6 @@ async def jx3_player(event: GroupMessageEvent, args: list[Any] = Depends(Jx3Arg.
     """
     arg_server, arg_user = args
     if not arg_server:
-        arg_server = server_mapping(group_id=event.group_id)
+        return await jx3_cmd_roleInfo.finish(PROMPT_ServerNotExist)
     msg = await roleInfo_(server=arg_server, player=arg_user)
     await jx3_cmd_roleInfo.finish(msg)

@@ -21,6 +21,8 @@ jx3_cmd_trade2 = on_command(
 @jx3_cmd_trade2.handle()
 async def jx3_trade2(matcher: Matcher, state: T_State, event: GroupMessageEvent, template: list[Any] = Depends(Jx3Arg.arg_factory)):
     arg_server, arg_item, arg_page = template
+    if not arg_server:
+        return await jx3_cmd_trade2.finish(PROMPT_ServerNotExist)
     state["server"] = arg_server
     pageSize = 20
     data, totalCount = await search_item_info_for_price(arg_item, arg_server, pageIndex=arg_page, pageSize=pageSize)
@@ -68,6 +70,8 @@ async def jx3_trade_detail(matcher: Matcher, state: T_State, event: GroupMessage
 
 async def get_jx3_trade_detail(matcher: Matcher, state: T_State, event: GroupMessageEvent, template: list[Any]):
     arg_server, arg_item = template
+    if not arg_server:
+        return await [PROMPT_ServerNotExist]
     data = await search_item_info(arg_item, pageIndex=0, pageSize=1000)
     data = [x for x in data if x.bind_type != GoodsBindType.BindOnPick]
     if len(data) < 1:
@@ -101,6 +105,8 @@ async def jx3_trade_favoritest(matcher: Matcher, state: T_State, event: GroupMes
     Example：交易行热门 2
     """
     arg_server, arg_page = template
+    if not arg_server:
+        return await jx3_cmd_favouritest.finish(PROMPT_ServerNotExist)
     items = get_favoritest_by_predict(lambda index, x: x.u_popularity > 100)
     pageSize = 20
     data, totalCount = await get_prices_by_items(items, arg_server, pageIndex=arg_page, pageSize=pageSize)
