@@ -26,6 +26,13 @@ async def nonebot_on_startup():
 @driver.on_shutdown
 async def nonebot_on_shutdown():
     logger.info('nonebot_on_shutdown...')
+    await flush_database()
+
+global_cmd_flush_database = on_command('flush_database')
+
+
+@global_cmd_flush_database.handle()
+async def flush_database():
     filebase_database.Database.save_all()
 
 ws_recev = on(type="WsRecv", priority=5, block=False)
