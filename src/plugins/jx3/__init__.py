@@ -26,7 +26,7 @@ async def nonebot_on_startup():
 @driver.on_shutdown
 async def nonebot_on_shutdown():
     logger.info('nonebot_on_shutdown...')
-    await global_flush_database()
+    filebase_database.Database.save_all()
 
 global_cmd_flush_database = on_command('flush_database')
 
