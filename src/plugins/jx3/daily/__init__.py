@@ -25,7 +25,7 @@ async def jx3_daily_img(event: GroupMessageEvent, args: Message = CommandArg()):
 
 
 jx3_cmd_daily_txt = on_command(
-    "jx3_daily_img",
+    "jx3_daily_txt",
     aliases={"日常", "周常"},
     priority=5,
     document="""
