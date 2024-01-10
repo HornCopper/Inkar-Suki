@@ -38,7 +38,7 @@ class GoodsInfo(dict):
     def __init__(self, data: dict = None) -> None:
         if data is None:
             data = {}  # 默认给个空数据用于初始化一个模板
-        self.load_data(data)
+        self.load_remote_data(data)
         super().__init__()
 
     def load_remote_data(self, data: dict):
@@ -50,6 +50,7 @@ class GoodsInfo(dict):
         self.ui_id = data.get("UiID")
         self.name = data.get("Name") or "未知物品"
         self.level = data.get("Level")  # 品数（仅武器才有）
+        return self.load_data(data)
 
     def load_local_data(self, data: dict):
         if data is None:
@@ -60,6 +61,7 @@ class GoodsInfo(dict):
         self.ui_id = data.get("ui_id")
         self.name = data.get("name") or "未知物品"
         self.level = data.get("level")  # 品数（仅武器才有）
+        return self.load_data(data)
 
     def __str__(self) -> str:
         x = "※" * (self.quality + 1)
