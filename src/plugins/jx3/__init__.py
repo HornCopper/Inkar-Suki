@@ -22,10 +22,15 @@ async def nonebot_on_startup():
         logger.info("Connected to SFAPI successfully.")
 
 
-@scheduler.scheduled_job("interval", id='database_save_all', seconds=3600*(1-0.05*random.random()))
 @driver.on_shutdown
 async def nonebot_on_shutdown():
     logger.info('nonebot_on_shutdown...')
+    filebase_database.Database.save_all()
+
+
+@scheduler.scheduled_job("interval", id='database_save_all', seconds=3600*(1-0.05*random.random()))
+async def nonebot_on_interval_task():
+    logger.info('nonebot_on_interval_task...')
     filebase_database.Database.save_all()
 
 global_cmd_flush_database = on_command('flush_database')
@@ -62,7 +67,7 @@ async def global_update_grp_config(event: GroupMessageEvent, args: list[Any] = D
     result = gc.mgr_property(arg_path, new_val)
     update_path = gc._db.database_filename
     db_instance = hex(id(gc._db.data_obj))
-    update_result = f'已管理更新{db_instance}@{arg_path},result=\n{result}'
+    update_result = f'已管理更新{db_instance}@{arg_path}\nnew_value={new_val},result=\n{result}'
     msg = f'{update_path}\n{update_result}'
     return await global_cmd_update_grp_config.send(msg)
 

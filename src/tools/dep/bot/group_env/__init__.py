@@ -1,3 +1,4 @@
+import os
 import copy
 from sgtpyutils.database import filebase_database
 from src.tools.utils import *
@@ -7,14 +8,17 @@ config_dict = {
     'jx3group': groupConfigInfos,
     'jx3user': userConfigInfos
 }
-import os
+
 
 class GroupConfig:
+    def get_db_path(self) -> str:
+        return bot_path.get_group_config(self.group_id, self.config)
+
     def __init__(self, group_id: str, config: str = 'jx3group', config_root: dict[str, GroupConfigInfo] = None) -> None:
         self.group_id = str(group_id)
         self.config = config
         self.root = config_root if config_root else config_dict.get(config)
-        p = bot_path.get_group_config(self.group_id, self.config)
+        p: str = self.get_db_path()
         self._db = filebase_database.Database(p)
         self.value = self._db.value
 
@@ -54,5 +58,8 @@ class GroupConfig:
 
 
 class GroupUserConfig(GroupConfig):
+    def get_db_path(self) -> str:
+        return bot_path.get_user_config(self.group_id, self.config)
+
     def __init__(self, group_id: str, config: str = 'jx3user', config_root: dict[str, GroupConfigInfo] = None) -> None:
-        super().__init__(group_id, f'user{os.sep}{config}', config_root)
+        super().__init__(group_id, config, config_root)
