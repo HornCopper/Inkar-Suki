@@ -1,5 +1,5 @@
 # from src.plugins.jx3.daily import daily_ # 产生循环调用风险
-
+from src.tools.dep.common_api.none_dep_api import *
 from ..SubscribeItem import *
 import threading
 import time
@@ -8,7 +8,7 @@ from src.tools.dep.bot import *
 CACHE_Daily: dict[str, str] = {}  # day -> url_local
 
 
-async def CallbackDaily(bot: Bot, group_id: str, sub: SubscribeSubject, cron: SubjectCron):
+async def CallbackDaily(group_id: str, sub: SubscribeSubject, cron: SubjectCron):
     global CACHE_Daily
     t = time.localtime(time.time() - 7 * 3600)   # 每天早上7点前均按前一天算
     date = time.strftime("%Y%m%d", t)
@@ -46,10 +46,10 @@ def run(__subjects: list):
     )
     __subjects.append(v)
     v = SubscribeSubject(name="今日日常", description="每天一大早推送今天的日常任务", cron=[
-                         SubjectCron("50 6 * * *", "早~今天的日常来啦")
+                         SubjectCron("45 6 * * *", "早~今天的日常来啦")
                          ], callback=CallbackDailyToday)
     __subjects.append(v)
     v = SubscribeSubject(name="明日日常", description="每天晚上10点推送次日的日常任务", cron=[
-                         SubjectCron("0 22 * * *", "这是明天的日常哦~晚安！")
+                         SubjectCron("55 21 * * *", "这是明天的日常哦~晚安！")
                          ], callback=CallbackDailyTomorow)
     __subjects.append(v)
