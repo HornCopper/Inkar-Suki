@@ -1,42 +1,19 @@
-from __future__ import annotations
 import copy
 from sgtpyutils.database import filebase_database
 from src.tools.utils import *
 
-
-class GroupConfigInfo:
-    name: str
-    description: str
-    default: any
-    infos: dict[str, GroupConfigInfo]
-
-    def __init__(self, name: str, description: str = None, default: any = None, infos: dict[str, GroupConfigInfo] = None) -> None:
-        self.name = name
-        self.description = description
-        self.default = default
-        self.infos = infos
-
-
-groupConfigAuth: dict[str, GroupConfigInfo] = {
-    'start': GroupConfigInfo('首次使用', default=DateTime('2024-01-08').timestamp()),
-    'uses': GroupConfigInfo('使用记录', '记录每个授权区间', default=[]),
-    'allow_server': GroupConfigInfo('可绑区服', '若无内容，则可任意绑定', default=[]),
-    'allow_bot': GroupConfigInfo('可绑机器人', '若无内容，则可任意绑定', default=[]),
+from .GroupConfigPreset import *
+config_dict = {
+    'jx3group': groupConfigInfos,
+    'jx3user': userConfigInfos
 }
-
-groupConfigInfos: dict[str, GroupConfigInfo] = {
-    'auth': GroupConfigInfo('授权', default={}, infos=groupConfigAuth),
-    'server': GroupConfigInfo('当前绑定服务器'),
-    'bot': GroupConfigInfo('当前机器人'),
-    'subscribe': GroupConfigInfo('当前订阅的事件', default={'日常': {}}),
-}
-
+import os
 
 class GroupConfig:
-    def __init__(self, group_id: str, config: str = 'jx3group') -> None:
+    def __init__(self, group_id: str, config: str = 'jx3group', config_root: dict[str, GroupConfigInfo] = None) -> None:
         self.group_id = str(group_id)
         self.config = config
-
+        self.root = config_root if config_root else config_dict.get(config)
         p = bot_path.get_group_config(self.group_id, self.config)
         self._db = filebase_database.Database(p)
         self.value = self._db.value
@@ -46,8 +23,7 @@ class GroupConfig:
             keys = keys.split('.')  # 转为属性组
         action = 'fetch' if new_val is Ellipsis else f'= {new_val}'
         data = self.value
-        root = groupConfigInfos
-        result = self.enter_property(data, root, keys, new_val)
+        result = self.enter_property(data, self.root, keys, new_val)
         logger.debug(
             f'mgr_property@{self.group_id}:{self.config} {str.join(".",keys)} {action},result={result}')
         return result
@@ -75,3 +51,8 @@ class GroupConfig:
             # 更新属性
             data[cur] = new_val
         return cur_data
+
+
+class GroupUserConfig(GroupConfig):
+    def __init__(self, group_id: str, config: str = 'jx3user', config_root: dict[str, GroupConfigInfo] = None) -> None:
+        super().__init__(group_id, f'user{os.sep}{config}', config_root)
