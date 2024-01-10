@@ -14,10 +14,8 @@ def server_bind(group_id: str, server: str) -> str:
         server = server_mapping(server)
         if not server:
             return [PROMPT_ServerNotExist]
-    path = f"{bot_path.DATA}/{group_id}/jx3group.json"
-    now = json.loads(read(path))
-    now["server"] = server
-    write(path, json.dumps(now, ensure_ascii=False))
+    group_config = GroupConfig(group_id)
+    _ = group_config.mgr_property('server', server)
     return server
 
 

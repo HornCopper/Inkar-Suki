@@ -48,9 +48,9 @@ class Assistance:
         return True
 
     async def create_group(group: str, description: str, creator: str):
-        group_info = json.loads(read(f"{bot_path.DATA}/{group}/jx3group.json"))
-        server = group_info["server"]
-        if group_info["server"] == "":
+        group_config = GroupConfig(group)
+        server = group_config.mgr_property('server')
+        if server == "":
             return "开团失败，未绑定服务器的群聊暂无法使用该功能，请先联系群主或管理员进行绑定哦~"
         status = await Assistance.check_description(group, description)
         if status is False:
@@ -73,8 +73,8 @@ class Assistance:
         status = await Assistance.check_apply(group, description, id)
         if status:
             return "唔……您似乎已经申请过了，请不要重复申请哦~\n如需修改请先发送“取消申请 <团队关键词> <ID>”，随后重新申请！"
-        group_info = json.loads(read(f"{bot_path.DATA}/{group}/jx3group.json"))
-        server = group_info["server"]
+        group_config = GroupConfig(group)
+        server = group_config.mgr_property('server')
         if job in ["老板", "躺", "躺拍"]:
             job = "老板"
         else:
