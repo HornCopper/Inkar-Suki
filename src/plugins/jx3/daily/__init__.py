@@ -43,7 +43,5 @@ jx3_cmd_daily_txt = on_command(
 @jx3_cmd_daily_txt.handle()
 async def jx3_daily_txt(event: GroupMessageEvent, args: Message = CommandArg()):
     content = await daily_txt(args.extract_plain_text(), group_id=event.group_id)
-    if isinstance(content, list):
-        return await jx3_cmd_daily_txt.finish(content[0])
-    return await jx3_cmd_daily_txt.finish(content)
+    return await jx3_cmd_daily_txt.finish(content.text)
 
