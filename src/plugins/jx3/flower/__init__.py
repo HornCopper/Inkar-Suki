@@ -28,7 +28,7 @@ CACHE_flower = filebase_database.Database(f'{bot_path.common_data_full}pvx_flowe
 async def jx3_flower(state: T_State, event: GroupMessageEvent, args: list[Any] = Depends(Jx3Arg.arg_factory)):
     arg_server, arg_map, arg_species = args
     if not arg_server:
-        return await jx3_cmd_flower.send(PROMPT_ServerNotExist)
+        return await jx3_cmd_flower.finish(PROMPT_ServerNotExist)
     data = await get_flower(arg_server, arg_map, arg_species)
     code = sgtpyutils.hash.get_hash(json.dumps(data))  # 检查是否有变化
     cache_key = f"{arg_server}-{arg_map}-{arg_species}"
