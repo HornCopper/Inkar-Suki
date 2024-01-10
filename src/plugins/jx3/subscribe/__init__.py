@@ -69,6 +69,7 @@ jx3_cmd_unsubscribe = on_command(
 @jx3_cmd_unsubscribe.handle()
 async def jx3_unsubscribe(event: GroupMessageEvent, args: list[Any] = Depends(Jx3Arg.arg_factory)):
     arg_sub,  = args
-    now, subject, msg = await get_jx3_unsubscribe(event, arg_sub)
-    result = await render_subscribe(VALID_Subjects, now, subject, msg)
+    subscribe_dict, subject_name, msg = await get_jx3_unsubscribe(event, arg_sub)
+    subject = VALID_Subjects.get(subject_name)
+    result = await render_subscribe(VALID_Subjects, subscribe_dict, subject, msg)
     return await jx3_cmd_unsubscribe.finish(ms.image(Path(result).as_uri()))
