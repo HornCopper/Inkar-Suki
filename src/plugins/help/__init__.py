@@ -130,7 +130,8 @@ async def help_(args: Message = CommandArg()):
         if not isinstance(image, str):
             return await help.finish("唔，帮助文件生成失败了哦~请联系机器人管理员解决此问题，附带以下信息：\n"+image)
         picture_message = ms.image(Path(image).as_uri())
+        tip = '【老版本帮助，新版本可以发“帮助”】'
         return await help.finish(
-            "帮助信息来啦！输入+help <module>可快速定位你要查找的模块哦~\n"
+            f"{tip}帮助信息来啦！输入+help <module>可快速定位你要查找的模块哦~\n"
             + picture_message
-            + "还有文档可以找哦~\nhttps://inkar-suki.codethink.cn/\n如果你觉得有帮助的话，欢迎来给作者赞助哦~\n链接：https://inkar-suki.codethink.cn/donate.html")
+            + "还有文档可以找哦~\nhttps://inkar-suki.codethink.cn/\n如果你觉得有帮助的话，欢迎来给作者赞助哦~\n链接：https://inkar-suki.codethink.cn/donate.html") + f'\n{tip}'
