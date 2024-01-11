@@ -48,5 +48,5 @@ jx3_cmd_daily_txt = on_command(
 async def jx3_daily_txt(event: GroupMessageEvent, args: list[Any] = Depends(Jx3Arg.arg_factory)):
     arg_server,  arg_rate = args
     content = await daily_txt(arg_server, group_id=event.group_id)
-    suffix = (f'\n{await saohua(arg_rate/100)}') if arg_rate > 0 else ''
+    suffix = (f'\n{"-"*10}\n{await saohua(arg_rate/100)}') if arg_rate > 0 else ''
     return await jx3_cmd_daily_txt.finish(f'{content.text}{suffix}')
