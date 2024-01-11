@@ -56,9 +56,11 @@ class Jx3ArgCallback:
         return x, is_default
 
     def _convert_bool(self, arg_value: str, **kwargs) -> int:
-        if arg_value in {'同意', '可', '真', '好', '批准', '准许', '要'}:
+        if arg_value in {'同意', '可', '真', '好', '批准',
+                         '准许', '要', '可以', '行', '成', '妥', '中'}:
             return True
-        if arg_value in {'不同意', '不可', '假', '差', '拒绝', '否决', '不要'}:
+        if arg_value in {'不同意', '不可', '假', '差', '拒绝',
+                         '否决', '不要', '不行', '不成', '不妥', '不中'}:
             return False
         x = get_number(arg_value)
         if x == 0:
