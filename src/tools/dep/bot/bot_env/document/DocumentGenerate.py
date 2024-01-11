@@ -28,13 +28,53 @@ class CommandRecord:
     favorite: int = 0  # 热度
     enable: bool = True  # 是否启用
 
+    cache_db: dict[str, filebase_database.Database] = {}
+
+    @staticmethod
+    def reduce_popularity_single(db: filebase_database.Database):
+        commands = db.value
+        counter = 0
+        wait_to_remove = []
+        for command in commands:
+            cmd = commands[command]
+            prev = cmd.get('favorite')
+            if prev is None:
+                continue
+            counter += 1
+            prev *= 0.995  # 每次降低5‰
+            prev -= 1  # 并-1
+            if prev < 0:
+                wait_to_remove.append(command)
+        for command in wait_to_remove:
+            del commands[command]
+        return counter, len(wait_to_remove)
+
+    @staticmethod
+    def reduce_popularity():
+        counter = 0
+        remove_count = 0
+        for db_path in CommandRecord.cache_db:
+            db = CommandRecord.cache_db.get(db_path)
+            s_counter, s_remove_count = CommandRecord.reduce_popularity_single(db)
+            counter += s_counter
+            remove_count += s_remove_count
+
+        msg = 'completed reduce_popularity'
+        if remove_count:
+            msg = f'{msg} removed:{remove_count}'
+        logger.debug(f"{msg} count:{counter}")
+
     @staticmethod
     def get_db(group: str = None) -> filebase_database.Database:
         path = bot_path.DATA
         suffix = group or bot_path.common_data
         path = f'{path}/{suffix}/commands'
 
+        prev = CommandRecord.cache_db.get(path)
+        if prev:
+            return prev
         db: filebase_database.Database = filebase_database.Database(path)
+        CommandRecord.cache_db[path] = db
         return db
 
     @staticmethod

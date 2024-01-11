@@ -67,6 +67,9 @@ class DailyResponse:
                 x = mapper(x)
             if isinstance(x, list):
                 x = str.join(',', x)
+            x = x.replace(';', ',')  # 移除分号
+            if x[-1] == ',':  # 移除末尾逗号
+                x = x[0:-1]
             result.append([x] + item)
             # [今日数据 , 类型 , 子分类 , 排序]
         self.items = list(sorted(result, key=lambda x: -x[3]))
@@ -97,6 +100,7 @@ class DailyResponse:
 
         if not self._data:
             return logger.warning(f'invalid data on daily:{data}')
+
 
 async def daily_txt(server: str = None, group_id: str = None, predict_day_num: int = 0):
     """

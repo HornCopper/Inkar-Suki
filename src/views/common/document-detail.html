@@ -284,8 +284,9 @@
           .map(x => get_random_exp())
         examples = distinct(examples, x => x)
         const rule = args.map(x => {
-          const { tpl, is_optional } = x
-          return is_optional ? `[${tpl.description}]` : tpl.description
+          const { tpl, is_optional, alias } = x
+          const name = alias || tpl.description
+          return is_optional ? `[${name}]` : name
         }).join(' ')
         return { rule, examples }
       }

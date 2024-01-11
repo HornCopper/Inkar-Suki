@@ -15,9 +15,17 @@ class Jx3ApiRequest:
         self.url = url
         self.argRequest = argRequest
 
-    async def output_url(self):
+    async def output_res(self):
         data = await get_api(self.url)
         response = Jx3ApiResponse(data)
+        return response
+
+    async def output_data(self):
+        response = await self.output_res()
+        return response.data
+
+    async def output_url(self):
+        response = await self.output_res()
         return response.output_url
 
     @classmethod

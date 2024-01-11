@@ -83,8 +83,9 @@ class PlainTxtDailyMessage(IDailyMessage):
 
 async def CallbackDaily(group_id: str, sub: SubscribeSubject, cron: SubjectCron):
     now = DateTime()
-    offset = 1 if now.hour >= 22 else 0  # 每晚10点后响应次日的
-    now += 2 * 3600e3  # 向后2小时
+    offset_hour = 3  # 向后3小时，保证9点以后推的是明日日常
+    offset = 1 if now.hour >= (24-offset_hour) else 0  # 每晚24-x点后响应次日的
+    now += offset_hour * 3600e3
     message = PlainTxtDailyMessage(now.tostring(DateTime.Format.YMD), group_id, cron, offset=offset)
     return await message.get_message()
 
