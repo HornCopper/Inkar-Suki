@@ -52,15 +52,15 @@ async def recruit_v2(server: str, actvt: str = ""):
     final_url = f"https://www.jx3api.com/data/member/recruit?token={token}&server={server}"
     if actvt != "":
         final_url = final_url + "&keyword=" + actvt
-    data = await get_api(final_url)
-    time_now = convert_time(data["data"]["time"])
+    raw_data = await get_api(final_url)
+    data = raw_data.get('data') or {}
+    time_now = convert_time(data.get("time"))
     appinfo = f" · 招募信息 · {server} · {time_now}"
     font = bot_path.ASSETS + "/font/custom.ttf"
-    data = data["data"]["data"]
     contents = []
-    for i in range(len(data)):
-        detail = data[i]
-        num = str(i + 1)
+    items = data.get('data')
+    for (index,detail) in enumerate(items):
+        num = str(index + 1)
         name = detail["activity"]
         level = str(detail["level"])
         leader = detail["leader"]
