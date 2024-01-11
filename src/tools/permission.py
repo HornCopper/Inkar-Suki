@@ -48,7 +48,7 @@ class Permission:
         self.init_permission()
 
     def init_permission(self) -> int:
-        self.u_level = self.config.mgr_property('permission.level')
+        self.u_level = int(self.config.mgr_property('permission.level'))
 
     def judge(self, score: int, action: str = '该操作', log: bool = True) -> PermissionResult:
         if not isinstance(score, int):
