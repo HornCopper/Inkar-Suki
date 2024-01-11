@@ -1,7 +1,6 @@
 import random
 from src.tools.dep.data_server import *
 from src.tools.utils import *
-from src.tools.dep.api.prompt import *
 from src.tools.config import Config
 _bot = Config.bot
 _token = Config.jx3api_globaltoken
