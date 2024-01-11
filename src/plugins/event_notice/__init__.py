@@ -44,6 +44,9 @@ def check_env_path(group_id: str):
     write(f"{new_path }/record.json", "[]")
     write(f"{new_path }/subscribe.json", "[]")
     write(f"{new_path }/blacklist.json", "[]")
+
+    # 设置开始日期
+    GroupConfig(group_id).mgr_property('auth.start', DateTime().timestamp())
     return False
 
 
@@ -62,8 +65,9 @@ async def on_new_group_enter(bot: Bot, event: NoticeEvent):
     if event.sub_type != "approve":
         return
     msg = "欢迎使用Inkar Suki！如需帮助请发送+help或查询文档哦~\nhttps://inkar-suki.codethink.cn"
-    await bot.call_api("send_group_msg", group_id=event.group_id, message="检测到本群为新群聊，音卡已经自动补全所需要的文件啦！")
-    check_env_path(event.group_id)
+    if check_env_path(event.group_id):
+        return
+    await bot.call_api("send_group_msg", group_id=event.group_id, message=f"检测到本群为新群聊，{Config.name}已经自动补全所需要的文件啦！")
 
 
 @notice.handle()
@@ -89,7 +93,7 @@ async def on_group_decrease(bot: Bot, event: NoticeEvent):
 
 
 async def notice_and_ban(bot: Bot, event: NoticeEvent, action: str):
-    message = f"唔……音卡在群聊（{event.group_id}）被{action}啦！\n操作者：{event.operator_id}，已自动封禁！"
+    message = f"唔……{Config.name}在群聊（{event.group_id}）被{action}啦！\n操作者：{event.operator_id}，已自动封禁！"
     for i in Config.notice_to:
         await bot.call_api("send_group_msg", group_id=int(i), message=message)
     kicker = str(event.operator_id)

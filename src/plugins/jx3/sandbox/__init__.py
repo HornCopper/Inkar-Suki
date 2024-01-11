@@ -7,7 +7,7 @@ jx3_cmd_sandbox = on_command(
     catalog=permission.jx3.pvp.gf.worldmap,
     description="获取攻防沙盘地图",
     example=[
-        Jx3Arg(Jx3ArgsType.server),
+        Jx3Arg(Jx3ArgsType.server, is_optional=True),
     ],
     document='''沙盘''',
 )

@@ -1,5 +1,5 @@
 from src.tools.dep import *
-from .assistance import Assistance
+from .api import Assistance
 
 aic = Assistance
 

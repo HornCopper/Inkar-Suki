@@ -276,10 +276,10 @@ filter_words = ["根骨", "力道", "元气", "身法", "体质"]
 async def generater(map, mode, boss):
     mode = mode_mapping(mode)
     if mode is False:
-        return ["唔……难度似乎音卡不能理解哦~"]
+        return [f"唔……难度似乎{Config.name}不能理解哦~"]
     zone = zone_mapping(map)
     if zone is False:
-        return ["唔……副本名称似乎音卡不能理解哦~"]
+        return [f"唔……副本名称似乎{Config.name}不能理解哦~"]
     try:
         data = await get_drops(zone, mode, boss)
     except KeyError:

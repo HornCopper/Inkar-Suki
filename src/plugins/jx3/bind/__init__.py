@@ -14,18 +14,23 @@ def server_bind(group_id: str, server: str) -> str:
         server = server_mapping(server)
         if not server:
             return [PROMPT_ServerNotExist]
-    path = f"{bot_path.DATA}/{group_id}/jx3group.json"
-    now = json.loads(read(path))
-    now["server"] = server
-    write(path, json.dumps(now, ensure_ascii=False))
+    group_config = GroupConfig(group_id)
+    _ = group_config.mgr_property('server', server)
     return server
 
 
-jx3_cmd_server_bind = on_command("jx3_bind", aliases={"绑定"}, priority=5)
+jx3_cmd_server_bind = on_command(
+    "绑定",
+    aliases={},
+    priority=5,
+    example=[
+        Jx3Arg(Jx3ArgsType.server, is_optional=False)
+    ]
+)
 
 
 @jx3_cmd_server_bind.handle()
-async def jx3_server_bind(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
+async def jx3_server_bind(bot: Bot, event: GroupMessageEvent, args: list[Any] = Depends(Jx3Arg.arg_factory)):
     # TODO 判别权限，应提取为专有函数
     personal_data = await bot.call_api("get_group_member_info", group_id=event.group_id, user_id=event.user_id, no_cache=True)
     group_admin = personal_data["role"] in ["owner", "admin"]
@@ -34,12 +39,14 @@ async def jx3_server_bind(bot: Bot, event: GroupMessageEvent, args: Message = Co
         if not x.success:
             return await jx3_cmd_server_bind.finish("唔……只有群主或管理员才可以修改哦！")
 
-    template = [Jx3Arg(Jx3ArgsType.server)]
-    server, = get_args(args, template, event)
-    server = server_bind(group_id=event.group_id, server=server)
-    if isinstance(server, list):
-        return await jx3_cmd_server_bind.finish(f"绑定失败：{server}")
-    return await jx3_cmd_server_bind.finish("绑定成功！\n当前区服为：" + server)
+    arg_server, = args
+    if not arg_server:
+        return await jx3_cmd_server_bind.finish(PROMPT_ServerNotExist)
+        
+    arg_server = server_bind(group_id=event.group_id, server=arg_server)
+    if isinstance(arg_server, list):
+        return await jx3_cmd_server_bind.finish(f"绑定失败：{arg_server}")
+    return await jx3_cmd_server_bind.finish("绑定成功！\n当前区服为：" + arg_server)
 
 jx3_cmd_server_unbind = on_command("jx3_unbind", aliases={"解绑"}, priority=5)
 

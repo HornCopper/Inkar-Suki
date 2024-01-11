@@ -1,6 +1,5 @@
 from src.tools.dep import *
 from src.tools.generate import get_uuid
-from src.tools.config import Config
 from src.constant.jx3.skilldatalib import kftosh
 from src.tools.utils import get_api, get_content
 from src.plugins.jx3.rank.school_rank import school_mapping as gkfdt
@@ -359,8 +358,6 @@ async def get_attr_main(server, id, group_id):
                               "/" + i["MaxStrengthLevel"] + ")")
             equip_icon_list.append(i["Icon"]["FileName"])
     for i in equip_data:
-        logger.info(i)
-        logger.info(type(i))
         if i == "":
             if equip_data.index(i) in [0, 1, 2, 3, 5]:
                 henchant[equip_data.index(i)] = ""
@@ -475,7 +472,6 @@ async def get_attr_main(server, id, group_id):
                 fs.append(int(x["Level"]))
             else:
                 fs.append(0)
-    logger.info(fs)
     try:
         wcs = equip_data[11]["ColorStone"]["Name"]
         wcs_icon = equip_data[11]["ColorStone"]["Icon"]["FileName"]
@@ -628,7 +624,6 @@ async def get_attr(kungfu: str, maxjl_list: list, jl_list: list, equip_list: lis
     background.alpha_composite(Image.open(await get_kf_icon(kungfu)).resize((50, 50)), (61, 62))
 
     # 武器图标
-    logger.info(equip_list)
     if kungfu not in ["问水诀", "山居剑意"]:
         if equip_icon_list[11] != "":
             if judge_special_weapon(equip_list[11]):

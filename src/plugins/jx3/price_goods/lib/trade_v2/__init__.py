@@ -37,6 +37,10 @@ async def get_prices_by_items(data: list, server: str, pageIndex: int = 0, pageS
             continue
         x.price = prices[x.id]
         x.current_price = current_prices_dict.get(x.id)
+        if not hasattr(x.price, 'to_dict'):
+            pass
+        if not hasattr(x.current_price, 'to_dict'):
+            pass
         result.append(x)
     page_start = pageIndex * pageSize
     total = len(result)
@@ -56,8 +60,8 @@ async def get_goods_current_detail_price(id: str, server: str, only_cache: bool 
         elif (DateTime() - DateTime(price_detail.updated)).total_seconds() < 86400*7:
             # 缓存模式下7天内有更新的不再重复加载
             return price_detail
-        elif random.random() > 0.95:
-            # 超过7天的则有5%概率重新加载
+        elif random.random() > 0.99:
+            # 超过7天的则有1%概率重新加载
             return price_detail
 
     url = f"https://next2.jx3box.com/api/item-price/{id}/detail?server={server}"
@@ -66,11 +70,10 @@ async def get_goods_current_detail_price(id: str, server: str, only_cache: bool 
         msg = raw_data.get("msg")
         return f"获取价格失败了：{msg}"
     data = raw_data.get("data") or {}
-    prices = data.get("prices") or []
+    prices: list[int] = data.get("prices") or []
     price_detail = GoodsPriceDetail(prices)
     price_detail.updated_time()
     CACHE_Goods_PriceDetail[key] = price_detail
-    flush_CACHE_PriceDetail()
     return price_detail
 
 
@@ -210,7 +213,6 @@ def refresh_goods_popularity():
     goods = get_favoritest_by_predict(exp)  # 获取所有有一定记录的物品
     for g in goods:
         g.u_popularity *= 0.995  # 每次降低5‰
-    flush_CACHE_Goods()
     logger.debug(f"completed refresh_goods_popularity count:{len(goods)}")
 
 

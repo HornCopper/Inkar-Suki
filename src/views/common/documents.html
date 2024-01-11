@@ -1,5 +1,4 @@
 <template>
-
   <div :style="{'text-align': 'center','font-size':font_size,width:'1000px'}">
     <el-card shadow="never">
       <div style="font-size:2rem;font-weight:600;">机器人使用说明{{ title }} {{ item_name && ` · ${item_name}` }}</div>
@@ -34,9 +33,11 @@
                 </el-col>
                 <el-col :span="20">
                   <div class="primary-content">
-                    <div>1. 欢迎使用机器人，完全免费，别花冤枉钱！</div>
+                    <div>1. 欢迎使用机器人，
+                      <span style="color:#0490e1">完全免费，别花冤枉钱！</span>
+                    </div>
                     <div>2. 指令按使用热度排序。</div>
-                    <div>3. 当前为测试版，提建议可以发用户群。</div>
+                    <div style="color:#0490e1">3. []包起来表示可填可不填，例如 马场 [不填则当前绑定区服]。</div>
                   </div>
                 </el-col>
               </el-row>
@@ -50,13 +51,10 @@
           <el-col :span="6">
             <div style="height:18rem">
               <el-card style="text-align:left">
-                <div style="font-size:1.5rem">群名称</div>
-                <div>群号：XXXXXX</div>
-                <div>机器人：XXXXXX</div>
-                <div>已相处：XXX天</div>
-                <div>绑定区服：XXX</div>
-                <el-divider style="margin:0.5rem"></el-divider>
-                <div>群内TOP：XXX、XXX、XXX、XXX、XXX、XXX、XXX</div>
+                <div style="font-size:1.2rem">{{ group_config.name }}</div>
+                <span v-for="(x,index) in group_config.labels" :key="index">
+                  <component :is="x.element||'div'" :style="x.style">{{ x.content }}</component>
+                </span>
               </el-card>
             </div>
             <div style="text-align: center;font-size:1.5rem">长按扫码加群领养</div>
@@ -316,26 +314,39 @@
         aliases = aliases.slice(0, 3)
         return aliases.join('|')
       }
-
+      methods.choice = (items, count) => {
+        const index = Math.floor(items.length * Math.random())
+        return items[index]
+      }
       methods.get_example_desc = x => {
         const { example } = x
         if (!example || !example.length) return ''
         const args = example
-          .map(x => x.split('.'))
-          .map(x => x.length === 1 ? x[0] : x[1])
-          .map(x => params_data.args_template[x])
+          .map(x => {
+            const arg_type = x.arg_type
+            const tpl = params_data.args_template[arg_type]
+            return Object.assign({ tpl }, x)
+          })
+
         const get_random_exp = item => {
           const raw = args.map(x => {
-            const index = Math.floor(x.example.length * Math.random())
-            return x.example[index]
+            const { tpl, is_optional } = x
+            const exp_name = methods.choice(tpl.example)
+            if (is_optional) return Math.random() > 0.5 ? exp_name : ''
+            return exp_name
           }).join(' ')
-          return `${x.name} ${raw}`
+          const name = x.aliases && x.aliases.length ? methods.choice(x.aliases) : x.name
+          return `${name} ${raw}`
         }
         let examples = new Array(5)
           .fill(0)
           .map(x => get_random_exp())
         examples = distinct(examples, x => x).slice(0, 1)
-        const rule = args.map(x => x.description).join(' ')
+        const rule = args.map(x => {
+          const { tpl, is_optional } = x
+          const show_name = x.alias || tpl.description // 优先使用参数别名
+          return is_optional ? `[${show_name}]` : show_name
+        }).join(' ')
         return { rule, examples }
       }
 
@@ -351,6 +362,7 @@
         args_template: {},
         catalogs: {},
         commands: [],
+        group_config: {},
         pageIndex: 1,
         item_name: '',
         title: '',
@@ -361,6 +373,7 @@
       }
     },
   })
+
 
 
 

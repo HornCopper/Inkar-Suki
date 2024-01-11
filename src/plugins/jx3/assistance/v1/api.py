@@ -48,9 +48,9 @@ class Assistance:
         return True
 
     async def create_group(group: str, description: str, creator: str):
-        group_info = json.loads(read(f"{bot_path.DATA}/{group}/jx3group.json"))
-        server = group_info["server"]
-        if group_info["server"] == "":
+        group_config = GroupConfig(group)
+        server = group_config.mgr_property('server')
+        if server == "":
             return "开团失败，未绑定服务器的群聊暂无法使用该功能，请先联系群主或管理员进行绑定哦~"
         status = await Assistance.check_description(group, description)
         if status is False:
@@ -73,14 +73,14 @@ class Assistance:
         status = await Assistance.check_apply(group, description, id)
         if status:
             return "唔……您似乎已经申请过了，请不要重复申请哦~\n如需修改请先发送“取消申请 <团队关键词> <ID>”，随后重新申请！"
-        group_info = json.loads(read(f"{bot_path.DATA}/{group}/jx3group.json"))
-        server = group_info["server"]
+        group_config = GroupConfig(group)
+        server = group_config.mgr_property('server')
         if job in ["老板", "躺", "躺拍"]:
             job = "老板"
         else:
             job = aliases(job)
             if job is False:
-                return "唔……音卡暂时没办法识别您的职业，请检查一下呗？\n避免使用“长歌”“万花”“天策”等字眼，您可以使用“天策t”“奶咕”“qc”等准确些的词语方便理解哦~\n如果您使用的词语实在无法识别，请使用标准名称，例如“离经易道”。"
+                return f"唔……{Config.name}暂时没办法识别您的职业，请检查一下呗？\n避免使用“长歌”“万花”“天策”等字眼，您可以使用“天策t”“奶咕”“qc”等准确些的词语方便理解哦~\n如果您使用的词语实在无法识别，请使用标准名称，例如“离经易道”。"
         job_icon = await Assistance.get_icon(job)
         final_url = f"{Config.jx3api_link}/data/role/detailed?token={token}&server={server}&name={id}"
         player_data = await get_api(final_url)

@@ -1,7 +1,7 @@
 from src.tools.dep import *
-
 from .achievement import *
 from .arena import *
+from .assistance import *
 from .bind import *
 from .buff import *
 from .daily import *
@@ -20,6 +20,7 @@ from .price_appearance import *
 from .price_gold import *
 from .price_goods import *
 from .price_wbl import *
+from .pvp_lks_boss import *
 from .rank import *
 from .recruit import *
 from .sandbox import *
