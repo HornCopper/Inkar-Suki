@@ -40,4 +40,4 @@ async def notice_fetch_article_adopt(event: GroupMessageEvent, args: list[Any] =
     date = DateTime(int(item.get('updatetime'))*1e3).tostring(DateTime.Format.DEFAULT)
     content = f'<h1>{title}</h1><h2>{date}</h2><div>{content}</div>' # TODO 使用模板
     img = await generate_by_raw_html(content, name='notice_fetch_article_adopt')
-    return await notice_cmd_fetch_article_adopt.send(ms.image(img))
+    return await notice_cmd_fetch_article_adopt.send(ms.image(Path(img).as_uri()))
