@@ -44,7 +44,7 @@ class DailyResponse:
         'orecar': ['日常', '阵营',  3401, None],
         'leader': ['日常', '世界', 3301, lambda data:f'主:{data[0]}/分:{data[1]}' if isinstance(data, list) else data],
         'draw': ['日常', '画像', 3201, None],
-        'luck': ['日常', '福源', 3101, None],
+        'luck': ['日常', '福缘', 3101, None],
         'rescue': ['日常', '驰援', 3001, None],
 
         'card': ['周常', '【家园声望·加倍道具】\n', 2501, None],
