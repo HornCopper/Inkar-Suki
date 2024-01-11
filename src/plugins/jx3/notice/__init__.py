@@ -29,5 +29,9 @@ notice_cmd_fetch_article_adopt = on_command(
 @notice_cmd_fetch_article_adopt.handle()
 async def notice_fetch_article_adopt(event: GroupMessageEvent, args: list[Any] = Depends(Jx3Arg.arg_factory)):
     arg_cata, = args
-    items = await get_jx3_article(arg_cata)
-    return await notice_cmd_fetch_article_adopt.finish(items)
+    items = await get_jx3_articles(arg_cata)
+    item = await get_jx3_article_detail(items[0])
+    content = item.get('content')
+    content = f'<div>{content}</div>'
+    img = await generate_by_raw_html(content, name='notice_fetch_article_adopt')
+    return await notice_cmd_fetch_article_adopt.send(ms.image(img))
