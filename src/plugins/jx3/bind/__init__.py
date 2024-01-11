@@ -21,7 +21,7 @@ def server_bind(group_id: str, server: str) -> str:
 
 jx3_cmd_server_bind = on_command(
     "绑定",
-    aliases={},
+    aliases={'绑定服务器', '绑定区服', '注册', '绑'},
     priority=5,
     example=[
         Jx3Arg(Jx3ArgsType.server, is_optional=False)
@@ -42,7 +42,7 @@ async def jx3_server_bind(bot: Bot, event: GroupMessageEvent, args: list[Any] = 
     arg_server, = args
     if not arg_server:
         return await jx3_cmd_server_bind.finish(PROMPT_ServerNotExist)
-        
+
     arg_server = server_bind(group_id=event.group_id, server=arg_server)
     if isinstance(arg_server, list):
         return await jx3_cmd_server_bind.finish(f"绑定失败：{arg_server}")

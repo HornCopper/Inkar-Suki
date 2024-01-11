@@ -15,11 +15,17 @@ jx3_cmd_equip_recommend = on_command(
     ]
 )
 
+__static_dict = {
+    'pve': 'PVE',
+    'pvp': 'PVP',
+}
+
 
 @jx3_cmd_equip_recommend.handle()
 async def jx3_equip_recommend_menu(event: GroupMessageEvent, state: T_State, args: list[Any] = Depends(Jx3Arg.arg_factory)):
     arg_kunfu, arg_condition = args
     condition = arg_condition.split(";") if arg_condition else []
+    condition = [__static_dict.get(str.lower(x)) or x for x in condition]
     if not arg_kunfu:
         return await jx3_cmd_equip_recommend.finish("唔……未找到该心法，请检查后重试~")
     forceId = arg_kunfu.gameid

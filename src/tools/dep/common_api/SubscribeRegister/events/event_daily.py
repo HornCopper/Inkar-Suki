@@ -32,7 +32,8 @@ class IDailyMessage:
 
 class ImgDailyMessage(IDailyMessage):
     CACHE_Daily: dict[str, str] = filebase_database.Database(
-        f'{bot_path.common_data_full}daily-img').value
+        f'{bot_path.common_data_full}daily-img',
+    ).value
 
     def get_path(self, filename: str) -> str:
         return f'{bot_path.DATA}{os.sep}res{os.sep}daily{filename}'
@@ -61,15 +62,18 @@ class ImgDailyMessage(IDailyMessage):
 
 
 class PlainTxtDailyMessage(IDailyMessage):
+
     CACHE_Daily: dict[str, str] = filebase_database.Database(
-        f'{bot_path.common_data_full}daily-txt').value
+        f'{bot_path.common_data_full}daily-txt',
+    ).value
 
     async def _get_daily_message(self):
         path_cache_daily = PlainTxtDailyMessage.CACHE_Daily.get(self.key)
         if not path_cache_daily:
             # 注意销毁今天以前的缓存
             content = await daily_txt(self.server, self.group_id, self.offset)  # 向后预测1天的
-            PlainTxtDailyMessage.CACHE_Daily[self.key] = content
+            txt = content.text if isinstance(content, DailyResponse) else content[0]
+            PlainTxtDailyMessage.CACHE_Daily[self.key] = txt
 
         data_daily = PlainTxtDailyMessage.CACHE_Daily[self.key]
         prefix = self.cron.notify_content
