@@ -133,7 +133,7 @@ async def generate_by_raw_html(html: str, web: bool = False, locate: str = None,
     file_path = f'{bot_path.CACHE}{os.sep}{name}.html'
     with open(file_path, 'w') as f:
         f.write(html)
-    return await generate(file_path, web, locate or 'div', first, delay)
+    return await generate(file_path, web, locate or 'section', first, delay)
 
 
 async def generate(html: str, web: bool = False, locate: str = None, first: bool = False, delay: int = 0):
