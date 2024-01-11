@@ -8,7 +8,7 @@ jx3_cmd_wiki = on_command(
     description='查看游戏各种萌新攻略',
     catalog=permission.jx3.common.wiki,
     example=[
-        Jx3Arg(Jx3ArgsType.default),
+        Jx3Arg(Jx3ArgsType.string, alias='问题'),
     ],
     document='''找游戏里面的萌新攻略模块，来回答问题'''
 )

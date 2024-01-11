@@ -41,10 +41,10 @@ restart = on_command("restart", priority=5)  # 重启`Inkar-Suki`，原理为`Fa
 
 @restart.handle()
 async def _(event: Event):
+    x = Permission(event.user_id).judge(5, '重启机器人')
+    if not x.success:
+        return await restart.finish(x.description)
     with open("./src/plugins/developer_tools/example.py", mode="w") as cache:
-        x = Permission(event.user_id).judge(5, '重启机器人')
-        if not x.success:
-            return await restart.finish(x.description)
         await restart.send("好啦，开始重启，整个过程需要些许时间，还请等我一下哦~")
         cache.write("status=\"OK\"")
 
@@ -174,9 +174,9 @@ util_cmd_handle_request = on_command(
     description='',
     catalog=permission.bot.group.apply,
     example=[
-        Jx3Arg(Jx3ArgsType.number),
-        Jx3Arg(Jx3ArgsType.bool),
-        Jx3Arg(Jx3ArgsType.string),
+        Jx3Arg(Jx3ArgsType.group_id, is_optional=True),
+        Jx3Arg(Jx3ArgsType.bool, is_optional=True),
+        Jx3Arg(Jx3ArgsType.remark, is_optional=True),
     ],
     document='''获取当前待处理的申请，选择要处理领养申请处理'''
 )
@@ -297,8 +297,8 @@ async def util_web(bot: Bot, event: GroupMessageEvent, args: list[Any] = Depends
 apply = on_command(
     "apply",
     aliases={
-        "申请", "领养", "购买", f"要一个{bot}",
-        f"想要一个{bot}", f"想有一个{bot}", f"{bot}", '机器人',
+        "申请", "领养", "购买", f"要一个{Config.bot}",
+        f"想要一个{Config.bot}", f"想有一个{Config.bot}", f"{Config.bot}", '机器人',
     },
     priority=5,
     description='获取如何拉机器人入群',

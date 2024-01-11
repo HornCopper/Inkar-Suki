@@ -7,7 +7,7 @@ jx3_cmd_arena_records = on_regex(
     description='获取玩家竞技场的战绩记录',
     catalog=permission.jx3.pvp.jjc.records,
     example=[
-        Jx3Arg(Jx3ArgsType.server),
+        Jx3Arg(Jx3ArgsType.server, is_optional=True),
         Jx3Arg(Jx3ArgsType.user),
         Jx3Arg(Jx3ArgsType.pvp_mode, default='33')
     ],
@@ -18,13 +18,13 @@ jx3_cmd_arena_records = on_regex(
 
 @jx3_cmd_arena_records.handle()
 async def jx3_arena_records(event: GroupMessageEvent, template: list[Any] = Depends(Jx3Arg.arg_factory)):
-    server, user, pvp_mode = template
-    if server is None:
+    arg_server, arg_user, arg_pvp_mode = template
+    if arg_server is None:
         return await jx3_cmd_arena_records.finish(PROMPT_ServerNotExist)
-    if user is None:
+    if arg_user is None:
         return await jx3_cmd_arena_records.finish(PROMPT_UserNotExist)
 
-    data = await arena_records(server=server, name=user, mode=pvp_mode)
+    data = await arena_records(server=arg_server, name=arg_user, mode=arg_pvp_mode)
     print(data)
     if isinstance(data, list):
         return await jx3_cmd_arena_records.finish(data[0])
@@ -38,7 +38,7 @@ jx3_cmd_arena_rank = on_regex(
     description='获取竞技场的各Top50',
     catalog=permission.jx3.pvp.jjc.rank,
     example=[
-        Jx3Arg(Jx3ArgsType.pvp_mode),
+        Jx3Arg(Jx3ArgsType.pvp_mode, is_optional=True),
     ],
     document='''排行 模式
     模式可以写22 33 55'''
@@ -60,7 +60,7 @@ jx3_cmd_arena_statistics = on_regex(
     description='获取竞技场的各门派统计',
     catalog=permission.jx3.pvp.jjc.statistics,
     example=[
-        Jx3Arg(Jx3ArgsType.pvp_mode),
+        Jx3Arg(Jx3ArgsType.pvp_mode, is_optional=True),
     ],
     document='''统计 模式
     模式可以写22 33 55'''

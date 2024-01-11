@@ -25,17 +25,13 @@ async def search_item_info(item_name: str, pageIndex: int = 0, pageSize: int = 2
     if not items:  # 无数据，返回
         return "没有找到该物品，尝试换个说法或者短一点"
     query_items: List[GoodsInfo] = []
-    new_goods = False
     for item in items:
         id = item["id"]
         if id not in CACHE_Goods:
             item["bind_type"], item["Level"] = await check_bind(id)
             CACHE_Goods[id] = GoodsInfo(item)
-            new_goods = True
         item: GoodsInfo = CACHE_Goods[id]
         query_items.append(item)
-    if new_goods:
-        flush_CACHE_Goods()
     query_items.sort(key=lambda x: -x.priority)  # 按热门程度排序，拾绑的放后面
     page_start = pageIndex * pageSize
     query_items = query_items[page_start:page_start+pageSize]
@@ -83,4 +79,3 @@ async def update_goods_popularity(target_id: str, all_ids: list):
             continue
         x: GoodsInfo = CACHE_Goods[id]
         x.u_popularity -= 1
-    flush_CACHE_Goods()

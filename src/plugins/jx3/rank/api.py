@@ -10,7 +10,7 @@ from src.tools.generate import generate, get_uuid
 
 from .top100 import *
 
-jx3_token = Config.jx3_token
+jx3_token = gloConfig.jx3_token
 
 
 async def rank_(type_1: str, type_2: str, server: str, group_id: str):

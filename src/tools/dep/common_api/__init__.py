@@ -1,2 +1,2 @@
-from src.tools.dep import *
 from .SubscribeRegister import *
+from .none_dep_api import *

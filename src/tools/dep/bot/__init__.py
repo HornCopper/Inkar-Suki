@@ -11,6 +11,7 @@ except Exception as _:
 
 '''初始化基础环境'''
 from .bot_env import *
+from .group_env import *
 
 '''初始化nonebot'''
 from nonebot.internal.params import Depends

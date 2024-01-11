@@ -1,7 +1,8 @@
-from src.tools.dep import *
 
 from .SubscribeItem import *
 from .events import *
+from src.tools.dep.bot.group_env import *
+from nonebot import get_driver
 # 订阅 主题 订阅等级
 __subjects: list[SubscribeSubject] = []
 VALID_Subjects: dict[str, SubscribeSubject] = {}
@@ -119,12 +120,12 @@ class MenuCallback:
             bot = self.bots.get(botname)
             for group in await bot.call_api("get_group_list"):
                 group_id = group.get("group_id")
-                g_subscribe = load_or_write_subscribe(group_id)
+                g_subscribe = GroupConfig(group_id, log=False).mgr_property('subscribe')
                 u_subscribed_level = MenuCallback.check_subscribed(self.sub, g_subscribe)
                 to_send_msg = u_subscribed_level >= self.cron.level
 
                 while to_send_msg:
-                    callback_result = await self.callback(bot, group_id, self.sub, self.cron)
+                    callback_result = await self.callback(group_id, self.sub, self.cron)
                     # 如果有返回值则表示需要发送
                     if not callback_result or not isinstance(callback_result, str):
                         to_send_msg = None

@@ -131,7 +131,7 @@ mgr_cmd_remove_robot = on_command(
     description='让机器人自己体面',
     catalog=permission.mgr.group.exit,
     example=[
-        Jx3Arg(Jx3ArgsType.number, default=600),
+        Jx3Arg(Jx3ArgsType.number, default=600, alias='延迟秒数'),
     ],
     document='''退群有冷静期，期间可以取消退群
     这种退群不会进黑名单
@@ -220,14 +220,14 @@ async def direct_leave_group(group_id: str):
             await bot.call_api(
                 "send_group_msg",
                 group_id=group_id,
-                message="音卡冷静期已到，有缘再见啦~"
+                message=f"{Config.name}冷静期已到，有缘再见啦~"
             )
             await bot.call_api('set_group_leave', group_id=group_id)
             if cmd_leave_task.get(group_id):
                 del cmd_leave_task[group_id]
 
             for i in Config.notice_to:
-                await bot.call_api("send_group_msg", group_id=int(i), message=f'音卡按他们的要求，离开了{group_id}')
+                await bot.call_api("send_group_msg", group_id=int(i), message=f'{Config.name}按他们的要求，离开了{group_id}')
         except Exception as ex:
             logger.warning(f'退群时操作失败:{ex}')
     logger.warning(f"完成：根据用户要求退出群:{group_id}")

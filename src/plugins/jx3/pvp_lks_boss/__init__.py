@@ -15,9 +15,9 @@ async def _(event: GroupMessageEvent):
         dt = time.strftime("%Y年%m月%d日 %H:%M:%S", time_local)
         return dt
 
-    def RestTime(GoalTime: int, StartTime: int = int(time.time())):
-        target_date = datetime.datetime.utcfromtimestamp(GoalTime)
-        delta = target_date - StartTime
+    def RestTime(GoalTime: int, StartTime: int = None):
+        target_date = DateTime(GoalTime)
+        delta = target_date - DateTime(StartTime)
         days = delta.days
         hours, remainder = divmod(delta.seconds, 3600)
         minutes, seconds = divmod(remainder, 60)
@@ -40,10 +40,10 @@ async def _(event: GroupMessageEvent):
         new = [i["server"], Parse(i["data"][0]), Parse(i["data"][1]), Parse(i["data"][2])]
         chart.append(new)
     html = css + tabulate(chart, tablefmt="unsafehtml")
-    final_path = f"{CACHE}/{get_uuid()}.html"
+    final_path = f"{bot_path.CACHE}/{get_uuid()}.html"
     write(final_path, html)
     img = await generate(final_path, False, "table", False)
     if img is False:
-        return await lks.finish("唔……音卡的烂柯山图片生成失败了捏，请联系作者~")
+        return await lks.finish(f"唔……{Config.name}的烂柯山图片生成失败了捏，请联系作者~")
     else:
         return await lks.finish(ms.image(Path(img).as_uri()))

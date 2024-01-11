@@ -42,7 +42,7 @@ class GoodsPriceDetail(GoodsPriceRecord):
     Price_Valid_TotalPrice = Gold.price_by_gold(100)  # 总价在100金以上则有效
     InvalidPrice = -1
 
-    def __init__(self, prices: list = None) -> None:
+    def __init__(self, prices: list[int] = None) -> None:
         if prices is None:
             prices = []
         self.latest = 0  # 最新数据时时间戳
@@ -51,7 +51,7 @@ class GoodsPriceDetail(GoodsPriceRecord):
         self.valid_price = self.get_valid_price()
         super().__init__()
 
-    def get_valid_price(self, prices: list = None):
+    def get_valid_price(self, prices: list[int] = None) -> int:
         """
         获取当前价格的有效价（总价在{Price_Valid_TotalPrice}以上则判定为有效）
         """
