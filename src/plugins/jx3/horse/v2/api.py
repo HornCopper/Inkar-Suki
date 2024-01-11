@@ -1,7 +1,7 @@
 from src.tools.dep import *
 from ..api_lib import *
-_horse_db = f'{bot_path.DATA}{os.sep}glo-horse'
-data_horse_reporter: dict[str, ] = filebase_database.Database(_horse_db).value  # 记录历史
+_horse_db = f'{bot_path.common_data_full}pvx_glo_horse'
+data_horse_reporter: dict[str, dict] = filebase_database.Database(_horse_db).value  # 记录历史
 
 
 async def get_horse_reporter_data(server: str, start: int = 0, end: int = 1):
