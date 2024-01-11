@@ -30,8 +30,14 @@ notice_cmd_fetch_article_adopt = on_command(
 async def notice_fetch_article_adopt(event: GroupMessageEvent, args: list[Any] = Depends(Jx3Arg.arg_factory)):
     arg_cata, = args
     items = await get_jx3_articles(arg_cata)
+    if not items:
+        return notice_cmd_fetch_article_adopt.finish('获取文章列表失败了')
     item = await get_jx3_article_detail(items[0])
+    if not item:
+        return notice_cmd_fetch_article_adopt.finish('获取文章内容失败了')
     content = item.get('content')
-    content = f'<div>{content}</div>'
+    title = item.get('title')
+    date = DateTime(int(item.get('updatetime'))*1e3).tostring(DateTime.Format.DEFAULT)
+    content = f'<h1>{title}</h1><h2>{date}</h2><div>{content}</div>' # TODO 使用模板
     img = await generate_by_raw_html(content, name='notice_fetch_article_adopt')
     return await notice_cmd_fetch_article_adopt.send(ms.image(img))
