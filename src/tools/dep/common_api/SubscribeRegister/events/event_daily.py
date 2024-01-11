@@ -31,7 +31,6 @@ class IDailyMessage:
 
 
 class ImgDailyMessage(IDailyMessage):
-    serializer = lambda x:
     CACHE_Daily: dict[str, str] = filebase_database.Database(
         f'{bot_path.common_data_full}daily-img',
     ).value
