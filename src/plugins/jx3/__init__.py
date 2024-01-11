@@ -74,7 +74,7 @@ global_cmd_update_usr_config = on_command(
 @global_cmd_update_usr_config.handle()
 async def global_update_usr_config(event: GroupMessageEvent, args: list[Any] = Depends(Jx3Arg.arg_factory)):
     arg_group, arg_path, arg_value = args
-    msg = await _update_grp_config(arg_path, arg_value, event.user_id, arg_group)
+    msg = await _update_grp_config(arg_path, arg_value, event.user_id, None, arg_group)
     return await global_cmd_update_usr_config.send(msg)
 
 
