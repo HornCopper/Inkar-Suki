@@ -53,22 +53,6 @@ async def post_url(url, proxy: dict = None, headers: str = None, timeout: int = 
         result = resp.text
         return result
 
-
-def Zone_mapping(server):
-    if server == "绝代天骄":
-        return "电信八区"
-    elif server in ["斗转星移", "唯我独尊", "乾坤一掷", "横刀断浪", "剑胆琴心", "幽月轮", "梦江南"]:
-        return "电信五区"
-    elif server in ["长安城", "蝶恋花", "龙争虎斗"]:
-        return "电信一区"
-    elif server == "青梅煮酒":
-        return "双线四区"
-    elif server in ["破阵子", "天鹅坪"]:
-        return "双线一区"
-    else:
-        return False
-
-
 async def get_uid(server, id):
     token = Config.jx3api_globaltoken
     url = f"{Config.jx3api_link}/data/role/detailed?token={token}&server={server}&name={id}"
