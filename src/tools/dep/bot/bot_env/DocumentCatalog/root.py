@@ -57,6 +57,8 @@ class permission(BaseCatalog):
                 '''事件'''
                 class subscribe(BaseCatalog):
                     '''订阅'''
+                class notice(BaseCatalog):
+                    '''公告'''
     class mgr(BaseCatalog):
         '''机器人管理'''
         class group(BaseCatalog):
