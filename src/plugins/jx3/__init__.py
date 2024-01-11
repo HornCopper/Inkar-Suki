@@ -87,7 +87,7 @@ async def _update_grp_config(arg_path, arg_value, user_id, arg_group=None, arg_u
     gc = GroupConfig(arg_group) if arg_group else GroupUserConfig(arg_user)
     result = gc.mgr_property(arg_path, new_val)
     update_path = gc._db.database_filename
-    db_instance = hex(id(gc._db.data_obj)) & 0xffffffff
+    db_instance = hex(id(gc._db.data_obj) & 0xffffffff)[2:]
     update_result = f'已管理更新{db_instance}@{arg_path}\nnew_value={new_val},result=\n{result}'
     msg = f'{update_path}\n{update_result}'
     return msg
