@@ -58,7 +58,7 @@ async def recruit_v2(server: str, actvt: str = ""):
     appinfo = f" · 招募信息 · {server} · {time_now}"
     font = bot_path.ASSETS + "/font/custom.ttf"
     contents = []
-    items = data.get('data')
+    items = data.get('data') or []
     for (index,detail) in enumerate(items):
         num = str(index + 1)
         name = detail["activity"]
@@ -74,8 +74,12 @@ async def recruit_v2(server: str, actvt: str = ""):
     html = read(bot_path.VIEWS + "/jx3/recruit/recruit.html")
     saohua = await get_api(f"https://www.jx3api.com/data/saohua/random?token={token}")
     saohua = saohua["data"]["text"]
+    footer = ''
+    if not items:
+        footer = f'{footer}<div>当前没有找到【{actvt}】的招募！</div>'
+    footer = f'{footer}{saohua}'
     html = html.replace("$customfont", font).replace("$appinfo", appinfo).replace(
-        "$recruitcontent", table).replace("$randomsaohua", saohua)
+        "$recruitcontent", table).replace("$randomsaohua", footer)
     final_html = bot_path.CACHE + "/" + get_uuid() + ".html"
     write(final_html, html)
     final_path = await generate(final_html, False, "table", False)
