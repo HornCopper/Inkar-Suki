@@ -86,16 +86,8 @@ def refresh_command_popularity():
     降低指令人气
     """
     logger.debug("start refresh_command_popularity")
-    commands = CommandRecord.get_db().value
-    counter = 0
-    for command in commands:
-        cmd = commands[command]
-        if cmd.get('favorite') is not None:
-            counter += 1
-            commands[command]['favorite'] *= 0.995  # 每次降低5‰
-    logger.debug(f"completed refresh_command_popularity count:{counter}")
-
+    CommandRecord.reduce_popularity()
+    logger.debug("completed refresh_command_popularity")
 
 scheduler.add_job(func=refresh_command_popularity,
                   trigger=IntervalTrigger(minutes=60), misfire_grace_time=300)
-
