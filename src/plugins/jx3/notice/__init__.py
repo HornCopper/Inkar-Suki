@@ -1,3 +1,4 @@
+import bs4
 from .api import *
 
 announce = on_command("jx3_announce", aliases={"维护公告", "更新公告", "公告", "更新"}, priority=5)
@@ -24,7 +25,7 @@ notice_cmd_fetch_article_adopt = on_command(
     ],
     document='''查询技改、新闻、公告的截图'''
 )
-import bs4
+
 
 @notice_cmd_fetch_article_adopt.handle()
 async def notice_fetch_article_adopt(event: GroupMessageEvent, args: list[Any] = Depends(Jx3Arg.arg_factory)):
@@ -38,10 +39,11 @@ async def notice_fetch_article_adopt(event: GroupMessageEvent, args: list[Any] =
     content = item.get('content')
     title = item.get('title')
     date = DateTime(int(item.get('updatetime'))*1e3).tostring(DateTime.Format.DEFAULT)
-    content = f'<div style="width:1080px"><h1>{title}</h1><h2>{date}</h2><div>{content}</div></div>' # TODO 使用模板
+    content = f'<h1 style="text-align:center">{title}</h1><h2 style="text-align:center">{date}</h2><div>{content}</div>'  # TODO 使用模板
     doc = bs4.BeautifulSoup(content)
     # 移除无效项
     [ele.extract() for ele in doc.find_all('p') if len(ele.text) < 2]
     content = doc.prettify()
+    content = f'<section style="width:800px">{content}</section>'
     img = await generate_by_raw_html(content, name='notice_fetch_article_adopt')
     return await notice_cmd_fetch_article_adopt.send(ms.image(Path(img).as_uri()))
