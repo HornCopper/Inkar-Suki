@@ -44,7 +44,7 @@ class Permission:
     # TODO use AOP to auto-reply by judgement.
     def __init__(self, user_id: str) -> None:
         self.user_id = str(user_id)
-        self.config = GroupUserConfig(self.user_id)
+        self.config = GroupUserConfig(self.user_id, log=False)
         self.init_permission()
 
     def init_permission(self) -> int:
@@ -62,7 +62,7 @@ class Permission:
             result = PermissionResult(False, u_level, f'{prefix}的权限只有{u_level}级，要求{score}级~')
 
         if log:
-            logger.debug(f'permission check@{action}:{result}')
+            logger.debug(f'permission check[{self.user_id}]@{action}:{result}')
         return result
 
 
