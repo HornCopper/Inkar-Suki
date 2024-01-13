@@ -23,6 +23,8 @@ class IDailyMessage:
         self.offset = offset
 
     async def get_message(self):
+        if not self.server:
+            return # 未绑定区服的不推送
         with PlainTxtDailyMessage.lock:
             return await self._get_daily_message()
 
