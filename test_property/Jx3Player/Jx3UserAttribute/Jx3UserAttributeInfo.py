@@ -3,11 +3,11 @@ from src.tools.utils import *
 from ...common import *
 from .members.Jx3Equip import *
 from .members import *
-from .IJx3UserPropertyFactory import *
+from .IJx3UserAttributeFactory import *
 
 
 class BaseJx3UserProperty(BaseUpdateAt):
-    factory: IJx3UserPropertyFactory
+    factory: IJx3UserAttributeFactory
     c_path = f'{bot_path.common_data_full}jx3_users'
     cache: dict[str, BaseUpdateAt] = filebase_database.Database(
         c_path,

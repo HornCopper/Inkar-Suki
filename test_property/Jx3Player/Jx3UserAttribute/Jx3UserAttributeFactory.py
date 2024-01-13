@@ -1,14 +1,14 @@
 from __future__ import annotations
-from .Jx3UserPropertyInfo import *
+from .Jx3UserAttributeInfo import *
 from ...common import *
 from src.tools.dep.data_server import *
 from src.tools.utils import *
-from .IJx3UserPropertyFactory import *
+from .IJx3UserAttributeFactory import *
 from src.tools.dep.common_api.none_dep_api.tuilan import *
 from src.tools.dep.api.config import *
 
 
-class Jx3UserPropertyFactory(IJx3UserPropertyFactory):
+class Jx3UserAttributeFactory(IJx3UserAttributeFactory):
     def __init__(self, data: dict) -> None:
         self.__data = data
         self.data: BaseJx3UserProperty = None  # 初始化
@@ -59,5 +59,5 @@ class Jx3UserPropertyFactory(IJx3UserPropertyFactory):
             "x-sk": xsk
         }
         data = await post_url(url="https://m.pvp.xoyo.com/mine/equip/get-role-equip", data=payload, headers=headers)
-        response = Jx3UserPropertyFactory(json.loads(data)).data
+        response = Jx3UserAttributeFactory(json.loads(data)).data
         return response

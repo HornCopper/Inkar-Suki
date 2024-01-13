@@ -116,6 +116,8 @@ class Jx3Equip:
         self.maxStrengthLevel = int(data.get('maxStrengthLevel'))
         '''最高强化等级'''
 
+        pass
+
     def to_dict(self):
         return {
             'item_id': self.item_id,
