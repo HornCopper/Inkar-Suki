@@ -3,6 +3,7 @@ from .. import *
 
 def test_group_config():
     config = GroupConfig(776484255)
+    config.mgr_property('server', '幽月轮')
     assert config.mgr_property('server') == '幽月轮'
     config.mgr_property('server', '唯我独尊')
     assert config.mgr_property('server') == '唯我独尊'
