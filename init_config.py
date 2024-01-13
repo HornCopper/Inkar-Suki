@@ -87,11 +87,14 @@ def init_arguments(args: list[str], template: list[ArgumentInfo] = None) -> list
         template = DEFAULT_expected_args
     for index, arg in enumerate(args):
         target = template[index]
-        v = get_from_encoded(arg)
-        if v is None:
-            # print(arg)
-            logger.warning(f'fail while parse argument "{target.name}"')
-        target.value = v
+        if len(arg) < 3:
+            logger.warning(f'too short payload for {target.name},please check')
+        else:
+            v = get_from_encoded(arg)
+            if v is None:
+                suffix = ' , please check if suitable encoded'
+                logger.warning(f'fail while parse argument "{target.name}"{suffix}')
+            target.value = v
     return template
 
 
