@@ -87,7 +87,7 @@ def init_arguments(args: list[str], template: list[ArgumentInfo] = None) -> list
         template = DEFAULT_expected_args
     for index, arg in enumerate(args):
         target = template[index]
-        if len(arg) < 3:
+        if arg is None or len(arg) < 3:
             logger.warning(f'too short payload for {target.name},please check')
         else:
             v = get_from_encoded(arg)
