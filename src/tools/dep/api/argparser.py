@@ -1,15 +1,12 @@
 from __future__ import annotations
 from typing import Any
 from typing import overload
-import functools
 from .config import *
 
 from ..exceptions import *
 from ..data_server import *
 from src.tools.utils import *
 from src.constant.jx3.skilldatalib import *
-from sgtpyutils import extensions
-from sgtpyutils.logger import logger
 from ..args import *
 from src.tools.dep.common_api import *
 logger.debug(f'load dependence:{__name__}')
