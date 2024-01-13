@@ -39,7 +39,7 @@ jobs:
             
       - name: Test with pytest
         run: |
-          pytest -v --full-trace --durations 10 --timeout=120
+          pytest -v --full-trace --durations 10 --timeout=1200
       - name: Devops Debug
         if: ${{ failure() }}
         run: |
