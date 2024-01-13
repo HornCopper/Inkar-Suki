@@ -45,9 +45,12 @@ class ArgumentInfo:
         pos_start = pos_span[0] + 1  # 取消第一个空格
         pos_end = pos_span[1]
         target_str = template[pos_start:pos_end]
-        new_value = self.value if self.value is not None else "None"
+        if self.value is not None:
+            new_value = self.value
+            logger.info(f'replace "{target_str}" to "******"')
+        else:
+            new_value = "None"
         evaluate_str = f"{self.name} = {new_value}"
-        logger.info(f'replace "{target_str}" to "******"')
         # logger.info(f'replace "{target_str}" to "{new_value}"')
         return f'{template[:pos_start]}{evaluate_str}{template[pos_end:]}'
 
