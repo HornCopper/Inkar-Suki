@@ -1,7 +1,7 @@
-/src/tools/config.py
-/src/assets/jx3/
-/src/assets/arcaea/
-/src/plugins/grab/eat_pic/*
+src/tools/config.py
+src/assets/jx3/
+src/assets/arcaea/
+src/plugins/grab/eat_pic/*
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -20,7 +20,7 @@ config.json
 cache/
 develop-eggs/
 dist/
-data/
+src/data/*
 downloads/
 eggs/
 .eggs/
@@ -159,4 +159,6 @@ dmypy.json
 .idea/
 
 
+
 !src/plugins/jx3/price_goods/lib*
+!src/data/users
