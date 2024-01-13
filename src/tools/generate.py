@@ -2,6 +2,7 @@
 @description: 用于使用playwright组件（浏览器模拟型爬虫）将网页转换为截图
 @date: 2023-07-25
 """
+import os
 import time
 import threading
 import uuid
@@ -19,6 +20,17 @@ def get_uuid():
 
 class PlaywrightRunner(threading.Thread):
     match_chars = re.compile(r'[a-z|A-Z|0-9| |_|\-|\+|\.]+')
+
+    def with_timestamp(raw_name: str) -> str:
+        filename = f'{DateTime().tostring(DateTime.Format.DEFAULT_MIL)}{raw_name}'
+        filename = str.join('_', PlaywrightRunner.match_chars.findall(filename))
+        return filename
+
+    def convert_filename(url: str) -> str:
+        file_url = url.replace(Path(bot_path.CACHE).as_uri(), '')[1:]
+        file_url = str.join('_', PlaywrightRunner.match_chars.findall(file_url))
+        file_url = file_url[0:124]
+        return file_url
 
     def __init__(self) -> None:
         self.tasks: list[tuple[str, str, bool, int, asyncio.Future]] = []
@@ -63,11 +75,9 @@ class PlaywrightRunner(threading.Thread):
         player = self._player
         loc = player
 
-        file_url = url.replace(Path(bot_path.CACHE).as_uri(), '')[1:]
-        file_url = str.join('_', PlaywrightRunner.match_chars.findall(file_url))
-        file_url = file_url[0:124]
+        file_url = PlaywrightRunner.convert_filename(url)
 
-        img = f"{bot_path.CACHE}/{file_url}.png"
+        img = f"{bot_path.CACHE}{os.sep}{file_url}.png"
         try:
             await player.goto(url)
             if delay > 0:
@@ -114,6 +124,16 @@ def stop_playwright():
 async def generate_by_url(url: str, locate: str = None, first: bool = False, delay: int = 0):
     result = await __client.generate_by_url(url, locate, first, delay)
     return result
+
+
+async def generate_by_raw_html(html: str, web: bool = False, locate: str = None, first: bool = False, delay: int = 0, name: str = None):
+    if name is None:
+        name = get_uuid()
+    name = PlaywrightRunner.with_timestamp(name)
+    file_path = f'{bot_path.CACHE}{os.sep}{name}.html'
+    with open(file_path, 'w') as f:
+        f.write(html)
+    return await generate(file_path, web, locate or 'section', first, delay)
 
 
 async def generate(html: str, web: bool = False, locate: str = None, first: bool = False, delay: int = 0):
