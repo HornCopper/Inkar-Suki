@@ -73,7 +73,6 @@ def get_tag_content(data: str, tag: str) -> str:
     return str.join('\n', result)
 
 
-views_match_chars = re.compile(r'[a-z|A-Z|0-9| |_|\-|\+|\.]+')
 
 
 async def get_render_image(view_file_path: str, data: dict = None, delay: int = 0, target: str = 'section') -> bytes:
@@ -88,8 +87,7 @@ async def get_render_image(view_file_path: str, data: dict = None, delay: int = 
         data = {}
     content = get_render_content(view_file_path, data)
 
-    filename = f'{DateTime().tostring(DateTime.Format.DEFAULT_MIL)}{view_file_path}'
-    filename = str.join('_', views_match_chars.findall(filename))
+    filename = PlaywrightRunner.with_timestamp(view_file_path)
     file = pathlib2.Path(bot_path.CACHE).joinpath(f'tpl_{filename}.html').as_posix()
     with open(file, 'w', encoding='utf-8') as f:
         f.write(content)
