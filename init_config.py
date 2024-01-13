@@ -124,7 +124,8 @@ def get_user_input() -> list[str]:
         logger.warning(msg)
         params = [None] * expected_args_count
     else:
-        params = sys.argv
+        # pytest.yaml 中 所有参数均以s开头以保证参数数量
+        params = [x[1:] if x[0] == 's' else x for x in sys.argv]
 
     return params
 
