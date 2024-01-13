@@ -3,12 +3,12 @@ from src.tools.dep.data_server import *
 from src.tools.utils import *
 from src.tools.dep.jx3.Jx3ApiResponse import *
 from src.tools.config import Config
-from ..Jx3UserProperty import *
+from ..Jx3UserAttribute import *
 from .Jx3PlayerLoader import *
 
 
 class Jx3PlayerDetailInfo:
-    def __init__(self, uid: str, server: str, property: Jx3UserPropertyInfo, user: Jx3PlayerInfo = None) -> None:
+    def __init__(self, uid: str, server: str, property: Jx3UserAttributeInfo, user: Jx3PlayerInfo = None) -> None:
         self.property = property
         self.uid = uid
         self.server = server
@@ -31,6 +31,6 @@ class Jx3PlayerDetailInfo:
     @classmethod
     async def from_uid(cls, server: str, uid: str, cache_length: float = 86400) -> Jx3PlayerDetailInfo:
         '''通过服务器和uid从缓存或远程加载'''
-        res = Jx3UserPropertyInfo.from_uid(uid, server, cache_length=cache_length)
+        res = Jx3UserAttributeInfo.from_uid(uid, server, cache_length=cache_length)
         target = cls(uid, server, res)
         return target

@@ -1,6 +1,6 @@
 from .GoodsBase import *
 from .GoodsPrice import *
-from .WucaiProperty import *
+from .WucaiAttribute import *
 
 
 class GoodsInfoFull(GoodsInfo):
@@ -35,7 +35,7 @@ class GoodsInfoFull(GoodsInfo):
         self.recovery_price = data.get("Price")  # 回收价
         self.level = data.get("Level")  # 品数（仅武器才有）
         data = data.get("WuCaiHtml") or ""  # 五彩石属性
-        self.wucai_properties = WucaiProperty.from_html(data)  # convert to wucai-properties
+        self.wucai_properties = WucaiAttribute.from_html(data)  # convert to wucai-properties
         return self
 
     @classmethod
