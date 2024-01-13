@@ -50,6 +50,9 @@ class ArgumentInfo:
             logger.info(f'replace "{target_str}" to "******"')
         else:
             new_value = "None"
+        # 检查是否合法字符串
+        if new_value[0] != '\'' and new_value[0] != '\'':
+            new_value = f'\'{new_value}\''
         evaluate_str = f"{self.name} = {new_value}"
         # logger.info(f'replace "{target_str}" to "{new_value}"')
         return f'{template[:pos_start]}{evaluate_str}{template[pos_end:]}'
