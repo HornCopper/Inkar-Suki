@@ -166,7 +166,7 @@ class Assistance:
         return False
 
     async def time_convert(time1: int):
-        return time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(time1))
+        return DateTime(time1).tostring()
 
     async def generate_html(group: str, description: str):
         now = json.loads(read(f"{bot_path.DATA}/{group}/opening.json"))

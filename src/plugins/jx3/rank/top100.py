@@ -53,8 +53,8 @@ async def get_top100(server: str, boss: str, team: str = None):  # 数据来源@
                 found = True
                 leader = i["role"]
                 team_logo = i["team_logo"]
-                start_time = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(i["start_time"]))
-                finish_time = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(i["finish_time"]))
+                start_time = DateTime(i["start_time"]).tostring()
+                finish_time = DateTime(i["finish_time"]).tostring()
                 num = 0
                 for x in i["teammate"].split(";"):
                     add_one = x.split(",")[0]

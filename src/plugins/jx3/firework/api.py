@@ -54,7 +54,7 @@ async def get_firework_image(server, name, group):
     html = read(bot_path.VIEWS + "/jx3/firework/firework.html")
     saohua = await get_api(f"https://www.jx3api.com/data/saohua/random?token={token}")
     saohua = saohua["data"]["text"]
-    appinfo_time = time.strftime("%H:%M:%S", time.localtime(time.time()))
+    appinfo_time = DateTime().tostring(DateTime.Format.HMS)
     appinfo = f"烟花记录 · {server} · {name} · 当前时间：{appinfo_time}"
     font = bot_path.ASSETS + "/font/custom.ttf"
     html = html.replace("$customfont", font).replace("$appinfo", appinfo).replace(

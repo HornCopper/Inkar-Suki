@@ -83,7 +83,7 @@ async def _(event: Event):
     x = Permission(event.user_id).judge(1, '运行状态详细')
     if not x.success:
         times = str("现在是"
-                    + time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
+                    + DateTime().tostring()
                     + f"\nNonebot {nbv}")
         return await ping.finish(times)
 
@@ -93,7 +93,7 @@ async def _(event: Event):
     def memory_status() -> float:
         return psutil.virtual_memory().percent
     times = str("现在是"
-                + time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
+                + DateTime().tostring()
                 + f"\nNonebot {nbv}"
                 )
     msg = f"来啦！\n\系统信息如下：\nCPU占用：{str(per_cpu_status()[0])}%\n内存占用：{str(memory_status())}%\n"
