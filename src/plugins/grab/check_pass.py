@@ -1,8 +1,8 @@
 from src.tools.dep import *
-
+from . import config as eat_config
 # 获取配置cd时间
-cd = Config.parse_obj(get_driver().config.dict()).whateat_cd
-max_count = Config.parse_obj(get_driver().config.dict()).whateat_max
+cd = eat_config.Config.parse_obj(get_driver().config.dict()).whateat_cd
+max_count = eat_config.Config.parse_obj(get_driver().config.dict()).whateat_max
 
 
 def check_cd(last_time: int) -> Tuple[bool, int, int]:
