@@ -1,9 +1,4 @@
-import time
-
-from nonebot import get_driver
-from typing import Tuple
-
-from .config import Config
+from src.tools.dep import *
 
 # 获取配置cd时间
 cd = Config.parse_obj(get_driver().config.dict()).whateat_cd
@@ -12,7 +7,7 @@ max_count = Config.parse_obj(get_driver().config.dict()).whateat_max
 
 def check_cd(last_time: int) -> Tuple[bool, int, int]:
     # 检查cd
-    current_time = int(time.time())
+    current_time = int(DateTime().timestamp())
     delta_time = current_time - last_time
     if delta_time < cd:
         return False, cd-delta_time, last_time

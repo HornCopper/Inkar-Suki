@@ -59,7 +59,7 @@ class Assistance:
             "creator": creator,
             "applying": [],
             "member": [[], [], [], [], []],
-            "create_time": int(time.time()),
+            "create_time": int(DateTime().timestamp()),
             "description": description,
             "server": server
         }
@@ -97,7 +97,7 @@ class Assistance:
             "job": job,
             "img": job_icon,
             "apply": applyer,
-            "time": int(time.time()),
+            "time": int(DateTime().timestamp()),
             "server": server
         }
         stg = await Assistance.storge(group, description, new)
