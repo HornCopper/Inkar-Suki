@@ -1,6 +1,8 @@
 from __future__ import annotations
 from .Base import *
 
+from typing import Literal
+
 
 class Kunfu(Aliasable):
     '''心法'''
@@ -11,6 +13,8 @@ class Kunfu(Aliasable):
     gameid: int
     '''游戏id'''
     color: str
+    '''主色调'''
+    type: Literal['t', 'dps', 'hps']
     '''主色调'''
 
     def register_alias(self):

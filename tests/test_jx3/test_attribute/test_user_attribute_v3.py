@@ -29,5 +29,14 @@ def test_fetch_by_uid():
 
 
 def test_fetch_and_generate():
-    import src.plugins.jx3.user.v3
-    func = src.plugins.jx3.user.v3.jx3_attribute3
+    import src.plugins.jx3
+    func = src.plugins.jx3.jx3_attribute3
+    mc = MessageCallback()
+    src.plugins.jx3.user.v3.jx3_cmd_attribute3 = mc
+
+    event = SFGroupMessageEvent(group_id=1120115)
+    event.message = obMessage("属性 唯满侠 无辜小狍")
+    args = Jx3Arg.arg_factory(src.plugins.jx3.jx3_cmd_attribute3, event)
+    task = func(args)
+    asyncio.run(task)
+    mc.check_counter()

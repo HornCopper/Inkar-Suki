@@ -11,6 +11,19 @@ class Jx3PlayerDetailInfo:
         self.server = server
         self.__user = user
 
+    def get_attributes(self, date: DateTime = None, page: int = None) -> dict[str, Jx3UserAttributeInfo]:
+        '''筛选指定的属性'''
+        attrs = self.attributes
+        if date is not None:
+            date = DateTime(date)
+            xattrs = filter(lambda x: not attrs[x].is_outdated(date), attrs)
+            attrs = list(xattrs)
+        if page is not None:
+            page = int(page)
+            xattrs = filter(lambda x: attrs[x].page.page == page, attrs)
+            attrs = list(xattrs)
+        return dict([x, self.attributes[x]] for x in attrs)
+
     @property
     def user(self):
         if self.__user:
