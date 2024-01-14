@@ -22,20 +22,20 @@ class Jx3PlayerLoader:
     ).value
 
     @staticmethod
-    def get_user(server: str, userid: str, cache_length: int = 30*86400):
+    def get_user(server: str, userid: str, cache_length: float = 30*86400):
         key = f'{server}@{userid}'
 
         prev = Jx3PlayerLoader.cache_uid.get(key)
         if prev and (DateTime() - DateTime(prev.updateAt)).total_seconds() < cache_length:
             # 30天内直接使用缓存
-            uid = prev.globalRoleId
+            uid = prev.roleId
             return Jx3PlayerLoader.cache_detail[uid]
         return None
 
     @staticmethod
-    async def get_user_async(server: str, userid: str, try_cache: bool = False):
-        if try_cache:
-            result = Jx3PlayerLoader.get_user(server, userid)
+    async def get_user_async(server: str, userid: str, cache_length: float = 86400):
+        if cache_length > 0:
+            result = Jx3PlayerLoader.get_user(server, userid, cache_length)
             if result:
                 return result
 
@@ -58,9 +58,6 @@ class Jx3PlayerInfoWithInit(Jx3PlayerInfo):
         return result
 
     @classmethod
-    def from_id(cls, server: str, user_id: str) -> Jx3PlayerInfo:
-        result = Jx3PlayerLoader.get_user(server, user_id)
-        if result is not None:
-            return result
-        t = Jx3PlayerLoader.get_user_async(server, user_id)
+    def from_id(cls, server: str, user_id: str, cache_length: float = None) -> Jx3PlayerInfo:
+        t = Jx3PlayerLoader.get_user_async(server, user_id, cache_length=cache_length)
         return ext.SyncRunner.as_sync_method(t)

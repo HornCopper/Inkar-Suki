@@ -1,17 +1,37 @@
 from __future__ import annotations
+from .Jx3UserAttributeInfo import *
+from ...common import *
 from src.tools.dep.data_server import *
 from src.tools.utils import *
-from src.tools.dep.jx3.Jx3ApiResponse import *
-from src.tools.config import Config
+from .IJx3UserAttributeFactory import *
+from src.tools.dep.common_api.none_dep_api.tuilan import *
+from src.tools.dep.api.config import *
 
 
+class Jx3UserAttributeFactory(IJx3UserAttributeFactory):
+    def __init__(self, data: dict) -> None:
+        self.__data = data
+        self.data: BaseJx3UserProperty = None  # 初始化
+        self.load_data()
 
-class Jx3PlayerDetailInfo:
-    def __init__(self) -> None:
-        pass
+    @property
+    def success(self):
+        return self.__data and self.__data.get('code') == 0
+
+    @property
+    def raw_data(self):
+        if not self.success:
+            return None
+        return self.__data.get('data')
+
+    def load_data(self):
+        raw_data = self.raw_data
+        if not raw_data:
+            return
+        self.data = BaseJx3UserProperty(raw_data)
 
     @staticmethod
-    async def get_property_by_uid(uid: str, server: str) -> Jx3PlayerDetailInfo:
+    async def _get_property_by_uid(uid: str, server: str) -> BaseJx3UserProperty:
         param = {
             "zone": Zone_mapping(server),
             "server": server,
@@ -39,4 +59,5 @@ class Jx3PlayerDetailInfo:
             "x-sk": xsk
         }
         data = await post_url(url="https://m.pvp.xoyo.com/mine/equip/get-role-equip", data=payload, headers=headers)
-        return data
+        response = Jx3UserAttributeFactory(json.loads(data)).data
+        return response

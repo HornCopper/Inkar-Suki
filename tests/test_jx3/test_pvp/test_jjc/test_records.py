@@ -9,7 +9,7 @@ def test_records():
     arena.jx3_cmd_arena_records = mc
 
     event = SFGroupMessageEvent()
-    event.message = obMessage("幽月轮 凉夜话雨")
+    event.message = obMessage("战绩 幽月轮 凉夜话雨")
     task = func(event, Jx3Arg.arg_factory(src.plugins.jx3.jx3_cmd_arena_records, event))
     asyncio.run(task)
     mc.check_counter()

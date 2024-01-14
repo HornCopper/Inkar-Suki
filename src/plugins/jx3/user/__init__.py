@@ -5,7 +5,7 @@ jx3_cmd_addritube = on_command(
     name="属性v1",
     aliases={'查装v1'},
     priority=5,
-    catalog=permission.jx3.pvp.user.property,
+    catalog=permission.jx3.pvp.user.attribute,
     description="查询玩家角色的装备和属性",
     example=[
         Jx3Arg(Jx3ArgsType.server, is_optional=True),
@@ -36,7 +36,7 @@ jx3_cmd_addritube_v2 = on_command(
     name="属性",
     aliases={'查装'},
     priority=5,
-    catalog=permission.jx3.pvp.user.property,
+    catalog=permission.jx3.pvp.user.attribute,
     description="查询玩家角色的装备和属性",
     example=[
         Jx3Arg(Jx3ArgsType.server, is_optional=True),
@@ -79,4 +79,4 @@ async def jx3_player(event: GroupMessageEvent, args: list[Any] = Depends(Jx3Arg.
     if not arg_server:
         return await jx3_cmd_roleInfo.finish(PROMPT_ServerNotExist)
     msg = await roleInfo_(server=arg_server, player=arg_user)
-    await jx3_cmd_roleInfo.finish(msg)
+    return await jx3_cmd_roleInfo.send(msg)

@@ -85,7 +85,10 @@ async def _update_grp_config(arg_path, arg_value, user_id, arg_group=None, arg_u
     new_val = Ellipsis if arg_value == 'VIEW' else arg_value
 
     gc = GroupConfig(arg_group) if arg_group else GroupUserConfig(arg_user)
-    result = gc.mgr_property(arg_path, new_val)
+    try:
+        result = gc.mgr_property(arg_path, new_val)
+    except Exception as ex:
+        result = f'更新失败:{ex}'
     update_path = gc._db.database_filename
     db_instance = hex(id(gc._db.data_obj) & 0xffffffff)[2:]
     update_result = f'已管理更新{db_instance}@{arg_path}\nnew_value={new_val},result=\n{result}'

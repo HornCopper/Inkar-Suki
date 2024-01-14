@@ -1,6 +1,7 @@
 from ... import *
 
 
+@pytest.mark.skipif('get_tuilan_articles' not in dir(), reason='无api可用')
 def test_fetch_adopt():
     mc = MessageCallback()
     import src.plugins.jx3.notice

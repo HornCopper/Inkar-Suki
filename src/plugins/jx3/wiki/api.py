@@ -143,7 +143,7 @@ class Jx3Guide:
 
     @staticmethod
     def get_url(url: str) -> str:
-        u = url.replace("{timestamp}", str(int(time.time() * 1e3)))
+        u = url.replace("{timestamp}", str(int(DateTime().timestamp() * 1e3)))
         u = u.replace("{source}", "62203")
         u = f"{Jx3Guide.API_host}{u}"
         return u

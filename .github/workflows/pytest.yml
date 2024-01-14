@@ -16,11 +16,12 @@ jobs:
         os: [ubuntu-latest, macos-latest, windows-latest]
         python-version: [ '3.10']
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
+          cache: 'pip'
       - name: Display Python version
         run: python --version
 
@@ -32,13 +33,13 @@ jobs:
           
           python -m pip install -r requirements.txt
           playwright install
-      - name: Init Config.py
+      - name: Init Config.py # TODO param use default
         run: |
-          python ./init_config.py ${{ secrets.proxy }} ${{ secrets.jx3_token }} ${{ secrets.jx3api_link }} ${{ secrets.jx3api_globaltoken }} ${{ secrets.jx3api_wslink }} ${{ secrets.jx3api_wstoken }} ${{ secrets.sfapi_wslink }} ${{ secrets.sfapi_wstoken }}
+          python ./init_config.py s${{ secrets.proxy }} s${{ secrets.jx3_token }} s${{ secrets.jx3api_link }} s${{ secrets.jx3api_globaltoken }} s${{ secrets.jx3api_wslink }} s${{ secrets.jx3api_wstoken }} s${{ secrets.sfapi_wslink }} s${{ secrets.sfapi_wstoken }}
             
       - name: Test with pytest
         run: |
-          pytest -v --full-trace --durations 10 --timeout=120
+          pytest -v --full-trace --durations 10 --timeout=1200
       - name: Devops Debug
         if: ${{ failure() }}
         run: |

@@ -45,9 +45,15 @@ class ArgumentInfo:
         pos_start = pos_span[0] + 1  # 取消第一个空格
         pos_end = pos_span[1]
         target_str = template[pos_start:pos_end]
-        new_value = self.value if self.value is not None else "None"
+        if self.value is not None:
+            new_value = self.value
+            logger.info(f'replace "{target_str}" to "******"')
+        else:
+            new_value = "None"
+        # 检查是否合法字符串
+        if new_value[0] != '\'' and new_value[0] != '\'':
+            new_value = f'\'{new_value}\''
         evaluate_str = f"{self.name} = {new_value}"
-        logger.info(f'replace "{target_str}" to "******"')
         # logger.info(f'replace "{target_str}" to "{new_value}"')
         return f'{template[:pos_start]}{evaluate_str}{template[pos_end:]}'
 
@@ -84,11 +90,14 @@ def init_arguments(args: list[str], template: list[ArgumentInfo] = None) -> list
         template = DEFAULT_expected_args
     for index, arg in enumerate(args):
         target = template[index]
-        v = get_from_encoded(arg)
-        if v is None:
-            # print(arg)
-            logger.warning(f'fail while parse argument "{target.name}"')
-        target.value = v
+        if arg is None or len(arg) < 3:
+            logger.warning(f'too short payload for {target.name},please check')
+        else:
+            v = get_from_encoded(arg)
+            if v is None:
+                suffix = ' , please check if suitable encoded'
+                logger.warning(f'fail while parse argument "{target.name}"{suffix}')
+            target.value = v
     return template
 
 
@@ -118,7 +127,8 @@ def get_user_input() -> list[str]:
         logger.warning(msg)
         params = [None] * expected_args_count
     else:
-        params = sys.argv
+        # pytest.yaml 中 所有参数均以s开头以保证参数数量
+        params = [x[1:] if x[0] == 's' else x for x in sys.argv]
 
     return params
 

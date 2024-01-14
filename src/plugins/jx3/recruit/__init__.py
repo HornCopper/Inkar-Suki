@@ -28,7 +28,7 @@ async def jx3_recruit(bot: Bot, event: GroupMessageEvent, args: Message = Comman
         data = await api_recruit(server, copy)
     if isinstance(data, list):
         return await jx3_cmd_recruit.finish(data[0])
-    return await jx3_cmd_recruit.finish(ms.image(data))
+    return await jx3_cmd_recruit.send(ms.image(data))
 
 recruitv2 = on_command("jx3_recruit", aliases={"招募"}, priority=5)
 
@@ -53,4 +53,4 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
         data = await recruit_v2(server, copy)
     if isinstance(data, list):
         return await recruitv2.finish(data[0])
-    return await recruitv2.finish(ms.image(data))
+    return await recruitv2.send(ms.image(data))

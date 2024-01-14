@@ -39,7 +39,7 @@ async def jx3_subscribe(event: GroupMessageEvent, args: list[Any] = Depends(Jx3A
 async def get_jx3_unsubscribe(event: GroupMessageEvent, arg_sub: str):
     subscribe = GroupConfig(event.group_id).mgr_property('subscribe')
     if arg_sub is None:
-        msg = f"没有这样的主题可以退订，请检查一下哦。"
+        msg = "没有这样的主题可以退订，请检查一下哦。"
     elif arg_sub not in subscribe:
         msg = f"尚未订阅[{arg_sub}]，取消不了。"
     else:
