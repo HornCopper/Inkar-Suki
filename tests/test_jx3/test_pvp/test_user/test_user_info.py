@@ -7,10 +7,13 @@ def test_user():
     func = src.plugins.jx3.user.jx3_player
 
     def finish(msg: str):
-        assert 'file://' in msg, f'image generate fail:{msg}.'
+        assert '25523361' in msg # uid
     mc = MessageCallback(cb_finish=finish)
+    raw_matcher = src.plugins.jx3.user.jx3_cmd_roleInfo
     src.plugins.jx3.user.jx3_cmd_roleInfo = mc
     event = SFGroupMessageEvent()
-    task = func(event, obMessage('唯满侠 步龄'))
+    event.message = obMessage("角色信息 唯满侠 步龄")
+    args = Jx3Arg.arg_factory(raw_matcher, event)
+    task = func(event, args)
     asyncio.run(task)
     mc.check_counter()

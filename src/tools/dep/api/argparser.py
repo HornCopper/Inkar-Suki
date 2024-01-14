@@ -1,15 +1,12 @@
 from __future__ import annotations
 from typing import Any
 from typing import overload
-import functools
 from .config import *
 
 from ..exceptions import *
 from ..data_server import *
 from src.tools.utils import *
 from src.constant.jx3.skilldatalib import *
-from sgtpyutils import extensions
-from sgtpyutils.logger import logger
 from ..args import *
 from src.tools.dep.common_api import *
 logger.debug(f'load dependence:{__name__}')
@@ -212,12 +209,12 @@ def get_args(arg1, arg2, arg3=None, method=None) -> list:
         message = convert_to_str(arg2)  # 从事件提取
         event = arg2  # 事件是第二个参数
         template_args = arg1
-        return direct_get_args(message, template_args, event, method=method)
-    return direct_get_args(arg1, arg2, arg3, method=method)
+        return direct_argparser(message, template_args, event, method=method)
+    return direct_argparser(arg1, arg2, arg3, method=method)
 
 
 @DocumentGenerator.record
-def direct_get_args(raw_input: str, template_args: List[Jx3Arg], event: GroupMessageEvent = None, method=None) -> list:
+def direct_argparser(raw_input: str, template_args: List[Jx3Arg], event: GroupMessageEvent = None, method=None) -> list:
     template_len = len(template_args)
     raw_input = raw_input or ''  # 默认传入空参数
     user_args = extensions.list2dict(raw_input.split(' '))

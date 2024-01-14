@@ -21,7 +21,7 @@ class permission(BaseCatalog):
                     '''沙盘'''
             class user(BaseCatalog):
                 '''角色'''
-                class property(BaseCatalog):
+                class attribute(BaseCatalog):
                     '''属性'''
                 class location(BaseCatalog):
                     '''定位'''

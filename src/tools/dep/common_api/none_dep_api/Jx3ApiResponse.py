@@ -1,5 +1,5 @@
 from src.tools.utils.request import *
-
+from .prompt import *
 class Jx3ApiResponse:
     def convert_403(self):
         if '侠客隐藏了游戏信息' in self.msg:

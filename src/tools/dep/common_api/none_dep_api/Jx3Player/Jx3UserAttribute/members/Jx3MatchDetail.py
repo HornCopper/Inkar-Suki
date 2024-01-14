@@ -1,45 +1,3 @@
-from .Equip import *
-from typing import overload
-
-
-class UserPanel:
-    @overload
-    def __init__(self, data: dict) -> None:
-        ...
-
-    @overload
-    def __init__(self, name: str, percent: bool, value: float) -> None:
-        ...
-
-    def __init__(self, name: str, percent: bool, value: float) -> None:
-        if isinstance(name, dict):
-            percent = name.get('percent') or False
-            value = name.get('value') or 0
-            name = name.get('name')
-        self.name: str = name  # 属性名称
-        self.percent: bool = percent  # 是否是百分比
-        self.value: float = value  # 数值
-
-
-class Kungfu:
-    mapper = {
-        'mowen': '莫问'
-    }
-
-    def __init__(self, name: str) -> None:
-        self.name = name
-
-    @property
-    def alias(self):
-        return Kungfu.mapper.get(self.name) or f'u:{self.name}'
-
-
-class Qixue:
-    def __init__(self, data: dict) -> None:
-        self.name = data.get('name')
-        # {FileName:https://...,Kind:技能,SubKind:长歌}
-        self.icon = data.get('icon')
-        self.skill_id = data.get('skill_id')
 
 
 class MatchDetail:
@@ -125,13 +83,3 @@ class MatchDetail:
     def __init__(self, data: dict) -> None:
         for x in data:
             setattr(self, x, data.get(x))
-
-
-class UserProperty:
-    def __init__(self, data: dict = None) -> None:
-        self.equips = [Equip(x) for x in data.get('Equips')]
-        self.kungfu = Kungfu(data.get('Kungfu').get('Name'))
-        self.matchDetail = MatchDetail(data.get('MatchDetail'))
-        self.qixue = [Qixue(x) for x in data.get('Person').get('qixueList')]
-        self.panel = [UserPanel(x) for x in data.get('PeronalPanel')]
-        self.score = data.get('TotalEquipsScore')

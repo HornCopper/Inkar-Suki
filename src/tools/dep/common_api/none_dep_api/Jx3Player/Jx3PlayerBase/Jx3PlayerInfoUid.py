@@ -20,5 +20,5 @@ class Jx3PlayerInfoUid:
         '''区服大区'''
 
     def to_dict(self):
-        return self.__dict__
+        return copy.deepcopy(self.__dict__)
 

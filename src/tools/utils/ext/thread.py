@@ -1,6 +1,8 @@
+from typing import TypeVar, Any
 import asyncio
 import threading
 from sgtpyutils.logger import logger
+_T = TypeVar('T')
 
 
 class SyncRunner(threading.Thread):
@@ -9,6 +11,7 @@ class SyncRunner(threading.Thread):
         self.tasks = async_task
         self.semaphore = threading.Semaphore(0)
         self.exception = None
+        self.result = None
         super().__init__(daemon=True)
 
     def run(self):
@@ -29,13 +32,13 @@ class SyncRunner(threading.Thread):
         return super().run()
 
     @staticmethod
-    def as_sync_method(async_method):
+    def as_sync_method(async_method: asyncio.futures.Future[Any, Any, _T]) -> _T:
         x = SyncRunner(async_method)
         x.start()
-        x.semaphore.acquire(timeout=30e3) # 默认最多等待30秒
-        result = x.result
+        x.semaphore.acquire(timeout=30e3)  # 默认最多等待30秒
         if x.exception:
             raise x.exception
+        result = x.result
         return result
 
 
