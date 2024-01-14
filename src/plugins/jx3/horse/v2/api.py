@@ -1,7 +1,11 @@
 from src.tools.dep import *
 from ..api_lib import *
 _horse_db = f'{bot_path.common_data_full}pvx_glo_horse'
-data_horse_reporter: dict[str, dict] = filebase_database.Database(_horse_db).value  # 记录历史
+data_horse_reporter: dict[str, HorseRecords] = filebase_database.Database(
+    _horse_db,
+    serializer=lambda data: [data[x].to_dict() for x in data],
+    deserializer=lambda data: [HorseRecords.from_dict(data[x]) for x in data]
+).value  # 记录历史
 
 
 async def get_horse_reporter_data(server: str, start: int = 0, end: int = 1):
@@ -18,7 +22,6 @@ async def load_horse_records(server: str):
     '''从缓存加载，如果无数据，则从网站加载'''
     prev_records = data_horse_reporter.get(server)
     if prev_records:
-        prev_records = HorseRecords.from_dict(prev_records)
         return prev_records
 
     # 首次加载时多加载2页的
