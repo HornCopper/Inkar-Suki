@@ -29,13 +29,13 @@ def test_recommend_menu():
 @pytest.mark.skipif('get_tuilan_articles' not in dir(), reason='无api可用')
 @pytest.mark.skipif(not Config.jx3_token, reason="无token时不测试")
 def test_recommend():
-    mc = MessageCallback()
-    equip_recommend.jx3_cmd_equip_recommend = mc
 
     func = equip_recommend.equip_recmded
     state = recommend_menu_check()
     event = SFGroupMessageEvent()
 
+    mc = MessageCallback()
+    equip_recommend.jx3_cmd_equip_recommend = mc
     mc.tag = '0'
     task = func(event, state, obMessage(mc.tag))
     asyncio.run(task)
