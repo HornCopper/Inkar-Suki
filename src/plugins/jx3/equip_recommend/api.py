@@ -107,7 +107,7 @@ async def get_single_recequips(data: dict, author: str, name: str, tag: str, kf:
     equip_list = []
     equip_icon_list = []
     equip_quailty = []
-    bot_path.PLUGINS + "/jx3/user/unknown.png"
+    bot_path.PLUGINS + "/jx3/user/v2/unknown.png"
     henchant = ["", "", "", "", "", ""]
     lenchant = ["", "", "", "", "", "", "", "", "", "", "", ""]
     if kf in ["问水诀", "山居剑意"]:
@@ -347,12 +347,12 @@ async def get_attr(kungfu: str, maxjl_list: list, jl_list: list, equip_list: lis
         raise ValueError("Unknown type of kungfu!")
     background = Image.open(await get_bg(kftosh(kungfu)))
     draw = ImageDraw.Draw(background)
-    flickering = Image.open(bot_path.PLUGINS + "/jx3/user/flicker.png").resize((38, 38))
-    precious = Image.open(bot_path.PLUGINS + "/jx3/user/xy.png")
-    full_jinglian = Image.open(bot_path.PLUGINS + "/jx3/user/jl.png")
-    un_full_jinglian = Image.open(bot_path.PLUGINS + "/jx3/user/unjl.png")
-    heavy_enchant = Image.open(bot_path.PLUGINS + "/jx3/user/henchant.png").resize((20, 20))
-    little_enchant = Image.open(bot_path.PLUGINS + "/jx3/user/lenchant.png").resize((20, 20))
+    flickering = Image.open(bot_path.PLUGINS + "/jx3/user/v2/flicker.png").resize((38, 38))
+    precious = Image.open(bot_path.PLUGINS + "/jx3/user/v2/xy.png")
+    full_jinglian = Image.open(bot_path.PLUGINS + "/jx3/user/v2/jl.png")
+    un_full_jinglian = Image.open(bot_path.PLUGINS + "/jx3/user/v2/unjl.png")
+    heavy_enchant = Image.open(bot_path.PLUGINS + "/jx3/user/v2/henchant.png").resize((20, 20))
+    little_enchant = Image.open(bot_path.PLUGINS + "/jx3/user/v2/lenchant.png").resize((20, 20))
 
     # 心法图标
     background.alpha_composite(Image.open(await get_kf_icon(kungfu)).resize((50, 50)), (61, 62))
