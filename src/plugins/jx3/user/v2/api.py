@@ -16,13 +16,6 @@ from nonebot.log import logger
 now = "万灵当歌"
 
 
-@Jx3Arg.requireTicket
-@Jx3Arg.requireToken
-async def addritube_(server: str = None, name: str = None):  
-    '''# 查装 <服务器> <ID>'''
-    final_url = f"{Config.jx3api_link}/view/role/attribute?ticket={ticket}&token={token}&robot={bot}&server={server}&name={name}&scale=1"
-    data = await get_api(final_url)
-    return Jx3ApiResponse(data).output_url
 
 
 async def roleInfo_(server, player):
@@ -296,7 +289,7 @@ async def get_attr_main(server, id, group_id):
     for i in data["data"]["Person"]["qixueList"]:
         messyqx.append(i["name"])
     qx = ["未知", "未知", "未知", "未知", "未知", "未知", "未知", "未知", "未知", "未知", "未知", "未知"]
-    unknown = bot_path.PLUGINS + "/jx3/user/unknown.png"
+    unknown = bot_path.PLUGINS + "/jx3/user/v2/unknown.png"
     qx_icon = [unknown, unknown, unknown, unknown, unknown, unknown,
                unknown, unknown, unknown, unknown, unknown, unknown]
     henchant = ["", "", "", "", "", ""]
@@ -572,7 +565,7 @@ async def get_attr_main(server, id, group_id):
 async def local_save(webpath):
     file_name = webpath.split("/")[-1].split("?")[0]
     if webpath.find("unknown.png") != -1:
-        return bot_path.PLUGINS + "/jx3/user/unknown.png"
+        return bot_path.PLUGINS + "/jx3/user/v2/unknown.png"
     final_path = bot_path.ASSETS + "/jx3/kungfu/" + file_name + ".png"
     if os.path.exists(final_path):
         return final_path
@@ -613,12 +606,12 @@ async def get_attr(kungfu: str, maxjl_list: list, jl_list: list, equip_list: lis
         raise ValueError("Unknown type of kungfu!")
     background = Image.open(await get_bg(kftosh(kungfu)))
     draw = ImageDraw.Draw(background)
-    flickering = Image.open(bot_path.PLUGINS + "/jx3/user/flicker.png").resize((38, 38))
-    precious = Image.open(bot_path.PLUGINS + "/jx3/user/xy.png")
-    full_jinglian = Image.open(bot_path.PLUGINS + "/jx3/user/jl.png")
-    un_full_jinglian = Image.open(bot_path.PLUGINS + "/jx3/user/unjl.png")
-    heavy_enchant = Image.open(bot_path.PLUGINS + "/jx3/user/henchant.png").resize((20, 20))
-    little_enchant = Image.open(bot_path.PLUGINS + "/jx3/user/lenchant.png").resize((20, 20))
+    flickering = Image.open(bot_path.PLUGINS + "/jx3/user/v2/flicker.png").resize((38, 38))
+    precious = Image.open(bot_path.PLUGINS + "/jx3/user/v2/xy.png")
+    full_jinglian = Image.open(bot_path.PLUGINS + "/jx3/user/v2/jl.png")
+    un_full_jinglian = Image.open(bot_path.PLUGINS + "/jx3/user/v2/unjl.png")
+    heavy_enchant = Image.open(bot_path.PLUGINS + "/jx3/user/v2/henchant.png").resize((20, 20))
+    little_enchant = Image.open(bot_path.PLUGINS + "/jx3/user/v2/lenchant.png").resize((20, 20))
 
     # 心法图标
     background.alpha_composite(Image.open(await get_kf_icon(kungfu)).resize((50, 50)), (61, 62))
