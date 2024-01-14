@@ -8,8 +8,8 @@ from .Jx3PlayerLoader import *
 
 
 class Jx3PlayerDetailInfo:
-    def __init__(self, uid: str, server: str, property: Jx3UserAttributeInfo, user: Jx3PlayerInfo = None) -> None:
-        self.property = property
+    def __init__(self, uid: str, server: str, attribute: Jx3UserAttributeInfo, user: Jx3PlayerInfo = None) -> None:
+        self.attribute = attribute
         self.uid = uid
         self.server = server
         self.__user = user
