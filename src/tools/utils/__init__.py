@@ -18,3 +18,6 @@ import copy
 
 import inspect
 import functools
+
+import locale
+locale.setlocale(locale.LC_CTYPE, 'chinese')
