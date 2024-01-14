@@ -6,6 +6,25 @@ from .members import *
 from .IJx3UserAttributeFactory import *
 from src.constant.jx3 import *
 
+
+class BaseJx3UserSummary(BaseUpdateAt):
+    '''记录更新时间和最后一次获取的装分'''
+
+    def __init__(self, data: dict = None) -> None:
+        super().__init__(data)
+        self.load_data(data)
+
+    def load_data(self, data: dict):
+        self.score = int(data.get('score') or 0)
+
+    def to_dict(self) -> dict:
+        result = {
+            'score': self.score,
+        }
+        result.update(super().to_dict())
+        return result
+
+
 class AttributeType(enum.IntFlag):
     Unknown = 0
     PVP = 2 << 1
@@ -31,6 +50,9 @@ class AttributeType(enum.IntFlag):
         return counter_1 > 1 or counter_2 > 1
 
 
+jeat = Jx3EquipAttributeType
+
+
 class BaseJx3UserAttributePage:
     types = [
         AttributeType.Unknown,
@@ -43,19 +65,36 @@ class BaseJx3UserAttributePage:
         AttributeType.PVX,
         AttributeType.FLY,
     ]
+    types_mapper = {
+        'dps': 2,
+        'hps': 4,
+        't': 6,
+    }
+    eq_attrs_mapper = {
+        jeat.伤: AttributeType.DPS,
+        jeat.疗: AttributeType.HPS,
+        jeat.御: AttributeType.TANK,
+        jeat.伤 | jeat.化: AttributeType.DPS | AttributeType.PVP,
+        jeat.疗 | jeat.化: AttributeType.HPS | AttributeType.PVP,
+        jeat.御 | jeat.化: AttributeType.TANK | AttributeType.PVP,
+        jeat.化: AttributeType.PVP,
+        'dps': AttributeType.DPS,
+        'hps': AttributeType.HPS,
+        't': AttributeType.TANK,
+    }
 
     def __init__(self) -> None:
         self.attr_type = AttributeType.Unknown
-        self.page: int = 0
+        self.equip_unmatch: list[Jx3Equip] = []
 
 
 class BaseJx3UserAttribute(BaseUpdateAt):
     factory: IJx3UserAttributeFactory
     c_path = f'{bot_path.common_data_full}jx3_users'
-    cache: dict[str, BaseUpdateAt] = filebase_database.Database(
+    cache: dict[str, BaseJx3UserSummary] = filebase_database.Database(
         c_path,
         serializer=lambda data: dict([x, data[x].to_dict()] for x in data),
-        deserializer=lambda data: dict([x, BaseUpdateAt(data[x])] for x in data),
+        deserializer=lambda data: dict([x, BaseJx3UserSummary(data[x])] for x in data),
     ).value
     '''key:lastupdate'''
 
@@ -68,7 +107,30 @@ class BaseJx3UserAttribute(BaseUpdateAt):
         判断装备化劲是否>0
         '''
         result = BaseJx3UserAttributePage()
-        pass
+        equip_unmatch = []
+        for equip in self.equips:
+            if equip.index == 12:
+                continue  # 忽略主武器
+            # if equip.index == 13:
+            #     continue  # 忽略副武器
+
+            ###
+            enchant_suffix = equip.enchant_suffix
+            if enchant_suffix:
+                result.attr_type |= BaseJx3UserAttributePage.eq_attrs_mapper.get(enchant_suffix)
+
+            ###
+            e_kun = self.equips[0].belongs.get('kungfu') or ''
+            e_kun = e_kun.split(',')
+            match = extensions.find(e_kun, lambda x: x in self.kungfu.alias)
+            if not match:
+                equip_unmatch.append(equip)  # 心法不符
+
+            ###
+            kun_type = self.kungfu.type or 'dps'
+            result.attr_type |= BaseJx3UserAttributePage.eq_attrs_mapper.get(kun_type)
+
+        result.equip_unmatch = equip_unmatch
         return result
 
     def __init__(self, data: dict = None) -> None:
@@ -102,8 +164,11 @@ class BaseJx3UserAttribute(BaseUpdateAt):
         return self
 
     @classmethod
-    def from_uid(cls, uid: str, server: str, cache_length: float = 0) -> dict[str, BaseJx3UserAttribute]:
-        '''dict[装分:属性值]'''
+    def from_uid(cls, uid: str, server: str, cache_length: float = 0) -> tuple[str, dict[str, BaseJx3UserAttribute]]:
+        '''
+        @return:
+            str:当前装分
+            dict[装分:属性值]'''
         key = f'{server}@{uid}'
         target = BaseJx3UserAttribute.cache.get(key)
         if target and not target.is_outdated(cache_length):
@@ -112,19 +177,21 @@ class BaseJx3UserAttribute(BaseUpdateAt):
         # 重新加载
         task = cls.factory._get_attribute_by_uid(uid, server)
         current_prop: BaseJx3UserAttribute = ext.SyncRunner.as_sync_method(task)
-
         # 存入缓存
         result = cls.from_cache(uid, server)
+        score = '0' # 默认值
         if current_prop.score > 0:
             # 只记录有装分的属性
-            result[str(current_prop.score)] = current_prop
+            score = str(current_prop.score)
+            result[score] = current_prop
             # 记录更新时间
-            BaseJx3UserAttribute.cache[key] = BaseUpdateAt(current_prop.__dict__)
+            BaseJx3UserAttribute.cache[key] = BaseJx3UserSummary(current_prop.__dict__)
+            pass
         elif len(list(result)) == 0:
             # 从未有过任何装分
-            return None
+            return None, None
 
-        return result
+        return score, result
 
     @classmethod
     def get_db_from_cache(cls, uid: str, server: str) -> BaseJx3UserAttribute:
@@ -137,7 +204,7 @@ class BaseJx3UserAttribute(BaseUpdateAt):
         return db
 
     @classmethod
-    def from_cache(cls, uid: str, server: str) -> BaseJx3UserAttribute:
+    def from_cache(cls, uid: str, server: str) -> dict[str, BaseJx3UserAttribute]:
         db = cls.get_db_from_cache(uid, server)
         return db.value
 

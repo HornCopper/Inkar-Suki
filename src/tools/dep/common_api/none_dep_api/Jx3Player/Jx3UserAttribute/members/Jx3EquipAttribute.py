@@ -5,7 +5,9 @@ class Jx3EquipAttributeType(enum.IntFlag):
     无 = 0
     伤 = 1
     疗 = 2
-    御 = 3
+    御 = 4
+    化 = 8
+    '''化劲pvp'''
 
 
 class Jx3EquipAttribute:
@@ -44,13 +46,16 @@ class Jx3EquipAttribute:
         
     @property
     def suffix(self) -> Jx3EquipAttributeType:
+        result = Jx3EquipAttributeType.无
         if '攻击' in self.desc:
-            return Jx3EquipAttributeType.伤
+            result |= Jx3EquipAttributeType.伤
         if '治疗' in self.desc:
-            return Jx3EquipAttributeType.疗
+            result |= Jx3EquipAttributeType.疗
         if '防御' in self.desc:
-            return Jx3EquipAttributeType.御
-        return Jx3EquipAttributeType.无
+            result |= Jx3EquipAttributeType.御
+        if '化劲' in self.desc:
+            result |= Jx3EquipAttributeType.化
+        return result
 
     def to_dict(self):
         return {
