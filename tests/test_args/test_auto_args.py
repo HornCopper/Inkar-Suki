@@ -30,15 +30,15 @@ def test_auto_args_server_and_str_args():
     event = SFGroupMessageEvent()
     event.group_id = 1211125  # 避免缓存
 
-    args = get_args('唯满侠 测试', templates, event)
+    args = argparser.get_args('唯满侠 测试', templates, event)
     assert args[0] == '唯我独尊'
     assert args[1] == '测试'
 
-    args = get_args('测试', templates, event)
+    args = argparser.get_args('测试', templates, event)
     assert args[0] is None
     assert args[1] == '测试'
 
-    args = get_args('', templates, event)
+    args = argparser.get_args('', templates, event)
     assert args[0] is None
     assert args[1] is None
 
@@ -47,16 +47,16 @@ def test_auto_args_server_and_str_args():
         Jx3Arg(Jx3ArgsType.string, is_optional=False),
         Jx3Arg(Jx3ArgsType.pageIndex, is_optional=True)
     ]
-    args = get_args('唯满侠 测试', templates)
+    args = argparser.get_args('唯满侠 测试', templates)
     assert args[0] == '唯我独尊'
     assert args[1] == '测试'
     assert args[2] == 0  # 默认返回第0页
 
-    args = get_args('唯满侠', templates, event)
+    args = argparser.get_args('唯满侠', templates, event)
     assert isinstance(args, Exception)
 
     templates = [
         Jx3Arg(Jx3ArgsType.subscribe),
     ]
-    arg_sub, = get_args('日常', templates, event)
+    arg_sub, = argparser.get_args('日常', templates, event)
     assert isinstance(arg_sub, str)

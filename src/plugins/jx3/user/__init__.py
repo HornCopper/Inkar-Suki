@@ -79,4 +79,4 @@ async def jx3_player(event: GroupMessageEvent, args: list[Any] = Depends(Jx3Arg.
     if not arg_server:
         return await jx3_cmd_roleInfo.finish(PROMPT_ServerNotExist)
     msg = await roleInfo_(server=arg_server, player=arg_user)
-    await jx3_cmd_roleInfo.finish(msg)
+    return await jx3_cmd_roleInfo.send(msg)

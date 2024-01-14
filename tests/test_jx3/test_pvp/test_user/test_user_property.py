@@ -9,9 +9,13 @@ def test_user_property():
     def finish(msg: str):
         assert 'file://' in msg, f'image generate fail:{msg}.'
     mc = MessageCallback(cb_finish=finish)
-    src.plugins.jx3.user.jx3_cmd_roleInfo = mc
-    event = SFGroupMessageEvent()
-    task = func(event, obMessage('唯满侠 步龄'))
+    raw_matcher = src.plugins.jx3.user.jx3_cmd_addritube
+    src.plugins.jx3.user.jx3_cmd_addritube = mc
+
+    event = SFGroupMessageEvent(group_id=1120115)
+    event.message = obMessage("属性 唯满侠 步龄")
+    args = Jx3Arg.arg_factory(raw_matcher, event)
+    task = func(event, args)
     asyncio.run(task)
     mc.check_counter()
 
@@ -24,8 +28,12 @@ def test_user_property_v2():
     def finish(msg: str):
         assert 'file://' in msg, f'image generate fail:{msg}.'
     mc = MessageCallback(cb_finish=finish)
+    raw_matcher = src.plugins.jx3.user.jx3_cmd_addritube_v2
     src.plugins.jx3.user.jx3_cmd_addritube_v2 = mc
     event = SFGroupMessageEvent()
-    task = func(event, obMessage('唯满侠 步龄'))
+    
+    event.message = obMessage("属性 唯满侠 步龄")
+    args = Jx3Arg.arg_factory(raw_matcher, event)
+    task = func(event, args)
     asyncio.run(task)
     mc.check_counter()
