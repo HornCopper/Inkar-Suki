@@ -10,7 +10,7 @@ from src.tools.dep import *
 from src.tools.config import Config
 from src.tools.generate import get_uuid
 
-from ..user.api import kungfu_mapping, get_fs, local_save,  get_kf_icon, get_bg, data_process, enchant_mapping, logger, judge_special_weapon
+from ..user.v2.api import kungfu_mapping, get_fs, local_save,  get_kf_icon, get_bg, data_process, enchant_mapping, logger, judge_special_weapon
 
 
 def format_body(data: dict) -> str:
