@@ -12,9 +12,9 @@ class BaseJx3UserSummary(BaseUpdateAt):
 
     def __init__(self, data: dict = None) -> None:
         super().__init__(data)
-        self.load_data(data)
 
     def load_data(self, data: dict):
+        super().load_data(data)
         self.score = int(data.get('score') or 0)
 
     def to_dict(self) -> dict:
@@ -173,14 +173,14 @@ class BaseJx3UserAttribute(BaseUpdateAt):
         key = f'{server}@{uid}'
         target = BaseJx3UserAttribute.cache.get(key)
         if target and not target.is_outdated(cache_length):
-            return cls.from_cache(uid, server)
+            return target.score, cls.from_cache(uid, server)
 
         # 重新加载
         task = cls.factory._get_attribute_by_uid(uid, server)
         current_prop: BaseJx3UserAttribute = ext.SyncRunner.as_sync_method(task)
         # 存入缓存
         result = cls.from_cache(uid, server)
-        score = '0' # 默认值
+        score = '0'  # 默认值
         if current_prop.score > 0:
             # 只记录有装分的属性
             score = str(current_prop.score)
