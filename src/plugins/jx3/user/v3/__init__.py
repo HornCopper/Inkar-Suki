@@ -15,20 +15,25 @@ jx3_cmd_attribute3 = on_command(
     document='''
     默认缓存1天内的角色信息
     保存30天内的装备变动信息
-    根据角色装备属性分类 
-    竞技dps 竞技hps 副本dps 副本hps 副本T 寻宝 娱乐''',
+    根据角色装备属性分类：
+    PVP-DPS  PVP-HPS  PVP-TANK
+    PVE-DPS  PVE-HPS  PVE-TANK
+    PVX      寻宝''',
 )
 
 
 @jx3_cmd_attribute3.handle()
-async def jx3_attribute3(matcher: Matcher, state: T_State, event: GroupMessageEvent, template: list[Any] = Depends(Jx3Arg.arg_factory)):
+async def jx3_attribute3(template: list[Any] = Depends(Jx3Arg.arg_factory)):
     arg_server, arg_user, arg_page = template
-    data = await Jx3PlayerDetailInfo.from_auto(arg_server, arg_user)
+    # 仅在30秒内缓存
+    data = await Jx3PlayerDetailInfo.from_auto(arg_server, arg_user, cache_length=30)
     if data is None:
         return await jx3_cmd_attribute3.finish(f'未能找到来自[{arg_server}]的用户[{arg_user}]')
 
     user = data.user.to_dict()
-    attributes = [data.attributes[x].to_dict() for x in data.attributes]
+
+    attributes = data.get_attributes(page=arg_page)
+    attributes = [data.attributes[x].to_dict() for x in attributes]
 
     result = {
         'user': user,
