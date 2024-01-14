@@ -32,7 +32,8 @@ async def get_horse_reporter(server: str, group_id: str = None):  # 数据来源
         return "没有找到该服务器信息哦，请检查后重试~"
     for i in data["data"]["list"]:
         if i["subtype"] == "npc_chat":
-            time_ = time.strftime("%Y年%m月%d日 %H:%M:%S", time.localtime(i["time"]))
+            
+            time_ = DateTime(i["time"]).tostring(DateTime.Format.DEFAULT)
             content = i["content"]
             map = i["map_name"]
             msg = f"{content}\n刷新时间：{time_}\n地图：{map}"

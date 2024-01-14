@@ -600,7 +600,7 @@ async def get_item_record(server: str, name: str):
             break  # 不限？不限给你鲨了
     saohua = await get_api(f"https://www.jx3api.com/data/saohua/random?token={token}")
     saohua = saohua["data"]["text"]
-    appinfo_time = time.strftime("%H:%M:%S", time.localtime(time.time()))
+    appinfo_time = DateTime().tostring(DateTime.Format.HMS)
     appinfo = f"掉落统计 · {server} · {name} · {appinfo_time}"
     final_table = "\n".join(tablecontents)
     html = read(bot_path.VIEWS + "/jx3/item/item.html")
