@@ -8,7 +8,7 @@ class Jx3Icon:
     def __init__(self, filename: str) -> None:
         if isinstance(filename, dict):
             '''{FileName:https://...,Kind:技能,SubKind:长歌}'''
-            icon = filename.get('icon')
+            icon = filename.get('icon') or filename
             filename = icon.get('FileName') if isinstance(icon, dict) else icon
         self.filename: str = filename
 
