@@ -87,6 +87,12 @@ class BaseJx3UserAttributePage:
         self.attr_type = AttributeType.Unknown
         self.equip_unmatch: list[Jx3Equip] = []
 
+    def to_dict(self):
+        return {
+            'equip_unmatch': [x.item_id for x in self.equip_unmatch],
+            'attr_type': self.attr_type.value,
+        }
+
 
 class BaseJx3UserAttribute(BaseUpdateAt):
     factory: IJx3UserAttributeFactory
@@ -218,5 +224,6 @@ class BaseJx3UserAttribute(BaseUpdateAt):
             'person': self.person.to_dict(),
             'panel': [x.__dict__ for x in self.panel],
             'score': self.score,
+            'page': self.page.to_dict(),
         })
         return result
