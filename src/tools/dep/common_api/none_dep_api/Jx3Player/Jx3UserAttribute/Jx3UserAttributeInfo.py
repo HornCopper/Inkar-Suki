@@ -63,6 +63,7 @@ class BaseJx3UserAttribute(BaseUpdateAt):
     def page(self) -> BaseJx3UserAttributePage:
         '''
         判断装备含有 攻击、防御、治疗
+        判断装备心法类型
         判断当前心法类型
         判断装备化劲是否>0
         '''
