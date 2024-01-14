@@ -23,13 +23,6 @@ async def api_recruit(server: str, copy: str = ""):  # 团队招募 <服务器> 
 
     return url
 
-
-def convert_time(timestamp: int):
-    time_local = time.localtime(timestamp)
-    dt = time.strftime("%H:%M:%S", time_local)
-    return dt
-
-
 template = """
 <tr>
     <td class="short-column">$sort</td>
@@ -54,7 +47,7 @@ async def recruit_v2(server: str, actvt: str = ""):
         final_url = final_url + "&keyword=" + actvt
     raw_data = await get_api(final_url)
     data = raw_data.get('data') or {}
-    time_now = convert_time(data.get("time"))
+    time_now = DateTime(data.get("time")).tostring(DateTime.Format.HMS)
     appinfo = f" · 招募信息 · {server} · {time_now}"
     font = bot_path.ASSETS + "/font/custom.ttf"
     contents = []
@@ -66,7 +59,7 @@ async def recruit_v2(server: str, actvt: str = ""):
         leader = detail["leader"]
         count = str(detail["number"]) + "/" + str(detail["maxNumber"])
         content = detail["content"]
-        create_time = convert_time(detail["createTime"])
+        create_time = DateTime(detail["createTime"]).tostring(DateTime.Format.HMS)
         new = template.replace("$sort", num).replace("$name", name).replace("$level", level).replace(
             "$leader", leader).replace("$count", count).replace("$content", content).replace("$time", create_time)
         contents.append(new)
