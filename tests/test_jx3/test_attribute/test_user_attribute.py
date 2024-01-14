@@ -3,7 +3,7 @@ from ... import *
 
 @pytest.mark.skipif('get_tuilan_articles' not in dir(), reason='无api可用')
 @pytest.mark.skipif(not Config.jx3api_globaltoken, reason="无apitoken时不测试")
-def test_user_property():
+def test_user_attribute():
     import src.plugins.jx3.user.v2
 
     def finish(msg: str):
@@ -21,7 +21,7 @@ def test_user_property():
 
 @pytest.mark.skipif('get_tuilan_articles' not in dir(), reason='无api可用')
 @pytest.mark.skipif(not Config.jx3api_globaltoken, reason="无apitoken时不测试")
-def test_user_property_v2():
+def test_user_attribute_v2():
     import src.plugins.jx3.user
 
     def finish(msg: str):

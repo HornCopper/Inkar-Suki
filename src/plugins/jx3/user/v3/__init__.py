@@ -35,3 +35,4 @@ async def jx3_attribute3(matcher: Matcher, state: T_State, event: GroupMessageEv
         'attributes': attributes,
     }
     return await jx3_cmd_attribute3.send(f'[测试]获取成功:data-length:{len(json.dumps(result))}')
+
