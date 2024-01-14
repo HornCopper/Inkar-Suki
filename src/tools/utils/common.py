@@ -39,7 +39,7 @@ def checknumber(value):
     return value.isdecimal()
 
 
-def convert_time(timestamp: int, format: str = '%Y年%m月%d日 %H:%M:%S'):
+def convert_time(timestamp: int, format: str = '%Y-%m-%d %H:%M:%S'):
     '''
     时间转换，自适应时间长度。
     '''

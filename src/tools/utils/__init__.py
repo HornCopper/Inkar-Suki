@@ -19,5 +19,6 @@ import copy
 import inspect
 import functools
 
-import locale
-locale.setlocale(locale.LC_CTYPE, 'zh_CN')
+# github action 不支持这么做
+# import locale
+# locale.setlocale(locale.LC_CTYPE, 'zh_CN')
