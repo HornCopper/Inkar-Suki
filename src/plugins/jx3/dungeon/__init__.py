@@ -65,8 +65,8 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     data = await generater(map, mode, boss)
     from nonebot.log import logger
     logger.info(data)
-    if isinstance(data, list):
-        return await drops.finish(ms.image(data))
+    if not isinstance(data, list):
+        return await drops.send(ms.image(data))
     return await drops.finish(data[0])
 
 item = on_command("jx3_itemdrop", aliases={"掉落"}, priority=5)
