@@ -41,3 +41,7 @@ def test_fetch_and_generate():
     task = func(args)
     asyncio.run(task)
     mc.check_counter()
+    # 重复进行一次判断缓存是否生效
+    task = func(args)
+    asyncio.run(task)
+    mc.check_counter()
