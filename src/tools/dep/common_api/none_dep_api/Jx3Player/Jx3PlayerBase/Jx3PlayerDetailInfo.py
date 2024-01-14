@@ -23,8 +23,8 @@ class Jx3PlayerDetailInfo:
         '''如果传入数值，则按uid，否则按id'''
         username_or_uid = str(username_or_uid)
         if len(username_or_uid) > 5 and checknumber(username_or_uid):
-            return cls.from_uid(server, username_or_uid, cache_length)
-        return cls.from_username(server, username_or_uid, cache_length)
+            return await cls.from_uid(server, username_or_uid, cache_length)
+        return await cls.from_username(server, username_or_uid, cache_length)
 
     @classmethod
     async def from_username(cls, server: str, username: str, cache_length: float = 86400) -> Jx3PlayerDetailInfo:
