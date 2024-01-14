@@ -46,9 +46,9 @@ async def jx3_attribute3(template: list[Any] = Depends(Jx3Arg.arg_factory)):
 
     arg_page = BaseJx3UserAttributePage.types[arg_page]
     attributes = data.get_attributes(page=arg_page)
-    
+
     if not attributes:
-        attributes = [current]
+        attributes = {f'{data.current_score}': current}
     attributes = [data.attributes[x].to_dict() for x in attributes]
 
     result = {
