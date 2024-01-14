@@ -68,7 +68,7 @@ async def get_monsters_map():
     font = bot_path.ASSETS + "/font/custom.ttf"
     saohua = await get_api(f"https://www.jx3api.com/data/saohua/random?token={token}")
     saohua = saohua["data"]["text"]
-    appinfo_time = time.strftime("%H:%M:%S", time.localtime(time.time()))
+    appinfo_time = DateTime().tostring(DateTime.Format.HMS)
     appinfo = f"自{start}起7天 · 当前时间：{appinfo_time}<br>{saohua}"
     html = html.replace("$content", "\n".join(content)).replace(
         "$customfont", font).replace("$appinfo", appinfo)
