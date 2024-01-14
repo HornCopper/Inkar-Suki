@@ -1,5 +1,6 @@
 from .... import *
 
+@pytest.mark.skipif('get_tuilan_articles' not in dir(), reason='无api可用')
 @pytest.mark.skipif(not Config.jx3api_globaltoken, reason="无token时不测试")
 def test_records():
     from src.plugins.jx3 import arena
