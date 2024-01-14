@@ -67,7 +67,7 @@ async def get_dilu_data():
     font = bot_path.ASSETS + "/font/custom.ttf"
     saohua = await get_api(f"https://www.jx3api.com/data/saohua/random?token={token}")
     saohua = saohua["data"]["text"]
-    appinfo_time = time.strftime("%H:%M:%S", time.localtime(time.time()))
+    appinfo_time = DateTime().tostring(DateTime.Format.HMS)
     html = html.replace("$customfont", font).replace("$tablecontent", content).replace(
         "$randomsaohua", saohua).replace("$appinfo", f"的卢统计 · {appinfo_time}")
     final_html = bot_path.CACHE + "/" + get_uuid() + ".html"
