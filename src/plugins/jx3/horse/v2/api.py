@@ -3,8 +3,8 @@ from ..api_lib import *
 _horse_db = f'{bot_path.common_data_full}pvx_glo_horse'
 data_horse_reporter: dict[str, HorseRecords] = filebase_database.Database(
     _horse_db,
-    serializer=lambda data: [data[x].to_dict() for x in data],
-    deserializer=lambda data: [HorseRecords.from_dict(data[x]) for x in data]
+    serializer=lambda data: [dict([x, data[x].to_dict()] for x in data)],
+    deserializer=lambda data: [dict([x, HorseRecords.from_dict(data[x]) for x in data])]
 ).value  # 记录历史
 
 
