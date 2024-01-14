@@ -3,7 +3,7 @@ from sgtpyutils.datetime import *
 
 class BaseUpdateAt:
     def __init__(self, data: dict = None) -> None:
-        if not data:
+        if data is None:
             return
         self.load_data(data)
 
