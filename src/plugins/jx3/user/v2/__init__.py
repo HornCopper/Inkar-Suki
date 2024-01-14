@@ -37,7 +37,7 @@ jx3_cmd_roleInfo = on_command(
 
 
 @jx3_cmd_roleInfo.handle()
-async def jx3_player(event: GroupMessageEvent, args: list[Any] = Depends(Jx3Arg.arg_factory)):
+async def jx3_roleInfo(event: GroupMessageEvent, args: list[Any] = Depends(Jx3Arg.arg_factory)):
     """
     获取玩家信息：
 
