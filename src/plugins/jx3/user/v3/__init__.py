@@ -28,11 +28,10 @@ async def jx3_attribute3(matcher: Matcher, state: T_State, event: GroupMessageEv
         return await jx3_cmd_attribute3.finish(f'未能找到来自[{arg_server}]的用户[{arg_user}]')
 
     user = data.user.to_dict()
-    attributes = data.attribute.to_dict()
+    attributes = [data.attributes[x].to_dict for x in data.attributes]
 
     result = {
         'user': user,
         'attributes': attributes,
     }
     return await jx3_cmd_attribute3.send(f'[测试]获取成功:data-length:{len(json.dumps(result))}')
-
