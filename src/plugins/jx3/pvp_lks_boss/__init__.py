@@ -10,11 +10,6 @@ async def _(event: GroupMessageEvent):
     bad = "https://jx3wbl.xoyocdn.com/img/icon-camp-bad.07567e9f.png"
     good = "https://jx3wbl.xoyocdn.com/img/icon-camp-good.0db444fe.png"
 
-    def convert_time(timestamp: int):
-        time_local = time.localtime(timestamp)
-        dt = time.strftime("%Y年%m月%d日 %H:%M:%S", time_local)
-        return dt
-
     def RestTime(GoalTime: int, StartTime: int = None):
         target_date = DateTime(GoalTime)
         delta = target_date - DateTime(StartTime)

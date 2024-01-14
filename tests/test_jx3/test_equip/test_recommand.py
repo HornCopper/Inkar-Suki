@@ -21,12 +21,12 @@ def recommend_menu_check():
     return state
 
 
-@pytest.mark.skipif(not Config.jx3_token, reason="无token时不测试")
+@pytest.mark.skipif('get_tuilan_articles' not in dir(), reason='无api可用')
 def test_recommend_menu():
     recommend_menu_check()
 
 
-@pytest.mark.skipif(True, reason="当前配置文件页面无法访问到")
+@pytest.mark.skipif('get_tuilan_articles' not in dir(), reason='无api可用')
 @pytest.mark.skipif(not Config.jx3_token, reason="无token时不测试")
 def test_recommend():
     mc = MessageCallback()
