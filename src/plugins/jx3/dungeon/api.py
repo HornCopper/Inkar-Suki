@@ -561,7 +561,7 @@ async def get_item_record(server: str, name: str):
         "order": "desc",
         "limit": "500",
         "offset": "0",
-        "_": int(time.time() * 1000),
+        "_": int(DateTime().timestamp() * 1e3),
         "filter": json.dumps(filter, ensure_ascii=False),
         "op": "{\"Zone\":\"LIKE\",\"Srv\":\"LIKE\"}"
     }
