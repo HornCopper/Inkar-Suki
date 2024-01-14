@@ -100,7 +100,7 @@ class Jx3Equip:
                 'current': data.get('SetListMap')
             },
             'color_index': int(data.get('Color') or 0),
-            'stone': data.get('FiveStone') or [],
+            'stones': data.get('FiveStone') or [],
             'level': data.get('Level'),
             'quality': data.get('Quality'),
             'quality_ext': data.get('IncreaseQuality'),
@@ -151,7 +151,7 @@ class Jx3Equip:
         self.set = data.get('set')
         '''套装列表'''
         self.color_index = data.get('color_index')
-        self.stones = [Jx3Stone(x) for x in data.get('stone')]
+        self.stones = [Jx3Stone(x) for x in data.get('stones')]
         '''五行石 [{Level,Name}]'''
         self.level = int(data.get('level'))
         '''游戏等级'''
@@ -207,7 +207,7 @@ class Jx3Equip:
             'score': self.score,
             'score_ext': self.score_ext,
             'belongs': self.belongs,
-            'wCommonEnchant': self.wCommonEnchant.id,
+            'wCommonEnchant': self.wCommonEnchant and self.wCommonEnchant.id,
             'wPermanentEnchant': self.wPermanentEnchant,
             'strengthLevel': self.strengthLevel,
             'maxStrengthLevel': self.maxStrengthLevel,
