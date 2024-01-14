@@ -58,11 +58,17 @@ class BaseJx3UserProperty(BaseUpdateAt):
         task = cls.factory._get_property_by_uid(uid, server)
         current_prop: BaseJx3UserProperty = ext.SyncRunner.as_sync_method(task)
 
-        # 记录更新时间
-        BaseJx3UserProperty.cache[key] = BaseUpdateAt(current_prop.__dict__)
         # 存入缓存
         result = cls.from_cache(uid, server)
-        result[str(current_prop.score)] = current_prop
+        if current_prop.score > 0:
+            # 只记录有装分的属性
+            result[str(current_prop.score)] = current_prop
+            # 记录更新时间
+            BaseJx3UserProperty.cache[key] = BaseUpdateAt(current_prop.__dict__)
+        elif len(list(result)) == 0:
+            # 从未有过任何装分
+            return None
+
         return result
 
     @classmethod

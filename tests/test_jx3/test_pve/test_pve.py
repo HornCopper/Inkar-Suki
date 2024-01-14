@@ -14,7 +14,7 @@ def test_recruit():
     state = dict()
     from src.plugins.jx3.bind import server_bind
 
-    event = SFGroupMessageEvent()
+    event = SFGroupMessageEvent(group_id=2114123)
     server_bind(event.group_id, '双梦')
     task = func(state, event, obMessage('x 武狱黑牢'))
     asyncio.run(task)
