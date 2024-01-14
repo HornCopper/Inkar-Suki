@@ -185,7 +185,7 @@ class BaseJx3UserAttribute(BaseUpdateAt):
             score = str(current_prop.score)
             result[score] = current_prop
             # 记录更新时间
-            BaseJx3UserAttribute.cache[key] = BaseJx3UserSummary(current_prop.__dict__)
+            BaseJx3UserAttribute.cache[key] = BaseJx3UserSummary(current_prop.to_dict())
             pass
         elif len(list(result)) == 0:
             # 从未有过任何装分
