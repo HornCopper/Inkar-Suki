@@ -34,5 +34,5 @@ class Qixue:
         return {
             'name': self.name,
             'icon': self.icon.filename,
-            'name': self.name,
+            'skill_id': self.skill_id,
         }
