@@ -41,7 +41,7 @@ async def jx3_next_ques(state: T_State, event: GroupMessageEvent, reference: Mes
     提交相关项查询
     """
     template = [Jx3Arg(Jx3ArgsType.default)]
-    [arg_reference] = get_args(reference, template, event)
+    [arg_reference] = argparser.get_args(reference, template, event)
     logger.debug(f"next_ques:{arg_reference}")
     if not arg_reference:
         return
