@@ -1,8 +1,4 @@
 from __future__ import annotations
-from src.tools.dep.data_server import *
-from src.tools.utils import *
-from src.tools.dep.jx3.Jx3ApiResponse import *
-from src.tools.config import Config
 from ..Jx3UserAttribute import *
 from .Jx3PlayerLoader import *
 
