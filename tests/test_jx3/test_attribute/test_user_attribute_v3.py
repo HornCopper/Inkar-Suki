@@ -1,6 +1,7 @@
 from ... import *
 
 
+@pytest.mark.skipif('get_tuilan_articles' not in dir(), reason='无api可用')
 @pytest.mark.skipif(not Config.jx3api_globaltoken, reason="无apitoken时不测试")
 def test_fetch():
     task = Jx3PlayerDetailInfo.from_username('破阵子', '烤冷面不加蛋')
