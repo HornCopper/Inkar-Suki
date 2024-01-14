@@ -86,6 +86,18 @@ class Jx3Equip:
 
     def __init__(self, data: dict) -> None:
         self.load_data(data)
+        self._enchant_suffix = None
+
+    @property
+    def enchant_suffix(self):
+        if self._enchant_suffix is not None:
+            return self._enchant_suffix
+        attrs = self.attributes
+        self._enchant_suffix = Jx3EquipAttributeType.无
+        for attr in attrs:
+            # if attr.suffix is not Jx3EquipAttributeType.无:
+            self._enchant_suffix |= attr.suffix
+        return self._enchant_suffix
 
     def map_data(self, data: dict):
         index = Jx3Equip.uc_pos.get(data.get('UcPos'))

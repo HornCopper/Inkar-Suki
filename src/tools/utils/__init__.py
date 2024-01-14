@@ -18,3 +18,7 @@ import copy
 
 import inspect
 import functools
+
+# github action 不支持这么做
+# import locale
+# locale.setlocale(locale.LC_CTYPE, 'zh_CN')

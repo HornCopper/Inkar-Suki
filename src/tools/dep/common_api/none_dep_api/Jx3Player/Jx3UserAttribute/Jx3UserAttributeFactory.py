@@ -11,7 +11,7 @@ from src.tools.dep.api.config import *
 class Jx3UserAttributeFactory(IJx3UserAttributeFactory):
     def __init__(self, data: dict) -> None:
         self.__data = data
-        self.data: BaseJx3UserProperty = None  # 初始化
+        self.data: BaseJx3UserAttribute = None  # 初始化
         self.load_data()
 
     @property
@@ -28,10 +28,10 @@ class Jx3UserAttributeFactory(IJx3UserAttributeFactory):
         raw_data = self.raw_data
         if not raw_data:
             return
-        self.data = BaseJx3UserProperty(raw_data)
+        self.data = BaseJx3UserAttribute(raw_data)
 
     @staticmethod
-    async def _get_property_by_uid(uid: str, server: str) -> BaseJx3UserProperty:
+    async def _get_attribute_by_uid(uid: str, server: str) -> BaseJx3UserAttribute:
         param = {
             "zone": Zone_mapping(server),
             "server": server,
@@ -58,6 +58,7 @@ class Jx3UserAttributeFactory(IJx3UserAttributeFactory):
             "User-Agent": "SeasunGame/193 CFNetwork/1240.0.4 Darwin/20.6.0",
             "x-sk": xsk
         }
+        logger.debug(f'load user attributes from tuilan:{server}@{uid}')
         data = await post_url(url="https://m.pvp.xoyo.com/mine/equip/get-role-equip", data=payload, headers=headers)
         response = Jx3UserAttributeFactory(json.loads(data)).data
         return response
