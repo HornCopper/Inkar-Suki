@@ -134,6 +134,7 @@ class BaseJx3UserAttribute(BaseUpdateAt):
         return result
 
     def __init__(self, data: dict = None) -> None:
+        super().__init__(data)
         self.load_data(data)
         pass
 
