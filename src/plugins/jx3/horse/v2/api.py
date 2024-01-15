@@ -35,7 +35,7 @@ async def get_horse_reporter_raw(server: str) -> list[HorseEventRecord]:
     prev_records = await load_horse_records(server)
 
     export_records = new_records.merge_records(prev_records)
-    data_horse_reporter[server] = export_records.to_dict()
+    data_horse_reporter[server] = export_records
     valids = export_records.valid_records
     return valids
 
