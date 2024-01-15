@@ -115,7 +115,7 @@ class MenuCallback:
 
     async def init_messages(self):
         '''收集各群的订阅结果'''
-        result = []
+        result = {}
         for botname in self.bots:
             bot = self.bots.get(botname)
             for group in await bot.call_api("get_group_list"):
@@ -132,9 +132,12 @@ class MenuCallback:
                         break
                     to_send_msg = callback_result
                     break
-
-                result.append([botname, group_id, to_send_msg])
-        self.result = result
+                key = f'{botname}@{group_id}'
+                if key in result:
+                    logger.warning(f'message duplicated in {key} -> {to_send_msg}')
+                result[key] = [botname, group_id, to_send_msg]
+                
+        self.result = [result[x] for x in result]
 
 
 load_subjects(__subjects, VALID_Subjects)
