@@ -114,18 +114,16 @@ async def on_jx3_event_recv(bot: Bot, event: RecvEvent):
         '818': lambda x: check_server(x) and x["name"] != "剑网3"  # 只看剑三的新闻
     }
 
-    for group_id in groups:
-        subscribe = GroupConfig(group_id).mgr_property('subscribe')
-        msg_type = message["type"]
-        if msg_type not in subscribe:
+    menu_sender = MenuCallback.from_general_name(message.get('type') or 'unknown')
+    result = menu_sender.result
+    for key in result:
+        (botname, group_id, to_send_msg, sub_from) = result[key]
+        if not to_send_msg:
             continue
-        group_config = GroupConfig(group_id)
+        group_config = GroupConfig(group_id, log=False)
         group_srv = group_config.mgr_property('server')
         callback = type_callback.get(message["type"])
         if callback and not callback(message):
             continue
-
-        try:
-            await bot.call_api("send_group_msg", group_id=group_id, message=message["msg"])
-        except Exception as ex:
-            logger.error(f"向群({group_id})推送失败，可能是因为风控、禁言或者未加入该群。ex={ex}")
+        to_send_msg = message["msg"]
+        await menu_sender.send_msg_single((botname, group_id, to_send_msg, sub_from))
