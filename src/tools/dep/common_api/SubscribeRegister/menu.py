@@ -116,27 +116,36 @@ class MenuCallback:
     async def init_messages(self):
         '''收集各群的订阅结果'''
         result = {}
+
+        tasks = {}
         for botname in self.bots:
             bot = self.bots.get(botname)
-            for group in await bot.call_api("get_group_list"):
-                group_id = group.get("group_id")
-                g_subscribe = GroupConfig(group_id, log=False).mgr_property('subscribe')
-                u_subscribed_level = MenuCallback.check_subscribed(self.sub, g_subscribe)
-                to_send_msg = u_subscribed_level >= self.cron.level
+            group_ids = [str(x.get("group_id")) for x in await bot.call_api("get_group_list")]
+            group_ids = extensions.distinct(group_ids)
+            for group in tasks:
+                tasks[group] = botname
 
-                while to_send_msg:
-                    callback_result = await self.callback(group_id, self.sub, self.cron)
-                    # 如果有返回值则表示需要发送
-                    if not callback_result or not isinstance(callback_result, str):
-                        to_send_msg = None
-                        break
-                    to_send_msg = callback_result
+        for group_id in tasks:
+            botname = tasks[group_id]
+            key = f'{botname}@{group_id}'
+            if key in result:
+                logger.warning(f'subscribe:message-to-send already in {key}')
+
+            g_subscribe = GroupConfig(group_id, log=False).mgr_property('subscribe')
+            u_subscribed_level = MenuCallback.check_subscribed(self.sub, g_subscribe)
+            to_send_msg = u_subscribed_level >= self.cron.level
+
+            while to_send_msg:
+                callback_result = await self.callback(group_id, self.sub, self.cron)
+                # 如果有返回值则表示需要发送
+                if not callback_result or not isinstance(callback_result, str):
+                    to_send_msg = None
                     break
-                key = f'{botname}@{group_id}'
-                if key in result:
-                    logger.warning(f'message duplicated in {key} -> {to_send_msg}')
-                result[key] = [botname, group_id, to_send_msg]
-                
+                to_send_msg = callback_result
+                break
+
+            result[key] = [botname, group_id, to_send_msg]
+
         self.result = [result[x] for x in result]
 
 
