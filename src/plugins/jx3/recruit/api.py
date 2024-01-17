@@ -52,6 +52,7 @@ async def recruit_v2(server: str, actvt: str = ""):
     font = bot_path.ASSETS + "/font/custom.ttf"
     contents = []
     items = data.get('data') or []
+    items = items[0:50] # 限制最多50个
     for (index,detail) in enumerate(items):
         num = str(index + 1)
         name = detail["activity"]
