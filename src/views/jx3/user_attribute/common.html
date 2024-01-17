@@ -537,11 +537,12 @@
       methods.get_kunfu_icon = (kunfu) => `https://img.jx3box.com/image/xf/${kunfu.gameid}.png`
       methods.get_stone_icon = (level) => `../assets/image/stone/${level}.png`
       methods.getEquipFlag = (equip) => {
-        const { maxStrengthLevel } = equip
-        if (maxStrengthLevel < 6) return '精简'
-        if (maxStrengthLevel > 6) return '橙武'
-        return ''
-      }
+          const { maxStrengthLevel, attributes } = equip
+          if (maxStrengthLevel > 6) return '橙武'
+          if (attributes.find(x => x.name.indexOf('SkillEvent') > -1)) return '特效'
+          if (maxStrengthLevel < 6) return '精简'
+          return ''
+        }
       methods.getEquipFrame = equip => {
         const { maxStrengthLevel, strengthLevel } = equip
         const img = computes.img_res.value
