@@ -44,7 +44,7 @@ class Jx3PlayerDetailInfo:
     async def from_username(cls, server: str, username: str, cache_length: float = 86400) -> Jx3PlayerDetailInfo:
         '''通过服务器和id从缓存或远程加载'''
         user = Jx3PlayerInfoWithInit.from_id(server, username, cache_length=cache_length)
-        return await cls.from_uid(user.serverName, user.roleId)
+        return await cls.from_uid(user.serverName, user.roleId, cache_length=cache_length)
 
     @classmethod
     async def from_uid(cls, server: str, uid: str, cache_length: float = 86400) -> Jx3PlayerDetailInfo:

@@ -29,3 +29,6 @@ class Kunfu(Aliasable):
     @property
     def icon(self):
         return f"https://img.jx3box.com/image/xf/{self.gameid}.png"
+
+    def to_dict(self) -> dict:
+        return self.__dict__

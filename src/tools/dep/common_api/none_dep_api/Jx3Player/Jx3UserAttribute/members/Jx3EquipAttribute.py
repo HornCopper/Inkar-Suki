@@ -11,6 +11,14 @@ class Jx3EquipAttributeType(enum.IntFlag):
 
 
 class Jx3EquipAttribute:
+    primary_attributes = {
+        '会心': '会',
+        '无双': '无',
+        '破防': '破',
+        '破招': '破',
+        '加速': '速',
+    }
+
     def __init__(self, data: dict) -> None:
         if data is None:
             data = {}
@@ -43,7 +51,15 @@ class Jx3EquipAttribute:
         '''属性最小增加数值'''
         self.value_min = int(data.get('value_min'))
         '''属性最大增加数值'''
-        
+
+    @property
+    def primary_attribute(self) -> str:
+        desc = self.desc
+        for x in Jx3EquipAttribute.primary_attributes:
+            if x in desc:
+                return Jx3EquipAttribute.primary_attributes[x]
+        return '' # 其他属性不显示
+
     @property
     def suffix(self) -> Jx3EquipAttributeType:
         result = Jx3EquipAttributeType.无

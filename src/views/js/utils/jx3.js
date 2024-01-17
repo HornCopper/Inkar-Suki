@@ -40,3 +40,7 @@ function convertPop(value) {
   const r = 1 + 4 * (1 - Math.pow(1.01, -value))
   return Number(r).toFixed(1)
 }
+
+function getLevelColor(index) {
+  return ['rgb(220,220,220)', 'rgb(190,190,190)', 'rgb(0, 210, 75)', 'rgb(0, 126, 255)', 'rgb(254, 45, 254)', 'rgb(255, 165, 0)', '#ff0000'][index]
+}
