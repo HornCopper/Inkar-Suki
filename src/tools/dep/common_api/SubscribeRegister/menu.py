@@ -89,10 +89,11 @@ class MenuCallback:
                 notify=log_name
             )
         )
-        target.result = MenuCallback.get_all_group_of_subscribe(
+        target.result = ext.SyncRunner.as_sync_method(MenuCallback.get_all_group_of_subscribe(
             subject=subject_name,
             cron_level=cron_level,  # 通用事件默认级别为0
-        )
+        ))
+        return target
 
     def __init__(self, sub: SubscribeSubject, cron: SubjectCron) -> None:
         self.result = []
@@ -132,7 +133,7 @@ class MenuCallback:
     async def send_msg_single(self, item):
         '''发送单条结果'''
         botname, group_id, to_send_msg, sub_from = item
-        sub_name = sub_from.name
+        sub_name = sub_from.name if hasattr(sub_from, 'name') else sub_from
         to_send_msg = f'{to_send_msg}\n该消息来自[{sub_name}]订阅，如需退订回复 `退订 {sub_name}`'
         try:
             await self.bots.get(botname).call_api("send_group_msg", group_id=group_id, message=to_send_msg)
@@ -146,6 +147,7 @@ class MenuCallback:
             dict[str,tuple[str,str,str]] key:(机器人id 群号 是否应发 订阅来源)
         '''
         bots = get_driver().bots
+        logger.debug(f'current online bots:{len(list(bots))}')
         result = {}
 
         tasks = {}
@@ -153,7 +155,7 @@ class MenuCallback:
             bot = bots.get(botname)
             group_ids = [str(x.get("group_id")) for x in await bot.call_api("get_group_list")]
             group_ids = extensions.distinct(group_ids)
-            for group in tasks:
+            for group in group_ids:
                 tasks[group] = botname
 
         for group_id in tasks:
@@ -170,7 +172,8 @@ class MenuCallback:
 
     async def init_messages(self):
         '''收集各群的订阅结果'''
-        result = MenuCallback.get_all_group_of_subscribe(self.sub, self.cron.level)
+        result = await MenuCallback.get_all_group_of_subscribe(self.sub, self.cron.level)
+
         for key in result:
             botname, group_id, to_send_msg, sub_from = result[key]
             while to_send_msg:
