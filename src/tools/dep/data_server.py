@@ -27,7 +27,7 @@ for x in server_raw_map:
 
 
 def Zone_mapping(server):
-    if server == {"绝代天骄"}:
+    if server in {"绝代天骄"}:
         return "电信八区"
     if server in {"斗转星移", "唯我独尊", "乾坤一掷", "横刀断浪", "剑胆琴心", "幽月轮", "梦江南"}:
         return "电信五区"
