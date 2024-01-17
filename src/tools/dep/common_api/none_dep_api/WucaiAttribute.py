@@ -1,6 +1,9 @@
 from __future__ import annotations
-from src.tools.dep import *
 import copy
+from typing import List, Tuple
+import re
+from .HtmlTagHandler import *
+
 
 class WucaiAttribute:
     DICT_filter = [

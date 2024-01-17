@@ -54,16 +54,16 @@ jeat = Jx3EquipAttributeType
 
 
 class BaseJx3UserAttributePage:
-    types = [
-        AttributeType.Unknown,
-        AttributeType.PVP | AttributeType.DPS,
-        AttributeType.PVE | AttributeType.DPS,
-        AttributeType.PVP | AttributeType.HPS,
-        AttributeType.PVE | AttributeType.HPS,
-        AttributeType.PVP | AttributeType.TANK,
-        AttributeType.PVE | AttributeType.TANK,
-        AttributeType.PVX,
-        AttributeType.FLY,
+    types: list[tuple[AttributeType, str]] = [
+        (AttributeType.Unknown, '全部'),
+        (AttributeType.PVP | AttributeType.DPS, 'PVP-DPS'),
+        (AttributeType.PVE | AttributeType.DPS, 'PVE-DPS'),
+        (AttributeType.PVP | AttributeType.HPS, 'PVP-HPS'),
+        (AttributeType.PVE | AttributeType.HPS, 'PVE-HPS'),
+        (AttributeType.PVP | AttributeType.TANK, 'PVE-TANK'),
+        (AttributeType.PVE | AttributeType.TANK, 'PVE-TANK'),
+        (AttributeType.PVX, '寻宝娱乐'),
+        (AttributeType.FLY, '起飞'),
     ]
     types_mapper = {
         'dps': 2,
@@ -141,7 +141,6 @@ class BaseJx3UserAttribute(BaseUpdateAt):
 
     def __init__(self, data: dict = None) -> None:
         super().__init__(data)
-        self.load_data(data)
         pass
 
     @staticmethod
@@ -190,7 +189,7 @@ class BaseJx3UserAttribute(BaseUpdateAt):
         if current_prop.score > 0:
             # 只记录有装分的属性
             score = str(current_prop.score)
-            result[score] = current_prop
+            current_prop.record_new_data(result, score)
             # 记录更新时间
             BaseJx3UserAttribute.cache[key] = BaseJx3UserSummary(current_prop.to_dict())
             pass
@@ -215,6 +214,26 @@ class BaseJx3UserAttribute(BaseUpdateAt):
         db = cls.get_db_from_cache(uid, server)
         return db.value
 
+    def record_new_data(self, result: dict[str, BaseJx3UserAttribute], score: str):
+        '''检查数据完整性并写入'''
+        prev = result.get(score)
+        if prev is None:
+            result[score] = self
+            return  # 首次记录则直接记录
+
+        if self.person.qixue:
+            result[score] = self
+            return  # 数据有效则直接记录
+
+        prevs = sorted(list(result), key=lambda x: int(x), reverse=True)
+        prevs = list(prevs)
+        prevs = filter(lambda x: x.person.qixue)  # 过滤有效奇穴的
+        prevs = list(prevs)
+        prev = result.get(prevs[0]) if prevs else None
+
+        self.person.qixue = prev.person.qixue  # 使用之前的记录
+        result[score] = self
+
     def to_dict(self) -> dict:
         result = super().to_dict()
         result.update({
@@ -225,5 +244,13 @@ class BaseJx3UserAttribute(BaseUpdateAt):
             'panel': [x.__dict__ for x in self.panel],
             'score': self.score,
             'page': self.page.to_dict(),
+        })
+        return result
+
+    def to_view(self) -> dict:
+        result = self.to_dict()
+        result.update({
+            'kungfu': self.kungfu.to_dict(),
+            'equips': [x.to_view() for x in self.equips],
         })
         return result

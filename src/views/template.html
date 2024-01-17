@@ -11,6 +11,7 @@
   <script src="../../src/views/js/libs/unpkg.com_element-plus@2.3.7_dist_index.full.js"></script>
   <script src="../../src/views/js/libs/unpkg.com_element-plus@2.3.6_dist_locale_zh-cn.js"></script>
   <script src="../../src/views/js/libs/cdn.staticfile.org_echarts_5.4.2_echarts.min.js"></script>
+  <script src="../../src/views/js/libs/unpkg.com.element-plus.icons-vue@2.3.1_dist_index.iife.min.js"></script>
   <script src="../../src/views/js/utils/index.js"></script>
   <script src="../../src/views/js/utils/jx3.js"></script>
   <script src="../../src/views/js/utils/dashboard.js"></script>
@@ -49,6 +50,10 @@
       return result
     }
     const app = Vue.createApp(component)
+    for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
+      app.component(key, component) // 注册el-icon
+    }
+
     app.use(ElementPlus)
     app.mount('#app')
   </script>

@@ -35,8 +35,8 @@ def test_fetch_and_generate():
     src.plugins.jx3.user.v3.jx3_cmd_attribute3 = mc
 
     event = SFGroupMessageEvent(group_id=1120115)
-    event.message = obMessage("属性 唯满侠 步龄")
-    # event.message = obMessage("属性 唯满侠 无辜小狍")
+    # event.message = obMessage("属性 纵月 藏忧 2")
+    event.message = obMessage("属性 唯满侠 包某 2")
     args = Jx3Arg.arg_factory(src.plugins.jx3.jx3_cmd_attribute3, event)
     task = func(args)
     asyncio.run(task)

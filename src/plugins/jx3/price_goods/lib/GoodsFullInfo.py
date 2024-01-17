@@ -1,6 +1,6 @@
 from .GoodsBase import *
 from .GoodsPrice import *
-from .WucaiAttribute import *
+from src.tools.dep.common_api.none_dep_api import *
 
 
 class GoodsInfoFull(GoodsInfo):
