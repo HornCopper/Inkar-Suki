@@ -11,6 +11,7 @@ class Jx3PlayerDetailInfo:
         self.uid = uid
         self.server = server
         self.__user = user
+        self.err_msg = None
 
     def get_attributes(self, date: DateTime = None, page: AttributeType = None) -> dict[str, Jx3UserAttributeInfo]:
         '''筛选指定的属性'''
@@ -44,6 +45,10 @@ class Jx3PlayerDetailInfo:
     async def from_username(cls, server: str, username: str, cache_length: float = 86400) -> Jx3PlayerDetailInfo:
         '''通过服务器和id从缓存或远程加载'''
         user = Jx3PlayerInfoWithInit.from_id(server, username, cache_length=cache_length)
+        if not user.roleId:
+            tar = Jx3PlayerDetailInfo(None, server, None, {}, user)
+            tar.err_msg = '玩家不存在'
+            return tar
         return await cls.from_uid(user.serverName, user.roleId, cache_length=cache_length)
 
     @classmethod

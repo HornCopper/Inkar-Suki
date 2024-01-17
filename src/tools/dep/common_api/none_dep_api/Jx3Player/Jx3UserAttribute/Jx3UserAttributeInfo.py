@@ -175,6 +175,8 @@ class BaseJx3UserAttribute(BaseUpdateAt):
         @return:
             str:当前装分
             dict[装分:属性值]'''
+        if not uid:
+            return None, None
         key = f'{server}@{uid}'
         target = BaseJx3UserAttribute.cache.get(key)
         if target and not target.is_outdated(cache_length):
