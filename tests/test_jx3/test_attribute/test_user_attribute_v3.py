@@ -29,6 +29,12 @@ def test_fetch_by_uid():
 
 
 @pytest.mark.skipif('get_tuilan_articles' not in dir(), reason='无api可用')
+def test_user_not_exist():
+    task = Jx3PlayerDetailInfo.from_username('唯满侠', '包某人')
+    data = asyncio.run(task)
+    assert data.uid is None and data.err_msg == '玩家不存在'  # 不存在或无效的
+
+@pytest.mark.skipif('get_tuilan_articles' not in dir(), reason='无api可用')
 def test_fetch_and_generate():
     import src.plugins.jx3
     func = src.plugins.jx3.jx3_attribute3

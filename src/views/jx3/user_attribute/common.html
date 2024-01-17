@@ -204,13 +204,23 @@
                         </div>
                         <div class="equip-footer-container">
                           <div class="equip-enchant-container">
+                            <span class="equip-enchant">
+                              <div v-if="equip.effectColorStone && equip.wPermanentEnchant" style="font-size:0.7rem;">
+                                <div style="position: absolute;transform: translateY(-5px);">
+                                  <div>{{ equip.wPermanentEnchant }}</div>
+                                  <div>{{ equip.effectColorStone.Name }}</div>
+                                </div>
+                              </div>
+                            </span>
+
                             <span v-if="equip.wPermanentEnchant" class="equip-enchant">
-                              <span>{{ equip.wPermanentEnchant }}</span>
+                              <span v-if="!equip.effectColorStone">{{ equip.wPermanentEnchant }}</span>
                               <img class="equip-enchant-img" :src="img_res.EnchantSmall" />
                             </span>
-                            <img v-if="equip.wCommonEnchant" class="equip-enchant-img" :src="img_res.EnchantBig" />
-                            <span v-else-if="equip.effectColorStone" class="equip-enchant">
-                              <span>{{ equip.effectColorStone.Name }}</span>
+                            <span v-if="equip.wCommonEnchant" class="equip-enchant">
+                              <img class="equip-enchant-img" :src="img_res.EnchantBig" />
+                            </span>
+                            <span v-if="equip.effectColorStone" class="equip-enchant">
                               <img class="equip-enchant-img" :src="equip.effectColorStone.Icon.FileName" />
                             </span>
                           </div>
