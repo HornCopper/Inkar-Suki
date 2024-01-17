@@ -36,9 +36,10 @@ async def jx3_attribute3(template: list[Any] = Depends(Jx3Arg.arg_factory)):
 
     # 仅在30秒内缓存
     data = await Jx3PlayerDetailInfo.from_auto(arg_server, arg_user, cache_length=30)
-    if data is None:
-        return await jx3_cmd_attribute3.finish(f'未能找到来自[{arg_server}]的用户[{arg_user}]')
-
+    err_msg = '角色信息获取失败' if data is None else data.err_msg
+    if err_msg:
+        err_msg = f',原因:{err_msg}'
+        return await jx3_cmd_attribute3.finish(f'未能找到来自[{arg_server}]的用户[{arg_user}]{err_msg}')
     user = data.user.to_dict()
     current = data.attributes[data.current_score]
     if arg_page == -1:
