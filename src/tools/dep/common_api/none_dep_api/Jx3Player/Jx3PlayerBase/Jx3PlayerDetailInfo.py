@@ -44,7 +44,7 @@ class Jx3PlayerDetailInfo:
     @classmethod
     async def from_username(cls, server: str, username: str, cache_length: float = 86400) -> Jx3PlayerDetailInfo:
         '''通过服务器和id从缓存或远程加载'''
-        user = Jx3PlayerInfoWithInit.from_id(server, username, cache_length=cache_length)
+        user = Jx3PlayerInfoWithInit.from_id(server, username, cache_length=7*86400)  # 一周内不更新
         if not user.roleId:
             tar = Jx3PlayerDetailInfo(None, server, None, {}, user)
             tar.err_msg = '玩家不存在'

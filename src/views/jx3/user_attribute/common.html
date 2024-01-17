@@ -224,8 +224,9 @@
                               <img class="equip-enchant-img" :src="equip.effectColorStone.Icon.FileName" />
                             </span>
                           </div>
-                          <div v-if="equip.way_to_fetch && equip.way_to_fetch.length" class="equip-way-to-fetch">
-                            {{ equip.way_to_fetch[0] }}</div>
+                          <div class="equip-way-to-fetch">
+                            {{ equip.way_to_fetch && equip.way_to_fetch[0] || '可能是过于珍贵，目前未知来源' }}
+                          </div>
                         </div>
                       </div>
                     </el-col>
