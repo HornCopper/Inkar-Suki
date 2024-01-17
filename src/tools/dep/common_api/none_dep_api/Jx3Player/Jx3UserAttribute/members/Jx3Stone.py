@@ -2,6 +2,21 @@ from .Jx3Icon import *
 
 
 class Jx3Stone:
+    slot = [
+        2, # 头
+        2, # 衣服
+        2, # 腰带
+        2, # 手
+        2, # 裤
+        2, # 鞋
+        1, # 链 
+        1, # 腰坠
+        0, # 戒指1
+        0, # 戒指2
+        1, # 暗器
+        3, # 武器1
+        3, # 武器2
+    ]
     def __init__(self, data: dict) -> None:
         if data is None:
             data = {}
