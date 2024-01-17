@@ -91,15 +91,15 @@
               <el-row>
                 <span class="sub-title">帮会</span>
                 <div class="sub-content">{{ user.tongName }}({{ user.personId }})</div>
-                <div class="school-icon-container">
-                  <img :src="user_description.school_icon" class="school-icon"
-                    :style="{filter:`drop-shadow(#fff -80px 0 0) drop-shadow(${kunfu.color} -80px 0px 6px) drop-shadow(${kunfu.color} -80px 0px 6px)  drop-shadow(${kunfu.color} -80px 0px 4px)  drop-shadow(${kunfu.color} -80px 0px 2px)`}" />
-                </div>
               </el-row>
               <el-row>
                 <span class="sub-title">角色</span>
                 <div class="sub-content">{{ user.bodyName }} · {{ user.forceName }}</div>
               </el-row>
+              <div class="school-icon-container">
+                <img :src="user_description.school_icon" class="school-icon"
+                  :style="{filter:`drop-shadow(#fff -120px 20px 0) drop-shadow(${kunfu.color} 0px 0px 2px) drop-shadow(${kunfu.color} 0px 0px 6px) drop-shadow(${kunfu.color} 0px 0px 12px)`}" />
+              </div>
             </el-col>
           </el-row>
         </el-collapse-item>
@@ -337,12 +337,13 @@
   }
 
   .school-icon-container {
-    width: 5rem;
-    height: 5rem;
+    width: 8rem;
+    height: 8rem;
     position: absolute;
-    right: 0;
+    right: 50px;
+    top: 30px;
     overflow: hidden;
-    filter: brightness(1.5);
+    filter: brightness(1.2);
   }
 
   .school-icon {
