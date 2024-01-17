@@ -56,5 +56,5 @@ def getGroupServer(group_id: str):
     '''
     if not group_id:
         return None
-    data = GroupConfig(group_id)
+    data = GroupConfig(group_id, log=False)
     return data.mgr_property('server')
