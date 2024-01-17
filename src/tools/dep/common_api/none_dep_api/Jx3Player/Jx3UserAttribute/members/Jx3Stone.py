@@ -39,6 +39,6 @@ class Jx3Stone:
         result = {
             'name': self.name,
             'level': self.level,
-            'icon': self.icon.filename,
+            'icon': self.icon.filename if self.icon else None,
         }
         return result
