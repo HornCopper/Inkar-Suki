@@ -1,3 +1,4 @@
+from src.tools.dep.common_api.none_dep_api.WucaiAttribute import *
 from .Jx3Icon import *
 from .Jx3Stone import *
 from .Jx3EquipAttribute import *
@@ -131,6 +132,7 @@ class Jx3Equip:
             'wPermanentEnchant': t2.get('Name'),
             'strengthLevel': data.get('StrengthLevel'),
             'maxStrengthLevel': data.get('MaxStrengthLevel'),
+            'effectColorStone': data.get('effectColorStone'),  # 五彩石
         }
 
         # '商店：陈只鱼 — 浪客行·装备'
@@ -194,6 +196,8 @@ class Jx3Equip:
         ''' # 大附魔 {Desc:'',Id:'11111'}'''
         self.wPermanentEnchant = data.get('wPermanentEnchant')
         ''' 小附魔 {Attributes,Name} '''
+        self.effectColorStone = data.get('effectColorStone')
+        ''' 五彩石 {Name,Level,Icon}'''
         self.strengthLevel = int(data.get('strengthLevel'))
         '''强化等级'''
         self.maxStrengthLevel = int(data.get('maxStrengthLevel'))
@@ -202,6 +206,11 @@ class Jx3Equip:
         self.way_to_fetch: list[str] = data.get('way_to_fetch')
         '''获得途径'''
         pass
+
+    @property
+    def primary_attribute(self) -> str:
+        primary_attributes = [x.primary_attribute for x in self.attributes]
+        return str.join('', primary_attributes)
 
     def to_dict(self):
         return {
@@ -221,8 +230,16 @@ class Jx3Equip:
             'belongs': self.belongs,
             'wCommonEnchant': self.wCommonEnchant and self.wCommonEnchant.id,
             'wPermanentEnchant': self.wPermanentEnchant,
+            'effectColorStone': self.effectColorStone,
             'strengthLevel': self.strengthLevel,
             'maxStrengthLevel': self.maxStrengthLevel,
             'attributes': [x.to_dict() for x in self.attributes],
             'way_to_fetch': self.way_to_fetch,
         }
+
+    def to_view(self):
+        result = self.to_dict()
+        result.update({
+            'primary_attribute': self.primary_attribute,
+        })
+        return result
