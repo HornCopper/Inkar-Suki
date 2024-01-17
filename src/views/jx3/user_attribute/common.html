@@ -1,0 +1,597 @@
+<template>
+  <div :style="{'text-align': 'center','font-size':font_size,width:'1000px'}">
+    <el-card shadow="never">
+      <div :style="{'font-size':'2rem','font-weight':600,color:'#ffffff'}" class="header-title">
+        <span>属性 · </span>
+        <span :style="{'color':user_description.kunfu.color}">
+          <span>{{user_description.title }}</span>
+          <span> · {{ kunfu.name }}({{ kunfu.belong }})</span>
+        </span>
+        <img style="width:3rem;position:absolute;" :src="kunfu_icon_img" />
+      </div>
+      <el-row>
+        <el-card style="width: 100%;margin: 0.2rem;">
+          <el-row>
+            <el-col :span="12">
+              <el-row>
+                <el-col class="primary-icon" :span="4">
+                  <div>命令</div>
+                  <div class="ver-line"></div>
+                </el-col>
+                <el-col :span="20">
+                  <div class="primary-title">
+                    <div>
+                      <span style="color:#cccccc">查看属性：</span>
+                      <span>属性 [服务器] [角色] [装备页]</span>
+                    </div>
+                  </div>
+                </el-col>
+              </el-row>
+            </el-col>
+            <el-col :span="12">
+              <el-row>
+                <el-col class="primary-icon" :span="4">
+                  <div style="color: #cccccc;">说明</div>
+                  <div class="ver-line"></div>
+                </el-col>
+                <el-col :span="20">
+                  <div class="primary-content">
+                    <div>1.默认缓存1天内的角色信息</div>
+                  </div>
+                  <div class="primary-content">
+                    <div>2.根据角色装备属性分类</div>
+                  </div>
+                  <div class="primary-content">
+                    <div>3.默认展示当前下线前最新，更多见【帮助 属性】</div>
+                  </div>
+                </el-col>
+              </el-row>
+            </el-col>
+          </el-row>
+        </el-card>
+      </el-row>
+      <el-collapse v-model="expanded_items">
+        <el-collapse-item name="1">
+          <template #title>
+            <div class="global-title">
+              <span>基本信息</span>
+              <span>（roleId:{{ user.roleId }}）</span>
+            </div>
+          </template>
+          <el-row>
+            <el-col :span="8" class="global-header-container">
+              <el-row>
+                <el-col :span="8">
+                  <img :src="user.personAvatar || '../views/common/img/default-user-icon.png'" class="user-avatar" />
+                </el-col>
+                <el-col :span="16" style="text-align: left;">
+                  <el-row>
+                    <span class="sub-title">昵称</span>
+                    <span :style="{'font-size':font_size,color:user_description.kunfu.color}">
+                      <span>{{ user.personName || '[不让看推栏]' }}</span>
+                    </span>
+                  </el-row>
+                  <el-row>
+                    <span class="sub-title">热度</span>
+                    <el-rate :model-value="convertPop(1)" disabled show-score text-color="#cccccc" />
+                  </el-row>
+                  <el-row>
+                    <span class="sub-title">标签</span>
+                    <el-tag>...这里显示标记</el-tag>
+                  </el-row>
+                </el-col>
+              </el-row>
+            </el-col>
+            <el-col :span="14" class="global-header-container">
+              <el-row>
+                <span class="sub-title">归属</span>
+                <div class="sub-content">{{ user.zoneName }} · {{ user.serverName }} · {{ user.campName }}</div>
+                <div style="margin-left:auto">更新于{{ formatTime(user.updateAt*1e3) }}</div>
+              </el-row>
+              <el-row>
+                <span class="sub-title">帮会</span>
+                <div class="sub-content">{{ user.tongName }}({{ user.personId }})</div>
+                <div class="school-icon-container">
+                  <img :src="user_description.school_icon" class="school-icon"
+                    :style="{filter:`drop-shadow(#fff -80px 0 0) drop-shadow(${kunfu.color} -80px 0px 6px) drop-shadow(${kunfu.color} -80px 0px 6px)  drop-shadow(${kunfu.color} -80px 0px 4px)  drop-shadow(${kunfu.color} -80px 0px 2px)`}" />
+                </div>
+              </el-row>
+              <el-row>
+                <span class="sub-title">角色</span>
+                <div class="sub-content">{{ user.bodyName }} · {{ user.forceName }}</div>
+              </el-row>
+            </el-col>
+          </el-row>
+        </el-collapse-item>
+        <el-collapse-item name="2">
+          <template #title>
+            <div class="global-title" style="display:flex;width:100%">
+              <div class="sub-content">{{ formatTime(attr.updateAt * 1e3) }}</div>
+              <div class="sub-content">[{{ currentFocus }}]</div>
+              <div style="display:flex;margin-left:auto">
+                <img style="width:2rem;height:2rem" :src="get_kunfu_icon(attr.kungfu)" />
+                <div class="sub-content">{{ attr.kungfu.name }}</div>
+              </div>
+            </div>
+          </template>
+          <el-tabs v-model="currentFocus" tab-position="bottom">
+            <el-tab-pane v-for="(type,index) in attributeTypes" :key="index" :name="type[2]">
+              <template #label>
+                <span>{{ index }}.{{ type[2] }}</span>
+              </template>
+              <div v-if="currentFocus === type[2]">
+                <el-card class="item-container">
+                  <el-row :gutter="20">
+                    <el-col :span="7" style="display:flex;flex-direction: column;">
+                      <div style="font-size:3rem;width:100%;text-align:center;line-height: 3rem;">{{ attr.score }}
+                      </div>
+                      <el-row v-if="false">
+                        <span class="sub-title">装备</span>
+                        <div class="sub-content">
+                          <span>{{ attr.page.attr_type }}</span>
+                        </div>
+                      </el-row>
+                      <el-row v-if="attr.page.equip_unmatch.length">
+                        <span class="sub-title">异常</span>
+                        <div class="sub-content">
+                          <span>{{ attr.page.equip_unmatch.length }}个装备有问题</span>
+                        </div>
+                        <el-space wrap>
+                          <div v-for="(ue,ueindex) in attr.page.equip_unmatch" :key="ueindex">
+                            <img :src="equip_dict[ue].icon" class="equip-mini-img" />
+                          </div>
+                        </el-space>
+                      </el-row>
+                      <div style="margin-top:auto">
+                        <el-divider style="margin:10px 2px 15px 2px">面板</el-divider>
+                        <div class="command-mini-card-container">
+                          <div v-for="(pan,panindex) in attr.panel" :key="panindex" class="command-mini-single-card">
+                            <div class="command-mini-card-title">{{ pan.name }}</div>
+                            <div>
+                              <span>{{ pan.value }}</span>
+                              <span v-if="pan.percent">%</span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div>
+                        <div>
+                          <el-divider style="margin:10px 2px 15px 2px">奇穴</el-divider>
+                          <el-space wrap style="text-align:center;display: flex;justify-content: center;">
+                            <div v-for="(i,qindex) in attr.person.qixue" :key="qindex" class="qixue-container">
+                              <img :src="i.icon" class="qixue-img" />
+                              <div class="qixue-text">{{ i.name }}</div>
+                            </div>
+                          </el-space>
+                        </div>
+                      </div>
+                    </el-col>
+                    <el-col :span="17">
+                      <div v-for="(equip,eqindex) in attr.equips.sort((a,b)=>a.index-b.index)" :key="eqindex"
+                        class="equip-container">
+                        <div class="equip-flag-container">
+                          <div v-if="getEquipFlag(equip)">
+                            <span class="equip-flag-text">
+                              <spam>{{ getEquipFlag(equip) }}</spam>
+                            </span>
+                            <img :src="img_res.FlagEmpty" class="equip-flag-img" />
+                          </div>
+                        </div>
+                        <img :src="getEquipFrame(equip)" class="equip-frame" />
+                        <img :src="equip.icon" />
+                        <div class="equip-description-container">
+                          <div class="equip-title">
+                            <span class="equip-title-quality">{{ equip.primary_attribute }}</span>
+                            <span :style="{color:getLevelColor(equip.color_index)}">{{ equip.name }}</span>
+                            <span class="equip-title-quality">{{ equip.quality }}</span>
+                            <span v-if="equip.quality_ext && false" class="equip-title-quality-ext">
+                              <span>+{{ equip.quality_ext }}</span>
+                            </span>
+                          </div>
+                          <div class="equip-enhanced">
+                            <el-icon v-for="start_active in equip.strengthLevel" :key="start_active" :size="25"
+                              class="icon-start-active">
+                              <star-filled class="icon-sized" />
+                            </el-icon>
+                            <el-icon v-for="start_inactive in (equip.maxStrengthLevel - equip.strengthLevel)"
+                              :key="start_inactive" :size="25" class="icon-start-inactive">
+                              <star-filled />
+                            </el-icon>
+                            <img v-for="(stone,eqi) in stone_slots[equip.index-1]" :key="eqi"
+                              :src="get_stone_icon((equip.stones[eqi] && equip.stones[eqi].level) || 0)"
+                              class="equip-stone" />
+                          </div>
+                        </div>
+                        <div class="equip-footer-container">
+                          <div class="equip-enchant-container">
+                            <span v-if="equip.wPermanentEnchant" class="equip-enchant">
+                              <span>{{ equip.wPermanentEnchant }}</span>
+                              <img class="equip-enchant-img" :src="img_res.EnchantSmall" />
+                            </span>
+                            <img v-if="equip.wCommonEnchant" class="equip-enchant-img" :src="img_res.EnchantBig" />
+                            <span v-else-if="equip.effectColorStone" class="equip-enchant">
+                              <span>{{ equip.effectColorStone.Name }}</span>
+                              <img class="equip-enchant-img" :src="equip.effectColorStone.Icon.FileName" />
+                            </span>
+                          </div>
+                          <div v-if="equip.way_to_fetch && equip.way_to_fetch.length" class="equip-way-to-fetch">
+                            {{ equip.way_to_fetch[0] }}</div>
+                        </div>
+                      </div>
+                    </el-col>
+                  </el-row>
+                </el-card>
+              </div>
+            </el-tab-pane>
+          </el-tabs>
+        </el-collapse-item>
+        <el-collapse-item name="3">
+          <template #title>
+            <div class="global-title">历史装分</div>
+          </template>
+          <el-row class="score-trend">
+            正在施工中
+            <div id="chart-score-trend" style="height:400px;width:1000px"></div>
+          </el-row>
+        </el-collapse-item>
+      </el-collapse>
+
+    </el-card>
+  </div>
+</template>
+<style lang="scss">
+  .ver-line {
+    height: 3rem;
+    border: 1px solid #aaaaaa;
+  }
+
+  .primary-icon {
+    color: #cccccc;
+    font-weight: 600;
+    font-size: 1.2rem;
+    line-height: 1.4rem;
+    display: flex;
+    justify-content: space-evenly;
+  }
+
+  .primary-title {
+    color: #ff0000;
+    font-weight: 400;
+    text-align: left;
+    line-height: 1.4rem;
+    font-size: 1.12rem;
+  }
+
+  .primary-content {
+    color: #999;
+    text-align: left;
+    line-height: 1rem;
+    font-size: 0.8rem;
+  }
+
+  .sub-title {
+    font-weight: 600;
+    font-size: 1rem;
+    width: 3rem;
+    text-align: left;
+  }
+
+  .sub-content {
+    line-height: 1.9rem;
+    color: #999;
+  }
+
+  .global-title {
+    color: #cccccc;
+    font-weight: 600;
+    font-size: 1.2rem;
+  }
+
+  .global-header-container {
+    color: #ccc;
+    border-radius: 1rem;
+    background-color: inherit;
+    box-shadow: 1px 1px 5px 0 rgba(255, 255, 255, 0.5);
+    border: solid 1px #cccccc;
+    padding: 0.5rem;
+    margin: 0.5rem;
+  }
+
+  .el-card {
+    --el-card-padding: 10px;
+    --el-text-color-primary: #cccccc;
+    --el-bg-color: #333;
+  }
+
+  .el-card__body {
+    background-color: #333;
+  }
+
+  .el-collapse {
+    --el-collapse-content-bg-color: inherit;
+    --el-collapse-header-bg-color: inherit;
+  }
+
+  .item-container {
+    text-align: left;
+  }
+
+  .header-title {
+    background-color: inherit;
+    border-radius: 1rem;
+  }
+
+  .user-avatar {
+    box-shadow: 1px 1px 5px 0 rgba(255, 255, 255, 0.5);
+    height: 5.1rem;
+  }
+
+  .school-icon-container {
+    width: 5rem;
+    height: 5rem;
+    position: absolute;
+    right: 0;
+    overflow: hidden;
+    filter: brightness(1.5);
+  }
+
+  .school-icon {
+    width: 4rem;
+    height: 4rem;
+    position: absolute;
+    right: 0px;
+    transform: translateX(80px);
+  }
+
+  .qixue-container {
+    width: 3rem;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+  .qixue-img {
+    width: 3rem;
+    height: 3rem;
+  }
+
+  .qixue-text {
+    font-size: 0.8rem;
+    line-height: 0.8rem;
+  }
+
+
+  .equip-container {
+    box-shadow: 1px 1px 3px 0px rgba(255, 255, 255, 0.5);
+    display: flex;
+    margin: 0.2rem 0;
+    padding: 0.3rem 1rem 0.3rem 0.5rem;
+    border-radius: 0.3rem;
+    height: 3rem;
+    overflow: hidden;
+  }
+
+  .equip-flag-container {
+    width: 30px;
+    background-color: inherit;
+    margin-right: 0.2rem;
+  }
+
+  .equip-flag-img {
+    width: 2rem;
+    position: absolute;
+  }
+
+  .equip-flag-text {
+    position: absolute;
+    z-index: 1;
+    color: #333;
+    width: 1rem;
+    line-height: 1rem;
+    transform: translateX(10px) translateY(3px);
+  }
+
+  .equip-frame {
+    width: 3rem;
+    position: absolute;
+    transform: translateX(2.1rem);
+  }
+
+  .equip-description-container {
+    margin-left: 0.5rem;
+    width: 300px;
+  }
+
+  .equip-title {
+    font-size: 1.2rem;
+    line-height: 1rem;
+  }
+
+  .equip-title-quality {
+    font-size: 1.1rem;
+  }
+
+  .equip-title-quality-ext {
+    color: #45d41e;
+    font-size: 1.1rem;
+  }
+
+  .equip-mini-img {
+    width: 2rem;
+    height: 2rem;
+  }
+
+  .icon-start-active {
+    color: #e8ad3f;
+    margin-left: -0.5rem;
+  }
+
+  .icon-start-inactive {
+    color: #505659;
+    margin-left: -0.5rem;
+  }
+
+  .equip-enhanced {
+    height: 1rem;
+    margin: 0.5rem 0 0 0.5rem;
+  }
+
+  .equip-stone {
+    width: 1.2rem;
+    margin-left: 0.5rem;
+  }
+
+  .equip-footer-container {
+    margin-left: auto;
+    text-align: right;
+  }
+
+  .equip-enchant-container {
+    height: 1.8rem;
+    font-size: 1rem;
+    line-height: 1rem;
+  }
+
+  .equip-enchant {
+    text-align: right;
+  }
+
+  .equip-enchant-img {
+    text-align: right;
+    width: 1.4rem;
+    margin-left: 0.2rem;
+    box-shadow: 1px 1px 3px 0px rgba(255, 255, 255, 0.5);
+  }
+
+  .equip-way-to-fetch {
+    margin-top: auto;
+    font-size: 0.8rem;
+    line-height: 0.8rem;
+    width: 15rem;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    color: #999999;
+  }
+
+
+  .command-mini-card-container {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: masonry;
+
+    flex-wrap: wrap;
+    text-align: center;
+    color: #cccccc;
+  }
+
+  .command-mini-single-card {
+    overflow: hidden;
+    white-space: nowrap;
+    margin: 0.2rem;
+    font-size: 0.8rem;
+    max-width: 10rem;
+    min-width: 5rem;
+    border-radius: 0.05rem;
+    box-shadow: 0px 0px 2px 0px rgba(255, 255, 255, 0.5);
+  }
+
+  .command-mini-card-title {
+    background-color: #333;
+  }
+</style>
+<script>
+  const { defineComponent, reactive, toRefs, ref, onMounted, computed } = Vue
+  const component = defineComponent({
+    components: {},
+    setup () {
+
+      onMounted(() => {
+      })
+      const methods = {
+        parseTime,
+        formatTime,
+        convertSci,
+        convertPop,
+        getLevelColor,
+      }
+      const computes = {}
+      computes.user_description = computed(() => {
+        const { user, kunfu } = params_data
+        const title = `${user.serverName} · ${user.roleName}`
+        const school_icon = `../assets/image/school/${user.forceName}.svg`
+        return { title, kunfu, school_icon }
+      })
+      methods.get_kunfu_icon = (kunfu) => `https://img.jx3box.com/image/xf/${kunfu.gameid}.png`
+      methods.get_stone_icon = (level) => `../assets/image/stone/${level}.png`
+      methods.getEquipFlag = (equip) => {
+        const { maxStrengthLevel } = equip
+        if (maxStrengthLevel < 6) return '精简'
+        if (maxStrengthLevel > 6) return '橙武'
+        return ''
+      }
+      methods.getEquipFrame = equip => {
+        const { maxStrengthLevel, strengthLevel } = equip
+        const img = computes.img_res.value
+        if (maxStrengthLevel >= 8) return img.FrameRing
+        if (maxStrengthLevel > strengthLevel) return img.FrameEmpty
+        return img.FrameEquip
+      }
+      computes.kunfu_icon_img = computed(() => {
+        const { kunfu } = params_data
+        return methods.get_kunfu_icon(kunfu)
+      })
+      computes.currentFocus = computed(() => {
+        const { attributeTypes, attributeType } = params_data
+        if (!attributeType) return attributeTypes[0][2]
+        const match_type = attributeTypes.find(x => (x[1] & attributeType) == attributeType)
+        if (!match_type) return attributeTypes[0][2]
+        return match_type[2]
+      })
+
+      computes.attr = computed(() => {
+        const { attributes } = params_data
+        return attributes && attributes[0] || {}
+      })
+      computes.equip_dict = computed(() => {
+        const attr = computes.attr.value
+        const equips = attr.equips
+        const result = {}
+        equips.map(e => {
+          result[e.item_id] = e
+        })
+        return result
+      })
+      computes.img_res = computed(() => {
+        const files = [
+          'EnchantBig',
+          'EnchantSmall',
+          'FlagEmpty',
+          'FrameEmpty',
+          'FrameEquip',
+          'FrameRing',
+          'Unknown',
+        ]
+        const result = {}
+        files.map(x => {
+          result[x] = `../views/jx3/user_attribute/img/${x}.png`
+        })
+        return result
+      })
+      const font_size = ref('1rem')
+      const expanded_items = reactive(['1', '2', '3'])
+      console.log(params_data)
+      return {
+        user: {},
+        attributes: [],
+        page: 0,
+        pages: [], // [[name,value],]
+
+        expanded_items,
+        ...computes,
+        font_size,
+        ...methods,
+      }
+    },
+  })
+</script>
