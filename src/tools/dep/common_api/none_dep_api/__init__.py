@@ -5,3 +5,5 @@ from .Jx3ApiResponse import *
 from .tuilan import *
 from .common import *
 from .Jx3Player import *
+from .WucaiAttribute import *
+from .HtmlTagHandler import *
