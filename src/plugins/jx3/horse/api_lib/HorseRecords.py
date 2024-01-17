@@ -72,7 +72,8 @@ class HorseRecords:
     def sort(items: list[HorseRecord]):
         items = extensions.distinct(items, lambda x: x.id)
         items = list(filter(lambda x: not x.outdated, items))
-        return sorted(items, key=lambda x: x.timestamp.timestamp(), reverse=True)  # 按时间戳降序排序
+        new_items = sorted(items, key=lambda x: x.timestamp.timestamp(), reverse=True)  # 按时间戳降序排序
+        return list(new_items)
 
     def load_records(self, records: list[dict]):
         items = [HorseRecord(x) for x in records]

@@ -1,4 +1,4 @@
-
+from __future__ import annotations
 from .SubscribeItem import *
 from .events import *
 from src.tools.dep.bot.group_env import *
@@ -42,16 +42,23 @@ async def OnCallback(sub: SubscribeSubject, cron: SubjectCron):
 class MenuCallback:
 
     @staticmethod
-    def check_subscribed(sub: SubscribeSubject, user_subs: dict[str, dict]) -> bool:
+    def check_subscribed(target_subject: SubscribeSubject, user_subs: dict[str, dict], sub_from: SubscribeSubject = None) -> tuple[bool, SubscribeSubject]:
         """
         检查当前订阅是否已包含
-        @return 返回当前监听参数值，-1表示未监听
+        @return tuple[
+            当前监听参数值，-1表示未监听
+            订阅的来源
+        ]
         """
+        if isinstance(target_subject, SubscribeSubject):
+            target_subject = target_subject.name
+
         def get_user_arg(v):
             return get_number(v.get("arg"))
-        v = user_subs.get(sub.name)
-        if v is not None:
-            return get_user_arg(v)
+        v = user_subs.get(target_subject)
+        if v is not None:  # 数值
+            return get_user_arg(v), sub_from or target_subject
+
         result = -1
         for s in user_subs:
             u_sub = VALID_Subjects.get(s)  # 获取当前项
@@ -61,12 +68,31 @@ class MenuCallback:
             # 子项继承父项的事件等级
             children_value = dict([[x, cur_value] for x in u_sub.children])
             # 逐个检查子项，并选择其中监听等级最高的返回，默认返回-1
-            v = MenuCallback.check_subscribed(sub, children_value)
-            if not isinstance(v, int):
-                v = get_user_arg(v)
-            if result < v:
-                result = v
-        return result
+            sub_level, _ = MenuCallback.check_subscribed(
+                target_subject, children_value, sub_from)
+            if not isinstance(sub_level, int):
+                sub_level = get_user_arg(sub_level)
+            if result < sub_level:
+                result = sub_level
+                sub_from = u_sub
+        return result, sub_from
+
+    @classmethod
+    def from_general_name(cls, subject_name: str, cron_level: int = 0, description: str = '事件订阅', log_name: str = '通用事件') -> MenuCallback:
+        target = MenuCallback(
+            sub=SubscribeSubject(
+                name=subject_name,
+                description=description,
+            ),
+            cron=SubjectCron(
+                exp='',
+                notify=log_name
+            )
+        )
+        target.result = MenuCallback.get_all_group_of_subscribe(
+            subject=subject_name,
+            cron_level=cron_level,  # 通用事件默认级别为0
+        )
 
     def __init__(self, sub: SubscribeSubject, cron: SubjectCron) -> None:
         self.result = []
@@ -105,38 +131,59 @@ class MenuCallback:
 
     async def send_msg_single(self, item):
         '''发送单条结果'''
-        [botname, group_id, to_send_msg] = item
-        sub_name = self.sub.name
+        botname, group_id, to_send_msg, sub_from = item
+        sub_name = sub_from.name
         to_send_msg = f'{to_send_msg}\n该消息来自[{sub_name}]订阅，如需退订回复 `退订 {sub_name}`'
         try:
             await self.bots.get(botname).call_api("send_group_msg", group_id=group_id, message=to_send_msg)
         except Exception as ex:
             logger.warning(f'{botname} bot fail to send msg -> {group_id}:{ex}')
 
+    @staticmethod
+    async def get_all_group_of_subscribe(subject: str, cron_level: int) -> dict[str, tuple[str, str, str]]:
+        '''获取指定主题已订阅的群
+        @return
+            dict[str,tuple[str,str,str]] key:(机器人id 群号 是否应发 订阅来源)
+        '''
+        bots = get_driver().bots
+        result = {}
+
+        tasks = {}
+        for botname in bots:
+            bot = bots.get(botname)
+            group_ids = [str(x.get("group_id")) for x in await bot.call_api("get_group_list")]
+            group_ids = extensions.distinct(group_ids)
+            for group in tasks:
+                tasks[group] = botname
+
+        for group_id in tasks:
+            botname = tasks[group_id]
+            key = f'{botname}@{group_id}'
+            if key in result:
+                logger.warning(f'subscribe:message-to-send already in {key}')
+
+            g_subscribe = GroupConfig(group_id, log=False).mgr_property('subscribe')
+            u_subscribed_level, sub_from = MenuCallback.check_subscribed(subject, g_subscribe)
+            to_send_msg = u_subscribed_level >= cron_level
+            result[key] = (botname, group_id, to_send_msg, sub_from)
+        return result
+
     async def init_messages(self):
         '''收集各群的订阅结果'''
-        result = {}
-        for botname in self.bots:
-            bot = self.bots.get(botname)
-            for group in await bot.call_api("get_group_list"):
-                group_id = group.get("group_id")
-                g_subscribe = GroupConfig(group_id, log=False).mgr_property('subscribe')
-                u_subscribed_level = MenuCallback.check_subscribed(self.sub, g_subscribe)
-                to_send_msg = u_subscribed_level >= self.cron.level
-
-                while to_send_msg:
-                    callback_result = await self.callback(group_id, self.sub, self.cron)
-                    # 如果有返回值则表示需要发送
-                    if not callback_result or not isinstance(callback_result, str):
-                        to_send_msg = None
-                        break
-                    to_send_msg = callback_result
+        result = MenuCallback.get_all_group_of_subscribe(self.sub, self.cron.level)
+        for key in result:
+            botname, group_id, to_send_msg, sub_from = result[key]
+            while to_send_msg:
+                callback_result = await self.callback(group_id, self.sub, self.cron)
+                # 如果有返回值则表示需要发送
+                if not callback_result or not isinstance(callback_result, str):
+                    to_send_msg = None
                     break
-                key = f'{botname}@{group_id}'
-                if key in result:
-                    logger.warning(f'message duplicated in {key} -> {to_send_msg}')
-                result[key] = [botname, group_id, to_send_msg]
-                
+                to_send_msg = callback_result
+                break
+
+            result[key] = (botname, group_id, to_send_msg, sub_from)
+
         self.result = [result[x] for x in result]
 
 

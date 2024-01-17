@@ -31,7 +31,7 @@ class GroupConfig:
         result = self.enter_property(data, self.root, keys, new_val)
         if self.log:
             msg = f'mgr_property@{self.group_id}:{self.config}'
-            msg = f'{str.join(".",keys)} {action},result={result}'
+            msg = f'{msg}{str.join(".",keys)} {action},result={result}'
             logger.debug(msg)
         return result
 
