@@ -18,7 +18,7 @@ class Databased:
         def func(x): return [x.get('name'), dict2obj(cls(), x)]
         dict_entity = dict([func(x) for x in db_entity])  # 心法字典
         for x in dict_entity:
-            dict_entity[x].name = x # 标注名称
+            dict_entity[x].name = x  # 标注名称
             dict_entity[x].register_alias()
 
 
