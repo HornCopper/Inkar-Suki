@@ -85,7 +85,9 @@ class BaseMenuCallback:
         with BaseMenuCallback.cache_lock:
             cache = BaseMenuCallback.group_cache.get(bot.self_id)
             if cache and not cache.is_outdated():
-                return cache.groups
+                result = cache.groups
+                if result: # 有数据才返回，否则重新加载
+                    return result 
             cache = CurrentGroupStatus()
             BaseMenuCallback.group_cache[bot.self_id] = cache
             group_list = []
