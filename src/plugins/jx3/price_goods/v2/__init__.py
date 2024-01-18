@@ -23,6 +23,7 @@ async def jx3_trade2(matcher: Matcher, state: T_State, event: GroupMessageEvent,
     arg_server, arg_item, arg_page = template
     if not arg_server:
         return await jx3_cmd_trade2.finish(PROMPT_ServerNotExist)
+    ignore_error = '物价' in str(event.get_message())
     state["server"] = arg_server
     pageSize = 20
     data, totalCount = await search_item_info_for_price(arg_item, arg_server, pageIndex=arg_page, pageSize=pageSize)
@@ -37,6 +38,8 @@ async def jx3_trade2(matcher: Matcher, state: T_State, event: GroupMessageEvent,
         matcher.set_arg("user_select_index", obMessage("-1"))
         result = await get_jx3_trade_detail(matcher, state, event, [arg_server, arg_item])
         if isinstance(result, list):
+            if ignore_error:
+                return
             return await jx3_cmd_trade2.finish(result[0])
         return await jx3_cmd_trade2.send(result)
 
