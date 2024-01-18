@@ -5,7 +5,7 @@ from .renderer import *
 jx3_cmd_trade2 = on_command(
     "jx3_trade2",
     name="交易行",
-    aliases={'交易'},
+    aliases={'交易', '拍卖行', '拍卖', '售卖', '售卖行', '商行', '商品', '物价'},
     priority=5,
     catalog=permission.jx3.pvg.price.trade,
     description="获取交易行物品的价格",

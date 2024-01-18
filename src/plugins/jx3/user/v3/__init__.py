@@ -33,7 +33,7 @@ def get_attributes_from_data(data: Jx3PlayerDetailInfo, arg_page: int | str) -> 
     def from_filter_type(filter_type: AttributeType):
         if filter_type == AttributeType.Unknown:
             return data.attributes
-        return data.get_attributes(filter_type), filter_type
+        return data.get_attributes(page=filter_type), filter_type
 
     if not checknumber(arg_page):
         filter_type = AttributeType.from_alias(arg_page)
