@@ -17,12 +17,15 @@ def migrate_test_resources():
     for root, dirs, files in os.walk(root_path):
         if not files:
             continue
-        if not os.path.exists(root):
-            os.makedirs(root)
 
+        target_path = f'{current}{os.sep}{root[r_len+1:]}{os.sep}'
+        if not os.path.exists(target_path):
+            os.makedirs(target_path)
+            
         for file in files:
             source = f'{root}{os.sep}{file}'
-            target = f'{current}{os.sep}{root[r_len:]}{os.sep}{file}'
+            target = f'{target_path}{file}'
+
             logger.debug(f'testingenv migrate:{source} to {target}')
             shutil.copy(source, target)
 
