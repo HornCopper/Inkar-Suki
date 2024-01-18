@@ -210,7 +210,14 @@ class Jx3Equip:
     @property
     def primary_attribute(self) -> str:
         primary_attributes = [x.primary_attribute for x in self.attributes]
-        return str.join('', primary_attributes)
+        result = str.join('', primary_attributes)
+
+        # 若有双破则简称破破
+        if '破防' in result and '破招' in result:
+            result = result.replace('破防', '')
+            result = result.replace('破招', '破破')
+
+        return result
 
     def to_dict(self):
         return {
