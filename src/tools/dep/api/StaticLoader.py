@@ -7,7 +7,7 @@ from src.tools.file import *
 
 
 class StaticLoader:
-    lock = threading.RLock()
+    lock = threading.Lock()
 
     inited: bool = False
     key: str  # from_id使用此字段
