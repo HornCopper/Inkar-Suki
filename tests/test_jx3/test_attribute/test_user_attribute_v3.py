@@ -42,8 +42,9 @@ def test_fetch_and_generate():
     src.plugins.jx3.user.v3.jx3_cmd_attribute3 = mc
 
     event = SFGroupMessageEvent(group_id=1120115)
-    # event.message = obMessage("属性 纵月 藏忧 2")
-    event.message = obMessage("属性 唯满侠 包某 2")
+    # event.message = obMessage("属性 唯满侠 包某 2")
+    event.message = obMessage("属性 纵月 藏忧 3")
+    
     args = Jx3Arg.arg_factory(src.plugins.jx3.jx3_cmd_attribute3, event)
     task = func(args)
     asyncio.run(task)
@@ -52,3 +53,25 @@ def test_fetch_and_generate():
     task = func(args)
     asyncio.run(task)
     mc.check_counter()
+
+
+@pytest.mark.skipif('get_tuilan_articles' not in dir(), reason='无api可用')
+def test_fetch_with_page():
+    import src.plugins.jx3
+    func = src.plugins.jx3.get_jx3_attribute3
+
+    event = SFGroupMessageEvent(group_id=1120115)
+    # event.message = obMessage("属性 唯满侠 包某 2")
+    event.message = obMessage("属性 纵月 藏忧 3")
+    args = Jx3Arg.arg_factory(src.plugins.jx3.jx3_cmd_attribute3, event)
+    task = func(args)
+    result = asyncio.run(task)
+    assert AttributeType(result.get('attributeType')) == AttributeType.PVP | AttributeType.HPS
+    assert result.get('attributes')
+
+    event.message = obMessage("属性 纵月 藏忧 pvpdps")
+    args = Jx3Arg.arg_factory(src.plugins.jx3.jx3_cmd_attribute3, event)
+    task = func(args)
+    result = asyncio.run(task)
+    assert AttributeType(result.get('attributeType')) == AttributeType.PVP | AttributeType.DPS
+    assert result.get('attributes')
