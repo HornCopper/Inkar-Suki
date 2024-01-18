@@ -14,9 +14,11 @@ class Jx3EquipAttribute:
     primary_attributes = {
         '会心': '会',
         '无双': '无',
-        '破防': '破',
-        '破招': '破',
+        '破防': '破防',
+        '破招': '破招',
         '加速': '速',
+        '御劲': '御',
+        '化劲': '化',
     }
 
     def __init__(self, data: dict) -> None:
@@ -58,7 +60,7 @@ class Jx3EquipAttribute:
         for x in Jx3EquipAttribute.primary_attributes:
             if x in desc:
                 return Jx3EquipAttribute.primary_attributes[x]
-        return '' # 其他属性不显示
+        return ''  # 其他属性不显示
 
     @property
     def suffix(self) -> Jx3EquipAttributeType:
