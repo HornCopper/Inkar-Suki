@@ -28,7 +28,17 @@ jx3_cmd_attribute3 = on_command(
 )
 
 
-def get_attributes_from_data(data: Jx3PlayerDetailInfo, arg_page: int | str) -> tuple[list[Jx3UserAttributeInfo], AttributeType]:
+@overload
+def get_attributes_from_data(data: Jx3PlayerDetailInfo, arg_page: int) -> tuple[list[Jx3UserAttributeInfo], AttributeType]:
+    ...
+
+
+@overload
+def get_attributes_from_data(data: Jx3PlayerDetailInfo, arg_page: str) -> tuple[list[Jx3UserAttributeInfo], AttributeType]:
+    ...
+
+
+def get_attributes_from_data(data: Jx3PlayerDetailInfo, arg_page: int) -> tuple[list[Jx3UserAttributeInfo], AttributeType]:
     '''根据筛选类型返回属性列表'''
     def from_filter_type(filter_type: AttributeType):
         if filter_type == AttributeType.Unknown:
@@ -78,7 +88,6 @@ async def get_jx3_attribute3(template: list[Any] = Depends(Jx3Arg.arg_factory)):
     result_attributeType = result_attributeType or 0
     result_attributeType = AttributeType(result_attributeType)
 
-    
     result = {
         'user': user,
         'attributes': attributes,
