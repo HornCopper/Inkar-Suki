@@ -249,7 +249,7 @@ class BaseJx3UserAttribute(BaseUpdateAt):
         result = super().to_dict()
         result.update({
             'equips': [x.to_dict() for x in self.equips],
-            'kungfu': self.kungfu.name,
+            'kungfu': self.kungfu and self.kungfu.name,
             'matchDetail': self.matchDetail.__dict__,
             'person': self.person.to_dict(),
             'panel': [x.__dict__ for x in self.panel],
