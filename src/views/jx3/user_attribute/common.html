@@ -550,7 +550,7 @@
       methods.getEquipFlag = (equip) => {
           const { maxStrengthLevel, attributes } = equip
           const skills = attributes.filter(x => x.name.indexOf('SkillEvent') > -1)
-          if (skills.length >= 1) return '大橙'
+          if (skills.length > 1) return '大橙'
           if (maxStrengthLevel > 6) return '小橙'
           if (skills.length === 1) return '特效'
           if (maxStrengthLevel < 6) return '精简'
