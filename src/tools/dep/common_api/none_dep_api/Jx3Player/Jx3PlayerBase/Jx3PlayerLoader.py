@@ -25,7 +25,7 @@ class Jx3PlayerLoader:
         if prev and (DateTime() - DateTime(prev.updateAt)).total_seconds() < cache_length:
             # 30天内直接使用缓存
             uid = prev.roleId
-            return Jx3PlayerLoader.cache_detail[uid]
+            return Jx3PlayerLoader.cache_detail.get(uid)
         return None
 
     @staticmethod
