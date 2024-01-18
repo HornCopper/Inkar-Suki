@@ -28,7 +28,11 @@ async def jx3_trade2(matcher: Matcher, state: T_State, event: GroupMessageEvent,
     pageSize = 20
     data, totalCount = await search_item_info_for_price(arg_item, arg_server, pageIndex=arg_page, pageSize=pageSize)
     if not isinstance(data, List):
+        if ignore_error:
+            return
         return await jx3_cmd_trade2.finish(data)
+
+
     all_id = [x.id for x in data]  # 取到的是id列表
     state["id"] = all_id
     if len(all_id) == 1:  # 仅有一个物品的话，则直接显示更加详细的信息。如果没有则直接跳过
@@ -41,6 +45,7 @@ async def jx3_trade2(matcher: Matcher, state: T_State, event: GroupMessageEvent,
             if ignore_error:
                 return
             return await jx3_cmd_trade2.finish(result[0])
+            
         return await jx3_cmd_trade2.send(result)
 
     result = await render_items(arg_server, arg_item, arg_page, pageSize, totalCount, data)
@@ -74,8 +79,10 @@ async def jx3_trade_detail(matcher: Matcher, state: T_State, event: GroupMessage
 async def get_jx3_trade_detail(matcher: Matcher, state: T_State, event: GroupMessageEvent, template: list[Any]):
     arg_server, arg_item = template
     if not arg_server:
-        return await [PROMPT_ServerNotExist]
+        return [PROMPT_ServerNotExist]
     data = await search_item_info(arg_item, pageIndex=0, pageSize=1000)
+    if isinstance(data, str):
+        return [data]
     data = [x for x in data if x.bind_type != GoodsBindType.BindOnPick]
     if len(data) < 1:
         return ['没有找到这个物品']

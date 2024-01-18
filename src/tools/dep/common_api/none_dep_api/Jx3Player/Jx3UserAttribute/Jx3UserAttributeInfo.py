@@ -30,7 +30,7 @@ jeat = Jx3EquipAttributeType
 
 class BaseJx3UserAttributePage:
     types: list[tuple[AttributeType, str]] = [
-        (AttributeType.Unknown, '默认'),
+        (AttributeType.Unknown, '当前'),
         (AttributeType.PVP | AttributeType.DPS, 'PVP-DPS'),
         (AttributeType.PVE | AttributeType.DPS, 'PVE-DPS'),
         (AttributeType.PVP | AttributeType.HPS, 'PVP-HPS'),
