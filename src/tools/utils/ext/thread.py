@@ -35,7 +35,7 @@ class SyncRunner(threading.Thread):
     def as_sync_method(async_method: asyncio.futures.Future[Any, Any, _T]) -> _T:
         x = SyncRunner(async_method)
         x.start()
-        x.semaphore.acquire(timeout=30e3)  # 默认最多等待30秒
+        x.semaphore.acquire(timeout=30.0)  # 默认最多等待30秒
         if x.exception:
             raise x.exception
         result = x.result
