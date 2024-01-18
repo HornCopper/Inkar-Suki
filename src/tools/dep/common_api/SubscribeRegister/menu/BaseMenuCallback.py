@@ -5,6 +5,7 @@ from ..events import *
 from src.tools.dep.bot.group_env import *
 from nonebot import get_driver
 
+
 async def OnCallback(sub: SubscribeSubject, cron: SubjectCron):
     return await BaseMenuCallback(sub, cron).run()
 
@@ -90,18 +91,16 @@ class BaseMenuCallback:
         group_list = await bot.call_api("get_group_list")
         group_ids = [str(x.get("group_id")) for x in group_list]
         group_ids = extensions.distinct(group_ids)
-        cache.groups = group_ids
+
+        groups = [(x, GroupActivity(x).total_command()) for x in group_ids]
+        groups = sorted(groups, key=lambda grp: grp[1], reverse=True)  # 按活跃度降序
+        cache.groups = [x[0] for x in group_ids]
         return cache.groups
 
-    @staticmethod
-    async def get_all_group_of_subscribe(subject: str, cron_level: int) -> dict[str, tuple[str, str, str]]:
-        '''获取指定主题已订阅的群
-        @return
-            dict[str,tuple[str,str,str]] key:(机器人id 群号 是否应发 订阅来源)
-        '''
+    async def get_all_groups() -> dict[str, list[str]]:
+        '''获取当前所有机器人所有群聊'''
         bots = get_driver().bots
         logger.debug(f'current online bots:{len(list(bots))}')
-        result = {}
 
         tasks = {}
         for botname in bots:
@@ -109,7 +108,16 @@ class BaseMenuCallback:
             group_ids = await BaseMenuCallback.get_groups(bot)
             for group in group_ids:
                 tasks[group] = botname
+        return tasks
 
+    @staticmethod
+    async def get_all_group_of_subscribe(subject: str, cron_level: int) -> dict[str, tuple[str, str, str]]:
+        '''获取指定主题已订阅的群
+        @return
+            dict[str,tuple[str,str,str]] key:(机器人id 群号 是否应发 订阅来源)
+        '''
+        tasks = await BaseMenuCallback.get_all_groups()
+        result = {}
         for group_id in tasks:
             botname = tasks[group_id]
             key = f'{botname}@{group_id}'
@@ -140,5 +148,3 @@ class BaseMenuCallback:
             result[key] = (botname, group_id, to_send_msg, sub_from)
 
         self.result = [result[x] for x in result]
-
-
