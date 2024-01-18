@@ -37,6 +37,7 @@ def Zone_mapping(server):
         return "双线四区"
     if server in {"破阵子", "天鹅坪"}:
         return "双线一区"
+    logger.warning(f'fail to found server zone:{server}')
     return None
 
 
