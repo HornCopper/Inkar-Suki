@@ -2,7 +2,7 @@ from __future__ import annotations
 from src.tools.utils import *
 from src.tools.config import Config
 from ...common import *
-
+from src.constant.jx3 import *
 
 class Jx3PlayerInfo(BaseUpdateAt):
     def __init__(self, data: dict = None) -> None:
@@ -22,7 +22,7 @@ class Jx3PlayerInfo(BaseUpdateAt):
         '''角色区内id'''
         self.globalRoleId: str = data.get('globalRoleId')
         '''角色id'''
-        self.forceName: str = data.get('forceName')
+        self.forceName: str = School.from_alias(data.get('forceName') or 'unknown')
         '''门派'''
         self.forceId: str = data.get('forceId')
         '''门派id'''
@@ -46,4 +46,5 @@ class Jx3PlayerInfo(BaseUpdateAt):
         '''推栏头像'''
 
     def to_dict(self):
-        return copy.deepcopy(self.__dict__)
+        result = copy.deepcopy(self.__dict__)
+        return result
