@@ -19,6 +19,7 @@ class Jx3EquipAttribute:
         '加速': '速',
         '御劲': '御',
         '化劲': '化',
+        '治疗成效': '疗'
     }
 
     def __init__(self, data: dict) -> None:
