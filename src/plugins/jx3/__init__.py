@@ -33,17 +33,32 @@ async def nonebot_on_interval_task():
     logger.info('nonebot_on_interval_task...')
     filebase_database.Database.save_all()
 
-global_cmd_flush_database = on_command('flush_database')
+global_cmd_flush_database = on_command(
+    'flush_database',
+    example=[
+        Jx3Arg(Jx3ArgsType.bool, default=False, alias='丢弃内存')
+    ]
+)
 
 
 @global_cmd_flush_database.handle()
-async def global_flush_database(event: GroupMessageEvent):
+async def global_flush_database(event: GroupMessageEvent, args=Depends(Jx3Arg.arg_factory)):
+    arg_drop, = args
     x = Permission(event.user_id).judge(10, '查询和更新配置')
     if not x.success:
         return await global_cmd_update_grp_config.finish(x.description)
     total = filebase_database.Database.cache
+    if arg_drop:
+        filebase_database.Database.cache = {}
+        msg = '已丢弃内存，即将重启'
+        await global_cmd_flush_database.send(msg)
+        with open("./src/plugins/developer_tools/example.py", mode="w") as cache:
+            cache.write("status=\"OK\"")
+        return
+
     filebase_database.Database.save_all()
-    return await global_cmd_flush_database.send(f'已完成更新,此次可能更新配置项:{len(list(total))}条')
+    msg = f'已完成更新,此次可能更新配置项:{len(list(total))}条'
+    return await global_cmd_flush_database.send(msg)
 
 global_cmd_update_grp_config = on_command(
     'update_grp_config',
