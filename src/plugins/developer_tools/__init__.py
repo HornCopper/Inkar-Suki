@@ -297,8 +297,8 @@ async def util_web(bot: Bot, event: GroupMessageEvent, args: list[Any] = Depends
 apply = on_command(
     "apply",
     aliases={
-        "申请", "领养", "购买", f"要一个{Config.bot}",
-        f"想要一个{Config.bot}", f"想有一个{Config.bot}", f"{Config.bot}", '机器人',
+        "申请", "领养", "购买", f"要一个{Config.name}",
+        f"想要一个{Config.name}", f"想有一个{Config.name}", f"{Config.name}", '机器人',
     },
     priority=5,
     description='获取如何拉机器人入群',
