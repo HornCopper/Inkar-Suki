@@ -86,21 +86,21 @@ class BaseMenuCallback:
             cache = BaseMenuCallback.group_cache.get(bot.self_id)
             if cache and not cache.is_outdated():
                 return cache.groups
-        cache = CurrentGroupStatus()
-        BaseMenuCallback.group_cache[bot.self_id] = cache
-        group_list = []
-        try:
-            await bot.call_api("get_group_list")
-        except Exception as ex:
-            logger.warning(f'fail loading group of bot:{bot.self_id},{ex}')
-            
-        group_ids = [str(x.get("group_id")) for x in group_list]
-        group_ids = extensions.distinct(group_ids)
+            cache = CurrentGroupStatus()
+            BaseMenuCallback.group_cache[bot.self_id] = cache
+            group_list = []
+            try:
+                await bot.call_api("get_group_list")
+            except Exception as ex:
+                logger.warning(f'fail loading group of bot:{bot.self_id},{ex}')
+                
+            group_ids = [str(x.get("group_id")) for x in group_list]
+            group_ids = extensions.distinct(group_ids)
 
-        groups = [(x, GroupActivity(x).total_command()) for x in group_ids]
-        groups = sorted(groups, key=lambda grp: grp[1], reverse=True)  # 按活跃度降序
-        cache.groups = [x[0] for x in group_ids]
-        return cache.groups
+            groups = [(x, GroupActivity(x).total_command()) for x in group_ids]
+            groups = sorted(groups, key=lambda grp: grp[1], reverse=True)  # 按活跃度降序
+            cache.groups = [x[0] for x in group_ids]
+            return cache.groups
 
     async def get_all_groups() -> dict[str, list[str]]:
         '''获取当前所有机器人所有群聊'''
