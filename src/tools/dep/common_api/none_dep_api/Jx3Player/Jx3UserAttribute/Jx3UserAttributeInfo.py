@@ -188,7 +188,7 @@ class BaseJx3UserAttribute(BaseUpdateAt):
         # 存入缓存
         result = cls.from_cache(uid, server)
         score = '0'  # 默认值
-        if current_prop.score > 0:
+        if current_prop and current_prop.score > 0:
             # 只记录有装分的属性
             score = str(current_prop.score)
             current_prop.record_new_data(result, score)
