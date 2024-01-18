@@ -39,7 +39,30 @@ async def OnCallback(sub: SubscribeSubject, cron: SubjectCron):
     return await MenuCallback(sub, cron).run()
 
 
+class CurrentGroupStatus(BaseUpdateAt):
+    groups: list[str]
+
+    def __init__(self, data: dict = None) -> None:
+        super().__init__(data)
+        if data is None:
+            data = {}
+        self.groups = data.get('groups')
+
+    def to_dict(self) -> dict:
+        result = super().to_dict()
+        result.update({
+            'groups': self.groups
+        })
+        return result
+
+
 class MenuCallback:
+    group_cache: dict[str, CurrentGroupStatus] = filebase_database.Database(
+        f'{bot_path.common_data_full}current-group-list',
+        serializer=lambda data: dict([x, data[x].to_dict()] for x in data),
+        deserializer=lambda data: dict([x, CurrentGroupStatus(data[x])] for x in data),
+    ).value
+    cache_lock: threading.RLock = threading.RLock()
 
     @staticmethod
     def check_subscribed(target_subject: SubscribeSubject, user_subs: dict[str, dict], sub_from: SubscribeSubject = None) -> tuple[bool, SubscribeSubject]:
@@ -97,7 +120,6 @@ class MenuCallback:
 
     def __init__(self, sub: SubscribeSubject, cron: SubjectCron) -> None:
         self.result = []
-        self.bots = get_driver().bots
         self.sub = sub
         self.cron = cron
 
@@ -141,6 +163,20 @@ class MenuCallback:
             logger.warning(f'{botname} bot fail to send msg -> {group_id}:{ex}')
 
     @staticmethod
+    async def get_groups(bot: Bot):
+        with MenuCallback.cache_lock:
+            cache = MenuCallback.group_cache.get(bot.self_id)
+            if cache and not cache.is_outdated():
+                return cache.groups
+        cache = CurrentGroupStatus()
+        MenuCallback.group_cache[bot.self_id] = cache
+        group_list = await bot.call_api("get_group_list")
+        group_ids = [str(x.get("group_id")) for x in group_list]
+        group_ids = extensions.distinct(group_ids)
+        cache.groups = group_ids
+        return cache.groups
+
+    @staticmethod
     async def get_all_group_of_subscribe(subject: str, cron_level: int) -> dict[str, tuple[str, str, str]]:
         '''获取指定主题已订阅的群
         @return
@@ -153,8 +189,7 @@ class MenuCallback:
         tasks = {}
         for botname in bots:
             bot = bots.get(botname)
-            group_ids = [str(x.get("group_id")) for x in await bot.call_api("get_group_list")]
-            group_ids = extensions.distinct(group_ids)
+            group_ids = await MenuCallback.get_groups(bot)
             for group in group_ids:
                 tasks[group] = botname
 
