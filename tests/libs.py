@@ -78,7 +78,7 @@ class SFGroupMessageEvent(GroupMessageEvent):
     def render_message(self, group):
         return super().render_message(group)
 
-    def __init__(self, time: int = None, self_id: int = None, post_type: Literal['message'] = None, sub_type: str = None, user_id: int = None, message_type: Literal['group'] = None, message_id: int = None, message: Message = None, original_message: Message = None, raw_message: str = None, font: int = None, sender: Sender = None, to_me: bool = False, reply: Reply | None = None, group_id: int = None, anonymous: Anonymous | None = None):
+    def __init__(self, time: int = None, self_id: int = None, post_type: Literal['message'] = None, sub_type: str = None, user_id: int = None, message_type: Literal['group'] = None, message_id: int = None, message: Message = None, original_message: Message = None, raw_message: str = None, font: int = None, sender: Sender = None, to_me: bool = False, reply: Reply = None, group_id: int = None, anonymous: Anonymous = None):
         time = time or int(sys_time.time())
         self_id = self_id or '0'
         post_type = post_type or 'message'
