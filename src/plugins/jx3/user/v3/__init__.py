@@ -1,4 +1,5 @@
 from src.tools.dep import *
+from typing import Union
 
 jx3_cmd_attribute3 = on_command(
     "jx3_attribute3",
@@ -28,7 +29,7 @@ jx3_cmd_attribute3 = on_command(
 )
 
 
-def get_attributes_from_data(data: Jx3PlayerDetailInfo, arg_page: int | str) -> tuple[list[Jx3UserAttributeInfo], AttributeType]:
+def get_attributes_from_data(data: Jx3PlayerDetailInfo, arg_page: Union[int, str]) -> tuple[list[Jx3UserAttributeInfo], AttributeType]:
     '''根据筛选类型返回属性列表'''
     def from_filter_type(filter_type: AttributeType):
         if filter_type == AttributeType.Unknown:
