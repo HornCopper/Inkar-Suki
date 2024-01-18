@@ -210,12 +210,19 @@ class Jx3Equip:
     @property
     def primary_attribute(self) -> str:
         primary_attributes = [x.primary_attribute for x in self.attributes]
+        counts = len(primary_attributes)
+        has_pf = '破防' in primary_attributes
+        has_pz = '破招' in primary_attributes
+        has_ws = '无' in primary_attributes
         result = str.join('', primary_attributes)
 
-        # 若有双破则简称破破
-        if '破防' in result and '破招' in result:
+        if has_pf and has_pz:
+            # 若有双破则简称破破
             result = result.replace('破防', '')
             result = result.replace('破招', '破破')
+        elif has_pf and has_ws:
+            # 若有破无则简写
+            result = result.replace('破防', '破')
 
         return result
 
