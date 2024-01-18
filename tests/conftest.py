@@ -9,10 +9,10 @@ def pytest_sessionfinish(session: pytest.Session, exitstatus: int):
 
 
 def migrate_test_resources():
-    current = pathlib2.Path(__file__).parent.parent
-    root_path = f'tests{os.sep}res'
+    current = pathlib2.Path(__file__).parent.parent.parent # file->res->tests
+    root_path = pathlib2.Path(f'tests{os.sep}res').absolute()
     r_len = len(root_path)
-    for root, dirs, files in os.walk(root_path):
+    for root, dirs, files in os.walk(root_path.as_posix()):
         if not files:
             continue
         logger.debug(f'testingenv migrate:{files}')
