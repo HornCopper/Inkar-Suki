@@ -49,6 +49,15 @@ class AttributeType(enum.IntFlag):
 
         return counter_1 > 1 or counter_2 > 1
 
+    @classmethod
+    def from_alias(cls, alias: str) -> AttributeType:
+        alias = str(alias).lower()
+        result = AttributeType.Unknown
+        for type in AttributeType:
+            if type.name.lower() in alias:
+                result |= type
+        return result
+
 
 jeat = Jx3EquipAttributeType
 
