@@ -50,6 +50,7 @@
           </el-row>
         </el-card>
       </el-row>
+      <div v-if="no_data" class="banner-notice">注意！当前角色没有{{ currentFocus }}的装备数据！已切回默认</div>
       <el-collapse v-model="expanded_items">
         <el-collapse-item name="1">
           <template #title>
@@ -510,6 +511,16 @@
 
   .command-mini-card-title {
     background-color: #333;
+  }
+  
+  .banner-notice {
+    margin: 0.5rem;
+    background-color: #db0700;
+    box-shadow: 0px 0px 2px 0px rgba(0, 0, 0, 1);
+    padding: 0.5rem;
+    color: #ffffff;
+    font-size: 1.1rem;
+    border-radius: 0.5rem;
   }
 </style>
 <script>
