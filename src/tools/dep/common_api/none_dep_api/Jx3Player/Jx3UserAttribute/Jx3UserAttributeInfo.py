@@ -25,40 +25,6 @@ class BaseJx3UserSummary(BaseUpdateAt):
         return result
 
 
-class AttributeType(enum.IntFlag):
-    Unknown = 0
-    PVP = 2 << 1
-    PVE = 2 << 2
-    PVX = 2 << 3
-
-    DPS = 2 << 11
-    HPS = 2 << 12
-    TANK = 2 << 13
-
-    FLY = 2 << 21
-
-    def warning(self):
-        '''判断类型是否重复，重复则说明不合理'''
-        v = self.value
-
-        group_1 = [AttributeType.PVP, AttributeType.PVE, AttributeType.PVX]
-        counter_1 = len(filter(lambda x: x & v == x, group_1))
-
-        group_2 = [AttributeType.DPS, AttributeType.HPS, AttributeType.TANK]
-        counter_2 = len(filter(lambda x: x & v == x, group_2))
-
-        return counter_1 > 1 or counter_2 > 1
-
-    @classmethod
-    def from_alias(cls, alias: str) -> AttributeType:
-        alias = str(alias).lower()
-        result = AttributeType.Unknown
-        for type in AttributeType:
-            if type.name.lower() in alias:
-                result |= type
-        return result
-
-
 jeat = Jx3EquipAttributeType
 
 
@@ -129,21 +95,32 @@ class BaseJx3UserAttribute(BaseUpdateAt):
             # if equip.index == 13:
             #     continue  # 忽略副武器
 
-            ###
+            # 通过大附魔判断
             enchant_suffix = equip.enchant_suffix
             if enchant_suffix:
                 result.attr_type |= BaseJx3UserAttributePage.eq_attrs_mapper.get(enchant_suffix)
 
-            ###
+            # 判断异常装备，装备适用心法是否与当前心法相同
+            # TODO 内功 外功 区分
             e_kun = self.equips[0].belongs.get('kungfu') or ''
             e_kun = e_kun.split(',')
             match = extensions.find(e_kun, lambda x: x in self.kungfu.alias)
             if not match:
                 equip_unmatch.append(equip)  # 心法不符
 
-            ###
+            # 按心法匹配当前类型
             kun_type = self.kungfu.type or 'dps'
             result.attr_type |= BaseJx3UserAttributePage.eq_attrs_mapper.get(kun_type)
+
+            # 按装备主属性判断
+            default = AttributeType.Unknown
+            datas = Jx3EquipAttribute.attribute_types
+            primary_attr: AttributeType = extensions.reduce(
+                equip.attributes,
+                lambda prev, cur: prev | (datas.get(cur.primary_attribute) or default),
+                default,
+            )
+            result.attr_type |= primary_attr
 
         result.equip_unmatch = equip_unmatch
         return result

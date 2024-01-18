@@ -16,6 +16,7 @@ def test_fetch():
     # 判断是否有效存储
     filebase_database.Database.save_all()
 
+
 @pytest.mark.skipif('get_tuilan_articles' not in dir(), reason='无api可用')
 def test_fetch_by_uid():
     task = Jx3PlayerDetailInfo.from_uid('破阵子', '1234')
@@ -34,6 +35,7 @@ def test_user_not_exist():
     data = asyncio.run(task)
     assert data.uid is None and data.err_msg == '玩家不存在'  # 不存在或无效的
 
+
 @pytest.mark.skipif('get_tuilan_articles' not in dir(), reason='无api可用')
 def test_fetch_and_generate():
     import src.plugins.jx3
@@ -44,7 +46,7 @@ def test_fetch_and_generate():
     event = SFGroupMessageEvent(group_id=1120115)
     # event.message = obMessage("属性 唯满侠 包某 2")
     event.message = obMessage("属性 纵月 藏忧 3")
-    
+
     args = Jx3Arg.arg_factory(src.plugins.jx3.jx3_cmd_attribute3, event)
     task = func(args)
     asyncio.run(task)
@@ -75,3 +77,25 @@ def test_fetch_with_page():
     result = asyncio.run(task)
     assert AttributeType(result.get('attributeType')) == AttributeType.PVP | AttributeType.DPS
     assert result.get('attributes')
+
+    event.message = obMessage("属性 纵月 藏忧 pve")
+    args = Jx3Arg.arg_factory(src.plugins.jx3.jx3_cmd_attribute3, event)
+    task = func(args)
+    result = asyncio.run(task)
+    assert AttributeType(result.get('attributeType')) == AttributeType.PVE
+    assert result.get('attributes')
+
+    event.message = obMessage("属性 纵月 藏忧 pvehps")
+    args = Jx3Arg.arg_factory(src.plugins.jx3.jx3_cmd_attribute3, event)
+    task = func(args)
+    result = asyncio.run(task)
+    assert AttributeType(result.get('attributeType')) == AttributeType.PVE | AttributeType.HPS
+    assert result.get('attributes')
+
+
+    event.message = obMessage("属性 纵月 藏忧 pvepvp")
+    args = Jx3Arg.arg_factory(src.plugins.jx3.jx3_cmd_attribute3, event)
+    task = func(args)
+    result = asyncio.run(task)
+    assert AttributeType(result.get('attributeType')) == AttributeType.PVE | AttributeType.PVP
+    assert result.get('no_data')

@@ -1,13 +1,5 @@
-import enum
-
-
-class Jx3EquipAttributeType(enum.IntFlag):
-    无 = 0
-    伤 = 1
-    疗 = 2
-    御 = 4
-    化 = 8
-    '''化劲pvp'''
+from .Jx3EquipAttributeType import *
+from .Jx3AttributeType import *  # 待解耦
 
 
 class Jx3EquipAttribute:
@@ -20,6 +12,14 @@ class Jx3EquipAttribute:
         '御劲': '御',
         '化劲': '化',
         '治疗成效': '疗'
+    }
+    attribute_types = {
+        '无': AttributeType.DPS | AttributeType.PVE,
+        '破防': AttributeType.DPS,
+        '破招': AttributeType.DPS | AttributeType.PVE,
+        '御': AttributeType.TANK,
+        '化': AttributeType.TANK | AttributeType.PVP,
+        '疗': AttributeType.HPS,
     }
 
     def __init__(self, data: dict) -> None:
