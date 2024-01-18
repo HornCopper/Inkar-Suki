@@ -1,5 +1,5 @@
 from src.tools.dep import *
-from .parse import main
+from .parse_v2 import GithubHandle
 from src.tools.config import Config
 from src.tools.file import read
 from src.tools.utils import get_status
@@ -117,7 +117,7 @@ async def recWebHook(req: Request):
     repo = body["repository"]["full_name"]
     event = req.headers.get("X-GitHub-Event")
     try:
-        message = "[GitHub] " + getattr(main, event)(body)
+        message = "[GitHub] " + getattr(GithubHandle, event)(body)
         message = message.replace("codethink-cn", "CodeThink-CN")
     except Exception as e:
         msg = f"Event {event} has not been supported."
