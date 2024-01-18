@@ -4,9 +4,9 @@ class CurrentGroupStatus(BaseUpdateAt):
     groups: list[str]
 
     def __init__(self, data: dict = None) -> None:
-        super().__init__(data)
         if data is None:
             data = {}
+        super().__init__(data)
         self.groups = data.get('groups')
 
     def to_dict(self) -> dict:
