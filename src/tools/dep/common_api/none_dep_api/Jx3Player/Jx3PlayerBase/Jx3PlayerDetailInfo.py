@@ -14,7 +14,7 @@ class Jx3PlayerDetailInfo:
         self.err_msg = None
 
     def get_attributes(self, date: DateTime = None, page: AttributeType = None) -> dict[str, Jx3UserAttributeInfo]:
-        '''筛选指定的属性'''
+        '''筛选指定的属性 TODO 筛选页面对PVE-DPS和HPS不准确'''
         attrs = self.attributes
         if date is not None:
             date = DateTime(date)
