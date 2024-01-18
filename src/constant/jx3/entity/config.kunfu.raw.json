@@ -66,7 +66,7 @@
   {
     "color": "#E6BC31",
     "belong": "少林",
-    "alias": ["yijing", "易筋经", "易筋", "易经"],
+    "alias": ["yijing", "yijin", "易筋经", "易筋", "易经"],
     "name": "易筋经",
     "gameid": 10003,
     "type": "dps"
@@ -122,7 +122,7 @@
   {
     "color": "#D6A16F",
     "belong": "丐帮",
-    "alias": ["xiaocheng", "丐帮", "笑尘决", "笑尘诀", "笑尘"],
+    "alias": ["xiaocheng","xiaochen", "丐帮", "笑尘决", "笑尘诀", "笑尘"],
     "name": "笑尘诀",
     "gameid": 10268,
     "type": "dps"
@@ -130,7 +130,7 @@
   {
     "color": "#f16040",
     "belong": "明教",
-    "alias": ["fanying", "焚影圣诀", "焚影圣决", "焚影"],
+    "alias": ["fanying", "fenying", "焚影圣诀", "焚影圣决", "焚影"],
     "name": "焚影圣诀",
     "gameid": 10242,
     "type": "dps"
