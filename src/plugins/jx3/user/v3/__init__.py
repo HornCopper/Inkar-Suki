@@ -67,6 +67,7 @@ async def jx3_attribute3(template: list[Any] = Depends(Jx3Arg.arg_factory)):
         'attributeTypeDict': [[x.name, x.value] for x in AttributeType],
         'kunfu': current.kungfu.to_dict(),  # 当前心法
         'stone_slots': Jx3Stone.slot,
+        'attributesTypeAvail': [], # TODO 缓存历史可用的页面
     }
 
     img = await get_render_image(f"src/views/jx3/user_attribute/common.html", result, delay=200)

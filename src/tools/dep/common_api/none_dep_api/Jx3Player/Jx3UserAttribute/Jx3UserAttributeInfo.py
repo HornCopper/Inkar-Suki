@@ -227,20 +227,29 @@ class BaseJx3UserAttribute(BaseUpdateAt):
             result[score] = self
             return  # 数据有效则直接记录
 
+        # 按装分排序
         prevs = sorted(list(result), key=lambda x: int(x), reverse=True)
         prevs = list(prevs)
-        prevs = filter(lambda x: x.person.qixue)  # 过滤有效奇穴的
-        prevs = list(prevs)
-        prev = result.get(prevs[0]) if prevs else None
 
-        self.person.qixue = prev.person.qixue  # 使用之前的记录
+        # 筛选有奇穴的
+        prevs = filter(lambda x: result[x].person.qixue, prevs)  # 过滤有效奇穴的
+        prevs = list(prevs)
+
+        # 取得该奇穴
+        prev = result.get(prevs[0]) if prevs else None
+        if prev:
+            prev = result[prev]
+            self.person.qixue = prev.person.qixue  # 使用之前的记录
+        else:
+            logger.warning(f'用户{self.person.to_dict()}当前无任何有效奇穴可用')
+
         result[score] = self
 
     def to_dict(self) -> dict:
         result = super().to_dict()
         result.update({
             'equips': [x.to_dict() for x in self.equips],
-            'kungfu': self.kungfu.name,
+            'kungfu': self.kungfu and self.kungfu.name,
             'matchDetail': self.matchDetail.__dict__,
             'person': self.person.to_dict(),
             'panel': [x.__dict__ for x in self.panel],
