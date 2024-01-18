@@ -31,9 +31,9 @@ class Jx3PlayerInfo(BaseUpdateAt):
         self.bodyId: str = data.get('bodyId')
         '''体态id'''
         self.tongName: str = data.get('tongName')
-        '''?'''
+        '''帮会名称'''
         self.tongId: str = data.get('tongId')
-        '''?'''
+        '''帮会id'''
         self.campName: str = data.get('campName')
         '''阵营：恶人谷 浩气盟 中立'''
         self.campId: str = data.get('campId')
