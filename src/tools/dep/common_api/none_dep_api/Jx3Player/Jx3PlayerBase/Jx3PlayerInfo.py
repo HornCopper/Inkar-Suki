@@ -4,6 +4,7 @@ from src.tools.config import Config
 from ...common import *
 from src.constant.jx3 import *
 
+
 class Jx3PlayerInfo(BaseUpdateAt):
     def __init__(self, data: dict = None) -> None:
         if data is None:
@@ -22,7 +23,8 @@ class Jx3PlayerInfo(BaseUpdateAt):
         '''角色区内id'''
         self.globalRoleId: str = data.get('globalRoleId')
         '''角色id'''
-        self.forceName: str = School.from_alias(data.get('forceName') or 'unknown')
+        school: School = School.from_alias(data.get('forceName') or 'unknown')
+        self.forceName: school and school.name
         '''门派'''
         self.forceId: str = data.get('forceId')
         '''门派id'''
