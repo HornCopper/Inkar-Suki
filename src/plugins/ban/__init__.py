@@ -82,16 +82,18 @@ async def _(bot: Bot, event: Event, args: Message = CommandArg()):
 
 
 @matcher_common_run.handle()
-async def common_match_ban_user(matcher: Matcher, event: Event):
+async def common_match_ban_user(matcher: Matcher, event: GroupMessageEvent):
     info = json.loads(read(bot_path.TOOLS + "/ban.json"))
     if str(event.user_id) not in info:
         return
 
     permit = Permission(event.user_id).judge(10, '黑名单用户免除封禁', log=False)
-    if permit.success:
+    if not permit.success:
+        matcher.stop_propagation()
         return
 
-    matcher.stop_propagation()
+    GroupActivity(event.group_id).update_general(1)
+
 mgr_cmd_echo_delay = on_command("mgr_cmd_echo_delay", aliases={'echovv'}, priority=5)
 
 echo_list = []
