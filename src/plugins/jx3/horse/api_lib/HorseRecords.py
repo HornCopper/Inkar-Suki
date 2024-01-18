@@ -65,7 +65,7 @@ class HorseRecords:
         if server is None:
             return
         self.server = server
-        if records:
+        if records is not None:
             self.load_records(records)
 
     @staticmethod
