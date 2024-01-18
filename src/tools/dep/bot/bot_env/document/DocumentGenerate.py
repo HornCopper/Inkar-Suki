@@ -3,7 +3,7 @@ from src.tools.dep.args import Jx3ArgsType
 from ..DocumentCatalog import permission, BaseCatalog
 from .DocumentItem import DocumentItem
 from .converter import *
-
+from ...group_env import *
 from src.tools.utils import *
 
 
@@ -87,7 +87,9 @@ class CommandRecord:
         sts: CommandRecord = CommandRecord.get_sts(caller_name, group)
         sts.favorite += favorite
 
-        CommandRecord.get_sts(caller_name, group, sts)
+        CommandRecord.get_sts(caller_name, group, sts)  # 存回
+
+        GroupActivity(group).update_command(1)
         if not sts.enable:
             return CommandRecordStatus.disabled
         return CommandRecordStatus.normal

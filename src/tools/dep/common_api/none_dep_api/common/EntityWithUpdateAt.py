@@ -11,15 +11,17 @@ class BaseUpdateAt:
         self.updateAt: float = data.get('updateAt') or DateTime().timestamp()
         '''数据更新时间'''
 
+    @overload
     def is_outdated(self, target: DateTime) -> bool:
         '''按保质期计算'''
         ...
 
-    def is_outdated(self, target: float) -> bool:
+    @overload
+    def is_outdated(self, target: float = 86400) -> bool:
         '''按保质最长间隔计算'''
         ...
 
-    def is_outdated(self, target: DateTime):
+    def is_outdated(self, target: DateTime = 86400):
         if isinstance(target, float) or isinstance(target, int):
             target = self.updateAt + float(target)
         if isinstance(target, DateTime):
