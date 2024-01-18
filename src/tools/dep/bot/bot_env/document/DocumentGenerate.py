@@ -104,7 +104,7 @@ class CommandRecord:
 class DocumentGenerator:
     commands: dict[str, DocumentItem] = {}
     _document: dict = None
-    _doc_lock = threading.RLock()
+    _doc_lock = threading.Lock()
 
     @staticmethod
     def register_single(arg: AssignableArg):

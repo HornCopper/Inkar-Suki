@@ -9,7 +9,7 @@ from src.tools.dep.data_server import *
 
 
 class IDailyMessage:
-    lock = threading.RLock()
+    lock = threading.Lock()
     CACHE_Daily: dict[str, str]  # day -> url_local
 
     def __init__(self, date: str, group_id: str, cron: SubjectCron, offset: int = 0) -> None:
