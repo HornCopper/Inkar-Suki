@@ -33,7 +33,7 @@ def Zone_mapping(server):
         return "电信五区"
     if server in {"长安城", "蝶恋花", "龙争虎斗"}:
         return "电信一区"
-    if server == {"青梅煮酒"}:
+    if server in {"青梅煮酒"}:
         return "双线四区"
     if server in {"破阵子", "天鹅坪"}:
         return "双线一区"
