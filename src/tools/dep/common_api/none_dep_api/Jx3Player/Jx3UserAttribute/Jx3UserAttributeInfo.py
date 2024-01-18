@@ -55,7 +55,7 @@ jeat = Jx3EquipAttributeType
 
 class BaseJx3UserAttributePage:
     types: list[tuple[AttributeType, str]] = [
-        (AttributeType.Unknown, '全部'),
+        (AttributeType.Unknown, '默认'),
         (AttributeType.PVP | AttributeType.DPS, 'PVP-DPS'),
         (AttributeType.PVE | AttributeType.DPS, 'PVE-DPS'),
         (AttributeType.PVP | AttributeType.HPS, 'PVP-HPS'),
@@ -63,7 +63,7 @@ class BaseJx3UserAttributePage:
         (AttributeType.PVP | AttributeType.TANK, 'PVE-TANK'),
         (AttributeType.PVE | AttributeType.TANK, 'PVE-TANK'),
         (AttributeType.PVX, '寻宝娱乐'),
-        (AttributeType.FLY, '起飞'),
+        (AttributeType.FLY, '轻功'),
     ]
     types_mapper = {
         'dps': 2,

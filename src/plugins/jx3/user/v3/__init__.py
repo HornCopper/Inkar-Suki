@@ -55,19 +55,20 @@ async def jx3_attribute3(template: list[Any] = Depends(Jx3Arg.arg_factory)):
     else:
         attributes = data.attributes
 
-    if not attributes:
+    if no_DATA := not attributes:
         attributes = {f'{data.current_score}': current}
     attributes = [data.attributes[x].to_view() for x in attributes]
 
     result = {
         'user': user,
         'attributes': attributes,
+        'no_data': no_DATA,
         'attributeType': page_setting and page_setting[0].value,
         'attributeTypes': [[x[0].name, x[0].value, x[1]] for x in BaseJx3UserAttributePage.types],
         'attributeTypeDict': [[x.name, x.value] for x in AttributeType],
         'kunfu': current.kungfu.to_dict(),  # 当前心法
         'stone_slots': Jx3Stone.slot,
-        'attributesTypeAvail': [], # TODO 缓存历史可用的页面
+        'attributesTypeAvail': [],  # TODO 缓存历史可用的页面
     }
 
     img = await get_render_image(f"src/views/jx3/user_attribute/common.html", result, delay=200)
