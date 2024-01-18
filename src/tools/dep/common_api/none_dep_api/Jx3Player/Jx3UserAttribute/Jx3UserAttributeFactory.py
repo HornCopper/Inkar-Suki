@@ -61,4 +61,6 @@ class Jx3UserAttributeFactory(IJx3UserAttributeFactory):
         logger.debug(f'load user attributes from tuilan:{server}@{uid}')
         data = await post_url(url="https://m.pvp.xoyo.com/mine/equip/get-role-equip", data=payload, headers=headers)
         response = Jx3UserAttributeFactory(json.loads(data)).data
+        if not response:
+            logger.warning(f'fail load attribute [{server}@{uid}]:{data}')
         return response
