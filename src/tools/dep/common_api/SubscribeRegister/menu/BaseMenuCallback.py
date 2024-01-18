@@ -88,7 +88,12 @@ class BaseMenuCallback:
                 return cache.groups
         cache = CurrentGroupStatus()
         BaseMenuCallback.group_cache[bot.self_id] = cache
-        group_list = await bot.call_api("get_group_list")
+        group_list = []
+        try:
+            await bot.call_api("get_group_list")
+        except Exception as ex:
+            logger.warning(f'fail loading group of bot:{bot.self_id},{ex}')
+            
         group_ids = [str(x.get("group_id")) for x in group_list]
         group_ids = extensions.distinct(group_ids)
 
