@@ -34,7 +34,7 @@ async def jx3_trade2(matcher: Matcher, state: T_State, event: GroupMessageEvent,
         matcher.set_arg("user_select_index", obMessage("1"))
         return
     elif len(all_id) == 0:  # 广搜没搜到，则转换为单搜
-        matcher.set_arg("user_select_index", obMessage("0"))
+        matcher.set_arg("user_select_index", obMessage("-1"))
         result = await get_jx3_trade_detail(matcher, state, event, [arg_server, arg_item])
         if isinstance(result, list):
             return await jx3_cmd_trade2.finish(result[0])
@@ -128,11 +128,11 @@ async def price_num_selected2(state: T_State, event: GroupMessageEvent, user_sel
 
 async def get_price_num_selected2(state: T_State, event: GroupMessageEvent, user_select_index: str):
     good_index = get_number(user_select_index)
-    all_ids = state["id"]
+    all_ids = state.get('id') or []
     logger.debug(f'price_num_selected2:{good_index}@{event.group_id},all={all_ids}')
     if good_index > len(all_ids) or good_index <= 0:
-        if good_index == 0:
-            return  # 无视0序号
+        if good_index == 0 or good_index == -1:
+            return  # 无视0序号,-1取消
         return f"无效的序号[{good_index}]，有效范围:1-{len(all_ids)}"
     target_id = all_ids[good_index-1]
     server = server_mapping(state["server"], event.group_id)
