@@ -16,7 +16,7 @@ class BaseMenuCallback:
         serializer=lambda data: dict([x, data[x].to_dict()] for x in data),
         deserializer=lambda data: dict([x, CurrentGroupStatus(data[x])] for x in data),
     ).value
-    cache_lock: threading.RLock = threading.RLock()
+    cache_lock: threading.Lock = threading.Lock()
 
     @classmethod
     def from_general_name(cls, subject_name: str, cron_level: int = 0, description: str = '事件订阅', log_name: str = '通用事件') -> BaseMenuCallback:
@@ -92,7 +92,7 @@ class BaseMenuCallback:
             BaseMenuCallback.group_cache[bot.self_id] = cache
             group_list = []
             try:
-                await bot.call_api("get_group_list")
+                group_list = await bot.call_api("get_group_list")
             except Exception as ex:
                 logger.warning(f'fail loading group of bot:{bot.self_id},{ex}')
                 

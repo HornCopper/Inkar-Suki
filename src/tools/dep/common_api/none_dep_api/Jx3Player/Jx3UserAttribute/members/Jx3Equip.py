@@ -10,7 +10,7 @@ class WCommonEnchant:
     '''
     大附魔属性
     '''
-    lock = threading.RLock()
+    lock = threading.Lock()
     ranges: list[tuple[str, int, int]] = None
     suffix_enum = {
         '帽': '帽',
