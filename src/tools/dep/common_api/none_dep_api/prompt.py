@@ -11,3 +11,6 @@ PROMPT_NumberInvalid = "唔……输入的不是数字哦，取消搜索。"
 PROMPT_NumberNotExist = "唔……序号不存在，取消搜索。"
 
 PROMPT_NODataAvailable = "唔……没有成功获取到任何数据哦~。"
+
+PROMPT_NoPermissionAdmin = "唔……只有管理员才有权哦~。"
+PROMPT_NoPermissionRoot = "唔……只有机器人主人才有权哦~。"

@@ -81,3 +81,8 @@ class permission(BaseCatalog):
             '''机器人群'''
             class apply(BaseCatalog):
                 '''处理申请'''
+
+        class command(BaseCatalog):
+            '''命令管理'''
+            class mapper(BaseCatalog):
+                '''命令映射'''
