@@ -1,7 +1,7 @@
 from ... import *
 
 
-@pytest.mark.skipif('get_tuilan_articles' not in dir(), reason='无api可用')
+@pytest.mark.skipif('Jx3TuilanNoticeFactory' not in dir(), reason='无api可用')
 @pytest.mark.skipif(not Config.jx3api_globaltoken, reason="无apitoken时不测试")
 def test_fetch():
     task = Jx3PlayerDetailInfo.from_username('破阵子', '烤冷面不加蛋')
@@ -17,7 +17,7 @@ def test_fetch():
     filebase_database.Database.save_all()
 
 
-@pytest.mark.skipif('get_tuilan_articles' not in dir(), reason='无api可用')
+@pytest.mark.skipif('Jx3TuilanNoticeFactory' not in dir(), reason='无api可用')
 def test_fetch_by_uid():
     task = Jx3PlayerDetailInfo.from_uid('破阵子', '1234')
     data = asyncio.run(task)
@@ -29,14 +29,14 @@ def test_fetch_by_uid():
     assert data.attributes
 
 
-@pytest.mark.skipif('get_tuilan_articles' not in dir(), reason='无api可用')
+@pytest.mark.skipif('Jx3TuilanNoticeFactory' not in dir(), reason='无api可用')
 def test_user_not_exist():
     task = Jx3PlayerDetailInfo.from_username('唯满侠', '包某人')
     data = asyncio.run(task)
     assert data.uid is None and data.err_msg == '玩家不存在'  # 不存在或无效的
 
 
-@pytest.mark.skipif('get_tuilan_articles' not in dir(), reason='无api可用')
+@pytest.mark.skipif('Jx3TuilanNoticeFactory' not in dir(), reason='无api可用')
 def test_fetch_and_generate():
     import src.plugins.jx3
     func = src.plugins.jx3.jx3_attribute3
@@ -57,7 +57,7 @@ def test_fetch_and_generate():
     mc.check_counter()
 
 
-@pytest.mark.skipif('get_tuilan_articles' not in dir(), reason='无api可用')
+@pytest.mark.skipif('Jx3TuilanNoticeFactory' not in dir(), reason='无api可用')
 def test_fetch_with_page():
     import src.plugins.jx3
     func = src.plugins.jx3.get_jx3_attribute3
