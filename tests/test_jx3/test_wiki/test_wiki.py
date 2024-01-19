@@ -34,7 +34,7 @@ def test_question():
 
 
 def test_noanswer():
-    arg_keywords = '小药专业表格'
+    arg_keywords = '小药好看点的！本赛季的！'
     task = get_guide(arg_keywords)
     result = asyncio.run(task)
     assert '尝试换个方式问问' in result.question.results[0][0]
