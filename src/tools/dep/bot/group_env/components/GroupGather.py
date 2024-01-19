@@ -4,7 +4,7 @@ from .CurrentGroupStatus import *
 from .GroupActivity import *
 from nonebot.adapters.onebot.v11 import Bot
 from nonebot import get_driver
-
+logger.debug(f'load dependence:{__name__}')
 
 class GroupGather:
     cache_lock: threading.Lock = threading.Lock()

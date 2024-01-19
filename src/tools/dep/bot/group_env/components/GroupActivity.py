@@ -1,5 +1,5 @@
 from ..GroupConfig import *
-
+logger.debug(f'load dependence:{__name__}')
 
 class GroupActivity(GroupConfig):
     '''统计群聊热度'''
