@@ -99,7 +99,7 @@ class Jx3ArgExt:
         '''要求有jx3api的token'''
         @functools.wraps(method)
         async def wrapper(*args, **kwargs):
-            from ...config.config import token
+            from src.tools.config import token
             if not token:
                 return [PROMPT_NoToken]
             return await method(*args, **kwargs)
@@ -110,7 +110,7 @@ class Jx3ArgExt:
         '''要求有推栏的token'''
         @functools.wraps(method)
         async def wrapper(*args, **kwargs):
-            from ...config.config import ticket
+            from src.tools.config import ticket
             if not ticket:
                 return [PROMPT_NoTicket]
             return await method(*args, **kwargs)
