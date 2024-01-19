@@ -1,18 +1,13 @@
 from ... import *
 
 
-@pytest.mark.skipif('get_tuilan_articles' not in dir(), reason='无api可用')
+@pytest.mark.skipif('Jx3TuilanNoticeFactory' not in dir(), reason='无api可用')
 def test_fetch_adopt():
-    mc = MessageCallback()
-    import src.plugins.jx3.notice
-    raw_matcher = src.plugins.jx3.notice.notice_cmd_fetch_article_adopt
-    func = src.plugins.jx3.notice.notice_fetch_article_adopt
-    src.plugins.jx3.notice.notice_cmd_fetch_article_adopt = mc
-    event = SFGroupMessageEvent()
-    mc.tag = '技改'
-    event.message = obMessage(mc.tag)
+    task = Jx3TuilanNoticeFactory.getNotice('新闻')
+    result = asyncio.run(task)
+    assert result.document.html
 
-    args = Jx3Arg.arg_factory(raw_matcher, event)
-    task = func(event, args)
-    asyncio.run(task)
-    mc.check_counter()
+    task = Jx3TuilanNoticeFactory.getNotice('公告')
+    result = asyncio.run(task)
+    assert result.document.html
+    pass
