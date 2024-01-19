@@ -1,7 +1,7 @@
 from __future__ import annotations
 from typing import Any
 from typing import overload
-from .config import *
+from src.tools.config import *
 
 from ..exceptions import *
 from ..data_server import *
@@ -99,7 +99,7 @@ class Jx3ArgExt:
         '''要求有jx3api的token'''
         @functools.wraps(method)
         async def wrapper(*args, **kwargs):
-            from .config import token
+            from ...config.config import token
             if not token:
                 return [PROMPT_NoToken]
             return await method(*args, **kwargs)
@@ -110,7 +110,7 @@ class Jx3ArgExt:
         '''要求有推栏的token'''
         @functools.wraps(method)
         async def wrapper(*args, **kwargs):
-            from .config import ticket
+            from ...config.config import ticket
             if not ticket:
                 return [PROMPT_NoTicket]
             return await method(*args, **kwargs)
