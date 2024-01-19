@@ -105,7 +105,7 @@ class MenuCallback(BaseMenuCallback):
         @return
             dict[str,tuple[str,str,str]] key:(机器人id 群号 是否应发 订阅来源)
         '''
-        tasks = await MenuCallback.get_all_groups()
+        tasks = await GroupGather.get_all_groups()
         result = {}
         for group_id in tasks:
             botname = tasks[group_id]
