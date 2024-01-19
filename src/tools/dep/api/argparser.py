@@ -49,6 +49,7 @@ class Jx3ArgCallback:
 
     def _convert_group_id(self, arg_value: str, **kwargs) -> tuple[str, bool]:
         '''TODO 群有效性判断'''
+        '''TODO 默认选中当前的群'''
         x, is_default = self._convert_number(arg_value, **kwargs)
         return x, is_default
 
