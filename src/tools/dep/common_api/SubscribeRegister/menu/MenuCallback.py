@@ -1,3 +1,4 @@
+from __future__ import annotations
 from .BaseMenuCallback import *
 # 订阅 主题 订阅等级
 __subjects: list[SubscribeSubject] = []
