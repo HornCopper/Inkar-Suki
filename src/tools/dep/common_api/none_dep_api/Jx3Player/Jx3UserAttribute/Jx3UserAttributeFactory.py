@@ -5,7 +5,7 @@ from src.tools.dep.data_server import *
 from src.tools.utils import *
 from .IJx3UserAttributeFactory import *
 from src.tools.dep.common_api.none_dep_api.tuilan import *
-from src.tools.dep.api.config import *
+from src.tools.config import *
 
 
 class Jx3UserAttributeFactory(IJx3UserAttributeFactory):
