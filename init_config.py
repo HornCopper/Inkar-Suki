@@ -66,7 +66,7 @@ class ArgumentInfo:
 
 
 def get_config_path() -> tuple[str, str]:
-    target_path = f'src{os.sep}tools{os.sep}'
+    target_path = f'src{os.sep}tools{os.sep}config{os.sep}'
     target_src_config = f'{target_path}config.sample.py'
     target_config = f'{target_path}config.py'
     return (target_src_config, target_config)
