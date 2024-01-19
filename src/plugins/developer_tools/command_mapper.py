@@ -40,7 +40,11 @@ async def dev_command_mapper(event: GroupMessageEvent):
     if new_command == raw_command:
         return
 
-    raw_args = str.join(' ', msg[1:])
+    new_commands = new_command.split('-')
+    append_args = msg[len(new_commands) + 1:]
+
+    raw_args = str.join(' ', append_args)
+    new_command = str.join(' ', new_commands)
     new_msg = f'{new_command} {raw_args}'
     event.message = obMessage(new_msg)
 
@@ -51,7 +55,7 @@ async def dev_command_mapper(event: GroupMessageEvent):
 dev_cmd_mgr_command_map = on_command(
     "mgr_command_map",
     name="设置映射",
-    aliases={},
+    aliases={'设置映射'},
     priority=5,
     description='设置命令的映射关系',
     catalog=permission.bot.command.mapper,
@@ -90,6 +94,9 @@ async def dev_mgr_command_map(bot: Bot, event: GroupMessageEvent, args=Depends(J
     # 此处导致无法应用单元测试
     personal_data = await bot.call_api("get_group_member_info", group_id=arg_grp, user_id=event.user_id, no_cache=True)
     group_admin = personal_data["role"] in ["owner", "admin"]
+
+    if arg_grp is None:
+        arg_grp = event.group_id
 
     if not permission.success and not group_admin:
         return await dev_cmd_mgr_command_map.finish(PROMPT_NoPermissionAdmin)
