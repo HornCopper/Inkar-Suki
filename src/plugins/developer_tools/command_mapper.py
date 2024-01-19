@@ -6,10 +6,13 @@ dev_global_command_record: dict[str, str] = filebase_database.Database(
 ).value
 
 
-def run_mapper(mapper: dict, raw_command: str) -> str:
+def run_mapper(mapper: dict, raw_command: str, max_depth=10) -> str:
     new_command = raw_command
     while tmp_cmd := mapper.get(new_command):
         new_command = tmp_cmd
+        max_depth -= 1
+        if not max_depth:
+            break
     if new_command == raw_command:
         return None
     return new_command
@@ -41,11 +44,12 @@ async def dev_command_mapper(event: GroupMessageEvent):
         return
 
     new_commands = new_command.split('-')
-    append_args = msg[len(new_commands) + 1:]
+    append_args = msg[len(new_commands):]
 
     raw_args = str.join(' ', append_args)
     new_command = str.join(' ', new_commands)
     new_msg = f'{new_command} {raw_args}'
+    logger.debug(f'map to new msg:{new_msg}')
     event.message = obMessage(new_msg)
 
 # TODO 实现占位符
@@ -82,7 +86,7 @@ async def dev_mgr_command_map(bot: Bot, event: GroupMessageEvent, args=Depends(J
     async def complete(action: str):
         msg = f'已更新{action}命令映射：{arg_prev_cmd} -> {arg_new_cmd}'
         logger.debug(msg)
-        return await dev_mgr_command_map.send(msg)
+        return await dev_cmd_mgr_command_map.send(msg)
 
     permission = Permission(event.user_id).judge(10, '命令主映射')
     if arg_glo:
@@ -91,12 +95,12 @@ async def dev_mgr_command_map(bot: Bot, event: GroupMessageEvent, args=Depends(J
         dev_global_command_record[arg_prev_cmd] = arg_new_cmd
         return await complete('全局')
 
+    if arg_grp is None:
+        arg_grp = event.group_id
+
     # 此处导致无法应用单元测试
     personal_data = await bot.call_api("get_group_member_info", group_id=arg_grp, user_id=event.user_id, no_cache=True)
     group_admin = personal_data["role"] in ["owner", "admin"]
-
-    if arg_grp is None:
-        arg_grp = event.group_id
 
     if not permission.success and not group_admin:
         return await dev_cmd_mgr_command_map.finish(PROMPT_NoPermissionAdmin)
