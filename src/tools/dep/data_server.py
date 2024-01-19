@@ -47,9 +47,10 @@ def server_mapping(server: str = None, group_id: str = None):
     '''
     根据服务器别名匹配服务器，若未输入则获取当前群所绑定的服务器
     '''
-    server: Server = Server.from_alias(server)
     if server:
-        return server.name
+        server: Server = Server.from_alias(server, log=False)
+        if server:
+            return server.name
     return getGroupServer(group_id=group_id)
 
 

@@ -1,5 +1,5 @@
 from ..SubscribeRegister import *
-
+from src.tools.dep.bot.group_env import *
 
 class GroupStatistics:
 
@@ -10,7 +10,7 @@ class GroupStatistics:
 
     @staticmethod
     async def run_statistics():
-        tasks = await BaseMenuCallback.get_all_groups()
+        tasks = await GroupGather.get_all_groups()
         for bot in tasks:
             # 若一个群有多个机器人，则每次记录多次，是正常逻辑
             groups = tasks[bot]
