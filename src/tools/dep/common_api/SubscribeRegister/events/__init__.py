@@ -1,7 +1,7 @@
 
 from ..SubscribeItem import *
 from ..callback import *
-from src.tools.dep.bot.bot_plugins import *
+from src.tools.dep.bot import *
 from . import events_base
 from . import events_gf
 from . import events_world_boss
