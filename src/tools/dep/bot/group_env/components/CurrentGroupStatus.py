@@ -1,5 +1,4 @@
-from ..events import *
-
+from src.tools.dep.common_api.none_dep_api.common.EntityWithUpdateAt import *
 class CurrentGroupStatus(BaseUpdateAt):
     groups: list[str]
 
