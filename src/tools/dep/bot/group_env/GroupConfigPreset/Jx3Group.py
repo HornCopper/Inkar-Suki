@@ -17,4 +17,5 @@ groupConfigInfos: dict[str, GroupConfigInfo] = {
     'bot': GroupConfigInfo('当前机器人'),
     'subscribe': GroupConfigInfo('当前订阅的事件', default={'日常': {}}),
     'activity': GroupConfigInfo('活跃度', default={}, infos=groupConfigActivity),
+    'command_map': GroupConfigInfo('命令映射', default={}),
 }

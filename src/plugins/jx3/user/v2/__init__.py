@@ -1,8 +1,8 @@
 from .api import *
 jx3_cmd_addritube_v2 = on_command(
     "jx3_addritube_v2",
-    name="属性",
-    aliases={'查装'},
+    name="属性v2",
+    aliases={'查装v2'},
     priority=5,
     catalog=permission.jx3.pvp.user.attribute,
     description="查询玩家角色的装备和属性",

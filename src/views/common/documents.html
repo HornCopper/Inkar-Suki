@@ -290,7 +290,7 @@
           x.favorite = x.favorite || 0
         })
         // 排除 v1 v2 等的
-        commands = commands.filter(x => x.name && x.name.indexOf('v') === -1)
+        // commands = commands.filter(x => x.name && x.name.indexOf('v') === -1)
         // 排除 纯英文的
         commands = commands.filter(x => /.*[\u4e00-\u9fa5]+.*$/.exec(x.name))
 
