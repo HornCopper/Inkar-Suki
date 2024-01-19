@@ -18,7 +18,7 @@ class Jx3EquipAttribute:
         '破防': AttributeType.DPS,
         '破招': AttributeType.DPS | AttributeType.PVE,
         '御': AttributeType.TANK,
-        '化': AttributeType.TANK | AttributeType.PVP,
+        '化': AttributeType.PVP,
         '疗': AttributeType.HPS,
     }
 
