@@ -51,6 +51,9 @@ class Jx3ArgCallback:
         '''TODO 群有效性判断'''
         '''TODO 默认选中当前的群'''
         x, is_default = self._convert_number(arg_value, **kwargs)
+        if x < int(1e6):
+            # 无效群号，返回默认
+            return None, True
         return x, is_default
 
     def _convert_bool(self, arg_value: str, **kwargs) -> int:
