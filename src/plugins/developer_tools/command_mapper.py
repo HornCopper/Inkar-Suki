@@ -30,7 +30,7 @@ async def dev_command_mapper(event: GroupMessageEvent):
     if new_command == raw_command:
         return
 
-    logger.debug(f'map to new msg:{new_command}')
+    logger.debug(f'map [{raw_command}] to new msg:{new_command}')
     event.message = obMessage(new_command)
 
 # TODO 实现占位符
@@ -64,17 +64,25 @@ dev_cmd_mgr_command_map = on_command(
 async def dev_mgr_command_map(bot: Bot, event: GroupMessageEvent, args=Depends(Jx3Arg.arg_factory)):
     arg_prev_cmd, arg_new_cmd, arg_grp, arg_glo = args
 
-    async def complete(action: str):
-        msg = f'已更新{action}命令映射：{arg_prev_cmd} -> {arg_new_cmd}'
+    async def complete(target_map: dict, action: str):
+        if arg_new_cmd is None:
+            action = f'移除{action}'
+            del target_map[arg_prev_cmd]
+        else:
+            action = f'更新{action}'
+            target_map[arg_prev_cmd] = arg_new_cmd
+
+        msg = f'已{action}命令映射：{arg_prev_cmd} -> {arg_new_cmd}'
         logger.debug(msg)
+        CommandMapper(target_map).flush()
         return await dev_cmd_mgr_command_map.send(msg)
 
     permission = Permission(event.user_id).judge(10, '命令主映射')
     if arg_glo:
         if not permission.success:
             return await dev_cmd_mgr_command_map.finish(permission.description)
-        dev_global_command_record[arg_prev_cmd] = arg_new_cmd
-        return await complete('全局')
+
+        return await complete(dev_global_command_record, '全局')
 
     if arg_grp is None:
         arg_grp = event.group_id
@@ -87,5 +95,4 @@ async def dev_mgr_command_map(bot: Bot, event: GroupMessageEvent, args=Depends(J
         return await dev_cmd_mgr_command_map.finish(PROMPT_NoPermissionAdmin)
 
     grp_config = GroupConfig(arg_grp).mgr_property('command_map')
-    grp_config[arg_prev_cmd] = arg_new_cmd
-    return await complete(f'群{arg_grp}')
+    return await complete(grp_config, f'群{arg_grp}')
