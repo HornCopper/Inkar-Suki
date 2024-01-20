@@ -121,7 +121,7 @@ async def on_jx3_event_recv(bot: Bot, event: RecvEvent):
         '玄晶': lambda x: check_server(x),
         '诛恶': lambda x: check_server(x),
         '开服': lambda x: check_server(x),
-        '818': lambda x: check_server(x) and x["name"] != "剑网3",  # 只看剑三的新闻
+        '818': lambda x: check_server(x), # 如果只看剑网3的话太少了 # and x["name"] != "剑网3",  # 只看剑三的新闻
         '机器人更新': lambda x: True,
     }
 
