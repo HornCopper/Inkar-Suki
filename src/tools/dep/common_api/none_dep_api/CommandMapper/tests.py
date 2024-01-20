@@ -35,7 +35,8 @@ def test_jx3_command_mapper():
         '属性': '属性v3',
         '配装-pve-$kunfu': '配装-$kunfu-pve',
         '配装-pvv-$kunfu': None,
+        '赤兔-$server': '抓马-$server-赤兔'
     }
     assert CommandMapper(mapper).convert('属性 而遇') == '属性v3 而遇'
     assert CommandMapper(mapper).convert('配装 pve 丐帮') == '配装 丐帮 pve'
-
+    assert CommandMapper(mapper).convert('赤兔 唯满侠') == '抓马 唯满侠 赤兔'
