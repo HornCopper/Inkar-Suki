@@ -17,10 +17,6 @@ async def nonebot_on_startup():
     if await ws_client.init():
         logger.info("Connected to JX3API successfully.")
 
-    logger.debug("Connecting to SFAPI...Please wait.")
-    if await sf_ws_client.init():
-        logger.info("Connected to SFAPI successfully.")
-
 
 @driver.on_shutdown
 async def nonebot_on_shutdown():
