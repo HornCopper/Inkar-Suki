@@ -63,7 +63,8 @@ def get_attribute_from_data(data: Jx3PlayerDetailInfo, arg_page: int) -> tuple[J
         page_setting = BaseJx3UserAttributePage.types[arg_page]
         return from_filter_type(page_setting[0])
 
-    return data.attributes and data.attributes[0], AttributeType.Unknown
+    current = data.attributes[data.current_score]
+    return current, AttributeType.Unknown
 
 
 async def get_jx3_attribute3(template: list[Any] = Depends(Jx3Arg.arg_factory)):
