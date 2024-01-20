@@ -6,18 +6,6 @@ dev_global_command_record: dict[str, str] = filebase_database.Database(
 ).value
 
 
-def run_mapper(mapper: dict, raw_command: str, max_depth=10) -> str:
-    new_command = raw_command
-    while tmp_cmd := mapper.get(new_command):
-        new_command = tmp_cmd
-        max_depth -= 1
-        if not max_depth:
-            break
-    if new_command == raw_command:
-        return None
-    return new_command
-
-
 @event_preprocessor
 async def dev_command_mapper(event: GroupMessageEvent):
     msg = event.message.extract_plain_text().split(' ')
@@ -32,12 +20,12 @@ async def dev_command_mapper(event: GroupMessageEvent):
     if new_command == raw_command:
         # 映射本群命令
         grp_config = GroupConfig(event.group_id, log=False)
-        if tmp := run_mapper(grp_config.mgr_property('command_map'), new_command):
+        if tmp := CommandMapper(grp_config.mgr_property('command_map')).convert(new_command):
             new_command = tmp
 
     if new_command == raw_command:
         # 映射全局命令
-        if tmp := run_mapper(dev_global_command_record, new_command):
+        if tmp := CommandMapper(dev_global_command_record).convert(new_command):
             new_command = tmp
 
     if new_command == raw_command:
