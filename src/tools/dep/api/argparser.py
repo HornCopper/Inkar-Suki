@@ -56,7 +56,7 @@ class Jx3ArgCallback:
             return None, True
         return x, is_default
 
-    def _convert_bool(self, arg_value: str, **kwargs) -> int:
+    def _convert_bool(self, arg_value: str, **kwargs) -> tuple[bool, bool]:
         if arg_value in {'同意', '可', '真', '好', '批准',
                          '准许', '要', '可以', '行', '成', '妥', '中',
                          '是', '对', '能', 'ok', 'OK', 'Ok', 'yes',
@@ -94,8 +94,6 @@ class Jx3ArgCallback:
         return subject.name, False
 
     def _convert_command(self, arg_value: str, **kwargs) -> tuple[str, bool]:
-        if arg_value == '[empty]':
-            return None, True
         return arg_value  # TODO 经允许注册有效的
 
 
@@ -159,6 +157,10 @@ class Jx3Arg(Jx3ArgCallback, Jx3ArgExt):
         获取当前参数的值，获取失败则返回None
         @return 返回值,是否是默认值
         '''
+        if arg_value == '[empty]':
+            # 手动设置为None
+            return None, False
+
         callback = self.callback.get(self.arg_type)
         if not callback:
             callback = Jx3ArgCallback._convert_string
@@ -237,7 +239,7 @@ def direct_argparser(raw_input: str, template_args: List[Jx3Arg], event: GroupMe
         template_index += 1  # 被匹配位每次+1
         x, is_default = match_value.data(arg_value, event)  # 将待匹配参数转换为数值
         result.append(x)  # 无论是否解析成功都将该位置参数填入
-        if x is None or is_default:
+        if x is None and is_default:
             if is_default and not match_value.is_optional:
                 return InvalidArgumentException(f'[{match_value.alias}]参数无效')
             continue  # 该参数去匹配下一个参数
