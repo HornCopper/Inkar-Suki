@@ -45,12 +45,13 @@ class CommandMapperStorage:
                 cur_map = new_map
 
             value = raw_mapper[m]
-            # 按参数长度降序以防止歧义
-            ordered_path = sorted(list(path_lib), key=lambda x: -len(x))
-            for path in ordered_path:
-                cmd_idx = path_lib[path]
-                value = value.replace(f'{CommandMapperStorage.FLAG_Args}{path}',
-                                      f'{CommandMapperStorage.FLAG_Args}{cmd_idx}')
+            if value:
+                # 只有有值时才进行替换，按参数长度降序以防止歧义
+                ordered_path = sorted(list(path_lib), key=lambda x: -len(x))
+                for path in ordered_path:
+                    cmd_idx = path_lib[path]
+                    value = value.replace(f'{CommandMapperStorage.FLAG_Args}{path}',
+                                          f'{CommandMapperStorage.FLAG_Args}{cmd_idx}')
             cur_map[CommandMapperStorage.FLAG_Value] = value
         return result
 
