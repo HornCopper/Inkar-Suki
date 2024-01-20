@@ -50,7 +50,7 @@
           </el-row>
         </el-card>
       </el-row>
-      <div v-if="no_data" class="banner-notice">注意！当前角色没有{{ currentFocus }}的装备数据！已切回默认</div>
+      <div v-if="no_data" class="banner-notice">注意！当前角色没有{{ currentFocus }}的装备数据！已切回默认[{{ result_attributeType }}]</div>
       <el-collapse v-model="expanded_items">
         <el-collapse-item name="1">
           <template #title>
