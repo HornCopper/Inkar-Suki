@@ -47,8 +47,9 @@ async def get_jx3_horse_info(template: list[Any]):
         # TODO use 责任链
         horse_record = [x for x in horse_record if arg_horse in x.horses_id]
         horse_data = [x for x in horse_data if arg_horse == x.key]
-        map_data = [x.map_data for x in horse_record]
-        map_data = extensions.distinct(map_data, lambda x: x.map_id)
+        target_map = extensions.distinct([x.map_id for x in horse_record])
+        target_map = dict([[x, True] for x in target_map])
+        map_data = [x for x in map_data if x.map_id in target_map]
 
     return (
         arg_server,
