@@ -1,4 +1,4 @@
-from jx3_event import *
+from .jx3_event import *
 from fastapi import Request, FastAPI
 from src.tools.config import *
 from src.tools.utils import *
