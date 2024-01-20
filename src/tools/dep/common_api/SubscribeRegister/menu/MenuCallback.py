@@ -1,4 +1,5 @@
 from __future__ import annotations
+from src.tools.dep.GroupStatistics import *
 from .BaseMenuCallback import *
 # 订阅 主题 订阅等级
 __subjects: list[SubscribeSubject] = []

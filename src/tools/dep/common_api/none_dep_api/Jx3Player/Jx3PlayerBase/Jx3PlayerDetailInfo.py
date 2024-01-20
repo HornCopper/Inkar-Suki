@@ -47,7 +47,7 @@ class Jx3PlayerDetailInfo:
         user = Jx3PlayerInfoWithInit.from_id(server, username, cache_length=7*86400)  # 一周内不更新
         if not user.roleId:
             tar = Jx3PlayerDetailInfo(None, server, None, {}, user)
-            tar.err_msg = '玩家不存在'
+            tar.err_msg = '未找到这个id的角色，用uid直接搜索试试'
             return tar
         return await cls.from_uid(user.serverName, user.roleId, cache_length=cache_length)
 
