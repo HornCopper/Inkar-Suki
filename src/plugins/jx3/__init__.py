@@ -119,14 +119,14 @@ async def on_jx3_event_recv(bot: Bot, event: RecvEvent):
     message = event.get_message()
     if message == "False":
         return
-    groups = os.listdir(bot_path.DATA)
     def check_server(x): return group_srv and x['server'] == group_srv
     '''已绑定服务器，且与事件一致'''
     type_callback = {
         '玄晶': lambda x: check_server(x),
         '诛恶': lambda x: check_server(x),
         '开服': lambda x: check_server(x),
-        '818': lambda x: check_server(x) and x["name"] != "剑网3"  # 只看剑三的新闻
+        '818': lambda x: check_server(x) and x["name"] != "剑网3",  # 只看剑三的新闻
+        '机器人更新': lambda x: True,
     }
 
     menu_sender = MenuCallback.from_general_name(message.get('type') or 'unknown')

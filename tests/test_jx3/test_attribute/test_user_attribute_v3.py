@@ -92,7 +92,6 @@ def test_fetch_with_page():
     assert AttributeType(result.get('attributeType')) == AttributeType.PVE | AttributeType.HPS
     assert result.get('attributes')
 
-
     event.message = obMessage("属性 纵月 藏忧 pvepvp")
     args = Jx3Arg.arg_factory(src.plugins.jx3.jx3_cmd_attribute3, event)
     task = func(args)

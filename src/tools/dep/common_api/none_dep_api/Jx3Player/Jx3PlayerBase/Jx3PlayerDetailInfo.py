@@ -13,7 +13,24 @@ class Jx3PlayerDetailInfo:
         self.__user = user
         self.err_msg = None
 
-    def get_attributes(self, date: DateTime = None, page: AttributeType = None) -> dict[str, Jx3UserAttributeInfo]:
+    def key(self):
+        return f'{self.server}@{self.uid}'
+
+    def get_attributes_history_by_attr_type(self, start: DateTime = None, end: DateTime = None) -> list[tuple[int, int]]:
+        '''获取历史装分变动记录'''
+        raise NotImplemented()
+
+    def get_attributes_by_attr_type(self, attr_type: AttributeType) -> Jx3UserAttributeInfo:
+        '''直接通过缓存获取最新配置'''
+        key = self.key
+        if his := BaseJx3UserAttribute.cache_latest_attr.get(key):
+            if isinstance(attr_type, AttributeType):
+                attr_type = attr_type.value
+            attr_score = his.get(str(attr_type.value))
+            return self.attributes.get(attr_score)
+        return None
+
+    def get_attributes_by_page(self, date: DateTime = None, page: AttributeType = None) -> dict[str, Jx3UserAttributeInfo]:
         '''筛选指定的属性 TODO 筛选页面对PVE-DPS和HPS不准确'''
         attrs = self.attributes
         if date is not None:

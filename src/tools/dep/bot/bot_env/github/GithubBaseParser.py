@@ -1,6 +1,6 @@
 import re
-from nonebot.log import logger
-from nonebot.adapters.onebot.v11 import MessageSegment as ms
+from nonebot.adapters.onebot.v11 import Event, MessageSegment as ms
+
 """
 解析类，没什么好看的。
 
@@ -8,7 +8,7 @@ from nonebot.adapters.onebot.v11 import MessageSegment as ms
 """
 
 
-class main:
+class GithubBaseParser:
     def push(body):
         pusher = body["pusher"]["name"]
         repo_name = body["repository"]["full_name"]

@@ -13,6 +13,17 @@ class CommandMapperStorage:
 
     def __init__(self, mapper: dict) -> None:
         self._mapper = mapper
+        _ = self.mapper # 初始化
+
+    @property
+    def map_id(self) -> int:
+        return id(self._mapper)
+
+    def flush(self):
+        '''重置缓存'''
+        m_id = self.map_id
+        if m_id in CommandMapperStorage.cache:
+            del CommandMapperStorage.cache[self.map_id]
         _ = self.mapper
 
     def generate(self):
