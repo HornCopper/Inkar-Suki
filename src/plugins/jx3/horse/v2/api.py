@@ -75,7 +75,7 @@ def get_horse_list_by_valids(valids: list[HorseEventRecord]):
     return horse_data
 
 
-def handle_horse_to_export(valids: list[HorseEventRecord]) -> tuple[list[HorseRecord], list[MapDataWithHorse], list[HorseInfo]]:
+def handle_horse_to_export(valids: list[HorseEventRecord]) -> tuple[list[HorseEventRecord], list[MapDataWithHorse], list[HorseInfo]]:
     map_data = extensions.distinct(valids, lambda x: x.map_id)
     map_data = [MapDataWithHorse(x.map_horse_data, x.map_data) for x in map_data]
 
@@ -92,7 +92,7 @@ def handle_horse_to_export(valids: list[HorseEventRecord]) -> tuple[list[HorseRe
     return valids_records, map_data, horse_data
 
 
-async def get_horse_reporter(server: str) -> tuple[list[HorseRecord], list[MapDataWithHorse], list[HorseInfo]]:
+async def get_horse_reporter(server: str) -> tuple[list[HorseEventRecord], list[MapDataWithHorse], list[HorseInfo]]:
     '''获取指定服务器当前马场状态'''
     if not server:
         return PROMPT_ServerNotExist
