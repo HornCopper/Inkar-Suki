@@ -1,5 +1,7 @@
-from ..SubscribeRegister import *
 from src.tools.dep.bot.group_env import *
+from .GroupGather import GroupGather
+from src.tools.dep.bot.bot_plugins import scheduler
+
 
 class GroupStatistics:
 
