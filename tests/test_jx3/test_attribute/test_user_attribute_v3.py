@@ -69,28 +69,28 @@ def test_fetch_with_page():
     task = func(args)
     result = asyncio.run(task)
     assert AttributeType(result.get('attributeType')) == AttributeType.PVP | AttributeType.HPS
-    assert result.get('attributes')
+    assert result.get('attribute')
 
     event.message = obMessage("属性 纵月 藏忧 pvpdps")
     args = Jx3Arg.arg_factory(src.plugins.jx3.jx3_cmd_attribute3, event)
     task = func(args)
     result = asyncio.run(task)
     assert AttributeType(result.get('attributeType')) == AttributeType.PVP | AttributeType.DPS
-    assert result.get('attributes')
+    assert result.get('attribute')
 
     event.message = obMessage("属性 纵月 藏忧 pve")
     args = Jx3Arg.arg_factory(src.plugins.jx3.jx3_cmd_attribute3, event)
     task = func(args)
     result = asyncio.run(task)
     assert AttributeType(result.get('attributeType')) == AttributeType.PVE
-    assert result.get('attributes')
+    assert result.get('attribute')
 
     event.message = obMessage("属性 纵月 藏忧 pvehps")
     args = Jx3Arg.arg_factory(src.plugins.jx3.jx3_cmd_attribute3, event)
     task = func(args)
     result = asyncio.run(task)
     assert AttributeType(result.get('attributeType')) == AttributeType.PVE | AttributeType.HPS
-    assert result.get('attributes')
+    assert result.get('attribute')
 
     event.message = obMessage("属性 纵月 藏忧 pvepvp")
     args = Jx3Arg.arg_factory(src.plugins.jx3.jx3_cmd_attribute3, event)
