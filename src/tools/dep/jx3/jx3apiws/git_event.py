@@ -13,12 +13,17 @@ class GithubUpdateEvent(RecvEvent):
     __event__ = "WsRecv.GithubUpdate"
     message_type = "GithubUpdate"
 
+    @property
+    def log(self) -> str:
+        return self.get_message().get('msg')
+
     @overrides(RecvEvent)
     def get_message(self) -> dict:
         return {
             "type": "机器人更新",
             "msg": self.server
         }
+
 
 @app.post(Config.web_path)
 async def on_git_update(req: Request):
