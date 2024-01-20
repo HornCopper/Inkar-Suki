@@ -88,42 +88,58 @@ class BaseJx3UserAttribute(BaseUpdateAt):
         判断装备化劲是否>0
         '''
         result = BaseJx3UserAttributePage()
-        equip_unmatch = []
-        
+
         # 按心法匹配当前类型
         kun_type = self.kungfu.type or 'dps'
         result.attr_type |= BaseJx3UserAttributePage.eq_attrs_mapper.get(kun_type)
-        
-        for equip in self.equips:
+
+        # 内功或外功
+        kun_ptype = self.kungfu.practice_type
+        kun_ptype = kun_ptype if isinstance(kun_ptype, list) else [kun_ptype]
+
+        # 属性常用常数
+        att_default = AttributeType.Unknown
+        att_dict = Jx3EquipAttribute.attribute_types
+
+        def handle_primary_attr(equip: Jx3Equip):
             if equip.index == 12:
-                continue  # 忽略主武器
+                return  # 忽略主武器
             # if equip.index == 13:
-            #     continue  # 忽略副武器
+            #     return  # 忽略副武器
 
-            # 通过大附魔判断
-            enchant_suffix = equip.enchant_suffix
-            if enchant_suffix:
-                result.attr_type |= BaseJx3UserAttributePage.eq_attrs_mapper.get(enchant_suffix)
+            # 按装备主属性判断
+            primary_attr: AttributeType = extensions.reduce(
+                equip.attributes,
+                lambda prev, cur: prev | (att_dict.get(cur.primary_attribute) or att_default),
+                att_default,
+            )
+            result.attr_type |= primary_attr
 
-            # 判断异常装备，装备适用心法是否与当前心法相同
-            # TODO 内功 外功 区分
+        equip_unmatch = []
+        def handle_kunfu_attr(equip: Jx3Equip):
+            '''判断异常装备，装备适用心法是否与当前心法相同'''
             e_kun = self.equips[0].belongs.get('kungfu') or ''
             e_kun = e_kun.split(',')
+
+            if e_kun[0] in kun_ptype:
+                return  # 当为精简时先匹配内功外功
+
             match = extensions.find(e_kun, lambda x: x in self.kungfu.alias)
             if not match:
                 equip_unmatch.append(equip)  # 心法不符
 
+        def handle_enchant(equip: Jx3Equip):
+            '''通过大附魔判断'''
+            enchant_suffix = equip.enchant_suffix
+            if not enchant_suffix:
+                return
+            result.attr_type |= BaseJx3UserAttributePage.eq_attrs_mapper.get(enchant_suffix)
 
-            # 按装备主属性判断
-            default = AttributeType.Unknown
-            datas = Jx3EquipAttribute.attribute_types
-            primary_attr: AttributeType = extensions.reduce(
-                equip.attributes,
-                lambda prev, cur: prev | (datas.get(cur.primary_attribute) or default),
-                default,
-            )
-            result.attr_type |= primary_attr
-
+        for equip in self.equips:
+            handle_enchant(equip)
+            handle_kunfu_attr(equip)
+            handle_primary_attr(equip)
+            
         result.equip_unmatch = equip_unmatch
         return result
 
