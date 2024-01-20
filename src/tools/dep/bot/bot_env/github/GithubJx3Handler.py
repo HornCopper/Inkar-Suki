@@ -19,9 +19,3 @@ class GithubHandle(GithubBaseParser):
         sender = body["sender"]["login"]
         source = body["pull_request"]["head"]["label"]
         return f'{Config.name}准备要更新啦~本次是来自{sender}的{action}。更新到{source}'
-
-    def check_run(body):
-        return ''
-
-    def workflow_job(body):
-        return ''
