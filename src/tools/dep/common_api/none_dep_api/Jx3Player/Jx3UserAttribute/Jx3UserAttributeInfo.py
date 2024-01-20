@@ -141,8 +141,8 @@ class BaseJx3UserAttribute(BaseUpdateAt):
             BaseJx3UserAttribute.cache[key] = BaseJx3UserSummary(current_prop.to_dict())
 
             # 记录当前主属性
-            if latest := BaseJx3UserAttribute.cache_latest_attr[key]:
-                pass
+            if latest := BaseJx3UserAttribute.cache_latest_attr.get(key):
+                pass # 已有结构，则不创建
             else:
                 latest = {}
                 BaseJx3UserAttribute.cache_latest_attr[key] = latest
