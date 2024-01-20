@@ -1,5 +1,4 @@
 from src.tools.dep import *
-from .parse_v2 import GithubHandle
 from .parse import main
 from src.tools.config import Config
 from src.tools.file import read
