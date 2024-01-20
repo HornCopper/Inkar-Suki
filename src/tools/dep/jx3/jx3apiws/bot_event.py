@@ -1,6 +1,7 @@
 from .events import *
 from src.tools.dep.bot import *
 
+
 class BotEventController:
     @staticmethod
     async def raise_notice(message: str):
@@ -22,9 +23,13 @@ class BotEventController:
             处理收到的ws数据，分发给机器人
         """
         try:
-            ws_obj = json.loads(message)
-            data = WsData.parse_obj(ws_obj)
-            event = EventRister.get_event(data)
+            if isinstance(message, str):
+                ws_obj = json.loads(message)
+                data = WsData.parse_obj(ws_obj)
+                event = EventRister.get_event(data)
+            else:
+                event:RecvEvent = message
+
             if event:
                 logger.debug(event.log)
                 bots = get_bots()

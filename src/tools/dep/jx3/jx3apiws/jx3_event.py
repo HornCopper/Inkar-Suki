@@ -35,7 +35,7 @@ class Jx3WebSocket:
         try:
             while True:
                 msg = await self.connect.recv()
-                asyncio.create_task(self._handle_msg(msg))
+                asyncio.create_task(BotEventController.handle_msg(msg))
 
         except ConnectionClosedOK:
             logger.debug("<g>jx3api > ws链接已主动关闭！</g>")
