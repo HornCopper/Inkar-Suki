@@ -8,8 +8,7 @@ dev_global_command_record: dict[str, str] = filebase_database.Database(
 
 @event_preprocessor
 async def dev_command_mapper(event: GroupMessageEvent):
-    msg = event.message.extract_plain_text().split(' ')
-    raw_command = msg[0]
+    raw_command = event.message.extract_plain_text().split(' ')
     new_command = raw_command
 
     # TODO 暂不实现 # 映射个人命令
