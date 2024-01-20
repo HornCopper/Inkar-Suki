@@ -16,7 +16,7 @@ class BaseJx3UserAttribute(BaseUpdateAt):
     '''key:lastupdate'''
 
     c_latest_path = f'{c_path}_latest'
-    cache_latest_attr: dict[str, dict[str, str]] = filebase_database.Database(c_latest_path)
+    cache_latest_attr: dict[str, dict[str, str]] = filebase_database.Database(c_latest_path).value
     '''key:user-key key2:attr_type'''
 
     @property
