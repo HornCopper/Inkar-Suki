@@ -33,7 +33,7 @@ async def on_git_update(req: Request):
     current_handler = GithubHandle
     # current_handler = GithubBaseParser
     if not hasattr(current_handler, event):
-        logger.warning(f'on_git_update invalid event:{event}')
+        logger.warning(f'on_git_update invalid event:{event} -> {body}')
         return 
     message = getattr(current_handler, event)(body)
     if not message:
