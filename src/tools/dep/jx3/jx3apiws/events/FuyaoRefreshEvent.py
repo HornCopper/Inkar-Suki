@@ -9,9 +9,7 @@ class FuyaoRefreshEvent(RecvEvent):
     message_type = "FuyaoRefresh"
     time: str
 
-    @validator("time", pre=True)
-    def check_time(cls, v):
-        return DateTime(int(v)).tostring("%H:%M:%S")
+
 
     @property
     def log(self) -> str:
