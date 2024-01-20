@@ -25,3 +25,6 @@ class GithubHandle(GithubBaseParser):
 
     def workflow_job(body):
         return ''
+
+    def workflow_run(body):
+        return ''
