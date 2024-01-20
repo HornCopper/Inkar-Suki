@@ -13,6 +13,7 @@ class CommandMapperStorage:
 
     def __init__(self, mapper: dict) -> None:
         self._mapper = mapper
+        _ = self.mapper
 
     def generate(self):
         result = {}
@@ -27,8 +28,8 @@ class CommandMapperStorage:
                     cur_map = next_map
                     continue
 
-                # 命令允许参数
-                if cmd.startswith(CommandMapperStorage.FLAG_Args):
+                # 命令允许参数。第一个不允许使用参数
+                if idx > 0 and cmd.startswith(CommandMapperStorage.FLAG_Args):
                     cmd_name = cmd[1:]
                     # 记录该路径参数名称
                     path_lib[cmd_name] = idx
