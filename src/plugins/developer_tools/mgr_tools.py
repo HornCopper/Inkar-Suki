@@ -221,7 +221,7 @@ async def _(state: T_State, event: Event):
     ]
     steps = [f'{index+1}.{x}' for (index, x) in enumerate(steps)]
     steps = str.join('\n', steps)
-    return await apply.finish(f'是要领养{bot}吗，免费的：\n{steps}')
+    return await apply.finish(f'是要领养{Config.name}({bot})吗，免费的：\n{steps}')
 
 
 # @apply.got("group", prompt="感谢您申请使用Inkar Suki，接下来请发送您所为之申请的群聊的群号。")

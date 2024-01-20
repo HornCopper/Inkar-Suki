@@ -13,11 +13,15 @@ class HorseRecord(HorseItem):
             return
         self._data = data
         self.id = data.get('id')
+        '''事件id'''
         self._content = data.get('content')
         self._map_name = data.get('map_name')
         self.map_id = str(data.get('map_id'))
+        '''地图id'''
         self.timestamp = DateTime(data.get('time'))
+        '''预测时间'''
         self.subtype = data.get('subtype')
+        '''消息来源[npc_chat forecast ...]'''
         self.__init = False
 
     @property
