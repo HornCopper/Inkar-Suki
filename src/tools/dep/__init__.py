@@ -1,6 +1,7 @@
+from sgtpyutils.logger import logger
+logger.debug(f'load dependence:{__name__}')
 from .bot import *
 from .jx3 import *
 from .api import *
-from sgtpyutils.logger import logger
-logger.debug(f'load dependence:{__name__}')
+from .GroupStatistics import *
 logger.debug(f'load dependence completed:{__name__}')
