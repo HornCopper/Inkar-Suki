@@ -54,7 +54,3 @@ class RecvEvent(BaseEvent, extra=Extra.ignore):
     @overrides(BaseEvent)
     def is_tome(self) -> bool:
         return False
-
-    @validator("time", pre=True)
-    def check_time(cls, v):
-        return DateTime(int(v)).tostring("%H:%M:%S")

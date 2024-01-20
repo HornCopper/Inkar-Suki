@@ -4,7 +4,7 @@ from .Jx3PlayerLoader import *
 
 
 class Jx3PlayerDetailInfo:
-    def __init__(self, uid: str, server: str, current_score: str, attributes: dict[str, Jx3UserAttributeInfo], user: Jx3PlayerInfo = None) -> None:
+    def __init__(self, uid: str, server: str, current_score: str, attributes: Jx3UserAttributeInfo, user: Jx3PlayerInfo = None) -> None:
         self.current_score = str(current_score)
         self.attributes = attributes
         '''dict[str,Jx3UserAttributeInfo] 装分:属性'''

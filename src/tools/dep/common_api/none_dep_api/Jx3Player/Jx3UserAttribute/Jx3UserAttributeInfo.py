@@ -16,7 +16,7 @@ class BaseJx3UserAttribute(BaseUpdateAt):
     '''key:lastupdate'''
 
     c_latest_path = f'{c_path}_latest'
-    cache_latest_attr: dict[str, dict[str, str]] = filebase_database.Database(c_latest_path)
+    cache_latest_attr: dict[str, dict[str, str]] = filebase_database.Database(c_latest_path).value
     '''key:user-key key2:attr_type'''
 
     @property
@@ -141,8 +141,8 @@ class BaseJx3UserAttribute(BaseUpdateAt):
             BaseJx3UserAttribute.cache[key] = BaseJx3UserSummary(current_prop.to_dict())
 
             # 记录当前主属性
-            if latest := BaseJx3UserAttribute.cache_latest_attr[key]:
-                pass
+            if latest := BaseJx3UserAttribute.cache_latest_attr.get(key):
+                pass # 已有结构，则不创建
             else:
                 latest = {}
                 BaseJx3UserAttribute.cache_latest_attr[key] = latest

@@ -17,10 +17,6 @@ class HorseRefreshEvent(RecvEvent):
     time: str
     """推送时间"""
 
-    @validator("time", pre=True)
-    def check_time(cls, v):
-        return DateTime(int(v)).tostring("%H:%M:%S")
-
     @property
     def log(self) -> str:
         log = f"马驹刷新推送：[{self.server}]的[{self.map}]将要在 {str(self.min)}-{str(self.max)} 分后刷新马驹。"
