@@ -63,7 +63,8 @@ def get_attribute_from_data(data: Jx3PlayerDetailInfo, arg_page: int) -> tuple[J
         page_setting = BaseJx3UserAttributePage.types[arg_page]
         return from_filter_type(page_setting[0])
 
-    return data.attributes and data.attributes[0], AttributeType.Unknown
+    current = data.attributes[data.current_score]
+    return current, AttributeType.Unknown
 
 
 async def get_jx3_attribute3(template: list[Any] = Depends(Jx3Arg.arg_factory)):
@@ -78,13 +79,14 @@ async def get_jx3_attribute3(template: list[Any] = Depends(Jx3Arg.arg_factory)):
     user = data.user.to_dict()
     current = data.attributes[data.current_score]
     
-    filter_type = AttributeType.Unknown
-    if arg_page == 0: # 为0时直接用当前
+    if arg_page == '0': # 为0时直接用当前
         attribute = current
+        filter_type = AttributeType.Unknown
     else:
         attribute, filter_type = get_attribute_from_data(data, arg_page)
-        if no_DATA := not attribute:
-            attribute = current
+
+    if no_DATA := not attribute:
+        attribute = current
 
     # 实际结果的类型
     result_attributeType = attribute and attribute.page.attr_type
@@ -98,7 +100,7 @@ async def get_jx3_attribute3(template: list[Any] = Depends(Jx3Arg.arg_factory)):
         'attribute': attribute,
         'no_data': no_DATA,
         'attributeType': filter_type.value,
-        'result_attributeType': result_attributeType,
+        'result_attributeType': result_attributeType.name,
         'attributeTypes': [[x[0].name, x[0].value, x[1]] for x in BaseJx3UserAttributePage.types],
         'attributeTypeDict': [[x.name, x.value] for x in AttributeType],
         'kunfu': current.kungfu.to_dict(),  # 当前心法
