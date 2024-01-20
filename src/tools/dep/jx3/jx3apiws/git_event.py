@@ -11,7 +11,7 @@ async def on_git_update(req: Request):
     body = await req.json()
     repo = body["repository"]["full_name"]
     event = req.headers.get("X-GitHub-Event")
-    current_handler = GithubJx3Handler
+    current_handler = GithubHandle
     # current_handler = GithubBaseParser
     message = getattr(current_handler, event)(body)
     logger.debug(f'on_git_update new message:{message}')
