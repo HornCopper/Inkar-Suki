@@ -512,7 +512,7 @@
   .command-mini-card-title {
     background-color: #333;
   }
-  
+
   .banner-notice {
     margin: 0.5rem;
     background-color: #db0700;
@@ -548,14 +548,14 @@
       methods.get_kunfu_icon = (kunfu) => `https://img.jx3box.com/image/xf/${kunfu.gameid}.png`
       methods.get_stone_icon = (level) => `../assets/image/stone/${level}.png`
       methods.getEquipFlag = (equip) => {
-          const { maxStrengthLevel, attributes } = equip
-          const skills = attributes.filter(x => x.name.indexOf('SkillEvent') > -1)
-          if (skills.length > 1) return '大橙'
-          if (maxStrengthLevel > 6) return '小橙'
-          if (skills.length === 1) return '特效'
-          if (maxStrengthLevel < 6) return '精简'
-          return ''
-        }
+        const { maxStrengthLevel, attributes } = equip
+        const skills = attributes.filter(x => x.name.indexOf('SkillEvent') > -1)
+        if (skills.length > 1) return '大橙'
+        if (maxStrengthLevel > 6) return '小橙'
+        if (skills.length === 1) return '特效'
+        if (maxStrengthLevel < 6) return '精简'
+        return ''
+      }
       methods.getEquipFrame = equip => {
         const { maxStrengthLevel, strengthLevel } = equip
         const img = computes.img_res.value
@@ -576,8 +576,8 @@
       })
 
       computes.attr = computed(() => {
-        const { attributes } = params_data
-        return attributes && attributes[0] || {}
+        const { attribute } = params_data
+        return attribute || {}
       })
       computes.equip_dict = computed(() => {
         const attr = computes.attr.value
@@ -609,7 +609,7 @@
       console.log(params_data)
       return {
         user: {},
-        attributes: [],
+        attribute: {},
         page: 0,
         pages: [], // [[name,value],]
 
