@@ -32,7 +32,12 @@ async def on_git_update(req: Request):
     event = req.headers.get("X-GitHub-Event")
     current_handler = GithubHandle
     # current_handler = GithubBaseParser
+    if not hasattr(current_handler, event):
+        logger.warning(f'on_git_update invalid event:{event} -> {body}')
+        return 
     message = getattr(current_handler, event)(body)
+    if not message:
+        return
     logger.debug(f'on_git_update new message:{message}')
 
     event = GithubUpdateEvent()
