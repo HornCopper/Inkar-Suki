@@ -89,6 +89,11 @@ class BaseJx3UserAttribute(BaseUpdateAt):
         '''
         result = BaseJx3UserAttributePage()
         equip_unmatch = []
+        
+        # 按心法匹配当前类型
+        kun_type = self.kungfu.type or 'dps'
+        result.attr_type |= BaseJx3UserAttributePage.eq_attrs_mapper.get(kun_type)
+        
         for equip in self.equips:
             if equip.index == 12:
                 continue  # 忽略主武器
@@ -108,9 +113,6 @@ class BaseJx3UserAttribute(BaseUpdateAt):
             if not match:
                 equip_unmatch.append(equip)  # 心法不符
 
-            # 按心法匹配当前类型
-            kun_type = self.kungfu.type or 'dps'
-            result.attr_type |= BaseJx3UserAttributePage.eq_attrs_mapper.get(kun_type)
 
             # 按装备主属性判断
             default = AttributeType.Unknown
