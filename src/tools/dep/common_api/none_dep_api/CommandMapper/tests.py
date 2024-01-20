@@ -24,6 +24,7 @@ def test_command_mapper_common():
 
     assert CommandMapper(mapper).convert('张x 北京') == '张y 北京'
     assert CommandMapper(mapper).convert('张x1 北京') == '张y 北京'
+    assert CommandMapper(mapper).convert('张x1') == '张y'
 
     assert CommandMapper(mapper).convert('你好 北京 小狗') == '你好 小狗 北京'
     assert CommandMapper(mapper).convert('你好 山东 大狗 1') == '你好 大狗 山东 1'
@@ -33,13 +34,8 @@ def test_jx3_command_mapper():
     mapper = {
         '属性': '属性v3',
         '配装-pve-$kunfu': '配装-$kunfu-pve',
+        '配装-pvv-$kunfu': None,
     }
     assert CommandMapper(mapper).convert('属性 而遇') == '属性v3 而遇'
     assert CommandMapper(mapper).convert('配装 pve 丐帮') == '配装 丐帮 pve'
 
-
-def test_first_command_not_allow():
-    mapper = {
-        '$x': '属性v3',
-    }
-    assert CommandMapper(mapper) is None

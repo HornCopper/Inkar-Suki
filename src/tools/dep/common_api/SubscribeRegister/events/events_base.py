@@ -8,3 +8,8 @@ def run(__subjects: list):
     __subjects.append(SubscribeSubject("更新", "当游戏有新版本时进行推送。"))
     __subjects.append(SubscribeSubject("818", "当群聊绑定的服务器的相关的贴吧出现八卦帖子时推送。"))
     __subjects.append(SubscribeSubject("诛恶", "【暂时关闭】当群聊绑定的服务器诛恶事件触发时进行推送。"))
+
+
+def run_after(__subjects: list):
+    '''加载完成其他后加载此处'''
+    __subjects.append(SubscribeSubject("机器人更新", "当机器人有新的更新时推送。"))

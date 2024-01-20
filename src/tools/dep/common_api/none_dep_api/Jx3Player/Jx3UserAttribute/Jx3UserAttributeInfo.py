@@ -1,72 +1,8 @@
 from __future__ import annotations
 from src.tools.utils import *
-from ...common import *
-from .members.Jx3Equip import *
-from .members import *
-from .IJx3UserAttributeFactory import *
 from src.constant.jx3 import *
-
-
-class BaseJx3UserSummary(BaseUpdateAt):
-    '''记录更新时间和最后一次获取的装分'''
-
-    def __init__(self, data: dict = None) -> None:
-        super().__init__(data)
-
-    def load_data(self, data: dict):
-        super().load_data(data)
-        self.score = int(data.get('score') or 0)
-
-    def to_dict(self) -> dict:
-        result = {
-            'score': self.score,
-        }
-        result.update(super().to_dict())
-        return result
-
-
-jeat = Jx3EquipAttributeType
-
-
-class BaseJx3UserAttributePage:
-    types: list[tuple[AttributeType, str]] = [
-        (AttributeType.Unknown, '当前'),
-        (AttributeType.PVP | AttributeType.DPS, 'PVP-DPS'),
-        (AttributeType.PVE | AttributeType.DPS, 'PVE-DPS'),
-        (AttributeType.PVP | AttributeType.HPS, 'PVP-HPS'),
-        (AttributeType.PVE | AttributeType.HPS, 'PVE-HPS'),
-        (AttributeType.PVP | AttributeType.TANK, 'PVE-TANK'),
-        (AttributeType.PVE | AttributeType.TANK, 'PVE-TANK'),
-        (AttributeType.PVX, '寻宝娱乐'),
-        (AttributeType.FLY, '轻功'),
-    ]
-    types_mapper = {
-        'dps': 2,
-        'hps': 4,
-        't': 6,
-    }
-    eq_attrs_mapper = {
-        jeat.伤: AttributeType.DPS,
-        jeat.疗: AttributeType.HPS,
-        jeat.御: AttributeType.TANK,
-        jeat.伤 | jeat.化: AttributeType.DPS | AttributeType.PVP,
-        jeat.疗 | jeat.化: AttributeType.HPS | AttributeType.PVP,
-        jeat.御 | jeat.化: AttributeType.TANK | AttributeType.PVP,
-        jeat.化: AttributeType.PVP,
-        'dps': AttributeType.DPS,
-        'hps': AttributeType.HPS,
-        't': AttributeType.TANK,
-    }
-
-    def __init__(self) -> None:
-        self.attr_type = AttributeType.Unknown
-        self.equip_unmatch: list[Jx3Equip] = []
-
-    def to_dict(self):
-        return {
-            'equip_unmatch': [x.item_id for x in self.equip_unmatch],
-            'attr_type': self.attr_type.value,
-        }
+from .BaseJx3UserAttributePage import *
+from .IJx3UserAttributeFactory import *
 
 
 class BaseJx3UserAttribute(BaseUpdateAt):
@@ -78,6 +14,10 @@ class BaseJx3UserAttribute(BaseUpdateAt):
         deserializer=lambda data: dict([x, BaseJx3UserSummary(data[x])] for x in data),
     ).value
     '''key:lastupdate'''
+
+    c_latest_path = f'{c_path}_latest'
+    cache_latest_attr: dict[str, dict[str, str]] = filebase_database.Database(c_latest_path)
+    '''key:user-key key2:attr_type'''
 
     @property
     def page(self) -> BaseJx3UserAttributePage:
@@ -116,6 +56,7 @@ class BaseJx3UserAttribute(BaseUpdateAt):
             result.attr_type |= primary_attr
 
         equip_unmatch = []
+
         def handle_kunfu_attr(equip: Jx3Equip):
             '''判断异常装备，装备适用心法是否与当前心法相同'''
             e_kun = self.equips[0].belongs.get('kungfu') or ''
@@ -139,7 +80,7 @@ class BaseJx3UserAttribute(BaseUpdateAt):
             handle_enchant(equip)
             handle_kunfu_attr(equip)
             handle_primary_attr(equip)
-            
+
         result.equip_unmatch = equip_unmatch
         return result
 
@@ -198,7 +139,15 @@ class BaseJx3UserAttribute(BaseUpdateAt):
             current_prop.record_new_data(result, score)
             # 记录更新时间
             BaseJx3UserAttribute.cache[key] = BaseJx3UserSummary(current_prop.to_dict())
-            pass
+
+            # 记录当前主属性
+            if latest := BaseJx3UserAttribute.cache_latest_attr[key]:
+                pass
+            else:
+                latest = {}
+                BaseJx3UserAttribute.cache_latest_attr[key] = latest
+            latest[str(current_prop.page.attr_type.value)] = score
+
         elif len(list(result)) == 0:
             # 从未有过任何装分
             return None, None
