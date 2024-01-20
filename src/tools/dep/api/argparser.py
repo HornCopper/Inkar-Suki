@@ -243,6 +243,7 @@ def direct_argparser(raw_input: str, template_args: List[Jx3Arg], event: GroupMe
             if is_default and not match_value.is_optional:
                 return InvalidArgumentException(f'[{match_value.alias}]参数无效')
             continue  # 该参数去匹配下一个参数
-
-        user_index += 1  # 输出参数位成功才+1
+        
+        if not is_default:
+            user_index += 1  # 输出参数位成功才+1
     return result
