@@ -43,7 +43,6 @@ class CommandMapper(CommandMapperStorage):
         raw_commands = commands if isinstance(commands, list) else commands.split(' ')
         cur_map = self.mapper
         # print(json.dumps(mapper, indent=4, ensure_ascii=False))
-
         def extract_result(result: str, idx: int) -> str:
             cmds = result.split(self.FLAG_Spliter)
             results = cmds + raw_commands[idx+1:]  # 映射命令后参数不变动
