@@ -31,7 +31,7 @@ class BotEventController:
                 event:RecvEvent = message
 
             if event:
-                logger.debug(event.log)
+                logger.debug(f'ws-event:{event.log}')
                 bots = get_bots()
                 for _, one_bot in bots.items():
                     await handle_event(one_bot, event)

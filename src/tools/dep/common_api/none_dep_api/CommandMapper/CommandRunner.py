@@ -43,6 +43,7 @@ class CommandMapper(CommandMapperStorage):
         raw_commands = commands if isinstance(commands, list) else commands.split(' ')
         cur_map = self.mapper
         # print(json.dumps(mapper, indent=4, ensure_ascii=False))
+
         def extract_result(result: str, idx: int) -> str:
             cmds = result.split(self.FLAG_Spliter)
             results = cmds + raw_commands[idx+1:]  # 映射命令后参数不变动
@@ -69,15 +70,14 @@ class CommandMapper(CommandMapperStorage):
                 cur_map = args
                 continue
 
-            cur_map = cur_map.get(cur_cmd)
-            if cur_map is None:
+            if next_val := cur_map.get(cur_cmd):
+                cur_map = next_val
+            elif result := cur_map.get(self.FLAG_Value):
+                # 已无法继续向下匹配，则将当前作为其他参数注入，idx-1
+                return extract_result(result, cur_idx-1)
+            else:
                 # 无匹配，直接返回原始传入
                 return commands if isinstance(commands, str) else str.join(' ', commands)
-
-            if result := cur_map.get(self.FLAG_Value):
-                # 有设置值则
-                return extract_result(result, cur_idx)
-
 
         if result := cur_map.get(self.FLAG_Value):
             # 有设置值则
