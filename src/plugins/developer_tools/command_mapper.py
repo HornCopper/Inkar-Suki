@@ -31,14 +31,8 @@ async def dev_command_mapper(event: GroupMessageEvent):
     if new_command == raw_command:
         return
 
-    new_commands = new_command.split('-')
-    append_args = msg[len(new_commands):]
-
-    raw_args = str.join(' ', append_args)
-    new_command = str.join(' ', new_commands)
-    new_msg = f'{new_command} {raw_args}'
-    logger.debug(f'map to new msg:{new_msg}')
-    event.message = obMessage(new_msg)
+    logger.debug(f'map to new msg:{new_command}')
+    event.message = obMessage(new_command)
 
 # TODO 实现占位符
 # #     命令占位符用`@`来表示

@@ -32,14 +32,14 @@ class CommandMapper(CommandMapperStorage):
         super().__init__(mapper)
 
     @overload
-    def convert(self, commands: str):
+    def convert(self, commands: str) -> str:
         ...
 
     @overload
-    def convert(self, commands: list[str]):
+    def convert(self, commands: list[str]) -> str:
         ...
 
-    def convert(self, commands: list[str], max_depth: int = 10):
+    def convert(self, commands: list[str], max_depth: int = 10) -> str:
         raw_commands = commands if isinstance(commands, list) else commands.split(' ')
         cur_map = self.mapper
         # print(json.dumps(mapper, indent=4, ensure_ascii=False))
@@ -78,3 +78,10 @@ class CommandMapper(CommandMapperStorage):
             if result := cur_map.get(self.FLAG_Value):
                 # 有设置值则
                 return extract_result(result, cur_idx)
+
+
+        if result := cur_map.get(self.FLAG_Value):
+            # 有设置值则
+            return extract_result(result, cur_idx)
+        # 无任何匹配
+        return commands
