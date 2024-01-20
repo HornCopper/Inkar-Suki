@@ -67,7 +67,10 @@ async def dev_mgr_command_map(bot: Bot, event: GroupMessageEvent, args=Depends(J
     async def complete(target_map: dict, action: str):
         if arg_new_cmd is None:
             action = f'移除{action}'
-            del target_map[arg_prev_cmd]
+            if arg_prev_cmd in target_map:
+                del target_map[arg_prev_cmd]
+            else:
+                action = f'{action}(本就不存在)'
         else:
             action = f'更新{action}'
             target_map[arg_prev_cmd] = arg_new_cmd
