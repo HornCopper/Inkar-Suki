@@ -93,7 +93,9 @@ class Jx3ArgCallback:
             return None, True
         return subject.name, False
 
-    def _convert_command(self, arg_value: str, **kwargs) -> str:
+    def _convert_command(self, arg_value: str, **kwargs) -> tuple[str, bool]:
+        if arg_value == '[empty]':
+            return None, True
         return arg_value  # TODO 经允许注册有效的
 
 
