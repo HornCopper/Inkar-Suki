@@ -36,3 +36,10 @@ def test_jx3_command_mapper():
     }
     assert CommandMapper(mapper).convert('属性 而遇') == '属性v3 而遇'
     assert CommandMapper(mapper).convert('配装 pve 丐帮') == '配装 丐帮 pve'
+
+
+def test_first_command_not_allow():
+    mapper = {
+        '$x': '属性v3',
+    }
+    assert CommandMapper(mapper) is None
