@@ -33,7 +33,7 @@ def test_fetch_by_uid():
 def test_user_not_exist():
     task = Jx3PlayerDetailInfo.from_username('唯满侠', '包某人')
     data = asyncio.run(task)
-    assert data.uid is None and data.err_msg == '玩家不存在'  # 不存在或无效的
+    assert data.uid is None and data.err_msg == PROMPT_UserNotExist  # 不存在或无效的
 
 
 @pytest.mark.skipif('Jx3TuilanNoticeFactory' not in dir(), reason='无api可用')
@@ -63,7 +63,7 @@ def test_fetch_with_page():
     func = src.plugins.jx3.get_jx3_attribute3
 
     event = SFGroupMessageEvent(group_id=1120115)
-    # event.message = obMessage("属性 唯满侠 包某 2")
+    # event.message = obMessage("属性 唯满侠 而遇 pve-dps")
     event.message = obMessage("属性 纵月 藏忧 3")
     args = Jx3Arg.arg_factory(src.plugins.jx3.jx3_cmd_attribute3, event)
     task = func(args)
