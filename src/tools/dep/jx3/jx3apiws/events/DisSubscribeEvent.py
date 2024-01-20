@@ -2,26 +2,31 @@ from .api_lib.EventRister import *
 from src.tools.utils import *
 
 
-@EventRister.rister(action=2004)
-class SpillTheTeaEvent(RecvEvent):
-    """818推送事件"""
+@EventRister.rister(action=10002)
+class DisSubscribeEvent(RecvEvent):
+    """取消订阅回执"""
 
-    __event__ = "WsRecv.SpillTheTea"
-    message_type = "SpillTheTea"
-    server: str
-    """服务器名"""
-    name: str
-    """吧名"""
-    title: str
-    """标题"""
-    url: str
-    """链接"""
+    __event__ = "WsRecv.DisSubscribe"
+    message_type = "DisSubscribe"
+    action: Literal["烟花报时", "玄晶报时", "游戏消息"]
+    """订阅内容"""
+    server: list[str]
+    """已订阅服务器"""
+
+    @validator("action", pre=True)
+    def check_action(cls, v):
+        if v == 1006:
+            return "烟花报时"
+        elif v == 1007:
+            return "玄晶报时"
+        elif v == 1010:
+            return "游戏消息"
 
     @property
     def log(self) -> str:
-        log = f"吃瓜推送事件：[{self.title}]"
+        log = f"取消订阅回执，类型：{self.action}。"
         return log
 
     @overrides(RecvEvent)
     def get_message(self) -> dict:
-        return {"type": "818", "server": self.server, "name": self.name, "msg": f"有新的八卦推送来啦！\n{self.title}\n{self.url}\n来源：{self.name}吧"}
+        return f"[取消订阅回执]\n类型：{self.action}。"

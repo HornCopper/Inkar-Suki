@@ -4,6 +4,8 @@ from .Jx3EquipAttribute import *
 from src.tools.utils import *
 from src.tools.file import *
 from .WCommonEnchant import *
+
+
 class EquipIcon(Jx3Icon):
     ...
 
@@ -164,6 +166,8 @@ class Jx3Equip:
             # 若有破无则简写
             result = result.replace('破防', '破')
 
+        if len(result) == 1:
+            result = f'纯{result}'
         return result
 
     def to_dict(self):
