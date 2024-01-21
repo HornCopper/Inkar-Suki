@@ -224,3 +224,6 @@ class BaseJx3UserAttribute(BaseUpdateAt):
             'equips': [x.to_view() for x in self.equips],
         })
         return result
+
+    def __str__(self) -> str:
+        return str(self.score)

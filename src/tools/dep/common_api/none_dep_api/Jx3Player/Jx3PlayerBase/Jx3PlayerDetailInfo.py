@@ -50,25 +50,26 @@ class Jx3PlayerDetailInfo:
     def get_attributes_by_filter(self, date: DateTime = None, attr_type: AttributeType = None, pageIndex: int = 0, pageSize: int = 10) -> list[Jx3UserAttributeInfo]:
         '''筛选指定的属性 TODO 筛选页面对PVE-DPS和HPS不准确
         @return 按装分降序列表'''
-        attrs = self.attributes
+        attrs = [self.attributes[x] for x in self.attributes]
+
         if date is not None:
             date = DateTime(date)
-            xattrs = filter(lambda x: not attrs[x].is_outdated(date), attrs)
-            attrs = dict([x, attrs[x]] for x in list(xattrs))
+            attrs = filter(lambda x: not x.is_outdated(date), attrs)
+            attrs = list(attrs)
         if attr_type is not None:
-            xattrs = filter(lambda x: attrs[x].page.attr_type & attr_type == attr_type, attrs)
-            attrs = dict([x, attrs[x]] for x in list(xattrs))
+            attrs = filter(lambda x: x.page.attr_type & attr_type == attr_type, attrs)
+            attrs = list(attrs)
 
-        return self.split_page(xattrs, pageIndex, pageSize)
+        return self.split_page(attrs, pageIndex, pageSize)
 
     def split_page(self, attrs_score: list[int], pageIndex: int = 0, pageSize: int = 200) -> list[Jx3UserAttributeInfo]:
-        attrs_score = sorted([int(x) for x in attrs_score], key=lambda x: x, reverse=True)
+        sorted_attrs = sorted([int(str(x)) for x in attrs_score], key=lambda x: x, reverse=True)
         start = pageIndex * pageSize
 
-        if len(attrs_score) < start:
+        if len(sorted_attrs) < start:
             return []
-        attrs_score = [str(x) for x in attrs_score[start:start+pageSize]]
-        result = [self.attributes[x] for x in list(attrs_score)]
+        scores = [str(x) for x in sorted_attrs[start:start+pageSize]]
+        result = [self.attributes[x] for x in list(scores)]
         return result
 
     @property
