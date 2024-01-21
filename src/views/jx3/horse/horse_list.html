@@ -1,7 +1,7 @@
 <template>
   <div :style="{'text-align': 'center','font-size':font_size,width:'1000px'}">
     <el-card shadow="never">
-      <div style="font-size:2rem;font-weight:600;">马场 · {{ server }}</div>
+      <div style="font-size:2rem;font-weight:600;">马场 · {{ server }} · {{ item_name }}</div>
       <el-row>
         <el-card style="width: 100%;margin: 0.2rem;">
           <el-row>
@@ -15,7 +15,7 @@
                   <div class="primary-title">
                     <div>
                       <span style="color:#999">查看马场记录：</span>
-                      <span>抓马 [服务器]</span>
+                      <span>抓马 [服务器] [马名]</span>
                     </div>
                   </div>
                 </el-col>
