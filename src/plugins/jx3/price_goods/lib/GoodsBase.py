@@ -4,14 +4,6 @@ from src.tools.dep import *
 from enum import Enum
 
 
-@ext.use_retry(max_attempts=3)
-async def check_bind(id: str):
-    data = await get_item_info_by_id(id)
-    bind_type = data.get("BindType") or 0
-    level = data.get("Level")
-    return bind_type, level
-
-
 async def get_item_info_by_id(id: str):
     item_info_url = f"https://helper.jx3box.com/api/wiki/post?type=item&source_id={id}"
     raw_data = await get_api(item_info_url)
@@ -35,15 +27,23 @@ class GoodsInfo(dict):
         self.price = None  # PriceSummary
         self.current_price = None  # PriceDetail
 
-    def __init__(self, data: dict = None) -> None:
+    async def reload_data(self, data: dict):
+        item_id = data.get('id')
+        new_data = await get_item_info_by_id(item_id)
+        data.update(new_data)
+        self.load_data(data)
+
+    def __init__(self, data: dict = None, not_to_load: bool = False) -> None:
+        super().__init__()
         if data is None:
             data = {}  # 默认给个空数据用于初始化一个模板
+        if not_to_load:
+            return
         self.load_data(data)
-        super().__init__()
 
     def __str__(self) -> str:
         x = "※" * (self.quality + 1)
-        return f"{x}{self.name}({self.id}){self.bind_type_str}"
+        return f"{x}{self.name}({self.id}){self.attribute_desc or ''}{self.bind_type_str}"
 
     def __repr__(self) -> str:
         return self.__str__()
@@ -111,18 +111,24 @@ class GoodsInfo(dict):
         self.quality = data.get("quality")
         self.ui_id = data.get("ui_id")
         self.name = data.get("name") or "未知物品"
-        self.level = data.get("level")  # 品数（仅武器才有）
+        self.level = data.get("level")  # 品数（仅装备才有）
+        self.attribute_desc: str = data.get('attribute_desc')  # 属性描述，根据属性算出（仅装备才有）
         return self
 
     def map_data(self, data: dict):
         if 'IconID' not in data:
             return data
+        attributes = data.get('attributes') or '[]'
+        attributes = attributes if isinstance(attributes, list) else json.loads(attributes)
+        attr_labels = [x.get('label') for x in attributes]
+        attr_primary = [Jx3EquipAttribute(x).primary_attribute for x in attr_labels]
+        data['attribute_desc'] = Jx3Equip.get_primary_attribute(attr_primary)
 
         data['icon'] = data.get("IconID") or 18888  # 默认给个小兔兔
         data['quality'] = data.get("Quality")
         data['ui_id'] = data.get("UiID")
         data['name'] = data.get("Name") or "未知物品"
-        data['level'] = data.get("Level")  # 品数（仅武器才有）
+        data['level'] = data.get("Level")  # 品数（仅装备才有）
 
     def to_dict(self) -> dict:
         return {
@@ -137,6 +143,7 @@ class GoodsInfo(dict):
             'ui_id': self.ui_id,
             'name': self.name,
             'level': self.level,
+            'attribute_desc': self.attribute_desc,
             'u_popularity': self.u_popularity,
             'price': (self.price.to_dict() if hasattr(self.price, 'to_dict') else self.price) if self.price else None,
             'current_price': (self.current_price.to_dict() if hasattr(self.current_price, 'to_dict') else self.current_price) if self.current_price else None,

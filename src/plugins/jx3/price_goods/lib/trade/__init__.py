@@ -30,10 +30,10 @@ async def search_item_info(item_name: str, pageIndex: int = 0, pageSize: int = 2
         if good_info := CACHE_Goods.get(id):
             item = good_info
         else:
-            item["bind_type"], item["Level"] = await check_bind(id)
-            CACHE_Goods[id] = GoodsInfo(item)
-            good_info = CACHE_Goods[id]
-            
+            good_info = GoodsInfo(item, not_to_load=True)
+            await good_info.reload_data(item)
+            CACHE_Goods[id] = good_info
+
         query_items.append(good_info)
     query_items.sort(key=lambda x: -x.priority)  # 按热门程度排序，拾绑的放后面
     page_start = pageIndex * pageSize
