@@ -39,7 +39,7 @@ class BaseJx3UserAttribute(BaseUpdateAt):
             self.kungfu = Kunfu(self.kungfu.alias)
             if not hasattr(self.kungfu, 'practice_type'):
                 logger.warning(f'loading kunfu fail:{self.kungfu.to_dict()}')
-                setattr(self.kungfu, 'practice_type', 'magic') # 默认给个内功
+                setattr(self.kungfu, 'practice_type', 'magic')  # 默认给个内功
         kun_ptype = self.kungfu.practice_type
         kun_ptype = kun_ptype if isinstance(kun_ptype, list) else [kun_ptype]
 
@@ -224,3 +224,6 @@ class BaseJx3UserAttribute(BaseUpdateAt):
             'equips': [x.to_view() for x in self.equips],
         })
         return result
+
+    def __str__(self) -> str:
+        return str(self.score)
