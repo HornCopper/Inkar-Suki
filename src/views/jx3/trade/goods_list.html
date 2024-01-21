@@ -53,8 +53,9 @@
               <div style="display: flex">
                 <img :src="scope.row.img_url" :style="{height: '1.4rem'}" />
                 <div :style="{'font-size':font_size,color:scope.row.color,'margin-left':'0.5rem'}">
+                  <span v-if="scope.row.attribute_desc" style="margin-right:0.5rem">{{ scope.row.attribute_desc }}</span>
                   <span>{{ scope.row.name }}</span>
-                  <span v-if="scope.row.level && scope.row.level>0">({{ scope.row.level }}品)</span>
+                  <span v-if="scope.row.level && scope.row.level>0"> ({{ scope.row.level }}品)</span>
                 </div>
               </div>
             </template>

@@ -71,6 +71,8 @@ class permission(BaseCatalog):
         '''用户管理'''
         class group(BaseCatalog):
             '''群管理'''
+        class personal(BaseCatalog):
+            '''人员管理'''
     class bot(BaseCatalog):
         '''机器人配置'''
         class docs(BaseCatalog):

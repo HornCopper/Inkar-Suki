@@ -25,6 +25,10 @@ class Jx3EquipAttribute:
     def __init__(self, data: dict) -> None:
         if data is None:
             data = {}
+        if isinstance(data, str):
+            self.load_data({})
+            self.desc = data
+            return # 仅传入属性描述，其他值无
         self.load_data(data)
         pass
 
@@ -50,9 +54,9 @@ class Jx3EquipAttribute:
         '''体质提高4456'''
         self.score: int = data.get('score')
         '''装分提升'''
-        self.value_max = int(data.get('value_max'))
+        self.value_max = int(data.get('value_max') or 0)
         '''属性最小增加数值'''
-        self.value_min = int(data.get('value_min'))
+        self.value_min = int(data.get('value_min') or 0)
         '''属性最大增加数值'''
 
     @property

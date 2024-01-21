@@ -149,14 +149,13 @@ class Jx3Equip:
         '''获得途径'''
         pass
 
-    @property
-    def primary_attribute(self) -> str:
-        primary_attributes = [x.primary_attribute for x in self.attributes]
-        counts = len(primary_attributes)
-        has_pf = '破防' in primary_attributes
-        has_pz = '破招' in primary_attributes
-        has_ws = '无' in primary_attributes
-        result = str.join('', primary_attributes)
+    @staticmethod
+    def get_primary_attribute(attributes: list[str]) -> str:
+        counts = len(attributes)
+        has_pf = '破防' in attributes
+        has_pz = '破招' in attributes
+        has_ws = '无' in attributes
+        result = str.join('', attributes)
 
         if has_pf and has_pz:
             # 若有双破则简称破破
@@ -169,6 +168,11 @@ class Jx3Equip:
         if len(result) == 1:
             result = f'纯{result}'
         return result
+
+    @property
+    def primary_attribute(self) -> str:
+        primary_attributes = [x.primary_attribute for x in self.attributes]
+        return Jx3Equip.get_primary_attribute(primary_attributes)
 
     def to_dict(self):
         return {
