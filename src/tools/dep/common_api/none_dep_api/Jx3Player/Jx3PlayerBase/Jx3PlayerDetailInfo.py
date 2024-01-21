@@ -37,7 +37,7 @@ class Jx3PlayerDetailInfo:
         if his := BaseJx3UserAttribute.cache_latest_attr.get(key):
             if isinstance(attr_type, AttributeType):
                 attr_type = attr_type.value
-            attr_score = his.get(str(attr_type.value))
+            attr_score = his.get(str(attr_type))
             if attr_score and int(attr_score) > 0:
                 result = self.attributes.get(attr_score)
 
