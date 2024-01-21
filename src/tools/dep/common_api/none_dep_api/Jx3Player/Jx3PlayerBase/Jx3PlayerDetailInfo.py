@@ -12,7 +12,7 @@ class Jx3PlayerDetailInfo:
         self.server = server
         self.__user = user
         self.err_msg = None
-
+    
     def key(self):
         return f'{self.server}@{self.uid}'
 
@@ -28,8 +28,9 @@ class Jx3PlayerDetailInfo:
             if isinstance(attr_type, AttributeType):
                 attr_type = attr_type.value
             attr_score = his.get(str(attr_type.value))
+            if attr_score and int(attr_score) > 0:
+                result = self.attributes.get(attr_score)
 
-            result = self.attributes.get(attr_score)
         if result is None:
             # TODO 后期数据全部完成缓存后应删除
             if result := self.get_attributes_by_filter(attr_type=attr_type):
