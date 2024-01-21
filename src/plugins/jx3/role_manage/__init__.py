@@ -11,6 +11,7 @@ error_delete_but_not_binded = "尚未绑定此角色！"
 
 bind_role = on_command("jx3_bindrole", aliases={"绑定角色"}, priority=5)
 
+
 @bind_role.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     init_folder()
@@ -36,6 +37,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
 
 verify = on_command("jx3_verifyrole", aliases={"验证角色"}, priority=5)
 
+
 @verify.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     arg = args.extract_plain_text().split(" ")
@@ -59,6 +61,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
 
 delete = on_command("jx3_deleterole", aliases={"解绑角色"}, priority=5)
 
+
 @delete.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     arg = args.extract_plain_text().split(" ")
@@ -74,15 +77,17 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
 
 listrole = on_command("jx3_listrole", aliases={"角色列表"}, priority=5)
 
+
 @listrole.handle()
 async def _(event: GroupMessageEvent):
     ans = getRoleList(str(event.user_id))
-    if ans in [-1,0]:
+    if ans in [-1, 0]:
         return await listrole.finish("您没有绑定任何角色哦~")
     else:
         return await listrole.finish("您绑定了以下角色：\n" + "\n".join(ans))
 
 cd_list = on_command("jx3_cdlist", aliases={"角色副本"}, priority=5)
+
 
 @cd_list.handle()
 async def _(event: GroupMessageEvent):
@@ -100,24 +105,34 @@ async def _(event: GroupMessageEvent):
         if mapFullName not in zones:
             zones.append(mapFullName)
     # for i in zones:
-    #     for x in 
-        
+    #     for x in
 
-location = on_command("jx3_iplocation", aliases={"属地查询"}, priority=5)
+
+location = on_command(
+    "jx3_iplocation",
+    aliases={"属地查询"},
+    priority=5,
+    description='用于查询角色最近一次登录的归属省份',
+    catalog=permission.user.personal,
+    example=[
+        Jx3Arg(Jx3ArgsType.server, is_optional=True),
+        Jx3Arg(Jx3ArgsType.user, is_optional=True),
+    ],
+    document='''
+    改功能考虑到其敏感性，暂时需要权限10以上才可使用。
+    '''
+)
+
 
 @location.handle()
-async def _(event: GroupMessageEvent, args: Message = CommandArg()):
+async def _(event: GroupMessageEvent, args: list[Any] = Depends(Jx3Arg.arg_factory)):
+    arg_server, arg_user = args
     x = Permission(event.user_id).judge(10, '玩家属地查询')
     if not x.success:
         return await location.finish(x.description)
-    arg = args.extract_plain_text().split(" ")
-    if len(arg) != 2:
-        return await bind_role.finish(error_argument_count)
-    srv = arg[0]
-    id = arg[1]
-    pd = await getPersonInfo(srv, id)
+    pd = await getPersonInfo(arg_server, arg_user)
     if pd is False:
         return await location.finish("没有找到玩家信息！")
     pid = pd["personId"]
-    data = await check_sign(pid, "", location = True)
+    data = await check_sign(pid, "", location=True)
     return await location.finish("该玩家的IP属地为：" + data)

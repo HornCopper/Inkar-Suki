@@ -12,7 +12,15 @@ class Jx3PlayerDetailInfo:
         self.server = server
         self.__user = user
         self.err_msg = None
-    
+
+    def latest_attrs(self) -> dict[str, str]:
+        '''获取最新数据
+        @return dict[类型enum,装分]'''
+        result = BaseJx3UserAttribute.cache_latest_attr.get(self.key)
+        if not result:
+            return {}
+        return result
+
     def key(self):
         return f'{self.server}@{self.uid}'
 
