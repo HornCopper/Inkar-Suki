@@ -104,7 +104,7 @@ async def get_jx3_attribute3(template: list[Any] = Depends(Jx3Arg.arg_factory)):
         'latest_attrs': data.latest_attrs,
         'no_data': no_DATA,
         'attributeType': filter_type.value,
-        'result_attributeType': result_attributeType.name,
+        'result_attributeType': str(result_attributeType).split('.')[1] if result_attributeType else None, 
         'attributeTypes': [[x[0].name, x[0].value, x[1]] for x in BaseJx3UserAttributePage.types],
         'attributeTypeDict': [[x.name, x.value] for x in AttributeType],
         'kunfu': current.kungfu.to_dict(),  # 当前心法
