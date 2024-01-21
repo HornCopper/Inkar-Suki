@@ -30,6 +30,7 @@ class GroupGather:
     async def get_groups(bot: Bot):
         '''TODO migrate to group-statistics module'''
         with GroupGather.cache_lock:
+            logger.debug(f'get_groups...bot{bot.self_id}')
             cache = GroupGather.group_cache.get(bot.self_id)
             if cache and not cache.is_outdated():
                 result = cache.groups
