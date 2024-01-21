@@ -28,8 +28,8 @@ load_subjects(__subjects, VALID_Subjects)
 
 class MenuCallback(BaseMenuCallback):
 
-    @classmethod
-    def from_general_name(cls, subject_name: str, cron_level: int = 0, description: str = '事件订阅', log_name: str = '通用事件') -> MenuCallback:
+    @staticmethod
+    async def from_general_name(subject_name: str, cron_level: int = 0, description: str = '事件订阅', log_name: str = '通用事件') -> MenuCallback:
         target = BaseMenuCallback(
             sub=SubscribeSubject(
                 name=subject_name,
@@ -40,10 +40,10 @@ class MenuCallback(BaseMenuCallback):
                 notify=log_name
             )
         )
-        target.result = ext.SyncRunner.as_sync_method(MenuCallback.get_all_group_of_subscribe(
+        target.result = await MenuCallback.get_all_group_of_subscribe(
             subject=subject_name,
             cron_level=cron_level,  # 通用事件默认级别为0
-        ))
+        )
         return target
 
     @staticmethod
