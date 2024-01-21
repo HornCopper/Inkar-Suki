@@ -38,30 +38,8 @@ class GoodsInfo(dict):
     def __init__(self, data: dict = None) -> None:
         if data is None:
             data = {}  # 默认给个空数据用于初始化一个模板
-        self.load_remote_data(data)
+        self.load_data(data)
         super().__init__()
-
-    def load_remote_data(self, data: dict):
-        if data is None:
-            return
-
-        self.icon = data.get("IconID") or 18888  # 默认给个小兔兔
-        self.quality = data.get("Quality")
-        self.ui_id = data.get("UiID")
-        self.name = data.get("Name") or "未知物品"
-        self.level = data.get("Level")  # 品数（仅武器才有）
-        return self.load_data(data)
-
-    def load_local_data(self, data: dict):
-        if data is None:
-            return
-
-        self.icon = data.get("icon") or 18888  # 默认给个小兔兔
-        self.quality = data.get("quality")
-        self.ui_id = data.get("ui_id")
-        self.name = data.get("name") or "未知物品"
-        self.level = data.get("level")  # 品数（仅武器才有）
-        return self.load_data(data)
 
     def __str__(self) -> str:
         x = "※" * (self.quality + 1)
@@ -120,18 +98,31 @@ class GoodsInfo(dict):
         return GoodsBindTypeBindTypes[self.bind_type.value]
 
     def load_data(self, data: dict):
+        self.map_data(data)
         self.init_computed_props()
+
         self.id = data.get("id")
         self._bind_type: GoodsBindType = GoodsBindType.BindOnPick
         self.bind_type = data.get("bind_type") or GoodsBindType.UnKnown
         """被使用的次数，次数多的优先前置"""
         self.u_popularity = data.get("u_popularity") or 0
 
-        if self.current_price is not None and not hasattr(self.current_price, 'to_dict'):
-            pass
-        if self.price is not None and not hasattr(self.price, 'to_dict'):
-            pass
+        self.icon = data.get("icon") or 18888  # 默认给个小兔兔
+        self.quality = data.get("quality")
+        self.ui_id = data.get("ui_id")
+        self.name = data.get("name") or "未知物品"
+        self.level = data.get("level")  # 品数（仅武器才有）
         return self
+
+    def map_data(self, data: dict):
+        if 'IconID' not in data:
+            return data
+
+        data['icon'] = data.get("IconID") or 18888  # 默认给个小兔兔
+        data['quality'] = data.get("Quality")
+        data['ui_id'] = data.get("UiID")
+        data['name'] = data.get("Name") or "未知物品"
+        data['level'] = data.get("Level")  # 品数（仅武器才有）
 
     def to_dict(self) -> dict:
         return {
