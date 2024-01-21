@@ -50,7 +50,8 @@
           </el-row>
         </el-card>
       </el-row>
-      <div v-if="no_data" class="banner-notice">注意！当前角色没有{{ currentFocus }}的装备数据！已切回默认[{{ result_attributeType }}]</div>
+      <div v-if="no_data" class="banner-notice">注意！当前角色没有{{ currentFocus }}的装备数据！已切回默认[{{ result_attributeType }}]
+      </div>
       <el-collapse v-model="expanded_items">
         <el-collapse-item name="1">
           <template #title>
@@ -107,8 +108,8 @@
         <el-collapse-item name="2">
           <template #title>
             <div class="global-title" style="display:flex;width:100%">
-              <div class="sub-content">{{ formatTime(attr.updateAt * 1e3) }}</div>
-              <div class="sub-content">[{{ currentFocus }}]</div>
+              <div class="sub-content">更新于{{ formatTime(attr.updateAt * 1e3) }}</div>
+              <div class="sub-content">，选中类型[{{ currentFocus }}]</div>
               <div style="display:flex;margin-left:auto">
                 <img style="width:2rem;height:2rem" :src="get_kunfu_icon(attr.kungfu)" />
                 <div class="sub-content">{{ attr.kungfu.name }}</div>
@@ -118,7 +119,10 @@
           <el-tabs v-model="currentFocus" tab-position="bottom">
             <el-tab-pane v-for="(type,index) in attributeTypes" :key="index" :name="type[2]">
               <template #label>
-                <span>{{ index }}.{{ type[2] }}</span>
+                <div :class="attrContains(type[1])?'tab-active':''">
+                  <div v-if="latest_attrs[type[1]]">{{ latest_attrs[type[1]] }}</div>
+                  <div>{{ index }}.{{ type[2] }}</div>
+                </div>
               </template>
               <div v-if="currentFocus === type[2]">
                 <el-card class="item-container">
@@ -522,6 +526,11 @@
     font-size: 1.1rem;
     border-radius: 0.5rem;
   }
+
+  .tab-active {
+    height: 2rem;
+    line-height: 1rem;
+  }
 </style>
 <script>
   const { defineComponent, reactive, toRefs, ref, onMounted, computed } = Vue
@@ -562,6 +571,12 @@
         if (maxStrengthLevel >= 8) return img.FrameRing
         if (maxStrengthLevel > strengthLevel) return img.FrameEmpty
         return img.FrameEquip
+      }
+      methods.attrSame = (now_val, attr) => (now_val & parseInt(attr)) == parseInt(attr)
+      methods.attrContains = (now_val) => {
+        const { latest_attrs } = params_data
+        return !!Object.keys(latest_attrs)
+          .find(attr => methods.attrSame(attr, now_val))
       }
       computes.kunfu_icon_img = computed(() => {
         const { kunfu } = params_data
