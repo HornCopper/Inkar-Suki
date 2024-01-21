@@ -68,8 +68,8 @@ class Jx3WebSocket:
                     uri=ws_path,
                     extra_headers=headers,
                     ping_interval=20,
-                    ping_timeout=20,
-                    close_timeout=10,
+                    ping_timeout=60,
+                    close_timeout=60,
                 )
                 asyncio.create_task(self._task())
                 logger.debug("<g>ws_server</g> | ws连接成功！")

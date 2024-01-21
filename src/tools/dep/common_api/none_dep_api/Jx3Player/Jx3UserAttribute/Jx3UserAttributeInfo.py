@@ -34,6 +34,12 @@ class BaseJx3UserAttribute(BaseUpdateAt):
         result.attr_type |= BaseJx3UserAttributePage.eq_attrs_mapper.get(kun_type)
 
         # 内功或外功
+        if not hasattr(self.kungfu, 'practice_type'):
+            # 解决一直报错问题
+            self.kungfu = Kunfu(self.kungfu.alias)
+            if not hasattr(self.kungfu, 'practice_type'):
+                logger.warning(f'loading kunfu fail:{self.kungfu.to_dict()}')
+                setattr(self.kungfu, 'practice_type', 'magic') # 默认给个内功
         kun_ptype = self.kungfu.practice_type
         kun_ptype = kun_ptype if isinstance(kun_ptype, list) else [kun_ptype]
 
@@ -142,7 +148,7 @@ class BaseJx3UserAttribute(BaseUpdateAt):
 
             # 记录当前主属性
             if latest := BaseJx3UserAttribute.cache_latest_attr.get(key):
-                pass # 已有结构，则不创建
+                pass  # 已有结构，则不创建
             else:
                 latest = {}
                 BaseJx3UserAttribute.cache_latest_attr[key] = latest
