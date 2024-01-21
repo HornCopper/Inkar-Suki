@@ -45,7 +45,7 @@ def get_attribute_from_data(data: Jx3PlayerDetailInfo, arg_page: int) -> tuple[J
             result = data.split_page([x for x in data.attributes], pageSize=1)
         else:
             result = data.get_attributes_by_attr_type(filter_type)
-            
+
         return result, filter_type
 
     if not checknumber(arg_page):
@@ -101,14 +101,14 @@ async def get_jx3_attribute3(template: list[Any] = Depends(Jx3Arg.arg_factory)):
     result = {
         'user': user,
         'attribute': attribute,
+        'latest_attrs': data.latest_attrs,
         'no_data': no_DATA,
         'attributeType': filter_type.value,
         'result_attributeType': result_attributeType.name,
         'attributeTypes': [[x[0].name, x[0].value, x[1]] for x in BaseJx3UserAttributePage.types],
         'attributeTypeDict': [[x.name, x.value] for x in AttributeType],
         'kunfu': current.kungfu.to_dict(),  # 当前心法
-        'stone_slots': Jx3Stone.slot,
-        'attributesTypeAvail': [],  # TODO 缓存历史可用的页面
+        'stone_slots': Jx3Stone.slot
     }
     return result
 
