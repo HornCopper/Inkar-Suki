@@ -42,8 +42,11 @@ def get_attribute_from_data(data: Jx3PlayerDetailInfo, arg_page: int) -> tuple[J
     '''根据筛选类型返回属性列表'''
     def from_filter_type(filter_type: AttributeType):
         if filter_type == AttributeType.Unknown:
-            return data.attributes
-        return data.get_attributes_by_attr_type(filter_type), filter_type
+            result = data.split_page([x for x in data.attributes], pageSize=1)
+        else:
+            result = data.get_attributes_by_attr_type(filter_type)
+            
+        return result, filter_type
 
     if not checknumber(arg_page):
         filter_type = AttributeType.from_alias(arg_page)
@@ -78,8 +81,8 @@ async def get_jx3_attribute3(template: list[Any] = Depends(Jx3Arg.arg_factory)):
         return await jx3_cmd_attribute3.finish(f'未能找到来自[{arg_server}]的角色[{arg_user}]{err_msg}')
     user = data.user.to_dict()
     current = data.attributes[data.current_score]
-    
-    if arg_page == '0': # 为0时直接用当前
+
+    if arg_page == '0':  # 为0时直接用当前
         attribute = current
         filter_type = AttributeType.Unknown
     else:
