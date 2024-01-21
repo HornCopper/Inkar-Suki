@@ -4,7 +4,7 @@ from .Jx3PlayerLoader import *
 
 
 class Jx3PlayerDetailInfo:
-    def __init__(self, uid: str, server: str, current_score: str, attributes: Jx3UserAttributeInfo, user: Jx3PlayerInfo = None) -> None:
+    def __init__(self, uid: str, server: str, current_score: str, attributes: dict[str, Jx3UserAttributeInfo], user: Jx3PlayerInfo = None) -> None:
         self.current_score = str(current_score)
         self.attributes = attributes
         '''dict[str,Jx3UserAttributeInfo] 装分:属性'''
@@ -32,20 +32,33 @@ class Jx3PlayerDetailInfo:
             result = self.attributes.get(attr_score)
         if result is None:
             # TODO 后期数据全部完成缓存后应删除
-            result = self.get_attributes_by_filter(attr_type=attr_type)
+            if result := self.get_attributes_by_filter(attr_type=attr_type):
+                result = result[0]  # 取装分最高者
         return result
 
-    def get_attributes_by_filter(self, date: DateTime = None, attr_type: AttributeType = None) -> dict[str, Jx3UserAttributeInfo]:
-        '''筛选指定的属性 TODO 筛选页面对PVE-DPS和HPS不准确'''
+    def get_attributes_by_filter(self, date: DateTime = None, attr_type: AttributeType = None, pageIndex: int = 0, pageSize: int = 10) -> list[Jx3UserAttributeInfo]:
+        '''筛选指定的属性 TODO 筛选页面对PVE-DPS和HPS不准确
+        @return 按装分降序列表'''
         attrs = self.attributes
         if date is not None:
             date = DateTime(date)
             xattrs = filter(lambda x: not attrs[x].is_outdated(date), attrs)
-            attrs = list(xattrs)
+            attrs = dict([x, attrs[x]] for x in list(xattrs))
         if attr_type is not None:
             xattrs = filter(lambda x: attrs[x].page.attr_type & attr_type == attr_type, attrs)
-            attrs = list(xattrs)
-        return dict([x, self.attributes[x]] for x in attrs)
+            attrs = dict([x, attrs[x]] for x in list(xattrs))
+
+        return self.split_page(xattrs, pageIndex, pageSize)
+
+    def split_page(self, attrs_score: list[int], pageIndex: int = 0, pageSize: int = 200) -> list[Jx3UserAttributeInfo]:
+        attrs_score = sorted([int(x) for x in attrs_score], key=lambda x: x, reverse=True)
+        start = pageIndex * pageSize
+
+        if len(attrs_score) < start:
+            return []
+        attrs_score = [str(x) for x in attrs_score[start:start+pageSize]]
+        result = [self.attributes[x] for x in list(attrs_score)]
+        return result
 
     @property
     def user(self):
