@@ -125,7 +125,7 @@ async def on_jx3_event_recv(bot: Bot, event: RecvEvent):
         '机器人更新': lambda x: True,
     }
 
-    menu_sender = MenuCallback.from_general_name(message.get('type') or 'unknown')
+    menu_sender = await MenuCallback.from_general_name(message.get('type') or 'unknown')
     result = menu_sender.result
     for key in result:
         (botname, group_id, to_send_msg, sub_from) = result[key]

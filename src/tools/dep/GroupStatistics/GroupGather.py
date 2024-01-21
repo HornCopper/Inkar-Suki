@@ -13,11 +13,10 @@ class GroupGather:
         serializer=lambda data: dict([x, data[x].to_dict()] for x in data),
         deserializer=lambda data: dict([x, CurrentGroupStatus(data[x])] for x in data),
     ).value
-
     async def get_all_groups() -> dict[str, list[str]]:
         '''获取当前所有机器人所有群聊'''
         bots = get_driver().bots
-        logger.debug(f'current online bots:{len(list(bots))}')
+        logger.debug(f'get_all_groups...current online bots:{len(list(bots))}')
 
         tasks = {}
         for botname in bots:
