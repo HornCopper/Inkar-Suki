@@ -29,7 +29,7 @@ async def jx3_trade2(matcher: Matcher, state: T_State, event: GroupMessageEvent,
     data, totalCount = await search_item_info_for_price(arg_item, arg_server, pageIndex=arg_page, pageSize=pageSize)
     if not isinstance(data, List):
         if ignore_error:
-            return
+            return matcher.set_arg("user_select_index", obMessage("-1"))
         return await jx3_cmd_trade2.finish(data)
 
 
