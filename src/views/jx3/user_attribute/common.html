@@ -135,7 +135,7 @@
                       <el-row v-if="attr.page.equip_unmatch.length">
                         <span class="sub-title">异常</span>
                         <div class="sub-content">
-                          <span>{{ attr.page.equip_unmatch.length }}个装备有问题</span>
+                          <span>{{ attr.page.equip_unmatch.length }}心法或属性不对。</span>
                         </div>
                         <el-space wrap>
                           <div v-for="(ue,ueindex) in attr.page.equip_unmatch" :key="ueindex">
