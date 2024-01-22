@@ -19,7 +19,7 @@ class GoodsInfoFull(GoodsInfo):
             'attributes': self.attributes,
             'recovery_price': self.recovery_price,
             'level': self.level,
-            'wucai_properties': [x.to_dict() for x in self.wucai_properties],
+            'wucai_properties': [x.to_dict() for x in self.wucai_properties] if wucai_properties else [],
         }
         r.update(self_dict)
         return r
@@ -49,7 +49,7 @@ class GoodsInfoFull(GoodsInfo):
         self.attributes = json.loads(data.get("attributes") or "[]")
         self.recovery_price = data.get("recovery_price")
         self.level = data.get("level")
-        self.wucai_properties = data.get("wucai_properties")
+        self.wucai_properties = data.get("wucai_properties") or []
         return self
 
     @classmethod
