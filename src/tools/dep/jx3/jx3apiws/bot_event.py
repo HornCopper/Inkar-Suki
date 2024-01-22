@@ -35,6 +35,7 @@ class BotEventController:
                 bots = get_bots()
                 for _, one_bot in bots.items():
                     await handle_event(one_bot, event)
+                    break # 事件只处理第一个机器人的，因为他们不需要机器人处理
             else:
                 logger.error(f"<r>未知的ws消息类型：{data}</r>")
         except Exception:
