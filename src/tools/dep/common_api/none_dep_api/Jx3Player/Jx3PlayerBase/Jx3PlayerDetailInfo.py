@@ -87,17 +87,21 @@ class Jx3PlayerDetailInfo:
     async def from_username(cls, server: str, username: str, cache_length: float = 86400) -> Jx3PlayerDetailInfo:
         '''通过服务器和id从缓存或远程加载'''
         user = Jx3PlayerInfoWithInit.from_id(server, username, cache_length=7*86400)  # 一周内不更新
-        if not user.roleId:
+        result = None
+        if user.roleId:
+            result = await cls.from_uid(user.serverName, user.roleId, cache_length=cache_length)
+
+        if not result:
             tar = Jx3PlayerDetailInfo(None, server, None, {}, user)
             tar.err_msg = PROMPT_UserNotExist
             return tar
-        return await cls.from_uid(user.serverName, user.roleId, cache_length=cache_length)
+        return result
 
     @classmethod
     async def from_uid(cls, server: str, uid: str, cache_length: float = 86400) -> Jx3PlayerDetailInfo:
         '''通过服务器和uid从缓存或远程加载'''
         score, res = Jx3UserAttributeInfo.from_uid(uid, server, cache_length=cache_length)
         if not res:
-            return res
+            return None
         target = cls(uid, server, score, res)
         return target
