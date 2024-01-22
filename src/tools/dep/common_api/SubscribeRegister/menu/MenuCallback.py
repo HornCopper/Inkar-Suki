@@ -101,7 +101,7 @@ class MenuCallback(BaseMenuCallback):
         return await super().run()
 
     @staticmethod
-    async def get_all_group_of_subscribe(subject: str, cron_level: int) -> dict[str, tuple[str, str, str]]:
+    async def get_all_group_of_subscribe(subject: str, cron_level: int) -> dict[str, tuple[str, str, str, str]]:
         '''获取指定主题已订阅的群
         @return
             dict[str,tuple[str,str,str]] key:(机器人id 群号 是否应发 订阅来源)
