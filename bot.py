@@ -74,13 +74,6 @@ init_folders = {
 
 check_pkgs()
 check_folders(init_folders)
-logger.debug('check plugins document')
-plugins = os.listdir("./src/plugins")
-for i in plugins:
-    if not os.path.exists(f"./src/plugins/{i}/info.json"):
-        raise FileNotFoundError(
-            f"Plugin `{i}` required a `info.json` but not found. Please check and try again.")
-        sys.exit(1)
 
 logger.debug('start nonebot...')
 app = nonebot.get_asgi()
