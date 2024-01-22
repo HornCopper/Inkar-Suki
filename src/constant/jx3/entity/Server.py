@@ -24,7 +24,7 @@ class Server(Aliasable):
         for rec in [x for x in ServerRecordType if x.value > 0]:
             result[rec.name] = None
 
-        self.record[self.name] = result
+        server_status_records[self.name] = result
         return result
 
     @record.setter
