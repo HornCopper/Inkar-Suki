@@ -22,7 +22,6 @@ class ServerStatusEvent(RecvEvent):
 
     @property
     def log(self) -> str:
-        self.record()
         log = f"开服推送事件：[{self.server}]状态-{self.status_desc}"
         return log
 
@@ -36,9 +35,13 @@ class ServerStatusEvent(RecvEvent):
     @overrides(RecvEvent)
     def get_message(self) -> dict:
         time_now = DateTime().tostring('%H:%M')
-        msg = f"{time_now} {self.mapped_server_name} {self.status_desc}"
+        msg_base = f"{time_now} {self.mapped_server_name} {self.status_desc}"
+
+        self.record() # 先记录本次，然后再计算时间差
+        msg_prev = self.mapped_server.record_desc
+        msg = f'{msg_base}{msg_prev}'
         return {
             "type": "开服",
-            "server": self.mapped_server,
+            "server": self.mapped_server.name,
             "msg": msg
         }
