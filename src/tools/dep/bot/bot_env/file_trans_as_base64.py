@@ -1,3 +1,4 @@
+from sgtpyutils.logger import logger
 import os
 import typing
 import pathlib
@@ -9,8 +10,9 @@ __raw_f2s = utils.f2s
 def __base64d_f2s(file: typing.Union[str, bytes, BytesIO, pathlib.Path]):
     if not isinstance(file, pathlib.Path):
         return __raw_f2s(file)
-        
-    if not os.path.isfile(file):
+
+    if os.path.exists(file):
+        logger.warning(f'target image file not exist:{file}')
         return __raw_f2s(file)
 
     with open(file, 'rb') as f:
