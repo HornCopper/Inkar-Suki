@@ -16,7 +16,9 @@ def __base64d_f2s(file: typing.Union[str, bytes, BytesIO, pathlib.Path]):
     if not isinstance(file, str):
         return __raw_f2s(file)
     if file.startswith(protocal_file):
-        file = file[len(protocal_file)+1:]
+        file = file[len(protocal_file):]
+        if ':' in file:  # not linux path
+            file = file[1:]
 
     if not os.path.exists(file):
         logger.warning(f'target image file not exist:{file}')
