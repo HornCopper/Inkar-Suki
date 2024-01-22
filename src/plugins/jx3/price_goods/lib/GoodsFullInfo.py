@@ -49,7 +49,7 @@ class GoodsInfoFull(GoodsInfo):
         self.attributes = json.loads(data.get("attributes") or "[]")
         self.recovery_price = data.get("recovery_price")
         self.level = data.get("level")
-        self.wucai_properties = data.get("wucai_properties")
+        self.wucai_properties = data.get("wucai_properties") or []
         return self
 
     @classmethod
