@@ -30,6 +30,7 @@ class MenuCallback(BaseMenuCallback):
 
     @staticmethod
     async def from_general_name(subject_name: str, cron_level: int = 0, description: str = '事件订阅', log_name: str = '通用事件') -> MenuCallback:
+        '''通过通用名称创建事件回调，并选中当前已订阅的群'''
         target = BaseMenuCallback(
             sub=SubscribeSubject(
                 name=subject_name,
