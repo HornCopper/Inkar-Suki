@@ -23,17 +23,17 @@ class IArgDesc:
 class Jx3ArgsType(enum.Enum):
     '''参数类型'''
 
-    default = IArgDesc(example=['苹果', '书本', '火锅'], description='默认')
+    default = IArgDesc(example=['苹果', '书本', '火锅', '文字'], description='默认')
     '''默认'''
-    string = IArgDesc(example=['苹果', '书本', '火锅'], description='文本')
+    string = IArgDesc(example=['苹果', '书本', '火锅', '文字'], description='文本')
     '''文本'''
-    number = IArgDesc(example=[1, 2, 3], description='数值')
+    number = IArgDesc(example=[1, 2, 3, 10, 20, 100], description='数值')
     '''数值'''
     bool = IArgDesc(example=["同意", "否定", "确定"], description='是否')
     '''真假'''
     server = IArgDesc(example=['唯满侠', '双梦', '煎蛋'], description='区服')
     '''区服'''
-    pageIndex = IArgDesc(example=[1, 2, 3], description='页码')
+    pageIndex = IArgDesc(example=[1, 2, 3, 4, 5, 6], description='页码')
     '''页码'''
     pageSize = IArgDesc(example=[5, 10, 50, 100], description='每页条数')
     '''每页条数'''
@@ -43,19 +43,19 @@ class Jx3ArgsType(enum.Enum):
     '''门派'''
     property = IArgDesc(example=['五行石', '太一玄晶', '砂'], description='道具名称')
     '''道具名称'''
-    user = IArgDesc(example=['打本本', '锦鲤鲤', '步龄龄'], description='玩家id')
+    user = IArgDesc(example=['打本本', '锦鲤鲤', '步龄龄', '拉矢公主', '你情缘呢'], description='玩家id')
     '''玩家id'''
     pvp_mode = IArgDesc(example=['22', '33', '55'], description='pvp模式')
     '''pvp模式'''
-    subscribe = IArgDesc(example=['日常', '攻防', '新闻'], description='事件订阅')
+    subscribe = IArgDesc(example=['日常', '攻防', '公告'], description='事件订阅')
     '''事件订阅'''
-    command = IArgDesc(example=['交易行', '战绩', '物价'], description='命令')
+    command = IArgDesc(example=['交易行', '战绩', '物价', '属性', '花价', '抓马'], description='命令')
     '''命令'''
     url = IArgDesc(example=['baidu.com', 'http://xx.com', 'https://qq.com'], description='链接')
     '''链接'''
-    group_id = IArgDesc(example=["123456", "111111", "654321"], description='群号')
+    group_id = IArgDesc(example=["123456", "111111", "654321", '650495414'], description='群号')
     '''群号'''
-    remark = IArgDesc(example=["yesyes", "来啦", "备注"], description='备注')
+    remark = IArgDesc(example=["yesyes", "来啦", "备注", '备注啦'], description='备注')
     '''备注'''
 
     def to_dict(self):
