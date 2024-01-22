@@ -127,6 +127,7 @@ async def on_jx3_event_recv(bot: Bot, event: RecvEvent):
 
     menu_sender = await MenuCallback.from_general_name(message.get('type') or 'unknown')
     result = menu_sender.result
+    # 回调判断消息是否应发送
     for key in result:
         (botname, group_id, to_send_msg, sub_from) = result[key]
         if not to_send_msg:
@@ -135,6 +136,9 @@ async def on_jx3_event_recv(bot: Bot, event: RecvEvent):
         group_srv = group_config.mgr_property('server')
         callback = type_callback.get(message["type"])
         if callback and not callback(message):
+            to_send_msg = None # 无效订阅
+            result[key] = (botname, group_id, to_send_msg, sub_from)
             continue
         to_send_msg = message["msg"]
-        await menu_sender.send_msg_single((botname, group_id, to_send_msg, sub_from))
+        result[key] = (botname, group_id, to_send_msg, sub_from)
+    await menu_sender.start_send_msg()
