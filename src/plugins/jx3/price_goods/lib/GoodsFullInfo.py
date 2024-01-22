@@ -19,7 +19,7 @@ class GoodsInfoFull(GoodsInfo):
             'attributes': self.attributes,
             'recovery_price': self.recovery_price,
             'level': self.level,
-            'wucai_properties': [x.to_dict() for x in self.wucai_properties] if wucai_properties else [],
+            'wucai_properties': [x.to_dict() for x in self.wucai_properties] if self.wucai_properties else [],
         }
         r.update(self_dict)
         return r
