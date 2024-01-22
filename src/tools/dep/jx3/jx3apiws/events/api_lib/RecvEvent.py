@@ -5,7 +5,7 @@ from abc import abstractmethod
 from nonebot.typing import overrides
 from nonebot.utils import escape_tag
 from src.tools.utils import *
-from src.constant.jx3.entity.Server import Server
+from src.constant.jx3.entity.Server import Server, ServerRecordType
 
 
 class RecvEvent(BaseEvent, extra=Extra.ignore):
