@@ -26,8 +26,17 @@ class BaseMenuCallback:
     @property
     def valid_result(self):
         result = self.result
+        valid_result = []
         '''bot group message from'''
-        return [x for x in result if x[2]]
+        for x in result:
+            if isinstance(x, str):
+                x = result[x]  # dict
+                
+            if not x[2]:
+                continue
+            valid_result.append(x)
+
+        return valid_result
 
     @property
     def statistics(self):
