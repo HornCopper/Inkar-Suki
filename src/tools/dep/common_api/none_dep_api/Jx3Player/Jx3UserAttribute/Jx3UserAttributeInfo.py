@@ -121,7 +121,7 @@ class BaseJx3UserAttribute(BaseUpdateAt):
         return self
 
     @classmethod
-    def from_uid(cls, uid: str, server: str, cache_length: float = 0) -> tuple[str, dict[str, BaseJx3UserAttribute]]:
+    def from_uid(cls, uid: str, server: str, cache_length: float = 0, only_cache: bool = True) -> tuple[str, dict[str, BaseJx3UserAttribute]]:
         '''
         @return:
             str:当前装分
@@ -132,6 +132,15 @@ class BaseJx3UserAttribute(BaseUpdateAt):
         target = BaseJx3UserAttribute.cache.get(key)
         if target and not target.is_outdated(cache_length):
             return target.score, cls.from_cache(uid, server)
+            
+        if only_cache:
+            # 只能获取缓存时使用
+            prev_data = cls.from_cache(uid, server)
+            if not prev_data:
+                return None, None  # 确实无数据可用
+            scores = sorted([int(x) for x in prev_data], key=lambda x: x, reverse=True)
+            score = str(scores[0])
+            return score, prev_data
 
         # 重新加载
         task = cls.factory._get_attribute_by_uid(uid, server)
