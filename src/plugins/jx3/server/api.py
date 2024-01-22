@@ -13,6 +13,6 @@ async def server_status(server: str = None):
     prefix = "开服状态："
     status_desc = '已开服。' if status else '维护中。'
 
-    msg = f'{prefix} {server} {status_desc}'
+    msg = f'{prefix} {server.name} {status_desc}'
     msg = f'{msg}\n{server.record_desc}'
     return msg
