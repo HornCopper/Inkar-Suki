@@ -15,7 +15,7 @@ __plugin_meta__ = PluginMetadata(
     supported_adapters=None,
 )
 
-_running_matcher: Dict[str, int] = {}
+_running_matcher: dict[str, int] = {}
 
 
 async def matcher_mutex(event: Event) -> AsyncGenerator[bool, None]:
@@ -37,5 +37,6 @@ async def matcher_mutex(event: Event) -> AsyncGenerator[bool, None]:
 
 @event_preprocessor
 async def preprocess(mutex: bool = Depends(matcher_mutex)):
-    if mutex:
-        raise IgnoredException("Another matcher running")
+    if not mutex:
+        return
+    raise IgnoredException("Another matcher running")
