@@ -42,6 +42,12 @@ class Server(Aliasable):
 
     @property
     def record_desc(self) -> str:
-        start = self.get_record(ServerRecordType.last_start) or '暂无记录'
-        stop = self.get_record(ServerRecordType.last_stop) or '暂无记录'
-        return f'上次开服:{start}\n上次维护:{stop}'
+        start: int = self.get_record(ServerRecordType.last_start)
+        stop: int = self.get_record(ServerRecordType.last_stop)
+        msg = f'上次开服:{start or "暂无"}\n上次维护:{stop or "暂无"}'
+        if start and stop:
+            delta = (DateTime(stop) - DateTime(start)).total_seconds()
+            if delta > 0:
+                msg = f'{msg}\n维护耗时:{int(delta/60)}分钟'
+
+        return msg
