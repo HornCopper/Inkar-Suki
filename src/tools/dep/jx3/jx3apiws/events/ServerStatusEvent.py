@@ -22,8 +22,16 @@ class ServerStatusEvent(RecvEvent):
 
     @property
     def log(self) -> str:
+        self.record()
         log = f"开服推送事件：[{self.server}]状态-{self.status_desc}"
         return log
+
+    def record(self):
+        s: Server = self.mapped_server
+        if s is None:
+            return
+        s_type = ServerRecordType.last_start if self.status else ServerRecordType.last_stop
+        s.get_record(s_type, DateTime().timestamp())
 
     @overrides(RecvEvent)
     def get_message(self) -> dict:
