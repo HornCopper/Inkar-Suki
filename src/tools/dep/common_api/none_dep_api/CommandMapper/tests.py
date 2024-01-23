@@ -37,7 +37,6 @@ def test_jx3_command_mapper():
         '配装-pvv-$kunfu': None,
         '赤兔': '抓马-赤兔',
         '赤兔-$server': '抓马-$server-赤兔',
-        '谁闪了': '掉落-太一玄晶',
         '谁闪了-$server': '掉落-$server-太一玄晶',
     }
     assert CommandMapper(mapper).convert('属性 而遇') == '属性v3 而遇'

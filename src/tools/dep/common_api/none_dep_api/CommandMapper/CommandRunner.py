@@ -51,7 +51,7 @@ class CommandMapper(CommandMapperStorage):
             total_commands = len(raw_commands)
             require_idx = int(x[1:])
             if require_idx >= total_commands:
-                logger.warning('require args{require_idx},but only {} args available')
+                logger.warning(f'require args{require_idx},but only {total_commands} args available')
                 return ''
             return raw_commands[require_idx]
 
@@ -68,7 +68,10 @@ class CommandMapper(CommandMapperStorage):
                 return export
             return self.convert(results, max_depth-1)
 
-        for cur_idx, cur_cmd in enumerate(raw_commands):
+        cur_idx = -1
+        while True:
+            cur_idx += 1
+            cur_cmd = raw_commands[cur_idx] if len(raw_commands) > cur_idx else ''
             # 获取当前位是否可为参数
             if args := cur_map.get(self.FLAG_Args):
                 # 可为参数则跟进参数，直接短路
@@ -83,9 +86,3 @@ class CommandMapper(CommandMapperStorage):
             else:
                 # 无匹配，直接返回原始传入
                 return commands if isinstance(commands, str) else str.join(' ', commands)
-
-        if result := cur_map.get(self.FLAG_Value):
-            # 有设置值则
-            return extract_result(result, cur_idx)
-        # 无任何匹配
-        return commands
