@@ -86,7 +86,8 @@
     "alias": ["xisui", "洗髓经", "洗髓", "和尚T", "秃T", "和尚t", "大师t", "大师T"],
     "name": "洗髓经",
     "gameid": 10002,
-    "type": "t"
+    "type": "t",
+    "practice_type": "physics"
   },
   {
     "color": "#FDDD70",

@@ -1,5 +1,6 @@
 from .CommandStorage import *
 from typing import overload
+from sgtpyutils.logger import logger
 
 
 class CommandMapper(CommandMapperStorage):
@@ -44,18 +45,22 @@ class CommandMapper(CommandMapperStorage):
         cur_map = self.mapper
         # print(json.dumps(mapper, indent=4, ensure_ascii=False))
 
+        def get_single_arg(x: str):
+            if not x.startswith(CommandMapperStorage.FLAG_Args):
+                return x
+            total_commands = len(raw_commands)
+            require_idx = int(x[1:])
+            if require_idx >= total_commands:
+                logger.warning('require args{require_idx},but only {} args available')
+                return ''
+            return raw_commands[require_idx]
+
         def extract_result(result: str, idx: int) -> str:
             cmds = result.split(self.FLAG_Spliter)
             results = cmds + raw_commands[idx+1:]  # 映射命令后参数不变动
 
-            results = [
-                (
-                    raw_commands[int(x[1:])]  # 是参数则填充
-                    if x.startswith(CommandMapperStorage.FLAG_Args)
-                    else x
-                )
-                for x in results
-            ]
+            results = [get_single_arg(x) for x in results]
+            results = [x for x in results if x]
             export = str.join(' ', results)
             if commands == export:
                 return commands if isinstance(commands, str) else str.join(' ', commands)
