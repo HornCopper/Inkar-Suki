@@ -11,25 +11,32 @@ async def dev_command_mapper(event: GroupMessageEvent):
     raw_command = event.message.extract_plain_text()
     new_command = raw_command
 
-    # TODO 暂不实现 # 映射个人命令
-    # grp_config = GroupUserConfig(event.group_id, log=False)
-    # if tmp := run_mapper(grp_config.mgr_property('command_map'), new_command):
-    #     new_command = tmp
+    visited = {}
+    max_level = 10
+    while max_level > 0:
+        max_level -= 1
+        round_command = new_command
 
-    if new_command == raw_command:
+        # TODO 暂不实现 # 映射个人命令
+        # grp_config = GroupUserConfig(event.group_id, log=False)
+        # if tmp := run_mapper(grp_config.mgr_property('command_map'), new_command):
+        #     new_command = tmp
+
         # 映射本群命令
         grp_config = GroupConfig(event.group_id, log=False)
         if tmp := CommandMapper(grp_config.mgr_property('command_map')).convert(new_command):
             new_command = tmp
 
-    if new_command == raw_command:
         # 映射全局命令
         if tmp := CommandMapper(dev_global_command_record).convert(new_command):
             new_command = tmp
 
-    if new_command == raw_command:
-        return
-
+        if new_command == round_command:
+            return
+        if visited.get(new_command):
+            break
+        visited[new_command] = True
+        
     logger.debug(f'map [{raw_command}] to new msg:{new_command}')
     event.message = obMessage(new_command)
 
