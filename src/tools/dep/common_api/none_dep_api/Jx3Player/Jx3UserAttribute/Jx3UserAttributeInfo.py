@@ -4,7 +4,6 @@ from src.constant.jx3 import *
 from .BaseJx3UserAttributePage import *
 from .IJx3UserAttributeFactory import *
 
-
 class BaseJx3UserAttribute(BaseUpdateAt):
     factory: IJx3UserAttributeFactory
     c_path = f'{bot_path.common_data_full}jx3_users'
@@ -36,7 +35,7 @@ class BaseJx3UserAttribute(BaseUpdateAt):
         # 内功或外功
         if not hasattr(self.kungfu, 'practice_type'):
             # 解决一直报错问题
-            self.kungfu = Kunfu(self.kungfu.alias)
+            self.kungfu = Kunfu.from_alias(self.kungfu.alias)
             if not hasattr(self.kungfu, 'practice_type'):
                 logger.warning(f'loading kunfu fail:{self.kungfu.to_dict()}')
                 setattr(self.kungfu, 'practice_type', 'magic')  # 默认给个内功
