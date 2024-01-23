@@ -54,11 +54,17 @@ class BaseJx3UserAttribute(BaseUpdateAt):
             #     return  # 忽略副武器
 
             # 按装备主属性判断
-            primary_attr: AttributeType = extensions.reduce(
-                equip.attributes,
-                lambda prev, cur: prev | (att_dict.get(cur.primary_attribute) or att_default),
-                att_default,
-            )
+            attributes = [x.primary_attribute for x in equip.attributes]
+            primary_attr = att_default
+            for att in att_dict:
+                has_attr = True
+                for single_att in att.split(','):
+                    att_desc = single_att
+                    if is_reverse := single_att.startswith('!'):
+                        att_desc = att_desc[1:]
+                    has_attr = has_attr and (is_reverse ^ (att_desc in attributes))
+                if has_attr:
+                    primary_attr |= att_dict[att]
             result.attr_type |= primary_attr
 
         equip_unmatch = []
@@ -90,7 +96,7 @@ class BaseJx3UserAttribute(BaseUpdateAt):
         if result.attr_type & (AttributeType.PVP | AttributeType.PVE) == AttributeType.Unknown:
             # 没有标注类型，则默认应该为PVE
             result.attr_type |= AttributeType.PVE
-            
+
         result.equip_unmatch = equip_unmatch
         return result
 
