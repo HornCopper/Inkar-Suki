@@ -28,6 +28,7 @@ async def send_with_async(method: str, url: str, proxy: dict = None, **kwargs) -
     while True:
         # TODO use AOP
         try:
+            logger.debug(f'request:{method}@{url}')
             req = await client.request(method, url, **kwargs)
             req.encoding = 'utf-8'
             return req
