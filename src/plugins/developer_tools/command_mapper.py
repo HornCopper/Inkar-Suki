@@ -33,10 +33,6 @@ async def dev_command_mapper(event: GroupMessageEvent):
     logger.debug(f'map [{raw_command}] to new msg:{new_command}')
     event.message = obMessage(new_command)
 
-# TODO 实现占位符
-# #     命令占位符用`@`来表示
-# #     例如 设置映射 配装-pve 配装-@-pve
-#     这样，再发[配装 pve 刀宗]等价于发了[配装 刀宗 pve]
 dev_cmd_mgr_command_map = on_command(
     "mgr_command_map",
     name="设置映射",
@@ -51,11 +47,12 @@ dev_cmd_mgr_command_map = on_command(
         Jx3Arg(Jx3ArgsType.bool, default=False, alias='是否全局'),
     ],
     document='''将某个存在或者不存在的命令，通过映射，变成一个其他命令。
-    额外附加的参数使用`-`来分割
-    例如 设置映射 小药 接引人-小药
-    这样，再发[小药]就等价发了[接引人 小药]
-
-
+    额外附加的参数使用`-`来分割。
+    例如 设置映射 小药 接引人-小药。
+    这样，再发[小药]就等价发了[接引人 小药]。
+    也可以加上参数，用[$参数名]表示
+    例如：设置映射 PVE-$kunfu 配装-$kunfu-PVE。
+    这样，再发[配装 pve 刀宗]等价于发了[配装 刀宗 pve]
     '''
 )
 
