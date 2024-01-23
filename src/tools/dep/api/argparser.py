@@ -188,7 +188,7 @@ class Jx3Arg(Jx3ArgCallback, Jx3ArgExt):
         if templates is None:  # 返回无效内容，不再继续处理
             logger.warning(f'处理指令时发现无效数据:{str(event.message)}')
             matcher.stop_propagation()
-        if templates is InvalidArgumentException:
+        if type(templates) is InvalidArgumentException:
             msg = f'{docs.name}指令错误，{ex}'
             logger.debug(f'show arguments error:{msg}')
             ext.SyncRunner.as_sync_method(matcher.finish(msg))
