@@ -4,11 +4,11 @@ from .. import *
 
 def test_global_update_grp_config():
     mc = MessageCallback()
-    import src.plugins.jx3
-    raw_matcher = src.plugins.jx3.global_cmd_update_grp_config
-    src.plugins.jx3.global_cmd_update_grp_config = mc
+    import src.plugins.developer_tools
+    raw_matcher = src.plugins.developer_tools.global_cmd_update_grp_config
+    src.plugins.developer_tools.mgr_config.global_cmd_update_grp_config = mc
 
-    func = src.plugins.jx3.global_update_grp_config
+    func = src.plugins.developer_tools.mgr_config.global_update_grp_config
     event = SFGroupMessageEvent()
 
     def callback_query(msg: str):

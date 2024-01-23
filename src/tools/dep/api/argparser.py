@@ -82,16 +82,17 @@ class Jx3ArgCallback:
             is_default = True
         return v - 1, is_default  # 输入值从1开始，返回值从0开始
 
-    def _convert_subscribe(self, arg_value: str, **kwargs) -> tuple[str, bool]:
+    def _convert_subscribe(self, arg_value: str, **kwargs) -> tuple[list[str], bool]:
         if arg_value is None:
             return None, True
         if not isinstance(arg_value, str):
             return None, True
         arg_sub = arg_value.lower() if arg_value else None
-        subject = VALID_Subjects.get(arg_sub)
-        if not subject:
+        arg_subs = [x.strip() for x in arg_sub.split('/')]
+        subjects = [VALID_Subjects.get(x) for x in arg_subs if x]
+        if not subjects:
             return None, True
-        return subject.name, False
+        return [sub.name for sub in subjects], False
 
     def _convert_command(self, arg_value: str, **kwargs) -> tuple[str, bool]:
         return arg_value  # TODO 经允许注册有效的
