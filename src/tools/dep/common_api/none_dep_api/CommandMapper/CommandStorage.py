@@ -29,11 +29,11 @@ class CommandMapperStorage:
     def generate(self):
         result = {}
         raw_mapper = self._mapper
-        path_lib = {}  # 记录选择器的路径以同质化参数
         for m in raw_mapper:
             cmds = m.split(CommandMapperStorage.FLAG_Spliter)
             cur_map = result
 
+            path_lib = {}  # 记录选择器的路径以同质化参数
             for idx, cmd in enumerate(cmds):
                 if next_map := cur_map.get(cmd):
                     cur_map = next_map
@@ -64,6 +64,7 @@ class CommandMapperStorage:
                     value = value.replace(f'{CommandMapperStorage.FLAG_Args}{path}',
                                           f'{CommandMapperStorage.FLAG_Args}{cmd_idx}')
             cur_map[CommandMapperStorage.FLAG_Value] = value
+
         return result
 
     @property
