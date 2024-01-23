@@ -42,7 +42,6 @@ class CommandMapper(CommandMapperStorage):
 
     def convert(self, commands: list[str], max_depth: int = 10) -> str:
         raw_commands = commands if isinstance(commands, list) else commands.split(' ')
-        cur_map = self.mapper
         # print(json.dumps(mapper, indent=4, ensure_ascii=False))
 
         def get_single_arg(x: str):
@@ -50,12 +49,14 @@ class CommandMapper(CommandMapperStorage):
                 return x
             total_commands = len(raw_commands)
             require_idx = int(x[1:])
+            # 不对，这里的2是因为在Storage中初始化的锅 # require_idx -= 1 # 应排除命令本身的1个身位
             if require_idx >= total_commands:
                 logger.warning(f'require args{require_idx},but only {total_commands} args available')
                 return ''
             return raw_commands[require_idx]
 
         def extract_result(result: str, idx: int) -> str:
+            logger.debug(f'cmd-mapper extract_result[{idx}] :{result}')
             cmds = result.split(self.FLAG_Spliter)
             results = cmds + raw_commands[idx+1:]  # 映射命令后参数不变动
 
@@ -69,6 +70,7 @@ class CommandMapper(CommandMapperStorage):
             return self.convert(results, max_depth-1)
 
         cur_idx = -1
+        cur_map = self.mapper
         while True:
             cur_idx += 1
             cur_cmd = raw_commands[cur_idx] if len(raw_commands) > cur_idx else ''

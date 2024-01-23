@@ -45,3 +45,4 @@ def test_jx3_command_mapper():
     assert CommandMapper(mapper).convert('赤兔') == '抓马 赤兔'
     assert CommandMapper(mapper).convert('谁闪了') == '掉落 太一玄晶'
     assert CommandMapper(mapper).convert('谁闪了 唯满侠') == '掉落 唯满侠 太一玄晶'
+    assert CommandMapper(mapper).convert('谁闪了 11 22 33') == '掉落 11 太一玄晶 22 33'
