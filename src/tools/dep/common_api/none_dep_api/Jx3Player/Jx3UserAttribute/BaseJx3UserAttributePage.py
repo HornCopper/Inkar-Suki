@@ -29,7 +29,7 @@ class BaseJx3UserAttributePage:
         (AttributeType.PVE | AttributeType.DPS, 'PVE-DPS'),
         (AttributeType.PVP | AttributeType.HPS, 'PVP-HPS'),
         (AttributeType.PVE | AttributeType.HPS, 'PVE-HPS'),
-        (AttributeType.PVP | AttributeType.TANK, 'PVE-TANK'),
+        (AttributeType.PVP | AttributeType.TANK, 'PVP-TANK'),
         (AttributeType.PVE | AttributeType.TANK, 'PVE-TANK'),
         (AttributeType.PVX, '寻宝娱乐'),
         (AttributeType.FLY, '轻功'),
