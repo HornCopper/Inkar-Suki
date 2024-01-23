@@ -30,7 +30,10 @@ class GoodsInfo(dict):
     async def reload_data(self, data: dict):
         item_id = data.get('id')
         new_data = await get_item_info_by_id(item_id)
-        data.update(new_data)
+        if new_data is not None and isinstance(new_data, dict):
+            data.update(new_data)
+        else:
+            logger.warning(f'invalid goods-detail data occurred:{item_id}->{new_data}')
         self.load_data(data)
 
     def __init__(self, data: dict = None, not_to_load: bool = False) -> None:
