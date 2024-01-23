@@ -19,20 +19,23 @@ _running_matcher: dict[str, int] = {}
 
 
 async def matcher_mutex(event: Event) -> AsyncGenerator[bool, None]:
-    result = False
+    '''返回当前是否已在处理'''
     try:
         session_id = event.get_session_id()
     except Exception:
-        yield result
-    else:
-        current_event_id = id(event)
-        if event_id := _running_matcher.get(session_id):
-            result = event_id != current_event_id
-        else:
-            _running_matcher[session_id] = current_event_id
-        yield result
-        if not result:
-            del _running_matcher[session_id]
+        yield False
+        return
+
+    current_event_id = id(event)
+    if prev_event_id := _running_matcher.get(session_id):
+        if prev_event_id != current_event_id:
+            # 事件不一致，则说明上一个事件正在处理
+            yield True
+            return
+
+    yield False
+    _running_matcher[session_id] = current_event_id
+    del _running_matcher[session_id]
 
 
 @event_preprocessor
