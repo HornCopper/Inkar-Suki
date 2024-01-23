@@ -8,6 +8,7 @@ import nonebot.adapters.onebot.utils
 __raw_f2s = nonebot.adapters.onebot.v11.message.f2s
 
 protocal_file = 'file://'
+protocal_http = 'http'
 
 
 def __base64d_f2s(file: typing.Union[str, bytes, BytesIO, pathlib.Path]):
@@ -19,6 +20,10 @@ def __base64d_f2s(file: typing.Union[str, bytes, BytesIO, pathlib.Path]):
         file = file[len(protocal_file):]
         if ':' in file:  # not linux path
             file = file[1:]
+        logger.debug(f'[hook-trans]reset file-path to {file}')
+    elif file.startswith(protocal_http):
+        logger.debug(f'[hook-trans]http file direct-pass:{file}')
+        return __raw_f2s(file)
 
     if not os.path.exists(file):
         logger.warning(f'target image file not exist:{file}')

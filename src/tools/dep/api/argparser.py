@@ -82,16 +82,17 @@ class Jx3ArgCallback:
             is_default = True
         return v - 1, is_default  # 输入值从1开始，返回值从0开始
 
-    def _convert_subscribe(self, arg_value: str, **kwargs) -> tuple[str, bool]:
+    def _convert_subscribe(self, arg_value: str, **kwargs) -> tuple[list[str], bool]:
         if arg_value is None:
             return None, True
         if not isinstance(arg_value, str):
             return None, True
         arg_sub = arg_value.lower() if arg_value else None
-        subject = VALID_Subjects.get(arg_sub)
-        if not subject:
+        arg_subs = [x.strip() for x in arg_sub.split('/')]
+        subjects = [VALID_Subjects.get(x) for x in arg_subs if x]
+        if not subjects:
             return None, True
-        return subject.name, False
+        return [sub.name for sub in subjects], False
 
     def _convert_command(self, arg_value: str, **kwargs) -> tuple[str, bool]:
         return arg_value  # TODO 经允许注册有效的
@@ -184,10 +185,14 @@ class Jx3Arg(Jx3ArgCallback, Jx3ArgExt):
     def arg_factory(matcher: Matcher, event: GroupMessageEvent) -> list[Any]:
         docs = get_cmd_docs(matcher)
         templates = get_args(docs.example, event, method=docs.name)
-        if templates is None:  # 不再继续处理
+        if templates is None:  # 返回无效内容，不再继续处理
+            logger.warning(f'处理指令时发现无效数据:{str(event.message)}')
             matcher.stop_propagation()
         if templates is InvalidArgumentException:
-            ext.SyncRunner.as_sync_method(matcher.finish(f'{docs.name}指令错误，{ex}'))
+            msg = f'{docs.name}指令错误，{ex}'
+            logger.debug(f'show arguments error:{msg}')
+            ext.SyncRunner.as_sync_method(matcher.finish(msg))
+            matcher.stop_propagation()
         return templates
 
     def to_dict(self):
@@ -221,8 +226,9 @@ def get_args(arg1, arg2, arg3=None, method=None) -> list:
         message = convert_to_str(arg2)  # 从事件提取
         event = arg2  # 事件是第二个参数
         template_args = arg1
-        return direct_argparser(message, template_args, event, method=method)
-    return direct_argparser(arg1, arg2, arg3, method=method)
+    else:
+        message, template_args, event = arg1, arg2, arg3
+    return direct_argparser(message, template_args, event, method=method)
 
 
 @DocumentGenerator.record
@@ -243,7 +249,7 @@ def direct_argparser(raw_input: str, template_args: List[Jx3Arg], event: GroupMe
             if is_default and not match_value.is_optional:
                 return InvalidArgumentException(f'[{match_value.alias}]参数无效')
             continue  # 该参数去匹配下一个参数
-        
+
         if not is_default:
             user_index += 1  # 输出参数位成功才+1
     return result

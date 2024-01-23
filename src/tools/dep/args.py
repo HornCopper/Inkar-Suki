@@ -47,7 +47,7 @@ class Jx3ArgsType(enum.Enum):
     '''玩家id'''
     pvp_mode = IArgDesc(example=['22', '33', '55'], description='pvp模式')
     '''pvp模式'''
-    subscribe = IArgDesc(example=['日常', '攻防', '公告'], description='事件订阅')
+    subscribe = IArgDesc(example=['日常', '攻防', '公告', '818/明日日常'], description='事件订阅')
     '''事件订阅'''
     command = IArgDesc(example=['交易行', '战绩', '物价', '属性', '花价', '抓马'], description='命令')
     '''命令'''
