@@ -87,6 +87,10 @@ class BaseJx3UserAttribute(BaseUpdateAt):
             handle_kunfu_attr(equip)
             handle_primary_attr(equip)
 
+        if result.attr_type & (AttributeType.PVP | AttributeType.PVE) == AttributeType.Unknown:
+            # 没有标注类型，则默认应该为PVE
+            result.attr_type |= AttributeType.PVE
+            
         result.equip_unmatch = equip_unmatch
         return result
 
