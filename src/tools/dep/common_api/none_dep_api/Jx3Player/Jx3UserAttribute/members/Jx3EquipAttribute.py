@@ -17,7 +17,7 @@ class Jx3EquipAttribute:
         '无': AttributeType.DPS | AttributeType.PVE,
         '破防': AttributeType.DPS,
         '破招': AttributeType.DPS | AttributeType.PVE,
-        '御': AttributeType.TANK,
+        '御,!疗': AttributeType.TANK,
         '化': AttributeType.PVP,
         '疗': AttributeType.HPS,
     }
@@ -28,7 +28,7 @@ class Jx3EquipAttribute:
         if isinstance(data, str):
             self.load_data({})
             self.desc = data
-            return # 仅传入属性描述，其他值无
+            return  # 仅传入属性描述，其他值无
         self.load_data(data)
         pass
 
