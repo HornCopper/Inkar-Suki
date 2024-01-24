@@ -16,7 +16,7 @@ __plugin_meta__ = PluginMetadata(
     supported_adapters=None,
 )
 
-_running_matcher: dict[str, int] = {}
+_running_matcher: dict[str, tuple[int, int]] = {}  # {session:[event,time]}
 _blocking_bot: dict[str, dict[str, str]] = filebase_database.Database(
     f'{bot_path.common_data_full}blocking-bot',
 ).value
@@ -73,27 +73,29 @@ async def matcher_mutex(bot: Bot, event: Event):
     try:
         session_id = event.get_session_id()
     except Exception:
-        yield False
-        return
+        return False
 
     slient_status = get_blocking_status(bot.self_id)
-    prev_event_id = _running_matcher.get(session_id)
+    prev_event = _running_matcher.get(session_id)
     if slient_status.get('slient_to') > DateTime().timestamp():
-        yield True
-        if prev_event_id:
+        if prev_event:
             del _running_matcher[session_id]
-        return
+        return True
 
     current_event_id = id(event)
-    if prev_event_id:
-        if prev_event_id != current_event_id:
+    if prev_event:
+        prev_event_id, prev_time = prev_event
+        if prev_event_id != current_event_id and prev_time > DateTime().timestamp():
             # 事件不一致，则说明上一个事件正在处理
-            yield True
-            return
+            return True
         del _running_matcher[session_id]
-    else:
-        _running_matcher[session_id] = current_event_id
-    yield False
+        return False
+
+    _running_matcher[session_id] = [
+        current_event_id,
+        int(DateTime().timestamp() + 30),  # 30秒未响应则取消锁定
+    ]
+    return False
 
 
 @event_preprocessor
