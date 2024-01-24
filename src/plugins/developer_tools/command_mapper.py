@@ -32,11 +32,13 @@ async def dev_command_mapper(event: GroupMessageEvent):
             new_command = tmp
 
         if new_command == round_command:
-            return
+            break
         if visited.get(new_command):
             break
         visited[new_command] = True
-
+        
+    if new_command == raw_command:
+        return
     logger.debug(f'map [{raw_command}] to new msg:{new_command}')
     event.message = obMessage(new_command)
 
