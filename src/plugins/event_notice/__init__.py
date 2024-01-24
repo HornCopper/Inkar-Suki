@@ -29,7 +29,7 @@ notice = on_notice(priority=5)
 
 def check_env_path(group_id: str):
     new_path = f"{bot_path.DATA}/{str(group_id)}"
-    if os.path.exists(new_path):
+    if os.path.exists(f'{new_path}/welcome.txt'):
         return True
     os.mkdir(new_path)
     write(f"{new_path }/jx3group.json", "{\"group\":\"" + str(group_id) +
