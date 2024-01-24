@@ -31,3 +31,7 @@ class GithubHandle(GithubBaseParser):
     def workflow_run(body):
         '''暂不处理'''
         return
+
+    def check_suite(body):
+        '''暂不处理'''
+        return
