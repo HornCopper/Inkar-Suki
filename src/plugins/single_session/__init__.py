@@ -39,6 +39,8 @@ def get_blocking_status(bot_qq: str):
 async def handle_api_result(
     bot: Bot, exception: Optional[Exception], api: str, data: Dict[str, Any], result: Any
 ):
+    if api != "send_msg":
+        return
     msg = str(data.get('message') or '')[0:50]
 
     x_data = {
@@ -47,10 +49,7 @@ async def handle_api_result(
         'message_type': data.get('message_type'),
         'message': msg,
     }
-
     logger.debug(f'[on_called_api.{api}]exception={exception},data:{x_data}')
-    if api != "send_msg":
-        return
     bot_qq = str(bot.self_id)
     data = get_blocking_status(bot_qq)
 
