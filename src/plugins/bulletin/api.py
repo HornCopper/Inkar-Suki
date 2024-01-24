@@ -6,11 +6,11 @@ async def get_bulletinG(msg: str):
     draw = ImageDraw.Draw(background)
     width, height = background.size
     if len(msg) <= 5:
-        fsize = 72
+        fsize = 144
     elif 5 < len(msg) <= 10:
-        fsize = 48
+        fsize = 96
     elif 10 < len(msg) <= 20:
-        fsize = 48
+        fsize = 96
         msg = msg[:9] + "\n" + msg[9:]
     font = ImageFont.truetype(bot_path.ASSETS + "/font/syst-heavy.otf", fsize)
     bbox = draw.textbbox((0, 0), msg, font=font)  
