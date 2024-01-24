@@ -13,3 +13,4 @@ def run(__subjects: list):
 def run_after(__subjects: list):
     '''加载完成其他后加载此处'''
     __subjects.append(SubscribeSubject("机器人更新", "当机器人有新的更新时推送。"))
+    __subjects.append(SubscribeSubject("机器人风控", "当有机器人被风控时推送"))
