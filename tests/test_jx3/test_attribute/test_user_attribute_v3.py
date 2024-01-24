@@ -45,12 +45,14 @@ def test_fetch_and_generate():
 
     event = SFGroupMessageEvent(group_id=1120115)
     # event.message = obMessage("属性 唯满侠 包某 2")
-    event.message = obMessage("属性 纵月 藏忧 3")
+    event.message = obMessage("属性 唯满侠 而遇")
+    # event.message = obMessage("属性 纵月 藏忧 3")
 
     args = Jx3Arg.arg_factory(src.plugins.jx3.jx3_cmd_attribute3, event)
     task = func(args)
     asyncio.run(task)
     mc.check_counter()
+
     # 重复进行一次判断缓存是否生效
     task = func(args)
     asyncio.run(task)
