@@ -49,11 +49,12 @@ class Jx3ArgCallback:
 
     def _convert_group_id(self, arg_value: str, **kwargs) -> tuple[str, bool]:
         '''TODO 群有效性判断'''
-        '''TODO 默认选中当前的群'''
+        event: GroupMessageEvent = kwargs.get('event')
+        default_group = str(event.group_id) if event else None
         x, is_default = self._convert_number(arg_value, **kwargs)
         if x < int(1e6):
             # 无效群号，返回默认
-            return None, True
+            return default_group, True
         return x, is_default
 
     def _convert_bool(self, arg_value: str, **kwargs) -> tuple[bool, bool]:
