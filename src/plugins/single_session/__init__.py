@@ -86,7 +86,7 @@ async def matcher_mutex(bot: Bot, event: Event):
     if alive_time > DateTime().timestamp():
         if prev_event:
             del _running_matcher[session_id]
-        print(f'{bot.self_id}@{session_id},账号封禁中，忽略。到{DateTime(alive_time)}')
+        print(f'{bot.self_id}账号封禁中，忽略。到{DateTime(alive_time)}')
         return True
 
     current_event_id = id(event)
