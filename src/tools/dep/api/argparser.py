@@ -49,11 +49,12 @@ class Jx3ArgCallback:
 
     def _convert_group_id(self, arg_value: str, **kwargs) -> tuple[str, bool]:
         '''TODO 群有效性判断'''
-        '''TODO 默认选中当前的群'''
+        event: GroupMessageEvent = kwargs.get('event')
+        default_group = str(event.group_id) if event else None
         x, is_default = self._convert_number(arg_value, **kwargs)
         if x < int(1e6):
             # 无效群号，返回默认
-            return None, True
+            return default_group, True
         return x, is_default
 
     def _convert_bool(self, arg_value: str, **kwargs) -> tuple[bool, bool]:
@@ -188,7 +189,7 @@ class Jx3Arg(Jx3ArgCallback, Jx3ArgExt):
         if templates is None:  # 返回无效内容，不再继续处理
             logger.warning(f'处理指令时发现无效数据:{str(event.message)}')
             matcher.stop_propagation()
-        if templates is InvalidArgumentException:
+        if type(templates) is InvalidArgumentException:
             msg = f'{docs.name}指令错误，{ex}'
             logger.debug(f'show arguments error:{msg}')
             ext.SyncRunner.as_sync_method(matcher.finish(msg))
