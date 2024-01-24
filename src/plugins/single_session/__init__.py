@@ -97,9 +97,12 @@ async def matcher_mutex(bot: Bot, event: Event):
     ]
     return False
 
+__session_lock = threading.Lock()
+
 
 @event_preprocessor
 async def preprocess(mutex: bool = Depends(matcher_mutex)):
-    if not mutex:
-        return
-    raise IgnoredException("Another matcher running")
+    with __session_lock:
+        if not mutex:
+            return
+        raise IgnoredException("Another matcher running")
