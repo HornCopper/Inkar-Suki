@@ -13,7 +13,7 @@ def test_auto_args_number():
 
     args = argparser.get_args('原命令 [empty] 是', templates, event)
     pass
-    assert args == ['原命令', None, None, True]
+    assert args == ['原命令', None, str(event.group_id), True]
 
 
 def test_invalid_arguments():
