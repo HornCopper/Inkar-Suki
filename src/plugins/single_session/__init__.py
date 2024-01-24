@@ -1,6 +1,7 @@
-from typing import Dict, AsyncGenerator
+from src.tools.dep import *
+from typing import Dict, Optional, Dict, Any
 
-from nonebot.adapters import Event
+from nonebot.adapters import Bot, Event
 from nonebot.params import Depends
 from nonebot.plugin import PluginMetadata
 from nonebot.message import IgnoredException, event_preprocessor
@@ -16,9 +17,59 @@ __plugin_meta__ = PluginMetadata(
 )
 
 _running_matcher: dict[str, int] = {}
+_blocking_bot: dict[str, dict[str, str]] = filebase_database.Database(
+    f'{bot_path.common_data_full}blocking-bot',
+).value
 
 
-async def matcher_mutex(event: Event):
+def get_blocking_status(bot_qq: str):
+    bot_qq = str(bot_qq)
+    data = _blocking_bot.get(bot_qq)
+    if data is None:
+        data = {
+            'slient_to': 0,
+            'failed_time': 0,
+        }
+        _blocking_bot[bot_qq] = data
+
+    return data
+
+
+@Bot.on_called_api
+async def handle_api_result(
+    bot: Bot, exception: Optional[Exception], api: str, data: Dict[str, Any], result: Any
+):
+    msg = str(data.get('message') or '')[0:50]
+
+    x_data = {
+        'user_id': data.get('user_id'),
+        'group_id': data.get('group_id'),
+        'message_type': data.get('message_type'),
+        'message': msg,
+    }
+
+    logger.debug(f'[on_called_api.{api}]exception={exception},data:{x_data}')
+    if api != "send_msg":
+        return
+    bot_qq = str(bot.self_id)
+    data = get_blocking_status(bot_qq)
+
+    if exception is None:
+        # 未被风控，则减少
+        data['failed_time'] = 0
+        data['slient_to'] -= - 1
+        if data['slient_to'] < 0:
+            data['slient_to'] = 0
+        return
+
+    # 60*(1+n^2)秒内不再处理消息
+    data['failed_time'] += 1
+    block_time = 60 * (1 + pow(data['failed_time'], 2))
+    data['slient_to'] = int(DateTime().timestamp() + block_time)
+    logger.warning(f'{bot_qq}账号连续消息发送失败{data["failed_time"]}次。下次尝试:{DateTime(data["slient_to"])}')
+
+
+async def matcher_mutex(bot: Bot, event: Event):
     '''返回当前是否已在处理'''
     try:
         session_id = event.get_session_id()
@@ -26,8 +77,16 @@ async def matcher_mutex(event: Event):
         yield False
         return
 
+    slient_status = get_blocking_status(bot.self_id)
+    prev_event_id = _running_matcher.get(session_id)
+    if slient_status.get('slient_to') > DateTime().timestamp():
+        yield True
+        if prev_event_id:
+            del _running_matcher[session_id]
+        return
+
     current_event_id = id(event)
-    if prev_event_id := _running_matcher.get(session_id):
+    if prev_event_id:
         if prev_event_id != current_event_id:
             # 事件不一致，则说明上一个事件正在处理
             yield True
