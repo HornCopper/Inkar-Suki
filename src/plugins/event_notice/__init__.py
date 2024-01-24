@@ -29,14 +29,13 @@ notice = on_notice(priority=5)
 
 def check_env_path(group_id: str):
     new_path = f"{bot_path.DATA}/{str(group_id)}"
-    if os.path.exists(f'{new_path}/welcome.txt'):
+    if os.path.exists(f'{new_path}/blacklist.json'):
         return True
     os.mkdir(new_path)
     write(f"{new_path }/jx3group.json", "{\"group\":\"" + str(group_id) +
           "\",\"server\":\"\",\"leader\":\"\",\"leaders\":[],\"name\":\"\",\"status\":false}")
     write(f"{new_path }/webhook.json", "[]")
     write(f"{new_path }/marry.json", "[]")
-    write(f"{new_path }/welcome.txt", "欢迎入群！")
     write(f"{new_path }/banword.json", "[]")
     write(f"{new_path }/opening.json", "[]")
     write(f"{new_path }/wiki.json", "{\"startwiki\":\"\",\"interwiki\":[]}")
@@ -58,13 +57,14 @@ async def on_new_group_enter(bot: Bot, event: NoticeEvent):
     obj = event.user_id
     group = event.group_id
     bots = Config.bot
+    config = GroupConfig(group)
     if str(obj) not in bots:
-        msg = ms.at(obj) + read(bot_path.DATA + "/" + str(group) + "/welcome.txt")
+        msg = ms.at(obj) + config.mgr_property('templates.welcome')
         return await bot.call_api("send_group_msg", group_id=group, message=msg)
 
     if event.sub_type != "approve":
         return
-    msg = "欢迎使用Inkar Suki！如需帮助请发送+help或查询文档哦~\nhttps://inkar-suki.codethink.cn"
+
     if check_env_path(event.group_id):
         return
     await bot.call_api("send_group_msg", group_id=event.group_id, message=f"检测到本群为新群聊，{Config.name}已经自动补全所需要的文件啦！")
@@ -111,24 +111,37 @@ async def _(bot: Bot, event: RequestEvent):
         msg = event.comment
         group = event.group_id
         user = event.user_id
+
+        msg = f"收到新的加群申请：\n邀请人：{user}\n群号：{group}\n消息：{msg}"
         for i in Config.notice_to:
-            await bot.call_api("send_group_msg", group_id=int(i), message=f"收到新的加群申请：\n邀请人：{user}\n群号：{group}\n消息：{msg}")
 
-welcome_msg_edit = on_command("welcome", priority=5)
+            await bot.call_api("send_group_msg", group_id=int(i), message=msg)
 
-
-@welcome_msg_edit.handle()
-async def __(event: GroupMessageEvent, args: Message = CommandArg()):
-    '''
+notice_cmd_welcome_msg_edit = on_command(
+    "welcome",
+    name="设置欢迎语",
+    aliases={'设置入群欢迎语'},
+    priority=5,
+    description='设置入群欢迎语，不要有空格',
+    catalog=permission.bot.command.mapper,
+    example=[
+        Jx3Arg(Jx3ArgsType.string, default='欢迎入群', alias='新欢迎语'),
+    ],
+    document='''
     欢迎语的修改。
     '''
+)
 
+
+@notice_cmd_welcome_msg_edit.handle()
+async def notice_welcome_msg_edit(bot: Bot, event: GroupMessageEvent, args: list[Any] = Depends(Jx3Arg.arg_factory)):
+    arg_msg, = args
     x = Permission(event.user_id).judge(5, '修改欢迎语')
-    if not x.success:
-        return await welcome_msg_edit.finish(x.description)
-    msg = args.extract_plain_text()
-    if msg:
-        write(bot_path.DATA + "/" + str(event.group_id) + "/welcome.txt", msg)
-        return await welcome_msg_edit.finish("喵~已设置入群欢迎！")
-    else:
-        return await welcome_msg_edit.finish("您输入了什么？")
+    if not x.success and not group_admin:
+        personal_data = await bot.call_api("get_group_member_info", group_id=event.group_id, user_id=event.user_id, no_cache=True)
+        group_admin = personal_data["role"] in ["owner", "admin"]
+        return await notice_cmd_welcome_msg_edit.finish(PROMPT_NoPermissionAdmin)
+
+    config = GroupConfig(event.group_id)
+    config.mgr_property('templates.welcome', arg_msg)
+    return await notice_cmd_welcome_msg_edit.send(f'设置完成')
