@@ -2,7 +2,7 @@ from src.tools.dep import *
 from PIL import Image, ImageDraw, ImageFont
 
 async def get_bulletinG(msg: str):
-    background = Image.open(bot_path.PLUGINS + "/bulletinG.jpg")
+    background = Image.open(bot_path.PLUGINS + "/bulletin/bulletinG.jpg")
     draw = ImageDraw.Draw(background)
     width, height = background.size
     if len(msg) <= 5:
