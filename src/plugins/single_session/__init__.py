@@ -65,7 +65,20 @@ async def handle_api_result(
     data['failed_time'] += 1
     block_time = 60 * (1 + pow(data['failed_time'], 2))
     data['slient_to'] = int(DateTime().timestamp() + block_time)
-    logger.warning(f'{bot_qq}账号连续消息发送失败{data["failed_time"]}次。下次尝试:{DateTime(data["slient_to"])}')
+    msg = f'{bot_qq}账号连续消息发送失败{data["failed_time"]}次。下次尝试:{DateTime(data["slient_to"])}'
+    logger.warning(msg)
+
+    # 通知群
+    if data['failed_time'] >= 5:
+        menu_sender = await MenuCallback.from_general_name('机器人风控')
+        result = menu_sender.result
+        # 回调判断消息是否应发送
+        for key in result:
+            (botname, group_id, to_send_msg, sub_from) = result[key]
+            if not to_send_msg:
+                continue
+            result[key] = (botname, group_id, msg, sub_from)
+        await menu_sender.start_send_msg()
 
 
 async def matcher_mutex(bot: Bot, event: Event):
