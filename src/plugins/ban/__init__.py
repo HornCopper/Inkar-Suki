@@ -134,6 +134,8 @@ mgr_cmd_remove_robot = on_command(
     catalog=permission.mgr.group.exit,
     example=[
         Jx3Arg(Jx3ArgsType.number, default=600, alias='延迟秒数'),
+        Jx3Arg(Jx3ArgsType.number, default=None, alias='机器人qq'),
+        Jx3Arg(Jx3ArgsType.bool, default=False, alias='是否直接移除'),
     ],
     document='''退群有冷静期，期间可以取消退群
     这种退群不会进黑名单
@@ -142,9 +144,10 @@ mgr_cmd_remove_robot = on_command(
 
 
 @mgr_cmd_remove_robot.handle()
-async def leave_group(bot: Bot, state: T_State, event: Event, args: list[Any] = Depends(Jx3Arg.arg_factory)):
-    delay, = args
-    state['delay'] = delay
+async def leave_group(bot: Bot,matcher:Matcher, state: T_State, event: Event, args: list[Any] = Depends(Jx3Arg.arg_factory)):
+    arg_delay, arg_bot, arg_direct = args
+    pass # 设置具体的退群人
+    state['delay'] = arg_delay
     personal_data = await bot.call_api("get_group_member_info", group_id=event.group_id, user_id=event.user_id, no_cache=True)
     group_admin = personal_data["role"] in ["owner", "admin"]
 

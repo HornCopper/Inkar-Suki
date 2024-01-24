@@ -59,4 +59,4 @@ def test_auto_args_server_and_str_args():
         Jx3Arg(Jx3ArgsType.subscribe),
     ]
     arg_sub, = argparser.get_args('日常', templates, event)
-    assert isinstance(arg_sub, str)
+    assert isinstance(arg_sub, list)

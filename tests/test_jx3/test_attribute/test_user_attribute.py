@@ -1,7 +1,7 @@
 from ... import *
 
 
-@pytest.mark.skipif('get_tuilan_articles' not in dir(), reason='无api可用')
+@pytest.mark.skipif('Jx3TuilanNoticeFactory' not in dir(), reason='无api可用')
 @pytest.mark.skipif(not Config.jx3api_globaltoken, reason="无apitoken时不测试")
 def test_user_attribute():
     import src.plugins.jx3.user.v2
@@ -19,7 +19,7 @@ def test_user_attribute():
     asyncio.run(task)
     mc.check_counter()
 
-@pytest.mark.skipif('get_tuilan_articles' not in dir(), reason='无api可用')
+@pytest.mark.skipif('Jx3TuilanNoticeFactory' not in dir(), reason='无api可用')
 @pytest.mark.skipif(not Config.jx3api_globaltoken, reason="无apitoken时不测试")
 def test_user_attribute_v2():
     import src.plugins.jx3.user

@@ -41,5 +41,5 @@ try:
     # 子依赖应后加载
     from .bot_plugins import *
     from src.tools.permission import checker as permission_check, error as permission_error, permission_judge, Permission, PermissionResult
-except Exception as _:
-    pass
+except Exception as ex:
+    logger.warning(f'加载bot_plugins及权限组件失败,{ex}')

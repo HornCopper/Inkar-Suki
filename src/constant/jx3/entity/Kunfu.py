@@ -15,7 +15,9 @@ class Kunfu(Aliasable):
     color: str
     '''主色调'''
     type: Literal['t', 'dps', 'hps']
-    '''主色调'''
+    '''心法类型'''
+    practice_type: str
+    '''修炼方式'''
 
     def register_alias(self):
         d = self._get_dict()

@@ -26,13 +26,15 @@ async def send_with_async(method: str, url: str, proxy: dict = None, **kwargs) -
     max_try_time = 3
     current_try_time = 0
     while True:
+        # TODO use AOP
         try:
+            logger.debug(f'request:{method}@{url}')
             req = await client.request(method, url, **kwargs)
             req.encoding = 'utf-8'
             return req
         except httpx.TimeoutException as ex:
             current_try_time += 1
-            if max_try_time < current_try_time:
+            if max_try_time > current_try_time:
                 continue
             msg = f"max_try_time(count={current_try_time}) exceeded to request in httpx({method} -> {url}):[{type(ex).__name__}]{ex}"
             logger.error(msg)

@@ -13,17 +13,59 @@ class Jx3PlayerDetailInfo:
         self.__user = user
         self.err_msg = None
 
-    def get_attributes(self, date: DateTime = None, page: AttributeType = None) -> dict[str, Jx3UserAttributeInfo]:
-        '''筛选指定的属性 TODO 筛选页面对PVE-DPS和HPS不准确'''
-        attrs = self.attributes
+    @property
+    def latest_attrs(self) -> dict[str, str]:
+        '''获取最新数据
+        @return dict[类型enum,装分]'''
+        result = BaseJx3UserAttribute.cache_latest_attr.get(self.key)
+        if not result:
+            return {}
+        return result
+
+    @property
+    def key(self):
+        return f'{self.server}@{self.uid}'
+
+    def get_attributes_history_by_attr_type(self, start: DateTime = None, end: DateTime = None) -> list[tuple[int, int]]:
+        '''获取历史装分变动记录'''
+        raise NotImplemented()
+
+    def get_attributes_by_attr_type(self, attr_type: AttributeType) -> Jx3UserAttributeInfo:
+        '''直接通过缓存获取最新配置'''
+        result = None
+        his = self.latest_attrs
+        if isinstance(attr_type, AttributeType):
+            attr_type = attr_type.value
+        attr_score = his.get(str(attr_type))
+        if attr_score and int(attr_score) > 0:
+            result = self.attributes.get(attr_score)
+
+        return result
+
+    def get_attributes_by_filter(self, date: DateTime = None, attr_type: AttributeType = None, pageIndex: int = 0, pageSize: int = 10) -> list[Jx3UserAttributeInfo]:
+        '''筛选指定的属性 TODO 筛选页面对PVE-DPS和HPS不准确
+        @return 按装分降序列表'''
+        attrs = [self.attributes[x] for x in self.attributes]
+
         if date is not None:
             date = DateTime(date)
-            xattrs = filter(lambda x: not attrs[x].is_outdated(date), attrs)
-            attrs = list(xattrs)
-        if page is not None:
-            xattrs = filter(lambda x: attrs[x].page.attr_type & page == page, attrs)
-            attrs = list(xattrs)
-        return dict([x, self.attributes[x]] for x in attrs)
+            attrs = filter(lambda x: not x.is_outdated(date), attrs)
+            attrs = list(attrs)
+        if attr_type is not None:
+            attrs = filter(lambda x: x.page.attr_type & attr_type == attr_type, attrs)
+            attrs = list(attrs)
+
+        return self.split_page(attrs, pageIndex, pageSize)
+
+    def split_page(self, attrs_score: list[int], pageIndex: int = 0, pageSize: int = 200) -> list[Jx3UserAttributeInfo]:
+        sorted_attrs = sorted([int(str(x)) for x in attrs_score], key=lambda x: x, reverse=True)
+        start = pageIndex * pageSize
+
+        if len(sorted_attrs) < start:
+            return []
+        scores = [str(x) for x in sorted_attrs[start:start+pageSize]]
+        result = [self.attributes[x] for x in list(scores)]
+        return result
 
     @property
     def user(self):
@@ -45,17 +87,21 @@ class Jx3PlayerDetailInfo:
     async def from_username(cls, server: str, username: str, cache_length: float = 86400) -> Jx3PlayerDetailInfo:
         '''通过服务器和id从缓存或远程加载'''
         user = Jx3PlayerInfoWithInit.from_id(server, username, cache_length=7*86400)  # 一周内不更新
-        if not user.roleId:
+        result = None
+        if user.roleId:
+            result = await cls.from_uid(user.serverName, user.roleId, cache_length=cache_length)
+
+        if not result:
             tar = Jx3PlayerDetailInfo(None, server, None, {}, user)
-            tar.err_msg = '玩家不存在'
+            tar.err_msg = PROMPT_UserNotExist
             return tar
-        return await cls.from_uid(user.serverName, user.roleId, cache_length=cache_length)
+        return result
 
     @classmethod
     async def from_uid(cls, server: str, uid: str, cache_length: float = 86400) -> Jx3PlayerDetailInfo:
         '''通过服务器和uid从缓存或远程加载'''
         score, res = Jx3UserAttributeInfo.from_uid(uid, server, cache_length=cache_length)
         if not res:
-            return res
+            return None
         target = cls(uid, server, score, res)
         return target

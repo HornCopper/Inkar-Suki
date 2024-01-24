@@ -50,7 +50,8 @@
           </el-row>
         </el-card>
       </el-row>
-      <div v-if="no_data" class="banner-notice">注意！当前角色没有{{ currentFocus }}的装备数据！已切回默认</div>
+      <div v-if="no_data" class="banner-notice">注意！当前角色没有{{ currentFocus }}的装备数据！已切回实时装备[{{ result_attributeType }}]
+      </div>
       <el-collapse v-model="expanded_items">
         <el-collapse-item name="1">
           <template #title>
@@ -91,7 +92,7 @@
               </el-row>
               <el-row>
                 <span class="sub-title">帮会</span>
-                <div class="sub-content">{{ user.tongName }}({{ user.personId }})</div>
+                <div class="sub-content">{{ user.tongName }}({{ user.tongId }})</div>
               </el-row>
               <el-row>
                 <span class="sub-title">角色</span>
@@ -107,135 +108,139 @@
         <el-collapse-item name="2">
           <template #title>
             <div class="global-title" style="display:flex;width:100%">
-              <div class="sub-content">{{ formatTime(attr.updateAt * 1e3) }}</div>
-              <div class="sub-content">[{{ currentFocus }}]</div>
+              <div class="sub-content">更新于{{ formatTime(attr.updateAt * 1e3) }}</div>
+              <div class="sub-content">，选中类型[{{ currentFocus }}]</div>
               <div style="display:flex;margin-left:auto">
                 <img style="width:2rem;height:2rem" :src="get_kunfu_icon(attr.kungfu)" />
                 <div class="sub-content">{{ attr.kungfu.name }}</div>
               </div>
             </div>
           </template>
-          <el-tabs v-model="currentFocus" tab-position="bottom">
-            <el-tab-pane v-for="(type,index) in attributeTypes" :key="index" :name="type[2]">
-              <template #label>
-                <span>{{ index }}.{{ type[2] }}</span>
-              </template>
-              <div v-if="currentFocus === type[2]">
-                <el-card class="item-container">
-                  <el-row :gutter="20">
-                    <el-col :span="7" style="display:flex;flex-direction: column;">
-                      <div style="font-size:3rem;width:100%;text-align:center;line-height: 3rem;">{{ attr.score }}
+          <div>
+            <div>
+              <el-card class="item-container">
+                <el-row :gutter="20">
+                  <el-col :span="7" style="display:flex;flex-direction: column;">
+                    <div style="font-size:3rem;width:100%;text-align:center;line-height: 3rem;">{{ attr.score }}
+                    </div>
+                    <el-row v-if="false">
+                      <span class="sub-title">装备</span>
+                      <div class="sub-content">
+                        <span>{{ attr.page.attr_type }}</span>
                       </div>
-                      <el-row v-if="false">
-                        <span class="sub-title">装备</span>
-                        <div class="sub-content">
-                          <span>{{ attr.page.attr_type }}</span>
+                    </el-row>
+                    <el-row v-if="attr.page.equip_unmatch.length">
+                      <span class="sub-title">异常</span>
+                      <div class="sub-content">
+                        <span>{{ attr.page.equip_unmatch.length }}心法或属性不对。</span>
+                      </div>
+                      <el-space wrap>
+                        <div v-for="(ue,ueindex) in attr.page.equip_unmatch" :key="ueindex">
+                          <img :src="equip_dict[ue].icon" class="equip-mini-img" />
                         </div>
-                      </el-row>
-                      <el-row v-if="attr.page.equip_unmatch.length">
-                        <span class="sub-title">异常</span>
-                        <div class="sub-content">
-                          <span>{{ attr.page.equip_unmatch.length }}个装备有问题</span>
+                      </el-space>
+                    </el-row>
+                    <div style="margin-top:auto">
+                      <el-divider style="margin:10px 2px 15px 2px">面板</el-divider>
+                      <div class="command-mini-card-container">
+                        <div v-for="(pan,panindex) in attr.panel" :key="panindex" class="command-mini-single-card">
+                          <div class="command-mini-card-title">{{ pan.name }}</div>
+                          <div>
+                            <span>{{ pan.value }}</span>
+                            <span v-if="pan.percent">%</span>
+                          </div>
                         </div>
-                        <el-space wrap>
-                          <div v-for="(ue,ueindex) in attr.page.equip_unmatch" :key="ueindex">
-                            <img :src="equip_dict[ue].icon" class="equip-mini-img" />
+                      </div>
+                    </div>
+                    <div>
+                      <div>
+                        <el-divider style="margin:10px 2px 15px 2px">奇穴</el-divider>
+                        <el-space wrap style="text-align:center;display: flex;justify-content: center;">
+                          <div v-for="(i,qindex) in attr.person.qixue" :key="qindex" class="qixue-container">
+                            <img :src="i.icon" class="qixue-img" />
+                            <div class="qixue-text">{{ i.name }}</div>
                           </div>
                         </el-space>
-                      </el-row>
-                      <div style="margin-top:auto">
-                        <el-divider style="margin:10px 2px 15px 2px">面板</el-divider>
-                        <div class="command-mini-card-container">
-                          <div v-for="(pan,panindex) in attr.panel" :key="panindex" class="command-mini-single-card">
-                            <div class="command-mini-card-title">{{ pan.name }}</div>
-                            <div>
-                              <span>{{ pan.value }}</span>
-                              <span v-if="pan.percent">%</span>
-                            </div>
-                          </div>
+                      </div>
+                    </div>
+                  </el-col>
+                  <el-col :span="17">
+                    <div v-for="(equip,eqindex) in attr.equips.sort((a,b)=>a.index-b.index)" :key="eqindex"
+                      class="equip-container">
+                      <div class="equip-flag-container">
+                        <div v-if="getEquipFlag(equip)">
+                          <span class="equip-flag-text">
+                            <spam>{{ getEquipFlag(equip) }}</spam>
+                          </span>
+                          <img :src="img_res.FlagEmpty" class="equip-flag-img" />
                         </div>
                       </div>
-                      <div>
-                        <div>
-                          <el-divider style="margin:10px 2px 15px 2px">奇穴</el-divider>
-                          <el-space wrap style="text-align:center;display: flex;justify-content: center;">
-                            <div v-for="(i,qindex) in attr.person.qixue" :key="qindex" class="qixue-container">
-                              <img :src="i.icon" class="qixue-img" />
-                              <div class="qixue-text">{{ i.name }}</div>
-                            </div>
-                          </el-space>
+                      <img :src="getEquipFrame(equip)" class="equip-frame" />
+                      <img :src="equip.icon" />
+                      <div class="equip-description-container">
+                        <div class="equip-title">
+                          <span class="equip-title-quality">{{ equip.primary_attribute }}</span>
+                          <span :style="{color:getLevelColor(equip.color_index)}">{{ equip.name }}</span>
+                          <span class="equip-title-quality">{{ equip.quality }}</span>
+                          <span v-if="equip.quality_ext && false" class="equip-title-quality-ext">
+                            <span>+{{ equip.quality_ext }}</span>
+                          </span>
+                        </div>
+                        <div class="equip-enhanced">
+                          <el-icon v-for="start_active in equip.strengthLevel" :key="start_active" :size="25"
+                            class="icon-start-active">
+                            <star-filled class="icon-sized" />
+                          </el-icon>
+                          <el-icon v-for="start_inactive in (equip.maxStrengthLevel - equip.strengthLevel)"
+                            :key="start_inactive" :size="25" class="icon-start-inactive">
+                            <star-filled />
+                          </el-icon>
+                          <img v-for="(stone,eqi) in stone_slots[equip.index-1]" :key="eqi"
+                            :src="get_stone_icon((equip.stones[eqi] && equip.stones[eqi].level) || 0)"
+                            class="equip-stone" />
                         </div>
                       </div>
-                    </el-col>
-                    <el-col :span="17">
-                      <div v-for="(equip,eqindex) in attr.equips.sort((a,b)=>a.index-b.index)" :key="eqindex"
-                        class="equip-container">
-                        <div class="equip-flag-container">
-                          <div v-if="getEquipFlag(equip)">
-                            <span class="equip-flag-text">
-                              <spam>{{ getEquipFlag(equip) }}</spam>
-                            </span>
-                            <img :src="img_res.FlagEmpty" class="equip-flag-img" />
-                          </div>
-                        </div>
-                        <img :src="getEquipFrame(equip)" class="equip-frame" />
-                        <img :src="equip.icon" />
-                        <div class="equip-description-container">
-                          <div class="equip-title">
-                            <span class="equip-title-quality">{{ equip.primary_attribute }}</span>
-                            <span :style="{color:getLevelColor(equip.color_index)}">{{ equip.name }}</span>
-                            <span class="equip-title-quality">{{ equip.quality }}</span>
-                            <span v-if="equip.quality_ext && false" class="equip-title-quality-ext">
-                              <span>+{{ equip.quality_ext }}</span>
-                            </span>
-                          </div>
-                          <div class="equip-enhanced">
-                            <el-icon v-for="start_active in equip.strengthLevel" :key="start_active" :size="25"
-                              class="icon-start-active">
-                              <star-filled class="icon-sized" />
-                            </el-icon>
-                            <el-icon v-for="start_inactive in (equip.maxStrengthLevel - equip.strengthLevel)"
-                              :key="start_inactive" :size="25" class="icon-start-inactive">
-                              <star-filled />
-                            </el-icon>
-                            <img v-for="(stone,eqi) in stone_slots[equip.index-1]" :key="eqi"
-                              :src="get_stone_icon((equip.stones[eqi] && equip.stones[eqi].level) || 0)"
-                              class="equip-stone" />
-                          </div>
-                        </div>
-                        <div class="equip-footer-container">
-                          <div class="equip-enchant-container">
-                            <span class="equip-enchant">
-                              <div v-if="equip.effectColorStone && equip.wPermanentEnchant" style="font-size:0.7rem;">
-                                <div style="position: absolute;transform: translateY(-5px);">
-                                  <div>{{ equip.wPermanentEnchant }}</div>
-                                  <div>{{ equip.effectColorStone.Name }}</div>
-                                </div>
+                      <div class="equip-footer-container">
+                        <div class="equip-enchant-container">
+                          <span class="equip-enchant">
+                            <div v-if="equip.effectColorStone && equip.wPermanentEnchant" style="font-size:0.7rem;">
+                              <div style="position: absolute;transform: translateY(-5px);">
+                                <div>{{ equip.wPermanentEnchant }}</div>
+                                <div>{{ equip.effectColorStone.Name }}</div>
                               </div>
-                            </span>
+                            </div>
+                          </span>
 
-                            <span v-if="equip.wPermanentEnchant" class="equip-enchant">
-                              <span v-if="!equip.effectColorStone">{{ equip.wPermanentEnchant }}</span>
-                              <img class="equip-enchant-img" :src="img_res.EnchantSmall" />
-                            </span>
-                            <span v-if="equip.wCommonEnchant" class="equip-enchant">
-                              <img class="equip-enchant-img" :src="img_res.EnchantBig" />
-                            </span>
-                            <span v-if="equip.effectColorStone" class="equip-enchant">
-                              <img class="equip-enchant-img" :src="equip.effectColorStone.Icon.FileName" />
-                            </span>
-                          </div>
-                          <div class="equip-way-to-fetch">
-                            {{ equip.way_to_fetch && equip.way_to_fetch[0] || '可能是过于珍贵，目前未知来源' }}
-                          </div>
+                          <span v-if="equip.wPermanentEnchant" class="equip-enchant">
+                            <span v-if="!equip.effectColorStone">{{ equip.wPermanentEnchant }}</span>
+                            <img class="equip-enchant-img" :src="img_res.EnchantSmall" />
+                          </span>
+                          <span v-if="equip.wCommonEnchant" class="equip-enchant">
+                            <img class="equip-enchant-img" :src="img_res.EnchantBig" />
+                          </span>
+                          <span v-if="equip.effectColorStone" class="equip-enchant">
+                            <img class="equip-enchant-img" :src="equip.effectColorStone.Icon.FileName" />
+                          </span>
+                        </div>
+                        <div class="equip-way-to-fetch">
+                          {{ equip.way_to_fetch && equip.way_to_fetch[0] || '可能是过于珍贵，目前未知来源' }}
                         </div>
                       </div>
-                    </el-col>
-                  </el-row>
-                </el-card>
+                    </div>
+                  </el-col>
+                </el-row>
+              </el-card>
+            </div>
+            <el-space wrap class="tabs-container">
+              <div v-for="(tab_type,index) in valid_attribute_types" :key="index"
+                :class="['tab-container',currentFocus == tab_type[1] ?'tab-active':'']">
+                <div>
+                  <div>{{ tab_type[2] }}</div>
+                  <div>{{ tab_type[1] }}</div>
+                </div>
               </div>
-            </el-tab-pane>
-          </el-tabs>
+            </el-space>
+          </div>
         </el-collapse-item>
         <el-collapse-item name="3">
           <template #title>
@@ -251,6 +256,7 @@
     </el-card>
   </div>
 </template>
+
 <style lang="scss">
   .ver-line {
     height: 3rem;
@@ -345,7 +351,7 @@
     right: 50px;
     top: 30px;
     overflow: hidden;
-    filter: brightness(1.2);
+    filter: brightness(1.1);
   }
 
   .school-icon {
@@ -512,7 +518,7 @@
   .command-mini-card-title {
     background-color: #333;
   }
-  
+
   .banner-notice {
     margin: 0.5rem;
     background-color: #db0700;
@@ -521,6 +527,24 @@
     color: #ffffff;
     font-size: 1.1rem;
     border-radius: 0.5rem;
+  }
+
+  .tabs-container {
+    width: 100%;
+    text-align: center;
+    display: flex;
+  }
+
+  .tab-container {
+    margin: 0.5rem 0.2rem;
+    padding: 0.5rem;
+    border-radius: 0.5rem;
+    box-shadow: 1px 1px 5px 0 rgba(255, 255, 255, 0.5);
+  }
+
+  .tab-active {
+    background-color: #1e82d4;
+    box-shadow: 1px 1px 10px 0 rgba(255, 255, 255, 1);
   }
 </style>
 <script>
@@ -548,14 +572,14 @@
       methods.get_kunfu_icon = (kunfu) => `https://img.jx3box.com/image/xf/${kunfu.gameid}.png`
       methods.get_stone_icon = (level) => `../assets/image/stone/${level}.png`
       methods.getEquipFlag = (equip) => {
-          const { maxStrengthLevel, attributes } = equip
-          const skills = attributes.filter(x => x.name.indexOf('SkillEvent') > -1)
-          if (skills.length >= 1) return '大橙'
-          if (maxStrengthLevel > 6) return '小橙'
-          if (skills.length === 1) return '特效'
-          if (maxStrengthLevel < 6) return '精简'
-          return ''
-        }
+        const { maxStrengthLevel, attributes } = equip
+        const skills = attributes.filter(x => x.name.indexOf('SkillEvent') > -1)
+        if (skills.length > 1) return '大橙'
+        if (maxStrengthLevel > 6) return '小橙'
+        if (skills.length === 1) return '特效'
+        if (maxStrengthLevel < 6) return '精简'
+        return ''
+      }
       methods.getEquipFrame = equip => {
         const { maxStrengthLevel, strengthLevel } = equip
         const img = computes.img_res.value
@@ -563,21 +587,19 @@
         if (maxStrengthLevel > strengthLevel) return img.FrameEmpty
         return img.FrameEquip
       }
+      methods.attrSame = (now_val, attr) => (now_val & parseInt(attr)) == parseInt(attr)
+      methods.attrContains = (now_val) => {
+        const { latest_attrs } = params_data
+        return !!Object.keys(latest_attrs)
+          .find(attr => methods.attrSame(attr, now_val))
+      }
       computes.kunfu_icon_img = computed(() => {
         const { kunfu } = params_data
         return methods.get_kunfu_icon(kunfu)
       })
-      computes.currentFocus = computed(() => {
-        const { attributeTypes, attributeType } = params_data
-        if (!attributeType) return attributeTypes[0][2]
-        const match_type = attributeTypes.find(x => (x[1] & attributeType) == attributeType)
-        if (!match_type) return attributeTypes[0][2]
-        return match_type[2]
-      })
-
       computes.attr = computed(() => {
-        const { attributes } = params_data
-        return attributes && attributes[0] || {}
+        const { attribute } = params_data
+        return attribute || {}
       })
       computes.equip_dict = computed(() => {
         const attr = computes.attr.value
@@ -604,14 +626,76 @@
         })
         return result
       })
+
+      methods.getAttrTypeDesc = attr_type => {
+        if (!attr_type) return '无'
+        attr_type = parseInt(attr_type)
+        const { attributeTypeDict } = params_data
+        const result = []
+        attributeTypeDict.map(x => {
+          const [base_name, base_val] = x
+          if (base_val <= 0) return
+          if (attr_type & base_val) {
+            attr_type -= base_val
+            result.push(base_name)
+          }
+        })
+        return result.join('-')
+      }
+      computes.currentFocus = computed(() => {
+        // 返回当前聚焦的属性名描述
+        const { attributeTypes, attributeType } = params_data
+        if (!attributeType) return attributeTypes[0][2]
+        const result = methods.getAttrTypeDesc(attributeType)
+        const valids = computes.valid_attribute_types.value
+
+        if (valids.find(x => result === x[1])) return result
+        return attributeTypes[0][2]
+      })
+      computes.valid_attribute_types = computed(() => {
+        // 获取当前所有配装的描述->list<tuple<类型值,类型描述,装分>>
+
+        const { attribute, attributeTypes, attributeTypeDict, latest_attrs } = params_data
+        const default_type = attributeTypes[0]
+        const user_hits = [
+          [default_type[1], default_type[2], attribute.score]
+        ] // 角色当前符合推荐配装的
+        const user_unhits = []
+
+        const recommand_dict = {}
+        attributeTypes.map(x => {
+          const [base_name, base_val, tab_name] = x
+          if (base_val <= 0) return
+          recommand_dict[`${base_val}`] = tab_name
+        })
+
+        const user_attr_types = Object.keys(latest_attrs)
+        user_attr_types.map(u_attr_type => {
+          const recommand_hit = recommand_dict[u_attr_type]
+          const list = recommand_hit ? user_hits : user_unhits
+          list.push([
+            `${u_attr_type}`, // 类型值
+            recommand_hit || methods.getAttrTypeDesc(u_attr_type), // 类型描述
+            latest_attrs[u_attr_type], // 装分
+          ])
+        })
+
+        const result = user_hits.concat(user_unhits)
+        return result
+      })
       const font_size = ref('1rem')
       const expanded_items = reactive(['1', '2', '3'])
-      console.log(params_data)
       return {
-        user: {},
-        attributes: [],
-        page: 0,
-        pages: [], // [[name,value],]
+        user: {}, // 角色基础信息
+        attribute: {}, // 角色属性
+        attributeType: 0, // 当前查询属性类型
+        attributeTypeDict: [['PVP', 4]], // 基本属性类型枚举
+        attributeTypes: [['基本类型描述', 4104, 'PVE-DPS']], // 预设属性类型枚举
+        result_attributeType: 0, // 实际显示属性类型
+        kunfu: {}, // 当前心法
+        latest_attrs: {}, // 最近所有属性类型
+        no_data: false, // 是否无任何数据可用
+        stone_slots: [], // 五行石插槽，静态数据
 
         expanded_items,
         ...computes,

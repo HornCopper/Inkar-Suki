@@ -57,7 +57,7 @@ class CommandRecord:
     def get_db(group: str = None) -> filebase_database.Database:
         path = bot_path.DATA
         suffix = group or bot_path.common_data
-        path = f'{path}/{suffix}/commands'
+        path = f'{path}{os.sep}{suffix}{os.sep}commands'
 
         prev = CommandRecord.cache_db.get(path)
         if prev:
@@ -104,7 +104,7 @@ class CommandRecord:
 class DocumentGenerator:
     commands: dict[str, DocumentItem] = {}
     _document: dict = None
-    _doc_lock = threading.RLock()
+    _doc_lock = threading.Lock()
 
     @staticmethod
     def register_single(arg: AssignableArg):

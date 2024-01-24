@@ -1,7 +1,7 @@
 
 from ..SubscribeItem import *
 from ..callback import *
-from src.tools.dep.bot.bot_plugins import *
+from src.tools.dep.bot import *
 from . import events_base
 from . import events_gf
 from . import events_world_boss
@@ -19,6 +19,8 @@ def init_subjects(__subjects: list[SubscribeSubject]):
     events_gf.run(__subjects, OnGfBig, OnGfSmall)
     events_world_boss.run(__subjects, OnWorldBoss)
     event_daily.run(__subjects)
+    
+    events_base.run_after(__subjects)
     # events_for_debug.run(__subjects)
 
 
