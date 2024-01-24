@@ -71,7 +71,7 @@ async def handle_api_result(
 async def matcher_mutex(bot: Bot, event: Event):
     '''返回当前是否已在处理'''
     event_type = event.get_type()
-    if event_type in {'meta_event'}:
+    if event_type in {'meta_event', 'notice'}:
         return False
 
     try:
