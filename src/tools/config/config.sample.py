@@ -36,7 +36,6 @@ class Config:
 
     cqhttp = ""  # CQHTTP地址，参考`https://go-cqhttp.org`。
 
-    welcome_file = global_path+"/tools/welcome.txt"
     version = ikv
     nonebot = nbv
 
