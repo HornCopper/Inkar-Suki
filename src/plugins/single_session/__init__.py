@@ -70,16 +70,23 @@ async def handle_api_result(
 
 async def matcher_mutex(bot: Bot, event: Event):
     '''返回当前是否已在处理'''
+    event_type = event.get_type()
+    if event_type in {'meta_event'}:
+        return False
+
     try:
         session_id = event.get_session_id()
-    except Exception:
+    except Exception as ex:
+        logger.warning(f'[event-{event_type}]fail to get session_id {ex}')
         return False
 
     slient_status = get_blocking_status(bot.self_id)
+    alive_time = slient_status.get('slient_to')
     prev_event = _running_matcher.get(session_id)
-    if slient_status.get('slient_to') > DateTime().timestamp():
+    if alive_time > DateTime().timestamp():
         if prev_event:
             del _running_matcher[session_id]
+        print(f'{bot.self_id}@{session_id},账号封禁中，忽略。到{DateTime(alive_time)}')
         return True
 
     current_event_id = id(event)
@@ -87,6 +94,7 @@ async def matcher_mutex(bot: Bot, event: Event):
         prev_event_id, prev_time = prev_event
         if prev_event_id != current_event_id and prev_time > DateTime().timestamp():
             # 事件不一致，则说明上一个事件正在处理
+            print(f'{bot.self_id}@{session_id},上一个事件仍在处理，忽略。')
             return True
         del _running_matcher[session_id]
         return False
@@ -103,6 +111,5 @@ __session_lock = threading.Lock()
 @event_preprocessor
 async def preprocess(mutex: bool = Depends(matcher_mutex)):
     with __session_lock:
-        if not mutex:
-            return
-        raise IgnoredException("Another matcher running")
+        if mutex:
+            raise IgnoredException("Another matcher running")
