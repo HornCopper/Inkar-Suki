@@ -139,7 +139,7 @@ async def price_num_selected2(state: T_State, event: GroupMessageEvent, user_sel
 async def get_price_num_selected2(state: T_State, event: GroupMessageEvent, user_select_index: str):
     good_index = get_number(user_select_index)
     all_ids = state.get('id') or []
-    logger.debug(f'price_num_selected2:{good_index}@{event.group_id},all={all_ids}')
+    logger.debug(f'price_num_selected2,raw={user_select_index}:{good_index}@{event.group_id},all={all_ids}')
     if good_index > len(all_ids) or good_index <= 0:
         if good_index == 0 or good_index == -1:
             return  # 无视0序号,-1取消
