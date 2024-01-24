@@ -29,21 +29,7 @@ jx3_cmd_attribute3 = on_command(
 )
 
 
-<<<<<<< HEAD
 def get_attributes_from_data(data: Jx3PlayerDetailInfo, arg_page: Union[int, str]) -> tuple[list[Jx3UserAttributeInfo], AttributeType]:
-=======
-@overload
-def get_attribute_from_data(data: Jx3PlayerDetailInfo, arg_page: int) -> tuple[Jx3UserAttributeInfo, AttributeType]:
-    ...
-
-
-@overload
-def get_attribute_from_data(data: Jx3PlayerDetailInfo, arg_page: str) -> tuple[Jx3UserAttributeInfo, AttributeType]:
-    ...
-
-
-def get_attribute_from_data(data: Jx3PlayerDetailInfo, arg_page: int) -> tuple[Jx3UserAttributeInfo, AttributeType]:
->>>>>>> b24322850a0a4fe781b64887b6ac470d265f2a61
     '''根据筛选类型返回属性列表'''
     def from_filter_type(filter_type: AttributeType):
         if filter_type == AttributeType.Unknown:
