@@ -18,7 +18,7 @@ __plugin_meta__ = PluginMetadata(
 _running_matcher: dict[str, int] = {}
 
 
-async def matcher_mutex(event: Event) -> AsyncGenerator[bool, None]:
+async def matcher_mutex(event: Event):
     '''返回当前是否已在处理'''
     try:
         session_id = event.get_session_id()
@@ -32,10 +32,10 @@ async def matcher_mutex(event: Event) -> AsyncGenerator[bool, None]:
             # 事件不一致，则说明上一个事件正在处理
             yield True
             return
-
+        del _running_matcher[session_id]
+    else:
+        _running_matcher[session_id] = current_event_id
     yield False
-    _running_matcher[session_id] = current_event_id
-    del _running_matcher[session_id]
 
 
 @event_preprocessor
