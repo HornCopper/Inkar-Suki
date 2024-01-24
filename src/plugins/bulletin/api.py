@@ -6,7 +6,7 @@ async def get_bulletinG(msg: str):
     draw = ImageDraw.Draw(background)
     width, height = background.size
     if len(msg) <= 5:
-        fszie = 72
+        fsize = 72
     elif 5 < len(msg) <= 10:
         fsize = 48
     elif 10 < len(msg) <= 20:
