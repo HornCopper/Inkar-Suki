@@ -236,7 +236,9 @@
         convertSci,
         convertPop
       }
-      const subscribe_status = computed(() => {
+      const computes = {}
+      computes.subscribe_status = computed(() => {
+        // 用户订阅状态
         const all = params_data.all_subjects
         const user = params_data.subscribe_info
         const result = {}
@@ -253,7 +255,8 @@
           .map((v, index) => Object.assign({ index }, v))
           .sort((a, b) => a.priority - b.priority)
       })
-      const subject_time = computed(() => {
+      computes.subject_time = computed(() => {
+        // 触发时间
         const data = params_data.subject.cron
         const result = [0, 0]
         if (!data || !data.length) return result
@@ -265,16 +268,18 @@
         return result
       })
       const expanded_items = reactive(['1', '2', '3'])
-      console.log(subscribe_status.value)
+      computes.subject = computed(() => {
+        const { subjects } = params_data
+        return subjects && subjects[0]
+      })
       return {
         all_subjects: [], //所有可用的主题
         message: '', //提示信息
         subscribe_info: '', //本次订阅主题的基本信息
-        subject: '', //本次订阅主题的用户配置
-        subscribe_status, // 用户订阅状态
-        subject_time, // 触发时间
+        subjects: {}, //本次订阅主题的用户配置
         expanded_items,
         ...methods,
+        ...computes,
       }
     },
   })

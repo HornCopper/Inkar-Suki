@@ -3,7 +3,7 @@ from src.tools.utils import *
 
 class Jx3Icon:
     cache = filebase_database.Database(f'{bot_path.common_data_full}glo-icon')
-    lock = threading.RLock()
+    lock = threading.Lock()
 
     def __init__(self, filename: str) -> None:
         if isinstance(filename, dict):

@@ -23,11 +23,16 @@ async def jx3_trade2(matcher: Matcher, state: T_State, event: GroupMessageEvent,
     arg_server, arg_item, arg_page = template
     if not arg_server:
         return await jx3_cmd_trade2.finish(PROMPT_ServerNotExist)
+    ignore_error = '物价' in str(event.get_message())
     state["server"] = arg_server
     pageSize = 20
     data, totalCount = await search_item_info_for_price(arg_item, arg_server, pageIndex=arg_page, pageSize=pageSize)
     if not isinstance(data, List):
+        if ignore_error:
+            return matcher.set_arg("user_select_index", obMessage("-1"))
         return await jx3_cmd_trade2.finish(data)
+
+
     all_id = [x.id for x in data]  # 取到的是id列表
     state["id"] = all_id
     if len(all_id) == 1:  # 仅有一个物品的话，则直接显示更加详细的信息。如果没有则直接跳过
@@ -37,7 +42,10 @@ async def jx3_trade2(matcher: Matcher, state: T_State, event: GroupMessageEvent,
         matcher.set_arg("user_select_index", obMessage("-1"))
         result = await get_jx3_trade_detail(matcher, state, event, [arg_server, arg_item])
         if isinstance(result, list):
+            if ignore_error:
+                return
             return await jx3_cmd_trade2.finish(result[0])
+            
         return await jx3_cmd_trade2.send(result)
 
     result = await render_items(arg_server, arg_item, arg_page, pageSize, totalCount, data)
@@ -71,8 +79,10 @@ async def jx3_trade_detail(matcher: Matcher, state: T_State, event: GroupMessage
 async def get_jx3_trade_detail(matcher: Matcher, state: T_State, event: GroupMessageEvent, template: list[Any]):
     arg_server, arg_item = template
     if not arg_server:
-        return await [PROMPT_ServerNotExist]
+        return [PROMPT_ServerNotExist]
     data = await search_item_info(arg_item, pageIndex=0, pageSize=1000)
+    if isinstance(data, str):
+        return [data]
     data = [x for x in data if x.bind_type != GoodsBindType.BindOnPick]
     if len(data) < 1:
         return ['没有找到这个物品']
@@ -129,7 +139,7 @@ async def price_num_selected2(state: T_State, event: GroupMessageEvent, user_sel
 async def get_price_num_selected2(state: T_State, event: GroupMessageEvent, user_select_index: str):
     good_index = get_number(user_select_index)
     all_ids = state.get('id') or []
-    logger.debug(f'price_num_selected2:{good_index}@{event.group_id},all={all_ids}')
+    logger.debug(f'price_num_selected2,raw={user_select_index}:{good_index}@{event.group_id},all={all_ids}')
     if good_index > len(all_ids) or good_index <= 0:
         if good_index == 0 or good_index == -1:
             return  # 无视0序号,-1取消

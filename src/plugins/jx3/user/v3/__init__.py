@@ -29,12 +29,29 @@ jx3_cmd_attribute3 = on_command(
 )
 
 
+<<<<<<< HEAD
 def get_attributes_from_data(data: Jx3PlayerDetailInfo, arg_page: Union[int, str]) -> tuple[list[Jx3UserAttributeInfo], AttributeType]:
+=======
+@overload
+def get_attribute_from_data(data: Jx3PlayerDetailInfo, arg_page: int) -> tuple[Jx3UserAttributeInfo, AttributeType]:
+    ...
+
+
+@overload
+def get_attribute_from_data(data: Jx3PlayerDetailInfo, arg_page: str) -> tuple[Jx3UserAttributeInfo, AttributeType]:
+    ...
+
+
+def get_attribute_from_data(data: Jx3PlayerDetailInfo, arg_page: int) -> tuple[Jx3UserAttributeInfo, AttributeType]:
+>>>>>>> b24322850a0a4fe781b64887b6ac470d265f2a61
     '''根据筛选类型返回属性列表'''
     def from_filter_type(filter_type: AttributeType):
         if filter_type == AttributeType.Unknown:
-            return data.attributes
-        return data.get_attributes(page=filter_type), filter_type
+            result = data.split_page([x for x in data.attributes], pageSize=1)
+        else:
+            result = data.get_attributes_by_attr_type(filter_type)
+
+        return result, filter_type
 
     if not checknumber(arg_page):
         filter_type = AttributeType.from_alias(arg_page)
@@ -54,7 +71,8 @@ def get_attributes_from_data(data: Jx3PlayerDetailInfo, arg_page: Union[int, str
         page_setting = BaseJx3UserAttributePage.types[arg_page]
         return from_filter_type(page_setting[0])
 
-    return data.attributes, AttributeType.Unknown
+    current = data.attributes[data.current_score]
+    return current, AttributeType.Unknown
 
 
 async def get_jx3_attribute3(template: list[Any] = Depends(Jx3Arg.arg_factory)):
@@ -69,21 +87,33 @@ async def get_jx3_attribute3(template: list[Any] = Depends(Jx3Arg.arg_factory)):
     user = data.user.to_dict()
     current = data.attributes[data.current_score]
 
-    attributes, filter_type = get_attributes_from_data(data, arg_page)
-    if no_DATA := not attributes:
-        attributes = {f'{data.current_score}': current}
-    attributes = [data.attributes[x].to_view() for x in attributes]
+    if arg_page == '0':  # 为0时直接用当前
+        attribute = current
+        filter_type = AttributeType.Unknown
+    else:
+        attribute, filter_type = get_attribute_from_data(data, arg_page)
+
+    if no_DATA := not attribute:
+        attribute = current
+
+    # 实际结果的类型
+    result_attributeType = attribute and attribute.page.attr_type
+    result_attributeType = result_attributeType or 0
+    result_attributeType = AttributeType(result_attributeType)
+
+    attribute = attribute.to_view()
 
     result = {
         'user': user,
-        'attributes': attributes,
+        'attribute': attribute,
+        'latest_attrs': data.latest_attrs,
         'no_data': no_DATA,
         'attributeType': filter_type.value,
+        'result_attributeType': str(result_attributeType).split('.')[1] if result_attributeType else None, 
         'attributeTypes': [[x[0].name, x[0].value, x[1]] for x in BaseJx3UserAttributePage.types],
         'attributeTypeDict': [[x.name, x.value] for x in AttributeType],
         'kunfu': current.kungfu.to_dict(),  # 当前心法
-        'stone_slots': Jx3Stone.slot,
-        'attributesTypeAvail': [],  # TODO 缓存历史可用的页面
+        'stone_slots': Jx3Stone.slot
     }
     return result
 

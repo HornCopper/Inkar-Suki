@@ -5,7 +5,8 @@
     "alias": ["aoxue", "zhanyi", "傲雪", "傲血", "傲血战意", "战意"],
     "name": "傲血战意",
     "gameid": 10026,
-    "type": "dps"
+    "type": "dps",
+    "practice_type": "physics"
   },
   {
     "color": "#d43618",
@@ -13,7 +14,8 @@
     "alias": ["tielao", "天策T", "策T", "铁牢", "铁牢律", "策t", "天策t", "TCT", "tct"],
     "name": "铁牢律",
     "gameid": 10062,
-    "type": "t"
+    "type": "t",
+    "practice_type": "physics"
   },
   {
     "color": "#BA9BE4",
@@ -21,7 +23,8 @@
     "alias": ["huajian", "花间", "花间游"],
     "name": "花间游",
     "gameid": 10021,
-    "type": "dps"
+    "type": "dps",
+    "practice_type": "magic"
   },
   {
     "color": "#d8c4ff",
@@ -29,7 +32,8 @@
     "alias": ["lijing", "奶花", "花奶", "离经", "离经易道", "易经"],
     "name": "离经易道",
     "gameid": 10028,
-    "type": "hps"
+    "type": "hps",
+    "practice_type": "magic"
   },
   {
     "color": "#37C0E2",
@@ -37,7 +41,8 @@
     "alias": ["zixia", "气纯", "紫霞功", "紫霞", "qc", "QC"],
     "name": "紫霞功",
     "gameid": 10014,
-    "type": "dps"
+    "type": "dps",
+    "practice_type": "magic"
   },
   {
     "color": "#48d6f9",
@@ -45,7 +50,8 @@
     "alias": ["taixu", "剑纯", "太虚剑意", "jc", "JC"],
     "name": "太虚剑意",
     "gameid": 10015,
-    "type": "dps"
+    "type": "dps",
+    "practice_type": "magic"
   },
   {
     "color": "#FF7DAD",
@@ -53,7 +59,8 @@
     "alias": ["bingxin", "冰心", "冰心诀", "冰心决", "BX", "bx"],
     "name": "冰心诀",
     "gameid": 10081,
-    "type": "dps"
+    "type": "dps",
+    "practice_type": "magic"
   },
   {
     "color": "#ffadcb",
@@ -61,7 +68,8 @@
     "alias": ["yunshang", "奶秀", "秀奶", "云裳心经", "云裳"],
     "name": "云裳心经",
     "gameid": 10080,
-    "type": "hps"
+    "type": "hps",
+    "practice_type": "magic"
   },
   {
     "color": "#E6BC31",
@@ -69,7 +77,8 @@
     "alias": ["yijing", "yijin", "易筋经", "易筋", "易经"],
     "name": "易筋经",
     "gameid": 10003,
-    "type": "dps"
+    "type": "dps",
+    "practice_type": "magic"
   },
   {
     "color": "#b58f12",
@@ -77,7 +86,8 @@
     "alias": ["xisui", "洗髓经", "洗髓", "和尚T", "秃T", "和尚t", "大师t", "大师T"],
     "name": "洗髓经",
     "gameid": 10002,
-    "type": "t"
+    "type": "t",
+    "practice_type": "physics"
   },
   {
     "color": "#FDDD70",
@@ -109,7 +119,8 @@
     ],
     "name": "问水诀",
     "gameid": 10144,
-    "type": "dps"
+    "type": "dps",
+    "practice_type": "physics"
   },
   {
     "color": "#FDDD70",
@@ -117,15 +128,17 @@
     "name": "山居剑意",
     "gameid": 10145,
     "alias": [],
-    "type": "dps"
+    "type": "dps",
+    "practice_type": "physics"
   },
   {
     "color": "#D6A16F",
     "belong": "丐帮",
-    "alias": ["xiaocheng","xiaochen", "丐帮", "笑尘决", "笑尘诀", "笑尘"],
+    "alias": ["xiaocheng", "xiaochen", "丐帮", "笑尘决", "笑尘诀", "笑尘"],
     "name": "笑尘诀",
     "gameid": 10268,
-    "type": "dps"
+    "type": "dps",
+    "practice_type": "physics"
   },
   {
     "color": "#f16040",
@@ -133,7 +146,8 @@
     "alias": ["fanying", "fenying", "焚影圣诀", "焚影圣决", "焚影"],
     "name": "焚影圣诀",
     "gameid": 10242,
-    "type": "dps"
+    "type": "dps",
+    "practice_type": "magic"
   },
   {
     "color": "#c55036",
@@ -141,7 +155,8 @@
     "alias": ["liuli", "mingzun", "明教T", "喵T", "明尊", "明尊琉璃体", "琉璃", "明尊", "明教t", "明尊t", "喵t", "mt", "MT"],
     "name": "明尊琉璃体",
     "gameid": 10243,
-    "type": "t"
+    "type": "t",
+    "practice_type": "magic"
   },
   {
     "color": "#4B9BFB",
@@ -149,7 +164,8 @@
     "alias": ["dujing", "毒经", "dj", "DJ", "Dj"],
     "name": "毒经",
     "gameid": 10175,
-    "type": "dps"
+    "type": "dps",
+    "practice_type": "magic"
   },
   {
     "color": "#7db8ff",
@@ -157,7 +173,8 @@
     "alias": ["butian", "奶毒", "毒奶", "补天诀", "补天决", "补天"],
     "name": "补天诀",
     "gameid": 10176,
-    "type": "hps"
+    "type": "hps",
+    "practice_type": "magic"
   },
   {
     "color": "#a2e05f",
@@ -165,7 +182,8 @@
     "alias": ["jingyu", "惊羽诀", "惊羽决", "鲸鱼", "惊羽", "唐门"],
     "name": "惊羽诀",
     "gameid": 10224,
-    "type": "dps"
+    "type": "dps",
+    "practice_type": "physics"
   },
   {
     "color": "#90CC50",
@@ -173,7 +191,8 @@
     "alias": ["tianluo", "天罗诡道", "田螺", "天罗", "tl", "TL"],
     "name": "天罗诡道",
     "gameid": 10225,
-    "type": "dps"
+    "type": "dps",
+    "practice_type": ["physics", "magic"]
   },
   {
     "color": "#4f5186",
@@ -181,7 +200,8 @@
     "alias": ["tiegu", "苍云T", "铁骨", "铁骨衣", "铁骨1", "苍t", "苍云t", "盾T", "盾t", "cyt", "CYT"],
     "name": "铁骨衣",
     "gameid": 10389,
-    "type": "t"
+    "type": "t",
+    "practice_type": "physics"
   },
   {
     "color": "#6568ad",
@@ -189,7 +209,8 @@
     "alias": ["fenshan", "分山劲", "分山", "岔劲"],
     "name": "分山劲",
     "gameid": 10390,
-    "type": "dps"
+    "type": "dps",
+    "practice_type": "physics"
   },
   {
     "color": "#6DDFE2",
@@ -197,7 +218,8 @@
     "alias": ["mowen", "莫问"],
     "name": "莫问",
     "gameid": 10447,
-    "type": "dps"
+    "type": "dps",
+    "practice_type": "magic"
   },
   {
     "color": "#78f0f3",
@@ -205,7 +227,8 @@
     "alias": ["xiangzhi", "奶歌", "歌奶", "相知", "奶咕"],
     "name": "相知",
     "gameid": 10448,
-    "type": "hps"
+    "type": "hps",
+    "practice_type": "magic"
   },
   {
     "color": "#8D90D8",
@@ -213,7 +236,8 @@
     "alias": ["beiao", "北傲决", "北傲诀", "霸刀", "北傲"],
     "name": "北傲诀",
     "gameid": 10464,
-    "type": "dps"
+    "type": "dps",
+    "practice_type": "physics"
   },
   {
     "color": "#94C7DC",
@@ -221,7 +245,8 @@
     "alias": ["linghai", "蓬莱", "凌海", "凌海诀"],
     "name": "凌海诀",
     "gameid": 10533,
-    "type": "dps"
+    "type": "dps",
+    "practice_type": "magic"
   },
   {
     "color": "#872F37",
@@ -229,7 +254,8 @@
     "alias": ["yinlong", "隐龙诀", "隐龙决", "隐龙", "凌雪", "凌雪阁"],
     "name": "隐龙诀",
     "gameid": 10585,
-    "type": "dps"
+    "type": "dps",
+    "practice_type": "physics"
   },
   {
     "color": "#b9c1ff",
@@ -237,7 +263,8 @@
     "alias": ["taixuan", "衍天", "衍天宗", "太玄经", "太玄"],
     "name": "太玄经",
     "gameid": 10615,
-    "type": "dps"
+    "type": "dps",
+    "practice_type": "magic"
   },
   {
     "color": "#16708a",
@@ -245,7 +272,8 @@
     "alias": ["wufang", "无方"],
     "name": "无方",
     "gameid": 10627,
-    "type": "dps"
+    "type": "dps",
+    "practice_type": "magic"
   },
   {
     "color": "#39bf9b",
@@ -253,7 +281,8 @@
     "alias": ["lingsu", "奶药", "药奶", "灵素", "北天", "北天药宗"],
     "name": "灵素",
     "gameid": 10626,
-    "type": "hps"
+    "type": "hps",
+    "practice_type": "magic"
   },
   {
     "color": "#6bb7f2",
@@ -261,7 +290,8 @@
     "alias": ["gufeng", "刀宗", "孤锋诀", "孤锋"],
     "name": "孤锋诀",
     "gameid": 10698,
-    "type": "dps"
+    "type": "dps",
+    "practice_type": "physics"
   },
   {
     "color": "#E1C855",
@@ -269,6 +299,7 @@
     "alias": ["shanhai", "万灵", "万灵当歌", "万灵山庄", "山海", "山海诀", "山海心诀", "山海决", "山海心决"],
     "name": "山海心诀",
     "gameid": 10756,
-    "type": "dps"
+    "type": "dps",
+    "practice_type": "physics"
   }
 ]

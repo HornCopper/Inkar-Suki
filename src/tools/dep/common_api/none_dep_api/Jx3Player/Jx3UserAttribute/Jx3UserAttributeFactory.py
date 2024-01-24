@@ -5,7 +5,7 @@ from src.tools.dep.data_server import *
 from src.tools.utils import *
 from .IJx3UserAttributeFactory import *
 from src.tools.dep.common_api.none_dep_api.tuilan import *
-from src.tools.dep.api.config import *
+from src.tools.config import *
 
 
 class Jx3UserAttributeFactory(IJx3UserAttributeFactory):
@@ -32,9 +32,10 @@ class Jx3UserAttributeFactory(IJx3UserAttributeFactory):
 
     @staticmethod
     async def _get_attribute_by_uid(uid: str, server: str) -> BaseJx3UserAttribute:
+        server: Server = Server.from_alias(server)
         param = {
-            "zone": Zone_mapping(server),
-            "server": server,
+            "zone": server.belong,
+            "server": server.name,
             "game_role_id": uid,
             "ts": gen_ts()
         }
@@ -58,9 +59,9 @@ class Jx3UserAttributeFactory(IJx3UserAttributeFactory):
             "User-Agent": "SeasunGame/193 CFNetwork/1240.0.4 Darwin/20.6.0",
             "x-sk": xsk
         }
-        logger.debug(f'load user attributes from tuilan:{server}@{uid}')
+        logger.debug(f'load user attributes from tuilan:{server.name}@{uid}')
         data = await post_url(url="https://m.pvp.xoyo.com/mine/equip/get-role-equip", data=payload, headers=headers)
         response = Jx3UserAttributeFactory(json.loads(data)).data
         if not response:
-            logger.warning(f'fail load attribute [{server}@{uid}]:{data}')
+            logger.warning(f'fail load attribute [{server.name}@{uid}]:{data}')
         return response

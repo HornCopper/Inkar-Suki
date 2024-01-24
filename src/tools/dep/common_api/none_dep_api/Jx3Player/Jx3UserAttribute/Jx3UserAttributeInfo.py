@@ -1,107 +1,8 @@
 from __future__ import annotations
 from src.tools.utils import *
-from ...common import *
-from .members.Jx3Equip import *
-from .members import *
-from .IJx3UserAttributeFactory import *
 from src.constant.jx3 import *
-
-
-class BaseJx3UserSummary(BaseUpdateAt):
-    '''记录更新时间和最后一次获取的装分'''
-
-    def __init__(self, data: dict = None) -> None:
-        super().__init__(data)
-
-    def load_data(self, data: dict):
-        super().load_data(data)
-        self.score = int(data.get('score') or 0)
-
-    def to_dict(self) -> dict:
-        result = {
-            'score': self.score,
-        }
-        result.update(super().to_dict())
-        return result
-
-
-class AttributeType(enum.IntFlag):
-    Unknown = 0
-    PVP = 2 << 1
-    PVE = 2 << 2
-    PVX = 2 << 3
-
-    DPS = 2 << 11
-    HPS = 2 << 12
-    TANK = 2 << 13
-
-    FLY = 2 << 21
-
-    def warning(self):
-        '''判断类型是否重复，重复则说明不合理'''
-        v = self.value
-
-        group_1 = [AttributeType.PVP, AttributeType.PVE, AttributeType.PVX]
-        counter_1 = len(filter(lambda x: x & v == x, group_1))
-
-        group_2 = [AttributeType.DPS, AttributeType.HPS, AttributeType.TANK]
-        counter_2 = len(filter(lambda x: x & v == x, group_2))
-
-        return counter_1 > 1 or counter_2 > 1
-
-    @classmethod
-    def from_alias(cls, alias: str) -> AttributeType:
-        alias = str(alias).lower()
-        result = AttributeType.Unknown
-        for type in AttributeType:
-            if type.name.lower() in alias:
-                result |= type
-        return result
-
-
-jeat = Jx3EquipAttributeType
-
-
-class BaseJx3UserAttributePage:
-    types: list[tuple[AttributeType, str]] = [
-        (AttributeType.Unknown, '默认'),
-        (AttributeType.PVP | AttributeType.DPS, 'PVP-DPS'),
-        (AttributeType.PVE | AttributeType.DPS, 'PVE-DPS'),
-        (AttributeType.PVP | AttributeType.HPS, 'PVP-HPS'),
-        (AttributeType.PVE | AttributeType.HPS, 'PVE-HPS'),
-        (AttributeType.PVP | AttributeType.TANK, 'PVE-TANK'),
-        (AttributeType.PVE | AttributeType.TANK, 'PVE-TANK'),
-        (AttributeType.PVX, '寻宝娱乐'),
-        (AttributeType.FLY, '轻功'),
-    ]
-    types_mapper = {
-        'dps': 2,
-        'hps': 4,
-        't': 6,
-    }
-    eq_attrs_mapper = {
-        jeat.伤: AttributeType.DPS,
-        jeat.疗: AttributeType.HPS,
-        jeat.御: AttributeType.TANK,
-        jeat.伤 | jeat.化: AttributeType.DPS | AttributeType.PVP,
-        jeat.疗 | jeat.化: AttributeType.HPS | AttributeType.PVP,
-        jeat.御 | jeat.化: AttributeType.TANK | AttributeType.PVP,
-        jeat.化: AttributeType.PVP,
-        'dps': AttributeType.DPS,
-        'hps': AttributeType.HPS,
-        't': AttributeType.TANK,
-    }
-
-    def __init__(self) -> None:
-        self.attr_type = AttributeType.Unknown
-        self.equip_unmatch: list[Jx3Equip] = []
-
-    def to_dict(self):
-        return {
-            'equip_unmatch': [x.item_id for x in self.equip_unmatch],
-            'attr_type': self.attr_type.value,
-        }
-
+from .BaseJx3UserAttributePage import *
+from .IJx3UserAttributeFactory import *
 
 class BaseJx3UserAttribute(BaseUpdateAt):
     factory: IJx3UserAttributeFactory
@@ -113,6 +14,10 @@ class BaseJx3UserAttribute(BaseUpdateAt):
     ).value
     '''key:lastupdate'''
 
+    c_latest_path = f'{c_path}_latest'
+    cache_latest_attr: dict[str, dict[str, str]] = filebase_database.Database(c_latest_path).value
+    '''key:user-key key2:attr_type'''
+
     @property
     def page(self) -> BaseJx3UserAttributePage:
         '''
@@ -122,28 +27,74 @@ class BaseJx3UserAttribute(BaseUpdateAt):
         判断装备化劲是否>0
         '''
         result = BaseJx3UserAttributePage()
-        equip_unmatch = []
-        for equip in self.equips:
+
+        # 按心法匹配当前类型
+        kun_type = self.kungfu.type or 'dps'
+        result.attr_type |= BaseJx3UserAttributePage.eq_attrs_mapper.get(kun_type)
+
+        # 内功或外功
+        if not hasattr(self.kungfu, 'practice_type'):
+            # 解决一直报错问题
+            self.kungfu = Kunfu.from_alias(self.kungfu.alias)
+            if not hasattr(self.kungfu, 'practice_type'):
+                logger.warning(f'loading kunfu fail:{self.kungfu.to_dict()}')
+                setattr(self.kungfu, 'practice_type', 'magic')  # 默认给个内功
+        kun_ptype = self.kungfu.practice_type
+        kun_ptype = kun_ptype if isinstance(kun_ptype, list) else [kun_ptype]
+
+        # 属性常用常数
+        att_default = AttributeType.Unknown
+        att_dict = Jx3EquipAttribute.attribute_types
+
+        def handle_primary_attr(equip: Jx3Equip):
             if equip.index == 12:
-                continue  # 忽略主武器
+                return  # 忽略主武器
             # if equip.index == 13:
-            #     continue  # 忽略副武器
+            #     return  # 忽略副武器
 
-            ###
-            enchant_suffix = equip.enchant_suffix
-            if enchant_suffix:
-                result.attr_type |= BaseJx3UserAttributePage.eq_attrs_mapper.get(enchant_suffix)
+            # 按装备主属性判断
+            attributes = [x.primary_attribute for x in equip.attributes]
+            primary_attr = att_default
+            for att in att_dict:
+                has_attr = True
+                for single_att in att.split(','):
+                    att_desc = single_att
+                    if is_reverse := single_att.startswith('!'):
+                        att_desc = att_desc[1:]
+                    has_attr = has_attr and (is_reverse ^ (att_desc in attributes))
+                if has_attr:
+                    primary_attr |= att_dict[att]
+            result.attr_type |= primary_attr
 
-            ###
+        equip_unmatch = []
+
+        def handle_kunfu_attr(equip: Jx3Equip):
+            '''判断异常装备，装备适用心法是否与当前心法相同'''
             e_kun = self.equips[0].belongs.get('kungfu') or ''
             e_kun = e_kun.split(',')
+
+            if e_kun[0] in kun_ptype:
+                return  # 当为精简时先匹配内功外功
+
             match = extensions.find(e_kun, lambda x: x in self.kungfu.alias)
             if not match:
                 equip_unmatch.append(equip)  # 心法不符
 
-            ###
-            kun_type = self.kungfu.type or 'dps'
-            result.attr_type |= BaseJx3UserAttributePage.eq_attrs_mapper.get(kun_type)
+        def handle_enchant(equip: Jx3Equip):
+            '''通过大附魔判断'''
+            enchant_suffix = equip.enchant_suffix
+            if not enchant_suffix:
+                return
+            result.attr_type |= BaseJx3UserAttributePage.eq_attrs_mapper.get(enchant_suffix)
+
+        for equip in self.equips:
+            handle_enchant(equip)
+            handle_kunfu_attr(equip)
+            handle_primary_attr(equip)
+
+        if result.attr_type & (AttributeType.PVP | AttributeType.PVE) == AttributeType.Unknown:
+            # 没有标注类型，则默认应该为PVE
+            result.attr_type |= AttributeType.PVE
 
         result.equip_unmatch = equip_unmatch
         return result
@@ -203,10 +154,23 @@ class BaseJx3UserAttribute(BaseUpdateAt):
             current_prop.record_new_data(result, score)
             # 记录更新时间
             BaseJx3UserAttribute.cache[key] = BaseJx3UserSummary(current_prop.to_dict())
-            pass
-        elif len(list(result)) == 0:
+
+            # 记录当前主属性
+            if latest := BaseJx3UserAttribute.cache_latest_attr.get(key):
+                pass  # 已有结构，则不创建
+            else:
+                latest = {}
+                BaseJx3UserAttribute.cache_latest_attr[key] = latest
+            latest[str(current_prop.page.attr_type.value)] = score
+
+        elif not result:
             # 从未有过任何装分
             return None, None
+        else:
+            # 有历史记录
+            scores = sorted([int(x) for x in result], key=lambda x: x, reverse=True)
+            score = str(scores[0])
+            return score, result
 
         return score, result
 
@@ -274,3 +238,6 @@ class BaseJx3UserAttribute(BaseUpdateAt):
             'equips': [x.to_view() for x in self.equips],
         })
         return result
+
+    def __str__(self) -> str:
+        return str(self.score)

@@ -7,7 +7,7 @@ from src.tools.file import *
 
 
 class StaticLoader:
-    lock = threading.RLock()
+    lock = threading.Lock()
 
     inited: bool = False
     key: str  # from_id使用此字段
@@ -28,12 +28,13 @@ class StaticLoader:
                 __raw_data = json.loads(read(cls.resource_url))
             raw_data: dict[str, cls] = {}
             if not __raw_data:
-                return
+                return logger.error(f'fail to load resources:{cls.__name__}')
             for x in __raw_data:
                 item = cls(x, __raw_data[x])
                 if not hasattr(item, 'key'):
                     item.key = x  # 未设置则主动设置
                 raw_data[item.key] = item
+
             cls.inited = True
             cls.static_data = raw_data
 

@@ -1,13 +1,5 @@
-import enum
-
-
-class Jx3EquipAttributeType(enum.IntFlag):
-    无 = 0
-    伤 = 1
-    疗 = 2
-    御 = 4
-    化 = 8
-    '''化劲pvp'''
+from .Jx3EquipAttributeType import *
+from .Jx3AttributeType import *  # 待解耦
 
 
 class Jx3EquipAttribute:
@@ -21,10 +13,22 @@ class Jx3EquipAttribute:
         '化劲': '化',
         '治疗成效': '疗'
     }
+    attribute_types = {
+        '无': AttributeType.DPS | AttributeType.PVE,
+        '破防': AttributeType.DPS,
+        '破招': AttributeType.DPS | AttributeType.PVE,
+        '御,!疗': AttributeType.TANK,
+        '化': AttributeType.PVP,
+        '疗': AttributeType.HPS,
+    }
 
     def __init__(self, data: dict) -> None:
         if data is None:
             data = {}
+        if isinstance(data, str):
+            self.load_data({})
+            self.desc = data
+            return  # 仅传入属性描述，其他值无
         self.load_data(data)
         pass
 
@@ -50,9 +54,9 @@ class Jx3EquipAttribute:
         '''体质提高4456'''
         self.score: int = data.get('score')
         '''装分提升'''
-        self.value_max = int(data.get('value_max'))
+        self.value_max = int(data.get('value_max') or 0)
         '''属性最小增加数值'''
-        self.value_min = int(data.get('value_min'))
+        self.value_min = int(data.get('value_min') or 0)
         '''属性最大增加数值'''
 
     @property

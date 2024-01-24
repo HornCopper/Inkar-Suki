@@ -10,7 +10,7 @@ async def render_subscribe(VALID_Subjects: dict[str, SubscribeSubject], subscrib
         "all_subjects": total,
         "message": message,
         "subscribe_info": subscribe_info,
-        "subject": subject and subject.to_dict(),
+        "subject": subject and [x.to_dict() for x in subject],
     }
     img = await get_render_image("src/views/jx3/subscribe/status.html", data)
     return img

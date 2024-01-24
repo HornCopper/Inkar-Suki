@@ -2,7 +2,7 @@ from ... import *
 from src.tools.dep.common_api.SubscribeRegister.events import *
 
 
-@pytest.mark.skipif('get_tuilan_articles' not in dir(), reason='无api可用')
+@pytest.mark.skipif('Jx3TuilanNoticeFactory' not in dir(), reason='无api可用')
 def test_event_daily_plain_text():
     event = SFGroupMessageEvent()
     event.group_id = 101100101

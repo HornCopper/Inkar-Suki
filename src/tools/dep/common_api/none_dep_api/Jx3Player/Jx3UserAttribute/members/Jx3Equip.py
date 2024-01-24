@@ -1,67 +1,9 @@
-from src.tools.dep.common_api.none_dep_api.WucaiAttribute import *
 from .Jx3Icon import *
 from .Jx3Stone import *
 from .Jx3EquipAttribute import *
 from src.tools.utils import *
 from src.tools.file import *
-
-
-class WCommonEnchant:
-    '''
-    大附魔属性
-    '''
-    lock = threading.RLock()
-    ranges: list[tuple[str, int, int]] = None
-    suffix_enum = {
-        '帽': '帽',
-        '衣': '衣',
-        '腰': '腰',
-        '鞋': '鞋',
-        '裤子': None,
-        '项链': None,
-        '戒指': None,
-        '腰坠': None,
-    }
-
-    def __init__(self, id: str, quality: int, attributes: list[Jx3EquipAttribute], sub_kind: str) -> None:
-        self.id = id
-        self.quality = quality
-        self.attributes = attributes
-        self.sub_kind = sub_kind
-        self._name = Ellipsis
-
-    @property
-    def core_name(self):
-        with self.lock:
-            if not self.ranges:
-                path = pathlib2.Path(__file__).parent.joinpath(
-                    'map.common-enchant-static.json').as_posix()
-                self.ranges = json.loads(read(path))
-        q = self.quality
-        def f(x): return x[1] < q and x[2] > q
-        core_name = extensions.find(self.ranges, f) or '大附魔'
-        return core_name
-
-    @property
-    def name(self):
-        if self._name is not Ellipsis:
-            return self._name
-        core_name = self.core_name
-
-        core_type: Jx3EquipAttributeType = extensions.find(
-            self.attributes, lambda x: x.suffix is not Jx3EquipAttributeType.无)
-        if not core_type:
-            self._name = None
-            return self._name
-        self._name = f'{core_name}·{core_type.name}·{self.suffix}'
-        return self._name
-
-    @property
-    def suffix(self):
-        t = self.sub_kind
-        d = WCommonEnchant.suffix_enum
-        result: str = extensions.find(list(d), lambda x: d[x] in t)
-        return d[result]
+from .WCommonEnchant import *
 
 
 class EquipIcon(Jx3Icon):
@@ -207,14 +149,13 @@ class Jx3Equip:
         '''获得途径'''
         pass
 
-    @property
-    def primary_attribute(self) -> str:
-        primary_attributes = [x.primary_attribute for x in self.attributes]
-        counts = len(primary_attributes)
-        has_pf = '破防' in primary_attributes
-        has_pz = '破招' in primary_attributes
-        has_ws = '无' in primary_attributes
-        result = str.join('', primary_attributes)
+    @staticmethod
+    def get_primary_attribute(attributes: list[str]) -> str:
+        counts = len(attributes)
+        has_pf = '破防' in attributes
+        has_pz = '破招' in attributes
+        has_ws = '无' in attributes
+        result = str.join('', attributes)
 
         if has_pf and has_pz:
             # 若有双破则简称破破
@@ -224,7 +165,14 @@ class Jx3Equip:
             # 若有破无则简写
             result = result.replace('破防', '破')
 
+        if len(result) == 1:
+            result = f'纯{result}'
         return result
+
+    @property
+    def primary_attribute(self) -> str:
+        primary_attributes = [x.primary_attribute for x in self.attributes]
+        return Jx3Equip.get_primary_attribute(primary_attributes)
 
     def to_dict(self):
         return {

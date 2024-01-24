@@ -23,7 +23,8 @@ class Jx3PlayerInfo(BaseUpdateAt):
         '''角色区内id'''
         self.globalRoleId: str = data.get('globalRoleId')
         '''角色id'''
-        school: School = School.from_alias(data.get('forceName') or 'unknown')
+        force_name = data.get('forceName') or 'unknown'
+        school: School = School.from_alias(force_name)
         self.forceName: str = school and school.name
         '''门派'''
         self.forceId: str = data.get('forceId')
