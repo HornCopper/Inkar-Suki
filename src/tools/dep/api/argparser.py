@@ -183,16 +183,17 @@ class Jx3Arg(Jx3ArgCallback, Jx3ArgExt):
         return f'[{self.arg_type.name}]{self.name}(default={self.default})'
 
     @staticmethod
-    def arg_factory(matcher: Matcher, event: GroupMessageEvent) -> list[Any]:
+    def arg_factory(matcher: Matcher, event: GroupMessageEvent, bot: Bot = None) -> list[Any]:
         docs = get_cmd_docs(matcher)
         templates = get_args(docs.example, event, method=docs.name)
         if templates is None:  # 返回无效内容，不再继续处理
             logger.warning(f'处理指令时发现无效数据:{str(event.message)}')
             matcher.stop_propagation()
         if type(templates) is InvalidArgumentException:
-            msg = f'{docs.name}指令错误，{ex}'
+            msg = f'{docs.name}指令错误，{templates}'
             logger.debug(f'show arguments error:{msg}')
-            ext.SyncRunner.as_sync_method(matcher.finish(msg))
+            reply = bot.send_group_msg(group_id=event.group_id, message=msg)
+            ext.SyncRunner.as_sync_method(reply)
             matcher.stop_propagation()
         return templates
 
@@ -248,7 +249,9 @@ def direct_argparser(raw_input: str, template_args: List[Jx3Arg], event: GroupMe
         result.append(x)  # 无论是否解析成功都将该位置参数填入
         if x is None and is_default:
             if is_default and not match_value.is_optional:
-                return InvalidArgumentException(f'[{match_value.alias}]参数无效')
+                value_name = match_value.alias or f'序号{template_index}'
+                value_name = f'{value_name}-{match_value.arg_type.name}'
+                return InvalidArgumentException(f'{value_name}参数，输入的"{arg_value}"，无效')
             continue  # 该参数去匹配下一个参数
 
         if not is_default:

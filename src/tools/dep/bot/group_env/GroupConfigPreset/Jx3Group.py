@@ -11,6 +11,11 @@ groupConfigActivity: dict[str, GroupConfigInfo] = {
     'command': GroupConfigInfo('功能使用数', default=[0]*31, description='单个数组循环存储1月内消息数'),
     'slient_count': GroupConfigInfo('沉寂天数', default=0, description='连续T日（默认7）功能使用数为X及以下（默认0）'),
 }
+
+
+groupConfigTemplates: dict[str, GroupConfigInfo] = {
+    'welcome': GroupConfigInfo('入群欢迎语', default='欢迎入群'),
+}
 groupConfigInfos: dict[str, GroupConfigInfo] = {
     'auth': GroupConfigInfo('授权', default={}, infos=groupConfigAuth),
     'server': GroupConfigInfo('当前绑定服务器'),
@@ -18,4 +23,5 @@ groupConfigInfos: dict[str, GroupConfigInfo] = {
     'subscribe': GroupConfigInfo('当前订阅的事件', default={'日常': {}}),
     'activity': GroupConfigInfo('活跃度', default={}, infos=groupConfigActivity),
     'command_map': GroupConfigInfo('命令映射', default={}),
+    'templates': GroupConfigInfo('话术', default={}, infos=groupConfigTemplates),
 }

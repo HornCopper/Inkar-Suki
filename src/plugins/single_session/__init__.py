@@ -93,7 +93,7 @@ async def matcher_mutex(bot: Bot, event: Event):
 
     _running_matcher[session_id] = [
         current_event_id,
-        int(DateTime().timestamp() + 30),  # 30秒未响应则取消锁定
+        int(DateTime().timestamp() + 7),  # 7秒未响应则取消锁定
     ]
     return False
 
