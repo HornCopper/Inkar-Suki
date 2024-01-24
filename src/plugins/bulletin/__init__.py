@@ -10,7 +10,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     elif len(msg) > 20:
         await bulletin_glad.finish("字数请控制在20字以内！")
     else:
-        img = await get_bulletinG(msg)
+        img = await get_bulletinG(msg, "G")
         await bulletin_glad.finish(ms.image(img))
 
 bulletin_sad = on_command("悲报", priority=5)
@@ -23,5 +23,5 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     elif len(msg) > 20:
         await bulletin_sad.finish("字数请控制在20字以内！")
     else:
-        img = await get_bulletinG(msg)
+        img = await get_bulletinG(msg, "S")
         await bulletin_sad.finish(ms.image(img))
