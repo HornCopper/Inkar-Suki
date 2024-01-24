@@ -75,7 +75,7 @@ async def matcher_mutex(bot: Bot, event: Event):
         return False
 
     try:
-        session_id = event.get_session_id()
+        session_id = f'{event.get_user_id()}@{event.get_plaintext()}'
     except Exception as ex:
         logger.warning(f'[event-{event_type}]fail to get session_id {ex}')
         return False
