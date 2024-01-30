@@ -2,7 +2,7 @@ from sgtpyutils.logger import logger
 import httpx
 
 
-def get_default_args(**kwargs):
+async def get_default_args(**kwargs):
     kwargs['timeout'] = kwargs.get('timeout') or 5
     return kwargs
 
@@ -16,7 +16,7 @@ async def send_with_async(method: str, url: str, proxy: dict = None, **kwargs) -
     @return httpx.Response:响应结果
     以指定方式发出请求，并返回请求结果的Response对象
     '''
-    kwargs = get_default_args(**kwargs)
+    kwargs = await get_default_args(**kwargs)
     client = kwargs.get('client')
     if client:
         del kwargs['client']
