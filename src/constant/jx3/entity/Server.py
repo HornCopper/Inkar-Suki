@@ -2,7 +2,7 @@ from .Base import *
 from src.tools.utils import *
 
 server_status_records: dict[str, dict[str, str]] = filebase_database.Database(
-    f'{bot_path.common_data_full}server_status_records',
+    f"{bot_path.common_data_full}server_status_records",
 ).value
 
 
@@ -13,8 +13,8 @@ class ServerRecordType(enum.Enum):
 
 
 class Server(Aliasable):
-    '''服务器'''
-    database = './config.server'
+    """服务器"""
+    database = "./config.server"
 
     @property
     def record(self):
@@ -44,10 +44,11 @@ class Server(Aliasable):
     def record_desc(self) -> str:
         start: int = self.get_record(ServerRecordType.last_start)
         stop: int = self.get_record(ServerRecordType.last_stop)
-        msg = f'上次开服:{start or "暂无"}\n上次维护:{stop or "暂无"}'
+        none = "暂无"
+        msg = f"上次开服:{start or none}\n上次维护:{stop or none}"
         if start and stop:
             delta = (DateTime(stop) - DateTime(start)).total_seconds()
             if delta > 0:
-                msg = f'{msg}\n维护耗时:{int(delta/60)}分钟'
+                msg = f"{msg}\n维护耗时:{int(delta/60)}分钟"
 
         return msg

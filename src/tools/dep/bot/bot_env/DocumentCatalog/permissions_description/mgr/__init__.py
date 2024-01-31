@@ -3,8 +3,8 @@ _self = permission.mgr
 
 
 _self.mark(
-    name='管理',
-    description='',
+    name="管理",
+    description="",
     enable=True,
     visiable=True
 )

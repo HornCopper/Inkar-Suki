@@ -26,7 +26,7 @@ class CommandRecord:
         wait_to_remove = []
         for command in commands:
             cmd = commands[command]
-            prev = cmd.get('favorite')
+            prev = cmd.get("favorite")
             if prev is None:
                 continue
             counter += 1
@@ -48,16 +48,16 @@ class CommandRecord:
             counter += s_counter
             remove_count += s_remove_count
 
-        msg = 'completed reduce_popularity'
+        msg = "completed reduce_popularity"
         if remove_count:
-            msg = f'{msg} removed:{remove_count}'
+            msg = f"{msg} removed:{remove_count}"
         logger.debug(f"{msg} count:{counter}")
 
     @staticmethod
     def get_db(group: str = None) -> filebase_database.Database:
         path = bot_path.DATA
         suffix = group or bot_path.common_data
-        path = f'{path}{os.sep}{suffix}{os.sep}commands'
+        path = f"{path}{os.sep}{suffix}{os.sep}commands"
 
         prev = CommandRecord.cache_db.get(path)
         if prev:
@@ -68,7 +68,7 @@ class CommandRecord:
 
     @staticmethod
     def get_sts(caller_name: str, group: str = None, new_sts: CommandRecord = None) -> CommandRecord:
-        '''统计功能使用'''
+        """统计功能使用"""
 
         db = CommandRecord.get_db(group)
         if new_sts:
@@ -96,8 +96,8 @@ class CommandRecord:
 
     def to_dict(self):
         return {
-            'favorite': self.favorite,
-            'enable': self.enable,
+            "favorite": self.favorite,
+            "enable": self.enable,
         }
 
 
@@ -115,28 +115,28 @@ class DocumentGenerator:
 
     @staticmethod
     def register(method: callable):
-        '''注册到帮助文档
-        此处注册的名字为命令名称，需要保证名称与函数名一致'''
+        """注册到帮助文档
+        此处注册的名字为命令名称，需要保证名称与函数名一致"""
         @functools.wraps(method)
         def wrapper(*args, **kwargs):
             arg = AssignableArg(args=args, kwargs=kwargs, method=method)
-            if 'regex' in method.__name__:  # 重写正则
+            if "regex" in method.__name__:  # 重写正则
                 x = DocumentGenerator.get_regex(args[0])
                 arg.set_args(0, x)
             _ = DocumentGenerator.register_single(arg)
             result = method(*arg.args, **arg.kwargs)
-            # logger.debug(f'docs:{docs}') # 显示很慢
+            # logger.debug(f"docs:{docs}") # 显示很慢
             return result
         return wrapper
 
     @staticmethod
     def record(method: callable):
-        '''记录每次指令调用'''
+        """记录每次指令调用"""
         @functools.wraps(method)
         def wrapper(*args, **kwargs):
             args = AssignableArg(args, kwargs, method)
 
-            raw_input, _ = args.check_if_exist('raw_input')
+            raw_input, _ = args.check_if_exist("raw_input")
             raw_input = convert_to_str(raw_input)
             args.set_args(0, raw_input)
 
@@ -149,42 +149,42 @@ class DocumentGenerator:
 
     @staticmethod
     def _record_log(args: AssignableArg, result: list[any]) -> CommandRecordStatus:
-        method, _ = args.check_if_exist('method')
-        raw_input, _ = args.check_if_exist('raw_input')
-        event, _ = args.check_if_exist('event')
+        method, _ = args.check_if_exist("method")
+        raw_input, _ = args.check_if_exist("raw_input")
+        event, _ = args.check_if_exist("event")
 
         if method:
             caller_name = method if isinstance(method, str) else method.__name__
         else:
             method_names = [x[3] for x in inspect.stack()]
-            caller_name_pos = extensions.find(enumerate(method_names), lambda x: x[1] == 'get_args')
+            caller_name_pos = extensions.find(enumerate(method_names), lambda x: x[1] == "get_args")
             caller_name = method_names[caller_name_pos[0] + 1]
 
         group = event and event.group_id
         log = {
-            'name': caller_name,
-            'args': result,
-            'raw': raw_input,
-            'group': group,
-            'user': event and event.user_id,
+            "name": caller_name,
+            "args": result,
+            "raw": raw_input,
+            "group": group,
+            "user": event and event.user_id,
         }
 
         # 记录和检查
-        msg_status = ''
+        msg_status = ""
         s_global = CommandRecord.record(caller_name)
         s_group = CommandRecord.record(caller_name, group) if group else CommandRecordStatus.normal
         if s_global & CommandRecordStatus.disabled == CommandRecordStatus.disabled:
-            msg_status = '-global-disabled'
+            msg_status = "-global-disabled"
         elif s_group & CommandRecordStatus.disabled == CommandRecordStatus.disabled:
-            msg_status = '-group-disabled'
-        logger.debug(f'func_called{msg_status}:{log}')
+            msg_status = "-group-disabled"
+        logger.debug(f"func_called{msg_status}:{log}")
         return CommandRecordStatus.disabled if msg_status else CommandRecordStatus.normal  # TODO 策略模式包装
 
     @staticmethod
     def get_regex(pattern: str):
         # 精确匹配
-        if not pattern[-1] == '$':
-            return f'{pattern}($| )'
+        if not pattern[-1] == "$":
+            return f"{pattern}($| )"
 
         # 和常规匹配
         return pattern
@@ -192,11 +192,11 @@ class DocumentGenerator:
     @staticmethod
     def counter(method: callable):
         # TODO 不会写
-        '''TODO 用户每次使用时调用'''
+        """TODO 用户每次使用时调用"""
         @functools.wraps(method)
         def wrapper(*args, **kwargs):
             result = method(*args, **kwargs)
-            logger.debug(f'功能调用:{args},{kwargs}')
+            logger.debug(f"功能调用:{args},{kwargs}")
             return result
         return wrapper
 
@@ -207,14 +207,14 @@ class DocumentGenerator:
         args_template = dict([[x.name, x.to_dict()] for x in Jx3ArgsType])
 
         return {
-            'catalogs': catalogs,
-            'commands': commands,
-            'args_template': args_template,
+            "catalogs": catalogs,
+            "commands": commands,
+            "args_template": args_template,
         }
 
     @staticmethod
     def get_documents() -> dict:
-        '''获取文档数据'''
+        """获取文档数据"""
         with DocumentGenerator._doc_lock:
             if DocumentGenerator._document:
                 return DocumentGenerator._document

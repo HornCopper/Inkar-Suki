@@ -4,19 +4,19 @@ from ..bot.group_env.components.CurrentGroupStatus import *
 from ..bot.group_env.components.GroupActivity import *
 from nonebot.adapters.onebot.v11 import Bot
 from nonebot import get_driver
-logger.debug(f'load dependence:{__name__}')
+logger.debug(f"load dependence:{__name__}")
 
 class GroupGather:
     cache_lock: threading.Lock = threading.Lock()
     group_cache: dict[str, CurrentGroupStatus] = filebase_database.Database(
-        f'{bot_path.common_data_full}current-group-list',
+        f"{bot_path.common_data_full}current-group-list",
         serializer=lambda data: dict([x, data[x].to_dict()] for x in data),
         deserializer=lambda data: dict([x, CurrentGroupStatus(data[x])] for x in data),
     ).value
     async def get_all_groups() -> dict[str, list[str]]:
-        '''获取当前所有机器人所有群聊'''
+        """获取当前所有机器人所有群聊"""
         bots = get_driver().bots
-        logger.debug(f'get_all_groups...current online bots:{len(list(bots))}')
+        logger.debug(f"get_all_groups...current online bots:{len(list(bots))}")
 
         tasks = {}
         for botname in bots:
@@ -28,9 +28,9 @@ class GroupGather:
 
     @staticmethod
     async def get_groups(bot: Bot):
-        '''TODO migrate to group-statistics module'''
+        """TODO migrate to group-statistics module"""
         with GroupGather.cache_lock:
-            logger.debug(f'get_groups...bot{bot.self_id}')
+            logger.debug(f"get_groups...bot{bot.self_id}")
             cache = GroupGather.group_cache.get(bot.self_id)
             if cache and not cache.is_outdated():
                 result = cache.groups
@@ -42,7 +42,7 @@ class GroupGather:
             try:
                 group_list = await bot.call_api("get_group_list")
             except Exception as ex:
-                logger.warning(f'fail loading group of bot:{bot.self_id},{ex}')
+                logger.warning(f"fail loading group of bot:{bot.self_id},{ex}")
 
             group_ids = [str(x.get("group_id")) for x in group_list]
             group_ids = extensions.distinct(group_ids)

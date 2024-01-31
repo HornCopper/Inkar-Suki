@@ -2,134 +2,133 @@ from src.tools.permission import checker, error
 
 from .manage import *
 
-error_already_binded = "您已经绑定过该角色了，您可以进行“验证角色”或“解绑角色”操作~"
-error_argument_count = "该命令需要2个参数，分别是服务器、角色名，并且不能省略服务器名称！"
-error_not_found = "未找到该角色！"
-error_not_binded = "尚未绑定该角色！\n请先发送“绑定角色 服务器 角色名”后按照指示操作！"
-error_already_verified = "该角色已绑定且已验证您的所有权！"
-error_delete_but_not_binded = "尚未绑定此角色！"
+# error_already_binded = "您已经绑定过该角色了，您可以进行“验证角色”或“解绑角色”操作~"
+# error_argument_count = "该命令需要2个参数，分别是服务器、角色名，并且不能省略服务器名称！"
+# error_not_found = "未找到该角色！"
+# error_not_binded = "尚未绑定该角色！\n请先发送“绑定角色 服务器 角色名”后按照指示操作！"
+# error_already_verified = "该角色已绑定且已验证您的所有权！"
+# error_delete_but_not_binded = "尚未绑定此角色！"
 
-bind_role = on_command("jx3_bindrole", aliases={"绑定角色"}, priority=5)
-
-
-@bind_role.handle()
-async def _(event: GroupMessageEvent, args: Message = CommandArg()):
-    init_folder()
-    arg = args.extract_plain_text().split(" ")
-    if len(arg) != 2:
-        return await bind_role.finish(error_argument_count)
-    srv = arg[0]
-    id = arg[1]
-    print(1)
-    if checkWtrIn(srv, id, str(event.user_id)):
-        return await bind_role.finish(error_already_binded)
-    else:
-        uuid = get_uuid()
-        if getRoleList(str(event.user_id)) == -1:
-            createRecord(str(event.user_id))
-        sts = await addRole(srv, id, str(event.user_id), uuid)
-        if sts == 1:
-            return await bind_role.finish(f"({srv})[{id}]绑定成功！\n请将该角色推栏账号的签名改为以下内容：\n{uuid}\n“验证角色”通过后即可改回来哦~")
-        elif sts == 2:
-            return await bind_role.finish(error_already_binded)
-        elif sts == 0:
-            return await bind_role.finish(error_not_found)
-
-verify = on_command("jx3_verifyrole", aliases={"验证角色"}, priority=5)
+# bind_role = on_command("jx3_bindrole", aliases={"绑定角色"}, priority=5)
 
 
-@verify.handle()
-async def _(event: GroupMessageEvent, args: Message = CommandArg()):
-    arg = args.extract_plain_text().split(" ")
-    if len(arg) != 2:
-        return await verify.finish(error_argument_count)
-    srv = arg[0]
-    id = arg[1]
-    if checkWtrIn(srv, id, str(event.user_id)) is False:
-        return await verify.finish(error_not_binded)
-    if checkVerify(srv, id, str(event.user_id)):
-        return await verify.finish(error_already_verified)
-    data = getData(srv, id, str(event.user_id))
-    pid = data["personId"]
-    uuid = data["verify"]
-    sts = await check_sign(pid, uuid, False)
-    if sts is False:
-        return await verify.finish("验证失败！该角色的签名与预留的字符串不符合！")
-    else:
-        passVerify(srv, id, str(event.user_id))
-        return await verify.finish(f"({srv})[{id}]绑定成功！")
+# @bind_role.handle()
+# async def _(event: GroupMessageEvent, args: Message = CommandArg()):
+#     init_folder()
+#     arg = args.extract_plain_text().split(" ")
+#     if len(arg) != 2:
+#         return await bind_role.finish(error_argument_count)
+#     srv = arg[0]
+#     id = arg[1]
+#     print(1)
+#     if checkWtrIn(srv, id, str(event.user_id)):
+#         return await bind_role.finish(error_already_binded)
+#     else:
+#         uuid = get_uuid()
+#         if getRoleList(str(event.user_id)) == -1:
+#             createRecord(str(event.user_id))
+#         sts = await addRole(srv, id, str(event.user_id), uuid)
+#         if sts == 1:
+#             return await bind_role.finish(f"({srv})[{id}]绑定成功！\n请将该角色推栏账号的签名改为以下内容：\n{uuid}\n“验证角色”通过后即可改回来哦~")
+#         elif sts == 2:
+#             return await bind_role.finish(error_already_binded)
+#         elif sts == 0:
+#             return await bind_role.finish(error_not_found)
 
-delete = on_command("jx3_deleterole", aliases={"解绑角色"}, priority=5)
-
-
-@delete.handle()
-async def _(event: GroupMessageEvent, args: Message = CommandArg()):
-    arg = args.extract_plain_text().split(" ")
-    if len(arg) != 2:
-        return await delete.finish(error_argument_count)
-    srv = arg[0]
-    id = arg[1]
-    if checkWtrIn(srv, id, str(event.user_id)) is False:
-        return await delete.finish(error_delete_but_not_binded)
-    else:
-        delRole(srv, id, str(event.user_id))
-        return await delete.finish("解绑成功！重新绑定需要再次验证哦~")
-
-listrole = on_command("jx3_listrole", aliases={"角色列表"}, priority=5)
+# verify = on_command("jx3_verifyrole", aliases={"验证角色"}, priority=5)
 
 
-@listrole.handle()
-async def _(event: GroupMessageEvent):
-    ans = getRoleList(str(event.user_id))
-    if ans in [-1, 0]:
-        return await listrole.finish("您没有绑定任何角色哦~")
-    else:
-        return await listrole.finish("您绑定了以下角色：\n" + "\n".join(ans))
+# @verify.handle()
+# async def _(event: GroupMessageEvent, args: Message = CommandArg()):
+#     arg = args.extract_plain_text().split(" ")
+#     if len(arg) != 2:
+#         return await verify.finish(error_argument_count)
+#     srv = arg[0]
+#     id = arg[1]
+#     if checkWtrIn(srv, id, str(event.user_id)) is False:
+#         return await verify.finish(error_not_binded)
+#     if checkVerify(srv, id, str(event.user_id)):
+#         return await verify.finish(error_already_verified)
+#     data = getData(srv, id, str(event.user_id))
+#     pid = data["personId"]
+#     uuid = data["verify"]
+#     sts = await check_sign(pid, uuid, False)
+#     if sts is False:
+#         return await verify.finish("验证失败！该角色的签名与预留的字符串不符合！")
+#     else:
+#         passVerify(srv, id, str(event.user_id))
+#         return await verify.finish(f"({srv})[{id}]绑定成功！")
 
-cd_list = on_command("jx3_cdlist", aliases={"角色副本"}, priority=5)
+# delete = on_command("jx3_deleterole", aliases={"解绑角色"}, priority=5)
 
 
-@cd_list.handle()
-async def _(event: GroupMessageEvent):
-    roles = getAllRole(event.user_id, False, True)
-    data = []
-    for i in roles:
-        info = i.split("|")
-        cdDt = await getRoleCd(info[2])
-        cdDt = cdDt["data"]
-        cdDt["guid"] = info[2]
-        data.append(cdDt)
-    zones = []
-    for i in data:
-        mapFullName = i["mapType"] + i["mapName"]
-        if mapFullName not in zones:
-            zones.append(mapFullName)
-    # for i in zones:
-    #     for x in
+# @delete.handle()
+# async def _(event: GroupMessageEvent, args: Message = CommandArg()):
+#     arg = args.extract_plain_text().split(" ")
+#     if len(arg) != 2:
+#         return await delete.finish(error_argument_count)
+#     srv = arg[0]
+#     id = arg[1]
+#     if checkWtrIn(srv, id, str(event.user_id)) is False:
+#         return await delete.finish(error_delete_but_not_binded)
+#     else:
+#         delRole(srv, id, str(event.user_id))
+#         return await delete.finish("解绑成功！重新绑定需要再次验证哦~")
+
+# listrole = on_command("jx3_listrole", aliases={"角色列表"}, priority=5)
+
+
+# @listrole.handle()
+# async def _(event: GroupMessageEvent):
+#     ans = getRoleList(str(event.user_id))
+#     if ans in [-1, 0]:
+#         return await listrole.finish("您没有绑定任何角色哦~")
+#     else:
+#         return await listrole.finish("您绑定了以下角色：\n" + "\n".join(ans))
+
+# cd_list = on_command("jx3_cdlist", aliases={"角色副本"}, priority=5)
+
+
+# @cd_list.handle()
+# async def _(event: GroupMessageEvent):
+#     roles = getAllRole(event.user_id, False, True)
+#     data = []
+#     for i in roles:
+#         info = i.split("|")
+#         cdDt = await getRoleCd(info[2])
+#         cdDt = cdDt["data"]
+#         cdDt["guid"] = info[2]
+#         data.append(cdDt)
+#     zones = []
+#     for i in data:
+#         mapFullName = i["mapType"] + i["mapName"]
+#         if mapFullName not in zones:
+#             zones.append(mapFullName)
+#     # for i in zones:
+#     #     for x in
 
 
 location = on_command(
     "jx3_iplocation",
     aliases={"属地查询"},
     priority=5,
-    description='用于查询角色最近一次登录的归属省份',
+    description="用于查询角色推栏IP的归属省份",
     catalog=permission.user.personal,
     example=[
         Jx3Arg(Jx3ArgsType.server, is_optional=True),
         Jx3Arg(Jx3ArgsType.user, is_optional=True),
     ],
-    document='''
+    document="""
     改功能考虑到其敏感性，暂时需要权限10以上才可使用。
-    '''
+    """
 )
 
 
 @location.handle()
 async def _(event: GroupMessageEvent, args: list[Any] = Depends(Jx3Arg.arg_factory)):
     arg_server, arg_user = args
-    x = Permission(event.user_id).judge(10, '玩家属地查询')
-    if not x.success:
-        return await location.finish(x.description)
+    if checker(str(event.user_id), 10) == False:
+        await location.finish(error(10))
     pd = await getPersonInfo(arg_server, arg_user)
     if pd is False:
         return await location.finish("没有找到玩家信息！")

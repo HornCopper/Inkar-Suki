@@ -5,15 +5,15 @@ jx3_cmd_horseinfo_map = on_command(
     "抓马",
     aliases={"马场"},
     priority=5,
-    description='获取各个马场刷新信息',
+    description="获取各个马场刷新信息",
     catalog=permission.jx3.pvx.property.horse.info,
     example=[
         Jx3Arg(Jx3ArgsType.server, is_optional=True),
-        Jx3Arg(Jx3ArgsType.string, default=None, alias='马名')
+        Jx3Arg(Jx3ArgsType.string, default=None, alias="马名")
     ],
-    document='''数据来源于剑三盒子
+    document="""数据来源于剑三盒子
     获取当前各个地图马场的数据并整合
-    得到马儿所在的地图'''
+    得到马儿所在的地图"""
 )
 
 
@@ -58,7 +58,7 @@ async def get_jx3_horse_info(template: list[Any]):
     )
 
 
-@scheduler.scheduled_job("interval", id='jx3_update_horseinfo', seconds=3600*(1-0.05*random.random()))
+@scheduler.scheduled_job("interval", id="jx3_update_horseinfo", seconds=3600*(1-0.05*random.random()))
 async def jx3_update_horseinfo():
     servers = list(server_map)
     server = random.choice(servers)

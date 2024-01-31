@@ -3,8 +3,8 @@ _self = permission.user.personal
 
 
 _self.mark(
-    name='人员管理',
-    description='',
+    name="人员管理",
+    description="",
     enable=True,
     visiable=True
 )

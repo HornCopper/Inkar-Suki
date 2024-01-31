@@ -3,8 +3,8 @@ _self = permission.bot.docs
 
 
 _self.mark(
-    name='文档',
-    description='',
+    name="文档",
+    description="",
     enable=True,
     visiable=True
 )

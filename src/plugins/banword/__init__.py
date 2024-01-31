@@ -21,9 +21,8 @@ banword = on_command("banword", priority=5)
 @banword.handle()
 async def __(event: GroupMessageEvent, args: Message = CommandArg()):  # 违禁词封锁
     bw = args.extract_plain_text()
-    x = Permission(event.user_id).judge(5, '添加违禁词')
-    if not x.success:
-        return await banword.finish(x.description)
+    if checker(str(event.user_id), 5) == False:
+        await banword.finish(error(5))
     if bw:
         now = json.loads(read(bot_path.DATA + "/" + str(event.group_id) + "/banword.json"))
         if bw in now:
@@ -39,10 +38,8 @@ unbanword = on_command("unbanword", priority=5)  # 违禁词解封
 
 @unbanword.handle()
 async def ___(event: GroupMessageEvent, args: Message = CommandArg()):
-    
-    x = Permission(event.user_id).judge(5, '删除违禁词')
-    if not x.success:
-        return await unbanword.finish(x.description)
+    if checker(str(event.user_id), 5) == False:
+        await unbanword.finish(error(5))
     cmd = args.extract_plain_text()
     if cmd:
         now = json.loads(read(bot_path.DATA + "/" + str(event.group_id) + "/banword.json"))
@@ -56,8 +53,11 @@ async def ___(event: GroupMessageEvent, args: Message = CommandArg()):
     else:
         return await unbanword.finish("您解封了什么？")
 
-@matcher_common_run.handle()
-async def common_match_ban_words(matcher: Matcher, bot: Bot, event: GroupMessageEvent):
+banned_word = on_message(priority=3, block = False) # 违禁词阻断器
+@banned_word.handle()
+async def _(matcher: Matcher, bot: Bot, event: GroupMessageEvent):
+    if checker(str(event.user_id),5):
+        return
     flag = False
     banwordlist = json.loads(read(bot_path.DATA + "/" + str(event.group_id) + "/banword.json"))
     msg = event.get_plaintext()
@@ -65,20 +65,16 @@ async def common_match_ban_words(matcher: Matcher, bot: Bot, event: GroupMessage
     for i in banwordlist:
         if msg.find(i) != -1:
             flag = True
-            break
-    if not flag:
-        return
-    permit = Permission(event.user_id).judge(5, '免除违禁词禁言')
-    if permit.success:
-        return
-
-    sb = event.user_id
-    try:
-        group = event.group_id
-        await bot.call_api("delete_msg", message_id=id_)
-        await bot.call_api("set_group_ban", group_id=group, user_id=sb, duration=60)
-        msg = ms.at(sb) + "唔……你触发了违禁词，已经给你喝了1分钟的红茶哦~"
-        matcher.stop_propagation()
-        return await matcher_common_run.finish(msg)
-    except Exception as _:
+    if flag:
+        sb = event.user_id
+        try:
+            group = event.group_id
+            await bot.call_api("delete_msg", message_id = id_)
+            await bot.call_api("set_group_ban", group_id = group, user_id = sb, duration = 60)
+            msg = ms.at(sb) + "唔……你触发了违禁词，已经给你喝了1分钟的红茶哦~"
+            matcher.stop_propagation()
+            await banned_word.finish(msg)
+        except:
+            pass
+    else:
         pass

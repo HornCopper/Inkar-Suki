@@ -1,6 +1,6 @@
-'''
+"""
 网络请求相关组件
-'''
+"""
 from sgtpyutils.logger import logger
 import time
 from .img_renderer import *

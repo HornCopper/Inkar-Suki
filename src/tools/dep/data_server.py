@@ -28,7 +28,7 @@ for x in server_raw_map:
 
 
 def Zone_mapping(server):
-    '''obsolete'''
+    """obsolete"""
     if server in {"绝代天骄"}:
         return "电信八区"
     if server in {"斗转星移", "唯我独尊", "乾坤一掷", "横刀断浪", "剑胆琴心", "幽月轮", "梦江南"}:
@@ -39,14 +39,14 @@ def Zone_mapping(server):
         return "双线四区"
     if server in {"破阵子", "天鹅坪"}:
         return "双线一区"
-    logger.warning('fail to found server zone:{server}')
+    logger.warning("fail to found server zone:{server}")
     return None
 
 
 def server_mapping(server: str = None, group_id: str = None):
-    '''
+    """
     根据服务器别名匹配服务器，若未输入则获取当前群所绑定的服务器
-    '''
+    """
     if server:
         server: Server = Server.from_alias(server, log=False)
         if server:
@@ -55,10 +55,10 @@ def server_mapping(server: str = None, group_id: str = None):
 
 
 def getGroupServer(group_id: str):
-    '''
+    """
     获取当前群所绑定的服务器，若未绑定则返回None
-    '''
+    """
     if not group_id:
         return None
     data = GroupConfig(group_id, log=False)
-    return data.mgr_property('server')
+    return data.mgr_property("server")

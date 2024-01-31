@@ -1,4 +1,3 @@
-import abc
 from src.tools.dep import *
 
 
@@ -13,20 +12,18 @@ class HorseItem:
 
 
 class HorseInfo(StaticLoader):
-    # TODO 剑三盒子使用了硬编码，应从其文件中获取
-    resource_url: str = pathlib2.Path(__file__).parent.joinpath(
-        'config.horse.static.json').as_posix()
-    resource_type: str = 'file'
-    icon_url: str = 'https://img.jx3box.com/horse/std/'
+    resource_url: str = pathlib2.Path(__file__).parent.joinpath("config.horse.static.json").as_posix()
+    resource_type: str = "file"
+    icon_url: str = "https://img.jx3box.com/horse/std/"
 
     def __init__(self, key: str, data: dict) -> None:
         self.key = key
-        self.id = data.get('id')
-        self.item_id = data.get('itemId')
+        self.id = data.get("id")
+        self.item_id = data.get("itemId")
 
     @property
     def icon(self):
-        return f'{HorseInfo.icon_url}{self.id}.png'
+        return f"{HorseInfo.icon_url}{self.id}.png"
 
     @classmethod
     def from_id(cls, name: str):
@@ -34,8 +31,7 @@ class HorseInfo(StaticLoader):
 
     def to_dict(self):
         return {
-            'name': self.key,
-            'id': self.id,
-            'item_id': self.item_id,
-            # 'icon': self.icon # 前端自己处理
+            "name": self.key,
+            "id": self.id,
+            "item_id": self.item_id,
         }

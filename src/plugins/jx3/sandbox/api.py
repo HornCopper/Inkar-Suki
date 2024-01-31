@@ -2,7 +2,7 @@ from src.tools.dep import *
 
 
 async def sandbox_(server: str):
-    '''沙盘 <服务器>'''
+    """沙盘 <服务器>"""
     if not server:
         return [PROMPT_ServerNotExist]
     if server is not None:

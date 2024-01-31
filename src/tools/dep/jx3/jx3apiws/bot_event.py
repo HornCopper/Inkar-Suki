@@ -1,6 +1,8 @@
 from .events import *
 from src.tools.dep.bot import *
 
+import json
+
 
 class BotEventController:
     @staticmethod
@@ -31,7 +33,7 @@ class BotEventController:
                 event:RecvEvent = message
 
             if event:
-                logger.debug(f'ws-event:{event.log}')
+                logger.debug(f"ws-event:{event.log}")
                 bots = get_bots()
                 for _, one_bot in bots.items():
                     await handle_event(one_bot, event)

@@ -7,5 +7,5 @@ class Jx3EquipAttributeType(enum.IntFlag):
     疗 = 2
     御 = 4
     化 = 8
-    '''化劲pvp'''
+    """化劲pvp"""
 

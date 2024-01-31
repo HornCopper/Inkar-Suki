@@ -34,11 +34,11 @@ class IDailyMessage:
 
 class ImgDailyMessage(IDailyMessage):
     CACHE_Daily: dict[str, str] = filebase_database.Database(
-        f'{bot_path.common_data_full}daily-img',
+        f"{bot_path.common_data_full}daily-img",
     ).value
 
     def get_path(self, filename: str) -> str:
-        return f'{bot_path.DATA}{os.sep}res{os.sep}daily{filename}'
+        return f"{bot_path.DATA}{os.sep}res{os.sep}daily{filename}"
 
     async def _get_daily_message(self):
         path_cache_daily = ImgDailyMessage.CACHE_Daily.get(self.key)
@@ -47,7 +47,7 @@ class ImgDailyMessage(IDailyMessage):
         if not has_cache:
             # 注意销毁今天以前的缓存
             url = await daily_(self.server, self.group_id, self.offset)  # 向后预测1天的
-            img_data = (await send_with_async('get', url)).content
+            img_data = (await send_with_async("get", url)).content
             path_cache_daily = f"{self.key}.png"
 
         target = Path(self.get_path(path_cache_daily))
@@ -66,7 +66,7 @@ class ImgDailyMessage(IDailyMessage):
 class PlainTxtDailyMessage(IDailyMessage):
 
     CACHE_Daily: dict[str, str] = filebase_database.Database(
-        f'{bot_path.common_data_full}daily-txt',
+        f"{bot_path.common_data_full}daily-txt",
     ).value
 
     async def _get_daily_message(self):
@@ -79,7 +79,7 @@ class PlainTxtDailyMessage(IDailyMessage):
 
         data_daily = PlainTxtDailyMessage.CACHE_Daily[self.key]
         prefix = self.cron.notify_content
-        message = f"{data_daily}\n{'-'*10}{prefix}\n{await saohua()}"
+        message = f"{data_daily}\n" + "----------" + f"{prefix}\n{await saohua()}"
         return message
 
 

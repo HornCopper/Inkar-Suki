@@ -6,39 +6,39 @@ from .IJx3UserAttributeFactory import *
 
 class BaseJx3UserAttribute(BaseUpdateAt):
     factory: IJx3UserAttributeFactory
-    c_path = f'{bot_path.common_data_full}jx3_users'
+    c_path = f"{bot_path.common_data_full}jx3_users"
     cache: dict[str, BaseJx3UserSummary] = filebase_database.Database(
         c_path,
         serializer=lambda data: dict([x, data[x].to_dict()] for x in data),
         deserializer=lambda data: dict([x, BaseJx3UserSummary(data[x])] for x in data),
     ).value
-    '''key:lastupdate'''
+    """key:lastupdate"""
 
-    c_latest_path = f'{c_path}_latest'
+    c_latest_path = f"{c_path}_latest"
     cache_latest_attr: dict[str, dict[str, str]] = filebase_database.Database(c_latest_path).value
-    '''key:user-key key2:attr_type'''
+    """key:user-key key2:attr_type"""
 
     @property
     def page(self) -> BaseJx3UserAttributePage:
-        '''
+        """
         判断装备含有 攻击、防御、治疗
         判断装备心法类型
         判断当前心法类型
         判断装备化劲是否>0
-        '''
+        """
         result = BaseJx3UserAttributePage()
 
         # 按心法匹配当前类型
-        kun_type = self.kungfu.type or 'dps'
+        kun_type = self.kungfu.type or "dps"
         result.attr_type |= BaseJx3UserAttributePage.eq_attrs_mapper.get(kun_type)
 
         # 内功或外功
-        if not hasattr(self.kungfu, 'practice_type'):
+        if not hasattr(self.kungfu, "practice_type"):
             # 解决一直报错问题
             self.kungfu = Kunfu.from_alias(self.kungfu.alias)
-            if not hasattr(self.kungfu, 'practice_type'):
-                logger.warning(f'loading kunfu fail:{self.kungfu.to_dict()}')
-                setattr(self.kungfu, 'practice_type', 'magic')  # 默认给个内功
+            if not hasattr(self.kungfu, "practice_type"):
+                logger.warning(f"loading kunfu fail:{self.kungfu.to_dict()}")
+                setattr(self.kungfu, "practice_type", "magic")  # 默认给个内功
         kun_ptype = self.kungfu.practice_type
         kun_ptype = kun_ptype if isinstance(kun_ptype, list) else [kun_ptype]
 
@@ -57,9 +57,9 @@ class BaseJx3UserAttribute(BaseUpdateAt):
             primary_attr = att_default
             for att in att_dict:
                 has_attr = True
-                for single_att in att.split(','):
+                for single_att in att.split(","):
                     att_desc = single_att
-                    if is_reverse := single_att.startswith('!'):
+                    if is_reverse := single_att.startswith("!"):
                         att_desc = att_desc[1:]
                     has_attr = has_attr and (is_reverse ^ (att_desc in attributes))
                 if has_attr:
@@ -69,9 +69,9 @@ class BaseJx3UserAttribute(BaseUpdateAt):
         equip_unmatch = []
 
         def handle_kunfu_attr(equip: Jx3Equip):
-            '''判断异常装备，装备适用心法是否与当前心法相同'''
-            e_kun = self.equips[0].belongs.get('kungfu') or ''
-            e_kun = e_kun.split(',')
+            """判断异常装备，装备适用心法是否与当前心法相同"""
+            e_kun = self.equips[0].belongs.get("kungfu") or ""
+            e_kun = e_kun.split(",")
 
             if e_kun[0] in kun_ptype:
                 return  # 当为精简时先匹配内功外功
@@ -81,7 +81,7 @@ class BaseJx3UserAttribute(BaseUpdateAt):
                 equip_unmatch.append(equip)  # 心法不符
 
         def handle_enchant(equip: Jx3Equip):
-            '''通过大附魔判断'''
+            """通过大附魔判断"""
             enchant_suffix = equip.enchant_suffix
             if not enchant_suffix:
                 return
@@ -105,39 +105,39 @@ class BaseJx3UserAttribute(BaseUpdateAt):
 
     @staticmethod
     def map_data(data: dict) -> dict:
-        '''将api数据转换为本地数据'''
+        """将api数据转换为本地数据"""
         mapped = {
-            'equips': (data.get('Equips') or []),
-            'kungfu': data.get('Kungfu').get('Name'),
-            'matchDetail': (data.get('MatchDetail') or []),
-            'person': data.get('Person'),
-            'panel': (data.get('PersonalPanel') or []),
-            'score': data.get('TotalEquipsScore'),
+            "equips": (data.get("Equips") or []),
+            "kungfu": data.get("Kungfu").get("Name"),
+            "matchDetail": (data.get("MatchDetail") or []),
+            "person": data.get("Person"),
+            "panel": (data.get("PersonalPanel") or []),
+            "score": data.get("TotalEquipsScore"),
         }
         mapped.update(data)
         return mapped
 
     def load_data(self, data: dict):
-        if 'TotalEquipsScore' in data:
+        if "TotalEquipsScore" in data:
             data = BaseJx3UserAttribute.map_data(data)
         super().load_data(data)
-        self.equips: list[Jx3Equip] = [Jx3Equip(x) for x in (data.get('equips'))]
-        self.kungfu: Kunfu = Kunfu.from_alias(data.get('kungfu'))
-        self.matchDetail: MatchDetail = MatchDetail(data.get('matchDetail'))
-        self.person: Jx3PersonInfo = Jx3PersonInfo(data.get('person'))
-        self.panel: list[UserPanel] = [UserPanel(x) for x in data.get('panel')]
-        self.score: int = data.get('score')
+        self.equips: list[Jx3Equip] = [Jx3Equip(x) for x in (data.get("equips"))]
+        self.kungfu: Kunfu = Kunfu.from_alias(data.get("kungfu"))
+        self.matchDetail: MatchDetail = MatchDetail(data.get("matchDetail"))
+        self.person: Jx3PersonInfo = Jx3PersonInfo(data.get("person"))
+        self.panel: list[UserPanel] = [UserPanel(x) for x in data.get("panel")]
+        self.score: int = data.get("score")
         return self
 
     @classmethod
     def from_uid(cls, uid: str, server: str, cache_length: float = 0) -> tuple[str, dict[str, BaseJx3UserAttribute]]:
-        '''
+        """
         @return:
             str:当前装分
-            dict[装分:属性值]'''
+            dict[装分:属性值]"""
         if not uid:
             return None, None
-        key = f'{server}@{uid}'
+        key = f"{server}@{uid}"
         target = BaseJx3UserAttribute.cache.get(key)
         if target and not target.is_outdated(cache_length):
             return target.score, cls.from_cache(uid, server)
@@ -147,7 +147,7 @@ class BaseJx3UserAttribute(BaseUpdateAt):
         current_prop: BaseJx3UserAttribute = ext.SyncRunner.as_sync_method(task)
         # 存入缓存
         result = cls.from_cache(uid, server)
-        score = '0'  # 默认值
+        score = "0"  # 默认值
         if current_prop and current_prop.score > 0:
             # 只记录有装分的属性
             score = str(current_prop.score)
@@ -176,9 +176,9 @@ class BaseJx3UserAttribute(BaseUpdateAt):
 
     @classmethod
     def get_db_from_cache(cls, uid: str, server: str) -> BaseJx3UserAttribute:
-        key = f'{server}@{uid}'
+        key = f"{server}@{uid}"
         db = filebase_database.Database(
-            f'{cls.c_path}{os.sep}{key}',
+            f"{cls.c_path}{os.sep}{key}",
             serializer=lambda data: dict([x, data[x].to_dict()] for x in data),
             deserializer=lambda data: dict([x, BaseJx3UserAttribute(data[x])] for x in data),
         )
@@ -190,7 +190,7 @@ class BaseJx3UserAttribute(BaseUpdateAt):
         return db.value
 
     def record_new_data(self, result: dict[str, BaseJx3UserAttribute], score: str):
-        '''检查数据完整性并写入'''
+        """检查数据完整性并写入"""
         prev = result.get(score)
         if prev is None:
             result[score] = self
@@ -214,28 +214,28 @@ class BaseJx3UserAttribute(BaseUpdateAt):
             prev = result[prev]
             self.person.qixue = prev.person.qixue  # 使用之前的记录
         else:
-            logger.warning(f'用户{self.person.to_dict()}当前无任何有效奇穴可用')
+            logger.warning(f"用户{self.person.to_dict()}当前无任何有效奇穴可用")
 
         result[score] = self
 
     def to_dict(self) -> dict:
         result = super().to_dict()
         result.update({
-            'equips': [x.to_dict() for x in self.equips],
-            'kungfu': self.kungfu and self.kungfu.name,
-            'matchDetail': self.matchDetail.__dict__,
-            'person': self.person.to_dict(),
-            'panel': [x.__dict__ for x in self.panel],
-            'score': self.score,
-            'page': self.page.to_dict(),
+            "equips": [x.to_dict() for x in self.equips],
+            "kungfu": self.kungfu and self.kungfu.name,
+            "matchDetail": self.matchDetail.__dict__,
+            "person": self.person.to_dict(),
+            "panel": [x.__dict__ for x in self.panel],
+            "score": self.score,
+            "page": self.page.to_dict(),
         })
         return result
 
     def to_view(self) -> dict:
         result = self.to_dict()
         result.update({
-            'kungfu': self.kungfu.to_dict(),
-            'equips': [x.to_view() for x in self.equips],
+            "kungfu": self.kungfu.to_dict(),
+            "equips": [x.to_view() for x in self.equips],
         })
         return result
 

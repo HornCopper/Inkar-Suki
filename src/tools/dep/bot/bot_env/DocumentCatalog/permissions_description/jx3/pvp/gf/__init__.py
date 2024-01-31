@@ -5,8 +5,8 @@ _self = permission.jx3.pvp.gf
 
 
 _self.mark(
-    name='攻防',
-    description='',
+    name="攻防",
+    description="",
     enable=True,
     visiable=True
 

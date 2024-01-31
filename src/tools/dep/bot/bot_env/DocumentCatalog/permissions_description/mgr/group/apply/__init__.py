@@ -3,8 +3,8 @@ _self = permission.mgr.group.apply
 
 
 _self.mark(
-    name='申请',
-    description='',
+    name="申请",
+    description="",
     enable=True,
     visiable=True
 )

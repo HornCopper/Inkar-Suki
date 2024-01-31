@@ -11,13 +11,13 @@ jx3_cmd_equip_recommend = on_command(
     priority=5,
     example=[
         Jx3Arg(Jx3ArgsType.kunfu),
-        Jx3Arg(Jx3ArgsType.string, alias='分类', is_optional=True)
+        Jx3Arg(Jx3ArgsType.string, alias="分类", is_optional=True)
     ]
 )
 
 __static_dict = {
-    'pve': 'PVE',
-    'pvp': 'PVP',
+    "pve": "PVE",
+    "pvp": "PVP",
 }
 
 

@@ -16,13 +16,13 @@ class Jx3UserAttributeFactory(IJx3UserAttributeFactory):
 
     @property
     def success(self):
-        return self.__data and self.__data.get('code') == 0
+        return self.__data and self.__data.get("code") == 0
 
     @property
     def raw_data(self):
         if not self.success:
             return None
-        return self.__data.get('data')
+        return self.__data.get("data")
 
     def load_data(self):
         raw_data = self.raw_data
@@ -59,9 +59,9 @@ class Jx3UserAttributeFactory(IJx3UserAttributeFactory):
             "User-Agent": "SeasunGame/193 CFNetwork/1240.0.4 Darwin/20.6.0",
             "x-sk": xsk
         }
-        logger.debug(f'load user attributes from tuilan:{server.name}@{uid}')
+        logger.debug(f"load user attributes from tuilan:{server.name}@{uid}")
         data = await post_url(url="https://m.pvp.xoyo.com/mine/equip/get-role-equip", data=payload, headers=headers)
         response = Jx3UserAttributeFactory(json.loads(data)).data
         if not response:
-            logger.warning(f'fail load attribute [{server.name}@{uid}]:{data}')
+            logger.warning(f"fail load attribute [{server.name}@{uid}]:{data}")
         return response

@@ -15,7 +15,7 @@ class AttributeType(enum.IntFlag):
     FLY = 2 << 21
 
     def warning(self):
-        '''判断类型是否重复，重复则说明不合理'''
+        """判断类型是否重复，重复则说明不合理"""
         v = self.value
 
         group_1 = [AttributeType.PVP, AttributeType.PVE, AttributeType.PVX]

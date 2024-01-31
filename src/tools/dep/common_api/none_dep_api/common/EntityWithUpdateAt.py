@@ -8,17 +8,17 @@ class BaseUpdateAt:
         self.load_data(data)
 
     def load_data(self, data: dict):
-        self.updateAt: float = data.get('updateAt') or DateTime().timestamp()
-        '''数据更新时间'''
+        self.updateAt: float = data.get("updateAt") or DateTime().timestamp()
+        """数据更新时间"""
 
     @overload
     def is_outdated(self, target: DateTime) -> bool:
-        '''按保质期计算'''
+        """按保质期计算"""
         ...
 
     @overload
     def is_outdated(self, target: float = 86400) -> bool:
-        '''按保质最长间隔计算'''
+        """按保质最长间隔计算"""
         ...
 
     def is_outdated(self, target: DateTime = 86400):
@@ -30,5 +30,5 @@ class BaseUpdateAt:
 
     def to_dict(self) -> dict:
         return {
-            'updateAt': self.updateAt,
+            "updateAt": self.updateAt,
         }

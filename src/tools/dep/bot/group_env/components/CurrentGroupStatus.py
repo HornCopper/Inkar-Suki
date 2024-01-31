@@ -6,12 +6,12 @@ class CurrentGroupStatus(BaseUpdateAt):
         if data is None:
             data = {}
         super().__init__(data)
-        self.groups = data.get('groups')
+        self.groups = data.get("groups")
 
     def to_dict(self) -> dict:
         result = super().to_dict()
         result.update({
-            'groups': self.groups
+            "groups": self.groups
         })
         return result
 

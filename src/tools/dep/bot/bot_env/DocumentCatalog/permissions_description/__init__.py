@@ -4,8 +4,8 @@ _self = permission
 
 
 _self.mark(
-    name='功能',
-    description='',
+    name="功能",
+    description="",
     enable=True,
     visiable=True
 )

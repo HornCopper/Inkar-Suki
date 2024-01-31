@@ -9,52 +9,51 @@ dev_cmd_show_help = on_command(
         "菜单", "开关", "授权", "咋用", "方法", "教程",
     },
     priority=5,
-    description='获取当前公开的命令文档',
+    description="获取当前公开的命令文档",
     catalog=permission.bot.docs.help,
     example=[
         Jx3Arg(Jx3ArgsType.pageIndex, is_optional=True, default=1),
         Jx3Arg(Jx3ArgsType.command, is_optional=True),
     ],
-    document='''帮助文档
+    document="""帮助文档
     可以使用[帮助 具体功能]来查看具体功能的详细说明
-    可以使用[设置映射 想取的指令名 原指令名]来取个小名，例如[设置映射 属性 属性v3]则可以让属性默认使用v3版本的'''
+    可以使用[设置映射 想取的指令名 原指令名]来取个小名，例如[设置映射 属性 属性v3]则可以让属性默认使用v3版本的"""
 )
 
 
 async def get_group_config(bot: Bot, group_id: str):
     group_config = GroupConfig(group_id)
-    auth_start = DateTime(group_config.mgr_property('auth.start'))
+    auth_start = DateTime(group_config.mgr_property("auth.start"))
     year = DateTime().year
-    month = '06' if DateTime().month > 6 else '01'
-
-    story_end: DateTime = DateTime(f'{year+1}-{month}-01')
-
+    month = "06" if DateTime().month > 6 else "01"
+    story_end: DateTime = DateTime(f"{year+1}-{month}-01")
     story_left = int((story_end - DateTime()).total_seconds() / 86400)
     story_length = int((DateTime() - auth_start).total_seconds() / 86400)
+    server = group_config.mgr_property("server")
     labels = [
-        {'content': f'群号：{group_id}'},
-        {'content': f'机器人：{bot.self_id if bot else None}'},
-        {'content': f'故事开始已：{story_length}天'},
-        {'content': f'绑定区服：{group_config.mgr_property("server")}'},
-        {'element': 'el-divider', 'style': 'margin:0.5rem'},
-        {'content': f'SVIP 剩余{story_left}天', 'style': 'color:#ed9b00'},
-        {'content': '群属性：', 'element': 'span'},
-        {'content': '限时免费', 'element': 'el-tag'},
+        {"content": f"群号：{group_id}"},
+        {"content": f"机器人：{bot.self_id if bot else None}"},
+        {"content": f"故事开始已：{story_length}天"},
+        {"content": f"绑定区服：{server}"},
+        {"element": "el-divider", "style": "margin:0.5rem"},
+        {"content": f"SVIP 剩余{story_left}天", "style": "color:#ed9b00"},
+        {"content": "群属性：", "element": "span"},
+        {"content": "限时免费", "element": "el-tag"},
     ]
 
-    group_info = {'name': '未知的群名'}
+    group_info = {"name": "未知的群名"}
     if bot:
         group_info = await bot.get_group_info(group_id=int(group_id))
-    group_name = group_info.get('group_name') or '未知的群名'
-    member_count = group_info.get('member_count') or 0
-    max_member_count = group_info.get('max_member_count') or 0
+    group_name = group_info.get("group_name") or "未知的群名"
+    member_count = group_info.get("member_count") or 0
+    max_member_count = group_info.get("max_member_count") or 0
 
-    labels.insert(0, {'content': group_name, 'style': 'font-size:1.2rem', 'element': 'span'})
-    labels.insert(1, {'content': f'{member_count}/{max_member_count}',
-                  'style': 'font-size:0.6rem', 'element': 'span'})
+    labels.insert(0, {"content": group_name, "style": "font-size:1.2rem", "element": "span"})
+    labels.insert(1, {"content": f"{member_count}/{max_member_count}",
+                  "style": "font-size:0.6rem", "element": "span"})
     return {
-        'name': group_info.get('name'),
-        'labels': labels
+        "name": group_info.get("name"),
+        "labels": labels
     }
 
 
@@ -70,15 +69,15 @@ async def dev_show_help(bot: Bot, event: GroupMessageEvent, args: list[Any] = De
 
     group_config = await get_group_config(bot, group_id)
     content = {
-        'item_name': command,
-        'pageIndex': pageIndex,
-        'global_status': global_status,
-        'group_status': group_status,
-        'group_config': group_config
+        "item_name": command,
+        "pageIndex": pageIndex,
+        "global_status": global_status,
+        "group_status": group_status,
+        "group_config": group_config
     }
     data.update(content)
 
-    template = 'document-detail' if command else 'documents'
+    template = "document-detail" if command else "documents"
     img = await get_render_image(f"src/views/common/{template}.html", data, delay=200)
     return await dev_cmd_show_help.send(ms.image(Path(img).as_uri()))
 

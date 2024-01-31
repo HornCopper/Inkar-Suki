@@ -5,26 +5,26 @@ from .prompt import *
 
 class Jx3ApiResponse:
     def convert_403(self):
-        if '侠客隐藏了游戏信息' in self.msg:
-            return '这个人设置了隐藏'
-        if '仅互关好友可见' in self.msg:
-            return '这个人设置了仅好友可见'
-        return '这个人不允许查看他的信息'
+        if "侠客隐藏了游戏信息" in self.msg:
+            return "唔……该玩家隐藏了自己的信息~"
+        if "仅互关好友可见" in self.msg:
+            return "唔……该玩家设置了仅互关好友可见~"
+        return "唔……该玩家不允许查询自己。"
 
     errors = {
-        400: lambda x: '输入的命令可能有错哦~',
+        400: lambda x: "唔……输入的命令有误。",
         403: convert_403,
-        404: lambda x: '没有找到这个人。',
-        406: lambda x: '获取信息失败了，先别用了o(╥﹏╥)o',
+        404: lambda x: "音卡找了很久，没有找到这个人QAQ",
+        406: lambda x: "获取信息失败了，先别用了o(╥﹏╥)o",
     }
 
     def __init__(self, data: dict) -> None:
-        logger.debug(f'api response with {data}')
-        self.code: int = data.get('code')
-        self.msg: str = data.get('msg')
+        logger.debug(f"api response with {data}")
+        self.code: int = data.get("code")
+        self.msg: str = data.get("msg")
 
-        self.data: dict = data.get('data') or {}
-        self.url: str = self.data.get('url')
+        self.data: dict = data.get("data") or {}
+        self.url: str = self.data.get("url")
 
     @property
     def success(self):
@@ -35,7 +35,7 @@ class Jx3ApiResponse:
         if self.success:
             return None
         callback = Jx3ApiResponse.errors.get(self.code)
-        error = callback(self) or f'未知错误(代码:{self.code})'
+        error = callback(self) or f"未知错误(代码:{self.code})"
         return error
 
     @property
@@ -67,5 +67,5 @@ class Jx3ApiRequest:
 
     @classmethod
     def request(cls, x: Jx3ApiRequest):
-        '''TODO AOP generate'''
+        """TODO AOP generate"""
         return

@@ -3,10 +3,10 @@ import threading
 
 
 class CommandMapperStorage:
-    pattern = re.compile(r'\$(\d+)')  # 匹配参数占位符，例如 $1、$2 等
-    FLAG_Spliter = '-'
-    FLAG_Value = f'{FLAG_Spliter}value'
-    FLAG_Args = '$'
+    pattern = re.compile(r"\$(\d+)")  # 匹配参数占位符，例如 $1、$2 等
+    FLAG_Spliter = "-"
+    FLAG_Value = f"{FLAG_Spliter}value"
+    FLAG_Args = "$"
 
     cache: dict[int, dict] = {}
     lock = threading.Lock()
@@ -20,7 +20,7 @@ class CommandMapperStorage:
         return id(self._mapper)
 
     def flush(self):
-        '''重置缓存'''
+        """重置缓存"""
         m_id = self.map_id
         if m_id in CommandMapperStorage.cache:
             del CommandMapperStorage.cache[self.map_id]
@@ -61,8 +61,8 @@ class CommandMapperStorage:
                 ordered_path = sorted(list(path_lib), key=lambda x: -len(x))
                 for path in ordered_path:
                     cmd_idx = path_lib[path]
-                    value = value.replace(f'{CommandMapperStorage.FLAG_Args}{path}',
-                                          f'{CommandMapperStorage.FLAG_Args}{cmd_idx}')
+                    value = value.replace(f"{CommandMapperStorage.FLAG_Args}{path}",
+                                          f"{CommandMapperStorage.FLAG_Args}{cmd_idx}")
             cur_map[CommandMapperStorage.FLAG_Value] = value
 
         return result

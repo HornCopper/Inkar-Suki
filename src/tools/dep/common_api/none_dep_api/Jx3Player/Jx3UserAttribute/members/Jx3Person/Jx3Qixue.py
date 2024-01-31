@@ -16,23 +16,23 @@ class Qixue:
 
     def load_data(self, data: dict):
         self.map_data(data)
-        self.name = data.get('name')
-        self.icon = QixueIcon(data.get('icon'))
-        self.skill_id = data.get('skill_id')
+        self.name = data.get("name")
+        self.icon = QixueIcon(data.get("icon"))
+        self.skill_id = data.get("skill_id")
 
     @property
     def icon_img(self):
         return QixueIcon.from_icon(self.icon)
 
     def __str__(self) -> str:
-        return f'[{self.name}]({self.skill_id})'
+        return f"[{self.name}]({self.skill_id})"
 
     def __repr__(self) -> str:
         return self.__str__()
 
     def to_dict(self):
         return {
-            'name': self.name,
-            'icon': self.icon.filename,
-            'skill_id': self.skill_id,
+            "name": self.name,
+            "icon": self.icon.filename,
+            "skill_id": self.skill_id,
         }
