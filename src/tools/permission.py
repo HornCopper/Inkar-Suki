@@ -1,10 +1,11 @@
 import json
 
-from src.tools.utils import *
-from src.tools.dep import bot_path
+from src.tools.config import Config
+
+TOOLS = Config.global_path + "/tools"
 
 def judge(qqnumber):
-    file = open(bot_path.TOOLS + "/permission.json", mode="r")
+    file = open(TOOLS + "/permission.json", mode="r")
     json_ = json.loads(file.read())
     file.close()
     if qqnumber not in json_:
@@ -13,7 +14,7 @@ def judge(qqnumber):
         return True
 
 def checker(qqnumber: str, score: int):
-    file = open(bot_path.TOOLS + "/permission.json", mode="r")
+    file = open(TOOLS + "/permission.json", mode="r")
     json_ = json.loads(file.read())
     file.close()
     if qqnumber not in json_:
@@ -30,7 +31,7 @@ def error(score):
 
 
 def block(sb: str) -> bool:
-    with open(bot_path.TOOLS + "/ban.json", mode="r") as cache:
+    with open(TOOLS + "/ban.json", mode="r") as cache:
         for i in json.loads(cache.read()):
             if i == sb:
                 return True
