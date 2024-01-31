@@ -2,7 +2,7 @@ from nonebot import on, on_command, require
 from sgtpyutils.logger import logger
 import sys
 try:
-    if not hasattr(sys.modules[__name__], 'scheduler'):
+    if not hasattr(sys.modules[__name__], "scheduler"):
         require("nonebot_plugin_apscheduler")
         from nonebot_plugin_apscheduler import scheduler
         from apscheduler.triggers.date import DateTrigger  # 一次性触发器

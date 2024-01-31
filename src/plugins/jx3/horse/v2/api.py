@@ -1,6 +1,6 @@
 from src.tools.dep import *
 from ..api_lib import *
-_horse_db = f'{bot_path.common_data_full}pvx_glo_horse'
+_horse_db = f"{bot_path.common_data_full}pvx_glo_horse"
 data_horse_reporter: dict[str, HorseRecords] = filebase_database.Database(
     _horse_db,
     serializer=lambda data: dict([[x, data[x].to_dict()] for x in data]),
@@ -12,13 +12,13 @@ async def get_horse_reporter_data(server: str, start: int = 0, end: int = 1):
     for i in range(start, end):
         final_url = f"https://next2.jx3box.com/api/game/reporter/horse?pageIndex={i+1}&pageSize=50&type=horse&server={server}&subtype=npc_chat"
         data = await get_api(final_url)
-        tmp_records = data.get('data').get('list') or []
+        tmp_records = data.get("data").get("list") or []
         records += tmp_records
     return records
 
 
 async def load_horse_records(server: str):
-    '''从缓存加载，如果无数据，则从网站加载'''
+    """从缓存加载，如果无数据，则从网站加载"""
     prev_records = data_horse_reporter.get(server)
     if prev_records:
         return prev_records
@@ -44,7 +44,7 @@ def get_groups_by_valids(valids: list[HorseEventRecord]):
     # 按地图-马名查时间戳
     records_dict: dict[str, list[HorseEventRecord]] = {}
     for x in valids:
-        key = f'{x.map_id}{x.horses_id}'
+        key = f"{x.map_id}{x.horses_id}"
         if not records_dict.get(key):
             records_dict[key] = []
         records_dict[key].append(x)
@@ -93,7 +93,7 @@ def handle_horse_to_export(valids: list[HorseEventRecord]) -> tuple[list[HorseEv
 
 
 async def get_horse_reporter(server: str) -> tuple[list[HorseEventRecord], list[MapDataWithHorse], list[HorseInfo]]:
-    '''获取指定服务器当前马场状态'''
+    """获取指定服务器当前马场状态"""
     if not server:
         return PROMPT_ServerNotExist
     valids = await get_horse_reporter_raw(server)

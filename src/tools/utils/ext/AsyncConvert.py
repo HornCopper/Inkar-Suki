@@ -25,8 +25,8 @@ class AsyncToSync:
         try:
             main_event_loop = asyncio.get_event_loop()
         except RuntimeError:
-            # There's no event loop in this thread. Look for the threadlocal if
-            # we're inside SyncToAsync
+            # There"s no event loop in this thread. Look for the threadlocal if
+            # we"re inside SyncToAsync
             main_event_loop = getattr(SyncToAsync.threadlocal, "main_event_loop", None)
             threadlocal = True
         if main_event_loop and main_event_loop.is_running():

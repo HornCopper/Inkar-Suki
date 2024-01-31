@@ -5,8 +5,8 @@ _self = permission.jx3.pvx
 
 
 _self.mark(
-    name='pvx玩法',
-    description='',
+    name="pvx玩法",
+    description="",
     enable=True,
     visiable=True
 

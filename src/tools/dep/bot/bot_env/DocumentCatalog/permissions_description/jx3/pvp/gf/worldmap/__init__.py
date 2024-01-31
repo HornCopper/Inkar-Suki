@@ -5,8 +5,8 @@ _self = permission.jx3.pvp.gf.worldmap
 
 
 _self.mark(
-    name='沙盘',
-    description='',
+    name="沙盘",
+    description="",
     enable=True,
     visiable=True
 

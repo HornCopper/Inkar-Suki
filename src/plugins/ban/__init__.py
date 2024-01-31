@@ -5,11 +5,10 @@ from src.tools.config import Config
 from src.tools.utils import checknumber
 from src.tools.file import read, write
 from src.tools.permission import checker, error
-import json
-import sys
-import nonebot
 
-from nonebot import on_command, on_message
+import json
+
+from nonebot import on_command
 from nonebot.adapters import Message
 from nonebot.adapters.onebot.v11 import Event, Bot
 from nonebot.matcher import Matcher
@@ -28,16 +27,14 @@ ban = on_command("ban", priority=5)  # 封禁，≥10的用户无视封禁。
 
 @ban.handle()
 async def _(bot: Bot, event: Event, args: Message = CommandArg()):
+    if checker(str(event.user_id), 10) == False:
+        await ban.finish(error(10))
     sb = args.extract_plain_text()
     self_protection = False
     if sb in Config.owner:
         await ban.send("不能封禁机器人主人，这么玩就不好了，所以我先把你ban了QwQ")
         sb = str(event.user_id)
         self_protection = True
-    x = Permission(event.user_id).judge(10, '拉黑用户')
-    if not x.success:
-        if self_protection is False:
-            return await ban.finish(x.description)
     if sb is False:
         return await ban.finish("您输入了什么？")
     if checknumber(sb) is False:
@@ -61,9 +58,8 @@ unban = on_command("unban", priority=5)  # 解封
 
 @unban.handle()
 async def _(bot: Bot, event: Event, args: Message = CommandArg()):
-    x = Permission(event.user_id).judge(10, '解除拉黑用户')
-    if not x.success:
-        return await ban.finish(x.description)
+    if checker(str(event.user_id), 10) == False:
+        await ban.finish(error(10))
     sb = args.extract_plain_text()
     if checknumber(sb) is False:
         return await ban.finish("不能全域封禁不是纯数字的QQ哦~")
@@ -81,20 +77,18 @@ async def _(bot: Bot, event: Event, args: Message = CommandArg()):
     return await ban.finish(f"好的，已经全域解封{sb_name}({sb})。")
 
 
-@matcher_common_run.handle()
-async def common_match_ban_user(matcher: Matcher, event: GroupMessageEvent):
+banned = on_message(priority=2, block=False) # 封禁阻断器
+@banned.handle()
+async def _(matcher: Matcher, event: Event):
     info = json.loads(read(bot_path.TOOLS + "/ban.json"))
-    if str(event.user_id) not in info:
-        return
-
-    permit = Permission(event.user_id).judge(10, '黑名单用户免除封禁', log=False)
-    if not permit.success:
+    if str(event.user_id) in info and checker(str(event.user_id),10) == False:
         matcher.stop_propagation()
-        return
+    else:
+        pass
 
     GroupActivity(event.group_id).update_general(1)
 
-mgr_cmd_echo_delay = on_command("mgr_cmd_echo_delay", aliases={'echovv'}, priority=5)
+mgr_cmd_echo_delay = on_command("mgr_cmd_echo_delay", aliases={"echovv"}, priority=5)
 
 echo_list = []
 
@@ -127,58 +121,50 @@ async def run_echo_delay():
 
 mgr_cmd_remove_robot = on_command(
     "mgr_leave_group",
-    name='移除机器人',
-    aliases={'移除机器人'},
+    name="移除机器人",
+    aliases={"移除音卡"},
     priority=5,
-    description='让机器人自己体面',
+    description="让音卡自行退群。",
     catalog=permission.mgr.group.exit,
     example=[
-        Jx3Arg(Jx3ArgsType.number, default=600, alias='延迟秒数'),
-        Jx3Arg(Jx3ArgsType.number, default=None, alias='机器人qq'),
-        Jx3Arg(Jx3ArgsType.bool, default=False, alias='是否直接移除'),
+        Jx3Arg(Jx3ArgsType.number, default=600, alias="延迟秒数"),
+        Jx3Arg(Jx3ArgsType.number, default=None, alias="机器人qq"),
+        Jx3Arg(Jx3ArgsType.bool, default=False, alias="是否直接移除")
     ],
-    document='''退群有冷静期，期间可以取消退群
+    document="""
     这种退群不会进黑名单
-    可以明确退群的时间，默认为10分钟(但参数的单位为妙)'''
+    可以明确退群的时间，默认为10分钟(但参数的单位为)"""
 )
 
 
 @mgr_cmd_remove_robot.handle()
-async def leave_group(bot: Bot,matcher:Matcher, state: T_State, event: Event, args: list[Any] = Depends(Jx3Arg.arg_factory)):
+async def leave_group(bot: Bot, state: T_State, event: Event, args: list[Any] = Depends(Jx3Arg.arg_factory)):
     arg_delay, arg_bot, arg_direct = args
     pass # 设置具体的退群人
-    state['delay'] = arg_delay
+    state["delay"] = arg_delay
     personal_data = await bot.call_api("get_group_member_info", group_id=event.group_id, user_id=event.user_id, no_cache=True)
     group_admin = personal_data["role"] in ["owner", "admin"]
-
-    x = Permission(event.user_id).judge(10, '移除机器人')
-    if not x.success and not group_admin:
+    global_permission = checker(str(event.user_id), 10)
+    if not global_permission and not group_admin:
         return await mgr_cmd_remove_robot.finish("唔……只有群主或管理员才能移除哦~")
 
     confirm_code = get_uuid()[0:6]
-    state['code'] = confirm_code
-    await mgr_cmd_remove_robot.send(f'确定要让机器人离开吗，回复确认码\n{confirm_code}')
+    state["code"] = confirm_code
+    await mgr_cmd_remove_robot.send(f"确定要让机器人离开吗，回复确认码\n{confirm_code}")
 
-cmd_cancel_leave = '取消移除机器人'
-cmd_leave_task: dict[str, int] = filebase_database.Database(
-    f'{bot_path.common_data_full}leave_tasks').value  # 退群状态
+cmd_cancel_leave = "取消移除机器人"
+cmd_leave_task: dict[str, int] = filebase_database.Database(f"{bot_path.common_data_full}leave_tasks").value  # 退群状态
 
-
-async def reschedule():
-    '''TODO 初始化时加载历史计划'''
-    pass
-
-
-@mgr_cmd_remove_robot.got('confirm')
-async def leave_group(bot: Bot, state: T_State, event: GroupMessageEvent, confirm: Message = Arg()):
+@mgr_cmd_remove_robot.got("confirm")
+async def leave_group(state: T_State, event: GroupMessageEvent, confirm: Message = Arg()):
     global cmd_leave_task
     u_input = confirm.extract_plain_text()
     if cmd_cancel_leave == u_input:
         return await cancel_leave_group(event)
-    if state['code'] != u_input:
-        return await mgr_cmd_remove_robot.send('没有回复正确的验证码哦~如果需要！重新发一下退出吧！')
+    if state["code"] != u_input:
+        return await mgr_cmd_remove_robot.send("唔……验证码和音卡给的不相符哦，如果需要，请在发送一次“移除机器人”")
     logger.warning(f"用户提交了注销申请:group={event.group_id},by:{event.user_id}")
-    counter = state['delay'] or 10 * 60
+    counter = state["delay"] or 10 * 60
 
     if counter < 0:
         counter = 0
@@ -187,9 +173,9 @@ async def leave_group(bot: Bot, state: T_State, event: GroupMessageEvent, confir
     schedule_time = DateTime(DateTime() + counter * 1e3)
 
     await add_schedule_of_leave(event.group_id, schedule_time)
-    prefix = f'[冷静期提醒]好哦~机器人将在{schedule_time.toRelativeTime()}'
-    suffix = f'离开\n取消回复：{cmd_cancel_leave}'
-    await mgr_cmd_remove_robot.send(f'{prefix}({schedule_time.tostring(DateTime.Format.DEFAULT)}){suffix}')
+    prefix = f"[冷静期提醒]好哦~机器人将在{schedule_time.toRelativeTime()}"
+    suffix = f"离开\n取消回复：{cmd_cancel_leave}"
+    await mgr_cmd_remove_robot.send(f"{prefix}({schedule_time.tostring(DateTime.Format.DEFAULT)}){suffix}")
 
 
 async def add_schedule_of_leave(group_id: str, schedule_time: DateTime):
@@ -227,14 +213,14 @@ async def direct_leave_group(group_id: str):
                 group_id=group_id,
                 message=f"{Config.name}冷静期已到，有缘再见啦~"
             )
-            await bot.call_api('set_group_leave', group_id=group_id)
+            await bot.call_api("set_group_leave", group_id=group_id)
             if cmd_leave_task.get(group_id):
                 del cmd_leave_task[group_id]
 
             for i in Config.notice_to:
-                await bot.call_api("send_group_msg", group_id=int(i), message=f'{Config.name}按他们的要求，离开了{group_id}')
+                await bot.call_api("send_group_msg", group_id=int(i), message=f"{Config.name}按他们的要求，离开了{group_id}")
         except Exception as ex:
-            logger.warning(f'退群时操作失败:{ex}')
+            logger.warning(f"退群时操作失败:{ex}")
     logger.warning(f"完成：根据用户要求退出群:{group_id}")
 
 
@@ -248,5 +234,5 @@ async def cancel_leave_group(event: GroupMessageEvent):
     if not cmd_leave_task.get(event.group_id):
         return
     del cmd_leave_task[event.group_id]
-    logger.info(f'用户取消了注销:group={event.group_id},by:{event.user_id}')
-    return await mgr_cmd_remove_robot.send('好哦~')
+    logger.info(f"用户取消了注销:group={event.group_id},by:{event.user_id}")
+    return await mgr_cmd_remove_robot.send("好哦~")

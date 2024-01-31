@@ -7,7 +7,7 @@ class Jx3PlayerDetailInfo:
     def __init__(self, uid: str, server: str, current_score: str, attributes: dict[str, Jx3UserAttributeInfo], user: Jx3PlayerInfo = None) -> None:
         self.current_score = str(current_score)
         self.attributes = attributes
-        '''dict[str,Jx3UserAttributeInfo] 装分:属性'''
+        """dict[str,Jx3UserAttributeInfo] 装分:属性"""
         self.uid = uid
         self.server = server
         self.__user = user
@@ -15,8 +15,8 @@ class Jx3PlayerDetailInfo:
 
     @property
     def latest_attrs(self) -> dict[str, str]:
-        '''获取最新数据
-        @return dict[类型enum,装分]'''
+        """获取最新数据
+        @return dict[类型enum,装分]"""
         result = BaseJx3UserAttribute.cache_latest_attr.get(self.key)
         if not result:
             return {}
@@ -24,14 +24,14 @@ class Jx3PlayerDetailInfo:
 
     @property
     def key(self):
-        return f'{self.server}@{self.uid}'
+        return f"{self.server}@{self.uid}"
 
     def get_attributes_history_by_attr_type(self, start: DateTime = None, end: DateTime = None) -> list[tuple[int, int]]:
-        '''获取历史装分变动记录'''
+        """获取历史装分变动记录"""
         raise NotImplemented()
 
     def get_attributes_by_attr_type(self, attr_type: AttributeType) -> Jx3UserAttributeInfo:
-        '''直接通过缓存获取最新配置'''
+        """直接通过缓存获取最新配置"""
         result = None
         his = self.latest_attrs
         if isinstance(attr_type, AttributeType):
@@ -43,8 +43,8 @@ class Jx3PlayerDetailInfo:
         return result
 
     def get_attributes_by_filter(self, date: DateTime = None, attr_type: AttributeType = None, pageIndex: int = 0, pageSize: int = 10) -> list[Jx3UserAttributeInfo]:
-        '''筛选指定的属性 TODO 筛选页面对PVE-DPS和HPS不准确
-        @return 按装分降序列表'''
+        """筛选指定的属性 TODO 筛选页面对PVE-DPS和HPS不准确
+        @return 按装分降序列表"""
         attrs = [self.attributes[x] for x in self.attributes]
 
         if date is not None:
@@ -77,7 +77,7 @@ class Jx3PlayerDetailInfo:
 
     @classmethod
     async def from_auto(cls, server: str, username_or_uid: str, cache_length: float = 86400) -> Jx3PlayerDetailInfo:
-        '''如果传入数值，则按uid，否则按id'''
+        """如果传入数值，则按uid，否则按id"""
         username_or_uid = str(username_or_uid)
         if len(username_or_uid) > 5 and checknumber(username_or_uid):
             return await cls.from_uid(server, username_or_uid, cache_length)
@@ -85,7 +85,7 @@ class Jx3PlayerDetailInfo:
 
     @classmethod
     async def from_username(cls, server: str, username: str, cache_length: float = 86400) -> Jx3PlayerDetailInfo:
-        '''通过服务器和id从缓存或远程加载'''
+        """通过服务器和id从缓存或远程加载"""
         user = Jx3PlayerInfoWithInit.from_id(server, username, cache_length=7*86400)  # 一周内不更新
         result = None
         if user.roleId:
@@ -99,7 +99,7 @@ class Jx3PlayerDetailInfo:
 
     @classmethod
     async def from_uid(cls, server: str, uid: str, cache_length: float = 86400) -> Jx3PlayerDetailInfo:
-        '''通过服务器和uid从缓存或远程加载'''
+        """通过服务器和uid从缓存或远程加载"""
         score, res = Jx3UserAttributeInfo.from_uid(uid, server, cache_length=cache_length)
         if not res:
             return None

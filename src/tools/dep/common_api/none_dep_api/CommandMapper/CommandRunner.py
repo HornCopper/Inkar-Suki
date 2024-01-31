@@ -4,7 +4,7 @@ from sgtpyutils.logger import logger
 
 
 class CommandMapper(CommandMapperStorage):
-    '''
+    """
     实现命令行映射功能
     (1) 创建映射后，改变用户输入的命令行为。
     例如：
@@ -27,7 +27,7 @@ class CommandMapper(CommandMapperStorage):
     映射 打招呼-$1-小狗 打招呼-小狗-$1
     打招呼 你好 小狗 == 打招呼 小狗 你好
     打招呼 你好 小狗 2024-01-22 == 打招呼 小狗 你好 2024-01-22
-    '''
+    """
 
     def __init__(self, mapper: dict):
         super().__init__(mapper)
@@ -41,7 +41,7 @@ class CommandMapper(CommandMapperStorage):
         ...
 
     def convert(self, commands: list[str], max_depth: int = 10) -> str:
-        raw_commands = commands if isinstance(commands, list) else commands.split(' ')
+        raw_commands = commands if isinstance(commands, list) else commands.split(" ")
         # print(json.dumps(mapper, indent=4, ensure_ascii=False))
 
         def get_single_arg(x: str):
@@ -51,20 +51,20 @@ class CommandMapper(CommandMapperStorage):
             require_idx = int(x[1:])
             # 不对，这里的2是因为在Storage中初始化的锅 # require_idx -= 1 # 应排除命令本身的1个身位
             if require_idx >= total_commands:
-                logger.warning(f'require args{require_idx},but only {total_commands} args available')
-                return ''
+                logger.warning(f"require args{require_idx},but only {total_commands} args available")
+                return ""
             return raw_commands[require_idx]
 
         def extract_result(result: str, idx: int) -> str:
-            logger.debug(f'cmd-mapper extract_result[{idx}] :{result}')
+            logger.debug(f"cmd-mapper extract_result[{idx}] :{result}")
             cmds = result.split(self.FLAG_Spliter)
             results = cmds + raw_commands[idx+1:]  # 映射命令后参数不变动
 
             results = [get_single_arg(x) for x in results]
             results = [x for x in results if x]
-            export = str.join(' ', results)
+            export = str.join(" ", results)
             if commands == export:
-                return commands if isinstance(commands, str) else str.join(' ', commands)
+                return commands if isinstance(commands, str) else str.join(" ", commands)
             if max_depth <= 0:
                 return export
             return self.convert(results, max_depth-1)
@@ -73,7 +73,7 @@ class CommandMapper(CommandMapperStorage):
         cur_map = self.mapper
         while True:
             cur_idx += 1
-            cur_cmd = raw_commands[cur_idx] if len(raw_commands) > cur_idx else ''
+            cur_cmd = raw_commands[cur_idx] if len(raw_commands) > cur_idx else ""
             # 获取当前位是否可为参数
             if args := cur_map.get(self.FLAG_Args):
                 # 可为参数则跟进参数，直接短路
@@ -87,4 +87,4 @@ class CommandMapper(CommandMapperStorage):
                 return extract_result(result, cur_idx-1)
             else:
                 # 无匹配，直接返回原始传入
-                return commands if isinstance(commands, str) else str.join(' ', commands)
+                return commands if isinstance(commands, str) else str.join(" ", commands)

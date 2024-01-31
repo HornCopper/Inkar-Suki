@@ -49,9 +49,8 @@ setwiki = on_command("setwiki", priority=5)
 
 @setwiki.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
-    x = Permission(event.user_id).judge(5, '设置wiki')
-    if not x.success:
-        return await setwiki.finish(x.description)
+    if checker(str(event.user_id), 5) == False:
+        await setwiki.finish(error(5))
     api = await wiki_.get_api(args.extract_plain_text())
     if api["status"] == 500:
         return await setwiki.finish("唔……此站点非有效的MediaWiki，请检查后重试~")
@@ -79,9 +78,8 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
     personal_data = await bot.call_api("get_group_member_info", group_id=event.group_id, user_id=event.user_id, no_cache=True)
     group_admin = personal_data["role"] in ["owner", "admin"]
     if not group_admin:
-        x = Permission(event.user_id).judge(5, '设置wiki的前缀')
-        if not x.success:
-            return await setwiki.finish(x.description)
+        if checker(str(event.user_id), 10) == False:
+            await interwiki.finish(error(10))
     args = args.extract_plain_text().split(" ")
     if args[0] == "add":
         if len(args) != 3:

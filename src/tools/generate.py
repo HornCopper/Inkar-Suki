@@ -19,16 +19,16 @@ def get_uuid():
 
 
 class PlaywrightRunner(threading.Thread):
-    match_chars = re.compile(r'[a-z|A-Z|0-9| |_|\-|\+|\.]+')
+    match_chars = re.compile(r"[a-z|A-Z|0-9| |_|\-|\+|\.]+")
 
     def with_timestamp(raw_name: str) -> str:
-        filename = f'{DateTime().tostring(DateTime.Format.DEFAULT_MIL)}{raw_name}'
-        filename = str.join('_', PlaywrightRunner.match_chars.findall(filename))
+        filename = f"{DateTime().tostring(DateTime.Format.DEFAULT_MIL)}{raw_name}"
+        filename = str.join("_", PlaywrightRunner.match_chars.findall(filename))
         return filename
 
     def convert_filename(url: str) -> str:
-        file_url = url.replace(Path(bot_path.CACHE).as_uri(), '')[1:]
-        file_url = str.join('_', PlaywrightRunner.match_chars.findall(file_url))
+        file_url = url.replace(Path(bot_path.CACHE).as_uri(), "")[1:]
+        file_url = str.join("_", PlaywrightRunner.match_chars.findall(file_url))
         file_url = file_url[0:124]
         return file_url
 
@@ -48,7 +48,7 @@ class PlaywrightRunner(threading.Thread):
     def stop(self):
         self.IsRunning = False
         for x in self.tasks:
-            x[4].set_exception('thread stopped')
+            x[4].set_exception("thread stopped")
 
     def run(self):
         ext.SyncRunner.as_sync_method(self.run_loop_async())
@@ -102,9 +102,9 @@ class PlaywrightRunner(threading.Thread):
         t.start()
         future = asyncio.Future()
         self.locker.acquire()
-        if not locate and 'http:' in url:
+        if not locate and "http:" in url:
             # 网页未启用定位时，截图整个页面
-            locate = 'div'
+            locate = "div"
             first = True
         self.tasks.append([url, locate, first, delay, future])
         self.locker.release()
@@ -130,14 +130,14 @@ async def generate_by_raw_html(html: str, web: bool = False, locate: str = None,
     if name is None:
         name = get_uuid()
     name = PlaywrightRunner.with_timestamp(name)
-    file_path = f'{bot_path.CACHE}{os.sep}{name}.html'
-    with open(file_path, 'w') as f:
+    file_path = f"{bot_path.CACHE}{os.sep}{name}.html"
+    with open(file_path, "w") as f:
         f.write(html)
-    return await generate(file_path, web, locate or 'section', first, delay)
+    return await generate(file_path, web, locate or "section", first, delay)
 
 
 async def generate(html: str, web: bool = False, locate: str = None, first: bool = False, delay: int = 0):
-    '''
+    """
     生成指定路径下html文件的截图
     @param html: html文件路径
     @param web: 仅可填False，否则返回空
@@ -145,7 +145,7 @@ async def generate(html: str, web: bool = False, locate: str = None, first: bool
     @param first: 是否选取首个元素截图
     @param delay: 打开网页后延迟时间，单位ms
     @return : 返回生成的图片路径
-    '''
+    """
     file_uri = html if web else Path(html).as_uri()
     result = await generate_by_url(file_uri, locate, first, delay)
     if result is None:

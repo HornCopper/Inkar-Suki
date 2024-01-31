@@ -3,7 +3,6 @@ from typing import overload, Type
 from nonebot.adapters.onebot.v11 import GroupMessageEvent
 
 from sgtpyutils.functools import AssignableArg
-import functools
 import nonebot
 from sgtpyutils.logger import logger
 from .document import DocumentGenerator, DocumentItem
@@ -11,7 +10,7 @@ from .document import DocumentGenerator, DocumentItem
 import nonebot.matcher
 from nonebot.matcher import Matcher
 
-logger.debug('hooked func on_command')
+logger.debug("hooked func on_command")
 
 
 @DocumentGenerator.counter
@@ -28,7 +27,7 @@ def __hook_on_command(
     _depth: int = 0,
     **kwargs,
 ) -> Type[Matcher]:
-    force_whitespace = ' '  # 参数-必须加空格才匹配
+    force_whitespace = " "  # 参数-必须加空格才匹配
     command_item = nonebot._on_command(cmd, rule, aliases, force_whitespace,  _depth+2)
     return command_item
 
@@ -66,25 +65,25 @@ def get_matcher_name(cls: Matcher):
     checker = cls.rule.checkers
     first = checker.__iter__().__next__()
     call = first.call
-    if hasattr(call, 'cmds'):
+    if hasattr(call, "cmds"):
         cmds = call.cmds
         cmd_tuple = [x[0] for x in cmds]
     else:
         reg_content = first.call.regex
-        if str.endswith(reg_content, ' '):
+        if str.endswith(reg_content, " "):
             reg_content = reg_content[0:-1]  # 移除末尾空格
         cmd_tuple = [reg_content]
 
     result = filter(lambda x: DocumentGenerator.commands.get(x), cmd_tuple)
     result = list(result)
     if not result:
-        raise Exception('no suitable docs')
+        raise Exception("no suitable docs")
     return result[0]
 
 
 def get_cmd_docs(cls):
     if not isinstance(cls, str):
-        if not hasattr(cls, 'rule'):
+        if not hasattr(cls, "rule"):
             cls = cls.name
         else:
             cls = get_matcher_name(cls)
@@ -101,7 +100,7 @@ def hook_handle(cls, parameterless=None):
         handler = wrapper(raw_handler)
 
         async def new_handler(*args, **kwargs):
-            print('before call', raw_handler, args, kwargs)
+            print("before call", raw_handler, args, kwargs)
             from ...api.argparser import Jx3Arg, get_args
             arg = AssignableArg(args, kwargs, handler)
             docs = get_cmd_docs(cls)

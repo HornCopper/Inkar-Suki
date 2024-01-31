@@ -19,49 +19,49 @@ class DocumentItem:
         self.cmd = cmd
         data = arg.kwargs
 
-        self.name = data.get('name')
-        self.aliases: set = data.get('aliases') or set()
+        self.name = data.get("name")
+        self.aliases: set = data.get("aliases") or set()
         if self.name:
             if self.name not in self.aliases:
                 self.aliases.add(self.name)  # 将名称设置为默认命令
-                data['aliases'] = self.aliases
+                data["aliases"] = self.aliases
         elif self.aliases:
             self.name = self.aliases.__iter__().__next__()  # 如果没有定义名称则将别名认为是名称
         elif self.cmd:  # 否则以命令来命名
             self.name = self.cmd
 
-        self.description = data.get('description')
-        self.priority = data.get('priority') or 0
-        self.example: list = data.get('example') or []
+        self.description = data.get("description")
+        self.priority = data.get("priority") or 0
+        self.example: list = data.get("example") or []
 
-        catalog = data.get('catalog')
+        catalog = data.get("catalog")
         if isinstance(catalog, str):
             cata = DocumentCatalog.cata_entity_dict.get(catalog)
             if cata:
                 catalog = cata
             else:
-                logger.warning(f'[document]invalid catalog name:{catalog}')
+                logger.warning(f"[document]invalid catalog name:{catalog}")
                 catalog = None
         self.catalog = catalog
 
-        self.document = data.get('document')
+        self.document = data.get("document")
 
     def __repr__(self) -> str:
         return self.__str__()
 
     def __str__(self) -> str:
-        alias = f',({self.aliases})' if self.aliases else ''
-        return f'{self.name}[{self.catalog}]{self.cmd}{alias}: {self.description}'
+        alias = f",({self.aliases})" if self.aliases else ""
+        return f"{self.name}[{self.catalog}]{self.cmd}{alias}: {self.description}"
 
     def to_dict(self) -> dict[str, any]:
         example = [tpl.to_dict() for tpl in self.example]
         return {
-            'name': self.name,
-            'cmd': self.cmd,
-            'aliases': list(self.aliases or {}),
-            'description': self.description,
-            'priority': self.priority,
-            'example': example,
-            'document': self.document,
-            'catalog': self.catalog and self.catalog.path,
+            "name": self.name,
+            "cmd": self.cmd,
+            "aliases": list(self.aliases or {}),
+            "description": self.description,
+            "priority": self.priority,
+            "example": example,
+            "document": self.document,
+            "catalog": self.catalog and self.catalog.path,
         }

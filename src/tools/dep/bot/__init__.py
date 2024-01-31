@@ -1,19 +1,17 @@
-'''
+"""
 机器人相关组件
-'''
-import sys
-import os
-from sgtpyutils.logger import logger
+"""
+from nonebot.log import logger
 try:
-    logger.debug(f'load dependence:{__name__}')
+    logger.debug(f"load dependence:{__name__}")
 except Exception as _:
     pass
 
-'''初始化基础环境'''
+"""初始化基础环境"""
 from .bot_env import *
 from .group_env import *
 
-'''初始化nonebot'''
+"""初始化nonebot"""
 from nonebot.internal.params import Depends
 from nonebot import on, on_command, require, on_message, on_regex
 from nonebot import get_driver
@@ -34,12 +32,12 @@ import nonebot
 nonebot.init(tools_path=bot_path.tools_path, log_level="INFO")
 
 
-'''初始调用库'''
+"""初始调用库"""
 from sgtpyutils.database import filebase_database
 from ...file import *
 try:
     # 子依赖应后加载
     from .bot_plugins import *
-    from src.tools.permission import checker as permission_check, error as permission_error, permission_judge, Permission, PermissionResult
+    from src.tools.permission import checker, error
 except Exception as ex:
-    logger.warning(f'加载bot_plugins及权限组件失败,{ex}')
+    logger.warning(f"加载bot_plugins及权限组件失败,{ex}")

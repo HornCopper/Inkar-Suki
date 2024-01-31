@@ -5,8 +5,8 @@ _self = permission.jx3.common
 
 
 _self.mark(
-    name='通用',
-    description='',
+    name="通用",
+    description="",
     enable=True,
     visiable=True
 

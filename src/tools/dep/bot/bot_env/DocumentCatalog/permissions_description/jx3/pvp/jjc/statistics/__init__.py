@@ -5,8 +5,8 @@ _self = permission.jx3.pvp.jjc.statistics
 
 
 _self.mark(
-    name='统计',
-    description='',
+    name="统计",
+    description="",
     enable=True,
     visiable=True
 

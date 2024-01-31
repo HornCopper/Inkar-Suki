@@ -29,15 +29,15 @@ load_subjects(__subjects, VALID_Subjects)
 class MenuCallback(BaseMenuCallback):
 
     @staticmethod
-    async def from_general_name(subject_name: str, cron_level: int = 0, description: str = '事件订阅', log_name: str = '通用事件') -> MenuCallback:
-        '''通过通用名称创建事件回调，并选中当前已订阅的群'''
+    async def from_general_name(subject_name: str, cron_level: int = 0, description: str = "事件订阅", log_name: str = "通用事件") -> MenuCallback:
+        """通过通用名称创建事件回调，并选中当前已订阅的群"""
         target = BaseMenuCallback(
             sub=SubscribeSubject(
                 name=subject_name,
                 description=description,
             ),
             cron=SubjectCron(
-                exp='',
+                exp="",
                 notify=log_name
             )
         )
@@ -103,26 +103,26 @@ class MenuCallback(BaseMenuCallback):
 
     @staticmethod
     async def get_all_group_of_subscribe(subject: str, cron_level: int) -> dict[str, tuple[str, str, str, str]]:
-        '''获取指定主题已订阅的群
+        """获取指定主题已订阅的群
         @return
             dict[str,tuple[str,str,str]] key:(机器人id 群号 是否应发 订阅来源)
-        '''
+        """
         tasks = await GroupGather.get_all_groups()
         result = {}
         for group_id in tasks:
             botname = tasks[group_id]
-            key = f'{botname}@{group_id}'
+            key = f"{botname}@{group_id}"
             if key in result:
-                logger.warning(f'subscribe:message-to-send already in {key}')
+                logger.warning(f"subscribe:message-to-send already in {key}")
 
-            g_subscribe = GroupConfig(group_id, log=False).mgr_property('subscribe')
+            g_subscribe = GroupConfig(group_id, log=False).mgr_property("subscribe")
             u_subscribed_level, sub_from = MenuCallback.check_subscribed(subject, g_subscribe)
             to_send_msg = u_subscribed_level >= cron_level
             result[key] = (botname, group_id, to_send_msg, sub_from)
         return result
 
     async def init_messages(self):
-        '''收集各群的订阅结果'''
+        """收集各群的订阅结果"""
         result = await MenuCallback.get_all_group_of_subscribe(self.sub, self.cron.level)
 
         for key in result:

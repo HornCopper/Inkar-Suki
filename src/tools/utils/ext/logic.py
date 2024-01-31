@@ -3,7 +3,7 @@ import functools
 from sgtpyutils.logger import logger
 
 
-def use_log(template: callable = lambda func, args, kwargs, result: f'{func} call [{str(args)},{str(kwargs)}] complete with result:{str(result)}'):
+def use_log(template: callable = lambda func, args, kwargs, result: f"{func} call [{str(args)},{str(kwargs)}] complete with result:{str(result)}"):
     def decorator(func: callable):
         @functools.wraps(func)
         def wrapper(*args, **kwargs):
@@ -19,17 +19,17 @@ def use_retry(max_attempts: int = 0, delay: int = int(1e3)):
     def decorator(func: callable):
         @functools.wraps(func)
         def wrapper(*args, **kwargs):
-            attempts = {'v': 0}
+            attempts = {"v": 0}
 
             def run_once(*args, **kwargs):
                 try:
                     return (True, func(*args, **kwargs))
                 except Exception as ex:
-                    attempts['v'] += 1
-                    logger.warning(
-                        f"{func.__name__} run failed({ex}) {attempts['v']}/{max_attempts} times.")
+                    attempts["v"] += 1
+                    v = attempts["v"]
+                    logger.warning(f"{func.__name__} run failed({ex}) {v}/{max_attempts} times.")
                     time.sleep(int(delay/1e3))
-                    if attempts['v'] > max_attempts and max_attempts > 0:
+                    if attempts["v"] > max_attempts and max_attempts > 0:
                         raise ex
                     return (False, None)
             while True:

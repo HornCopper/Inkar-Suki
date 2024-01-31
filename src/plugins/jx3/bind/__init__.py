@@ -15,13 +15,13 @@ def server_bind(group_id: str, server: str) -> str:
         if not server:
             return [PROMPT_ServerNotExist]
     group_config = GroupConfig(group_id)
-    _ = group_config.mgr_property('server', server)
+    _ = group_config.mgr_property("server", server)
     return server
 
 
 jx3_cmd_server_bind = on_command(
     "绑定",
-    aliases={'绑定服务器', '绑定区服', '注册', '绑'},
+    aliases={"绑定服务器", "绑定区服", "注册", "绑"},
     priority=5,
     example=[
         Jx3Arg(Jx3ArgsType.server, is_optional=False)
@@ -31,14 +31,11 @@ jx3_cmd_server_bind = on_command(
 
 @jx3_cmd_server_bind.handle()
 async def jx3_server_bind(bot: Bot, event: GroupMessageEvent, args: list[Any] = Depends(Jx3Arg.arg_factory)):
-    # TODO 判别权限，应提取为专有函数
     personal_data = await bot.call_api("get_group_member_info", group_id=event.group_id, user_id=event.user_id, no_cache=True)
     group_admin = personal_data["role"] in ["owner", "admin"]
     if not group_admin:
-        x = Permission(event.user_id).judge(8, '绑定服务器')
-        if not x.success:
-            return await jx3_cmd_server_bind.finish("唔……只有群主或管理员才可以修改哦！")
-
+        if checker(str(event.user_id), 5) == False:
+            await jx3_cmd_server_bind.finish(error(5))
     arg_server, = args
     if not arg_server:
         return await jx3_cmd_server_bind.finish(PROMPT_ServerNotExist)
@@ -53,13 +50,11 @@ jx3_cmd_server_unbind = on_command("jx3_unbind", aliases={"解绑"}, priority=5)
 
 @jx3_cmd_server_unbind.handle()
 async def jx3_server_bind(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
-    # TODO 判别权限，应提取为专有函数
     personal_data = await bot.call_api("get_group_member_info", group_id=event.group_id, user_id=event.user_id, no_cache=True)
     group_admin = personal_data["role"] in ["owner", "admin"]
     if not group_admin:
-        x = Permission(event.user_id).judge(8, '解绑服务器')
-        if not x.success:
-            return await jx3_cmd_server_unbind.finish("唔……只有群主或管理员才可以修改哦！")
+        if checker(str(event.user_id), 8) == False:
+            await jx3_cmd_server_unbind.finish(error(8))
 
     server_bind(group_id=event.group_id, server=None)
-    return await jx3_cmd_server_unbind.finish("已解绑")
+    return await jx3_cmd_server_unbind.finish("好的！已将本群的服务器绑定清空~\n如需再次绑定，请发送“绑定 服务器”。")

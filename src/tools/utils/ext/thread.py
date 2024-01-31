@@ -2,7 +2,7 @@ from typing import TypeVar, Any
 import asyncio
 import threading
 from sgtpyutils.logger import logger
-_T = TypeVar('T')
+_T = TypeVar("T")
 
 
 class SyncRunner(threading.Thread):
@@ -25,7 +25,7 @@ class SyncRunner(threading.Thread):
             self.result = asyncio.run(self.tasks)
         except Exception as ex:
             self.result = None
-            logger.warning(f'fail in running{self.tasks}.Exception:{ex}')
+            logger.warning(f"fail in running{self.tasks}.Exception:{ex}")
             self.exception = ex
         finally:
             self.semaphore.release()
@@ -42,7 +42,7 @@ class SyncRunner(threading.Thread):
         return result
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     async def async_method():
         await asyncio.sleep(10)
         return 1

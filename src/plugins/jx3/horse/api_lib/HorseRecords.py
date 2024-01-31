@@ -13,10 +13,10 @@ class HorseEventRecord(HorseItem):
             return  # 手动构建
 
         if not isinstance(parent, HorseRecord):
-            raise InvalidArgumentException('parent->HorseRecord')
+            raise InvalidArgumentException("parent->HorseRecord")
         self.timestamp: DateTime = DateTime(parent.timestamp) + minute * 60e3
 
-        names = name.split('/')
+        names = name.split("/")
         self.load_by_raw_data(parent.id, names, parent.map_id)
 
     def load_by_raw_data(self, parent_id: str, horses_id: list[str], map_id: str):
@@ -35,19 +35,19 @@ class HorseEventRecord(HorseItem):
 
     def to_dict(self):
         return {
-            'id': self.id,
-            'horses': self.horses_id,
-            'timestamp': self.timestamp.timestamp(),
-            'map': self.map_id,
+            "id": self.id,
+            "horses": self.horses_id,
+            "timestamp": self.timestamp.timestamp(),
+            "map": self.map_id,
         }
 
     @classmethod
     def from_dict(cls, data: dict) -> HorseEventRecord:
         target = cls(None, None, None)
-        target.timestamp = DateTime(data.get('timestamp'))
-        parent_id = data.get('id')
-        horses = data.get('horses')
-        map_id = data.get('map')
+        target.timestamp = DateTime(data.get("timestamp"))
+        parent_id = data.get("id")
+        horses = data.get("horses")
+        map_id = data.get("map")
         target.load_by_raw_data(parent_id, horses, map_id)
         return target
 
@@ -82,7 +82,7 @@ class HorseRecords:
         self.valid_records: List[HorseEventRecord] = extensions.flat(valid_recordss)
 
     def merge_records(self, target: HorseRecords) -> HorseRecords:
-        '''合并和去重'''
+        """合并和去重"""
         if not target:
             return self
         x = HorseRecords(self.server)
@@ -106,7 +106,7 @@ class HorseRecords:
             for record in x.items:
                 name = record[0]
                 minute = record[1]
-                key = f'{x.map_id}@{name}'
+                key = f"{x.map_id}@{name}"
                 if not result.get(key):
                     result[key] = []
                 r = HorseEventRecord(x, name, minute)
@@ -118,8 +118,8 @@ class HorseRecords:
 
     def to_dict(self):
         return {
-            'records': [x.to_dict() for x in self.records],
-            'valid_records': [x.to_dict() for x in self.valid_records],
+            "records": [x.to_dict() for x in self.records],
+            "valid_records": [x.to_dict() for x in self.valid_records],
         }
 
     @classmethod
@@ -130,6 +130,6 @@ class HorseRecords:
             if not items:
                 return []
             return [cls.from_dict(x) for x in items]
-        target.records = convert_record(HorseRecord, data.get('records'))
-        target.valid_records = convert_record(HorseEventRecord, data.get('valid_records'))
+        target.records = convert_record(HorseRecord, data.get("records"))
+        target.valid_records = convert_record(HorseEventRecord, data.get("valid_records"))
         return target

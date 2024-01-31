@@ -7,19 +7,19 @@ _token = Config.jx3api_globaltoken
 
 class Jx3PlayerLoader:
     cache_uid: dict[str, Jx3PlayerInfoUid] = filebase_database.Database(
-        f'{bot_path.common_data_full}player_role_id',
+        f"{bot_path.common_data_full}player_role_id",
         serializer=lambda data: dict([[x, data[x].to_dict()] for x in data]),
         deserializer=lambda data: dict([[x, Jx3PlayerInfoUid(data[x])] for x in data]),
     ).value
     cache_detail: dict[str, Jx3PlayerInfo] = filebase_database.Database(
-        f'{bot_path.common_data_full}player_roles',
+        f"{bot_path.common_data_full}player_roles",
         serializer=lambda data: dict([[x, data[x].to_dict()] for x in data]),
         deserializer=lambda data: dict([[x, Jx3PlayerInfo(data[x])] for x in data]),
     ).value
 
     @staticmethod
     def get_user(server: str, userid: str, cache_length: float = 30*86400):
-        key = f'{server}@{userid}'
+        key = f"{server}@{userid}"
 
         prev = Jx3PlayerLoader.cache_uid.get(key)
         if prev and (DateTime() - DateTime(prev.updateAt)).total_seconds() < cache_length:
@@ -35,7 +35,7 @@ class Jx3PlayerLoader:
             if result:
                 return result
 
-        key = f'{server}@{userid}'
+        key = f"{server}@{userid}"
 
         url = f"{Config.jx3api_link}/data/role/detailed?token={_token}&server={server}&name={userid}"
         data = await Jx3ApiRequest(url).output_data()

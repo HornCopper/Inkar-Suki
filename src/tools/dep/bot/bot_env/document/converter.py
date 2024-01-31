@@ -8,7 +8,7 @@ from nonebot.adapters import Message, MessageSegment
 def convert_to_str(msg: MessageSegment):
     if isinstance(msg, GroupMessageEvent):
         x = msg.get_message().extract_plain_text()
-        msg = str.join(' ', x.split(' ')[1:])  # 将命令去除
+        msg = str.join(" ", x.split(" ")[1:])  # 将命令去除
     if isinstance(msg, MessageSegment):
         msg = msg.data
     if isinstance(msg, v11Message):
@@ -20,5 +20,5 @@ def convert_to_str(msg: MessageSegment):
 
     if isinstance(msg, str):
         return msg
-    logger.warning(f'message cant convert to str:{msg}')
+    logger.warning(f"message cant convert to str:{msg}")
     return msg

@@ -5,8 +5,8 @@ _self = permission.jx3.pvg.price.trade
 
 
 _self.mark(
-    name='交易行',
-    description='',
+    name="交易行",
+    description="",
     enable=True,
     visiable=True
 )

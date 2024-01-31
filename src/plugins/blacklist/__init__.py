@@ -3,9 +3,8 @@ from src.tools.config import Config
 from src.tools.utils import nodetemp
 from src.tools.permission import checker
 from src.tools.file import read, write
+
 import json
-import sys
-import nonebot
 
 from nonebot import on_command
 from nonebot.adapters import Message
@@ -21,9 +20,8 @@ async def _(bot: Bot, event: Event, args: Message = CommandArg()):
     arg = args.extract_plain_text().split(" ")
     personal_data = await bot.call_api("get_group_member_info", group_id=event.group_id, user_id=event.user_id, no_cache=True)
     group_admin = personal_data["role"] in ["owner", "admin"]
-    
-    x = Permission(event.user_id).judge(5, '添加避雷')
-    if not x.success and not group_admin:
+    permission = checker(str(event.user_id), 5)
+    if not permission and not group_admin:
         return await block.finish("唔……只有群主或管理员才能修改哦~")
     if len(arg) != 2:
         return await block.finish("唔……需要2个参数，第一个参数为玩家名，第二个参数是原因~\n提示：理由中请勿包含空格。")
@@ -46,9 +44,8 @@ async def _(bot: Bot, event: Event, args: Message = CommandArg()):
     arg = args.extract_plain_text().split(" ")
     personal_data = await bot.call_api("get_group_member_info", group_id=event.group_id, user_id=event.user_id, no_cache=True)
     group_admin = personal_data["role"] in ["owner", "admin"]
-    
-    x = Permission(event.user_id).judge(5, '移除避雷')
-    if not x.success and not group_admin:
+    permission = checker(str(event.user_id), 5)
+    if not permission and not group_admin:
         return await block.finish("唔……只有群主或管理员才能修改哦~")
     if len(arg) != 1:
         return await unblock.finish("参数仅为玩家名，请勿附带任何信息！")
