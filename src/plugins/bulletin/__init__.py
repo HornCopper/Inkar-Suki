@@ -32,7 +32,7 @@ self_ban = on_command("禁言我", priority=5)
 @self_ban.handle()
 async def _(bot: Bot, event: GroupMessageEvent):
     bot_id = Config.bot[0]
-    role = await bot.call_api("get_group_member_info", group_id=event.group_id, user_id=event.user_id, no_cache=1)
+    role = await bot.call_api("get_group_member_info", group_id=event.group_id, user_id=int(bot_id), no_cache=1)
     role = role["role"]
     if role not in ["owner","admin"]:
         return
