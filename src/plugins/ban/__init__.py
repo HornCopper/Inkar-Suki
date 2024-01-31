@@ -77,8 +77,7 @@ async def _(bot: Bot, event: Event, args: Message = CommandArg()):
     return await ban.finish(f"好的，已经全域解封{sb_name}({sb})。")
 
 
-banned = on_message(priority=2, block=False) # 封禁阻断器
-@banned.handle()
+@matcher_common_run.handle()
 async def _(matcher: Matcher, event: Event):
     info = json.loads(read(bot_path.TOOLS + "/ban.json"))
     if str(event.user_id) in info and checker(str(event.user_id),10) == False:
