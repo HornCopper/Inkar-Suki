@@ -14,9 +14,8 @@ async def search_item_info_for_price(item_name: str, server: str, pageIndex: int
     搜索物品，并排除拾绑物品及无销售的物品
     @return list[goods],totalCount
     """
-    msg = f'search_item_info_for_price:{item_name}'
-    msg_serach = f'[{server}]@page:{pageIndex}(pageSize:{pageSize})'
-    logger.debug(f'{msg}{msg_serach}')
+    logger.debug(
+        f"search_item_info_for_price:{item_name}[{server}]@page:{pageIndex}(pageSize:{pageSize})")
     data = await search_item_info(item_name, pageIndex=0, pageSize=1000)
     if not isinstance(data, List):
         return [data, None]  # 未返回正确数据

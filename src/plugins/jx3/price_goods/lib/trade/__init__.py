@@ -26,14 +26,12 @@ async def search_item_info(item_name: str, pageIndex: int = 0, pageSize: int = 2
         return "没有找到该物品，尝试换个说法或者短一点"
     query_items: List[GoodsInfo] = []
     for item in items:
-        item_id = item["id"]
-        good_info = CACHE_Goods.get(item_id)
-        if good_info is None:
-            good_info = GoodsInfo(item, not_to_load=True)
-            await good_info.reload_data(item)
-            CACHE_Goods[item_id] = good_info
-
-        query_items.append(good_info)
+        id = item["id"]
+        if id not in CACHE_Goods:
+            item["bind_type"], item["Level"] = await check_bind(id)
+            CACHE_Goods[id] = GoodsInfo(item)
+        item: GoodsInfo = CACHE_Goods[id]
+        query_items.append(item)
     query_items.sort(key=lambda x: -x.priority)  # 按热门程度排序，拾绑的放后面
     page_start = pageIndex * pageSize
     query_items = query_items[page_start:page_start+pageSize]
