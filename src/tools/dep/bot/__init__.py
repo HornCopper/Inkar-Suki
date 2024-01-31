@@ -27,6 +27,7 @@ from pathlib import Path
 from nonebot.message import handle_event
 from nonebot import get_bots
 from src.tools.utils import *
+from src.tools.permission import checker, error
 matcher_common_run = on_message(priority=3, block=False)
 import nonebot
 nonebot.init(tools_path=bot_path.tools_path, log_level="INFO")
@@ -38,6 +39,5 @@ from ...file import *
 try:
     # 子依赖应后加载
     from .bot_plugins import *
-    from src.tools.permission import checker, error
 except Exception as ex:
     logger.warning(f"加载bot_plugins及权限组件失败,{ex}")
