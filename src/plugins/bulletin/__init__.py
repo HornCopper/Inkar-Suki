@@ -38,5 +38,5 @@ async def _(bot: Bot, event: GroupMessageEvent):
         return
     else:
         num = random.randint(1, 720)
-        await bot.call_api("set_group_ban", user_id=event.user_id, group_id=event.group_id, duration=num)
+        await bot.call_api("set_group_ban", user_id=event.user_id, group_id=event.group_id, duration=num*60)
         await self_ban.finish(f"自助禁言成功！音卡送您{num}分钟的红茶~")
