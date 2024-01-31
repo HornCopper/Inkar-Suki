@@ -89,7 +89,8 @@ async def dev_mgr_command_map(bot: Bot, event: GroupMessageEvent, args=Depends(J
     personal_data = await bot.call_api("get_group_member_info", group_id=arg_grp, user_id=event.user_id, no_cache=True)
     group_admin = personal_data["role"] in ["owner", "admin"]
 
-    if not permission.success and not group_admin:
+    permission = checker(str(event.user_id), 10)
+    if not permission and not group_admin:
         return await dev_cmd_mgr_command_map.finish(PROMPT_NoPermissionAdmin)
 
     grp_config = GroupConfig(arg_grp).mgr_property("command_map")
