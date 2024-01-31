@@ -12,26 +12,17 @@ def judge(qqnumber):
     else:
         return True
 
-def checker(qqnumber: str, score: int) -> bool:
-    x = permission_judge(qqnumber, score)
-    return x[0]
-
-@ext.use_log()
-def permission_judge(qqnumber: str, score: int, action: str = "该操作") -> tuple[bool, int, str]:
+def checker(qqnumber: str, score: int):
     file = open(bot_path.TOOLS + "/permission.json", mode="r")
     json_ = json.loads(file.read())
     file.close()
-    if not isinstance(qqnumber, str):
-        qqnumber = str(qqnumber)
-    if not isinstance(score, int):
-        score = int(score)
-    prefix = f"唔……{action}需要授权,但你"
     if qqnumber not in json_:
-        return (False, None, f"{prefix}没有任何授权哦~")
-    u_level = int(json_[qqnumber])
-    if u_level < score:
-        return (False, u_level, f"{prefix}的权限只有{u_level}级，要求{score}级~")
-    return (True, u_level, None)
+        return False
+    else:
+        if (int(json_[qqnumber]) >= score) == False:
+            return False
+        else:
+            return True
 
 
 def error(score):
