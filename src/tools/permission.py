@@ -2,7 +2,7 @@ import json
 
 from src.tools.config import Config
 
-TOOLS = Config.global_path + "/tools"
+TOOLS = Config.global_path
 
 def judge(qqnumber):
     file = open(TOOLS + "/permission.json", mode="r")
