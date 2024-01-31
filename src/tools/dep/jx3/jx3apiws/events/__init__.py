@@ -11,5 +11,5 @@ from .NewsRecvEvent import *
 from .ServerStatusEvent import *
 from .SpillTheTeaEvent import *
 # from .SubscribeEvent import * # 没交钱
-# from .XingxiaYuncongsheEvent import * # 云从社事件应只用于统计
+from .YunCongEvent import *
 # from .XuanJingEvent import * # 没交钱
