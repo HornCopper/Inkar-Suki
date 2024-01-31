@@ -53,8 +53,7 @@ async def ___(event: GroupMessageEvent, args: Message = CommandArg()):
     else:
         return await unbanword.finish("您解封了什么？")
 
-banned_word = on_message(priority=3, block = False) # 违禁词阻断器
-@banned_word.handle()
+@matcher_common_run.handle()
 async def _(matcher: Matcher, bot: Bot, event: GroupMessageEvent):
     if checker(str(event.user_id),5):
         return
@@ -73,7 +72,7 @@ async def _(matcher: Matcher, bot: Bot, event: GroupMessageEvent):
             await bot.call_api("set_group_ban", group_id = group, user_id = sb, duration = 60)
             msg = ms.at(sb) + "唔……你触发了违禁词，已经给你喝了1分钟的红茶哦~"
             matcher.stop_propagation()
-            await banned_word.finish(msg)
+            await matcher_common_run.finish(msg)
         except:
             pass
     else:
