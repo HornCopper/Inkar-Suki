@@ -1,7 +1,5 @@
-from sgtpyutils.datetime import DateTime
-from sgtpyutils.database import filebase_database
-
 import re
+import time
 
 
 def get_number(number):
@@ -39,11 +37,20 @@ def checknumber(value):
     return value.isdecimal()
 
 
-def convert_time(timestamp: int, format: str = "%Y-%m-%d %H:%M:%S"):
-    """
+def convert_time(timestamp: int, format: str = "%Y年%m月%d日 %H:%M:%S"):
+    '''
     时间转换，自适应时间长度。
-    """
-    return DateTime(timestamp).tostring(format)
+    '''
+    if len(str(timestamp)) == 13:
+        time_local = time.localtime(timestamp / 1000)
+    elif len(str(timestamp)) == 10:
+        time_local = time.localtime(timestamp)
+    else:
+        class TimeLengthError(OSError):
+            ...
+        raise TimeLengthError("Length of timestamp cannot be approved!")
+    dt = time.strftime(format, time_local)
+    return dt
 
 
 def nodetemp(nickname: str, qqnumber: str, message: str) -> dict:

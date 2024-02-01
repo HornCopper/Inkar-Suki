@@ -25,4 +25,5 @@ class ZhuEEvent(RecvEvent):
 
     @overrides(RecvEvent)
     def get_message(self) -> dict:
-        return {"type": "云从", "msg": f"{self.site}的{self.name}（{self.desc}）在{self.time}开启了！"}
+        time_ = convert_time(int(self.time), "%H:%M")
+        return {"type": "云从", "msg": f"{self.site}的{self.name}（{self.desc}）在{time_}开启了！"}
