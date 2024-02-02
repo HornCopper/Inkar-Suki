@@ -4,7 +4,6 @@ from src.tools.file import read, write
 from src.tools.permission import checker, error
 from src.tools.utils import checknumber
 
-import nonebot
 import json
 import os
 
@@ -14,6 +13,16 @@ from nonebot.adapters import Message
 from nonebot.adapters.onebot.v11 import Bot, GroupMessageEvent, NoticeEvent, RequestEvent
 from nonebot.params import CommandArg
 
+selfEnterMsg = """噔噔咚——音卡很荣幸受邀来到了「$GROUP_ID」~
+请先告诉我这个群聊需要绑定哪一个区服呢？这样我才可以更好地为您服务☆
+示例：绑定 幽月轮
+订阅消息需要手动设置，如果需要请使用：订阅 开服
+同时使用这个指令后，可以查看音卡所有的可订阅栏目哦，使用“订阅”后面跟上这些项目就可以订阅啦。
+
+如需音卡离开群聊，请发送：移除机器人 
+如需查看音卡的指令，请发送：帮助
+其余注意事项可以查看音卡空间来了解哦，空间也将不定时发布活动等事项，敬请关注！"""
+# 上述欢迎语内容为@厌睢(监狱牢头)制作，HornCopper修改
 
 def banned(sb):  # 检测某个人是否被封禁。
     with open(bot_path.TOOLS + "/ban.json") as cache:
@@ -60,11 +69,11 @@ async def on_new_group_enter(bot: Bot, event: NoticeEvent):
     config = GroupConfig(group)
     if str(obj) not in bots:
         msg = ms.at(obj) + config.mgr_property("templates.welcome")
-        return await bot.call_api("send_group_msg", group_id=group, message=msg)
-
+        await bot.call_api("send_group_msg", group_id=group, message=msg)
+        return
     if event.sub_type != "approve":
         return
-
+    await bot.call_api("send_group_msg", group_id=event.group_id, message=selfEnterMsg.replace("$GROUP_ID", str(event.group_id)))
     if check_env_path(event.group_id):
         return
     await bot.call_api("send_group_msg", group_id=event.group_id, message=f"检测到本群为新群聊，{Config.name}已经自动补全所需要的文件啦！")
@@ -102,6 +111,8 @@ async def notice_and_ban(bot: Bot, event: NoticeEvent, action: str):
     banlist = json.loads(read(bot_path.TOOLS + "/ban.json"))
     banlist.append(kicker)
     write(bot_path.TOOLS + "/ban.json", json.dumps(banlist))
+
+
 request = on_request(priority=5)
 
 
@@ -122,7 +133,7 @@ notice_cmd_welcome_msg_edit = on_command(
     name="设置欢迎语",
     aliases={"设置入群欢迎语"},
     priority=5,
-    description="设置入群欢迎语，不要有空格",
+    description="设置入群欢迎语，请不要携带空格哦~",
     catalog=permission.bot.command.mapper,
     example=[
         Jx3Arg(Jx3ArgsType.string, default="欢迎入群", alias="新欢迎语"),
@@ -140,8 +151,7 @@ async def notice_welcome_msg_edit(bot: Bot, event: GroupMessageEvent, args: list
     if not permission and not group_admin:
         personal_data = await bot.call_api("get_group_member_info", group_id=event.group_id, user_id=event.user_id, no_cache=True)
         group_admin = personal_data["role"] in ["owner", "admin"]
-        return await notice_cmd_welcome_msg_edit.finish(PROMPT_NoPermissionAdmin)
-
+        await notice_cmd_welcome_msg_edit.finish(PROMPT_NoPermissionAdmin)
     config = GroupConfig(event.group_id)
     config.mgr_property("templates.welcome", arg_msg)
-    return await notice_cmd_welcome_msg_edit.send(f"设置完成")
+    await notice_cmd_welcome_msg_edit.finish("好啦，已经设置完成啦！")

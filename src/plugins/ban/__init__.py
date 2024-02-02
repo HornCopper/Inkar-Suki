@@ -15,6 +15,12 @@ from nonebot.matcher import Matcher
 from nonebot.params import CommandArg
 
 
+endwith = """音卡要离开这里啦，音卡还没有学会人类的告别语，但是数据库中有一句话似乎很适合现在使用——如果还想来找我的话，我一直在这里（650495414）。
+
+“假如再无法遇见你，祝你早安、午安和晚安。”
+——《楚门的世界》"""
+
+
 def in_it(qq: str):
     for i in json.loads(read(bot_path.TOOLS + "/ban.json")):
         if i == qq:
@@ -172,9 +178,9 @@ async def leave_group(state: T_State, event: GroupMessageEvent, confirm: Message
     schedule_time = DateTime(DateTime() + counter * 1e3)
 
     await add_schedule_of_leave(event.group_id, schedule_time)
-    prefix = f"[冷静期提醒]好哦~机器人将在{schedule_time.toRelativeTime()}"
-    suffix = f"离开\n取消回复：{cmd_cancel_leave}"
-    await mgr_cmd_remove_robot.send(f"{prefix}({schedule_time.tostring(DateTime.Format.DEFAULT)}){suffix}")
+    prefix = f"[冷静期提醒]音卡将会在{schedule_time.toRelativeTime()}离开。"
+    suffix = f"\n如果需要取消，请发送：{cmd_cancel_leave}"
+    await mgr_cmd_remove_robot.send(f"{prefix}({schedule_time.tostring(DateTime.Format.DEFAULT)}){suffix}\n{endwith}")
 
 
 async def add_schedule_of_leave(group_id: str, schedule_time: DateTime):
