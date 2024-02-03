@@ -2,7 +2,7 @@ from .api import *
 jx3_cmd_addritube = on_command(
     "jx3_addritube",
     name="属性v1",
-    aliases={'查装v1'},
+    aliases={"查装v1"},
     priority=5,
     catalog=permission.jx3.pvp.user.attribute,
     description="查询玩家角色的装备和属性",
@@ -10,7 +10,7 @@ jx3_cmd_addritube = on_command(
         Jx3Arg(Jx3ArgsType.server, is_optional=True),
         Jx3Arg(Jx3ArgsType.user),
     ],
-    document='''''',
+    document="""""",
 )
 
 
