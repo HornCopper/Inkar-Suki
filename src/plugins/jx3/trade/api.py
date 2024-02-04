@@ -83,7 +83,7 @@ async def getImg(server: str, name: str, group: str):
             for word in toReplace_word:
                 table_content = table_content.replace(word[0], word[1])
             table.append(table_content)
-            if len(table) == 10:
+            if len(table) == 12:
                 break
         final_table = "\n".join(table)
         html = read(bot_path.VIEWS + "/jx3/trade/trade.html")
