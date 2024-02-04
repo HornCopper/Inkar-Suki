@@ -28,7 +28,12 @@ template_table = """
     <td class="short-column">$price</td>
 </tr>"""
 
-async def getImg(server: str, name: str):
+async def getImg(server: str, name: str, group: str):
+    if token is None:
+        return [PROMPT_NoToken]
+    server = server_mapping(server, group)
+    if not server:
+        return [PROMPT_ServerNotExist]
     for i in filters:
         if name.find(i) != -1:
             return ["唔……请勿查找无封装备！"]
