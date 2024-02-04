@@ -65,7 +65,7 @@ async def getImg(server: str, name: str, group: str):
         if current != None:
             currentStatus = 1
         if currentStatus:
-            toReplace = [["$low", toCoinImage(convert(current["LowestPrice"]))], ["$equal", toCoinImage(convert(current["AvgPrice"]))], "$high", toCoinImage(convert(current["HighestPrice"]))]
+            toReplace = [["$low", toCoinImage(convert(current["LowestPrice"]))], ["$equal", toCoinImage(convert(current["AvgPrice"]))], ["$high", toCoinImage(convert(current["HighestPrice"]))]]
             msgbox = template_msgbox
             for toReplace_word in toReplace:
                 msgbox = msgbox.replace(toReplace_word[0], toReplace_word[1])
@@ -91,7 +91,7 @@ async def getImg(server: str, name: str, group: str):
         saohua = await get_api(f"https://www.jx3api.com/data/saohua/random?token={token}")
         saohua = saohua["data"]["text"]
         final_name = itemList_searchable[0]["name"]
-        html = html.replace("$customfont", font).replace("$tablecontent", final_table).replace("$randomsaohua", saohua).replace("$appinfo", f" · 交易行 · {server} · {final_name}").replace("$msgbox", msgbox)
+        html = html.replace("$customfont", font).replace("$tablecontent", final_table).replace("$randomsaohua", saohua).replace("$appinfo", f"交易行 · {server} · {final_name}").replace("$msgbox", msgbox)
         final_html = bot_path.CACHE + "/" + get_uuid() + ".html"
         write(final_html, html)
         final_path = await generate(final_html, False, "body", False)
