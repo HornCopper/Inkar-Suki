@@ -79,7 +79,7 @@ async def getImg(server: str, name: str, group: str):
         table = []
         for each_price in detailData["data"]["prices"]:
             table_content = template_table
-            toReplace_word = [["$icon", itemList_searchable[0]["icon"]], ["$color", color], ["$name", itemList_searchable[0]["name"]], ["$time", convert_time(each_price["created"], "%m月%日 %H%M%S")], ["$limit", str(each_price["n_count"])], ["$price", toCoinImage(convert(each_price["unit_price"]))]]
+            toReplace_word = [["$icon", itemList_searchable[0]["icon"]], ["$color", color], ["$name", itemList_searchable[0]["name"]], ["$time", convert_time(each_price["created"], "%m月%d日 %H:%M:%S")], ["$limit", str(each_price["n_count"])], ["$price", toCoinImage(convert(each_price["unit_price"]))]]
             for word in toReplace_word:
                 table_content = table_content.replace(word[0], word[1])
             table.append(table_content)
@@ -91,7 +91,7 @@ async def getImg(server: str, name: str, group: str):
         saohua = await get_api(f"https://www.jx3api.com/data/saohua/random?token={token}")
         saohua = saohua["data"]["text"]
         final_name = itemList_searchable[0]["name"]
-        html = html.replace("$customfont", font).replace("$tablecontent", final_table).replace("$randomsaohua", saohua).replace("$appinfo", f" · 交易行 · {server} · {final_name}")
+        html = html.replace("$customfont", font).replace("$tablecontent", final_table).replace("$randomsaohua", saohua).replace("$appinfo", f" · 交易行 · {server} · {final_name}").replace("$msgbox", msgbox)
         final_html = bot_path.CACHE + "/" + get_uuid() + ".html"
         write(final_html, html)
         final_path = await generate(final_html, False, "body", False)
@@ -109,14 +109,14 @@ async def getImg(server: str, name: str, group: str):
                 itemData = each_item["data"]["logs"][-1]
                 time_that = itemData["CreatedAt"]
                 timestamp = datetime.datetime.strptime(time_that, "%Y-%m-%dT%H:%M:%S+08:00")
-                final_time = convert_time(int(timestamp.timestamp()), "%m月%日 %H%M%S")
+                final_time = convert_time(int(timestamp.timestamp()), "%m月%d日 %H:%M:%S")
                 count = str(itemData["SampleSize"])
                 table_content = template_table
                 table.append(table_content.replace("$icon", each_item["icon"]).replace("$color", color).replace("$name", final_name).replace("$time", final_time).replace("$limit", count).replace("$price", toCoinImage(convert(itemData["AvgPrice"]))))
             else:
                 # 使用最新一条数据
                 itemData = itemData["data"]["prices"][0]
-                final_time = convert_time(itemData["created"], "%m月%日 %H%M%S")
+                final_time = convert_time(itemData["created"], "%m月%d日 %H:%M:%S")
                 count = itemData["n_count"]
                 table.append(table_content.replace("$icon", each_item["icon"]).replace("$color", color).replace("$name", final_name).replace("$time", final_time).replace("$limit", count).replace("$price", toCoinImage(convert(itemData["unit_price"]))))
         final_table = "\n".join(table)
