@@ -35,3 +35,4 @@ from .firework import *
 from .detail import *
 from .private import *
 from .role_manage import *
+from .trade import *
