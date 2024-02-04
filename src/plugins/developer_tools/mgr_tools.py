@@ -206,3 +206,15 @@ async def _(state: T_State, event: Event):
     steps = [f"{index+1}.{x}" for (index, x) in enumerate(steps)]
     steps = str.join("\n", steps)
     await apply.finish(f"是要领养{Config.name}({bot})吗，免费的：\n{steps}")
+
+randomnum = on_command("random_num", aliases={"随机数"}, priority=5)
+
+@randomnum.handle()
+async def _(event: GroupMessageEvent, args: Message = CommandArg()):
+    arg = args.extract_plain_text().split(" ")
+    if len(arg) != 2:
+        await randomnum.finish("唔……请参考下面的随机数生成格式：\n随机数 起始 终止")
+    if not checknumber(arg[0]) or not checknumber(arg[1]):
+        await randomnum.finish("唔……随机数的范围需要是数字哦~")
+    num = random.randint(int(arg[0]), int(arg[1]))
+    await randomnum.finish("好的，音卡已经为你生成了一个随机数：" + str(num))
