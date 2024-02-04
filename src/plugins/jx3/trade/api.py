@@ -93,7 +93,6 @@ async def getImg(server: str, name: str):
         return Path(final_path).as_uri()
     else:
         # 如果有多个，则分别显示近期价格，只显示最新一条
-        msgbox = ""
         table = []
         for each_item in itemList_searchable:
             color = ["(167, 167, 167)", "(255, 255, 255)", "(0, 210, 75)", "(0, 126, 255)", "(254, 45, 254)", "(255, 165, 0)"][new["quality"]]
@@ -120,7 +119,7 @@ async def getImg(server: str, name: str):
         font = bot_path.ASSETS + "/font/custom.ttf"
         saohua = await get_api(f"https://www.jx3api.com/data/saohua/random?token={token}")
         saohua = saohua["data"]["text"]
-        html = html.replace("$customfont", font).replace("$tablecontent", final_table).replace("$randomsaohua", saohua).replace("$appinfo", f" · 交易行 · {server} · {name}")
+        html = html.replace("$customfont", font).replace("$tablecontent", final_table).replace("$randomsaohua", saohua).replace("$appinfo", f"交易行 · {server} · {name}").replace("$msgbox", "")
         final_html = bot_path.CACHE + "/" + get_uuid() + ".html"
         write(final_html, html)
         final_path = await generate(final_html, False, "body", False)
