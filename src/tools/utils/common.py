@@ -38,9 +38,9 @@ def checknumber(value):
 
 
 def convert_time(timestamp: int, format: str = "%Y年%m月%d日 %H:%M:%S"):
-    '''
+    """
     时间转换，自适应时间长度。
-    '''
+    """
     if len(str(timestamp)) == 13:
         time_local = time.localtime(timestamp / 1000)
     elif len(str(timestamp)) == 10:
