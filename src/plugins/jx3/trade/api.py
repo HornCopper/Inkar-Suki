@@ -55,7 +55,7 @@ async def getImg(server: str, name: str, group: str):
         else:
             new["data"] = itemAPIData["data"]
         new["id"] = id
-        new["icon"] = f"https://icon.jx3box.com/icon/" + i["IconID"] + ".png"
+        new["icon"] = f"https://icon.jx3box.com/icon/" + str(i["IconID"]) + ".png"
         new["name"] = i["Name"]
         new["quality"] = i["Quality"] if checknumber(i["Quality"]) else 0
         itemList_searchable.append(new)
