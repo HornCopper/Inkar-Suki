@@ -54,7 +54,7 @@ async def getImg(server: str, name: str, group: str):
             continue
         else:
             new["data"] = itemAPIData["data"]
-        new["id"] = id
+        new["id"] = str(id)
         new["icon"] = f"https://icon.jx3box.com/icon/" + str(i["IconID"]) + ".png"
         new["name"] = i["Name"]
         new["quality"] = i["Quality"] if checknumber(i["Quality"]) else 0
@@ -71,7 +71,7 @@ async def getImg(server: str, name: str, group: str):
                 msgbox = msgbox.replace(toReplace_word[0], toReplace_word[1])
         else:
             msgbox = ""
-        color = ["(167, 167, 167)", "(255, 255, 255)", "(0, 210, 75)", "(0, 126, 255)", "(254, 45, 254)", "(255, 165, 0)"][new["quality"]]
+        color = ["(167, 167, 167)", "(255, 255, 255)", "(0, 210, 75)", "(0, 126, 255)", "(254, 45, 254)", "(255, 165, 0)"][itemList_searchable[0]["quality"]]
         itemId = itemList_searchable[0]["id"]
         detailData = await get_api(f"https://next2.jx3box.com/api/item-price/{itemId}/detail?server={server}&limit=20")
         if not currentStatus and detailData["data"]["prices"] == None:
@@ -100,7 +100,7 @@ async def getImg(server: str, name: str, group: str):
         # 如果有多个，则分别显示近期价格，只显示最新一条
         table = []
         for each_item in itemList_searchable:
-            color = ["(167, 167, 167)", "(255, 255, 255)", "(0, 210, 75)", "(0, 126, 255)", "(254, 45, 254)", "(255, 165, 0)"][new["quality"]]
+            color = ["(167, 167, 167)", "(255, 255, 255)", "(0, 210, 75)", "(0, 126, 255)", "(254, 45, 254)", "(255, 165, 0)"][each_item["quality"]]
             itemId = each_item["id"]
             final_name = each_item["name"]
             itemData = await get_api(f"https://next2.jx3box.com/api/item-price/{itemId}/detail?server={server}&limit=20")
