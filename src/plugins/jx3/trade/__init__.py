@@ -1,6 +1,6 @@
 from .api import *
 
-trade = on_command("交易行v1", priority=5)
+trade = on_command("交易行", priority=5)
 
 
 @trade.handle()
