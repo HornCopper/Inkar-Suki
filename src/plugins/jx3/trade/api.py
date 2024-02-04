@@ -94,7 +94,7 @@ async def getImg(server: str, name: str, group: str):
         html = html.replace("$customfont", font).replace("$tablecontent", final_table).replace("$randomsaohua", saohua).replace("$appinfo", f"交易行 · {server} · {final_name}").replace("$msgbox", msgbox)
         final_html = bot_path.CACHE + "/" + get_uuid() + ".html"
         write(final_html, html)
-        final_path = await generate(final_html, False, "body", False)
+        final_path = await generate(final_html, False, ".total", False)
         return Path(final_path).as_uri()
     else:
         # 如果有多个，则分别显示近期价格，只显示最新一条
@@ -127,7 +127,7 @@ async def getImg(server: str, name: str, group: str):
         html = html.replace("$customfont", font).replace("$tablecontent", final_table).replace("$randomsaohua", saohua).replace("$appinfo", f"交易行 · {server} · {name}").replace("$msgbox", "")
         final_html = bot_path.CACHE + "/" + get_uuid() + ".html"
         write(final_html, html)
-        final_path = await generate(final_html, False, "body", False)
+        final_path = await generate(final_html, False, ".total", False)
         return Path(final_path).as_uri()
 
 def toCoinImage(rawString: str):
