@@ -15,3 +15,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
         server = arg[0]
         id = arg[1]
     img = await getImg(server, id)
+    if type(img) == type([]):
+        await trade.finish(img[0])
+    else:
+        await trade.finish(ms.image(img))
