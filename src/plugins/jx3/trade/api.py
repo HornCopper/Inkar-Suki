@@ -115,7 +115,7 @@ async def getImg(server: str, name: str):
                 final_time = convert_time(itemData["created"], "%m月%日 %H%M%S")
                 count = itemData["n_count"]
                 table.append(table_content.replace("$icon", each_item["icon"]).replace("$color", color).replace("$name", final_name).replace("$time", final_time).replace("$limit", count).replace("$price", toCoinImage(convert(itemData["unit_price"]))))
-                final_table = "\n".join(table)
+        final_table = "\n".join(table)
         html = read(bot_path.VIEWS + "/jx3/trade/trade.html")
         font = bot_path.ASSETS + "/font/custom.ttf"
         saohua = await get_api(f"https://www.jx3api.com/data/saohua/random?token={token}")
