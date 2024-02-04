@@ -46,7 +46,7 @@ async def getImg(server: str, name: str, group: str):
     itemList_searchable = []
     for i in itemData["data"]["data"]:
         new = {}
-        if i["BindType"] not in [0, 1, 2]:
+        if i["BindType"] not in [0, 1, 2, None]:
             continue
         id = i["id"]
         itemAPIData = await get_api(f"https://next2.jx3box.com/api/item-price/{id}/logs?server={server}&limit=20")
