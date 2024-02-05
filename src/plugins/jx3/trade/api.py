@@ -29,8 +29,6 @@ template_table = """
 </tr>"""
 
 async def getImg(server: str, name: str, group: str):
-    if token is None:
-        return [PROMPT_NoToken]
     server = server_mapping(server, group)
     if not server:
         return [PROMPT_ServerNotExist]
@@ -135,7 +133,7 @@ async def getImg(server: str, name: str, group: str):
         return Path(final_path).as_uri()
 
 def toCoinImage(rawString: str):
-    to_replace = [["砖", f"<img src=\"{brickl}\">"], ["金", f"<img src=\"{goldl}\">"], ["银", f"<img src=\"{silverll}\">"], ["铜", f"<img src=\"{copperl}\">"]]
+    to_replace = [["砖", f"<img src=\"{brickl}\">"], ["金", f"<img src=\"{goldl}\">"], ["银", f"<img src=\"{silverl}\">"], ["铜", f"<img src=\"{copperl}\">"]]
     for waiting in to_replace:
         rawString = rawString.replace(waiting[0], waiting[1])
     processedString = rawString
