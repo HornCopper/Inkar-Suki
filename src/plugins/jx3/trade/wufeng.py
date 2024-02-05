@@ -51,7 +51,10 @@ async def getWufengImg(raw: str, server: str, group: str):
     if type(data) == type([]):
         return data
     currentStatus = 0 # 当日是否具有该物品在交易行
-    itemId = data["id"]
+    try:
+        itemId = data["id"]
+    except:
+        return [f"唔……未找到该属性的无封装备。"]
     logs = await get_api(f"https://next2.jx3box.com/api/item-price/{itemId}/logs?server={server}")
     current = logs["data"]["today"]
     if current != None:
