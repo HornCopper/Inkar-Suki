@@ -63,7 +63,8 @@ async def on_jx3_event_recv(bot: Bot, event: RecvEvent):
 @ws_recev.handle()
 async def _(event: RecvEvent):
     if event.get_message()["type"] == "开服":
-        os.remove(bot_path.ASSETS + "/jx3/monsters.jpg")
-        asyncio.sleep(900)
-        os.remove(bot_path.ASSETS + "/jx3/monsters.jpg")
+        if datetime.date.today().weekday() + 1 == 1:
+            os.remove(bot_path.ASSETS + "/jx3/monsters.jpg")
+            asyncio.sleep(900)
+            os.remove(bot_path.ASSETS + "/jx3/monsters.jpg")
         
