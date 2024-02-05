@@ -72,7 +72,7 @@ async def getWufengImg(raw: str, server: str, group: str):
     if not currentStatus and detailData["data"]["prices"] == None:
         return ["唔……该物品目前交易行没有数据。"]
     table = []
-    icon = "https://icon.jx3box.com/icon/" + data["IconID"] + ".png"
+    icon = "https://icon.jx3box.com/icon/" + str(data["IconID"]) + ".png"
     name = data["Name"]
     for each_price in detailData["data"]["prices"]:
         table_content = template_table
