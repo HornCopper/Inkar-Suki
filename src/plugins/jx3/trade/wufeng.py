@@ -29,6 +29,8 @@ async def getData(name, quality):
 
 async def getArmor(raw: str):
     attrs = convertAttrs(raw)
+    if attrs == False:
+        return [f"您输入的装备词条有误，请确保包含以下三个要素：\n品级、属性、部位\n示例：13550内功双会头"]
     parsed = attrs[0]
     place = attrs[1]
     quality = attrs[2]
@@ -39,13 +41,15 @@ async def getArmor(raw: str):
     else:
         for i in data:
             if getAttrs(i["attributes"]) == parsed:
-                return i, final_name
+                return i
             
 async def getWufengImg(raw: str, server: str, group: str):
     server = server_mapping(server, group)
     if not server:
         return [PROMPT_ServerNotExist]
     data = await getArmor(raw)
+    if type(data) == type([]):
+        return data
     currentStatus = 0 # 当日是否具有该物品在交易行
     itemId = data["id"]
     logs = await get_api(f"https://next2.jx3box.com/api/item-price/{itemId}/logs?server={server}")
