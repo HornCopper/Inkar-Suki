@@ -37,7 +37,7 @@ good = "<img src=\"https://jx3wbl.xoyocdn.com/img/icon-camp-good.0db444fe.png\">
 
 async def get_baizhan_img():
     url = await get_url_with_token("baizhan")
-    data = await get_api(url)
+    data = await get_api(url + f"&robot={bot}")
     return data["data"]["url"]
 
 async def get_dilu_data():
