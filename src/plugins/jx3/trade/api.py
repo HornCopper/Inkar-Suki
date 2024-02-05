@@ -34,7 +34,7 @@ async def getImg(server: str, name: str, group: str):
         return [PROMPT_ServerNotExist]
     for i in filters:
         if name.find(i) != -1:
-            return ["唔……请勿查找无封装备！"]
+            return ["唔……请勿查找无封装备！\n如果您需要查找无封装备，可以使用“交易行无封”（注意没有空格），使用方法参考：交易行无封 服务器 词条\n词条示例：13550内功双会头"]
     for i in banned:
         if name == i:
             return ["唔……请勿查找无封装备！"]

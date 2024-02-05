@@ -40,7 +40,7 @@ async def getArmor(raw: str):
         return [f"未查找到该{basic_name}装备！"]
     else:
         for i in data:
-            if getAttrs(i["attributes"]) == parsed:
+            if set(getAttrs(i["attributes"])) == set(parsed):
                 return i
             
 async def getWufengImg(raw: str, server: str, group: str):
