@@ -41,7 +41,7 @@ async def on_jx3_event_recv(bot: Bot, event: RecvEvent):
         "开服": lambda x: check_server(x),
         "机器人更新": lambda x: True,
     }
-
+    
     menu_sender = await MenuCallback.from_general_name(message.get("type") or "unknown")
     result = menu_sender.result
     # 回调判断消息是否应发送
@@ -59,3 +59,11 @@ async def on_jx3_event_recv(bot: Bot, event: RecvEvent):
         to_send_msg = message["msg"]
         result[key] = (botname, group_id, to_send_msg, sub_from)
     await menu_sender.start_send_msg()
+
+@ws_recev.handle()
+async def _(event: RecvEvent):
+    if event.get_message()["type"] == "开服":
+        os.remove(bot_path.ASSETS + "/jx3/monsters.jpg")
+        asyncio.sleep(900)
+        os.remove(bot_path.ASSETS + "/jx3/monsters.jpg")
+        
