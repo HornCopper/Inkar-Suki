@@ -18,7 +18,7 @@ async def getData(name, quality):
     data = []
     for i in range(1, 114514):
         getdata = await get_api(url + str(i+1))
-        if getdata["data"]["total"] == 0:
+        if getdata["data"]["data"] == []:
             break
         for x in getdata["data"]["data"]:
             if x["BindType"] != 2:
