@@ -163,7 +163,7 @@ def convertAttrs(raw: str):
     
     if fd(raw, "头") or fd(raw, "帽") or fd(raw, "脑壳"):
         place = "头饰"
-    elif fd(raw, "手") or raw(raw, "臂"):
+    elif fd(raw, "手") or fd(raw, "臂"):
         place = "护臂"
     elif fd(raw, "裤") or fd(raw, "下装"):
         place = "裤"
