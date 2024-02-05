@@ -28,7 +28,10 @@ async def getData(name, quality):
     return data
 
 async def getArmor(raw: str):
-    parsed, place, quality = convertAttrs(raw)
+    attrs = convertAttrs(raw)
+    parsed = attrs[0]
+    place = attrs[1]
+    quality = attrs[2]
     final_name = basic_name + place
     data = await getData(final_name, quality)
     if len(data) == 0:
@@ -179,4 +182,4 @@ def convertAttrs(raw: str):
     else:
         return False
 
-    return more, place, quality
+    return [more, place, quality]
