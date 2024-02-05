@@ -161,19 +161,20 @@ def convertAttrs(raw: str):
 
     quality = num_list[0]
     
-    if fd(raw, "头", "帽", "脑壳"):
+    if fd(raw, "头") or fd(raw, "帽") or fd(raw, "脑壳"):
         place = "头饰"
-    elif fd(raw, "手", "臂"):
+    elif fd(raw, "手") or raw(raw, "臂"):
         place = "护臂"
-    elif fd(raw, "裤", "下装"):
+    elif fd(raw, "裤") or fd(raw, "下装"):
         place = "裤"
-    elif fd(raw, "鞋", "jio", "脚"):
+    elif fd(raw, "鞋") or fd(raw, "jio") or fd(raw, "脚"):
         place = "鞋"
-    elif fd(raw, "链", "项"):
+    elif fd(raw, "链") or fd(raw, "项"):
         place = "项链"
-    elif fd(raw, "坠", "腰") and not fd(raw, "腰带"):
-        place = "腰坠"
-    elif fd(raw, "暗器", "囊", "弓弦"):
+    elif fd(raw, "坠") or fd(raw, "腰"):
+        if not fd(raw, "腰带"):
+            place = "腰坠"
+    elif fd(raw, "暗器") or fd(raw, "囊") or fd(raw, "弓弦"):
         place = "囊"
     else:
         return False
