@@ -36,7 +36,7 @@ async def getArmor(raw: str):
     else:
         for i in data:
             if getAttrs(i["attributes"]) == parsed:
-                return i
+                return i, final_name
             
 async def getWufengImg(raw: str, server: str, group: str):
     server = server_mapping(server, group)
@@ -61,14 +61,15 @@ async def getWufengImg(raw: str, server: str, group: str):
     else:
         msgbox = ""
     color = ["(167, 167, 167)", "(255, 255, 255)", "(0, 210, 75)", "(0, 126, 255)", "(254, 45, 254)", "(255, 165, 0)"][logs["quality"]]
-    itemId = logs["id"]
     detailData = await get_api(f"https://next2.jx3box.com/api/item-price/{itemId}/detail?server={server}&limit=20")
     if not currentStatus and detailData["data"]["prices"] == None:
         return ["唔……该物品目前交易行没有数据。"]
     table = []
+    icon = "https://icon.jx3box.com/icon/" + data["IconID"] + ".png"
+    name = data["Name"]
     for each_price in detailData["data"]["prices"]:
         table_content = template_table
-        toReplace_word = [["$icon", logs["icon"]], ["$color", color], ["$name", logs["name"]], ["$time", convert_time(each_price["created"], "%m月%d日 %H:%M:%S")], ["$limit", str(each_price["n_count"])], ["$price", toCoinImage(convert(each_price["unit_price"]))]]
+        toReplace_word = [["$icon", icon], ["$color", color], ["$name", name], ["$time", convert_time(each_price["created"], "%m月%d日 %H:%M:%S")], ["$limit", str(each_price["n_count"])], ["$price", toCoinImage(convert(each_price["unit_price"]))]]
         for word in toReplace_word:
             table_content = table_content.replace(word[0], word[1])
         table.append(table_content)
