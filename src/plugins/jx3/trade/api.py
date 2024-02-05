@@ -114,13 +114,12 @@ async def getImg(server: str, name: str, group: str):
                 timestamp = datetime.datetime.strptime(time_that, "%Y-%m-%dT%H:%M:%S+08:00")
                 final_time = convert_time(int(timestamp.timestamp()), "%m月%d日 %H:%M:%S")
                 count = str(itemData["SampleSize"])
-                table_content = template_table
                 table.append(table_content.replace("$icon", each_item["icon"]).replace("$color", color).replace("$name", final_name).replace("$time", final_time).replace("$limit", count).replace("$price", toCoinImage(convert(itemData["AvgPrice"]))))
             else:
                 # 使用最新一条数据
                 itemData = itemData["data"]["prices"][0]
                 final_time = convert_time(itemData["created"], "%m月%d日 %H:%M:%S")
-                count = itemData["n_count"]
+                count = str(itemData["n_count"])
                 table.append(table_content.replace("$icon", each_item["icon"]).replace("$color", color).replace("$name", final_name).replace("$time", final_time).replace("$limit", count).replace("$price", toCoinImage(convert(itemData["unit_price"]))))
         final_table = "\n".join(table)
         html = read(bot_path.VIEWS + "/jx3/trade/trade.html")
