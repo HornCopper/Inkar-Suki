@@ -64,6 +64,9 @@ async def getImg(server: str, name: str, group: str):
         current = itemList_searchable[0]["data"]["today"]
         if current != None:
             currentStatus = 1
+        else:
+            if itemList_searchable[0]["data"]["yesterday"] != None:
+                current = itemList_searchable[0]["data"]["yesterday"]
         if currentStatus:
             toReplace = [["$low", toCoinImage(convert(current["LowestPrice"]))], ["$equal", toCoinImage(convert(current["AvgPrice"]))], ["$high", toCoinImage(convert(current["HighestPrice"]))]]
             msgbox = template_msgbox
