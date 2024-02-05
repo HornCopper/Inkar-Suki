@@ -67,7 +67,7 @@ async def getWufengImg(raw: str, server: str, group: str):
             msgbox = msgbox.replace(toReplace_word[0], toReplace_word[1])
     else:
         msgbox = ""
-    color = ["(167, 167, 167)", "(255, 255, 255)", "(0, 210, 75)", "(0, 126, 255)", "(254, 45, 254)", "(255, 165, 0)"][logs["quality"]]
+    color = ["(167, 167, 167)", "(255, 255, 255)", "(0, 210, 75)", "(0, 126, 255)", "(254, 45, 254)", "(255, 165, 0)"][data["Quality"]]
     detailData = await get_api(f"https://next2.jx3box.com/api/item-price/{itemId}/detail?server={server}&limit=20")
     if not currentStatus and detailData["data"]["prices"] == None:
         return ["唔……该物品目前交易行没有数据。"]
