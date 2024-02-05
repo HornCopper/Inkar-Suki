@@ -12,7 +12,7 @@ from nonebot.adapters.onebot.v11 import Bot, Event, GroupMessageEvent
 from nonebot.params import CommandArg
 
 
-block = on_command("block", aliases={"加黑", "避雷"}, priority=5)  # 综合避雷名单-添加
+block = on_command("block", aliases={"避雷", "加入黑名单"}, priority=5)  # 综合避雷名单-添加
 
 
 @block.handle()
@@ -36,8 +36,7 @@ async def _(bot: Bot, event: Event, args: Message = CommandArg()):
     write(bot_path.DATA + "/" + str(event.group_id) + "/blacklist.json", json.dumps(now, ensure_ascii=False))
     return await block.finish("成功将该玩家加入黑名单！")
 
-unblock = on_command("unblock", aliases={"删黑"}, priority=5)  # 解除避雷
-
+unblock = on_command("unblock", aliases={"移出黑名单"}, priority=5)  # 解除避雷
 
 @unblock.handle()
 async def _(bot: Bot, event: Event, args: Message = CommandArg()):
@@ -59,8 +58,7 @@ async def _(bot: Bot, event: Event, args: Message = CommandArg()):
             return await unblock.finish("成功移除该玩家的避雷！")
     return await unblock.finish("移除失败！尚未避雷该玩家！")
 
-sblock = on_command("sblock", aliases={"查黑"}, priority=5)  # 查询是否在避雷名单
-
+sblock = on_command("sblock", aliases={"查找黑名单"}, priority=5)  # 查询是否在避雷名单
 
 @sblock.handle()
 async def _(event: Event, args: Message = CommandArg()):
@@ -74,20 +72,34 @@ async def _(event: Event, args: Message = CommandArg()):
             reason = i["reason"]
             msg = f"玩家[{sb}]被避雷的原因为：\n{reason}"
             return await sblock.finish(msg)
-    return await sblock.finish("该玩家尚未被避雷哦~")
+    return await sblock.finish("该玩家没有被本群加入黑名单哦~")
 
-lblock = on_command("lblock", aliases={"列黑"}, priority=5)  # 列出所有黑名单
+
+template = """
+<tr>
+    <td class="short-column">$name</td>
+    <td class="short-column">$reason</td>
+</tr>"""
+
+lblock = on_command("lblock", aliases={"本群黑名单", "列出黑名单"}, priority=5)  # 列出所有黑名单
 
 
 @lblock.handle()
 async def _(bot: Bot, event: GroupMessageEvent):
     now = json.loads(read(bot_path.DATA + "/" + str(event.group_id) + "/blacklist.json"))
-    f = ""
+    table = []
+    if len(now) == 0:
+        await lblock.finish("唔……本群没有设置任何避雷名单哦~")
     for i in now:
-        pl = i["ban"]
-        r = i["reason"]
-        p = f"玩家名：{pl}\n避雷原因：{r}\n"
-        f = f + "\n" + p
-    f = f[1:]
-    node = nodetemp("避雷查询", Config.bot[0], f)
-    await bot.call_api("send_group_forward_msg", group_id=event.group_id, messages=node)
+        table.append(template.replace("$name", i["ban"]).replace("$reason", i["reason"]))
+    final_table = "\n".join(table)
+    html = read(bot_path.VIEWS + "/jx3/blacklist/blacklist.html")
+    font = bot_path.ASSETS + "/font/custom.ttf"
+    saohua = await get_api(f"https://www.jx3api.com/data/saohua/random?token={token}")
+    saohua = saohua["data"]["text"]
+    html = html.replace("$customfont", font).replace("$tablecontent", final_table).replace("$randomsaohua", saohua)
+    final_html = bot_path.CACHE + "/" + get_uuid() + ".html"
+    write(final_html, html)
+    final_path = await generate(final_html, False, "table", False)
+    return Path(final_path).as_uri()
+    
