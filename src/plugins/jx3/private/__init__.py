@@ -9,7 +9,7 @@ async def _(event: GroupMessageEvent):
     return await dilu.finish(ms.image(img))
 
 
-monsters_v1 = on_command("jx3_monsters_v1", aliases={"百战v1"}, priority=5)
+monsters_v1 = on_command("jx3_monsters_v1", aliases={"百战"}, priority=5)
 
 @monsters_v1.handle()
 async def _(event: GroupMessageEvent):
