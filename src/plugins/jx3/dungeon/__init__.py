@@ -91,10 +91,9 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
         return await item.finish(data[0])
     return await item.finish(ms.image(data))
 
-monsters = on_command("jx3_monsters_v2", aliases={"百战"}, priority=5)
-
+monsters = on_command("jx3_monsters_v2", aliases={"百战v2"}, priority=5)
 
 @monsters.handle()
-async def _(event: GroupMessageEvent, args: Message = CommandArg()):
+async def _(event: GroupMessageEvent):
     img = await get_monsters_map()
     return await monsters.finish(ms.image(img))

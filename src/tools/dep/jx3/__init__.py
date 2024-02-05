@@ -1,4 +1,4 @@
-from sgtpyutils.logger import logger
+from nonebot.log import logger
 try:
     logger.debug(f"load dependence:{__name__}")
 except Exception as _:

@@ -35,6 +35,11 @@ bad = "<img src=\"https://jx3wbl.xoyocdn.com/img/icon-camp-bad.07567e9f.png\">"
 good = "<img src=\"https://jx3wbl.xoyocdn.com/img/icon-camp-good.0db444fe.png\">"
 
 
+async def get_baizhan_img():
+    url = await get_url_with_token("baizhan")
+    data = await get_api(url)
+    return data["data"]["url"]
+
 async def get_dilu_data():
     url = await get_url_with_token("dilu")
     data = await get_api(url)
