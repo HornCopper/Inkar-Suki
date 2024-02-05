@@ -101,5 +101,5 @@ async def _(bot: Bot, event: GroupMessageEvent):
     final_html = bot_path.CACHE + "/" + get_uuid() + ".html"
     write(final_html, html)
     final_path = await generate(final_html, False, "table", False)
-    return Path(final_path).as_uri()
+    await lblock.finish(ms.image(Path(final_path).as_uri()))
     
