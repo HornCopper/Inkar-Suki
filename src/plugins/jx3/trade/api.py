@@ -106,6 +106,7 @@ async def getImg(server: str, name: str, group: str):
             itemId = each_item["id"]
             final_name = each_item["name"]
             itemData = await get_api(f"https://next2.jx3box.com/api/item-price/{itemId}/detail?server={server}&limit=20")
+            table_content = template_table
             if itemData["data"]["prices"] == None:
                 # 转用已存储的Log进行处理
                 itemData = each_item["data"]["logs"][-1]
