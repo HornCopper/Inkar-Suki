@@ -136,5 +136,5 @@ class Sign:
         if qq not in list(now):
             now[qq] = {"coin": int(value)}
         else:
-            now[qq]["coin"] = int(Sign.get_coin(qq)) + value
+            now[qq]["coin"] = int(Sign.get_coin(qq)) + int(value)
         write(bot_path.CLOCK + "/account.json", json.dumps(now))
