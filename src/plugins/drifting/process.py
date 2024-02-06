@@ -66,11 +66,11 @@ async def reportBottle(sender: str, id: str):
     status = await checkBottle(current, sender, id=id)
     if status:
         return "请不要举报自己的漂流瓶。"
-    status = await checkBottle(current, id=id)
+    status = await checkBottle(current, id=id, admin=True)
     if status:
         return [id] # 返回ID的值，检测返回类型，如果是`str`则提交给机器人主人。
     else:
-        return "这个漂流瓶不是你投掷的或尚未被投，请检查后重试？"   
+        return "这个漂流瓶尚未被投，请检查后重试？"   
     
 async def lookupBottle(id: str):
     current = json.loads(read(bottle_path))
