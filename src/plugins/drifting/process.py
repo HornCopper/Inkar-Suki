@@ -7,20 +7,19 @@ async def checkBottle(data: list, sender: str = None, msg: str = None, id: str =
     a2 = bool(msg) == bool(id)
     if a1 != a2:
         raise ValueError("The function `checkBottle` can only receive one argument from the `msg` and the `id`!")
-    current = json.loads(read(bottle_path))
-    for i in current:
+    for i in data:
         if id == None:
             if i["msg"] == msg and i["sender"] == sender:
                 return i["id"]
-        if msg == None:
+        elif msg == None:
             if admin:
-                if i["id"] == id:
+                if str(i["id"]) == id:
                     user = i["sender"]
                     user_msg = i["msg"]
                     final_msg = f"找到了来自「{user}」的漂流瓶：\n{user_msg}"
                     return final_msg
             else:
-                if i["id"] == id and i["sender"] == sender:
+                if str(i["id"]) == id and i["sender"] == sender:
                     return i["msg"]
     return False
 
@@ -31,7 +30,7 @@ async def createBottle(msg: str, sender: str, anonymous: bool):
     current = json.loads(read(bottle_path))
     status = await checkBottle(current, sender, msg)
     if status:
-        return "投掷失败，我们已经发现了一个相同的瓶子，如果你需要删除，请发送：\n删除漂流瓶 " + status
+        return "投掷失败，我们已经发现了一个相同的瓶子，如果你需要删除，请发送：\n删除漂流瓶 " + str(status)
     new_id = len(current) + 1
     new = {
         "id": new_id,
@@ -47,7 +46,7 @@ async def deleteBottle(sender: str, id: str, admin: bool = False):
     current = json.loads(read(bottle_path))
     status = await checkBottle(current, sender, id=id, admin=admin)
     if not status:
-        return "这个漂流瓶不是你投掷的或尚未被投，请检查后重试？"
+        return "这个漂流瓶不是你投掷的或尚未被投掷出去，请检查后重试？"
     else:
         current = json.loads(read(bottle_path))
         for i in current:
