@@ -130,3 +130,11 @@ class Sign:
         now = json.loads(read(bot_path.CLOCK + "/account.json"))
         now[qq]["coin"] = final_value
         write(bot_path.CLOCK + "/account.json", json.dumps(now))
+    
+    def add(qq, value):
+        now = json.loads(read(bot_path.CLOCK + "/account.json"))
+        if qq not in list(now):
+            now[qq] = {"coin": int(value)}
+        else:
+            now[qq]["coin"] = int(Sign.get_coin(qq)) + value
+        write(bot_path.CLOCK + "/account.json", json.dumps(now))
