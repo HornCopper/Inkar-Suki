@@ -33,7 +33,7 @@ async def get_dh(type_: str):
             thread = x["BigPostId"]
             link = f"http://c.tieba.baidu.com/p/{thread}?pid={post}0&cid=0#{post}"
             links.append(link)
-            table.append(template_dh.replace("$num", str(i + 1).replace("$context", title).replace("$time", final_time)))
+            table.append(template_dh.replace("$num", str(i + 1)).replace("$context", title).replace("$time", final_time))
             num = num + 1
             if num == 10:
                 break
