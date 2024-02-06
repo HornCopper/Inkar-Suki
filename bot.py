@@ -9,15 +9,15 @@ from src.tools.dep import *
 
 
 def check_pkgs():
-    db = filebase_database.Database('pip_update')
-    last = DateTime(db.value.get('update'))
-    db.value['update'] = DateTime().tostring()
+    db = filebase_database.Database("pip_update")
+    last = DateTime(db.value.get("update"))
+    db.value["update"] = DateTime().tostring()
     db.save()
     if (DateTime() - last).total_seconds() < 86400 * 30:
         # 每月最多更新一次
         return
-    os.system('pip install -r requirements.txt --upgrade')
-    os.system('playwright install')
+    os.system("pip install -r requirements.txt --upgrade")
+    os.system("playwright install")
 
 
 def check_folder(path: str, can_retry: bool = True):
@@ -76,7 +76,7 @@ init_folders = {
 check_pkgs()
 check_folders(init_folders)
 
-logger.debug('start nonebot...')
+logger.debug("start nonebot...")
 app = nonebot.get_asgi()
 driver = nonebot.get_driver()
 driver.register_adapter(ONEBOT_V11Adapter)
