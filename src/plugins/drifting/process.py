@@ -84,7 +84,7 @@ async def randomBottle():
     anonymous = current[rdnum]["anonymous"]
     msg = current[rdnum]["msg"]
     id = str(current[rdnum]["id"])
-    sender = current[rdnum][id] if not anonymous else "匿名"
+    sender = current[rdnum]["sender"] if not anonymous else "匿名"
     return f"这是一个来自「{sender}」的漂流瓶（ID为{id}）：\n{msg}"
 
 def mapping(raw: str):
