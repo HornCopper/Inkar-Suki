@@ -13,6 +13,7 @@ async def _(event: Event, args: Message = CommandArg()):
         await throw_out.finish("唔……参数不正确哦，请检查后重试~")
     if len(arg) == 1:
         msg = arg[0]
+        anonymous = False
     elif len(arg) == 2:
         msg = arg[0]
         anonymous = mapping(arg[1])
