@@ -4,7 +4,7 @@ dh_ = on_command("jx3_dh", aliases={"蹲号"}, priority=5)
 
 
 @dh_.handle()
-async def _(bot: Bot, event: GroupMessageEvent, state: T_State, args: Message = CommandArg()):
+async def _(event: GroupMessageEvent, state: T_State, args: Message = CommandArg()):
     """
     获取盆栽蹲号信息：
 
