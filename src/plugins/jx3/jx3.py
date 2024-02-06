@@ -15,7 +15,7 @@ from .news import *
 from .notice import *
 from .other import *
 from .pet import *
-from .price_account import *
+from .penzai import *
 from .price_appearance import *
 from .price_gold import *
 from .price_wbl import *
