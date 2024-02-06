@@ -48,7 +48,7 @@ async def _(event: Event, args: Message = CommandArg()):
     Sign.add(arg[0], arg[1])
     await addc.finish("已向该账户添加了" + arg[1] + "枚金币！")
 
-reducec = on_command("增加金币", priority=5)
+reducec = on_command("减少金币", priority=5)
 
 @reducec.handle()
 async def _(event: Event, args: Message = CommandArg()):
