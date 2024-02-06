@@ -12,6 +12,7 @@ async def get_wg(name):
             links = []
             floors = []
             table = []
+            num = 0
             for i in range(len(data["Result"]["Exteriors"])):
                 x = data["Result"]["Exteriors"][i]
                 time_ = x["Time"]
