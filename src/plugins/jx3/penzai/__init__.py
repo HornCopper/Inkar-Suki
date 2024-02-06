@@ -20,8 +20,8 @@ async def _(bot: Bot, event: GroupMessageEvent, state: T_State, args: Message = 
     data = await get_dh(final_details)
     if type(data) == type([]):
         image = data[0]
-        links = data[1]
-        state["links"] = links
+        state["links"] = data[1]
+        state["floors"] = data[2]
         await dh_.send(ms.image(image))
         return
     else:
@@ -34,5 +34,7 @@ async def _(event: GroupMessageEvent, state: T_State, num: Message = Arg()):
         await dh_.finish(PROMPT_NumberInvalid)
     else:
         links = state["links"]
-        await dh_.finish(links[int(num)-1])
+        floors = state["floors"]
+        floor = str(floors[int(num)-1])
+        await dh_.finish(links[int(num)-1] + f"\n请前往{floor}楼哦~")
     

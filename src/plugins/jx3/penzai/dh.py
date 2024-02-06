@@ -22,6 +22,7 @@ async def get_dh(type_: str):
             return "唔……没有获取到任何信息！"
         table = []
         links = []
+        floors = []
         num = 0
         for i in range(len(data["Result"]["Heros"])):
             x = data["Result"]["Heros"][i]
@@ -31,6 +32,8 @@ async def get_dh(type_: str):
             final_time = convert_time(int(timestamp.timestamp()), "%m月%d日 %H:%M:%S")
             title = x["Details"]
             thread = x["BigPostId"]
+            floor = x["Floor"]
+            floors.append(floor)
             link = f"http://c.tieba.baidu.com/p/{thread}?pid={post}0&cid=0#{post}"
             links.append(link)
             table.append(template_dh.replace("$num", str(i + 1)).replace("$context", title).replace("$time", final_time))
@@ -49,5 +52,5 @@ async def get_dh(type_: str):
         final_html = bot_path.CACHE + "/" + get_uuid() + ".html"
         write(final_html, html)
         final_path = await generate(final_html, False, "table", False)
-        return [Path(final_path).as_uri(), links]
+        return [Path(final_path).as_uri(), links, floors]
 
