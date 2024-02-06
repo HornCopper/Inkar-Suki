@@ -2,8 +2,6 @@ from src.tools.dep import *
 from src.tools.file import read, write
 import random
 import json
-import sys
-import nonebot
 import os
 import datetime
 
@@ -123,3 +121,12 @@ class Sign:
         获取用户当前金币数
         """
         return Sign.get_user_record(qq).get("coin") or 0
+    
+    def reduce(qq, value):
+        current = int(Sign.get_coin(qq))
+        if current < value:
+            return False
+        final_value = current - value
+        now = json.loads(read(bot_path.CLOCK + "/account.json"))
+        now[qq]["coin"] = final_value
+        write(bot_path.CLOCK + "/account.json", json.dumps(now))

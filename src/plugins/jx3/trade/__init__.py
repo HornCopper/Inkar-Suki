@@ -7,7 +7,7 @@ trade = on_command("jx3_trade", aliases={"交易行"}, priority=5)
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     arg = args.extract_plain_text().split(" ")
     if len(arg) not in [1, 2]:
-        return await trade.finish("唔……参数不正确哦，请检查后重试~")
+        await trade.finish("唔……参数不正确哦，请检查后重试~")
     if len(arg) == 1:
         server = None
         id = arg[0]
@@ -27,7 +27,7 @@ trade_wf = on_command("jx3_wufeng", aliases={"交易行无封"}, priority=5)
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     arg = args.extract_plain_text().split(" ")
     if len(arg) not in [1, 2]:
-        return await trade_wf.finish("唔……参数不正确哦，请检查后重试~")
+        await trade_wf.finish("唔……参数不正确哦，请检查后重试~")
     if len(arg) == 1:
         server = None
         msg = arg[0]

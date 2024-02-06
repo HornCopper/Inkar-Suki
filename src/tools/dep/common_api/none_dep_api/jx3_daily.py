@@ -20,23 +20,6 @@ async def daily_(server: str = None, group_id: str = None, predict_day_num: int 
 
 
 class DailyResponse:
-    # mark = {
-    #     "war": ["日常", "秘境大战", 3701, None],
-    #     "battle": ["日常", "今日战场", 3601, None],
-    #     "school": ["日常", "宗门事件", 3501, None],
-    #     "orecar": ["日常", "阵营任务",  3401, None],
-    #     "leader": ["日常", "世界首领", 3301, lambda data:f"主:{data[0]}/分:{data[1]}" if isinstance(data, list) else data],
-    #     "draw": ["日常", "美人画像", 3201, None],
-    #     "luck": ["日常", "福源宠物", 3101, None],
-    #     "rescue": ["日常", "驰援任务", 3001, None],
-
-    #     "card": ["周常", "家园声望·加倍道具", 2501, None],
-    #     "team": ["周常", "", 2401, lambda data:[
-    #         f"\n【武林通鉴·公共任务】\n{data[0]}",
-    #         f"\n【武林通鉴·秘境任务】\n{data[1]}",
-    #         f"\n【武林通鉴·团队秘境】\n{data[2]}",
-    #     ]],
-    # }
     mark = {
         "war": ["日常", "大战", 3701, None],
         "battle": ["日常", "战场", 3601, None],
