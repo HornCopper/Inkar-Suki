@@ -48,6 +48,6 @@ async def get_dh(type_: str):
         html = html.replace("$customfont", font).replace("$tablecontent", final_table).replace("$randomsaohua", saohua).replace("$appinfo", f"蹲号 · {type_}")
         final_html = bot_path.CACHE + "/" + get_uuid() + ".html"
         write(final_html, html)
-        final_path = await generate(final_html, False, ".total", False)
+        final_path = await generate(final_html, False, "table", False)
         return [Path(final_path).as_uri(), links]
 
