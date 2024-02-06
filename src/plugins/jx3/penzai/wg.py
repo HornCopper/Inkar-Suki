@@ -36,8 +36,7 @@ async def get_wg(name):
             font = bot_path.ASSETS + "/font/custom.ttf"
             saohua = await get_api(f"https://www.jx3api.com/data/saohua/random?token={token}")
             saohua = saohua["data"]["text"]
-            type_ = type_.replace(",", "+")
-            html = html.replace("$customfont", font).replace("$tablecontent", final_table).replace("$randomsaohua", saohua).replace("$appinfo", f"贴吧物价 · {type_}")
+            html = html.replace("$customfont", font).replace("$tablecontent", final_table).replace("$randomsaohua", saohua).replace("$appinfo", f"贴吧物价 · {name}")
             final_html = bot_path.CACHE + "/" + get_uuid() + ".html"
             write(final_html, html)
             final_path = await generate(final_html, False, "table", False)
