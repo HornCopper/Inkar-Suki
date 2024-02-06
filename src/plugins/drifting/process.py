@@ -50,7 +50,7 @@ async def deleteBottle(sender: str, id: str, admin: bool = False):
     else:
         current = json.loads(read(bottle_path))
         for i in current:
-            if i["id"] == id:
+            if str(i["id"]) == id:
                 if admin:
                     current.remove(i)
                     write(bottle_path, json.dumps(current, ensure_ascii=False))
