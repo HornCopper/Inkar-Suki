@@ -31,7 +31,7 @@ async def createBottle(msg: str, sender: str, anonymous: bool):
     status = await checkBottle(current, sender, msg)
     if status:
         return "投掷失败，我们已经发现了一个相同的瓶子，如果你需要删除，请发送：\n删除漂流瓶 " + str(status)
-    new_id = len(current) + 1
+    new_id = current[-1]["id"] + 1
     new = {
         "id": new_id,
         "msg": msg,
