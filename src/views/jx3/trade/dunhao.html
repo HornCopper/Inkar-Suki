@@ -15,7 +15,7 @@
      -->
     <style>
         table {
-            width: 800px;
+            width: 1200px;
             border-collapse: separate;
             border-spacing: 0;
             border: 1px solid #000;
@@ -62,6 +62,19 @@
             font-family: Harmony, sans-serif;
         }
     </style>
+    <script>
+        window.onload = function () {
+            var elements = document.querySelectorAll("#context");
+            elements.forEach(function (element) {
+                var text = element.innerText;
+                var newText = "";
+                for (var i = 0; i < text.length; i += 60) {
+                    newText += text.slice(i, i + 60) + "\n";
+                }
+                element.innerText = newText;
+            });
+        };  
+    </script>
 </head>
 
 <body>

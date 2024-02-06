@@ -6,7 +6,7 @@ import datetime
 template_dh = """
 <tr>
     <td class="short-column">$num</td>
-    <td class="short-column">$context</td>
+    <td class="short-column"><div id="context">$context</div></td>
     <td class="short-column">$time</td>
 </tr>
 """
