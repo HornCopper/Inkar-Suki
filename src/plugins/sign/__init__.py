@@ -11,7 +11,7 @@ from .manage import Sign
 
 sign_main = Sign
 
-sign_ = on_command("-签到", aliases={"-打卡"}, priority=5)
+sign_ = on_command("签到", aliases={"打卡"}, priority=5)
 
 
 @sign_.handle()
