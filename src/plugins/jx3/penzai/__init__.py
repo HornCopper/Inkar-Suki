@@ -12,10 +12,10 @@ async def _(bot: Bot, event: GroupMessageEvent, state: T_State, args: Message = 
     """
     details = args.extract_plain_text()
     if details == "":
-        return await dh_.finish("您没有输入条件哦，请检查后重试~\n条件以空格分割哦~")
+        await dh_.finish("您没有输入条件哦，请检查后重试~\n条件以空格分割哦~")
     details = details.split(" ")
     if len(details) < 1:
-        return await dh_.finish("您没有输入条件哦，请检查后重试~\n条件以空格分割哦~")
+        await dh_.finish("您没有输入条件哦，请检查后重试~\n条件以空格分割哦~")
     final_details = ",".join(details)
     data = await get_dh(final_details)
     if type(data) == type([]):
