@@ -17,22 +17,50 @@ sign_ = on_command("签到", aliases={"打卡"}, priority=5)
 @sign_.handle()
 async def sign(event: Event):
     if sign_main.wsigned(event.user_id):
-        return await sign_.finish(ms.at(event.user_id) + "\n你已经签到过了哦，不能重复签到。")
+        await sign_.finish(ms.at(event.user_id) + "\n你已经签到过了哦，不能重复签到。")
     data = sign_main.generate_everyday_reward(event.user_id)
 
     sign_main.save_data(data, event.user_id)
-    return await sign_.finish(data.msg)
+    await sign_.finish(data.msg)
 
-coin = on_command("金币", aliases={"余额"}, priority=5)
+coin_ = on_command("金币", aliases={"余额"}, priority=5)
 
 
-@coin.handle()
+@coin_.handle()
 async def check_balance(event: Event):
-    coin_ = Sign.get_coin(event.user_id)
+    coin__ = Sign.get_coin(event.user_id)
     if coin_ is False:
-        return await coin.finish("唔……您没有签到过哦，没有任何金币余额呢！")
-    return await coin.finish(ms.at(event.user_id) + f"\n您的金币余额为：\n{coin_}枚")
+        await coin_.finish("唔……您没有签到过哦，没有任何金币余额呢！")
+    await coin_.finish(ms.at(event.user_id) + f"\n您的金币余额为：\n{coin__}枚")
 
+
+addc = on_command("增加金币", priority=5)
+
+@addc.handle()
+async def _(event: Event, args: Message = CommandArg()):
+    if checker(str(event.user_id), 10) == False:
+        await addc.finish(error(10))
+    arg = args.extract_plain_text().split(" ")
+    if len(arg) != 2:
+        await addc.finish("唔……参数数量不正确哦~")
+    if not checknumber(arg[0]) or not checknumber(arg[1]):
+        await addc.finish("唔……参数需要是数字哦~")
+    Sign.add(arg[0], arg[1])
+    await addc.finish("已向该账户添加了" + arg[1] + "枚金币！")
+
+reducec = on_command("增加金币", priority=5)
+
+@reducec.handle()
+async def _(event: Event, args: Message = CommandArg()):
+    if checker(str(event.user_id), 10) == False:
+        await reducec.finish(error(10))
+    arg = args.extract_plain_text().split(" ")
+    if len(arg) != 2:
+        await reducec.finish("唔……参数数量不正确哦~")
+    if not checknumber(arg[0]) or not checknumber(arg[1]):
+        await reducec.finish("唔……参数需要是数字哦~")
+    Sign.add(arg[0], arg[1])
+    await reducec.finish("已向该账户扣除了" + arg[1] + "枚金币！")
 
 @scheduler.scheduled_job("cron", hour="7")
 async def clean_data():
