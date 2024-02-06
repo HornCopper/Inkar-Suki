@@ -88,7 +88,7 @@ async def randomBottle():
     return f"这是一个来自「{sender}」的漂流瓶（ID为{id}）：\n{msg}"
 
 def mapping(raw: str):
-    if mapping in ["匿名", "n", "匿", "腻了", "匿了", "N", "是", "1", "y", "Y"]:
+    if raw in ["匿名", "n", "匿", "腻了", "匿了", "N", "是", "1", "y", "Y"]:
         return True
     else:
         return False
