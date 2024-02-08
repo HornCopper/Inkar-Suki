@@ -37,7 +37,7 @@ async def getChutianImg():
     elif hour % 2 == 0 and 30 > minute >= 0:
         t = "c00" # 双数整点
     # 时间轴：双数整点 -> 双数半点 -> 单数整点 -> 单数半点
-    # 代码轴：c00 -> c01 -> c10 -> c11
+    # 代码轴：c00 -> c01 -> c10 -> c11 -> c00
     typeList = ["c00", "c01", "c10", "c11"]
     for i in range(len(processedData[t])):
         x = processedData[t][i]
@@ -60,7 +60,14 @@ async def getChutianImg():
                     next = typeList.index(t) + 1
                     if next == 4:
                         next = 0
-                    final_data.append(processedData[typeList[next]][num-1])
+                    final_data.append(processedData[typeList[next]][num])
+            try:
+                final_data.append(processedData[t][i+2])
+            except IndexError:
+                next = typeList.index(t) + 1
+                if next == 4:
+                    next = 0
+                final_data.append(processedData[typeList[next]][1])
     table = []
     for i in final_data:
         icon = "https://img.jx3box.com/pve/minimap/minimap_" + i["icon"] + ".png"
