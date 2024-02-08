@@ -44,6 +44,8 @@ async def getChutianImg():
         if x["key"] == t and x["time"] <= minute:
             final_data = []
             try:
+                if i-1 == -1:
+                    raise IndexError("Cannot accept the value below 0.")
                 final_data.append(processedData[t][i-1])
             except IndexError:
                 previous = typeList.index(t) - 1
