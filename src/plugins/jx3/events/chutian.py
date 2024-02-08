@@ -64,6 +64,8 @@ async def getChutianImg():
         icon = "https://img.jx3box.com/pve/minimap/minimap_" + i["icon"] + ".png"
         hour = processHour(t, i["key"], int(hour))
         minute = str(i["time"])
+        if len(minute) == 1:
+            minute = "0" + minute
         at_map = i["map"]
         site = i["site"]
         section = i["stage"]
