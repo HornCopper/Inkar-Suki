@@ -61,13 +61,6 @@ async def getChutianImg():
                     if next == 4:
                         next = 0
                     final_data.append(processedData[typeList[next]][num])
-            try:
-                final_data.append(processedData[t][i+2])
-            except IndexError:
-                next = typeList.index(t) + 1
-                if next == 4:
-                    next = 0
-                final_data.append(processedData[typeList[next]][1])
     table = []
     for i in final_data:
         icon = "https://img.jx3box.com/pve/minimap/minimap_" + i["icon"] + ".png"
