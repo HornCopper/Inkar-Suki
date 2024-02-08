@@ -26,22 +26,22 @@ async def processData():
 async def getChutianImg():
     processedData = await processData()
     now_time = datetime.datetime.now()
-    hour = int(now_time.strftime("%H"))
-    minute = int(now_time.strftime("%M"))
-    if hour % 2 == 1 and minute >= 30:
+    chour = int(now_time.strftime("%H"))
+    cminute = int(now_time.strftime("%M"))
+    if chour % 2 == 1 and cminute >= 30:
         t = "c11" # 单数半点
-    elif hour % 2 == 1 and 30 > minute >= 0:
+    elif chour % 2 == 1 and 30 > cminute >= 0:
         t = "c10" # 单数整点
-    elif hour % 2 == 0 and minute >= 30:
+    elif chour % 2 == 0 and cminute >= 30:
         t = "c01" # 双数半点
-    elif hour % 2 == 0 and 30 > minute >= 0:
+    elif chour % 2 == 0 and 30 > cminute >= 0:
         t = "c00" # 双数整点
     # 时间轴：双数整点 -> 双数半点 -> 单数整点 -> 单数半点
     # 代码轴：c00 -> c01 -> c10 -> c11 -> c00
     typeList = ["c00", "c01", "c10", "c11"]
     for i in range(len(processedData[t])):
         x = processedData[t][i]
-        if x["key"] == t and x["time"] <= minute:
+        if x["key"] == t and x["time"] <= cminute:
             final_data = []
             try:
                 if i-1 == -1:
@@ -66,7 +66,7 @@ async def getChutianImg():
     table = []
     for i in final_data:
         icon = "https://img.jx3box.com/pve/minimap/minimap_" + i["icon"] + ".png"
-        hour = processHour(t, i["key"], int(hour))
+        hour = processHour(t, i["key"], int(chour))
         minute = str(i["time"])
         if len(minute) == 1:
             minute = "0" + minute
