@@ -6,7 +6,7 @@ template_chutian = """
 <tr>
     <td class="short-column">$time</td>
     <td class="short-column">$map·$place</span></td>
-    <td class="short-column"><img src="$icon">$section</td>
+    <td class="short-column"><img src="$icon" style="vertical-align: middle;">$section</td>
     <td class="short-column">$desc</td>
 </tr>"""
 
