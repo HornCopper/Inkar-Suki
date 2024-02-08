@@ -68,7 +68,7 @@ async def getChutianImg():
         site = i["site"]
         section = i["stage"]
         desc = i["desc"]
-        table.append(template_chutian.replace("$time", hour + ":" + minute).replace("$map", at_map).replace("$place", site).replace("$icon", icon).replace("$section", section).replace("$desc", desc))
+        table.append(template_chutian.replace("$time", str(hour) + ":" + str(minute)).replace("$map", at_map).replace("$place", site).replace("$icon", icon).replace("$section", section).replace("$desc", desc))
     final_table = "\n".join(table)
     html = read(bot_path.VIEWS + "/jx3/celebrations/chutian.html")
     font = bot_path.ASSETS + "/font/custom.ttf"
