@@ -13,9 +13,13 @@ template_chutian = """
 async def processData():
     api = "https://cms.jx3box.com/api/cms/game/celebrity?type=0"
     data = await get_api(api)
-    processed = {}
+    processed = {
+        "c00": [],
+        "c01": [],
+        "c10": [],
+        "c11": []
+    }
     for i in data["data"]:
-        processed[i["key"]]:list
         processed[i["key"]].append(i)
     return processed
 
