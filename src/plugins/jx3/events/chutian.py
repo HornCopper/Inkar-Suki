@@ -51,9 +51,9 @@ async def getChutianImg():
                     previous = 3
                 final_data.append(processedData[typeList[next]][:1])
             final_data.append(x)
-            for num in range(3)[1:]:
+            for num in range(3):
                 try:
-                    final_data.append(processedData[t][i+num])
+                    final_data.append(processedData[t][i+1+num])
                 except IndexError:
                     next = typeList.index(t) + 1
                     if next == 4:
