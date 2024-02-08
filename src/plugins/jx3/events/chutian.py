@@ -20,7 +20,7 @@ async def processData():
     return processed
 
 async def getChutianImg():
-    processData = await processData()
+    processedData = await processData()
     now_time = datetime.datetime.now()
     hour = int(now_time.strftime("%H"))
     minute = int(now_time.strftime("%M"))
@@ -35,26 +35,26 @@ async def getChutianImg():
     # 时间轴：双数整点 -> 双数半点 -> 单数整点 -> 单数半点
     # 代码轴：c00 -> c01 -> c10 -> c11
     typeList = ["c00", "c01", "c10", "c11"]
-    for i in range(len(processData[t])):
-        x = processData[t][i]
+    for i in range(len(processedData[t])):
+        x = processedData[t][i]
         if x["key"] == t and x["time"] <= minute:
             final_data = []
             try:
-                final_data.append(processData[t][i-1])
+                final_data.append(processedData[t][i-1])
             except IndexError:
                 previous = typeList.index(t) - 1
                 if previous == -1:
                     previous = 3
-                final_data.append(processData[typeList[next]][:1])
+                final_data.append(processedData[typeList[next]][:1])
             final_data.append(x)
             for num in range(3)[1:]:
                 try:
-                    final_data.append(processData[t][i+num])
+                    final_data.append(processedData[t][i+num])
                 except IndexError:
                     next = typeList.index(t) + 1
                     if next == 4:
                         next = 0
-                    final_data.append(processData[typeList[next]][num])
+                    final_data.append(processedData[typeList[next]][num])
     table = []
     for i in final_data:
         icon = "https://img.jx3box.com/pve/minimap/minimap_" + i["icon"] + ".png"
