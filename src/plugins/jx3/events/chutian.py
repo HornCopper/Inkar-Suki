@@ -95,23 +95,27 @@ def processHour(current: str, goal: str, hour: int):
         hour = hour + 1
         if hour == 24:
             return 0
+        return hour
     elif current == "c10" and goal == "c11":
         return hour
     elif current == "c11" and goal == "c00":
         hour = hour + 1
         if hour == 24:
             return 0
+        return hour
     elif current == "c11" and goal == "c10":
         return hour
     elif current == "c10" and goal == "c01":
         hour = hour - 1
         if hour == -1:
             return 23
+        return hour
     elif current == "c01" and goal == "c00":
         return hour
     elif current == "c00" and goal == "c11":
         hour = hour - 1
         if hour == 23:
             return 0
+        return hour
     else:
         raise ValueError("The current key and the goal key must be adjacent!")
