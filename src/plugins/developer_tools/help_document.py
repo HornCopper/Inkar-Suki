@@ -16,8 +16,7 @@ dev_cmd_show_help = on_command(
         Jx3Arg(Jx3ArgsType.command, is_optional=True),
     ],
     document="""帮助文档
-    可以使用[帮助 具体功能]来查看具体功能的详细说明
-    可以使用[设置映射 想取的指令名 原指令名]来取个小名，例如[设置映射 属性 属性v3]则可以让属性默认使用v3版本的"""
+    可以使用[帮助 具体功能]来查看具体功能的详细说明"""
 )
 
 
