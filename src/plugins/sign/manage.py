@@ -124,7 +124,7 @@ class Sign:
     
     def reduce(qq, value):
         current = int(Sign.get_coin(qq))
-        if current < value:
+        if current < int(value):
             return False
         final_value = current - value
         now = json.loads(read(bot_path.CLOCK + "/account.json"))
