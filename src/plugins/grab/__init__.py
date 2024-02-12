@@ -12,11 +12,8 @@ except Exception:
     scheduler = None
     logger.warning("未安装定时插件依赖")
 
-from src.tools.utils import checknumber
 
 from .check_pass import check_cd, check_max
-from .gettor import get_tieba
-from .cheater import verify_cheater
 
 what_eat = on_regex(r"^(/)?[今|明|后]?[天|日]?(早|中|晚)?(上|午|餐|饭|夜宵|宵夜)?吃(什么|啥|点啥)$", priority=5)
 what_drink = on_regex(r"^(/)?[今|明|后]?[天|日]?(早|中|晚)?(上|午|餐|饭|夜宵|宵夜)?喝(什么|啥|点啥)$", priority=5)
@@ -37,46 +34,6 @@ all_file_drink_name = os.listdir(str(img_drink_path))
 
 # 载入bot名字
 Bot_NICKNAME = Config.name
-
-tieba = on_command("-tieba", aliases={"-帖子"}, priority=5)
-
-
-@tieba.handle()
-async def _(event: GroupMessageEvent, args: Message = CommandArg()):
-    """
-    贴吧内容查询，具体实现参考`gettor.py`的`get_tieba`函数。
-    """
-    tid = args.extract_plain_text()
-    if checknumber(tid) is False:
-        return await tieba.finish("请给出纯数字的帖子ID哦~")
-    msg = await get_tieba(int(tid))
-    return await tieba.finish(msg)
-
-cheater_ = on_command("jx3_cheater", aliases={"-骗子", "-查人"}, priority=5)
-
-
-@cheater_.handle()
-async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
-    content = args.extract_plain_text()
-    if not checknumber(content):
-        return await cheater_.finish("请输入纯数字的QQ哦~")
-    else:
-        personal_data = await bot.call_api("get_stranger_info", user_id=int(content))
-        if personal_data["user_id"] == 0:
-            return await cheater_.finish("唔……该QQ号似乎不存在哦~")
-        else:
-            level = personal_data["level"]
-            login = personal_data["login_days"]
-            nickname = personal_data["nickname"]
-            basic_info = f"QQ等级：{level}\n登录天数：{login}\n昵称：{nickname}"
-        data = await verify_cheater(str(content))
-        if data is False:
-            msg = f"此人应该不是骗子？{Config.name}在贴吧没有找到哦~\n{basic_info}"
-        else:
-            url = data
-            msg = f"此人可能是骗子？在贴吧已有记录！\n{url}\n{basic_info}\n仅供参考！请以实际内容为准！"
-        return await cheater_.finish(msg)
-
 
 @del_dish.handle()
 async def got_dish_name(matcher: Matcher, state: T_State):
