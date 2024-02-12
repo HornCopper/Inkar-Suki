@@ -59,7 +59,7 @@ async def _(event: Event, args: Message = CommandArg()):
         await reducec.finish("唔……参数数量不正确哦~")
     if not checknumber(arg[0]) or not checknumber(arg[1]):
         await reducec.finish("唔……参数需要是数字哦~")
-    Sign.add(arg[0], arg[1])
+    Sign.reduce(arg[0], arg[1])
     await reducec.finish("已向该账户扣除了" + arg[1] + "枚金币！")
 
 @scheduler.scheduled_job("cron", hour="7")
