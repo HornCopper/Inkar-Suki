@@ -126,7 +126,7 @@ class Sign:
         current = int(Sign.get_coin(qq))
         if current < int(value):
             return False
-        final_value = current - (value)
+        final_value = current - int(value)
         now = json.loads(read(bot_path.CLOCK + "/account.json"))
         now[qq]["coin"] = final_value
         write(bot_path.CLOCK + "/account.json", json.dumps(now))
