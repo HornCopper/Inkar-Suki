@@ -19,9 +19,6 @@ def init_subjects(__subjects: list[SubscribeSubject]):
     events_gf.run(__subjects, OnGfBig, OnGfSmall)
     events_world_boss.run(__subjects, OnWorldBoss)
     event_daily.run(__subjects)
-    
-    events_base.run_after(__subjects)
-    # events_for_debug.run(__subjects)
 
 
 def init_cron(sub: SubscribeSubject, OnCallback: callable):
