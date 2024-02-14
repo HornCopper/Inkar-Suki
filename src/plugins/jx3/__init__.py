@@ -43,6 +43,8 @@ async def on_jx3_event_recv(bot: Bot, event: RecvEvent):
         "追魂": lambda x: check_server(x),
         "抓马": lambda x: check_server(x),
         "奇遇": lambda x: check_server(x),
+        "关隘": lambda x: check_server(x),
+        "扶摇": lambda x: check_server(x)
     }
     
     menu_sender = await MenuCallback.from_general_name(message.get("type") or "unknown")
