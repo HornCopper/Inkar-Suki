@@ -1,5 +1,5 @@
 from .api_lib.EventRister import *
-from src.tools.utils import *
+from src.tools.dep import *
 
 
 @EventRister.rister(action=1009)
@@ -11,7 +11,7 @@ class ZhuEEvent(RecvEvent):
     message_type = "ZhuE"
     map_name: str
     """地图名"""
-    time: str
+    time: int
     """获取时间"""
     server: str
 
@@ -22,4 +22,5 @@ class ZhuEEvent(RecvEvent):
 
     @overrides(RecvEvent)
     def get_message(self) -> dict:
-        return {"type": "诛恶", "server": self.server, "msg": f"现在是{self.time}了！{Config.name}提醒各位：\n{self.server} 的 诛恶事件 在 {self.map_name} 触发啦，快前往该地图吧！"}
+        final_time = convert_time(self.time, "%H:%M")
+        return {"type": "诛恶", "server": self.server, "msg": f"{self.server}的诛恶事件在{final_time}在{self.map_name}触发啦，快前往该地图吧！"}

@@ -38,6 +38,11 @@ def checknumber(value):
 
 
 def convert_time(timestamp: int, format: str = "%Y年%m月%d日 %H:%M:%S"):
+    if checknumber(timestamp) != False:
+        try:
+            timestamp = int(timestamp)
+        except:
+            return False
     """
     时间转换，自适应时间长度。
     """

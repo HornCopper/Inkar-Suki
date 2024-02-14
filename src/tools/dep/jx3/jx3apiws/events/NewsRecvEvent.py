@@ -24,4 +24,5 @@ class NewsRecvEvent(RecvEvent):
 
     @overrides(RecvEvent)
     def get_message(self) -> dict:
-        return {"type": "公告", "msg": f"{self.type}来啦！\n标题：{self.title}\n链接：{self.url}\n日期：{self.date}"}
+        final_date = self.date.replace("/", "-")
+        return {"type": "公告", "msg": f"{self.type}来啦！\n标题：{self.title}\n链接：{self.url}\n日期：{final_date}"}
