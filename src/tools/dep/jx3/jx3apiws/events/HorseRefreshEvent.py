@@ -147,7 +147,7 @@ class DiluRefreshEvent(RecvEvent):
         final_time = convert_time(self.time, "%H:%M")
         return {"type": "的卢", "server": self.server, "msg": f"{self.server}的{self.name}在{self.map_name}被{self.camp_name}的{self.role_name}于{final_time}捕获了！"}
 
-@EventRister.rister(action=1012)
+@EventRister.rister(action=1013)
 class DiluSoldEvent(RecvEvent):
     """的卢事件"""
 
