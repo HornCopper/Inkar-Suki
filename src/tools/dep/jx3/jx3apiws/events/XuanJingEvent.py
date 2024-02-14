@@ -14,15 +14,18 @@ class XuanJingEvent(RecvEvent):
     """地图名"""
     name: str
     """玄晶名"""
-    time: str
+    time: int
     """获取时间"""
     server: str
+    """服务器"""
 
     @property
     def log(self) -> str:
-        log = f"玄晶事件：【{self.server}】[{self.time}] 侠士 {self.role_name} 在 {self.map_name} 获取了 {self.name}。"
+        final_time = convert_time(self.time, "%H:%M")
+        log = f"玄晶事件：【{self.server}】[{final_time}] 侠士 {self.role_name} 在 {self.map_name} 获取了 {self.name}。"
         return log
 
     @overrides(RecvEvent)
     def get_message(self) -> dict:
-        return {"type": "玄晶", "server": f"{self.server}", "msg": f"{self.time}\n【{self.server}】恭喜侠士[{self.role_name}]在{self.map_name}获得稀有掉落[{self.name}]！"}
+        final_time = convert_time(self.time, "%H:%M")
+        return {"type": "玄晶", "server": f"{self.server}", "msg": f"{self.server}的{self.name}在{final_time}被{self.role_name}从{self.map_name}中拍走啦！"}

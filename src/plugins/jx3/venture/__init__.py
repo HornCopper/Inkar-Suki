@@ -126,7 +126,7 @@ async def jx3_serendipity_recipe(event: GroupMessageEvent, args: Message = Comma
     filename = serendipity + ".png"
     filepath = bot_path.ASSETS + "/jx3/serendipity/" + filename
     if filename in imgs:
-        return await preposition.finish(ms.image(Path(filepath).as_uri()))
+        await preposition.finish(ms.image(Path(filepath).as_uri()))
     data = await get_image(serendipity)
     if data is False:
         return await preposition.finish("唔……没有找到相关信息~")
@@ -135,4 +135,4 @@ async def jx3_serendipity_recipe(event: GroupMessageEvent, args: Message = Comma
         image = open(filepath, mode="wb")
         image.write(image_content)
         image.close()
-        return await preposition.finish(ms.image(Path(filepath).as_uri()))
+        await preposition.finish(ms.image(Path(filepath).as_uri()))

@@ -36,10 +36,13 @@ async def on_jx3_event_recv(bot: Bot, event: RecvEvent):
     def check_server(x): return group_srv and x["server"] == group_srv
     """已绑定服务器，且与事件一致"""
     type_callback = {
+        "的卢": lambda x: check_server(x),
         "玄晶": lambda x: check_server(x),
         "诛恶": lambda x: check_server(x),
         "开服": lambda x: check_server(x),
-        "机器人更新": lambda x: True,
+        "追魂": lambda x: check_server(x),
+        "抓马": lambda x: check_server(x),
+        "奇遇": lambda x: check_server(x),
     }
     
     menu_sender = await MenuCallback.from_general_name(message.get("type") or "unknown")

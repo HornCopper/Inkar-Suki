@@ -11,7 +11,7 @@ class ZhuEEvent(RecvEvent):
     message_type = "YunCong"
     name: str
     """阶段名"""
-    time: str
+    time: int
     """获取时间"""
     desc: str
     """阶段名称"""
