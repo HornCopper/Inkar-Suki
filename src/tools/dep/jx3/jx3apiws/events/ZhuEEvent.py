@@ -17,7 +17,8 @@ class ZhuEEvent(RecvEvent):
 
     @property
     def log(self) -> str:
-        log = f"诛恶事件：{self.time} {self.server} 的 诛恶事件 在 {self.map_name}触发了！"
+        final_time = convert_time(self.time, "%H:%M")
+        log = f"诛恶事件：{final_time} {self.server} 的 诛恶事件 在 {self.map_name}触发了！"
         return log
 
     @overrides(RecvEvent)

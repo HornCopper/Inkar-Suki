@@ -11,3 +11,4 @@ from .YunCongEvent import *
 from .XuanJingEvent import *
 from .LankeshanRefreshEvent import *
 from .ZhuihunNamedEvent import *
+from .ZhuEEvent import *
