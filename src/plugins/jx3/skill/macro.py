@@ -26,7 +26,7 @@ icon_to_xf = {
     "10243": "明尊琉璃体",
     "10389": "铁骨衣",
     "10698": "孤锋诀",
-    "10756": "万灵当歌"
+    "10756": "山海心诀"
 }
 
 
@@ -37,7 +37,7 @@ async def get_url(xf):
         xf_ = icon_to_xf[i["icon"]]
         if xf_ == xf:
             if xf_ == "花间游":
-                return "https://www.jx3box.com/macro/74995"  # 谁叫你花间还在招标找不到宏啊寄
+                return "https://cms.jx3box.com/api/cms/post/74995"  # 谁叫你花间还在招标找不到宏啊寄
             return "https://cms.jx3box.com/api/cms" + i["link"].replace("macro", "post")
 
 
