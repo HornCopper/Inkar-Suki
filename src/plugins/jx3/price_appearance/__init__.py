@@ -16,5 +16,9 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
         return await item_price.finish("缺少物品名称，没办法找哦~")
     data = await item_(arg)
     if isinstance(data, list):
-        return await item_price.finish(data[0])
-    return await item_price.finish(ms.image(data))
+        async with httpx.AsyncClient() as client:
+            r: httpx.Response = await client.get(data[0])
+            final_image = r.content
+            await item_price.finish(ms.image(final_image))
+    await item_price.finish(ms.image(data))
+
