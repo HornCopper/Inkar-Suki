@@ -1,4 +1,4 @@
-from sgtpyutils.logger import logger
+from nonebot.log import logger
 import httpx
 
 

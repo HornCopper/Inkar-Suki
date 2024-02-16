@@ -72,5 +72,8 @@ async def jx3_arena_statistics(bot: Bot, event: GroupMessageEvent, template: lis
     pvp_mode, = template
     data = await arena_statistics(mode=pvp_mode)
     if isinstance(data, list):
-        return await jx3_cmd_arena_statistics.finish(data[0])
-    return await jx3_cmd_arena_statistics.send(ms.image(data))
+        async with httpx.AsyncClient() as client:
+            r: httpx.Response = await client.get(data[0])
+            final_image = r.content
+            await jx3_cmd_arena_statistics.finish(ms.image(final_image))
+    await jx3_cmd_arena_statistics.finish(ms.image(data))
