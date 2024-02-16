@@ -24,4 +24,4 @@ class ZhuEEvent(RecvEvent):
     @overrides(RecvEvent)
     def get_message(self) -> dict:
         final_time = convert_time(self.time, "%H:%M")
-        return {"type": "诛恶", "server": self.server, "msg": f"{self.server}的诛恶事件在{final_time}在{self.map_name}触发啦，快前往该地图吧！"}
+        return {"type": "诛恶", "server": self.server, "msg": f"{self.server} 的诛恶事件于 {final_time} 在 {self.map_name} 触发啦，快前往该地图吧！"}

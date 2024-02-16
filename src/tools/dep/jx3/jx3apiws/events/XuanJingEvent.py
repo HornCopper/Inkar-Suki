@@ -28,4 +28,4 @@ class XuanJingEvent(RecvEvent):
     @overrides(RecvEvent)
     def get_message(self) -> dict:
         final_time = convert_time(self.time, "%H:%M")
-        return {"type": "玄晶", "server": f"{self.server}", "msg": f"{self.server}的{self.name}在{final_time}被{self.role_name}从{self.map_name}中拍走啦！"}
+        return {"type": "玄晶", "server": f"{self.server}", "msg": f"{self.server} 的{self.name}在 {final_time} 被[{self.role_name}]从 {self.map_name} 拍走啦！"}

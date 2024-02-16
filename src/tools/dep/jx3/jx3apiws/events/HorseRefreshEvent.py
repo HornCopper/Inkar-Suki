@@ -23,7 +23,7 @@ class HorseRefreshEvent(RecvEvent):
 
     @property
     def log(self) -> str:
-        log = f"马驹刷新推送：[{self.server}]的[{self.map_name}]将要在 {str(self.min_time)}-{str(self.max_time)} 分后刷新马驹。"
+        log = f"马驹刷新推送：{self.server}的 {self.map_name}即将在 {str(self.min_time)}-{str(self.max_time)} 分钟后刷新马驹，请有意愿的侠士速去捕捉！"
         return log
 
     @overrides(RecvEvent)
@@ -60,7 +60,7 @@ class HorseCaughtEvent(RecvEvent):
     @overrides(RecvEvent)
     def get_message(self) -> dict:
         final_time = convert_time(self.time, "%H:%M")
-        return {"type": "抓马", "server": self.server, "msg": f"[{self.server}]的{self.horse}于{final_time}在{self.map_name}被{self.name}捕获了！"}
+        return {"type": "抓马", "server": self.server, "msg": f"{self.server} 的 {self.horse} 于 {final_time} 在 {self.map_name} 被[{self.name}]捕获了！"}
 
 @EventRister.rister(action=1010)
 class DiluRefreshEvent(RecvEvent):
@@ -85,7 +85,7 @@ class DiluRefreshEvent(RecvEvent):
     
     @overrides(RecvEvent)
     def get_message(self) -> dict:
-        return {"type": "的卢", "server": self.server, "msg": f"{self.server}的{self.name}即将刷新！"}
+        return {"type": "的卢", "server": self.server, "msg": f"{self.server} 的{self.name}即将刷新！"}
     
 @EventRister.rister(action=1011)
 class DiluAppearEvent(RecvEvent):
@@ -113,7 +113,7 @@ class DiluAppearEvent(RecvEvent):
     @overrides(RecvEvent)
     def get_message(self) -> dict:
         final_time = convert_time(self.time, "%H:%M")
-        return {"type": "的卢", "server": self.server, "msg": f"{self.server}的{self.name}于{final_time}出现在{self.map_name}！"}
+        return {"type": "的卢", "server": self.server, "msg": f"{self.server} 的{self.name}于 {final_time} 出现在 {self.map_name}，请浩气盟和恶人谷的侠士速去捕捉！"}
     
 @EventRister.rister(action=1012)
 class DiluRefreshEvent(RecvEvent):
@@ -139,13 +139,13 @@ class DiluRefreshEvent(RecvEvent):
     @property
     def log(self) -> str:
         final_time = convert_time(self.time, "%H:%M")
-        log = f"的卢捕获推送：{self.server}的{self.name}在{self.map_name}被{self.camp_name}的{self.role_name}捕获了！"
+        log = f"的卢捕获推送：{self.server}的{self.name}在{self.map_name}被{self.camp_name}的{self.role_name}于{final_time}捕获了！"
         return log
     
     @overrides(RecvEvent)
     def get_message(self) -> dict:
         final_time = convert_time(self.time, "%H:%M")
-        return {"type": "的卢", "server": self.server, "msg": f"{self.server}的{self.name}在{self.map_name}被{self.camp_name}的{self.role_name}于{final_time}捕获了！"}
+        return {"type": "的卢", "server": self.server, "msg": f"{self.server} 的{self.name}在 {self.map_name} 被 {self.camp_name}的[{self.role_name}]于 {final_time} 捕获了！"}
 
 @EventRister.rister(action=1013)
 class DiluSoldEvent(RecvEvent):
@@ -177,4 +177,4 @@ class DiluSoldEvent(RecvEvent):
     @overrides(RecvEvent)
     def get_message(self) -> dict:
         final_time = convert_time(self.time, "%H:%M")
-        return {"type": "的卢", "server": self.server, "msg": f"{self.server}的{self.name}于{final_time}被{self.camp_name}的{self.role_name}以{self.amount}的价格竞拍成功！"}
+        return {"type": "的卢", "server": self.server, "msg": f"{self.server} 的{self.name}于 {final_time} 被 {self.camp_name}的[{self.role_name}]以 {self.amount} 的价格竞拍成功！"}
