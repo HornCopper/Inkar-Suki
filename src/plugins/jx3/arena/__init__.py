@@ -20,15 +20,16 @@ jx3_cmd_arena_records = on_regex(
 async def jx3_arena_records(event: GroupMessageEvent, template: list[Any] = Depends(Jx3Arg.arg_factory)):
     arg_server, arg_user, arg_pvp_mode = template
     if arg_server is None:
-        return await jx3_cmd_arena_records.finish(PROMPT_ServerNotExist)
+        await jx3_cmd_arena_records.finish(PROMPT_ServerNotExist)
     if arg_user is None:
-        return await jx3_cmd_arena_records.finish(PROMPT_UserNotExist)
-
+        await jx3_cmd_arena_records.finish(PROMPT_UserNotExist)
     data = await arena_records(server=arg_server, name=arg_user, mode=arg_pvp_mode)
-    print(data)
-    if isinstance(data, list):
-        return await jx3_cmd_arena_records.finish(data[0])
-    return await jx3_cmd_arena_records.send(ms.image(data))
+    if isinstance(data, str):
+        async with httpx.AsyncClient() as client:
+            r: httpx.Response = await client.get(data)
+            final_image = r.content
+            await jx3_cmd_arena_records.finish(ms.image(final_image))
+    await jx3_cmd_arena_records.finish(data[0])
 
 
 jx3_cmd_arena_rank = on_regex(
@@ -49,9 +50,12 @@ jx3_cmd_arena_rank = on_regex(
 async def jx3_arena_rank(bot: Bot, event: GroupMessageEvent, template: list[Any] = Depends(Jx3Arg.arg_factory)):
     pvp_mode, = template
     data = await arena_rank(mode=pvp_mode)
-    if isinstance(data, list):
-        return await jx3_cmd_arena_rank.finish(data[0])
-    return await jx3_cmd_arena_rank.send(ms.image(data))
+    if isinstance(data, str):
+        async with httpx.AsyncClient() as client:
+            r: httpx.Response = await client.get(data)
+            final_image = r.content
+            await jx3_cmd_arena_rank.finish(ms.image(final_image))
+    await jx3_cmd_arena_rank.finish(data[0])
 
 jx3_cmd_arena_statistics = on_regex(
     r"^(/)?(名剑|jjc|竞技场)?(统计|日志)",
