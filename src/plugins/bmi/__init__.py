@@ -10,8 +10,8 @@ async def _(event: Event, args: Message = CommandArg()):
     for i in arg:
         if not checknumber(i):
             await bmi.finish("唔……请参考以下格式，注意两个参数都是纯数字哦~\nBMI 身高(米) 体重(千克)")
-    height = int(arg[0])
-    weight = int(arg[1])
+    height = float(arg[0])
+    weight = float(arg[1])
     bmi = height / (weight*weight)
     final_result = round(bmi, 1)
     if final_result <= 18.4:
