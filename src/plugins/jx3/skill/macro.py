@@ -25,7 +25,8 @@ icon_to_xf = {
     "10002": "洗髓经",
     "10243": "明尊琉璃体",
     "10389": "铁骨衣",
-    "10698": "孤锋诀"
+    "10698": "孤锋诀",
+    "10756": "万灵当歌"
 }
 
 
@@ -36,7 +37,7 @@ async def get_url(xf):
         xf_ = icon_to_xf[i["icon"]]
         if xf_ == xf:
             if xf_ == "花间游":
-                return "https://cms.jx3box.com/api/cms/post/53569"  # 谁叫你花间还在招标找不到宏啊寄
+                return "https://www.jx3box.com/macro/74995"  # 谁叫你花间还在招标找不到宏啊寄
             return "https://cms.jx3box.com/api/cms" + i["link"].replace("macro", "post")
 
 
@@ -58,7 +59,7 @@ async def get_macro(xf):
     speed = detail["speed"]
     if speed == "":
         speed = "未知"
-    msg = f"推荐的宏命令如下：\n{macro}\n\n奇穴：{talent_info}\n来源：@{title}\n推荐加速：{speed}"
+    msg = f"推荐的宏命令如下：\n{macro}\n\n奇穴：{talent_info}\n来源：@{title}\n推荐加速：{speed}\n如果上述内容不够详细，可以点击下面的传送门直达宏发布页面：\n{url}"
     return msg
 
 
