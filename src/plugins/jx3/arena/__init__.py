@@ -71,9 +71,9 @@ jx3_cmd_arena_statistics = on_regex(
 async def jx3_arena_statistics(bot: Bot, event: GroupMessageEvent, template: list[Any] = Depends(Jx3Arg.arg_factory)):
     pvp_mode, = template
     data = await arena_statistics(mode=pvp_mode)
-    if isinstance(data, list):
+    if isinstance(data, str):
         async with httpx.AsyncClient() as client:
-            r: httpx.Response = await client.get(data[0])
+            r: httpx.Response = await client.get(data)
             final_image = r.content
             await jx3_cmd_arena_statistics.finish(ms.image(final_image))
-    await jx3_cmd_arena_statistics.finish(ms.image(data))
+    await jx3_cmd_arena_statistics.finish(data[0])
