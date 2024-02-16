@@ -12,8 +12,8 @@ async def _(event: Event, args: Message = CommandArg()):
             await bmi.finish("唔……请参考以下格式，注意两个参数都是纯数字哦~\nBMI 身高(米) 体重(千克)")
     height = float(arg[0])
     weight = float(arg[1])
-    bmi = height / (weight*weight)
-    final_result = round(bmi, 1)
+    bmi_value = height / (weight*weight)
+    final_result = round(bmi_value, 1)
     if final_result <= 18.4:
         msg = f"您的BMI计算结果是：{final_result}，属于偏瘦（0~18.4）哦~"
     elif 18.5 <= final_result <= 23.9:
