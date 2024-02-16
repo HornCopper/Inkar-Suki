@@ -59,7 +59,8 @@ async def get_macro(xf):
     speed = detail["speed"]
     if speed == "":
         speed = "未知"
-    msg = f"推荐的宏命令如下：\n{macro}\n\n奇穴：{talent_info}\n来源：@{title}\n推荐加速：{speed}\n如果上述内容不够详细，可以点击下面的传送门直达宏发布页面：\n{url}"
+    final_url = "https://www.jx3box.com/macro/" + url.split("/")[-1]
+    msg = f"推荐的宏命令如下：\n{macro}\n\n奇穴：{talent_info}\n来源：@{title}\n推荐加速：{speed}\n如果上述内容不够详细，可以点击下面的传送门直达宏发布页面：\n{final_url}"
     return msg
 
 
