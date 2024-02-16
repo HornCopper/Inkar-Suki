@@ -27,4 +27,4 @@ class FuyaoNamedEvent(RecvEvent):
     def get_message(self) -> dict:
         name = "、".join(self.name)
         final_time = convert_time(self.time, format="%H:%M")
-        return {"type": "扶摇", "msg": f"{self.server}的唐文羽在{final_time}点名了[{name}]，请速速前往少林！", "server": f"{self.server}"}
+        return {"type": "扶摇", "msg": f"{self.server} 的唐文羽在 {final_time} 点名了 [{name}]，请速速前往少林！", "server": f"{self.server}"}
