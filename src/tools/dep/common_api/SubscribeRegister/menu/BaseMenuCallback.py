@@ -63,6 +63,6 @@ class BaseMenuCallback:
         sub_name = sub_from.name if hasattr(sub_from, "name") else sub_from
         to_send_msg = f"{to_send_msg}\n该消息来自[{sub_name}]订阅，如需退订回复 `退订 {sub_name}`"
         try:
-            await BaseMenuCallback.bots.get(botname).call_api("send_group_msg", group_id=group_id, message=to_send_msg)
+            await BaseMenuCallback.bots.get(botname).call_api("send_group_msg", group_id=int(group_id), message=to_send_msg)
         except Exception as ex:
             logger.warning(f"{botname} bot fail to send msg -> {group_id}:{ex}")
