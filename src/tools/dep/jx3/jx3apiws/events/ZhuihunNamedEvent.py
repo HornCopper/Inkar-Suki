@@ -32,4 +32,4 @@ class ZhuihunNamedEvent(RecvEvent):
         origin_n = self.name
         goal_s = self.realm
         final_template = f"先锋队执事：请[{origin_s}·{origin_n}]侠士速来[{goal_s}]·跨服烂柯山，有要事相商！"
-        return {"type":"追魂", "server": origin_s, "msg": final_template}
+        return {"type":"追魂", "server": self.server, "msg": final_template}
