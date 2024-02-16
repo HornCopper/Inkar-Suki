@@ -23,4 +23,4 @@ class NewsRecvEvent(RecvEvent):
     @overrides(RecvEvent)
     def get_message(self) -> dict:
         final_time = convert_time(self.start, "%H:%M")
-        return {"type": "关隘", "server": self.server, "msg": f"{self.server}·{self.castle}在{final_time}开启了！"}
+        return {"type": "关隘", "server": self.server, "msg": f"{self.server}·{self.castle}在 {final_time} 开启了！"}

@@ -22,4 +22,4 @@ class FuyaoRefreshEvent(RecvEvent):
     @overrides(RecvEvent)
     def get_message(self) -> dict:
         final_time = convert_time(self.time, format="%H:%M")
-        return {"type": "扶摇", "server": self.server, "msg": f"{self.server}的扶摇九天在{final_time}开启啦，请前往少林演武场参加试炼！"}
+        return {"type": "扶摇", "server": self.server, "msg": f"{self.server} 的扶摇九天在 {final_time} 开启啦，请前往少林演武场参加试炼！"}
