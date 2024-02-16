@@ -28,7 +28,7 @@ class HorseRefreshEvent(RecvEvent):
 
     @overrides(RecvEvent)
     def get_message(self) -> dict:
-        return {"type": "抓马", "server": self.server, "msg": f"{self.server}的{self.map_name}将在{str(self.min_time)}-{str(self.max_time)}刷新马驹哦~"}
+        return {"type": "抓马", "server": self.server, "msg": f"{self.server} 的 {self.map_name} 将在 {str(self.min_time)}-{str(self.max_time)} 分钟左右刷新马驹哦~"}
 
 
 @EventRister.rister(action=1003)
