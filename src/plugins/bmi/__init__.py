@@ -22,4 +22,5 @@ async def _(event: Event, args: Message = CommandArg()):
         msg = f"您的BMI计算结果是：{final_result}，属于偏胖（24.0~27.9）哦~"
     elif final_result >= 28.0:
         msg = f"您的BMI计算结果是：{final_result}，属于肥胖（28.0+）哦~\n音卡建议您少吃高热量食物，多多运动保持健康身体哦！"
+    await bmi.finish(msg)
     
