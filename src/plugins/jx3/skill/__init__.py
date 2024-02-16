@@ -80,7 +80,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
                 return await _talent.finish(msg)
     return await _talent.finish("唔……未找到该奇穴哦~")
 
-macro_ = on_command("jx3_macro_v2", aliases={"宏v2"}, priority=5)
+macro_ = on_command("jx3_macro_v2", aliases={"宏"}, priority=5)
 
 
 @macro_.handle()
@@ -92,7 +92,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     data = await get_macro(xf)
     return await macro_.finish(data)
 
-macro_v1 = on_command("jx3_macro", aliases={"宏"}, priority=5)
+macro_v1 = on_command("jx3_macro", aliases={"宏v1"}, priority=5)
 
 
 @macro_v1.handle()
