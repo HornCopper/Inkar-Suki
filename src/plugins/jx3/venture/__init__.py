@@ -12,7 +12,7 @@ async def jx3_serendipity(event: GroupMessageEvent, args: Message = CommandArg()
     '''
     arg = args.extract_plain_text().split(" ")
     if len(arg) not in [1, 2]:
-        return await jx3_cmd_serendipity.finish("唔……参数不正确哦，请检查后重试~")
+        await jx3_cmd_serendipity.finish("唔……参数不正确哦，请检查后重试~")
     if len(arg) == 1:
         server = None
         id = arg[0]
@@ -21,9 +21,10 @@ async def jx3_serendipity(event: GroupMessageEvent, args: Message = CommandArg()
         id = arg[1]
     data = await serendipity_(server, id, group_id=event.group_id)
     if isinstance(data, list):
-        return await jx3_cmd_serendipity.finish(data[0])
+        await jx3_cmd_serendipity.finish(data[0])
     else:
-        return await jx3_cmd_serendipity.finish(ms.image(data))
+        data = await get_content(data)
+        await jx3_cmd_serendipity.finish(ms.image(data))
 
 jx3_cmd_statistical = on_command("jx3_lstatistical", aliases={"近期奇遇"}, priority=5)
 
@@ -37,7 +38,7 @@ async def jx3_lstatistical(event: GroupMessageEvent, args: Message = CommandArg(
     '''
     arg = args.extract_plain_text().split(" ")
     if len(arg) not in [1, 2]:
-        return await jx3_cmd_statistical.finish("唔……参数不正确哦，请检查后重试~")
+        await jx3_cmd_statistical.finish("唔……参数不正确哦，请检查后重试~")
     if len(arg) == 1:
         server = None
         name = arg[0]
@@ -46,9 +47,10 @@ async def jx3_lstatistical(event: GroupMessageEvent, args: Message = CommandArg(
         name = arg[1]
     data = await statistical_(server, serendipity=name, group_id=event.group_id)
     if isinstance(data, list):
-        return await jx3_cmd_statistical.finish(data[0])
+        await jx3_cmd_statistical.finish(data[0])
     else:
-        return await jx3_cmd_statistical.finish(ms.image(data))
+        data = await get_content(data)
+        await jx3_cmd_statistical.finish(ms.image(data))
 
 jx3_cmd_gserendipity = on_command("jx3_gserendipity", aliases={"全服奇遇"}, priority=5)
 
@@ -62,12 +64,13 @@ async def jx3_gserendipity(event: GroupMessageEvent, args: Message = CommandArg(
     '''
     arg = args.extract_plain_text()
     if arg == "":
-        return await jx3_cmd_gserendipity.finish("唔……缺少奇遇名称，没有办法找哦~")
+        await jx3_cmd_gserendipity.finish("唔……缺少奇遇名称，没有办法找哦~")
     data = await global_serendipity(arg)
     if isinstance(data, list):
-        return await jx3_cmd_gserendipity.finish(data[0])
+        await jx3_cmd_gserendipity.finish(data[0])
     else:
-        return await jx3_cmd_gserendipity.finish(ms.image(data))
+        data = await get_content(data)
+        await jx3_cmd_gserendipity.finish(ms.image(data))
 
 jx3_cmd_gstatistical = on_command("jx3_gstatistical", aliases={"全服统计"}, priority=5)
 
@@ -81,12 +84,13 @@ async def jx3_gstatistical(event: GroupMessageEvent, args: Message = CommandArg(
     '''
     arg = args.extract_plain_text()
     if arg == "":
-        return await jx3_cmd_gstatistical.finish("唔……缺少奇遇名称，没有办法找哦~")
+        await jx3_cmd_gstatistical.finish("唔……缺少奇遇名称，没有办法找哦~")
     data = await global_statistical(arg)
     if isinstance(data, list):
-        return await jx3_cmd_gstatistical.finish(data[0])
+        await jx3_cmd_gstatistical.finish(data[0])
     else:
-        return await jx3_cmd_gstatistical.finish(ms.image(data))
+        data = await get_content(data)
+        await jx3_cmd_gstatistical.finish(ms.image(data))
 
 preposition = on_command("jx3_preposition", aliases={"前置"}, priority=5)
 
@@ -103,9 +107,9 @@ async def jx3_preposition(event: GroupMessageEvent, args: Message = CommandArg()
     serendipity = args.extract_plain_text()
     data = await get_preposition(serendipity)
     if data is False:
-        return await preposition.finish("唔……没有找到相关信息~")
+        await preposition.finish("唔……没有找到相关信息~")
     else:
-        return await preposition.finish(ms.image(data) + "\n数据来自隐元秘鉴，请在合理范围内使用本图片。")
+        await preposition.finish(ms.image(data) + "\n数据来自隐元秘鉴，请在合理范围内使用本图片。")
 
 recipe = on_command("jx3_recipe", aliases={"攻略"}, priority=5)
 
@@ -129,7 +133,7 @@ async def jx3_serendipity_recipe(event: GroupMessageEvent, args: Message = Comma
         await preposition.finish(ms.image(Path(filepath).as_uri()))
     data = await get_image(serendipity)
     if data is False:
-        return await preposition.finish("唔……没有找到相关信息~")
+        await preposition.finish("唔……没有找到相关信息~")
     else:
         image_content = await get_content(data)
         image = open(filepath, mode="wb")
