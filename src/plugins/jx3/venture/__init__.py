@@ -5,11 +5,11 @@ jx3_cmd_serendipity = on_command("jx3_serendipity", aliases={"奇遇", "查询"}
 
 @jx3_cmd_serendipity.handle()
 async def jx3_serendipity(event: GroupMessageEvent, args: Message = CommandArg()):
-    '''
+    """
     获取个人奇遇记录：
 
     Example：-奇遇 幽月轮 哭包猫@唯我独尊
-    '''
+    """
     arg = args.extract_plain_text().split(" ")
     if len(arg) not in [1, 2]:
         await jx3_cmd_serendipity.finish("唔……参数不正确哦，请检查后重试~")
@@ -31,11 +31,11 @@ jx3_cmd_statistical = on_command("jx3_lstatistical", aliases={"近期奇遇"}, p
 
 @jx3_cmd_statistical.handle()
 async def jx3_lstatistical(event: GroupMessageEvent, args: Message = CommandArg()):
-    '''
+    """
     获取某服务器最近出奇遇的人的列表：
 
     Example：-近期奇遇 幽月轮 阴阳两界
-    '''
+    """
     arg = args.extract_plain_text().split(" ")
     if len(arg) not in [1, 2]:
         await jx3_cmd_statistical.finish("唔……参数不正确哦，请检查后重试~")
@@ -57,11 +57,11 @@ jx3_cmd_gserendipity = on_command("jx3_gserendipity", aliases={"全服奇遇"}, 
 
 @jx3_cmd_gserendipity.handle()
 async def jx3_gserendipity(event: GroupMessageEvent, args: Message = CommandArg()):
-    '''
+    """
     获取全服最近某奇遇的触发列表，按触发顺序：
 
     Example：-全服奇遇 阴阳两界
-    '''
+    """
     arg = args.extract_plain_text()
     if arg == "":
         await jx3_cmd_gserendipity.finish("唔……缺少奇遇名称，没有办法找哦~")
@@ -77,11 +77,11 @@ jx3_cmd_gstatistical = on_command("jx3_gstatistical", aliases={"全服统计"}, 
 
 @jx3_cmd_gstatistical.handle()
 async def jx3_gstatistical(event: GroupMessageEvent, args: Message = CommandArg()):
-    '''
+    """
     获取各服奇遇的触发者，统计图表：
 
     Example：-全服统计 阴阳两界
-    '''
+    """
     arg = args.extract_plain_text()
     if arg == "":
         await jx3_cmd_gstatistical.finish("唔……缺少奇遇名称，没有办法找哦~")
@@ -97,18 +97,19 @@ preposition = on_command("jx3_preposition", aliases={"前置"}, priority=5)
 
 @preposition.handle()
 async def jx3_preposition(event: GroupMessageEvent, args: Message = CommandArg()):
-    '''
+    """
     获取奇遇前置。
 
     Example：-前置 阴阳两界
 
     数据来源：隐元秘鉴
-    '''
+    """
     serendipity = args.extract_plain_text()
     data = await get_preposition(serendipity)
     if data is False:
         await preposition.finish("唔……没有找到相关信息~")
     else:
+        data = await get_content(data)
         await preposition.finish(ms.image(data) + "\n数据来自隐元秘鉴，请在合理范围内使用本图片。")
 
 recipe = on_command("jx3_recipe", aliases={"攻略"}, priority=5)
@@ -116,7 +117,7 @@ recipe = on_command("jx3_recipe", aliases={"攻略"}, priority=5)
 
 @recipe.handle()
 async def jx3_serendipity_recipe(event: GroupMessageEvent, args: Message = CommandArg()):
-    '''
+    """
     获取奇遇攻略。
 
     Example：-攻略 阴阳两界
@@ -124,7 +125,7 @@ async def jx3_serendipity_recipe(event: GroupMessageEvent, args: Message = Comma
     数据来源：隐元秘鉴
 
     本功能由于图片~~又臭又长~~所以需要缓存到本地再发送。
-    '''
+    """
     serendipity = args.extract_plain_text()
     imgs = os.listdir(bot_path.ASSETS + "/jx3/serendipity")
     filename = serendipity + ".png"
@@ -139,4 +140,5 @@ async def jx3_serendipity_recipe(event: GroupMessageEvent, args: Message = Comma
         image = open(filepath, mode="wb")
         image.write(image_content)
         image.close()
-        await preposition.finish(ms.image(Path(filepath).as_uri()))
+        data = await get_content(data)
+        await preposition.finish(ms.image(Path(data).as_uri()))
