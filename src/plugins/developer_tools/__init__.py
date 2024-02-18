@@ -4,3 +4,5 @@ from .help_document import *
 
 from .mgr_config import *
 from .mgr_tools import *
+
+from .failed import *
