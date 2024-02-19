@@ -40,7 +40,7 @@ async def getImg(server: str, name: str, group: str):
     for i in banned:
         if name == i:
             return ["唔……请勿查找无封装备！"]
-    itemData = await get_api(f"https://node.jx3box.com/api/node/item/search?ids=&keyword={name}&client=std")
+    itemData = await get_api(f"https://node.jx3box.com/api/node/item/search?ids=&keyword={name}&client=std&per=35")
     if itemData["data"]["total"] == 0:
         return ["唔……您搜索的物品尚未收录！"]
     itemList_searchable = []
