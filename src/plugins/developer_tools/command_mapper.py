@@ -86,7 +86,7 @@ async def dev_mgr_command_map(bot: Bot, event: GroupMessageEvent, args=Depends(J
         return await complete(dev_global_command_record, "全局")
 
     # 此处导致无法应用单元测试
-    personal_data = await bot.call_api("get_group_member_info", group_id=arg_grp, user_id=event.user_id, no_cache=True)
+    personal_data = await bot.call_api("get_group_member_info", group_id=int(arg_grp), user_id=event.user_id, no_cache=True)
     group_admin = personal_data["role"] in ["owner", "admin"]
 
     permission = checker(str(event.user_id), 10)
