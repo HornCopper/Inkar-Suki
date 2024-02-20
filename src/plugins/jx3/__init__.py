@@ -1,4 +1,7 @@
+import shutil
+
 from nonebot import get_driver
+
 from .jx3 import *
 
 driver = get_driver()
@@ -69,7 +72,6 @@ async def on_jx3_event_recv(bot: Bot, event: RecvEvent):
 async def _(event: RecvEvent):
     if event.get_message()["type"] == "开服":
         if datetime.date.today().weekday() + 1 == 1:
-            os.remove(bot_path.ASSETS + "/jx3/monsters.jpg")
-            asyncio.sleep(900)
-            os.remove(bot_path.ASSETS + "/jx3/monsters.jpg")
+            await asyncio.sleep(900)
+            shutil.rmtree(bot_path.ASSETS + "/jx3/monsters.jpg")
         
