@@ -20,7 +20,7 @@ from bs4 import BeautifulSoup
 headers = {
     "Connection": "keep-alive",
     "Cache-Control": "max-age=0",
-    "sec-ch-ua": ""Google Chrome";v="89", "Chromium";v="89", ";Not A Brand";v="99"",
+    "sec-ch-ua": "\"Google Chrome\";v=\"89\", \"Chromium\";v=\"89\", \";Not A Brand\";v=\"99\"",
     "sec-ch-ua-mobile": "?0",
     "Upgrade-Insecure-Requests": "1",
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.114 Safari/537.36",
