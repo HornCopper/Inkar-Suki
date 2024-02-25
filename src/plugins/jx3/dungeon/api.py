@@ -591,7 +591,16 @@ async def get_item_record(server: str, name: str):
         days = int(timedelta.total_seconds() // 86400)
         hours = int((timedelta.total_seconds() - days*86400) // 3600)
         minutes = int((timedelta.total_seconds() - days*86400 - hours*3600) // 60)
-        relateTime = f"{days}天{hours}时{minutes}分前"
+        days = str(days)
+        hours = str(hours)
+        minutes = str(minutes)
+        if len(days) == 1:
+            days = "0" + days
+        if len(hours) == 1:
+            hours = "0" + hours
+        if len(minutes) == 1:
+            minutes = "0" + minutes
+        relateTime = f"{days} 天{hours} 时{minutes} 分前"
         server = i["Srv"]
         tablecontents.append(template_item.replace("$server", server).replace("$name", item_name).replace(
             "$map", zone).replace("$id", id).replace("$time", timeGet).replace("$relate", relateTime))
