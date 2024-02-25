@@ -32,24 +32,28 @@ async def getImage_v2(server: str, name: str, group_id: str):
         serendity_name = i["event"]
         flag = bot_path.ASSETS + "/serendipity/vector/peerless.png" if i["level"] == 2 else ""
         icon = bot_path.ASSETS + "/serendipity/serendipity/" + serendity_name + ".png"
-        timeGet = convert_time(i["time"], format="%Y-%m-%d %H:%M:%S")
-        timeGet_int = int(i["time"])
-        datetime_1 = datetime.fromtimestamp(timeGet_int)
-        datetime_2 = datetime.fromtimestamp(current_time)
-        timedelta = datetime_2 - datetime_1
-        days = int(timedelta.total_seconds() // 86400)
-        hours = int((timedelta.total_seconds() - days*86400) // 3600)
-        minutes = int((timedelta.total_seconds() - days*86400 - hours*3600) // 60)
-        days = str(days)
-        hours = str(hours)
-        minutes = str(minutes)
-        if len(days) == 1:
-            days = "0" + days
-        if len(hours) == 1:
-            hours = "0" + hours
-        if len(minutes) == 1:
-            minutes = "0" + minutes
-        relativeTime = f"{days}天{hours}时{minutes}分前"
+        if i["time"] != 0:
+            timeGet = convert_time(i["time"], format="%Y-%m-%d %H:%M:%S")
+            timeGet_int = int(i["time"])
+            datetime_1 = datetime.fromtimestamp(timeGet_int)
+            datetime_2 = datetime.fromtimestamp(current_time)
+            timedelta = datetime_2 - datetime_1
+            days = int(timedelta.total_seconds() // 86400)
+            hours = int((timedelta.total_seconds() - days*86400) // 3600)
+            minutes = int((timedelta.total_seconds() - days*86400 - hours*3600) // 60)
+            days = str(days)
+            hours = str(hours)
+            minutes = str(minutes)
+            if len(days) == 1:
+                days = "0" + days
+            if len(hours) == 1:
+                hours = "0" + hours
+            if len(minutes) == 1:
+                minutes = "0" + minutes
+            relativeTime = f"{days}天{hours}时{minutes}分前"
+        else:
+            timeGet = "遗忘的时间"
+            relativeTime = ""
         tables.append(template_serendity.replace("$peerless_flag", flag).replace("$serendipity_icon", icon).replace("$actual_time", timeGet).replace("$relative_time", relativeTime))
     tables[0] = tables[0][:-5] + poem + "</tr>"
     saohua = await get_api(f"https://www.jx3api.com/data/saohua/random?token={token}")
