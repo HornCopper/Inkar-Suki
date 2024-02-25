@@ -29,6 +29,8 @@ async def getImage_v2(server: str, name: str, group_id: str):
     tables = []
     current_time = int(datetime.now().timestamp())
     for i in data["data"]:
+        if i["level"] >= 3:
+            continue
         serendity_name = i["event"]
         flag = bot_path.ASSETS + "/serendipity/vector/peerless.png" if i["level"] == 2 else ""
         icon = bot_path.ASSETS + "/serendipity/serendipity/" + serendity_name + ".png"
