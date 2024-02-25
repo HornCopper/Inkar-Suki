@@ -1,4 +1,5 @@
 from .api import *
+from .newui import *
 
 jx3_cmd_serendipity = on_command("jx3_serendipity", aliases={"奇遇", "查询"}, priority=5)
 
@@ -45,7 +46,7 @@ async def jx3_serendipity(event: GroupMessageEvent, args: Message = CommandArg()
     elif len(arg) == 2:
         server = arg[0]
         id = arg[1]
-    data = await serendipity_(server, id, group_id=str(event.group_id))
+    data = await getImage_v2(server, id, group_id=str(event.group_id))
     if isinstance(data, list):
         await serendipity_v2.finish(data[0])
     else:
