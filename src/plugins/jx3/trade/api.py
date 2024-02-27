@@ -30,7 +30,7 @@ template_table = """
     <td class="short-column">$price</td>
 </tr>"""
 
-async def getImg(server: str, name: str, group: str):
+async def getImg(server: str, name: str, group: str, itemList: list = []):
     server = server_mapping(server, group)
     if not server:
         return [PROMPT_ServerNotExist]
@@ -40,11 +40,22 @@ async def getImg(server: str, name: str, group: str):
     for i in banned:
         if name == i:
             return ["唔……请勿查找无封装备！"]
-    itemData = await get_api(f"https://node.jx3box.com/api/node/item/search?ids=&keyword={name}&client=std&per=35")
-    if itemData["data"]["total"] == 0:
-        return ["唔……您搜索的物品尚未收录！"]
+    final_list = []
+    if itemList == []:
+        itemData = await get_api(f"https://node.jx3box.com/api/node/item/search?ids=&keyword={name}&client=std&per=35")
+        if itemData["data"]["total"] == 0:
+            return ["唔……您搜索的物品尚未收录！"]
+        final_list = itemData["data"]["data"]
+    else:
+        for i in itemList:
+            itemData = await get_api(f"https://node.jx3box.com/api/node/item/search?ids=&keyword={i}&client=std&per=5")
+            if itemData["data"]["total"] == 0:
+                continue
+            else:
+                for x in itemData["data"]["data"]:
+                    final_list.append(x)
     itemList_searchable = []
-    for i in itemData["data"]["data"]:
+    for i in final_list:
         new = {}
         if i["BindType"] not in [0, 1, 2, None]:
             continue
@@ -81,7 +92,13 @@ async def getImg(server: str, name: str, group: str):
         itemId = itemList_searchable[0]["id"]
         detailData = await get_api(f"https://next2.jx3box.com/api/item-price/{itemId}/detail?server={server}&limit=20")
         if (not currentStatus or yesterdayFlag) and detailData["data"]["prices"] == None:
-            return ["唔……该物品目前交易行没有数据。"]
+            if not yesterdayFlag:
+                return ["唔……该物品目前交易行没有数据。"]
+            else:
+                low = convert(current["LowestPrice"])
+                avg = convert(current["AvgPrice"])
+                high = convert(current["HighestPrice"])
+                return [f"唔……该物品目前交易行没有数据，但是音卡找到了昨日的数据：\n昨日低价：{low}\n昨日均价：{avg}\n昨日高价：{high}"]
         table = []
         for each_price in detailData["data"]["prices"]:
             table_content = template_table
@@ -96,7 +113,7 @@ async def getImg(server: str, name: str, group: str):
         font = bot_path.ASSETS + "/font/custom.ttf"
         saohua = await get_api(f"https://www.jx3api.com/data/saohua/random?token={token}")
         saohua = saohua["data"]["text"]
-        final_name = itemList_searchable[0]["name"]
+        final_name = itemList_searchable[0]["name"] if itemList == [] else "+".join(itemList)
         html = html.replace("$customfont", font).replace("$tablecontent", final_table).replace("$randomsaohua", saohua).replace("$appinfo", f"交易行 · {server} · {final_name}").replace("$msgbox", msgbox)
         final_html = bot_path.CACHE + "/" + get_uuid() + ".html"
         write(final_html, html)

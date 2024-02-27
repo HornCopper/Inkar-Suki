@@ -57,10 +57,12 @@ async def getWufengImg(raw: str, server: str, group: str):
         return [f"唔……未找到该属性的无封装备。"]
     logs = await get_api(f"https://next2.jx3box.com/api/item-price/{itemId}/logs?server={server}")
     current = logs["data"]["today"]
+    yesterdayFlag = False
     if current != None:
         currentStatus = 1
     else:
         if logs["data"]["yesterday"] != None:
+            yesterdayFlag = True
             currentStatus = 1
             current = logs["data"]["yesterday"]
     if currentStatus:
@@ -72,8 +74,14 @@ async def getWufengImg(raw: str, server: str, group: str):
         msgbox = ""
     color = ["(167, 167, 167)", "(255, 255, 255)", "(0, 210, 75)", "(0, 126, 255)", "(254, 45, 254)", "(255, 165, 0)"][data["Quality"]]
     detailData = await get_api(f"https://next2.jx3box.com/api/item-price/{itemId}/detail?server={server}&limit=20")
-    if not currentStatus and detailData["data"]["prices"] == None:
-        return ["唔……该物品目前交易行没有数据。"]
+    if (not currentStatus or yesterdayFlag) and detailData["data"]["prices"] == None:
+        if not yesterdayFlag:
+            return ["唔……该物品目前交易行没有数据。"]
+        else:
+            low = convert(current["LowestPrice"])
+            avg = convert(current["AvgPrice"])
+            high = convert(current["HighestPrice"])
+            return [f"唔……该物品目前交易行没有数据，但是音卡找到了昨日的数据：\n昨日低价：{low}\n昨日均价：{avg}\n昨日高价：{high}"]
     table = []
     icon = "https://icon.jx3box.com/icon/" + str(data["IconID"]) + ".png"
     name = data["Name"]

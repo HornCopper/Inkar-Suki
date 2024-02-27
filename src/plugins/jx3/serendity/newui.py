@@ -10,7 +10,7 @@ template_serendity = """
         <img src="$peerless_flag">
     </td>
     <td class="empty-column">
-        <img src="$serendipity_icon">
+        <img src="$serendipity_icon" alt="$serendipity_name.png">
     </td>
     <td class="short-column">$actual_time<br>$relative_time</td>
 </tr>"""
@@ -56,7 +56,7 @@ async def getImage_v2(server: str, name: str, group_id: str):
         else:
             timeGet = "遗忘的时间"
             relativeTime = ""
-        tables.append(template_serendity.replace("$peerless_flag", flag).replace("$serendipity_icon", icon).replace("$actual_time", timeGet).replace("$relative_time", relativeTime))
+        tables.append(template_serendity.replace("$peerless_flag", flag).replace("$serendipity_icon", icon).replace("$actual_time", timeGet).replace("$relative_time", relativeTime).replace("$serendipity_name", serendity_name))
     if len(tables) == 0:
         return ["唔……您似乎只有宠物奇遇哦，如果需要查看请使用V1版本的奇遇查询：\n查询/奇遇 区服 ID"]
     tables[0] = tables[0][:-5] + poem + "</tr>"
