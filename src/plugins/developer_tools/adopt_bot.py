@@ -17,7 +17,7 @@ async def _(event: Event):
         time_ = convert_time(i["time"], "%m-%d %H:%M:%S")
         msg = f"群聊（{group}），由{user}发起，日期为：{time_}"
         msgs.append(msg)
-    current_application.finish(prefix + "\n".join(msgs))
+    await current_application.finish(prefix + "\n".join(msgs))
     
 
 process_application = on_command("同意邀请", aliases={"同意申请"}, priority=5)
