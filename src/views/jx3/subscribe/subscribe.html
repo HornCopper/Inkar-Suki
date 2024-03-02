@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <link href="https://cdn.jx3box.com/static/tool/css/chunk-vendors.6acbb61b.css" rel="stylesheet">
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+        }
+
+        .el-row {
+            width: 850px;
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .el-col {
+            margin-left: 15px;
+            margin-bottom: 10px;
+            width: 250px;
+            height: 90px;
+            border: 1px solid rgb(179, 179, 179);
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-left: 5px;
+            padding-right: 10px;
+        }
+
+        .el-box {
+
+            display: flex;
+            align-items: center;
+        }
+
+        .el-status {
+
+            display: flex;
+            align-items: center;
+        }
+
+        .disabled {
+            font-size: 35px;
+            color: red;
+        }
+
+        .enabled {
+            font-size: 35px;
+            color: green;
+        }
+
+        .el-image {
+            width: 30px;
+            height: 30px;
+        }
+
+        .el-text {
+            display: flex;
+            flex-direction: column;
+            padding-left: 10px;
+        }
+
+        .element-text-up {
+            font-weight: 800;
+        }
+
+        .element-text-down {
+            color: grey;
+            font-size: small;
+        }
+
+        .el-divider--horizontal {
+            display: block;
+            height: 1px;
+            width: 100%;
+            margin: 24px 0
+        }
+
+        .el-divider {
+            background-color: #dcdfe6;
+            position: relative
+        }
+
+        .el-divider__text {
+            position: absolute;
+            background-color: #fff;
+            padding: 0 20px;
+            color: #303133
+        }
+
+        .el-divider__text.is-left {
+            left: 20px;
+            -webkit-transform: translateY(-50%);
+            transform: translateY(-50%)
+        }
+
+        @font-face {
+            font-family: Harmony;
+            src: url($customfont);
+        }
+
+        body {
+            font-family: Harmony, sans-serif;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="total">
+        <!-- 通用划线 -->
+        <div class="el-divider el-divider--horizontal" style="width:850px">
+            <div class="el-divider__text is-left">群聊 $group_name（$group_id） 关于本群</div>
+        </div>
+
+        <!-- 图标库 -->
+        <div class="el-row">
+            $contents
+        </div>
+    </div>
+</body>
+
+</html>

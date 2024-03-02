@@ -83,7 +83,7 @@ function modify(item, callback, freezingOffCallBack) {
 
 /**
  * get property of object
- * you can use `getProp(obj,['a','b','c'])` to get obj.a.b.c,simply?
+ * you can use `getProp(obj,['a","b","c'])` to get obj.a.b.c,simply?
  *
  * @export
  * @param {Object} node

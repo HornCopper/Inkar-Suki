@@ -2,7 +2,7 @@ from .Base import *
 from src.tools.utils import *
 
 server_status_records: dict[str, dict[str, str]] = filebase_database.Database(
-    f"{bot_path.common_data_full}server_status_records",
+    f"{common_data_full}server_status_records",
 ).value
 
 

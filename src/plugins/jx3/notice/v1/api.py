@@ -1,5 +1,5 @@
 from __future__ import annotations
-from src.tools.dep import *
+from src.tools.basic import *
 
 
 async def announce_by_jx3api():

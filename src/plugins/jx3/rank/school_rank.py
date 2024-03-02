@@ -1,4 +1,4 @@
-from src.tools.dep import *
+from src.tools.basic import *
 
 template = """
 <li>
@@ -102,15 +102,15 @@ async def get_school_rank(season_key):
         contents.append(template.replace("$width", width).replace("$color", color).replace(
             "$name", name).replace("$dps", dps).replace("$img", icon))
     contents = "\n".join(contents)
-    html = read(bot_path.VIEWS + "/jx3/schoolrank/schoolrank.html")
-    font = bot_path.ASSETS + "/font/custom.ttf"
+    html = read(VIEWS + "/jx3/schoolrank/schoolrank.html")
+    font = ASSETS + "/font/custom.ttf"
     saohua = await get_api(f"https://www.jx3api.com/data/saohua/random?token={token}")
     saohua = saohua["data"]["text"]
-    appinfo_time = DateTime().tostring(DateTime.Format.HMS)
+    appinfo_time = convert_time(getCurrentTime(), "%H:%M:%S")
     appinfo = f"{season} · 当前时间：{appinfo_time}<br>{saohua}"
     html = html.replace("$content", contents).replace(
         "$customfont", font).replace("$appinfo", appinfo)
-    final_html = bot_path.CACHE + "/" + get_uuid() + ".html"
+    final_html = CACHE + "/" + get_uuid() + ".html"
     write(final_html, html)
     final_path = await generate(final_html, False, ".m-ladder-rank", False)
     return Path(final_path).as_uri()

@@ -6,7 +6,7 @@ import httpx
 from PIL import Image, ImageFont, ImageDraw
 from datetime import datetime, timezone
 
-from src.tools.dep import *
+from src.tools.basic import *
 from src.tools.config import Config
 from src.tools.generate import get_uuid
 
@@ -107,7 +107,7 @@ async def get_single_recequips(data: dict, author: str, name: str, tag: str, kf:
     equip_list = []
     equip_icon_list = []
     equip_quailty = []
-    bot_path.PLUGINS + "/jx3/user/v2/unknown.png"
+    PLUGINS + "/jx3/user/v2/unknown.png"
     henchant = ["", "", "", "", "", ""]
     lenchant = ["", "", "", "", "", "", "", "", "", "", "", ""]
     if kf in ["问水诀", "山居剑意"]:
@@ -332,10 +332,10 @@ async def get_single_recequips(data: dict, author: str, name: str, tag: str, kf:
 
 async def get_attr(kungfu: str, maxjl_list: list, jl_list: list, equip_list: list, equip_icon_list: list, equip_quailty: list, basic: list, henchant: list, lenchant: list, fs: list, wcs_icon: str, wcs: str, attrs: list, wcs1, wcs_icon1):
     attr = kungfu_mapping(kungfu)
-    syst_bold = bot_path.ASSETS + "/font/syst-bold.ttf"
-    syst_mid = bot_path.ASSETS + "/font/syst-mid.ttf"
-    msyh = bot_path.ASSETS + "/font/msyh.ttf"
-    calibri = bot_path.ASSETS + "/font/calibri.ttf"
+    syst_bold = ASSETS + "/font/syst-bold.ttf"
+    syst_mid = ASSETS + "/font/syst-mid.ttf"
+    msyh = ASSETS + "/font/msyh.ttf"
+    calibri = ASSETS + "/font/calibri.ttf"
     if attr in ["根骨", "元气", "力道", "身法"]:
         objects = ["面板攻击", "基础攻击", "会心", "会心效果", "加速", attr, "破防", "无双", "破招", "最大气血值", "御劲", "化劲"]
     elif attr == "治疗":
@@ -347,12 +347,12 @@ async def get_attr(kungfu: str, maxjl_list: list, jl_list: list, equip_list: lis
         raise ValueError("Unknown type of kungfu!")
     background = Image.open(await get_bg(kftosh(kungfu)))
     draw = ImageDraw.Draw(background)
-    flickering = Image.open(bot_path.PLUGINS + "/jx3/user/v2/flicker.png").resize((38, 38))
-    precious = Image.open(bot_path.PLUGINS + "/jx3/user/v2/xy.png")
-    full_jinglian = Image.open(bot_path.PLUGINS + "/jx3/user/v2/jl.png")
-    un_full_jinglian = Image.open(bot_path.PLUGINS + "/jx3/user/v2/unjl.png")
-    heavy_enchant = Image.open(bot_path.PLUGINS + "/jx3/user/v2/henchant.png").resize((20, 20))
-    little_enchant = Image.open(bot_path.PLUGINS + "/jx3/user/v2/lenchant.png").resize((20, 20))
+    flickering = Image.open(PLUGINS + "/jx3/user/v2/flicker.png").resize((38, 38))
+    precious = Image.open(PLUGINS + "/jx3/user/v2/xy.png")
+    full_jinglian = Image.open(PLUGINS + "/jx3/user/v2/jl.png")
+    un_full_jinglian = Image.open(PLUGINS + "/jx3/user/v2/unjl.png")
+    heavy_enchant = Image.open(PLUGINS + "/jx3/user/v2/henchant.png").resize((20, 20))
+    little_enchant = Image.open(PLUGINS + "/jx3/user/v2/lenchant.png").resize((20, 20))
 
     # 心法图标
     background.alpha_composite(Image.open(await get_kf_icon(kungfu)).resize((50, 50)), (61, 62))
@@ -553,6 +553,6 @@ async def get_attr(kungfu: str, maxjl_list: list, jl_list: list, equip_list: lis
         draw.text((1068, 657), wcs1, file=(255, 255, 255),
                   font=ImageFont.truetype(msyh, size=12), anchor="lt")
 
-    final_path = bot_path.CACHE + "/" + get_uuid() + ".png"
+    final_path = CACHE + "/" + get_uuid() + ".png"
     background.save(final_path)
     return final_path

@@ -1,6 +1,6 @@
 from nonebot.message import run_postprocessor
 
-from src.tools.dep import *
+from src.tools.basic import *
 
 @run_postprocessor
 async def _(bot: Bot, event: Event, matcher: Matcher, exception: Optional[Exception]):

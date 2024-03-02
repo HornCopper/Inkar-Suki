@@ -1,22 +1,17 @@
 from .api import *
 
-jx3_cmd_sandbox = on_command(
-    "jx3_sandbox",
-    aliases={"沙盘", "攻防"},
-    priority=5,
-    catalog=permission.jx3.pvp.gf.worldmap,
-    description="获取攻防沙盘地图",
-    example=[
-        Jx3Arg(Jx3ArgsType.server, is_optional=True),
-    ],
-    document='''沙盘''',
-)
+sandbox = on_command("jx3_sandbox", aliases={"沙盘"}, priority=5)
 
+@sandbox.handle()
+async def _(event: GroupMessageEvent, args: Message = CommandArg()):
+    """
+    获取服务器沙盘：
 
-@jx3_cmd_sandbox.handle()
-async def jx3_sandbox(event: GroupMessageEvent, template: list[Any] = Depends(Jx3Arg.arg_factory)):
-    server, = template
-    data = await sandbox_(server)
-    if isinstance(data, list):
-        return await jx3_cmd_sandbox.finish(data[0])
-    return await jx3_cmd_sandbox.send(ms.image(data))
+    Example：-沙盘 幽月轮
+    """
+    server = args.extract_plain_text()
+    data = await sandbox_(server, group_id = event.group_id)
+    if type(data) == type([]):
+        await sandbox.finish(data[0])
+    else:
+        await sandbox.finish(ms.image(data))

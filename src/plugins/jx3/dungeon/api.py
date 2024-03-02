@@ -3,7 +3,7 @@ import re
 from tabulate import tabulate
 from datetime import datetime, timedelta
 
-from src.tools.dep import *
+from src.tools.basic import *
 from src.tools.generate import generate, get_uuid
 from src.plugins.help import css
 from src.plugins.jx3.user import Zone_mapping
@@ -428,13 +428,13 @@ async def generater(map, mode, boss):
             tablecontent.append(template_drop.replace("$icon", icon).replace("$name", name).replace("$attrs", attrs).replace(
                 "$type", type_).replace("$stars", stars).replace("$quailty", quailty).replace("$score", score).replace("$fivestone", fivestone))
         final_table = "\n".join(tablecontent)
-        html = read(bot_path.VIEWS + "/jx3/drop/drop.html")
-        font = bot_path.ASSETS + "/font/custom.ttf"
+        html = read(VIEWS + "/jx3/drop/drop.html")
+        font = ASSETS + "/font/custom.ttf"
         saohua = await get_api(f"https://www.jx3api.com/data/saohua/random?token={token}")
         saohua = saohua["data"]["text"]
         html = html.replace("$font", font).replace("$tablecontent", final_table).replace(
             "$saohua", saohua).replace("$appinfo", f" · 掉落列表 · {mode}{zone} · {boss}")
-        final_html = bot_path.CACHE + "/" + get_uuid() + ".html"
+        final_html = CACHE + "/" + get_uuid() + ".html"
         write(final_html, html)
         final_path = await generate(final_html, False, "table", False)
         return Path(final_path).as_uri()
@@ -487,8 +487,8 @@ async def zone_v2(server, id):
         "X-Sk": gen_xsk(param)
     }
     data = await post_url("https://m.pvp.xoyo.com/h5/parser/cd-process/get-by-role", headers=headers, data=param)
-    unable = unable_.replace("$imagepath", bot_path.ASSETS + "/image/grey.png")
-    available = available_.replace("$imagepath", bot_path.ASSETS + "/image/gold.png")
+    unable = unable_.replace("$imagepath", ASSETS + "/image/grey.png")
+    available = available_.replace("$imagepath", ASSETS + "/image/gold.png")
     data = json.loads(data)
     if data["data"] == []:
         return ["该玩家目前尚未打过任何副本哦~\n注意：10人普通副本会在周五刷新一次。"]
@@ -508,13 +508,13 @@ async def zone_v2(server, id):
                 "$zonemode", map_type).replace("$images", image_content)
             contents.append(temp)
         content = "\n".join(contents)
-        html = read(bot_path.VIEWS + "/jx3/teamcd/teamcd.html")
-        font = bot_path.ASSETS + "/font/custom.ttf"
+        html = read(VIEWS + "/jx3/teamcd/teamcd.html")
+        font = ASSETS + "/font/custom.ttf"
         saohua = await get_api(f"https://www.jx3api.com/data/saohua/random?token={token}")
         saohua = saohua["data"]["text"]
         html = html.replace("$customfont", font).replace("$tablecontent", content).replace(
             "$randomsaohua", saohua).replace("$appinfo", f" · 副本记录 · {server} · {id}")
-        final_html = bot_path.CACHE + "/" + get_uuid() + ".html"
+        final_html = CACHE + "/" + get_uuid() + ".html"
         write(final_html, html)
         final_path = await generate(final_html, False, "table", False)
         return Path(final_path).as_uri()
@@ -561,7 +561,7 @@ async def get_item_record(server: str, name: str):
         "order": "desc",
         "limit": "500",
         "offset": "0",
-        "_": int(DateTime().timestamp() * 1e3),
+        "_": int(time.time()),
         "filter": json.dumps(filter, ensure_ascii=False),
         "op": "{\"Zone\":\"LIKE\",\"Srv\":\"LIKE\"}"
     }
@@ -569,7 +569,7 @@ async def get_item_record(server: str, name: str):
     known_time = []
     known_id = []
     tablecontents = []
-    font = bot_path.ASSETS + "/font/custom.ttf"
+    font = ASSETS + "/font/custom.ttf"
     num = 0
     for i in data["rows"]:
         if i["Tm"] in known_time and i["Nike"] in known_id:
@@ -609,13 +609,13 @@ async def get_item_record(server: str, name: str):
             break  # 不限？不限给你鲨了
     saohua = await get_api(f"https://www.jx3api.com/data/saohua/random?token={token}")
     saohua = saohua["data"]["text"]
-    appinfo_time = DateTime().tostring(DateTime.Format.HMS)
+    appinfo_time = convert_time(getCurrentTime(), "%H:%M:%S")
     appinfo = f"掉落统计 · {server} · {name} · {appinfo_time}"
     final_table = "\n".join(tablecontents)
-    html = read(bot_path.VIEWS + "/jx3/item/item.html")
+    html = read(VIEWS + "/jx3/item/item.html")
     html = html.replace("$customfont", font).replace("$tablecontent", final_table).replace(
         "$randomsaohua", saohua).replace("$appinfo", appinfo)
-    final_html = bot_path.CACHE + "/" + get_uuid() + ".html"
+    final_html = CACHE + "/" + get_uuid() + ".html"
     write(final_html, html)
     final_path = await generate(final_html, False, "table", False)
     return Path(final_path).as_uri()

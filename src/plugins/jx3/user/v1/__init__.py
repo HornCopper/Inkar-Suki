@@ -24,8 +24,8 @@ async def jx3_addritube(event: GroupMessageEvent, template: list[Any] = Depends(
     """
     arg_server, arg_user = template
     if not arg_server:
-        return await jx3_cmd_addritube.finish(PROMPT_ServerNotExist)
+        await jx3_cmd_addritube.finish(PROMPT_ServerNotExist)
     data = await addritube_(arg_server, arg_user)
     if isinstance(data, list):
-        return await jx3_cmd_addritube.finish(data[0])
-    return await jx3_cmd_addritube.send(ms.image(data))
+        await jx3_cmd_addritube.finish(data[0])
+    await jx3_cmd_addritube.send(ms.image(data))

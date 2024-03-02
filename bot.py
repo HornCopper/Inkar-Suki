@@ -1,37 +1,23 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-from hooks import *
-import sys
-from src.tools.config import Config
 import os
+import nonebot
+
 from nonebot.adapters.onebot.v11 import Adapter as ONEBOT_V11Adapter
-from src.tools.dep import *
 
-
-def check_pkgs():
-    db = filebase_database.Database("pip_update")
-    last = DateTime(db.value.get("update"))
-    db.value["update"] = DateTime().tostring()
-    db.save()
-    if (DateTime() - last).total_seconds() < 86400 * 30:
-        # 每月最多更新一次
-        return
-    os.system("pip install -r requirements.txt --upgrade")
-    os.system("playwright install")
-
+from src.tools.basic import *
 
 def check_folder(path: str, can_retry: bool = True):
     if os.path.isdir(path):
         return True
     if os.path.exists(path):
-        logger.logger.warning(f"{path}被文件占用，将其强行移除。")
+        logger.warning(f"{path}被文件占用，将其强行移除。")
         os.remove(path)
         if not can_retry:
             return False
         return check_folder(path, can_retry=False)
     os.mkdir(path)
     return True
-
 
 def check_folders(folder_nest: dict, parent_path: str = None):
 
@@ -46,7 +32,6 @@ def check_folders(folder_nest: dict, parent_path: str = None):
         children = folder_nest[f]
         if isinstance(children, dict):
             check_folders(children, new_parent)
-
 
 init_folders = {
     "./src": {
@@ -73,7 +58,6 @@ init_folders = {
     }
 }
 
-check_pkgs()
 check_folders(init_folders)
 
 logger.debug("start nonebot...")

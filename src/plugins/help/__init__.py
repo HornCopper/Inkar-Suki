@@ -1,4 +1,4 @@
-from src.tools.dep import *
+from src.tools.basic import *
 from src.tools.generate import generate, get_uuid
 from src.tools.config import Config
 from src.tools.file import read, write
@@ -50,7 +50,7 @@ css = """
             }
 </style>"""
 css = css.replace("customfont", Config.font_path)
-path = bot_path.PLUGINS
+path = PLUGINS
 
 
 @help.handle()
@@ -65,11 +65,11 @@ async def help_(args: Message = CommandArg()):
         admin = {}
         aliases = {}
         table = []
-        modules = os.listdir(bot_path.PLUGINS)
+        modules = os.listdir(PLUGINS)
         if module not in modules:
-            return await help.finish("唔……没有找到此模块哦，请使用+help查看所有模块及其帮助。")
+            await help.finish("唔……没有找到此模块哦，请使用+help查看所有模块及其帮助。")
         else:
-            plugin_info = json.loads(read(bot_path.PLUGINS + "/" + module + "/info.json"))
+            plugin_info = json.loads(read(PLUGINS + "/" + module + "/info.json"))
             name = plugin_info["name"]
             version = plugin_info["version"]
             author = plugin_info["author"]
@@ -81,13 +81,13 @@ async def help_(args: Message = CommandArg()):
             msg = str(tabulate(table, headers="firstrow", tablefmt="html"))
             table.clear()
             html = "<div style=\"font-family:Custom\">" + msg.replace("$", "<br>") + "</div>" + css
-            final_path = bot_path.CACHE + "/" + get_uuid() + ".html"
+            final_path = CACHE + "/" + get_uuid() + ".html"
             write(final_path, html)
             image = await generate(final_path, False, "table", False)
             if not isinstance(image, str):
-                return await help.finish("唔，帮助文件生成失败了哦~请联系机器人管理员解决此问题，附带以下信息：\n"+image)
+                await help.finish("唔，帮助文件生成失败了哦~请联系机器人管理员解决此问题，附带以下信息：\n"+image)
             picture_message = ms.image(Path(image).as_uri())
-            return await help.finish(
+            await help.finish(
                 "查询到插件"
                 + module
                 + "的帮助文件啦~\n"
@@ -122,14 +122,14 @@ async def help_(args: Message = CommandArg()):
         msg = str(tabulate(table, headers="firstrow", tablefmt="html"))
         table.clear()
         html = "<div style=\"font-family:Custom\">" + msg.replace("$", "<br>") + "</div>"+css
-        final_path = bot_path.CACHE + "/" + get_uuid() + ".html"
+        final_path = CACHE + "/" + get_uuid() + ".html"
         write(final_path, html)
         image = await generate(final_path, False, "table", False)
         if not isinstance(image, str):
-            return await help.finish("唔，帮助文件生成失败了哦~请联系机器人管理员解决此问题，附带以下信息：\n"+image)
+            await help.finish("唔，帮助文件生成失败了哦~请联系机器人管理员解决此问题，附带以下信息：\n"+image)
         picture_message = ms.image(Path(image).as_uri())
         tip = "【老版本帮助，新版本可以发“帮助”】"
-        return await help.finish(
+        await help.finish(
             f"{tip}帮助信息来啦！输入+help <module>可快速定位你要查找的模块哦~\n"
             + picture_message
             + "还有文档可以找哦~\nhttps://inkar-suki.codethink.cn/\n如果你觉得有帮助的话，欢迎来给作者赞助哦~\n链接：https://inkar-suki.codethink.cn/donate.html") + f"\n{tip}"

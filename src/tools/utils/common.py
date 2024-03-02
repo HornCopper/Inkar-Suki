@@ -1,5 +1,10 @@
 import re
 import time
+import datetime
+import json
+
+from ..file import read, write
+from ..basic.jx3 import DATA
 
 
 def get_number(number):
@@ -65,4 +70,21 @@ def nodetemp(nickname: str, qqnumber: str, message: str) -> dict:
 def prefix(event, prefix):
     if str(event.raw_message)[0] != prefix:
         return False
+    return True
+
+def getCurrentTime():
+    return datetime.datetime.now().timestamp()
+
+def getGroupData(group: str, key: str):
+    data = json.loads(read(DATA + "/" + group + "/jx3group.json"))
+    if data == False:
+        return False
+    return data[key]
+
+def setGroupData(group: str, key: str, new):
+    data = json.loads(read(DATA + "/" + group + "/jx3group.json"))
+    if data == False:
+        return False
+    data[key] = new
+    write(DATA + "/" + group + "/jx3group.json", json.dumps(data, ensure_ascii=False))
     return True

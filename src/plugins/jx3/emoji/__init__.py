@@ -1,6 +1,6 @@
 from random import random
 
-from src.tools.dep import *
+from src.tools.basic import *
 
 rdemoji = on_command("jx3_emoji", aliases={"随机表情"}, priority=5)
 
@@ -15,9 +15,9 @@ async def _(event: GroupMessageEvent):
         rdnum = random.randint(0, len(data) - 1)
         status = await get_status(data[rdnum]["url"])
         if status == 200:
-            return await rdemoji.finish(ms.image(data[rdnum]["url"]))
+            await rdemoji.finish(ms.image(data[rdnum]["url"]))
         else:
             failed_time = failed_time + 1
             if failed_time == 5:
-                return await rdemoji.finish("唔……已经失败超过5次，查找失败！")
+                await rdemoji.finish("唔……已经失败超过5次，查找失败！")
             continue

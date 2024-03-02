@@ -1,7 +1,7 @@
 
 from nonebot import on_notice, on_command, on_request
 from nonebot.adapters.onebot.v11 import Bot, GroupMessageEvent, NoticeEvent, RequestEvent
-from src.tools.dep import *
+from src.tools.basic import *
 from src.tools.local_version import nbv
 from nonebot.adapters.onebot.v11 import unescape
 import psutil
@@ -15,8 +15,8 @@ async def ___(event: Event):
     if checker(str(event.user_id), 1) == False:
         await purge.finish(error(1))
     try:
-        for i in os.listdir(bot_path.CACHE):
-            os.remove(bot_path.CACHE + "/" + i)
+        for i in os.listdir(CACHE):
+            os.remove(CACHE + "/" + i)
     except Exception as _:
         await purge.finish("部分文件并没有找到哦~")
     else:
@@ -48,25 +48,10 @@ echo = on_command("echo", priority=5)  # 复读只因功能
 
 
 @echo.handle()
-async def echo_(event: Event, args: v11Message = CommandArg()):
+async def echo_(event: Event, args: Message = CommandArg()):
     if checker(str(event.user_id), 9) == False:
         await echo.finish(error(9))
     await echo.finish(args)
-
-say = on_command("say", priority=5)  # 复读只因 + CQ码转换（mix：没有CQ码）
-
-
-@say.handle()
-async def say_(event: Event, args: v11Message = CommandArg()):
-    def _unescape(message: v11Message, segment: MessageSegment):
-        if segment.is_text():
-            raw = unescape(str(segment))
-            return message.append(raw)
-        return message.append(segment)
-    if checker(str(event.user_id), 10) == False:
-        await say.finish(error(10))
-    message = extensions.reduce(args, _unescape, v11Message())
-    await say.finish(message)
 
 ping = on_command("ping", aliases={"-测试"}, priority=5)  # 测试机器人是否在线
 
@@ -76,7 +61,7 @@ async def _(event: Event):
     permission = checker(str(event.user_id), 1)
     if not permission:
         times = str("现在是"
-                    + DateTime().tostring()
+                    + convert_time(getCurrentTime())
                     + f"\nNonebot {nbv}")
         await ping.finish(times)
 
@@ -87,7 +72,7 @@ async def _(event: Event):
         return psutil.virtual_memory().percent
     
     times = str("现在是"
-                + DateTime().tostring()
+                + convert_time(getCurrentTime())
                 + f"\nNonebot {nbv}"
                 )
     msg = f"咕咕咕，音卡来啦！\n系统信息如下：\n当前CPU占用：{str(per_cpu_status()[0])}%\n当前内存占用：{str(memory_status())}%\n"
@@ -97,7 +82,7 @@ post = on_command("post", priority=5)  # 发送全域公告至每一个机器人
 
 
 @post.handle()
-async def _(bot: Bot, event: Event, args: v11Message = CommandArg()):
+async def _(bot: Bot, event: Event, args: Message = CommandArg()):
     if str(event.user_id) not in Config.owner:
         await post.finish("唔……只有机器人主人可以使用该命令哦~")
     cmd = args.extract_plain_text()
@@ -112,7 +97,7 @@ call_api = on_command("call_api", aliases={"api"}, priority=5)  # 调用`go-cqht
 
 
 @call_api.handle()
-async def _(event: Event, args: v11Message = CommandArg()):
+async def _(event: Event, args: Message = CommandArg()):
     if checker(str(event.user_id), 10) == False:
         await call_api.finish(error(10))
     cmd = args.extract_plain_text()
@@ -123,7 +108,7 @@ git = on_command("-git", priority=5)  # 调用`Git`，~~别问意义是什么~~
 
 
 @git.handle()
-async def _(event: Event, args: v11Message = CommandArg()):
+async def _(event: Event, args: Message = CommandArg()):
     if checker(str(event.user_id), 10) == False:
         await git.finish(error(10))
     output = ""
@@ -146,66 +131,12 @@ voice = on_command("voice", priority=5)  # 调用腾讯的语音TTS接口，生�
 
 
 @voice.handle()
-async def _(bot: Bot, event: GroupMessageEvent, args: v11Message = CommandArg()):
+async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
     if checker(str(event.user_id), 10) == False:
         await voice.finish(error(10))
     sth = args.extract_plain_text()
     final_msg = f"[CQ:tts,text={sth}]"
     await bot.call_api("send_group_msg", group_id=event.group_id, message=final_msg)
-
-
-util_cmd_web = on_command(
-    "util_web",
-    name="网页截图",
-    aliases={"web"},
-    priority=5,
-    description="网页截图，需要网址",
-    catalog=permission.bot.docs,
-    example=[
-        Jx3Arg(Jx3ArgsType.url)
-    ],
-    document="""通过截图"""
-)
-
-
-@util_cmd_web.handle()
-async def util_web(bot: Bot, event: GroupMessageEvent, args: list[Any] = Depends(Jx3Arg.arg_factory)):
-    if checker(str(event.user_id), 10) == False:
-        await util_cmd_web.finish(error(10))
-    url, = args
-    image = await generate_by_url(url, delay=1000)
-    img = ms.image(Path(image).as_uri())
-    await util_cmd_web.send(v11Message(f"{img}\n网页截图完成"))
-
-
-apply = on_command(
-    "apply",
-    aliases={
-        "申请", "领养", "购买", f"要一个{Config.name}",
-        f"想要一个{Config.name}", f"想有一个{Config.name}", f"{Config.name}", "机器人",
-    },
-    priority=5,
-    description="获取如何拉机器人入群",
-    catalog=permission.mgr.group.apply,
-    example=[],
-    document=""""""
-)
-
-
-@apply.handle()
-async def _(state: T_State, event: Event):
-    applier = str(event.user_id)
-    state["user"] = applier
-    steps = [
-        "音卡的好友答案为：sin y",
-        "Inkar Suki用户群：650495414",
-        "直接加音卡好友再邀请入群就好啦",
-        "记得告诉用户群内管理哦~",
-        "等待管理处理即可！"
-    ]
-    steps = [f"{index+1}.{x}" for (index, x) in enumerate(steps)]
-    steps = str.join("\n", steps)
-    await apply.finish(f"是要领养{Config.name}({bot})吗，免费的：\n{steps}")
 
 randomnum = on_command("random_num", aliases={"随机数"}, priority=5)
 

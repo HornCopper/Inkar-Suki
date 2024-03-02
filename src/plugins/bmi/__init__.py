@@ -1,4 +1,4 @@
-from src.tools.dep import *
+from src.tools.basic import *
 
 bmi = on_command("bmi", aliases={"BMI", "身体质量指数"}, priority=5)
 

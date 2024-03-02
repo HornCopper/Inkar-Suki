@@ -1,7 +1,7 @@
 <template>
-  <div :style="{'text-align': 'center','font-size':font_size,width:'1000px'}">
+  <div :style="{'text-align': 'center","font-size':font_size,width:'1000px'}">
     <el-card shadow="never">
-      <div :style="{'font-size':'2rem','font-weight':600,color:'#ffffff'}" class="header-title">
+      <div :style="{'font-size":"2rem","font-weight':600,color:'#ffffff'}" class="header-title">
         <span>属性 · </span>
         <span :style="{'color':user_description.kunfu.color}">
           <span>{{user_description.title }}</span>
@@ -233,7 +233,7 @@
             </div>
             <el-space wrap class="tabs-container">
               <div v-for="(tab_type,index) in valid_attribute_types" :key="index"
-                :class="['tab-container',currentFocus == tab_type[1] ?'tab-active':'']">
+                :class="['tab-container',currentFocus == tab_type[1] ?'tab-active":"']">
                 <div>
                   <div>{{ tab_type[2] }}</div>
                   <div>{{ tab_type[1] }}</div>

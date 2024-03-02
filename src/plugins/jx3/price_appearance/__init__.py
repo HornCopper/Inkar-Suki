@@ -13,12 +13,10 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     """
     arg = args.extract_plain_text()
     if arg == "":
-        return await item_price.finish("缺少物品名称，没办法找哦~")
+        await item_price.finish("缺少物品名称，没办法找哦~")
     data = await item_(arg)
     if isinstance(data, str):
-        async with httpx.AsyncClient() as client:
-            r: httpx.Response = await client.get(data)
-            final_image = r.content
-            await item_price.finish(ms.image(final_image))
+        final_image = await get_content(data)
+        await item_price.finish(ms.image(final_image))
     await item_price.finish(data[0])
 

@@ -15,7 +15,7 @@ __objects = {
 
 
 class PrimaryAttr(Aliasable):
-    '''主属性'''
+    """主属性"""
     database = './config.primary_attr'
     type: AttrType = AttrType.none
 

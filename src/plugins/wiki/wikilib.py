@@ -97,7 +97,7 @@ class wiki:
         try:
             iw_flag = page["query"]["interwiki"]
             iw = iw_flag[0]["iw"]
-            return await wiki.interwiki_search(api, iw, title[len(iw)+1:])
+            await wiki.interwiki_search(api, iw, title[len(iw)+1:])
         except Exception as _:
             curid_dict = page["query"]["pages"]
         for i in curid_dict:
@@ -115,7 +115,7 @@ class wiki:
             if missing and special:
                 return {"status": 404}
             elif missing and special is False:
-                return await wiki.search(api, title)
+                await wiki.search(api, title)
             elif missing is False and special:
                 actually_title = page["query"]["pages"][i]["title"]
                 link = api.replace("/api.php", "/index.php") + "?title=" + convert(actually_title)
@@ -146,7 +146,7 @@ class wiki:
         iwlink = iwdata["data"]
         data = await wiki.get_api(iwlink)
         new_api = data["data"]
-        return await wiki.simple(new_api, title)
+        await wiki.simple(new_api, title)
 
     async def search(api, title):
         final_link = api + f"?action=query&list=search&format=json&srsearch={title}"

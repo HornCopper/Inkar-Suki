@@ -1,4 +1,4 @@
-from src.tools.dep import *
+from src.tools.basic import *
 
 
 block = on_command("block", aliases={"避雷", "加入黑名单"}, priority=5)  # 综合避雷名单-添加
@@ -17,12 +17,12 @@ async def _(bot: Bot, event: Event, args: Message = CommandArg()):
     sb = arg[0]
     reason = arg[1]
     new = {"ban": sb, "reason": reason}
-    now = json.loads(read(bot_path.DATA + "/" + str(event.group_id) + "/blacklist.json"))
+    now = json.loads(read(DATA + "/" + str(event.group_id) + "/blacklist.json"))
     for i in now:
         if i["ban"] == sb:
             await block.finish("该玩家已加入黑名单。")
     now.append(new)
-    write(bot_path.DATA + "/" + str(event.group_id) + "/blacklist.json", json.dumps(now, ensure_ascii=False))
+    write(DATA + "/" + str(event.group_id) + "/blacklist.json", json.dumps(now, ensure_ascii=False))
     await block.finish("成功将该玩家加入黑名单！")
 
 unblock = on_command("unblock", aliases={"移出黑名单"}, priority=5)  # 解除避雷
@@ -38,11 +38,11 @@ async def _(bot: Bot, event: Event, args: Message = CommandArg()):
     if len(arg) != 1:
         await unblock.finish("参数仅为玩家名，请勿附带任何信息！")
     sb = arg[0]
-    now = json.loads(read(bot_path.DATA + "/" + str(event.group_id) + "/blacklist.json"))
+    now = json.loads(read(DATA + "/" + str(event.group_id) + "/blacklist.json"))
     for i in now:
         if i["ban"] == sb:
             now.remove(i)
-            write(bot_path.DATA + "/" + str(event.group_id) + "/blacklist.json",
+            write(DATA + "/" + str(event.group_id) + "/blacklist.json",
                   json.dumps(now, ensure_ascii=False))
             await unblock.finish("成功移除该玩家的避雷！")
     await unblock.finish("移除失败！尚未避雷该玩家！")
@@ -55,7 +55,7 @@ async def _(event: Event, args: Message = CommandArg()):
     if len(arg) != 1:
         await sblock.finish("参数仅为玩家名，请勿附带任何信息！")
     sb = arg[0]
-    now = json.loads(read(bot_path.DATA + "/" + str(event.group_id) + "/blacklist.json"))
+    now = json.loads(read(DATA + "/" + str(event.group_id) + "/blacklist.json"))
     for i in now:
         if i["ban"] == sb:
             reason = i["reason"]
@@ -75,19 +75,19 @@ lblock = on_command("lblock", aliases={"本群黑名单", "列出黑名单"}, pr
 
 @lblock.handle()
 async def _(bot: Bot, event: GroupMessageEvent):
-    now = json.loads(read(bot_path.DATA + "/" + str(event.group_id) + "/blacklist.json"))
+    now = json.loads(read(DATA + "/" + str(event.group_id) + "/blacklist.json"))
     table = []
     if len(now) == 0:
         await lblock.finish("唔……本群没有设置任何避雷名单哦~")
     for i in now:
         table.append(template.replace("$name", i["ban"]).replace("$reason", i["reason"]))
     final_table = "\n".join(table)
-    html = read(bot_path.VIEWS + "/jx3/blacklist/blacklist.html")
-    font = bot_path.ASSETS + "/font/custom.ttf"
+    html = read(VIEWS + "/jx3/blacklist/blacklist.html")
+    font = ASSETS + "/font/custom.ttf"
     saohua = await get_api(f"https://www.jx3api.com/data/saohua/random?token={token}")
     saohua = saohua["data"]["text"]
     html = html.replace("$customfont", font).replace("$tablecontent", final_table).replace("$randomsaohua", saohua)
-    final_html = bot_path.CACHE + "/" + get_uuid() + ".html"
+    final_html = CACHE + "/" + get_uuid() + ".html"
     write(final_html, html)
     final_path = await generate(final_html, False, "table", False)
     send_path = Path(final_path).as_uri()
