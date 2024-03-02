@@ -1,8 +1,14 @@
 import json
+import pathlib2
+import os
 
-from src.tools.config import Config
+tools_path = f"{os.getcwd()}/src/tools"
 
-TOOLS = Config.global_path
+def get_path(path: str) -> str:
+    t = pathlib2.Path(tools_path)
+    return t.parent.joinpath(path).__str__()
+
+TOOLS = get_path("tools")
 
 def judge(qqnumber):
     file = open(TOOLS + "/permission.json", mode="r")
