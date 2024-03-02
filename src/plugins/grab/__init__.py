@@ -11,13 +11,6 @@ from src.tools.basic import *
 import requests
 import base64
 
-try:
-    scheduler = require("nonebot_plugin_apscheduler").scheduler
-except Exception:
-    scheduler = None
-    logger.warning("未安装定时插件依赖")
-
-
 from .check_pass import check_cd, check_max
 
 what_eat = on_regex(r"^(/)?[今|明|后]?[天|日]?(早|中|晚)?(上|午|餐|饭|夜宵|宵夜)?吃(什么|啥|点啥)$", priority=5)
