@@ -1,5 +1,7 @@
 from src.tools.basic import *
 
+from .about import *
+
 subscribe_options = json.loads(read(PLUGINS + "/jx3/subscribe/options.json"))
 
 subscribe_enable = on_command("jx3_subscribe", aliases={"订阅", "开启"}, priority=5)
@@ -37,3 +39,10 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
             currentData.remove(i)
         setGroupData(str(event.group_id), "subscribe", currentData)
         await subscribe_disable.finish("退订成功！\n可使用“关于”查看本群详细信息！")
+
+info = on_command("jx3_about", aliases={"关于", "本群订阅"}, priority=5)
+
+@info.handle()
+async def _(bot: Bot, event: GroupMessageEvent):
+    about_img = await generateGroupInfo(bot, str(event.group_id))
+    await info.finish(ms.image(about_img))
