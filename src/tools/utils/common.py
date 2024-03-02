@@ -4,7 +4,7 @@ import datetime
 import json
 
 from ..file import read, write
-from ..basic.jx3 import DATA
+from ..basic import DATA
 
 
 def get_number(number):
