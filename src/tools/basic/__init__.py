@@ -5,8 +5,10 @@ try:
 except:
     pass
 
+from src.constant.jx3 import *
+
 from .jx3 import *
-from .data_server import *
+from .data_server import server_mapping, getGroupServer, Zone_mapping
 from .message_process import *
 from .group_opeator import *
 
