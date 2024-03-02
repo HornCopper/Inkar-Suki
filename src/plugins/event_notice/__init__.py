@@ -19,7 +19,6 @@ selfEnterMsg = """噔噔咚——音卡很荣幸受邀来到了「$GROUP_ID」~
 订阅消息需要手动设置，如果需要请使用：订阅 开服
 同时使用这个指令后，可以查看音卡所有的可订阅栏目哦，使用“订阅”后面跟上这些项目就可以订阅啦。
 
-如需音卡离开群聊，请发送：移除机器人 
 如需查看音卡的指令，请发送：帮助
 其余注意事项可以查看音卡空间来了解哦，空间也将不定时发布活动等事项，敬请关注！"""
 # 上述欢迎语内容为@厌睢(监狱牢头)制作，HornCopper修改
@@ -88,13 +87,25 @@ request = on_request(priority=5)
 @request.handle()
 async def _(bot: Bot, event: RequestEvent):
     if event.request_type == "group" and event.sub_type == "invite":
-        msg = event.comment
         group = event.group_id
         user = event.user_id
-
-        msg = f"收到新的加群申请：\n邀请人：{user}\n群号：{group}\n消息：{msg}"
+        if str(user) in json.loads(read(TOOLS + "/ban.json")):
+            await bot.call_api("set_group_add_request", flag=event.flag, sub_type="invite", approve=False, reason="邀请人已被音卡封禁！无法邀请音卡入群！")
+        flag = event.flag
+        time = event.time
+        new = {
+            "group_id": group,
+            "user_id": user,
+            "flag": flag,
+            "time": time
+        }
+        current = json.loads(read(TOOLS + "/" + "application.json"))
+        if new in current:
+            return
+        current.append(new)
+        write(TOOLS + "/" + "application.json", json.dumps(current, ensure_ascii=False))
+        msg = f"收到新的加群申请：\n邀请人：{user}\n群号：{group}"
         for i in Config.notice_to:
-
             await bot.call_api("send_group_msg", group_id=int(i), message=msg)
 
 notice_cmd_welcome_msg_edit = on_command("welcome", priority=5)
