@@ -63,6 +63,8 @@ async def recruit_v2(server: str, actvt: str = ""):
         create_time = convert_time(detail["createTime"])
         new = template.replace("$sort", num).replace("$name", name).replace("$level", level).replace("$leader", leader).replace("$count", count).replace("$content", content).replace("$time", create_time)
         contents.append(new)
+        if len(contents) == 50:
+            break
     table ="\n".join(contents)
     html = read(VIEWS + "/jx3/recruit/recruit.html")
     saohua = await get_api(f"https://www.jx3api.com/data/saohua/random?token={token}")
