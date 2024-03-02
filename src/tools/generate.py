@@ -23,7 +23,7 @@ def get_uuid():
 async def generate_by_url(url: str, locate: str = None, first_element: bool = False, delay: int = 0):
     try:
         async with async_playwright() as p:
-            logger.opt(colors=True).info("<gold>Generating source: " + url + "</gold>")
+            logger.opt(colors=True).info("<green>Generating source: " + url + "</green>")
             browser = await p.chromium.launch(headless=True, slow_mo=0)
             context = await browser.new_context()
             page = await context.new_page()
