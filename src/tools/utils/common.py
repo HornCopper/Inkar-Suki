@@ -68,4 +68,4 @@ def prefix(event, prefix):
     return True
 
 def getCurrentTime():
-    return datetime.datetime.now().timestamp()
+    return int(datetime.datetime.now().timestamp())
