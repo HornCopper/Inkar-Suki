@@ -26,8 +26,6 @@ async def jx3_server_bind(bot: Bot, event: GroupMessageEvent, args: Message = Co
     server = args.extract_plain_text()
     group_id = str(event.group_id)
     exact_server = server_mapping(server)
-    if not exact_server:
-        await jx3_cmd_server_bind.finish("唔……服务器名称输入有误，绑定失败！")
     server_bind(group_id=group_id, server=exact_server if server else "")
     if server == "":
         await jx3_cmd_server_bind.finish("已清除本群的绑定信息！")
