@@ -3,7 +3,6 @@ from nonebot.adapters.onebot.v11.permission import GROUP_ADMIN, GROUP_OWNER
 from nonebot.permission import SUPERUSER
 from nonebot.adapters.onebot.v11.helpers import extract_image_urls
 from nonebot.exception import ActionFailed
-from nonebot import require
 from nonebot.matcher import Matcher
 
 from src.tools.basic import *
@@ -12,12 +11,16 @@ import requests
 import base64
 
 try:
-    scheduler = require("nonebot_plugin_apscheduler").scheduler
+    from nonebot import require
+
+    require("nonebot_plugin_apscheduler")
+    
+    from nonebot_plugin_apscheduler import scheduler
 except Exception:
     scheduler = None
     logger.warning("未安装定时插件依赖")
 
-from nonebot_plugin_apscheduler import scheduler
+
 
 from .check_pass import check_cd, check_max
 
