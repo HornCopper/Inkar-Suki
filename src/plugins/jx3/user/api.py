@@ -1,5 +1,6 @@
 from src.tools.basic import *
 from src.tools.generate import get_uuid
+from src.tools.config import Config
 from src.constant.jx3.skilldatalib import kftosh
 from src.tools.utils import get_api, get_content
 from src.plugins.jx3.rank.school_rank import school_mapping as gkfdt
@@ -16,6 +17,24 @@ from nonebot.log import logger
 now = "万灵当歌"
 
 
+ticket = Config.jx3_token
+
+
+async def addritube_(server: str = None, name: str = None, group_id: str = None):  # 查装 <服务器> <ID>
+    if token == None or ticket == None:
+        return [PROMPT_NoTicket]
+    server = server_mapping(server, group_id)
+    if not server:
+        return [PROMPT_ServerNotExist]
+    final_url = f"{Config.jx3api_link}/view/role/attribute?ticket={ticket}&token={token}&robot={bot}&server={server}&name={name}&scale=1"
+    data = await get_api(final_url)
+    if data["code"] == 404:
+        return ["唔……玩家不存在。"]
+    if data["code"] == 403 and data["msg"] == "侠客隐藏了游戏信息":
+        return ["唔，该玩家隐藏了信息。"]
+    if data["code"] == 403 and data["msg"] == "仅互关好友可见":
+        return ["仅互关好友可见哦~"]
+    return data["data"]["url"]
 
 
 async def roleInfo_(server, player):
@@ -46,6 +65,22 @@ async def post_url(url, proxy: dict = None, headers: str = None, timeout: int = 
         result = resp.text
         return result
 
+
+def Zone_mapping(server):
+    if server == "绝代天骄":
+        return "电信八区"
+    elif server in ["斗转星移", "唯我独尊", "乾坤一掷", "横刀断浪", "剑胆琴心", "幽月轮", "梦江南"]:
+        return "电信五区"
+    elif server in ["长安城", "蝶恋花", "龙争虎斗"]:
+        return "电信一区"
+    elif server == "青梅煮酒":
+        return "双线四区"
+    elif server in ["破阵子", "天鹅坪"]:
+        return "双线一区"
+    else:
+        return False
+
+
 async def get_uid(server, id):
     token = Config.jx3api_globaltoken
     url = f"{Config.jx3api_link}/data/role/detailed?token={token}&server={server}&name={id}"
@@ -72,7 +107,7 @@ def find_qx(data, kf, qx):
         for x in range(1, 6):
             try:
                 each = real_data[str(i)][str(x)]
-            except Exception as _:
+            except:
                 continue
             if each["name"] == qx:
                 return i-1
@@ -233,7 +268,7 @@ async def get_attr_main(server, id, group_id):
     if not server:
         return [PROMPT_ServerNotExist]
     uid = await get_uid(server, id)
-    if uid is False:
+    if uid == False:
         return ["唔……未找到该玩家。"]
     param = {
         "zone": Zone_mapping(server),
@@ -289,7 +324,7 @@ async def get_attr_main(server, id, group_id):
     for i in data["data"]["Person"]["qixueList"]:
         messyqx.append(i["name"])
     qx = ["未知", "未知", "未知", "未知", "未知", "未知", "未知", "未知", "未知", "未知", "未知", "未知"]
-    unknown = PLUGINS + "/jx3/user/v2/unknown.png"
+    unknown = PLUGINS + "/jx3/user/unknown.png"
     qx_icon = [unknown, unknown, unknown, unknown, unknown, unknown,
                unknown, unknown, unknown, unknown, unknown, unknown]
     henchant = ["", "", "", "", "", ""]
@@ -306,7 +341,7 @@ async def get_attr_main(server, id, group_id):
     qxdata = await get_api(f"https://data.jx3box.com/talent/{ver}.json")
     for i in messyqx:
         index = find_qx(qxdata, kf, i)
-        if index is None:
+        if index == None:
             continue
         qx[index] = i
     for i in range(12):
@@ -320,7 +355,7 @@ async def get_attr_main(server, id, group_id):
             msg = i["Quality"]
             try:
                 modify = i["ModifyType"]
-            except Exception as _:
+            except:
                 equip_quailty.append(msg)
                 continue
             for x in modify:
@@ -351,17 +386,19 @@ async def get_attr_main(server, id, group_id):
                               "/" + i["MaxStrengthLevel"] + ")")
             equip_icon_list.append(i["Icon"]["FileName"])
     for i in equip_data:
+        logger.info(i)
+        logger.info(type(i))
         if i == "":
             if equip_data.index(i) in [0, 1, 2, 3, 5]:
                 henchant[equip_data.index(i)] = ""
                 continue
         try:
             i["Icon"]["SubKind"]
-        except Exception as _:
+        except:
             if equip_data.index(i) in [0, 1, 2, 3, 5]:
                 henchant[equip_data.index(i)] = ""
                 continue
-        if not isinstance(i, dict):
+        if type(i) != type({}):
             continue
         if i["Icon"]["SubKind"] == "帽子":
             if "WCommonEnchant" in list(i):
@@ -458,23 +495,24 @@ async def get_attr_main(server, id, group_id):
             continue
         try:
             i["FiveStone"]
-        except Exception as _:
+        except:
             continue
         for x in i["FiveStone"]:
             if x["Name"] != "":
                 fs.append(int(x["Level"]))
             else:
                 fs.append(0)
+    logger.info(fs)
     try:
         wcs = equip_data[11]["ColorStone"]["Name"]
         wcs_icon = equip_data[11]["ColorStone"]["Icon"]["FileName"]
-    except Exception as _:
+    except:
         wcs = ""
         wcs_icon = ""
     try:
         wcs1 = equip_data[12]["ColorStone"]["Name"]
         wcs_icon1 = equip_data[12]["ColorStone"]["Icon"]["FileName"]
-    except Exception as _:
+    except:
         wcs1 = ""
         wcs_icon1 = ""
     values = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
@@ -565,14 +603,14 @@ async def get_attr_main(server, id, group_id):
 async def local_save(webpath):
     file_name = webpath.split("/")[-1].split("?")[0]
     if webpath.find("unknown.png") != -1:
-        return PLUGINS + "/jx3/user/v2/unknown.png"
+        return PLUGINS + "/jx3/user/unknown.png"
     final_path = ASSETS + "/jx3/kungfu/" + file_name + ".png"
     if os.path.exists(final_path):
         return final_path
     else:
         try:
             main = await get_content(webpath)
-        except Exception as _:
+        except:
             return webpath
         cache = open(final_path, mode="wb")
         cache.write(main)
@@ -581,8 +619,7 @@ async def local_save(webpath):
 
 
 def judge_special_weapon(name):
-    special_weapons = ["雪凤冰王笛", "血影天宇舞姬", "炎枪重黎", "腾空", "画影", "金刚", "岚尘金蛇", "苌弘化碧",
-                       "蝎心忘情", "抱朴狩天", "八相连珠", "圆月双角", "九龙升景", "斩马刑天", "风雷瑶琴剑", "五相斩", "雪海散华"]
+    special_weapons = ["雪凤冰王笛", "血影天宇舞姬", "炎枪重黎", "腾空", "画影", "金刚", "岚尘金蛇", "苌弘化碧", "蝎心忘情", "抱朴狩天", "八相连珠", "圆月双角", "九龙升景", "斩马刑天", "风雷瑶琴剑", "五相斩", "雪海散华", "麒王逐魂"]
     for i in special_weapons:
         if name.split("(")[0] in special_weapons:
             return True
@@ -606,17 +643,18 @@ async def get_attr(kungfu: str, maxjl_list: list, jl_list: list, equip_list: lis
         raise ValueError("Unknown type of kungfu!")
     background = Image.open(await get_bg(kftosh(kungfu)))
     draw = ImageDraw.Draw(background)
-    flickering = Image.open(PLUGINS + "/jx3/user/v2/flicker.png").resize((38, 38))
-    precious = Image.open(PLUGINS + "/jx3/user/v2/xy.png")
-    full_jinglian = Image.open(PLUGINS + "/jx3/user/v2/jl.png")
-    un_full_jinglian = Image.open(PLUGINS + "/jx3/user/v2/unjl.png")
-    heavy_enchant = Image.open(PLUGINS + "/jx3/user/v2/henchant.png").resize((20, 20))
-    little_enchant = Image.open(PLUGINS + "/jx3/user/v2/lenchant.png").resize((20, 20))
+    flickering = Image.open(PLUGINS + "/jx3/user/flicker.png").resize((38, 38))
+    precious = Image.open(PLUGINS + "/jx3/user/xy.png")
+    full_jinglian = Image.open(PLUGINS + "/jx3/user/jl.png")
+    un_full_jinglian = Image.open(PLUGINS + "/jx3/user/unjl.png")
+    heavy_enchant = Image.open(PLUGINS + "/jx3/user/henchant.png").resize((20, 20))
+    little_enchant = Image.open(PLUGINS + "/jx3/user/lenchant.png").resize((20, 20))
 
     # 心法图标
     background.alpha_composite(Image.open(await get_kf_icon(kungfu)).resize((50, 50)), (61, 62))
 
     # 武器图标
+    logger.info(equip_list)
     if kungfu not in ["问水诀", "山居剑意"]:
         if equip_icon_list[11] != "":
             if judge_special_weapon(equip_list[11]):
