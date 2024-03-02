@@ -29,4 +29,4 @@ async def jx3_server_bind(bot: Bot, event: GroupMessageEvent, args: Message = Co
     server_bind(group_id=group_id, server=exact_server if server else "")
     if server == "":
         await jx3_cmd_server_bind.finish("已清除本群的绑定信息！")
-    await jx3_cmd_server_bind.finish("绑定成功！\n当前区服为：" + server)
+    await jx3_cmd_server_bind.finish("绑定成功！\n当前区服为：" + exact_server)
