@@ -1,4 +1,4 @@
-from src.tools.dep import *
+from src.tools.basic import *
 
 
 async def demon_(server: str = None, group_id: str = None):  # 金价 <服务器>

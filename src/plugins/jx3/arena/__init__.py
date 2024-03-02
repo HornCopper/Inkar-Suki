@@ -1,83 +1,45 @@
 from .api import *
 
-jx3_cmd_arena_records = on_regex(
-    r"^(/)?(名剑|jjc|竞技场)?(战绩|记录)",
-    name="名剑战绩",
-    priority=5,
-    description="获取玩家竞技场的战绩记录",
-    catalog=permission.jx3.pvp.jjc.records,
-    example=[
-        Jx3Arg(Jx3ArgsType.server, is_optional=True),
-        Jx3Arg(Jx3ArgsType.user),
-        Jx3Arg(Jx3ArgsType.pvp_mode, default="33")
-    ],
-    document="""战绩 玩家id 模式
-    模式可以写22 33 55"""
-)
+arena = on_command("jx3_arena", aliases={"名剑"}, priority=5)
 
 
-@jx3_cmd_arena_records.handle()
-async def jx3_arena_records(event: GroupMessageEvent, template: list[Any] = Depends(Jx3Arg.arg_factory)):
-    arg_server, arg_user, arg_pvp_mode = template
-    if arg_server is None:
-        await jx3_cmd_arena_records.finish(PROMPT_ServerNotExist)
-    if arg_user is None:
-        await jx3_cmd_arena_records.finish(PROMPT_UserNotExist)
-    data = await arena_records(server=arg_server, name=arg_user, mode=arg_pvp_mode)
-    if isinstance(data, str):
-        async with httpx.AsyncClient() as client:
-            r: httpx.Response = await client.get(data)
-            final_image = r.content
-            await jx3_cmd_arena_records.finish(ms.image(final_image))
-    await jx3_cmd_arena_records.finish(data[0])
-
-
-jx3_cmd_arena_rank = on_regex(
-    r"^(/)?(名剑|jjc|竞技场)?(排行|榜单|榜)",
-    name="名剑排行",
-    priority=5,
-    description="获取竞技场的各Top50",
-    catalog=permission.jx3.pvp.jjc.rank,
-    example=[
-        Jx3Arg(Jx3ArgsType.pvp_mode, is_optional=True),
-    ],
-    document="""排行 模式
-    模式可以写22 33 55"""
-)
-
-
-@jx3_cmd_arena_rank.handle()
-async def jx3_arena_rank(bot: Bot, event: GroupMessageEvent, template: list[Any] = Depends(Jx3Arg.arg_factory)):
-    pvp_mode, = template
-    data = await arena_rank(mode=pvp_mode)
-    if isinstance(data, str):
-        async with httpx.AsyncClient() as client:
-            r: httpx.Response = await client.get(data)
-            final_image = r.content
-            await jx3_cmd_arena_rank.finish(ms.image(final_image))
-    await jx3_cmd_arena_rank.finish(data[0])
-
-jx3_cmd_arena_statistics = on_regex(
-    r"^(/)?(名剑|jjc|竞技场)?(统计|日志)",
-    name="名剑统计",
-    priority=5,
-    description="获取竞技场的各门派统计",
-    catalog=permission.jx3.pvp.jjc.statistics,
-    example=[
-        Jx3Arg(Jx3ArgsType.pvp_mode, is_optional=True),
-    ],
-    document="""统计 模式
-    模式可以写22 33 55"""
-)
-
-
-@jx3_cmd_arena_statistics.handle()
-async def jx3_arena_statistics(bot: Bot, event: GroupMessageEvent, template: list[Any] = Depends(Jx3Arg.arg_factory)):
-    pvp_mode, = template
-    data = await arena_statistics(mode=pvp_mode)
-    if isinstance(data, str):
-        async with httpx.AsyncClient() as client:
-            r: httpx.Response = await client.get(data)
-            final_image = r.content
-            await jx3_cmd_arena_statistics.finish(ms.image(final_image))
-    await jx3_cmd_arena_statistics.finish(data[0])
+@arena.handle()
+async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
+    arg = args.extract_plain_text().split(" ")
+    if len(arg) not in [2, 3, 4]:
+        await arena.finish(PROMPT_ArgumentCountInvalid)
+    if arg[0] == "战绩":
+        if len(arg) not in [2, 3, 4]:
+            await arena.finish(PROMPT_ArgumentCountInvalid)
+        mode = "22"
+        if len(arg) == 2:
+            server = None
+            name = arg[1]
+        elif len(arg) == 3:
+            server = arg[1]
+            name = arg[2]
+        else:
+            server = arg[1]
+            name = arg[2]
+            mode = arg[3]
+        data = await arena_(object="战绩", server=server, name=name, group_id=event.group_id, mode=mode)
+        if type(data) == type([]):
+            await arena.finish(data[0])
+        else:
+            await arena.finish(ms.image(data))
+    elif arg[0] == "排行":
+        if len(arg) != 2:
+            await arena.finish(PROMPT_ArgumentCountInvalid)
+        data = await arena_(object="排行", mode=arg[1], group_id=event.group_id)
+        if type(data) == type([]):
+            await arena.finish(data[0])
+        else:
+            await arena.finish(ms.image(data))
+    elif arg[0] == "统计":
+        if len(arg) != 2:
+            await arena.finish(PROMPT_ArgumentCountInvalid)
+        data = await arena_(object="统计", mode=arg[1], group_id=event.group_id)
+        if type(data) == type([]):
+            await arena.finish(data[0])
+        else:
+            await arena.finish(ms.image(data))

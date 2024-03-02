@@ -1,4 +1,4 @@
-from src.tools.dep import *
+from src.tools.basic import *
 
 import datetime
 
@@ -76,13 +76,13 @@ async def getChutianImg():
         desc = i["desc"]
         table.append(template_chutian.replace("$time", str(hour) + ":" + str(minute)).replace("$map", at_map).replace("$place", site).replace("$icon", icon).replace("$section", section).replace("$desc", desc))
     final_table = "\n".join(table)
-    html = read(bot_path.VIEWS + "/jx3/celebrations/chutian.html")
-    font = bot_path.ASSETS + "/font/custom.ttf"
+    html = read(VIEWS + "/jx3/celebrations/chutian.html")
+    font = ASSETS + "/font/custom.ttf"
     saohua = await get_api(f"https://www.jx3api.com/data/saohua/random?token={token}")
     saohua = saohua["data"]["text"]
     current_time = datetime.datetime.now().strftime("%H:%M")
     html = html.replace("$customfont", font).replace("$tablecontent", final_table).replace("$randomsaohua", saohua).replace("$appinfo", f"楚天社 · {current_time}")
-    final_html = bot_path.CACHE + "/" + get_uuid() + ".html"
+    final_html = CACHE + "/" + get_uuid() + ".html"
     write(final_html, html)
     final_path = await generate(final_html, False, "table", False)
     return Path(final_path).as_uri()

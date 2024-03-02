@@ -1,6 +1,6 @@
 from typing import Literal, Tuple
 
-from src.tools.dep import *
+from src.tools.basic import *
 
 
 async def saohua_primary(subject: Literal["random", "content"]) -> Tuple[str, str]:
@@ -14,8 +14,8 @@ async def saohua_primary(subject: Literal["random", "content"]) -> Tuple[str, st
 
 
 async def saohua_random():
-    return await saohua_primary("random")
+    await saohua_primary("random")
 
 
 async def saohua_tiangou():
-    return await saohua_primary("content")
+    await saohua_primary("content")

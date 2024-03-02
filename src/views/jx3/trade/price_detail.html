@@ -1,5 +1,5 @@
 <template>
-  <div :style="{'text-align': 'center','font-size':font_size,width:'1000px'}">
+  <div :style="{'text-align': 'center","font-size':font_size,width:'1000px'}">
     <el-card shadow="never">
       <div style="font-size:2rem;font-weight:600;">
         <span>交易行 · {{ server }} · </span>
@@ -63,7 +63,7 @@
                 <el-col :span="20" style="text-align: left;">
                   <div>
                     <span class="sub-title">名称</span>
-                    <span :style="{'font-size':font_size,color:item.color,'margin-left':'0.5rem'}">
+                    <span :style="{'font-size':font_size,color:item.color,'margin-left":"0.5rem'}">
                       <span>{{ item.name }}</span>
 
                     </span>
@@ -300,7 +300,7 @@
         convertSci,
         convertPop
       }
-      // const price_handle = ['AvgPrice','LowestPrice','HighestPrice']
+      // const price_handle = ['AvgPrice","LowestPrice","HighestPrice']
       const price_logs_converted = (field_name) => {
         const raw = params_data.price_logs
         const result = []

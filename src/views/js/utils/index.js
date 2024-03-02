@@ -327,7 +327,7 @@ function getTime(type) {
  */
 function rgbToHex(value) {
   if (/rgba?/.test(value)) {
-    const array = value.split(',')
+    const array = value.split(",")
     value = '#'
     for (let i = 0; array.length > i; i++) {
       const color = parseInt(array[i].replace(/[^\d]/gi, ''), 10).toString(16)

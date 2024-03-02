@@ -2,7 +2,7 @@ import time
 
 from nonebot.adapters.onebot.v11 import MessageSegment as ms
 
-from src.tools.dep import *
+from src.tools.basic import *
 
 
 def boss_mapping(boss: str):
@@ -53,8 +53,8 @@ async def get_top100(server: str, boss: str, team: str = None):  # 数据来源@
                 found = True
                 leader = i["role"]
                 team_logo = i["team_logo"]
-                start_time = DateTime(i["start_time"]).tostring()
-                finish_time = DateTime(i["finish_time"]).tostring()
+                start_time = convert_time(i["start_time"])
+                finish_time = convert_time(i["finish_time"])
                 num = 0
                 for x in i["teammate"].split(";"):
                     add_one = x.split(",")[0]

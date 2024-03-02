@@ -1,5 +1,5 @@
 <template>
-  <div :style="{'text-align': 'center','font-size':font_size,width:'1000px'}">
+  <div :style="{'text-align': 'center","font-size':font_size,width:'1000px'}">
     <div style="font-size:2rem;font-weight:600;">
       <span>花价</span>
       <span v-if="server">· {{ server }}</span>
@@ -53,7 +53,7 @@
           <template #default="scope">
             <div style="display: flex">
               <img :src="scope.row.img_url" :style="{height: '1.4rem'}" />
-              <span :style="{'font-size':font_size,color:scope.row.color,'margin-left':'0.5rem'}">
+              <span :style="{'font-size':font_size,color:scope.row.color,'margin-left":"0.5rem'}">
                 <span>{{ scope.row.name }}</span>
               </span>
               <span>
@@ -71,7 +71,7 @@
         <el-table-column v-for="(x,index) in Object.keys((items && items[0] && items[0].line) || {})" :key="x"
           :label="`分线·${x}`" width="150px">
           <template #default="scope">
-            <div v-if="scope.row.line[x]" :style="{color:['#2a6e3f','#e18a3b','#945635','#108b96'][index]}">{{
+            <div v-if="scope.row.line[x]" :style="{color:['#2a6e3f","#e18a3b","#945635","#108b96'][index]}">{{
               scope.row.line[x].join(' | ') }}</div>
             <div v-else style="color:#cccccc">无</div>
           </template>

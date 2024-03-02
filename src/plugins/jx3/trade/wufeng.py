@@ -94,12 +94,12 @@ async def getWufengImg(raw: str, server: str, group: str):
         if len(table) == 12:
             break
     final_table = "\n".join(table)
-    html = read(bot_path.VIEWS + "/jx3/trade/trade.html")
-    font = bot_path.ASSETS + "/font/custom.ttf"
+    html = read(VIEWS + "/jx3/trade/trade.html")
+    font = ASSETS + "/font/custom.ttf"
     saohua = await get_api(f"https://www.jx3api.com/data/saohua/random?token={token}")
     saohua = saohua["data"]["text"]
     html = html.replace("$customfont", font).replace("$tablecontent", final_table).replace("$randomsaohua", saohua).replace("$appinfo", f"交易行 · {server} · {name}").replace("$msgbox", msgbox)
-    final_html = bot_path.CACHE + "/" + get_uuid() + ".html"
+    final_html = CACHE + "/" + get_uuid() + ".html"
     write(final_html, html)
     final_path = await generate(final_html, False, ".total", False)
     return Path(final_path).as_uri()

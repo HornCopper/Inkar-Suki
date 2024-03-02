@@ -1,2 +1,2 @@
-from src.tools.dep import *
+from src.tools.basic import *
 from .lib import *

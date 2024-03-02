@@ -5,19 +5,19 @@ from typing import Literal
 
 
 class Kunfu(Aliasable):
-    '''心法'''
+    """心法"""
     database = './config.kunfu'
 
     belong: str
-    '''归属的门派'''
+    """归属的门派"""
     gameid: int
-    '''游戏id'''
+    """游戏id"""
     color: str
-    '''主色调'''
+    """主色调"""
     type: Literal['t', 'dps', 'hps']
-    '''心法类型'''
+    """心法类型"""
     practice_type: str
-    '''修炼方式'''
+    """修炼方式"""
 
     def register_alias(self):
         d = self._get_dict()

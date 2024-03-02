@@ -4,13 +4,13 @@ import hmac
 from tabulate import tabulate
 from datetime import datetime, timezone
 
-from src.tools.dep import *
+from src.tools.basic import *
 from src.plugins.help import css
 from src.tools.generate import generate, get_uuid
 
 from .top100 import *
 
-jx3_token = gloConfig.jx3_token
+jx3_token = Config.jx3_token
 
 
 async def rank_(type_1: str, type_2: str, server: str, group_id: str):
@@ -43,7 +43,7 @@ async def rank_(type_1: str, type_2: str, server: str, group_id: str):
 
 
 def format_body(data: dict) -> str:
-    return json.dumps(data, separators=(',', ':'))
+    return json.dumps(data, separators=(",", ":"))
 
 
 def gen_ts() -> str:
@@ -126,7 +126,7 @@ async def zlrank(server: str = None, school: str = None, group_id: str = None):
         chart.append(new)
         num = num + 1
     final_html = css + tabulate(chart, tablefmt="unsafehtml")
-    final_path = bot_path.CACHE + "/" + get_uuid() + ".html"
+    final_path = CACHE + "/" + get_uuid() + ".html"
     write(final_path, final_html)
     img = await generate(final_path, False, "table", False)
     if img is False:

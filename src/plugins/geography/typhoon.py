@@ -2,7 +2,7 @@ import re
 
 from bs4 import BeautifulSoup as bs
 
-from src.tools.dep import *
+from src.tools.basic import *
 
 
 async def get_typhoon_list():

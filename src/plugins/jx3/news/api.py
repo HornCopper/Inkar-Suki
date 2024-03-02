@@ -1,4 +1,4 @@
-from src.tools.dep import *
+from src.tools.basic import *
 
 async def news_(token: str = None):
     full_link = f"{Config.jx3api_link}/data/web/news/allnews?limit=5&token={token}"

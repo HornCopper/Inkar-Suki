@@ -10,7 +10,7 @@ jx3_cmd_addritube_v2 = on_command(
         Jx3Arg(Jx3ArgsType.server, is_optional=True),
         Jx3Arg(Jx3ArgsType.user),
     ],
-    document='''''',
+    document="""""",
 
 )
 
@@ -19,11 +19,11 @@ jx3_cmd_addritube_v2 = on_command(
 async def jx3_addritube_v2(event: GroupMessageEvent, template: list[Any] = Depends(Jx3Arg.arg_factory)):
     arg_server, arg_user = template
     if not arg_server:
-        return await jx3_cmd_addritube_v2.finish(PROMPT_ServerNotExist)
+        await jx3_cmd_addritube_v2.finish(PROMPT_ServerNotExist)
     data = await get_attr_main(arg_server, arg_user, str(event.group_id))
     if isinstance(data, list):
-        return await jx3_cmd_addritube_v2.finish(data[0])
-    return await jx3_cmd_addritube_v2.send(ms.image(data))
+        await jx3_cmd_addritube_v2.finish(data[0])
+    await jx3_cmd_addritube_v2.send(ms.image(data))
 
 jx3_cmd_roleInfo = on_command(
     "玩家信息",
@@ -45,6 +45,6 @@ async def jx3_roleInfo(event: GroupMessageEvent, args: list[Any] = Depends(Jx3Ar
     """
     arg_server, arg_user = args
     if not arg_server:
-        return await jx3_cmd_roleInfo.finish(PROMPT_ServerNotExist)
+        await jx3_cmd_roleInfo.finish(PROMPT_ServerNotExist)
     msg = await roleInfo_(server=arg_server, player=arg_user)
-    return await jx3_cmd_roleInfo.send(msg)
+    await jx3_cmd_roleInfo.send(msg)

@@ -1,13 +1,15 @@
-from src.tools.dep import *
+from src.tools.basic import *
 from src.tools.file import write
 
 from .manage import Sign
 
-'''
+from nonebot_plugin_apscheduler import scheduler
+
+"""
 签到功能，仅供娱乐。
 
 原理：定时任务 + 文件操作
-'''
+"""
 
 sign_main = Sign
 
@@ -64,11 +66,11 @@ async def _(event: Event, args: Message = CommandArg()):
 
 @scheduler.scheduled_job("cron", hour="7")
 async def clean_data():
-    write(bot_path.CLOCK + "/signed.json", "[]")
+    write(CLOCK + "/signed.json", "[]")
     logger.info("Signed.json has been cleaned.")
     try:
-        for i in os.listdir(bot_path.CACHE):
-            os.remove(bot_path.CACHE + "/" + i)
+        for i in os.listdir(CACHE):
+            os.remove(CACHE + "/" + i)
         logger.info("已清理所有缓存文件。")
     except Exception as _:
         logger.info("缓存清理失败，请检查后重试！！！")

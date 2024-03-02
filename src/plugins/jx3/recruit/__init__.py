@@ -14,12 +14,12 @@ async def jx3_recruit(bot: Bot, event: GroupMessageEvent, args: Message = Comman
     if arg == "":
         group_server = getGroupServer(str(event.group_id))
         if not group_server:
-            return await jx3_cmd_recruit.finish("尚未绑定服务器，请携带服务器参数使用！")
+            await jx3_cmd_recruit.finish("尚未绑定服务器，请携带服务器参数使用！")
         data = await api_recruit(server=group_server)
     else:
         arg = arg.split(" ")
         if len(arg) not in [1, 2]:
-            return await jx3_cmd_recruit.finish("参数不正确哦，只能有1或2个参数~")
+            await jx3_cmd_recruit.finish("参数不正确哦，只能有1或2个参数~")
         server = server_mapping(arg[0], str(event.group_id))
         if len(arg) == 1:
             copy = arg[0] if not server_mapping(arg[0]) else ""  # 当第一个参数是服务器的话则为空
@@ -27,8 +27,8 @@ async def jx3_recruit(bot: Bot, event: GroupMessageEvent, args: Message = Comman
             copy = arg[1]
         data = await api_recruit(server, copy)
     if isinstance(data, list):
-        return await jx3_cmd_recruit.finish(data[0])
-    return await jx3_cmd_recruit.send(ms.image(data))
+        await jx3_cmd_recruit.finish(data[0])
+    await jx3_cmd_recruit.send(ms.image(data))
 
 jx3_cmd_recruit_v2 = on_command("jx3_recruit", aliases={"招募"}, priority=5)
 
@@ -39,12 +39,12 @@ async def jx3_recruit_v2(event: GroupMessageEvent, args: Message = CommandArg())
     if arg == "":
         group_server = getGroupServer(str(event.group_id))
         if not group_server:
-            return await jx3_cmd_recruit_v2.finish("尚未绑定服务器，请携带服务器参数使用！")
+            await jx3_cmd_recruit_v2.finish("尚未绑定服务器，请携带服务器参数使用！")
         data = await recruit_v2(group_server)
     else:
         arg = arg.split(" ")
         if len(arg) not in [1, 2]:
-            return await jx3_cmd_recruit_v2.finish("参数不正确哦，只能有1或2个参数~")
+            await jx3_cmd_recruit_v2.finish("参数不正确哦，只能有1或2个参数~")
         server = server_mapping(arg[0], str(event.group_id))
         if len(arg) == 1:
             copy = arg[0] if not server_mapping(arg[0]) else ""  # 当第一个参数是服务器的话则为空
@@ -52,5 +52,5 @@ async def jx3_recruit_v2(event: GroupMessageEvent, args: Message = CommandArg())
             copy = arg[1]
         data = await recruit_v2(server, copy)
     if isinstance(data, list):
-        return await jx3_cmd_recruit_v2.finish(data[0])
-    return await jx3_cmd_recruit_v2.send(ms.image(data))
+        await jx3_cmd_recruit_v2.finish(data[0])
+    await jx3_cmd_recruit_v2.send(ms.image(data))

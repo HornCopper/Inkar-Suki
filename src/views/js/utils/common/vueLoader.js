@@ -42,7 +42,7 @@ const obj = {};
             scopedSelectors.push(segments[1] + scopeName + (segments[2] || ''))
           })
 
-          var scopedRule = scopedSelectors.join(',') + rule.cssText.substr(rule.selectorText.length)
+          var scopedRule = scopedSelectors.join(",") + rule.cssText.substr(rule.selectorText.length)
           sheet.deleteRule(i)
           sheet.insertRule(scopedRule, i)
         }

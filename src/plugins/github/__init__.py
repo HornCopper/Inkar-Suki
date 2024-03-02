@@ -1,10 +1,10 @@
-from src.tools.dep import *
+from src.tools.basic import *
 from src.tools.config import Config
 from src.tools.file import read
 from src.tools.utils import get_status
 from src.tools.permission import checker, error
+
 import json
-import sys
 import nonebot
 import os
 
@@ -16,9 +16,11 @@ from nonebot.adapters.onebot.v11 import MessageSegment as ms
 from nonebot.log import logger
 from nonebot.params import CommandArg
 
+from .parse import GithubBaseParser
+
 
 def already(reponame: str, group) -> bool:
-    final_path = bot_path.DATA + "/" + group + "/" + "webhook.json"
+    final_path = DATA + "/" + group + "/" + "webhook.json"
     repos = json.loads(read(final_path))
     for i in repos:
         if i == reponame:
@@ -37,11 +39,11 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     reponame = args.extract_plain_text()
     status_code = await get_status("https://github.com/" + reponame)
     if status_code != 200:
-        return await repo.finish(f"仓库获取失败，请检查后重试哦~\n错误码：{status_code}")
+        await repo.finish(f"仓库获取失败，请检查后重试哦~\n错误码：{status_code}")
     else:
         img = ms.image(
             "https://opengraph.githubassets.com/c9f4179f4d560950b2355c82aa2b7750bffd945744f9b8ea3f93cc24779745a0/"+reponame)
-        return await repo.finish(img)
+        await repo.finish(img)
 
 webhook = on_command("bindrepo", aliases={"webhook"}, priority=5)
 
@@ -59,20 +61,20 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
     repo_name = args.extract_plain_text()
     status_code = await get_status("https://github.com/" + repo_name)
     if status_code != 200:
-        return await repo.finish(f"唔……绑定失败。\n错误码：{status_code}")
+        await repo.finish(f"唔……绑定失败。\n错误码：{status_code}")
     else:
         group = str(event.group_id)
         if already(repo_name, group) is False:
-            cache = open(bot_path.DATA + "/" + group + "/" + "webhook.json", mode="r")
+            cache = open(DATA + "/" + group + "/" + "webhook.json", mode="r")
             now = json.loads(cache.read())
             now.append(repo_name)
             cache.close()
-            cache = open(bot_path.DATA + "/" + group + "/" + "webhook.json", mode="w")
+            cache = open(DATA + "/" + group + "/" + "webhook.json", mode="w")
             cache.write(json.dumps(now))
             cache.close()
-            return await webhook.finish("绑定成功！")
+            await webhook.finish("绑定成功！")
         else:
-            return await webhook.finish("唔……绑定失败：已经绑定过了。")
+            await webhook.finish("唔……绑定失败：已经绑定过了。")
 
 unbind = on_command("unbindrepo", aliases={"unbind_webhook"}, priority=5)
 
@@ -90,16 +92,16 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
     repo = args.extract_plain_text()
     group = str(event.group_id)
     if already(repo, group) is False:
-        return await unbind.finish("唔……解绑失败：尚未绑定此仓库。")
+        await unbind.finish("唔……解绑失败：尚未绑定此仓库。")
     else:
-        cache = open(bot_path.DATA + "/" + group + "/webhook.json", mode="r")
+        cache = open(DATA + "/" + group + "/webhook.json", mode="r")
         now = json.loads(cache.read())
         now.remove(repo)
         cache.close()
-        cache = open(bot_path.DATA + "/" + group + "/webhook.json", mode="w")
+        cache = open(DATA + "/" + group + "/webhook.json", mode="w")
         cache.write(json.dumps(now))
         cache.close()
-        return await unbind.finish("解绑成功！")
+        await unbind.finish("解绑成功！")
 
 app: FastAPI = nonebot.get_app()
 
@@ -112,7 +114,6 @@ async def recWebHook(req: Request):
     body = await req.json()
     repo = body["repository"]["full_name"]
     event = req.headers.get("X-GitHub-Event")
-    # current_handler = GithubJx3Handle
     current_handler = GithubBaseParser
     try:
         message = "[GitHub] " + getattr(current_handler, event)(body)
@@ -131,10 +132,10 @@ async def sendm(bot, message, repo):
     """
     推送`Webhook`。
     """
-    groups = os.listdir(bot_path.DATA)
+    groups = os.listdir(DATA)
     send_group = []
     for i in groups:
-        if repo in json.loads(read(bot_path.DATA + "/" + i + "/webhook.json")):
+        if repo in json.loads(read(DATA + "/" + i + "/webhook.json")):
             send_group.append(int(i))
     for i in send_group:
         response = await bot.call_api("send_group_msg", group_id=int(i), message=message)

@@ -1,4 +1,4 @@
-from src.tools.dep import *
+from src.tools.basic import *
 
 import datetime
 
@@ -109,13 +109,13 @@ async def getImg(server: str, name: str, group: str, itemList: list = []):
             if len(table) == 12:
                 break
         final_table = "\n".join(table)
-        html = read(bot_path.VIEWS + "/jx3/trade/trade.html")
-        font = bot_path.ASSETS + "/font/custom.ttf"
+        html = read(VIEWS + "/jx3/trade/trade.html")
+        font = ASSETS + "/font/custom.ttf"
         saohua = await get_api(f"https://www.jx3api.com/data/saohua/random?token={token}")
         saohua = saohua["data"]["text"]
         final_name = itemList_searchable[0]["name"] if itemList == [] else "+".join(itemList)
         html = html.replace("$customfont", font).replace("$tablecontent", final_table).replace("$randomsaohua", saohua).replace("$appinfo", f"交易行 · {server} · {final_name}").replace("$msgbox", msgbox)
-        final_html = bot_path.CACHE + "/" + get_uuid() + ".html"
+        final_html = CACHE + "/" + get_uuid() + ".html"
         write(final_html, html)
         final_path = await generate(final_html, False, ".total", False)
         return Path(final_path).as_uri()
@@ -143,12 +143,12 @@ async def getImg(server: str, name: str, group: str, itemList: list = []):
                 count = str(itemData["n_count"])
                 table.append(table_content.replace("$icon", each_item["icon"]).replace("$color", color).replace("$name", final_name).replace("$time", final_time).replace("$limit", count).replace("$price", toCoinImage(convert(itemData["unit_price"]))))
         final_table = "\n".join(table)
-        html = read(bot_path.VIEWS + "/jx3/trade/trade.html")
-        font = bot_path.ASSETS + "/font/custom.ttf"
+        html = read(VIEWS + "/jx3/trade/trade.html")
+        font = ASSETS + "/font/custom.ttf"
         saohua = await get_api(f"https://www.jx3api.com/data/saohua/random?token={token}")
         saohua = saohua["data"]["text"]
         html = html.replace("$customfont", font).replace("$tablecontent", final_table).replace("$randomsaohua", saohua).replace("$appinfo", f"交易行 · {server} · {name}").replace("$msgbox", "")
-        final_html = bot_path.CACHE + "/" + get_uuid() + ".html"
+        final_html = CACHE + "/" + get_uuid() + ".html"
         write(final_html, html)
         final_path = await generate(final_html, False, ".total", False)
         return Path(final_path).as_uri()

@@ -1,5 +1,5 @@
 <template>
-  <div :style="{'text-align': 'center','font-size':font_size,width:'1000px'}">
+  <div :style="{'text-align': 'center","font-size':font_size,width:'1000px'}">
     <el-card shadow="never">
       <div style="font-size:2rem;font-weight:600;">交易行 · {{ server }} · {{ item_name }}</div>
       <el-row>
@@ -52,7 +52,7 @@
             <template #default="scope">
               <div style="display: flex">
                 <img :src="scope.row.img_url" :style="{height: '1.4rem'}" />
-                <div :style="{'font-size':font_size,color:scope.row.color,'margin-left':'0.5rem'}">
+                <div :style="{'font-size':font_size,color:scope.row.color,'margin-left":"0.5rem'}">
                   <span v-if="scope.row.attribute_desc" style="margin-right:0.5rem">{{ scope.row.attribute_desc }}</span>
                   <span>{{ scope.row.name }}</span>
                   <span v-if="scope.row.level && scope.row.level>0"> ({{ scope.row.level }}品)</span>

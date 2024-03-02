@@ -1,5 +1,5 @@
 
-from src.tools.dep import *
+from src.tools.basic import *
 
 icon_to_xf = {
     "10175": "毒经",

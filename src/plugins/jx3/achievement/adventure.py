@@ -1,4 +1,4 @@
-from src.tools.dep import *
+from src.tools.basic import *
 
 
 async def getAdventure(adventure: str):
@@ -38,12 +38,12 @@ async def getAdventure(adventure: str):
 
 
 async def getAchievementsIcon(IconID: str):
-    final_path = bot_path.ASSETS + "/jx3/adventure/" + IconID + ".png"
+    final_path = ASSETS + "/jx3/adventure/" + IconID + ".png"
     if os.path.exists(final_path):
         return ms.image(Path(final_path).as_uri())
     else:
         image_url = f"https://icon.jx3box.com/icon/{IconID}.png"
-        cache = open(bot_path.ASSETS + "/jx3/adventure/" + IconID + ".png", mode="wb")
+        cache = open(ASSETS + "/jx3/adventure/" + IconID + ".png", mode="wb")
         cache.write(await get_content(image_url))
         cache.close()
         return ms.image(Path(final_path).as_uri())

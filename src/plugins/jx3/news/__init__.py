@@ -12,5 +12,5 @@ async def _():
     """
     r = await news_()
     # if isinstance(r, GloConfigException):
-    #     return await r.finish(news)
-    return await news.finish(r)
+    #     await r.finish(news)
+    await news.finish(r)

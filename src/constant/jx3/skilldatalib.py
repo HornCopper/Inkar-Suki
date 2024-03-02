@@ -1,5 +1,5 @@
 import json
-from src.tools.dep.bot import *
+from src.tools.basic.bot import *
 from urllib.error import HTTPError
 from pathlib import Path
 
@@ -14,41 +14,41 @@ from .entity import *
 
 
 def kftosh(kf: str) -> str:
-    '''
+    """
     将门派别名转换为门派名称
-    '''
+    """
     x = kftoschool(kf)
     return x and x.name
 
 
 def kftoschool(kf: str) -> School:
-    '''
+    """
     将门派别名转换为门派
-    '''
+    """
     return School.from_alias(kf)
 
 
 def std_kunfu(kf_alias: str) -> Kunfu:
-    '''
+    """
     将心法别称转换为标准心法
-    '''
+    """
     return Kunfu.from_alias(kf_alias)
 
 
 def aliases(SkillName: str) -> str:
-    '''
+    """
     将心法别称转换为标准心法名
-    '''
+    """
     x = std_kunfu(SkillName)
     return x and x.name
 
 
 async def getTalents():
-    '''
+    """
     获取所有门派的奇穴。
 
     数据来源：`JX3BOX` & `JX3API`
-    '''
+    """
     force_list = await get_api("https://inkar-suki.codethink.cn/jx3boxdata")
     data_list = []
     for i in force_list:
@@ -58,16 +58,16 @@ async def getTalents():
             info = await get_url(url=f"https://data.jx3box.com/bps/std/{i}/talent.json")
             data = json.loads(info)
             for a in data:
-                write(bot_path.ASSETS + "/jx3/talents/" +
+                write(ASSETS + "/jx3/talents/" +
                       a["kungfu"] + ".json", json.dumps(a, ensure_ascii=False))
 
 
 async def getSkills():
-    '''
+    """
     获取所有门派的技能。
 
     数据来源：`JX3BOX` & `JX3API`。
-    '''
+    """
     force_list = await get_api("https://inkar-suki.codethink.cn/jx3boxdata")
     data_list = []
     for i in force_list:
@@ -77,14 +77,14 @@ async def getSkills():
             info = await get_url(url=f"https://data.jx3box.com/bps/std/{i}/skill.json")
             data = json.loads(info)
             for a in data:
-                write(bot_path.ASSETS + "/jx3/skills/" +
+                write(ASSETS + "/jx3/skills/" +
                       a["kungfuName"] + ".json", json.dumps(a, ensure_ascii=False))
 
 
 async def get_icon(skillName: str, type_: str, api_icon: str = None, kungfu: str = None) -> str:
     if kungfu is None:
         raise ValueError("Key value `kungfu` was not found.")
-    final_path = bot_path.ASSETS + "/jx3/icons/" + kungfu + "_" + skillName + ".png"
+    final_path = ASSETS + "/jx3/icons/" + kungfu + "_" + skillName + ".png"
     if os.path.exists(final_path):
         if type_ == "cq":
             return "[CQ:image,file=" + Path(final_path).as_uri() + "]"
@@ -96,7 +96,7 @@ async def get_icon(skillName: str, type_: str, api_icon: str = None, kungfu: str
             icon = await get_content(api_icon_url)
         except Exception as _:
             raise HTTPError(msg="Can't connect to " + api_icon_url + ".")
-        cache = open(bot_path.ASSETS + "/jx3/icons/" + kungfu +
+        cache = open(ASSETS + "/jx3/icons/" + kungfu +
                      "_" + skillName + ".png", mode="wb")
         cache.write(icon)
         cache.close()
@@ -107,13 +107,13 @@ async def get_icon(skillName: str, type_: str, api_icon: str = None, kungfu: str
 
 
 async def getAllSkillsInfo(Kungfu: str) -> str:
-    '''
+    """
     获取心法下所有技能。
-    '''
+    """
     Kungfu = aliases(Kungfu)
     if Kungfu == "隐龙诀":
         Kungfu == "隐龙决"  # 由于`JX3Box`的`API`的数据错误问题，目前只能这样适配，等到数据纠正后删除这块代码。
-    skill = read(bot_path.ASSETS + "/jx3/skills/" + Kungfu + ".json")
+    skill = read(ASSETS + "/jx3/skills/" + Kungfu + ".json")
     if skill is False:
         await getSkills()
         await getAllSkillsInfo(Kungfu)
@@ -160,7 +160,7 @@ async def getSingleSkill(kungfu: str, skillName: str):
     if kungfu is False:
         return False
     try:
-        data = json.loads(read(bot_path.ASSETS + "/jx3/skills/" + kungfu + ".json"))
+        data = json.loads(read(ASSETS + "/jx3/skills/" + kungfu + ".json"))
     except Exception as _:
         await getSkills()
         await getSingleSkill(kungfu, skillName)
@@ -205,7 +205,7 @@ async def getSingleTalent(Kungfu: str, TalentName: str):
         return "此心法不存在哦，请检查后重试~"
     try:
         data = json.loads(
-            read(bot_path.ASSETS + "/jx3/talents/" + kungfuname + ".json"))
+            read(ASSETS + "/jx3/talents/" + kungfuname + ".json"))
     except Exception as _:
         await getTalents()
         await getSingleTalent(kungfuname, TalentName)

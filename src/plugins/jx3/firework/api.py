@@ -1,6 +1,6 @@
 from playwright.async_api import async_playwright
 
-from src.tools.dep import *
+from src.tools.basic import *
 
 
 def javascript(server, name):
@@ -8,7 +8,7 @@ def javascript(server, name):
     // OA神的JavaScript代码 XD
     async () =>{
         let a = await window.grecaptcha.execute(window.xconfig.extend.reCaptchaToken)
-        let b = await fetch('https://www.jx3pet.com/api/firework?server=$server&name=$name&response=' + a)
+        let b = await fetch("https://www.jx3pet.com/api/firework?server=$server&name=$name&response=" + a)
         return b.json()}    
     """
     return js.replace("$server", server).replace("$name", name)
@@ -51,15 +51,15 @@ async def get_firework_image(server, name, group):
         tablecontent.append(template.replace("$count", str(i)).replace("$map", data[i]["map_name"]).replace("$sed", data[i]["sender"]).replace(
             "$rec", data[i]["recipient"]).replace("$time", convert_time(data[i]["time"])).replace("$firework", data[i]["name"]))
     tablecontents = "\n".join(tablecontent)
-    html = read(bot_path.VIEWS + "/jx3/firework/firework.html")
+    html = read(VIEWS + "/jx3/firework/firework.html")
     saohua = await get_api(f"https://www.jx3api.com/data/saohua/random?token={token}")
     saohua = saohua["data"]["text"]
-    appinfo_time = DateTime().tostring(DateTime.Format.HMS)
+    appinfo_time = convert_time(getCurrentTime(), "%H:%M:%S")
     appinfo = f"烟花记录 · {server} · {name} · 当前时间：{appinfo_time}"
-    font = bot_path.ASSETS + "/font/custom.ttf"
+    font = ASSETS + "/font/custom.ttf"
     html = html.replace("$customfont", font).replace("$appinfo", appinfo).replace(
         "$tablecontent", tablecontents).replace("$randomsaohua", saohua)
-    final_html = bot_path.CACHE + "/" + get_uuid() + ".html"
+    final_html = CACHE + "/" + get_uuid() + ".html"
     write(final_html, html)
     final_path = await generate(final_html, False, "table", False)
     return Path(final_path).as_uri()

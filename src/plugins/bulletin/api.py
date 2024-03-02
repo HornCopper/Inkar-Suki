@@ -1,10 +1,10 @@
-from src.tools.dep import *
+from src.tools.basic import *
 from PIL import Image, ImageDraw, ImageFont
 
 async def get_bulletinG(msg: str, type_: str):
     if type_ not in ["S", "G"]:
         return False
-    background = Image.open(bot_path.PLUGINS + f"/bulletin/bulletin{type_}.jpg")
+    background = Image.open(PLUGINS + f"/bulletin/bulletin{type_}.jpg")
     draw = ImageDraw.Draw(background)
     width, height = background.size
     if len(msg) <= 5:
@@ -14,7 +14,7 @@ async def get_bulletinG(msg: str, type_: str):
     elif 10 < len(msg) <= 20:
         fsize = 64
         msg = msg[:9] + "\n" + msg[9:]
-    font = ImageFont.truetype(bot_path.ASSETS + "/font/syst-heavy.otf", fsize)
+    font = ImageFont.truetype(ASSETS + "/font/syst-heavy.otf", fsize)
     bbox = draw.textbbox((0, 0), msg, font=font)  
     text_width = bbox[2] - bbox[0]  
     text_height = bbox[3] - bbox[1]
@@ -27,6 +27,6 @@ async def get_bulletinG(msg: str, type_: str):
         f = (0, 0, 0)
         o = (255, 255, 255)
     draw.text((x, y), msg, font=font, align="center", fill=f, outline=o, stroke_fill=o, stroke_width=1)
-    new_file = bot_path.CACHE + "/" + get_uuid() + ".jpg"
+    new_file = CACHE + "/" + get_uuid() + ".jpg"
     background.save(new_file)
     return Path(new_file).as_uri()

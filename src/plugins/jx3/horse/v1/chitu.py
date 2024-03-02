@@ -3,7 +3,7 @@ import time
 from bs4 import BeautifulSoup
 
 from src.tools.utils import get_url, get_api
-from src.tools.dep import *
+from src.tools.basic import *
 
 from ...jx3 import server_mapping
 

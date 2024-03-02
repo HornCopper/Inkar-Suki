@@ -1,4 +1,4 @@
-from src.tools.dep import *
+from src.tools.basic import *
 
 
 async def item_(name: str = None):  # 物价 <物品>

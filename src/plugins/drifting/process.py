@@ -1,6 +1,6 @@
-from src.tools.dep import *
+from src.tools.basic import *
 
-bottle_path = bot_path.CLOCK + "/bottles.json"
+bottle_path = CLOCK + "/bottles.json"
 
 async def checkBottle(data: list, sender: str = None, msg: str = None, id: str = None, admin: bool = False):
     a1 = bool(msg) == bool(id)

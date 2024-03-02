@@ -19,7 +19,7 @@ import store from '@/store'
     }
     return true
   } else {
-    console.error(`need roles! Like v-permission="['admin','editor']"`)
+    console.error(`need roles! Like v-permission="['admin","editor']"`)
     return false
   }
 }

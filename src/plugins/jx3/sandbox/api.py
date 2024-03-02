@@ -1,4 +1,4 @@
-from src.tools.dep import *
+from src.tools.basic import *
 
 
 async def sandbox_(server: str):

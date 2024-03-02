@@ -10,4 +10,4 @@ async def _(event: GroupMessageEvent):
     Example：-维护公告
     """
     url = await announce_by_jx3api()
-    return await announce.finish(ms.image(url))
+    await announce.finish(ms.image(url))

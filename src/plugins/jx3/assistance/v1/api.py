@@ -6,7 +6,7 @@ from tabulate import tabulate
 from pathlib import Path
 from random import randint
 
-from src.tools.dep import *
+from src.tools.basic import *
 
 css = """
 <style>
@@ -41,15 +41,14 @@ css = css.replace("ctft", path.as_uri())
 
 class Assistance:
     async def check_description(group: str, description: str):
-        file_content = json.loads(read(f"{bot_path.DATA}/{group}/opening.json"))
+        file_content = json.loads(read(f"{DATA}/{group}/opening.json"))
         for i in file_content:
             if i["description"] == description:
                 return False
         return True
 
     async def create_group(group: str, description: str, creator: str):
-        group_config = GroupConfig(group)
-        server = group_config.mgr_property('server')
+        server = json.loads(read(DATA + "/" + group + "/jx3group.json"))["server"]
         if server == "":
             return "开团失败，未绑定服务器的群聊暂无法使用该功能，请先联系群主或管理员进行绑定哦~"
         status = await Assistance.check_description(group, description)
@@ -59,13 +58,13 @@ class Assistance:
             "creator": creator,
             "applying": [],
             "member": [[], [], [], [], []],
-            "create_time": int(DateTime().timestamp()),
+            "create_time": getCurrentTime(),
             "description": description,
             "server": server
         }
-        now = json.loads(read(f"{bot_path.DATA}/{group}/opening.json"))
+        now = json.loads(read(f"{DATA}/{group}/opening.json"))
         now.append(new)
-        write(f"{bot_path.DATA}/{group}/opening.json",
+        write(f"{DATA}/{group}/opening.json",
               json.dumps(now, ensure_ascii=False))
         return "开团成功，团员可通过以下命令进行预定：\n预定 <团队关键词> <ID> <职业>\n上述命令使用时请勿带尖括号，职业请使用准确些的词语，避免使用“长歌”，“万花”等模棱两可的职业字眼，也可以是“躺拍”“老板”等词语。\n特别注意：团长请给自己预定，否则预定总人数将为26人！"
 
@@ -73,8 +72,7 @@ class Assistance:
         status = await Assistance.check_apply(group, description, id)
         if status:
             return "唔……您似乎已经申请过了，请不要重复申请哦~\n如需修改请先发送“取消申请 <团队关键词> <ID>”，随后重新申请！"
-        group_config = GroupConfig(group)
-        server = group_config.mgr_property('server')
+        server = json.loads(read(DATA + "/" + group + "/jx3group.json"))["server"]
         if job in ["老板", "躺", "躺拍"]:
             job = "老板"
         else:
@@ -97,7 +95,7 @@ class Assistance:
             "job": job,
             "img": job_icon,
             "apply": applyer,
-            "time": int(DateTime().timestamp()),
+            "time": getCurrentTime(),
             "server": server
         }
         stg = await Assistance.storge(group, description, new)
@@ -110,7 +108,7 @@ class Assistance:
         status = await Assistance.check_apply(group, description, id)
         if status is False:
             return "唔……您似乎还没申请呢！"
-        now = json.loads(read(f"{bot_path.DATA}/{group}/opening.json"))
+        now = json.loads(read(f"{DATA}/{group}/opening.json"))
         for i in now:
             if i["description"] == description:
                 for x in i["member"]:
@@ -119,30 +117,30 @@ class Assistance:
                             if y["apply"] != actor:
                                 return "请勿修改他人留坑！"
                             x.remove(y)
-                            write(f"{bot_path.DATA}/{group}/opening.json",
+                            write(f"{DATA}/{group}/opening.json",
                                   json.dumps(now, ensure_ascii=False))
                             return "成功取消留坑！"
         return "取消失败，未知错误。"
 
     async def dissolve(group: str, description: str, actor: str):
-        now = json.loads(read(f"{bot_path.DATA}/{group}/opening.json"))
+        now = json.loads(read(f"{DATA}/{group}/opening.json"))
         for i in now:
             if i["description"] == description:
                 if i["creator"] != actor:
                     return "非创建者无法解散团队哦~"
                 now.remove(i)
-                write(f"{bot_path.DATA}/{group}/opening.json", json.dumps(now, ensure_ascii=False))
+                write(f"{DATA}/{group}/opening.json", json.dumps(now, ensure_ascii=False))
                 return "解散团队成功！"
 
     async def storge(group: str, description: str, info: dict):
-        now = json.loads(read(f"{bot_path.DATA}/{group}/opening.json"))
+        now = json.loads(read(f"{DATA}/{group}/opening.json"))
         for i in now:
             if i["description"] == description:
                 members = i["member"]
                 for x in members:
                     if len(x) != 5:
                         x.append(info)
-                        write(f"{bot_path.DATA}/{group}/opening.json",
+                        write(f"{DATA}/{group}/opening.json",
                               json.dumps(now, ensure_ascii=False))
                         return True
                     else:
@@ -156,7 +154,7 @@ class Assistance:
         return False
 
     async def check_apply(group: str, description: str, id: str):
-        file_content = json.loads(read(f"{bot_path.DATA}/{group}/opening.json"))
+        file_content = json.loads(read(f"{DATA}/{group}/opening.json"))
         for i in file_content:
             if i["description"] == description:
                 for x in i["member"]:
@@ -166,10 +164,10 @@ class Assistance:
         return False
 
     async def time_convert(time1: int):
-        return DateTime(time1).tostring()
+        return convert_time(time1)
 
     async def generate_html(group: str, description: str):
-        now = json.loads(read(f"{bot_path.DATA}/{group}/opening.json"))
+        now = json.loads(read(f"{DATA}/{group}/opening.json"))
         for i in now:
             if i["description"] == description:
                 chart = []
@@ -194,13 +192,13 @@ class Assistance:
                     chart.append(space)
                 final_html = "<div style=\"font-family:Custom\">" + \
                     tabulate(chart, tablefmt="unsafehtml") + "</div>" + css
-                path = bot_path.CACHE + "/" + get_uuid() + ".html"
+                path = CACHE + "/" + get_uuid() + ".html"
                 write(path, final_html)
                 return path
         return False
 
     async def random_member(group: str, description: str):
-        now = json.loads(read(f"{bot_path.DATA}/{group}/opening.json"))
+        now = json.loads(read(f"{DATA}/{group}/opening.json"))
         members = []
         for i in now:
             if i["description"] == description:

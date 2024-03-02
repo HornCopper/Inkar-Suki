@@ -1,4 +1,4 @@
-from src.tools.dep.common_api.none_dep_api.HtmlTagHandler import *
+from src.tools.basic.common_api.none_dep_api.HtmlTagHandler import *
 from typing import List
 import pathlib2
 import json
@@ -28,10 +28,10 @@ async def get_render_image(view_file_path: str, data: dict = None, delay: int = 
     content = get_render_content(view_file_path, data)
 
     filename = PlaywrightRunner.with_timestamp(view_file_path)
-    file = pathlib2.Path(bot_path.CACHE).joinpath(f"tpl_{filename}.html").as_posix()
+    file = pathlib2.Path(CACHE).joinpath(f"tpl_{filename}.html").as_posix()
     with open(file, "w", encoding="utf-8") as f:
         f.write(content)
-    return await generate(file, delay=delay, locate=target)
+    await generate(file, delay=delay, locate=target)
 
 
 def __init_data(data: dict):

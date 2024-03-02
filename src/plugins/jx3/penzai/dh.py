@@ -1,4 +1,4 @@
-from src.tools.dep import *
+from src.tools.basic import *
 
 import datetime
 
@@ -42,13 +42,13 @@ async def get_dh(type_: str):
         if len(table) < 1:
             return "唔……没有获取到任何信息！"
         final_table = "\n".join(table)
-        html = read(bot_path.VIEWS + "/jx3/trade/dunhao.html")
-        font = bot_path.ASSETS + "/font/custom.ttf"
+        html = read(VIEWS + "/jx3/trade/dunhao.html")
+        font = ASSETS + "/font/custom.ttf"
         saohua = await get_api(f"https://www.jx3api.com/data/saohua/random?token={token}")
         saohua = saohua["data"]["text"]
         type_ = type_.replace(",", "+")
         html = html.replace("$customfont", font).replace("$tablecontent", final_table).replace("$randomsaohua", saohua).replace("$appinfo", f"蹲号 · {type_}")
-        final_html = bot_path.CACHE + "/" + get_uuid() + ".html"
+        final_html = CACHE + "/" + get_uuid() + ".html"
         write(final_html, html)
         final_path = await generate(final_html, False, "table", False)
         return [Path(final_path).as_uri(), links, floors]

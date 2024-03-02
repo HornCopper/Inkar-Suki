@@ -76,7 +76,7 @@ async def data_post(url, proxy: dict = None, **kwargs) -> str:
     """
     功能与post_url一致
     """
-    return await post_url(url, proxy, **kwargs)
+    await post_url(url, proxy, **kwargs)
 
 
 async def get_status(url, proxy: dict = None, **kwargs) -> int:
