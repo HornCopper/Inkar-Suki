@@ -18,7 +18,7 @@ template_subscribe = """
 </div>"""
 
 async def generateGroupInfo(bot: Bot, group_id: str):
-    current = await getGroupData(group_id, "subscribe")
+    current = getGroupData(group_id, "subscribe")
     if len(current) <= 0:
         return ["本群聊没有开启任何内容哦~"]
     else:
