@@ -17,6 +17,7 @@ except Exception:
     scheduler = None
     logger.warning("未安装定时插件依赖")
 
+from nonebot_plugin_apscheduler import scheduler
 
 from .check_pass import check_cd, check_max
 

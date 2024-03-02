@@ -23,6 +23,7 @@ from nonebot.params import CommandArg, Arg
 from nonebot import on_command, on, on_regex, on_request, on_notice, on_message
 from nonebot.typing import T_State
 from nonebot.matcher import Matcher
+from nonebot import get_driver
 
 PROMPT_NoToken = "唔……该音卡实例没有填写JX3API的token，数据获取失败，请联系机器人主人！"
 PROMPT_ServerNotExist = "唔……没有找到服务器参数，群聊似乎也没有绑定服务器哦，要不绑定试试呢？"
