@@ -3,6 +3,7 @@ from nonebot.adapters.onebot.v11.permission import GROUP_ADMIN, GROUP_OWNER
 from nonebot.permission import SUPERUSER
 from nonebot.adapters.onebot.v11.helpers import extract_image_urls
 from nonebot.exception import ActionFailed
+from nonebot import require
 from nonebot.matcher import Matcher
 
 from src.tools.basic import *
@@ -11,15 +12,10 @@ import requests
 import base64
 
 try:
-    from nonebot import require
-
-    require("nonebot_plugin_apscheduler")
-    
-    from nonebot_plugin_apscheduler import scheduler
+    scheduler = require("nonebot_plugin_apscheduler").scheduler
 except Exception:
     scheduler = None
     logger.warning("未安装定时插件依赖")
-
 
 
 from .check_pass import check_cd, check_max
@@ -129,30 +125,6 @@ async def handle(state: T_State, name: Message = Arg()):
     except ActionFailed:
         await view_dish.finish("没有找到你所说的，请检查一下菜单吧", at_sender=True)
 
-
-@view_all_dishes.handle()
-async def handle(bot: Bot, event: MessageEvent, state: T_State):
-    # 正则匹配组
-    args = list(state["_matched_groups"])
-    if args[1] in ["菜单", "菜品"]:
-        path = img_eat_path
-        all_name = all_file_eat_name
-    elif args[1] in ["饮料", "饮品"]:
-        path = img_drink_path
-        all_name = all_file_drink_name
-    # 合并转发
-    msg_list = [f"{Bot_NICKNAME}查询到的{args[1]}如下"]
-    N = 0
-    for name in all_name:
-        N += 1
-        img = path / name
-        with open(img, "rb") as im:
-            img_bytes = im.read()
-        base64_str = "base64://" + base64.b64encode(img_bytes).decode()
-        name = re.sub(".jpg", "", name)
-        msg_list.append(f"{N}.{name}\n{ms.image(base64_str)}")
-    await send_forward_msg(bot, event, Bot_NICKNAME, bot.self_id, msg_list)
-
 # 初始化内置时间的last_time
 time = 0
 # 用户数据
@@ -208,32 +180,5 @@ async def wte(msg: MessageEvent):
         except ActionFailed:
             await what_eat.finish("出错啦！没有找到好吃的~")
 
-# 每日0点重置用户数据
-
-
-def reset_user_count():
-    global user_count
-    user_count = {}
-
-
-try:
-    scheduler.add_job(reset_user_count, "cron", hour="0", id="delete_date")
-except ActionFailed as e:
-    logger.warning(f"定时任务添加失败，{repr(e)}")
-
-# 上限回复消息
 max_msg = ("你今天吃的够多了！不许再吃了(´-ωก`)", "吃吃吃，就知道吃，你都吃饱了！明天再来(▼皿▼#)", "(*｀へ´*)你猜我会不会再给你发好吃的图片",
            f"没得吃的了，{Bot_NICKNAME}的食物都被你这坏蛋吃光了！", "你在等我给你发好吃的？做梦哦！你都吃那么多了，不许再吃了！ヽ(≧Д≦)ノ")
-
-# 调用合并转发api函数
-
-
-async def send_forward_msg(bot: Bot, event: MessageEvent, name: str, uin: str, msgs: list) -> dict:
-    def to_json(msg: Message):
-        return {"type": "node", "data": {"name": name, "uin": uin, "content": msg}}
-
-    messages = [to_json(msg) for msg in msgs]
-    if isinstance(event, GroupMessageEvent):
-        await bot.call_api("send_group_forward_msg", group_id=event.group_id, messages=messages)
-    else:
-        await bot.call_api("send_private_forward_msg", user_id=event.user_id, messages=messages)
