@@ -23,7 +23,7 @@ async def _(event: Event):
 process_application = on_command("同意邀请", aliases={"同意申请"}, priority=5)
 
 @process_application.handle()
-async def _(event: Event, args: Message = CommandArg()):
+async def _(bot: Bot, event: Event, args: Message = CommandArg()):
     if checker(str(event.user_id), 10) == False:
         await process_application.finish(error(10))
     args = args.extract_plain_text()
@@ -43,7 +43,7 @@ async def _(event: Event, args: Message = CommandArg()):
 
 
 deny_application = on_command("拒绝邀请", aliases={"拒绝邀请"}, priority=5)
-async def _(event: Event, args: Message = CommandArg()):
+async def _(bot: Bot, event: Event, args: Message = CommandArg()):
     if checker(str(event.user_id), 10) == False:
         await deny_application.finish(error(10))
     args = args.extract_plain_text()
