@@ -24,7 +24,7 @@ def server_mapping(server: str = None, group_id: str = None):
     """
     if server:
         for i in list(servers):
-            if i in servers[i]:
+            if server in servers[i]:
                 return i
     return getGroupServer(group_id=group_id)
 
