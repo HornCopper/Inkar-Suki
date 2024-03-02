@@ -26,7 +26,7 @@ process_application = on_command("同意邀请", aliases={"同意申请"}, prior
 async def _(event: Event, args: Message = CommandArg()):
     if checker(str(event.user_id), 10) == False:
         await process_application.finish(error(10))
-    args = args.extract_plain_text().split(" ")
+    args = args.extract_plain_text()
     if checknumber(args) == False:
         await process_application.finish("唔……同意申请的命令后面直接加群号即可哦~")
     current = json.loads(read(TOOLS + "/application.json"))
@@ -46,7 +46,7 @@ deny_application = on_command("拒绝邀请", aliases={"拒绝邀请"}, priority
 async def _(event: Event, args: Message = CommandArg()):
     if checker(str(event.user_id), 10) == False:
         await deny_application.finish(error(10))
-    args = args.extract_plain_text().split(" ")
+    args = args.extract_plain_text()
     if checknumber(args) == False:
         await deny_application.finish("唔……同意申请的命令后面直接加群号即可哦~")
     current = json.loads(read(TOOLS + "/application.json"))
