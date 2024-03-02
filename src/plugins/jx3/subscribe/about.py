@@ -1,6 +1,6 @@
 from src.tools.basic import *
 
-from . import subscribe_options
+subscribe_options = json.loads(read(PLUGINS + "/jx3/subscribe/options.json"))
 
 template_subscribe = """
 <div class="el-col">
