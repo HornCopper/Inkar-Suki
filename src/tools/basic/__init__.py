@@ -8,6 +8,7 @@ except:
 from .jx3 import *
 from .data_server import *
 from .message_process import *
+from .group_opeator import *
 
 from nonebot.adapters.onebot.v11 import MessageSegment as ms, Event, GroupMessageEvent, Bot
 from nonebot.adapters import Message
