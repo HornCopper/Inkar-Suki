@@ -60,6 +60,8 @@ init_folders = {
 
 check_folders(init_folders)
 
+nonebot.init()
+
 logger.debug("start nonebot...")
 app = nonebot.get_asgi()
 driver = nonebot.get_driver()
