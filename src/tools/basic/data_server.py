@@ -1,4 +1,5 @@
 from src.tools.basic import *
+from .group_opeator import getGroupData
 
 import json
 
