@@ -4,7 +4,7 @@ from nonebot.adapters.onebot.v11 import GroupMessageEvent
 import os
 import json
 
-from .. import DATA, write
+from ..basic import DATA, write
 
 preprocess = on_message(priority=0)
 
