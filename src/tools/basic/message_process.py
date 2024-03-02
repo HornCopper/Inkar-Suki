@@ -6,7 +6,7 @@ import json
 
 from ..basic import DATA, write
 
-preprocess = on_message(priority=0)
+preprocess = on_message(priority=0, block=False)
 
 """
 new_path = f"{DATA}/{str(group_id)}"
