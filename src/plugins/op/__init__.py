@@ -1,18 +1,9 @@
-from src.tools.utils import checknumber
-from src.tools.config import Config
-from src.tools.file import write, read
-from src.tools.permission import checker, error
-import json
-import sys
-import nonebot
+from src.tools.basic import *
 
 from nonebot import on_command
 from nonebot.adapters import Message
 from nonebot.adapters.onebot.v11 import Event, Bot
 from nonebot.params import CommandArg
-
-TOOLS = nonebot.get_driver().config.tools_path
-sys.path.append(str(TOOLS))
 
 
 # 机器人管理员权限设置
@@ -26,7 +17,7 @@ async def handle_first_receive(bot: Bot, event: Event, args: Message = CommandAr
     info = args.extract_plain_text()
     if info:
         try:
-            arguments = info.split(' ')
+            arguments = info.split(" ")
         except:
             pass
         try:
