@@ -38,3 +38,4 @@ def getGroupServer(group_id: str):
     group = getGroupData(group_id, "server")
     if not group:
         return None
+    return group
