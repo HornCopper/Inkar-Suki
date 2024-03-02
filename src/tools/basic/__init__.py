@@ -11,7 +11,8 @@ import sys
 import re
 
 from src.constant.jx3 import *
-from src.tools import checker, error, get_uuid, generate
+from src.tools.generate import get_uuid, generate
+from src.tools.permission import checker, error
 
 from .jx3 import *
 from .data_server import server_mapping, getGroupServer, Zone_mapping
