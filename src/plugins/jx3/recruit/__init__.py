@@ -51,6 +51,6 @@ async def jx3_recruit_v2(event: GroupMessageEvent, args: Message = CommandArg())
         else:
             copy = arg[1]
         data = await recruit_v2(server, copy)
-    if isinstance(data, list):
-        await jx3_cmd_recruit_v2.finish(data[0])
-    await jx3_cmd_recruit_v2.send(ms.image(data))
+        if isinstance(data, list):
+            await jx3_cmd_recruit_v2.finish(data[0])
+        await jx3_cmd_recruit_v2.send(ms.image(data))
