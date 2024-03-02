@@ -5,7 +5,6 @@ from abc import abstractmethod
 from nonebot.typing import overrides
 from nonebot.utils import escape_tag
 from src.tools.utils import *
-from src.constant.jx3.entity.Server import Server, ServerRecordType
 
 
 class RecvEvent(BaseEvent, extra=Extra.ignore):
@@ -16,15 +15,6 @@ class RecvEvent(BaseEvent, extra=Extra.ignore):
     message_type: str
     server: Optional[str] = None
     """影响服务器"""
-
-    @property
-    def mapped_server(self) -> Server:
-        return Server.from_alias(self.server)
-
-    @property
-    def mapped_server_name(self) -> str:
-        s: Server = self.mapped_server
-        return s.name if s else self.server
 
     @property
     @abstractmethod

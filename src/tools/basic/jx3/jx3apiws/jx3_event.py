@@ -3,7 +3,6 @@ from .bot_event import *
 
 import websockets
 import asyncio
-import json
 
 from typing import Optional
 
