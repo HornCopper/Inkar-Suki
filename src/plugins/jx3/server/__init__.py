@@ -11,6 +11,8 @@ async def jx3_server(event: GroupMessageEvent, args: Message = CommandArg()):
     Example：-开服 幽月轮 
     """
     server = args.extract_plain_text()
-    server = server_mapping(server, event.group_id)
-    msg = await server_status(server)
-    await cmd_jx3_server.finish(msg)
+    srv = server_mapping(server, str(event.group_id))
+    if srv == None:
+        await cmd_jx3_server.finish(PROMPT_ServerNotExist)
+    msg = await server_status(srv)
+    await cmd_jx3_server.finish()
