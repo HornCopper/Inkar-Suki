@@ -7,5 +7,5 @@ async def server_status(server: str = None):
     data = info["data"]
     prefix = "开服状态："
     status_desc = "已开服。" if data["status"] else "维护中。"
-    msg = f"{prefix} {server.name} {status_desc}"
+    msg = f"{prefix} {server} {status_desc}"
     return msg
