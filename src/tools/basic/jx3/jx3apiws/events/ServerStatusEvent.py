@@ -29,6 +29,6 @@ class ServerStatusEvent(RecvEvent):
 
     @overrides(RecvEvent)
     def get_message(self) -> dict:
-        time_now = DateTime().tostring("%H:%M")
+        time_now = convert_time(getCurrentTime(), "%H:%M")
         msg = f"{time_now} {self.mapped_server_name} {self.status_desc}"
         return {"type": "开服", "server": self.server, "msg": msg}

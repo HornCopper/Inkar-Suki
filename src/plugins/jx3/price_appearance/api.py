@@ -1,4 +1,4 @@
-from src.tools.basic import get_api, token, bot, PROMPT_NoToken, proxies
+from src.tools.basic import *
 
 
 async def item_(name: str = None):  # 物价 <物品>
