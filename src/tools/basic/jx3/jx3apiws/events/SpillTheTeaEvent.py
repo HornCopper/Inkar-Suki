@@ -24,4 +24,4 @@ class SpillTheTeaEvent(RecvEvent):
 
     @overrides(RecvEvent)
     def get_message(self) -> dict:
-        return {"type": "818", "server": self.server, "name": self.name, "msg": f"有新的八卦推送来啦！\n{self.title}\n{self.url}\n来源：{self.name}吧"}
+        return {"type": "818", "name": self.name, "msg": f"有新的八卦推送来啦！\n{self.title}\n{self.url}\n来源：{self.name}吧"}
