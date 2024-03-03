@@ -15,4 +15,4 @@ async def jx3_server(event: GroupMessageEvent, args: Message = CommandArg()):
     if srv == None:
         await cmd_jx3_server.finish(PROMPT_ServerNotExist)
     msg = await server_status(srv)
-    await cmd_jx3_server.finish()
+    await cmd_jx3_server.finish(msg)
