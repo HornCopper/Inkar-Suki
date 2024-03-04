@@ -1,4 +1,14 @@
 from .dh import *
+from .api import get_from
+
+template_wg = """
+<tr>
+    <td class="short-column">$num</td>
+    <td class="short-column"><div id="context">$context</div></td>
+    <td class="short-column">$place吧</td>
+    <td class="short-column">$time</td>
+</tr>
+"""
 
 async def get_wg(name):
     timestamp = int(datetime.datetime.now().timestamp())
@@ -22,17 +32,18 @@ async def get_wg(name):
                 timestamp = datetime.datetime.strptime(time_, "%Y-%m-%dT%H:%M:%SZ")
                 final_time = convert_time(int(timestamp.timestamp()), "%m月%d日 %H:%M:%S")
                 link = f"http://c.tieba.baidu.com/p/{thread}?pid={post}0&cid=0#{post}"
+                place = await get_url(link)
                 floor = x["Floor"]
                 links.append(link)
                 floors.append(floor)
-                table.append(template_dh.replace("$num", str(i + 1)).replace("$context", title).replace("$time", final_time))
+                table.append(template_wg.replace("$num", str(i + 1)).replace("$context", title).replace("$time", final_time).replace("$place", place))
                 num = num + 1
                 if num == 10:
                     break
             if len(table) < 1:
                 return "唔……没有获取到任何信息！"
             final_table = "\n".join(table)
-            html = read(VIEWS + "/jx3/trade/dunhao.html")
+            html = read(VIEWS + "/jx3/trade/waiguan.html")
             font = ASSETS + "/font/custom.ttf"
             saohua = await get_api(f"https://www.jx3api.com/data/saohua/random?token={token}")
             saohua = saohua["data"]["text"]
