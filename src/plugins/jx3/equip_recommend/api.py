@@ -347,12 +347,12 @@ async def get_attr(kungfu: str, maxjl_list: list, jl_list: list, equip_list: lis
         raise ValueError("Unknown type of kungfu!")
     background = Image.open(await get_bg(kftosh(kungfu)))
     draw = ImageDraw.Draw(background)
-    flickering = Image.open(PLUGINS + "/jx3/user/v2/flicker.png").resize((38, 38))
-    precious = Image.open(PLUGINS + "/jx3/user/v2/xy.png")
-    full_jinglian = Image.open(PLUGINS + "/jx3/user/v2/jl.png")
-    un_full_jinglian = Image.open(PLUGINS + "/jx3/user/v2/unjl.png")
-    heavy_enchant = Image.open(PLUGINS + "/jx3/user/v2/henchant.png").resize((20, 20))
-    little_enchant = Image.open(PLUGINS + "/jx3/user/v2/lenchant.png").resize((20, 20))
+    flickering = Image.open(PLUGINS + "/jx3/user/flicker.png").resize((38, 38))
+    precious = Image.open(PLUGINS + "/jx3/user/xy.png")
+    full_jinglian = Image.open(PLUGINS + "/jx3/user/jl.png")
+    un_full_jinglian = Image.open(PLUGINS + "/jx3/user/unjl.png")
+    heavy_enchant = Image.open(PLUGINS + "/jx3/user/henchant.png").resize((20, 20))
+    little_enchant = Image.open(PLUGINS + "/jx3/user/lenchant.png").resize((20, 20))
 
     # 心法图标
     background.alpha_composite(Image.open(await get_kf_icon(kungfu)).resize((50, 50)), (61, 62))
