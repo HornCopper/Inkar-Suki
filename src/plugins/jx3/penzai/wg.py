@@ -15,7 +15,11 @@ template_wg = """
 
 async def get_from(url: str):
     data = await get_url(url)
-    return unquote(re.findall(r"<meta furl=\".+fname", data)[0][33:-16])
+    try:
+        final = unquote(re.findall(r"<meta furl=\".+fname", data)[0][33:-16])
+    except:
+        final = "未知"
+    return final
 
 async def get_wg(name):
     timestamp = int(datetime.datetime.now().timestamp())
