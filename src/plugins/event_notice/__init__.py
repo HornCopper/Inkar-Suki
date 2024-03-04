@@ -43,7 +43,7 @@ async def on_new_group_enter(bot: Bot, event: NoticeEvent):
     group = event.group_id
     bots = Config.bot
     if str(obj) not in bots:
-        msg = ms.at(obj) + getGroupData(str(event.group_id), "welcome")
+        msg = ms.at(obj) + " " + getGroupData(str(event.group_id), "welcome")
         await bot.call_api("send_group_msg", group_id=group, message=msg)
         return
     if event.sub_type != "approve":

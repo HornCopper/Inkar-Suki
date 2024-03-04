@@ -10,7 +10,8 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     Example：-沙盘 幽月轮
     """
     server = args.extract_plain_text()
-    data = await sandbox_(server, group_id = event.group_id)
+    server = server_mapping(server, str(event.group_id))
+    data = await sandbox_(server)
     if type(data) == type([]):
         await sandbox.finish(data[0])
     else:
