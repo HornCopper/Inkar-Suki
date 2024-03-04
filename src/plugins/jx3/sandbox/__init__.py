@@ -14,4 +14,5 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     if type(data) == type([]):
         await sandbox.finish(data[0])
     else:
+        data = await get_content(data)
         await sandbox.finish(ms.image(data))

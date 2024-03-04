@@ -87,6 +87,7 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
     if isinstance(data, list):
         await achievements.finish(data[0])
     else:
+        data = await get_content(data)
         await achievements.finish(ms.image(data))
 
 achievement_v2 = on_command("jx3_achievement_v2", aliases={"进度v2"}, priority=5)
