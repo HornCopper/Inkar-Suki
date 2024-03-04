@@ -3,7 +3,6 @@ from src.tools.generate import get_uuid
 from src.tools.config import Config
 from src.constant.jx3.skilldatalib import kftosh
 from src.tools.utils import get_api, get_content
-from src.plugins.jx3.rank.school_rank import school_mapping as gkfdt
 import os
 import json
 import httpx
@@ -12,6 +11,7 @@ from pathlib import Path
 from PIL import Image, ImageDraw, ImageFont
 from nonebot import get_driver
 from nonebot.log import logger
+
 
 
 now = "万灵当歌"
@@ -92,7 +92,7 @@ async def get_uid(server, id):
 
 
 async def get_personal_kf(kfid):
-    kfdt = gkfdt
+    kfdt = await get_api("https://inkar-suki.codethink.cn/schoolmapping")
     for i in list(kfdt):
         if str(kfdt[i]) == str(kfid):
             return i
@@ -233,7 +233,7 @@ async def get_bg(sc):
 
 
 async def get_kf_icon(kf):
-    school_mapping = gkfdt
+    school_mapping = await get_api("https://inkar-suki.codethink.cn/schoolmapping")
     num = school_mapping[kf]
     final_path = ASSETS + "/jx3/kungfu/" + kf + ".png"
     if os.path.exists(final_path):
