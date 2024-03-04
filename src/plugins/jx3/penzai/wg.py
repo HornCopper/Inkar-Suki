@@ -1,5 +1,8 @@
+from urllib.parse import unquote
+
 from .dh import *
-from .api import get_from
+
+import re
 
 template_wg = """
 <tr>
@@ -9,6 +12,10 @@ template_wg = """
     <td class="short-column">$time</td>
 </tr>
 """
+
+async def get_from(url: str):
+    data = await get_url(url)
+    return unquote(re.findall(r"<meta furl=\".+fname", data)[0][33:-16])
 
 async def get_wg(name):
     timestamp = int(datetime.datetime.now().timestamp())
@@ -32,7 +39,7 @@ async def get_wg(name):
                 timestamp = datetime.datetime.strptime(time_, "%Y-%m-%dT%H:%M:%SZ")
                 final_time = convert_time(int(timestamp.timestamp()), "%m月%d日 %H:%M:%S")
                 link = f"http://c.tieba.baidu.com/p/{thread}?pid={post}0&cid=0#{post}"
-                place = await get_url(link)
+                place = await get_from(link)
                 floor = x["Floor"]
                 links.append(link)
                 floors.append(floor)
