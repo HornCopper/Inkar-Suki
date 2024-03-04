@@ -26,6 +26,7 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
     data = await zone(server, id)
     if isinstance(data, list):
         await zones.finish(data[0])
+    data = await get_content(data)
     await zones.finish(ms.image(data))
 
 zonesv2 = on_command("jx3_zones", aliases={"副本"}, priority=5)

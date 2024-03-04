@@ -64,6 +64,7 @@ async def jx3_rank(event: GroupMessageEvent, args: Message = CommandArg()):
     if isinstance(data, list):
         await jx3_cmd_rank.finish(data[0])
     else:
+        data = await get_content(data)
         await jx3_cmd_rank.finish(ms.image(data))
 
 rank = on_command("jx3_schoolrank", aliases={"门派天梯", "天梯"}, priority=5)
