@@ -26,6 +26,7 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
         if type(data) == type([]):
             await arena.finish(data[0])
         else:
+            data = await get_content(data)
             await arena.finish(ms.image(data))
     elif arg[0] == "排行":
         if len(arg) != 2:
@@ -34,6 +35,7 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
         if type(data) == type([]):
             await arena.finish(data[0])
         else:
+            data = await get_content(data)
             await arena.finish(ms.image(data))
     elif arg[0] == "统计":
         if len(arg) != 2:
@@ -42,4 +44,5 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
         if type(data) == type([]):
             await arena.finish(data[0])
         else:
+            data = await get_content(data)
             await arena.finish(ms.image(data))
