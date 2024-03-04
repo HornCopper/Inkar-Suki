@@ -21,7 +21,7 @@ from tabulate import tabulate
 文字来源于内置，图片由每个`plugin`文件夹下的`info.json`中的内容整合，再以`selenium`进行渲染所得。
 """
 
-help = on_command("help", aliases={"帮助v1", "功能v1"}, priority=5)
+help = on_command("help", aliases={"帮助", "功能", "查看", "文档", "使用说明"}, priority=5)
 css = """
 <style>
             ::-webkit-scrollbar 
