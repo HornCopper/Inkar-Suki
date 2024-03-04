@@ -43,49 +43,13 @@ colors = {
     "山海心诀": "#FFFFFF"
 }
 
-school_mapping = {
-    "冰心诀": "10081",
-    "云裳心经": "10080",
-    "花间游": "10021",
-    "离经易道": "10028",
-    "毒经": "10175",
-    "补天诀": "10176",
-    "莫问": "10447",
-    "相知": "10448",
-    "无方": "10627",
-    "灵素": "10626",
-    "傲血战意": "10026",
-    "铁牢律": "10062",
-    "易筋经": "10003",
-    "洗髓经": "10002",
-    "焚影圣诀": "10242",
-    "明尊琉璃体": "10243",
-    "分山劲": "10390",
-    "铁骨衣": "10389",
-    "紫霞功": "10014",
-    "太虚剑意": "10015",
-    "天罗诡道": "10225",
-    "惊羽诀": "10224",
-    "问水诀": "10144",
-    "山居剑意": "10145",
-    "笑尘诀": "10268",
-    "北傲诀": "10464",
-    "凌海诀": "10533",
-    "隐龙诀": "10585",
-    "太玄经": "10615",
-    "孤锋诀": "10698",
-    "山海心诀": "10756"
-}
-
-
 async def get_school_icon(name):
-    school_data = school_mapping
+    school_data = await get_api("https://inkar-suki.codethink.cn/schoolmapping")
     if name not in list(school_data):
         raise KeyError(f"The force {name} cannot be found in the offical API of Inkar Suki.")
     else:
         icon_id = school_data[name]
         return f"https://img.jx3box.com/image/xf/{icon_id}.png"
-
 
 async def get_school_rank(season_key):
     rank_data = await get_api(f"https://cms.jx3box.com/api/cms/bps/dps/group/{season_key}")
@@ -94,22 +58,19 @@ async def get_school_rank(season_key):
     contents = []
     for i in rank_data["data"]["items"]:
         width = str(round(int(i["dps"].split(".")[0]) / int(standard.split(".")[0]) * 100, 2)) + "%"
-        kunfu = std_kunfu(i["xf"])
-        icon = kunfu.icon
-        name = kunfu.name
+        icon = await get_school_icon(i["xf"])
+        name = i["xf"]
         dps = str(int(i["dps"].split(".")[0]))
-        color = kunfu.color
-        contents.append(template.replace("$width", width).replace("$color", color).replace(
-            "$name", name).replace("$dps", dps).replace("$img", icon))
+        color = colors[i["xf"]]
+        contents.append(template.replace("$width", width).replace("$color", color).replace("$name", name).replace("$dps", dps).replace("$img", icon))
     contents = "\n".join(contents)
     html = read(VIEWS + "/jx3/schoolrank/schoolrank.html")
     font = ASSETS + "/font/custom.ttf"
     saohua = await get_api(f"https://www.jx3api.com/data/saohua/random?token={token}")
     saohua = saohua["data"]["text"]
-    appinfo_time = convert_time(getCurrentTime(), "%H:%M:%S")
+    appinfo_time = time.strftime("%H:%M:%S",time.localtime(time.time()))
     appinfo = f"{season} · 当前时间：{appinfo_time}<br>{saohua}"
-    html = html.replace("$content", contents).replace(
-        "$customfont", font).replace("$appinfo", appinfo)
+    html = html.replace("$content", contents).replace("$customfont", font).replace("$appinfo", appinfo)
     final_html = CACHE + "/" + get_uuid() + ".html"
     write(final_html, html)
     final_path = await generate(final_html, False, ".m-ladder-rank", False)

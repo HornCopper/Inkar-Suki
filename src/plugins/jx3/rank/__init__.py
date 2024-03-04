@@ -66,33 +66,13 @@ async def jx3_rank(event: GroupMessageEvent, args: Message = CommandArg()):
     else:
         await jx3_cmd_rank.finish(ms.image(data))
 
-jx3_cmd_zlrank = on_command("jx3_zlrank", aliases={"资历排行"}, priority=5)
-
-
-@jx3_cmd_zlrank.handle()
-async def jx3_zlrank(event: GroupMessageEvent, args: Message = CommandArg()):
-    arg = args.extract_plain_text().split(" ")
-    if len(arg) not in [1, 2]:
-        await jx3_cmd_zlrank.finish("唔……参数不正确哦，请检查后重试~")
-    if len(arg) == 1:
-        server = None
-        school = arg[0]
-    elif len(arg) == 2:
-        server = arg[0]
-        school = arg[1]
-    data = await zlrank(server, school, str(event.group_id))
-    if isinstance(data, list):
-        await jx3_cmd_zlrank.finish(data[0])
-    else:
-        await jx3_cmd_zlrank.finish(ms.image(Path(data).as_uri()))
-
-rank = on_command("jx3_schoolrank", aliases={"门派天梯", "天梯   "}, priority=5)
+rank = on_command("jx3_schoolrank", aliases={"门派天梯", "天梯"}, priority=5)
 
 
 @rank.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     season = args.extract_plain_text()
-    season_data = await get_api("https://cms.jx3box.com/api/cms/bps/dps/group?client=std")
+    season_data = await get_api("https://cms.jx3box.com/api/cms/bps/dps/ladder?client=std")
     if season == "":
         season_key = season_data["data"][0]["key"]
     else:

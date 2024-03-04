@@ -15,6 +15,8 @@ wiki = on_command("wiki", priority=5)
 async def _(event: GroupMessageEvent, state: T_State, args: Message = CommandArg()):
     title = args.extract_plain_text()
     init_api = json.loads(read(DATA + "/"+str(event.group_id)+"/wiki.json"))["startwiki"]
+    if init_api == "":
+        await wiki.finish("尚未指定起始Wiki，请尝试使用以下命令进行绑定：\n+setwiki 任意Wiki页面链接")
     info = await wiki_.simple(init_api, title)
     if info["status"] == 202:
         msg = ""
