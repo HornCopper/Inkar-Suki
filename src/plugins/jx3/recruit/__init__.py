@@ -28,6 +28,7 @@ async def jx3_recruit(bot: Bot, event: GroupMessageEvent, args: Message = Comman
         data = await api_recruit(server, copy)
     if isinstance(data, list):
         await jx3_cmd_recruit.finish(data[0])
+    data = await get_content(data)
     await jx3_cmd_recruit.send(ms.image(data))
 
 jx3_cmd_recruit_v2 = on_command("jx3_recruit", aliases={"招募"}, priority=5)
