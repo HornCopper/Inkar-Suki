@@ -13,20 +13,6 @@ from src.tools.generate import get_uuid
 from ..user.api import kungfu_mapping, get_fs, local_save,  get_kf_icon, get_bg, data_process, enchant_mapping, judge_special_weapon
 
 
-def format_body(data: dict) -> str:
-    return json.dumps(data, separators=(",", ":"))
-
-
-def gen_ts() -> str:
-    return f"{datetime.now(timezone.utc):%Y%m%d%H%M%S%f}"[:-3]
-
-
-def gen_xsk(data: str) -> str:
-    data += "@#?.#@"
-    secret = "MaYoaMQ3zpWJFWtN9mqJqKpHrkdFwLd9DDlFWk2NnVR1mChVRI6THVe6KsCnhpoR"
-    return hmac.new(secret.encode(), msg=data.encode(), digestmod=hashlib.sha256).hexdigest()
-
-
 async def post_url(url, proxy: dict = None, headers: str = None, timeout: int = 300, data: dict = None):
     async with httpx.AsyncClient(proxies=proxy, follow_redirects=True) as client:
         resp = await client.post(url, timeout=timeout, headers=headers, data=data)
