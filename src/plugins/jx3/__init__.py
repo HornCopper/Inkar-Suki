@@ -42,7 +42,7 @@ async def on_jx3_event_recv(bot: Bot, event: RecvEvent):
 
 @ws_recev.handle()
 async def _(event: RecvEvent):
-    type_ = event.get_message["type"]
+    type_ = event.get_message()["type"]
     if type_ == "开服":
         await asyncio.sleep(900)
         shutil.rmtree(ASSETS + "/jx3/monsters.jpg")
