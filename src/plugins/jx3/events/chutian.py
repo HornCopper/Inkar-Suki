@@ -25,7 +25,7 @@ async def getChutianImg():
         t = "c00" # 双数整点 next -> c01
     events = []
     for i in processedData["data"]:
-        if i["key"] == t:
+        if i["key"] == t and i["time"] >= int(convert_time(getCurrentTime(), "%M")):
             currentSort = processedData["data"].index(i)
             events.append(processedData["data"][currentSort-2])
             events.append(processedData["data"][currentSort-1])
@@ -50,7 +50,10 @@ async def getChutianImg():
         icon = "https://img.jx3box.com/pve/minimap/minimap_" + i["icon"] + ".png"
         desc = i["desc"]
         hour = getHour(standard, i["key"])
-        final_time = str(hour) + ":" + str(i["time"])
+        minute = str(i["time"])
+        if len(minute) == 1:
+            minute = "0" + minute
+        final_time = str(hour) + ":" + minute
         tables.append(template_chutian.replace("$time", final_time).replace("$site", site).replace("$icon", icon).replace("$section", event).replace("$desc", desc))
     final_table = "\n".join(tables)
     html = read(VIEWS + "/jx3/celebrations/chutian.html")
