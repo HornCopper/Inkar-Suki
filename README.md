@@ -27,7 +27,7 @@ _基于Nonebot 2的多功能的群聊机器人_
 
 本项目与`QQ`无关，请勿用于搭建QQ机器人等服务。仅供娱乐与学习，下载后请于24小时内删除。
 
-已将`Serfend`开发的所有功能删除。
+什么？你说`gocq`寄了你不会了？请立即点击查看[Inkar Suki Docs的Lagrange文档](https://inkar-suki.codethink.cn/Inkar-Suki-Docs/#/lagrange)，或直接前往项目主页：[LagrangeDev/Lagrange.Core](https://github.com/LagrangeDev/Lagrange.Core)。
 
 # 功能
 **由于功能设计初衷是为群聊服务，以下大部分功能将在私聊不可用，食用方法请移步[文档](https://inkar-suki.codethink.cn)。**
