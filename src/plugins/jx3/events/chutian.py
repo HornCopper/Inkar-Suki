@@ -37,7 +37,6 @@ async def getChutianImg():
                 overFlag = True
             if overFlag:
                 currentSort = 0
-            events.append(processedData["data"][currentSort+0])
             events.append(processedData["data"][currentSort+1])
             events.append(processedData["data"][currentSort+2])
             events.append(processedData["data"][currentSort+3])
