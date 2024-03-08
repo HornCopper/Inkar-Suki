@@ -41,6 +41,7 @@ async def getChutianImg():
             events.append(processedData["data"][currentSort+1])
             events.append(processedData["data"][currentSort+2])
             events.append(processedData["data"][currentSort+3])
+            break
     standard = events[2]["key"] # 第二个为当前事件，标准事件
     tables = []
     for i in events:
