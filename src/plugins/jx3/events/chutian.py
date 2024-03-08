@@ -49,7 +49,7 @@ async def getChutianImg():
         icon = "https://img.jx3box.com/pve/minimap/minimap_" + i["icon"] + ".png"
         desc = i["desc"]
         hour = getHour(standard, i["key"])
-        final_time = str(hour) + ":" + int(i["time"])
+        final_time = str(hour) + ":" + str(i["time"])
         tables.append(template_chutian.replace("$time", final_time).replace("$site", site).replace("$icon", icon).replace("$section", event).replace("$desc", desc))
     final_table = "\n".join(tables)
     html = read(VIEWS + "/jx3/celebrations/chutian.html")
