@@ -26,8 +26,8 @@ async def _(state: T_State, event: Event):
 
 
 @rdp.receive("answer")
-async def __(event: Event, state: T_State, answer: Message = Arg()):
-    ans = answer.extract_plain_text()
+async def __(state: T_State, event: Event = Received("answer")):
+    ans = event.message
     if ans == state["guess"]:
         Sign.add(str(event.user_id), 50)
         author = state["author"]
