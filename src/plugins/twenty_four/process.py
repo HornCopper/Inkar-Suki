@@ -27,7 +27,6 @@ def check_valid(expr):
             if char in operators and i + 1 < len(expr) and expr[i + 1] in operators:
                 return False
             i += 1
-            continue
         else:
             return False
     if num_numbers > 9:
