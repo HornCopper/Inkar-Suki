@@ -13,9 +13,7 @@ def calc(expr):
 def check_valid(expr):
     operators = ["+", "-", "*", "/"]
     other_symbols = ["(", ")"]
-    numbers = [str(i) for i in range(1, 14)]
-    valid_chars = numbers + operators + other_symbols
-    valid_chars_set = set(valid_chars)
+    valid_chars_set = set(operators + other_symbols)
 
     i = 0
     num_numbers = 0
@@ -29,16 +27,7 @@ def check_valid(expr):
             if char in operators and i + 1 < len(expr) and expr[i + 1] in operators:
                 return False
             i += 1
-            if i < len(expr) and expr[i] == " ":
-                while i < len(expr) and expr[i] == " ":
-                    i += 1
-                    if i < len(expr) and expr[i] in operators:
-                        return False
             continue
-        elif char == " ":
-            i += 1
-            if i < len(expr):
-                return False
         else:
             return False
     if num_numbers > 9:
