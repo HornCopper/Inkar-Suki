@@ -25,7 +25,7 @@ async def _(state: T_State, event: Event):
     return
 
 
-@rdp.got("answer")
+@rdp.receive("answer")
 async def __(event: Event, state: T_State, answer: Message = Arg()):
     ans = answer.extract_plain_text()
     if ans == state["guess"]:
