@@ -2,8 +2,6 @@ from src.plugins.sign import Sign
 
 from .api import *
 
-question = ""
-
 rdp = on_command("randomPoem", aliases={"对诗"}, priority=5)
 
 @rdp.handle()
@@ -21,10 +19,12 @@ async def _(state: T_State, event: Event):
     state["author"] = author
     state["title"] = title
     state["answer"] = guess
-    global question
     question = f"请听题！\n{blank}"
+    await rdp.send(question)
+    return
 
-@rdp.got("answer", prompt=question)
+
+@rdp.got("answer")
 async def __(event: Event, state: T_State, answer: Message = Arg()):
     ans = answer.extract_plain_text()
     if ans == state["guess"]:
