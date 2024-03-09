@@ -25,10 +25,22 @@ def convert_time(timestamp: int):
     dt = time.strftime("%H:%M:%S", time_local)
     return dt
 
-template = """
+template_interserver = """
 <tr>
     <td class="short-column">$sort</td>
     <td class="short-column">$flag</td>
+    <td class="short-column">$name</td>
+    <td class="short-column">$level</td>
+    <td class="short-column">$leader</td>
+    <td class="short-column">$count</td>
+    <td class="short-column">$content</td>
+    <td class="short-column">$time</td>
+</tr>
+"""
+
+template_local = """
+<tr>
+    <td class="short-column">$sort</td>
     <td class="short-column">$name</td>
     <td class="short-column">$level</td>
     <td class="short-column">$leader</td>
@@ -58,7 +70,6 @@ async def recruit_v2(server: str, actvt: str = "", local: bool = False):
         flag = False if not detail["roomID"] else True
         if local and flag:
             continue
-        flag = "" if not detail["roomID"] else "<img src=\"https://img.jx3box.com/image/box/servers.svg\" style=\"width:20px;height:20px;\">" 
         num = str(i + 1)
         name = detail["activity"]
         level = str(detail["level"])
@@ -66,6 +77,10 @@ async def recruit_v2(server: str, actvt: str = "", local: bool = False):
         count = str(detail["number"]) + "/" + str(detail["maxNumber"])
         content = detail["content"]
         create_time = convert_time(detail["createTime"])
+        if local:
+            template = template_local
+        else:
+            template = template_interserver
         new = template.replace("$sort", num).replace("$name", name).replace("$level", level).replace("$leader", leader).replace("$count", count).replace("$content", content).replace("$time", create_time).replace("$flag", flag)
         contents.append(new)
         if len(contents) == 50:
