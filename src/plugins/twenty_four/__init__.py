@@ -18,7 +18,7 @@ async def __(state: T_State, event: Event = Received("answer")):
     expr = str(event.message)
     numbers = state["numbers"]
     solution = await find_solution(numbers)
-    if expr = "无解":
+    if expr == "无解":
         if solution:
             Sign.reduce(str(event.user_id), 50)
             await tf.finish(f"回答错误：该组合存在解。\n其中一组解为：{solution}\n您失去了50枚金币。")
