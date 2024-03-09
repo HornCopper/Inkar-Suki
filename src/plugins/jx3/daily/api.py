@@ -23,8 +23,8 @@ async def daily_(server: str = None, group_id: str = None, predict_day_num: int 
     rescue = data["rescue"]
     luck = "/".join(data["luck"])
     hometown = "/".join(data["card"])
-    public = "/".join(data["team"][0])
-    five = "/".join(data["team"][1])
-    ten = "/".join(data["team"][2])
-    msg = f"当前时间：{date} 星期{week}\n大战：{war}\n战场：{battle}\n宗门：{school}\n阵营：{orecar}\n驰援：{rescue}\n\n【福缘宠物】\n{luck}\n【家园声望·加倍道具】{hometown}【武林通鉴·公共任务】{public}【武林通鉴·秘境任务】{five}【武林通鉴·团队秘境】{ten}"
+    public = "/".join(data["team"][0].split(";"))
+    five = "/".join(data["team"][1].split(";"))
+    ten = "/".join(data["team"][2].split(";"))
+    msg = f"当前时间：{date} 星期{week}\n大战：{war}\n战场：{battle}\n宗门：{school}\n阵营：{orecar}\n驰援：{rescue}\n\n【福缘宠物】\n{luck}\n【家园声望·加倍道具】\n{hometown}\n【武林通鉴·公共任务】\n{public}\n【武林通鉴·秘境任务】\n{five}\n【武林通鉴·团队秘境】\n{ten}"
     return msg
