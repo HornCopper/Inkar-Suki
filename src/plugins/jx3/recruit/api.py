@@ -69,6 +69,7 @@ async def recruit_v2(server: str, actvt: str = "", local: bool = False):
         detail = data[i]
         flag = False if not detail["roomID"] else True
         if local and flag:
+            num = str(i + 1)
             continue
         num = str(i + 1)
         name = detail["activity"]
