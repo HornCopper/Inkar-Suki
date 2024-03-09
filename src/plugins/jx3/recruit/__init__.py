@@ -51,7 +51,7 @@ async def jx3_recruit_v2(event: GroupMessageEvent, args: Message = CommandArg())
             copy = arg[0] if not server_mapping(arg[0]) else ""  # 当第一个参数是服务器的话则为空
         else:
             copy = arg[1]
-        data = await recruit_v2(server, copy, local=False)
+        data = await recruit_v2(server, copy, local=True)
     if isinstance(data, list):
         await jx3_cmd_recruit_v2.finish(data[0])
     await jx3_cmd_recruit_v2.finish(ms.image(data))
@@ -77,7 +77,7 @@ async def jx3_recruit_v2(event: GroupMessageEvent, args: Message = CommandArg())
             copy = arg[0] if not server_mapping(arg[0]) else ""  # 当第一个参数是服务器的话则为空
         else:
             copy = arg[1]
-        data = await recruit_v2(server, copy, local=True)
+        data = await recruit_v2(server, copy, local=False)
     if isinstance(data, list):
         await jx3_cmd_recruit_local.finish(data[0])
     await jx3_cmd_recruit_local.finish(ms.image(data))
