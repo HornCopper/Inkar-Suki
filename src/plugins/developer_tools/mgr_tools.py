@@ -1,9 +1,13 @@
 
 from nonebot import on_notice, on_command, on_request
 from nonebot.adapters.onebot.v11 import Bot, GroupMessageEvent, NoticeEvent, RequestEvent
+from nonebot.adapters.onebot.v11 import unescape
+
+from typing import List
+
 from src.tools.basic import *
 from src.tools.local_version import nbv
-from nonebot.adapters.onebot.v11 import unescape
+
 import psutil
 
 
