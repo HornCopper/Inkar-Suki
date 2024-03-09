@@ -11,6 +11,8 @@ async def _(state: T_State, event: Event):
     title = data[1]
     author = data[2]
     contents = content.split("，")
+    if len(contents) == 1:
+        contents = content.split("。")
     rdPart = random.randint(0, len(contents) - 1)
     guess = contents[rdPart]
     if guess[-1] in ["？", "！", "。"]:
