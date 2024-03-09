@@ -54,11 +54,11 @@ async def recruit_v2(server: str, actvt: str = "", local: bool = False):
     data = data["data"]["data"]
     contents = []
     for i in range(len(data)):
+        detail = data[i]
         flag = False if not detail["roomID"] else True
         if local and flag:
             continue
         flag = "" if not detail["roomID"] else "<img src=\"https://img.jx3box.com/image/box/servers.svg\" style=\"width:20px;height:20px;\">" 
-        detail = data[i]
         num = str(i + 1)
         name = detail["activity"]
         level = str(detail["level"])
