@@ -3,9 +3,6 @@ from src.plugins.sign import Sign
 from .process import *
 from src.tools.basic import *
 
-no_solution = ['无解', '無解', 'none', 'n/a']
-
-
 tf = on_command("twentyFour", aliases={"24点"}, priority=5)
 
 
