@@ -11,7 +11,7 @@ def calc(expr):
 
 
 def check_valid(expr):
-    operators = ['+', '-', '*', '/', '(', ')']
+    operators = ["+", "-", "*", "/", "(", ")"]
     numbers = [str(i) for i in range(1, 14)]
     valid_chars = numbers + operators
     valid_chars_set = set(valid_chars)
@@ -28,13 +28,13 @@ def check_valid(expr):
             if char in operators and i + 1 < len(expr) and expr[i + 1] in operators:
                 return False
             i += 1
-            if i < len(expr) and expr[i] == ' ':
-                while i < len(expr) and expr[i] == ' ':
+            if i < len(expr) and expr[i] == " ":
+                while i < len(expr) and expr[i] == " ":
                     i += 1
                     if i < len(expr) and expr[i] in operators:
                         return False
             continue
-        elif char == ' ':
+        elif char == " ":
             i += 1
             if i < len(expr):
                 return False
@@ -47,30 +47,30 @@ def check_valid(expr):
 
 async def find_solution(numbers):
     perms = list(itertools.permutations(numbers))
-    operators = ['+', '-', '*', '/']
+    operators = ["+", "-", "*", "/"]
     exprs = list(itertools.product(operators, repeat=4))
 
     for perm in perms:
         for expr in exprs:  # 穷举就完事了
-            exp = '(({}{}{}){}{}){}{}'.format(perm[0], expr[0], perm[1], expr[1], perm[2], expr[2], perm[3])
+            exp = "(({}{}{}){}{}){}{}".format(perm[0], expr[0], perm[1], expr[1], perm[2], expr[2], perm[3])
             try:
                 if (calc(exp) == 24 or 0 < 24 - calc(exp) < 1e-13):
                     return exp
             except:
                 pass
-            exp = '({}{}{}){}({}{}{})'.format(perm[0], expr[0], perm[1], expr[1], perm[2], expr[2], perm[3])
+            exp = "({}{}{}){}({}{}{})".format(perm[0], expr[0], perm[1], expr[1], perm[2], expr[2], perm[3])
             try:
                 if (calc(exp) == 24 or 0 < 24 - calc(exp) < 1e-13):
                     return exp
             except:
                 pass
-            exp = '{}{}({}{}({}{}{}))'.format(perm[0], expr[0], perm[1], expr[1], perm[2], expr[2], perm[3])
+            exp = "{}{}({}{}({}{}{}))".format(perm[0], expr[0], perm[1], expr[1], perm[2], expr[2], perm[3])
             try:
                 if (calc(exp) == 24 or 0 < 24 - calc(exp) < 1e-13):
                     return exp
             except:
                 pass
-            exp = '{}{}({}{}{}){}{}'.format(perm[0], expr[0], perm[1], expr[1], perm[2], expr[2], perm[3])
+            exp = "{}{}({}{}{}){}{}".format(perm[0], expr[0], perm[1], expr[1], perm[2], expr[2], perm[3])
             try:
                 if (calc(exp) == 24 or 0 < 24 - calc(exp) < 1e-13):
                     return exp
