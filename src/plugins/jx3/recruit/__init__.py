@@ -51,7 +51,7 @@ async def jx3_recruit_v2(event: GroupMessageEvent, args: Message = CommandArg())
             copy = arg[0] if not server_mapping(arg[0]) else ""  # 当第一个参数是服务器的话则为空
         else:
             copy = arg[1]
-        data = await recruit_v2(server, copy, local=True)
+        data = await recruit_v2(server, copy, local=False)
     if isinstance(data, list):
         await jx3_cmd_recruit_v2.finish(data[0])
     await jx3_cmd_recruit_v2.finish(ms.image(data))
@@ -67,7 +67,7 @@ async def jx3_recruit_v2(event: GroupMessageEvent, args: Message = CommandArg())
         group_server = getGroupServer(str(event.group_id))
         if not group_server:
             await jx3_cmd_recruit_local.finish("尚未绑定服务器，请携带服务器参数使用！")
-        data = await recruit_v2(group_server)
+        data = await recruit_v2(group_server, local=True)
     else:
         arg = arg.split(" ")
         if len(arg) not in [1, 2]:
@@ -77,7 +77,7 @@ async def jx3_recruit_v2(event: GroupMessageEvent, args: Message = CommandArg())
             copy = arg[0] if not server_mapping(arg[0]) else ""  # 当第一个参数是服务器的话则为空
         else:
             copy = arg[1]
-        data = await recruit_v2(server, copy, local=False)
+        data = await recruit_v2(server, copy, local=True)
     if isinstance(data, list):
         await jx3_cmd_recruit_local.finish(data[0])
     await jx3_cmd_recruit_local.finish(ms.image(data))
