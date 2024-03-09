@@ -69,8 +69,9 @@ async def recruit_v2(server: str, actvt: str = "", local: bool = False):
         detail = data[i]
         flag = False if not detail["roomID"] else True
         if local and flag:
-            num = str(i + 1)
+            num = str(num + 1)
             continue
+        flag = "" if not detail["roomID"] else "<img src=\"https://img.jx3box.com/image/box/servers.svg\" style=\"width:20px;height:20px;\">" 
         num = str(i + 1)
         name = detail["activity"]
         level = str(detail["level"])
@@ -80,6 +81,7 @@ async def recruit_v2(server: str, actvt: str = "", local: bool = False):
         create_time = convert_time(detail["createTime"])
         if local:
             template = template_local
+            flag = ""
         else:
             template = template_interserver
         new = template.replace("$sort", num).replace("$name", name).replace("$level", level).replace("$leader", leader).replace("$count", count).replace("$content", content).replace("$time", create_time).replace("$flag", flag)
