@@ -11,9 +11,10 @@ def calc(expr):
 
 
 def check_valid(expr):
-    operators = ["+", "-", "*", "/", "(", ")"]
+    operators = ["+", "-", "*", "/"]
+    other_symbols = ["(", ")"]
     numbers = [str(i) for i in range(1, 14)]
-    valid_chars = numbers + operators
+    valid_chars = numbers + operators + other_symbols
     valid_chars_set = set(valid_chars)
 
     i = 0
