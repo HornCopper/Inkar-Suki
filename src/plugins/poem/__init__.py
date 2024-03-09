@@ -27,7 +27,7 @@ async def _(state: T_State, event: Event):
 
 @rdp.receive("answer")
 async def __(state: T_State, event: Event = Received("answer")):
-    ans = event.message
+    ans = str(event.message)
     if ans == state["answer"]:
         Sign.add(str(event.user_id), 50)
         author = state["author"]
