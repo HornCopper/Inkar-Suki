@@ -60,3 +60,9 @@ async def _(bot: Bot, event: Event, args: Message = CommandArg()):
             write(TOOLS + "/application.json", json.dumps(pre))
             await deny_application.finish("已经将该群聊的申请处理完毕啦，音卡已经前往那里了！")
     await deny_application.finish("呜喵……真的有这个群申请了吗？")
+
+donate = on_command("donate", aliases={"赞助音卡"}, priority=5)
+
+@donate.handle()
+async def _():
+    await donate.finish("感谢您对音卡的支持，点击下方链接可以支持音卡：\nhttps://inkar-suki.codethink.cn/Inkar-Suki-Docs/#/donate\n请注意：音卡**绝对不是**付费，赞助全自愿！！")
