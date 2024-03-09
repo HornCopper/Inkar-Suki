@@ -38,7 +38,7 @@ template = """
 </tr>
 """
 
-async def recruit_v2(server: str, actvt: str = ""):
+async def recruit_v2(server: str, actvt: str = "", local: bool = False):
     if token == None:
         return [PROMPT_NoToken]
     server = server_mapping(server)
@@ -54,6 +54,10 @@ async def recruit_v2(server: str, actvt: str = ""):
     data = data["data"]["data"]
     contents = []
     for i in range(len(data)):
+        flag = False if not detail["roomID"] else True
+        if local and flag:
+            continue
+        flag = "" if not detail["roomID"] else "<img src=\"https://img.jx3box.com/image/box/servers.svg\" style=\"width:20px;height:20px;\">" 
         detail = data[i]
         num = str(i + 1)
         name = detail["activity"]
@@ -62,7 +66,6 @@ async def recruit_v2(server: str, actvt: str = ""):
         count = str(detail["number"]) + "/" + str(detail["maxNumber"])
         content = detail["content"]
         create_time = convert_time(detail["createTime"])
-        flag = "" if not detail["roomID"] else "<img src=\"https://img.jx3box.com/image/box/servers.svg\" style=\"width:20px;height:20px;\">" 
         new = template.replace("$sort", num).replace("$name", name).replace("$level", level).replace("$leader", leader).replace("$count", count).replace("$content", content).replace("$time", create_time).replace("$flag", flag)
         contents.append(new)
         if len(contents) == 50:
