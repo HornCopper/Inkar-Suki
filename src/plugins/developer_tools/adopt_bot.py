@@ -35,7 +35,7 @@ async def _(bot: Bot, event: Event, args: Message = CommandArg()):
             await bot.call_api("set_group_add_request", flag=i["flag"], sub_type="invite", approve=True)
             pre = current
             for x in pre:
-                if x["group_id"] == args:
+                if x["group_id"] == int(args):
                     pre.remove(x)
             write(TOOLS + "/application.json", json.dumps(pre))
             await process_application.finish("已经将该群聊的申请处理完毕啦，音卡已经前往那里了！")
@@ -55,7 +55,7 @@ async def _(bot: Bot, event: Event, args: Message = CommandArg()):
             await bot.call_api("set_group_add_request", flag=i["flag"], sub_type="invite", approve=False)
             pre = current
             for x in pre:
-                if x["group_id"] == args:
+                if x["group_id"] == int(args):
                     pre.remove(x)
             write(TOOLS + "/application.json", json.dumps(pre))
             await deny_application.finish("已经将该群聊的申请处理完毕啦，音卡已经前往那里了！")
