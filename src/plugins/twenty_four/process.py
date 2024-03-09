@@ -4,7 +4,6 @@ import random
 from simpleeval import simple_eval
 
 def calc(expr):
-    expr = expr.replace("\\", "")
     try:
         return simple_eval(expr)
     except Exception:
@@ -12,10 +11,9 @@ def calc(expr):
 
 
 def check_valid(expr):
-    operators = ['+', '-', '*', '/']
-    other_symbols = ['(', ')', '\\']
+    operators = ['+', '-', '*', '/', '(', ')']
     numbers = [str(i) for i in range(1, 14)]
-    valid_chars = numbers + operators + other_symbols
+    valid_chars = numbers + operators
     valid_chars_set = set(valid_chars)
 
     i = 0
