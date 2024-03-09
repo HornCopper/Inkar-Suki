@@ -18,3 +18,4 @@ cron-descriptor
 croniter
 pre-commit
 ruff
+simpleeval
