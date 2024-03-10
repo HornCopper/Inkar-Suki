@@ -607,14 +607,14 @@ async def get_item_record(server: str, name: str):
         num += 1
         if num == 30:
             break  # 不限？不限给你鲨了
-    saohua = await get_api(f"https://www.jx3api.com/data/saohua/random?token={token}")
-    saohua = saohua["data"]["text"]
+    poem = await get_api("https://v1.jinrishici.com/all.json")
+    poem = poem["content"] + "——" + poem["author"] + "《" + poem["origin"] + "》"
+    saohua = poem
     appinfo_time = convert_time(getCurrentTime(), "%H:%M:%S")
     appinfo = f"掉落统计 · {server} · {name} · {appinfo_time}"
     final_table = "\n".join(tablecontents)
     html = read(VIEWS + "/jx3/item/item.html")
-    html = html.replace("$customfont", font).replace("$tablecontent", final_table).replace(
-        "$randomsaohua", saohua).replace("$appinfo", appinfo)
+    html = html.replace("$customfont", font).replace("$tablecontent", final_table).replace("$randomsaohua", saohua).replace("$appinfo", appinfo)
     final_html = CACHE + "/" + get_uuid() + ".html"
     write(final_html, html)
     final_path = await generate(final_html, False, "table", False)

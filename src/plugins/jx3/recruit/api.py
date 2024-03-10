@@ -90,8 +90,9 @@ async def recruit_v2(server: str, actvt: str = "", local: bool = False):
             break
     table ="\n".join(contents)
     html = read(VIEWS + "/jx3/recruit/recruit.html")
-    saohua = await get_api(f"https://www.jx3api.com/data/saohua/random?token={token}")
-    saohua = saohua["data"]["text"]
+    poem = await get_api("https://v1.jinrishici.com/all.json")
+    poem = poem["content"] + "——" + poem["author"] + "《" + poem["origin"] + "》"
+    saohua = poem
     html = html.replace("$customfont", font).replace("$appinfo", appinfo).replace("$recruitcontent", table).replace("$randomsaohua", saohua)
     final_html = CACHE + "/" + get_uuid() + ".html"
     write(final_html, html)

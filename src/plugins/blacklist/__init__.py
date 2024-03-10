@@ -84,8 +84,9 @@ async def _(bot: Bot, event: GroupMessageEvent):
     final_table = "\n".join(table)
     html = read(VIEWS + "/jx3/blacklist/blacklist.html")
     font = ASSETS + "/font/custom.ttf"
-    saohua = await get_api(f"https://www.jx3api.com/data/saohua/random?token={token}")
-    saohua = saohua["data"]["text"]
+    poem = await get_api("https://v1.jinrishici.com/all.json")
+    poem = poem["content"] + "——" + poem["author"] + "《" + poem["origin"] + "》"
+    saohua = poem
     html = html.replace("$customfont", font).replace("$tablecontent", final_table).replace("$randomsaohua", saohua)
     final_html = CACHE + "/" + get_uuid() + ".html"
     write(final_html, html)

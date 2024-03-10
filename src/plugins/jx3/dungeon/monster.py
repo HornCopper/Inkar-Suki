@@ -66,8 +66,9 @@ async def get_monsters_map():
     start = re.sub(r"\..+\Z", "", map_data["data"]["start"].replace("T", " ")).split(" ")[0]
     html = read(VIEWS + "/jx3/monster/monster.html")
     font = ASSETS + "/font/custom.ttf"
-    saohua = await get_api(f"https://www.jx3api.com/data/saohua/random?token={token}")
-    saohua = saohua["data"]["text"]
+    poem = await get_api("https://v1.jinrishici.com/all.json")
+    poem = poem["content"] + "——" + poem["author"] + "《" + poem["origin"] + "》"
+    saohua = poem
     appinfo_time = convert_time(getCurrentTime(), "%H:%M:%S")
     appinfo = f"自{start}起7天 · 当前时间：{appinfo_time}<br>{saohua}"
     html = html.replace("$content", "\n".join(content)).replace(
