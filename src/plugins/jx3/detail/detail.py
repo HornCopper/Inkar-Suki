@@ -144,11 +144,11 @@ async def generate_zd_image(server: str, id: str):
     content = "\n".join(content)
     html = read(VIEWS + "/jx3/zone_detail/zone_detail.html")
     font = ASSETS + "/font/custom.ttf"
-    saohua = await get_api(f"https://www.jx3api.com/data/saohua/random?token={token}")
-    saohua = saohua["data"]["text"]
+    poem = await get_api("https://v1.jinrishici.com/all.json")
+    poem = poem["content"] + "——" + poem["author"] + "《" + poem["origin"] + "》"
+    saohua = poem
     appinfo_time = convert_time(getCurrentTime(), "%H:%M")
-    html = html.replace("$customfont", font).replace("$tablecontent", content).replace(
-        "$randomsaohua", saohua).replace("$appinfo", f" 副本总览 · {server} · {id} · {appinfo_time}")
+    html = html.replace("$customfont", font).replace("$tablecontent", content).replace("$randomsaohua", saohua).replace("$appinfo", f" 副本总览 · {server} · {id} · {appinfo_time}")
     final_html = CACHE + "/" + get_uuid() + ".html"
     write(final_html, html)
     final_path = await generate(final_html, False, "table", False)

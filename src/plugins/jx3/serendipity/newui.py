@@ -60,8 +60,9 @@ async def getImage_v2(server: str, name: str, group_id: str):
     if len(tables) == 0:
         return ["唔……您似乎只有宠物奇遇哦，如果需要查看请使用V1版本的奇遇查询：\n查询/奇遇 区服 ID"]
     tables[0] = tables[0][:-5] + poem + "</tr>"
-    saohua = await get_api(f"https://www.jx3api.com/data/saohua/random?token={token}")
-    saohua = saohua["data"]["text"]
+    poem = await get_api("https://v1.jinrishici.com/all.json")
+    poem = poem["content"] + "——" + poem["author"] + "《" + poem["origin"] + "》"
+    saohua = poem
     appinfo_time = convert_time(int(datetime.now().timestamp()), "%H:%M:%S")
     appinfo = f"个人奇遇记录 · {server} · {name} · {appinfo_time}"
     final_table = "\n".join(tables)
