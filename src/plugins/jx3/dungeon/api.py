@@ -600,7 +600,7 @@ async def get_item_record(server: str, name: str):
             hours = "0" + hours
         if len(minutes) == 1:
             minutes = "0" + minutes
-        relateTime = f"{days} 天{hours} 时{minutes} 分前"
+        relateTime = f"{days}天{hours}时{minutes}分前"
         server = i["Srv"]
         tablecontents.append(template_item.replace("$server", server).replace("$name", item_name).replace(
             "$map", zone).replace("$id", id).replace("$time", timeGet).replace("$relate", relateTime))

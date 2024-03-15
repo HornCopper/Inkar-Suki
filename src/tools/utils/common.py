@@ -69,3 +69,23 @@ def prefix(event, prefix):
 
 def getCurrentTime():
     return int(datetime.datetime.now().timestamp())
+
+def relateTime(current, goal):
+    current_time = int(datetime.now().timestamp())
+    timeGet_int = int(current)
+    datetime_1 = datetime.fromtimestamp(timeGet_int)
+    datetime_2 = datetime.fromtimestamp(current_time)
+    timedelta = datetime_2 - datetime_1
+    days = int(timedelta.total_seconds() // 86400)
+    hours = int((timedelta.total_seconds() - days*86400) // 3600)
+    minutes = int((timedelta.total_seconds() - days*86400 - hours*3600) // 60)
+    days = str(days)
+    hours = str(hours)
+    minutes = str(minutes)
+    if len(days) == 1:
+        days = "0" + days
+    if len(hours) == 1:
+        hours = "0" + hours
+    if len(minutes) == 1:
+        minutes = "0" + minutes
+    relateTime = f"{days}天{hours}时{minutes}分前"
