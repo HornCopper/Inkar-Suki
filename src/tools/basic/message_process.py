@@ -4,7 +4,7 @@ from nonebot.adapters.onebot.v11 import GroupMessageEvent, PrivateMessageEvent
 import os
 import json
 
-from ..basic import DATA, write
+from ..basic import DATA, write, Config
 
 preprocess = on_message(priority=0, block=False)
 
@@ -43,4 +43,6 @@ async def checkEnv(event: GroupMessageEvent):
     
 @preprocess.handle()
 async def autoPrivate(event: PrivateMessageEvent):
+    if str(event.user_id) in Config.bot:
+        return
     await preprocess.finish("呜喵？如果你想要音卡去你的群聊一起玩的话，请前往我们的用户群找我哦，群号为：650495414\n另附：如果正在寻找文档，请点击下方链接前往：\nhttps://inkar-suki.codethink.cn/Inkar-Suki-Docs/#/\n如果愿意给音卡赞助，还可以点击下面的链接支持音卡：\nhttps://inkar-suki.codethink.cn/Inkar-Suki-Docs/#/donate")
