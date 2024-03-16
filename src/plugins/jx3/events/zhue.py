@@ -36,7 +36,7 @@ async def getZhueRecord(server: str):
     poem = poem["content"] + "——" + poem["author"] + "《" + poem["origin"] + "》"
     saohua = poem
     appinfo_time = convert_time(getCurrentTime(), "%H:%M:%S")
-    appinfo = f"诛恶记录 · {server} · {appinfo_time}"
+    appinfo = f" · 诛恶记录 · {server} · {appinfo_time}"
     final_table = "\n".join(tables)
     html = read(VIEWS + "/jx3/zhue/zhue.html")
     font = ASSETS + "/font/custom.ttf"
