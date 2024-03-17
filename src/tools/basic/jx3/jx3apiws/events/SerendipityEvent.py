@@ -28,6 +28,8 @@ class SerendipityEvent(RecvEvent):
 
     @overrides(RecvEvent)
     def get_message(self) -> dict:
+        if self.event in ["泛天河", "庆舞良宵", "拜春擂"]:
+            return {"type": ""}
         final_time = convert_time(self.time, "%H:%M")
         msg = f"{self.server} 的[{self.name}]在 {final_time} 抱走了奇遇「{self.event}」!"
         return {"type": "奇遇", "server": self.server, "msg": msg}
