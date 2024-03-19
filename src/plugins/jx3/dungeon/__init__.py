@@ -49,6 +49,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     data = await zone_v2(server, id)
     if isinstance(data, list):
         await zonesv2.finish(data[0])
+    data = get_content_local(data)
     await zonesv2.finish(ms.image(data))
 
 drops = on_command("jx3_drops", aliases={"掉落列表"}, priority=5)
@@ -66,6 +67,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     from nonebot.log import logger
     logger.info(data)
     if not isinstance(data, list):
+        data = get_content_local(data)
         await drops.send(ms.image(data))
     await drops.finish(data[0])
 
@@ -89,6 +91,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     data = await get_item_record(server, name)
     if isinstance(data, list):
         await item.finish(data[0])
+    data = get_content_local(data)
     await item.finish(ms.image(data))
 
 monsters = on_command("jx3_monsters_v2", aliases={"百战v2"}, priority=5)

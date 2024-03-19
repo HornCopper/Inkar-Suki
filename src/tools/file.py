@@ -1,5 +1,6 @@
 import os
 import pathlib2
+import urllib
 
 
 def read(Path):
@@ -27,6 +28,13 @@ path_roow = os.path.join(path_cur, "..")
 path_asset = os.path.join(path_roow, "assets")
 path_asset = os.path.realpath(path_asset)
 
+def get_content_local(path: str):
+    """
+    直接获取文件内容。
+    """
+    with urllib.request.urlopen(path) as f:  
+        content = f.read()
+        return content
 
 def get_resource_path(path: str) -> str:
     """

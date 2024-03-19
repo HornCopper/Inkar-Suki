@@ -54,6 +54,7 @@ async def jx3_recruit_v2(event: GroupMessageEvent, args: Message = CommandArg())
         data = await recruit_v2(server, copy, local=False)
     if isinstance(data, list):
         await jx3_cmd_recruit_v2.finish(data[0])
+    data = get_content_local(data)
     await jx3_cmd_recruit_v2.finish(ms.image(data))
 
 
@@ -80,4 +81,5 @@ async def jx3_recruit_v2(event: GroupMessageEvent, args: Message = CommandArg())
         data = await recruit_v2(server, copy, local=True)
     if isinstance(data, list):
         await jx3_cmd_recruit_local.finish(data[0])
+    data = get_content_local(data)
     await jx3_cmd_recruit_local.finish(ms.image(data))

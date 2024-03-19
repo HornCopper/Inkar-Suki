@@ -50,6 +50,7 @@ async def jx3_serendipity(event: GroupMessageEvent, args: Message = CommandArg()
     if isinstance(data, list):
         await serendipity_v2.finish(data[0])
     else:
+        data = get_content_local(data)
         await serendipity_v2.finish(ms.image(data))
 
 jx3_cmd_statistical = on_command("jx3_lstatistical", aliases={"近期奇遇"}, priority=5)
