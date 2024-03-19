@@ -25,4 +25,5 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     if isinstance(data, list):
         await zone_detail.finish(data[0])
     else:
+        data = get_content_local(data)
         await zone_detail.finish(ms.image(data))

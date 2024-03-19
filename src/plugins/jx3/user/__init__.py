@@ -51,6 +51,7 @@ async def jx3_addritube(event: GroupMessageEvent, args: Message = CommandArg()):
     if type(data) == type([]):
         await jx3_cmd_addritube_v2.finish(data[0])
     else:
+        data = get_content_local(data)
         await jx3_cmd_addritube_v2.finish(ms.image(data))
 
 jx3_cmd_roleInfo = on_command("jx3_player", aliases={"玩家信息"}, priority=5)

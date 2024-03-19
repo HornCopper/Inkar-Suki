@@ -110,6 +110,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     if isinstance(data, list):
         await achievement_v2.finish(data[0])
     else:
+        data = get_content_local(data)
         await achievement_v2.finish(ms.image(data))
 
 zone_achievement = on_command("jx3_zoneachi", aliases={"团本成就"}, priority=5)
@@ -150,4 +151,5 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     if isinstance(data, list):
         await zone_achievement.finish(data[0])
     else:
+        data = get_content_local(data)
         await zone_achievement.finish(ms.image(data))
