@@ -1,10 +1,11 @@
 from nonebot import on_message
-from nonebot.adapters.onebot.v11 import GroupMessageEvent, PrivateMessageEvent
+from nonebot.adapters.onebot.v11 import GroupMessageEvent, PrivateMessageEvent, Bot
 
 import os
 import json
+import random
 
-from ..basic import DATA, write, Config
+from ..basic import DATA, write, Config, get_api
 
 preprocess = on_message(priority=0, block=False)
 
@@ -26,7 +27,7 @@ write(f"{new_path }/subscribe.json", "[]")
 write(f"{new_path }/blacklist.json", "[]")"""
 
 @preprocess.handle()
-async def checkEnv(event: GroupMessageEvent):
+async def checkEnv(bot: Bot, event: GroupMessageEvent):
     group_id = str(event.group_id)
     files = {
         "blacklist.json": [],
@@ -36,11 +37,24 @@ async def checkEnv(event: GroupMessageEvent):
         "wiki.json": {"startwiki":"","interwiki":[]},
         "record.json": []
     }
+    status = []
     for i in list(files):
         if os.path.exists(DATA + "/" + group_id + "/" + i):
+            status.append(True)
             continue
+        status.append(False)
         write(DATA + "/" + group_id + "/" + i, json.dumps(files[i]))
-    
+    ans = []
+    for i in range(len(list(files))):
+        ans.append(True)
+    if ans == status:
+        chance = random.randint(1, 100)
+        if chance % 25 == 0:
+            sh_d = await get_api("https://www.jx3api.com/data/saohua/random")
+            sh = sh_d["data"]["text"]
+            await bot.call_api("send_group_msg", group_id=event.group_id, message=sh)
+            
+
 @preprocess.handle()
 async def autoPrivate(event: PrivateMessageEvent):
     if str(event.user_id) in Config.bot:
