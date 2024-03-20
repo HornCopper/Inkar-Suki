@@ -5,7 +5,13 @@ import os
 import json
 import random
 
-from ..basic import DATA, write, Config, get_api, getGroupData
+from ..basic import DATA, write, Config, get_api, read
+
+def getGroupData(group: str, key: str):
+    data = json.loads(read(DATA + "/" + str(group) + "/jx3group.json"))
+    if data == False:
+        return False
+    return data[key]
 
 preprocess = on_message(priority=0, block=False)
 
