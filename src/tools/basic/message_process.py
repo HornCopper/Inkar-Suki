@@ -5,7 +5,7 @@ import os
 import json
 import random
 
-from ..basic import DATA, write, Config, get_api
+from ..basic import DATA, write, Config, get_api, getGroupData
 
 preprocess = on_message(priority=0, block=False)
 
@@ -47,7 +47,8 @@ async def checkEnv(bot: Bot, event: GroupMessageEvent):
     ans = []
     for i in range(len(list(files))):
         ans.append(True)
-    if ans == status:
+    group_cfg = getGroupData(str(event.group_id), "subscribe")
+    if ans == status and "骚话" in group_cfg:
         chance = random.randint(1, 100)
         if chance % 25 == 0:
             sh_d = await get_api("https://www.jx3api.com/data/saohua/random")
