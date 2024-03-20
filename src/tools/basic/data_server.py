@@ -16,9 +16,9 @@ def Zone_mapping(server):
         return "双线一区"
     return None
 
-servers = json.loads(read(TOOLS + "/basic/server.json"))
 
 def server_mapping(server: str = None, group_id: str = None):
+    servers = json.loads(read(TOOLS + "/basic/server.json"))
     """
     根据服务器别名匹配服务器，若未输入则获取当前群所绑定的服务器
     """
