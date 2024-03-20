@@ -12,5 +12,6 @@
     "更新": ["游戏内容更新", "https://inkar-suki.codethink.cn/Inkar-Suki-Docs/img/update.png"],
     "诛恶": ["本服诛恶事件", "https://img.jx3box.com/pve/minimap/minimap_7.png"],
     "云从": ["全服云从预告", "https://img.jx3box.com/pve/minimap/minimap_6.png"],
-    "骚话": ["随机群内骚话（4%）", "https://img.jx3box.com/image/box/emotion.svg"]
+    "骚话": ["随机群内骚话（4%）", "https://img.jx3box.com/image/box/emotion.svg"],
+    "日常": ["每天07:40推送日常", "https://img.jx3box.com/image/box/collection.svg"]
 }
