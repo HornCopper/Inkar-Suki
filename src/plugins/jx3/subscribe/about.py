@@ -1,7 +1,5 @@
 from src.tools.basic import *
 
-subscribe_options = json.loads(read(PLUGINS + "/jx3/subscribe/options.json"))
-
 template_subscribe = """
 <div class="el-col">
     <div class="el-box">
@@ -18,6 +16,7 @@ template_subscribe = """
 </div>"""
 
 async def generateGroupInfo(bot: Bot, group_id: str):
+    subscribe_options = json.loads(read(PLUGINS + "/jx3/subscribe/options.json"))
     current = getGroupData(group_id, "subscribe")
     contents = []
     for i in list(subscribe_options):
