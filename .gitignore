@@ -4,6 +4,7 @@ src/assets/arcaea/
 src/plugins/grab/eat_pic/*
 src/tools/config.py
 src/tools/application.json
+src/plugins/developer_tools/failed.py
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
