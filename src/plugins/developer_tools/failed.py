@@ -1,4 +1,5 @@
 from nonebot.message import run_postprocessor
+from nonebot.adapters import Bot
 
 from src.tools.basic import *
 
@@ -6,4 +7,12 @@ from src.tools.basic import *
 async def _(bot: Bot, event: Event, matcher: Matcher, exception: Optional[Exception]):
     if exception:
         for i in Config.owner:
-            await bot.send_private_msg(user_id=int(i), message="群消息发送失败，账号可能被判定业务违规，请解除验证码！")
+            await bot.send_private_msg(user_id=int(i), message=f"音卡出现了报错：\n{exception}")
+
+@Bot.on_calling_api
+async def _(event: Event, matcher: Matcher):
+    to_check = event.get_message().extract_plain_text()
+    final_url = f"https://api.wer.plus/api/min?t={to_check}"
+    data = await get_api(final_url)
+    if data["num"] > 0:
+        matcher.stop_propagation()
