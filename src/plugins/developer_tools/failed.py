@@ -12,7 +12,7 @@ async def _(bot: Bot, event: Event, matcher: Matcher, exception: Optional[Except
 @Bot.on_calling_api
 async def _(event: Event, matcher: Matcher):
     to_check = event.get_message().extract_plain_text()
-    final_url = f"https://api.wer.plus/api/min?t={to_check}"
+    final_url = f"https://inkar-suki.codethink.cn/banword?word={to_check}"
     data = await get_api(final_url)
     if data["num"] > 0:
         matcher.stop_propagation()
