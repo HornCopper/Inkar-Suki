@@ -34,15 +34,7 @@ async def on_jx3_event_recv(bot: Bot, event: RecvEvent):
     for i in available_group:
         if msg_type in getGroupData(str(i), "subscribe"):
             if "server" not in list(message):
-                await bot.call_api("send_group_msg", group_id=i, message=message["msg"])
+                await bot.call_api("send_group_msg", group_id=i, message=message["msg"], flag=1)
             else:
                 if getGroupData(str(i), "server") == message["server"]:
-                    await bot.call_api("send_group_msg", group_id=i, message=message["msg"])
-
-
-@ws_recev.handle()
-async def _(event: RecvEvent):
-    type_ = event.get_message()["type"]
-    if type_ == "开服":
-        await asyncio.sleep(900)
-        shutil.rmtree(ASSETS + "/jx3/monsters.jpg")
+                    await bot.call_api("send_group_msg", group_id=i, message=message["msg"], flag=1)
