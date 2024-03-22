@@ -48,7 +48,7 @@ async def handle_api_call(bot: Bot, api: str, data: dict):
         to_check_headers = {
             "word": message
         }
-        data = await post_url("https://inkar-suki.codethink.cn/banword", headers=to_check_headers)
+        data = await post_url("https://inkar-suki.codethink.cn/banword", data=to_check_headers)
         data = json.loads(data)["code"]
         if data != 200:
             raise MockApiException("The message includes banned word!")
