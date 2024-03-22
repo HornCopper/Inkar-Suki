@@ -34,7 +34,7 @@ async def on_jx3_event_recv(bot: Bot, event: RecvEvent):
     for i in available_group:
         if msg_type in getGroupData(str(i), "subscribe"):
             if "server" not in list(message):
-                await bot.call_api("send_group_msg", group_id=i, message=message["msg"], flag=1)
+                await bot.call_api("send_group_msg", group_id=i, message=message["msg"], whitelist=1)
             else:
                 if getGroupData(str(i), "server") == message["server"]:
-                    await bot.call_api("send_group_msg", group_id=i, message=message["msg"], flag=1)
+                    await bot.call_api("send_group_msg", group_id=i, message=message["msg"], whitelist=1)
