@@ -49,7 +49,7 @@ async def handle_api_call(bot: Bot, api: str, data: dict):
         if "whitelist" in list(data):
             data.pop("whitelist")
             return
-        message = re.sub(r"\[.*?\]", "", data["message"])
+        message = re.sub(r"\[.*?\]", "", str(data["message"]))
         logger.info(message)
         if message == "":
             return
@@ -57,8 +57,8 @@ async def handle_api_call(bot: Bot, api: str, data: dict):
             "word": message
         }
         data = await post_url("https://inkar-suki.codethink.cn/banword", data=to_check_headers)
-        data = json.loads(data)["code"]
-        if data != 200:
+        data = data["code"]
+        if data == 200:
             raise MockApiException("The message includes banned word!")
 
 @preprocess.handle()
