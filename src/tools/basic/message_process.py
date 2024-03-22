@@ -3,6 +3,7 @@ from nonebot.adapters.onebot.v11 import GroupMessageEvent, PrivateMessageEvent, 
 from nonebot.adapters import Bot
 from nonebot.exception import MockApiException
 from nonebot.log import logger
+from nonebot.matcher import Matcher
 
 import os
 import json
@@ -10,7 +11,7 @@ import re
 import httpx
 import random
 
-from ..basic import DATA, write, Config, get_api, read
+from ..basic import DATA, write, Config, get_api, read, TOOLS
 
 def getGroupData(group: str, key: str):
     data = json.loads(read(DATA + "/" + str(group) + "/jx3group.json"))
@@ -46,20 +47,23 @@ async def post_url(url: str, headers: dict = {}, data: dict = {}):
 @Bot.on_calling_api
 async def handle_api_call(bot: Bot, api: str, data: dict):
     if api in ["send_group_msg", "send_private_msg", "send_msg"]:
-        if "whitelist" in list(data):
-            data.pop("whitelist")
-            return
         message = re.sub(r"\[.*?\]", "", str(data["message"]))
         logger.info(message)
         if message == "":
             return
-        to_check_headers = {
-            "word": message
-        }
-        data = await post_url("https://inkar-suki.codethink.cn/banword", data=to_check_headers)
-        data = data["code"]
-        if data == 200:
-            raise MockApiException("The message includes banned word!")
+        banword = json.loads(read(TOOLS + "/banword.json"))
+        for i in banword:
+            if message.find(i) != -1:
+                data["message"] = "唔……音卡本来想给告诉你的，可是检测到了不好的内容，所以只能隐藏啦，不然音卡的小鱼干会被没收的T_T"
+
+
+@preprocess.handle()
+async def _(event: Event, matcher: Matcher):
+    msg = str(event.message)
+    banword = json.loads(read(TOOLS + "/banword.json"))
+    for i in banword:
+        if msg.find(i) != -1:
+            matcher.stop_propagation()
 
 @preprocess.handle()
 async def checkEnv(bot: Bot, event: GroupMessageEvent):
