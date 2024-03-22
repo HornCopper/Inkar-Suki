@@ -5,9 +5,10 @@ from nonebot.exception import MockApiException
 
 import os
 import json
+import httpx
 import random
 
-from ..basic import DATA, write, Config, get_api, read, post_url
+from ..basic import DATA, write, Config, get_api, read
 
 def getGroupData(group: str, key: str):
     data = json.loads(read(DATA + "/" + str(group) + "/jx3group.json"))
@@ -33,6 +34,12 @@ write(f"{new_path }/arcaea.json", "{}")
 write(f"{new_path }/record.json", "[]")
 write(f"{new_path }/subscribe.json", "[]")
 write(f"{new_path }/blacklist.json", "[]")"""
+
+async def post_url(url: str, headers: dict):
+    async with httpx.AsyncClient(follow_redirects=True) as client:
+        resp = await client.post(url, headers=headers)
+        json_ = resp.json()
+        return json_
 
 @Bot.on_calling_api
 async def handle_api_call(bot: Bot, api: str, data: dict):
