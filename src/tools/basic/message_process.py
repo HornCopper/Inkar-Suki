@@ -49,12 +49,12 @@ async def handle_api_call(bot: Bot, api: str, data: dict):
     if api in ["send_group_msg", "send_private_msg", "send_msg"]:
         message = re.sub(r"\[.*?\]", "", str(data["message"]))
         logger.info(message)
-        if message == "":
+        if message == "" or "whitelist" in list(data):
             return
         banword = json.loads(read(TOOLS + "/banword.json"))
         for i in banword:
             if message.find(i) != -1:
-                data["message"] = "唔……音卡本来想给告诉你的，可是检测到了不好的内容，所以只能隐藏啦，不然音卡的小鱼干会被没收的T_T"
+                await bot.call_api("send_group_msg", group_id=data["group_id"], message="唔……音卡本来想给告诉你的，可是检测到了不好的内容，所以只能隐藏啦，不然音卡的小鱼干会被没收的T_T")
 
 
 @preprocess.handle()
