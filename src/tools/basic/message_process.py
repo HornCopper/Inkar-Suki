@@ -1,11 +1,13 @@
 from nonebot import on_message
-from nonebot.adapters.onebot.v11 import GroupMessageEvent, PrivateMessageEvent, Bot
+from nonebot.adapters.onebot.v11 import GroupMessageEvent, PrivateMessageEvent, Bot, Event
+from nonebot.adapters import Bot
+from nonebot.exception import MockApiException
 
 import os
 import json
 import random
 
-from ..basic import DATA, write, Config, get_api, read
+from ..basic import DATA, write, Config, get_api, read, post_url
 
 def getGroupData(group: str, key: str):
     data = json.loads(read(DATA + "/" + str(group) + "/jx3group.json"))
@@ -31,6 +33,18 @@ write(f"{new_path }/arcaea.json", "{}")
 write(f"{new_path }/record.json", "[]")
 write(f"{new_path }/subscribe.json", "[]")
 write(f"{new_path }/blacklist.json", "[]")"""
+
+@Bot.on_calling_api
+async def handle_api_call(bot: Bot, api: str, data: dict):
+    if api in ["send_group_msg", "send_private_msg", "send_msg"]:
+        message = data["message"]
+        to_check_headers = {
+            "word": message
+        }
+        data = await post_url("https://inkar-suki.codethink.cn/banword", headers=to_check_headers)
+        data = json.loads(data)["code"]
+        if data != 200:
+            raise MockApiException("The message includes banned word!")
 
 @preprocess.handle()
 async def checkEnv(bot: Bot, event: GroupMessageEvent):
@@ -60,7 +74,6 @@ async def checkEnv(bot: Bot, event: GroupMessageEvent):
             sh_d = await get_api("https://www.jx3api.com/data/saohua/random")
             sh = sh_d["data"]["text"]
             await bot.call_api("send_group_msg", group_id=event.group_id, message=sh)
-            
 
 @preprocess.handle()
 async def autoPrivate(event: PrivateMessageEvent):
