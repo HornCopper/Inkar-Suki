@@ -2,6 +2,7 @@ from nonebot import on_message
 from nonebot.adapters.onebot.v11 import GroupMessageEvent, PrivateMessageEvent, Bot, Event
 from nonebot.adapters import Bot
 from nonebot.exception import MockApiException
+from nonebot.log import logger
 
 import os
 import json
@@ -42,31 +43,20 @@ async def post_url(url: str, headers: dict = {}, data: dict = {}):
         json_ = resp.json()
         return json_
 
-global msg
-global status
-
-msg = ""
-status = False
-
 @Bot.on_calling_api
 async def handle_api_call(bot: Bot, api: str, data: dict):
     if api in ["send_group_msg", "send_private_msg", "send_msg"]:
         message = re.sub(r"\[.*?\]", "", data["message"])
+        logger.info(message)
         if message == "":
             return
-        if msg == message and not status:
-            return
-        msg = message
         to_check_headers = {
             "word": message
         }
         data = await post_url("https://inkar-suki.codethink.cn/banword", data=to_check_headers)
         data = json.loads(data)["code"]
         if data != 200:
-            status = True
             raise MockApiException("The message includes banned word!")
-        else:
-            status = False
 
 @preprocess.handle()
 async def checkEnv(bot: Bot, event: GroupMessageEvent):
