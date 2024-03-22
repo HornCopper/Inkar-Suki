@@ -35,7 +35,7 @@ write(f"{new_path }/record.json", "[]")
 write(f"{new_path }/subscribe.json", "[]")
 write(f"{new_path }/blacklist.json", "[]")"""
 
-async def post_url(url: str, headers: dict, data: dict):
+async def post_url(url: str, headers: dict = {}, data: dict = {}):
     async with httpx.AsyncClient(follow_redirects=True) as client:
         resp = await client.post(url, headers=headers, data=data)
         json_ = resp.json()
