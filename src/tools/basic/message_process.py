@@ -52,6 +52,8 @@ status = False
 async def handle_api_call(bot: Bot, api: str, data: dict):
     if api in ["send_group_msg", "send_private_msg", "send_msg"]:
         message = re.sub(r"\[.*?\]", "", data["message"])
+        if message == "":
+            return
         if msg == message and not status:
             return
         msg = message
