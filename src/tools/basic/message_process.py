@@ -47,6 +47,7 @@ async def post_url(url: str, headers: dict = {}, data: dict = {}):
 async def handle_api_call(bot: Bot, api: str, data: dict):
     if api in ["send_group_msg", "send_private_msg", "send_msg"]:
         if "whitelist" in list(data):
+            data.pop("whitelist")
             return
         message = re.sub(r"\[.*?\]", "", data["message"])
         logger.info(message)
