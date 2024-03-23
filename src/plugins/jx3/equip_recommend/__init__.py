@@ -16,6 +16,7 @@ async def jx3_equip_recommend_menu(event: GroupMessageEvent, state: T_State, arg
         await jx3_cmd_equip_recommend.finish("唔……参数数量有问题哦，请检查后重试~\n或查看帮助文件（+help）获得更详细的信息哦~")
     condition = []
     classic = ["PVE", "PVP"]
+    kf = ""
     if len(arg) == 2:
         if str.upper(arg[0]) in classic:
             kf = aliases(arg[1])
