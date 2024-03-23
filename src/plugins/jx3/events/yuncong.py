@@ -55,11 +55,16 @@ async def getYuncongImg():
         events.append(diff[2])
         common[3]["hour"] = str(int(chour) + 1)
         events.append(diff[3])
+        break
         
     tables = []
     for i in events:
         hour = i["hour"]
         minute = str(i["time"])
+        if len(hour) == 1:
+            hour = "0" + hour
+        if len(minute) == 1:
+            minute = "0" + minute
         time = f"{hour}:{minute}"
         desc = i["desc"]
         section = i["stage"]
