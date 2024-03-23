@@ -32,7 +32,10 @@ async def generate_by_url(url: str, locate: str = None, first_element: bool = Fa
                 time.sleep(delay / 1000)
             uuid_ = get_uuid()
             store_path = f"{CACHE}/{uuid_}.png"
-            await page.add_style_tag(content=css)
+            if web:
+                await page.add_style_tag(content=css)
+            else:
+                pass
             if locate != None:
                 if first_element:
                     await page.locator(locate).first.screenshot(path=store_path)
