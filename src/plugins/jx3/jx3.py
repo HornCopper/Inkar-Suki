@@ -11,7 +11,7 @@ from .horse import *
 from .joy import *
 from .matrix import *
 from .news import *
-from .notice import *
+from .announce import *
 from .other import *
 from .pet import *
 from .penzai import *
