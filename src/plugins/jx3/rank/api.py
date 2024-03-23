@@ -12,7 +12,7 @@ async def rank_(type_1: str, type_2: str, server: str, group_id: str):
         return [PROMPT_ServerNotExist]
     if token is None:
         return [PROMPT_NoToken]
-    final_url = f"{Config.jx3api_link}/data/rank/statistical?token={token}&robot={bot}&server={server}&table={type_1}&name={type_2}&scale=1"
+    final_url = f"{Config.jx3api_link}/view/rank/statistical?token={token}&robot={bot}&server={server}&table={type_1}&name={type_2}&scale=1"
     if type_1 == "个人":
         if type_2 not in ["名士五十强", "老江湖五十强", "兵甲藏家五十强", "名师五十强", "阵营英雄五十强", "薪火相传五十强", "庐园广记一百强"]:
             return ["唔……类型不正确，请检查后重试~"]
@@ -23,7 +23,7 @@ async def rank_(type_1: str, type_2: str, server: str, group_id: str):
         if type_2 not in ["赛季恶人五十强", "赛季浩气五十强", "上周恶人五十强", "上周浩气五十强", "本周恶人五十强", "本周浩气五十强"]:
             return ["唔……类型不正确，请检查后重试~"]
     elif type_1 == "试炼":
-        if type_2 not in ["万花", "七秀", "少林", "纯阳", "天策", "五毒", "唐门", "明教", "苍云", "长歌", "藏剑", "丐帮", "霸刀", "蓬莱", "凌雪", "衍天", "药宗", "刀宗", "万灵山庄"]:
+        if type_2 not in ["万花", "七秀", "少林", "纯阳", "天策", "五毒", "唐门", "明教", "苍云", "长歌", "藏剑", "丐帮", "霸刀", "蓬莱", "凌雪", "衍天", "药宗", "刀宗", "万灵"]:
             return ["唔……门派不正确哦，请检查后重试~"]
     else:
         return ["未知类型，只能是个人/帮会/战功/试炼哦！"]
