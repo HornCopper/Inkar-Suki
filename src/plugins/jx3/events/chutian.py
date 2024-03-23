@@ -14,7 +14,8 @@ async def getChutianImg():
     tables = []
     for i in data["data"]:
         time = i["time"]
-        icon = "https://img.jx3box.com/pve/minimap/minimap_" + i["icon"] + ".png"
+        icon = i["icon"] if i["icon"] != "12" else "10"
+        icon = "https://img.jx3box.com/pve/minimap/minimap_" + icon + ".png"
         desc = i["desc"]
         section = i["event"]
         map = i["map_name"]
