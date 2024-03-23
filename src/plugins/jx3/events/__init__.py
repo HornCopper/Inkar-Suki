@@ -14,7 +14,7 @@ ycs = on_command("jx3_yuncong", aliases={"云从社"}, priority=5)
 @ycs.handle()
 async def _(event: GroupMessageEvent):
     image = await getYuncongImg()
-    await cts.finish(ms.image(image))
+    await ycs.finish(ms.image(image))
 
 zhue_ = on_command("jx3_zhue", aliases={"诛恶"}, priority=5)
 
