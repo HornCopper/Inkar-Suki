@@ -35,11 +35,21 @@ async def getChutianImg():
                 processedData["data"][currentSort+1]
             except IndexError:
                 overFlag = True
-            if overFlag:
-                currentSort = 0
             events.append(processedData["data"][currentSort+1])
-            events.append(processedData["data"][currentSort+2])
-            events.append(processedData["data"][currentSort+3])
+            try:
+                events.append(processedData["data"][currentSort+2])
+            except IndexError:
+                if not overFlag:
+                    events.append(processedData["data"][0])
+                else:
+                    events.append(processedData["data"][1])
+            try:
+                events.append(processedData["data"][currentSort+3])
+            except IndexError:
+                if not overFlag:
+                    events.append(processedData["data"][0])
+                else:
+                    events.append(processedData["data"][2])
             break
     standard = events[2]["key"] # 第二个为当前事件，标准事件
     tables = []
