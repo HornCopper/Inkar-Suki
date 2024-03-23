@@ -92,6 +92,7 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
             ans.append(process(i))
     ans = ["|命令|格式|别名|描述|权限|图片|","|-----|-----|-----|-----|-----|-----|"] + ans
     ans = "\n".join(ans)
+    ans = ans.replace("|", "\\|")
     node = [
         {
             "type": "node",
