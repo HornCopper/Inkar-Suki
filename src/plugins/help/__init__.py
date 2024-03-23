@@ -89,37 +89,44 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
     ans = []
     for i in data:
         if i.find(args.extract_plain_text()) and count_line(i) >= 6:
-            ans.append(process(i))
+            ans.append(i)
     ans = ["|命令|格式|别名|描述|权限|图片|","|-----|-----|-----|-----|-----|-----|"] + ans
-    ans = "\n".join(ans)
-    ans = ans.replace("|", "\\|")
-    node = [
-        {
-            "type": "node",
-            "data": 
-            {
-                "name": "Inkar Suki · 音卡",
-                "uin": "3438531564",
-                "content": 
-                [
-                    {
-                        "type": "markdown",
-                        "data": 
-                        {
-                            "content": ans
-                        }
-                    }
-                ]
-            }
-        }
-    ]
-    ans = await bot.call_api("send_forward_msg", messages=node)
-    ans = [
-        {
-            "type": "longmsg",
-            "data": {
-                "id":ans
-            }
-        }
-    ]
-    await bot.call_api("send_group_msg", group_id=event.group_id, message=ans)
+    html = "<!DOCTYPE html><html><head><meta charset=\"utf-8\"></head><body>" + "\n".join(ans) + "</body></html>"
+    output = CACHE + "/" + get_uuid() + ".html"
+    write(output, html)
+    final_path = await generate(output, False)
+    final_path = Path(final_path).as_uri()
+    data = get_content_local(final_path)
+    await getCmd.finish(ms.image(data))
+    # ans = "\n".join(ans)
+    # ans = ans.replace("|", "\\|")
+    # node = [
+    #     {
+    #         "type": "node",
+    #         "data": 
+    #         {
+    #             "name": "Inkar Suki · 音卡",
+    #             "uin": "3438531564",
+    #             "content": 
+    #             [
+    #                 {
+    #                     "type": "markdown",
+    #                     "data": 
+    #                     {
+                            
+    #                     }
+    #                 }
+    #             ]
+    #         }
+    #     }
+    # ]
+    # ans = await bot.call_api("send_forward_msg", messages=node)
+    # ans = [
+    #     {
+    #         "type": "longmsg",
+    #         "data": {
+    #             "id":ans
+    #         }
+    #     }
+    # ]
+    # await bot.call_api("send_group_msg", group_id=event.group_id, message=ans)
