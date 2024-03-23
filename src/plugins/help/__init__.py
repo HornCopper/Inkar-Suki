@@ -92,7 +92,7 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
         if i.find(args.extract_plain_text()) != -1 and count_line(i) >= 6:
             ans.append(i)
     ans = ["|命令|格式|别名|描述|权限|图片|","|-----|-----|-----|-----|-----|-----|"] + ans
-    html = markdown.markdown("\n".join(ans))
+    html = markdown.markdown("\n".join(ans), extensions=["markdown.extensions.tables"])
     html = "<!DOCTYPE html><html><head><meta charset=\"utf-8\"></head><body>" + html + "</body></html>"
     output = CACHE + "/" + get_uuid() + ".html"
     write(output, html)
