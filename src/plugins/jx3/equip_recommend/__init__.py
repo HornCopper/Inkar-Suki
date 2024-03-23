@@ -17,7 +17,7 @@ async def jx3_equip_recommend_menu(event: GroupMessageEvent, state: T_State, arg
     condition = []
     classic = ["PVE", "PVP"]
     if len(arg) == 2:
-        if arg[0].upper() in classic:
+        if str.upper(arg[0]) in classic:
             kf = aliases(arg[1])
             condition.append(arg[0])
         else:
