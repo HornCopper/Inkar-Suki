@@ -1,7 +1,5 @@
 from src.tools.basic import *
 
-import datetime
-
 template_chutian = """
 <tr>
     <td class="short-column">$time</td>
@@ -11,59 +9,17 @@ template_chutian = """
 </tr>"""
 
 async def getChutianImg():
-    processedData = await get_api("https://cms.jx3box.com/api/cms/game/celebrity?type=0")
-    now_time = datetime.datetime.now()
-    chour = int(now_time.strftime("%H"))
-    cminute = int(now_time.strftime("%M"))
-    if chour % 2 == 1 and cminute >= 30:
-        t = "c11" # 单数半点 next-> c00
-    elif chour % 2 == 1 and 30 > cminute >= 0:
-        t = "c10" # 单数整点 next -> c11
-    elif chour % 2 == 0 and cminute >= 30:
-        t = "c01" # 双数半点 next -> c10
-    elif chour % 2 == 0 and 30 > cminute >= 0:
-        t = "c00" # 双数整点 next -> c01
-    events = []
-    for i in processedData["data"]:
-        if i["key"] == t and i["time"] >= int(convert_time(getCurrentTime(), "%M")):
-            currentSort = processedData["data"].index(i)
-            events.append(processedData["data"][currentSort-2])
-            events.append(processedData["data"][currentSort-1])
-            events.append(processedData["data"][currentSort])
-            overFlag = False
-            try:
-                processedData["data"][currentSort+1]
-            except IndexError:
-                overFlag = True
-            events.append(processedData["data"][currentSort+1])
-            try:
-                events.append(processedData["data"][currentSort+2])
-            except IndexError:
-                if not overFlag:
-                    events.append(processedData["data"][0])
-                else:
-                    events.append(processedData["data"][1])
-            try:
-                events.append(processedData["data"][currentSort+3])
-            except IndexError:
-                if not overFlag:
-                    events.append(processedData["data"][0])
-                else:
-                    events.append(processedData["data"][2])
-            break
-    standard = events[2]["key"] # 第二个为当前事件，标准事件
+    url = f"https://www.jx3api.com/data/active/celebrities?token={token}"
+    data = await get_api(url)
     tables = []
-    for i in events:
-        event = i["stage"]
-        site = i["map"] + "·" + i["site"]
+    for i in data["data"]:
+        time = i["time"]
         icon = "https://img.jx3box.com/pve/minimap/minimap_" + i["icon"] + ".png"
         desc = i["desc"]
-        hour = getHour(standard, i["key"])
-        minute = str(i["time"])
-        if len(minute) == 1:
-            minute = "0" + minute
-        final_time = str(hour) + ":" + minute
-        tables.append(template_chutian.replace("$time", final_time).replace("$site", site).replace("$icon", icon).replace("$section", event).replace("$desc", desc))
+        section = i["event"]
+        map = i["map"]
+        site = i["site"]
+        tables.append(template_chutian.replace("$time", time).replace("$site", map + "·" + site).replace("icon", icon).replace("$desc", desc).replace("$section", section))
     final_table = "\n".join(tables)
     html = read(VIEWS + "/jx3/celebrations/chutian.html")
     font = ASSETS + "/font/custom.ttf"
@@ -76,19 +32,3 @@ async def getChutianImg():
     write(final_html, html)
     final_path = await generate(final_html, False, "table", False)
     return Path(final_path).as_uri()
-        
-
-def getHour(currentFlag: str, diffFlag: str):
-    if currentFlag[1] == diffFlag[1]:
-        result = int(convert_time(getCurrentTime(), "%H"))
-    elif currentFlag == "c01" and diffFlag == "c10":
-        result = int(convert_time(getCurrentTime(), "%H")) + 1
-    elif currentFlag == "c11" and diffFlag == "c00":
-        result = int(convert_time(getCurrentTime(), "%H")) + 1
-    elif currentFlag == "c00" and diffFlag == "c11":
-        result = int(convert_time(getCurrentTime(), "%H")) - 1
-    elif currentFlag == "c10" and diffFlag == "c01":
-        result = int(convert_time(getCurrentTime(), "%H")) - 1
-    if result >= 24:
-        result = result - 24
-    return result
