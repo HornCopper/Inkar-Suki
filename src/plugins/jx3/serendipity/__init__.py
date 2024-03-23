@@ -119,53 +119,16 @@ async def jx3_gstatistical(event: GroupMessageEvent, args: Message = CommandArg(
         data = await get_content(data)
         await jx3_cmd_gstatistical.finish(ms.image(data))
 
-preposition = on_command("jx3_preposition", aliases={"前置"}, priority=5)
+
+preposition = on_command("jx3_preposition", aliases={"前置", "攻略"}, priority=5)
 
 
 @preposition.handle()
 async def jx3_preposition(event: GroupMessageEvent, args: Message = CommandArg()):
-    """
-    获取奇遇前置。
-
-    Example：-前置 阴阳两界
-
-    数据来源：隐元秘鉴
-    """
     serendipity = args.extract_plain_text()
     data = await get_preposition(serendipity)
-    if data is False:
+    if data == False:
         await preposition.finish("唔……没有找到相关信息~")
     else:
-        data = await get_content(data)
-        await preposition.finish(ms.image(data) + "\n数据来自隐元秘鉴，请在合理范围内使用本图片。")
-
-recipe = on_command("jx3_recipe", aliases={"攻略"}, priority=5)
-
-
-@recipe.handle()
-async def jx3_serendipity_recipe(event: GroupMessageEvent, args: Message = CommandArg()):
-    """
-    获取奇遇攻略。
-
-    Example：-攻略 阴阳两界
-
-    数据来源：隐元秘鉴
-
-    本功能由于图片~~又臭又长~~所以需要缓存到本地再发送。
-    """
-    serendipity = args.extract_plain_text()
-    imgs = os.listdir(ASSETS + "/jx3/serendipity")
-    filename = serendipity + ".png"
-    filepath = ASSETS + "/jx3/serendipity/" + filename
-    if filename in imgs:
-        await preposition.finish(ms.image(Path(filepath).as_uri()))
-    data = await get_image(serendipity)
-    if data is False:
-        await preposition.finish("唔……没有找到相关信息~")
-    else:
-        image_content = await get_content(data)
-        image = open(filepath, mode="wb")
-        image.write(image_content)
-        image.close()
-        data = await get_content(data)
-        await preposition.finish(ms.image(Path(data).as_uri()))
+        data = get_content_local(data)
+        await preposition.finish(ms.image(data))

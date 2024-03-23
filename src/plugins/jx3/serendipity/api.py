@@ -49,39 +49,17 @@ async def global_statistical(name: str = None):  # 全服统计 [奇遇]
     data = await get_api(final_url)
     return data["data"]["url"]
 
-
-async def get_preposition_page_url(name: str = None):
-    api = "http://jx3yymj.com/index.php?mid=qy"
-    data = await get_url(api)
-    bs = BeautifulSoup(data, "html.parser")
-    all = bs.find_all("li", class_="clear")
-    for i in all:
-        singlen = i.find(class_="ngeb").get_text()
-        singleu = "http://jx3yymj.com/" + i.a["href"]
-        if singlen.find(name) != -1:
-            return singleu
-    return False
-
-
 async def get_preposition(name: str = None):
-    url = await get_preposition_page_url(name)
-    if url is False:
+    url = "https://inkar-suki.codethink.cn/serendipity"
+    data = await get_api(url)
+    flag = False
+    for i in data:
+        if i["name"] == name:
+            id = i["id"]
+            flag = True
+    if not flag:
         return False
-    data = await get_url(url)
-    bs = BeautifulSoup(data, "html.parser")
-    table = bs.find(class_="et_vars bd_tb")
-    table = css + str(table).replace("<caption class=\"blind\">Extra Form</caption>", "")
-    path = CACHE + "/" + get_uuid() + ".html"
-    write(path, table)
-    img = await generate(path, False, "table", False)
-    return Path(img).as_uri()
-
-
-async def get_image(name: str = None):
-    url = await get_preposition_page_url(name)
-    if url is False:
-        return False
-    data = await get_url(url)
-    bs = BeautifulSoup(data, "html.parser")
-    article = bs.find("article").find_all("img")[0]["src"]
-    return article
+    final_url = "https://jx3box.com/adventure/" + str(id)
+    addtional_css = ".m-wiki-metas{display: none;}"
+    image = await generate(final_url, True, ".c-wiki-panel", True, 0, addtional_css)
+    return Path(image).as_uri()
