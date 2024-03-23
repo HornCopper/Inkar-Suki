@@ -50,7 +50,23 @@ template_local = """
 </tr>
 """
 
-async def recruit_v2(server: str, actvt: str = "", local: bool = False):
+async def checkAd(msg: str, data: dict):
+    data = data["data"]
+    for x in data:
+        status = []
+        for num in range(len(x)):
+            status.append(True)
+        result = []
+        for y in x:
+            if msg.find(y) != -1:
+                result.append(True)
+            else:
+                result.append(False)
+        if status == result:
+            return True
+    return False
+
+async def recruit_v2(server: str, actvt: str = "", local: bool = False, filter: bool = False):
     if token == None:
         return [PROMPT_NoToken]
     server = server_mapping(server)
@@ -60,16 +76,19 @@ async def recruit_v2(server: str, actvt: str = "", local: bool = False):
     if actvt != "":
         final_url = final_url + "&keyword=" + actvt
     data = await get_api(final_url)
+    adFlags = await get_api("https://inkar-suki.codethink.cn/filters")
     time_now = convert_time(data["data"]["time"])
     appinfo = f" · 招募信息 · {server} · {time_now}"
     font = ASSETS + "/font/custom.ttf"
     data = data["data"]["data"]
     contents = []
     for i in range(len(data)):
+        content = detail["content"]
+        if checkAd(content, adFlags):
+            continue
         detail = data[i]
         flag = False if not detail["roomID"] else True
         if local and flag:
-            num = str(i + 1)
             continue
         flag = "" if not detail["roomID"] else "<img src=\"https://img.jx3box.com/image/box/servers.svg\" style=\"width:20px;height:20px;\">" 
         num = str(i + 1)
@@ -77,7 +96,6 @@ async def recruit_v2(server: str, actvt: str = "", local: bool = False):
         level = str(detail["level"])
         leader = detail["leader"]
         count = str(detail["number"]) + "/" + str(detail["maxNumber"])
-        content = detail["content"]
         create_time = convert_time(detail["createTime"])
         if local:
             template = template_local
