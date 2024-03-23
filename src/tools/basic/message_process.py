@@ -38,12 +38,6 @@ write(f"{new_path }/record.json", "[]")
 write(f"{new_path }/subscribe.json", "[]")
 write(f"{new_path }/blacklist.json", "[]")"""
 
-async def post_url(url: str, headers: dict = {}, data: dict = {}):
-    async with httpx.AsyncClient(follow_redirects=True) as client:
-        resp = await client.post(url, headers=headers, data=data)
-        json_ = resp.json()
-        return json_
-
 @Bot.on_calling_api
 async def handle_api_call(bot: Bot, api: str, data: dict):
     if api in ["send_group_msg", "send_private_msg", "send_msg"]:
