@@ -20,7 +20,7 @@ def get_uuid():
     return str(uuid.uuid1()).replace("-", "")
 
 
-async def generate_by_url(url: str, locate: str = None, first_element: bool = False, delay: int = 0):
+async def generate_by_url(url: str, locate: str = None, first_element: bool = False, delay: int = 0, css: str = ""):
     try:
         async with async_playwright() as p:
             logger.opt(colors=True).info("<green>Generating source: " + url + "</green>")
@@ -32,6 +32,7 @@ async def generate_by_url(url: str, locate: str = None, first_element: bool = Fa
                 time.sleep(delay / 1000)
             uuid_ = get_uuid()
             store_path = f"{CACHE}/{uuid_}.png"
+            await page.add_style_tag(content=css)
             if locate != None:
                 if first_element:
                     await page.locator(locate).first.screenshot(path=store_path)
@@ -46,18 +47,21 @@ async def generate_by_url(url: str, locate: str = None, first_element: bool = Fa
         return False
 
 
-async def generate(html: str, web: bool = False, locate: str = None, first: bool = False, delay: int = 0):
+async def generate(path: str, web: bool = False, locate: str = None, first: bool = False, delay: int = 0, addtional_css: str = ""):
     """
     生成指定路径下html文件的截图
-    @param html: HTML文件的本地路径
-    @param web: 没什么用，填个`False`凑个数吧（已弃用的外网截图）
+    @param path: HTML文件的本地路径或网络地址
+    @param web: 是否为外网截图
     @param locate: 所截图的标签
     @param first: 是否只截图第一个元素
     @param delay: 等待时间，单位为毫秒（ms）
-    @return : 所生成的图片的本地路径
+    @addtional_css: 追加的CSS
     """
-    html = Path(html).as_uri()
-    result = await generate_by_url(html, locate, first, delay)
+    if not web:
+        final_path = Path(path).as_uri()
+    else:
+        final_path = path
+    result = await generate_by_url(final_path, locate, first, delay, addtional_css)
     if result is None:
         return False
     return result
