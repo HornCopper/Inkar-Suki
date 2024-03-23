@@ -27,10 +27,7 @@ async def generate_by_url(url: str, locate: str = None, first_element: bool = Fa
             browser = await p.chromium.launch(headless=True, slow_mo=0)
             context = await browser.new_context()
             page = await context.new_page()
-            if web:
-                await page.goto(url)
-            else:
-                await page.goto({"path": url})
+            await page.goto(url)
             if delay > 0:
                 time.sleep(delay / 1000)
             uuid_ = get_uuid()
@@ -60,7 +57,7 @@ async def generate(path: str, web: bool = False, locate: str = None, first: bool
     @param delay: 等待时间，单位为毫秒（ms）
     @addtional_css: 追加的CSS
     """
-    final_path = path
+    final_path = Path(path).as_uri() if not web else path
     result = await generate_by_url(final_path, locate, first, delay, addtional_css, web)
     if result is None:
         return False
