@@ -14,8 +14,13 @@ async def jx3_equip_recommend_menu(event: GroupMessageEvent, state: T_State, arg
     arg = args.extract_plain_text().split(" ")
     if len(arg) not in [1, 2]:
         await jx3_cmd_equip_recommend.finish("唔……参数数量有问题哦，请检查后重试~\n或查看帮助文件（+help）获得更详细的信息哦~")
-    kf = aliases(arg[0])
     condition = []
+    classic = ["PVE", "PVP"]
+    if len(arg) == 2:
+        if arg[0].upper() in classic:
+            kf = aliases(arg[1])
+        else:
+            kf = aliases(arg[0])
     school_mapping = await get_api("https://inkar-suki.codethink.cn/schoolmapping")
     if len(arg) == 2:
         condition = arg[1].split(";")
