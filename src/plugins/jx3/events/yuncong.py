@@ -47,13 +47,13 @@ async def getYuncongImg():
         events.append(common[current - 1])
         common[current]["hour"] = chour
         events.append(current)
-        common[0]["hour"] = chour + 1
+        common[0]["hour"] = str(int(chour) + 1)
         events.append(x[0])
-        common[1]["hour"] = chour + 1
+        common[1]["hour"] = str(int(chour) + 1)
         events.append(x[1])
-        common[2]["hour"] = chour + 1
+        common[2]["hour"] = str(int(chour) + 1)
         events.append(x[2])
-        common[3]["hour"] = chour + 1
+        common[3]["hour"] = str(int(chour) + 1)
         events.append(x[3])
         
     tables = []
