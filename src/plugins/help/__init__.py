@@ -43,11 +43,6 @@ css = """
                 padding: 15px; 
                 text-align: left; 
             }
-            @font-face
-            {
-                font-family: Custom;
-                src: url("customfont");
-            }
 </style>"""
 css = css.replace("customfont", Config.font_path)
 path = PLUGINS

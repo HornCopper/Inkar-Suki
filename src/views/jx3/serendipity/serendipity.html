@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <!--
         该代码协议与Inkar Suki仓库协议相同。
@@ -61,20 +62,15 @@
             font-style: italic;
             font-size: 12px;
         }
-        @font-face {
-            font-family: Harmony;
-            src: url($customfont);
-        }
-        body {
-            font-family: Harmony, sans-serif;
-        }
     </style>
 </head>
+
 <body>
     <table style="background-color: #ffffff;">
         <thead>
             <tr>
-                <th class="empty-column"><img src="$titleimage", style="background-repeat:no-repeat;background-size:contain;height:20px;"></th>
+                <th class="empty-column"><img src="$titleimage" ,
+                        style="background-repeat:no-repeat;background-size:contain;height:20px;"></th>
                 <th class="short-column">名称</th>
                 <th class="short-column">时间</th>
                 <th class="long-column"> </th>
@@ -85,10 +81,12 @@
         </tbody>
         <tfoot>
             <span style="text-align: center;">
-            <tr>
-                <td colspan="3">&copy; Inkar Suki · $appinfo</td>
-            </tr></span>
+                <tr>
+                    <td colspan="3">&copy; Inkar Suki · $appinfo</td>
+                </tr>
+            </span>
         </tfoot>
     </table>
 </body>
+
 </html>
