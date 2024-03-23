@@ -46,7 +46,7 @@ async def getYuncongImg():
         common[current - 1]["hour"] = chour
         events.append(common[current - 1])
         common[current]["hour"] = chour
-        events.append(current)
+        events.append(common[current])
         common[0]["hour"] = str(int(chour) + 1)
         events.append(diff[0])
         common[1]["hour"] = str(int(chour) + 1)
