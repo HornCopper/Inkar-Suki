@@ -25,27 +25,70 @@ from tabulate import tabulate
 help = on_command("help", aliases={"帮助", "功能", "查看", "文档", "使用说明"}, priority=5)
 css = """
 <style>
-            ::-webkit-scrollbar 
-            {
-                display: none;   
-            }
-            table 
-            { 
-                border-collapse: collapse; 
-            } 
-            table, th, td
-            { 
-                border: 1px solid rgba(0,0,0,0.05); 
-                font-size: 0.8125rem; 
-                font-weight: 500; 
-            } 
-            th, td 
-            { 
-                padding: 15px; 
-                text-align: left; 
-            }
+    ::-webkit-scrollbar 
+    {
+        display: none;   
+    }
+    table 
+    { 
+        border-collapse: collapse; 
+    } 
+    table, th, td
+    { 
+        border: 1px solid rgba(0,0,0,0.05); 
+        font-size: 0.8125rem; 
+        font-weight: 500; 
+    } 
+    th, td 
+    { 
+        padding: 15px; 
+        text-align: left; 
+    }
 </style>"""
 css = css.replace("customfont", Config.font_path)
+css2 = """
+<style>
+    table {
+        width: 800px;
+        border-collapse: separate;
+        border-spacing: 0;
+        border: 1px solid #000;
+    }
+
+    th {
+        background-color: #333;
+        color: #fff;
+        padding: 5px;
+        width: 50px;
+        text-align: center;
+    }
+
+    td {
+        padding: 20px;
+        text-align: center;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        border-bottom: 1px solid #D3D3D3;
+        margin-bottom: 1px;
+    }
+
+    tbody tr:not(:first-child) {
+        /* border-top: 1px solid #000; */
+        border: 1px solid black;
+    }
+
+    .short-column {
+        width: 150px;
+    }
+
+    tfoot {
+        text-align: center;
+        font-style: italic;
+        font-size: 12px;
+    }
+</style>
+"""
 path = PLUGINS
 
 def count_line(string: str):
@@ -93,10 +136,10 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
             ans.append(i)
     ans = ["|命令|格式|别名|描述|权限|图片|","|-----|-----|-----|-----|-----|-----|"] + ans
     html = markdown.markdown("\n".join(ans), extensions=["markdown.extensions.tables"])
-    html = "<!DOCTYPE html><html><head><meta charset=\"utf-8\"></head><body>" + html + "</body></html>"
+    html = "<!DOCTYPE html><html><head><meta charset=\"utf-8\">" + css2 + "</head><body>" + html + "</body></html>"
     output = CACHE + "/" + get_uuid() + ".html"
     write(output, html)
-    final_path = await generate(output, False)
+    final_path = await generate(output, False, "table", True)
     final_path = Path(final_path).as_uri()
     data = get_content_local(final_path)
     await getCmd.finish(ms.image(data))
