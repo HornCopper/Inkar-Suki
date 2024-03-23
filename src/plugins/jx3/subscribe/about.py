@@ -43,7 +43,7 @@ async def generateGroupInfo(bot: Bot, group_id: str):
             flag = "✖"
         addtions_contents.append(template_subscribe.replace("$image", icon).replace("$subject", i).replace("$description", desc).replace("$status", status).replace("$flag", flag))
     final_subscribe_contents = "\n".join(subscribe_contents)
-    final_options_contents = "\n".join(subscribe_options)
+    final_options_contents = "\n".join(addtions_contents)
     html = read(VIEWS + "/jx3/subscribe/subscribe.html")
     font = ASSETS + "/font/custom.ttf"
     group_info = await bot.call_api("get_group_info", group_id=int(group_id), no_cache=True)
