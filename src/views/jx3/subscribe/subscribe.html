@@ -82,8 +82,15 @@
         }
 
         .el-divider {
-            background-color: #dcdfe6;
-            position: relative
+            background-color: #ff2571;
+            position: relative;
+            height: 3px;
+        }
+
+        .el-mini-divider {
+            background-color: #4a4aff;
+            position: relative;
+            height: 1px;
         }
 
         .el-divider__text {
@@ -125,9 +132,21 @@
             <div class="el-divider__text is-left">群聊 $group_name（$group_id） 关于本群</div>
         </div>
 
+        <div class="el-mini-divider el-divider--horizontal" style="width:850px">
+            <div class="el-divider__text is-left">订阅内容（使用 订阅/开启 加上下面的小标题即可订阅，多个请用空格分隔）</div>
+        </div>
+
         <!-- 图标库 -->
         <div class="el-row">
-            $contents
+            $subscribe_contents
+        </div>
+
+        <div class="el-mini-divider el-divider--horizontal" style="width:850px">
+            <div class="el-divider__text is-left">功能附加（使用 开启/订阅 加上下面的小标题即可订阅，多个请用空格分隔）</div>
+        </div>
+
+        <div class="el-row">
+            $addtion_contents
         </div>
     </div>
 </body>
