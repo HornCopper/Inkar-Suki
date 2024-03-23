@@ -36,12 +36,15 @@ jx3_cmd_recruit_v2 = on_command("jx3_recruit", aliases={"招募"}, priority=5)
 
 @jx3_cmd_recruit_v2.handle()
 async def jx3_recruit_v2(event: GroupMessageEvent, args: Message = CommandArg()):
+    filter = False
+    if "招募过滤" in getGroupData(str(event.group_id), "addtions"):
+        filter = True
     arg = args.extract_plain_text()
     if arg == "":
         group_server = getGroupServer(str(event.group_id))
         if not group_server:
             await jx3_cmd_recruit_v2.finish("尚未绑定服务器，请携带服务器参数使用！")
-        data = await recruit_v2(group_server)
+        data = await recruit_v2(group_server, filter=filter)
     else:
         arg = arg.split(" ")
         if len(arg) not in [1, 2]:
@@ -51,7 +54,7 @@ async def jx3_recruit_v2(event: GroupMessageEvent, args: Message = CommandArg())
             copy = arg[0] if not server_mapping(arg[0]) else ""  # 当第一个参数是服务器的话则为空
         else:
             copy = arg[1]
-        data = await recruit_v2(server, copy, local=False)
+        data = await recruit_v2(server, copy, False, filter)
     if isinstance(data, list):
         await jx3_cmd_recruit_v2.finish(data[0])
     data = get_content_local(data)
@@ -64,11 +67,14 @@ jx3_cmd_recruit_local = on_command("jx3_recruit_local", aliases={"本服招募"}
 @jx3_cmd_recruit_local.handle()
 async def jx3_recruit_v2(event: GroupMessageEvent, args: Message = CommandArg()):
     arg = args.extract_plain_text()
+    filter = False
+    if "招募过滤" in getGroupData(str(event.group_id), "addtions"):
+        filter = True
     if arg == "":
         group_server = getGroupServer(str(event.group_id))
         if not group_server:
             await jx3_cmd_recruit_local.finish("尚未绑定服务器，请携带服务器参数使用！")
-        data = await recruit_v2(group_server, local=True)
+        data = await recruit_v2(group_server, local=True, filter=filter)
     else:
         arg = arg.split(" ")
         if len(arg) not in [1, 2]:
@@ -78,7 +84,8 @@ async def jx3_recruit_v2(event: GroupMessageEvent, args: Message = CommandArg())
             copy = arg[0] if not server_mapping(arg[0]) else ""  # 当第一个参数是服务器的话则为空
         else:
             copy = arg[1]
-        data = await recruit_v2(server, copy, local=True)
+
+        data = await recruit_v2(server, copy, True, filter)
     if isinstance(data, list):
         await jx3_cmd_recruit_local.finish(data[0])
     data = get_content_local(data)
