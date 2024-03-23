@@ -57,10 +57,7 @@ async def generate(path: str, web: bool = False, locate: str = None, first: bool
     @param delay: 等待时间，单位为毫秒（ms）
     @addtional_css: 追加的CSS
     """
-    if not web:
-        final_path = Path(path).as_uri()
-    else:
-        final_path = path
+    final_path = path
     result = await generate_by_url(final_path, locate, first, delay, addtional_css)
     if result is None:
         return False
