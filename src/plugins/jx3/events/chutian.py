@@ -17,7 +17,7 @@ async def getChutianImg():
         icon = "https://img.jx3box.com/pve/minimap/minimap_" + i["icon"] + ".png"
         desc = i["desc"]
         section = i["event"]
-        map = i["map"]
+        map = i["map_name"]
         site = i["site"]
         tables.append(template_chutian.replace("$time", time).replace("$site", map + "·" + site).replace("icon", icon).replace("$desc", desc).replace("$section", section))
     final_table = "\n".join(tables)
