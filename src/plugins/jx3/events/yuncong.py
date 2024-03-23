@@ -32,13 +32,14 @@ async def getYuncongImg():
                 else:
                     common[current-1]["hour"] = chour
                 events.append(common[current-1])
+                common[current]["hour"] = chour
                 events.append(common[current])
                 for x in range(4)[1:]:
                     add = current + x
                     if add + 1 > len(common):
                         add = add - len(common) -1
                     if common[add]["key"] != common[current]["key"]:
-                        common[add]["key"] = str(int(chour) + 1)
+                        common[add]["hour"] = str(int(chour) + 1)
                     events.append(common[add])
                 break
             else:
