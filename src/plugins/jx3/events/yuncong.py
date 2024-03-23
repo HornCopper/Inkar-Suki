@@ -18,7 +18,7 @@ async def getYuncongImg():
     events = []
     for i in common:
         if i["key"] == currentFlag:
-            if cminute <= i["time"]:
+            if int(cminute) <= i["time"]:
                 current = common.index(i)
                 if common[current-1]["key"] != common[current]["key"]:
                     common[current-1]["hour"] = str(int(chour) - 1)
