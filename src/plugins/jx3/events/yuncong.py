@@ -16,6 +16,13 @@ async def getYuncongImg():
     data = data["data"]
     common = data[:-3]
     events = []
+    x = []
+    y = []
+    for i in common:
+        if i["key"] == currentFlag:
+            y.append(i)
+        else:
+            x.append(i)
     for i in common:
         if i["key"] == currentFlag:
             if int(cminute) <= i["time"]:
@@ -33,6 +40,22 @@ async def getYuncongImg():
                     if common[add]["key"] != common[current]["key"]:
                         common[add]["key"] = str(int(chour) + 1)
                     events.append(common[add]["key"])
+            else:
+                continue
+        current = len(y) - 1
+        common[current - 1]["hour"] = chour
+        events.append(common[current - 1])
+        common[current]["hour"] = chour
+        events.append(current)
+        common[0]["hour"] = chour + 1
+        events.append(x[0])
+        common[1]["hour"] = chour + 1
+        events.append(x[1])
+        common[2]["hour"] = chour + 1
+        events.append(x[2])
+        common[3]["hour"] = chour + 1
+        events.append(x[3])
+        
     tables = []
     for i in events:
         hour = i["hour"]
