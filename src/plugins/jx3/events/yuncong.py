@@ -44,7 +44,7 @@ async def getYuncongImg():
         site = i["site"]
         icon = "https://img.jx3box.com/pve/minimap/minimap_" + i["icon"] + ".png"
         tables.append(template_chutian.replace("$time", time).replace("$site", map + "·" + site).replace("$icon", icon).replace("$desc", desc).replace("$section", section))
-        final_table = "\n".join(tables)
+    final_table = "\n".join(tables)
     html = read(VIEWS + "/jx3/celebrations/chutian.html")
     font = ASSETS + "/font/custom.ttf"
     poem = await get_api("https://v1.jinrishici.com/all.json")
