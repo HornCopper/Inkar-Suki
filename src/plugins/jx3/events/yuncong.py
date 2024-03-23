@@ -39,7 +39,7 @@ async def getYuncongImg():
                         add = add - len(common) -1
                     if common[add]["key"] != common[current]["key"]:
                         common[add]["key"] = str(int(chour) + 1)
-                    events.append(common[add]["key"])
+                    events.append(common[add])
             else:
                 continue
         current = len(same) - 1
