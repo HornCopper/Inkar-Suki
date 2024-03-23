@@ -3,6 +3,7 @@ from src.tools.generate import generate, get_uuid
 from src.tools.config import Config
 from src.tools.file import read, write
 import json
+import markdown
 import os
 
 from pathlib import Path
@@ -91,7 +92,8 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
         if i.find(args.extract_plain_text()) and count_line(i) >= 6:
             ans.append(i)
     ans = ["|命令|格式|别名|描述|权限|图片|","|-----|-----|-----|-----|-----|-----|"] + ans
-    html = "<!DOCTYPE html><html><head><meta charset=\"utf-8\"></head><body>" + "\n".join(ans) + "</body></html>"
+    html = markdown.markdown("\n".join(ans))
+    html = "<!DOCTYPE html><html><head><meta charset=\"utf-8\"></head><body>" + html + "</body></html>"
     output = CACHE + "/" + get_uuid() + ".html"
     write(output, html)
     final_path = await generate(output, False)
