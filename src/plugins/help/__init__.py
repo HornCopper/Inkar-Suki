@@ -47,11 +47,78 @@ css = """
 css = css.replace("customfont", Config.font_path)
 path = PLUGINS
 
+def count_line(string: str):
+    num = 0
+    for i in string:
+        if i == "|":
+            num = num + 1
+    return num
+
+def process(markdown: str):
+    """
+    适配Lagrange的Markdown
+    """
+    to_replace = [
+        [
+            "\\",
+            "\\\\"
+        ]
+        [
+            "\"",
+            "\\\\\\\""
+        ],
+        [
+            "<br>",
+            "\n"
+        ]
+    ]
+    for i in to_replace:
+        markdown = markdown.replace(i[0], i[1])
+    return markdown
 
 @help.handle()
 async def help_():
     await help.finish(f"Inkar Suki · 音卡使用文档：\nhttps://inkar-suki.codethink.cn/Inkar-Suki-Docs/#/")
 
-# getCmd = on_command("get_cmd", aliases={"查找命令"}, priority=5)
-# @getCmd.handle()
-# async def _()
+getCmd = on_command("get_cmd", aliases={"查找命令"}, priority=5)
+@getCmd.handle()
+async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
+    api = "https://inkar-suki.codethink.cn/Inkar-Suki-Docs/usage.md"
+    data = await get_url(api)
+    data = data.split("\n")
+    ans = []
+    for i in data:
+        if i.find(args.extract_plain_text()) and count_line(i) >= 6:
+            ans.append(process(i))
+    ans = ["|命令|格式|别名|描述|权限|图片|","|-----|-----|-----|-----|-----|-----|"] + ans
+    ans = "\n".join(ans)
+    node = [
+        {
+            "type": "node",
+            "data": 
+            {
+                "name": "Inkar Suki · 音卡",
+                "uin": "3438531564",
+                "content": 
+                [
+                    {
+                        "type": "markdown",
+                        "data": 
+                        {
+                            "content": ans
+                        }
+                    }
+                ]
+            }
+        }
+    ]
+    ans = await bot.call_api("send_forward_msg", messages=node)
+    ans = [
+        {
+            "type": "longmsg",
+            "data": {
+                "id":ans
+            }
+        }
+    ]
+    await bot.call_api("send_group_msg", group_id=event.group_id, message=ans)
