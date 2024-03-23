@@ -51,3 +51,7 @@ path = PLUGINS
 @help.handle()
 async def help_():
     await help.finish(f"Inkar Suki · 音卡使用文档：\nhttps://inkar-suki.codethink.cn/Inkar-Suki-Docs/#/")
+
+# getCmd = on_command("get_cmd", aliases={"查找命令"}, priority=5)
+# @getCmd.handle()
+# async def _()
