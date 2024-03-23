@@ -48,7 +48,7 @@ async def generateGroupInfo(bot: Bot, group_id: str):
     font = ASSETS + "/font/custom.ttf"
     group_info = await bot.call_api("get_group_info", group_id=int(group_id), no_cache=True)
     group_name = group_info["group_name"]
-    html = html.replace("$customfont", font).replace("$subscribe_contents", final_subscribe_contents).replace("$option_contents", final_options_contents).replace("$group_id", group_id).replace("$group_name", group_name)
+    html = html.replace("$customfont", font).replace("$subscribe_contents", final_subscribe_contents).replace("$addtion_contents", final_options_contents).replace("$group_id", group_id).replace("$group_name", group_name)
     final_html = CACHE + "/" + get_uuid() + ".html"
     write(final_html, html)
     final_path = await generate(final_html, False, ".total", False)
