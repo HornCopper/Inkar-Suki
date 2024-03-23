@@ -49,7 +49,9 @@ async def handle_api_call(bot: Bot, api: str, data: dict):
     if api in ["send_group_msg", "send_private_msg", "send_msg"]:
         message = re.sub(r"\[.*?\]", "", str(data["message"]))
         logger.info(message)
-        if message == "" or "whitelist" in list(data):
+        if message == "":
+            return
+        if "whitelist" in list(data):
             data.pop("whitelist")
             return
         banword = json.loads(read(TOOLS + "/banword.json"))
