@@ -9,11 +9,12 @@ async def _(event: GroupMessageEvent):
     image = await getChutianImg()
     await cts.finish(ms.image(image))
 
-ycs = on_command("jx3_yuncong", priority=5, aliases={"云从社"})
+ycs = on_command("jx3_yuncong", aliases={"云从社"}, priority=5)
 
 @ycs.handle()
 async def _(event: GroupMessageEvent):
-    return # 正在施工
+    image = await getYuncongImg()
+    await cts.finish(ms.image(image))
 
 zhue_ = on_command("jx3_zhue", aliases={"诛恶"}, priority=5)
 
