@@ -84,8 +84,9 @@ async def recruit_v2(server: str, actvt: str = "", local: bool = False, filter: 
     contents = []
     for i in range(len(data)):
         content = detail["content"]
-        if checkAd(content, adFlags):
-            continue
+        if filter:
+            if checkAd(content, adFlags):
+                continue
         detail = data[i]
         flag = False if not detail["roomID"] else True
         if local and flag:

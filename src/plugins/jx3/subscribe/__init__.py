@@ -11,14 +11,20 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
         await subscribe_enable.finish("唔……开启失败，您似乎没有告诉我您要订阅的内容？")
     else:
         subscribe_options = json.loads(read(PLUGINS + "/jx3/subscribe/options.json"))
-        if not set(arg).issubset(set(list(subscribe_options))):
+        addtion_options = json.loads(read(PLUGINS + "/jx3/subscribe/addtions.json"))
+        if not set(arg).issubset(set(list(subscribe_options) + list(addtion_options))):
             await subscribe_enable.finish("唔……开启失败，虽然音卡可以一次开启多个订阅，但是好像您这里包含了不应该存在的订阅内容，请检查后重试！")
-        currentData = getGroupData(str(event.group_id), "subscribe")
+        currentSubscribe = getGroupData(str(event.group_id), "subscribe")
+        currentAddtion = getGroupData(str(event.group_id), "addtions")
         for i in arg:
-            if i in currentData:
+            if i in currentSubscribe or i in currentAddtion:
                 continue
-            currentData.append(i)
-        setGroupData(str(event.group_id), "subscribe", currentData)
+            if i in subscribe_options:
+                currentSubscribe.append(i)
+            elif i in addtion_options:
+                currentAddtion.append(i)
+        setGroupData(str(event.group_id), "subscribe", currentSubscribe)
+        setGroupData(str(event.group_id), "addtions", currentAddtion)
         await subscribe_enable.finish("订阅成功！\n可使用“关于”查看本群详细信息！")
 
 subscribe_disable = on_command("jx3_unsubscribe", aliases={"退订", "关闭"}, priority=5)
@@ -30,14 +36,20 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
         await subscribe_disable.finish("唔……关闭失败，您似乎没有告诉我您要退订的内容？")
     else:
         subscribe_options = json.loads(read(PLUGINS + "/jx3/subscribe/options.json"))
-        if not set(arg).issubset(set(list(subscribe_options))):
+        addtion_options = json.loads(read(PLUGINS + "/jx3/subscribe/addtions.json"))
+        if not set(arg).issubset(set(list(subscribe_options) + list(addtion_options))):
             await subscribe_enable.finish("唔……关闭失败，虽然音卡可以一次关闭多个订阅，但是好像您这里包含了不应该存在的退订内容，请检查后重试！")
-        currentData = getGroupData(str(event.group_id), "subscribe")
+        currentSubscribe = getGroupData(str(event.group_id), "subscribe")
+        currentAddtion = getGroupData(str(event.group_id), "addtions")
         for i in arg:
-            if i not in currentData:
+            if i not in currentSubscribe and i not in currentAddtion:
                 continue
-            currentData.remove(i)
-        setGroupData(str(event.group_id), "subscribe", currentData)
+            if i in currentSubscribe:
+                currentSubscribe.remove(i)
+            elif i in currentAddtion:
+                currentAddtion.remove(i)
+        setGroupData(str(event.group_id), "subscribe", currentSubscribe)
+        setGroupData(str(event.group_id), "addtions", currentAddtion)
         await subscribe_disable.finish("退订成功！\n可使用“关于”查看本群详细信息！")
 
 info = on_command("jx3_about", aliases={"关于", "本群订阅"}, priority=5)
