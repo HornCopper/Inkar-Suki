@@ -60,6 +60,6 @@ async def get_preposition(name: str = None):
     if not flag:
         return False
     final_url = "https://jx3box.com/adventure/" + str(id)
-    addtional_css = ".m-wiki-metas{display: none;}"
-    image = await generate(final_url, True, ".c-wiki-panel", True, 0, addtional_css)
+    addtional_css = ".m-wiki-metas .c-header-inner .m-adventure-navigation{display: none;}"
+    image = await generate(final_url, True, ".c-wiki-panel", True, 2000, addtional_css)
     return Path(image).as_uri()
