@@ -7,7 +7,6 @@ def get_path(path: str) -> str:
     t = pathlib2.Path(tools_path)
     return t.parent.joinpath(path).__str__()
 
-
 DATA = get_path("data")
 CACHE = get_path("cache")
 ASSETS = get_path("assets")
