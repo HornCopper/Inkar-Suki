@@ -9,7 +9,7 @@ from nonebot.adapters.onebot.v11 import Event, MessageSegment as ms
 
 def process(raw: str):
     markdown_text = raw
-    pattern = r"!\[\]\(([^)]*)\)"  
+    pattern = r"!\[([^]]*)\]\(([^)]*)\)" 
     matches = re.finditer(pattern, markdown_text)  
     processed_text = ""  
     current_pos = 0  
