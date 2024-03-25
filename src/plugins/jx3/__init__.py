@@ -1,5 +1,3 @@
-import shutil
-
 from nonebot import get_driver
 
 from .jx3 import *
@@ -16,6 +14,7 @@ async def nonebot_on_startup():
         logger.info("Connected to JX3API successfully.")
 
 ws_recev = on(type="WsRecv", priority=5, block=False)
+
 
 
 @ws_recev.handle()

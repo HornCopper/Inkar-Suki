@@ -2,6 +2,9 @@ import re
 import time
 import datetime
 
+from ..file import write
+from ..basic import CLOCK
+
 def get_number(number):
     """
     返回参数的数值，默认返回0
@@ -89,3 +92,8 @@ def relateTime(current, goal):
     if len(minutes) == 1:
         minutes = "0" + minutes
     relateTime = f"{days}天{hours}时{minutes}分前"
+    return relateTime
+
+def record_info(record_content: str):
+    msg = convert_time(getCurrentTime(), "[%Y-%m-%d %H:%M:%S] "+ record_content)
+    write(CLOCK + "/logs/InkarSuki.log", msg)
