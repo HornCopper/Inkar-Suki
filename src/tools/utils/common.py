@@ -2,7 +2,7 @@ import re
 import time
 import datetime
 
-from ..file import write
+from ..file import write, read
 from ..basic import CLOCK
 
 def get_number(number):
@@ -96,4 +96,6 @@ def relateTime(current, goal):
 
 def record_info(record_content: str):
     msg = convert_time(getCurrentTime(), "[%Y-%m-%d %H:%M:%S] "+ record_content)
+    raw = read(CLOCK + "/logs/InkarSuki.log")
+    msg = raw + "\n" + msg
     write(CLOCK + "/logs/InkarSuki.log", msg)
