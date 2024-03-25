@@ -1,9 +1,17 @@
 import re
 import time
 import datetime
+import pathlib2
+import os
 
 from ..file import write, read
-from ..basic import CLOCK
+
+tools_path = f"{os.getcwd()}/src/tools"
+
+def get_path(path: str) -> str:
+    t = pathlib2.Path(tools_path)
+    return t.parent.joinpath(path).__str__()
+CLOCK = get_path("clock")
 
 def get_number(number):
     """
