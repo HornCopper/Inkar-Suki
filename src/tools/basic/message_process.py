@@ -42,7 +42,6 @@ write(f"{new_path }/blacklist.json", "[]")"""
 async def handle_api_call(bot: Bot, api: str, data: dict):
     if api in ["send_group_msg", "send_private_msg", "send_msg"]:
         message = re.sub(r"\[.*?\]", "", str(data["message"]))
-        logger.info(message)
         if message == "":
             return
         if "whitelist" in list(data):
