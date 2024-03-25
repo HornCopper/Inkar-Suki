@@ -15,7 +15,7 @@ def process(raw: str):
     current_pos = 0  
     for match in matches:  
         processed_text += markdown_text[current_pos:match.start()]  
-        image_url = match.group(1)  
+        image_url = match.group(2)  
         result = ms.image(image_url)  
         processed_text += str(result)  
         current_pos = match.end()  
