@@ -3,6 +3,7 @@ from src.tools.config import Config
 from src.tools.file import read, write
 from src.tools.permission import checker, error
 from src.tools.utils import checknumber
+from src.tools.utils.markdown import Markdown as md, send_markdown
 
 import json
 import os
@@ -21,6 +22,8 @@ selfEnterMsg = """噔噔咚——音卡很荣幸受邀来到了「$GROUP_ID」~
 
 如需查看音卡的指令，请发送：帮助
 其余注意事项可以查看音卡空间来了解哦，空间也将不定时发布活动等事项，敬请关注！"""
+
+
 # 上述欢迎语内容为@厌睢(监狱牢头)制作，HornCopper修改
 
 def banned(sb):  # 检测某个人是否被封禁。
@@ -33,6 +36,7 @@ def banned(sb):  # 检测某个人是否被封禁。
 
 
 notice = on_notice(priority=5)
+
 
 @notice.handle()
 async def on_new_group_enter(bot: Bot, event: NoticeEvent):
@@ -49,6 +53,7 @@ async def on_new_group_enter(bot: Bot, event: NoticeEvent):
     if event.sub_type != "approve":
         return
     await bot.call_api("send_group_msg", group_id=event.group_id, message=selfEnterMsg.replace("$GROUP_ID", str(event.group_id)))
+
 
 @notice.handle()
 async def on_group_ban(bot: Bot, event: NoticeEvent):
@@ -70,6 +75,7 @@ async def on_group_decrease(bot: Bot, event: NoticeEvent):
         return
     await notice_and_ban(bot, event, "移出")
 
+
 async def notice_and_ban(bot: Bot, event: NoticeEvent, action: str):
     message = f"唔……{Config.name}在群聊（{event.group_id}）被{action}啦！\n操作者：{event.operator_id}，已自动封禁！"
     for i in Config.notice_to:
@@ -83,6 +89,7 @@ async def notice_and_ban(bot: Bot, event: NoticeEvent, action: str):
 
 
 request = on_request(priority=5)
+
 
 @request.handle()
 async def _(bot: Bot, event: RequestEvent):
@@ -104,11 +111,19 @@ async def _(bot: Bot, event: RequestEvent):
             return
         current.append(new)
         write(TOOLS + "/" + "application.json", json.dumps(current, ensure_ascii=False))
-        msg = f"收到新的加群申请：\n邀请人：{user}\n群号：{group}"
+        btn_accept = md.button("同意", "同意申请 " + str(group))
+        btn_deny = md.button("拒绝", "拒绝申请 " + str(group))
+        msg = (f"# 收到新的加群申请：\n"
+               f"邀请人：{user}\n"
+               f"群号：{group}\n\n"
+               f"> {btn_accept}    {btn_deny}")
         for i in Config.notice_to:
-            await bot.call_api("send_group_msg", group_id=int(i), message=msg)
+            # await bot.call_api("send_group_msg", group_id=int(i), message=msg)
+            await send_markdown(msg, bot, session_id=int(i), message_type="group")
+
 
 notice_cmd_welcome_msg_edit = on_command("welcome", priority=5)
+
 
 @notice_cmd_welcome_msg_edit.handle()
 async def notice_welcome_msg_edit(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
