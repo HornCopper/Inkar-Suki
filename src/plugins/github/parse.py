@@ -7,6 +7,20 @@ from nonebot.adapters.onebot.v11 import Event, MessageSegment as ms
 建议自行查阅文档或者发起一些用于测试的`Webhook`以便于观察数据结构，欢迎`Pull Request`，此处仅解析部分常见`Event`。
 """
 
+def process(raw: str):
+    markdown_text = raw
+    pattern = r"!\[\]\(([^)]*)\)"  
+    matches = re.finditer(pattern, markdown_text)  
+    processed_text = ""  
+    current_pos = 0  
+    for match in matches:  
+        processed_text += markdown_text[current_pos:match.start()]  
+        image_url = match.group(1)  
+        result = ms.image(image_url)  
+        processed_text += str(result)  
+        current_pos = match.end()  
+    processed_text += markdown_text[current_pos:]  
+    return processed_text
 
 class GithubBaseParser:
     def push(body):
@@ -98,12 +112,7 @@ class GithubBaseParser:
             except Exception as _:
                 itype = "issue"
             sender = body["sender"]["login"]
-            msg = body["comment"]["body"]
-            msg_regex = re.compile(r"!\[.*\]\((.*)\)")
-            images = msg_regex.findall(msg)
-            msg = re.sub(r"!\[.*\]\((.*)\)", "[图片]", msg)
-            for i in images:
-                msg = msg + ms.image(i)
+            msg = process(body["comment"]["body"]) 
             repo_name = body["repository"]["full_name"]
             issue_num = str(body["issue"]["number"])
             issue_title = body["issue"]["title"]
@@ -114,12 +123,7 @@ class GithubBaseParser:
         action = body["action"]
         if action == "created":
             sender = body["sender"]["login"]
-            msg = body["comment"]["body"]
-            msg_regex = re.compile(r"!\[.*\]\((.*)\)")
-            images = msg_regex.findall(msg)
-            msg = re.sub(r"!\[.*\]\((.*)\)", "[图片]", msg)
-            for i in images:
-                msg = msg + ms.image(i)
+            msg = process(body["comment"]["body"])  
             repo_name = body["repository"]["full_name"]
             commit = body["comment"]["commit_id"][0:7]
             msg = f"{sender} commented on {repo_name} commit {commit}.\n{msg}"
