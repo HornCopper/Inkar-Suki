@@ -3,7 +3,7 @@ from urllib.parse import quote
 import nonebot
 from nonebot import Bot
 from nonebot.adapters.onebot import v11, v12
-from typing import Any
+from typing import Any, Union
 
 from nonebot.adapters.onebot.v11 import MessageEvent
 
@@ -25,7 +25,7 @@ def encode_url(text: str) -> str:
     return quote(text, safe="")
 
 
-async def send_markdown(markdown: str, bot: Bot, *, message_type: str = None, session_id: str | int = None, event: MessageEvent = None, **kwargs) -> dict[
+async def send_markdown(markdown: str, bot: Bot, *, message_type: str = None, session_id: Union[str, int] = None, event: MessageEvent = None, **kwargs) -> dict[
     str, Any]:
     """发送markdown格式消息
     Args:
