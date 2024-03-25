@@ -21,8 +21,9 @@ ws_recev = on(type="WsRecv", priority=5, block=False)
 @ws_recev.handle()
 async def on_jx3_event_recv(bot: Bot, event: RecvEvent):
     message = event.get_message()
-    if message == "False":
+    if message == "False" or message["type"] == "":
         return
+    logger.info(message["msg"])
     groups = os.listdir(DATA)
     available_group = []
     bot_groups = await bot.call_api("get_group_list")
