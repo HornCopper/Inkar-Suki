@@ -65,7 +65,7 @@ async def _(event: Event, matcher: Matcher):
 async def checkEnv(bot: Bot, event: GroupMessageEvent, matcher: Matcher):
     group_id = str(event.group_id)
     message = (event.message)
-    if "禁言" in getGroupData(group_id, "addtions") and "订阅" not in message:
+    if "禁言" in getGroupData(group_id, "addtions") and ("订阅" not in message and "退订" not in message):
         matcher.stop_propagation()
     files = {
         "blacklist.json": [],
