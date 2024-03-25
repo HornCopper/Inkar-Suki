@@ -101,10 +101,10 @@ async def _(bot: Bot, event: RequestEvent):
         flag = event.flag
         time = event.time
         new = {
-                "group_id": group,
-                "user_id" : user,
-                "flag"    : flag,
-                "time"    : time
+            "group_id": group,
+            "user_id": user,
+            "flag": flag,
+            "time": time
         }
         current = json.loads(read(TOOLS + "/" + "application.json"))
         if new in current:
