@@ -1,6 +1,17 @@
 import re
 import time
 import datetime
+import pathlib2
+import os
+
+from ..file import write, read
+
+tools_path = f"{os.getcwd()}/src/tools"
+
+def get_path(path: str) -> str:
+    t = pathlib2.Path(tools_path)
+    return t.parent.joinpath(path).__str__()
+CLOCK = get_path("clock")
 
 def get_number(number):
     """
@@ -89,3 +100,10 @@ def relateTime(current, goal):
     if len(minutes) == 1:
         minutes = "0" + minutes
     relateTime = f"{days}天{hours}时{minutes}分前"
+    return relateTime
+
+def record_info(record_content: str):
+    msg = convert_time(getCurrentTime(), "[%Y-%m-%d %H:%M:%S] "+ record_content)
+    raw = read(CLOCK + "/logs/InkarSuki.log")
+    msg = raw + "\n" + msg
+    write(CLOCK + "/logs/InkarSuki.log", msg)
