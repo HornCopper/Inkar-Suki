@@ -65,8 +65,6 @@ async def _(event: Event, matcher: Matcher):
 async def checkEnv(bot: Bot, event: GroupMessageEvent, matcher: Matcher):
     group_id = str(event.group_id)
     message = (event.message)
-    if "禁言" in getGroupData(group_id, "addtions") and ("订阅" not in message and "退订" not in message):
-        matcher.stop_propagation()
     files = {
         "blacklist.json": [],
         "jx3group.json": {"server": "", "group": group_id, "subscribe": [], "addtions": [], "welcome": "欢迎入群！"},
@@ -86,6 +84,8 @@ async def checkEnv(bot: Bot, event: GroupMessageEvent, matcher: Matcher):
     for i in range(len(list(files))):
         ans.append(True)
     group_cfg = getGroupData(str(event.group_id), "subscribe")
+    if "禁言" in getGroupData(group_id, "addtions") and ("订阅" not in message and "退订" not in message):
+        matcher.stop_propagation()
     if ans == status and "骚话" in group_cfg:
         chance = random.randint(1, 100)
         if chance % 25 == 0:
