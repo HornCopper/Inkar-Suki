@@ -64,7 +64,7 @@ async def _(event: Event, matcher: Matcher):
 @preprocess.handle()
 async def checkEnv(bot: Bot, event: GroupMessageEvent, matcher: Matcher):
     group_id = str(event.group_id)
-    message = (event.message)
+    message = str(event.message)
     files = {
         "blacklist.json": [],
         "jx3group.json": {"server": "", "group": group_id, "subscribe": [], "addtions": [], "welcome": "欢迎入群！"},
