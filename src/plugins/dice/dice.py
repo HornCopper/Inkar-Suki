@@ -21,7 +21,7 @@ class DiceValueError(Exception):
 
     def __init__(self, message, value=None):
         if value:
-            self.message = f'输入为“{value}”，' + message
+            self.message = f"输入为“{value}”，" + message
         else:
             self.message = message
 
@@ -33,7 +33,7 @@ class DiceItemBase(object):
     def __init__(self, dice_code: str):
         self.code = dice_code
         self.result = None
-        self.detail = ''
+        self.detail = ""
 
     def GetResult(self):
         return self.result
@@ -50,7 +50,7 @@ class Dice(DiceItemBase):
 
     def __init__(self, dice_code: str):
 
-        dice_code = dice_code.replace(' ', '')
+        dice_code = dice_code.replace(" ", "")
         super().__init__(dice_code)
         args = self.GetArgs()
         self.count = args[0]
@@ -58,43 +58,43 @@ class Dice(DiceItemBase):
         self.adv = args[2]
         self.positive = args[3]
         if self.count < 1 or self.count > MAX_DICE_COUNT:
-            raise DiceValueError(f'骰子数量不得小于1或大于{MAX_DICE_COUNT}。', self.count)
+            raise DiceValueError(f"骰子数量不得小于1或大于{MAX_DICE_COUNT}。", self.count)
         if self.sides < 2:
-            raise DiceValueError('骰子面数不得小于2。', self.sides)
+            raise DiceValueError("骰子面数不得小于2。", self.sides)
         if self.adv > self.count:
-            raise DiceValueError('优劣势骰数不得大于总骰子数。', self.adv)
+            raise DiceValueError("优劣势骰数不得大于总骰子数。", self.adv)
 
     def GetArgs(self):
         dice_code = self.code.upper()  # 便于识别
         dice_code = dice_code.replace("D%", "D100")  # 百分骰别名
-        dice_count = '1'  # 骰子数量
-        dice_adv = '0'  # 保留的骰子量
+        dice_count = "1"  # 骰子数量
+        dice_adv = "0"  # 保留的骰子量
         positive = 0  # 是否保留骰子
-        if re.search(r'[^0-9DKQ\%]', dice_code):
-            raise DiceSyntaxError('骰子表达式中存在无法识别的字符。')
-        temp = dice_code.split('D')
+        if re.search(r"[^0-9DKQ\%]", dice_code):
+            raise DiceSyntaxError("骰子表达式中存在无法识别的字符。")
+        temp = dice_code.split("D")
         if len(temp[0]):
             dice_count = temp[0]
         dice_sides = temp[1]
-        if 'K' in temp[1]:
-            midstrs = temp[1].partition('K')
+        if "K" in temp[1]:
+            midstrs = temp[1].partition("K")
             dice_sides = midstrs[0]
             dice_adv = midstrs[2]
             positive = 1
-        elif 'Q' in temp[1]:
-            midstrs = temp[1].partition('Q')
+        elif "Q" in temp[1]:
+            midstrs = temp[1].partition("Q")
             dice_sides = midstrs[0]
             dice_adv = midstrs[2]
             positive = -1
         if positive and not len(dice_adv):
-            dice_adv = '1'  # K/Q后没有值默认为1
+            dice_adv = "1"  # K/Q后没有值默认为1
         # 语法合法检定
         if not dice_count.isdigit():
-            raise DiceValueError('无效的骰子数量', dice_count)
+            raise DiceValueError("无效的骰子数量", dice_count)
         if not dice_sides.isdigit():
-            raise DiceValueError('无效的骰子面数', dice_sides)
+            raise DiceValueError("无效的骰子面数", dice_sides)
         if not dice_adv.isdigit():
-            raise DiceValueError('无效的优劣势', dice_adv)
+            raise DiceValueError("无效的优劣势", dice_adv)
         return (int(dice_count), int(dice_sides), int(dice_adv), positive)
 
     def Roll(self):
@@ -110,37 +110,37 @@ class Dice(DiceItemBase):
             new_results = []
             indexes = np.array(dice_results).argsort()
             indexes = indexes[-adv:] if positive == 1 else indexes[:adv]
-            output_buffer = '=['
+            output_buffer = "=["
             for i in range(self.count):
                 output_buffer += str(dice_results[i])
                 if i in indexes:
                     new_results.append(dice_results[i])
-                    output_buffer += '*'
+                    output_buffer += "*"
                 if i < self.count - 1:
-                    output_buffer += ', '
-            output_buffer += ']'
+                    output_buffer += ", "
+            output_buffer += "]"
             if self.count >= MAX_OUTPUT_CNT:
-                output_buffer = f'=[数量过大，已省略{self.count}条数据]'
+                output_buffer = f"=[数量过大，已省略{self.count}条数据]"
             output += output_buffer
             dice_results = new_results
         # 公用加法
         length = len(dice_results)
         if length > 1:
-            output_buffer = '=['
+            output_buffer = "=["
             for i in range(length):
                 result += dice_results[i]
                 output_buffer += str(dice_results[i])
                 if i < length - 1:
-                    output_buffer += '+'
-            output_buffer += ']'
+                    output_buffer += "+"
+            output_buffer += "]"
             if self.count > MAX_OUTPUT_CNT:  # 显示数据含100
-                output_buffer = f'=[数量过大，已省略{self.count}条数据]'
+                output_buffer = f"=[数量过大，已省略{self.count}条数据]"
             output += output_buffer
         else:
             result = dice_results[0]
-        output += f'={result}'
+        output += f"={result}"
         if len(output) > MAX_OUTPUT_LEN:
-            output = '输出过长……'
+            output = "输出过长……"
         self.detail = output 
         self.result = result
 
@@ -150,51 +150,51 @@ class FudgeDice(DiceItemBase):
 
     def __init__(self, dice_code: str):
 
-        dice_code = dice_code.replace(' ', '')
+        dice_code = dice_code.replace(" ", "")
         super().__init__(dice_code)
         args = self.GetArgs(msg)
         self.count = args[0]
         if self.count < 1 or self.count > MAX_DICE_COUNT:
-            raise DiceValueError(f'骰子数量不得小于1或大于{MAX_DICE_COUNT}。', self.count)
+            raise DiceValueError(f"骰子数量不得小于1或大于{MAX_DICE_COUNT}。", self.count)
 
 
     def GetArgs(self):
         dice_code = self.code.upper()  # 便于识别
-        if dice_code.upper().endswith('DF'):  # 兼容旧格式
-            dice_code = dice_code[:-2] + 'F'
-        dice_count = '4'  # 骰子数量
-        if re.search(r'[^0-9F]', dice_code):
-            raise DiceSyntaxError('骰子表达式中存在无法识别的字符。')
-        temp = dice_code.split('F')
+        if dice_code.upper().endswith("DF"):  # 兼容旧格式
+            dice_code = dice_code[:-2] + "F"
+        dice_count = "4"  # 骰子数量
+        if re.search(r"[^0-9F]", dice_code):
+            raise DiceSyntaxError("骰子表达式中存在无法识别的字符。")
+        temp = dice_code.split("F")
         if len(temp[0]):
             dice_count = temp[0]
 
         # 语法合法检定
         if not dice_count.isdigit():
-            raise DiceValueError('无效的骰子数量。', dice_count)
+            raise DiceValueError("无效的骰子数量。", dice_count)
         return (int(dice_count), 0)
 
     def Roll(self):
         output = self.code
         result = 0
 
-        dice_results = ['-', '-', '0', '0', '+', '+']
+        dice_results = ["-", "-", "0", "0", "+", "+"]
         selected_results = [secrets.choice(dice_results) for _ in range(self.count)]
 
         if self.count >= MAX_OUTPUT_CNT:
-            output_buffer = f'=[数量过大，已省略{self.count}条数据]'
+            output_buffer = f"=[数量过大，已省略{self.count}条数据]"
         else:
-            output += '=[' + ', '.join(selected_results) + ']'
+            output += "=[" + ", ".join(selected_results) + "]"
 
         for res in selected_results:
-            if res == '-':
+            if res == "-":
                 result -= 1
-            elif res == '+':
+            elif res == "+":
                 result += 1
 
-        output += f'={result}'
+        output += f"={result}"
         if len(output) > MAX_OUTPUT_LEN:
-            output = '输出过长……'
+            output = "输出过长……"
         self.detail = output 
         self.result = result
 
@@ -203,38 +203,38 @@ class BonusPunishDice(DiceItemBase):
 
     def __init__(self, dice_code: str):
 
-        dice_code = dice_code.replace(' ', '')
+        dice_code = dice_code.replace(" ", "")
         super().__init__(dice_code)
         args = self.GetArgs(msg)
         self.count = args[0]
         self.positive = args[1]
         if self.count < 1 or self.count > MAX_DICE_COUNT:
-            raise DiceValueError(f'骰子数量不得小于1或大于{MAX_DICE_COUNT}。', self.count)
+            raise DiceValueError(f"骰子数量不得小于1或大于{MAX_DICE_COUNT}。", self.count)
 
     def GetArgs(self, msg):
         dice_code = self.code.upper()  # 便于识别
-        dice_count = '1'  # 骰子数量
-        if re.search(r'[^0-9BP]', dice_code):
-            raise DiceSyntaxError('骰子表达式中存在无法识别的字符。')
-        if 'B' in dice_code:
+        dice_count = "1"  # 骰子数量
+        if re.search(r"[^0-9BP]", dice_code):
+            raise DiceSyntaxError("骰子表达式中存在无法识别的字符。")
+        if "B" in dice_code:
             positive = False
-            temp = dice_code.split('B')
+            temp = dice_code.split("B")
             if temp[1]:
                 dice_count = temp[1]
-        elif 'P' in dice_code:
+        elif "P" in dice_code:
             positive = True
-            temp = dice_code.split('P')    
+            temp = dice_code.split("P")    
             if temp[1]:
                 dice_count = temp[1]
 
         # 语法合法检定
         if not dice_count.isdigit():
-            raise DiceValueError('无效的骰子数量。', dice_count)
+            raise DiceValueError("无效的骰子数量。", dice_count)
 
         return (int(dice_count), positive)
 
     def Roll(self, msg):
-        output = ''
+        output = ""
         dice_results = []
         positive = self.positive
         result = 0
@@ -242,7 +242,7 @@ class BonusPunishDice(DiceItemBase):
 
         d100_result = secrets.randbelow(100) + 1
         d100_digit = d100_result % 10
-        output += f'D100={d100_result}, {self.code}'
+        output += f"D100={d100_result}, {self.code}"
 
         for i in range(self.count):
             dice_results.append(secrets.randbelow(10))
@@ -252,26 +252,26 @@ class BonusPunishDice(DiceItemBase):
 
         if self.count > 1:
             if self.count >= MAX_OUTPUT_CNT:
-                output_buffer = f'=[数量过大，已省略{self.count}条数据]'
+                output_buffer = f"=[数量过大，已省略{self.count}条数据]"
             else:
-                output_buffer = '=['
+                output_buffer = "=["
                 for i in range(self.count):
                     output_buffer += str(dice_results[i])
                     if i < self.count - 1:
-                        output_buffer += ', '
-                output_buffer += ']'
+                        output_buffer += ", "
+                output_buffer += "]"
             output += output_buffer
         else:
-            output += '=' + str(dice_results[0])
+            output += "=" + str(dice_results[0])
 
         if positive:
             result = max(new_results)
         else:
             result = min(new_results)
 
-        output += f'={result}'
+        output += f"={result}"
         if len(output) > MAX_OUTPUT_LEN:
-            output = '输出过长……'
+            output = "输出过长……"
         self.detail = output 
         self.result = result
 
@@ -280,7 +280,7 @@ class WODDice(DiceItemBase):
     """无限骰子项"""
     def __init__(self, dice_code: str):
 
-        dice_code = dice_code.replace(' ', '')
+        dice_code = dice_code.replace(" ", "")
         super().__init__(dice_code)
         args = self.GetArgs(msg)
         self.count = args[0]
@@ -289,33 +289,33 @@ class WODDice(DiceItemBase):
         self.success_line_max = args[3]
         self.sides = args[4]
         if self.count < 1 or self.count > MAX_DICE_COUNT:
-            raise DiceValueError(f'骰子数量不得小于1或大于{MAX_DICE_COUNT}。', self.count)
+            raise DiceValueError(f"骰子数量不得小于1或大于{MAX_DICE_COUNT}。", self.count)
         if self.sides < 2:
-            raise DiceValueError('骰子面数不得小于2。', self.sides)
+            raise DiceValueError("骰子面数不得小于2。", self.sides)
         if self.add_line != 0 and (self.add_line < 2 or self.add_line > self.sides):
-            raise DiceValueError(f'加骰线不得小于2或大于{self.sides}。', self.add_line)
+            raise DiceValueError(f"加骰线不得小于2或大于{self.sides}。", self.add_line)
 
     def GetArgs(self, msg):
         dice_code = self.code.upper()  # 便于识别
-        match = re.match(r'(\d+)A(\d+)(?:K(\d+))?(?:Q(\d+))?(?:M(\d+))?', dice_code)
+        match = re.match(r"(\d+)A(\d+)(?:K(\d+))?(?:Q(\d+))?(?:M(\d+))?", dice_code)
         if not match:
-            raise DiceSyntaxError('骰子表达式中存在无法识别的字符。')
+            raise DiceSyntaxError("骰子表达式中存在无法识别的字符。")
         dice_count = match.group(1)  # 骰子个数
         dice_add_line = match.group(2)  # 加骰线
-        dice_success_line = match.group(3) if match.group(3) else '8'  # 成功线
-        dice_success_line_max = match.group(4) if match.group(4) else '0'  # 最大成功线
-        dice_sides = match.group(5) if match.group(5) else '10'  # 骰子面数
+        dice_success_line = match.group(3) if match.group(3) else "8"  # 成功线
+        dice_success_line_max = match.group(4) if match.group(4) else "0"  # 最大成功线
+        dice_sides = match.group(5) if match.group(5) else "10"  # 骰子面数
         # 语法合法检定
         if not dice_count.isdigit():
-            raise DiceValueError('无效的骰子数量。', dice_count)
+            raise DiceValueError("无效的骰子数量。", dice_count)
         if not dice_add_line.isdigit():
-            raise DiceValueError('无效的加骰线。', dice_add_line)
+            raise DiceValueError("无效的加骰线。", dice_add_line)
         if not dice_success_line.isdigit():
-            raise DiceValueError('无效的成功线。', dice_success_line)
+            raise DiceValueError("无效的成功线。", dice_success_line)
         if not dice_success_line_max.isdigit():
-            raise DiceValueError('无效的成功线。', dice_success_line_max)
+            raise DiceValueError("无效的成功线。", dice_success_line_max)
         if not dice_sides.isdigit():
-            raise DiceValueError('无效的骰子面数。', dice_sides)
+            raise DiceValueError("无效的骰子面数。", dice_sides)
             
         return (int(dice_count), int(dice_add_line), int(dice_success_line), int(dice_success_line_max), int(dice_sides))
 
@@ -328,7 +328,7 @@ class WODDice(DiceItemBase):
         success_line = self.success_line
         success_line_max = self.success_line_max
         
-        output_buffer = '=['
+        output_buffer = "=["
         while dice_count:
             dice_results = []
             dice_exceed_results = []
@@ -352,35 +352,35 @@ class WODDice(DiceItemBase):
                     dice_exceed_results.append(False)
 
             exceed_result = 0
-            output_buffer += '{'
+            output_buffer += "{"
             for i in range(dice_count):
                 if dice_exceed_results[i]:
                     exceed_result += 1
-                    output_buffer += '<'
+                    output_buffer += "<"
                     output_buffer += str(dice_results[i])
                     if i in indexes:
                         success_count += 1
-                        output_buffer += '*'
-                    output_buffer += '>'
+                        output_buffer += "*"
+                    output_buffer += ">"
                 else:
                     output_buffer += str(dice_results[i])
                     if i in indexes:
                         success_count += 1
-                        output_buffer += '*'
+                        output_buffer += "*"
                 if i < dice_count - 1:
-                    output_buffer += ', '
-            output_buffer += '}, '
+                    output_buffer += ", "
+            output_buffer += "}, "
             dice_count = exceed_result
-        output_buffer = output_buffer[:-2]  # 去除最后的', '
-        output_buffer += ']'
+        output_buffer = output_buffer[:-2]  # 去除最后的", "
+        output_buffer += "]"
         if self.count >= MAX_OUTPUT_CNT:
-            output_buffer = f'=[数量过大，已省略{self.count}条数据]'
+            output_buffer = f"=[数量过大，已省略{self.count}条数据]"
         output += output_buffer
         
         result = success_count
-        output += f'={result}'
+        output += f"={result}"
         if len(output) > MAX_OUTPUT_LEN:
-            output = '输出过长……'
+            output = "输出过长……"
         self.detail = output 
         self.result = result
 
@@ -389,34 +389,34 @@ class DXDice(DiceItemBase):
     """双重十字骰子项"""
     def __init__(self, dice_code: str):
 
-        dice_code = dice_code.replace(' ', '')
+        dice_code = dice_code.replace(" ", "")
         super().__init__(dice_code)
         args = self.GetArgs(msg)
         self.count = args[0]
         self.add_line = args[1]
         self.sides = args[2]
         if self.count < 1 or self.count > MAX_DICE_COUNT:
-            raise DiceValueError(f'骰子数量不得小于1或大于{MAX_DICE_COUNT}。', self.count)
+            raise DiceValueError(f"骰子数量不得小于1或大于{MAX_DICE_COUNT}。", self.count)
         if self.sides < 2:
-            raise DiceValueError('骰子面数不得小于2。', self.sides)
+            raise DiceValueError("骰子面数不得小于2。", self.sides)
         if self.add_line < 2 or self.add_line > self.sides:
-            raise DiceValueError(f'加骰线不得小于2或大于{self.sides}。', self.add_line)
+            raise DiceValueError(f"加骰线不得小于2或大于{self.sides}。", self.add_line)
 
     def GetArgs(self, msg):
         dice_code = self.code.upper()  # 便于识别
-        match = re.match(r'(\d+)C(\d+)(?:M(\d+))?', dice_code)
+        match = re.match(r"(\d+)C(\d+)(?:M(\d+))?", dice_code)
         if not match:
-            raise DiceSyntaxError('骰子表达式中存在无法识别的字符。')
+            raise DiceSyntaxError("骰子表达式中存在无法识别的字符。")
         dice_count = match.group(1)  # 骰子个数
         dice_add_line = match.group(2)  # 加骰线
-        dice_sides = match.group(3) if match.group(3) else '10'  # 骰子面数
+        dice_sides = match.group(3) if match.group(3) else "10"  # 骰子面数
         # 语法合法检定
         if not dice_count.isdigit():
-            raise DiceValueError('无效的骰子数量。', dice_count)
+            raise DiceValueError("无效的骰子数量。", dice_count)
         if not dice_add_line.isdigit():
-            raise DiceValueError('无效的加骰线。', dice_add_line)
+            raise DiceValueError("无效的加骰线。", dice_add_line)
         if not dice_sides.isdigit():
-            raise DiceValueError('无效的骰子面数。', dice_sides)
+            raise DiceValueError("无效的骰子面数。", dice_sides)
         return (int(dice_count), int(dice_add_line), int(dice_sides))
 
     def Roll(self, msg):
@@ -426,7 +426,7 @@ class DXDice(DiceItemBase):
         add_line = self.add_line
         dice_count = self.count
         
-        output_buffer = '=['
+        output_buffer = "=["
         while dice_count:
             dice_results = []
             dice_exceed_results = []
@@ -440,28 +440,28 @@ class DXDice(DiceItemBase):
                     dice_exceed_results.append(False)
 
             exceed_result = 0
-            output_buffer += '{'
+            output_buffer += "{"
             for i in range(dice_count):
                 if dice_exceed_results[i]:
                     exceed_result += 1
-                    output_buffer += '<'
+                    output_buffer += "<"
                     output_buffer += str(dice_results[i])
-                    output_buffer += '>'
+                    output_buffer += ">"
                 else:
                     output_buffer += str(dice_results[i])
                 if i < dice_count - 1:
-                    output_buffer += ', '
-            output_buffer += '}, '
+                    output_buffer += ", "
+            output_buffer += "}, "
             dice_count = exceed_result
-        output_buffer = output_buffer[:-2]  # 去除最后的', '
-        output_buffer += ']'
+        output_buffer = output_buffer[:-2]  # 去除最后的", "
+        output_buffer += "]"
         if self.count >= MAX_OUTPUT_CNT:
-            output_buffer = f'=[数量过大，已省略{self.count}条数据]'
+            output_buffer = f"=[数量过大，已省略{self.count}条数据]"
         output += output_buffer
         
         result = (dice_rounds - 1) * self.sides + max(dice_results)
-        output += f'={result}'
+        output += f"={result}"
         if len(output) > MAX_OUTPUT_LEN:
-            output = '输出过长……'
+            output = "输出过长……"
         self.detail = output 
         self.result = result
