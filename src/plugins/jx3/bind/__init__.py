@@ -9,7 +9,7 @@ def server_bind(group_id: str, server: str):
         server = server_mapping(server)
         if not server:
             return [PROMPT_ServerNotExist]
-    path = f"{DATA}/{group_id}/jx3group.json"
+    path = f"{DATA}/{group_id}/settings.json"
     now = json.loads(read(path))
     now["server"] = server
     write(path, json.dumps(now, ensure_ascii=False))

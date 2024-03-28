@@ -14,7 +14,7 @@ import random
 from ..basic import DATA, write, Config, get_api, read, TOOLS
 
 def getGroupData(group: str, key: str):
-    data = json.loads(read(DATA + "/" + str(group) + "/jx3group.json"))
+    data = json.loads(read(DATA + "/" + str(group) + "/settings.json"))
     if data == False:
         return False
     return data[key]
@@ -26,7 +26,7 @@ new_path = f"{DATA}/{str(group_id)}"
 if os.path.exists(f"{new_path}/blacklist.json"):
     return True
 os.mkdir(new_path)
-write(f"{new_path }/jx3group.json", "{\"group\":\"" + str(group_id) +
+write(f"{new_path }/settings.json", "{\"group\":\"" + str(group_id) +
         "\",\"server\":\"\",\"leader\":\"\",\"leaders\":[],\"name\":\"\",\"status\":false}")
 write(f"{new_path }/webhook.json", "[]")
 write(f"{new_path }/marry.json", "[]")
@@ -67,7 +67,7 @@ async def checkEnv(bot: Bot, event: GroupMessageEvent, matcher: Matcher):
     message = str(event.message)
     files = {
         "blacklist.json": [],
-        "jx3group.json": {"server": "", "group": group_id, "subscribe": [], "addtions": [], "welcome": "欢迎入群！"},
+        "settings.json": {"server": "", "group": group_id, "subscribe": [], "addtions": [], "welcome": "欢迎入群！"},
         "webhook.json": [],
         "opening.json": [],
         "wiki.json": {"startwiki":"","interwiki":[]},
