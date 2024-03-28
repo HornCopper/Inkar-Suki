@@ -48,10 +48,12 @@ dice = on_command("rd", aliases={"掷骰子"}, priority=5)
 async def _(args: Message = CommandArg()):
     part = args.extract_plain_text().split(" ")
     dices = part[0]
-    dc = part[1]
+    if len(part) < 2:
+        dc = None
+    else:
+        dc = part[1]
     output = await process_expression(dices, dc)
-    await dice.finish(output)
-
+    await dice.finish(output)
 
 async def process_expression(expr: str, dc):
     dice_list, count, times, err = parse_dice_expression(expr)
