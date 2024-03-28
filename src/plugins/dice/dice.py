@@ -152,7 +152,7 @@ class FudgeDice(DiceItemBase):
 
         dice_code = dice_code.replace(" ", "")
         super().__init__(dice_code)
-        args = self.GetArgs(msg)
+        args = self.GetArgs()
         self.count = args[0]
         if self.count < 1 or self.count > MAX_DICE_COUNT:
             raise DiceValueError(f"骰子数量不得小于1或大于{MAX_DICE_COUNT}。", self.count)
@@ -205,7 +205,7 @@ class BonusPunishDice(DiceItemBase):
 
         dice_code = dice_code.replace(" ", "")
         super().__init__(dice_code)
-        args = self.GetArgs(msg)
+        args = self.GetArgs()
         self.count = args[0]
         self.positive = args[1]
         if self.count < 1 or self.count > MAX_DICE_COUNT:
@@ -282,7 +282,7 @@ class WODDice(DiceItemBase):
 
         dice_code = dice_code.replace(" ", "")
         super().__init__(dice_code)
-        args = self.GetArgs(msg)
+        args = self.GetArgs()
         self.count = args[0]
         self.add_line = args[1]
         self.success_line = args[2]
@@ -391,7 +391,7 @@ class DXDice(DiceItemBase):
 
         dice_code = dice_code.replace(" ", "")
         super().__init__(dice_code)
-        args = self.GetArgs(msg)
+        args = self.GetArgs()
         self.count = args[0]
         self.add_line = args[1]
         self.sides = args[2]

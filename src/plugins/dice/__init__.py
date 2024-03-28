@@ -44,7 +44,7 @@ se.functions.update(math_funcs)
 dice = on_command("rd", aliases={"掷骰子"}, priority=5)
 
 
-@dice.command()
+@dice.handle()
 async def _(args: Message = CommandArg()):
     part = args.extract_plain_text().split(" ")
     dices = part[0]
@@ -90,7 +90,7 @@ def parse_dice_expression(dices):
         if func_match:
             dice_expr_list[i] = item.lower()
 
-    Logger.debug(dice_expr_list)
+    logger.debug(dice_expr_list)
     if len(dice_item_list) > MAX_ITEM_COUNT:
         return None, None, None, DiceValueError("唔……音卡无法解析骰子表达式：\n骰子表达式项数超过限制。").message
         
@@ -170,13 +170,13 @@ def generate_dice_message(expr, dice_expr_list, dice_count, times, dc):
         dice_detail_list = insert_multiply(dice_detail_list)
         dice_res_list = insert_multiply(dice_res_list)
         output_line += "".join(dice_detail_list)
-        Logger.debug(dice_detail_list)
-        Logger.debug(dice_res_list)
+        logger.debug(dice_detail_list)
+        logger.debug(dice_res_list)
         try:
             if dice_res_list:
                 dice_res = "".join(dice_res_list)
                 dice_res = dice_res.replace("\*", "*")
-                Logger.debug(dice_res)
+                logger.debug(dice_res)
                 result = int(se.eval(dice_res))
             else:
                 raise SyntaxError
