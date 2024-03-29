@@ -211,7 +211,7 @@ class BonusPunishDice(DiceItemBase):
         if self.count < 1 or self.count > MAX_DICE_COUNT:
             raise DiceValueError(f"骰子数量不得小于1或大于{MAX_DICE_COUNT}。", self.count)
 
-    def GetArgs(self, msg):
+    def GetArgs(self):
         dice_code = self.code.upper()  # 便于识别
         dice_count = "1"  # 骰子数量
         if re.search(r"[^0-9BP]", dice_code):
@@ -233,7 +233,7 @@ class BonusPunishDice(DiceItemBase):
 
         return (int(dice_count), positive)
 
-    def Roll(self, msg):
+    def Roll(self):
         output = ""
         dice_results = []
         positive = self.positive
@@ -295,7 +295,7 @@ class WODDice(DiceItemBase):
         if self.add_line != 0 and (self.add_line < 2 or self.add_line > self.sides):
             raise DiceValueError(f"加骰线不得小于2或大于{self.sides}。", self.add_line)
 
-    def GetArgs(self, msg):
+    def GetArgs(self):
         dice_code = self.code.upper()  # 便于识别
         match = re.match(r"(\d+)A(\d+)(?:K(\d+))?(?:Q(\d+))?(?:M(\d+))?", dice_code)
         if not match:
@@ -319,7 +319,7 @@ class WODDice(DiceItemBase):
             
         return (int(dice_count), int(dice_add_line), int(dice_success_line), int(dice_success_line_max), int(dice_sides))
 
-    def Roll(self, msg):
+    def Roll(self):
         output = self.code
         result = 0
         success_count = 0
@@ -402,7 +402,7 @@ class DXDice(DiceItemBase):
         if self.add_line < 2 or self.add_line > self.sides:
             raise DiceValueError(f"加骰线不得小于2或大于{self.sides}。", self.add_line)
 
-    def GetArgs(self, msg):
+    def GetArgs(self):
         dice_code = self.code.upper()  # 便于识别
         match = re.match(r"(\d+)C(\d+)(?:M(\d+))?", dice_code)
         if not match:
@@ -419,7 +419,7 @@ class DXDice(DiceItemBase):
             raise DiceValueError("无效的骰子面数。", dice_sides)
         return (int(dice_count), int(dice_add_line), int(dice_sides))
 
-    def Roll(self, msg):
+    def Roll(self):
         output = self.code
         result = 0
         dice_rounds = 0
