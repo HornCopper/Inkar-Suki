@@ -44,11 +44,10 @@ class GithubBaseParser:
             source = body["pull_request"]["head"]["label"]
             goal = body["pull_request"]["base"]["label"]
             title = body["pull_request"]["title"]
-            comment = body["pull_request"]["body"]
             repo = body["repository"]["full_name"]
             sender = body["sender"]["login"]
             num = body["pull_request"]["number"]
-            msg = f"{sender} opened a pull request on {repo}#{num}.\nFrom {source} to {goal}.\nTitle:{title}\nDescription:{comment}"
+            msg = f"{sender} opened a pull request on {repo}#{num}.\nFrom {source} to {goal}.\nTitle:{title}"
         elif action == "closed":
             source = body["pull_request"]["head"]["label"]
             goal = body["pull_request"]["base"]["label"]
