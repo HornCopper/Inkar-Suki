@@ -12,13 +12,13 @@ MAX_DETAIL_CNT = 5  # n次投掷的骰子的总量超过该值时将不再显示
 MAX_ITEM_COUNT = 10  # 骰子表达式最多的项数
 
 dice_patterns = [
-    r"(\d+A\d+(?:[KQM]?\d*)?(?:[KQM]?\d*)?(?:[KQM]?\d*)?)",  # WOD骰子
-    r"(\d+C\d+M?\d*)",  # 双重十字骰子
-    r"([BP]\d*)",  # 奖惩骰子
-    r"(\d*D?F)",  # 命运骰子
-    r"(\d*D\d*%?(?:K\d*|Q\d*)?)",  # 普通骰子
-    r"(\d+)",  # 数字
-    r"([\(\)])",  # 括号
+    r'(\d+A\d+(?:[KQM]?\d*)?(?:[KQM]?\d*)?(?:[KQM]?\d*)?)',  # WOD骰子
+    r'(\d+C\d+M?\d*)',  # 双重十字骰子
+    r'(?:D(?:100|%)?)?([BP]\d*)',  # 奖惩骰子
+    r'D?(\d*F)',  # 命运骰子
+    r'(\d*D\d*%?(?:K\d*|Q\d*)?)',  # 普通骰子
+    r'(\d+)',  # 数字
+    r'([\(\)])',  # 括号
 ]
 
 math_funcs = {
@@ -41,7 +41,7 @@ math_funcs = {
 se = SimpleEval()
 se.functions.update(math_funcs)
 
-dice = on_command("rd", aliases={"掷骰子"}, priority=5)
+dice = on_command("rd", aliases={"dice", "掷骰子"}, priority=5)
 
 
 @dice.handle()
@@ -53,7 +53,8 @@ async def _(args: Message = CommandArg()):
     else:
         dc = part[1]
     output = await process_expression(dices, dc)
-    await dice.finish(output)
+    await dice.finish(output)
+
 
 async def process_expression(expr: str, dc):
     dice_list, count, times, err = parse_dice_expression(expr)
@@ -122,7 +123,7 @@ def parse_dice_expression(dices):
         except (DiceSyntaxError, DiceValueError) as ex:
             errmsg = f"第{dice_count}项发生：" + ex.message
     if errmsg:
-        return None, None, None, DiceValueError("无法解析骰子表达式：\n" + errmsg).message
+        return None, None, None, DiceValueError("唔……音卡无法解析骰子表达式：\n" + errmsg).message
     return dice_expr_list, dice_count, int(times), None
 
 # 在数字与数字之间加上乘号
@@ -190,7 +191,7 @@ def generate_dice_message(expr, dice_expr_list, dice_count, times, dc):
 
         if dc:
             output_line += f"/{dc}  "
-            if result >= int(dc):
+            if result <= int(dc):
                 output_line += "成功！"
                 success_num += 1
             else:

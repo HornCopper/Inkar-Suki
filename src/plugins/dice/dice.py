@@ -58,11 +58,13 @@ class Dice(DiceItemBase):
         self.adv = args[2]
         self.positive = args[3]
         if self.count < 1 or self.count > MAX_DICE_COUNT:
-            raise DiceValueError(f"骰子数量不得小于1或大于{MAX_DICE_COUNT}。", self.count)
-        if self.sides < 2:
-            raise DiceValueError("骰子面数不得小于2。", self.sides)
+            raise DiceValueError(f"骰子数量不要小于1或大于{MAX_DICE_COUNT}。", self.count)
+        if self.sides < 1:
+            raise DiceValueError("骰子面数不要小于2。", self.sides)
+        if self.sides == 1:
+            raise DiceValueError("1……1面的骰子？")
         if self.adv > self.count:
-            raise DiceValueError("优劣势骰数不得大于总骰子数。", self.adv)
+            raise DiceValueError("优劣势骰数不要大于总骰子数。", self.adv)
 
     def GetArgs(self):
         dice_code = self.code.upper()  # 便于识别
@@ -90,11 +92,11 @@ class Dice(DiceItemBase):
             dice_adv = "1"  # K/Q后没有值默认为1
         # 语法合法检定
         if not dice_count.isdigit():
-            raise DiceValueError("无效的骰子数量", dice_count)
+            raise DiceValueError("无效的骰子数量。", dice_count)
         if not dice_sides.isdigit():
-            raise DiceValueError("无效的骰子面数", dice_sides)
+            raise DiceValueError("无效的骰子面数。", dice_sides)
         if not dice_adv.isdigit():
-            raise DiceValueError("无效的优劣势", dice_adv)
+            raise DiceValueError("无效的优劣势。", dice_adv)
         return (int(dice_count), int(dice_sides), int(dice_adv), positive)
 
     def Roll(self):
@@ -155,7 +157,7 @@ class FudgeDice(DiceItemBase):
         args = self.GetArgs()
         self.count = args[0]
         if self.count < 1 or self.count > MAX_DICE_COUNT:
-            raise DiceValueError(f"骰子数量不得小于1或大于{MAX_DICE_COUNT}。", self.count)
+            raise DiceValueError(f"骰子数量不要小于1或大于{MAX_DICE_COUNT}。", self.count)
 
 
     def GetArgs(self):
@@ -209,7 +211,7 @@ class BonusPunishDice(DiceItemBase):
         self.count = args[0]
         self.positive = args[1]
         if self.count < 1 or self.count > MAX_DICE_COUNT:
-            raise DiceValueError(f"骰子数量不得小于1或大于{MAX_DICE_COUNT}。", self.count)
+            raise DiceValueError(f"骰子数量不要小于1或大于{MAX_DICE_COUNT}。", self.count)
 
     def GetArgs(self):
         dice_code = self.code.upper()  # 便于识别
@@ -289,11 +291,13 @@ class WODDice(DiceItemBase):
         self.success_line_max = args[3]
         self.sides = args[4]
         if self.count < 1 or self.count > MAX_DICE_COUNT:
-            raise DiceValueError(f"骰子数量不得小于1或大于{MAX_DICE_COUNT}。", self.count)
-        if self.sides < 2:
-            raise DiceValueError("骰子面数不得小于2。", self.sides)
+            raise DiceValueError(f"骰子数量不要小于1或大于{MAX_DICE_COUNT}。", self.count)
+        if self.sides < 1:
+            raise DiceValueError("骰子面数不要小于2。", self.sides)
+        if self.sides == 1:
+            raise DiceValueError("1……1面的骰子？")
         if self.add_line != 0 and (self.add_line < 2 or self.add_line > self.sides):
-            raise DiceValueError(f"加骰线不得小于2或大于{self.sides}。", self.add_line)
+            raise DiceValueError(f"加骰线不要小于2或大于{self.sides}。", self.add_line)
 
     def GetArgs(self):
         dice_code = self.code.upper()  # 便于识别
@@ -396,11 +400,13 @@ class DXDice(DiceItemBase):
         self.add_line = args[1]
         self.sides = args[2]
         if self.count < 1 or self.count > MAX_DICE_COUNT:
-            raise DiceValueError(f"骰子数量不得小于1或大于{MAX_DICE_COUNT}。", self.count)
-        if self.sides < 2:
-            raise DiceValueError("骰子面数不得小于2。", self.sides)
+            raise DiceValueError(f"骰子数量不要小于1或大于{MAX_DICE_COUNT}。", self.count)
+        if self.sides < 1:
+            raise DiceValueError("骰子面数不要小于2。", self.sides)
+        if self.sides == 1:
+            raise DiceValueError("1……1面的骰子？")
         if self.add_line < 2 or self.add_line > self.sides:
-            raise DiceValueError(f"加骰线不得小于2或大于{self.sides}。", self.add_line)
+            raise DiceValueError(f"加骰线不要小于2或大于{self.sides}。", self.add_line)
 
     def GetArgs(self):
         dice_code = self.code.upper()  # 便于识别
