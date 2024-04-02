@@ -122,7 +122,6 @@ async def jx3_gstatistical(event: GroupMessageEvent, args: Message = CommandArg(
 
 preposition = on_command("jx3_preposition", aliases={"前置", "攻略"}, priority=5)
 
-
 @preposition.handle()
 async def jx3_preposition(event: GroupMessageEvent, args: Message = CommandArg()):
     serendipity = args.extract_plain_text()
@@ -130,5 +129,4 @@ async def jx3_preposition(event: GroupMessageEvent, args: Message = CommandArg()
     if data == False:
         await preposition.finish("唔……没有找到相关信息~")
     else:
-        data = get_content_local(data)
-        await preposition.finish(ms.image(data))
+        await preposition.finish(data)
