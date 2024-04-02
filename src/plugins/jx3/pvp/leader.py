@@ -45,7 +45,7 @@ async def getLKSImage():
     for i in data["data"]:
         template = template_leader.replace("$server", i["server"])
         for x in range(0,3):
-            detail = i[x]
+            detail = i["data"][x]
             template = template.replace("$camp" + str(x+1), getCampIcon(detail["camp_name"])).replace("$color" + str(x+1), getStatusColor(detail["status"])).replace("$status" + str(x+1), getStatusString(detail["status"])).replace("$time" + str(x+1), convert_time(detail["end_time"], "%m-%d %H:%M:%S")).replace("$relate" + str(x+1), getRelateTime(getCurrentTime(), detail["end_time"]))
         tables.append(template)
     poem = await get_api("https://v1.jinrishici.com/all.json")
