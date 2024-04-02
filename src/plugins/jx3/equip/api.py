@@ -10,7 +10,7 @@ from src.tools.basic import *
 from src.tools.config import Config
 from src.tools.generate import get_uuid
 
-from ..user.api import kungfu_mapping, get_fs, local_save,  get_kf_icon, get_bg, data_process, enchant_mapping, judge_special_weapon
+from ..attributes.api import kungfu_mapping, get_fs, local_save,  get_kf_icon, get_bg, data_process, enchant_mapping, judge_special_weapon
 
 
 async def post_url(url, proxy: dict = None, headers: str = None, timeout: int = 300, data: dict = None):
