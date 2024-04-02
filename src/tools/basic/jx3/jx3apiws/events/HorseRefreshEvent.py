@@ -62,32 +62,7 @@ class HorseCaughtEvent(RecvEvent):
         final_time = convert_time(self.time, "%H:%M")
         return {"type": "抓马", "server": self.server, "msg": f"{self.server} 的 {self.horse} 于 {final_time} 在 {self.map_name} 被[{self.name}]捕获了！"}
 
-@EventRister.rister(action=1010)
-class DiluRefreshEvent(RecvEvent):
-    """的卢刷新事件"""
-
-    __event__ = "WsRecv.DiluRefresh"
-    message_type = "DiluRefresh"
-    zone: str
-    """游戏大区"""
-    server: str
-    """服务器"""
-    name: str
-    """刷新名称（的卢）"""
-    time: int
-    """时间戳"""
-
-    @property
-    def log(self) -> str:
-        final_time = convert_time(self.time, "%H:%M")
-        log = f"的卢刷新推送：{self.server}的{self.name}即将在{final_time}左右刷新！"
-        return log
-    
-    @overrides(RecvEvent)
-    def get_message(self) -> dict:
-        return {"type": "的卢", "server": self.server, "msg": f"{self.server} 的{self.name}即将刷新！"}
-    
-@EventRister.rister(action=1011)
+@EventRister.rister(action=1012)
 class DiluAppearEvent(RecvEvent):
     """的卢事件"""
 
@@ -115,7 +90,7 @@ class DiluAppearEvent(RecvEvent):
         final_time = convert_time(self.time, "%H:%M")
         return {"type": "的卢", "server": self.server, "msg": f"{self.server} 的{self.name}于 {final_time} 出现在 {self.map_name}，请浩气盟和恶人谷的侠士速去捕捉！"}
     
-@EventRister.rister(action=1012)
+@EventRister.rister(action=1013)
 class DiluRefreshEvent(RecvEvent):
     """的卢刷新事件"""
 
@@ -147,7 +122,7 @@ class DiluRefreshEvent(RecvEvent):
         final_time = convert_time(self.time, "%H:%M")
         return {"type": "的卢", "server": self.server, "msg": f"{self.server} 的{self.name}在 {self.map_name} 被 {self.camp_name}的[{self.role_name}]于 {final_time} 捕获了！"}
 
-@EventRister.rister(action=1013)
+@EventRister.rister(action=1014)
 class DiluSoldEvent(RecvEvent):
     """的卢事件"""
 
