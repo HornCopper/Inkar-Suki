@@ -59,28 +59,24 @@ async def echo_(event: Event, args: Message = CommandArg()):
 
 ping = on_command("ping", aliases={"-测试"}, priority=5)  # 测试机器人是否在线
 
+def per_cpu_status() -> List[float]:
+    return psutil.cpu_percent(interval=1, percpu=True)
+
+def memory_status() -> float:
+    return psutil.virtual_memory().percent
 
 @ping.handle()
-async def _(event: Event):
+async def _(bot: Bot, event: Event):
     permission = checker(str(event.user_id), 1)
     if not permission:
-        times = str("现在是"
-                    + convert_time(getCurrentTime())
-                    + f"\nNonebot {nbv}")
-        await ping.finish(times)
-
-    def per_cpu_status() -> List[float]:
-        return psutil.cpu_percent(interval=1, percpu=True)
-
-    def memory_status() -> float:
-        return psutil.virtual_memory().percent
-    
-    times = str("现在是"
-                + convert_time(getCurrentTime())
-                + f"\nNonebot {nbv}"
-                )
-    msg = f"咕咕咕，音卡来啦！\n系统信息如下：\n当前CPU占用：{str(per_cpu_status()[0])}%\n当前内存占用：{str(memory_status())}%\n"
-    await ping.finish(msg + times)
+        await ping.finish(f"咕咕咕，音卡来啦！\n当前时间为：{convert_time(getCurrentTime())}\n当前Nonebot版本为：{nbv}")
+    else:
+        groups = await bot.call_api("get_group_list")
+        group_count = len(groups)
+        friends = await bot.call_api("get_friend_list")
+        friend_count = len(friends)
+        msg = f"咕咕咕，音卡来啦！\n系统信息如下：\n当前CPU占用：{str(per_cpu_status()[0])}%\n当前内存占用：{str(memory_status())}%\n现在是：{convert_time(getCurrentTime())}\n{group_count} | {friend_count} | {nbv}"
+    await ping.finish(msg)
 
 post = on_command("post", priority=5)  # 发送全域公告至每一个机器人加入的QQ群。
 
