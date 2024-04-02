@@ -324,7 +324,7 @@ async def get_attr_main(server, id, group_id):
     for i in data["data"]["Person"]["qixueList"]:
         messyqx.append(i["name"])
     qx = ["未知", "未知", "未知", "未知", "未知", "未知", "未知", "未知", "未知", "未知", "未知", "未知"]
-    unknown = PLUGINS + "/jx3/user/unknown.png"
+    unknown = PLUGINS + "/jx3/attributes/unknown.png"
     qx_icon = [unknown, unknown, unknown, unknown, unknown, unknown,
                unknown, unknown, unknown, unknown, unknown, unknown]
     henchant = ["", "", "", "", "", ""]
@@ -603,7 +603,7 @@ async def get_attr_main(server, id, group_id):
 async def local_save(webpath):
     file_name = webpath.split("/")[-1].split("?")[0]
     if webpath.find("unknown.png") != -1:
-        return PLUGINS + "/jx3/user/unknown.png"
+        return PLUGINS + "/jx3/attributes/unknown.png"
     final_path = ASSETS + "/jx3/kungfu/" + file_name + ".png"
     if os.path.exists(final_path):
         return final_path
@@ -643,12 +643,12 @@ async def get_attr(kungfu: str, maxjl_list: list, jl_list: list, equip_list: lis
         raise ValueError("Unknown type of kungfu!")
     background = Image.open(await get_bg(kftosh(kungfu)))
     draw = ImageDraw.Draw(background)
-    flickering = Image.open(PLUGINS + "/jx3/user/flicker.png").resize((38, 38))
-    precious = Image.open(PLUGINS + "/jx3/user/xy.png")
-    full_jinglian = Image.open(PLUGINS + "/jx3/user/jl.png")
-    un_full_jinglian = Image.open(PLUGINS + "/jx3/user/unjl.png")
-    heavy_enchant = Image.open(PLUGINS + "/jx3/user/henchant.png").resize((20, 20))
-    little_enchant = Image.open(PLUGINS + "/jx3/user/lenchant.png").resize((20, 20))
+    flickering = Image.open(PLUGINS + "/jx3/attributes/flicker.png").resize((38, 38))
+    precious = Image.open(PLUGINS + "/jx3/attributes/xy.png")
+    full_jinglian = Image.open(PLUGINS + "/jx3/attributes/jl.png")
+    un_full_jinglian = Image.open(PLUGINS + "/jx3/attributes/unjl.png")
+    heavy_enchant = Image.open(PLUGINS + "/jx3/attributes/henchant.png").resize((20, 20))
+    little_enchant = Image.open(PLUGINS + "/jx3/attributes/lenchant.png").resize((20, 20))
 
     # 心法图标
     background.alpha_composite(Image.open(await get_kf_icon(kungfu)).resize((50, 50)), (61, 62))
