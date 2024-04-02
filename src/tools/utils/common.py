@@ -84,12 +84,12 @@ def getCurrentTime():
 def getRelateTime(current, goal):
     current_time = int(current)
     timeGet_int = int(goal)
-    datetime_1 = datetime.datetime.fromtimestamp(timeGet_int)
-    datetime_2 = datetime.datetime.fromtimestamp(current_time)
+    datetime_1 = datetime.datetime.fromtimestamp(current_time)
+    datetime_2 = datetime.datetime.fromtimestamp(timeGet_int)
     timedelta = datetime_2 - datetime_1
-    days = int(timedelta.total_seconds() // 86400)
-    hours = int((timedelta.total_seconds() - days*86400) // 3600)
-    minutes = int((timedelta.total_seconds() - days*86400 - hours*3600) // 60)
+    days = int(abs(timedelta.total_seconds()) // 86400)
+    hours = int((abs(timedelta.total_seconds()) - days*86400) // 3600)
+    minutes = int((abs(timedelta.total_seconds()) - days*86400 - hours*3600) // 60)
     days = str(days)
     hours = str(hours)
     minutes = str(minutes)
