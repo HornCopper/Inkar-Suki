@@ -1,3 +1,4 @@
+from .leader import *
 from .api import *
 
 arena = on_command("jx3_arena", aliases={"名剑"}, priority=5)
@@ -46,3 +47,11 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
         else:
             data = await get_content(data)
             await arena.finish(ms.image(data))
+
+lks = on_command("jx3_lks", aliases={"烂柯山"}, priority=5)
+
+@lks.handle()
+async def _(event: GroupMessageEvent):
+    img = await getLKSImage()
+    data = get_content_local(img)
+    await lks.finish(ms.image(data))

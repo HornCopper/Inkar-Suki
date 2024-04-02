@@ -81,11 +81,11 @@ def prefix(event, prefix):
 def getCurrentTime():
     return int(datetime.datetime.now().timestamp())
 
-def relateTime(current, goal):
-    current_time = int(datetime.now().timestamp())
-    timeGet_int = int(current)
-    datetime_1 = datetime.fromtimestamp(timeGet_int)
-    datetime_2 = datetime.fromtimestamp(current_time)
+def getRelateTime(current, goal):
+    current_time = int(current)
+    timeGet_int = int(goal)
+    datetime_1 = datetime.datetime.fromtimestamp(timeGet_int)
+    datetime_2 = datetime.datetime.fromtimestamp(current_time)
     timedelta = datetime_2 - datetime_1
     days = int(timedelta.total_seconds() // 86400)
     hours = int((timedelta.total_seconds() - days*86400) // 3600)
@@ -99,7 +99,13 @@ def relateTime(current, goal):
         hours = "0" + hours
     if len(minutes) == 1:
         minutes = "0" + minutes
-    relateTime = f"{days}天{hours}时{minutes}分前"
+    if current_time >= timeGet_int:
+        flag = "前"
+        msg = f"{days}天{hours}时{minutes}分"
+    else:
+        flag = "后"
+        msg = f"{days}天{hours}时{minutes}分"[1:]
+    relateTime = msg + flag
     return relateTime
 
 def record_info(record_content: str):

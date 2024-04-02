@@ -1,7 +1,7 @@
 from src.tools.basic import *
 
 from .achievement import *
-from .arena import *
+from .pvp import *
 from .bind import *
 from .buff import *
 from .daily import *
@@ -15,8 +15,8 @@ from .announce import *
 from .other import *
 from .pet import *
 from .penzai import *
-from .price_appearance import *
-from .price_gold import *
+from .appearance import *
+from .gold import *
 from .rank import *
 from .recruit import *
 from .sandbox import *
@@ -24,9 +24,9 @@ from .server import *
 from .skill import *
 from .subscribe import *
 from .task import *
-from .user import *
+from .attributes import *
 from .serendipity import *
-from .equip_recommend import *
+from .equip import *
 from .emoji import *
 from .firework import *
 from .detail import *

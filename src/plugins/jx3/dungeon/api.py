@@ -6,7 +6,7 @@ from datetime import datetime, timedelta
 from src.tools.basic import *
 from src.tools.generate import generate, get_uuid
 from src.plugins.help import css
-from src.plugins.jx3.user import Zone_mapping
+from src.plugins.jx3.attributes import Zone_mapping
 
 
 async def zone(server, id):
@@ -585,24 +585,7 @@ async def get_item_record(server: str, name: str):
         else:
             zone = i["Copyname"]
         timeGet = convert_time(i["Tm"])
-        current_time = int(datetime.now().timestamp())
-        timeGet_int = int(i["Tm"])
-        datetime_1 = datetime.fromtimestamp(timeGet_int)
-        datetime_2 = datetime.fromtimestamp(current_time)
-        timedelta = datetime_2 - datetime_1
-        days = int(timedelta.total_seconds() // 86400)
-        hours = int((timedelta.total_seconds() - days*86400) // 3600)
-        minutes = int((timedelta.total_seconds() - days*86400 - hours*3600) // 60)
-        days = str(days)
-        hours = str(hours)
-        minutes = str(minutes)
-        if len(days) == 1:
-            days = "0" + days
-        if len(hours) == 1:
-            hours = "0" + hours
-        if len(minutes) == 1:
-            minutes = "0" + minutes
-        relateTime = f"{days}天{hours}时{minutes}分前"
+        relateTime = getRelateTime(getCurrentTime(), i["Tm"])
         server = i["Srv"]
         tablecontents.append(template_item.replace("$server", server).replace("$name", item_name).replace(
             "$map", zone).replace("$id", id).replace("$time", timeGet).replace("$relate", relateTime))
