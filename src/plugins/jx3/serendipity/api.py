@@ -49,13 +49,6 @@ async def global_statistical(name: str = None):  # 全服统计 [奇遇]
     data = await get_api(final_url)
     return data["data"]["url"]
 
-addtional_css = """
-.m-wiki-metas .c-header .m-adventure-navigation
-{
-    display: none;
-}
-"""
-
 async def get_preposition(name: str = None):
     url = "https://inkar-suki.codethink.cn/serendipity"
     data = await get_api(url)
@@ -67,5 +60,4 @@ async def get_preposition(name: str = None):
     if not flag:
         return False
     final_url = "https://jx3box.com/adventure/" + str(id)
-    image = await generate(final_url, True, ".c-wiki-panel", True, 4000, addtional_css)
-    return Path(image).as_uri()
+    return f"【{name}】魔盒攻略：\n{final_url}"

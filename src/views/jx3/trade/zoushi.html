@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Custom Content Chart</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+<div style="width:80%; margin:0 auto;">
+    <canvas id="customContentChart" width="800" height="400"></canvas>
+</div>
+
+<script>
+    const prices = $y;
+    const labels = $x;
+
+    const maxY = Math.max(...prices);
+    const unitY = Math.ceil(maxY / 8);
+
+
+    const ctx = document.getElementById("customContentChart").getContext("2d");
+    const customContentChart = new Chart(ctx, 
+    {
+        type: "line",
+        data: {
+            labels: labels,
+            datasets: [{
+                label: "Inkar Suki · 交易行价格走势 · $server · $name",
+                data: prices,
+                borderColor: "gold",
+                backgroundColor: "transparent",
+                borderWidth: 3,
+                pointBackgroundColor: "red",
+                pointRadius: 4,
+                pointHoverRadius: 6,
+            }]
+        },
+        options: {
+            scales: {
+                yAxes: [{
+                    ticks: {
+                        beginAtZero: true,
+                        stepSize: unitY,
+                    },
+                    scaleLabel: {
+                        display: true,
+                        labelString: "Price",
+                    },
+                    gridLines: {
+                    }
+                }],
+                xAxes: [{
+                    scaleLabel: {
+                        display: true,
+                        labelString: "Day"
+                    },
+                    gridLines: {
+                    }
+                }]
+            },
+            animation: 
+            {
+                onComplete: function() {
+                    const chartInstance = this.chart;
+                    const ctx = chartInstance.ctx;
+                    ctx.font = Chart.helpers.fontString("12", "normal", Chart.defaults.global.defaultFontFamily);
+                    ctx.fillStyle = "blue";
+                    ctx.textAlign = "center";
+                    ctx.textBaseline = "bottom";
+
+                    this.data.datasets.forEach(function(dataset, i) {
+                        const meta = chartInstance.controller.getDatasetMeta(i);
+                        meta.data.forEach(function(bar, index) {
+                            const content = customContent[index];
+                            ctx.fillText(content, bar._model.x, bar._model.y - 10);
+                        });
+                    });
+                }
+            }
+        }
+    });
+</script>
+</body>
+</html>
