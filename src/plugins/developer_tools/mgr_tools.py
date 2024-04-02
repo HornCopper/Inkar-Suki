@@ -75,7 +75,9 @@ async def _(bot: Bot, event: Event):
         group_count = len(groups)
         friends = await bot.call_api("get_friend_list")
         friend_count = len(friends)
-        msg = f"咕咕咕，音卡来啦！\n系统信息如下：\n当前CPU占用：{str(per_cpu_status()[0])}%\n当前内存占用：{str(memory_status())}%\n现在是：{convert_time(getCurrentTime())}\n{group_count} | {friend_count} | {nbv}"
+        registers = os.listdir(DATA)
+        register_count = len(registers)
+        msg = f"咕咕咕，音卡来啦！\n系统信息如下：\n当前CPU占用：{str(per_cpu_status()[0])}%\n当前内存占用：{str(memory_status())}%\n现在是：{convert_time(getCurrentTime())}\n{group_count} | {register_count} | {friend_count} | {nbv}"
     await ping.finish(msg)
 
 post = on_command("post", priority=5)  # 发送全域公告至每一个机器人加入的QQ群。
