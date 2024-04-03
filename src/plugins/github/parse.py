@@ -7,6 +7,13 @@ from nonebot.adapters.onebot.v11 import Event, MessageSegment as ms
 建议自行查阅文档或者发起一些用于测试的`Webhook`以便于观察数据结构，欢迎`Pull Request`，此处仅解析部分常见`Event`。
 """
 
+def process2(markdown_text: str):
+    markdown_text = re.sub(r"```.*?```", "", markdown_text, flags=re.DOTALL)
+    markdown_text = re.sub(r"#+ .*", "", markdown_text)
+    markdown_text = re.sub(r"\n\s*\n", "\n", markdown_text)
+    markdown_text = markdown_text.strip()
+    return markdown_text
+
 def process(raw: str):
     markdown_text = raw
     pattern = r"!\[([^]]*)\]\(([^)]*)\)" 
@@ -20,7 +27,7 @@ def process(raw: str):
         processed_text += str(result)  
         current_pos = match.end()  
     processed_text += markdown_text[current_pos:]  
-    return processed_text
+    return process2(processed_text)
 
 class GithubBaseParser:
     def push(body):
@@ -70,8 +77,11 @@ class GithubBaseParser:
             issue_num = str(body["issue"]["number"])
             issue_title = body["issue"]["title"]
             repo_name = body["repository"]["full_name"]
-            issue_desc = body["issue"]["body"]
-            msg = f"{issue_actter} {action} an issue on {repo_name}#{issue_num}.\nTitle:{issue_title}\nDescription:{issue_desc}"
+            if action == "opened":
+                issue_comment = "\nDescription: " + process(body["issue"]["body"])
+            else:
+                issue_comment = ""
+            msg = f"{issue_actter} {action} an issue on {repo_name}#{issue_num}.\nTitle: {issue_title}" + issue_comment
             return msg
         elif action == "assigned" or action == "unassigned":
             issue_num = str(body["issue"]["number"])
