@@ -1,85 +1,97 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Custom Content Chart</title>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- 文档元数据 -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- 页面标题 -->
+    <title>自定义内容图表</title>
+    <!-- Chart.js 外部脚本 -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-<div style="width:80%; margin:0 auto;">
-    <canvas id="customContentChart" width="800" height="400"></canvas>
-</div>
+    <!-- 图表容器 -->
+    <div style="width:80%; margin:0 auto;">
+        <canvas id="customContentChart" width="800" height="400"></canvas>
+    </div>
 
-<script>
-    const prices = $y;
-    const labels = $x;
+    <!-- JavaScript 代码 -->
+    <script>
+        // 图表数据
+        const prices = [100,200,300,400,500];
+        const labels = ["04-01", "04-02", "04-03", "04-04", "04-05"];
 
-    const maxY = Math.max(...prices);
-    const unitY = Math.ceil(maxY / 8);
+        // 计算最大 Y 值和单位 Y
+        const maxY = Math.max(...prices);
+        const unitY = Math.ceil(maxY / 8);
 
+        // 获取画布上下文
+        const ctx = document.getElementById("customContentChart").getContext("2d");
 
-    const ctx = document.getElementById("customContentChart").getContext("2d");
-    const customContentChart = new Chart(ctx, 
-    {
-        type: "line",
-        data: {
-            labels: labels,
-            datasets: [{
-                label: "Inkar Suki · 交易行价格走势 · $server · $name",
-                data: prices,
-                borderColor: "gold",
-                backgroundColor: "transparent",
-                borderWidth: 3,
-                pointBackgroundColor: "red",
-                pointRadius: 4,
-                pointHoverRadius: 6,
-            }]
-        },
-        options: {
-            scales: {
-                yAxes: [{
-                    ticks: {
-                        beginAtZero: true,
-                        stepSize: unitY,
-                    },
-                    scaleLabel: {
-                        display: true,
-                        labelString: "Price",
-                    },
-                    gridLines: {
-                    }
-                }],
-                xAxes: [{
-                    scaleLabel: {
-                        display: true,
-                        labelString: "Day"
-                    },
-                    gridLines: {
-                    }
+        // 创建图表
+        const customContentChart = new Chart(ctx, {
+            type: "line",
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: "Inkar Suki · 交易行价格走势 · $server · $name",
+                    data: prices,
+                    borderColor: "gold", // 线条颜色
+                    backgroundColor: "transparent", // 透明背景
+                    borderWidth: 3, // 线条宽度
+                    pointBackgroundColor: "red", // 点颜色
+                    pointRadius: 4, // 点半径
+                    pointHoverRadius: 6, // 鼠标悬停点半径
                 }]
             },
-            animation: 
-            {
-                onComplete: function() {
-                    const chartInstance = this.chart;
-                    const ctx = chartInstance.ctx;
-                    ctx.font = Chart.helpers.fontString("12", "normal", Chart.defaults.global.defaultFontFamily);
-                    ctx.fillStyle = "blue";
-                    ctx.textAlign = "center";
-                    ctx.textBaseline = "bottom";
+            options: {
+                // Y 轴刻度选项
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            beginAtZero: true, // 从零开始
+                            stepSize: unitY, // 刻度步长
+                        },
+                        scaleLabel: {
+                            display: true,
+                            labelString: "价格", // Y 轴标签
+                            borderColor : "#000"
+                        },
+                        gridLines: {
+                            borderColor : "black"
+                        } // Y 轴网格线
+                    }],
+                    // X 轴刻度选项
+                    xAxes: [{
+                        scaleLabel: {
+                            display: true,
+                            labelString: "日期" // X 轴标签
+                        },
+                        gridLines: {} // X 轴网格线
+                    }]
+                },
+                // 动画选项
+                animation: {
+                    onComplete: function() {
+                        const chartInstance = this.chart;
+                        const ctx = chartInstance.ctx;
+                        ctx.font = Chart.helpers.fontString("12", "normal", Chart.defaults.global.defaultFontFamily);
+                        ctx.fillStyle = "blue";
+                        ctx.textAlign = "center";
+                        ctx.textBaseline = "bottom";
 
-                    this.data.datasets.forEach(function(dataset, i) {
-                        const meta = chartInstance.controller.getDatasetMeta(i);
-                        meta.data.forEach(function(bar, index) {
-                            const content = customContent[index];
-                            ctx.fillText(content, bar._model.x, bar._model.y - 10);
+                        // 为每个数据点添加自定义内容
+                        this.data.datasets.forEach(function(dataset, i) {
+                            const meta = chartInstance.controller.getDatasetMeta(i);
+                            meta.data.forEach(function(bar, index) {
+                                const content = customContent[index];
+                                ctx.fillText(content, bar._model.x, bar._model.y - 10);
+                            });
                         });
-                    });
+                    }
                 }
             }
-        }
-    });
-</script>
+        });
+    </script>
 </body>
 </html>
