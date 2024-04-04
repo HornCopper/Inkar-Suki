@@ -96,10 +96,9 @@ class GithubBaseParser:
             issue_num = str(body["issue"]["number"])
             issue_title = body["issue"]["title"]
             repo_name = body["repository"]["full_name"]
-            issue_desc = body["issue"]["body"]
             label = body["label"]["name"]
             sender = body["sender"]["login"]
-            msg = f"{sender} {action} \"{label}\" on {repo_name}#{issue_num}.\nTitle:{issue_title}\nDescription:{issue_desc}"
+            msg = f"{sender} {action} \"{label}\" on {repo_name}#{issue_num}.\nTitle:{issue_title}"
             return msg
         elif action == "edited":
             issue_num = str(body["issue"]["number"])
