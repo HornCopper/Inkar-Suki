@@ -59,15 +59,14 @@ class GithubBaseParser:
             source = body["pull_request"]["head"]["label"]
             goal = body["pull_request"]["base"]["label"]
             title = body["pull_request"]["title"]
-            comment = body["pull_request"]["body"]
             repo = body["repository"]["full_name"]
             sender = body["sender"]["login"]
             num = body["pull_request"]["number"]
             merged = body["pull_request"]["merged"]
             if merged is True:
-                msg = f"{sender} closed the pull request on {repo}#{num}.\nFrom {source} to {goal}.\n(Already merged)\nTitle:{title}\nDescription:{comment}"
+                msg = f"{sender} merged the pull request on {repo}#{num}.\nFrom {source} to {goal}.\nTitle:{title}"
             else:
-                msg = f"{sender} closed the pull request on {repo}#{num}.\nFrom {source} to {goal}.\nTitle:{title}\nDescription:{comment}"
+                msg = f"{sender} closed the pull request on {repo}#{num}.\nFrom {source} to {goal}.\nTitle:{title}"
         return msg
 
     def issues(body):
@@ -78,7 +77,7 @@ class GithubBaseParser:
             issue_title = body["issue"]["title"]
             repo_name = body["repository"]["full_name"]
             if action == "opened":
-                issue_comment = "\nDescription: " + process(body["issue"]["body"])
+                issue_comment = "\nComment:  " + process(body["issue"]["body"])
             else:
                 issue_comment = ""
             msg = f"{issue_actter} {action} an issue on {repo_name}#{issue_num}.\nTitle: {issue_title}" + issue_comment
@@ -90,7 +89,7 @@ class GithubBaseParser:
             issue_desc = body["issue"]["body"]
             sender = body["sender"]["login"]
             assignee = body["assignee"]["login"]
-            msg = f"{sender} {action} {assignee} on {repo_name}#{issue_num}.\nTitle:{issue_title}\nDescription:{issue_desc}"
+            msg = f"{sender} {action} {assignee} on {repo_name}#{issue_num}.\nTitle:{issue_title}\nComment: {issue_desc}"
             return msg
         elif action == "labeled" or action == "unlabeled":
             issue_num = str(body["issue"]["number"])
@@ -98,7 +97,7 @@ class GithubBaseParser:
             repo_name = body["repository"]["full_name"]
             label = body["label"]["name"]
             sender = body["sender"]["login"]
-            msg = f"{sender} {action} \"{label}\" on {repo_name}#{issue_num}.\nTitle:{issue_title}"
+            msg = f"{sender} {action} \"{label}\" on {repo_name}#{issue_num}.\nTitle: {issue_title}"
             return msg
         elif action == "edited":
             issue_num = str(body["issue"]["number"])
@@ -108,7 +107,9 @@ class GithubBaseParser:
             from_ = body["changes"]["body"]["from"]
             to_ = body["issue"]["body"]
             user = body["issue"]["user"]["login"]
-            msg = f"{sender} {action} the comment by {user} on {repo_name}#{issue_num}.\nTitle:{issue_title}\nSource Commment:{from_}\nChanged Comment:{to_}"
+            if user == sender:
+                user = "self"
+            msg = f"{sender} {action} the comment by {user} on {repo_name}#{issue_num}.\nTitle: {issue_title}\nComment: {to_}"
             return msg
 
     def issue_comment(body):
@@ -124,7 +125,7 @@ class GithubBaseParser:
             repo_name = body["repository"]["full_name"]
             issue_num = str(body["issue"]["number"])
             issue_title = body["issue"]["title"]
-            msg = f"{sender} commented on {itype} on {repo_name}#{issue_num}.\nTitle:{issue_title}\nDescription:{msg}"
+            msg = f"{sender} commented on {itype} on {repo_name}#{issue_num}.\nTitle:{issue_title}\nComment: {msg}"
             return msg
 
     def commit_comment(body):
