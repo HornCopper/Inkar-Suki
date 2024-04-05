@@ -46,12 +46,39 @@ async def jx3_serendipity(event: GroupMessageEvent, args: Message = CommandArg()
     elif len(arg) == 2:
         server = arg[0]
         id = arg[1]
-    data = await getImage_v2(server, id, group_id=str(event.group_id))
+    data = await getImage_v2(server, id, str(event.group_id), True)
     if isinstance(data, list):
         await serendipity_v2.finish(data[0])
     else:
         data = get_content_local(data)
         await serendipity_v2.finish(ms.image(data))
+
+pet_serendipity = on_command("jx3_pet_serendipity", aliases={"宠物奇遇"}, priority=5)
+
+
+@pet_serendipity.handle()
+async def jx3_serendipity(event: GroupMessageEvent, args: Message = CommandArg()):
+    """
+    获取个人奇遇记录：
+
+    Example：-奇遇v2 幽月轮 哭包猫@唯我独尊
+    """
+    arg = args.extract_plain_text().split(" ")
+    if len(arg) not in [1, 2]:
+        await pet_serendipity.finish("唔……参数不正确哦，请检查后重试~")
+    if len(arg) == 1:
+        server = None
+        id = arg[0]
+    elif len(arg) == 2:
+        server = arg[0]
+        id = arg[1]
+    data = await getImage_v2(server, id, str(event.group_id), False)
+    if isinstance(data, list):
+        await pet_serendipity.finish(data[0])
+    else:
+        data = get_content_local(data)
+        await pet_serendipity.finish(ms.image(data))
+
 
 jx3_cmd_statistical = on_command("jx3_lstatistical", aliases={"近期奇遇"}, priority=5)
 

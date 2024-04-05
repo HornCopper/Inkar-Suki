@@ -1,4 +1,4 @@
-from src.tools.basic import *
+from .api import *
 
 from datetime import datetime
 
@@ -15,7 +15,7 @@ template_serendity = """
     <td class="short-column">$actual_time<br>$relative_time</td>
 </tr>"""
 
-async def getImage_v2(server: str, name: str, group_id: str):
+async def getImage_v2(server: str, name: str, group_id: str, type: bool):
     if token is None:
         return [PROMPT_NoToken]
     server = server_mapping(server, group_id)
@@ -29,7 +29,9 @@ async def getImage_v2(server: str, name: str, group_id: str):
     tables = []
     current_time = int(datetime.now().timestamp())
     for i in data["data"]:
-        if i["level"] >= 3:
+        if type and i["level"] >= 3: # 绝世+普通
+            continue
+        if not type and i["level"] != 3: # 宠物
             continue
         serendity_name = i["event"]
         flag = ASSETS + "/serendipity/vector/peerless.png" if i["level"] == 2 else ""
