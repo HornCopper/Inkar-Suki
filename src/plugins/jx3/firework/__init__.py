@@ -1,6 +1,6 @@
 from .api import *
 
-firework = on_command("jx3_firework_v2", aliases={"烟花v2"}, priority=5)
+firework = on_command("jx3_firework_v2", aliases={"烟花"}, priority=5)
 
 
 @firework.handle()

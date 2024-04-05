@@ -58,7 +58,7 @@ async def getImage_v2(server: str, name: str, group_id: str):
             relativeTime = ""
         tables.append(template_serendity.replace("$peerless_flag", flag).replace("$serendipity_icon", icon).replace("$actual_time", timeGet).replace("$relative_time", relativeTime).replace("$serendipity_name", serendity_name))
     if len(tables) == 0:
-        return ["唔……您似乎只有宠物奇遇哦，如果需要查看请使用V1版本的奇遇查询：\n查询/奇遇 区服 ID"]
+        return ["唔……您似乎只有宠物奇遇哦，如果需要查看请使用V1版本的奇遇查询：\n查询v1/奇遇v1 区服 ID"]
     tables[0] = tables[0][:-5] + poem + "</tr>"
     poem_ = await get_api("https://v1.jinrishici.com/all.json")
     poem_ = poem_["content"] + "——" + poem_["author"] + "《" + poem_["origin"] + "》"
