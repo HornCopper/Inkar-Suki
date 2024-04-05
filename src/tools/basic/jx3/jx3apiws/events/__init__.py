@@ -12,3 +12,4 @@ from .LankeshanRefreshEvent import *
 from .ZhuihunNamedEvent import *
 from .ZhuEEvent import *
 from .PvpEvent import *
+from .FireworkEvent import *
