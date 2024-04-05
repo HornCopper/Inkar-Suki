@@ -14,7 +14,9 @@ def get_path(path: str) -> str:
     return t.parent.joinpath(path).__str__()
 
 CACHE = get_path("cache")
-
+ASSETS = get_path("assets")
+TOOLS = get_path("tools")
+VIEWS = get_path("views")
 
 def get_uuid():
     return str(uuid.uuid1()).replace("-", "")
