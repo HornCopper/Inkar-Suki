@@ -1,7 +1,7 @@
 from .api import *
 from .newui import *
 
-jx3_cmd_serendipity = on_command("jx3_serendipity", aliases={"奇遇", "查询"}, priority=5)
+jx3_cmd_serendipity = on_command("jx3_serendipity", aliases={"奇遇v1", "查询v1"}, priority=5)
 
 
 @jx3_cmd_serendipity.handle()
@@ -27,7 +27,7 @@ async def jx3_serendipity(event: GroupMessageEvent, args: Message = CommandArg()
         data = await get_content(data)
         await jx3_cmd_serendipity.finish(ms.image(data))
 
-serendipity_v2 = on_command("jx3_serendipity_v2", aliases={"奇遇v2", "查询v2"}, priority=5)
+serendipity_v2 = on_command("jx3_serendipity_v2", aliases={"奇遇", "查询"}, priority=5)
 
 
 @serendipity_v2.handle()

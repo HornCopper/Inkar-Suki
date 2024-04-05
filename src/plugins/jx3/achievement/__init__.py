@@ -59,7 +59,7 @@ async def _(state: T_State, num: Message = Arg()):
     else:
         await adventure_.finish("唔……输入的不是数字哦，取消搜索。")
 
-achievements = on_command("jx3_machi", aliases={"进度"}, priority=5)
+achievements = on_command("jx3_machi", aliases={"进度v1"}, priority=5)
 
 
 @achievements.handle()
@@ -90,7 +90,7 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
         data = await get_content(data)
         await achievements.finish(ms.image(data))
 
-achievement_v2 = on_command("jx3_achievement_v2", aliases={"进度v2"}, priority=5)
+achievement_v2 = on_command("jx3_achievement_v2", aliases={"进度"}, priority=5)
 
 
 @achievement_v2.handle()
