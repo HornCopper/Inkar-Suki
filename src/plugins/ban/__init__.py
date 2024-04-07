@@ -15,11 +15,13 @@ from nonebot.matcher import Matcher
 from nonebot.params import CommandArg
 
 
-leave_msg = f"{Config.name}要离开这里啦，{Config.name}还没有学会人类的告别语，但是数据库中有一句话似乎很适合现在使用——如果还想来找我的话，我一直在这里（650495414）。
+leave_msg = f"{Config.name}要离开这里啦，{Config.name}还没有学会人类的告别语，但是数据库中有一句话似乎很适合现在使用——如果还想来找我的话，我一直在这里（650495414）。"
 
-“假如再无法遇见你，祝你早安、午安和晚安。”
+add_ = """“假如再无法遇见你，祝你早安、午安和晚安。”
 ——《楚门的世界》"
+"""
 
+leave_msg = leave_msg + "\n" + add_
 
 def in_it(qq: str):
     for i in json.loads(read(TOOLS + "/ban.json")):
