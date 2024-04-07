@@ -197,7 +197,7 @@ def zone_mapping(zone):
     elif zone in ["永王行宫·花月别院", "花月别院", "花月"]:
         return "永王行宫·花月别院"
     elif zone in ["永王行宫·仙侣庭院", "仙侣庭院", "仙侣", "仙女"]:
-        return "永王行宫·仙侣庭院"
+        return "永王行宫·仙侣庭园"
     elif zone in ["上阳宫·双曜亭", "双曜", "双曜亭", "双耀"]:
         return "上阳宫·双曜亭"
     elif zone in ["上阳宫·观风殿", "观风", "观风殿", "gfd"]:

@@ -64,6 +64,8 @@ async def getYuncongImg():
     tables = []
     for i in events:
         hour = str(i["hour"])
+        if hour == "24":
+            hour = "0"
         minute = str(i["time"])
         if len(hour) == 1:
             hour = "0" + hour
