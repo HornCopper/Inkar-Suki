@@ -15,10 +15,10 @@ from nonebot.matcher import Matcher
 from nonebot.params import CommandArg
 
 
-endwith = """音卡要离开这里啦，音卡还没有学会人类的告别语，但是数据库中有一句话似乎很适合现在使用——如果还想来找我的话，我一直在这里（650495414）。
+leave_msg = f"{Config.name}要离开这里啦，{Config.name}还没有学会人类的告别语，但是数据库中有一句话似乎很适合现在使用——如果还想来找我的话，我一直在这里（650495414）。
 
 “假如再无法遇见你，祝你早安、午安和晚安。”
-——《楚门的世界》"""
+——《楚门的世界》"
 
 
 def in_it(qq: str):
@@ -41,9 +41,9 @@ async def _(bot: Bot, event: Event, args: Message = CommandArg()):
         await ban.send("不能封禁机器人主人，这么玩就不好了，所以我先把你ban了QwQ")
         sb = str(event.user_id)
         self_protection = True
-    if sb is False:
+    if not sb:
         await ban.finish("您输入了什么？")
-    if checknumber(sb) is False:
+    elif not checknumber(sb):
         await ban.finish("不能全域封禁不是纯数字的QQ哦~")
     elif in_it(sb):
         return ban.finish("唔……全域封禁失败，这个人已经被封禁了。")
@@ -80,7 +80,30 @@ async def _(bot: Bot, event: Event, args: Message = CommandArg()):
 @preprocess.handle()
 async def _(matcher: Matcher, event: Event):
     info = json.loads(read(TOOLS + "/ban.json"))
-    if str(event.user_id) in info and checker(str(event.user_id),10) == False:
+    if str(event.user_id) in info and not checker(str(event.user_id),10):
         matcher.stop_propagation()
     else:
         pass
+
+
+dismiss = on_command("dismiss", aliases={"移除机器人"}, priority=5)
+
+
+@dismiss.handle()
+async def leave_group(bot: Bot, event: Event):
+    personal_data = await bot.call_api("get_group_member_info", group_id=event.group_id, user_id=event.user_id, no_cache=True)
+    user_permission = personal_data["role"] in ["owner", "admin"]
+    if not (checker(str(event.user_id), 10) or user_permission):
+        await dismiss.finish(f"唔……只有群主或管理员才能移除{Config.name}哦~")
+    else:
+        await dismiss.send(f"确定要让{Config.name}离开吗？如果是，请再发送一次“移除机器人”。")
+
+
+@dismiss.got("confirm")
+async def leave_group(bot: Bot, event: Event, confirm: Message = Arg()):
+    u_input = confirm.extract_plain_text()
+    if u_input == "移除机器人":
+        await dismiss.send(leave_msg)
+        for i in Config.notice_to:
+            await bot.call_api("send_group_msg", group_id=int(i), message=f"{Config.name}按他们的要求，离开了{event.group_id}。")
+        await bot.call_api("set_group_leave", group_id=event.group_id)
