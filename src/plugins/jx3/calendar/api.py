@@ -12,7 +12,7 @@ template_calendar = """
     <strong>大战：</strong>$war<br>
     <strong>阵营：</strong>$camp<br>
     <strong>战场：</strong>$battle<br>
-    <strong>门派：</strong>$school<br>
+    <strong>门派：</strong><br>$school<br>
     <strong>驰援：</strong>$rescue
     <strong>福缘宠物：</strong><br>$pet<br>$leader
 </td>
@@ -43,7 +43,7 @@ async def getCalendar():
         school = i["school"]
         rescue = i["rescue"]
         pet = "、".join(i["luck"])
-        content.append(template_calendar.replace("$day", day).replace("$war", war).replace("$camp", camp).replace("$battle", battle).replace("$school", school).replace("$rescue", rescue).replace("$pet", pet))
+        content.append(template_calendar.replace("$day", day).replace("$war", war).replace("$camp", camp).replace("$battle", battle).replace("$school", school).replace("$rescue", rescue).replace("$pet", pet).replace("$leader", leader))
     poem = await get_api("https://v1.jinrishici.com/all.json")
     poem = poem["content"] + "——" + poem["author"] + "《" + poem["origin"] + "》"
     saohua = poem
