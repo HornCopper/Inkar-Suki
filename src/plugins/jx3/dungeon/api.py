@@ -430,7 +430,7 @@ async def generater(map, mode, boss):
         final_table = "\n".join(tablecontent)
         html = read(VIEWS + "/jx3/drop/drop.html")
         font = ASSETS + "/font/custom.ttf"
-        saohua = await get_api(f"https://www.jx3api.com/data/saohua/random?token={token}")
+        saohua = await get_api(f"{Config.jx3api_link}/data/saohua/random")
         saohua = saohua["data"]["text"]
         html = html.replace("$font", font).replace("$tablecontent", final_table).replace(
             "$saohua", saohua).replace("$appinfo", f" · 掉落列表 · {mode}{zone} · {boss}")

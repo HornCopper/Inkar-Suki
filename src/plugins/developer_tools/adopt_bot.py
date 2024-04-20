@@ -5,9 +5,9 @@ current_application = on_command("邀请列表", priority=5)
 
 @current_application.handle()
 async def _(event: Event):
-    if os.path.exists(TOOLS + "/application.json") == False:
+    if not os.path.exists(TOOLS + "/application.json"):
         write(TOOLS + "/application.json", "[]")
-    if checker(str(event.user_id), 10) == False:
+    if not checker(str(event.user_id), 10):
         await current_application.finish(error(10))
     current = json.loads(read(TOOLS + "/application.json"))
     prefix = "当前有下列群聊可以处理：\n"
@@ -26,10 +26,10 @@ process_application = on_command("同意邀请", aliases={"同意申请"}, prior
 
 @process_application.handle()
 async def _(bot: Bot, event: Event, args: Message = CommandArg()):
-    if checker(str(event.user_id), 10) == False:
+    if not checker(str(event.user_id), 10):
         await process_application.finish(error(10))
     args = args.extract_plain_text()
-    if checknumber(args) == False:
+    if not checknumber(args):
         await process_application.finish("唔……同意申请的命令后面直接加群号即可哦~")
     current = json.loads(read(TOOLS + "/application.json"))
     for i in current:
@@ -48,10 +48,10 @@ deny_application = on_command("拒绝邀请", aliases={"拒绝邀请"}, priority
 
 
 async def _(bot: Bot, event: Event, args: Message = CommandArg()):
-    if checker(str(event.user_id), 10) == False:
+    if not checker(str(event.user_id), 10):
         await deny_application.finish(error(10))
     args = args.extract_plain_text()
-    if checknumber(args) == False:
+    if not checknumber(args):
         await deny_application.finish("唔……同意申请的命令后面直接加群号即可哦~")
     current = json.loads(read(TOOLS + "/application.json"))
     for i in current:
@@ -71,5 +71,4 @@ donate = on_command("donate", aliases={"赞助音卡"}, priority=5)
 
 @donate.handle()
 async def _():
-    await donate.finish(
-        "感谢您对音卡的支持，点击下方链接可以支持音卡：\nhttps://inkar-suki.codethink.cn/Inkar-Suki-Docs/#/donate\n请注意：音卡**绝对不是**付费，赞助全自愿！！")
+    await donate.finish("感谢您对音卡的支持，点击下方链接可以支持音卡：\nhttps://inkar-suki.codethink.cn/Inkar-Suki-Docs/#/donate\n请注意：音卡**绝对不是**付费，赞助全自愿！！")

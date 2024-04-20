@@ -33,3 +33,7 @@ from .detail import *
 from .private import *
 from .trade import *
 from .events import *
+from .calendar import *
+from .awesome import *
+from .duowan import *
+from .snacks import *

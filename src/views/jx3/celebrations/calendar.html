@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calendar</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        th,
+        td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: center;
+        }
+
+        th {
+            background-color: #80ffe5;
+            color: #333;
+        }
+
+        td {
+            background-color: #fff;
+        }
+
+        td:hover {
+            background-color: #f2f2f2;
+            cursor: pointer;
+        }
+
+        .day {
+            width: 150px
+        }
+    </style>
+</head>
+
+<body>
+    <table style="width: 1100px;background-color: rgb(187, 255, 246);" ;>
+        <thead>
+            <tr>
+                $tablehead
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                $tablecontent
+            </tr>
+        </tbody>
+        <tfoot>
+            <tr>
+                <td colspan="7">&copy; Inkar Suki$appinfo<br>$randomsaohua/td>
+            </tr>
+        </tfoot>
+    </table>
+</body>
+
+</html>

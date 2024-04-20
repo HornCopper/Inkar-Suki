@@ -12,7 +12,7 @@ op = on_command("setop", aliases={"admin", "setadmin"}, priority=5)
 
 @op.handle()
 async def handle_first_receive(bot: Bot, event: Event, args: Message = CommandArg()):
-    if checker(str(event.user_id), 10) == False:
+    if not checker(str(event.user_id), 10):
         await op.finish(error(10))
     info = args.extract_plain_text()
     if info:
@@ -21,7 +21,7 @@ async def handle_first_receive(bot: Bot, event: Event, args: Message = CommandAr
         except:
             pass
         try:
-            if checknumber(str(arguments[0])) == False or checknumber(str(arguments[1])) == False:
+            if not checknumber(str(arguments[0])) or not checknumber(str(arguments[1])):
                 await op.finish("唔……QQ号和权限等级都必须是数字哦~")
         except:
             await op.finish("唔，你好像少了点参数。")

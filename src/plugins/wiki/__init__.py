@@ -52,7 +52,7 @@ setwiki = on_command("setwiki", priority=5)
 
 @setwiki.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
-    if checker(str(event.user_id), 5) == False:
+    if not checker(str(event.user_id), 5):
         await setwiki.finish(error(5))
     api = await wiki_.get_api(args.extract_plain_text())
     if api["status"] == 500:
@@ -81,7 +81,7 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
     personal_data = await bot.call_api("get_group_member_info", group_id=event.group_id, user_id=event.user_id, no_cache=True)
     group_admin = personal_data["role"] in ["owner", "admin"]
     if not group_admin:
-        if checker(str(event.user_id), 10) == False:
+        if not checker(str(event.user_id), 10):
             await interwiki.finish(error(10))
     args = args.extract_plain_text().split(" ")
     if args[0] == "add":

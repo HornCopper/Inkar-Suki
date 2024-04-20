@@ -175,10 +175,10 @@ async def getAllSkillsInfo(Kungfu: str) -> str:
     if Kungfu == "隐龙诀":
         Kungfu == "隐龙决"  # 由于`JX3Box`的`API`的数据错误问题，目前只能这样适配，等到数据纠正后删除这块代码。
     skill = read(ASSETS + "/jx3/skills/" + Kungfu + ".json")
-    if skill == False:
+    if not skill:
         await getSkills()
         await getAllSkillsInfo(Kungfu)
-    if Kungfu == False:
+    if not Kungfu:
         return False
     skills = json.loads(skill)
     node = []
@@ -218,7 +218,7 @@ async def getSingleSkill(kungfu: str, skillName: str):
     kungfu = aliases(kungfu)
     if kungfu == "隐龙诀":
         kungfu == "隐龙决"  # 由于`JX3Box`的`API`的数据错误问题，目前只能这样适配，等到数据纠正后删除这块代码。其实是推栏的代码错了笑死。
-    if kungfu == False:
+    if not kungfu:
         return False
     try:
         data = json.loads(read(ASSETS + "/jx3/skills/" + kungfu + ".json"))
@@ -262,7 +262,7 @@ async def getSingleSkill(kungfu: str, skillName: str):
 
 async def getSingleTalent(Kungfu: str, TalentName: str):
     kungfuname = aliases(Kungfu)
-    if kungfuname == False:
+    if not kungfuname:
         return "此心法不存在哦，请检查后重试~"
     try:
         data = json.loads(

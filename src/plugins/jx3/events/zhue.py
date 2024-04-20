@@ -21,7 +21,7 @@ async def getZhueRecord(server: str):
     appinfo_time = convert_time(getCurrentTime(), "%H:%M:%S")
     appinfo = f" · 诛恶记录 · {server} · {appinfo_time}"
     final_table = "\n".join(tables)
-    html = read(VIEWS + "/jx3/zhue/zhue.html")
+    html = read(VIEWS + "/jx3/celebrations/zhue.html")
     font = ASSETS + "/font/custom.ttf"
     html = html.replace("$customfont", font).replace("$tablecontent", final_table).replace("$randomsaohua", saohua).replace("$appinfo", appinfo)
     final_html = CACHE + "/" + get_uuid() + ".html"

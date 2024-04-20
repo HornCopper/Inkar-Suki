@@ -56,7 +56,7 @@ async def get_wg(name):
             final_table = "\n".join(table)
             html = read(VIEWS + "/jx3/trade/waiguan.html")
             font = ASSETS + "/font/custom.ttf"
-            saohua = await get_api(f"https://www.jx3api.com/data/saohua/random?token={token}")
+            saohua = await get_api(f"{Config.jx3api_link}/data/saohua/random")
             saohua = saohua["data"]["text"]
             html = html.replace("$customfont", font).replace("$tablecontent", final_table).replace("$randomsaohua", saohua).replace("$appinfo", f"贴吧物价 · {name}")
             final_html = CACHE + "/" + get_uuid() + ".html"

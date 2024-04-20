@@ -268,7 +268,7 @@ async def get_attr_main(server, id, group_id):
     if not server:
         return [PROMPT_ServerNotExist]
     uid = await get_uid(server, id)
-    if uid == False:
+    if not uid
         return ["唔……未找到该玩家。"]
     param = {
         "zone": Zone_mapping(server),
