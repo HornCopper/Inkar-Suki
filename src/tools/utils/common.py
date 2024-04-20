@@ -49,7 +49,7 @@ def checknumber(value):
 
 
 def convert_time(timestamp: int, format: str = "%Y年%m月%d日 %H:%M:%S"):
-    if checknumber(timestamp) != False:
+    if checknumber(timestamp):
         try:
             timestamp = int(timestamp)
         except:
