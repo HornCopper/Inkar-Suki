@@ -12,8 +12,8 @@ template_calendar = """
     <strong>大战：</strong>$war<br>
     <strong>阵营：</strong>$camp<br>
     <strong>战场：</strong>$battle<br>
+    <strong>驰援：</strong>$rescue<br>
     <strong>门派：</strong><br>$school<br>
-    <strong>驰援：</strong>$rescue
     <strong>福缘宠物：</strong><br>$pet<br>$leader
 </td>
 """
