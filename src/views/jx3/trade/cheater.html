@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <!--
         该代码协议与Inkar Suki仓库协议相同。
@@ -44,6 +45,7 @@
 
         .short-column {
             width: 150px;
+            font-size: 20px;
         }
 
         tfoot {
@@ -51,7 +53,7 @@
             font-style: italic;
             font-size: 12px;
         }
-        
+
         @font-face {
             font-family: Harmony;
             src: url($customfont);
@@ -61,17 +63,27 @@
             font-family: Harmony, sans-serif;
         }
     </style>
+    <script>
+        window.onload = function () {
+            var elements = document.querySelectorAll("#context");
+            elements.forEach(function (element) {
+                var text = element.innerText;
+                var newText = "";
+                for (var i = 0; i < text.length; i += 40) {
+                    newText += text.slice(i, i + 40) + "\n";
+                }
+                element.innerText = newText;
+            });
+        };  
+    </script>
 </head>
 <body>
-    <table style="background-color: #e6daf3    ;">
+    <table style="background-color: #ffe8d0;">
         <thead>
             <tr>
-                <th class="short-column">区服</th>
-                <th class="short-column">物品</th>
-                <th class="short-column">地图</th>
-                <th class="short-column">角色</th>
-                <th class="short-column">时间</th>
-                <th class="short-column">参考</th>
+                <th class="short-column">贴吧来源</th>
+                <th class="short-column">内容</th>
+                <th class="short-column">帖子ID</th>
             </tr>
         </thead>
         <tbody>
@@ -79,9 +91,10 @@
         </tbody>
         <tfoot>
             <tr>
-                <td colspan="7">&copy; Inkar Suki · $appinfo<br>$randomsaohua</td>
+                <td colspan="7">&copy; Inkar Suki$appinfo<br>小提示：帖子ID是贴吧链接末尾的一串数字！</td>
             </tr>
         </tfoot>
     </table>
 </body>
+
 </html>

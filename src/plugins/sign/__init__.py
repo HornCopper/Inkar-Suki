@@ -80,7 +80,7 @@ addc = on_command("增加金币", priority=5)
 
 @addc.handle()
 async def _(event: Event, args: Message = CommandArg()):
-    if checker(str(event.user_id), 10) == False:
+    if not checker(str(event.user_id), 10):
         await addc.finish(error(10))
     arg = args.extract_plain_text().split(" ")
     if len(arg) != 2:
@@ -94,7 +94,7 @@ reducec = on_command("减少金币", priority=5)
 
 @reducec.handle()
 async def _(event: Event, args: Message = CommandArg()):
-    if checker(str(event.user_id), 10) == False:
+    if not checker(str(event.user_id), 10):
         await reducec.finish(error(10))
     arg = args.extract_plain_text().split(" ")
     if len(arg) != 2:

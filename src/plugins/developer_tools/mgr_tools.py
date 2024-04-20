@@ -16,7 +16,7 @@ purge = on_command("purge", priority=5)  # 清除所有`help`生成的缓存图�
 
 @purge.handle()
 async def ___(event: Event):
-    if checker(str(event.user_id), 1) == False:
+    if not checker(str(event.user_id), 1):
         await purge.finish(error(1))
     try:
         for i in os.listdir(CACHE):
@@ -31,7 +31,7 @@ shutdown = on_command("shutdown", aliases={"poweroff"}, priority=5)  # 关掉`In
 
 @shutdown.handle()
 async def ____(event: Event):
-    if checker(str(event.user_id), 10) == False:
+    if not checker(str(event.user_id), 10):
         await shutdown.finish(error(10))
     await shutdown.send("请稍候，正在关闭中……")
     await shutdown.send("关闭成功！请联系Owner到后台手动开启哦~")
@@ -42,7 +42,7 @@ restart = on_command("restart", priority=5)  # 重启`Inkar-Suki`，原理为`Fa
 
 @restart.handle()
 async def _(event: Event):
-    if checker(str(event.user_id), 5) == False:
+    if not checker(str(event.user_id), 5):
         await restart.finish(error(5))
     with open("./src/plugins/developer_tools/example.py", mode="w") as cache:
         await restart.send("好啦，开始重启，整个过程需要些许时间，还请等我一下哦~")
@@ -53,7 +53,7 @@ echo = on_command("echo", priority=5)  # 复读只因功能
 
 @echo.handle()
 async def echo_(event: Event, args: Message = CommandArg()):
-    if checker(str(event.user_id), 9) == False:
+    if not checker(str(event.user_id), 9)
         await echo.finish(error(9))
     await echo.finish(args)
 
@@ -100,7 +100,7 @@ call_api = on_command("call_api", aliases={"api"}, priority=5)  # 调用`go-cqht
 
 @call_api.handle()
 async def _(event: Event, args: Message = CommandArg()):
-    if checker(str(event.user_id), 10) == False:
+    if not checker(str(event.user_id), 10):
         await call_api.finish(error(10))
     cmd = args.extract_plain_text()
     result = await get_url(f"{Config.cqhttp}{cmd}")
@@ -111,7 +111,7 @@ git = on_command("-git", priority=5)  # 调用`Git`，~~别问意义是什么~~
 
 @git.handle()
 async def _(event: Event, args: Message = CommandArg()):
-    if checker(str(event.user_id), 10) == False:
+    if not checker(str(event.user_id), 10):
         await git.finish(error(10))
     output = ""
     commit = args.extract_plain_text()
@@ -134,7 +134,7 @@ voice = on_command("voice", priority=5)  # 调用腾讯的语音TTS接口，生�
 
 @voice.handle()
 async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
-    if checker(str(event.user_id), 10) == False:
+    if not checker(str(event.user_id), 10):
         await voice.finish(error(10))
     sth = args.extract_plain_text()
     final_msg = f"[CQ:tts,text={sth}]"

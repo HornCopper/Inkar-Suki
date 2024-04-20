@@ -35,7 +35,7 @@ ban = on_command("ban", priority=5)  # 封禁，≥10的用户无视封禁。
 
 @ban.handle()
 async def _(bot: Bot, event: Event, args: Message = CommandArg()):
-    if checker(str(event.user_id), 10) == False:
+    if not checker(str(event.user_id), 10):
         await ban.finish(error(10))
     sb = args.extract_plain_text()
     self_protection = False
@@ -62,7 +62,7 @@ unban = on_command("unban", priority=5)  # 解封
 
 @unban.handle()
 async def _(bot: Bot, event: Event, args: Message = CommandArg()):
-    if checker(str(event.user_id), 10) == False:
+    if not checker(str(event.user_id), 10):
         await ban.finish(error(10))
     sb = args.extract_plain_text()
     if checknumber(sb) is False:

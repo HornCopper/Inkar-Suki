@@ -26,7 +26,7 @@ def checker(qqnumber: str, score: int):
     if qqnumber not in json_:
         return False
     else:
-        if (int(json_[qqnumber]) >= score) == False:
+        if not (int(json_[qqnumber]) >= score):
             return False
         else:
             return True

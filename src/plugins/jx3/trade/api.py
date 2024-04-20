@@ -111,7 +111,7 @@ async def getImg(server: str, name: str, group: str, itemList: list = []):
         final_table = "\n".join(table)
         html = read(VIEWS + "/jx3/trade/trade.html")
         font = ASSETS + "/font/custom.ttf"
-        saohua = await get_api(f"https://www.jx3api.com/data/saohua/random?token={token}")
+        saohua = await get_api(f"{Config.jx3api_link}/data/saohua/random")
         saohua = saohua["data"]["text"]
         final_name = itemList_searchable[0]["name"] if itemList == [] else "+".join(itemList)
         html = html.replace("$customfont", font).replace("$tablecontent", final_table).replace("$randomsaohua", saohua).replace("$appinfo", f"交易行 · {server} · {final_name}").replace("$msgbox", msgbox)
@@ -145,7 +145,7 @@ async def getImg(server: str, name: str, group: str, itemList: list = []):
         final_table = "\n".join(table)
         html = read(VIEWS + "/jx3/trade/trade.html")
         font = ASSETS + "/font/custom.ttf"
-        saohua = await get_api(f"https://www.jx3api.com/data/saohua/random?token={token}")
+        saohua = await get_api(f"{Config.jx3api_link}/data/saohua/random")
         saohua = saohua["data"]["text"]
         html = html.replace("$customfont", font).replace("$tablecontent", final_table).replace("$randomsaohua", saohua).replace("$appinfo", f"交易行 · {server} · {name}").replace("$msgbox", "")
         final_html = CACHE + "/" + get_uuid() + ".html"

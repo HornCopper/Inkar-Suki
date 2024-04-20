@@ -15,7 +15,7 @@ from ..basic import DATA, write, Config, get_api, read, TOOLS
 
 def getGroupData(group: str, key: str):
     data = json.loads(read(DATA + "/" + str(group) + "/settings.json"))
-    if data == False:
+    if not data:
         return False
     return data[key]
 

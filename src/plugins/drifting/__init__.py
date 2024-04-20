@@ -66,7 +66,7 @@ lookup = on_command("查看漂流瓶", priority=5)
 
 @lookup.handle()
 async def _(event: Event, args: Message = CommandArg()):
-    if checker(str(event.user_id), 10) == False:
+    if not checker(str(event.user_id), 10):
         await lookup.finish(error(10))
     args = args.extract_plain_text()
     if not checknumber(args):

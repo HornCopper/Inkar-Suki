@@ -153,7 +153,7 @@ preposition = on_command("jx3_preposition", aliases={"前置", "攻略"}, priori
 async def jx3_preposition(event: GroupMessageEvent, args: Message = CommandArg()):
     serendipity = args.extract_plain_text()
     data = await get_preposition(serendipity)
-    if data == False:
+    if data:
         await preposition.finish("唔……没有找到相关信息~")
     else:
         await preposition.finish(data)

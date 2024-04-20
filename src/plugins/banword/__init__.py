@@ -6,7 +6,7 @@ banword = on_command("banword", priority=5)
 @banword.handle()
 async def __(event: GroupMessageEvent, args: Message = CommandArg()):  # 违禁词封锁
     bw = args.extract_plain_text()
-    if checker(str(event.user_id), 5) == False:
+    if not checker(str(event.user_id), 5):
         await banword.finish(error(5))
     if bw:
         now = json.loads(read(TOOLS + "/banword.json"))
@@ -23,7 +23,7 @@ unbanword = on_command("unbanword", priority=5)  # 违禁词解封
 
 @unbanword.handle()
 async def ___(event: GroupMessageEvent, args: Message = CommandArg()):
-    if checker(str(event.user_id), 5) == False:
+    if not checker(str(event.user_id), 5):
         await unbanword.finish(error(5))
     cmd = args.extract_plain_text()
     if cmd:

@@ -29,7 +29,7 @@ async def getData(name, quality):
 
 async def getArmor(raw: str):
     attrs = convertAttrs(raw)
-    if attrs == False:
+    if not attrs:
         return [f"您输入的装备词条有误，请确保包含以下三个要素：\n品级、属性、部位\n示例：13550内功双会头"]
     parsed = attrs[0]
     place = attrs[1]
