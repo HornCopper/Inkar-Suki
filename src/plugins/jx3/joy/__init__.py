@@ -50,7 +50,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
         server = data["server"]
         url = data["url"]
         date = data["date"]
-        msg = f"咚！音卡为您找了一个瓜！\n标题：{title}\n{url}\n来源：{name}吧（{server}）\n日期：{date}"
+        msg = f"咚！音卡为您找了一个瓜！\n标题：{title}\nhttps://tieba.baidu.com/p/{url}\n来源：{name}吧（{server}）\n日期：{date}"
         await watermelon.finish(msg)
     if not checknumber(tid):
         await watermelon.finish("唔……请直接给出帖子的ID（通常是链接最后那一串数字）！")
