@@ -8,15 +8,17 @@ def generate_weekday_list(start_day):
 
 template_calendar = """
 <td class="day">
-    <span style="font-size:40px">$day</span><br>
-    <strong>大战：</strong>$war<br>
-    <strong>阵营：</strong>$camp<br>
-    <strong>战场：</strong>$battle<br>
-    <strong>驰援：</strong>$rescue<br>
-    <strong>门派：</strong><br>$school<br>
-    <strong>福缘宠物：</strong><br>$pet<br>$leader
+    <span style="font-size:40px">$day</span>
 </td>
 """
+
+template_event = """
+<strong>大战：</strong>$war<br>
+<strong>阵营：</strong>$camp<br>
+<strong>战场：</strong>$battle<br>
+<strong>驰援：</strong>$rescue<br>
+<strong>门派：</strong><br>$school<br>
+<strong>福缘宠物：</strong><br>$pet<br>$leader"""
 
 world_boss = "<strong>世界首领：</strong><br>$boss"
 
@@ -30,28 +32,31 @@ async def getCalendar():
     for i in week_list:
         week_list_html.append(f"<th>{i}</th>")
     week_list_html = "\n".join(week_list_html)
-    content = []
+    days = []
+    events = []
     for i in data:
+        day = i["day"]
+        days.append(day)
         leader = ""
         if "leader" in list(i):
             leader = "、".join(i["leader"])
             leader = "\n" + world_boss.replace("$boss", leader)
-        day = i["day"]
         war = i["war"][2:]
         camp = i["orecar"]
         battle = i["battle"]
         school = i["school"]
         rescue = i["rescue"]
         pet = "、".join(i["luck"])
-        content.append(template_calendar.replace("$day", day).replace("$war", war).replace("$camp", camp).replace("$battle", battle).replace("$school", school).replace("$rescue", rescue).replace("$pet", pet).replace("$leader", leader))
+        events.append(template_event.replace("$war", war).replace("$camp", camp).replace("$battle", battle).replace("$school", school).replace("$rescue", rescue).replace("$pet", pet).replace("$leader", leader))
     poem = await get_api("https://v1.jinrishici.com/all.json")
     poem = poem["content"] + "——" + poem["author"] + "《" + poem["origin"] + "》"
     saohua = poem
     appinfo = f" · 活动日历 · 自{today}起7天"
-    final_table = "\n".join(content)
+    final_days = "\n".join(days)
+    final_events = "\n".join(events)
     html = read(VIEWS + "/jx3/celebrations/calendar.html")
     font = ASSETS + "/font/custom.ttf"
-    html = html.replace("$customfont", font).replace("$tablecontent", final_table).replace("$randomsaohua", saohua).replace("$appinfo", appinfo).replace("$tablehead", week_list_html)
+    html = html.replace("$customfont", font).replace("$datecontent", final_days).replace("$eventcontent", final_events).replace("$randomsaohua", saohua).replace("$appinfo", appinfo).replace("$tablehead", week_list_html)
     final_html = CACHE + "/" + get_uuid() + ".html"
     write(final_html, html)
     final_path = await generate(final_html, False, "table", False)
