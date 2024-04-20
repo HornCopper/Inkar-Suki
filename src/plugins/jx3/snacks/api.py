@@ -1,7 +1,7 @@
 from src.tools.basic import *
 
 async def getSnack(school: str):
-    actual_name = kftosh(aliases(school))
+    actual_name = aliases(school)
     if not actual_name:
         return "唔……没有找到该心法！"
     url = f"https://www.jx3api.com/data/school/toxic?name={actual_name}"

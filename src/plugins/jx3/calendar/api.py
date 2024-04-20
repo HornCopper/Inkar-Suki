@@ -28,7 +28,7 @@ async def getCalendar():
     week_list = generate_weekday_list(data[0]["week"])
     week_list_html = []
     for i in week_list:
-        week_list_html.append(i, f"<th>{i}</th>")
+        week_list_html.append(f"<th>{i}</th>")
     week_list_html = "\n".join(week_list_html)
     content = []
     for i in data:

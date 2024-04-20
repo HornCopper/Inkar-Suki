@@ -36,6 +36,8 @@ async def getAwesomeRecord(uin: str):
                 comment = comment.replace(uin, "<span style=\"background-color: #f6c694\">" + uin + "</span>")
                 template = template_awesome.replace("$origin", origin).replace("$server", server).replace("$title", title).replace("$comment", comment).replace("$time", display_time).replace("$thread", thread)
                 content.append(template)
+                if len(content) > 10:
+                    break
         appinfo_time = convert_time(getCurrentTime(), "%H:%M:%S")
         appinfo = f" · 骗子查询 · {appinfo_time}"
         final_table = "\n".join(content)
