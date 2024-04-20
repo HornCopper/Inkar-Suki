@@ -53,7 +53,7 @@ echo = on_command("echo", priority=5)  # 复读只因功能
 
 @echo.handle()
 async def echo_(event: Event, args: Message = CommandArg()):
-    if not checker(str(event.user_id), 9)
+    if not checker(str(event.user_id), 9):
         await echo.finish(error(9))
     await echo.finish(args)
 
