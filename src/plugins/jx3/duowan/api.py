@@ -20,7 +20,7 @@ async def getTongzhan(server: str):
     data = await get_api(api)
     data = data["data"]
     tables = []
-    for i in data["data"]:
+    for i in data[0]["data"]:
         channel_icon = i["logoUrl"]
         channel_name = i["snick"]
         channel_num = i["asid"]
