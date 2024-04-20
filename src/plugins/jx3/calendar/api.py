@@ -13,12 +13,14 @@ template_calendar = """
 """
 
 template_event = """
+<td>
 <strong>大战：</strong>$war<br>
 <strong>阵营：</strong>$camp<br>
 <strong>战场：</strong>$battle<br>
 <strong>驰援：</strong>$rescue<br>
 <strong>门派：</strong><br>$school<br>
-<strong>福缘宠物：</strong><br>$pet<br>$leader"""
+<strong>福缘宠物：</strong><br>$pet<br>$leader
+</td>"""
 
 world_boss = "<strong>世界首领：</strong><br>$boss"
 
@@ -36,7 +38,7 @@ async def getCalendar():
     events = []
     for i in data:
         day = i["day"]
-        days.append(day)
+        days.append(template_calendar.replace("$day", day))
         leader = ""
         if "leader" in list(i):
             leader = "、".join(i["leader"])
