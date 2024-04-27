@@ -9,7 +9,6 @@ import httpx
 
 from pathlib import Path
 from PIL import Image, ImageDraw, ImageFont
-from nonebot import get_driver
 from nonebot.log import logger
 
 ticket = Config.jx3_token
@@ -96,6 +95,8 @@ async def get_personal_kf(kfid):
 def find_qx(data, kf, qx):
     if qx == "蒹山":
         qx = "兼山"
+    if qx == "桑拓":
+        qx = "桑柘"
     real_data = data[kf]
     for i in range(1, 13):
         for x in range(1, 6):
