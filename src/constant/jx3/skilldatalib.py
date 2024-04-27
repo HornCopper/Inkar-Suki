@@ -11,7 +11,7 @@ CONSTANT = ASSETS[:-6] + "constant"
 
 
 def kftosh(kf: str) -> str:
-    with open(CONSTANT + "/jx3/kungfu.json", "r", encoding="utf-8") as f:
+    with open(CONSTANT + "/jx3/school.json", "r", encoding="utf-8") as f:
         kf_dict = json.load(f)
 
     return kf_dict.get(kf, False)
