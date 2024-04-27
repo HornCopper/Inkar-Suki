@@ -5,8 +5,7 @@
 
 _基于Nonebot 2的多功能的群聊机器人_
 
-![Nonebot2](https://img.shields.io/badge/Nonebot2-Release_v2.0.0_beta.5-brightgreen)
-![go-cqhttp](https://img.shields.io/badge/go--cqhttp-v1.0.0_rc3-brightgreen)
+![Nonebot2](https://img.shields.io/badge/Nonebot2-Release_v2.2.1-brightgreen)
 <br>
 ![GitHub](https://img.shields.io/github/license/codethink-cn/Inkar-Suki)
 ![Python](https://img.shields.io/badge/Python-3.8+-blue)
