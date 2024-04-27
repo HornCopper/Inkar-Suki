@@ -1,5 +1,6 @@
-from src.tools.basic import *
 from PIL import Image, ImageDraw, ImageFont
+
+from src.tools.basic import *
 
 async def get_bulletinG(msg: str, type_: str):
     if type_ not in ["S", "G"]:

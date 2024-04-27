@@ -1,7 +1,5 @@
 from .detail import *
 
-from src.tools.permission import checker, error
-
 zone_detail = on_command("jx3_zone_detail", aliases={"副本总览"}, priority=5)
 
 

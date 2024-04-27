@@ -12,13 +12,7 @@ from PIL import Image, ImageDraw, ImageFont
 from nonebot import get_driver
 from nonebot.log import logger
 
-
-
-now = "万灵当歌"
-
-
 ticket = Config.jx3_token
-
 
 async def addritube_(server: str = None, name: str = None, group_id: str = None):  # 查装 <服务器> <ID>
     if token == None or ticket == None:

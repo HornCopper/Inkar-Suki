@@ -1,3 +1,3 @@
-from .adopt_bot import *
-from .mgr_tools import *
+from .application import *
+from .classic import *
 from .feedback import *
