@@ -3,7 +3,7 @@ from bs4 import BeautifulSoup
 from src.tools.utils import get_url, get_api
 from src.tools.basic import *
 
-from ...jx3 import server_mapping
+from ..jx3 import server_mapping
 
 
 async def get_chitu(server: str, group_id: str):  # 数据来源@jw3cx.com
