@@ -146,7 +146,7 @@ def mode_mapping(mode):
     return False
 
 def zone_mapping(zone):
-    with open(PLUGINS + "/jx3/dungeon/zone_mapping.json", "r", encoding="utf-8") as f:
+    with open(PLUGINS + "/jx3/dungeon/zone.json", "r", encoding="utf-8") as f:
         zone_mapping_dict = json.load(f)
 
     for k, v in zone_mapping_dict.items():
