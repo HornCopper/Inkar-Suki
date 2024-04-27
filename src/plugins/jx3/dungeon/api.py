@@ -137,7 +137,7 @@ async def get_drops(map, mode, boss):
 # 暂时未知数据是否相同，后续考虑是否添加。
 
 def mode_mapping(mode):
-    with open("mode.json", "r", encoding="utf-8") as f:
+    with open(PLUGINS + "/jx3/dungeon/mode.json", "r", encoding="utf-8") as f:
         mode_mapping_dict = json.load(f)
 
     for k, v in mode_mapping_dict.items():
@@ -146,7 +146,7 @@ def mode_mapping(mode):
     return False
 
 def zone_mapping(zone):
-    with open("zone_mapping.json", "r", encoding="utf-8") as f:
+    with open(PLUGINS + "/jx3/dungeon/zone_mapping.json", "r", encoding="utf-8") as f:
         zone_mapping_dict = json.load(f)
 
     for k, v in zone_mapping_dict.items():

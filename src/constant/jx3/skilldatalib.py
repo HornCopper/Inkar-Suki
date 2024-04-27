@@ -8,7 +8,7 @@ from src.tools.config import Config
 import json
 
 def kftosh(kf: str) -> str:
-    with open("school.json", "r", encoding="utf-8") as f:
+    with open(CONSTANT + "/jx3/school.json", "r", encoding="utf-8") as f:
         kf_dict = json.load(f)
 
     for x in kf_dict:
@@ -20,7 +20,7 @@ def kftosh(kf: str) -> str:
 
 
 def aliases(SkillName: str) -> str:
-    with open("kungfu.json", "r", encoding="utf-8") as f:
+    with open(CONSTANT + "/jx3/kungfu.json", "r", encoding="utf-8") as f:
         aliases_dict = json.load(f)
 
     for k, v in aliases_dict.items():

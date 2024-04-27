@@ -13,6 +13,7 @@ ASSETS = get_path("assets")
 CLOCK = get_path("clock")
 VIEWS = get_path("views")
 PLUGINS = get_path("plugins")
+CONSTANT = get_path("constant")
 TOOLS = tools_path
 
 common_data: str = "common"
