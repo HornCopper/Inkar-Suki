@@ -161,35 +161,35 @@ def toCoinImage(rawString: str):
     return processedString
 
 def convert(price: int):
-    if 1 <= price <= 99: # 铜
+    if 1 <= price <= 99:  # 铜
         return f"{price} 铜"
-    elif 100 <= price <= 9999: # 银
+    elif 100 <= price <= 9999:  # 银
+        silver = price // 100
         copper = price % 100
-        silver = (price - copper) / 100
         if copper == 0:
-            return str(int(silver)) + " 银" 
+            return f"{silver} 银"
         else:
-            return str(int(silver)) + " 银" + " " + str(int(copper)) + " 铜"
-    elif 10000 <= price <= 99999999: # 金
+            return f"{silver} 银 {copper} 铜"
+    elif 10000 <= price <= 99999999:  # 金
+        gold = price // 10000
+        silver = (price % 10000) // 100
         copper = price % 100
-        silver = ((price - copper) % 10000) / 100
-        gold = (price - copper - silver) / 10000
-        msg = str(int(gold)) + " 金"
-        if str(int(silver)) != "0":
-            msg = msg + " " + str(int(silver)) + " 银"
-        if str(int(copper)) != "0":
-            msg = msg + " " + str(int(copper)) + " 铜"
-        return msg
-    elif 100000000 <= price: # 砖
+        result = f"{gold} 金"
+        if silver:
+            result += f" {silver} 银"
+        if copper:
+            result += f" {copper} 铜"
+        return result
+    elif price >= 100000000:  # 砖
+        brick = price // 100000000
+        gold = (price % 100000000) // 10000
+        silver = (price % 10000) // 100
         copper = price % 100
-        silver: int = ((price - copper) % 10000) / 100
-        gold = ((price - copper - silver*100) % 100000000) / 10000
-        brick = (price - copper - silver*100 - gold*10000) / 100000000
-        msg = str(int(brick)) + " 砖"
-        if str(int(gold)) != "0":
-            msg = msg + " " + str(int(gold)) + " 金"
-        if str(int(silver)) != "0":
-            msg = msg + " " + str(int(silver)) + " 银"
-        if str(int(copper)) != "0":
-            msg = msg + " " + str(int(copper)) + " 铜"
-        return msg
+        result = f"{brick} 砖"
+        if gold:
+            result += f" {gold} 金"
+        if silver:
+            result += f" {silver} 银"
+        if copper:
+            result += f" {copper} 铜"
+        return result
