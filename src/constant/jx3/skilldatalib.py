@@ -9,16 +9,12 @@ import json
 
 CONSTANT = ASSETS[:-6] + "constant"
 
+
 def kftosh(kf: str) -> str:
-    with open(CONSTANT + "/jx3/school.json", "r", encoding="utf-8") as f:
+    with open(CONSTANT + "/jx3/kungfu.json", "r", encoding="utf-8") as f:
         kf_dict = json.load(f)
 
-    for x in kf_dict:
-        for y in kf_dict[x]:
-            kf_dict[y] = x
-        kf_dict[x] = x
-
-    return kf_dict.get(kf) or False
+    return kf_dict.get(kf, False)
 
 
 def aliases(SkillName: str) -> str:
