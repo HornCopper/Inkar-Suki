@@ -97,7 +97,7 @@ def find_qx(data, kf, qx):
         qx = "兼山"
     if qx == "桑拓":
         qx = "桑柘"
-    if qx == "素矰 ":
+    if qx.find("素矰") != -1:
         qx = "素矰"
     real_data = data[kf]
     for i in range(1, 13):
