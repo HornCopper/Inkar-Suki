@@ -340,7 +340,8 @@ async def get_attr_main(server, id, group_id):
         qx[index] = i
     for i in range(12):
         for x in data["data"]["Person"]["qixueList"]:
-            if x["name"] == qx[i]:
+            qx_name = x["name"].replace(" ", "")
+            if qx_name == qx[i]:
                 qx_icon[i] = x["icon"]["FileName"]
     for i in equip_data:
         if i == "":
