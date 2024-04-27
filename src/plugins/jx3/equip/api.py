@@ -1,13 +1,9 @@
-import hashlib
-import hmac
 import json
 import httpx
 
 from PIL import Image, ImageFont, ImageDraw
-from datetime import datetime, timezone
 
 from src.tools.basic import *
-from src.tools.config import Config
 from src.tools.generate import get_uuid
 
 from ..attributes.api import kungfu_mapping, get_fs, local_save,  get_kf_icon, get_bg, data_process, enchant_mapping, judge_special_weapon
@@ -26,7 +22,7 @@ async def get_recommended_equips_list(forceId: str, condition):
         "EquipTags": condition,
         "Size": 10,
         "cursor": 0,
-        "matchSeasonId": "653a2852de993800140a41f8",
+        "matchSeasonId": "6629cd12ba3129001275fc58",
         "ts": gen_ts()
     }
     param = format_body(param)
