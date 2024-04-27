@@ -13,8 +13,12 @@ CONSTANT = ASSETS[:-6] + "constant"
 def kftosh(kf: str) -> str:
     with open(CONSTANT + "/jx3/school.json", "r", encoding="utf-8") as f:
         kf_dict = json.load(f)
-
-    return kf_dict.get(kf, False)
+    for k, v_list in kf_dict.items():
+        if kf in v_list:
+            return k
+        elif kf == k:
+            return k  # 如果传入参数本身就是键，直接返回该键
+    return False
 
 
 def aliases(SkillName: str) -> str:
