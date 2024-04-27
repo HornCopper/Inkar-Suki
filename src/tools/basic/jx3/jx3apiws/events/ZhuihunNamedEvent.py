@@ -23,7 +23,7 @@ class ZhuihunNamedEvent(RecvEvent):
 
     @property
     def log(self) -> str:
-        log = f"追魂点名：先锋队执事：请[{self.subserver}·{self.name}]侠士速来[{self.realm}]·跨服烂柯山，有要事相商！。"
+        log = f"追魂点名：先锋队执事：请[{self.name}·{self.subserver}]侠士速来[{self.realm}]·跨服烂柯山，有要事相商！。"
         return log
 
     @overrides(RecvEvent)
