@@ -11,5 +11,7 @@ async def _(event: Event, args: Message = CommandArg()):
         start = arg[0]
         end = arg[1]
         image = await cq_crt(start, end)
+        if type(image) == type([]):
+            await cq.finish(image[0])
         image = get_content_local(image)
         await cq.finish(ms.image(image))
