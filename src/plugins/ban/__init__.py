@@ -35,6 +35,8 @@ ban = on_command("ban", priority=5)  # 封禁，≥10的用户无视封禁。
 
 @ban.handle()
 async def _(bot: Bot, event: Event, args: Message = CommandArg()):
+    if str(event.message)[3] != " ":
+        return
     if not checker(str(event.user_id), 10):
         await ban.finish(error(10))
     sb = args.extract_plain_text()
