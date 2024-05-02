@@ -152,8 +152,11 @@ def data_process(kf, data, f):
 
 def enchant_mapping(quailty):
     data = {
-        "天堑奇玿":
-        {
+        "天堑奇珵": {
+            "min": 14350,
+            "max": 15800
+        },
+        "天堑奇玿": {
             "min": 12800,
             "max": 14150
         },
