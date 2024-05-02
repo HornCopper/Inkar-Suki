@@ -233,5 +233,5 @@ async def cq_crt(start: str, end: str):
     final_html = final_html.replace("$customfont", font)
     final_path = CACHE + "/" + get_uuid() + ".html"
     write(final_path, final_html)
-    final_path = await generate(final_path, False, ".search-result", False)
-    return Path(final_path).as_uri()
+    generated = await generate(final_path, False, ".search-result", False)
+    return Path(generated).as_uri()
