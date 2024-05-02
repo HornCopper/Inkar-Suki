@@ -238,7 +238,7 @@ async def cq_crt(start: str, end: str):
     basic = basic.replace("$ticket", str(price)).replace("$minute", str(minute))
     final_html = basic.replace("$content", template)
     font = ASSETS + "/font/custom.ttf"
-    final_html = final_html.replace("$customfont", font).replace("$start", ).replace("$end", end)
+    final_html = final_html.replace("$customfont", font).replace("$start", start).replace("$end", end)
     final_path = CACHE + "/" + get_uuid() + ".html"
     write(final_path, final_html)
     generated = await generate(final_path, False, ".search-result", False)
