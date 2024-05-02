@@ -199,9 +199,9 @@ def seconds_to_minutes(seconds):
 async def cq_crt(start: str, end: str):
     if start == end:
         return ["请您原地站着不动即可。"]
-    start = quote(quote(start))
-    end = quote(quote(end))
-    api = f"https://www.cqmetro.cn/Front/html/TakeLine!queryYsTakeLine.action?entity.startStaName={start}&entity.endStaName={end}"
+    start_ = quote(quote(start))
+    end_ = quote(quote(end))
+    api = f"https://www.cqmetro.cn/Front/html/TakeLine!queryYsTakeLine.action?entity.startStaName={start_}&entity.endStaName={end_}"
     data = await get_api(api)
     if len(data["result"]) == 0:
         return ["未查询到线路，请检查起始站名或到达站名是否有误？"]
@@ -238,7 +238,7 @@ async def cq_crt(start: str, end: str):
     basic = basic.replace("$ticket", str(price)).replace("$minute", str(minute))
     final_html = basic.replace("$content", template)
     font = ASSETS + "/font/custom.ttf"
-    final_html = final_html.replace("$customfont", font).replace("$start", start).replace("$end", end)
+    final_html = final_html.replace("$customfont", font).replace("$start", ).replace("$end", end)
     final_path = CACHE + "/" + get_uuid() + ".html"
     write(final_path, final_html)
     generated = await generate(final_path, False, ".search-result", False)
