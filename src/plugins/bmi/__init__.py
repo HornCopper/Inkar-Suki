@@ -1,9 +1,11 @@
 from src.tools.basic import *
 
-bmi = on_command("bmi", aliases={"BMI", "身体质量指数"}, priority=5)
+bmi = on_command("bmi", aliases={"BMI", "身体质量指数"}, force_whitespace=True, priority=5)
 
 @bmi.handle()
 async def _(event: Event, args: Message = CommandArg()):
+    if args.extract_plain_text() == "":
+        return
     arg = args.extract_plain_text().split(" ")
     if len(arg) != 2:
         await bmi.finish("唔……参数数量不正确哦，请参考以下格式，注意两个参数都是纯数字哦~\nBMI 身高(米) 体重(千克)")

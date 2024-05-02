@@ -1,9 +1,11 @@
 from .api import *
 
-cheater = on_command("jx3_cheater", aliases={"查人", "骗子"}, priority=5)
+cheater = on_command("jx3_cheater", aliases={"查人", "骗子"}, force_whitespace=True, priority=5)
 
 @cheater.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
+    if args.extract_plain_text() == "":
+        return
     uin = args.extract_plain_text()
     if not checknumber(uin):
         await cheater.finish("唔……查人请给出纯数字的QQ号！")

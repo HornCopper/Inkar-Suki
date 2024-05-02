@@ -13,13 +13,13 @@ import base64
 
 from .check_pass import check_cd, check_max
 
-what_eat = on_regex(r"^(/)?[今|明|后]?[天|日]?(早|中|晚)?(上|午|餐|饭|夜宵|宵夜)?吃(什么|啥|点啥)$", priority=5)
-what_drink = on_regex(r"^(/)?[今|明|后]?[天|日]?(早|中|晚)?(上|午|餐|饭|夜宵|宵夜)?喝(什么|啥|点啥)$", priority=5)
-view_all_dishes = on_regex(r"^(/)?查[看|询]?全部(菜[单|品]|饮[料|品])$", priority=5)
-view_dish = on_regex(r"^(/)?查[看|询]?(菜[单|品]|饮[料|品])[\s]?(.*)?", priority=5)
-add_dish = on_regex(r"^(/)?添[加]?(菜[品|单]|饮[品|料])[\s]?(.*)?", priority=99,
+what_eat = on_regex(r"^(/)?[今|明|后]?[天|日]?(早|中|晚)?(上|午|餐|饭|夜宵|宵夜)?吃(什么|啥|点啥)$", force_whitespace=True, priority=5)
+what_drink = on_regex(r"^(/)?[今|明|后]?[天|日]?(早|中|晚)?(上|午|餐|饭|夜宵|宵夜)?喝(什么|啥|点啥)$", force_whitespace=True, priority=5)
+view_all_dishes = on_regex(r"^(/)?查[看|询]?全部(菜[单|品]|饮[料|品])$", force_whitespace=True, priority=5)
+view_dish = on_regex(r"^(/)?查[看|询]?(菜[单|品]|饮[料|品])[\s]?(.*)?", force_whitespace=True, priority=5)
+add_dish = on_regex(r"^(/)?添[加]?(菜[品|单]|饮[品|料])[\s]?(.*)?", force_whitespace=True, priority=99,
                     permission=GROUP_ADMIN | GROUP_OWNER | SUPERUSER)
-del_dish = on_regex(r"^(/)?删[除]?(菜[品|单]|饮[品|料])[\s]?(.*)?", priority=5,
+del_dish = on_regex(r"^(/)?删[除]?(菜[品|单]|饮[品|料])[\s]?(.*)?", force_whitespace=True, priority=5,
                     permission=GROUP_ADMIN | GROUP_OWNER | SUPERUSER)
 
 # 今天吃什么路径

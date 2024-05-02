@@ -6,11 +6,13 @@ from tabulate import tabulate
 
 from .api import *
 
-jx3_cmd_equip_recommend = on_command("jx3_equip_recommend", aliases={"配装"}, priority=5)
+jx3_cmd_equip_recommend = on_command("jx3_equip_recommend", aliases={"配装"}, force_whitespace=True, priority=5)
 
 
 @jx3_cmd_equip_recommend.handle()
 async def jx3_equip_recommend_menu(event: GroupMessageEvent, state: T_State, args: Message = CommandArg()):
+    if args.extract_plain_text() == "":
+        return
     arg = args.extract_plain_text().split(" ")
     if len(arg) not in [1, 2]:
         await jx3_cmd_equip_recommend.finish("唔……参数数量有问题哦，请检查后重试~\n或查看帮助文件（+help）获得更详细的信息哦~")

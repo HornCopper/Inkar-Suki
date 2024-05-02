@@ -8,17 +8,18 @@ from src.tools.basic import *
 def boss_mapping(boss: str):
     xjd_num = 10369
     wyhl_num = 10907
-    if boss in ["西津渡老一", "张景超", "张法雷", "张景超与张法雷", "张法雷与张景超"]:
+    llf_num = 11500
+    if boss in ["张景超", "张法雷", "张景超与张法雷", "张法雷与张景超"]:
         return xjd_num
-    elif boss in ["西津渡老二", "刘展"]:
+    elif boss in ["刘展"]:
         return xjd_num + 1
-    elif boss in ["苏凤楼", "西津渡老三", "孤鸿"]:
+    elif boss in ["苏凤楼"]:
         return xjd_num + 2
-    elif boss in ["韩敬青", "兵刃巫医", "西津渡老四"]:
+    elif boss in ["韩敬青"]:
         return xjd_num + 3
-    elif boss in ["藤原佑野", "西津渡老五", "秘藤比丘", "送的"]:
+    elif boss in ["藤原佑野"]:
         return xjd_num + 4
-    elif boss in ["李重茂", "废帝", "西津渡老六"]:
+    elif boss in ["李重茂"]:
         return xjd_num + 5
     elif boss in ["时风"]:
         return wyhl_num
@@ -32,6 +33,16 @@ def boss_mapping(boss: str):
         return wyhl_num + 4
     elif boss in ["翁幼之"]:
         return wyhl_num + 5
+    elif boss in ["葛木寒"]:
+        return llf_num
+    elif boss in ["雨轻红"]:
+        return llf_num + 1
+    elif boss in ["喜雅"]:
+        return llf_num + 2
+    elif boss in ["鹰眼客"]:
+        return llf_num + 3
+    elif boss in ["赤幽明","赤厄明", "赤幽明与赤厄明", "赤厄明与赤幽明"]:
+        return llf_num + 4
     else:
         return False
 

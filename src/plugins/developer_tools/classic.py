@@ -11,11 +11,13 @@ from src.tools.local_version import nbv
 import psutil
 
 
-purge = on_command("purge", priority=5)  # 清除所有`help`生成的缓存图片
+purge = on_command("purge", force_whitespace=True, priority=5)  # 清除所有`help`生成的缓存图片
 
 
 @purge.handle()
-async def ___(event: Event):
+async def ___(event: Event, args: Message = CommandArg()):
+    if args.extract_plain_text() != "":
+        return
     if not checker(str(event.user_id), 1):
         await purge.finish(error(1))
     try:
@@ -26,38 +28,44 @@ async def ___(event: Event):
     else:
         await purge.finish("好的，已帮你清除图片缓存~")
 
-shutdown = on_command("shutdown", aliases={"poweroff"}, priority=5)  # 关掉`Inkar-Suki`主程序
+shutdown = on_command("shutdown", aliases={"poweroff"}, force_whitespace=True, priority=5)  # 关掉`Inkar-Suki`主程序
 
 
 @shutdown.handle()
-async def ____(event: Event):
+async def ____(event: Event, args: Message = CommandArg()):
+    if args.extract_plain_text() == "":
+        return
     if not checker(str(event.user_id), 10):
         await shutdown.finish(error(10))
     await shutdown.send("请稍候，正在关闭中……")
     await shutdown.send("关闭成功！请联系Owner到后台手动开启哦~")
     sys.exit(0)
 
-restart = on_command("restart", priority=5)  # 重启`Inkar-Suki`，原理为`FastAPI`的文件监控自动重启
+restart = on_command("restart", force_whitespace=True, priority=5)  # 重启`Inkar-Suki`，原理为`FastAPI`的文件监控自动重启
 
 
 @restart.handle()
-async def _(event: Event):
+async def _(event: Event, args: Message = CommandArg()):
+    if args.extract_plain_text() == "":
+        return
     if not checker(str(event.user_id), 5):
         await restart.finish(error(5))
     with open("./src/plugins/developer_tools/example.py", mode="w") as cache:
         await restart.send("好啦，开始重启，整个过程需要些许时间，还请等我一下哦~")
         cache.write("status=\"OK\"")
 
-echo = on_command("echo", priority=5)  # 复读只因功能
+echo = on_command("echo", force_whitespace=True, priority=5)  # 复读只因功能
 
 
 @echo.handle()
 async def echo_(event: Event, args: Message = CommandArg()):
+    if args.extract_plain_text() == "":
+        return
     if not checker(str(event.user_id), 9):
         await echo.finish(error(9))
     await echo.finish(args)
 
-ping = on_command("ping", aliases={"-测试"}, priority=5)  # 测试机器人是否在线
+ping = on_command("ping", aliases={"-测试"}, force_whitespace=True, priority=5)  # 测试机器人是否在线
 
 def per_cpu_status() -> List[float]:
     return psutil.cpu_percent(interval=1, percpu=True)
@@ -66,7 +74,9 @@ def memory_status() -> float:
     return psutil.virtual_memory().percent
 
 @ping.handle()
-async def _(bot: Bot, event: Event):
+async def _(bot: Bot, event: Event, args: Message = CommandArg()):
+    if args.extract_plain_text() != "":
+        return
     permission = checker(str(event.user_id), 1)
     if not permission:
         await ping.finish(f"咕咕咕，音卡来啦！\n当前时间为：{convert_time(getCurrentTime())}\n当前Nonebot版本为：{nbv}")
@@ -80,11 +90,13 @@ async def _(bot: Bot, event: Event):
         msg = f"咕咕咕，音卡来啦！\n系统信息如下：\n当前CPU占用：{str(per_cpu_status()[0])}%\n当前内存占用：{str(memory_status())}%\n现在是：{convert_time(getCurrentTime())}\n{group_count} | {register_count} | {friend_count} | {nbv}"
     await ping.finish(msg)
 
-post = on_command("post", priority=5)  # 发送全域公告至每一个机器人加入的QQ群。
+post = on_command("post", force_whitespace=True, priority=5)  # 发送全域公告至每一个机器人加入的QQ群。
 
 
 @post.handle()
 async def _(bot: Bot, event: Event, args: Message = CommandArg()):
+    if args.extract_plain_text() == "":
+        return
     if str(event.user_id) not in Config.owner:
         await post.finish("唔……只有机器人主人可以使用该命令哦~")
     cmd = args.extract_plain_text()
@@ -95,22 +107,26 @@ async def _(bot: Bot, event: Event, args: Message = CommandArg()):
                            message=cmd
                            )
 
-call_api = on_command("call_api", aliases={"api"}, priority=5)  # 调用`go-cqhttp`的`API`接口。
+call_api = on_command("call_api", aliases={"api"}, force_whitespace=True, priority=5)  # 调用`go-cqhttp`的`API`接口。
 
 
 @call_api.handle()
 async def _(event: Event, args: Message = CommandArg()):
+    if args.extract_plain_text() == "":
+        return
     if not checker(str(event.user_id), 10):
         await call_api.finish(error(10))
     cmd = args.extract_plain_text()
     result = await get_url(f"{Config.cqhttp}{cmd}")
-    await call_api.finish(f"已将您的接口调用完毕！")
+    await call_api.finish(f"已将您的接口调用完毕！\n{result}")
 
-git = on_command("-git", priority=5)  # 调用`Git`，~~别问意义是什么~~
+git = on_command("-git", force_whitespace=True, priority=5)  # 调用`Git`，~~别问意义是什么~~
 
 
 @git.handle()
 async def _(event: Event, args: Message = CommandArg()):
+    if args.extract_plain_text() == "":
+        return
     if not checker(str(event.user_id), 10):
         await git.finish(error(10))
     output = ""
@@ -129,21 +145,25 @@ async def _(event: Event, args: Message = CommandArg()):
         msg = "执行完成，但没有输出哦~"
     await git.finish(msg)
 
-voice = on_command("voice", priority=5)  # 调用腾讯的语音TTS接口，生成语音。
+voice = on_command("voice", force_whitespace=True, priority=5)  # 调用腾讯的语音TTS接口，生成语音。
 
 
 @voice.handle()
 async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
+    if args.extract_plain_text() == "":
+        return
     if not checker(str(event.user_id), 10):
         await voice.finish(error(10))
     sth = args.extract_plain_text()
     final_msg = f"[CQ:tts,text={sth}]"
     await bot.call_api("send_group_msg", group_id=event.group_id, message=final_msg)
 
-randomnum = on_command("random_num", aliases={"随机数"}, priority=5)
+randomnum = on_command("random_num", aliases={"随机数"}, force_whitespace=True, priority=5)
 
 @randomnum.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
+    if args.extract_plain_text() == "":
+        return
     arg = args.extract_plain_text().split(" ")
     if len(arg) != 2:
         await randomnum.finish("唔……请参考下面的随机数生成格式：\n随机数 起始 终止")
