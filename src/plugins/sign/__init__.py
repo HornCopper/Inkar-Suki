@@ -20,9 +20,11 @@ from .message import message_sign
 
 import random
 
-command = on_command("抽签", priority=6)
+command = on_command("抽签", force_whitespace=True, priority=6)
 @command.handle()
-async def lq_():
+async def lq_(args: Message = CommandArg()):
+    if args.extract_plain_text() != "":
+        return
     await command.send("确定要抽取吗")
 
 @command.got("pb")
@@ -53,11 +55,13 @@ async def pq_(reply: str = ArgPlainText("pb")):
 
 sign_main = Sign
 
-sign_ = on_command("签到", aliases={"打卡"}, priority=5)
+sign_ = on_command("签到", aliases={"打卡"}, force_whitespace=True, priority=5)
 
 
 @sign_.handle()
-async def sign(event: Event):
+async def sign(event: Event, args: Message = CommandArg()):
+    if args.extract_plain_text() != "":
+        return
     if sign_main.wsigned(event.user_id):
         await sign_.finish(ms.at(event.user_id) + "\n你已经签到过了哦，不能重复签到。")
     data = sign_main.generate_everyday_reward(event.user_id)
@@ -65,21 +69,25 @@ async def sign(event: Event):
     sign_main.save_data(data, event.user_id)
     await sign_.finish(data.msg)
 
-coin_ = on_command("金币", aliases={"余额"}, priority=5)
+coin_ = on_command("金币", aliases={"余额"}, force_whitespace=True, priority=5)
 
 
 @coin_.handle()
-async def check_balance(event: Event):
+async def check_balance(event: Event, args: Message = CommandArg()):
+    if args.extract_plain_text() != "":
+        return
     coin__ = Sign.get_coin(event.user_id)
     if coin_ is False:
         await coin_.finish("唔……您没有签到过哦，没有任何金币余额呢！")
     await coin_.finish(ms.at(event.user_id) + f"\n您的金币余额为：\n{coin__}枚")
 
 
-addc = on_command("增加金币", priority=5)
+addc = on_command("增加金币", force_whitespace=True, priority=5)
 
 @addc.handle()
 async def _(event: Event, args: Message = CommandArg()):
+    if args.extract_plain_text() == "":
+        return
     if not checker(str(event.user_id), 10):
         await addc.finish(error(10))
     arg = args.extract_plain_text().split(" ")
@@ -90,10 +98,12 @@ async def _(event: Event, args: Message = CommandArg()):
     Sign.add(arg[0], arg[1])
     await addc.finish("已向该账户添加了" + arg[1] + "枚金币！")
 
-reducec = on_command("减少金币", priority=5)
+reducec = on_command("减少金币", force_whitespace=True, priority=5)
 
 @reducec.handle()
 async def _(event: Event, args: Message = CommandArg()):
+    if args.extract_plain_text() == "":
+        return
     if not checker(str(event.user_id), 10):
         await reducec.finish(error(10))
     arg = args.extract_plain_text().split(" ")

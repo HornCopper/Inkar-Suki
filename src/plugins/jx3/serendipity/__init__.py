@@ -1,7 +1,7 @@
 from .api import *
 from .newui import *
 
-jx3_cmd_serendipity = on_command("jx3_serendipity", aliases={"奇遇v1", "查询v1"}, priority=5)
+jx3_cmd_serendipity = on_command("jx3_serendipity", aliases={"奇遇v1", "查询v1"}, force_whitespace=True, priority=5)
 
 
 @jx3_cmd_serendipity.handle()
@@ -11,6 +11,8 @@ async def jx3_serendipity(event: GroupMessageEvent, args: Message = CommandArg()
 
     Example：-奇遇 幽月轮 哭包猫@唯我独尊
     """
+    if args.extract_plain_text() == "":
+        return
     arg = args.extract_plain_text().split(" ")
     if len(arg) not in [1, 2]:
         await jx3_cmd_serendipity.finish("唔……参数不正确哦，请检查后重试~")
@@ -27,7 +29,7 @@ async def jx3_serendipity(event: GroupMessageEvent, args: Message = CommandArg()
         data = await get_content(data)
         await jx3_cmd_serendipity.finish(ms.image(data))
 
-serendipity_v2 = on_command("jx3_serendipity_v2", aliases={"奇遇", "查询"}, priority=5)
+serendipity_v2 = on_command("jx3_serendipity_v2", aliases={"奇遇", "查询"}, force_whitespace=True, priority=5)
 
 
 @serendipity_v2.handle()
@@ -37,6 +39,8 @@ async def jx3_serendipity(event: GroupMessageEvent, args: Message = CommandArg()
 
     Example：-奇遇v2 幽月轮 哭包猫@唯我独尊
     """
+    if args.extract_plain_text() == "":
+        return
     arg = args.extract_plain_text().split(" ")
     if len(arg) not in [1, 2]:
         await serendipity_v2.finish("唔……参数不正确哦，请检查后重试~")
@@ -53,7 +57,7 @@ async def jx3_serendipity(event: GroupMessageEvent, args: Message = CommandArg()
         data = get_content_local(data)
         await serendipity_v2.finish(ms.image(data))
 
-pet_serendipity = on_command("jx3_pet_serendipity", aliases={"宠物奇遇"}, priority=5)
+pet_serendipity = on_command("jx3_pet_serendipity", aliases={"宠物奇遇"}, force_whitespace=True, priority=5)
 
 
 @pet_serendipity.handle()
@@ -63,6 +67,8 @@ async def jx3_serendipity(event: GroupMessageEvent, args: Message = CommandArg()
 
     Example：-奇遇v2 幽月轮 哭包猫@唯我独尊
     """
+    if args.extract_plain_text() == "":
+        return
     arg = args.extract_plain_text().split(" ")
     if len(arg) not in [1, 2]:
         await pet_serendipity.finish("唔……参数不正确哦，请检查后重试~")
@@ -80,7 +86,7 @@ async def jx3_serendipity(event: GroupMessageEvent, args: Message = CommandArg()
         await pet_serendipity.finish(ms.image(data))
 
 
-jx3_cmd_statistical = on_command("jx3_lstatistical", aliases={"近期奇遇"}, priority=5)
+jx3_cmd_statistical = on_command("jx3_lstatistical", aliases={"近期奇遇"}, force_whitespace=True, priority=5)
 
 
 @jx3_cmd_statistical.handle()
@@ -90,6 +96,8 @@ async def jx3_lstatistical(event: GroupMessageEvent, args: Message = CommandArg(
 
     Example：-近期奇遇 幽月轮 阴阳两界
     """
+    if args.extract_plain_text() == "":
+        return
     arg = args.extract_plain_text().split(" ")
     if len(arg) not in [1, 2]:
         await jx3_cmd_statistical.finish("唔……参数不正确哦，请检查后重试~")
@@ -106,7 +114,7 @@ async def jx3_lstatistical(event: GroupMessageEvent, args: Message = CommandArg(
         data = await get_content(data)
         await jx3_cmd_statistical.finish(ms.image(data))
 
-jx3_cmd_gserendipity = on_command("jx3_gserendipity", aliases={"全服奇遇"}, priority=5)
+jx3_cmd_gserendipity = on_command("jx3_gserendipity", aliases={"全服奇遇"}, force_whitespace=True, priority=5)
 
 
 @jx3_cmd_gserendipity.handle()
@@ -116,6 +124,8 @@ async def jx3_gserendipity(event: GroupMessageEvent, args: Message = CommandArg(
 
     Example：-全服奇遇 阴阳两界
     """
+    if args.extract_plain_text() == "":
+        return
     arg = args.extract_plain_text()
     if arg == "":
         await jx3_cmd_gserendipity.finish("唔……缺少奇遇名称，没有办法找哦~")
@@ -126,7 +136,7 @@ async def jx3_gserendipity(event: GroupMessageEvent, args: Message = CommandArg(
         data = await get_content(data)
         await jx3_cmd_gserendipity.finish(ms.image(data))
 
-jx3_cmd_gstatistical = on_command("jx3_gstatistical", aliases={"全服统计"}, priority=5)
+jx3_cmd_gstatistical = on_command("jx3_gstatistical", aliases={"全服统计"}, force_whitespace=True, priority=5)
 
 
 @jx3_cmd_gstatistical.handle()
@@ -136,6 +146,8 @@ async def jx3_gstatistical(event: GroupMessageEvent, args: Message = CommandArg(
 
     Example：-全服统计 阴阳两界
     """
+    if args.extract_plain_text() == "":
+        return
     arg = args.extract_plain_text()
     if arg == "":
         await jx3_cmd_gstatistical.finish("唔……缺少奇遇名称，没有办法找哦~")
@@ -147,10 +159,12 @@ async def jx3_gstatistical(event: GroupMessageEvent, args: Message = CommandArg(
         await jx3_cmd_gstatistical.finish(ms.image(data))
 
 
-preposition = on_command("jx3_preposition", aliases={"前置", "攻略"}, priority=5)
+preposition = on_command("jx3_preposition", aliases={"前置", "攻略"}, force_whitespace=True, priority=5)
 
 @preposition.handle()
 async def jx3_preposition(event: GroupMessageEvent, args: Message = CommandArg()):
+    if args.extract_plain_text() == "":
+        return
     serendipity = args.extract_plain_text()
     data = await get_preposition(serendipity)
     if data:

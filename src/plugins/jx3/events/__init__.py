@@ -2,21 +2,25 @@ from .chutian import *
 from .yuncong import *
 from .zhue import *
 
-cts = on_command("jx3_chutian", aliases={"楚天社"}, priority=5)
+cts = on_command("jx3_chutian", aliases={"楚天社"}, force_whitespace=True, priority=5)
 
 @cts.handle()
-async def _(event: GroupMessageEvent):
+async def _(event: GroupMessageEvent, args: Message = CommandArg()):
+    if args.extract_plain_text() != "":
+        return
     image = await getChutianImg()
     await cts.finish(ms.image(image))
 
-ycs = on_command("jx3_yuncong", aliases={"云从社"}, priority=5)
+ycs = on_command("jx3_yuncong", aliases={"云从社"}, force_whitespace=True, priority=5)
 
 @ycs.handle()
-async def _(event: GroupMessageEvent):
+async def _(event: GroupMessageEvent, args: Message = CommandArg()):
+    if args.extract_plain_text() != "":
+        return
     image = await getYuncongImg()
     await ycs.finish(ms.image(image))
 
-zhue_ = on_command("jx3_zhue", aliases={"诛恶"}, priority=5)
+zhue_ = on_command("jx3_zhue", aliases={"诛恶"}, force_whitespace=True, priority=5)
 
 @zhue_.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):

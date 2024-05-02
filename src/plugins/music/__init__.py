@@ -18,11 +18,13 @@ from nonebot.typing import T_State
 @QQ音乐
 """
 
-search_music = on_command("search_music", aliases={"搜歌"}, priority=5)
+search_music = on_command("search_music", aliases={"搜歌"}, force_whitespace=True, priority=5)
 
 
 @search_music.handle()
 async def _(state: T_State, event: GroupMessageEvent, args: Message = CommandArg()):
+    if args.extract_plain_text() == "":
+        return
     data = args.extract_plain_text().split(" ")
     if len(data) != 2:
         await search_music.finish("唔……参数不正确哦，只能有2个参数~")
@@ -58,11 +60,13 @@ async def __(state: T_State, num: Message = Arg()):
     msg = ms.music(p, song)
     await search_music.finish(msg)
 
-get_music = on_command("get_music", aliases={"点歌"}, priority=5)
+get_music = on_command("get_music", aliases={"点歌"}, force_whitespace=True, priority=5)
 
 
 @get_music.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
+    if args.extract_plain_text() == "":
+        return
     data = args.extract_plain_text().split(" ")
     if len(data) not in [2, 3]:
         await get_music.finish("唔……参数只能有2或3个哦~")
@@ -82,11 +86,13 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     msg = ms.music(p, info[1])
     await get_music.finish(msg)
 
-get_lyrics = on_command("get_lyrics", aliases={"搜歌词"}, priority=5)
+get_lyrics = on_command("get_lyrics", aliases={"搜歌词"}, force_whitespace=True, priority=5)
 
 
 @get_lyrics.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
+    if args.extract_plain_text() == "":
+        return
     lyrics = args.extract_plain_text()
     if lyrics == "":
         await get_lyrics.finish("唔……没有告诉我歌词哦~")

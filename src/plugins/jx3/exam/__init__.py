@@ -1,6 +1,6 @@
 from .api import *
 
-exam = on_command("jx3_exam", aliases={"科举"}, priority=5)
+exam = on_command("jx3_exam", aliases={"科举"}, force_whitespace=True, priority=5)
 
 
 @exam.handle()
@@ -10,6 +10,8 @@ async def _(args: Message = CommandArg()):
 
     Example：-科举 古琴有几根弦
     """
+    if args.extract_plain_text() == "":
+        return
     if args.extract_plain_text():
         await exam.finish(await exam_(args.extract_plain_text()))
     else:

@@ -28,7 +28,7 @@ def already(reponame: str, group) -> bool:
     return False
 
 
-repo = on_command("repo", priority=5)
+repo = on_command("repo", force_whitespace=True, priority=5)
 
 
 @repo.handle()
@@ -36,6 +36,8 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     """
     获取`GitHub`仓库的简介图片。
     """
+    if args.extract_plain_text() == "":
+        return
     reponame = args.extract_plain_text()
     status_code = await get_status("https://github.com/" + reponame)
     if status_code != 200:
@@ -45,7 +47,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
             "https://opengraph.githubassets.com/c9f4179f4d560950b2355c82aa2b7750bffd945744f9b8ea3f93cc24779745a0/"+reponame)
         await repo.finish(img)
 
-webhook = on_command("bindrepo", aliases={"webhook"}, priority=5)
+webhook = on_command("bindrepo", aliases={"webhook"}, force_whitespace=True, priority=5)
 
 
 @webhook.handle()
@@ -53,6 +55,8 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
     """
     添加群聊响应的`Webhook`仓库。
     """
+    if args.extract_plain_text() == "":
+        return
     personal_data = await bot.call_api("get_group_member_info", group_id=event.group_id, user_id=event.user_id, no_cache=True)
     group_admin = personal_data["role"] in ["owner", "admin"]
     if not group_admin:
@@ -76,7 +80,7 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
         else:
             await webhook.finish("唔……绑定失败：已经绑定过了。")
 
-unbind = on_command("unbindrepo", aliases={"unbind_webhook"}, priority=5)
+unbind = on_command("unbindrepo", aliases={"unbind_webhook"}, force_whitespace=True, priority=5)
 
 
 @unbind.handle()
@@ -84,6 +88,8 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
     """
     与上一个函数功能相反。
     """
+    if args.extract_plain_text() == "":
+        return
     personal_data = await bot.call_api("get_group_member_info", group_id=event.group_id, user_id=event.user_id, no_cache=True)
     group_admin = personal_data["role"] in ["owner", "admin"]
     if not group_admin:

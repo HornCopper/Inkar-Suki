@@ -1,9 +1,11 @@
 from .crt import *
 
-cq = on_command("crt", priority=5)
+cq = on_command("crt", force_whitespace=True, priority=5)
 
 @cq.handle()
 async def _(event: Event, args: Message = CommandArg()):
+    if args.extract_plain_text() == "":
+        return
     arg = args.extract_plain_text().split(" ")
     if len(arg) != 2:
         await cq.finish("请给出起始站点和终止站点！")

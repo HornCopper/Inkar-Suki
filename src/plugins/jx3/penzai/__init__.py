@@ -1,6 +1,6 @@
 from .api import *
 
-dh_ = on_command("jx3_dh", aliases={"蹲号"}, priority=5)
+dh_ = on_command("jx3_dh", aliases={"蹲号"}, force_whitespace=True, priority=5)
 
 
 @dh_.handle()
@@ -10,6 +10,8 @@ async def _(event: GroupMessageEvent, state: T_State, args: Message = CommandArg
 
     Example：-蹲号 蝶金
     """
+    if args.extract_plain_text() == "":
+        return
     details = args.extract_plain_text()
     if details == "":
         await dh_.finish("您没有输入条件哦，请检查后重试~\n条件以空格分割哦~")
@@ -38,7 +40,7 @@ async def _(event: GroupMessageEvent, state: T_State, num: Message = Arg()):
         floor = str(floors[int(num)-1])
         await dh_.finish(links[int(num)-1] + f"\n请前往{floor}楼哦~")
 
-wg_ = on_command("jx3_wg", aliases={"贴吧物价"}, priority=5)
+wg_ = on_command("jx3_wg", aliases={"贴吧物价"}, force_whitespace=True, priority=5)
 
 
 @wg_.handle()
@@ -48,6 +50,8 @@ async def _(event: GroupMessageEvent, state: T_State, args: Message = CommandArg
 
     Example：-蹲号 蝶金
     """
+    if args.extract_plain_text() == "":
+        return
     details = args.extract_plain_text()
     if details == "":
         await wg_.finish("您没有输入条件哦，请检查后重试~\n条件以空格分割哦~")

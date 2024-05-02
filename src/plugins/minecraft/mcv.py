@@ -1,6 +1,4 @@
-from src.tools.utils import get_api
-import re
-
+from src.tools.basic import *
 
 async def mcbedrockv():  # Minecraft 基岩版 最新版本获取，数据来源@Mojira
     data = await get_api("https://bugs.mojang.com/rest/api/2/project/10200/versions")

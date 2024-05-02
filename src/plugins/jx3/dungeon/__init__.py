@@ -1,7 +1,7 @@
 from .api import *
 from .monster import *
 
-zones = on_command("jx3_zones_v1", aliases={"副本v1"}, priority=5)
+zones = on_command("jx3_zones_v1", aliases={"副本v1"}, force_whitespace=True, priority=5)
 
 
 @zones.handle()
@@ -11,6 +11,8 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
 
     Example：-副本v1 幽月轮 哭包猫@唯我独尊
     """
+    if args.extract_plain_text() == "":
+        return
     group_server = getGroupServer(str(event.group_id))
     arg = args.extract_plain_text().split(" ")
     if len(arg) not in [1, 2]:
@@ -29,11 +31,13 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
     data = await get_content(data)
     await zones.finish(ms.image(data))
 
-zonesv2 = on_command("jx3_zones", aliases={"副本"}, priority=5)
+zonesv2 = on_command("jx3_zones", aliases={"副本"}, force_whitespace=True, priority=5)
 
 
 @zonesv2.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
+    if args.extract_plain_text() == "":
+        return
     group_server = getGroupServer(str(event.group_id))
     arg = args.extract_plain_text().split(" ")
     if len(arg) not in [1, 2]:
@@ -52,11 +56,13 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     data = get_content_local(data)
     await zonesv2.finish(ms.image(data))
 
-drops = on_command("jx3_drops", aliases={"掉落列表"}, priority=5)
+drops = on_command("jx3_drops", aliases={"掉落列表"}, force_whitespace=True, priority=5)
 
 
 @drops.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
+    if args.extract_plain_text() == "":
+        return
     arg = args.extract_plain_text().split(" ")
     if len(arg) != 3:
         await drops.finish("唔……参数不正确哦~")
@@ -71,11 +77,13 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
         await drops.send(ms.image(data))
     await drops.finish(data[0])
 
-item = on_command("jx3_itemdrop", aliases={"掉落"}, priority=5)
+item = on_command("jx3_itemdrop", aliases={"掉落"}, force_whitespace=True, priority=5)
 
 
 @item.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
+    if args.extract_plain_text() == "":
+        return
     group_server = getGroupServer(str(event.group_id))
     arg = args.extract_plain_text().split(" ")
     if len(arg) not in [1, 2]:
@@ -94,9 +102,11 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     data = get_content_local(data)
     await item.finish(ms.image(data))
 
-monsters = on_command("jx3_monsters_v2", aliases={"百战v2"}, priority=5)
+monsters = on_command("jx3_monsters_v2", aliases={"百战v2"}, force_whitespace=True, priority=5)
 
 @monsters.handle()
-async def _(event: GroupMessageEvent):
+async def _(event: GroupMessageEvent, args: Message = CommandArg()):
+    if args.extract_plain_text() != "":
+        return
     img = await get_monsters_map()
     await monsters.finish(ms.image(img))

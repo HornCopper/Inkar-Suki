@@ -1,11 +1,13 @@
 from src.tools.basic import *
 
 
-block = on_command("block", aliases={"避雷", "加入黑名单"}, priority=5)  # 综合避雷名单-添加
+block = on_command("block", aliases={"避雷", "加入黑名单"}, force_whitespace=True, priority=5)  # 综合避雷名单-添加
 
 
 @block.handle()
 async def _(bot: Bot, event: Event, args: Message = CommandArg()):
+    if args.extract_plain_text() == "":
+        return
     arg = args.extract_plain_text().split(" ")
     personal_data = await bot.call_api("get_group_member_info", group_id=event.group_id, user_id=event.user_id, no_cache=True)
     group_admin = personal_data["role"] in ["owner", "admin"]
@@ -25,10 +27,12 @@ async def _(bot: Bot, event: Event, args: Message = CommandArg()):
     write(DATA + "/" + str(event.group_id) + "/blacklist.json", json.dumps(now, ensure_ascii=False))
     await block.finish("成功将该玩家加入黑名单！")
 
-unblock = on_command("unblock", aliases={"移出黑名单"}, priority=5)  # 解除避雷
+unblock = on_command("unblock", aliases={"移出黑名单"}, force_whitespace=True, priority=5)  # 解除避雷
 
 @unblock.handle()
 async def _(bot: Bot, event: Event, args: Message = CommandArg()):
+    if args.extract_plain_text() == "":
+        return
     arg = args.extract_plain_text().split(" ")
     personal_data = await bot.call_api("get_group_member_info", group_id=event.group_id, user_id=event.user_id, no_cache=True)
     group_admin = personal_data["role"] in ["owner", "admin"]
@@ -47,10 +51,12 @@ async def _(bot: Bot, event: Event, args: Message = CommandArg()):
             await unblock.finish("成功移除该玩家的避雷！")
     await unblock.finish("移除失败！尚未避雷该玩家！")
 
-sblock = on_command("sblock", aliases={"查找黑名单"}, priority=5)  # 查询是否在避雷名单
+sblock = on_command("sblock", aliases={"查找黑名单"}, force_whitespace=True, priority=5)  # 查询是否在避雷名单
 
 @sblock.handle()
 async def _(event: Event, args: Message = CommandArg()):
+    if args.extract_plain_text() == "":
+        return
     arg = args.extract_plain_text().split(" ")
     if len(arg) != 1:
         await sblock.finish("参数仅为玩家名，请勿附带任何信息！")
@@ -70,11 +76,13 @@ template = """
     <td class="short-column">$reason</td>
 </tr>"""
 
-lblock = on_command("lblock", aliases={"本群黑名单", "列出黑名单"}, priority=5)  # 列出所有黑名单
+lblock = on_command("lblock", aliases={"本群黑名单", "列出黑名单"}, force_whitespace=True, priority=5)  # 列出所有黑名单
 
 
 @lblock.handle()
-async def _(bot: Bot, event: GroupMessageEvent):
+async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
+    if args.extract_plain_text() != "":
+        return
     now = json.loads(read(DATA + "/" + str(event.group_id) + "/blacklist.json"))
     table = []
     if len(now) == 0:

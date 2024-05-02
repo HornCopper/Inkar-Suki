@@ -3,11 +3,13 @@ from src.plugins.sign import Sign
 from .process import *
 from src.tools.basic import *
 
-tf = on_command("twentyFour", aliases={"24点"}, priority=5)
+tf = on_command("twentyFour", aliases={"24点"}, force_whitespace=True, priority=5)
 
 
 @tf.handle()
-async def _(state: T_State, event: Event):
+async def _(state: T_State, event: Event, args: Message = CommandArg()):
+    if args.extract_plain_text() != "":
+        return
     numbers = [random.randint(1, 13) for _ in range(4)]
     state["numbers"] = numbers
     await tf.send(f"音卡翻出了这组数字：{numbers}\n请告诉我一个表达式，使其结果为24。（若无解，可以告诉我“无解”）")

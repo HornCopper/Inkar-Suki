@@ -148,11 +148,13 @@ async def _(bot: Bot, event: RequestEvent):
             await bot.call_api("send_group_msg", group_id=int(i), message=msg)
 
 
-notice_cmd_welcome_msg_edit = on_command("welcome", priority=5)
+notice_cmd_welcome_msg_edit = on_command("welcome", force_whitespace=True, priority=5)
 
 
 @notice_cmd_welcome_msg_edit.handle()
 async def notice_welcome_msg_edit(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
+    if args.extract_plain_text() == "":
+        return
     arg_msg = args.extract_plain_text()
     permission = checker(str(event.user_id), 5)
     if not permission and not group_admin:

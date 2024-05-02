@@ -12,7 +12,7 @@ from .joy import *
 from .matrix import *
 from .news import *
 from .announce import *
-from .other import *
+from .pendant import *
 from .pet import *
 from .penzai import *
 from .appearance import *

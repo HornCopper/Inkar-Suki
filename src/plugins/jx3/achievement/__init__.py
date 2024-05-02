@@ -2,7 +2,7 @@ from src.plugins.jx3.dungeon.api import mode_mapping
 
 from .api import *
 
-adventure_ = on_command("jx3_adventure", aliases={"成就"}, priority=5)
+adventure_ = on_command("jx3_adventure", aliases={"成就"}, force_whitespace=True, priority=5)
 
 
 @adventure_.handle()
@@ -12,6 +12,8 @@ async def _(state: T_State, args: Message = CommandArg()):
 
     Example：-成就 好久不见
     """
+    if args.extract_plain_text() == "":
+        return
     achievement_name = args.extract_plain_text()
     data = await getAdventure(achievement_name)
     if data["status"] == 404:
@@ -59,7 +61,7 @@ async def _(state: T_State, num: Message = Arg()):
     else:
         await adventure_.finish("唔……输入的不是数字哦，取消搜索。")
 
-achievements = on_command("jx3_machi", aliases={"进度v1"}, priority=5)
+achievements = on_command("jx3_machi", aliases={"进度v1"}, force_whitespace=True, priority=5)
 
 
 @achievements.handle()
@@ -90,7 +92,7 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
         data = await get_content(data)
         await achievements.finish(ms.image(data))
 
-achievement_v2 = on_command("jx3_achievement_v2", aliases={"进度"}, priority=5)
+achievement_v2 = on_command("jx3_achievement_v2", aliases={"进度"}, force_whitespace=True, priority=5)
 
 
 @achievement_v2.handle()
@@ -113,7 +115,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
         data = get_content_local(data)
         await achievement_v2.finish(ms.image(data))
 
-zone_achievement = on_command("jx3_zoneachi", aliases={"团本成就"}, priority=5)
+zone_achievement = on_command("jx3_zoneachi", aliases={"团本成就"}, force_whitespace=True, priority=5)
 
 
 @zone_achievement.handle()

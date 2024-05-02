@@ -13,7 +13,7 @@ async def nonebot_on_startup():
     if await ws_client.init():
         logger.info("Connected to JX3API successfully.")
 
-ws_recev = on(type="WsRecv", priority=5, block=False)
+ws_recev = on(type="WsRecv", force_whitespace=True, priority=5, block=False)
 
 @ws_recev.handle()
 async def on_jx3_event_recv(bot: Bot, event: RecvEvent):

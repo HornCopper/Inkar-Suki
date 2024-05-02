@@ -1,11 +1,13 @@
 from .leader import *
 from .api import *
 
-arena = on_command("jx3_arena", aliases={"名剑"}, priority=5)
+arena = on_command("jx3_arena", aliases={"名剑"}, force_whitespace=True, priority=5)
 
 
 @arena.handle()
 async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
+    if args.extract_plain_text() == "":
+        return
     arg = args.extract_plain_text().split(" ")
     if len(arg) not in [2, 3, 4]:
         await arena.finish(PROMPT_ArgumentCountInvalid)
@@ -48,7 +50,7 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
             data = await get_content(data)
             await arena.finish(ms.image(data))
 
-lks = on_command("jx3_lks", aliases={"烂柯山"}, priority=5)
+lks = on_command("jx3_lks", aliases={"烂柯山"}, force_whitespace=True, priority=5)
 
 @lks.handle()
 async def _(event: GroupMessageEvent):
