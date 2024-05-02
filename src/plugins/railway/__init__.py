@@ -4,8 +4,8 @@ cq = on_command("crt", priority=5)
 
 @cq.handle()
 async def _(event: Event, args: Message = CommandArg()):
-    arg = args.extract_plain_text()
-    if len(arg.split(" ")) != 2:
+    arg = args.extract_plain_text().split(" ")
+    if len(arg) != 2:
         await cq.finish("请给出起始站点和终止站点！")
     else:
         start = arg[0]
