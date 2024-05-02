@@ -5,11 +5,13 @@ from nonebot.adapters import Message
 from nonebot.adapters.onebot.v11 import GroupMessageEvent
 from nonebot.params import CommandArg
 
-nbnhhsh = on_command("nbnhhsh", aliases={"能不能好好说话"}, priority=5)
+nbnhhsh = on_command("nbnhhsh", aliases={"能不能好好说话"}, force_whitespace=True, priority=5)
 
 
 @nbnhhsh.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
+    if args.extract_plain_text() == "":
+        return
     content = args.extract_plain_text()
     url = "https://lab.magiconch.com/api/nbnhhsh/guess"
     data = {

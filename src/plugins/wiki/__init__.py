@@ -8,11 +8,13 @@ from src.tools.basic import *
 from .wikilib import wiki as wiki_
 
 
-wiki = on_command("wiki", priority=5)
+wiki = on_command("wiki", force_whitespace=True, priority=5)
 
 
 @wiki.handle()
 async def _(event: GroupMessageEvent, state: T_State, args: Message = CommandArg()):
+    if args.extract_plain_text() == "":
+        return
     title = args.extract_plain_text()
     init_api = json.loads(read(DATA + "/"+str(event.group_id)+"/wiki.json"))["startwiki"]
     if init_api == "":
@@ -47,11 +49,13 @@ async def _(event: GroupMessageEvent, state: T_State, args: Message = CommandArg
     elif info["status"] == 502:
         await wiki.finish(info["reason"])
 
-setwiki = on_command("setwiki", priority=5)
+setwiki = on_command("setwiki", force_whitespace=True, priority=5)
 
 
 @setwiki.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
+    if args.extract_plain_text() == "":
+        return
     if not checker(str(event.user_id), 5):
         await setwiki.finish(error(5))
     api = await wiki_.get_api(args.extract_plain_text())
@@ -73,11 +77,13 @@ def check_interwiki_prefix(group, prefix):
     return False
 
 
-interwiki = on_command("interwiki", aliases={"iw"}, priority=5)
+interwiki = on_command("interwiki", aliases={"iw"}, force_whitespace=True, priority=5)
 
 
 @interwiki.handle()
 async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
+    if args.extract_plain_text() == "":
+        return
     personal_data = await bot.call_api("get_group_member_info", group_id=event.group_id, user_id=event.user_id, no_cache=True)
     group_admin = personal_data["role"] in ["owner", "admin"]
     if not group_admin:
@@ -143,11 +149,13 @@ def get_local_api(group, prefix):
     return False
 
 
-iwiki = on_command("iwiki", priority=5)
+iwiki = on_command("iwiki", force_whitespace=True, priority=5)
 
 
 @iwiki.handle()
 async def _(state: T_State, event: GroupMessageEvent, args: Message = CommandArg()):
+    if args.extract_plain_text() == "":
+        return
     search = args.extract_plain_text().split(":")
     if len(search) <= 1:
         await iwiki.finish("唔……没有Interwiki前缀，请检查后重试~")

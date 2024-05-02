@@ -1,7 +1,4 @@
-from src.tools.utils import get_api
-import sys
-import re
-
+from src.tools.basic import *
 
 def clean(string: str) -> str:
     return re.sub(r"§.", "", string)

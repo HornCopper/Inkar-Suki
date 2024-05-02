@@ -1,6 +1,6 @@
 from .api import *
 
-jx3_cmd_recruit = on_command("jx3_recruit_v1", aliases={"招募v1"}, priority=5)
+jx3_cmd_recruit = on_command("jx3_recruit_v1", aliases={"招募v1"}, force_whitespace=True, priority=5)
 
 
 @jx3_cmd_recruit.handle()
@@ -31,7 +31,7 @@ async def jx3_recruit(bot: Bot, event: GroupMessageEvent, args: Message = Comman
     data = await get_content(data)
     await jx3_cmd_recruit.send(ms.image(data))
 
-jx3_cmd_recruit_v2 = on_command("jx3_recruit", aliases={"招募"}, priority=5)
+jx3_cmd_recruit_v2 = on_command("jx3_recruit", aliases={"招募"}, force_whitespace=True, priority=5)
 
 
 @jx3_cmd_recruit_v2.handle()
@@ -61,7 +61,7 @@ async def jx3_recruit_v2(event: GroupMessageEvent, args: Message = CommandArg())
     await jx3_cmd_recruit_v2.finish(ms.image(data))
 
 
-jx3_cmd_recruit_local = on_command("jx3_recruit_local", aliases={"本服招募"}, priority=5)
+jx3_cmd_recruit_local = on_command("jx3_recruit_local", aliases={"本服招募"}, force_whitespace=True, priority=5)
 
 
 @jx3_cmd_recruit_local.handle()

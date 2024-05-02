@@ -12,7 +12,7 @@ from nonebot import on_command
 from nonebot.adapters import Message
 from nonebot.adapters.onebot.v11 import Event, Bot
 from nonebot.matcher import Matcher
-from nonebot.params import CommandArg
+from nonebot.params import CommandArg, CommandStart
 
 
 leave_msg = f"{Config.name}要离开这里啦，{Config.name}还没有学会人类的告别语，但是数据库中有一句话似乎很适合现在使用——如果还想来找我的话，我一直在这里（650495414）。"
@@ -30,11 +30,13 @@ def in_it(qq: str):
     return False
 
 
-ban = on_command("ban", priority=5)  # 封禁，≥10的用户无视封禁。
+ban = on_command("ban", force_whitespace=True, priority=5)  # 封禁，≥10的用户无视封禁。
 
 
 @ban.handle()
 async def _(bot: Bot, event: Event, args: Message = CommandArg()):
+    if args.extract_plain_text() == "":
+        return
     if not checker(str(event.user_id), 10):
         await ban.finish(error(10))
     sb = args.extract_plain_text()
@@ -57,11 +59,13 @@ async def _(bot: Bot, event: Event, args: Message = CommandArg()):
             return
         await ban.finish(f"好的，已经全域封禁({sb})。")
 
-unban = on_command("unban", priority=5)  # 解封
+unban = on_command("unban", force_whitespace=True, priority=5)  # 解封
 
 
 @unban.handle()
 async def _(bot: Bot, event: Event, args: Message = CommandArg()):
+    if args.extract_plain_text() == "":
+        return
     if not checker(str(event.user_id), 10):
         await ban.finish(error(10))
     sb = args.extract_plain_text()
@@ -88,11 +92,13 @@ async def _(matcher: Matcher, event: Event):
         pass
 
 
-dismiss = on_command("dismiss", aliases={"移除机器人"}, priority=5)
+dismiss = on_command("dismiss", aliases={"移除机器人"}, force_whitespace=True, priority=5)
 
 
 @dismiss.handle()
-async def leave_group(bot: Bot, event: Event):
+async def leave_group(bot: Bot, event: Event, args: Message = CommandArg()):
+    if args.extract_plain_text() != "":
+        return
     personal_data = await bot.call_api("get_group_member_info", group_id=event.group_id, user_id=event.user_id, no_cache=True)
     user_permission = personal_data["role"] in ["owner", "admin"]
     if not (checker(str(event.user_id), 10) or user_permission):

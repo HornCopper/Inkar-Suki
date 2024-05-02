@@ -1,10 +1,12 @@
 from .trend import *
 
-trade = on_command("jx3_trade", aliases={"交易行"}, priority=5)
+trade = on_command("jx3_trade", aliases={"交易行"}, force_whitespace=True, priority=5)
 
 
 @trade.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
+    if args.extract_plain_text() == "":
+        return
     arg = args.extract_plain_text().split(" ")
     if len(arg) not in [1, 2]:
         await trade.finish("唔……参数不正确哦，请检查后重试~")
@@ -23,11 +25,13 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     else:
         await trade.finish(ms.image(img))
 
-trade_wf = on_command("jx3_wufeng", aliases={"交易行无封"}, priority=5)
+trade_wf = on_command("jx3_wufeng", aliases={"交易行无封"}, force_whitespace=True, priority=5)
 
 
 @trade_wf.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
+    if args.extract_plain_text() == "":
+        return
     arg = args.extract_plain_text().split(" ")
     if len(arg) not in [1, 2]:
         await trade_wf.finish("唔……参数不正确哦，请检查后重试~")
@@ -44,7 +48,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
         await trade.finish(ms.image(img))
 
 # 施工中
-# trade_trend = on_command("jx3_trend", aliases={"交易行走势"}, priority=5)
+# trade_trend = on_command("jx3_trend", aliases={"交易行走势"}, force_whitespace=True, priority=5)
 
 # @trade_trend.handle()
 # async def _(event: GroupMessageEvent, args: Message = CommandArg()):

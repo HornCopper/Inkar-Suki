@@ -1,6 +1,6 @@
 from .api import *
 
-skill = on_command("jx3_skill", aliases={"技能"}, priority=5)
+skill = on_command("jx3_skill", aliases={"技能"}, force_whitespace=True, priority=5)
 
 
 @skill.handle()
@@ -10,6 +10,8 @@ async def _(args: Message = CommandArg()):
 
     Example：-技能 莫问 徵
     """
+    if args.extract_plain_text() == "":
+        return
     info = args.extract_plain_text().split(" ")
     if len(info) != 2:
         await skill.finish("信息不正确哦，只能有2个参数，请检查后重试~")
@@ -21,11 +23,13 @@ async def _(args: Message = CommandArg()):
         await skill.finish("此心法不存在哦，请检查后重试~")
     await skill.finish(msg)
 
-_talent = on_command("jx3_talent", aliases={"奇穴"}, priority=5)
+_talent = on_command("jx3_talent", aliases={"奇穴"}, force_whitespace=True, priority=5)
 
 
 @_talent.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
+    if args.extract_plain_text() == "":
+        return
     arg = args.extract_plain_text().split(" ")
     versions = await get_api("https://data.jx3box.com/talent/index.json")
     if len(arg) not in [2, 3]:
@@ -80,11 +84,13 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
                 await _talent.finish(msg)
     await _talent.finish("唔……未找到该奇穴哦~")
 
-macro_ = on_command("jx3_macro_v2", aliases={"宏"}, priority=5)
+macro_ = on_command("jx3_macro_v2", aliases={"宏"}, force_whitespace=True, priority=5)
 
 
 @macro_.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
+    if args.extract_plain_text() == "":
+        return
     xf = args.extract_plain_text()
     xf = aliases(xf)
     if xf is False:
@@ -92,11 +98,13 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     data = await get_macro(xf)
     await macro_.finish(data)
 
-macro_v1 = on_command("jx3_macro", aliases={"宏v1"}, priority=5)
+macro_v1 = on_command("jx3_macro", aliases={"宏v1"}, force_whitespace=True, priority=5)
 
 
 @macro_v1.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
+    if args.extract_plain_text() == "":
+        return
     xf = aliases(args.extract_plain_text())
     if xf is False:
         await macro_v1.finish("唔……心法输入有误，请检查后重试~")

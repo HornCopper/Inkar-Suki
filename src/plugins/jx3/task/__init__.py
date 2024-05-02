@@ -1,10 +1,12 @@
 from .api import *
 
-task_ = on_command("jx3_task", aliases={"任务"}, priority=5)
+task_ = on_command("jx3_task", aliases={"任务"}, force_whitespace=True, priority=5)
 
 
 @task_.handle()
 async def _(state: T_State, args: Message = CommandArg()):
+    if args.extract_plain_text() == "":
+        return
     """
     查询任务及任务链：
 
