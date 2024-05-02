@@ -199,8 +199,8 @@ def seconds_to_minutes(seconds):
 async def cq_crt(start: str, end: str):
     if start == end:
         return ["请您原地站着不动即可。"]
-    start = quote(quote(start))
-    end = quote(quote(end))
+    start = quote(start)
+    end = quote(end)
     api = f"https://www.cqmetro.cn/Front/html/TakeLine!queryYsTakeLine.action?entity.startStaName={start}&entity.endStaName={end}"
     data = await get_api(api)
     if len(data["result"]) == 0:
