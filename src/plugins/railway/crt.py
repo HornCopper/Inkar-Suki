@@ -206,8 +206,8 @@ async def cq_crt(start: str, end: str):
     if len(data["result"]) == 0:
         return ["未查询到线路，请检查起始站名或到达站名是否有误？"]
     data = data["result"][0]
-    count = len(data["transferStaNames"].split(",")) - 1
-    if count == 0:
+    count = len(data["transferStaNames"].split(","))
+    if data["transferStaNames"] == "":
         template = template_2
     elif count == 1:
         template = template_3
