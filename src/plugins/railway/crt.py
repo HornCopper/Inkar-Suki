@@ -220,9 +220,17 @@ async def cq_crt(start: str, end: str):
     directions = data["transferStaDerict"].split(",")
     swaps = data["transferStaNames"].split(",")
     for i in range(1, 4):
+        try:
+            lines[i-1]
+        except:
+            break
         line = lines[i-1]
         color = get_color(colors[i-1])
         icon = get_line_icon(line)
+        try:
+            directions[i-1]
+        except:
+            continue
         direction = directions[i-1]
         swap = swaps[i-1]
         template = template.replace("$line" + str(i), line).replace("$color" + str(i), color).replace("$icon" + str(i), icon).replace("$direction" + str(i), direction).replace("$swap" + str(i), swap)
