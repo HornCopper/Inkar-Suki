@@ -1,10 +1,12 @@
 from src.tools.basic import *
 
-banword = on_command("banword", priority=5)
+banword = on_command("banword", force_whitespace=True, priority=5)
 
 
 @banword.handle()
 async def __(event: GroupMessageEvent, args: Message = CommandArg()):  # 违禁词封锁
+    if args.extract_plain_text() == "":
+        return
     bw = args.extract_plain_text()
     if not checker(str(event.user_id), 5):
         await banword.finish(error(5))
@@ -18,11 +20,13 @@ async def __(event: GroupMessageEvent, args: Message = CommandArg()):  # 违禁�
     else:
         await banword.finish("您封禁了什么？")
 
-unbanword = on_command("unbanword", priority=5)  # 违禁词解封
+unbanword = on_command("unbanword", force_whitespace=True, priority=5)  # 违禁词解封
 
 
 @unbanword.handle()
 async def ___(event: GroupMessageEvent, args: Message = CommandArg()):
+    if args.extract_plain_text() == "":
+        return
     if not checker(str(event.user_id), 5):
         await unbanword.finish(error(5))
     cmd = args.extract_plain_text()

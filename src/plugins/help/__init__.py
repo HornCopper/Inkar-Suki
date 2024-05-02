@@ -22,7 +22,7 @@ from tabulate import tabulate
 文字来源于内置，图片由每个`plugin`文件夹下的`info.json`中的内容整合，再以`selenium`进行渲染所得。
 """
 
-help = on_command("help", aliases={"帮助", "功能", "查看", "文档", "使用说明"}, priority=5)
+help = on_command("help", aliases={"帮助", "功能", "查看", "文档", "使用说明"}, force_whitespace=True, priority=5)
 css = """
 <style>
     ::-webkit-scrollbar 
@@ -121,12 +121,16 @@ def process(markdown: str):
     return markdown
 
 @help.handle()
-async def help_():
+async def help_(args: Message = CommandArg()):
+    if args.extract_plain_text() != "":
+        return
     await help.finish(f"Inkar Suki · 音卡使用文档：\nhttps://inkar-suki.codethink.cn/Inkar-Suki-Docs/#/")
 
-getCmd = on_command("get_cmd", aliases={"查找命令"}, priority=5)
+getCmd = on_command("get_cmd", aliases={"查找命令"}, force_whitespace=True, priority=5)
 @getCmd.handle()
 async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
+    if args.extract_plain_text() == "":
+        return
     api = "https://inkar-suki.codethink.cn/Inkar-Suki-Docs/usage.md"
     data = await get_url(api)
     data = data.split("\n")

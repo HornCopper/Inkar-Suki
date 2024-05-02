@@ -42,11 +42,13 @@ math_funcs = {
 se = SimpleEval()
 se.functions.update(math_funcs)
 
-dice = on_command("rd", aliases={"dice", "掷骰子"}, priority=5)
+dice = on_command("rd", aliases={"dice", "掷骰子"}, force_whitespace=True, priority=5)
 
 
 @dice.handle()
 async def _(args: Message = CommandArg()):
+    if args.extract_plain_text() == "":
+        return
     part = args.extract_plain_text().split(" ")
     dices = part[0]
     if len(part) < 2:

@@ -1,6 +1,6 @@
 from .api import *
 
-sandbox = on_command("jx3_sandbox", aliases={"沙盘"}, priority=5)
+sandbox = on_command("jx3_sandbox", aliases={"沙盘"}, force_whitespace=True, priority=5)
 
 @sandbox.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):

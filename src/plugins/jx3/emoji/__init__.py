@@ -2,11 +2,13 @@ from random import random
 
 from src.tools.basic import *
 
-rdemoji = on_command("jx3_emoji", aliases={"随机表情"}, priority=5)
+rdemoji = on_command("jx3_emoji", aliases={"随机表情"}, force_whitespace=True, priority=5)
 
 
 @rdemoji.handle()
-async def _(event: GroupMessageEvent):
+async def _(event: GroupMessageEvent, args: Message = CommandArg()):
+    if args.extract_plain_text() != "":
+        return
     api = "https://cms.jx3box.com/api/cms/post/emotions?type=&search=&star=&original=&page=1&per=50"
     data = await get_api(api)
     data = data["data"]["list"]

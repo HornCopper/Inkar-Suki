@@ -18,10 +18,12 @@ async def createIssue(uin: str, comment: str):
     response = await post_url(url, headers=headers, json=data)
     return response
 
-feedback_ = on_command("feedback", aliases={"反馈"}, priority=5)
+feedback_ = on_command("feedback", aliases={"反馈"}, force_whitespace=True, priority=5)
 
 @feedback_.handle()
 async def _(event: Event, args: Message = CommandArg()):
+    if args.extract_plain_text() == "":
+        return
     msg = args.extract_plain_text()
     user = str(event.user_id)
     if len(msg) <= 8:

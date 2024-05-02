@@ -2,31 +2,35 @@ from .api import *
 
 from nonebot.rule import to_me
 
-jx3_cmd_saohua_random = on_command("jx3_random", aliases={"骚话", "烧话"}, priority=5)
+jx3_cmd_saohua_random = on_command("jx3_random", aliases={"骚话", "烧话"}, force_whitespace=True, priority=5)
 
 
 @jx3_cmd_saohua_random.handle()
-async def jx3_saohua_random():
+async def jx3_saohua_random(args: Message = CommandArg()):
     """
     召唤一条骚话：
 
     Example：-骚话
     """
+    if args.extract_plain_text() != "":
+        return
     full_link = f"{Config.jx3api_link}/data/saohua/random"
     info = await get_api(full_link)
     msg = info["data"]["text"]
     await jx3_cmd_saohua_random.finish(msg)
 
-jx3_cmd_saohua_tiangou = on_command("jx3_tiangou", aliases={"舔狗"}, priority=5)
+jx3_cmd_saohua_tiangou = on_command("jx3_tiangou", aliases={"舔狗", "舔狗日记"}, force_whitespace=True, priority=5)
 
 
 @jx3_cmd_saohua_tiangou.handle()
-async def jx3_saohua_tiangou():
+async def jx3_saohua_tiangou(args: Message = CommandArg()):
     """
     获取一条舔狗日志：
 
     Example：-舔狗
     """
+    if args.extract_plain_text() != "":
+        return
     full_link = f"https://www.jx3api.com/data/saohua/content?token={token}"
     info = await get_api(full_link)
     msg = info["data"]["text"]
@@ -37,7 +41,7 @@ async def post_url(url: str, **kwargs):
         resp = await client.post(url, **kwargs)
         return resp.json()
 
-watermelon = on_command("jx3_watermelon", aliases={"吃瓜"}, rule=to_me(), priority=5)
+watermelon = on_command("jx3_watermelon", aliases={"吃瓜"}, rule=to_me(), force_whitespace=True, priority=5)
 @watermelon.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     tid = args.extract_plain_text()

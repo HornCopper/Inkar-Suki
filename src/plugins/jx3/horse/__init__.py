@@ -1,20 +1,6 @@
 from .api import *
 
-jx3_cmd_ct = on_command("jx3_ct", aliases={"赤兔"}, priority=5,)
-
-
-@jx3_cmd_ct.handle()
-async def jx3_ct_v1(event: GroupMessageEvent, args: Message = CommandArg()):
-    """
-    获取赤兔刷新信息：
-
-    Example：-赤兔 幽月轮
-    """
-    server = args.extract_plain_text()
-    msg = await get_chitu(server, group_id=event.group_id)
-    await jx3_cmd_ct.finish(msg)
-
-jx3_cmd_horse = on_command("jx3_horse_v1", aliases={"抓马", "马场"}, priority=5)
+jx3_cmd_horse = on_command("jx3_horse_v1", aliases={"抓马", "马场"}, force_whitespace=True, priority=5)
 
 
 @jx3_cmd_horse.handle()

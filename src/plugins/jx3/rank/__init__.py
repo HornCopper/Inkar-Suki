@@ -1,7 +1,7 @@
 from .api import *
 from .school_rank import *
 
-jx3_cmd_top100_ = on_command("jx3_top100", aliases={"百强"}, priority=5)
+jx3_cmd_top100_ = on_command("jx3_top100", aliases={"百强"}, force_whitespace=True, priority=5)
 
 
 @jx3_cmd_top100_.handle()
@@ -12,6 +12,8 @@ async def jx3_top100(event: GroupMessageEvent, args: Message = CommandArg()):
     Example：-百强 幽月轮 李重茂
     Example：-百强 幽月轮 李重茂 风波渡
     """
+    if args.extract_plain_text() == "":
+        return
     arg = args.extract_plain_text().split(" ")
     if len(arg) not in [1, 2, 3]:
         await jx3_cmd_top100_.finish("唔……参数不正确哦，请检查后重试~")
@@ -36,7 +38,7 @@ async def jx3_top100(event: GroupMessageEvent, args: Message = CommandArg()):
     data = await get_top100(server, boss, team)
     await jx3_cmd_top100_.finish(data)
 
-jx3_cmd_rank = on_command("jx3_rank", aliases={"榜单"}, priority=5)
+jx3_cmd_rank = on_command("jx3_rank", aliases={"榜单"}, force_whitespace=True, priority=5)
 
 
 @jx3_cmd_rank.handle()
@@ -67,7 +69,7 @@ async def jx3_rank(event: GroupMessageEvent, args: Message = CommandArg()):
         data = await get_content(data)
         await jx3_cmd_rank.finish(ms.image(data))
 
-rank = on_command("jx3_schoolrank", aliases={"门派天梯", "天梯"}, priority=5)
+rank = on_command("jx3_schoolrank", aliases={"门派天梯", "天梯"}, force_whitespace=True, priority=5)
 
 
 @rank.handle()

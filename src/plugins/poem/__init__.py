@@ -2,10 +2,12 @@ from src.plugins.sign import Sign
 
 from .api import *
 
-rdp = on_command("randomPoem", aliases={"对诗"}, priority=5)
+rdp = on_command("randomPoem", aliases={"对诗"}, force_whitespace=True, priority=5)
 
 @rdp.handle()
-async def _(state: T_State, event: Event):
+async def _(state: T_State, event: Event, args: Message = CommandArg()):
+    if args.extract_plain_text() != "":
+        return
     data = await getRandomPoem()
     content = data[0]
     title = data[1]

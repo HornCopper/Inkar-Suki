@@ -2,10 +2,12 @@ from src.tools.basic import *
 
 from .about import *
 
-subscribe_enable = on_command("jx3_subscribe", aliases={"订阅", "开启"}, priority=5)
+subscribe_enable = on_command("jx3_subscribe", aliases={"订阅", "开启"}, force_whitespace=True, priority=5)
 
 @subscribe_enable.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
+    if args.extract_plain_text() == "":
+        return
     arg = args.extract_plain_text().split(" ")
     if len(arg) == 0:
         await subscribe_enable.finish("唔……开启失败，您似乎没有告诉我您要订阅的内容？")
@@ -27,10 +29,12 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
         setGroupData(str(event.group_id), "addtions", currentAddtion)
         await subscribe_enable.finish("订阅成功！\n可使用“关于”查看本群详细信息！")
 
-subscribe_disable = on_command("jx3_unsubscribe", aliases={"退订", "关闭"}, priority=5)
+subscribe_disable = on_command("jx3_unsubscribe", aliases={"退订", "关闭"}, force_whitespace=True, priority=5)
 
 @subscribe_disable.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
+    if args.extract_plain_text() == "":
+        return
     arg = args.extract_plain_text().split(" ")
     if len(arg) == 0:
         await subscribe_disable.finish("唔……关闭失败，您似乎没有告诉我您要退订的内容？")
@@ -52,9 +56,11 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
         setGroupData(str(event.group_id), "addtions", currentAddtion)
         await subscribe_disable.finish("退订成功！\n可使用“关于”查看本群详细信息！")
 
-info = on_command("jx3_about", aliases={"关于", "本群订阅"}, priority=5)
+info = on_command("jx3_about", aliases={"关于", "本群订阅"}, force_whitespace=True, priority=5)
 
 @info.handle()
-async def _(bot: Bot, event: GroupMessageEvent):
+async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
+    if args.extract_plain_text() != "":
+        return
     about_img = await generateGroupInfo(bot, str(event.group_id))
     await info.finish(ms.image(about_img))

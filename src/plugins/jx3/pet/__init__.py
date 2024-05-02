@@ -1,6 +1,6 @@
 from .api import *
 
-jx3_cmd_pet = on_command("jx3_pet", aliases={"宠物"}, priority=5)
+jx3_cmd_pet = on_command("jx3_pet", aliases={"宠物"}, force_whitespace=True, priority=5)
 
 
 @jx3_cmd_pet.handle()
@@ -10,6 +10,8 @@ async def jx3_pet(state: T_State, args: Message = CommandArg()):
 
     Example：-宠物 静静
     """
+    if args.extract_plain_text() == "":
+        return
     data = args.extract_plain_text()
     pets = await get_pet(data)
     state["pets"] = pets

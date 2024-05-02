@@ -1,6 +1,6 @@
 from .api import *
 
-buff_ = on_command("jx3_buff", aliases={"debuff", "buff"}, priority=5)
+buff_ = on_command("jx3_buff", aliases={"debuff", "buff"}, force_whitespace=True, priority=5)
 
 
 @buff_.handle()
@@ -11,6 +11,8 @@ async def _(event: GroupMessageEvent, state: T_State, args: Message = CommandArg
     Example：-buff 躺在冰冷的地上
     Example：-debuff 耐力受损
     """
+    if args.extract_plain_text() == "":
+        return
     buff = args.extract_plain_text()
     data = await get_buff(buff)
     if not isinstance(data, str):

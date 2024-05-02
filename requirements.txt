@@ -1,12 +1,11 @@
 beautifulsoup4
 httpx[http2]
+nonebot2
+nonebot2[fastapi]
 nb-cli
-nonebot2 >= 2.1.3
-nonebot2[fastapi] >= 1.2.0
 nonebot-adapter-onebot
 psutil
 tabulate
-xpinyin
 numpy
 nonebot_plugin_apscheduler
 playwright
