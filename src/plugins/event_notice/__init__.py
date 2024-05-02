@@ -88,8 +88,40 @@ async def notice_and_ban(bot: Bot, event: NoticeEvent, action: str):
     write(TOOLS + "/ban.json", json.dumps(banlist))
 
 
-request = on_request(priority=5)
+# request = on_request(priority=5)
 
+
+# @request.handle()
+# async def _(bot: Bot, event: RequestEvent):
+#     if event.request_type == "group" and event.sub_type == "invite":
+#         group = event.group_id
+#         user = event.user_id
+#         if str(user) in json.loads(read(TOOLS + "/ban.json")):
+#             await bot.call_api("set_group_add_request", flag=event.flag, sub_type="invite", approve=False, reason="邀请人已被音卡封禁！无法邀请音卡入群！")
+#         flag = event.flag
+#         time = event.time
+#         new = {
+#             "group_id": group,
+#             "user_id": user,
+#             "flag": flag,
+#             "time": time
+#         }
+#         current = json.loads(read(TOOLS + "/" + "application.json"))
+#         if new in current:
+#             return
+#         current.append(new)
+#         write(TOOLS + "/" + "application.json", json.dumps(current, ensure_ascii=False))
+#         btn_accept = md.button("同意", "同意申请 " + str(group))
+#         btn_deny = md.button("拒绝", "拒绝申请 " + str(group))
+#         msg = (f"# 收到新的加群申请：\n"
+#                f"邀请人：{user}\n"
+#                f"群号：{group}\n\n"
+#                f"> {btn_accept}    {btn_deny}")
+#         for i in Config.notice_to:
+#             # await bot.call_api("send_group_msg", group_id=int(i), message=msg)
+#             await send_markdown(msg, bot, session_id=int(i), message_type="group")
+
+request = on_request(priority=5)
 
 @request.handle()
 async def _(bot: Bot, event: RequestEvent):
@@ -111,15 +143,9 @@ async def _(bot: Bot, event: RequestEvent):
             return
         current.append(new)
         write(TOOLS + "/" + "application.json", json.dumps(current, ensure_ascii=False))
-        btn_accept = md.button("同意", "同意申请 " + str(group))
-        btn_deny = md.button("拒绝", "拒绝申请 " + str(group))
-        msg = (f"# 收到新的加群申请：\n"
-               f"邀请人：{user}\n"
-               f"群号：{group}\n\n"
-               f"> {btn_accept}    {btn_deny}")
+        msg = f"收到新的加群申请：\n邀请人：{user}\n群号：{group}"
         for i in Config.notice_to:
-            # await bot.call_api("send_group_msg", group_id=int(i), message=msg)
-            await send_markdown(msg, bot, session_id=int(i), message_type="group")
+            await bot.call_api("send_group_msg", group_id=int(i), message=msg)
 
 
 notice_cmd_welcome_msg_edit = on_command("welcome", priority=5)
