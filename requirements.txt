@@ -10,7 +10,7 @@ xpinyin
 numpy
 nonebot_plugin_apscheduler
 playwright
-pydantic
+pydantic <= 1.10.13
 pathlib2
 aiotieba
 pillow
