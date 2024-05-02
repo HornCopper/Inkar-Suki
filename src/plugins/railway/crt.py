@@ -232,6 +232,10 @@ async def cq_crt(start: str, end: str):
         except:
             continue
         direction = directions[i-1]
+        try:
+            swaps[i-1]
+        except:
+            continue
         swap = swaps[i-1]
         template = template.replace("$line" + str(i), line).replace("$color" + str(i), color).replace("$icon" + str(i), icon).replace("$direction" + str(i), direction).replace("$swap" + str(i), swap)
     basic = read(VIEWS + "/railway/crt/crt.html")
