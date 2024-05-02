@@ -235,7 +235,7 @@ async def cq_crt(start: str, end: str):
         swap = swaps[i-1]
         template = template.replace("$line" + str(i), line).replace("$color" + str(i), color).replace("$icon" + str(i), icon).replace("$direction" + str(i), direction).replace("$swap" + str(i), swap)
     basic = read(VIEWS + "/railway/crt/crt.html")
-    basic = basic.replace("$price", str(price)).replace("$minute", str(minute)).replace("$start", start).replace("$end", end)
+    basic = basic.replace("$ticket", str(price)).replace("$minute", str(minute)).replace("$start", start).replace("$end", end)
     final_html = basic.replace("$content", template)
     font = ASSETS + "/font/custom.ttf"
     final_html = final_html.replace("$customfont", font)
