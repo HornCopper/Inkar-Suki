@@ -1,6 +1,12 @@
-from nonebot import get_driver
+from nonebot import get_driver, require
+
+require("nonebot_plugin_apscheduler")
+
+from nonebot_plugin_apscheduler import scheduler
 
 from .jx3 import *
+
+import datetime, shutil
 
 driver = get_driver()
 
@@ -13,12 +19,22 @@ async def nonebot_on_startup():
     if await ws_client.init():
         logger.info("Connected to JX3API successfully.")
 
+def rm():
+    shutil.rmtree(ASSETS + "/jx3/monsters.jpg")
+
 ws_recev = on(type="WsRecv", priority=5, block=False)
+
+@ws_recev.handle()
+async def _(event: RecvEvent):
+    message = event.get_message()
+    now = datetime.datetime.now()
+    if message["type"] == "开服" and ((now.weekday() + 1) % 7 + 1) == 1:
+        scheduler.add_job(rm, "cron", minutes=15, id="remove_monsters_image")
 
 @ws_recev.handle()
 async def on_jx3_event_recv(bot: Bot, event: RecvEvent):
     message = event.get_message()
-    if message == "False" or message["type"] == "":
+    if not message or message["type"] == "":
         return
     logger.info(message["msg"])
     record_info(message["msg"])
