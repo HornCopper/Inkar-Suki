@@ -67,8 +67,8 @@ pattern = r'来自\[(.*?)\]*订阅，回复\[退订 (.*?)\]退订'
 
 @preprocess.handle()
 async def checkEnv(bot: Bot, event: GroupMessageEvent, matcher: Matcher):
-    msg = event.message.extract_plain_text()
-    match_rong_sb = re.search(pattern, msg)
+    rec = event.message.extract_plain_text()
+    match_rong_sb = re.search(pattern, rec)
     if match_rong_sb:
         await bot.call_api("send_group_msg", group_id=event.group_id, message=msg)
         await bot.call_api("set_group_leave", group_id=event.group_id)
