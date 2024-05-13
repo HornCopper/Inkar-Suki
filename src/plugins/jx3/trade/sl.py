@@ -181,7 +181,7 @@ async def getSingleEquipment(raw_message: str):
     equipmentAttributes = processAttributes(judgeResult[0])
     equipmentQuality = int(judgeResult[2])
     equipmentPositionNum = convertPositionToNum(judgeResult[1])
-    correctAttributes = checkAttributesAtQuality(equipmentType, equipmentQuality, equipmentAttributes, judgeResult[1])
+    correctAttributes = await checkAttributesAtQuality(equipmentType, equipmentQuality, equipmentAttributes, judgeResult[1])
     if correctAttributes == False:
         equipmentAttributes_str = " ".join(equipmentAttributes)
         return [f"唔……在{equipmentQuality}品级阶段不存在属性为[{equipmentAttributes_str}]的无封装备！"]
