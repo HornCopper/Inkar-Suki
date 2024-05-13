@@ -15,9 +15,8 @@ async def getZhueRecord(server: str):
     for i in data:
         relateTime = getRelateTime(getCurrentTime(), i["time"])
         tables.append(template_zhue.replace("$time", convert_time(i["time"])).replace("$map", i["map_name"]).replace("$relate", relateTime))
-    poem = await get_api("https://v1.jinrishici.com/all.json")
-    poem = poem["content"] + "——" + poem["author"] + "《" + poem["origin"] + "》"
-    saohua = poem
+    saohua = await get_api(f"https://www.jx3api.com/data/saohua/random?token={token}")
+    saohua = saohua["data"]["text"]
     appinfo_time = convert_time(getCurrentTime(), "%H:%M:%S")
     appinfo = f" · 诛恶记录 · {server} · {appinfo_time}"
     final_table = "\n".join(tables)

@@ -28,9 +28,8 @@ async def getTongzhan(server: str):
         camp_name = i["campName"]
         camp_icon = good if camp_name == "浩气盟" else bad
         tables.append(template_tongzhan.replace("$channel_icon", channel_icon).replace("$channel_name", channel_name).replace("$channel_num", str(channel_num)).replace("$channel_online", str(channel_online)).replace("$camp_icon", camp_icon).replace("$camp_name", camp_name))
-    poem = await get_api("https://v1.jinrishici.com/all.json")
-    poem = poem["content"] + "——" + poem["author"] + "《" + poem["origin"] + "》"
-    saohua = poem
+    saohua = await get_api(f"https://www.jx3api.com/data/saohua/random?token={token}")
+    saohua = saohua["data"]["text"]
     appinfo_time = convert_time(getCurrentTime(), "%H:%M:%S")
     appinfo = f" · 统战YY · {server} · {appinfo_time}"
     final_table = "\n".join(tables)
