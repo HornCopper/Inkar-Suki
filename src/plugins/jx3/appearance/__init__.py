@@ -1,6 +1,6 @@
 from .api import *
 
-item_price = on_command("jx3_price", aliases={"物价"}, force_whitespace=True, priority=5)
+item_price = on_command("jx3_price", aliases={"物价", "价格"}, force_whitespace=True, priority=5)
 
 
 @item_price.handle()

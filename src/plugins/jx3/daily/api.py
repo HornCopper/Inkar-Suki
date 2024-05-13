@@ -2,15 +2,12 @@ from src.tools.basic import *
 
 import datetime
 
-async def daily_(server: str = None, group_id: str = None, predict_day_num: int = 0):
+async def daily_(predict_day_num: int = 0):
     """
     获取日常图片链接
     @param predict_day_num 向后预测天数
     """
-    server = server_mapping(server, str(group_id))
-    if not server:
-        return [PROMPT_ServerNotExist]
-    full_link = f"{Config.jx3api_link}/data/active/current?server={server}&num={predict_day_num}"
+    full_link = f"{Config.jx3api_link}/data/active/current?num={predict_day_num}"
     data = await get_api(full_link)
     data = data["data"]
     leader = "今日无世界首领"

@@ -98,16 +98,16 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     data = await get_macro(xf)
     await macro_.finish(data)
 
-macro_v1 = on_command("jx3_macro", aliases={"宏v1"}, force_whitespace=True, priority=5)
+# macro_v1 = on_command("jx3_macro", aliases={"宏v1"}, force_whitespace=True, priority=5)
 
 
-@macro_v1.handle()
-async def _(event: GroupMessageEvent, args: Message = CommandArg()):
-    if args.extract_plain_text() == "":
-        return
-    xf = aliases(args.extract_plain_text())
-    if xf is False:
-        await macro_v1.finish("唔……心法输入有误，请检查后重试~")
-    data = await get_api(f"https://www.jx3api.com/data/school/macro?name={xf}&token={token}")
-    data = data["data"]["context"]
-    await macro_v1.finish(data)
+# @macro_v1.handle()
+# async def _(event: GroupMessageEvent, args: Message = CommandArg()):
+#     if args.extract_plain_text() == "":
+#         return
+#     xf = aliases(args.extract_plain_text())
+#     if xf is False:
+#         await macro_v1.finish("唔……心法输入有误，请检查后重试~")
+#     data = await get_api(f"https://www.jx3api.com/data/school/macro?name={xf}&token={token}")
+#     data = data["data"]["context"]
+#     await macro_v1.finish(data)
