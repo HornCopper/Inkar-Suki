@@ -154,7 +154,8 @@ async def checkAttributesAtQuality(type: str, quality: int, attributes: list, po
         "data[pos]": standardName,
         "data[quality]": quality
     }
-    data = await get_api(api, data=params)
+    data = await post_url(api, data=params)
+    data = json.loads(data)
     for i in data["data"]:
         if set(i.split(" ")) == set(attributes):
             return i
@@ -195,7 +196,8 @@ async def getSingleEquipment(raw_message: str):
         "data[limit]": 8,
         "data[order]": "id desc"
     }
-    data = await get_api(api, data=params)
+    data = await post_url(api, data=params)
+    data = json.loads(data)
     if data["data"] == []:
         return ["唔……已找到该属性无封装备，但没有数据。"]
     contents = []
