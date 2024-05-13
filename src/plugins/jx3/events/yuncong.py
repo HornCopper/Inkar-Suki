@@ -8,75 +8,17 @@ def parity(num: int):
     return False
 
 async def getYuncongImg():
-    api = "https://cms.jx3box.com/api/cms/game/celebrity?type=1" # 0为楚天社 1为云从社
-    data = await get_api(api)
-    chour = convert_time(getCurrentTime(), "%H")
-    cminute = convert_time(getCurrentTime(), "%M")
-    currentFlag = "y0" if parity(int(chour)) else "y1"
-    data = data["data"]
-    common = data[:-3]
-    events = []
-    diff = []
-    same = []
-    for i in common:
-        if i["key"] == currentFlag:
-            same.append(i)
-        else:
-            diff.append(i)
-    for i in common:
-        if i["key"] == currentFlag:
-            if int(cminute) <= i["time"]:
-                current = common.index(i)
-                if common[current-1]["key"] != common[current]["key"]:
-                    common[current-1]["hour"] = str(int(chour) - 1)
-                else:
-                    common[current-1]["hour"] = chour
-                events.append(common[current-1])
-                common[current]["hour"] = chour
-                events.append(common[current])
-                for x in range(4)[1:]:
-                    add = current + x
-                    if add + 1 > len(common):
-                        add = add - len(common) -1
-                    if common[add]["key"] != common[current]["key"]:
-                        common[add]["hour"] = str(int(chour) + 1)
-                    else:
-                        common[add]["hour"] = chour
-                    events.append(common[add])
-                break
-            else:
-                continue
-        current = len(same) - 1
-        common[current - 1]["hour"] = chour
-        events.append(common[current - 1])
-        common[current]["hour"] = chour
-        events.append(common[current])
-        common[0]["hour"] = str(int(chour) + 1)
-        events.append(diff[0])
-        common[1]["hour"] = str(int(chour) + 1)
-        events.append(diff[1])
-        common[2]["hour"] = str(int(chour) + 1)
-        events.append(diff[2])
-        common[3]["hour"] = str(int(chour) + 1)
-        events.append(diff[3])
-        break
-        
+    url = f"https://www.jx3api.com/data/active/celebrity?season=3"
+    data = await get_api(url)
     tables = []
-    for i in events:
-        hour = str(i["hour"])
-        if hour == "24":
-            hour = "0"
-        minute = str(i["time"])
-        if len(hour) == 1:
-            hour = "0" + hour
-        if len(minute) == 1:
-            minute = "0" + minute
-        time = f"{hour}:{minute}"
+    for i in data["data"]:
+        time = i["time"]
+        icon = i["icon"] if i["icon"] != "10" else "12"
+        icon = "https://img.jx3box.com/pve/minimap/minimap_" + icon + ".png"
         desc = i["desc"]
-        section = i["stage"]
-        map = i["map"]
+        section = i["event"]
+        map = i["map_name"]
         site = i["site"]
-        icon = "https://img.jx3box.com/pve/minimap/minimap_" + i["icon"] + ".png"
         tables.append(template_chutian.replace("$time", time).replace("$site", map + "·" + site).replace("$icon", icon).replace("$desc", desc).replace("$section", section))
     final_table = "\n".join(tables)
     html = read(VIEWS + "/jx3/celebrations/chutian.html")
@@ -85,7 +27,7 @@ async def getYuncongImg():
     poem = poem["content"] + "——" + poem["author"] + "《" + poem["origin"] + "》"
     saohua = poem
     current_time = convert_time(getCurrentTime(), "%H:%M:%S")
-    html = html.replace("$customfont", font).replace("$tablecontent", final_table).replace("$randomsaohua", saohua).replace("$appinfo", f"云从社 · {current_time}")
+    html = html.replace("$customfont", font).replace("$tablecontent", final_table).replace("$randomsaohua", saohua).replace("$appinfo", f"楚天社 · {current_time}")
     final_html = CACHE + "/" + get_uuid() + ".html"
     write(final_html, html)
     final_path = await generate(final_html, False, "table", False)
