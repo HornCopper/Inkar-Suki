@@ -43,5 +43,5 @@ async def _(args: Message = CommandArg()):
             image_url = f"{base_url}{batch_choice}dragon_{rdnum}_{ext}"
             resp = await client.get(image_url)
             if resp.status_code == 200:
-                image = await resp.content
+                image = resp.content
                 await rdli.finish(ms.image(image))
