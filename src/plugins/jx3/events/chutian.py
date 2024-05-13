@@ -9,7 +9,7 @@ template_chutian = """
 </tr>"""
 
 async def getChutianImg():
-    url = f"https://www.jx3api.com/data/active/celebrities?token={token}"
+    url = f"https://www.jx3api.com/data/active/celebrity"
     data = await get_api(url)
     tables = []
     for i in data["data"]:
