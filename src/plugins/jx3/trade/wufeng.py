@@ -30,7 +30,7 @@ async def getData(name, quality):
 async def getArmor(raw: str):
     attrs = convertAttrs(raw)
     if not attrs:
-        return [f"您输入的装备词条有误，请确保包含以下三个要素：\n品级、属性、部位\n示例：13550内功双会头"]
+        return [f"您输入的装备词条有误，请确保包含以下四个要素：\n品级、属性、部位、内外功\n示例：13550内功双会头"]
     parsed = attrs[0]
     place = attrs[1]
     quality = attrs[2]
@@ -96,105 +96,10 @@ async def getWufengImg(raw: str, server: str, group: str):
     final_table = "\n".join(table)
     html = read(VIEWS + "/jx3/trade/trade.html")
     font = ASSETS + "/font/custom.ttf"
-    poem = await get_api("https://v1.jinrishici.com/all.json")
-    poem = poem["content"] + "——" + poem["author"] + "《" + poem["origin"] + "》"
-    saohua = poem
+    saohua = await get_api(f"https://www.jx3api.com/data/saohua/random?token={token}")
+    saohua = saohua["data"]["text"]
     html = html.replace("$customfont", font).replace("$tablecontent", final_table).replace("$randomsaohua", saohua).replace("$appinfo", f"交易行 · {server} · {name}").replace("$msgbox", msgbox)
     final_html = CACHE + "/" + get_uuid() + ".html"
     write(final_html, html)
     final_path = await generate(final_html, False, ".total", False)
     return Path(final_path).as_uri()
-
-def extract_numbers(string):
-    pattern = r"\d+"
-    numbers = re.findall(pattern, string)
-    return [int(num) for num in numbers]
- 
-def convertAttrs(raw: str):
-    # 手搓关键词提取
-    def fd(raw: str, to: str):
-        if raw.find(to) != -1:
-            return True
-        return False
-
-    raw = raw.replace("攻击", "")
-    raw = raw.replace("攻", "")
-    raw = raw.replace("品", "")
-
-    more = []
-
-    # 基础类型 内外功
-    if fd(raw, "外"):
-        basic = "外功"
-    elif fd(raw, "内"):
-        basic = "内功"
-    else:
-        return False
-
-    more.append(basic + "攻击")
-
-    # 基础类型 会心 破防 无双 破招（不存在纯破招无封）
-    if fd(raw, "纯会"):
-        if basic == "外功":
-            more.append(basic + "会心")
-        else:
-            more.append("全会心")
-    if fd(raw, "纯无"):
-        more.append("无双")
-    if fd(raw, "纯破"):
-        more.append(basic + "破防")
-
-    # 双会类
-    if fd(raw, "双会"):
-        if basic == "外功":
-            more.append(basic + "会心")
-            more.append(basic + "会心效果")
-        else:
-            more.append("全会心")
-            more.append("全会心效果")
-
-    # 双会可能出现的组合
-    if fd(raw, "破") and not fd(raw, "纯破") and not fd(raw, "破招"):
-        more.append(basic + "破防")
-    
-    if fd(raw, "招") or fd(raw, "破破"):
-        more.append("破招")
-    
-    if fd(raw, "无") and not fd(raw, "纯无"):
-        more.append("无双")
-    
-    # 会心
-    if fd(raw, "会") and not fd(raw, "双会") and not fd(raw, "纯会"):
-        if basic == "外功":
-            more.append(basic + "会心")
-        else:
-            more.append("全会心")
-
-    num_list = extract_numbers(raw)
-    if len(num_list) != 1:
-        return False
-    
-    # 部位
-    place = ""
-
-    quality = num_list[0]
-    
-    if fd(raw, "头") or fd(raw, "帽") or fd(raw, "脑壳"):
-        place = "头饰"
-    elif fd(raw, "手") or fd(raw, "臂"):
-        place = "护臂"
-    elif fd(raw, "裤") or fd(raw, "下装"):
-        place = "裤"
-    elif fd(raw, "鞋") or fd(raw, "jio") or fd(raw, "脚"):
-        place = "鞋"
-    elif fd(raw, "链") or fd(raw, "项"):
-        place = "项链"
-    elif fd(raw, "坠") or fd(raw, "腰"):
-        if not fd(raw, "腰带"):
-            place = "腰坠"
-    elif fd(raw, "暗器") or fd(raw, "囊") or fd(raw, "弓弦"):
-        place = "囊"
-    else:
-        return False
-
-    return [more, place, quality]

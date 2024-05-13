@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <!--
+        该代码协议与Inkar Suki仓库协议相同。
+
+        禁止帝君和兔兔使用。
+
+        禁止任何人商用。
+
+        欢迎借鉴或用于开源项目。
+
+        ——HornCopper
+     -->
+    <style>
+        table {
+            width: 800px;
+            border-collapse: separate;
+            border-spacing: 0;
+            border: 1px solid #000;
+        }
+
+        th {
+            background-color: #333;
+            color: #fff;
+            padding: 8px;
+            text-align: center;
+        }
+
+        td {
+            padding: 20px;
+            text-align: center;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            border-bottom: 1px solid #D3D3D3;
+            margin-bottom: 1px;
+        }
+
+        tbody tr:not(:first-child) {
+            /* border-top: 1px solid #000; */
+            border: 1px solid black;
+        }
+
+        .short-column {
+            width: 150px;
+        }
+
+        tfoot {
+            text-align: center;
+            font-style: italic;
+            font-size: 12px;
+        }
+
+        @font-face {
+            font-family: Harmony;
+            src: url($customfont);
+        }
+
+        body {
+            font-family: Harmony, sans-serif;
+        }
+
+        .name {
+            color: #fe2dfe;
+            /* 文字填充色 */
+            -webkit-text-stroke: 0.3px black;
+            /* 描边的宽度和颜色 */
+            text-align: center;
+        }
+
+        .attributes {
+            color: #00d24b;
+            /* 文字填充色 */
+            -webkit-text-stroke: 0.3px black;
+            /* 描边的宽度和颜色 */
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+    <table style="background-color: #e3fffd    ;">
+        <thead>
+            <tr>
+                <th class="short-column">图标</th>
+                <th class="short-column">名称</th>
+                <th class="short-column">品级</th>
+                <th class="short-column">属性</th>
+                <th class="short-column">类型</th>
+                <th class="short-column">区服</th>
+                <th class="short-column">价格</th>
+                <th class="short-column">时间</th>
+            </tr>
+        </thead>
+        <tbody>
+            $tablecontent
+        </tbody>
+        <tfoot>
+            <tr>
+                <td colspan="7">&copy; Inkar Suki$appinfo<br>$randomsaohua</td>
+            </tr>
+        </tfoot>
+    </table>
+</body>
+
+</html>

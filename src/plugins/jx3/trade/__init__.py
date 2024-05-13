@@ -47,6 +47,43 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     else:
         await trade.finish(ms.image(img))
 
+
+item_price = on_command("jx3_price", aliases={"物价", "价格"}, force_whitespace=True, priority=5)
+
+
+@item_price.handle()
+async def _(event: GroupMessageEvent, args: Message = CommandArg()):
+    """
+    获取外观物价：
+
+    Example：-物价 山神盒子
+    Example：-物价 大橙武券
+    """
+    if args.extract_plain_text() == "":
+        return
+    arg = args.extract_plain_text()
+    if arg == "":
+        await item_price.finish("缺少物品名称，没办法找哦~")
+    data = await item_(arg)
+    if isinstance(data, str):
+        final_image = await get_content(data)
+        await item_price.finish(ms.image(final_image))
+    await item_price.finish(data[0])
+
+
+sl = on_command("jx3_sl", aliases="无封", priority=5)
+
+@sl.handle()
+async def _(event: GroupMessageEvent, args: Message = CommandArg()):
+    if args.extract_plain_text() == "":
+        return
+    image = await getSingleEquipment(args.extract_plain_text())
+    if type(image) == type([]):
+        await sl.finish(image[0])
+    else:
+        image = get_content_local(image)
+        await sl.finish(ms.image(image))
+
 # 施工中
 # trade_trend = on_command("jx3_trend", aliases={"交易行走势"}, force_whitespace=True, priority=5)
 
