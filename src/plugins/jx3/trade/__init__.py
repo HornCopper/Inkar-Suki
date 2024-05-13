@@ -71,7 +71,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     await item_price.finish(data[0])
 
 
-sl = on_command("jx3_sl", aliases="无封", priority=5)
+sl = on_command("jx3_sl", aliases={"无封"}, priority=5)
 
 @sl.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
