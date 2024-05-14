@@ -136,9 +136,9 @@ async def getAllServerWufengImg(raw: str):
             avgs.append(current["AvgPrice"])
             lows.append(current["LowestPrice"])
         else:
-            highs.append(highs[-1])
-            avgs.append(avgs[-1])
-            lows.append(lows[-1])
+            highs.append(0)
+            avgs.append(0)
+            lows.append(0)
         color = ["(167, 167, 167)", "(255, 255, 255)", "(0, 210, 75)", "(0, 126, 255)", "(254, 45, 254)", "(255, 165, 0)"][data["Quality"]]
         detailData = await get_api(f"https://next2.jx3box.com/api/item-price/{itemId}/detail?server={server}&limit=20")
         table = []
@@ -165,9 +165,12 @@ async def getAllServerWufengImg(raw: str):
             table_content = table_content.replace(word[0], word[1])
         table.append(table_content)
 
-    final_highest = int(sum(highs) / len(highs))
-    final_avg = int(sum(avgs) / len(avgs))
-    final_lowest = int(sum(lows) / len(lows))
+    fhighs = [x for x in highs if x != 0]
+    favgs = [x for x in avgs if x != 0]
+    flows = [x for x in lows if x != 0]
+    final_highest = int(sum(fhighs) / len(fhighs))
+    final_avg = int(sum(favgs) / len(favgs))
+    final_lowest = int(sum(flows) / len(flows))
     toReplace = [["$low", toCoinImage(convert(final_lowest))], ["$equal", toCoinImage(convert(final_avg))], ["$high", toCoinImage(convert(final_highest))]]
     msgbox = template_msgbox.replace("当日", "全服")
     for toReplace_word in toReplace:
