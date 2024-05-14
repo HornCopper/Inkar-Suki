@@ -150,6 +150,7 @@ async def getAllServerWufengImg(raw: str):
                 for word in toReplace_word:
                     table_content = template_table.replace(word[0], word[1])
                 table.append(table_content)
+                continue
             else:
                 avg = convert(current["AvgPrice"])
                 toReplace_word = [["$icon", icon], ["$color", color], ["$name", name + "<br>" + " ".join(getAttrs(data["attributes"]))], ["$time", convert_time(getCurrentTime(), "%m月%d日 %H:%M:%S")], ["$limit", "N/A"], ["$price", toCoinImage(convert(avg))]]
