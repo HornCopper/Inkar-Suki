@@ -165,7 +165,7 @@ async def getAllServerWufengImg(raw: str):
                 continue
         each_price = detailData["data"]["prices"][0]
         table_content = template_table
-        toReplace_word = [["$icon", icon], ["$color", color], ["$name", name + f"（{server}）<br>" + " ".join(getAttrs(data["attributes"]))], ["$time", convert_time(each_price["created"], "%m月%d日 %H:%M:%S")], ["$limit", str(each_price["n_count"])], ["$price", toCoinImage(convert(each_price["unit_price"]))]]
+        toReplace_word = [["$icon", icon], ["$color", color], ["$name", name + f"（{server}）<br><span style=\"color:rgb(0, 210, 75)\">" + " ".join(getAttrs(data["attributes"])) + "</span>"], ["$time", convert_time(each_price["created"], "%m月%d日 %H:%M:%S")], ["$limit", str(each_price["n_count"])], ["$price", toCoinImage(convert(each_price["unit_price"]))]]
         for word in toReplace_word:
             table_content = table_content.replace(word[0], word[1])
         table.append(table_content)
