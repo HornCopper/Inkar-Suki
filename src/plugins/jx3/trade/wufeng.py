@@ -150,15 +150,17 @@ async def getAllServerWufengImg(raw: str):
         if (not currentStatus or yesterdayFlag) and detailData["data"]["prices"] == None:
             if not yesterdayFlag:
                 toReplace_word = [["$icon", icon], ["$color", color], ["$name", name + f"（{server}）<br><span style=\"color:rgb(0, 210, 75)\">" + " ".join(getAttrs(data["attributes"])) + "</span>"], ["$time", convert_time(getCurrentTime(), "%m月%d日 %H:%M:%S")], ["$limit", "N/A"], ["$price", "<span style=\"color:red\">没有数据</span>"]]
+                table_content = template_table
                 for word in toReplace_word:
-                    table_content = template_table.replace(word[0], word[1])
+                    table_content = table_content.replace(word[0], word[1])
                 table.append(table_content)
                 continue
             else:
                 avg = convert(current["AvgPrice"])
                 toReplace_word = [["$icon", icon], ["$color", color], ["$name", name + f"（{server}）<br><span style=\"color:rgb(0, 210, 75)\">" + " ".join(getAttrs(data["attributes"])) + "</span>"], ["$time", convert_time(getCurrentTime(), "%m月%d日 %H:%M:%S")], ["$limit", "N/A"], ["$price", toCoinImage(convert(avg))]]
+                table_content = template_table
                 for word in toReplace_word:
-                    table_content = template_table.replace(word[0], word[1])
+                    table_content = table_content.replace(word[0], word[1])
                 table.append(table_content)
                 continue
         each_price = detailData["data"]["prices"][0]
