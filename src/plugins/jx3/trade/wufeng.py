@@ -131,6 +131,9 @@ async def getAllServerWufengImg(raw: str):
                 yesterdayFlag = True
                 currentStatus = 1
                 current = logs["data"]["yesterday"]
+            else:
+                yesterdayFlag = 0
+                currentStatus = 0
         if currentStatus:
             highs.append(current["HighestPrice"])
             avgs.append(current["AvgPrice"])
