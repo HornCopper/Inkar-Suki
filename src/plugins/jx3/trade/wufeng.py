@@ -108,7 +108,7 @@ async def getWufengImg(raw: str, server: str, group: str):
     return Path(final_path).as_uri()
 
 async def getAllServerWufengImg(raw: str):
-    servers = list(json.loads(read(TOOLS + "/basic/jx3/server.json")))
+    servers = list(json.loads(read(TOOLS + "/basic/server.json")))
     highs = []
     lows = []
     avgs = []
