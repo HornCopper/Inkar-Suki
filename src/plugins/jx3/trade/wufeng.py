@@ -44,6 +44,9 @@ async def getArmor(raw: str):
                 return i
             
 async def getWufengImg(raw: str, server: str, group: str):
+    if server == "全服":
+        result = await getAllServerWufengImg(raw)
+        return result
     server = server_mapping(server, group)
     if not server:
         return [PROMPT_ServerNotExist]
@@ -99,6 +102,81 @@ async def getWufengImg(raw: str, server: str, group: str):
     saohua = await get_api(f"https://www.jx3api.com/data/saohua/random?token={token}")
     saohua = saohua["data"]["text"]
     html = html.replace("$customfont", font).replace("$tablecontent", final_table).replace("$randomsaohua", saohua).replace("$appinfo", f"交易行 · {server} · {name}").replace("$msgbox", msgbox)
+    final_html = CACHE + "/" + get_uuid() + ".html"
+    write(final_html, html)
+    final_path = await generate(final_html, False, ".total", False)
+    return Path(final_path).as_uri()
+
+async def getAllServerWufengImg(raw: str):
+    servers = list(json.loads(read(TOOLS + "/basic/jx3/server.json")))
+    highs = []
+    lows = []
+    avgs = []
+    data = await getArmor(raw)
+    if type(data) == type([]):
+        return data
+    currentStatus = 0 # 当日是否具有该物品在交易行
+    try:
+        itemId = data["id"]
+    except:
+        return [f"唔……未找到该属性的无封装备。"]
+    for server in servers:
+        logs = await get_api(f"https://next2.jx3box.com/api/item-price/{itemId}/logs?server={server}")
+        current = logs["data"]["today"]
+        yesterdayFlag = False
+        if current != None:
+            currentStatus = 1
+        else:
+            if logs["data"]["yesterday"] != None:
+                yesterdayFlag = True
+                currentStatus = 1
+                current = logs["data"]["yesterday"]
+        if currentStatus:
+            highs.append(current["HighestPrice"])
+            avgs.append(current["AvgPrice"])
+            lows.append(current["LowestPrice"])
+        else:
+            highs.append(highs[-1])
+            avgs.append(avgs[-1])
+            lows.append(lows[-1])
+        color = ["(167, 167, 167)", "(255, 255, 255)", "(0, 210, 75)", "(0, 126, 255)", "(254, 45, 254)", "(255, 165, 0)"][data["Quality"]]
+        detailData = await get_api(f"https://next2.jx3box.com/api/item-price/{itemId}/detail?server={server}&limit=20")
+        table = []
+        icon = "https://icon.jx3box.com/icon/" + str(data["IconID"]) + ".png"
+        name = data["Name"]
+        if (not currentStatus or yesterdayFlag) and detailData["data"]["prices"] == None:
+            if not yesterdayFlag:
+                toReplace_word [["$icon", icon], ["$color", color], ["$name", name + "<br>" + " ".join(getAttrs(data["attributes"]))], ["$time", convert_time(getCurrentTime(), "%m月%d日 %H:%M:%S")], ["$limit", "N/A"], ["$price", "<span style=\"color:red\">没有数据</span>"]]
+                for word in toReplace_word:
+                    table_content = template_table.replace(word[0], word[1])
+                table.append(table_content)
+            else:
+                avg = convert(current["AvgPrice"])
+                toReplace_word = [["$icon", icon], ["$color", color], ["$name", name + "<br>" + " ".join(getAttrs(data["attributes"]))], ["$time", convert_time(getCurrentTime(), "%m月%d日 %H:%M:%S")], ["$limit", "N/A"], ["$price", toCoinImage(convert(avg))]]
+                for word in toReplace_word:
+                    table_content = template_table.replace(word[0], word[1])
+                table.append(table_content)
+                continue
+        each_price = detailData["data"]["prices"][0]
+        table_content = template_table
+        toReplace_word = [["$icon", icon], ["$color", color], ["$name", name + "<br>" + " ".join(getAttrs(data["attributes"]))], ["$time", convert_time(each_price["created"], "%m月%d日 %H:%M:%S")], ["$limit", str(each_price["n_count"])], ["$price", toCoinImage(convert(each_price["unit_price"]))]]
+        for word in toReplace_word:
+            table_content = table_content.replace(word[0], word[1])
+        table.append(table_content)
+
+    final_highest = int(sum(highs) / len(highs))
+    final_avg = int(sum(avgs) / len(avgs))
+    final_lowest = int(sum(lows) / len(lows))
+    toReplace = [["$low", toCoinImage(convert(final_lowest))], ["$equal", toCoinImage(convert(final_avg))], ["$high", toCoinImage(convert(final_highest))]]
+    msgbox = template_msgbox.replace("当日", "全服")
+    for toReplace_word in toReplace:
+        msgbox = msgbox.replace(toReplace_word[0], toReplace_word[1])
+    final_table = "\n".join(table)
+    html = read(VIEWS + "/jx3/trade/trade.html")
+    font = ASSETS + "/font/custom.ttf"
+    saohua = await get_api(f"https://www.jx3api.com/data/saohua/random?token={token}")
+    saohua = saohua["data"]["text"]
+    html = html.replace("$customfont", font).replace("$tablecontent", final_table).replace("$randomsaohua", saohua).replace("$appinfo", f"交易行 · 全服 · {name}").replace("$msgbox", msgbox)
     final_html = CACHE + "/" + get_uuid() + ".html"
     write(final_html, html)
     final_path = await generate(final_html, False, ".total", False)
