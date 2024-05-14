@@ -124,7 +124,7 @@ def process(markdown: str):
 async def help_(args: Message = CommandArg()):
     if args.extract_plain_text() != "":
         return
-    await help.finish(f"Inkar Suki · 音卡使用文档：\nhttps://inkar-suki.codethink.cn/Inkar-Suki-Docs/#/")
+    await help.finish(f"Inkar Suki · 音卡使用文档：\nhttps://inkar-suki.codethink.cn/Inkar-Suki-Docs/#/\n点击下面的链接直达剑网3模块简化版文档：\nhttps://inkar-suki.codethink.cn/Inkar-Suki-Docs/#/jx3_easy")
 
 getCmd = on_command("get_cmd", aliases={"查找命令"}, force_whitespace=True, priority=5)
 @getCmd.handle()
