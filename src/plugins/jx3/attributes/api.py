@@ -237,12 +237,7 @@ async def get_kf_icon(kf):
     try:
         num = school_mapping[kf]
     except:
-        schools = await get_api("https://inkar-suki.codethink.cn/jx3boxdata")
-        schools = list(schools.values())
-        if kf in schools:
-            return ASSETS + "/image/school/" + kf + ".png"
-        else:
-            return PLUGINS + "/jx3/attributes/unknown.png"
+        return "https://img.jx3box.com/image/xf/0.png"
     final_path = ASSETS + "/jx3/kungfu/" + kf + ".png"
     if os.path.exists(final_path):
         return final_path
