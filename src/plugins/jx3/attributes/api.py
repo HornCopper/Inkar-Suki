@@ -234,15 +234,19 @@ async def get_bg(sc):
 
 async def get_kf_icon(kf):
     school_mapping = await get_api("https://inkar-suki.codethink.cn/schoolmapping")
+    flag = False
     try:
         num = school_mapping[kf]
     except:
-        return "https://img.jx3box.com/image/xf/0.png"
+        flag = True
     final_path = ASSETS + "/jx3/kungfu/" + kf + ".png"
     if os.path.exists(final_path):
         return final_path
     else:
-        data = await get_content(f"https://img.jx3box.com/image/xf/{num}.png")
+        if not flag:
+            data = await get_content(f"https://img.jx3box.com/image/xf/{num}.png")
+        else:
+            data = await get_content("https://img.jx3box.com/image/xf/0.png")
         cache = open(final_path, mode="wb")
         cache.write(data)
         cache.close()
