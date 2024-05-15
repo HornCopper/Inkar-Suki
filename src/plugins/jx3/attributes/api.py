@@ -300,7 +300,7 @@ async def get_attr_main(server, id, group_id):
     data = json.loads(data)
     kfid = data["data"]["Kungfu"]["KungfuID"]
     kf = await get_personal_kf(kfid)
-    if kf == False:
+    if not kf:
         kf = uid[2]
     kf = kf.replace("决", "诀")
     if kf == "山居剑意":
@@ -320,7 +320,11 @@ async def get_attr_main(server, id, group_id):
     equip_list = []
     equip_icon_list = []
     equip_quailty = []
-    score = data["data"]["MatchDetail"]["score"]
+    score_dict = data["data"]["MatchDetail"]
+    try:
+        score = score_dict["score"]
+    except:
+        score = "未知"
     basic = [score, id, school_body, uid]
     messyqx = []
     for i in data["data"]["Person"]["qixueList"]:
