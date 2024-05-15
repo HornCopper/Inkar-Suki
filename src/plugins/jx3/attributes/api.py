@@ -300,6 +300,8 @@ async def get_attr_main(server, id, group_id):
     data = json.loads(data)
     kfid = data["data"]["Kungfu"]["KungfuID"]
     kf = await get_personal_kf(kfid)
+    if kf == False:
+        kf = uid[2]
     kf = kf.replace("决", "诀")
     if kf == "山居剑意":
         kf = "问水诀"
