@@ -240,7 +240,7 @@ async def get_kf_icon(kf):
         schools = await get_api("https://inkar-suki.codethink.cn/jx3boxdata")
         schools = list(schools.values())
         if kf in schools:
-            return ASSETS + "/image/school/" + kf + ".svg"
+            return ASSETS + "/image/school/" + kf + ".png"
         else:
             return PLUGINS + "/jx3/attributes/unknown.png"
     final_path = ASSETS + "/jx3/kungfu/" + kf + ".png"
