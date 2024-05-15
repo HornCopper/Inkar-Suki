@@ -312,6 +312,8 @@ async def get_attr_main(server, id, group_id):
         flag = 2
     elif att == "防御":
         flag = 3
+    else:
+        flag = 4
     school_body = uid[2] + "·" + uid[1]
     uid = uid[0]
     equip_data = data_process(kf, data, True)
@@ -320,11 +322,7 @@ async def get_attr_main(server, id, group_id):
     equip_list = []
     equip_icon_list = []
     equip_quailty = []
-    score_dict = data["data"]["MatchDetail"]
-    try:
-        score = score_dict["score"]
-    except:
-        score = "未知"
+    score = data["data"]["TotalEquipsScore"]
     basic = [score, id, school_body, uid]
     messyqx = []
     for i in data["data"]["Person"]["qixueList"]:
@@ -577,7 +575,7 @@ async def get_attr_main(server, id, group_id):
                 values[10] = str(i["value"]) + "%"
             if i["name"] == "化劲":
                 values[11] = str(i["value"]) + "%"
-    else:
+    elif flag == 3:
         panel = data["data"]["PersonalPanel"]
         for i in panel:
             if i["name"] == "外功防御":
@@ -603,6 +601,8 @@ async def get_attr_main(server, id, group_id):
             if i["name"] == "加速":
                 values[11] = str(i["value"])
                 values[9] = "%.2f%%" % (i["value"]/96483.75 * 100)
+    else:
+        values = ["未知属性", "未知属性", "未知属性", "未知属性", "未知属性", "未知属性", "未知属性", "未知属性", "未知属性", "未知属性", "未知属性", "未知属性"]
     img = await get_attr(kf, maxjl_list, jl_list, equip_list, equip_icon_list, equip_quailty, basic, qx, qx_icon, henchant, lenchant, fs, wcs_icon, wcs, values, wcs1, wcs_icon1)
     return img
 
@@ -647,7 +647,7 @@ async def get_attr(kungfu: str, maxjl_list: list, jl_list: list, equip_list: lis
     elif attr == "防御":
         objects = ["外防", "内防", "最大气血值", "破招", "御劲", "闪避", "招架", "拆招", "体质", "加速率", "无双", "加速"]
     else:
-        raise ValueError("Unknown type of kungfu!")
+        objects = ["N/A", "N/A", "N/A", "N/A", "N/A", "N/A", "N/A", "N/A", "N/A", "N/A", "N/A", "N/A"]
     background = Image.open(await get_bg(kftosh(kungfu)))
     draw = ImageDraw.Draw(background)
     flickering = Image.open(PLUGINS + "/jx3/attributes/flicker.png").resize((38, 38))
