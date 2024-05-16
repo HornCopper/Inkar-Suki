@@ -139,7 +139,7 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
         if i.find(args.extract_plain_text()) != -1 and count_line(i) >= 6:
             ans.append(i)
     if len(ans) == 0:
-        await getCmd.finish("唔……没有找到相关命令，您可以到用户群（" + Config.notice_to[0] + "）进行反馈！")
+        await getCmd.finish("唔……没有找到相关命令，您可以到用户群（650495414）进行反馈！")
     ans = ["|命令|格式|别名|描述|权限|图片|","|-----|-----|-----|-----|-----|-----|"] + ans
     html = markdown.markdown("\n".join(ans), extensions=["markdown.extensions.tables"])
     html = "<!DOCTYPE html><html><head><meta charset=\"utf-8\">" + css2 + "</head><body>" + html + "</body></html>"
