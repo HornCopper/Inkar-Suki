@@ -16,7 +16,7 @@ def getAttrs(data: list):
 async def getData(name, quality):
     url = f"https://node.jx3box.com/api/node/item/search?ids=&keyword={name}&client=std&MinLevel=quality&MaxLevel=quality&per=50&page="
     data = []
-    getdata = await get_api(url + str(i+1))
+    getdata = await get_api(url)
     for x in getdata["data"]["data"]:
         if x["BindType"] != 2:
             continue
