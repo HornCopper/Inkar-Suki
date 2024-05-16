@@ -49,6 +49,14 @@ def convertAttrs(raw: str):
         else:
             more.append("全会心")
             more.append("全会心效果")
+    
+    if fd(raw, "会心会效") and not fd(raw, "双会"):
+        if basic == "外功":
+            more.append(basic + "会心")
+            more.append(basic + "会心效果")
+        else:
+            more.append("全会心")
+            more.append("全会心效果")
 
     # 双会可能出现的组合
     if fd(raw, "破") and not fd(raw, "纯破") and not fd(raw, "破招"):
@@ -61,7 +69,7 @@ def convertAttrs(raw: str):
         more.append("无双")
     
     # 会心
-    if fd(raw, "会") and not fd(raw, "双会") and not fd(raw, "纯会"):
+    if fd(raw, "会") and not fd(raw, "双会") and not fd(raw, "纯会") and not fd(raw, "会效"):
         if basic == "外功":
             more.append(basic + "会心")
         else:
