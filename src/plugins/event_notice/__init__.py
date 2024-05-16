@@ -78,7 +78,7 @@ async def on_group_decrease(bot: Bot, event: NoticeEvent):
 
 async def notice_and_ban(bot: Bot, event: NoticeEvent, action: str):
     message = f"唔……{Config.name}在群聊（{event.group_id}）被{action}啦！\n操作者：{event.operator_id}，已自动封禁！"
-    for i in Config.notice_to:
+    for i in Config.notice_to[str(event.self_id)]:
         await bot.call_api("send_group_msg", group_id=int(i), message=message)
     kicker = str(event.operator_id)
     if banned(kicker):
@@ -144,7 +144,7 @@ async def _(bot: Bot, event: RequestEvent):
         current.append(new)
         write(TOOLS + "/" + "application.json", json.dumps(current, ensure_ascii=False))
         msg = f"收到新的加群申请：\n邀请人：{user}\n群号：{group}"
-        for i in Config.notice_to:
+        for i in Config.notice_to[str(event.self_id)]:
             await bot.call_api("send_group_msg", group_id=int(i), message=msg)
 
 

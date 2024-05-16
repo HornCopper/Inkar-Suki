@@ -112,6 +112,6 @@ async def leave_group(bot: Bot, event: Event, confirm: Message = Arg()):
     u_input = confirm.extract_plain_text()
     if u_input == "移除机器人":
         await dismiss.send(leave_msg)
-        for i in Config.notice_to:
+        for i in Config.notice_to[str(event.self_id)]:
             await bot.call_api("send_group_msg", group_id=int(i), message=f"{Config.name}按他们的要求，离开了{event.group_id}。")
         await bot.call_api("set_group_leave", group_id=event.group_id)
