@@ -2,8 +2,6 @@ from nonebot import get_driver
 
 from .jx3 import *
 
-import datetime, shutil
-
 driver = get_driver()
 
 
@@ -15,9 +13,9 @@ async def nonebot_on_startup():
     if await ws_client.init():
         logger.info("Connected to JX3API successfully.")
 
-ws_recev = on(type="WsRecv", priority=5, block=False)
+jx3api_ws = on(type="WsRecv", priority=5, block=False)
 
-@ws_recev.handle()
+@jx3api_ws.handle()
 async def on_jx3_event_recv(bot: Bot, event: RecvEvent):
     message = event.get_message()
     if not message or message["type"] == "":

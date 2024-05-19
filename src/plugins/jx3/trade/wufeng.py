@@ -14,17 +14,12 @@ def getAttrs(data: list):
     return attrs
 
 async def getData(name, quality):
-    url = f"https://node.jx3box.com/api/node/item/search?ids=&keyword={name}&client=std&per=50&page="
+    url = f"https://node.jx3box.com/api/node/item/search?ids=&keyword={name}&client=std&MinLevel={quality}&MaxLevel={quality}&per=50&BindType=2"
     data = []
-    for i in range(1, 114514):
-        getdata = await get_api(url + str(i+1))
-        if getdata["data"]["data"] == []:
-            break
-        for x in getdata["data"]["data"]:
-            if x["BindType"] != 2:
-                continue
-            if str(x["Level"]) == str(quality):
-                data.append(x)
+    getdata = await get_api(url)
+    for x in getdata["data"]["data"]:
+        if str(x["Level"]) == str(quality):
+            data.append(x)
     return data
 
 async def getArmor(raw: str):
