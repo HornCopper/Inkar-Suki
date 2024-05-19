@@ -20,10 +20,8 @@ class Config:
 
     web_path = ""  # GitHub Webhook的地址，填写`/a`，则内网地址为`http://127.0.0.1:<NB端口>/a`，`NB端口`在`.env.dev`中的`PORT`
 
-    name = '音卡' # 机器人名字
+    name = "音卡" # 机器人名字
     
-    bot = [""]  # Bot的QQ号，此处请只填写一个，用`str`存在`list`中。
-
     platform = True  # 平台标识，`True`为Linux，`False`为`Windows`
 
     owner = [""]  # Bot主人，可以有多个，用`str`存在`list`中
@@ -67,4 +65,8 @@ class Config:
 
     jx3api_link = ""  # JX3API API链接
 
-    notice_to = [""]  # 机器人的部分日志将发送到这些群聊，每个元素类型为`str`
+    notice_to = {
+        "bot_id": "group_id"
+    }  # 机器人的部分日志将发送到这些群聊
+
+    bot = list(notice_to) # 不改了就这样
