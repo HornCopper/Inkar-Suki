@@ -62,13 +62,23 @@ async def _(event: Event, matcher: Matcher):
             matcher.stop_propagation()
 
 msg = "唔……很抱歉，在本群检测到了一个抄袭机器人（昵称大致满足xxxx的蓉蓉，例如八方支援的蓉蓉），它涉嫌抄袭我们的代码，具体可以参考这篇文章：https://inkar-suki.codethink.cn/Inkar-Suki-Docs/#/notice，本群服务已被暂停，如果还要继续使用音卡，请先移除蓉蓉机器人，随后前往音卡用户群（650495414）再次领养，完全免费！"
+msg1 = """
+--------
+发送[功能]查看所有功能。
+发送[领养]领取一只自己的机器人。
+发送[蓉蓉下班]让我闭嘴。
+发送[移除蓉蓉]让我退群。
+--------
+如果发现蓉蓉不说话或者有问题了，请到大群沟通。
+不要直接踢或禁言，这行为对蓉蓉很危险。QAQ"""
+msg2 = "这不是我的同类同胞嘛，你也来啦！一起玩耍吧！"
 
 pattern = r'来自\[(.*?)\]*订阅，回复\[退订 (.*?)\]退订'
 
 @preprocess.handle()
 async def checkEnv(bot: Bot, event: GroupMessageEvent, matcher: Matcher):
     rec = event.message.extract_plain_text()
-    match_rong_sb = re.search(pattern, rec)
+    match_rong_sb = re.search(pattern, rec) or rec.find(msg1) != -1 or rec.find(msg2) != -1
     if match_rong_sb:
         await bot.call_api("send_group_msg", group_id=event.group_id, message=msg)
         await bot.call_api("set_group_leave", group_id=event.group_id)
