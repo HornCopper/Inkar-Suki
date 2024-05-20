@@ -172,9 +172,9 @@ async def getSingleImg(name: str):
     if itemData["data"]["total"] == 0:
         return ["唔……您搜索的物品尚未收录！"]
     final_list = itemData["data"]["data"]
-    itemList_searchable = []
     servers = list(json.loads(read(TOOLS + "/basic/server.json")))
     for server in servers:
+        itemList_searchable = []
         for i in final_list:
             new = {}
             if i["BindType"] not in [0, 1, 2, None]:
