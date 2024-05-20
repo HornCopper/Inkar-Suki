@@ -158,6 +158,9 @@ async def getImg(server: str, name: str, group: str, itemList: list = []):
 
 async def getSingleImg(name: str):
     table = []
+    lows = []
+    avgs = []
+    highs = []
     for i in filters:
         if name.find(i) != -1:
             return ["唔……请勿查找无封装备！\n如果您需要查找无封装备，可以使用“交易行无封”（注意没有空格），使用方法参考：交易行无封 服务器 词条\n词条示例：13550内功双会头"]
@@ -194,21 +197,24 @@ async def getSingleImg(name: str):
             if current != None:
                 currentStatus = 1
             else:
-                if itemList_searchable[0]["data"]["yesterday"] != None:
+                if itemList_searchable[0]["data"]["yesterday"]  != None:
                     yesterdayFlag = True
                     currentStatus = 1
-                    current = itemList_searchable[0]["data"]["yesterday"]
+                    current = itemList_searchable[0]["data"]["yesterday"] 
+                else:
+                    yesterdayFlag = 0
+                    currentStatus = 0
             if currentStatus:
-                toReplace = [["$low", toCoinImage(convert(current["LowestPrice"]))], ["$equal", toCoinImage(convert(current["AvgPrice"]))], ["$high", toCoinImage(convert(current["HighestPrice"]))]]
-                msgbox = template_msgbox
-                for toReplace_word in toReplace:
-                    msgbox = msgbox.replace(toReplace_word[0], toReplace_word[1])
+                highs.append(current["HighestPrice"])
+                avgs.append(current["AvgPrice"])
+                lows.append(current["LowestPrice"])
             else:
-                msgbox = ""
+                highs.append(0)
+                avgs.append(0)
+                lows.append(0)
             color = ["(167, 167, 167)", "(255, 255, 255)", "(0, 210, 75)", "(0, 126, 255)", "(254, 45, 254)", "(255, 165, 0)"][itemList_searchable[0]["quality"]]
             itemId = itemList_searchable[0]["id"]
-            icon_id = itemList_searchable[0]["IconID"]
-            icon = "https://icon.jx3box.com/icon/" + str(icon_id) + ".png"
+            icon = itemList_searchable[0]["icon"]
             detailData = await get_api(f"https://next2.jx3box.com/api/item-price/{itemId}/detail?server={server}&limit=20")
             if (not currentStatus or yesterdayFlag) and detailData["data"]["prices"] == None:
                 if not yesterdayFlag:
@@ -226,6 +232,16 @@ async def getSingleImg(name: str):
                         table_content = table_content.replace(word[0], word[1])
                     table.append(table_content)
                     continue
+            fhighs = [x for x in highs if x != 0]
+            favgs = [x for x in avgs if x != 0]
+            flows = [x for x in lows if x != 0]
+            final_highest = int(sum(fhighs) / len(fhighs))
+            final_avg = int(sum(favgs) / len(favgs))
+            final_lowest = int(sum(flows) / len(flows))
+            toReplace = [["$low", toCoinImage(convert(final_lowest))], ["$equal", toCoinImage(convert(final_avg))], ["$high", toCoinImage(convert(final_highest))]]
+            msgbox = template_msgbox.replace("当日", "全服")
+            for toReplace_word in toReplace:
+                msgbox = msgbox.replace(toReplace_word[0], toReplace_word[1])
             each_price = detailData["data"]["prices"][0]
             table_content = template_table
             toReplace_word = [["$icon", itemList_searchable[0]["icon"]], ["$color", color], ["$name", itemList_searchable[0]["name"]], ["$time", convert_time(each_price["created"], "%m月%d日 %H:%M:%S")], ["$limit", str(each_price["n_count"])], ["$price", toCoinImage(convert(each_price["unit_price"]))]]
