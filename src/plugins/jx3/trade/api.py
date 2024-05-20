@@ -31,6 +31,9 @@ template_table = """
 </tr>"""
 
 async def getImg(server: str, name: str, group: str, itemList: list = []):
+    if server == "全服":
+        data = await getSingleImg(name)
+        return data
     server = server_mapping(server, group)
     if not server:
         return [PROMPT_ServerNotExist]
@@ -152,6 +155,96 @@ async def getImg(server: str, name: str, group: str, itemList: list = []):
         write(final_html, html)
         final_path = await generate(final_html, False, ".total", False)
         return Path(final_path).as_uri()
+
+async def getSingleImg(name: str):
+    table = []
+    for i in filters:
+        if name.find(i) != -1:
+            return ["唔……请勿查找无封装备！\n如果您需要查找无封装备，可以使用“交易行无封”（注意没有空格），使用方法参考：交易行无封 服务器 词条\n词条示例：13550内功双会头"]
+    for i in banned:
+        if name == i:
+            return ["唔……请勿查找无封装备！"]
+    final_list = []
+    itemData = await get_api(f"https://node.jx3box.com/api/node/item/search?ids=&keyword={name}&client=std&per=35")
+    if itemData["data"]["total"] == 0:
+        return ["唔……您搜索的物品尚未收录！"]
+    final_list = itemData["data"]["data"]
+    itemList_searchable = []
+    servers = list(json.loads(read(TOOLS + "/basic/server.json")))
+    for server in servers:
+        for i in final_list:
+            new = {}
+            if i["BindType"] not in [0, 1, 2, None]:
+                continue
+            id = i["id"]
+            itemAPIData = await get_api(f"https://next2.jx3box.com/api/item-price/{id}/logs?server={server}&limit=20")
+            if itemAPIData["data"]["logs"] == None:
+                continue
+            else:
+                new["data"] = itemAPIData["data"]
+            new["id"] = str(id)
+            new["icon"] = f"https://icon.jx3box.com/icon/" + str(i["IconID"]) + ".png"
+            new["name"] = i["Name"]
+            new["quality"] = i["Quality"] if checknumber(i["Quality"]) else 0
+            itemList_searchable.append(new)
+        if len(itemList_searchable) == 1:
+            currentStatus = 0 # 当日是否具有该物品在交易行
+            yesterdayFlag = False
+            current = itemList_searchable[0]["data"]["today"]
+            if current != None:
+                currentStatus = 1
+            else:
+                if itemList_searchable[0]["data"]["yesterday"] != None:
+                    yesterdayFlag = True
+                    currentStatus = 1
+                    current = itemList_searchable[0]["data"]["yesterday"]
+            if currentStatus:
+                toReplace = [["$low", toCoinImage(convert(current["LowestPrice"]))], ["$equal", toCoinImage(convert(current["AvgPrice"]))], ["$high", toCoinImage(convert(current["HighestPrice"]))]]
+                msgbox = template_msgbox
+                for toReplace_word in toReplace:
+                    msgbox = msgbox.replace(toReplace_word[0], toReplace_word[1])
+            else:
+                msgbox = ""
+            color = ["(167, 167, 167)", "(255, 255, 255)", "(0, 210, 75)", "(0, 126, 255)", "(254, 45, 254)", "(255, 165, 0)"][itemList_searchable[0]["quality"]]
+            itemId = itemList_searchable[0]["id"]
+            icon_id = itemList_searchable[0]["IconID"]
+            icon = "https://icon.jx3box.com/icon/" + str(icon_id) + ".png"
+            detailData = await get_api(f"https://next2.jx3box.com/api/item-price/{itemId}/detail?server={server}&limit=20")
+            if (not currentStatus or yesterdayFlag) and detailData["data"]["prices"] == None:
+                if not yesterdayFlag:
+                    toReplace_word = [["$icon", icon], ["$color", color], ["$name", name + f"（{server}）"], ["$time", convert_time(getCurrentTime(), "%m月%d日 %H:%M:%S")], ["$limit", "N/A"], ["$price", "<span style=\"color:red\">没有数据</span>"]]
+                    table_content = template_table
+                    for word in toReplace_word:
+                        table_content = table_content.replace(word[0], word[1])
+                    table.append(table_content)
+                    continue
+                else:
+                    avg = convert(current["AvgPrice"])
+                    toReplace_word = [["$icon", icon], ["$color", color], ["$name", name + f"（{server}）"], ["$time", convert_time(getCurrentTime(), "%m月%d日 %H:%M:%S")], ["$limit", "N/A"], ["$price", toCoinImage(avg)]]
+                    table_content = template_table
+                    for word in toReplace_word:
+                        table_content = table_content.replace(word[0], word[1])
+                    table.append(table_content)
+                    continue
+            each_price = detailData["data"]["prices"][0]
+            table_content = template_table
+            toReplace_word = [["$icon", itemList_searchable[0]["icon"]], ["$color", color], ["$name", itemList_searchable[0]["name"]], ["$time", convert_time(each_price["created"], "%m月%d日 %H:%M:%S")], ["$limit", str(each_price["n_count"])], ["$price", toCoinImage(convert(each_price["unit_price"]))]]
+            for word in toReplace_word:
+                table_content = table_content.replace(word[0], word[1])
+            table.append(table_content)
+            final_table = "\n".join(table)
+            html = read(VIEWS + "/jx3/trade/trade.html")
+            font = ASSETS + "/font/custom.ttf"
+            saohua = await get_api(f"{Config.jx3api_link}/data/saohua/random")
+            saohua = saohua["data"]["text"]
+            final_name = itemList_searchable[0]["name"]
+            html = html.replace("$customfont", font).replace("$tablecontent", final_table).replace("$randomsaohua", saohua).replace("$appinfo", f"交易行 · {server} · {final_name}").replace("$msgbox", msgbox)
+            final_html = CACHE + "/" + get_uuid() + ".html"
+            write(final_html, html)
+            final_path = await generate(final_html, False, ".total", False)
+            return Path(final_path).as_uri()
+        else:
+            return ["唔……您给出的物品名称似乎不够精准，全服交易行价格查询最好给出准确名称哦！"]
 
 def toCoinImage(rawString: str):
     to_replace = [["砖", f"<img src=\"{brickl}\">"], ["金", f"<img src=\"{goldl}\">"], ["银", f"<img src=\"{silverl}\">"], ["铜", f"<img src=\"{copperl}\">"]]
