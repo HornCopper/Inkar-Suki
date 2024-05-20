@@ -79,5 +79,5 @@ async def jx3_player(event: GroupMessageEvent, args: Message = CommandArg()):
     elif len(arg) == 2:
         server = arg[0]
         id = arg[1]
-    msg = await roleInfo_(server=server, player=id, group_id=event.group_id)
+    msg = await roleInfo_(server=server, player=id, group_id=str(event.group_id))
     await jx3_cmd_roleInfo.finish(msg)
