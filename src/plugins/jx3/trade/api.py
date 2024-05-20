@@ -232,6 +232,8 @@ async def getSingleImg(name: str):
                         table_content = table_content.replace(word[0], word[1])
                     table.append(table_content)
                     continue
+        else:
+            return ["唔……您给出的物品名称似乎不够精准，全服交易行价格查询最好给出准确名称哦！"]
         fhighs = [x for x in highs if x != 0]
         favgs = [x for x in avgs if x != 0]
         flows = [x for x in lows if x != 0]
@@ -259,8 +261,6 @@ async def getSingleImg(name: str):
         write(final_html, html)
         final_path = await generate(final_html, False, ".total", False)
         return Path(final_path).as_uri()
-        else:
-            return ["唔……您给出的物品名称似乎不够精准，全服交易行价格查询最好给出准确名称哦！"]
 
 def toCoinImage(rawString: str):
     to_replace = [["砖", f"<img src=\"{brickl}\">"], ["金", f"<img src=\"{goldl}\">"], ["银", f"<img src=\"{silverl}\">"], ["铜", f"<img src=\"{copperl}\">"]]
