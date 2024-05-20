@@ -240,27 +240,27 @@ async def getSingleImg(name: str):
             table.append(table_content)
         else:
             return ["唔……您给出的物品名称似乎不够精准，全服交易行价格查询最好给出准确名称哦！"]
-        fhighs = [x for x in highs if x != 0]
-        favgs = [x for x in avgs if x != 0]
-        flows = [x for x in lows if x != 0]
-        final_highest = int(sum(fhighs) / len(fhighs))
-        final_avg = int(sum(favgs) / len(favgs))
-        final_lowest = int(sum(flows) / len(flows))
-        toReplace = [["$low", toCoinImage(convert(final_lowest))], ["$equal", toCoinImage(convert(final_avg))], ["$high", toCoinImage(convert(final_highest))]]
-        msgbox = template_msgbox.replace("当日", "全服")
-        for toReplace_word in toReplace:
-            msgbox = msgbox.replace(toReplace_word[0], toReplace_word[1])
-        final_table = "\n".join(table)
-        html = read(VIEWS + "/jx3/trade/trade.html")
-        font = ASSETS + "/font/custom.ttf"
-        saohua = await get_api(f"{Config.jx3api_link}/data/saohua/random")
-        saohua = saohua["data"]["text"]
-        final_name = itemList_searchable[0]["name"]
-        html = html.replace("$customfont", font).replace("$tablecontent", final_table).replace("$randomsaohua", saohua).replace("$appinfo", f"交易行 · {server} · {final_name}").replace("$msgbox", msgbox)
-        final_html = CACHE + "/" + get_uuid() + ".html"
-        write(final_html, html)
-        final_path = await generate(final_html, False, ".total", False)
-        return Path(final_path).as_uri()
+    fhighs = [x for x in highs if x != 0]
+    favgs = [x for x in avgs if x != 0]
+    flows = [x for x in lows if x != 0]
+    final_highest = int(sum(fhighs) / len(fhighs))
+    final_avg = int(sum(favgs) / len(favgs))
+    final_lowest = int(sum(flows) / len(flows))
+    toReplace = [["$low", toCoinImage(convert(final_lowest))], ["$equal", toCoinImage(convert(final_avg))], ["$high", toCoinImage(convert(final_highest))]]
+    msgbox = template_msgbox.replace("当日", "全服")
+    for toReplace_word in toReplace:
+        msgbox = msgbox.replace(toReplace_word[0], toReplace_word[1])
+    final_table = "\n".join(table)
+    html = read(VIEWS + "/jx3/trade/trade.html")
+    font = ASSETS + "/font/custom.ttf"
+    saohua = await get_api(f"{Config.jx3api_link}/data/saohua/random")
+    saohua = saohua["data"]["text"]
+    final_name = itemList_searchable[0]["name"]
+    html = html.replace("$customfont", font).replace("$tablecontent", final_table).replace("$randomsaohua", saohua).replace("$appinfo", f"交易行 · {server} · {final_name}").replace("$msgbox", msgbox)
+    final_html = CACHE + "/" + get_uuid() + ".html"
+    write(final_html, html)
+    final_path = await generate(final_html, False, ".total", False)
+    return Path(final_path).as_uri()
 
 def toCoinImage(rawString: str):
     to_replace = [["砖", f"<img src=\"{brickl}\">"], ["金", f"<img src=\"{goldl}\">"], ["银", f"<img src=\"{silverl}\">"], ["铜", f"<img src=\"{copperl}\">"]]
