@@ -19,6 +19,9 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     id_cut = id.split(",")
     if len(id_cut) <= 1:
         id_cut = []
+    if server == "全服":
+        if not checker(str(event.user_id), 10):
+            await trade.finish(error(10))
     img = await getImg(server, id, str(event.group_id), id_cut)
     if type(img) == type([]):
         await trade.finish(img[0])
