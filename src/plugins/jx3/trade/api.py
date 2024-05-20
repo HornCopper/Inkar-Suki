@@ -232,33 +232,33 @@ async def getSingleImg(name: str):
                         table_content = table_content.replace(word[0], word[1])
                     table.append(table_content)
                     continue
-            fhighs = [x for x in highs if x != 0]
-            favgs = [x for x in avgs if x != 0]
-            flows = [x for x in lows if x != 0]
-            final_highest = int(sum(fhighs) / len(fhighs))
-            final_avg = int(sum(favgs) / len(favgs))
-            final_lowest = int(sum(flows) / len(flows))
-            toReplace = [["$low", toCoinImage(convert(final_lowest))], ["$equal", toCoinImage(convert(final_avg))], ["$high", toCoinImage(convert(final_highest))]]
-            msgbox = template_msgbox.replace("当日", "全服")
-            for toReplace_word in toReplace:
-                msgbox = msgbox.replace(toReplace_word[0], toReplace_word[1])
-            each_price = detailData["data"]["prices"][0]
-            table_content = template_table
-            toReplace_word = [["$icon", itemList_searchable[0]["icon"]], ["$color", color], ["$name", itemList_searchable[0]["name"]], ["$time", convert_time(each_price["created"], "%m月%d日 %H:%M:%S")], ["$limit", str(each_price["n_count"])], ["$price", toCoinImage(convert(each_price["unit_price"]))]]
-            for word in toReplace_word:
-                table_content = table_content.replace(word[0], word[1])
-            table.append(table_content)
-            final_table = "\n".join(table)
-            html = read(VIEWS + "/jx3/trade/trade.html")
-            font = ASSETS + "/font/custom.ttf"
-            saohua = await get_api(f"{Config.jx3api_link}/data/saohua/random")
-            saohua = saohua["data"]["text"]
-            final_name = itemList_searchable[0]["name"]
-            html = html.replace("$customfont", font).replace("$tablecontent", final_table).replace("$randomsaohua", saohua).replace("$appinfo", f"交易行 · {server} · {final_name}").replace("$msgbox", msgbox)
-            final_html = CACHE + "/" + get_uuid() + ".html"
-            write(final_html, html)
-            final_path = await generate(final_html, False, ".total", False)
-            return Path(final_path).as_uri()
+        fhighs = [x for x in highs if x != 0]
+        favgs = [x for x in avgs if x != 0]
+        flows = [x for x in lows if x != 0]
+        final_highest = int(sum(fhighs) / len(fhighs))
+        final_avg = int(sum(favgs) / len(favgs))
+        final_lowest = int(sum(flows) / len(flows))
+        toReplace = [["$low", toCoinImage(convert(final_lowest))], ["$equal", toCoinImage(convert(final_avg))], ["$high", toCoinImage(convert(final_highest))]]
+        msgbox = template_msgbox.replace("当日", "全服")
+        for toReplace_word in toReplace:
+            msgbox = msgbox.replace(toReplace_word[0], toReplace_word[1])
+        each_price = detailData["data"]["prices"][0]
+        table_content = template_table
+        toReplace_word = [["$icon", itemList_searchable[0]["icon"]], ["$color", color], ["$name", itemList_searchable[0]["name"]], ["$time", convert_time(each_price["created"], "%m月%d日 %H:%M:%S")], ["$limit", str(each_price["n_count"])], ["$price", toCoinImage(convert(each_price["unit_price"]))]]
+        for word in toReplace_word:
+            table_content = table_content.replace(word[0], word[1])
+        table.append(table_content)
+        final_table = "\n".join(table)
+        html = read(VIEWS + "/jx3/trade/trade.html")
+        font = ASSETS + "/font/custom.ttf"
+        saohua = await get_api(f"{Config.jx3api_link}/data/saohua/random")
+        saohua = saohua["data"]["text"]
+        final_name = itemList_searchable[0]["name"]
+        html = html.replace("$customfont", font).replace("$tablecontent", final_table).replace("$randomsaohua", saohua).replace("$appinfo", f"交易行 · {server} · {final_name}").replace("$msgbox", msgbox)
+        final_html = CACHE + "/" + get_uuid() + ".html"
+        write(final_html, html)
+        final_path = await generate(final_html, False, ".total", False)
+        return Path(final_path).as_uri()
         else:
             return ["唔……您给出的物品名称似乎不够精准，全服交易行价格查询最好给出准确名称哦！"]
 
