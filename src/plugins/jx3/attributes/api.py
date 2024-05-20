@@ -30,7 +30,8 @@ async def addritube_(server: str = None, name: str = None, group_id: str = None)
     return data["data"]["url"]
 
 
-async def roleInfo_(server, player):
+async def roleInfo_(server, player, group_id):
+    server = server_mapping(server, group_id)
     if not token:
         return PROMPT_NoToken
     final_url = f"{Config.jx3api_link}/data/role/detailed?token={token}&name={player}&server={server}"
