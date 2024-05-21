@@ -322,7 +322,10 @@ async def get_attr_main(server, id, group_id):
         flag = 3
     else:
         flag = 4
-    school_body = uid[2] + "·" + uid[1]
+    try:
+        school_body = uid[2] + "·" + uid[1]
+    except:
+        return ["门派、体型等关键数据缺失，请尝试使用旗舰端在世界频道发言！"]
     uid = uid[0]
     equip_data = data_process(kf, data, True)
     maxjl_list = []
