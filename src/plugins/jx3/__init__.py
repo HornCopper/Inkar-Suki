@@ -25,7 +25,6 @@ async def on_jx3_event_recv(bot: Bot, event: RecvEvent):
     if message["type"] == "开服" and datetime.date.today().weekday() == 0:
         shutil.rmtree(ASSETS + "/jx3/monsters.jpg")
     logger.info(message["msg"])
-    record_info(message["msg"])
     groups = os.listdir(DATA)
     available_group = []
     bot_groups = await bot.call_api("get_group_list")
@@ -40,6 +39,8 @@ async def on_jx3_event_recv(bot: Bot, event: RecvEvent):
                 continue
             else:
                 if getGroupData(str(i), "server") == message["server"]:
+                    if "抓马过滤" in getGroupData(str(i), "addtions") and message["msg"].find(" 赤兔 ") == -1 or message["msg"].find(" 里飞沙 ") == -1 and message["type"] == "抓马":
+                        continue
                     await bot.call_api("send_group_msg", group_id=i, message=message["msg"], whitelist=1)
                     continue
                 else:
