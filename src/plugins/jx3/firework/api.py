@@ -15,13 +15,15 @@ def javascript(server, name):
 
 
 async def get_firework_data(server, name):
-    async with async_playwright() as p:
-        browser = await p.chromium.launch(headless=True, slow_mo=900)
-        context = await browser.new_context()
-        page = await context.new_page()
-        await page.goto("https://www.jx3pet.com/firework")
-        info = await page.evaluate(javascript(server, name))
-        return info
+    # async with async_playwright() as p:
+    #     browser = await p.chromium.launch(headless=True, slow_mo=900)
+    #     context = await browser.new_context()
+    #     page = await context.new_page()
+    #     await page.goto("https://www.jx3pet.com/firework")
+    #     info = await page.evaluate(javascript(server, name))
+    #     return info
+    info = await get_api(f"https://www.jx3pet.com/api/firework?server={server}&name={name}")
+    return info
 
 template = """
 <tr>
