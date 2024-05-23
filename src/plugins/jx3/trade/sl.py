@@ -42,7 +42,7 @@ def convertAttrs(raw: str):
         more.append(basic + "破防")
 
     # 双会类
-    if fd(raw, "双会"):
+    if fd(raw, "双会") or fd(raw, "会会"):
         if basic == "外功":
             more.append(basic + "会心")
             more.append(basic + "会心效果")
