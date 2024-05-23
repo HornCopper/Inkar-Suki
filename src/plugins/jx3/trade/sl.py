@@ -42,15 +42,7 @@ def convertAttrs(raw: str):
         more.append(basic + "破防")
 
     # 双会类
-    if fd(raw, "双会") or fd(raw, "会会"):
-        if basic == "外功":
-            more.append(basic + "会心")
-            more.append(basic + "会心效果")
-        else:
-            more.append("全会心")
-            more.append("全会心效果")
-    
-    if fd(raw, "会心会效") and not fd(raw, "双会"):
+    if fd(raw, "双会") or fd(raw, "会心会效") or fd(raw, "会会"):
         if basic == "外功":
             more.append(basic + "会心")
             more.append(basic + "会心效果")
@@ -69,7 +61,7 @@ def convertAttrs(raw: str):
         more.append("无双")
     
     # 会心
-    if fd(raw, "会") and not fd(raw, "双会") and not fd(raw, "纯会") and not fd(raw, "会效"):
+    if fd(raw, "会") and not fd(raw, "双会") and not fd(raw, "纯会") and not fd(raw, "会效") and not fd(raw, "会心会效") and not fd(raw, "会会"):
         if basic == "外功":
             more.append(basic + "会心")
         else:
