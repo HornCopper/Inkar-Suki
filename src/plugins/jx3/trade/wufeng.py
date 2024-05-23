@@ -52,7 +52,8 @@ async def getWufengImg(raw: str, server: str, group: str):
     try:
         itemId = data["id"]
     except:
-        return [f"唔……未找到该属性的无封装备。"]
+        emg = await get_content("https://inkar-suki.codethink.cn/Inkar-Suki-Docs/img/emoji.jpg")
+        return ["音卡建议您不要造无封装备了，因为没有。\n" + ms.image(emg)]
     logs = await get_api(f"https://next2.jx3box.com/api/item-price/{itemId}/logs?server={server}")
     current = logs["data"]["today"]
     yesterdayFlag = False
