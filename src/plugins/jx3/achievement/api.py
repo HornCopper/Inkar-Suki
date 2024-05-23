@@ -42,6 +42,9 @@ template = """
 
 
 async def achi_v2(server: str = None, name: str = None, achievement: str = None, group_id: str = None):
+    server = server_mapping(server, group_id)
+    if not server:
+        return [PROMPT_ServerNotExist]
     personal_data_request = f"{Config.jx3api_link}/data/role/detailed?token={token}&server={server}&name={name}"
     personal_data = await get_api(personal_data_request)
     if personal_data["code"] != 200:

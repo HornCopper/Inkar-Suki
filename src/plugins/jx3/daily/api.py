@@ -4,7 +4,6 @@ import datetime
 
 async def daily_(predict_day_num: int = 0):
     """
-    获取日常图片链接
     @param predict_day_num 向后预测天数
     """
     full_link = f"{Config.jx3api_link}/data/active/current?num={predict_day_num}"
