@@ -243,9 +243,12 @@ async def getSingleImg(name: str):
     fhighs = [x for x in highs if x != 0]
     favgs = [x for x in avgs if x != 0]
     flows = [x for x in lows if x != 0]
-    final_highest = int(sum(fhighs) / len(fhighs))
-    final_avg = int(sum(favgs) / len(favgs))
-    final_lowest = int(sum(flows) / len(flows))
+    try:
+        final_highest = int(sum(fhighs) / len(fhighs))
+        final_avg = int(sum(favgs) / len(favgs))
+        final_lowest = int(sum(flows) / len(flows))
+    except:
+        return ["唔……该物品全服均没有数据！"]
     toReplace = [["$low", toCoinImage(convert(final_lowest))], ["$equal", toCoinImage(convert(final_avg))], ["$high", toCoinImage(convert(final_highest))]]
     msgbox = template_msgbox.replace("当日", "全服")
     for toReplace_word in toReplace:
