@@ -76,6 +76,8 @@ async def recruit_v2(server: str, actvt: str = "", local: bool = False, filter: 
     if actvt != "":
         final_url = final_url + "&keyword=" + actvt
     data = await get_api(final_url)
+    if data["code"] != 200:
+        return ["唔……未找到相关团队，请检查后重试！"]
     adFlags = await get_api("https://inkar-suki.codethink.cn/filters")
     time_now = convert_time(data["data"]["time"])
     appinfo = f" · 招募信息 · {server} · {time_now}"
