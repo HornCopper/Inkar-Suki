@@ -117,10 +117,3 @@ async def _(event: Event, args: Message = CommandArg()):
 @scheduler.scheduled_job("cron", hour="7")
 async def clean_data():
     write(CLOCK + "/signed.json", "[]")
-    logger.info("Signed.json has been cleaned.")
-    try:
-        for i in os.listdir(CACHE):
-            os.remove(CACHE + "/" + i)
-        logger.info("已清理所有缓存文件。")
-    except Exception as _:
-        logger.info("缓存清理失败，请检查后重试！！！")
