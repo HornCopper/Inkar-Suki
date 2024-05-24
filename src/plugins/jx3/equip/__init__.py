@@ -6,8 +6,16 @@ from tabulate import tabulate
 
 from .api import *
 
-jx3_cmd_equip_recommend = on_command("jx3_equip_recommend", aliases={"配装"}, force_whitespace=True, priority=5)
+template_rec_equip = """
+<tr>
+    <td class="short-column">$num</td>
+    <td class="short-column">$author</td>
+    <td class="short-column">$name</td>
+    <td class="short-column">$tag</td>
+    <td class="short-column">$like</td>
+</tr>"""
 
+jx3_cmd_equip_recommend = on_command("jx3_equip_recommend", aliases={"配装"}, force_whitespace=True, priority=5)
 
 @jx3_cmd_equip_recommend.handle()
 async def jx3_equip_recommend_menu(event: GroupMessageEvent, state: T_State, args: Message = CommandArg()):
@@ -26,9 +34,9 @@ async def jx3_equip_recommend_menu(event: GroupMessageEvent, state: T_State, arg
         else:
             kf = aliases(arg[0])
             condition.append(arg[1])
+    elif len(arg) == 1:
+        kf = aliases(arg[0])
     school_mapping = await get_api("https://inkar-suki.codethink.cn/schoolmapping")
-    if len(arg) == 2:
-        condition = arg[1].split(";")
     if kf not in list(school_mapping):
         await jx3_cmd_equip_recommend.finish("唔……未找到该心法，请检查后重试~")
     forceId = school_mapping[kf]
@@ -40,16 +48,24 @@ async def jx3_equip_recommend_menu(event: GroupMessageEvent, state: T_State, arg
     state["condition"] = condition
     state["kungfu"] = kf
     chart = []
-    chart.append(["序号", "作者", "名称", "标签", "点赞"])
     for i in range(len(data[1])):
-        chart.append([str(i), data[3][i], data[1][i], data[2][i], data[4][i]])
-    html = css + tabulate(chart, tablefmt="unsafehtml")
+        chart.append(template_rec_equip
+                     .replace("$num", str(i))
+                     .replace("$author", data[3][i])
+                     .replace("$name", data[1][i])
+                     .replace("$tag", data[2][i])
+                     .replace("$like", data[4][i]))
+    html = read(VIEWS + "/jx3/equip/recommend.html")
+    font = ASSETS + "/font/custom.ttf"
+    chart = "\n".join(chart)
+    html = html.replace("$customfont", font).replace("$tablecontent", chart).replace("$kf", kf)
     final_path = f"{CACHE}/{get_uuid()}.html"
     write(final_path, html)
     img = await generate(final_path, False, "table", False)
     if not img:
         await jx3_cmd_equip_recommend.finish("唔……音卡的配装列表图生成失败了捏，请联系作者~")
     else:
+        img = get_content_local(img)
         await jx3_cmd_equip_recommend.send(ms.image(Path(img).as_uri()))
 
 
