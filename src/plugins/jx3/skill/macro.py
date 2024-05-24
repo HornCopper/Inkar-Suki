@@ -36,8 +36,6 @@ async def get_url(xf):
     for i in macro_list:
         xf_ = icon_to_xf[i["icon"]]
         if xf_ == xf:
-            if xf_ == "花间游":
-                return "https://cms.jx3box.com/api/cms/post/74995"  # 谁叫你花间还在招标找不到宏啊寄
             return "https://cms.jx3box.com/api/cms" + i["link"].replace("macro", "post")
 
 
