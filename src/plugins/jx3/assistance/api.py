@@ -158,10 +158,9 @@ class Assistance:
                     for y in x:
                         icon = y["img"]
                         id = y["id"]
-                        uid = y["uid"]
                         job = y["job"]
                         time1 = await Assistance.time_convert(y["time"])
-                        content = f"<img src={icon} width=\"20\" height=\"20\"></img>{id}<br>职业：{job}<br>UID：{uid}<br>{time1}"
+                        content = f"<img src={icon} width=\"20\" height=\"20\"></img>{id}<br>职业：{job}<br>{time1}"
                         space.append(content)
                     chart.append(space)
                 final_html = "<div style=\"font-family:Custom\">" + \
