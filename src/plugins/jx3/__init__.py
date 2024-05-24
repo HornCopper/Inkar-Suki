@@ -40,7 +40,7 @@ async def on_jx3_event_recv(bot: Bot, event: RecvEvent):
                 continue
             else:
                 if getGroupData(str(i), "server") == message["server"]:
-                    if "抓马过滤" in getGroupData(str(i), "addtions") and message["msg"].find(" 赤兔 ") == -1 or message["msg"].find(" 里飞沙 ") == -1 and message["type"] == "抓马":
+                    if "抓马过滤" in getGroupData(str(i), "addtions") and (message["msg"].find(" 赤兔 ") == -1 or message["msg"].find(" 里飞沙 ") == -1) and message["type"] == "抓马":
                         continue
                     await bot.call_api("send_group_msg", group_id=i, message=message["msg"], whitelist=1)
                     continue
