@@ -62,11 +62,12 @@ async def jx3_equip_recommend_menu(event: GroupMessageEvent, state: T_State, arg
     final_path = f"{CACHE}/{get_uuid()}.html"
     write(final_path, html)
     img = await generate(final_path, False, "table", False)
+    img = Path(img).as_uri()
     if not img:
         await jx3_cmd_equip_recommend.finish("唔……音卡的配装列表图生成失败了捏，请联系作者~")
     else:
         img = get_content_local(img)
-        await jx3_cmd_equip_recommend.send(ms.image(Path(img).as_uri()))
+        await jx3_cmd_equip_recommend.send(ms.image(img))
 
 
 @jx3_cmd_equip_recommend.got("index", prompt="请选择配装查看哦，回复我只需要数字就行啦！")

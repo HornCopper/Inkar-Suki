@@ -32,6 +32,6 @@ async def get_horse_next_spawn(server: str):
             next_times[horse_type] = "无法预知" if "尚久" in time_str else (datetime.fromisoformat(json_data["created_at"][:-6]) + timedelta(minutes=int(time_remaining))).strftime("%Y-%m-%d %H:%M:%S")
     result = "各马驹的下一个生成时间：\n"
     for horse, time in next_times.items():
-        result += f"{horse}出世：{time}\n"
+        result += f"{horse}：{time}\n"
 
     return result.strip()
