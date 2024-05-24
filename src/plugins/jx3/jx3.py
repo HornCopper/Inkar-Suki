@@ -15,7 +15,6 @@ from .announce import *
 from .pendant import *
 from .pet import *
 from .penzai import *
-from .appearance import *
 from .gold import *
 from .rank import *
 from .recruit import *
@@ -37,3 +36,4 @@ from .calendar import *
 from .awesome import *
 from .duowan import *
 from .snacks import *
+from .assistance import *
