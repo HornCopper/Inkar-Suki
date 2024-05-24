@@ -1,6 +1,6 @@
 from src.tools.basic import *
 
-import tabulate
+from tabulate import tabulate
 
 css = """
 <style>
