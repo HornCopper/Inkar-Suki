@@ -13,5 +13,5 @@ jx3_cmd_horse_v2 = on_command("jx3_horse_v2", aliases={"抓马", "马场"}, forc
 @jx3_cmd_horse_v2.handle()
 async def jx3_horse_v2(event: GroupMessageEvent, args: Message = CommandArg()):
     server = args.extract_plain_text()
-    msg = await get_horse_next_spawn(server)
+    msg = await get_horse_next_spawn(server, str(event.group_id))
     await jx3_cmd_horse_v2.finish(msg)
