@@ -19,7 +19,7 @@ async def get_horse_reporter(server: str, group_id: str = None):  # 数据来源
             msg = f"{content}\n刷新时间：{time_}\n地图：{map}"
             return msg
         
-async def get_horse_next_spawn(server):
+async def get_horse_next_spawn(server, group_id: str):
     def parse_info(raw_msg: str, flush_time: str):
         next_times = {}
 
@@ -46,6 +46,9 @@ async def get_horse_next_spawn(server):
             result += f"{horse[:-2]} 将于{time}后刷新"
         ans = result.strip()
         return ans if ans != "" else "时间尚久，无法预知。"
+    server = server_mapping(server, group_id)
+    if not server:
+        return PROMPT_ServerNotExist
     web_data = await get_api(f"https://next2.jx3box.com/api/game/reporter/horse?pageIndex=1&pageSize=50&server={server}&type=horse&subtype=npc_chat")
     msg = {}
     ft = {}
