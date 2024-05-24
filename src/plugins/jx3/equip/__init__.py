@@ -28,12 +28,12 @@ async def jx3_equip_recommend_menu(event: GroupMessageEvent, state: T_State, arg
     classic = ["PVE", "PVP"]
     kf = ""
     if len(arg) == 2:
-        if str.upper(arg[0]) in classic:
+        if arg[0].upper() in classic:
             kf = aliases(arg[1])
-            condition.append(arg[0])
+            condition.append(arg[0].upper())
         else:
             kf = aliases(arg[0])
-            condition.append(arg[1])
+            condition.append(arg[1].upper())
     elif len(arg) == 1:
         kf = aliases(arg[0])
     school_mapping = await get_api("https://inkar-suki.codethink.cn/schoolmapping")
