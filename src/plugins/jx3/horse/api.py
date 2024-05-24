@@ -43,7 +43,7 @@ async def get_horse_next_spawn(server, group_id: str):
         # 构造结果字符串
         result = ""
         for horse, time in next_times.items():
-            result += f"{horse[:-2]} 将于{time}后刷新"
+            result += f"\n{horse[:-2]} 将于{time}后刷新"
         ans = result.strip()
         return ans if ans != "" else "时间尚久，无法预知。"
     server = server_mapping(server, group_id)
@@ -65,6 +65,6 @@ async def get_horse_next_spawn(server, group_id: str):
     final_msg = ""
     for map_name in maps:
         print(ft[map_name])
-        final_msg += f"\n{map_name}\n" + parse_info(msg[map_name], ft[map_name]) + "\n-------------------------------"
+        final_msg += f"\n{map_name}" + parse_info(msg[map_name], ft[map_name]) + "\n-------------------------------"
     final_msg = final_msg[1:-1]
     return final_msg if not dl_flag else final_msg + "\n今日将有的卢出世，敬请留意！"
