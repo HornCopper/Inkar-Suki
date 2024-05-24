@@ -19,26 +19,49 @@ async def get_horse_reporter(server: str, group_id: str = None):  # 数据来源
             msg = f"{content}\n刷新时间：{time_}\n地图：{map}"
             return msg
         
-async def get_horse_next_spawn(server: str):
-    web_data = await get_api(f"https://next2.jx3box.com/api/game/reporter/horse?pageIndex=1&pageSize=1&server={server}&type=horse&subtype=npc_chat")
-    json_data = web_data["data"]["list"][0]
+async def get_horse_next_spawn(server):
+    def parse_info(raw_msg: str, flush_time: str):
+        next_times = {}
 
-    next_times = {}
+        # 解析内容
+        content_lines = raw_msg.split("\n")
+        for line in content_lines:
+            if "距离下一匹" in line and "还有" in line:
+                horse_type, time_str = line.split("还有")
+                horse_type = horse_type.replace("距离下一匹", "").strip()
+                time_remaining = time_str.split("分钟")[0].strip()
+                if "尚久" in time_str:
+                    next_times[horse_type] = "无法预知"
+                else:
+                    created_at = datetime.strptime(flush_time, "%Y-%m-%dT%H:%M:%S+08:00")
+                    next_spawn_time = created_at + timedelta(minutes=int(time_remaining))
+                    time_difference = next_spawn_time - datetime.now()
+                    minutes = int(time_difference.total_seconds() // 60)
+                    if minutes > 0:
+                        next_times[horse_type] = f"{minutes}分钟"
 
-    dl = False
-    content_lines = json_data["content"].split("\n")
-    if "今日将有的卢出世，侠士届时可前去尝试捕捉。" in content_lines:
-        dl = True
-    for line in content_lines:
-        if "距离下一匹" in line and "还有" in line:
-            horse_type, time_str = line.split("还有")
-            horse_type = horse_type.replace("距离下一匹", "").strip()
-            time_remaining = time_str.split("分钟")[0].strip()
-            next_times[horse_type] = "无法预知" if "尚久" in time_str else (datetime.fromisoformat(json_data["created_at"][:-6]) + timedelta(minutes=int(time_remaining))).strftime("%Y-%m-%d %H:%M:%S")
-
-    result = "各马驹的下一个生成时间：\n"
-    for horse, time in next_times.items():
-        result += f"{horse}出世：{time}\n"
-
-    ans = result.strip() if not dl else result.strip() + "\n今日将有的卢出世，敬请留意！"
-    return ans
+        # 构造结果字符串
+        result = ""
+        for horse, time in next_times.items():
+            result += f"{horse[:-2]} 将于{time}后刷新"
+        ans = result.strip()
+        return ans if ans != "" else "时间尚久，无法预知。"
+    web_data = await get_api(f"https://next2.jx3box.com/api/game/reporter/horse?pageIndex=1&pageSize=50&server={server}&type=horse&subtype=npc_chat")
+    msg = {}
+    ft = {}
+    maps = ["鲲鹏岛", "阴山大草原", "黑戈壁"]
+    dl_flag = False
+    for map_name in maps:
+        for each_info in web_data["data"]["list"]:
+            if each_info["map_name"] == map_name:
+                msg[map_name] = each_info["content"]
+                if each_info["content"].find("今日将有的卢出世，侠士届时可前去尝试捕捉。") != -1:
+                    dl_flag = True
+                ft[map_name] = each_info["created_at"]
+                break
+    final_msg = ""
+    for map_name in maps:
+        print(ft[map_name])
+        final_msg += f"\n{map_name}\n" + parse_info(msg[map_name], ft[map_name]) + "\n-------------------------------"
+    final_msg = final_msg[1:-1]
+    return final_msg if not dl_flag else final_msg + "\n今日将有的卢出世，敬请留意！"
