@@ -159,7 +159,7 @@ class Assistance:
                         icon = y["img"]
                         id = y["id"]
                         job = y["job"]
-                        time1 = await Assistance.time_convert(y["time"])
+                        time1 = convert_time(y["time"])
                         content = f"<img src={icon} width=\"20\" height=\"20\"></img>{id}<br>职业：{job}<br>{time1}"
                         space.append(content)
                     chart.append(space)
