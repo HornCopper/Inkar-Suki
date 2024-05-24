@@ -148,12 +148,11 @@ class Assistance:
                 chart = []
                 creator = i["creator"]
                 time_ = convert_time(i["create_time"])
-                server = i["server"]
                 lenth = len(i["member"][0]) + len(i["member"][1]) + \
                     len(i["member"][2]) + \
                     len(i["member"][3]) + len(i["member"][4])
                 chart.append([f"创建者：{creator}", description,
-                             time_, server, f"{lenth}/25"])
+                             time_, "开团辅助", f"{lenth}/25"])
                 for x in i["member"]:
                     space = []
                     for y in x:
