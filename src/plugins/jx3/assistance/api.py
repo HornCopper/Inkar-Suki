@@ -167,6 +167,6 @@ class Assistance:
                 html = read(VIEWS + "/jx3/assistance/assistance.html").replace("$tablecontent", html_table).replace("$creator", str(creator)).replace("$tc", str(count["T"])).replace("$nc", str(count["N"])).replace("$bc", str(count["B"])).replace("$dc", str(count["D"])).replace("$customfont", font).replace("$rdbg", bg).replace("$title", description)
                 final_html = CACHE + "/" + get_uuid() + ".html"
                 write(final_html, html)
-                final_path = await generate(final_html, False, "body", False)
+                final_path = await generate(final_html, False, "background-container", False)
                 return Path(final_path).as_uri()
         return False
