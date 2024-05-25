@@ -194,7 +194,7 @@ class Assistance:
                             cell_content = "<div class=\"content-cell\"></div>"
                         html_table += f"<td>{cell_content}</td>\n"
                     html_table += "</tr>\n"
-                bg = ASSETS + "/image/assistance/" + random.randint(1, 9) + ".jpg"
+                bg = ASSETS + "/image/assistance/" + str(random.randint(1, 9)) + ".jpg"
                 html_table += "</table>"
                 font = ASSETS + "/font/custom.ttf"
                 html = read(VIEWS + "/jx3/assistance/assistance.html").replace("$tablecontent", html_table).replace("$creator", creator).replace("$tc", count["T"]).replace("$nc", count["N"]).replace("$bc", count["B"]).replace("$dc", count["D"]).replace("$customfont", font).replace("$rdbg", bg)
