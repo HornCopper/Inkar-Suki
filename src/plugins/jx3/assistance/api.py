@@ -167,7 +167,7 @@ class Assistance:
                 for row in i["member"]:
                     html_table += "  <tr>\n"
                     for x in range(5):
-                        if i < len(row) and row[x]:  # 如果索引在范围内且元素不为空
+                        if x < len(row) and row[x]:  # 如果索引在范围内且元素不为空
                             a = row[x]
                             count[Assistance.job_to_type(a["job"])] += 1
                             img_src = a["img"]
