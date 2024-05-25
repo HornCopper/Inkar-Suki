@@ -173,7 +173,7 @@ class Assistance:
                             img_src = a["img"]
                             job_color = colorList.get(a["job"], "#000000")  # 默认颜色为黑色
                             id_text = a["id"]
-                            qq_text = a["applyer"]
+                            qq_text = a["apply"]
                             cell_content = f"""
                             <div class="content-cell">
                                 <img src={img_src}>
