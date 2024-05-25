@@ -1,38 +1,5 @@
 from src.tools.basic import *
 
-from tabulate import tabulate
-
-css = """
-<style>
-            ::-webkit-scrollbar 
-            {
-                display: none;   
-            }
-            table 
-            { 
-                border-collapse: collapse; 
-            } 
-            table, th, td
-            { 
-                border: 1px solid rgba(0,0,0,0.05); 
-                font-size: 0.8125rem; 
-                font-weight: 500; 
-            } 
-            th, td 
-            { 
-                padding: 15px; 
-                text-align: left; 
-            }
-            @font-face
-            {
-                font-family: Custom;
-                src: url("ctft");
-            }
-</style>"""
-path = Path(get_resource_path(f"font{os.sep}custom.ttf"))
-css = css.replace("ctft", path.as_uri())
-
-
 class Assistance:
     async def check_description(group: str, description: str):
         file_content = json.loads(read(f"{DATA}/{group}/opening.json"))
