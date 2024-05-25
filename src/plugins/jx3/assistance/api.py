@@ -140,32 +140,66 @@ class Assistance:
                         if y["id"] == id:
                             return True
         return False
+    
+    def job_to_type(job: str):
+        if job in ["铁牢律", "明尊琉璃体", "洗髓经", "铁骨衣"]:
+            return "T"
+        elif job in ["离经易道", "补天诀", "相知", "灵素", "云裳心经"]:
+            return "N"
+        elif job == "老板":
+            return "B"
+        else:
+            return "D"
 
     async def generate_html(group: str, description: str):
         now = json.loads(read(f"{DATA}/{group}/opening.json"))
         for i in now:
             if i["description"] == description:
-                chart = []
+                colorList = await get_api("https://inkar-suki.codethink.cn/schoolcolors")
                 creator = i["creator"]
-                time_ = convert_time(i["create_time"])
-                lenth = len(i["member"][0]) + len(i["member"][1]) + \
-                    len(i["member"][2]) + \
-                    len(i["member"][3]) + len(i["member"][4])
-                chart.append([f"创建者：{creator}", description,
-                             time_, "开团辅助", f"{lenth}/25"])
-                for x in i["member"]:
-                    space = []
-                    for y in x:
-                        icon = y["img"]
-                        id = y["id"]
-                        job = y["job"]
-                        time1 = convert_time(y["time"])
-                        content = f"<img src={icon} width=\"20\" height=\"20\"></img>{id}<br>职业：{job}<br>{time1}"
-                        space.append(content)
-                    chart.append(space)
-                final_html = "<div style=\"font-family:Custom\">" + \
-                    tabulate(chart, tablefmt="unsafehtml") + "</div>" + css
-                path = CACHE + "/" + get_uuid() + ".html"
-                write(path, final_html)
-                return path
+                count = {
+                    "T": 0,
+                    "N": 0,
+                    "D": 0,
+                    "B": 0
+                }
+                html_table = "<table>"
+                for row in i["member"]:
+                    html_table += "  <tr>\n"
+                    for x in range(5):
+                        if i < len(row) and row[x]:  # 如果索引在范围内且元素不为空
+                            a = row[x]
+                            count[Assistance.job_to_type(a["job"])] += 1
+                            img_src = a["img"]
+                            job_color = colorList.get(a["job"], "#000000")  # 默认颜色为黑色
+                            id_text = a["id"]
+                            qq_text = a["qq"]
+                            cell_content = f"""
+                            <div class="content-cell">
+                                <img src={img_src}>
+                                <p style="
+                                    padding-left: 5px;
+                                    color: {job_color};
+                                    text-shadow:
+                                        -1px -1px 0 #000, 
+                                        1px -1px 0 #000, 
+                                        -1px 1px 0 #000,
+                                        1px 1px 0 #000;">
+                                    {id_text}
+                                    <br>（{qq_text}）
+                                </p>
+                            </div>
+                            """
+                        else:
+                            cell_content = "<div class=\"content-cell\"></div>"
+                        html_table += f"<td>{cell_content}</td>\n"
+                    html_table += "</tr>\n"
+                bg = ASSETS + "/image/assistance/" + random.randint(1, 9) + ".jpg"
+                html_table += "</table>"
+                font = ASSETS + "/font/custom.ttf"
+                html = read(VIEWS + "/jx3/assistance/assistance.html").replace("$tablecontent", html_table).replace("$creator", creator).replace("$tc", count["T"]).replace("$nc", count["N"]).replace("$bc", count["B"]).replace("$dc", count["D"]).replace("$customfont", font).replace("$rdbg", bg)
+                final_html = CACHE + "/" + get_uuid() + ".html"
+                write(final_html, html)
+                final_path = await generate(final_html, False, "body", False)
+                return Path(final_path).as_uri()
         return False

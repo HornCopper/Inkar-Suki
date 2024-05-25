@@ -69,6 +69,33 @@ async def jx3_rank(event: GroupMessageEvent, args: Message = CommandArg()):
         data = await get_content(data)
         await jx3_cmd_rank.finish(ms.image(data))
 
+
+jx3_cmd_allserver_rank = on_command("jx3_asrank", aliases={"全服榜单"}, force_whitespace=True, priority=5)
+
+@jx3_cmd_allserver_rank.handle()
+async def jx3_rank(event: GroupMessageEvent, args: Message = CommandArg()):
+    return # 鸽一下
+    """
+    获取全服风云榜单：
+
+    Example：-全服榜单 个人 名士五十强
+    Example：-全服榜单 帮会 恶人神兵宝甲五十强
+    Example：-全服榜单 阵营 赛季恶人五十强
+    Example：-全服榜单 试炼 明教
+    """
+    arg = args.extract_plain_text().split(" ")
+    if len(arg) != 2:
+        await jx3_cmd_rank.finish("唔……参数不正确哦，请检查后重试~")
+        type1 = arg[0]
+        type2 = arg[1]
+    data = await asrank(type1, type2)
+    if isinstance(data, list):
+        await jx3_cmd_rank.finish(data[0])
+    else:
+        data = await get_content(data)
+        await jx3_cmd_rank.finish(ms.image(data))
+
+
 rank = on_command("jx3_schoolrank", aliases={"门派天梯", "天梯"}, force_whitespace=True, priority=5)
 
 
