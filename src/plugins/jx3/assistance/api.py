@@ -197,7 +197,7 @@ class Assistance:
                 bg = ASSETS + "/image/assistance/" + str(random.randint(1, 9)) + ".jpg"
                 html_table += "</table>"
                 font = ASSETS + "/font/custom.ttf"
-                html = read(VIEWS + "/jx3/assistance/assistance.html").replace("$tablecontent", html_table).replace("$creator", creator).replace("$tc", count["T"]).replace("$nc", count["N"]).replace("$bc", count["B"]).replace("$dc", count["D"]).replace("$customfont", font).replace("$rdbg", bg)
+                html = read(VIEWS + "/jx3/assistance/assistance.html").replace("$tablecontent", html_table).replace("$creator", str(creator)).replace("$tc", str(count["T"])).replace("$nc", str(count["N"])).replace("$bc", str(count["B"])).replace("$dc", str(count["D"])).replace("$customfont", font).replace("$rdbg", bg).replace("$title", description)
                 final_html = CACHE + "/" + get_uuid() + ".html"
                 write(final_html, html)
                 final_path = await generate(final_html, False, "body", False)
