@@ -68,6 +68,6 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     keyword = args.extract_plain_text()
     if keyword == "":
         return await team.finish("唔……没有输入关键词哦，请检查后重试~")
-    html_path = await aic.generate_html(str(event.group_id), keyword)
-    img = await generate(html_path, False, "table", False)
+    img_path = await aic.generate_html(str(event.group_id), keyword)
+    img = get_content_local(img_path)
     return await team.finish(ms.image(Path(img).as_uri()))
