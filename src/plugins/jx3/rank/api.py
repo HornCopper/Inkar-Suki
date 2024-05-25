@@ -33,3 +33,7 @@ async def rank_(type_1: str, type_2: str, server: str, group_id: str):
     if data["code"] == 404:
         return ["唔……未收录！"]
     return data["data"]["url"]
+
+async def asrank(type_1: str, type_2: str):
+    ...
+    # 鸽一下
