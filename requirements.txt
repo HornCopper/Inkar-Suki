@@ -19,3 +19,4 @@ pre-commit
 ruff
 markdown
 simpleeval
+pypinyin>=0.40.0,<1.0.0
