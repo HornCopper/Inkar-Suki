@@ -31,7 +31,7 @@ delete_affection_ = on_command("jx3_affdl", aliases={"解除情缘"}, force_whit
 
 @delete_affection_.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
-    if args.extract_plain_text() == "":
+    if args.extract_plain_text() != "":
         return
     self_id = event.user_id
     ans = await delete_affection(self_id)
