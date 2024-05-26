@@ -6,6 +6,7 @@ from typing import List, Optional, Tuple
 from PIL import Image, ImageDraw
 from PIL.Image import Image as IMG
 
+from .config import handle_config
 from .utils import get_pinyin, legal_idiom, load_font, save_jpg
 
 
@@ -64,7 +65,7 @@ class Handle:
         self.font_tone = load_font("NotoSansMono-Regular.ttf", font_size_tone)
 
         self.colors = (
-            ENHANCED_COLOR if True else NORMAL_COLOR
+            ENHANCED_COLOR if handle_config.handle_color_enhance else NORMAL_COLOR
         )
 
     def guess(self, idiom: str) -> Optional[GuessResult]:

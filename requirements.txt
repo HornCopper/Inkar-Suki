@@ -1,6 +1,6 @@
 beautifulsoup4
 httpx[http2]
-nonebot2
+nonebot2==2.2.0
 nonebot2[fastapi]
 nb-cli
 nonebot-adapter-onebot
@@ -12,7 +12,7 @@ playwright
 pydantic
 pathlib2
 aiotieba
-pillow
+pillow==10.0.0
 cron-descriptor
 croniter
 pre-commit
@@ -20,3 +20,4 @@ ruff
 markdown
 simpleeval
 pypinyin>=0.40.0,<1.0.0
+nonebot_plugin_alconna>=0.38.0,<1.0.0
