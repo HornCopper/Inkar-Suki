@@ -37,8 +37,8 @@ async def bind_affection(uin_1: int, name_1: str, uin_2: int, name_2: str, group
     server = getGroupServer(str(group_id))
     if not server: 
         return [PROMPT_ServerNotExist]
-    school_1 = getSchool(name_1, server)
-    school_2 = getSchool(name_2, server)
+    school_1 = await getSchool(name_1, server)
+    school_2 = await getSchool(name_2, server)
     new_data = {
         "server": server,
         "uin": [uin_1, uin_2],
