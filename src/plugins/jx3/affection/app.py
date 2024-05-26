@@ -39,6 +39,8 @@ async def bind_affection(uin_1: int, name_1: str, uin_2: int, name_2: str, group
         return [PROMPT_ServerNotExist]
     school_1 = await getSchool(name_1, server)
     school_2 = await getSchool(name_2, server)
+    if not school_1 or not school_2:
+        return ["绑定失败，对方或者自己的ID无法对应到角色！\n请检查对面或自身角色是否在本群聊绑定的服务器中！"]
     new_data = {
         "server": server,
         "uin": [uin_1, uin_2],
