@@ -8,7 +8,8 @@ def getAffections():
         return []
     else:
         content = read(global_file_path)
-        return json.loads(content)
+        data = json.loads(content)
+        return data
     
 def storgeAffections(new_data: dict):
     current = getAffections()
