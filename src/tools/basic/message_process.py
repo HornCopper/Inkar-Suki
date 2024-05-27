@@ -8,10 +8,9 @@ from nonebot.matcher import Matcher
 import os
 import json
 import re
-import httpx
 import random
 
-from ..basic import DATA, write, Config, get_api, read, TOOLS
+from ..basic import DATA, write, Config, get_api, read, TOOLS, chat_spark
 
 def getGroupData(group: str, key: str):
     data = json.loads(read(DATA + "/" + str(group) + "/settings.json"))
@@ -117,3 +116,15 @@ async def autoPrivate(event: PrivateMessageEvent):
     if str(event.user_id) in Config.bot:
         return
     await preprocess.finish("呜喵？如果你想要音卡去你的群聊一起玩的话，请前往我们的用户群找我哦，群号为：650495414\n另附：如果正在寻找文档，请点击下方链接前往：\nhttps://inkar-suki.codethink.cn/Inkar-Suki-Docs/#/\n如果愿意给音卡赞助，还可以点击下面的链接支持音卡：\nhttps://inkar-suki.codethink.cn/Inkar-Suki-Docs/#/donate")
+
+@preprocess.handle()
+async def _(bot: Bot, event: GroupMessageEvent):
+    message = event.message
+    if len(message) == 1 and message[0].message_type == "text":
+        if len(event.message.extract_plain_text()) > 30:
+            return
+        if "随机AI" in getGroupData(str(event.group_id), "subscribe"):
+            chance = random.randint(1, 100)
+            if chance % 50 == 0:
+                rd_resp = await chat_spark(message.extract_plain_text())
+                await bot.call_api("send_group_msg", group_id=event.group_id, message=rd_resp)

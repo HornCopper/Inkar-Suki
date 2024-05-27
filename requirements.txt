@@ -21,3 +21,4 @@ markdown
 simpleeval
 pypinyin>=0.40.0,<1.0.0
 nonebot_plugin_alconna>=0.38.0,<1.0.0
+spark_ai_python
