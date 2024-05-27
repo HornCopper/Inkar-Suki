@@ -177,3 +177,23 @@ async def wte(msg: MessageEvent):
 
 max_msg = ("你今天吃的够多了！不许再吃了(´-ωก`)", "吃吃吃，就知道吃，你都吃饱了！明天再来(▼皿▼#)", "(*｀へ´*)你猜我会不会再给你发好吃的图片",
            f"没得吃的了，{Bot_NICKNAME}的食物都被你这坏蛋吃光了！", "你在等我给你发好吃的？做梦哦！你都吃那么多了，不许再吃了！ヽ(≧Д≦)ノ")
+
+self_ban = on_command("禁言我", force_whitespace=True, priority=5)
+
+@self_ban.handle()
+async def _(bot: Bot, event: GroupMessageEvent):
+    num = random.randint(1, 720)
+    await bot.call_api("set_group_ban", user_id=event.user_id, group_id=event.group_id, duration=num*60)
+    await self_ban.finish(f"自助禁言成功！音卡送您{num}分钟的红茶~")
+
+ai = on_command("chat", aliases={"AI"}, priority=5, force_whitespace=True)
+
+@ai.handle()
+async def _(event: GroupMessageEvent, args: Message = CommandArg()):
+    if args.extract_plain_text() == "":
+        return
+    if not checker(str(event.user_id), 9):
+        await ai.finish(error(9))
+    msg = args.extract_plain_text()
+    resp = await chat_spark(msg)
+    await ai.finish(resp)

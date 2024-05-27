@@ -18,6 +18,7 @@ from .jx3 import *
 from .data_server import server_mapping, getGroupServer, Zone_mapping
 from .message_process import *
 from .group_opeator import *
+from .spark import *
 
 from nonebot.adapters.onebot.v11 import MessageSegment as ms, Event, GroupMessageEvent, Bot
 from nonebot.adapters import Message
