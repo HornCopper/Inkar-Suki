@@ -10,7 +10,9 @@ import json
 import re
 import random
 
-from ..basic import DATA, write, Config, get_api, read, TOOLS, chat_spark
+from ..basic import DATA, write, Config, get_api, read, TOOLS
+
+from .spark import chat_spark
 
 def getGroupData(group: str, key: str):
     data = json.loads(read(DATA + "/" + str(group) + "/settings.json"))
