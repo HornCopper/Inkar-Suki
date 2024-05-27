@@ -7,6 +7,7 @@ from nonebot import require
 from nonebot.matcher import Matcher
 
 from src.tools.basic import *
+from src.plugins.sign import Sign
 
 import requests
 import base64
@@ -193,7 +194,11 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     if args.extract_plain_text() == "":
         return
     if not checker(str(event.user_id), 9):
-        await ai.finish(error(9))
+        coin = Sign.get_coin(str(event.user_id))
+        if len(args.extract_plain_text())*5 > coin:
+            await ai.finish(error(9) + "\n或者您也可以通过5金币/字进行使用，签到或与音卡玩游戏即可获得，但您当前金币余额不足。")
+        else:
+            Sign.reduce(str(event.user_id), len(args.extract_plain_text())*5)
     msg = args.extract_plain_text()
     resp = await chat_spark(msg)
     await ai.finish(resp)
