@@ -122,7 +122,7 @@ async def autoPrivate(event: PrivateMessageEvent):
 @preprocess.handle()
 async def _(bot: Bot, event: GroupMessageEvent):
     message = event.message
-    if len(message) == 1 and message[0].message_type == "text":
+    if len(message) == 1 and message[0].type == "text":
         if len(event.message.extract_plain_text()) > 30:
             return
         if "随机AI" in getGroupData(str(event.group_id), "subscribe"):
