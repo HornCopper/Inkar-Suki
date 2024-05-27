@@ -2,9 +2,6 @@ from nonebot import get_driver
 
 from .jx3 import *
 
-import shutil
-import datetime
-
 driver = get_driver()
 
 
@@ -23,8 +20,6 @@ async def on_jx3_event_recv(bot: Bot, event: RecvEvent):
     message = event.get_message()
     if not message or message["type"] == "":
         return
-    if message["type"] == "开服" and datetime.date.today().weekday() == 0:
-        shutil.rmtree(ASSETS + "/jx3/monsters.jpg")
     logger.info(message["msg"])
     groups = os.listdir(DATA)
     available_group = []
