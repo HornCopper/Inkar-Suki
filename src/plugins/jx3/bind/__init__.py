@@ -14,7 +14,7 @@ def server_bind(group_id: str, server: str):
     now["server"] = server
     write(path, json.dumps(now, ensure_ascii=False))
 
-jx3_cmd_server_bind = on_command("jx3_bind", aliases={"绑定"}, force_whitespace=True, priority=5)
+jx3_cmd_server_bind = on_command("jx3_bind", aliases={"绑定", "绑定区服"}, force_whitespace=True, priority=5)
 
 @jx3_cmd_server_bind.handle()
 async def jx3_server_bind(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
