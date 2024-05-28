@@ -162,8 +162,7 @@ class FudgeDice(DiceItemBase):
 
     def GetArgs(self):
         dice_code = self.code.upper()  # 便于识别
-        if dice_code.upper().endswith("DF"):  # 兼容旧格式
-            dice_code = dice_code[:-2] + "F"
+        dice_code = dice_code.replace("D", "")  # 去除“D”
         dice_count = "4"  # 骰子数量
         if re.search(r"[^0-9F]", dice_code):
             raise DiceSyntaxError("骰子表达式中存在无法识别的字符。")
@@ -177,7 +176,7 @@ class FudgeDice(DiceItemBase):
         return (int(dice_count), 0)
 
     def Roll(self):
-        output = self.code
+        output = self.code.replace("D", "")  # 去除“D”
         result = 0
 
         dice_results = ["-", "-", "0", "0", "+", "+"]
