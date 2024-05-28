@@ -55,11 +55,11 @@ class Assistance:
             return "唔……您似乎还没申请呢！"
         now = json.loads(read(f"{DATA}/{group}/opening.json"))
         for i in now:
-            if i["description"] == description:
+            if i["description"] == description or now.index(i) == description:
                 for x in i["member"]:
                     for y in x:
                         if y["id"] == id:
-                            if y["apply"] != actor:
+                            if y["apply"] != actor and i["creator"] != actor:
                                 return "请勿修改他人留坑！"
                             x.remove(y)
                             write(f"{DATA}/{group}/opening.json",
@@ -70,7 +70,7 @@ class Assistance:
     async def dissolve(group: str, description: str, actor: str):
         now = json.loads(read(f"{DATA}/{group}/opening.json"))
         for i in now:
-            if i["description"] == description:
+            if i["description"] == description or now.index(i) == description:
                 if i["creator"] != actor:
                     return "非创建者无法解散团队哦~"
                 now.remove(i)
@@ -80,7 +80,7 @@ class Assistance:
     async def storge(group: str, description: str, info: dict):
         now = json.loads(read(f"{DATA}/{group}/opening.json"))
         for i in now:
-            if i["description"] == description:
+            if i["description"] == description or now.index(i) == description:
                 members = i["member"]
                 for x in members:
                     if len(x) != 5:
@@ -101,7 +101,7 @@ class Assistance:
     async def check_apply(group: str, description: str, id: str):
         file_content = json.loads(read(f"{DATA}/{group}/opening.json"))
         for i in file_content:
-            if i["description"] == description:
+            if i["description"] == description or file_content.index(i) == description:
                 for x in i["member"]:
                     for y in x:
                         if y["id"] == id:
@@ -118,10 +118,10 @@ class Assistance:
         else:
             return "D"
 
-    async def generate_html(group: str, description: str):
+    async def generate_html(group: str, description):
         now = json.loads(read(f"{DATA}/{group}/opening.json"))
         for i in now:
-            if i["description"] == description:
+            if i["description"] == description or now.index(i) == description:
                 colorList = await get_api("https://inkar-suki.codethink.cn/schoolcolors")
                 creator = i["creator"]
                 count = {

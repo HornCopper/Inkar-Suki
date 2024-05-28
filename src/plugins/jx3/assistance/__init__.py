@@ -9,6 +9,8 @@ create = on_command("创建团队", force_whitespace=True, priority=5)
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     if args.extract_plain_text() == "":
         return
+    if checknumber(args.extract_plain_text()):
+        await create.finish("唔……请勿使用纯数字作为关键词！")
     resp = await aic.create_group(str(event.group_id), args.extract_plain_text(), str(event.user_id))
     await create.finish(resp)
 
@@ -71,3 +73,16 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     img_path = await aic.generate_html(str(event.group_id), keyword)
     img = get_content_local(img_path)
     await team.finish(ms.image(img))
+
+
+teamList = on_command("团队列表", priority=5, force_whitespace=True)
+
+@teamList.handle()
+async def _(event: GroupMessageEvent):
+    file_content = json.loads(read(f"{DATA}/{str(event.group_id)}/opening.json"))
+    if len(file_content) == 0:
+        await teamList.finish("唔……本群没有任何团队！")
+    msg = "本群有以下团队：\n"
+    for i in range(len(file_content)):
+        msg += str(i) + ". " + file_content[i]["description"] + "\n创建者：" + str(i["creator"]) + "\n"
+    await teamList.finish(msg + "小提示：序号可以替代关键词！")
