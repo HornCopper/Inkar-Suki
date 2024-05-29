@@ -16,7 +16,7 @@ dice_patterns = [
     r"(\d+A\d+(?:[KQM]?\d*)?(?:[KQM]?\d*)?(?:[KQM]?\d*)?)",  # WOD骰子
     r"(\d+C\d+M?\d*)",  # 双重十字骰子
     r"(?:D(?:100|%)?)?([BP]\d*)",  # 奖惩骰子
-    r"D?(\d*F)",  # 命运骰子
+    r"(\d*D?F)",  # 命运骰子
     r"(\d*D\d*%?(?:K\d*|Q\d*)?)",  # 普通骰子
     r"(\d+)",  # 数字
     r"([\(\)])",  # 括号
@@ -190,17 +190,23 @@ def generate_dice_message(expr, dice_expr_list, dice_count, times, dc):
             return DiceSyntaxError("唔……骰子表达式无效！").message
         except Exception as e:
             return DiceValueError("音卡似乎无法理解该骰子表达式：\n" + str(e)).message
-        output_line += "=" + str(result)
+        try:
+            output_line += '=' + str(result)
+        except ValueError:
+            return DiceValueError("音卡似乎无法理解该骰子表达式：\n太复杂啦，不想算了啦……").message
 
-        if dc:
-            output_line += f"/{dc}  "
-            if result <= int(dc):
-                output_line += "成功！"
-                success_num += 1
-            else:
-                output_line += "失败！"
-                fail_num += 1
-        output += f"\n{expr}={output_line}"
+        try:
+            if dc:
+                output_line += f"/{dc}  "
+                if result <= int(dc):
+                    output_line += "成功！"
+                    success_num += 1
+                else:
+                    output_line += "失败！"
+                    fail_num += 1
+            output += f"\n{expr}={output_line}"
+        except ValueError:
+            return "无效的DC：" + dc
     if dc and times > 1:
         output += f"\n▷ 判定成功数量：{success_num}  判定失败数量：{fail_num}"
 
