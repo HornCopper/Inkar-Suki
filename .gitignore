@@ -6,6 +6,8 @@ src/tools/config.py
 src/tools/application.json
 src/plugins/developer_tools/failed.py
 src/plugins/developer_tools/application_v2.py
+src/plugins/book/
+src/tools/order.json
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
