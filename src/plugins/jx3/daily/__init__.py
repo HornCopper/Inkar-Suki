@@ -37,3 +37,21 @@ async def run_at_7_40():
             if int(group_id) in group[x]:
                 if "日常" in getGroupData(str(group_id), "subscribe"):
                     await bots[x].call_api("send_group_msg", group_id=int(group_id), message=msg)
+
+@scheduler.scheduled_job("cron", hour="19", minute="30")
+async def run_at_19_30():
+    msg = "世界BOSS要开始啦，请提前前往对应地图等待吧！\n发送“日常”可获得今日世界BOSS名单（如有）。"
+    bots = get_bots()
+    groups = os.listdir(DATA)
+    group = {}
+    for i in list(bots):
+        single_groups = await bots[i].call_api("get_group_list")
+        group_id_s = []
+        for x in single_groups:
+            group_id_s.append(x["group_id"])
+        group[i] = group_id_s
+    for group_id in groups:
+        for x in list(group):
+            if int(group_id) in group[x]:
+                if "首领" in getGroupData(str(group_id), "subscribe"):
+                    await bots[x].call_api("send_group_msg", group_id=int(group_id), message=msg)
