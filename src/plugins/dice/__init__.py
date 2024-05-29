@@ -192,7 +192,7 @@ def generate_dice_message(expr, dice_expr_list, dice_count, times, dc):
             return DiceValueError("音卡似乎无法理解该骰子表达式：\n" + str(e)).message
         try:
             output_line += '=' + str(result)
-        except ValueError:
+        except Exception:
             return DiceValueError("音卡似乎无法理解该骰子表达式：\n太复杂啦，不想算了啦……").message
 
         try:
