@@ -179,7 +179,7 @@ async def wte(msg: MessageEvent):
 max_msg = ("你今天吃的够多了！不许再吃了(´-ωก`)", "吃吃吃，就知道吃，你都吃饱了！明天再来(▼皿▼#)", "(*｀へ´*)你猜我会不会再给你发好吃的图片",
            f"没得吃的了，{Bot_NICKNAME}的食物都被你这坏蛋吃光了！", "你在等我给你发好吃的？做梦哦！你都吃那么多了，不许再吃了！ヽ(≧Д≦)ノ")
 
-self_ban = on_command("禁言我", force_whitespace=True, priority=5)
+self_ban = on_command("禁言我", aliases={"抽奖"}, force_whitespace=True, priority=5)
 
 @self_ban.handle()
 async def _(bot: Bot, event: GroupMessageEvent):
