@@ -143,7 +143,7 @@ class Assistance:
                             qq_text = a["apply"]
                             cell_content = f"""
                             <div class="content-cell">
-                                <img src={img_src}>
+                                <img width="48px" height="48px" src={img_src}>
                                 <p style="
                                     padding-left: 5px;
                                     color: {job_color};
