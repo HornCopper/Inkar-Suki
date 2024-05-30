@@ -84,5 +84,5 @@ async def _(event: GroupMessageEvent):
         await teamList.finish("唔……本群没有任何团队！")
     msg = "本群有以下团队：\n"
     for i in range(len(file_content)):
-        msg += str(i) + ". " + file_content[i]["description"] + "\n创建者：" + str(i["creator"]) + "\n"
+        msg += str(i) + ". " + file_content[i]["description"] + "\n创建者：" + str(file_content[i]["creator"]) + "\n"
     await teamList.finish(msg + "小提示：序号可以替代关键词！")
