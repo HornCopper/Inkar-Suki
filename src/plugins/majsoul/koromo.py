@@ -2,7 +2,28 @@ from src.tools.basic import *
 
 import math
 
-koromo_api = "https://5-data.amae-koromo.com/api/v2/pl4/search_player/{player}?limit=20&tag=all"
+gamemode = {
+    "金东": 8,
+    "金": 9,
+    "玉东": 11,
+    "玉": 12,
+    "王东": 15,
+    "王座": 16,
+    "三金东": 21,
+    "三金": 22,
+    "三玉东": 23,
+    "三玉": 24,
+    "三王东": 25,
+    "三王座": 26,
+}
+
+koromo_api_sp = "https://5-data.amae-koromo.com/api/v2/pl4/search_player/{player}?limit=20&tag=all" 
+
+koromo_api_pr = "https://5-data.amae-koromo.com/api/v2/pl4/player_records/{player_id}/{end_timestamp}/{start_timestamp}?limit=5&mode=9&descending=true"
+
+def sort_list_of_dicts(list_of_dicts, key_name):
+    sorted_list = sorted(list_of_dicts, key=lambda x: x[key_name])
+    return sorted_list
 
 def getRank(raw_data: dict):
     id = raw_data["level"]["id"]
@@ -13,7 +34,7 @@ def getRank(raw_data: dict):
     return label
 
 async def find_player(keyword: str):
-    final_url = koromo_api.format(player=keyword)
+    final_url = koromo_api_sp.format(player=keyword)
     data = await get_api(final_url)
     msg = "查找到下列玩家：\n"
     if len(data) == 0:
@@ -21,3 +42,62 @@ async def find_player(keyword: str):
     for i in data:
         msg += f"[{getRank(i)}] " + i["nickname"] + "\n"
     return msg[:-1]
+
+async def get_id_by_name(keyword: str):
+    final_url = koromo_api_sp.format(player=keyword)
+    data = await get_api(final_url)
+    if len(data) != 1:
+        return ["未找到任何玩家，或者该ID不准确，请检查后重试！"]
+    else:
+        return data[0]["id"]
+
+def get_mode_name(mode: int):
+    for i in gamemode:
+        if mode == gamemode[i]:
+            return i
+
+def get_player_sort(player: int, sorted_data: dict):
+    for i in sorted_data:
+        if player == i["accountId"]:
+            return "一二三四"[sorted_data.index(i)]
+
+template_majsoul_record = """
+<tr>
+    <td>$level</td>
+    <td>$num</td>
+    <td>$1st（$sc1）$gr1</td>
+    <td>$2nd（$sc2）$gr2</td>
+    <td>$3rd（$sc3）$gr3</td>
+    <td>$4th（$sc4）$gr4</td>
+    <td>$time</td>
+</tr>"""
+
+async def get_records(name: str = None, mode: str = "8.9.11.12.15.16"):
+    if name is None:
+        return "请输入玩家名！"
+    pid = await get_id_by_name(name)
+    if type(pid) == type([]):
+        return pid[0]
+    final_url = koromo_api_pr.format(player_id=pid, end_timestamp=str(getCurrentTime()*1000), start_timestamp="1262304000000")
+    data = await get_api(final_url)
+    if data == {}:
+        return "PID输入错误，或该玩家没有任何记录！"
+    else:
+        tables = []
+        for i in data:
+            level = get_mode_name(i["modeId"])
+            sorted_players = sort_list_of_dicts(i["players"], "score")
+            place = get_player_sort(pid, sorted_players)
+            done_time = convert_time(i["endTime"])
+            template = template_majsoul_record.replace("$level", level).replace("$num", place).replace("$time", done_time)
+            template = template.replace("1st", sorted_players[0]["nickname"]).replace("$sc1", str(sorted_players[0]["score"])).replace("$gr1", sorted_players[0]["gradingScore"])
+            template = template.replace("2nd", sorted_players[1]["nickname"]).replace("$sc2", str(sorted_players[1]["score"])).replace("$gr2", sorted_players[1]["gradingScore"])
+            template = template.replace("3rd", sorted_players[2]["nickname"]).replace("$sc3", str(sorted_players[2]["score"])).replace("$gr3", sorted_players[2]["gradingScore"])
+            template = template.replace("4th", sorted_players[3]["nickname"]).replace("$sc4", str(sorted_players[3]["score"])).replace("$gr4", sorted_players[3]["gradingScore"])
+            tables.append(template)
+        html = read(VIEWS + "/majsoul/record/record.html")
+        html = html.replace("$player_name", name).replace("$tablecontent", "\n".join(tables))
+        final_html = CACHE + "/" + get_uuid() + ".html"
+        write(final_html, html)
+        final_path = await generate(final_html, False, ".background-container", False)
+        return [Path(final_path).as_uri()]
