@@ -19,7 +19,7 @@ gamemode = {
 
 koromo_api_sp = "https://5-data.amae-koromo.com/api/v2/pl4/search_player/{player}?limit=20&tag=all" 
 
-koromo_api_pr = "https://5-data.amae-koromo.com/api/v2/pl4/player_records/{player_id}/{end_timestamp}/{start_timestamp}?limit=5&mode=9&descending=true"
+koromo_api_pr = "https://5-data.amae-koromo.com/api/v2/pl4/player_records/{player_id}/{end_timestamp}/{start_timestamp}?limit=5&mode={mode}&descending=true"
 
 def sort_list_of_dicts(list_of_dicts, key_name):
     sorted_list = sorted(list_of_dicts, key=lambda x: x[key_name])
@@ -81,7 +81,7 @@ async def get_records(name: str = None, mode: str = "8.9.11.12.15.16"):
     pid = await get_id_by_name(name)
     if type(pid) == type([]):
         return pid[0]
-    final_url = koromo_api_pr.format(player_id=pid, end_timestamp=str(getCurrentTime()*1000), start_timestamp="1262304000000")
+    final_url = koromo_api_pr.format(player_id=pid, end_timestamp=str(getCurrentTime()*1000), start_timestamp="1262304000000", mode=mode)
     data = await get_api(final_url)
     if data == {}:
         return "PID输入错误，或该玩家没有任何记录！"
