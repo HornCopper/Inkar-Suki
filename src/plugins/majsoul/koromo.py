@@ -13,9 +13,9 @@ def getRank(raw_data: dict):
 async def find_player(keyword: str):
     final_url = koromo_api.format(player=keyword)
     data = await get_api(final_url)
-    msg = ""
+    msg = "查找到下列玩家：\n"
     if len(data) == 0:
         return "未找到任何玩家！"
     for i in data:
-        msg += f"{getRank(i)} " + i["nickname"] + "\n"
+        msg += f"[{getRank(i)}] " + i["nickname"] + "\n"
     return msg[:-1]
