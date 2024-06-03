@@ -16,7 +16,7 @@ generate_record = on_command("get_records", aliases={"msgr"}, priority=5, force_
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     if args.extract_plain_text() == "":
         return
-    data = get_records(args.extract_plain_text())
+    data = await get_records(args.extract_plain_text())
     if type(data) == type([]):
         img = get_content_local(data[0])
         await generate_record.finish(ms.image(img))
