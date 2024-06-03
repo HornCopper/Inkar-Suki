@@ -6,8 +6,10 @@ koromo_api = "https://5-data.amae-koromo.com/api/v2/pl4/search_player/{player}?l
 
 def getRank(raw_data: dict):
     id = raw_data["level"]["id"]
-    minorRank = (math.floor(id / 100) % 100) - 1
-    label = "初士杰豪圣魂"[minorRank] + str(minorRank)
+    major = id % 10000
+    minor = math.floor(major / 100)
+    rank = "初士杰豪圣"[minor-1] if minor != 6 else "魂"
+    label = rank + str(major % 100)
     return label
 
 async def find_player(keyword: str):
