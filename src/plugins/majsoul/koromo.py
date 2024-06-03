@@ -25,8 +25,11 @@ def sort_list_of_dicts(list_of_dicts, key_name):
     sorted_list = sorted(list_of_dicts, key=lambda x: x[key_name])
     return sorted_list
 
-def getRank(raw_data: dict):
-    id = raw_data["level"]["id"]
+def getRank(raw_data):
+    if type(raw_data) == type(dict):
+        id = raw_data["level"]["id"]
+    elif type(raw_data) == type(1): # Accept both `int` and `dict`
+        id = raw_data
     major = id % 10000
     minor = math.floor(major / 100)
     rank = "初士杰豪圣"[minor-1] if minor != 6 else "魂"
