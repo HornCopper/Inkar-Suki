@@ -89,7 +89,7 @@ async def get_records(name: str = None, mode: str = "8.9.11.12.15.16"):
         tables = []
         for i in data:
             level = get_mode_name(i["modeId"])
-            sorted_players = sort_list_of_dicts(i["players"], "score")
+            sorted_players = list(reversed(sort_list_of_dicts(i["players"], "score")))
             place = get_player_sort(pid, sorted_players)
             done_time = convert_time(i["endTime"])
             template = template_majsoul_record.replace("$level", level).replace("$num", place).replace("$time", done_time)
