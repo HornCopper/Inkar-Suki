@@ -70,10 +70,10 @@ template_majsoul_record = """
 <tr>
     <td>$level</td>
     <td>$num</td>
-    <td>$1st（$sc1）$gr1</td>
-    <td>$2nd（$sc2）$gr2</td>
-    <td>$3rd（$sc3）$gr3</td>
-    <td>$4th（$sc4）$gr4</td>
+    <td>$1st（$sc1）<br>$gr1</td>
+    <td>$2nd（$sc2）<br>$gr2</td>
+    <td>$3rd（$sc3）<br>$gr3</td>
+    <td>$4th（$sc4）<br>$gr4</td>
     <td>$time</td>
 </tr>"""
     
@@ -96,10 +96,10 @@ async def get_records(name: str = None, mode: str = "16.12.9.15.11.8"):
             place = get_player_sort(pid, sorted_players)
             done_time = convert_time(i["endTime"])
             template = template_majsoul_record.replace("$level", level).replace("$num", place).replace("$time", done_time)
-            template = template.replace("$1st", getRank(sorted_players[0]["level"]) + " " + sorted_players[0]["nickname"]).replace("$sc1", str(sorted_players[0]["score"])).replace("$gr1", str(sorted_players[0]["gradingScore"]))
-            template = template.replace("$2nd", getRank(sorted_players[1]["level"]) + " " + sorted_players[1]["nickname"]).replace("$sc2", str(sorted_players[1]["score"])).replace("$gr2", str(sorted_players[1]["gradingScore"]))
-            template = template.replace("$3rd", getRank(sorted_players[2]["level"]) + " " + sorted_players[2]["nickname"]).replace("$sc3", str(sorted_players[2]["score"])).replace("$gr3", str(sorted_players[2]["gradingScore"]))
-            template = template.replace("$4th", getRank(sorted_players[3]["level"]) + " " + sorted_players[3]["nickname"]).replace("$sc4", str(sorted_players[3]["score"])).replace("$gr4", str(sorted_players[3]["gradingScore"]))
+            template = template.replace("$1st", "[" + getRank(sorted_players[0]["level"]) + "] " + sorted_players[0]["nickname"]).replace("$sc1", str(sorted_players[0]["score"])).replace("$gr1", str(sorted_players[0]["gradingScore"]))
+            template = template.replace("$2nd", "[" + getRank(sorted_players[1]["level"]) + "] " + sorted_players[1]["nickname"]).replace("$sc2", str(sorted_players[1]["score"])).replace("$gr2", str(sorted_players[1]["gradingScore"]))
+            template = template.replace("$3rd", "[" + getRank(sorted_players[2]["level"]) + "] " + sorted_players[2]["nickname"]).replace("$sc3", str(sorted_players[2]["score"])).replace("$gr3", str(sorted_players[2]["gradingScore"]))
+            template = template.replace("$4th", "[" + getRank(sorted_players[3]["level"]) + "] " + sorted_players[3]["nickname"]).replace("$sc4", str(sorted_players[3]["score"])).replace("$gr4", str(sorted_players[3]["gradingScore"]))
             tables.append(template)
         html = read(VIEWS + "/majsoul/record/record.html")
         html = html.replace("$player_name", name).replace("$tablecontent", "\n".join(tables))
