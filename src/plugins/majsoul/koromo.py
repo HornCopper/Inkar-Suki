@@ -80,13 +80,17 @@ template_majsoul_record = """
 def process_number(string_num: str):
     int_num = int(string_num)
     if int_num > 0:
-        return "<span style=\"color:green\">" + string_num + "</span>"
+        return "<span style=\"color:green\">+" + string_num + "</span>"
     elif int_num < 0:
         return "<span style=\"color:red\">" + string_num + "</span>"
     else:
         return string_num
 
-
+def process_nickname(string: str, match: str):
+    if match == string:
+        return "<b>" + string + "</b>"
+    else:
+        return string
 async def get_records(name: str = None, mode: str = "16.12.9.15.11.8"):
     if name is None:
         return "请输入玩家名！"
@@ -105,10 +109,10 @@ async def get_records(name: str = None, mode: str = "16.12.9.15.11.8"):
             place = get_player_sort(pid, sorted_players)
             done_time = convert_time(i["endTime"], "%Y-%m-%d<br>%H:%M:%S")
             template = template_majsoul_record.replace("$level", level).replace("$num", place).replace("$time", done_time)
-            name_1st = "[" + getRank(sorted_players[0]["level"]) + "] " + sorted_players[0]["nickname"]
-            name_2nd = "[" + getRank(sorted_players[1]["level"]) + "] " + sorted_players[1]["nickname"]
-            name_3rd = "[" + getRank(sorted_players[2]["level"]) + "] " + sorted_players[2]["nickname"]
-            name_4th = "[" + getRank(sorted_players[3]["level"]) + "] " + sorted_players[3]["nickname"]
+            name_1st = "[" + getRank(sorted_players[0]["level"]) + "] " + process_nickname(sorted_players[0]["nickname"])
+            name_2nd = "[" + getRank(sorted_players[1]["level"]) + "] " + process_nickname(sorted_players[1]["nickname"])
+            name_3rd = "[" + getRank(sorted_players[2]["level"]) + "] " + process_nickname(sorted_players[2]["nickname"])
+            name_4th = "[" + getRank(sorted_players[3]["level"]) + "] " + process_nickname(sorted_players[3]["nickname"])
             score_1st = str(sorted_players[0]["score"])
             score_2nd = str(sorted_players[1]["score"])
             score_3rd = str(sorted_players[2]["score"])
