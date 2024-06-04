@@ -70,10 +70,10 @@ template_majsoul_record = """
 <tr>
     <td>$level</td>
     <td>$num</td>
-    <td>$1st（$sc1）<br>$gr1</td>
-    <td>$2nd（$sc2）<br>$gr2</td>
-    <td>$3rd（$sc3）<br>$gr3</td>
-    <td>$4th（$sc4）<br>$gr4</td>
+    <td>$1st<br>（$sc1）<br>$gr1</td>
+    <td>$2nd<br>（$sc2）<br>$gr2</td>
+    <td>$3rd<br>（$sc3）<br>$gr3</td>
+    <td>$4th<br>（$sc4）<br>$gr4</td>
     <td>$time</td>
 </tr>"""
     
