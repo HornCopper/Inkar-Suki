@@ -21,6 +21,8 @@ koromo_api_sp = "https://5-data.amae-koromo.com/api/v2/pl4/search_player/{player
 
 koromo_api_pr = "https://5-data.amae-koromo.com/api/v2/pl4/player_records/{player_id}/{end_timestamp}/{start_timestamp}?limit=5&mode={mode}&descending=true"
 
+koromo_api_pes = "https://5-data.amae-koromo.com/api/v2/pl4/player_extended_stats/13042014/1262304000000/1717424339999?mode=9"
+
 def sort_list_of_dicts(list_of_dicts, key_name):
     sorted_list = sorted(list_of_dicts, key=lambda x: x[key_name])
     return sorted_list
@@ -74,8 +76,9 @@ template_majsoul_record = """
     <td>$4th（$sc4）$gr4</td>
     <td>$time</td>
 </tr>"""
+    
 
-async def get_records(name: str = None, mode: str = "8.9.11.12.15.16"):
+async def get_records(name: str = None, mode: str = "16.12.9.15.11.8"):
     if name is None:
         return "请输入玩家名！"
     pid = await get_id_by_name(name)
