@@ -94,7 +94,7 @@ async def get_records(name: str = None, mode: str = "16.12.9.15.11.8"):
             level = get_mode_name(i["modeId"])
             sorted_players = list(reversed(sort_list_of_dicts(i["players"], "score")))
             place = get_player_sort(pid, sorted_players)
-            done_time = convert_time(i["endTime"])
+            done_time = convert_time(i["endTime"], "%Y-%m-%d<br>%H:%M:%S")
             template = template_majsoul_record.replace("$level", level).replace("$num", place).replace("$time", done_time)
             template = template.replace("$1st", "[" + getRank(sorted_players[0]["level"]) + "] " + sorted_players[0]["nickname"]).replace("$sc1", str(sorted_players[0]["score"])).replace("$gr1", str(sorted_players[0]["gradingScore"]))
             template = template.replace("$2nd", "[" + getRank(sorted_players[1]["level"]) + "] " + sorted_players[1]["nickname"]).replace("$sc2", str(sorted_players[1]["score"])).replace("$gr2", str(sorted_players[1]["gradingScore"]))
