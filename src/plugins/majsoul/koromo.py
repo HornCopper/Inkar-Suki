@@ -88,7 +88,7 @@ def process_number(string_num: str):
 
 def process_nickname(string: str, match: str):
     if match == string:
-        return "<b>" + string + "</b>"
+        return "<span style=\"color:gold\"><b>" + string + "</b></span>"
     else:
         return string
 async def get_records(name: str = None, mode: str = "16.12.9.15.11.8"):
