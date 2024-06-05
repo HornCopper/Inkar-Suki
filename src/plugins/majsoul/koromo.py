@@ -126,8 +126,9 @@ async def get_records(name: str = None, mode: str = "16.12.9.15.11.8"):
             template = template.replace("$3rd", name_3rd).replace("$sc3", score_3rd).replace("$gr3", grading_3rd)
             template = template.replace("$4th", name_4th).replace("$sc4", score_4th).replace("$gr4", grading_4th)
             tables.append(template)
+        rdbg = ASSETS + "/majsoul/" + str(random.randint(0, 44)) + ".jpg"
         html = read(VIEWS + "/majsoul/record/record.html")
-        html = html.replace("$player_name", name).replace("$tablecontent", "\n".join(tables))
+        html = html.replace("$player_name", name).replace("$tablecontent", "\n".join(tables)).replace("$rdbg", rdbg)
         final_html = CACHE + "/" + get_uuid() + ".html"
         write(final_html, html)
         final_path = await generate(final_html, False, ".background-container", False)
