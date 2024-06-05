@@ -28,7 +28,7 @@ def sort_list_of_dicts(list_of_dicts, key_name):
     return sorted_list
 
 def getRank(raw_data):
-    if type(raw_data) == type(dict):
+    if type(raw_data) == type({}):
         id = raw_data["level"]["id"]
     elif type(raw_data) == type(1): # Accept both `int` and `dict`
         id = raw_data
