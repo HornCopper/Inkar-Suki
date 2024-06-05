@@ -121,7 +121,7 @@ async def player_pt(name: str = None, mode="16.12.9.15.11.8"):
     rank = getRank(data["level"]["id"])
     level = max_points[rank]
     score = str(data["level"]["score"] + data["level"]["delta"])
-    rank_max = data["max_level"]["id"]
+    rank_max = getRank(data["max_level"]["id"])
     level_max = max_points[rank_max]
     score_max = str(data["max_level"]["score"] + data["max_level"]["delta"])
     return f"[{rank}] {name}（{pid}）\n当前PT：[{rank}] {score}/{level}\n最高PT：[{rank_max}] {score_max}/{level_max}"
