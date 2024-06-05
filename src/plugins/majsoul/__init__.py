@@ -22,3 +22,13 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
         await generate_record.finish(ms.image(img))
     else:
         await generate_record.finish(data)
+
+
+get_pt = on_command("get_pt", aliases={"mspt"}, priority=5, force_whitespace=True)
+
+@get_pt.handle()
+async def _(event: GroupMessageEvent, args: Message = CommandArg()):
+    if args.extract_plain_text() == "":
+        return
+    data = await player_pt(args.extract_plain_text())
+    await get_pt.finish(data)

@@ -21,7 +21,7 @@ koromo_api_sp = "https://5-data.amae-koromo.com/api/v2/pl4/search_player/{player
 
 koromo_api_pr = "https://5-data.amae-koromo.com/api/v2/pl4/player_records/{player_id}/{end_timestamp}/{start_timestamp}?limit=5&mode={mode}&descending=true"
 
-koromo_api_pes = "https://5-data.amae-koromo.com/api/v2/pl4/player_extended_stats/13042014/1262304000000/1717424339999?mode=9"
+koromo_api_ps = "https://5-data.amae-koromo.com/api/v2/pl4/player_stats/{player_id}/{start_timestamp}/{end_timestamp}?mode={mode}"
 
 def sort_list_of_dicts(list_of_dicts, key_name):
     sorted_list = sorted(list_of_dicts, key=lambda x: x[key_name])
@@ -48,7 +48,7 @@ async def find_player(keyword: str):
         msg += f"[{getRank(i)}] " + i["nickname"] + "\n"
     return msg[:-1]
 
-async def get_id_by_name(keyword: str):
+async def get_id_by_name(keyword: str, mode: str = "16.12.9.15.11.8"):
     final_url = koromo_api_sp.format(player=keyword)
     data = await get_api(final_url)
     if len(data) != 1:
@@ -77,6 +77,24 @@ template_majsoul_record = """
     <td>$time</td>
 </tr>"""
 
+max_points = {
+    "初1": 20,
+    "初2": 80,
+    "初3": 200,
+    "士1": 600,
+    "士2": 800,
+    "士3": 1000,
+    "杰1": 1200,
+    "杰2": 1400,
+    "杰3": 2000,
+    "豪1": 2800,
+    "豪2": 3200,
+    "豪3": 3600,
+    "圣1": 4000,
+    "圣2": 6000,
+    "圣3": 9000
+}
+
 def process_number(string_num: str):
     int_num = int(string_num)
     if int_num > 0:
@@ -91,6 +109,23 @@ def process_nickname(string: str, match: str):
         return "<span style=\"color:gold\"><b>" + string + "</b></span>"
     else:
         return string
+    
+async def player_pt(name: str = None, mode="16.12.9.15.11.8"):
+    if name is None:
+        return "请输入玩家名！"
+    pid = await get_id_by_name(name)
+    if type(pid) == type([]):
+        return pid[0]
+    final_url = koromo_api_ps.format(player_id=pid, end_timestamp=str(getCurrentTime()*1000), start_timestamp="1262304000000", mode=mode)
+    data = await get_api(final_url)
+    rank = getRank(data["level"]["id"])
+    level = max_points[rank]
+    score = str(data["level"]["score"] + data["level"]["delta"])
+    rank_max = data["max_level"]["id"]
+    level_max = max_points[rank_max]
+    score_max = str(data["max_level"]["score"] + data["max_level"]["delta"])
+    return f"[{rank}] {name}\n当前PT：[{rank}] {score}/{level}\n最高PT：[{rank_max}] {score_max}/{level_max}"
+
 async def get_records(name: str = None, mode: str = "16.12.9.15.11.8"):
     if name is None:
         return "请输入玩家名！"
