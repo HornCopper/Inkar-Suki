@@ -124,7 +124,7 @@ async def player_pt(name: str = None, mode="16.12.9.15.11.8"):
     rank_max = data["max_level"]["id"]
     level_max = max_points[rank_max]
     score_max = str(data["max_level"]["score"] + data["max_level"]["delta"])
-    return f"[{rank}] {name}\n当前PT：[{rank}] {score}/{level}\n最高PT：[{rank_max}] {score_max}/{level_max}"
+    return f"[{rank}] {name}（{pid}）\n当前PT：[{rank}] {score}/{level}\n最高PT：[{rank_max}] {score_max}/{level_max}"
 
 async def get_records(name: str = None, mode: str = "16.12.9.15.11.8"):
     if name is None:
