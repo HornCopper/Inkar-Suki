@@ -144,7 +144,7 @@ async def generate_zd_image(server: str, id: str):
     content = "\n".join(content)
     html = read(VIEWS + "/jx3/zone_detail/zone_detail.html")
     font = ASSETS + "/font/custom.ttf"
-    saohua = await get_api(f"https://www.jx3api.com/data/saohua/random?token={token}")
+    saohua = await get_api(f"{Config.jx3api_link}/data/saohua/random")
     saohua = saohua["data"]["text"]
     appinfo_time = convert_time(getCurrentTime(), "%H:%M")
     html = html.replace("$customfont", font).replace("$tablecontent", content).replace("$randomsaohua", saohua).replace("$appinfo", f" 副本总览 · {server} · {id} · {appinfo_time}")
