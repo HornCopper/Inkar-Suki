@@ -50,7 +50,7 @@ async def getCalendar():
         rescue = i["rescue"]
         pet = "、".join(i["luck"])
         events.append(template_event.replace("$war", war).replace("$camp", camp).replace("$battle", battle).replace("$school", school).replace("$rescue", rescue).replace("$pet", pet).replace("$leader", leader))
-    saohua = await get_api(f"https://www.jx3api.com/data/saohua/random?token={token}")
+    saohua = await get_api(f"{Config.jx3api_link}/data/saohua/random")
     saohua = saohua["data"]["text"]
     appinfo = f" · 活动日历 · 自{today}起7天"
     final_days = "\n".join(days)

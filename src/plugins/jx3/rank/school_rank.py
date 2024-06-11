@@ -66,7 +66,7 @@ async def get_school_rank(season_key):
     contents = "\n".join(contents)
     html = read(VIEWS + "/jx3/schoolrank/schoolrank.html")
     font = ASSETS + "/font/custom.ttf"
-    saohua = await get_api(f"https://www.jx3api.com/data/saohua/random?token={token}")
+    saohua = await get_api(f"{Config.jx3api_link}/data/saohua/random")
     saohua = saohua["data"]["text"]
     appinfo_time = time.strftime("%H:%M:%S",time.localtime(time.time()))
     appinfo = f"{season} · 当前时间：{appinfo_time}<br>{saohua}"
