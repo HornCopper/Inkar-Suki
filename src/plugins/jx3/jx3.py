@@ -27,7 +27,6 @@ from .attributes import *
 from .serendipity import *
 from .equip import *
 from .emoji import *
-from .firework import *
 from .detail import *
 from .private import *
 from .trade import *
