@@ -7,7 +7,7 @@ class ServerStatusEvent(RecvEvent):
     """服务器状态推送事件"""
 
     __event__ = "WsRecv.ServerStatus"
-    message_type = "ServerStatus"
+    message_type: str = "ServerStatus"
     status: bool
     """服务器状态"""
     server: str

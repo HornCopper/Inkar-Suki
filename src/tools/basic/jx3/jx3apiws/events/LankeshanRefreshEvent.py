@@ -6,7 +6,7 @@ class NewsRecvEvent(RecvEvent):
     """烂柯山关隘首领刷新推送事件"""
 
     __event__ = "WsRecv.Lankeshan"
-    message_type = "Lankeshan"
+    message_type:str = "Lankeshan"
     server: str
     """服务器"""
     castle: str

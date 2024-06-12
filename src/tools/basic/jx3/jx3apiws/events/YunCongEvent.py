@@ -8,7 +8,7 @@ class ZhuEEvent(RecvEvent):
     云从推送
     """
     __event__ = "WsRecv.YunCong"
-    message_type = "YunCong"
+    message_type: str = "YunCong"
     name: str
     """阶段名"""
     time: int

@@ -7,7 +7,7 @@ class XuanJingEvent(RecvEvent):
     """玄晶获取事件"""
 
     __event__ = "WsRecv.XuanJing"
-    message_type = "XuanJing"
+    message_type: str = "XuanJing"
     role_name: str
     """角色名"""
     map_name: str

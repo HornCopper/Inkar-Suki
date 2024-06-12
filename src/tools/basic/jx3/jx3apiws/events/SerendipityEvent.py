@@ -7,7 +7,7 @@ class SerendipityEvent(RecvEvent):
     """奇遇播报事件"""
 
     __event__ = "WsRecv.Serendipity"
-    message_type = "Serendipity"
+    message_type: str = "Serendipity"
     zone: str
     """游戏大区"""
     server: str
