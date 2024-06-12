@@ -10,7 +10,7 @@ from src.tools.utils import *
 class RecvEvent(BaseEvent, extra=Extra.ignore):
     """ws推送事件"""
 
-    __event__ = "WsRecv"
+    __event__: str = "WsRecv"
     post_type: str = "WsRecv"
     message_type: str
     server: Optional[str] = None

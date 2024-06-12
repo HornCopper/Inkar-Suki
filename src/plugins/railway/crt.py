@@ -65,7 +65,7 @@ template_3 = """
         <!-- 第二段末站 -->
     </span>
 </div>
-""" # 适用于3站线路
+"""  # 适用于3站线路
 
 template_2 = """
 <div style="width: 60px;height: 68px;margin-top: 22px;margin-bottom: 40px;float: left;">
@@ -96,7 +96,7 @@ template_2 = """
     <span style="float: left;width: 135px;height: 16px;font-size: 16px;text-align: center;line-height: 14px;position: relative;right: 38px;color:$color1">
         $end
     </span>
-</div>""" # 适用于2站线路
+</div>"""  # 适用于2站线路
 
 template_4 = """
 <div style="width: 60px;height: 68px;margin-top: 22px;margin-bottom: 40px;float: left;">
@@ -171,6 +171,7 @@ template_4 = """
     </span>
 </div>"""
 
+
 def get_line_icon(line):
     if line == "江跳线(市郊铁路)":
         return "https://www.cqmetro.cn/imgs/route-5.png"
@@ -184,6 +185,7 @@ def get_line_icon(line):
         num = line[0]
         return f"https://www.cqmetro.cn/imgs/route-{num}.png"
 
+
 def get_color(raw):
     if raw == "pt3005c":
         return "#0077c8"
@@ -196,6 +198,7 @@ def seconds_to_minutes(seconds):
     rounded_minutes = round(minutes)
     return rounded_minutes
 
+
 async def cq_crt(start: str, end: str):
     if start == end:
         return ["请您原地站着不动即可。"]
@@ -203,7 +206,7 @@ async def cq_crt(start: str, end: str):
     end_ = quote(quote(end))
     api = f"https://www.cqmetro.cn/Front/html/TakeLine!queryYsTakeLine.action?entity.startStaName={start_}&entity.endStaName={end_}"
     data = await get_api(api)
-    if len(data["result"]) == 0:
+    if not data.get("result", []):
         return ["未查询到线路，请检查起始站名或到达站名是否有误？"]
     data = data["result"][0]
     count = len(data["transferStaNames"].split(","))
@@ -221,24 +224,24 @@ async def cq_crt(start: str, end: str):
     swaps = data["transferStaNames"].split(",")
     for i in range(1, 4):
         try:
-            lines[i-1]
+            lines[i - 1]
         except:
             break
-        line = lines[i-1]
-        color = get_color(colors[i-1])
+        line = lines[i - 1]
+        color = get_color(colors[i - 1])
         icon = get_line_icon(line)
         template = template.replace("$line" + str(i), line).replace("$color" + str(i), color).replace("$icon" + str(i), icon)
         try:
-            directions[i-1]
+            directions[i - 1]
         except:
             continue
-        direction = directions[i-1]
+        direction = directions[i - 1]
         template = template.replace("$direction" + str(i), direction)
         try:
-            swaps[i-1]
+            swaps[i - 1]
         except:
             continue
-        swap = swaps[i-1]
+        swap = swaps[i - 1]
         template = template.replace("$swap" + str(i), swap)
     basic = read(VIEWS + "/railway/crt/crt.html")
     basic = basic.replace("$ticket", str(price)).replace("$minute", str(minute))

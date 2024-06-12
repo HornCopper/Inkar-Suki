@@ -7,7 +7,7 @@ class FireworkEvent(RecvEvent):
     """烟花事件"""
 
     __event__ = "WsRecv.Firework"
-    message_type = "Firework"
+    message_type: str = "Firework"
     time: int
     """点名时间"""
     server: str
@@ -29,4 +29,6 @@ class FireworkEvent(RecvEvent):
     @overrides(RecvEvent)
     def get_message(self) -> dict:
         final_time = convert_time(self.time, format="%H:%M")
-        return {"type": "烟花", "msg": f"{self.server} 的 {self.sender} 于 {final_time} 在 {self.map_name} 给 {self.recipient} 赠送了烟花「{self.name}」！", "server": f"{self.server}"}
+        return {"type": "烟花",
+                "msg": f"{self.server} 的 {self.sender} 于 {final_time} 在 {self.map_name} 给 {self.recipient} 赠送了烟花「{self.name}」！",
+                "server": f"{self.server}"}

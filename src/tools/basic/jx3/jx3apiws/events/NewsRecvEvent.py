@@ -7,7 +7,7 @@ class NewsRecvEvent(RecvEvent):
     """新闻推送事件"""
 
     __event__ = "WsRecv.News"
-    message_type = "News"
+    message_type: str = "News"
     type: str
     """新闻类型"""
     title: str

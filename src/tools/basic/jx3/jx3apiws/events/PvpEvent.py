@@ -7,7 +7,7 @@ class GranaryRobbedRecvEvent(RecvEvent):
     """粮仓被劫事件"""
 
     __event__ = "WsRecv.GranaryRobbed"
-    message_type = "GranaryRobbed"
+    message_type: str = "GranaryRobbed"
     server: str
     """服务器名称"""
     castle: str
@@ -30,7 +30,7 @@ class LeaderResetRecvEvent(RecvEvent):
     """大将重置事件"""
 
     __event__ = "WsRecv.LeaderReset"
-    message_type = "LeaderReset"
+    message_type: str = "LeaderReset"
     server: str
     """服务器名称"""
     name: str
@@ -52,7 +52,7 @@ class FlagRobbedRecvEvent(RecvEvent):
     """大旗被夺事件"""
 
     __event__ = "WsRecv.FlagRobbed"
-    message_type = "FlagRobbed"
+    message_type: str = "FlagRobbed"
     server: str
     """服务器名称"""
     camp_name: str
@@ -77,7 +77,7 @@ class TongCastleRobbedRecvEvent(RecvEvent):
     """据点占领事件(有帮会)"""
 
     __event__ = "WsRecv.TongCastleRobbed"
-    message_type = "TongCastleRobbed"
+    message_type: str = "TongCastleRobbed"
     server: str
     """服务器名称"""
     camp_name: str
@@ -102,7 +102,7 @@ class CastleRobbedRecvEvent(RecvEvent):
     """据点占领事件(无帮会)"""
 
     __event__ = "WsRecv.CastleRobbed"
-    message_type = "CastleRobbed"
+    message_type: str = "CastleRobbed"
     server: str
     """服务器名称"""
     camp_name: str
@@ -125,7 +125,7 @@ class SettlementRecvEvent(RecvEvent):
     """攻防结算事件"""
 
     __event__ = "WsRecv.Settlement"
-    message_type = "Settlement"
+    message_type: str = "Settlement"
     server: str
     """服务器名称"""
     camp_name: str

@@ -7,7 +7,7 @@ class HorseRefreshEvent(RecvEvent):
     """马驹刷新事件"""
 
     __event__ = "WsRecv.HorseRefresh"
-    message_type = "HorseRefresh"
+    message_type: str = "HorseRefresh"
     zone: str
     """游戏大区"""
     server: str
@@ -36,7 +36,7 @@ class HorseCaughtEvent(RecvEvent):
     """马驹捕获事件"""
 
     __event__ = "WsRecv.HorseCaught"
-    message_type = "HorseCaught"
+    message_type: str = "HorseCaught"
     
     zone: str
     """游戏大区"""
@@ -67,7 +67,7 @@ class DiluAppearEvent(RecvEvent):
     """的卢事件"""
 
     __event__ = "WsRecv.DiluAppear"
-    message_type = "DiluAppear"
+    message_type: str = "DiluAppear"
     zone: str
     """游戏大区"""
     server: str
@@ -95,7 +95,7 @@ class DiluRefreshEvent(RecvEvent):
     """的卢刷新事件"""
 
     __event__ = "WsRecv.DiluCaught"
-    message_type = "DiluCaught"
+    message_type: str = "DiluCaught"
     zone: str
     """游戏大区"""
     server: str
@@ -127,7 +127,7 @@ class DiluSoldEvent(RecvEvent):
     """的卢事件"""
 
     __event__ = "WsRecv.DiluSold"
-    message_type = "DiluSold"
+    message_type: str = "DiluSold"
     zone: str
     """游戏大区"""
     server: str
