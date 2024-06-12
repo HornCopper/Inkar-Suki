@@ -6,7 +6,7 @@ from src.tools.utils import *
 class FuyaoRefreshEvent(RecvEvent):
 
     __event__ = "WsRecv.FuyaoRefresh"
-    message_type = "FuyaoRefresh"
+    message_type: str = "FuyaoRefresh"
     server: str
     """服务器"""
     time: int
@@ -30,7 +30,7 @@ class FuyaoNamedEvent(RecvEvent):
     """扶摇点名事件"""
 
     __event__ = "WsRecv.FuyaoNamed"
-    message_type = "FuyaoNamed"
+    message_type: str = "FuyaoNamed"
     name: list[str]
     """点名角色组"""
     time: int

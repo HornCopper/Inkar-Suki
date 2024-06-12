@@ -6,8 +6,8 @@ from src.tools.utils import *
 class ClientUpdateRecEvent(RecvEvent):
     """更新推送事件"""
 
-    __event__ = "WsRecv.ClientUpdate"
-    message_type = "ClientUpdate"
+    __event__: str = "WsRecv.ClientUpdate"
+    message_type: str = "ClientUpdate"
     old_version: str
     """旧版本"""
     new_version: str

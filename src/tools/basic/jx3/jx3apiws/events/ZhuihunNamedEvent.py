@@ -7,7 +7,7 @@ class ZhuihunNamedEvent(RecvEvent):
     """游戏系统频道消息推送"""
 
     __event__ = "WsRecv.ZhuihunNamedMsg"
-    message_type = "ZhuihunNamed"
+    message_type: str = "ZhuihunNamed"
     zone: str
     """游戏大区"""
     server: str

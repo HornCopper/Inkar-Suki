@@ -8,7 +8,7 @@ class ZhuEEvent(RecvEvent):
     诛恶事件推送
     """
     __event__ = "WsRecv.ZhuE"
-    message_type = "ZhuE"
+    message_type: str = "ZhuE"
     map_name: str
     """地图名"""
     time: int
