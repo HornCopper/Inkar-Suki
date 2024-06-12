@@ -7,7 +7,7 @@ class SpillTheTeaEvent(RecvEvent):
     """818推送事件"""
 
     __event__ = "WsRecv.SpillTheTea"
-    message_type = "SpillTheTea"
+    message_type: str = "SpillTheTea"
     server: str
     """服务器名"""
     name: str
