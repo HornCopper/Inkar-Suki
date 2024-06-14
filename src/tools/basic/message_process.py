@@ -20,7 +20,6 @@ def getGroupData(group: str, key: str):
         return False
     else:
         data = json.loads(data)
-        logger.info(data)
     return data[key]
 
 preprocess = on_message(priority=0, block=False)
