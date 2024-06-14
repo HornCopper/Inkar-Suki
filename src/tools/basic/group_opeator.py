@@ -7,10 +7,8 @@ def getGroupData(group: str, key: str):
     if not data:
         return False
     else:
-        data = json.loads(read(DATA + "/" + str(group) + "/settings.json"))
+        data = json.loads(data)
         logger.info(data)
-    return data[key]
-
     return data[key]
 
 def setGroupData(group: str, key: str, new):
