@@ -8,7 +8,6 @@ def getGroupData(group: str, key: str):
         return False
     else:
         data = json.loads(data)
-        logger.info(data)
     return data[key]
 
 def setGroupData(group: str, key: str, new):
