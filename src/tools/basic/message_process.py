@@ -15,9 +15,12 @@ from ..basic import DATA, write, Config, get_api, read, TOOLS
 from .spark import chat_spark
 
 def getGroupData(group: str, key: str):
-    data = json.loads(read(DATA + "/" + str(group) + "/settings.json"))
+    data = read(DATA + "/" + str(group) + "/settings.json")
     if not data:
         return False
+    else:
+        data = json.loads(data)
+        logger.info(data)
     return data[key]
 
 preprocess = on_message(priority=0, block=False)
