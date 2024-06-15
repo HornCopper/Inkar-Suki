@@ -4,8 +4,8 @@
 # def require_config():
 # class configs(enum)
 
-from .config import Config
-from .config import Config as gloConfig
+from .config_example import Config
+from .config_example import Config as gloConfig
 token = Config.jx3api_globaltoken
 bot = "Inkar-Suki"
 proxies = None
