@@ -7,6 +7,7 @@ class Config:
     这里是`Inkar Suki`的配置文件，从`V0.8.3-Hotfix-3起，我们删除了`initialization.py`。
     取消了问答式配置，改为了用户自己填写。
     需要您填写的是末尾有注释的行，其他行请勿改动，感谢使用！
+    填写完毕后，请将本文件内容复制一份，并粘贴至`config.py`中，这个文件不存在需要您自行创建
     """
     config_py_path = os.path.abspath(inspect.getfile(inspect.currentframe()))[:-10]
     global_path = config_py_path[:-6]+"/"
