@@ -6,8 +6,6 @@ from nonebot.adapters.onebot.v11 import unescape
 from typing import List
 
 from src.tools.basic import *
-from src.tools.local_version import nbv
-
 import psutil
 
 
@@ -67,19 +65,13 @@ async def echo_(event: Event, args: Message = CommandArg()):
 
 ping = on_command("ping", aliases={"-测试"}, force_whitespace=True, priority=5)  # 测试机器人是否在线
 
-def per_cpu_status() -> List[float]:
-    return psutil.cpu_percent(interval=1, percpu=True)
-
-def memory_status() -> float:
-    return psutil.virtual_memory().percent
-
 @ping.handle()
 async def _(bot: Bot, event: Event, args: Message = CommandArg()):
     if args.extract_plain_text() != "":
         return
     permission = checker(str(event.user_id), 1)
     if not permission:
-        await ping.finish(f"咕咕咕，音卡来啦！\n当前时间为：{convert_time(getCurrentTime())}\n当前Nonebot版本为：{nbv}")
+        await ping.finish(f"咕咕咕，音卡来啦！\n当前时间为：{convert_time(getCurrentTime())}")
     else:
         groups = await bot.call_api("get_group_list")
         group_count = len(groups)
@@ -87,7 +79,7 @@ async def _(bot: Bot, event: Event, args: Message = CommandArg()):
         friend_count = len(friends)
         registers = os.listdir(DATA)
         register_count = len(registers)
-        msg = f"咕咕咕，音卡来啦！\n系统信息如下：\n当前CPU占用：{str(per_cpu_status()[0])}%\n当前内存占用：{str(memory_status())}%\n现在是：{convert_time(getCurrentTime())}\n{group_count} | {register_count} | {friend_count} | {nbv}"
+        msg = f"咕咕咕，音卡来啦！\n现在是：{convert_time(getCurrentTime())}\n{group_count} | {register_count} | {friend_count}"
     await ping.finish(msg)
 
 post = on_command("post", force_whitespace=True, priority=5)  # 发送全域公告至每一个机器人加入的QQ群。
