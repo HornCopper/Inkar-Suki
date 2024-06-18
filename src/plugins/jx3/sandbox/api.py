@@ -23,7 +23,7 @@ async def sandbox_v2_(server: str):
         return [PROMPT_ServerInvalid]
     html = read(VIEWS + "/jx3/pvp/sandbox.html")
     update_time = convert_time(data["data"]["update"])
-    html = html.replace("$update", update_time)
+    html = html.replace("$time", update_time)
     html = html.replace("$server", server)
     for i in data["data"]["data"]:
         camp = "haoqi" if i["campName"] == "浩气盟" else "eren"
