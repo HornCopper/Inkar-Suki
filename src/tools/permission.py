@@ -13,21 +13,12 @@ TOOLS = get_path("tools")
 def judge(qqnumber):
     with open(TOOLS + "/permission.json", mode="r") as file:
         json_ = json.loads(file.read())
-    if qqnumber not in json_:
-        return False
-    else:
-        return True
+    return qqnumber in json_
 
 def checker(qqnumber: str, score: int):
     with open(TOOLS + "/permission.json", mode="r") as file:
         json_ = json.loads(file.read())
-    if qqnumber not in json_:
-        return False
-    else:
-        if not (int(json_[qqnumber]) >= score):
-            return False
-        else:
-            return True
+    return False if qqnumber not in json_ else int(json_[qqnumber]) >= score
 
 
 def error(score):
