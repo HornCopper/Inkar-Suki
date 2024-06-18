@@ -1,26 +1,24 @@
 import pathlib2
 import urllib
 
-def read(Path):
+def read(Path) -> str:
     try:
-        cache = open(Path, mode="r", encoding="utf-8")
-        msg = cache.read()
-        cache.close()
+        with open(Path, mode="r", encoding="utf-8") as cache:
+            msg = cache.read()
         return msg or "{}"
     except Exception as _:
         return "{}"  # 默认返回空对象
 
 
-def write(Path, sth):
+def write(Path, sth) -> bool:
     p = pathlib2.Path(Path).parent
     if not p.exists():
         p.mkdir()  # check if not exist
-    cache = open(Path, mode="w", encoding="utf-8")
-    cache.write(sth)
-    cache.close()
+    with open(Path, mode="w", encoding="utf-8") as cache:
+        cache.write(sth)
     return True
 
-def get_content_local(path: str):
+def get_content_local(path: str) -> str:
     """
     直接获取文件内容。
     """
