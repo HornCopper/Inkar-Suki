@@ -14,6 +14,8 @@ def Zone_mapping(server):
         return "双线区"
     if server in {"破阵子", "天鹅坪"}:
         return "双线区"
+    if server in {"英雄客", "自当狂", "九万里", "万象长安", "山海相逢", "有人赴约", "眉间雪"}:
+        return "无界区"
     return None
 
 
