@@ -44,7 +44,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
         await repo.finish(f"仓库获取失败，请检查后重试哦~\n错误码：{status_code}")
     else:
         img = ms.image(
-            "https://opengraph.githubassets.com/c9f4179f4d560950b2355c82aa2b7750bffd945744f9b8ea3f93cc24779745a0/"+reponame)
+            "https://opengraph.githubassets.com/c9f4179f4d560950b2355c82aa2b7750bffd945744f9b8ea3f93cc24779745a0/" + reponame)
         await repo.finish(img)
 
 webhook = on_command("bindrepo", aliases={"webhook"}, force_whitespace=True, priority=5)
@@ -69,13 +69,11 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
     else:
         group = str(event.group_id)
         if already(repo_name, group) is False:
-            cache = open(DATA + "/" + group + "/" + "webhook.json", mode="r")
-            now = json.loads(cache.read())
-            now.append(repo_name)
-            cache.close()
-            cache = open(DATA + "/" + group + "/" + "webhook.json", mode="w")
-            cache.write(json.dumps(now))
-            cache.close()
+            with open(DATA + "/" + group + "/" + "webhook.json", mode="r") as cache:
+                now = json.loads(cache.read())
+                now.append(repo_name)
+            with open(DATA + "/" + group + "/" + "webhook.json", mode="w") as cache:
+                cache.write(json.dumps(now))
             await webhook.finish("绑定成功！")
         else:
             await webhook.finish("唔……绑定失败：已经绑定过了。")
@@ -100,13 +98,11 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
     if already(repo, group) is False:
         await unbind.finish("唔……解绑失败：尚未绑定此仓库。")
     else:
-        cache = open(DATA + "/" + group + "/webhook.json", mode="r")
-        now = json.loads(cache.read())
-        now.remove(repo)
-        cache.close()
-        cache = open(DATA + "/" + group + "/webhook.json", mode="w")
-        cache.write(json.dumps(now))
-        cache.close()
+        with open(DATA + "/" + group + "/webhook.json", mode="r") as cache:
+            now = json.loads(cache.read())
+            now.remove(repo)
+        with open(DATA + "/" + group + "/webhook.json", mode="w") as cache:
+            cache.write(json.dumps(now))
         await unbind.finish("解绑成功！")
 
 app: FastAPI = nonebot.get_app()
