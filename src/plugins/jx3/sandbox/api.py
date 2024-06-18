@@ -30,5 +30,5 @@ async def sandbox_v2_(server: str):
         html = html.replace("$" + i["castleName"], camp)
     final_html = CACHE + "/" + get_uuid() + ".html"
     write(final_html, html)
-    final_path = await generate(final_html, False, "m-sandbox-map", False)
+    final_path = await generate(final_html, False, ".m-sandbox-map", False)
     return Path(final_path).as_uri()
