@@ -126,9 +126,9 @@ async def reload_group(bot: Bot, event: Event, args: Message = CommandArg()):
     personal_data = await bot.call_api("get_group_member_info", group_id=event.group_id, user_id=event.user_id, no_cache=True)
     user_permission = personal_data["role"] in ["owner", "admin"]
     if not (checker(str(event.user_id), 10) or user_permission):
-        await recovery.finish(f"唔……只有群主或管理员才能移除{Config.name}哦~")
+        await recovery.finish(f"唔……只有群主或管理员才能重置{Config.name}哦~")
     else:
-        await recovery.send(f"确定要让{Config.name}离开吗？如果是，请再发送一次“重置音卡”。\n注意：所有本群数据将会清空，包括绑定和订阅！")
+        await recovery.send(f"确定要重置{Config.name}数据吗？如果是，请再发送一次“重置音卡”。\n注意：所有本群数据将会清空，包括绑定和订阅，该操作不可逆！")
 
 import shutil
 
