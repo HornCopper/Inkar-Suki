@@ -229,9 +229,8 @@ async def get_bg(sc):
         return final_path
     else:
         data = await get_content(f"https://cdn.jx3box.com/static/pz/img/overview/horizontal/{sc}.png")
-        cache = open(final_path, mode="wb")
-        cache.write(data)
-        cache.close()
+        with open(final_path, mode="wb") as cache:
+            cache.write(data)
         return final_path
 
 
@@ -250,9 +249,8 @@ async def get_kf_icon(kf):
             data = await get_content(f"https://img.jx3box.com/image/xf/{num}.png")
         else:
             data = await get_content("https://img.jx3box.com/image/xf/0.png")
-        cache = open(final_path, mode="wb")
-        cache.write(data)
-        cache.close()
+        with open(final_path, mode="wb") as cache:
+            cache.write(data)
         return final_path
 
 
@@ -632,9 +630,8 @@ async def local_save(webpath):
             main = await get_content(webpath)
         except:
             return webpath
-        cache = open(final_path, mode="wb")
-        cache.write(main)
-        cache.close()
+        with open(final_path, mode="wb") as cache:
+            cache.write(main)
         return final_path
 
 
