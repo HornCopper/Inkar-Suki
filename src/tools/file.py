@@ -1,60 +1,27 @@
-import os
 import pathlib2
 import urllib
 
-
-def read(Path):
+def read(Path) -> str:
     try:
-        cache = open(Path, mode="r", encoding="utf-8")
-        msg = cache.read()
-        cache.close()
+        with open(Path, mode="r", encoding="utf-8") as cache:
+            msg = cache.read()
         return msg or "{}"
     except Exception as _:
         return "{}"  # 默认返回空对象
 
 
-def write(Path, sth):
+def write(Path, sth) -> bool:
     p = pathlib2.Path(Path).parent
     if not p.exists():
         p.mkdir()  # check if not exist
-    cache = open(Path, mode="w", encoding="utf-8")
-    cache.write(sth)
-    cache.close()
+    with open(Path, mode="w", encoding="utf-8") as cache:
+        cache.write(sth)
     return True
 
-
-path_cur = os.path.dirname(__file__)
-path_roow = os.path.join(path_cur, "..")
-path_asset = os.path.join(path_roow, "assets")
-path_asset = os.path.realpath(path_asset)
-
-def get_content_local(path: str):
+def get_content_local(path: str) -> str:
     """
     直接获取文件内容。
     """
     with urllib.request.urlopen(path) as f:  
         content = f.read()
         return content
-
-def get_resource_path(path: str) -> str:
-    """
-    获取asset目录下的路径
-    """
-    return os.path.join(path_asset, path)
-
-
-def get_resource(path: str) -> bytes:
-    """
-    读取asset目录下的文件
-    """
-    res = get_resource_path(path)
-    with open(res, "rb") as f:
-        return f.read()
-
-
-def get_res_image(path: str) -> bytes:
-    return get_resource(os.path.join("image", path))
-
-
-def get_res_font(path: str) -> bytes:
-    return get_resource(os.path.join("font", path))
