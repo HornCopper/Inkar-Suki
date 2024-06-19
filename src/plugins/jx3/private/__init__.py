@@ -23,7 +23,6 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     else:
         url = await get_baizhan_img()
         data = await get_content(url)
-        bz = open(correct_path, mode="wb")
-        bz.write(data)
-        bz.close()
+        with open(correct_path, mode="wb") as bz:
+            bz.write(data)
         await monsters_v1.finish(ms.image(Path(correct_path).as_uri()))
