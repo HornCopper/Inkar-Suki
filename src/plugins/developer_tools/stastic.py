@@ -15,7 +15,7 @@ async def generate_bar_chart(data):
     bar_width = 0.6
     bar_positions = np.arange(len(categories))
 
-    ax.bar(bar_positions, values, width=bar_width, color="blue")
+    ax.bar(bar_positions, values, width=bar_width, color=["blue", "green", "red", "purple"])
 
     font_path = ASSETS + "/font/custom.ttf"
     prop = fm.FontProperties(fname=font_path)
@@ -27,7 +27,7 @@ async def generate_bar_chart(data):
     ax.set_ylabel("对数数量", fontproperties=prop, fontsize=12)
 
     ax.set_xticks(bar_positions)
-    ax.set_xticklabels(categories, fontproperties=prop, rotation=90, ha="center")
+    ax.set_xticklabels(categories, fontproperties=prop, rotation=75, ha="center")
 
     plt.tight_layout()
 
