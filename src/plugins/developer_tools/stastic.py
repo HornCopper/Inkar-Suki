@@ -27,7 +27,7 @@ async def generate_bar_chart(data):
     ax.set_ylabel("对数数量", fontproperties=prop, fontsize=12)
 
     ax.set_xticks(bar_positions)
-    ax.set_xticklabels(categories, fontproperties=prop, rotation=60, ha="center")
+    ax.set_xticklabels(categories, fontproperties=prop, rotation=90, ha="center")
 
     for bar in bars:
         yval = bar.get_height()
