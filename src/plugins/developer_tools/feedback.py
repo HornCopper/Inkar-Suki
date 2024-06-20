@@ -1,5 +1,7 @@
 from src.tools.basic import *
 
+from .stastic import generate_bar_chart
+
 github_token = Config.ght
 
 async def createIssue(uin: str, comment: str):
@@ -31,3 +33,18 @@ async def _(event: Event, args: Message = CommandArg()):
     else:
         await createIssue(user, msg)
         await feedback_.finish("已经将您的反馈内容提交至Inkar Suki GitHub，处理完毕后我们会通过电子邮件等方式通知您，音卡感谢您的反馈！")
+
+stastic = on_command("stastic", aliases={"统计", "统计数据", "命令统计"}, priority=5, force_whitespace=True)
+
+@stastic.handle()
+async def _(event: Event, args: Message = CommandArg()):
+    current_data = json.loads(read(TOOLS + "/population.json"))
+    img: bytes
+    if args.extract_plain_text() == "":
+        img = await generate_bar_chart(current_data)
+    else:
+        for name in current_data:
+            if name == args.extract_plain_text():
+                img = await generate_bar_chart({name: current_data[name]})
+        await stastic.finish("没有找到该命令的统计数据，可能是调用量为0或者不存在。")
+    await stastic.finish(ms.image(img))
