@@ -18,12 +18,15 @@ from .spark import chat_spark
 
 @run_preprocessor
 async def _(cmd = RawCommand()):
+    if cmd == None:
+        return
     current_data = json.loads(read(TOOLS + "/population.json"))
     if cmd not in current_data:
         current_data[cmd] = 1
     else:
         current_data[cmd] += 1
     write(TOOLS + "/population.json", json.dumps(current_data))
+    
     
 
 def getGroupData(group: str, key: str):
