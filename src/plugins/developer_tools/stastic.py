@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 import matplotlib.font_manager as fm
 import io
+import numpy as np
 
 from src.tools.basic import ASSETS
 
@@ -8,7 +9,7 @@ async def generate_bar_chart(data):
     categories = list(data.keys())
     values = list(data.values())
 
-    plt.figure(figsize=(10, 10))
+    plt.figure(figsize=(16, 10))
     plt.bar(categories, values, color=["blue", "green", "red", "purple"])
 
     font_path = ASSETS + "/font/custom.ttf"
@@ -31,3 +32,7 @@ async def generate_bar_chart(data):
     buf.close()
 
     return image_bytes
+
+def preprocess_data(data):
+    processed_data = {key: np.log10(value) for key, value in data.items()}
+    return processed_data
