@@ -4,6 +4,8 @@ from nonebot.adapters import Bot
 from nonebot.exception import MockApiException
 from nonebot.log import logger
 from nonebot.matcher import Matcher
+from nonebot.message import run_preprocessor
+from nonebot.params import RawCommand
 
 import os
 import json
@@ -13,6 +15,16 @@ import random
 from ..basic import DATA, write, Config, get_api, read, TOOLS
 
 from .spark import chat_spark
+
+@run_preprocessor
+async def _(cmd = RawCommand()):
+    current_data = json.loads(read(TOOLS + "/population.json"))
+    if cmd not in current_data:
+        current_data[cmd] = 1
+    else:
+        current_data[cmd] += 1
+    write(TOOLS + "/population.json", json.dumps(current_data))
+    
 
 def getGroupData(group: str, key: str):
     data = read(DATA + "/" + str(group) + "/settings.json")
