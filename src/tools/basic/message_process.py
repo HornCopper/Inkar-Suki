@@ -25,7 +25,7 @@ async def _(cmd = RawCommand()):
         current_data[cmd] = 1
     else:
         current_data[cmd] += 1
-    write(TOOLS + "/population.json", json.dumps(current_data))
+    write(TOOLS + "/population.json", json.dumps(current_data, ensure_ascii=False))
     
     
 
