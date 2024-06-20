@@ -17,7 +17,7 @@ async def generate_bar_chart(data):
     spacing_factor = 1.5
     bar_positions = np.arange(len(categories)) * spacing_factor
 
-    bars = ax.barh(bar_positions, values, height=bar_height, color="blue")
+    bars = ax.barh(bar_positions, values, height=bar_height, color=["blue", "green", "red", "purple"])
 
     font_path = ASSETS + "/font/custom.ttf"
     prop = fm.FontProperties(fname=font_path)
