@@ -36,10 +36,10 @@ async def generate_bar_chart(data):
     plt.close(fig)
     buf.seek(0)
 
-    image_base64 = base64.b64encode(buf.read()).decode("utf-8")
+    image_bytes = buf.read()
     buf.close()
 
-    return image_base64
+    return image_bytes
 
 def preprocess_data(data):
     processed_data = {key: np.log10(value) for key, value in data.items()}
