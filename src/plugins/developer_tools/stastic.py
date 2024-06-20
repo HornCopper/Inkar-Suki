@@ -6,7 +6,7 @@ import numpy as np
 from src.tools.basic import ASSETS
 
 async def generate_bar_chart(data):
-    data = dict(sorted(data.items(), key=lambda item: item[1], reverse=False))
+    data = dict(sorted(data.items(), key=lambda item: item[1], reverse=True))
 
     categories = list(data.keys())
     values = list(data.values())
