@@ -6,10 +6,11 @@ import numpy as np
 from src.tools.basic import ASSETS
 
 async def generate_bar_chart(data):
+    data = preprocess_data(data)
     categories = list(data.keys())
     values = list(data.values())
 
-    plt.figure(figsize=(16, 10))
+    plt.figure(figsize=(160, 80))
     plt.bar(categories, values, color=["blue", "green", "red", "purple"])
 
     font_path = ASSETS + "/font/custom.ttf"
