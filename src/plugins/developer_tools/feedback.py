@@ -38,6 +38,8 @@ stastic = on_command("stastic", aliases={"统计", "统计数据", "命令统计
 
 @stastic.handle()
 async def _(event: Event, args: Message = CommandArg()):
+    if not checker(str(event.user_id), 10):
+        await stastic.finish(error(10))
     current_data = json.loads(read(TOOLS + "/population.json"))
     img: bytes
     if args.extract_plain_text() == "":
