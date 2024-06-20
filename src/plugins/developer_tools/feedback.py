@@ -47,6 +47,6 @@ async def _(event: Event, args: Message = CommandArg()):
     else:
         for name in current_data:
             if name == args.extract_plain_text():
-                img = await generate_bar_chart({name: current_data[name]})
+                await stastic.finish("该命令截至目前的总调用量为：" + str(current_data[name]))
         await stastic.finish("没有找到该命令的统计数据，可能是调用量为0或者不存在。")
     await stastic.finish(ms.image(img))
