@@ -16,11 +16,14 @@ async def _(args: Message = CommandArg()):
 async def _(event: Event, args: Message = CommandArg()):
     if args.extract_plain_text() != "":
         return
+    rdint = random.randint(1, 100)
     if event.user_id == 1925648680:
-        rdint = random.randint(1, 10)
-        if rdint >= 4:
+        if rdint >= 31:
             img = get_content_local(Path(PLUGINS + "/grab/lwx.jpg").as_uri())
             await rddi.finish(ms.image(img))
+    if rdint == 1:
+        img = get_content_local(Path(PLUGINS + "/grab/lwx.jpg").as_uri())
+        await rddi.finish(ms.image(img))
     data = await get_api("https://api.thedogapi.com/v1/images/search?size=full")
     image = await get_content(data[0]["url"])
     await rddi.finish(ms.image(image))
