@@ -2,7 +2,7 @@ from src.tools.basic import *
 
 rdci = on_command("随机猫图", priority=5)
 
-rddi = on_command("随机狗图", priority=5)
+rddi = on_command("随机狗图", aliases={"随机lwx"}, priority=5)
 
 @rdci.handle()
 async def _(args: Message = CommandArg()):
