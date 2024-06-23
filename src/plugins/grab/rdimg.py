@@ -13,7 +13,7 @@ async def _(args: Message = CommandArg()):
     await rdci.finish(ms.image(image))
 
 @rddi.handle()
-async def _(args: Message = CommandArg()):
+async def _(event: Event, args: Message = CommandArg()):
     if args.extract_plain_text() != "":
         return
     if event.user_id == 1925648680:
