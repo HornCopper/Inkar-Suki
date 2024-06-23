@@ -17,7 +17,7 @@ async def _(event: Event, args: Message = CommandArg()):
     if args.extract_plain_text() != "":
         return
     if event.user_id == 1925648680:
-        img = get_content_local(Path(PLUGINS + "/grab/lwx.jpgd").as_uri())
+        img = get_content_local(Path(PLUGINS + "/grab/lwx.jpg").as_uri())
         await rddi.finish(ms.image(img))
     data = await get_api("https://api.thedogapi.com/v1/images/search?size=full")
     image = await get_content(data[0]["url"])
