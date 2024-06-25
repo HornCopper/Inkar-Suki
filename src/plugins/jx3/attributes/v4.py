@@ -283,7 +283,7 @@ async def get_attrs_v4(server: str, name: str, group_id: str):
         else:
             if lenchant_flag and not colorful_stone_flag:
                 display_enchant = "<img src=\"" + colorful_stone_image + "\" style=\"vertical-align: middle;\">" + lenchant_name
-            elif colorful_stone_flag and not lenchant_name:
+            elif colorful_stone_flag and not lenchant_flag:
                 display_enchant = "<img src=\"" + colorful_stone_image + "\" style=\"vertical-align: middle;\">" + colorful_stone_name
             else:
                 display_enchant = ""
