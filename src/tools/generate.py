@@ -27,7 +27,9 @@ async def generate_by_url(url: str, locate: str = None, first_element: bool = Fa
         async with async_playwright() as p:
             logger.opt(colors=True).info("<green>Generating source: " + url + "</green>")
             browser = await p.chromium.launch(headless=True, slow_mo=0)
-            context = await browser.new_context()
+            context = await browser.new_context(
+                viewport={"width": 1920, "height": 1080}
+            )
             page = await context.new_page()
             await page.goto(url)
             if delay > 0:
