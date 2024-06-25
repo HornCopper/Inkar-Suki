@@ -240,7 +240,7 @@ async def get_attrs_v4(server: str, name: str, group_id: str):
                 else:
                     if lenchant_flag and not henchant_flag:
                         display_enchant = "<img src=\"" + PLUGINS + "/jx3/attributes/lenchant.png" + "\" style=\"vertical-align: middle;\">" + lenchant_name
-                    elif henchant_flag and not lenchant_name:
+                    elif henchant_flag and not lenchant_flag:
                         display_enchant = "<img src=\"" + PLUGINS + "/jx3/attributes/henchant.png" + "\" style=\"vertical-align: middle;\">" + henchant_name
                     else:
                         display_enchant = ""
