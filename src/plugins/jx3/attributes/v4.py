@@ -256,7 +256,7 @@ async def get_attrs_v4(server: str, name: str, group_id: str):
     for each_location in data["data"]["Equips"]:
         eicon = each_location["Icon"]["FileName"]
         ename = each_location["Name"] + "（" + each_location["Quality"] + "）"
-        eattr = get_equip_attr(each_location["ModifyType"])
+        eattr = get_equip_attr(each_location["ModifyType"], type)
         ecurrent_strength = each_location["StrengthLevel"]
         emax_strength = each_location["MaxStrengthLevel"]
         erest_strength = str(int(emax_strength) - int(ecurrent_strength))
