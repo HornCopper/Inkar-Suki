@@ -299,5 +299,5 @@ async def get_attrs_v4(server: str, name: str, group_id: str):
     html = html.replace("$customfont", font).replace("$tablecontent", final_table).replace("$school", basic_info[3]).replace("$color", colors[kungfu])
     final_html = CACHE + "/" + get_uuid() + ".html"
     write(final_html, html)
-    final_path = await generate(final_html, False, "table", False)
+    final_path = await generate(final_html, False, ".wrapper", False)
     return Path(final_path).as_uri()
