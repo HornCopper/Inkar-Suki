@@ -5,7 +5,7 @@ jx3_cmd_top100_ = on_command("jx3_top100", aliases={"百强"}, force_whitespace=
 
 
 @jx3_cmd_top100_.handle()
-async def jx3_top100(event: GroupMessageEvent, args: Message = CommandArg()):
+async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     """
     获取魔盒百强列表：
 
@@ -42,7 +42,7 @@ jx3_cmd_rank = on_command("jx3_rank", aliases={"榜单"}, force_whitespace=True,
 
 
 @jx3_cmd_rank.handle()
-async def jx3_rank(event: GroupMessageEvent, args: Message = CommandArg()):
+async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     """
     获取风云榜单：
 
@@ -73,7 +73,7 @@ async def jx3_rank(event: GroupMessageEvent, args: Message = CommandArg()):
 jx3_cmd_allserver_rank = on_command("jx3_asrank", aliases={"全服榜单"}, force_whitespace=True, priority=5)
 
 @jx3_cmd_allserver_rank.handle()
-async def jx3_rank(event: GroupMessageEvent, args: Message = CommandArg()):
+async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     return # 鸽一下
     """
     获取全服风云榜单：

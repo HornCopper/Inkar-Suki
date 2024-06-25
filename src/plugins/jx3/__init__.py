@@ -16,7 +16,7 @@ async def nonebot_on_startup():
 jx3api_ws = on(type="WsRecv", priority=5, block=False)
 
 @jx3api_ws.handle()
-async def on_jx3_event_recv(bot: Bot, event: RecvEvent):
+async def _(bot: Bot, event: RecvEvent):
     message = event.get_message()
     if not message or message["type"] == "":
         return

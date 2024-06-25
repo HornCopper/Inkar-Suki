@@ -39,7 +39,7 @@ notice = on_notice(priority=5)
 
 
 @notice.handle()
-async def on_new_group_enter(bot: Bot, event: NoticeEvent):
+async def _(bot: Bot, event: NoticeEvent):
     """入群自动发送帮助信息。"""
     if not event.notice_type == "group_increase":
         return
@@ -56,7 +56,7 @@ async def on_new_group_enter(bot: Bot, event: NoticeEvent):
 
 
 @notice.handle()
-async def on_group_ban(bot: Bot, event: NoticeEvent):
+async def _(bot: Bot, event: NoticeEvent):
     """被禁言了"""
     if event.notice_type != "group_ban":
         return
@@ -67,7 +67,7 @@ async def on_group_ban(bot: Bot, event: NoticeEvent):
 
 
 @notice.handle()
-async def on_group_decrease(bot: Bot, event: NoticeEvent):
+async def _(bot: Bot, event: NoticeEvent):
     """被踢了"""
     if not event.notice_type == "group_decrease":
         return
@@ -76,7 +76,7 @@ async def on_group_decrease(bot: Bot, event: NoticeEvent):
     await notice_and_ban(bot, event, "移出")
 
 
-async def notice_and_ban(bot: Bot, event: NoticeEvent, action: str):
+async def _(bot: Bot, event: NoticeEvent, action: str):
     message = f"唔……{Config.name}在群聊（{event.group_id}）被{action}啦！\n操作者：{event.operator_id}，已自动封禁！"
     for i in Config.notice_to[str(event.self_id)]:
         await bot.call_api("send_group_msg", group_id=int(i), message=message)
@@ -152,7 +152,7 @@ notice_cmd_welcome_msg_edit = on_command("welcome", force_whitespace=True, prior
 
 
 @notice_cmd_welcome_msg_edit.handle()
-async def notice_welcome_msg_edit(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
+async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
     if args.extract_plain_text() == "":
         return
     arg_msg = args.extract_plain_text()

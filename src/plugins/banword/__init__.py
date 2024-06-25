@@ -4,7 +4,7 @@ banword = on_command("banword", force_whitespace=True, priority=5)
 
 
 @banword.handle()
-async def __(event: GroupMessageEvent, args: Message = CommandArg()):  # 违禁词封锁
+async def _(event: GroupMessageEvent, args: Message = CommandArg()):  # 违禁词封锁
     if args.extract_plain_text() == "":
         return
     bw = args.extract_plain_text()
@@ -24,7 +24,7 @@ unbanword = on_command("unbanword", force_whitespace=True, priority=5)  # 违禁
 
 
 @unbanword.handle()
-async def ___(event: GroupMessageEvent, args: Message = CommandArg()):
+async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     if args.extract_plain_text() == "":
         return
     if not checker(str(event.user_id), 5):
