@@ -109,7 +109,7 @@ async def get_attrs_v4(server: str, name: str, group_id: str):
     data = json.loads(data)
     basic_info_key = ["角色名", "UID", "帮会", "门派", "体型", "阵营", "推栏", "装分", "气血"]
     basic_info.append(data["data"]["TotalEquipsScore"])
-    basic_info.append(data["data"]["MuchDetail"]["totalLift"])
+    basic_info.append(data["data"]["MatchDetail"]["totalLift"])
     kungfu = school_mapping(data["data"]["Kungfu"]["KungfuID"])
     type = kungfu_mapping(kungfu)
     if type in ["根骨", "元气", "身法", "力道"]:
@@ -122,45 +122,45 @@ async def get_attrs_v4(server: str, name: str, group_id: str):
             "力道": "atStrengthBase"
         }
         basic_info = basic_info + [
-            str(data["data"]["MuchDetail"][type_to_attr[type]]), 
-            str(data["data"]["MuchDetail"]["totalAttack"]), 
-            str(data["data"]["MuchDetail"]["baseAttack"]), 
-            str(data["data"]["MuchDetail"]["atCriticalStrikeLevel"]), 
-            str(data["data"]["MuchDetail"]["atCriticalDamagePowerBaseLevel"]) + "%", 
-            str(data["data"]["MuchDetail"]["atHasteBaseLevel"]), 
-            str(data["data"]["MuchDetail"]["atOvercomeBaseLevel"]) + "%", 
-            str(data["data"]["MuchDetail"]["atStrainBaseLevel"]) + "%", 
-            str(data["data"]["MuchDetail"]["atSurplusValueBase"]), 
-            str(data["data"]["MuchDetail"]["atToughnessBaseLevel"]) + "%", 
-            str(data["data"]["MuchDetail"]["atDecriticalDamagePowerBaseLevel"]) + "%" 
+            str(data["data"]["MatchDetail"][type_to_attr[type]]), 
+            str(data["data"]["MatchDetail"]["totalAttack"]), 
+            str(data["data"]["MatchDetail"]["baseAttack"]), 
+            str(data["data"]["MatchDetail"]["atCriticalStrikeLevel"]), 
+            str(data["data"]["MatchDetail"]["atCriticalDamagePowerBaseLevel"]) + "%", 
+            str(data["data"]["MatchDetail"]["atHasteBaseLevel"]), 
+            str(data["data"]["MatchDetail"]["atOvercomeBaseLevel"]) + "%", 
+            str(data["data"]["MatchDetail"]["atStrainBaseLevel"]) + "%", 
+            str(data["data"]["MatchDetail"]["atSurplusValueBase"]), 
+            str(data["data"]["MatchDetail"]["atToughnessBaseLevel"]) + "%", 
+            str(data["data"]["MatchDetail"]["atDecriticalDamagePowerBaseLevel"]) + "%" 
             ]
     elif type == "治疗":
         basic_info_key.append("根骨")
         basic_info_key = basic_info_key + ["治疗量", "会心", "会心效果", "加速", "御劲", "化劲"]
         basic_info = basic_info + [
-            str(data["data"]["MuchDetail"]["atSpiritBase"]),
-            str(data["data"]["MuchDetail"]["totaltherapyPowerBase"]),
-            str(data["data"]["MuchDetail"]["atCriticalStrikeLevel"]), 
-            str(data["data"]["MuchDetail"]["atCriticalDamagePowerBaseLevel"]) + "%", 
-            str(data["data"]["MuchDetail"]["atHasteBaseLevel"]), 
-            str(data["data"]["MuchDetail"]["atToughnessBaseLevel"]) + "%", 
-            str(data["data"]["MuchDetail"]["atDecriticalDamagePowerBaseLevel"]) + "%" 
+            str(data["data"]["MatchDetail"]["atSpiritBase"]),
+            str(data["data"]["MatchDetail"]["totaltherapyPowerBase"]),
+            str(data["data"]["MatchDetail"]["atCriticalStrikeLevel"]), 
+            str(data["data"]["MatchDetail"]["atCriticalDamagePowerBaseLevel"]) + "%", 
+            str(data["data"]["MatchDetail"]["atHasteBaseLevel"]), 
+            str(data["data"]["MatchDetail"]["atToughnessBaseLevel"]) + "%", 
+            str(data["data"]["MatchDetail"]["atDecriticalDamagePowerBaseLevel"]) + "%" 
         ]
     elif type == "防御":
         basic_info_key.append("体质")
         basic_info_key = basic_info_key + ["外防", "内防", "御劲", "闪避", "招架", "拆招", "加速", "无双", "破招", "化劲"]
         basic_info = basic_info + [
-            str(data["data"]["MuchDetail"]["atVitalityBase"]),
-            str(data["data"]["MuchDetail"]["atPhysicsShieldBaseLevel"]) + "%",
-            str(data["data"]["MuchDetail"]["atMagicShieldLevel"]) + "%",
-            str(data["data"]["MuchDetail"]["atToughnessBaseLevel"]) + "%",
-            str(data["data"]["MuchDetail"]["atDodgeLevel"]) + "%",
-            str(data["data"]["MuchDetail"]["atParryBaseLevel"]) + "%",
-            str(data["data"]["MuchDetail"]["atParryValue"]),
-            str(data["data"]["MuchDetail"]["atHasteBaseLevel"]),
-            str(data["data"]["MuchDetail"]["atStrainBaseLevel"]) + "%",
-            str(data["data"]["MuchDetail"]["atSurplusValueBase"]),
-            str(data["data"]["MuchDetail"]["atDecriticalDamagePowerBaseLevel"]) + "%"
+            str(data["data"]["MatchDetail"]["atVitalityBase"]),
+            str(data["data"]["MatchDetail"]["atPhysicsShieldBaseLevel"]) + "%",
+            str(data["data"]["MatchDetail"]["atMagicShieldLevel"]) + "%",
+            str(data["data"]["MatchDetail"]["atToughnessBaseLevel"]) + "%",
+            str(data["data"]["MatchDetail"]["atDodgeLevel"]) + "%",
+            str(data["data"]["MatchDetail"]["atParryBaseLevel"]) + "%",
+            str(data["data"]["MatchDetail"]["atParryValue"]),
+            str(data["data"]["MatchDetail"]["atHasteBaseLevel"]),
+            str(data["data"]["MatchDetail"]["atStrainBaseLevel"]) + "%",
+            str(data["data"]["MatchDetail"]["atSurplusValueBase"]),
+            str(data["data"]["MatchDetail"]["atDecriticalDamagePowerBaseLevel"]) + "%"
         ]
     if data["data"]["Person"]["qixueList"] == []:
         qixue_Confirmed = []
