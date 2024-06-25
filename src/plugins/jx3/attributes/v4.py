@@ -296,7 +296,7 @@ async def get_attrs_v4(server: str, name: str, group_id: str):
         table.append(template_attrs_v4.replace("$icon", eicon).replace("$name", ename).replace("$attr", eattr).replace("$enable", ecurrent_strength).replace("$available", erest_strength).replace("$fivestone", fivestones).replace("$enchant", display_enchant).replace("$source", source))
     final_table = "\n".join(table)
     font = ASSETS + "/font/custom.ttf"
-    html = html.replace("$customfont", font).replace("$tablecontent", final_table).replace("$school", basic_info[3]).replace("$color", colors[kungfu])
+    html = html.replace("$customfont", font).replace("$tablecontent", final_table).replace("$school", ASSETS + "/image/school/" + basic_info[3] + ".svg").replace("$color", colors[kungfu])
     final_html = CACHE + "/" + get_uuid() + ".html"
     write(final_html, html)
     final_path = await generate(final_html, False, ".wrapper", False, viewport={"width": 2560, "height": 1440})
