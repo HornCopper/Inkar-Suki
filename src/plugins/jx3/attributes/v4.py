@@ -162,6 +162,8 @@ async def get_attrs_v4(server: str, name: str, group_id: str):
             str(data["data"]["MatchDetail"]["atSurplusValueBase"]),
             str(data["data"]["MatchDetail"]["atDecriticalDamagePowerBaseLevel"]) + "%"
         ]
+    qixue = []
+    qixueImg = []
     if data["data"]["Person"]["qixueList"] == []:
         qixue_Confirmed = []
         qixueCImg = []
@@ -191,7 +193,6 @@ async def get_attrs_v4(server: str, name: str, group_id: str):
         qixue = insert_multiple_elements(qixue_Confirmed, name_positions) # 奇穴列表
         qixueImg = insert_multiple_elements(qixueLImg, img_positions) # 奇穴图片列表
     else:
-        qixue = []
         for i in range(12):
             qixue.append("未知")
             qixueImg.append(PLUGINS + "/jx3/attributes/unknown.png")
