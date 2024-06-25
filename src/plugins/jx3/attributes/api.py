@@ -88,7 +88,7 @@ async def get_uid(server, id):
 
 
 async def get_personal_kf(kfid):
-    kfdt = await get_api("https://inkar-suki.codethink.cn/schoolmapping")
+    kfdt = json.loads(read(PLUGINS + "/jx3/attributes/schoolmapping.json"))
     for i in list(kfdt):
         if str(kfdt[i]) == str(kfid):
             return i
@@ -235,7 +235,7 @@ async def get_bg(sc):
 
 
 async def get_kf_icon(kf):
-    school_mapping = await get_api("https://inkar-suki.codethink.cn/schoolmapping")
+    school_mapping = json.loads(read(PLUGINS + "/jx3/attributes/schoolmapping.json"))
     flag = False
     try:
         num = school_mapping[kf]

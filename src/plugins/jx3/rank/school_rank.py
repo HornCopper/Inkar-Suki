@@ -44,7 +44,7 @@ colors = {
 }
 
 async def get_school_icon(name):
-    school_data = await get_api("https://inkar-suki.codethink.cn/schoolmapping")
+    school_data = json.loads(read(PLUGINS + "/jx3/attributes/schoolmapping.json"))
     if name not in list(school_data):
         raise KeyError(f"The force {name} cannot be found in the offical API of Inkar Suki.")
     else:

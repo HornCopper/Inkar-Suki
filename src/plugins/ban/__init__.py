@@ -96,7 +96,7 @@ dismiss = on_command("dismiss", aliases={"移除音卡"}, force_whitespace=True,
 
 
 @dismiss.handle()
-async def leave_group(bot: Bot, event: Event, args: Message = CommandArg()):
+async def _(bot: Bot, event: Event, args: Message = CommandArg()):
     if args.extract_plain_text() != "":
         return
     personal_data = await bot.call_api("get_group_member_info", group_id=event.group_id, user_id=event.user_id, no_cache=True)
@@ -108,7 +108,7 @@ async def leave_group(bot: Bot, event: Event, args: Message = CommandArg()):
 
 
 @dismiss.got("confirm")
-async def leave_group(bot: Bot, event: Event, confirm: Message = Arg()):
+async def _(bot: Bot, event: Event, confirm: Message = Arg()):
     u_input = confirm.extract_plain_text()
     if u_input == "移除音卡":
         await dismiss.send(leave_msg)
@@ -120,7 +120,7 @@ async def leave_group(bot: Bot, event: Event, confirm: Message = Arg()):
 recovery = on_command("recovery", aliases={"重置音卡"}, force_whitespace=True, priority=5)
 
 @recovery.handle()
-async def reload_group(bot: Bot, event: Event, args: Message = CommandArg()):
+async def _(bot: Bot, event: Event, args: Message = CommandArg()):
     if args.extract_plain_text() != "":
         return
     personal_data = await bot.call_api("get_group_member_info", group_id=event.group_id, user_id=event.user_id, no_cache=True)
@@ -133,7 +133,7 @@ async def reload_group(bot: Bot, event: Event, args: Message = CommandArg()):
 import shutil
 
 @recovery.got("confirm")
-async def leave_group(bot: Bot, event: Event, confirm: Message = Arg()):
+async def _(bot: Bot, event: Event, confirm: Message = Arg()):
     u_input = confirm.extract_plain_text()
     if u_input == "重置音卡":
         if os.path.exists(DATA + "/" + str(event.group_id)):

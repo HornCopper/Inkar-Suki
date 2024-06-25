@@ -5,7 +5,7 @@ jx3_cmd_serendipity = on_command("jx3_serendipity", aliases={"奇遇v1", "查询
 
 
 @jx3_cmd_serendipity.handle()
-async def jx3_serendipity(event: GroupMessageEvent, args: Message = CommandArg()):
+async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     """
     获取个人奇遇记录：
 
@@ -33,7 +33,7 @@ serendipity_v2 = on_command("jx3_serendipity_v2", aliases={"奇遇", "查询"}, 
 
 
 @serendipity_v2.handle()
-async def jx3_serendipity(event: GroupMessageEvent, args: Message = CommandArg()):
+async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     """
     获取个人奇遇记录：
 
@@ -61,7 +61,7 @@ pet_serendipity = on_command("jx3_pet_serendipity", aliases={"宠物奇遇"}, fo
 
 
 @pet_serendipity.handle()
-async def jx3_serendipity(event: GroupMessageEvent, args: Message = CommandArg()):
+async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     """
     获取个人奇遇记录：
 
@@ -90,7 +90,7 @@ jx3_cmd_statistical = on_command("jx3_lstatistical", aliases={"近期奇遇"}, f
 
 
 @jx3_cmd_statistical.handle()
-async def jx3_lstatistical(event: GroupMessageEvent, args: Message = CommandArg()):
+async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     """
     获取某服务器最近出奇遇的人的列表：
 
@@ -118,7 +118,7 @@ jx3_cmd_gserendipity = on_command("jx3_gserendipity", aliases={"全服奇遇"}, 
 
 
 @jx3_cmd_gserendipity.handle()
-async def jx3_gserendipity(event: GroupMessageEvent, args: Message = CommandArg()):
+async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     """
     获取全服最近某奇遇的触发列表，按触发顺序：
 
@@ -140,7 +140,7 @@ jx3_cmd_gstatistical = on_command("jx3_gstatistical", aliases={"全服统计"}, 
 
 
 @jx3_cmd_gstatistical.handle()
-async def jx3_gstatistical(event: GroupMessageEvent, args: Message = CommandArg()):
+async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     """
     获取各服奇遇的触发者，统计图表：
 
@@ -162,7 +162,7 @@ async def jx3_gstatistical(event: GroupMessageEvent, args: Message = CommandArg(
 preposition = on_command("jx3_preposition", aliases={"前置", "攻略"}, force_whitespace=True, priority=5)
 
 @preposition.handle()
-async def jx3_preposition(event: GroupMessageEvent, args: Message = CommandArg()):
+async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     if args.extract_plain_text() == "":
         return
     serendipity = args.extract_plain_text()

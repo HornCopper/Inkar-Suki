@@ -18,7 +18,7 @@ template_rec_equip = """
 jx3_cmd_equip_recommend = on_command("jx3_equip_recommend", aliases={"配装"}, force_whitespace=True, priority=5)
 
 @jx3_cmd_equip_recommend.handle()
-async def jx3_equip_recommend_menu(event: GroupMessageEvent, state: T_State, args: Message = CommandArg()):
+async def _(event: GroupMessageEvent, state: T_State, args: Message = CommandArg()):
     if args.extract_plain_text() == "":
         return
     arg = args.extract_plain_text().split(" ")
@@ -36,7 +36,7 @@ async def jx3_equip_recommend_menu(event: GroupMessageEvent, state: T_State, arg
             condition.append(arg[1].upper())
     elif len(arg) == 1:
         kf = aliases(arg[0])
-    school_mapping = await get_api("https://inkar-suki.codethink.cn/schoolmapping")
+    school_mapping = json.loads(read(PLUGINS + "/jx3/attributes/schoolmapping.json"))
     if kf not in list(school_mapping):
         await jx3_cmd_equip_recommend.finish("唔……未找到该心法，请检查后重试~")
     forceId = school_mapping[kf]

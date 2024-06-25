@@ -8,7 +8,7 @@ from nonebot_plugin_apscheduler import scheduler
 
 jx3_cmd_daily = on_command("jx3_daily", aliases={"日常"}, force_whitespace=True, priority=5)
 @jx3_cmd_daily.handle()
-async def jx3_daily(event: GroupMessageEvent):
+async def _(event: GroupMessageEvent):
     """
     查询日常。
 

@@ -13,7 +13,7 @@ purge = on_command("purge", force_whitespace=True, priority=5)  # 清除所有`h
 
 
 @purge.handle()
-async def ___(event: Event, args: Message = CommandArg()):
+async def _(event: Event, args: Message = CommandArg()):
     if args.extract_plain_text() != "":
         return
     if not checker(str(event.user_id), 1):
@@ -30,7 +30,7 @@ shutdown = on_command("shutdown", aliases={"poweroff"}, force_whitespace=True, p
 
 
 @shutdown.handle()
-async def ____(event: Event, args: Message = CommandArg()):
+async def _(event: Event, args: Message = CommandArg()):
     if args.extract_plain_text() == "":
         return
     if not checker(str(event.user_id), 10):
@@ -56,7 +56,7 @@ echo = on_command("echo", force_whitespace=True, priority=5)  # 复读只因功�
 
 
 @echo.handle()
-async def echo_(event: Event, args: Message = CommandArg()):
+async def _(event: Event, args: Message = CommandArg()):
     if args.extract_plain_text() == "":
         return
     if not checker(str(event.user_id), 9):

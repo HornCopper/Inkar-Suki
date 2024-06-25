@@ -59,7 +59,7 @@ sign_ = on_command("签到", aliases={"打卡"}, force_whitespace=True, priority
 
 
 @sign_.handle()
-async def sign(event: Event, args: Message = CommandArg()):
+async def _(event: Event, args: Message = CommandArg()):
     if args.extract_plain_text() != "":
         return
     if sign_main.wsigned(event.user_id):
@@ -73,7 +73,7 @@ coin_ = on_command("金币", aliases={"余额"}, force_whitespace=True, priority
 
 
 @coin_.handle()
-async def check_balance(event: Event, args: Message = CommandArg()):
+async def _(event: Event, args: Message = CommandArg()):
     if args.extract_plain_text() != "":
         return
     coin__ = Sign.get_coin(event.user_id)

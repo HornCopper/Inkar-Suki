@@ -57,7 +57,7 @@ write(f"{new_path }/subscribe.json", "[]")
 write(f"{new_path }/blacklist.json", "[]")"""
 
 @Bot.on_calling_api
-async def handle_api_call(bot: Bot, api: str, data: dict):
+async def _(bot: Bot, api: str, data: dict):
     if api in ["send_group_msg", "send_private_msg", "send_msg"]:
         message = re.sub(r"\[.*?\]", "", str(data["message"]))
         if message == "":
@@ -80,7 +80,7 @@ async def _(event: Event, matcher: Matcher):
             matcher.stop_propagation()
 
 @preprocess.handle()
-async def checkEnv(bot: Bot, event: GroupMessageEvent, matcher: Matcher):
+async def _(bot: Bot, event: GroupMessageEvent, matcher: Matcher):
     group_id = str(event.group_id)
     message = str(event.message)
     files = {
@@ -112,7 +112,7 @@ async def checkEnv(bot: Bot, event: GroupMessageEvent, matcher: Matcher):
             await bot.call_api("send_group_msg", group_id=event.group_id, message=sh)
 
 @preprocess.handle()
-async def autoPrivate(event: PrivateMessageEvent):
+async def _(event: PrivateMessageEvent):
     if str(event.user_id) in Config.bot:
         return
     await preprocess.finish("呜喵？如果你想要音卡去你的群聊一起玩的话，请前往我们的用户群找我哦，群号为：650495414\n另附：如果正在寻找文档，请点击下方链接前往：\nhttps://inkar-suki.codethink.cn/Inkar-Suki-Docs/#/\n如果愿意给音卡赞助，还可以点击下面的链接支持音卡：\nhttps://inkar-suki.codethink.cn/Inkar-Suki-Docs/#/donate")
