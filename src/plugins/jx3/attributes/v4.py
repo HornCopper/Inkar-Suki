@@ -188,7 +188,7 @@ async def get_attrs_v4(server: str, name: str, group_id: str):
         qxdata = await get_api(f"https://data.jx3box.com/talent/{ver}.json")
         for i in range(len(qixue_Looking)):
             place = qxdata, qixue_Looking[i]
-            name_positions.apppend((qixue_Looking[i], place))
+            name_positions.append((qixue_Looking[i], place))
             img_positions.append((qixueLImg[i], place))
         qixue = insert_multiple_elements(qixue_Confirmed, name_positions) # 奇穴列表
         qixueImg = insert_multiple_elements(qixueLImg, img_positions) # 奇穴图片列表
