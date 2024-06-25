@@ -197,7 +197,7 @@ async def get_attrs_v4(server: str, name: str, group_id: str):
             qixue.append("未知")
             qixueImg.append(PLUGINS + "/jx3/attributes/unknown.png")
     table = []
-    html = read(VIEWS + "/jx3/equip/attributes.html")
+    html = read(VIEWS + "/jx3/equip/attributes_v4.html")
     html = html.replace("$panel_key", json.dumps(basic_info_key, ensure_ascii=False))
     html = html.replace("$panel_value", json.dumps(basic_info, ensure_ascii=False))
     html = html.replace("$qixue_name", json.dumps(qixue, ensure_ascii=False))
