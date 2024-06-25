@@ -47,7 +47,7 @@ async def _(args: Message = CommandArg()):
                 *500
             )
                 )
-        for ext in ['.jpg', '.png', '.gif']:
+        for ext in [".jpg", ".png", ".gif"]:
             image_url = f"{base_url}{batch_choice}dragon_{rdnum}_{ext}"
             resp = await client.get(image_url)
             if resp.status_code == 200:
