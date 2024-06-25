@@ -33,7 +33,7 @@ def school_mapping(school_num: int) -> str:
         
 def get_qixue_place(qixueList: dict, qixueName: str) -> int:
     for a in qixueList:
-        for b in a:
+        for b in qixueList[a]:
             if qixueList[a][b] == qixueName:
                 return int(a)
             
