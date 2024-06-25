@@ -279,7 +279,7 @@ async def get_attrs_v4(server: str, name: str, group_id: str):
             colorful_stone_name = each_location["effectColorStone"]["Name"]
             colorful_stone_image = each_location["effectColorStone"]["Icon"]["FileName"]
         if lenchant_flag and colorful_stone_flag:
-            display_enchant = "<img src=\"" + colorful_stone_image + "\" style=\"vertical-align: middle;\"><img src=\"" + PLUGINS + "/jx3/attributes/lenchant.png" + "\" style=\"vertical-align: middle;\">" + colorful_stone_name
+            display_enchant = "<img src=\"" + PLUGINS + "/jx3/attributes/lenchant.png" + "\" style=\"vertical-align: middle;\"><img width=\"32px\" height=\"32px\" src=\"" + colorful_stone_image + "\" style=\"vertical-align: middle;\">" + colorful_stone_name
         else:
             if lenchant_flag and not colorful_stone_flag:
                 display_enchant = "<img src=\"" + colorful_stone_image + "\" style=\"vertical-align: middle;\">" + lenchant_name
