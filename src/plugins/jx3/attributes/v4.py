@@ -106,6 +106,7 @@ async def get_attrs_v4(server: str, name: str, group_id: str):
         "x-sk": xsk
     }
     data = await post_url(url="https://m.pvp.xoyo.com/mine/equip/get-role-equip", data=param, headers=headers)
+    data = json.loads(data)
     basic_info_key = ["角色名", "UID", "帮会", "门派", "体型", "阵营", "推栏", "装分", "气血"]
     basic_info.append(data["data"]["TotalEquipsScore"])
     basic_info.append(data["data"]["totalLift"])
