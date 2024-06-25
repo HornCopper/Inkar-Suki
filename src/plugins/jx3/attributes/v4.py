@@ -202,7 +202,7 @@ async def get_attrs_v4(server: str, name: str, group_id: str):
     html = html.replace("$panel_value", json.dumps(basic_info, ensure_ascii=False))
     html = html.replace("$qixue_name", json.dumps(qixue, ensure_ascii=False))
     html = html.replace("$qixue_img", json.dumps(qixueImg, ensure_ascii=False))
-    for location in ["帽子", "上衣", "腰带", "护臂", "裤子", "鞋", "项链", "腰坠", "戒指", "投掷囊"]: # 武器单独适配，此处适配全身除武器以外的
+    for location in ["帽子", "上衣", "腰带", "护臂", "裤子", "鞋", "项链", "腰坠", "戒指", "戒指", "投掷囊"]: # 武器单独适配，此处适配全身除武器以外的
         for each_location in data["data"]["Equips"]:
             if each_location["Icon"]["SubKind"] == location:
                 eicon = each_location["Icon"]["FileName"]
