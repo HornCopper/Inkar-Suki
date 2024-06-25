@@ -109,7 +109,7 @@ async def get_attrs_v4(server: str, name: str, group_id: str):
     data = json.loads(data)
     basic_info_key = ["角色名", "UID", "帮会", "门派", "体型", "阵营", "推栏", "装分", "气血"]
     basic_info.append(data["data"]["TotalEquipsScore"])
-    basic_info.append(data["data"]["totalLift"])
+    basic_info.append(data["data"]["MuchDetail"]["totalLift"])
     kungfu = school_mapping(data["data"]["Kungfu"]["KungfuID"])
     type = kungfu_mapping(kungfu)
     if type in ["根骨", "元气", "身法", "力道"]:
