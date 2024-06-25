@@ -34,7 +34,7 @@ def school_mapping(school_num: int) -> str:
 def get_qixue_place(qixueList: dict, qixueName: str) -> int:
     for a in qixueList:
         for b in qixueList[a]:
-            if qixueList[a][b] == qixueName:
+            if qixueList[a][b]["name"] == qixueName:
                 return int(a)
             
 def insert_multiple_elements(single_list, elements_positions):
