@@ -22,14 +22,17 @@ def get_uuid():
     return str(uuid.uuid1()).replace("-", "")
 
 
-async def generate_by_url(url: str, locate: str = None, first_element: bool = False, delay: int = 0, css: str = "", web: bool=False):
+async def generate_by_url(url: str, locate: str = None, first_element: bool = False, delay: int = 0, css: str = "", web: bool=False, viewport: dict = {}):
     try:
         async with async_playwright() as p:
             logger.opt(colors=True).info("<green>Generating source: " + url + "</green>")
             browser = await p.chromium.launch(headless=True, slow_mo=0)
-            context = await browser.new_context(
-                viewport={"width": 1920, "height": 1080}
-            )
+            if viewport == {}:
+                context = await browser.new_context()
+            else:
+                context = await browser.new_context(
+                    viewport=viewport
+                )
             page = await context.new_page()
             await page.goto(url)
             if delay > 0:
@@ -54,7 +57,7 @@ async def generate_by_url(url: str, locate: str = None, first_element: bool = Fa
         return False
 
 
-async def generate(path: str, web: bool = False, locate: str = None, first: bool = False, delay: int = 0, addtional_css: str = ""):
+async def generate(path: str, web: bool = False, locate: str = None, first: bool = False, delay: int = 0, addtional_css: str = "", viewport: dict = {}):
     """
     生成指定路径下html文件的截图
     @param path: HTML文件的本地路径或网络地址
@@ -65,7 +68,7 @@ async def generate(path: str, web: bool = False, locate: str = None, first: bool
     @addtional_css: 追加的CSS
     """
     final_path = Path(path).as_uri() if not web else path
-    result = await generate_by_url(final_path, locate, first, delay, addtional_css, web)
+    result = await generate_by_url(final_path, locate, first, delay, addtional_css, web, viewport)
     if result is None:
         return False
     return result
