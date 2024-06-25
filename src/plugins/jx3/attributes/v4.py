@@ -164,7 +164,7 @@ async def get_attrs_v4(server: str, name: str, group_id: str):
         ]
     qixue = []
     qixueImg = []
-    if data["data"]["Person"]["qixueList"] == []:
+    if data["data"]["Person"]["qixueList"] != []:
         qixue_Confirmed = []
         qixueCImg = []
         qixue_Looking = []
