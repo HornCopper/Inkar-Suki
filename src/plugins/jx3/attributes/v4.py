@@ -6,11 +6,9 @@ from .api import kungfu_mapping, enchant_mapping, find_qx
 
 template_attrs_v4 = """
 <tr>
-    <td><img src="$icon"></td>
+    <td><img width=\"80px\" height=\"80px\" src="$icon"></td>
     <td>$name<br>$attr</td>
-    <td><span style="color:gold">$enable</span><span style="color:grey"></span>$available</td>
-    <td>
-        $fivestone
+    <td><span style="color:gold">$enable</span><span style="color:grey"></span>$available<br>$fivestone</td>
     <td>
         $enchant
     </td>
@@ -198,9 +196,7 @@ async def get_attrs_v4(server: str, name: str, group_id: str):
                 qixue[place] = qxname
                 qixueImg[place] = i["icon"]["FileName"]
     else:
-        for i in range(12):
-            qixue.append("未知")
-            qixueImg.append()
+        pass
     table = []
     html = read(VIEWS + "/jx3/equip/attributes_v4.html")
     html = html.replace("$panel_key", json.dumps(basic_info_key, ensure_ascii=False))
@@ -223,7 +219,7 @@ async def get_attrs_v4(server: str, name: str, group_id: str):
                 else:
                     fivestones = []
                     for each_hole in each_location["FiveStone"]:
-                        fivestones.append("<img src=\"" + ASSETS + "/wuxingshi/" + each_hole["Level"] + ".png" + "\" style=\"vertical-align: middle;\" width=\"20px\" height=\"20px\">")
+                        fivestones.append("<img width=\"32px\" height=\"32px\" src=\"" + ASSETS + "/wuxingshi/" + each_hole["Level"] + ".png" + "\" style=\"vertical-align: middle;\">")
                     fivestones = "\n".join(fivestones)
                 henchant_flag = False
                 lenchant_flag = False
@@ -236,7 +232,7 @@ async def get_attrs_v4(server: str, name: str, group_id: str):
                         type_ = "疗"
                     else:
                         type_ = "御"
-                    henchant_name = enchant_mapping(each_location["Quality"]) + "·" + type_ + location_mapping(location)
+                    henchant_name = enchant_mapping(each_location["Quality"]) + "·" + type_ + "·" + location_mapping(location)
                 if "WPermanentEnchant" in each_location:
                     lenchant_flag = True
                     lenchant_name = each_location["WPermanentEnchant"]["Name"]
@@ -253,7 +249,7 @@ async def get_attrs_v4(server: str, name: str, group_id: str):
                 if source == []:
                     source = ""
                 else:
-                    source = source[0]["source"].split("；")[0]
+                    source = source[0]["source"].split("；")[0].replace(" — ", "<br>")
                 data["data"]["Equips"].remove(each_location)
                 table.append(template_attrs_v4.replace("$icon", eicon).replace("$name", ename).replace("$attr", eattr).replace("$enable", ecurrent_strength).replace("$available", erest_strength).replace("$fivestone", fivestones).replace("$enchant", display_enchant).replace("$source", source))
             else:
@@ -269,7 +265,7 @@ async def get_attrs_v4(server: str, name: str, group_id: str):
         erest_strength = int(erest_strength) * "★"
         fivestones = []
         for each_hole in each_location["FiveStone"]:
-            fivestones.append("<img src=\"" + ASSETS + "/wuxingshi/" + each_hole["Level"] + ".png" + "\" style=\"vertical-align: middle;\" width=\"20px\" height=\"20px\">")
+            fivestones.append("<img src=\"" + ASSETS + "/wuxingshi/" + each_hole["Level"] + ".png" + "\" style=\"vertical-align: middle;\" width=\"32px\" height=\"32px\">")
         fivestones = "\n".join(fivestones)
         lenchant_flag = False
         colorful_stone_flag = False
@@ -293,12 +289,14 @@ async def get_attrs_v4(server: str, name: str, group_id: str):
         if source == []:
             source = ""
         else:
-            source = source[0]["source"].split("；")[0]
+            source = source[0]["source"].split("；")[0].replace(" — ", "<br>")
         data["data"]["Equips"].remove(each_location)
         table.append(template_attrs_v4.replace("$icon", eicon).replace("$name", ename).replace("$attr", eattr).replace("$enable", ecurrent_strength).replace("$available", erest_strength).replace("$fivestone", fivestones).replace("$enchant", display_enchant).replace("$source", source))
     final_table = "\n".join(table)
     font = ASSETS + "/font/custom.ttf"
     school = kftosh(kungfu)
+    if not school:
+        school = ""
     html = html.replace("$customfont", font).replace("$tablecontent", final_table).replace("$school", ASSETS + "/image/school/" + school + ".svg").replace("$color", getColor(school))
     final_html = CACHE + "/" + get_uuid() + ".html"
     write(final_html, html)
