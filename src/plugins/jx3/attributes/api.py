@@ -96,6 +96,9 @@ async def get_personal_kf(kfid):
 
 
 def find_qx(data, kf, qx):
+    kfdt = json.loads(read(PLUGINS + "/jx3/attributes/schoolmapping.json"))
+    if kf not in kfdt:
+        return None
     if qx == "蒹山":
         qx = "兼山"
     if qx == "桑拓":

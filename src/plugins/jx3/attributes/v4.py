@@ -112,6 +112,8 @@ async def get_attrs_v4(server: str, name: str, group_id: str):
     basic_info.append(data["data"]["TotalEquipsScore"])
     basic_info.append(data["data"]["MatchDetail"]["totalLift"])
     kungfu = school_mapping(data["data"]["Kungfu"]["KungfuID"])
+    if kungfu == "山居剑意":
+        kungfu = "问水诀"
     type = kungfu_mapping(kungfu)
     if type in ["根骨", "元气", "身法", "力道"]:
         basic_info_key.append(type)
@@ -189,6 +191,8 @@ async def get_attrs_v4(server: str, name: str, group_id: str):
         qxdata = await get_api(f"https://data.jx3box.com/talent/{ver}.json")
         for i in range(len(qixue_Looking)):
             place = get_qixue_place(qxdata[kungfu], qixue_Looking[i])
+            if place == None:
+                print(qixue_Looking[i])
             name_positions.append((qixue_Looking[i], place-1))
             img_positions.append((qixueLImg[i], place-1))
         qixue = insert_multiple_elements(qixue_Confirmed, name_positions) # 奇穴列表
@@ -263,13 +267,10 @@ async def get_attrs_v4(server: str, name: str, group_id: str):
         erest_strength = str(int(emax_strength) - int(ecurrent_strength))
         ecurrent_strength = int(ecurrent_strength) * "★"
         erest_strength = int(erest_strength) * "★"
-        if location == "戒指":
-            fivestones = "不适用"
-        else:
-            fivestones = []
-            for each_hole in each_location["FiveStone"]:
-                fivestones.append("<img src=\"" + ASSETS + "/wuxingshi/" + each_hole["Level"] + ".png" + "\" style=\"vertical-align: middle;\" width=\"20px\" height=\"20px\">")
-            fivestones = "\n".join(fivestones)
+        fivestones = []
+        for each_hole in each_location["FiveStone"]:
+            fivestones.append("<img src=\"" + ASSETS + "/wuxingshi/" + each_hole["Level"] + ".png" + "\" style=\"vertical-align: middle;\" width=\"20px\" height=\"20px\">")
+        fivestones = "\n".join(fivestones)
         lenchant_flag = False
         colorful_stone_flag = False
         if "WPermanentEnchant" in each_location:
@@ -293,8 +294,9 @@ async def get_attrs_v4(server: str, name: str, group_id: str):
             source = ""
         else:
             source = source[0]["source"].split("；")[0]
-        data["data"]["Equips"].remove(each_location)
-        table.append(template_attrs_v4.replace("$icon", eicon).replace("$name", ename).replace("$attr", eattr).replace("$enable", ecurrent_strength).replace("$available", erest_strength).replace("$fivestone", fivestones).replace("$enchant", display_enchant).replace("$source", source))
+        temp = template_attrs_v4.replace("$icon", eicon).replace("$name", ename).replace("$attr", eattr).replace("$enable", ecurrent_strength).replace("$available", erest_strength).replace("$fivestone", fivestones).replace("$enchant", display_enchant).replace("$source", source)
+        table.append(temp)
+        continue
     final_table = "\n".join(table)
     font = ASSETS + "/font/custom.ttf"
     html = html.replace("$customfont", font).replace("$tablecontent", final_table).replace("$school", ASSETS + "/image/school/" + basic_info[3] + ".svg").replace("$color", getColor(basic_info[3]))

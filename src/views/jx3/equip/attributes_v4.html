@@ -11,6 +11,20 @@
             src: url("$customfont");
         }
 
+        .outlined-text {
+            color: white;
+            /* 字体颜色 */
+            text-shadow:
+                -1px -1px 0 #000,
+                /* 左上 */
+                1px -1px 0 #000,
+                /* 右上 */
+                -1px 1px 0 #000,
+                /* 左下 */
+                1px 1px 0 #000;
+            /* 右下 */
+        }
+
         body {
             font-family: Inkar-Suki, sans-serif;
             font-size: 15px;
@@ -142,7 +156,7 @@
 </head>
 
 <body>
-    <div class="wrapper">
+    <div class="wrapper outlined-text">
         <div class="left-section">
             <div class="section">
                 <div class="title">角色信息</div>
