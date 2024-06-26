@@ -2,7 +2,7 @@ from src.tools.basic import *
 from src.plugins.jx3.rank.school_rank import colors
 from src.plugins.jx3.affection import getColor
 
-from .api import kungfu_mapping, enchant_mapping
+from .api import kungfu_mapping, enchant_mapping, find_qx
 
 template_attrs_v4 = """
 <tr>
@@ -163,22 +163,22 @@ async def get_attrs_v4(server: str, name: str, group_id: str):
             str(data["data"]["MatchDetail"]["atSurplusValueBase"]),
             str(data["data"]["MatchDetail"]["atDecriticalDamagePowerBaseLevel"]) + "%"
         ]
-    qixue = []
-    qixueImg = []
+    qixue = ["未知", "未知", "未知", "未知", "未知", "未知", "未知", "未知", "未知", "未知", "未知", "未知"]
+    qixueImg = [
+        PLUGINS + "/jx3/attributes/unknown.png",
+        PLUGINS + "/jx3/attributes/unknown.png",
+        PLUGINS + "/jx3/attributes/unknown.png",
+        PLUGINS + "/jx3/attributes/unknown.png",
+        PLUGINS + "/jx3/attributes/unknown.png",
+        PLUGINS + "/jx3/attributes/unknown.png",
+        PLUGINS + "/jx3/attributes/unknown.png",
+        PLUGINS + "/jx3/attributes/unknown.png",
+        PLUGINS + "/jx3/attributes/unknown.png", 
+        PLUGINS + "/jx3/attributes/unknown.png",
+        PLUGINS + "/jx3/attributes/unknown.png",
+        PLUGINS + "/jx3/attributes/unknown.png"
+    ]
     if data["data"]["Person"]["qixueList"] != []:
-        qixue_Confirmed = []
-        qixueCImg = []
-        qixue_Looking = []
-        qixueLImg = []
-        for i in data["data"]["Person"]["qixueList"]:
-            if i["level"] == 0:
-                qixue_Looking.append(i["name"])
-                qixueCImg.append(i["icon"]["FileName"])
-            else:
-                qixue_Confirmed.append(i["name"])
-                qixueLImg.append(i["icon"]["FileName"])
-        name_positions = []
-        img_positions = []
         versions = await get_api("https://data.jx3box.com/talent/index.json")
         for i in versions:
             if i["name"].find("体服") != -1:
@@ -187,16 +187,18 @@ async def get_attrs_v4(server: str, name: str, group_id: str):
                 ver = i["version"]
                 break
         qxdata = await get_api(f"https://data.jx3box.com/talent/{ver}.json")
-        for i in range(len(qixue_Looking)):
-            place = get_qixue_place(qxdata[kungfu], qixue_Looking[i])
-            name_positions.append((qixue_Looking[i], place-1))
-            img_positions.append((qixueLImg[i], place-1))
-        qixue = insert_multiple_elements(qixue_Confirmed, name_positions) # 奇穴列表
-        qixueImg = insert_multiple_elements(qixueLImg, img_positions) # 奇穴图片列表
+        for i in data["data"]["Person"]["qixueList"]:
+            qxname = i["name"]
+            place = find_qx(qxdata, kungfu, qxname)
+            if place == None:
+                continue
+            else:
+                qixue[place] = qxname
+                qixueImg[place] = i["icon"]["FileName"]
     else:
         for i in range(12):
             qixue.append("未知")
-            qixueImg.append(PLUGINS + "/jx3/attributes/unknown.png")
+            qixueImg.append()
     table = []
     html = read(VIEWS + "/jx3/equip/attributes_v4.html")
     html = html.replace("$panel_key", json.dumps(basic_info_key, ensure_ascii=False))
@@ -293,7 +295,6 @@ async def get_attrs_v4(server: str, name: str, group_id: str):
             source = ""
         else:
             source = source[0]["source"].split("；")[0]
-        data["data"]["Equips"].remove(each_location)
         table.append(template_attrs_v4.replace("$icon", eicon).replace("$name", ename).replace("$attr", eattr).replace("$enable", ecurrent_strength).replace("$available", erest_strength).replace("$fivestone", fivestones).replace("$enchant", display_enchant).replace("$source", source))
     final_table = "\n".join(table)
     font = ASSETS + "/font/custom.ttf"
