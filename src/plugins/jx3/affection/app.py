@@ -1,5 +1,7 @@
 from src.tools.basic import *
 
+from src.plugins.jx3.rank.school_rank import colors
+
 global_file_path = TOOLS + "/affections.json"
 
 def getAffections():
@@ -61,8 +63,8 @@ async def delete_affection(uin: int):
             write(global_file_path, json.dumps(data, ensure_ascii=False))
             return ["已解除情缘关系！"]
 
-async def getColor(school: str):
-    data = await get_api("https://inkar-suki.codethink.cn/schoolcolors")
+def getColor(school: str):
+    data = colors
     for i in data:
         if kftosh(i) == school:
             return data[i]

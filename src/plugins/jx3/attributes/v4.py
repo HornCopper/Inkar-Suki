@@ -1,5 +1,6 @@
 from src.tools.basic import *
 from src.plugins.jx3.rank.school_rank import colors
+from src.plugins.jx3.affection import getColor
 
 from .api import kungfu_mapping, enchant_mapping
 
@@ -282,9 +283,9 @@ async def get_attrs_v4(server: str, name: str, group_id: str):
             display_enchant = "<img src=\"" + PLUGINS + "/jx3/attributes/lenchant.png" + "\" style=\"vertical-align: middle;\"><img width=\"32px\" height=\"32px\" src=\"" + colorful_stone_image + "\" style=\"vertical-align: middle;\">" + colorful_stone_name
         else:
             if lenchant_flag and not colorful_stone_flag:
-                display_enchant = "<img src=\"" + colorful_stone_image + "\" style=\"vertical-align: middle;\">" + lenchant_name
+                display_enchant = "<img src=\"" + PLUGINS + "/jx3/attributes/lenchant.png" + "\" style=\"vertical-align: middle;\">" + lenchant_name
             elif colorful_stone_flag and not lenchant_flag:
-                display_enchant = "<img src=\"" + colorful_stone_image + "\" style=\"vertical-align: middle;\">" + colorful_stone_name
+                display_enchant = "<img width=\"32px\" height=\"32px\" src=\"" + colorful_stone_image + "\" style=\"vertical-align: middle;\">" + colorful_stone_name
             else:
                 display_enchant = ""
         source = each_location["equipBelongs"]
@@ -296,7 +297,7 @@ async def get_attrs_v4(server: str, name: str, group_id: str):
         table.append(template_attrs_v4.replace("$icon", eicon).replace("$name", ename).replace("$attr", eattr).replace("$enable", ecurrent_strength).replace("$available", erest_strength).replace("$fivestone", fivestones).replace("$enchant", display_enchant).replace("$source", source))
     final_table = "\n".join(table)
     font = ASSETS + "/font/custom.ttf"
-    html = html.replace("$customfont", font).replace("$tablecontent", final_table).replace("$school", ASSETS + "/image/school/" + basic_info[3] + ".svg").replace("$color", colors[kungfu])
+    html = html.replace("$customfont", font).replace("$tablecontent", final_table).replace("$school", ASSETS + "/image/school/" + basic_info[3] + ".svg").replace("$color", getColor(basic_info[3]))
     final_html = CACHE + "/" + get_uuid() + ".html"
     write(final_html, html)
     final_path = await generate(final_html, False, None, False, viewport={"width": 2200, "height": 1250}, full_screen=True)
