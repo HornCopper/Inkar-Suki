@@ -22,7 +22,7 @@ def get_uuid():
     return str(uuid.uuid1()).replace("-", "")
 
 
-async def generate_by_url(url: str, locate: str = None, first_element: bool = False, delay: int = 0, css: str = "", web: bool=False, viewport: dict = {}):
+async def generate_by_url(url: str, locate: str = None, first_element: bool = False, delay: int = 0, css: str = "", web: bool=False, viewport: dict = {}, full_screen: bool = False):
     try:
         async with async_playwright() as p:
             logger.opt(colors=True).info("<green>Generating source: " + url + "</green>")
@@ -45,9 +45,9 @@ async def generate_by_url(url: str, locate: str = None, first_element: bool = Fa
                 pass
             if locate != None:
                 if first_element:
-                    await page.locator(locate).first.screenshot(path=store_path)
+                        await page.locator(locate).first.screenshot(path=store_path, full_screen=full_screen)
                 else:
-                    await page.locator(locate).screenshot(path=store_path)
+                    await page.locator(locate).screenshot(path=store_path, full_screen=full_screen)
             else:
                 await page.screenshot(path=store_path)
             logger.opt(colors=True).info("<green>Generated successfully: " + store_path + "</green>")
@@ -57,7 +57,16 @@ async def generate_by_url(url: str, locate: str = None, first_element: bool = Fa
         return False
 
 
-async def generate(path: str, web: bool = False, locate: str = None, first: bool = False, delay: int = 0, addtional_css: str = "", viewport: dict = {}):
+async def generate(
+        path: str, 
+        web: bool = False, 
+        locate: str = None,
+        first: bool = False, 
+        delay: int = 0, 
+        addtional_css: str = "", 
+        viewport: dict = {}, 
+        full_screen: bool = False
+    ):
     """
     生成指定路径下html文件的截图
     @param path: HTML文件的本地路径或网络地址
@@ -68,7 +77,7 @@ async def generate(path: str, web: bool = False, locate: str = None, first: bool
     @addtional_css: 追加的CSS
     """
     final_path = Path(path).as_uri() if not web else path
-    result = await generate_by_url(final_path, locate, first, delay, addtional_css, web, viewport)
+    result = await generate_by_url(final_path, locate, first, delay, addtional_css, web, viewport, full_screen)
     if result is None:
         return False
     return result
