@@ -11,7 +11,6 @@ def check_folder(path: str, can_retry: bool = True):
     if os.path.isdir(path):
         return True
     if os.path.exists(path):
-        logger.warning(f"{path}被文件占用，将其强行移除。")
         os.remove(path)
         if not can_retry:
             return False
@@ -25,7 +24,6 @@ def check_folders(folder_nest: dict, parent_path: str = None):
         parent_path = ""
     else:
         parent_path = f"{parent_path}{os.sep}"
-    logger.info(f"初始化系统文件夹:{parent_path}")
     for f in folder_nest:
         new_parent = f"{parent_path}{f}"
         check_folder(new_parent)
