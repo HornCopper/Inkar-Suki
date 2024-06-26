@@ -15,7 +15,7 @@ template_subscribe = """
     <div class="el-status $status">$flag</div>
 </div>"""
 
-async def _(bot: Bot, group_id: str):
+async def generateGroupInfo(bot: Bot, group_id: str):
     subscribe_options = json.loads(read(PLUGINS + "/jx3/subscribe/options.json"))
     addtions_options = json.loads(read(PLUGINS + "/jx3/subscribe/addtions.json"))
     current_subscribe = getGroupData(group_id, "subscribe")
