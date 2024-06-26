@@ -45,9 +45,9 @@ async def generate_by_url(url: str, locate: str = None, first_element: bool = Fa
                 pass
             if locate != None:
                 if first_element:
-                        await page.locator(locate).first.screenshot(path=store_path, full_screen=full_screen)
+                        await page.locator(locate).first.screenshot(path=store_path, full_page=full_screen)
                 else:
-                    await page.locator(locate).screenshot(path=store_path, full_screen=full_screen)
+                    await page.locator(locate).screenshot(path=store_path, full_page=full_screen)
             else:
                 await page.screenshot(path=store_path)
             logger.opt(colors=True).info("<green>Generated successfully: " + store_path + "</green>")
