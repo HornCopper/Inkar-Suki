@@ -153,8 +153,7 @@
             padding: 10px;
         }
 
-        #skill-image
-        {
+        #skill-image {
             width: 80px;
             height: 80px;
         }
@@ -267,7 +266,7 @@
         <div class="right-section">
             <div class="section">
                 <div class="title">装备列表</div>
-                <table>
+                <table id="equip-list">
                     <tr>
                         <th>图标</th>
                         <th>名称</th>
@@ -334,6 +333,33 @@
             document.documentElement.style.height = "auto";
             document.body.style.height = "auto";
         });
+
+        function removeEmptyColumns(tableId) {
+            const table = document.getElementById(tableId);
+            const rows = table.rows;
+            const columnCount = rows[0].cells.length;
+
+            for (let colIndex = columnCount - 1; colIndex >= 0; colIndex--) {
+                let isEmpty = true;
+
+                for (let rowIndex = 1; rowIndex < rows.length; rowIndex++) {
+                    const cell = rows[rowIndex].cells[colIndex];
+                    if (cell && (cell.textContent.trim() !== "" || cell.querySelector('img'))) {
+                        isEmpty = false;
+                        break;
+                    }
+                }
+
+                if (isEmpty) {
+                    for (let rowIndex = 0; rowIndex < rows.length; rowIndex++) {
+                        rows[rowIndex].deleteCell(colIndex);
+                    }
+                }
+            }
+        }
+
+        removeEmptyColumns("equip-list");
+
     </script>
 </body>
 
