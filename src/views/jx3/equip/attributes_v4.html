@@ -23,12 +23,16 @@
             display: flex;
             justify-content: center;
             align-items: flex-start;
-            height: 100vh;
+            min-height: 100vh;
             overflow: hidden;
         }
 
         .left-section {
             position: relative;
+            flex: 1;
+            margin-right: 20px;
+            max-width: 30%;
+            align-items: flex-start;
         }
 
         .left-section::before {
@@ -47,9 +51,7 @@
         .left-section .section {
             position: relative;
             z-index: 1;
-            /* 确保文字在SVG之上 */
         }
-
 
         .wrapper {
             width: 100%;
@@ -62,13 +64,6 @@
             border-radius: 15px;
             display: flex;
             justify-content: space-between;
-            align-items: flex-start;
-        }
-
-        .left-section {
-            flex: 1;
-            margin-right: 20px;
-            max-width: 30%;
             align-items: flex-start;
         }
 
@@ -112,14 +107,6 @@
             width: 45%;
             border-bottom: 1px solid white;
         }
-
-        .skills {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            align-items: center;
-        }
-
 
         .skills img {
             margin: 5px;
@@ -321,6 +308,12 @@
             });
         }
         replaceImgLink("#skill-image", $qixue_img);
+        window.addEventListener("load", function () {
+            document.body.style.overflow = "visible";
+            document.documentElement.style.overflow = "visible";
+            document.documentElement.style.height = "auto";
+            document.body.style.height = "auto";
+        });
     </script>
 </body>
 
