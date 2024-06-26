@@ -72,10 +72,10 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     if args.extract_plain_text() == "":
         return
     coin = Sign.get_coin(str(event.user_id))
-    if coin < 500:
-        await addritube_v4.finish("属性v4正在内测，需要500金币才能使用哦！")
+    if coin < 50:
+        await addritube_v4.finish("属性v4正在内测，需要50金币才能使用哦！")
     else:
-        Sign.reduce(str(event.user_id), 500)
+        Sign.reduce(str(event.user_id), 50)
     arg = args.extract_plain_text().split(" ")
     if len(arg) not in [1, 2]:
         await addritube_v4.finish("唔……参数不正确哦，请检查后重试~")
