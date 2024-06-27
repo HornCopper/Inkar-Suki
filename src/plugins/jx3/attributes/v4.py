@@ -249,7 +249,10 @@ async def get_attrs_v4(server: str, name: str, group_id: str):
                 if source == []:
                     source = ""
                 else:
-                    source = source[0]["source"].split("；")[0].replace(" — ", "<br>")
+                    try:
+                        source = source[0]["source"].split("；")[0].replace(" — ", "<br>")
+                    except:
+                        source = ""
                 data["data"]["Equips"].remove(each_location)
                 table.append(template_attrs_v4.replace("$icon", eicon).replace("$name", ename).replace("$attr", eattr).replace("$enable", ecurrent_strength).replace("$available", erest_strength).replace("$fivestone", fivestones).replace("$enchant", display_enchant).replace("$source", source))
             else:
@@ -289,7 +292,10 @@ async def get_attrs_v4(server: str, name: str, group_id: str):
         if source == []:
             source = ""
         else:
-            source = source[0]["source"].split("；")[0].replace(" — ", "<br>")
+            try:
+                source = source[0]["source"].split("；")[0].replace(" — ", "<br>")
+            except:
+                source = ""
         table.append(template_attrs_v4.replace("$icon", eicon).replace("$name", ename).replace("$attr", eattr).replace("$enable", ecurrent_strength).replace("$available", erest_strength).replace("$fivestone", fivestones).replace("$enchant", display_enchant).replace("$source", source))
     final_table = "\n".join(table)
     font = ASSETS + "/font/custom.ttf"
