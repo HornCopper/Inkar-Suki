@@ -39,6 +39,7 @@ class BotEventController:
                 bots = get_bots()
                 for _, one_bot in bots.items():
                     await handle_event(one_bot, event)
+                    break
             else:
                 logger.error(f"<r>未知的ws消息类型：{data}</r>")
         except Exception:
