@@ -16,28 +16,31 @@ async def nonebot_on_startup():
 jx3api_ws = on(type="WsRecv", priority=5, block=False)
 
 @jx3api_ws.handle()
-async def _(bot: Bot, event: RecvEvent):
+async def _(event: RecvEvent):
     message = event.get_message()
-    if not message or message["type"] == "":
+    if not message or not message.get("type"):
         return
-    logger.info(message["msg"])
-    groups = os.listdir(DATA)
-    available_group = []
-    bot_groups = await bot.call_api("get_group_list")
-    for i in bot_groups:
-        if str(i["group_id"]) in groups:
-            available_group.append(int(i["group_id"]))
-    msg_type = message["type"]
-    for i in available_group:
-        if msg_type in getGroupData(str(i), "subscribe"):
-            if "server" not in list(message):
-                await bot.call_api("send_group_msg", group_id=i, message=message["msg"], whitelist=1)
+    bots = get_bots()  
+    for bot_name, bot_instance in bots.items():
+        bot_groups = await bot_instance.call_api("get_group_list")
+        available_groups = [int(group["group_id"]) for group in bot_groups if str(group["group_id"]) in os.listdir(DATA)]
+        msg_type = message["type"]
+        for group_id in available_groups:
+            group_data = getGroupData(str(group_id))
+            if msg_type not in getGroupData(str(group_id), "subscribe"):
                 continue
-            else:
-                if getGroupData(str(i), "server") == message["server"]:
-                    if "抓马过滤" in getGroupData(str(i), "addtions") and (message["msg"].find(" 赤兔 ") == -1 or message["msg"].find(" 里飞沙 ") == -1) and message["type"] == "抓马":
+            if "server" not in message:
+                await bot_instance.call_api("send_group_msg", group_id=group_id, message=message["msg"])
+                continue
+            if group_data.get("server") == message.get("server"):
+                if msg_type == "抓马" and "horse" in message:
+                    horse_name = message["horse"]
+                    if "抓马过滤" in group_data.get("addtions", []) and horse_name not in ["赤兔", "里飞沙"]:
                         continue
-                    await bot.call_api("send_group_msg", group_id=i, message=message["msg"], whitelist=1)
-                    continue
-                else:
-                    continue
+
+                if "奇遇过滤" in group_data.get("addtions", []):
+                    if message.get("level") != 2:
+                        continue
+
+                await bot_instance.call_api("send_group_msg", group_id=group_id, message=message["msg"])
+            continue
