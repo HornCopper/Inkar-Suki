@@ -8,7 +8,7 @@ class ClientUpdateRecEvent(RecvEvent):
 
     __event__: str = "WsRecv.ClientUpdate"
     message_type: str = "ClientUpdate"
-    old_version: str
+    now_version: str
     """旧版本"""
     new_version: str
     """新版本"""
@@ -24,4 +24,4 @@ class ClientUpdateRecEvent(RecvEvent):
 
     @overrides(RecvEvent)
     def get_message(self) -> dict:
-        return {"type": "更新", "msg": f"检测到客户端有更新哦~\n当前版本：{self.old_version}\n更新版本：{self.new_version}\n共计{self.package_num}个更新包，总大小为{self.package_size}。"}
+        return {"type": "更新", "msg": f"检测到客户端有更新哦~\n当前版本：{self.now_version}\n更新版本：{self.new_version}\n共计{self.package_num}个更新包，总大小为{self.package_size}。"}
