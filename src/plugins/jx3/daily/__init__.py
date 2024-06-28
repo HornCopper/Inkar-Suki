@@ -42,10 +42,12 @@ async def run_at_8_30():
                     await bots[x].call_api("send_group_msg", group_id=int(group_id), message=msg)
 
 @scheduler.scheduled_job("cron", hour="19", minute="30")
-async def run_at_19_30():
-    if datetime.date.today().weekday() not in [2, 4]:
-        return
-    msg = "世界BOSS活动即将开始，主线20:00/分线20:05，请提前前往对应地图等待吧！\n发送“日常”可获得今日世界BOSS名单（如有）。"
+async def boss_and_small_gf():
+    if datetime.date.today().weekday() in [2, 4]:
+        activity = "世界BOSS（主20:00/分20:05）"
+    elif datetime.date.today().weekday() in [1, 3]:
+        activity = "逐鹿中原"
+    msg = activity + "即将开始，请提前到达对应地图等待吧！"
     bots = get_bots()
     groups = os.listdir(DATA)
     group = {}
