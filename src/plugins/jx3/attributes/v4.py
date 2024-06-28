@@ -267,9 +267,17 @@ async def get_attrs_v4(server: str, name: str, group_id: str):
         ecurrent_strength = int(ecurrent_strength) * "★"
         erest_strength = int(erest_strength) * "★"
         fivestones = []
-        for each_hole in each_location["FiveStone"]:
-            fivestones.append("<img src=\"" + ASSETS + "/wuxingshi/" + each_hole["Level"] + ".png" + "\" style=\"vertical-align: middle;\" width=\"32px\" height=\"32px\">")
-        fivestones = "\n".join(fivestones)
+        fivestones_flag = True
+        try:
+            five_stones_data = each_location["FiveStone"]
+        except:
+            fivestones_flag = False
+        if fivestones_flag:
+            for each_hole in five_stones_data:
+                fivestones.append("<img src=\"" + ASSETS + "/wuxingshi/" + each_hole["Level"] + ".png" + "\" style=\"vertical-align: middle;\" width=\"32px\" height=\"32px\">")
+            fivestones = "\n".join(fivestones)
+        else:
+            fivestones = ""
         lenchant_flag = False
         colorful_stone_flag = False
         if "WPermanentEnchant" in each_location:
