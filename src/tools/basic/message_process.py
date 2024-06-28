@@ -107,7 +107,7 @@ async def _(bot: Bot, event: GroupMessageEvent, matcher: Matcher):
     if ans == status and "骚话" in group_cfg:
         chance = random.randint(1, 100)
         if chance % 25 == 0:
-            sh_d = await get_api("https://www.jx3api.com/data/saohua/random")
+            sh_d = await get_api(f"{Config.jx3api_link}/data/saohua/random")
             sh = sh_d["data"]["text"]
             await bot.call_api("send_group_msg", group_id=event.group_id, message=sh)
 
