@@ -8,7 +8,7 @@ from src.plugins.jx3.attributes import Zone_mapping
 
 async def zone(server, id):
     server = server_mapping(server)
-    final_url = f"{Config.jx3api_link}/view/role/teamCdList?token={token}&server={server}&name={id}&ticket={ticket}&robot={bot}&scale=1"
+    final_url = f"{Config.jx3api_link}/view/role/teamCdList?token={token}&server={server}&name={id}&ticket={ticket}&nickname={bot}&chrome=1"
     data = await get_api(final_url)
     if data["code"] == 404:
         return ["玩家不存在或尚未在世界频道发言哦~"]

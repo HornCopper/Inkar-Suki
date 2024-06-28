@@ -19,7 +19,7 @@ async def addritube_(server: str = None, name: str = None, group_id: str = None)
     server = server_mapping(server, group_id)
     if not server:
         return [PROMPT_ServerNotExist]
-    final_url = f"{Config.jx3api_link}/view/role/attribute?ticket={ticket}&token={token}&robot={bot}&server={server}&name={name}&scale=1"
+    final_url = f"{Config.jx3api_link}/view/role/attribute?ticket={ticket}&token={token}&nickname={bot}&server={server}&name={name}&chrome=1"
     data = await get_api(final_url)
     if data["code"] == 404:
         return ["唔……玩家不存在。"]

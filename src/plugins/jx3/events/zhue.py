@@ -8,7 +8,7 @@ template_zhue = """
 </tr>"""
 
 async def getZhueRecord(server: str):
-    api = f"https://www.jx3api.com/data/server/antivice?token={token}&server={server}"
+    api = f"{Config.jx3api_link}/data/server/antivice?token={token}&server={server}"
     data = await get_api(api)
     data = data["data"]
     tables = []
