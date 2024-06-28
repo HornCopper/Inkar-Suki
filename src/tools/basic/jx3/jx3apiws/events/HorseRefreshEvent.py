@@ -60,7 +60,7 @@ class HorseCaughtEvent(RecvEvent):
     @overrides(RecvEvent)
     def get_message(self) -> dict:
         final_time = convert_time(self.time, "%H:%M")
-        return {"type": "抓马", "server": self.server, "msg": f"{self.server} 的 {self.horse} 于 {final_time} 在 {self.map_name} 被[{self.name}]捕获了！"}
+        return {"type": "抓马", "server": self.server, "msg": f"{self.server} 的 {self.horse} 于 {final_time} 在 {self.map_name} 被[{self.name}]捕获了！", "horse": self.horse}
 
 @EventRister.rister(action=1012)
 class DiluAppearEvent(RecvEvent):
