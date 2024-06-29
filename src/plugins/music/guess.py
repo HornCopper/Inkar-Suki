@@ -8,10 +8,10 @@ def getRandomMusic():
     随机获取一首歌。
     请将需要随机到的歌曲移动至`src/assets/music`中。
     """
-    music_list = os.listdir(ASSETS + "/music")
+    music_list = os.listdir(ASSETS + "/music/")
     random_music = random.choice(music_list)
     final_path = ASSETS + "/music/" + random_music
-    return random_music, final_path
+    return [random_music, final_path]
 
 async def extract_music(input_file, output_file, time):
     ffmpeg_command = [
