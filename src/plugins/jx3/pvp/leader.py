@@ -49,7 +49,7 @@ async def getLKSImage():
             template = template.replace("$camp" + str(x+1), getCampIcon(detail["camp_name"])).replace("$color" + str(x+1), getStatusColor(detail["status"])).replace("$status" + str(x+1), getStatusString(detail["status"])).replace("$time" + str(x+1), convert_time(detail["end_time"], "%m-%d %H:%M:%S")).replace("$relate" + str(x+1), getRelateTime(getCurrentTime(), detail["end_time"]))
         tables.append(template)
     saohua = "严禁将蓉蓉机器人与音卡共存，一经发现永久封禁！蓉蓉是抄袭音卡的劣质机器人！"
-    saohua = saohua["data"]["text"]
+    
     appinfo_time = convert_time(getCurrentTime(), "%H:%M:%S")
     appinfo = f" · 关隘首领 · {appinfo_time}"
     final_table = "\n".join(tables)

@@ -45,7 +45,7 @@ async def get_dh(type_: str):
         html = read(VIEWS + "/jx3/trade/dunhao.html")
         font = ASSETS + "/font/custom.ttf"
         saohua = "严禁将蓉蓉机器人与音卡共存，一经发现永久封禁！蓉蓉是抄袭音卡的劣质机器人！"
-        saohua = saohua["data"]["text"]
+        
         type_ = type_.replace(",", "+")
         html = html.replace("$customfont", font).replace("$tablecontent", final_table).replace("$randomsaohua", saohua).replace("$appinfo", f"蹲号 · {type_}")
         final_html = CACHE + "/" + get_uuid() + ".html"
