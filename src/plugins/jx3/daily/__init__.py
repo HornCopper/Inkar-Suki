@@ -42,11 +42,11 @@ async def run_at_8_30():
                     await bots[x].call_api("send_group_msg", group_id=int(group_id), message=msg)
 
 @scheduler.scheduled_job("cron", hour="19", minute="30")
-async def boss_and_small_gf():
+async def boss():
     if datetime.date.today().weekday() in [2, 4]:
         activity = "世界BOSS（主20:00/分20:05）"
-    elif datetime.date.today().weekday() in [1, 3]:
-        activity = "逐鹿中原"
+    else:
+        return
     msg = activity + "即将开始，请提前到达对应地图等待吧！"
     bots = get_bots()
     groups = os.listdir(DATA)
@@ -60,7 +60,29 @@ async def boss_and_small_gf():
     for group_id in groups:
         for x in list(group):
             if int(group_id) in group[x]:
-                if "首领" in getGroupData(str(group_id), "subscribe"):
+                if "世界BOSS" in getGroupData(str(group_id), "subscribe"):
+                    await bots[x].call_api("send_group_msg", group_id=int(group_id), message=msg)
+
+@scheduler.scheduled_job("cron", hour="19", minute="30")
+async def small_gf():
+    if datetime.date.today().weekday() in [2, 4]:
+        activity = "逐鹿中原"
+    else:
+        return
+    msg = activity + "即将开始，请提前到达对应地图等待吧！"
+    bots = get_bots()
+    groups = os.listdir(DATA)
+    group = {}
+    for i in list(bots):
+        single_groups = await bots[i].call_api("get_group_list")
+        group_id_s = []
+        for x in single_groups:
+            group_id_s.append(x["group_id"])
+        group[i] = group_id_s
+    for group_id in groups:
+        for x in list(group):
+            if int(group_id) in group[x]:
+                if "攻防" in getGroupData(str(group_id), "subscribe"):
                     await bots[x].call_api("send_group_msg", group_id=int(group_id), message=msg)
 
 @scheduler.scheduled_job("cron", hour="18", minute="20")
