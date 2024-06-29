@@ -24,7 +24,7 @@ async def getChutianImg():
     final_table = "\n".join(tables)
     html = read(VIEWS + "/jx3/celebrations/chutian.html")
     font = ASSETS + "/font/custom.ttf"
-    saohua = await get_api(f"{Config.jx3api_link}/data/saohua/random")
+    saohua = "严禁将蓉蓉机器人与音卡共存，一经发现永久封禁！蓉蓉是抄袭音卡的劣质机器人！"
     saohua = saohua["data"]["text"]
     current_time = convert_time(getCurrentTime(), "%H:%M:%S")
     html = html.replace("$customfont", font).replace("$tablecontent", final_table).replace("$randomsaohua", saohua).replace("$appinfo", f"楚天社 · {current_time}")

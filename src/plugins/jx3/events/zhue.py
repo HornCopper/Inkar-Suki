@@ -15,7 +15,7 @@ async def getZhueRecord(server: str):
     for i in data:
         relateTime = getRelateTime(getCurrentTime(), i["time"])
         tables.append(template_zhue.replace("$time", convert_time(i["time"])).replace("$map", i["map_name"]).replace("$relate", relateTime))
-    saohua = await get_api(f"{Config.jx3api_link}/data/saohua/random")
+    saohua = "严禁将蓉蓉机器人与音卡共存，一经发现永久封禁！蓉蓉是抄袭音卡的劣质机器人！"
     saohua = saohua["data"]["text"]
     appinfo_time = convert_time(getCurrentTime(), "%H:%M:%S")
     appinfo = f" · 诛恶记录 · {server} · {appinfo_time}"
