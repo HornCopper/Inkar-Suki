@@ -341,10 +341,10 @@ async def generater(map, mode, boss):
         final_table = "\n".join(tablecontent)
         html = read(VIEWS + "/jx3/drop/drop.html")
         font = ASSETS + "/font/custom.ttf"
-        saohua = await get_api(f"{Config.jx3api_link}/data/saohua/random")
+        saohua = "严禁将蓉蓉机器人与音卡共存，一经发现永久封禁！蓉蓉是抄袭音卡的劣质机器人！"
         saohua = saohua["data"]["text"]
         html = html.replace("$font", font).replace("$tablecontent", final_table).replace(
-            "$saohua", saohua).replace("$appinfo", f" · 掉落列表 · {mode}{zone} · {boss}")
+            "$randomsaohua", saohua).replace("$appinfo", f" · 掉落列表 · {mode}{zone} · {boss}")
         final_html = CACHE + "/" + get_uuid() + ".html"
         write(final_html, html)
         final_path = await generate(final_html, False, "table", False)
@@ -423,7 +423,7 @@ async def zone_v2(server, id):
         content = "\n".join(contents)
         html = read(VIEWS + "/jx3/teamcd/teamcd.html")
         font = ASSETS + "/font/custom.ttf"
-        saohua = await get_api(f"{Config.jx3api_link}/data/saohua/random")
+        saohua = "严禁将蓉蓉机器人与音卡共存，一经发现永久封禁！蓉蓉是抄袭音卡的劣质机器人！"
         saohua = saohua["data"]["text"]
         html = html.replace("$customfont", font).replace("$tablecontent", content).replace("$randomsaohua", saohua).replace("$appinfo", f" · 副本记录 · {server} · {id}")
         final_html = CACHE + "/" + get_uuid() + ".html"
@@ -502,7 +502,7 @@ async def get_item_record(server: str, name: str):
         num += 1
         if num == 30:
             break  # 不限？不限给你鲨了
-    saohua = await get_api(f"{Config.jx3api_link}/data/saohua/random")
+    saohua = "严禁将蓉蓉机器人与音卡共存，一经发现永久封禁！蓉蓉是抄袭音卡的劣质机器人！"
     saohua = saohua["data"]["text"]
     appinfo_time = convert_time(getCurrentTime(), "%H:%M:%S")
     appinfo = f"掉落统计 · {server} · {name} · {appinfo_time}"
