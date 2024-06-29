@@ -1,7 +1,6 @@
 from src.tools.basic import *
 
-from pypub import AudioSegment
-
+import subprocess
 import aiofiles
 
 def getRandomMusic():
@@ -15,8 +14,16 @@ def getRandomMusic():
     return random_music, final_path
 
 async def extract_music(input_file, output_file, time):
-    audio = AudioSegment.from_mp3(input_file)
-    first_three_seconds = audio[:time*1000]
-    async with aiofiles.open(output_file, "wb") as f:
-        first_three_seconds.export(f, format="mp3")
-
+    ffmpeg_command = [
+        "ffmpeg",
+        "-i", input_file,
+        "-t", str(time),
+        "-c", "copy",
+        output_file
+    ]
+    process = await asyncio.create_subprocess_exec(*ffmpeg_command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    stdout, stderr = await process.communicate()
+    if process.returncode != 0:
+        logger.info(f"Error occurred: {stderr.decode()}")
+    else:
+        logger.info(f"Extracted music successfully to {output_file}")
