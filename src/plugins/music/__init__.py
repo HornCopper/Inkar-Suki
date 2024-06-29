@@ -97,15 +97,16 @@ guess_music = on_command("guess_music", aliases={"猜歌"}, force_whitespace=Tru
 
 @guess_music.handle()
 async def _(event: GroupMessageEvent, state: T_State, args: Message = CommandArg()):
-    if args.extract_plain_text() == "":
+    if args.extract_plain_text() != "":
         return
-    name, input = getRandomMusic()
+    rd = getRandomMusic()
+    input = rd[1]
+    name = rd[0]
+    logger.info(name)
     state["ans"] = name[:-4]
     output = CACHE + "/" + get_uuid() + ".mp3"
-    music = await extract_music(input, output, 3)
-    music = get_content_local(Path(music).as_uri())
-    msg = ms.record(music)
-    await guess_music.send(msg)
+    await extract_music(input, output, 3)
+    await guess_music.send(ms.record(file=Path(output).as_uri()))
     return
 
 @guess_music.got("music", prompt="请告诉我歌曲名！")
