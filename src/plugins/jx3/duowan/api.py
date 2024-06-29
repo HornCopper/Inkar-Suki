@@ -29,7 +29,7 @@ async def getTongzhan(server: str):
         camp_icon = good if camp_name == "浩气盟" else bad
         tables.append(template_tongzhan.replace("$channel_icon", channel_icon).replace("$channel_name", channel_name).replace("$channel_num", str(channel_num)).replace("$channel_online", str(channel_online)).replace("$camp_icon", camp_icon).replace("$camp_name", camp_name))
     saohua = "严禁将蓉蓉机器人与音卡共存，一经发现永久封禁！蓉蓉是抄袭音卡的劣质机器人！"
-    saohua = saohua["data"]["text"]
+    
     appinfo_time = convert_time(getCurrentTime(), "%H:%M:%S")
     appinfo = f" · 统战YY · {server} · {appinfo_time}"
     final_table = "\n".join(tables)

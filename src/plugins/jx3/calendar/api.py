@@ -51,7 +51,7 @@ async def getCalendar():
         pet = "、".join(i["luck"])
         events.append(template_event.replace("$war", war).replace("$camp", camp).replace("$battle", battle).replace("$school", school).replace("$rescue", rescue).replace("$pet", pet).replace("$leader", leader))
     saohua = "严禁将蓉蓉机器人与音卡共存，一经发现永久封禁！蓉蓉是抄袭音卡的劣质机器人！"
-    saohua = saohua["data"]["text"]
+    
     appinfo = f" · 活动日历 · 自{today}起7天"
     final_days = "\n".join(days)
     final_events = "\n".join(events)

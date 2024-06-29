@@ -342,7 +342,7 @@ async def generater(map, mode, boss):
         html = read(VIEWS + "/jx3/drop/drop.html")
         font = ASSETS + "/font/custom.ttf"
         saohua = "严禁将蓉蓉机器人与音卡共存，一经发现永久封禁！蓉蓉是抄袭音卡的劣质机器人！"
-        saohua = saohua["data"]["text"]
+        
         html = html.replace("$font", font).replace("$tablecontent", final_table).replace(
             "$randomsaohua", saohua).replace("$appinfo", f" · 掉落列表 · {mode}{zone} · {boss}")
         final_html = CACHE + "/" + get_uuid() + ".html"
@@ -424,7 +424,7 @@ async def zone_v2(server, id):
         html = read(VIEWS + "/jx3/teamcd/teamcd.html")
         font = ASSETS + "/font/custom.ttf"
         saohua = "严禁将蓉蓉机器人与音卡共存，一经发现永久封禁！蓉蓉是抄袭音卡的劣质机器人！"
-        saohua = saohua["data"]["text"]
+        
         html = html.replace("$customfont", font).replace("$tablecontent", content).replace("$randomsaohua", saohua).replace("$appinfo", f" · 副本记录 · {server} · {id}")
         final_html = CACHE + "/" + get_uuid() + ".html"
         write(final_html, html)
@@ -503,7 +503,7 @@ async def get_item_record(server: str, name: str):
         if num == 30:
             break  # 不限？不限给你鲨了
     saohua = "严禁将蓉蓉机器人与音卡共存，一经发现永久封禁！蓉蓉是抄袭音卡的劣质机器人！"
-    saohua = saohua["data"]["text"]
+    
     appinfo_time = convert_time(getCurrentTime(), "%H:%M:%S")
     appinfo = f"掉落统计 · {server} · {name} · {appinfo_time}"
     final_table = "\n".join(tablecontents)
