@@ -37,6 +37,10 @@ async def _(event: RecvEvent):
                     horse_name = message["horse"]
                     if "抓马过滤" in group_data.get("addtions", []) and horse_name not in ["赤兔", "里飞沙"]:
                         continue
+                if msg_type == "抓马" and "map" in message:
+                    map_name = message["map"]
+                    if "抓马过滤" in group_data.get("addtions", []) and map_name not in ["黑龙沼", "黑戈壁", "阴山大草原", "鲲鹏岛"]:
+                        continue
 
                 if "奇遇过滤" in group_data.get("addtions", []):
                     if message.get("level") != 2:
