@@ -78,8 +78,8 @@ async def generateAffectionImage(uin: int):
             bg = ASSETS + "/image/assistance/" + str(random.randint(1, 9)) + ".jpg"
             uin_1 = i["uin"][0]
             uin_2 = i["uin"][1]
-            color_1 = await getColor(i["school"][0])
-            color_2 = await getColor(i["school"][1])
+            color_1 = getColor(i["school"][0])
+            color_2 = getColor(i["school"][1])
             img_1 = ASSETS + "/image/school/" + i["school"][0] + ".png"
             img_2 = ASSETS + "/image/school/" + i["school"][1] + ".png"
             name_1 = i["name"][0]
