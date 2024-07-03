@@ -4,8 +4,9 @@ from nonebot.adapters import Bot
 from nonebot.exception import MockApiException
 from nonebot.log import logger
 from nonebot.matcher import Matcher
-from nonebot.message import run_preprocessor
+from nonebot.message import run_preprocessor, run_postprocessor
 from nonebot.params import RawCommand
+from typing import Optional
 
 import os
 import json
@@ -15,6 +16,16 @@ import random
 from ..basic import DATA, write, Config, get_api, read, TOOLS
 
 from .spark import chat_spark
+
+@run_postprocessor
+async def _(bot: Bot, event: Event, matcher: Matcher, exception: Optional[Exception], cmd = RawCommand()):
+    if cmd == None:
+        return
+    if exception:
+        if event.message_type == "group":
+            await bot.call_api("send_group_msg", group_id=event.group_id, message=f"呜……音卡处理消息中遇到了代码错误，请将本消息告知开发者！\n{exception}\n原始命令：\n{event.raw_message}")
+        if event.message_type == "private":
+            await bot.call_api("send_private_msg", user_id=event.user_id, message=f"呜……音卡处理消息中遇到了代码错误，请将本消息告知开发者！\n{exception}\n原始命令：\n{event.raw_message}")
 
 @run_preprocessor
 async def _(cmd = RawCommand()):
