@@ -23,9 +23,9 @@ async def _(bot: Bot, event: Event, matcher: Matcher, exception: Optional[Except
         return
     if exception:
         if event.message_type == "group":
-            await bot.call_api("send_group_msg", group_id=event.group_id, message=f"呜……音卡处理消息中遇到了代码错误，请将本消息告知开发者！\n{exception}\n原始命令：\n{event.raw_message}")
+            await bot.call_api("send_group_msg", group_id=event.group_id, message=f"呜……音卡处理消息中遇到了代码错误，请将本消息告知开发者！\n{exception.__class__}: {exception}\n原始命令：\n{event.raw_message}")
         if event.message_type == "private":
-            await bot.call_api("send_private_msg", user_id=event.user_id, message=f"呜……音卡处理消息中遇到了代码错误，请将本消息告知开发者！\n{exception}\n原始命令：\n{event.raw_message}")
+            await bot.call_api("send_private_msg", user_id=event.user_id, message=f"呜……音卡处理消息中遇到了代码错误，请将本消息告知开发者！\n{exception.__class__}: {exception}\n原始命令：\n{event.raw_message}")
 
 @run_preprocessor
 async def _(cmd = RawCommand()):
