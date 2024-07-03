@@ -65,7 +65,7 @@ async def boss():
 
 @scheduler.scheduled_job("cron", hour="19", minute="30")
 async def small_gf():
-    if datetime.date.today().weekday() in [2, 4]:
+    if datetime.date.today().weekday() in [1, 3]:
         activity = "逐鹿中原"
     else:
         return
