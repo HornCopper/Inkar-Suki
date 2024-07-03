@@ -13,6 +13,8 @@ src/assets/music/
 
 affections.json
 
+.env.dev
+
 population.json
 
 # Byte-compiled / optimized / DLL files
