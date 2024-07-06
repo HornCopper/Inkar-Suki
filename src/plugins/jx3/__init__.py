@@ -42,7 +42,7 @@ async def _(event: RecvEvent):
                     if "抓马过滤" in group_data.get("addtions", []) and map_name not in ["黑龙沼", "黑戈壁", "阴山大草原", "鲲鹏岛"]:
                         continue
 
-                if "奇遇过滤" in group_data.get("addtions", []):
+                if msg_type == "奇遇" and "奇遇过滤" in group_data.get("addtions", []):
                     if message.get("level") != 2:
                         continue
 
