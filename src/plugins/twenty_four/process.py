@@ -70,16 +70,21 @@ async def find_solution(numbers):
 
 def contains_all_numbers(expr, numbers):
     used_numbers = [str(num) for num in numbers]
+    used_count = {str(num): 0 for num in numbers}
     i = 0
     while i < len(expr):
         char = expr[i]
-        if char.isdigit():
+        if isint(char):
             number = char
-            while i + 1 < len(expr) and expr[i + 1].isdigit():
+            while i + 1 < len(expr) and isint(expr[i + 1]):
                 number += expr[i + 1]
                 i += 1
             if number in used_numbers:
-                used_numbers.remove(number)
+                used_count[number] += 1
+                if used_count[number] > numbers.count(int(number)):
+                    return False
+            else:
+                return False
         i += 1
+    return True
 
-    return len(used_numbers) == 0
