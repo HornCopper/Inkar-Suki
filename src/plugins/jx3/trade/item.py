@@ -1,4 +1,4 @@
-from .sl import *
+from src.tools.basic import *
 
 async def item_(name: str = None):  # 物价 <物品>
     if token is None:

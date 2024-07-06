@@ -1,7 +1,12 @@
+from .api import *
+from .item import *
+from .item_v2 import *
+from .sl import *
 from .trend import *
+from .wufeng import *
+
 
 trade = on_command("jx3_trade", aliases={"交易行"}, force_whitespace=True, priority=5)
-
 
 @trade.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
@@ -25,8 +30,8 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     else:
         await trade.finish(ms.image(img))
 
-trade_wf = on_command("jx3_wufeng", aliases={"交易行无封"}, force_whitespace=True, priority=5)
 
+trade_wf = on_command("jx3_wufeng", aliases={"交易行无封"}, force_whitespace=True, priority=5)
 
 @trade_wf.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
@@ -50,7 +55,6 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
 
 item_price = on_command("jx3_price", aliases={"物价", "价格"}, force_whitespace=True, priority=5)
 
-
 @item_price.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     """
@@ -70,19 +74,31 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
         await item_price.finish(ms.image(final_image))
     await item_price.finish(data[0])
 
+item_v2_ = on_command("jx3_item_v2", aliases={"物价v2"}, force_whitespace=True, priority=5)
+@item_v2_.handle()
+async def _(event: GroupMessageEvent, args: Message = CommandArg()):
+    """
+    获取外观物价：
+    Example：-物价v2 山神盒子
+    Example：-物价v2 大橙武券
+    """
+    if args.extract_plain_text() == "":
+        return
+    image = await getSingleItemPrice(args.extract_plain_text())
+    
 
-sl = on_command("jx3_sl", aliases={"无封"}, priority=5, force_whitespace=True)
+sl_ = on_command("jx3_sl", aliases={"无封"}, priority=5, force_whitespace=True)
 
-@sl.handle()
+@sl_.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     if args.extract_plain_text() == "":
         return
     image = await getSingleEquipment(args.extract_plain_text())
     if type(image) == type([]):
-        await sl.finish(image[0])
+        await sl_.finish(image[0])
     else:
         image = get_content_local(image)
-        await sl.finish(ms.image(image))
+        await sl_.finish(ms.image(image))
 
 # 施工中
 # trade_trend = on_command("jx3_trend", aliases={"交易行走势"}, force_whitespace=True, priority=5)

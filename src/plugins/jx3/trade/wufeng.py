@@ -1,4 +1,7 @@
-from .api import *
+from src.tools.basic import *
+
+from .sl import convertAttrs
+from .api import toCoinImage, convert, template_msgbox, template_table
 
 basic_name = "无封"
 
