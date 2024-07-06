@@ -103,6 +103,7 @@ async def _(event: GroupMessageEvent, state: T_State, args: Message = CommandArg
     input = rd[1]
     name = rd[0]
     logger.info(name)
+    logger.info(name)
     state["ans"] = name[:-4]
     output = CACHE + "/" + get_uuid() + ".mp3"
     await extract_music(input, output, 3)
