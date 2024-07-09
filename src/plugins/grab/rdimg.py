@@ -19,10 +19,10 @@ async def _(event: Event, args: Message = CommandArg()):
     rdint = random.randint(1, 100)
     if event.user_id == 1925648680:
         if rdint >= 31:
-            img = get_content_local(Path(PLUGINS + "/grab/lwx.jpg").as_uri())
+            img = get_content_local(Path(PLUGINS + "/grab/lwx" + str(random.randint(1,4)) + ".jpg").as_uri())
             await rddi.finish(ms.image(img))
-    if rdint == 1:
-        img = get_content_local(Path(PLUGINS + "/grab/lwx.jpg").as_uri())
+    if rdint <= 10:
+        img = get_content_local(Path(PLUGINS + "/grab/lwx" + str(random.randint(1,4)) + ".jpg").as_uri())
         await rddi.finish(ms.image(img))
     data = await get_api("https://api.thedogapi.com/v1/images/search?size=full")
     image = await get_content(data[0]["url"])
