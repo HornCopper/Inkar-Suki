@@ -11,7 +11,7 @@ async def generate_bar_chart(data):
     categories = list(data.keys())
     values = list(data.values())
 
-    fig, ax = plt.subplots(figsize=(10, 25))
+    fig, ax = plt.subplots(figsize=(10, 30))
     
     bar_height = 0.6
     spacing_factor = 1.5
