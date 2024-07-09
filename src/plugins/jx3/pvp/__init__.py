@@ -13,7 +13,6 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
         # 2 -> 战绩 srv xx / 战绩 xx 22(33or55)
         # 3 -> 战绩 srv xx 22(33or55)
         await arena_re.finish(PROMPT_ArgumentCountInvalid)
-    mode = "22"
     if len(arg) == 1:
         server = None
         name = arg[0]
@@ -29,7 +28,7 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
         server = arg[0]
         name = arg[1]
         mode = arg[2]
-    data = await arena_record(server=server, name=name, group_id=event.group_id, mode=mode)
+    data = await arena_record(server=server, name=name, group_id=event.group_id)
     if type(data) == type([]):
         await arena_re.finish(data[0])
     else:

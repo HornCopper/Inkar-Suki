@@ -1,7 +1,7 @@
 from src.tools.basic import *
 
 
-async def arena_record(server: str = None, name: str = None, mode: str = "33", group_id: str = None):
+async def arena_record(server: str = None, name: str = None, mode: str = "", group_id: str = None):
     if token == None:
         return [PROMPT_NoToken]
     if ticket == None:
