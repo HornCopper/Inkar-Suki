@@ -34,7 +34,7 @@ async def rank_(type_1: str, type_2: str, server: str, group_id: str):
 async def sl_rank_(server: str, group_id: str, school: str = None):
     if server == "全服":
         # 全服试炼榜单
-        final_url = f"/view/rank/server/statistical?table=试炼&name={school}&nickname={bot}"
+        final_url = f"{Config.jx3api_link}/view/rank/server/statistical?table=试炼&name={school}&nickname={bot}"
         data = await get_api(final_url)
         if data["code"] == 400:
             return [PROMPT_ArgumentInvalid]
