@@ -3,7 +3,6 @@ from .school_rank import *
 
 jx3_cmd_top100_ = on_command("jx3_top100", aliases={"百强"}, force_whitespace=True, priority=5)
 
-
 @jx3_cmd_top100_.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     """
@@ -40,7 +39,6 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
 
 jx3_cmd_rank = on_command("jx3_rank", aliases={"榜单"}, force_whitespace=True, priority=5)
 
-
 @jx3_cmd_rank.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     """
@@ -49,7 +47,6 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     Example：-榜单 个人 幽月轮 名士五十强
     Example：-榜单 帮会 幽月轮 恶人神兵宝甲五十强
     Example：-榜单 阵营 幽月轮 赛季恶人五十强
-    Example：-榜单 试炼 幽月轮 明教
     """
     arg = args.extract_plain_text().split(" ")
     if len(arg) not in [2, 3]:
@@ -69,35 +66,35 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
         data = await get_content(data)
         await jx3_cmd_rank.finish(ms.image(data))
 
+sl_rank = on_command("jx3_slrank", aliases={"试炼"}, force_whitespace=True, priority=5)
 
-jx3_cmd_allserver_rank = on_command("jx3_asrank", aliases={"全服榜单"}, force_whitespace=True, priority=5)
-
-@jx3_cmd_allserver_rank.handle()
+@sl_rank.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
-    return # 鸽一下
     """
-    获取全服风云榜单：
-
-    Example：-全服榜单 个人 名士五十强
-    Example：-全服榜单 帮会 恶人神兵宝甲五十强
-    Example：-全服榜单 阵营 赛季恶人五十强
-    Example：-全服榜单 试炼 明教
+    获取试炼榜：
+    Example：-试炼 全服 万花
+    Example：-试炼 万花
+    Example：-试炼 幽月轮 万花
     """
+    if args.extract_plain_text() == "":
+        return
     arg = args.extract_plain_text().split(" ")
-    if len(arg) != 2:
-        await jx3_cmd_rank.finish("唔……参数不正确哦，请检查后重试~")
-        type1 = arg[0]
-        type2 = arg[1]
-    data = await asrank(type1, type2)
-    if isinstance(data, list):
-        await jx3_cmd_rank.finish(data[0])
+    if len(arg) not in [1, 2]:
+        await sl_rank.finish("唔……参数不正确哦，请检查后重试~")
+    if len(arg) == 1:
+        server = None
+        school = arg[0]
+    elif len(arg) == 2:
+        server = arg[0]
+        school = arg[1]
+    img = await sl_rank_(server, str(event.group_id), school)
+    if type(img) == type([]):
+        await sl_rank.finish(img[0])
     else:
-        data = await get_content(data)
-        await jx3_cmd_rank.finish(ms.image(data))
-
+        img = await get_content(img)
+        await sl_rank.finish(ms.image(img))
 
 rank = on_command("jx3_schoolrank", aliases={"门派天梯", "天梯"}, force_whitespace=True, priority=5)
-
 
 @rank.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
