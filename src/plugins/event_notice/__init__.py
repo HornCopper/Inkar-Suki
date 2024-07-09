@@ -41,7 +41,7 @@ notice = on_notice(priority=5)
 @notice.handle()
 async def _(bot: Bot, event: NoticeEvent):
     """入群自动发送帮助信息。"""
-    if not event.notice_type == "group_increase":
+    if event.notice_type != "group_increase":
         return
     obj = event.user_id
     group = event.group_id
@@ -50,9 +50,23 @@ async def _(bot: Bot, event: NoticeEvent):
         msg = ms.at(obj) + " " + getGroupData(str(event.group_id), "welcome")
         await bot.call_api("send_group_msg", group_id=group, message=msg)
         return
-    if event.sub_type != "approve":
-        return
     await bot.call_api("send_group_msg", group_id=event.group_id, message=selfEnterMsg.replace("$GROUP_ID", str(event.group_id)))
+    group_id = str(event.group_id)
+    files = {
+        "blacklist.json": [],
+        "settings.json": {"server": "", "group": group_id, "subscribe": [], "addtions": [], "welcome": "欢迎入群！"},
+        "webhook.json": [],
+        "opening.json": [],
+        "wiki.json": {"startwiki":"","interwiki":[]},
+        "record.json": []
+    }
+    status = []
+    for i in list(files):
+        if os.path.exists(DATA + "/" + group_id + "/" + i):
+            status.append(True)
+            continue
+        status.append(False)
+        write(DATA + "/" + group_id + "/" + i, json.dumps(files[i]))
 
 
 @notice.handle()

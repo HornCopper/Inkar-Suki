@@ -94,28 +94,10 @@ async def _(event: Event, matcher: Matcher):
 async def _(bot: Bot, event: GroupMessageEvent, matcher: Matcher):
     group_id = str(event.group_id)
     message = str(event.message)
-    files = {
-        "blacklist.json": [],
-        "settings.json": {"server": "", "group": group_id, "subscribe": [], "addtions": [], "welcome": "欢迎入群！"},
-        "webhook.json": [],
-        "opening.json": [],
-        "wiki.json": {"startwiki":"","interwiki":[]},
-        "record.json": []
-    }
-    status = []
-    for i in list(files):
-        if os.path.exists(DATA + "/" + group_id + "/" + i):
-            status.append(True)
-            continue
-        status.append(False)
-        write(DATA + "/" + group_id + "/" + i, json.dumps(files[i]))
-    ans = []
-    for i in range(len(list(files))):
-        ans.append(True)
     group_cfg = getGroupData(str(event.group_id), "subscribe")
     if "禁言" in getGroupData(group_id, "addtions") and ("订阅" not in message and "退订" not in message):
         matcher.stop_propagation()
-    if ans == status and "骚话" in group_cfg:
+    if "骚话" in group_cfg:
         chance = random.randint(1, 100)
         if chance % 25 == 0:
             sh_d = await get_api(f"{Config.jx3api_link}/data/saohua/random")
