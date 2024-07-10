@@ -17,7 +17,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     if args.extract_plain_text() == "":
         return
     data = await get_records(args.extract_plain_text())
-    if type(data) == type([]):
+    if isinstance(data, list):
         img = get_content_local(data[0])
         await generate_record.finish(ms.image(img))
     else:

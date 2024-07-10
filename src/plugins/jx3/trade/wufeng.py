@@ -49,7 +49,7 @@ async def getWufengImg(raw: str, server: str, group: str):
     if not server:
         return [PROMPT_ServerNotExist]
     data = await getArmor(raw)
-    if type(data) == type([]):
+    if isinstance(data, list):
         return data
     currentStatus = 0 # 当日是否具有该物品在交易行
     try:
@@ -113,7 +113,7 @@ async def getAllServerWufengImg(raw: str):
     avgs = []
     table = []
     data = await getArmor(raw)
-    if type(data) == type([]):
+    if isinstance(data, list):
         return data
     currentStatus = 0 # 当日是否具有该物品在交易行
     try:

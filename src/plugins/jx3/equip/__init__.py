@@ -81,7 +81,7 @@ async def jx3_equip_recommend_detail(state: T_State, index: Message = Arg()):
     name = state["name"][int(index)]
     kungfu = state["kungfu"]
     data = await get_single_recequips(data, author, name, tag, kungfu)
-    if type(data) == type([]):
+    if isinstance(data, list):
         await jx3_cmd_equip_recommend.finish(data[0])
     else:
         await jx3_cmd_equip_recommend.finish(ms.image(Path(data).as_uri()))

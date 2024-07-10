@@ -1,5 +1,5 @@
-from .api import *
-from .newui import *
+from .v1 import *
+from .v2 import *
 
 jx3_cmd_serendipity = on_command("jx3_serendipity", aliases={"奇遇v1", "查询v1"}, force_whitespace=True, priority=5)
 

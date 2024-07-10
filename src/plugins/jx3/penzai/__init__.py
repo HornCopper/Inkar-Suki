@@ -20,7 +20,7 @@ async def _(event: GroupMessageEvent, state: T_State, args: Message = CommandArg
         await dh_.finish("您没有输入条件哦，请检查后重试~\n条件以空格分割哦~")
     final_details = ",".join(details)
     data = await get_dh(final_details)
-    if type(data) == type([]):
+    if isinstance(data, list):
         image = data[0]
         state["links"] = data[1]
         state["floors"] = data[2]
@@ -60,7 +60,7 @@ async def _(event: GroupMessageEvent, state: T_State, args: Message = CommandArg
         await wg_.finish("您没有输入条件哦，请检查后重试~\n条件以空格分割哦~")
     final_details = ",".join(details)
     data = await get_wg(final_details)
-    if type(data) == type([]):
+    if isinstance(data, list):
         image = data[0]
         state["links"] = data[1]
         state["floors"] = data[2]
