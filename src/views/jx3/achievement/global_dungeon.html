@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <style>
+        table {
+            width: 800px;
+            border-collapse: separate;
+            border-spacing: 0;
+            border: 1px solid #000;
+        }
+
+        th {
+            background-color: #333;
+            color: #fff;
+            padding: 8px;
+            text-align: center;
+        }
+
+        td {
+            padding: 20px;
+            text-align: center;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            border-bottom: 1px solid #D3D3D3;
+        }
+
+        tbody tr:not(:first-child) {
+            border: 1px solid black;
+        }
+
+        .short-column {
+            width: 150px;
+        }
+
+        tfoot {
+            text-align: center;
+            font-style: italic;
+            font-size: 12px;
+        }
+
+        .progress-bar {
+            width: 300px;
+            height: 20px;
+            background-color: #cfcfcf;
+            position: relative;
+            border-radius: 10px;
+        }
+
+        .progress {
+            height: 100%;
+            border-radius: 10px;
+        }
+
+        .progress-text {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            line-height: 20px;
+            color: black;
+            font-weight: bold;
+        }
+
+        @font-face {
+            font-family: Harmony;
+            src: url($customfont);
+        }
+
+        body {
+            font-family: Harmony, sans-serif;
+        }
+    </style>
+</head>
+
+<body>
+    <table style="background-color: #f3f3db;">
+        <thead>
+            <tr>
+                <th class="short-column" style="height:20px">名称</th>
+                <th class="short-column" style="height:20px">副本</th>
+                <th class="short-column" style="height:20px">进度</th>
+                <th class="short-column" style="height:20px">资历</th>
+            </tr>
+        </thead>
+        <tbody>
+            $tablecontent
+        </tbody>
+        <tfoot>
+            <tr>
+                <td colspan="4">&copy; Inkar Suki · $appinfo<br>$randomsaohua</td>
+            </tr>
+        </tfoot>
+    </table>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const progressBars = document.querySelectorAll(".progress-bar .progress");
+            progressBars.forEach(function (bar) {
+                const width = parseFloat(bar.style.width);
+                let color = "#5ebfd7";
+
+                if (width >= 75) {
+                    color = "#ff2929";
+                } else if (width >= 50) {
+                    color = "#ff8929";
+                } else if (width >= 25) {
+                    color = "#ece44a";
+                } else {
+                    color = "#4caf50";
+                }
+                bar.style.backgroundColor = color;
+            });
+        });
+    </script>
+</body>
+
+</html>

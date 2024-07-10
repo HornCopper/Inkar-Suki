@@ -2,7 +2,6 @@ from .detail import *
 
 zone_detail = on_command("jx3_zone_detail", aliases={"副本总览"}, force_whitespace=True, priority=5)
 
-
 @zone_detail.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     if args.extract_plain_text() == "":
@@ -25,3 +24,25 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     else:
         data = get_content_local(data)
         await zone_detail.finish(ms.image(data))
+
+global_dungeon_lookup = on_command("jx3_global_dungeon", aliases={"副本分览"}, force_whitespace=True, priority=5)
+
+@global_dungeon_lookup.handle()
+async def _(event: GroupMessageEvent, args: Message = CommandArg()):
+    if args.extract_plain_text() == "":
+        return
+    arg = args.extract_plain_text().split(" ")
+    if len(arg) not in [1, 2]:
+        await global_dungeon_lookup.finish("唔……参数不正确哦，请检查后重试~")
+    if len(arg) == 1:
+        server = None
+        id = arg[0]
+    elif len(arg) == 2:
+        server = arg[0]
+        id = arg[1]
+    data = await get_all_dungeon_image(server, id, str(event.group_id))
+    if isinstance(data, list):
+        await global_dungeon_lookup.finish(data[0])
+    else:
+        data = get_content_local(data)
+        await global_dungeon_lookup.finish(ms.image(data))

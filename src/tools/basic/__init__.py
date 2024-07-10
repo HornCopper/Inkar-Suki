@@ -38,6 +38,7 @@ PROMPT_ArgumentCountInvalid = "唔……参数数量有误，请检查后重试�
 PROMPT_NumberInvalid = "唔……输入的不是数字哦，取消搜索。"
 PROMPT_InvalidToken = "唔……该音卡实例的JX3API的token无效，请联系机器人主人！"
 PROMPT_NumberNotExist = "唔……输入的数字不在范围内哦，请检查后重试！"
+PROMPT_PlayerNotExist = "唔……玩家不存在哦，请检查后重试！"
 
 token = Config.jx3api_globaltoken
 ticket = Config.jx3_token

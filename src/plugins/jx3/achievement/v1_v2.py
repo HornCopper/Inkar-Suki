@@ -1,7 +1,7 @@
 from src.tools.basic import *
 from src.plugins.jx3.dungeon.api import get_map, zone_mapping, mode_mapping
 
-from .adventure import *
+from .box import *
 
 
 async def post_url(url, proxy: dict = None, headers: str = None, timeout: int = 300, data: dict = None):

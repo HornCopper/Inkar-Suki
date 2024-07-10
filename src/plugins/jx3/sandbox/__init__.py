@@ -13,7 +13,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     server = args.extract_plain_text()
     server = server_mapping(server, str(event.group_id))
     data = await sandbox_(server)
-    if type(data) == type([]):
+    if isinstance(data, list):
         await sandbox.finish(data[0])
     else:
         data = await get_content(data)
@@ -31,7 +31,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     server = args.extract_plain_text()
     server = server_mapping(server, str(event.group_id))
     data = await sandbox_v2_(server)
-    if type(data) == type([]):
+    if isinstance(data, list):
         await sandbox_v2.finish(data[0])
     else:
         data = get_content_local(data)

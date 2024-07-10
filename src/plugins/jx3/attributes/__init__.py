@@ -25,7 +25,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
         server = arg[0]
         id = arg[1]
     data = await addritube_(server, id, group_id=event.group_id)
-    if type(data) == type([]):
+    if isinstance(data, list):
         await addritube_v1.finish(data[0])
     else:
         data = await get_content(data)
@@ -53,7 +53,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
         server = arg[0]
         id = arg[1]
     data = await get_attr_main(server, id, str(event.group_id))
-    if type(data) == type([]):
+    if isinstance(data, list):
         await addritube_v2.finish(data[0])
     else:
         data = get_content_local(data)
@@ -81,7 +81,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
         server = arg[0]
         id = arg[1]
     data = await get_attrs_v4(server, id, str(event.group_id))
-    if type(data) == type([]):
+    if isinstance(data, list):
         await addritube_v4.finish(data[0])
     else:
         data = get_content_local(data)

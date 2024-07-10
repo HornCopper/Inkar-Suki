@@ -1,6 +1,6 @@
 from src.plugins.jx3.dungeon.api import mode_mapping
 
-from .api import *
+from .v1_v2 import *
 
 adventure_ = on_command("jx3_adventure", aliases={"成就"}, force_whitespace=True, priority=5)
 

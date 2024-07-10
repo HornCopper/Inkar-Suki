@@ -29,7 +29,7 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
         name = arg[1]
         mode = arg[2]
     data = await arena_record(server=server, name=name, group_id=event.group_id)
-    if type(data) == type([]):
+    if isinstance(data, list):
         await arena_re.finish(data[0])
     else:
         data = await get_content(data)
@@ -45,7 +45,7 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
     if arg[0] not in ["22", "33", "55"]:
         await arena_ra.finish("唔……名剑模式只接受22、33、55！")
     data = await arena_rank(mode=arg[0])
-    if type(data) == type([]):
+    if isinstance(data, list):
         await arena_ra.finish(data[0])
     else:
         data = await get_content(data)
@@ -61,7 +61,7 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
     if arg[0] not in ["22", "33", "55"]:
         await arena_s.finish("唔……名剑模式只接受22、33、55！")
     data = await arena_stastic(mode=arg[1])
-    if type(data) == type([]):
+    if isinstance(data, list):
         await arena_s.finish(data[0])
     else:
         data = await get_content(data)

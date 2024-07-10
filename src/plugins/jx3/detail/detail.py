@@ -152,3 +152,84 @@ async def generate_zd_image(server: str, id: str):
     write(final_html, html)
     final_path = await generate(final_html, False, "table", False)
     return Path(final_path).as_uri()
+
+template_each_dungeon = """
+<tr>
+    $header
+    <td class="short-column">$mode</td>
+    <td class="short-column">
+        <div class="progress-bar" style="margin: 0 auto;">
+            <div class="progress" style="width: $schedule;"></div>
+            <span class="progress-text">$schedule</span>
+        </div>
+    </td>
+    <td class="short-column">$num</td>
+</tr>"""
+
+template_each_dungeon_header = """
+<td class="short-column" rowspan="$count">$name</td>
+"""
+
+async def get_personal_guid(server: str, id: str):
+    final_url = f"{Config.jx3api_link}/data/role/detailed?token={token}&server={server}&name={id}"
+    data = await get_api(final_url)
+    if data["code"] != 200:
+        return False
+    else:
+        return data["data"]["globalRoleId"]
+
+async def get_map_all_id(map_name: str):
+    final_url = "https://m.pvp.xoyo.com/achievement/list/dungeon-maps"
+    data = await get_tuilan_data(final_url, {"name": map_name, "detail": True, "ts": gen_ts()})
+    return data["data"]["maps"]
+
+def get_all_map():
+    return json.loads(read(PLUGINS + "/jx3/dungeon/zone.json"))
+
+def calculate(raw_data: dict):
+    done = 0
+    total = 0
+    for achievement in raw_data["data"]["data"]:
+        if achievement["isFinished"]:
+            done += achievement["reward_point"]
+        total += achievement["reward_point"]
+    return done, total
+
+async def get_all_dungeon_image(server: str, id: str, group_id: str):
+    server = server_mapping(server, group_id)
+    if server == None:
+        return [PROMPT_ServerNotExist]
+    guid = await get_personal_guid(server, id)
+    if not guid:
+        return [PROMPT_PlayerNotExist]
+    map_list = get_all_map()
+    table = []
+    for map in map_list:
+        map_data = await get_map_all_id(map)
+        mode_count = len(map_data)
+        is_first = False
+        for mode in map_data:
+            template = template_each_dungeon
+            if is_first:
+                template = template.replace("$header", template_each_dungeon_header.replace("$count", str(mode_count)).replace("$name", map))
+                is_first = True
+            else:
+                template = template.replace("$header", "")
+            single_map_data = await get_tuilan_data("https://m.pvp.xoyo.com/achievement/list/achievements", {"cursor": 0, "size": 200, "dungeon_map_id": mode["id"], "gameRoleId": guid, "ts": gen_ts()})
+            done, total = calculate(single_map_data)
+            schedule = str(int(done / total)) + "%"
+            table.append(
+                template
+                .replace("$mode", mode["name"])
+                .replace("$schedule", schedule)
+                .replace("$num", f"{done}/{total}")
+            )
+    html = read(VIEWS + "/jx3/achievement/global_dungeon.html")
+    font = ASSETS + "/font/custom.ttf"
+    saohua = "严禁将蓉蓉机器人与音卡共存，一经发现永久封禁！蓉蓉是抄袭音卡的劣质机器人！"
+    appinfo_time = convert_time(getCurrentTime(), "%H:%M")
+    html = html.replace("$customfont", font).replace("$tablecontent", "\n".join(table)).replace("$randomsaohua", saohua).replace("$appinfo", f"副本分览 · {server} · {id} · {appinfo_time}")
+    final_html = CACHE + "/" + get_uuid() + ".html"
+    write(final_html, html)
+    final_path = await generate(final_html, False, "table", False)
+    return Path(final_path).as_uri()
