@@ -181,7 +181,7 @@ async def get_personal_guid(server: str, id: str):
 async def get_map_all_id(map_name: str):
     final_url = "https://m.pvp.xoyo.com/achievement/list/dungeon-maps"
     data = await get_tuilan_data(final_url, {"name": map_name, "detail": True, "ts": gen_ts()})
-    return data["data"]["maps"]
+    return data["data"][0]["maps"]
 
 def get_all_map():
     return json.loads(read(PLUGINS + "/jx3/dungeon/zone.json"))
@@ -205,19 +205,21 @@ async def get_all_dungeon_image(server: str, id: str, group_id: str):
     map_list = get_all_map()
     table = []
     for map in map_list:
+        if map == "冷龙峰":
+            continue
         map_data = await get_map_all_id(map)
         mode_count = len(map_data)
-        is_first = False
+        is_first = True
         for mode in map_data:
             template = template_each_dungeon
             if is_first:
                 template = template.replace("$header", template_each_dungeon_header.replace("$count", str(mode_count)).replace("$name", map))
-                is_first = True
+                is_first = False
             else:
                 template = template.replace("$header", "")
             single_map_data = await get_tuilan_data("https://m.pvp.xoyo.com/achievement/list/achievements", {"cursor": 0, "size": 200, "dungeon_map_id": mode["id"], "gameRoleId": guid, "ts": gen_ts()})
             done, total = calculate(single_map_data)
-            schedule = str(int(done / total)) + "%"
+            schedule = str(int(done / total * 100)) + "%"
             table.append(
                 template
                 .replace("$mode", mode["name"])
