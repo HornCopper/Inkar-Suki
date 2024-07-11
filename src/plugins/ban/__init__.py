@@ -138,4 +138,20 @@ async def _(bot: Bot, event: Event, confirm: Message = Arg()):
     if u_input == "重置音卡":
         if os.path.exists(DATA + "/" + str(event.group_id)):
             shutil.rmtree(DATA + "/" + str(event.group_id))
+        group_id = str(event.group_id)
+        files = {
+            "blacklist.json": [],
+            "settings.json": {"server": "", "group": group_id, "subscribe": [], "addtions": [], "welcome": "欢迎入群！"},
+            "webhook.json": [],
+            "opening.json": [],
+            "wiki.json": {"startwiki":"","interwiki":[]},
+            "record.json": []
+        }
+        status = []
+        for i in list(files):
+            if os.path.exists(DATA + "/" + group_id + "/" + i):
+                status.append(True)
+                continue
+            status.append(False)
+            write(DATA + "/" + group_id + "/" + i, json.dumps(files[i]))
         await dismiss.send("重置成功！可以重新开始绑定本群数据了！")
