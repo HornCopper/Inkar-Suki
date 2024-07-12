@@ -85,7 +85,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
         server = None
         school = arg[0]
     elif len(arg) == 2:
-        server = arg[0]
+        server = server_mapping(arg[0])
         school = arg[1]
     img = await sl_rank_(server, str(event.group_id), school)
     if type(img) == type([]):
