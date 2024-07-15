@@ -28,6 +28,8 @@ _基于Nonebot 2的多功能的群聊机器人_
 
 什么？你说`gocq`寄了你不会了？请立即点击查看[Inkar Suki Docs的Lagrange文档](https://inkar-suki.codethink.cn/Inkar-Suki-Docs/#/lagrange)，或直接前往项目主页：[LagrangeDev/Lagrange.Core](https://github.com/LagrangeDev/Lagrange.Core)。
 
+[声明：本项目基于原项目做一些小修改，要使用请以原版为主。]
+
 # 功能
 **由于功能设计初衷是为群聊服务，以下大部分功能将在私聊不可用，食用方法请移步[文档](https://inkar-suki.codethink.cn)。**
 
@@ -48,8 +50,7 @@ _基于Nonebot 2的多功能的群聊机器人_
 
 # 赞助
 
-<img src="https://inkar-suki.codethink.cn/Inkar-Suki-Docs/img/wechat_donate.png" height="500" alt="支付宝收款码">
-<img src="https://inkar-suki.codethink.cn/Inkar-Suki-Docs/img/alipay_donate.png" height="500" alt="微信收款码">
+赞助请移步：https://github.com/codethink-cn/Inkar-Suki
 
 # 友情链接
 - [Nonebot 2](https://v2.nonebot.dev/) - 跨平台 Python 异步机器人框架；
