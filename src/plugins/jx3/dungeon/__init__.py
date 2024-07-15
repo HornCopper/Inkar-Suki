@@ -109,4 +109,5 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     if args.extract_plain_text() != "":
         return
     img = await get_monsters_map()
+    img = get_content_local(img)
     await monsters.finish(ms.image(img))

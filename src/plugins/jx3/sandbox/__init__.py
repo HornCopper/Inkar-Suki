@@ -1,5 +1,4 @@
 from .api import *
-from src.plugins.sign import Sign
 
 sandbox = on_command("jx3_sandbox", aliases={"沙盘"}, force_whitespace=True, priority=5)
 
@@ -18,7 +17,6 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     else:
         data = await get_content(data)
         await sandbox.finish(ms.image(data))
-
 
 sandbox_v2 = on_command("jx3_sandbox_v2", aliases={"沙盘v2"}, force_whitespace=True, priority=5)
 

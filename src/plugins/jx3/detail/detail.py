@@ -144,8 +144,8 @@ async def generate_zd_image(server: str, id: str):
     content = "\n".join(content)
     html = read(VIEWS + "/jx3/zone_detail/zone_detail.html")
     font = ASSETS + "/font/custom.ttf"
-    saohua = "严禁将蓉蓉机器人与音卡共存，一经发现永久封禁！蓉蓉是抄袭音卡的劣质机器人！"
-    
+    saohua = await get_api(f"{Config.jx3api_link}/data/saohua/random")
+    saohua = saohua["data"]["text"]
     appinfo_time = convert_time(getCurrentTime(), "%H:%M")
     html = html.replace("$customfont", font).replace("$tablecontent", content).replace("$randomsaohua", saohua).replace("$appinfo", f" 副本总览 · {server} · {id} · {appinfo_time}")
     final_html = CACHE + "/" + get_uuid() + ".html"
@@ -228,7 +228,8 @@ async def get_all_dungeon_image(server: str, id: str, group_id: str):
             )
     html = read(VIEWS + "/jx3/achievement/global_dungeon.html")
     font = ASSETS + "/font/custom.ttf"
-    saohua = "严禁将蓉蓉机器人与音卡共存，一经发现永久封禁！蓉蓉是抄袭音卡的劣质机器人！"
+    saohua = await get_api(f"{Config.jx3api_link}/data/saohua/random")
+    saohua = saohua["data"]["text"]
     appinfo_time = convert_time(getCurrentTime(), "%H:%M")
     html = html.replace("$customfont", font).replace("$tablecontent", "\n".join(table)).replace("$randomsaohua", saohua).replace("$appinfo", f"副本分览 · {server} · {id} · {appinfo_time}")
     final_html = CACHE + "/" + get_uuid() + ".html"

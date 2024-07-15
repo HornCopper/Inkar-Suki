@@ -1,0 +1,83 @@
+from playwright.async_api import async_playwright
+
+from src.tools.basic import *
+
+
+def javascript(server, name):
+    js = """
+    // OA神的JavaScript代码 XD
+    async () =>{
+        let a = await window.grecaptcha.execute(window.xconfig.extend.reCaptchaToken)
+        let b = await fetch("https://www.jx3pet.com/api/firework?server=$server&name=$name&response=" + a)
+        return b.json()}    
+    """
+    return js.replace("$server", server).replace("$name", name)
+
+
+async def get_firework_data(server, name):
+    # async with async_playwright() as p:
+    #     browser = await p.chromium.launch(headless=True, slow_mo=900)
+    #     context = await browser.new_context()
+    #     page = await context.new_page()
+    #     await page.goto("https://www.jx3pet.com/firework")
+    #     info = await page.evaluate(javascript(server, name))
+    #     return info
+    info = await get_api(f"https://www.jx3pet.com/api/firework?server={server}&name={name}")
+    return info
+
+template = """
+<tr>
+    <td class="short-column">$count</td>
+    <td class="short-column">$map</td>
+    <td class="short-column">$sed</td>
+    <td class="short-column">$rec</td>
+    <td class="short-column">$time</td>
+    <td class="short-column">$firework</td>
+</tr>
+"""
+
+
+#async def get_firework_image(server, name, group):
+#    server = server_mapping(server, group)
+#    logger.info(server)
+#    if not server:
+#        return [PROMPT_ServerNotExist]
+#    while True:
+#        data = await get_firework_data(server, name)
+#        if data["code"] == 200:
+#            break
+#    logger.info(data)
+#    tablecontent = []
+#    data = data["data"]
+#    for i in range(len(data)):
+#        tablecontent.append(template.replace("$count", str(i)).replace("$map", data[i]["map_name"]).replace("$sed", data[i]["sender"]).replace(
+#            "$rec", data[i]["recipient"]).replace("$time", convert_time(data[i]["time"])).replace("$firework", data[i]["name"]))
+#    tablecontents = "\n".join(tablecontent)
+#    html = read(VIEWS + "/jx3/firework/firework.html")
+#    saohua = await get_api(f"{Config.jx3api_link}/data/saohua/random")
+#    saohua = saohua["data"]["text"]
+#    appinfo_time = convert_time(getCurrentTime(), "%H:%M:%S")
+#    appinfo = f"烟花记录 · {server} · {name} · 当前时间：{appinfo_time}"
+#    font = ASSETS + "/font/custom.ttf"
+#    html = html.replace("$customfont", font).replace("$appinfo", appinfo).replace(
+#        "$tablecontent", tablecontents).replace("$randomsaohua", saohua)
+#    final_html = CACHE + "/" + get_uuid() + ".html"
+#    write(final_html, html)
+#    final_path = await generate(final_html, False, "table", False)
+#    return Path(final_path).as_uri()
+
+async def get_firework_image(server: str = None, name: str = None, group_id: str = None):
+    if token == None :
+        return [PROMPT_NoTicket]
+    server = server_mapping(server, group_id)
+    if not server:
+        return [PROMPT_ServerNotExist]
+    final_url = f"{Config.jx3api_link}/view/watch/record?token={token}&nickname={bot}&server={server}&name={name}&chrome=1"
+    data = await get_api(final_url)
+    if data["code"] == 404 and data["msg"] == "未收录":
+        return ["未收录该角色烟花信息！"] 
+    if data["code"] == 404:
+        return ["接口404错误，请联系管理员！"]
+    if data["code"] == 403:
+        return ["接口403错误，请联系管理员！"]
+    return data["data"]["url"]

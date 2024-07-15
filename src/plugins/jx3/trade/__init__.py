@@ -27,6 +27,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     if len(id_cut) <= 1:
         id_cut = []
     img = await getImg(server, id, str(event.group_id), id_cut)
+    img = get_content_local(img)
     if type(img) == type([]):
         await trade.finish(img[0])
     else:
@@ -49,6 +50,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
         server = arg[0]
         msg = arg[1]
     img = await getWufengImg(msg, server, str(event.group_id))
+    img = get_content_local(img)
     if type(img) == type([]):
         await trade.finish(img[0])
     else:
@@ -87,11 +89,11 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     """
     if args.extract_plain_text() == "":
         return
-    coin = Sign.get_coin(str(event.user_id))
-    if coin < 50:
-        await item_v2_.finish("物价v2正在内测，需要50金币才能使用哦！")
-    else:
-        Sign.reduce(str(event.user_id), 50)
+#    coin = Sign.get_coin(str(event.user_id))
+#    if coin < 50:
+#        await item_v2_.finish("物价v2正在内测，需要50金币才能使用哦！")
+#    else:
+#        Sign.reduce(str(event.user_id), 50)
     image = await getSingleItemPrice(args.extract_plain_text())
     if type(image) == type([]):
         await item_v2_.finish(image[0])

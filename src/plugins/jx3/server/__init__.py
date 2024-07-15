@@ -3,7 +3,7 @@ from .api import *
 cmd_jx3_server = on_command("jx3_server", aliases={"开服"}, priority=5, force_whitespace=True)
 
 @cmd_jx3_server.handle()
-async def _(event: GroupMessageEvent, args: Message = CommandArg()):
+async def jx3_server(event: GroupMessageEvent, args: Message = CommandArg()):
     """
     获取服务器开服状态：
 

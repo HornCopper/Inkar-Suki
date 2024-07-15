@@ -41,7 +41,7 @@ async def post_url(url: str, **kwargs):
         resp = await client.post(url, **kwargs)
         return resp.json()
 
-watermelon = on_command("jx3_watermelon", aliases={"吃瓜"}, rule=to_me(), force_whitespace=True, priority=5)
+watermelon = on_command("jx3_watermelon", aliases={"吃瓜v1"}, rule=to_me(), force_whitespace=True, priority=5)
 @watermelon.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     tid = args.extract_plain_text()

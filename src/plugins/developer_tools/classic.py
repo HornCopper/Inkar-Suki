@@ -2,6 +2,7 @@
 from nonebot import on_notice, on_command, on_request
 from nonebot.adapters.onebot.v11 import Bot, GroupMessageEvent, NoticeEvent, RequestEvent
 from nonebot.adapters.onebot.v11 import unescape
+from nonebot.rule import to_me
 
 from typing import List
 
@@ -9,7 +10,7 @@ from src.tools.basic import *
 import psutil
 
 
-purge = on_command("purge", force_whitespace=True, priority=5)  # 清除所有`help`生成的缓存图片
+purge = on_command("purge", rule=to_me(), force_whitespace=True, priority=5)  # 清除所有`help`生成的缓存图片
 
 
 @purge.handle()
@@ -26,7 +27,7 @@ async def _(event: Event, args: Message = CommandArg()):
     else:
         await purge.finish("好的，已帮你清除图片缓存~")
 
-shutdown = on_command("shutdown", aliases={"poweroff"}, force_whitespace=True, priority=5)  # 关掉`Inkar-Suki`主程序
+shutdown = on_command("shutdown", aliases={"poweroff"}, rule=to_me(), force_whitespace=True, priority=5)  # 关掉`Inkar-Suki`主程序
 
 
 @shutdown.handle()
@@ -63,7 +64,7 @@ async def _(event: Event, args: Message = CommandArg()):
         await echo.finish(error(9))
     await echo.finish(args)
 
-ping = on_command("ping", aliases={"-测试"}, force_whitespace=True, priority=5)  # 测试机器人是否在线
+ping = on_command("ping", aliases={"-测试"}, rule=to_me(), force_whitespace=True, priority=5)  # 测试机器人是否在线
 
 @ping.handle()
 async def _(bot: Bot, event: Event, args: Message = CommandArg()):
@@ -99,43 +100,43 @@ async def _(bot: Bot, event: Event, args: Message = CommandArg()):
                            message=cmd
                            )
 
-call_api = on_command("call_api", aliases={"api"}, force_whitespace=True, priority=5)  # 调用`go-cqhttp`的`API`接口。
+#call_api = on_command("call_api", aliases={"api"}, force_whitespace=True, priority=5)  # 调用`go-cqhttp`的`API`接口。
+#
+#
+#@call_api.handle()
+#async def _(event: Event, args: Message = CommandArg()):
+#    if args.extract_plain_text() == "":
+#        return
+#    if not checker(str(event.user_id), 10):
+#        await call_api.finish(error(10))
+#    cmd = args.extract_plain_text()
+#    result = await get_url(f"{Config.cqhttp}{cmd}")
+#    await call_api.finish(f"已将您的接口调用完毕！\n{result}")
+
+#git = on_command("-git", force_whitespace=True, priority=5)  # 调用`Git`，~~别问意义是什么~~
 
 
-@call_api.handle()
-async def _(event: Event, args: Message = CommandArg()):
-    if args.extract_plain_text() == "":
-        return
-    if not checker(str(event.user_id), 10):
-        await call_api.finish(error(10))
-    cmd = args.extract_plain_text()
-    result = await get_url(f"{Config.cqhttp}{cmd}")
-    await call_api.finish(f"已将您的接口调用完毕！\n{result}")
-
-git = on_command("-git", force_whitespace=True, priority=5)  # 调用`Git`，~~别问意义是什么~~
-
-
-@git.handle()
-async def _(event: Event, args: Message = CommandArg()):
-    if args.extract_plain_text() == "":
-        return
-    if not checker(str(event.user_id), 10):
-        await git.finish(error(10))
-    output = ""
-    commit = args.extract_plain_text()
-    if commit == "pull":
-        output = os.popen("git pull").read()
-        await git.finish(output)
-    os.system("git add .")
-    msg = ""
-    msg = msg + os.popen("git commit -m \""
-                         + commit
-                         + "\""
-                         ).read()
-    msg = msg + os.popen("git push").read()
-    if msg == "":
-        msg = "执行完成，但没有输出哦~"
-    await git.finish(msg)
+#@git.handle()
+#async def _(event: Event, args: Message = CommandArg()):
+#    if args.extract_plain_text() == "":
+#        return
+#    if not checker(str(event.user_id), 10):
+#        await git.finish(error(10))
+#    output = ""
+#    commit = args.extract_plain_text()
+#    if commit == "pull":
+#        output = os.popen("git pull").read()
+#        await git.finish(output)
+#    os.system("git add .")
+#    msg = ""
+#    msg = msg + os.popen("git commit -m \""
+#                         + commit
+#                         + "\""
+#                         ).read()
+#    msg = msg + os.popen("git push").read()
+#    if msg == "":
+#        msg = "执行完成，但没有输出哦~"
+#    await git.finish(msg)
 
 voice = on_command("voice", force_whitespace=True, priority=5)  # 调用腾讯的语音TTS接口，生成语音。
 

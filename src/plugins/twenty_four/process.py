@@ -87,4 +87,3 @@ def contains_all_numbers(expr, numbers):
                 return False
         i += 1
     return True
-

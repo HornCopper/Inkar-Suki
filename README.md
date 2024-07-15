@@ -22,7 +22,7 @@ _基于Nonebot 2的多功能的群聊机器人_
 
 各种功能于一体的群聊机器人，基于[Nonebot 2](https://v2.nonebot.dev)。
 
-项目基于`AGPL-3.0`开源，欢迎借鉴，不欢迎商用，不欢迎帝君和平凡的名字（331945833）以任何形式使用本仓库任何源码，有声明的除外。
+项目基于`AGPL-3.0`开源，欢迎借鉴，不欢迎商用，不欢迎帝君以任何形式使用本仓库任何源码，有声明的除外。
 
 本项目与`QQ`无关，请勿用于搭建QQ机器人等服务。仅供娱乐与学习，下载后请于24小时内删除。
 
@@ -48,13 +48,13 @@ _基于Nonebot 2的多功能的群聊机器人_
 
 # 赞助
 
-<img src="https://inkar-suki.codethink.cn/Inkar-Suki-Docs/img/wechat_donate.jpg" height="500" alt="微信收款码">
-<img src="https://inkar-suki.codethink.cn/Inkar-Suki-Docs/img/alipay_donate.png" height="500" alt="支付宝收款码">
+<img src="https://inkar-suki.codethink.cn/Inkar-Suki-Docs/img/wechat_donate.png" height="500" alt="支付宝收款码">
+<img src="https://inkar-suki.codethink.cn/Inkar-Suki-Docs/img/alipay_donate.png" height="500" alt="微信收款码">
 
 # 友情链接
 - [Nonebot 2](https://v2.nonebot.dev/) - 跨平台 Python 异步机器人框架；
 - [go-cqhttp](https://docs.go-cqhttp.org/) - 基于 Mirai 以及 MiraiGo 的 OneBot Golang 原生实现；
 - [小可·Akaribot](https://github.com/Teahouse-Studios/akari-bot) - 茶馆群内QQ机器人（小可）by @OasisAkari；
 - [团子机器人](https://github.com/JustUndertaker/mini_jx3_bot) - 基于nonebot2的剑网三群聊机器人，采用jx3api作为数据源 by @JustUndertaker；
-- [资源酒肆](https://jq.qq.com/?_wv=1027&k=urh2dqal) - 欢迎来这里畅聊`Minecraft`相关内容。
+- [资源酒肆](https://jq.qq.com/?_wv=1027&k=urh2dqal) - 欢迎来这里畅聊`Minecraft`相关内容；
 

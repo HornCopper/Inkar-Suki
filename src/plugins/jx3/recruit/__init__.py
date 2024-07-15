@@ -4,7 +4,7 @@ jx3_cmd_recruit = on_command("jx3_recruit_v1", aliases={"招募v1"}, force_white
 
 
 @jx3_cmd_recruit.handle()
-async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
+async def jx3_recruit(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
     """
     获取招募：
 
@@ -35,7 +35,7 @@ jx3_cmd_recruit_v2 = on_command("jx3_recruit", aliases={"招募"}, force_whitesp
 
 
 @jx3_cmd_recruit_v2.handle()
-async def _(event: GroupMessageEvent, args: Message = CommandArg()):
+async def jx3_recruit_v2(event: GroupMessageEvent, args: Message = CommandArg()):
     filter = False
     if "招募过滤" in getGroupData(str(event.group_id), "addtions"):
         filter = True
@@ -65,7 +65,7 @@ jx3_cmd_recruit_local = on_command("jx3_recruit_local", aliases={"本服招募"}
 
 
 @jx3_cmd_recruit_local.handle()
-async def _(event: GroupMessageEvent, args: Message = CommandArg()):
+async def jx3_recruit_v2(event: GroupMessageEvent, args: Message = CommandArg()):
     arg = args.extract_plain_text()
     filter = False
     if "招募过滤" in getGroupData(str(event.group_id), "addtions"):

@@ -18,7 +18,7 @@ template_rec_equip = """
 jx3_cmd_equip_recommend = on_command("jx3_equip_recommend", aliases={"配装"}, force_whitespace=True, priority=5)
 
 @jx3_cmd_equip_recommend.handle()
-async def _(event: GroupMessageEvent, state: T_State, args: Message = CommandArg()):
+async def jx3_equip_recommend_menu(event: GroupMessageEvent, state: T_State, args: Message = CommandArg()):
     if args.extract_plain_text() == "":
         return
     arg = args.extract_plain_text().split(" ")
@@ -84,4 +84,6 @@ async def jx3_equip_recommend_detail(state: T_State, index: Message = Arg()):
     if isinstance(data, list):
         await jx3_cmd_equip_recommend.finish(data[0])
     else:
-        await jx3_cmd_equip_recommend.finish(ms.image(Path(data).as_uri()))
+        img = Path(data).as_uri()
+        img = get_content_local(img)
+        await jx3_cmd_equip_recommend.finish(ms.image(img))

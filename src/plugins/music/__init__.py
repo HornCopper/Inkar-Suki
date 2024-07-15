@@ -1,8 +1,14 @@
-from src.tools.basic import *
-from src.plugins.sign import Sign
+from .music import get, search, getLyricBelongToMusicInfo
+from src.tools.utils import checknumber
 
-from .music import *
-from .guess import *
+from nonebot import on_command
+from nonebot.adapters import Message
+from nonebot.params import CommandArg, Arg
+from nonebot.adapters.onebot.v11 import MessageSegment as ms
+from nonebot.adapters.onebot.v11 import GroupMessageEvent
+from nonebot.typing import T_State
+
+
 
 """
 搜歌可查询歌曲，点歌直接根据歌曲名和作者（若有）推出歌曲。
@@ -91,34 +97,3 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     if lyrics == "":
         await get_lyrics.finish("唔……没有告诉我歌词哦~")
     await get_lyrics.finish(await getLyricBelongToMusicInfo(lyrics))
-
-
-guess_music = on_command("guess_music", aliases={"猜歌"}, force_whitespace=True, priority=5)
-
-@guess_music.handle()
-async def _(event: GroupMessageEvent, state: T_State, args: Message = CommandArg()):
-    if args.extract_plain_text() != "":
-        return
-    rd = getRandomMusic()
-    input = rd[1]
-    name = rd[0]
-    logger.info(name)
-    logger.info(name)
-    state["ans"] = name[:-4]
-    output = CACHE + "/" + get_uuid() + ".mp3"
-    await extract_music(input, output, 3)
-    await guess_music.send(ms.record(file=Path(output).as_uri()))
-    return
-
-@guess_music.got("music", prompt="请告诉我歌曲名！")
-
-async def _(event: GroupMessageEvent, state: T_State, music: Message = Arg()):
-    music = music.extract_plain_text()
-    if music == "":
-        await guess_music.finish("唔……没有告诉我歌曲名哦~")
-    if music == state["ans"]:
-        Sign.add(str(event.user_id), 200)
-        await guess_music.finish("恭喜你答对了！\n你获得了200枚金币！")
-    else:
-        Sign.reduce(str(event.user_id), 100)
-        await guess_music.finish("唔……你答错了哦~\n你失去了100枚金币！")

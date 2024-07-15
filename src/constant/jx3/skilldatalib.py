@@ -38,7 +38,9 @@ async def getTalents():
     数据来源：`JX3BOX` & `JX3API`
     """
     force_list = await get_api("https://inkar-suki.codethink.cn/jx3boxdata")
-    data_list = list(force_list)
+    data_list = []
+    for i in force_list:
+        data_list.append(i)
     for i in data_list:
         if await get_status(url=f"https://data.jx3box.com/talent/{i}.json") != 404:
             info = await get_url(url=f"https://data.jx3box.com/bps/std/{i}/talent.json")
@@ -55,7 +57,9 @@ async def getSkills():
     数据来源：`JX3BOX` & `JX3API`。
     """
     force_list = await get_api("https://inkar-suki.codethink.cn/jx3boxdata")
-    data_list = list(force_list)
+    data_list = []
+    for i in force_list:
+        data_list.append(i)
     for i in data_list:
         if await get_status(url=f"https://data.jx3box.com/bps/std/{i}/skill.json") != 404:
             info = await get_url(url=f"https://data.jx3box.com/bps/std/{i}/skill.json")
@@ -66,7 +70,7 @@ async def getSkills():
 
 
 async def get_icon(skillName: str, type_: str, api_icon: str = None, kungfu: str = None) -> str:
-    if kungfu is None:
+    if kungfu == None:
         raise ValueError("Key value `kungfu` was not found.")
     final_path = ASSETS + "/jx3/icons/" + kungfu + "_" + skillName + ".png"
     if os.path.exists(final_path):
@@ -145,7 +149,7 @@ async def getSingleSkill(kungfu: str, skillName: str):
         return False
     try:
         data = json.loads(read(ASSETS + "/jx3/skills/" + kungfu + ".json"))
-    except Exception:
+    except:
         await getSkills()
         await getSingleSkill(kungfu, skillName)
     moreInfo = data["remarks"]
@@ -190,11 +194,13 @@ async def getSingleTalent(Kungfu: str, TalentName: str):
     try:
         data = json.loads(
             read(ASSETS + "/jx3/talents/" + kungfuname + ".json"))
-    except Exception:
+    except:
         await getTalents()
         await getSingleTalent(kungfuname, TalentName)
+    correct = {}
     detail = data["kungfuLevel"]
-    correct = {str(i["level"]): i for i in detail}
+    for i in detail:
+        correct[str(i["level"])] = i
     for i in range(1, 13):
         Skills = correct[str(i)]["forceSkills"]
         Talents = correct[str(i)]["kungfuSkills"]

@@ -25,41 +25,51 @@ template_event = """
 world_boss = "<strong>世界首领：</strong><br>$boss"
 
 async def getCalendar():
-    api = f"{Config.jx3api_link}/data/active/list/calendar?num=7"
-    data = await get_api(api)
-    data = data["data"]["data"][-8:-1]
-    today = data[0]["date"]
-    week_list = generate_weekday_list(data[0]["week"])
-    week_list_html = []
-    for i in week_list:
-        week_list_html.append(f"<th>{i}</th>")
-    week_list_html = "\n".join(week_list_html)
-    days = []
-    events = []
-    for i in data:
-        day = i["day"]
-        days.append(template_calendar.replace("$day", day))
-        leader = ""
-        if "leader" in list(i):
-            leader = "、".join(i["leader"])
-            leader = "\n" + world_boss.replace("$boss", leader)
-        war = i["war"][2:]
-        camp = i["orecar"]
-        battle = i["battle"]
-        school = i["school"]
-        rescue = i["rescue"]
-        pet = "、".join(i["luck"])
-        events.append(template_event.replace("$war", war).replace("$camp", camp).replace("$battle", battle).replace("$school", school).replace("$rescue", rescue).replace("$pet", pet).replace("$leader", leader))
-    saohua = "严禁将蓉蓉机器人与音卡共存，一经发现永久封禁！蓉蓉是抄袭音卡的劣质机器人！"
+    final_url = f"{Config.jx3api_link}/view/active/list/calendar?num=7&nickname={bot}"
+    data = await get_api(final_url)
+    if data["code"] == 404:
+        return ["接口404错误，请联系管理员！"]
+    if data["code"] == 403:
+        return ["接口403错误，请联系管理员！"]
+    return data["data"]["url"]
+
     
-    appinfo = f" · 活动日历 · 自{today}起7天"
-    final_days = "\n".join(days)
-    final_events = "\n".join(events)
-    html = read(VIEWS + "/jx3/celebrations/calendar.html")
-    font = ASSETS + "/font/custom.ttf"
-    html = html.replace("$customfont", font).replace("$datecontent", final_days).replace("$eventcontent", final_events).replace("$randomsaohua", saohua).replace("$appinfo", appinfo).replace("$tablehead", week_list_html)
-    final_html = CACHE + "/" + get_uuid() + ".html"
-    write(final_html, html)
-    final_path = await generate(final_html, False, "table", False)
-    return Path(final_path).as_uri()
+#async def getCalendar():
+#    api = f"{Config.jx3api_link}/data/active/list/calendar?num=7"
+#    data = await get_api(api)
+#    data = data["data"]["data"][-8:-1]
+#    today = data[0]["date"]
+#    week_list = generate_weekday_list(data[0]["week"])
+#    week_list_html = []
+#    for i in week_list:
+#        week_list_html.append(f"<th>{i}</th>")
+#    week_list_html = "\n".join(week_list_html)
+#    days = []
+#    events = []
+#    for i in data:
+#        day = i["day"]
+#        days.append(template_calendar.replace("$day", day))
+#        leader = ""
+#        if "leader" in list(i):
+#            leader = "、".join(i["leader"])
+#            leader = "\n" + world_boss.replace("$boss", leader)
+#        war = i["war"][2:]
+#        camp = i["orecar"]
+#        battle = i["battle"]
+#        school = i["school"]
+#        rescue = i["rescue"]
+#        pet = "、".join(i["luck"])
+#        events.append(template_event.replace("$war", war).replace("$camp", camp).replace("$battle", battle).replace("$school", school).replace("$rescue", rescue).replace("$pet", pet).replace("$leader", leader))
+#    saohua = await get_api(f"{Config.jx3api_link}/data/saohua/random")
+#    saohua = saohua["data"]["text"]
+#    appinfo = f" · 活动日历 · 自{today}起7天"
+#    final_days = "\n".join(days)
+#    final_events = "\n".join(events)
+#    html = read(VIEWS + "/jx3/celebrations/calendar.html")
+#    font = ASSETS + "/font/custom.ttf"
+#    html = html.replace("$customfont", font).replace("$datecontent", final_days).replace("$eventcontent", final_events).replace("$randomsaohua", saohua).replace("$appinfo", appinfo).replace("$tablehead", week_list_html)
+#    final_html = CACHE + "/" + get_uuid() + ".html"
+#    write(final_html, html)
+#    final_path = await generate(final_html, False, "table", False)
+#    return Path(final_path).as_uri()
         

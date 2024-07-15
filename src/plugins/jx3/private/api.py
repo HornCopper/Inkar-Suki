@@ -13,12 +13,21 @@ def get_headers(application_type: str) -> dict:
     return headers
 
 
-async def get_url_with_token(app: str) -> dict:
-    if ikst == "":
-        raise KeyError("Unmatched the token to Inkar-Suki offical API.")
-    api = "https://inkar-suki.codethink.cn/api"
-    data = await post_url(url=api, headers=get_headers(app))
-    return json.loads(data)["url"]
+#async def get_url_with_token(app: str) -> dict:
+#    if ikst == "":
+#        raise KeyError("Unmatched the token to Inkar-Suki offical API.")
+#    api = "https://inkar-suki.codethink.cn/api"
+#    data = await post_url(url=api, headers=get_headers(app))
+#    return json.loads(data)["url"]
+
+async def get_url_monster_(args: Message = CommandArg()):
+    if token is None:
+        return [PROMPT_NoToken]
+    final_url = f"{Config.jx3api_link}/view/active/monster?token={token}&browser=1"
+    data = await get_api(final_url)
+    if data["code"] == 400:
+        return ["唔……百战接口尚在维护中！"]
+    return data["data"]["url"]
 
 template = """
 <tr>
@@ -70,8 +79,8 @@ async def get_dilu_data():
     content = "\n".join(table)
     html = read(VIEWS + "/jx3/dilu/dilu.html")
     font = ASSETS + "/font/custom.ttf"
-    saohua = "严禁将蓉蓉机器人与音卡共存，一经发现永久封禁！蓉蓉是抄袭音卡的劣质机器人！"
-    
+    saohua = await get_api(f"{Config.jx3api_link}/data/saohua/random")
+    saohua = saohua["data"]["text"]
     appinfo_time = convert_time(getCurrentTime(), "%H:%M:%S")
     html = html.replace("$customfont", font).replace("$tablecontent", content).replace(
         "$randomsaohua", saohua).replace("$appinfo", f"的卢统计 · {appinfo_time}")

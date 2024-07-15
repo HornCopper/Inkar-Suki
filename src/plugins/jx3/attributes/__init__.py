@@ -3,7 +3,7 @@ from src.plugins.sign import Sign
 from .api import *
 from .v4 import *
 
-addritube_v1 = on_command("jx3_addritube", aliases={"属性v1", "查装v1"}, force_whitespace=True, priority=5)
+addritube_v1 = on_command("jx3_addritube", aliases={"属性", "查装"}, force_whitespace=True, priority=5)
 
 @addritube_v1.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
@@ -31,7 +31,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
         data = await get_content(data)
         await addritube_v1.finish(ms.image(data))
 
-addritube_v2 = on_command("jx3_addritube_v2", aliases={"属性", "查装", "属性v2", "查装v2"}, force_whitespace=True, priority=5)
+addritube_v2 = on_command("jx3_addritube_v2", aliases={"属性v2", "查装v2"}, force_whitespace=True, priority=5)
 
 @addritube_v2.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):

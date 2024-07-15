@@ -66,8 +66,8 @@ async def get_monsters_map():
     start = re.sub(r"\..+\Z", "", map_data["data"]["start"].replace("T", " ")).split(" ")[0]
     html = read(VIEWS + "/jx3/monster/monster.html")
     font = ASSETS + "/font/custom.ttf"
-    saohua = "严禁将蓉蓉机器人与音卡共存，一经发现永久封禁！蓉蓉是抄袭音卡的劣质机器人！"
-    
+    saohua = await get_api(f"{Config.jx3api_link}/data/saohua/random")
+    saohua = saohua["data"]["text"]
     appinfo_time = convert_time(getCurrentTime(), "%H:%M:%S")
     appinfo = f"自{start}起7天 · 当前时间：{appinfo_time}<br>{saohua}"
     html = html.replace("$content", "\n".join(content)).replace(

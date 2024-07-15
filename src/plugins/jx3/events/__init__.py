@@ -9,6 +9,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     if args.extract_plain_text() != "":
         return
     image = await getChutianImg()
+    image = get_content_local(image)
     await cts.finish(ms.image(image))
 
 ycs = on_command("jx3_yuncong", aliases={"云从社"}, force_whitespace=True, priority=5)
@@ -18,6 +19,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     if args.extract_plain_text() != "":
         return
     image = await getYuncongImg()
+    image = get_content_local(image)
     await ycs.finish(ms.image(image))
 
 zhue_ = on_command("jx3_zhue", aliases={"诛恶"}, force_whitespace=True, priority=5)
@@ -29,4 +31,5 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
         await zhue_.finish(PROMPT_ServerNotExist)
     else:
         image = await getZhueRecord(server)
+        image = get_content_local(image)
         await zhue_.finish(ms.image(image))

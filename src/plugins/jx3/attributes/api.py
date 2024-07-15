@@ -27,6 +27,8 @@ async def addritube_(server: str = None, name: str = None, group_id: str = None)
         return ["唔，该玩家隐藏了信息。"]
     if data["code"] == 403 and data["msg"] == "仅互关好友可见":
         return ["仅互关好友可见哦~"]
+    if data["code"] == 406 and data["msg"] == "ticket is invalid!":
+        return ["推栏token失效啦！请联系管理员更换！"]
     return data["data"]["url"]
 
 

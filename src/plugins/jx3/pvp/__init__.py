@@ -60,17 +60,17 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
     arg = args.extract_plain_text().split(" ")
     if arg[0] not in ["22", "33", "55"]:
         await arena_s.finish("唔……名剑模式只接受22、33、55！")
-    data = await arena_stastic(mode=arg[1])
+    data = await arena_stastic(mode=arg[0])
     if isinstance(data, list):
         await arena_s.finish(data[0])
     else:
         data = await get_content(data)
         await arena_s.finish(ms.image(data))
 
-lks = on_command("jx3_lks", aliases={"烂柯山"}, force_whitespace=True, priority=5)
+#lks = on_command("jx3_lks", aliases={"烂柯山"}, force_whitespace=True, priority=5)
 
-@lks.handle()
-async def _(event: GroupMessageEvent):
-    img = await getLKSImage()
-    data = get_content_local(img)
-    await lks.finish(ms.image(data))
+#@lks.handle()
+#async def _(event: GroupMessageEvent):
+#    img = await getLKSImage()
+#    data = get_content_local(img)
+#    await lks.finish(ms.image(data))

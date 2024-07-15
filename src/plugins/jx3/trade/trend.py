@@ -1,4 +1,4 @@
-from src.tools.basic import *
+from .wufeng import *
 
 # 施工中……
 # def delete_binded(raw: list):

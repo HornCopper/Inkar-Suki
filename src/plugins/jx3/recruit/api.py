@@ -112,8 +112,8 @@ async def recruit_v2(server: str, actvt: str = "", local: bool = False, filter: 
             break
     table ="\n".join(contents)
     html = read(VIEWS + "/jx3/recruit/recruit.html")
-    saohua = "严禁将蓉蓉机器人与音卡共存，一经发现永久封禁！蓉蓉是抄袭音卡的劣质机器人！"
-    
+    saohua = await get_api(f"{Config.jx3api_link}/data/saohua/random")
+    saohua = saohua["data"]["text"]
     html = html.replace("$customfont", font).replace("$appinfo", appinfo).replace("$recruitcontent", table).replace("$randomsaohua", saohua)
     final_html = CACHE + "/" + get_uuid() + ".html"
     write(final_html, html)

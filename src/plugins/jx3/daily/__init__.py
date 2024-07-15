@@ -10,22 +10,24 @@ import datetime
 
 jx3_cmd_daily = on_command("jx3_daily", aliases={"日常"}, force_whitespace=True, priority=5)
 @jx3_cmd_daily.handle()
-async def _(event: GroupMessageEvent):
+async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     """
     查询日常。
 
     Notice：每个服务器的日常相同，仅美人图有可能存在不同。
 
     Example：-日常
-    Example：-周常
     """
-    info = await daily_()
+    server = args.extract_plain_text()
+#    server = server_mapping(server, str(event.group_id))
+    server = server_mapping(server, group_id=event.group_id)
+    info = await daily_(server)
     await jx3_cmd_daily.finish(info)
 
 @scheduler.scheduled_job("cron", hour="8", minute="30")
 async def run_at_8_30():
     msg = await daily_()
-    msg = "早安！音卡为您送上今天的日常：\n" + msg
+    msg = "早安！菲佣玛丽为您送上今天的日常：\n" + msg
     bots = get_bots()
     groups = os.listdir(DATA)
     group = {}
@@ -63,7 +65,7 @@ async def boss():
                 if "世界BOSS" in getGroupData(str(group_id), "subscribe"):
                     await bots[x].call_api("send_group_msg", group_id=int(group_id), message=msg)
 
-@scheduler.scheduled_job("cron", hour="19", minute="30")
+@scheduler.scheduled_job("cron", hour="19", minute="20")
 async def small_gf():
     if datetime.date.today().weekday() in [1, 3]:
         activity = "逐鹿中原"

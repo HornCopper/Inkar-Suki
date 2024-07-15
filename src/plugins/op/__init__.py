@@ -11,7 +11,7 @@ op = on_command("setop", aliases={"admin", "setadmin"}, force_whitespace=True, p
 
 
 @op.handle()
-async def _(bot: Bot, event: Event, args: Message = CommandArg()):
+async def handle_first_receive(bot: Bot, event: Event, args: Message = CommandArg()):
     if args.extract_plain_text() == "":
         return
     if not checker(str(event.user_id), 10):

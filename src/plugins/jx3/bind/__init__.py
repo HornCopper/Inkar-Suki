@@ -17,7 +17,7 @@ def server_bind(group_id: str, server: str):
 jx3_cmd_server_bind = on_command("jx3_bind", aliases={"绑定", "绑定区服"}, force_whitespace=True, priority=5)
 
 @jx3_cmd_server_bind.handle()
-async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
+async def jx3_server_bind(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
     personal_data = await bot.call_api("get_group_member_info", group_id = event.group_id, user_id = event.user_id, no_cache = True)
     group_admin = personal_data["role"] in ["owner", "admin"]
     robot_admin = checker(str(event.user_id), 8)

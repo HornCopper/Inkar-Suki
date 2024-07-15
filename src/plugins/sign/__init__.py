@@ -59,7 +59,7 @@ sign_ = on_command("签到", aliases={"打卡"}, force_whitespace=True, priority
 
 
 @sign_.handle()
-async def _(event: Event, args: Message = CommandArg()):
+async def sign(event: Event, args: Message = CommandArg()):
     if args.extract_plain_text() != "":
         return
     if sign_main.wsigned(event.user_id):
@@ -73,7 +73,7 @@ coin_ = on_command("金币", aliases={"余额"}, force_whitespace=True, priority
 
 
 @coin_.handle()
-async def _(event: Event, args: Message = CommandArg()):
+async def check_balance(event: Event, args: Message = CommandArg()):
     if args.extract_plain_text() != "":
         return
     coin__ = Sign.get_coin(event.user_id)
@@ -113,24 +113,6 @@ async def _(event: Event, args: Message = CommandArg()):
         await reducec.finish("唔……参数需要是数字哦~")
     Sign.reduce(arg[0], arg[1])
     await reducec.finish("已向该账户扣除了" + arg[1] + "枚金币！")
-
-tradec = on_command("交易金币", force_whitespace=True, priority=5)
-
-@tradec.handle()
-async def _(event: Event, args: Message = CommandArg()):
-    if args.extract_plain_text() == "":
-        return
-    arg = args.extract_plain_text().split(" ")
-    if len(arg) != 2:
-        await tradec.finish("唔……参数数量不正确哦~")
-    if not checknumber(arg[0]) or not checknumber(arg[1]):
-        await tradec.finish("唔……参数需要是数字哦~")
-    if Sign.get_coin(str(event.user_id)) < int(arg[1]):
-        await tradec.finish("唔……你没有那么多的金币！")
-    else:
-        Sign.reduce(str(event.user_id), int(arg[1]))
-        Sign.add(str(arg[0]), int(arg[1]))
-        await tradec.finish("已成功将" + arg[1] + "枚金币从您的账户转到" + str(arg[0]) + "的账户！")
 
 @scheduler.scheduled_job("cron", hour="7")
 async def clean_data():

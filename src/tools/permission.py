@@ -11,14 +11,25 @@ def get_path(path: str) -> str:
 TOOLS = get_path("tools")
 
 def judge(qqnumber):
-    with open(TOOLS + "/permission.json", mode="r") as file:
-        json_ = json.loads(file.read())
-    return qqnumber in json_
+    file = open(TOOLS + "/permission.json", mode="r")
+    json_ = json.loads(file.read())
+    file.close()
+    if qqnumber not in json_:
+        return False
+    else:
+        return True
 
 def checker(qqnumber: str, score: int):
-    with open(TOOLS + "/permission.json", mode="r") as file:
-        json_ = json.loads(file.read())
-    return False if qqnumber not in json_ else int(json_[qqnumber]) >= score
+    file = open(TOOLS + "/permission.json", mode="r")
+    json_ = json.loads(file.read())
+    file.close()
+    if qqnumber not in json_:
+        return False
+    else:
+        if not (int(json_[qqnumber]) >= score):
+            return False
+        else:
+            return True
 
 
 def error(score):

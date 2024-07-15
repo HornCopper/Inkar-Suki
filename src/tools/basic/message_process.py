@@ -23,9 +23,9 @@ async def _(bot: Bot, event: Event, matcher: Matcher, exception: Optional[Except
         return
     if exception:
         if event.message_type == "group":
-            await bot.call_api("send_group_msg", group_id=event.group_id, message=f"呜……音卡处理消息中遇到了代码错误，请将本消息告知开发者！\n{exception.__class__}: {exception}\n原始命令：\n{event.raw_message}\n特别提示：如果是属性报错，可以尝试使用属性v1或者属性v4！")
+            await bot.call_api("send_group_msg", group_id=event.group_id, message=f"处理消息中遇到了代码错误，请将本消息告知开发者！\n{exception.__class__}: {exception}\n原始命令：\n{event.raw_message}")
         if event.message_type == "private":
-            await bot.call_api("send_private_msg", user_id=event.user_id, message=f"呜……音卡处理消息中遇到了代码错误，请将本消息告知开发者！\n{exception.__class__}: {exception}\n原始命令：\n{event.raw_message}")
+            await bot.call_api("send_private_msg", user_id=event.user_id, message=f"处理消息中遇到了代码错误，请将本消息告知开发者！\n{exception.__class__}: {exception}\n原始命令：\n{event.raw_message}")
 
 @run_preprocessor
 async def _(cmd = RawCommand()):
@@ -108,4 +108,4 @@ async def _(bot: Bot, event: GroupMessageEvent, matcher: Matcher):
 async def _(event: PrivateMessageEvent):
     if str(event.user_id) in Config.bot:
         return
-    await preprocess.finish("呜喵？如果你想要音卡去你的群聊一起玩的话，请前往我们的用户群找我哦，群号为：650495414\n另附：如果正在寻找文档，请点击下方链接前往：\nhttps://inkar-suki.codethink.cn/Inkar-Suki-Docs/#/\n如果愿意给音卡赞助，还可以点击下面的链接支持音卡：\nhttps://inkar-suki.codethink.cn/Inkar-Suki-Docs/#/donate")
+    await preprocess.finish("Hello World!")

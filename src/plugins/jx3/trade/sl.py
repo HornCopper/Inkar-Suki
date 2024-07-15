@@ -57,6 +57,15 @@ def convertAttrs(raw: str):
     if fd(raw, "招") or fd(raw, "破破"):
         more.append("破招")
     
+    #if fd(raw, "破招") or fd(raw, "破防") or fd(raw, "破破"):
+    #    more.append("破招")
+    #    more.append("破防")
+    #elif fd(raw, "招"):
+    #    more.append("破招")
+    #elif fd(raw, "破") and not fd(raw, "纯破") and not fd(raw, "破招"):
+   #     more.append("破防")
+
+
     if fd(raw, "无") and not fd(raw, "纯无"):
         more.append("无双")
     

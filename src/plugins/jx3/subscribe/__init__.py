@@ -1,8 +1,9 @@
 from src.tools.basic import *
+from nonebot.rule import to_me
 
 from .about import *
 
-subscribe_enable = on_command("jx3_subscribe", aliases={"订阅", "开启"}, force_whitespace=True, priority=5)
+subscribe_enable = on_command("jx3_subscribe", aliases={"订阅", "开启"}, rule=to_me(), force_whitespace=True, priority=5)
 
 @subscribe_enable.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
@@ -29,7 +30,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
         setGroupData(str(event.group_id), "addtions", currentAddtion)
         await subscribe_enable.finish("订阅成功！\n可使用“关于”查看本群详细信息！")
 
-subscribe_disable = on_command("jx3_unsubscribe", aliases={"退订", "关闭"}, force_whitespace=True, priority=5)
+subscribe_disable = on_command("jx3_unsubscribe", aliases={"退订", "关闭"}, rule=to_me(), force_whitespace=True, priority=5)
 
 @subscribe_disable.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
@@ -63,4 +64,5 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
     if args.extract_plain_text() != "":
         return
     about_img = await generateGroupInfo(bot, str(event.group_id))
+    about_img = get_content_local(about_img)
     await info.finish(ms.image(about_img))

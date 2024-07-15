@@ -24,12 +24,13 @@ async def _(event: GroupMessageEvent, state: T_State, args: Message = CommandArg
         image = data[0]
         state["links"] = data[1]
         state["floors"] = data[2]
+        image = get_content_local(image)
         await dh_.send(ms.image(image))
         return
     else:
         await dh_.finish(data)
 
-@dh_.got("num", prompt="回复标题前方的序号，音卡就可以给你链接啦！")
+@dh_.got("num", prompt="请回复标题前方的序号，我就可以给你链接啦！")
 async def _(event: GroupMessageEvent, state: T_State, num: Message = Arg()):
     num = num.extract_plain_text()
     if not checknumber(num):
@@ -64,12 +65,13 @@ async def _(event: GroupMessageEvent, state: T_State, args: Message = CommandArg
         image = data[0]
         state["links"] = data[1]
         state["floors"] = data[2]
+        image = get_content_local(image)
         await wg_.send(ms.image(image))
         return
     else:
         await wg_.finish(data)
 
-@wg_.got("num", prompt="回复标题前方的序号，音卡就可以给你链接啦！")
+@wg_.got("num", prompt="请回复标题前方的序号，我可以给你链接啦！")
 async def _(event: GroupMessageEvent, state: T_State, num: Message = Arg()):
     num = num.extract_plain_text()
     if not checknumber(num):
