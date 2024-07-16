@@ -6,7 +6,7 @@ async def api_recruit(server: str, copy: str = ""):  # 团队招募 <服务器> 
     server = server_mapping(server)
     if not server:
         return [PROMPT_ServerNotExist]
-    final_url = f"{Config.jx3api_link}/view/member/recruit?token={token}&server={server}&nickname={bot}&chrome=1&keyword="
+    final_url = f"{Config.jx3.api.url}/view/member/recruit?token={token}&server={server}&nickname={bot}&chrome=1&keyword="
     if copy != "":
         final_url = final_url + copy
     data = await get_api(final_url)
@@ -72,7 +72,7 @@ async def recruit_v2(server: str, actvt: str = "", local: bool = False, filter: 
     server = server_mapping(server)
     if not server:
         return [PROMPT_ServerNotExist]
-    final_url = f"{Config.jx3api_link}/data/member/recruit?token={token}&server={server}"
+    final_url = f"{Config.jx3.api.url}/data/member/recruit?token={token}&server={server}"
     if actvt != "":
         final_url = final_url + "&keyword=" + actvt
     data = await get_api(final_url)

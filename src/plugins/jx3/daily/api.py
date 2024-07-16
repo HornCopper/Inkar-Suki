@@ -6,7 +6,7 @@ async def daily_(predict_day_num: int = 0):
     """
     @param predict_day_num 向后预测天数
     """
-    full_link = f"{Config.jx3api_link}/data/active/calendar?num={predict_day_num}"
+    full_link = f"{Config.jx3.api.url}/data/active/calendar?num={predict_day_num}"
     data = await get_api(full_link)
     data = data["data"]
     leader = "今日无世界首领"

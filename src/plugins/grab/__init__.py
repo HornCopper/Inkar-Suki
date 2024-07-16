@@ -34,7 +34,7 @@ img_drink_path = Path(os.path.join(os.path.dirname(__file__), "drink_pic"))
 all_file_drink_name = os.listdir(str(img_drink_path))
 
 # 载入bot名字
-Bot_NICKNAME = Config.name
+Bot_NICKNAME = Config.bot_basic.bot_name
 
 @del_dish.handle()
 async def got_dish_name(matcher: Matcher, state: T_State):

@@ -108,7 +108,7 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
 app: FastAPI = nonebot.get_app()
 
 
-@app.post(Config.web_path)
+@app.post(Config.github.web_path)
 async def recWebHook(req: Request):
     """
     接受`Webhook`的`POST`接口，路径来源于`config.py`。
@@ -123,7 +123,7 @@ async def recWebHook(req: Request):
     except Exception as e:
         msg = f"Event {event} has not been supported."
         return {"status": "500", "message": msg, "error": e}
-    bots: list = Config.bot
+    bots: list = Config.bot_basic.bot_notice
     for i in bots:
         bot = get_bot(i)
         await sendm(bot, message, repo)

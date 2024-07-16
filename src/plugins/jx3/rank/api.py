@@ -12,7 +12,7 @@ async def rank_(type_1: str, type_2: str, server: str, group_id: str):
         return [PROMPT_ServerNotExist]
     if token is None:
         return [PROMPT_NoToken]
-    final_url = f"{Config.jx3api_link}/view/rank/statistical?token={token}&nickname={bot}&server={server}&table={type_1}&name={type_2}&chrome=1"
+    final_url = f"{Config.jx3.api.url}/view/rank/statistical?token={token}&nickname={bot}&server={server}&table={type_1}&name={type_2}&chrome=1"
     if type_1 == "个人":
         if type_2 not in ["名士五十强", "老江湖五十强", "兵甲藏家五十强", "名师五十强", "阵营英雄五十强", "薪火相传五十强", "庐园广记一百强"]:
             return ["唔……类型不正确，请检查后重试~"]
@@ -34,7 +34,7 @@ async def rank_(type_1: str, type_2: str, server: str, group_id: str):
 async def sl_rank_(server: str, group_id: str, school: str = None):
     if server == "全服":
         # 全服试炼榜单
-        final_url = f"{Config.jx3api_link}/view/rank/server/statistical?table=试炼&name={school}&nickname={bot}"
+        final_url = f"{Config.jx3.api.url}/view/rank/server/statistical?table=试炼&name={school}&nickname={bot}"
         data = await get_api(final_url)
         if data["code"] == 400:
             return [PROMPT_ArgumentInvalid]
@@ -43,7 +43,7 @@ async def sl_rank_(server: str, group_id: str, school: str = None):
         return data["data"]["url"]
     else:
         # 区服试炼榜单
-        final_url = f"{Config.jx3api_link}/view/rank/statistical?token={token}&nickname={bot}&server={server}&table=试炼&name={school}&chrome=1"
+        final_url = f"{Config.jx3.api.url}/view/rank/statistical?token={token}&nickname={bot}&server={server}&table=试炼&name={school}&chrome=1"
         data = await get_api(final_url)
         if data["code"] == 400:
             return [PROMPT_ArgumentInvalid]

@@ -45,7 +45,7 @@ async def _(bot: Bot, event: NoticeEvent):
         return
     obj = event.user_id
     group = event.group_id
-    bots = Config.bot
+    bots = Config.bot_basic.bot_notice
     if str(obj) not in bots:
         msg = ms.at(obj) + " " + getGroupData(str(event.group_id), "welcome")
         await bot.call_api("send_group_msg", group_id=group, message=msg)
@@ -74,7 +74,7 @@ async def _(bot: Bot, event: NoticeEvent):
     """被禁言了"""
     if event.notice_type != "group_ban":
         return
-    if str(event.user_id) not in Config.bot:
+    if str(event.user_id) not in Config.bot_basic.bot_notice:
         return
     await bot.call_api("set_group_leave", group_id=event.group_id)
     await notice_and_ban(bot, event, "禁言")
@@ -91,8 +91,8 @@ async def _(bot: Bot, event: NoticeEvent):
 
 
 async def _(bot: Bot, event: NoticeEvent, action: str):
-    message = f"唔……{Config.name}在群聊（{event.group_id}）被{action}啦！\n操作者：{event.operator_id}，已自动封禁！"
-    for i in Config.notice_to[str(event.self_id)]:
+    message = f"唔……{Config.bot_basic.bot_name}在群聊（{event.group_id}）被{action}啦！\n操作者：{event.operator_id}，已自动封禁！"
+    for i in Config.bot_basic.bot_notice[str(event.self_id)]:
         await bot.call_api("send_group_msg", group_id=int(i), message=message)
     kicker = str(event.operator_id)
     if banned(kicker):
@@ -131,7 +131,7 @@ async def _(bot: Bot, event: NoticeEvent, action: str):
 #                f"邀请人：{user}\n"
 #                f"群号：{group}\n\n"
 #                f"> {btn_accept}    {btn_deny}")
-#         for i in Config.notice_to:
+#         for i in Config.bot_basic.bot_notice:
 #             # await bot.call_api("send_group_msg", group_id=int(i), message=msg)
 #             await send_markdown(msg, bot, session_id=int(i), message_type="group")
 
@@ -158,7 +158,7 @@ async def _(bot: Bot, event: RequestEvent):
         current.append(new)
         write(TOOLS + "/" + "application.json", json.dumps(current, ensure_ascii=False))
         msg = f"收到新的加群申请：\n邀请人：{user}\n群号：{group}"
-        for i in Config.notice_to[str(event.self_id)]:
+        for i in Config.bot_basic.bot_notice[str(event.self_id)]:
             await bot.call_api("send_group_msg", group_id=int(i), message=msg)
 
 
@@ -171,9 +171,9 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
         return
     arg_msg = args.extract_plain_text()
     permission = checker(str(event.user_id), 5)
+    personal_data = await bot.call_api("get_group_member_info", group_id=event.group_id, user_id=event.user_id, no_cache=True)
+    group_admin = personal_data["role"] in ["owner", "admin"]
     if not permission and not group_admin:
-        personal_data = await bot.call_api("get_group_member_info", group_id=event.group_id, user_id=event.user_id, no_cache=True)
-        group_admin = personal_data["role"] in ["owner", "admin"]
         await notice_cmd_welcome_msg_edit.finish(error(5))
     setGroupData(str(event.group_id), "welcome", arg_msg)
     await notice_cmd_welcome_msg_edit.finish("好啦，已经设置完成啦！")

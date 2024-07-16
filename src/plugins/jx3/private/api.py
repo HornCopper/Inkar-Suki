@@ -2,7 +2,7 @@ from src.tools.basic import *
 from src.constant.jx3 import brickl, goldl
 import re
 
-ikst = Config.inkarsuki_offical_apitoken
+ikst = Config.hidden.offcial_token
 
 
 def get_headers(application_type: str) -> dict:

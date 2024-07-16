@@ -11,7 +11,7 @@ from pathlib import Path
 from PIL import Image, ImageDraw, ImageFont
 from nonebot.log import logger
 
-ticket = Config.jx3_token
+ticket = Config.jx3.api.ticket
 
 async def addritube_(server: str = None, name: str = None, group_id: str = None):  # 查装 <服务器> <ID>
     if token == None or ticket == None:
@@ -19,7 +19,7 @@ async def addritube_(server: str = None, name: str = None, group_id: str = None)
     server = server_mapping(server, group_id)
     if not server:
         return [PROMPT_ServerNotExist]
-    final_url = f"{Config.jx3api_link}/view/role/attribute?ticket={ticket}&token={token}&nickname={bot}&server={server}&name={name}&chrome=1"
+    final_url = f"{Config.jx3.api.url}/view/role/attribute?ticket={ticket}&token={token}&nickname={bot}&server={server}&name={name}&chrome=1"
     data = await get_api(final_url)
     if data["code"] == 404:
         return ["唔……玩家不存在。"]
@@ -34,7 +34,7 @@ async def roleInfo_(server, player, group_id):
     server = server_mapping(server, group_id)
     if not token:
         return PROMPT_NoToken
-    final_url = f"{Config.jx3api_link}/data/role/detailed?token={token}&name={player}&server={server}"
+    final_url = f"{Config.jx3.api.url}/data/role/detailed?token={token}&name={player}&server={server}"
     if not server:
         return PROMPT_ServerNotExist
     data = await get_api(final_url)
@@ -53,8 +53,8 @@ async def roleInfo_(server, player, group_id):
     return msg
 
 
-async def post_url(url, proxy: dict = None, headers: str = None, timeout: int = 300, data: dict = None):
-    async with httpx.AsyncClient(proxies=proxy, follow_redirects=True) as client:
+async def post_url(url, headers: str = None, timeout: int = 300, data: dict = None):
+    async with httpx.AsyncClient(follow_redirects=True) as client:
         resp = await client.post(url, timeout=timeout, headers=headers, data=data)
         result = resp.text
         return result
@@ -79,8 +79,8 @@ def Zone_mapping(server, legacy: bool = False):
 
 
 async def get_uid(server, id):
-    token = Config.jx3api_globaltoken
-    url = f"{Config.jx3api_link}/data/role/detailed?token={token}&server={server}&name={id}"
+    token = Config.jx3.api.token
+    url = f"{Config.jx3.api.url}/data/role/detailed?token={token}&server={server}&name={id}"
     data = await get_api(url)
     if data["code"] != 200:
         return False

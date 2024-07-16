@@ -39,7 +39,7 @@ def getStatusString(status: int):
         return "可拾取"
 
 async def getLKSImage():
-    url = f"{Config.jx3api_link}/data/server/leader?token={token}"
+    url = f"{Config.jx3.api.url}/data/server/leader?token={token}"
     data = await get_api(url)
     tables = []
     for i in data["data"]:

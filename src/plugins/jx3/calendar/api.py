@@ -25,7 +25,7 @@ template_event = """
 world_boss = "<strong>世界首领：</strong><br>$boss"
 
 async def getCalendar():
-    api = f"{Config.jx3api_link}/data/active/list/calendar?num=7"
+    api = f"{Config.jx3.api.url}/data/active/list/calendar?num=7"
     data = await get_api(api)
     data = data["data"]["data"][-8:-1]
     today = data[0]["date"]

@@ -27,7 +27,7 @@ def checkUinStatus(uin: int):
     return False
     
 async def getSchool(name: str, server: str):
-    data = await get_api(f"{Config.jx3api_link}/data/role/detailed?token={token}&server={server}&name={name}")
+    data = await get_api(f"{Config.jx3.api.url}/data/role/detailed?token={token}&server={server}&name={name}")
     if data["code"] != 200:
         return False
     else:

@@ -6,7 +6,7 @@ async def sandbox_(server: str):
     if not server:
         return [PROMPT_ServerNotExist]
     if server is not None:
-        final_url = f"{Config.jx3api_link}/view/server/sand?token={token}&chrome=1&nickname={bot}&server={server}"
+        final_url = f"{Config.jx3.api.url}/view/server/sand?token={token}&chrome=1&nickname={bot}&server={server}"
     data = await get_api(final_url)
     if data["code"] == 400:
         return [PROMPT_ServerInvalid]
@@ -17,7 +17,7 @@ async def sandbox_v2_(server: str):
     if not server:
         return [PROMPT_ServerNotExist]
     if server is not None:
-        final_url = f"{Config.jx3api_link}/data/server/sand?token={token}&server={server}"
+        final_url = f"{Config.jx3.api.url}/data/server/sand?token={token}&server={server}"
     data = await get_api(final_url)
     if data["code"] == 400:
         return [PROMPT_ServerInvalid]

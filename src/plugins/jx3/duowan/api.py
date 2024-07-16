@@ -16,7 +16,7 @@ template_tongzhan = """
 </tr>"""
 
 async def getTongzhan(server: str):
-    api = f"{Config.jx3api_link}/data/duowan/statistical?token={token}&server={server}"
+    api = f"{Config.jx3.api.url}/data/duowan/statistical?token={token}&server={server}"
     data = await get_api(api)
     data = data["data"]
     tables = []

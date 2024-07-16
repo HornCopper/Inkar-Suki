@@ -19,7 +19,7 @@ template_awesome = """
 """
 
 async def getAwesomeRecord(uin: str):
-    api = f"{Config.jx3api_link}/data/fraud/detail?token={token}&uid={uin}&uin={uin}"
+    api = f"{Config.jx3.api.url}/data/fraud/detail?token={token}&uid={uin}&uin={uin}"
     data = await get_api(api)
     if data["data"]["records"] == []:
         return False

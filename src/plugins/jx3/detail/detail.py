@@ -5,7 +5,7 @@ from src.plugins.jx3.dungeon.api import post_url
 async def get_tuilan_data(url: str, params: dict = None):
     if params is None:
         params = {"ts": gen_ts()}
-    ticket = Config.jx3_token
+    ticket = Config.jx3.api.ticket
     params = format_body(params)
     xsk = gen_xsk(params)
     basic_headers = {
@@ -31,7 +31,7 @@ async def get_tuilan_data(url: str, params: dict = None):
 
 
 async def get_guid(server: str, name: str):
-    url = f"{Config.jx3api_link}/data/role/detailed?token={Config.jx3api_globaltoken}&server={server}&name={name}"
+    url = f"{Config.jx3.api.url}/data/role/detailed?token={Config.jx3.api.token}&server={server}&name={name}"
     data = await get_api(url)
     if data["code"] != 200:
         return False
@@ -171,7 +171,7 @@ template_each_dungeon_header = """
 """
 
 async def get_personal_guid(server: str, id: str):
-    final_url = f"{Config.jx3api_link}/data/role/detailed?token={token}&server={server}&name={id}"
+    final_url = f"{Config.jx3.api.url}/data/role/detailed?token={token}&server={server}&name={id}"
     data = await get_api(final_url)
     if data["code"] != 200:
         return False

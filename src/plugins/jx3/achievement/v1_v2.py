@@ -4,8 +4,8 @@ from src.plugins.jx3.dungeon.api import get_map, zone_mapping, mode_mapping
 from .box import *
 
 
-async def post_url(url, proxy: dict = None, headers: str = None, timeout: int = 300, data: dict = None):
-    async with httpx.AsyncClient(proxies=proxy, follow_redirects=True) as client:
+async def post_url(url, headers: str = None, timeout: int = 300, data: dict = None):
+    async with httpx.AsyncClient(follow_redirects=True) as client:
         resp = await client.post(url, timeout=timeout, headers=headers, data=data)
         result = resp.text
         return result
@@ -19,7 +19,7 @@ async def achievements_(server: str = None, name: str = None, achievement: str =
     server = server_mapping(server, group_id)
     if not server:
         return [PROMPT_ServerNotExist]
-    final_url = f"{Config.jx3api_link}/view/role/achievement?server={server}&name={achievement}&role={name}&nickname={bot}&ticket={ticket}&token={token}&chrome=1"
+    final_url = f"{Config.jx3.api.url}/view/role/achievement?server={server}&name={achievement}&role={name}&nickname={bot}&ticket={ticket}&token={token}&chrome=1"
     data = await get_api(final_url)
     if data["code"] == 400:
         return [PROMPT_ServerInvalid]
@@ -45,7 +45,7 @@ async def achi_v2(server: str = None, name: str = None, achievement: str = None,
     server = server_mapping(server, group_id)
     if not server:
         return [PROMPT_ServerNotExist]
-    personal_data_request = f"{Config.jx3api_link}/data/role/detailed?token={token}&server={server}&name={name}"
+    personal_data_request = f"{Config.jx3.api.url}/data/role/detailed?token={token}&server={server}&name={name}"
     personal_data = await get_api(personal_data_request)
     if personal_data["code"] != 200:
         guid = ""
@@ -115,7 +115,7 @@ async def zone_achi(server: str = None, name: str = None, zone: str = None, mode
     logger.info(name)
     if zone is False or mode is False:
         return ["唔……难度或名称输入有误。"]
-    personal_data_request = f"{Config.jx3api_link}/data/role/detailed?token={token}&server={server}&name={name}"
+    personal_data_request = f"{Config.jx3.api.url}/data/role/detailed?token={token}&server={server}&name={name}"
     personal_data = await get_api(personal_data_request)
     logger.info(personal_data_request)
     if personal_data["code"] != 200:

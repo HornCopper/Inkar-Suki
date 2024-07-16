@@ -54,8 +54,8 @@ class Jx3WebSocket:
         if self.connect:
             return None
 
-        ws_path = Config.jx3api_wslink
-        ws_token = Config.jx3api_wstoken
+        ws_path = Config.jx3.ws.url
+        ws_token = Config.jx3.ws.token
         if ws_token is None:
             ws_token = ""
         headers = {"token": ws_token}

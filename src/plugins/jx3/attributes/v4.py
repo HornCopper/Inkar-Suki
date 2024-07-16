@@ -16,7 +16,7 @@ template_attrs_v4 = """
 </tr>"""
 
 async def get_basic_info(server: str, name: str):
-    data = await get_api(f"{Config.jx3api_link}/data/role/detailed?token={token}&server={server}&name={name}")
+    data = await get_api(f"{Config.jx3.api.url}/data/role/detailed?token={token}&server={server}&name={name}")
     if data["code"] != 200:
         return 404
     else:

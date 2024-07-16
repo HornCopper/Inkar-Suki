@@ -8,7 +8,7 @@ from src.plugins.jx3.attributes import Zone_mapping
 
 async def zone(server, id):
     server = server_mapping(server)
-    final_url = f"{Config.jx3api_link}/view/role/teamCdList?token={token}&server={server}&name={id}&ticket={ticket}&nickname={bot}&chrome=1"
+    final_url = f"{Config.jx3.api.url}/view/role/teamCdList?token={token}&server={server}&name={id}&ticket={ticket}&nickname={bot}&chrome=1"
     data = await get_api(final_url)
     if data["code"] == 404:
         return ["玩家不存在或尚未在世界频道发言哦~"]
@@ -27,8 +27,8 @@ async def get_cd(server: str, sep: str):
     return msg
 
 
-async def post_url(url, proxy: dict = None, headers: str = None, timeout: int = 300, data: dict = None):
-    async with httpx.AsyncClient(proxies=proxy, follow_redirects=True) as client:
+async def post_url(url, headers: str = None, timeout: int = 300, data: dict = None):
+    async with httpx.AsyncClient(follow_redirects=True) as client:
         resp = await client.post(url, timeout=timeout, headers=headers, data=data)
         result = resp.text
         return result
@@ -187,10 +187,10 @@ filter_words = ["根骨", "力道", "元气", "身法", "体质"]
 async def generater(map, mode, boss):
     mode = mode_mapping(mode)
     if mode is False:
-        return [f"唔……难度似乎{Config.name}不能理解哦~"]
+        return [f"唔……难度似乎{Config.bot_basic.bot_name}不能理解哦~"]
     zone = zone_mapping(map)
     if zone is False:
-        return [f"唔……副本名称似乎{Config.name}不能理解哦~"]
+        return [f"唔……副本名称似乎{Config.bot_basic.bot_name}不能理解哦~"]
     try:
         data = await get_drops(zone, mode, boss)
     except KeyError:
@@ -371,7 +371,7 @@ available_ = """
 
 async def zone_v2(server, id):
     server = server_mapping(server)
-    details_request = f"{Config.jx3api_link}/data/role/detailed?token={token}&server={server}&name={id}"
+    details_request = f"{Config.jx3.api.url}/data/role/detailed?token={token}&server={server}&name={id}"
     details_data = await get_api(details_request)
     if details_data["code"] != 200:
         guid = ""

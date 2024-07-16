@@ -4,7 +4,7 @@ async def getSnack(school: str):
     actual_name = aliases(school)
     if not actual_name:
         return "唔……没有找到该心法！"
-    url = f"{Config.jx3api_link}/data/school/toxic?name={actual_name}"
+    url = f"{Config.jx3.api.url}/data/school/toxic?name={actual_name}"
     data = await get_api(url)
     if data["code"] == 400:
         return "唔……没有找到该心法！"

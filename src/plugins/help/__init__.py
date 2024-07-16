@@ -45,7 +45,7 @@ css = """
         text-align: left; 
     }
 </style>"""
-css = css.replace("customfont", Config.font_path)
+css = css.replace("customfont", ASSETS + "/font/custom.ttf")
 css2 = """
 <style>
     table {

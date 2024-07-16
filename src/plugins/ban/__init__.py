@@ -15,7 +15,7 @@ from nonebot.matcher import Matcher
 from nonebot.params import CommandArg, CommandStart
 
 
-leave_msg = f"{Config.name}要离开这里啦，{Config.name}还没有学会人类的告别语，但是数据库中有一句话似乎很适合现在使用——如果还想来找我的话，我一直在这里（650495414）。"
+leave_msg = f"{Config.bot_basic.bot_name}要离开这里啦，{Config.bot_basic.bot_name}还没有学会人类的告别语，但是数据库中有一句话似乎很适合现在使用——如果还想来找我的话，我一直在这里（650495414）。"
 
 add_ = """“假如再无法遇见你，祝你早安、午安和晚安。”
 ——《楚门的世界》"
@@ -41,7 +41,7 @@ async def _(bot: Bot, event: Event, args: Message = CommandArg()):
         await ban.finish(error(10))
     sb = args.extract_plain_text()
     self_protection = False
-    if sb in Config.owner:
+    if sb in Config.bot_basic.bot_owner:
         await ban.send("不能封禁机器人主人，这么玩就不好了，所以我先把你ban了QwQ")
         sb = str(event.user_id)
         self_protection = True
@@ -102,9 +102,9 @@ async def _(bot: Bot, event: Event, args: Message = CommandArg()):
     personal_data = await bot.call_api("get_group_member_info", group_id=event.group_id, user_id=event.user_id, no_cache=True)
     user_permission = personal_data["role"] in ["owner", "admin"]
     if not (checker(str(event.user_id), 10) or user_permission):
-        await dismiss.finish(f"唔……只有群主或管理员才能移除{Config.name}哦~")
+        await dismiss.finish(f"唔……只有群主或管理员才能移除{Config.bot_basic.bot_name}哦~")
     else:
-        await dismiss.send(f"确定要让{Config.name}离开吗？如果是，请再发送一次“移除音卡”。")
+        await dismiss.send(f"确定要让{Config.bot_basic.bot_name}离开吗？如果是，请再发送一次“移除音卡”。")
 
 
 @dismiss.got("confirm")
@@ -112,8 +112,8 @@ async def _(bot: Bot, event: Event, confirm: Message = Arg()):
     u_input = confirm.extract_plain_text()
     if u_input == "移除音卡":
         await dismiss.send(leave_msg)
-        for i in Config.notice_to[str(event.self_id)]:
-            await bot.call_api("send_group_msg", group_id=int(i), message=f"{Config.name}按他们的要求，离开了{event.group_id}。")
+        for i in Config.bot_basic.bot_notice[str(event.self_id)]:
+            await bot.call_api("send_group_msg", group_id=int(i), message=f"{Config.bot_basic.bot_name}按他们的要求，离开了{event.group_id}。")
         await bot.call_api("set_group_leave", group_id=event.group_id)
 
 
@@ -126,9 +126,9 @@ async def _(bot: Bot, event: Event, args: Message = CommandArg()):
     personal_data = await bot.call_api("get_group_member_info", group_id=event.group_id, user_id=event.user_id, no_cache=True)
     user_permission = personal_data["role"] in ["owner", "admin"]
     if not (checker(str(event.user_id), 10) or user_permission):
-        await recovery.finish(f"唔……只有群主或管理员才能重置{Config.name}哦~")
+        await recovery.finish(f"唔……只有群主或管理员才能重置{Config.bot_basic.bot_name}哦~")
     else:
-        await recovery.send(f"确定要重置{Config.name}数据吗？如果是，请再发送一次“重置音卡”。\n注意：所有本群数据将会清空，包括绑定和订阅，该操作不可逆！")
+        await recovery.send(f"确定要重置{Config.bot_basic.bot_name}数据吗？如果是，请再发送一次“重置音卡”。\n注意：所有本群数据将会清空，包括绑定和订阅，该操作不可逆！")
 
 import shutil
 

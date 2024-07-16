@@ -1,4 +1,4 @@
-src/tools/config/config.py
+src/tools/config/config.yml
 src/assets/jx3/
 src/assets/arcaea/
 src/plugins/grab/eat_pic/*

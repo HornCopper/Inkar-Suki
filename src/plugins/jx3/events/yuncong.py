@@ -8,7 +8,7 @@ def parity(num: int):
     return False
 
 async def getYuncongImg():
-    url = f"{Config.jx3api_link}/data/active/celebrity?season=3"
+    url = f"{Config.jx3.api.url}/data/active/celebrity?season=3"
     data = await get_api(url)
     tables = []
     for i in data["data"]:

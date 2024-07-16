@@ -1,7 +1,7 @@
 from src.tools.basic import *
 
 async def news_(token: str = None):
-    full_link = f"{Config.jx3api_link}/data/news/allnews?limit=5&token={token}"
+    full_link = f"{Config.jx3.api.url}/data/news/allnews?limit=5&token={token}"
     info = await get_api(full_link)
 
     def dtut(date, title, url, type_):

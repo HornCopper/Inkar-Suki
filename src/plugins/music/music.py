@@ -102,5 +102,5 @@ async def getLyricBelongToMusicInfo(lyric: str):
         return "没有找到关于该歌词的歌曲！"
     file = data["filename"]
     lyric_ = data["lyric"]
-    msg = f"{Config.name}为您匹配到最相似的结果是：\n歌曲：{file}\n{lyric_}\n数据来源：酷狗音乐"
+    msg = f"{Config.bot_basic.bot_name}为您匹配到最相似的结果是：\n歌曲：{file}\n{lyric_}\n数据来源：酷狗音乐"
     return msg

@@ -2,13 +2,13 @@ from src.tools.basic import *
 
 from .stastic import generate_bar_chart
 
-github_token = Config.ght
+github_token = Config.github.github_personal_token
 
 async def createIssue(uin: str, comment: str):
     title = "【反馈】Inkar Suki · 使用反馈"
     date = convert_time(getCurrentTime())
     msg = f"日期：{date}\n用户：{uin}\n留言：{comment}"
-    url = f"https://api.github.com/repos/{Config.repo_name}/issues"
+    url = f"https://api.github.com/repos/{Config.bot_basic.bot_repo}/issues"
     headers = {
         "Authorization": f"token {github_token}",
         "Accept": "application/vnd.github.v3+json"

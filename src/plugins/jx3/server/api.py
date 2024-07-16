@@ -2,7 +2,7 @@ from src.tools.basic import *
 
 
 async def server_status(server: str = None):
-    full_link = f"{Config.jx3api_link}/data/server/check"
+    full_link = f"{Config.jx3.api.url}/data/server/check"
     info = await get_api(full_link)
     data = info["data"]
     prefix = "开服状态："

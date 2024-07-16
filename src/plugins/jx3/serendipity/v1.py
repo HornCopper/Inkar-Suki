@@ -12,7 +12,7 @@ async def serendipity_(server: str = None, name: str = None, group_id: str = Non
     server = server_mapping(server, group_id)
     if not server:
         return [PROMPT_ServerNotExist]
-    final_url = f"{Config.jx3api_link}/view/luck/adventure?token={token}&nickname={bot}&ticket={ticket}&server={server}&name={name}&chrome=1"
+    final_url = f"{Config.jx3.api.url}/view/luck/adventure?token={token}&nickname={bot}&ticket={ticket}&server={server}&name={name}&chrome=1"
     data = await get_api(final_url)
     return data["data"]["url"]
 
@@ -25,9 +25,9 @@ async def statistical_(server: str = None, serendipity: str = None, group_id: st
     if not server:
         return [PROMPT_ServerNotExist]
     if serendipity is None:
-        final_url = f"{Config.jx3api_link}/view/luck/collect?token={token}&nickname={bot}&server={server}&chrome=1"
+        final_url = f"{Config.jx3.api.url}/view/luck/collect?token={token}&nickname={bot}&server={server}&chrome=1"
     else:
-        final_url = f"{Config.jx3api_link}/view/luck/statistical?token={token}&nickname={bot}&ticket={ticket}&server={server}&name={serendipity}&chrome=1"
+        final_url = f"{Config.jx3.api.url}/view/luck/statistical?token={token}&nickname={bot}&ticket={ticket}&server={server}&name={serendipity}&chrome=1"
     data = await get_api(final_url)
     return data["data"]["url"]
 
@@ -36,7 +36,7 @@ async def global_serendipity(name: str = None):  # 全服奇遇 [奇遇]
     if token is None:
         return [PROMPT_NoToken]
     if name is not None:
-        final_url = f"{Config.jx3api_link}/view/luck/server/adventure?name={name}&token={token}&nickname={bot}&chrome=1"
+        final_url = f"{Config.jx3.api.url}/view/luck/server/adventure?name={name}&token={token}&nickname={bot}&chrome=1"
     data = await get_api(final_url)
     return data["data"]["url"]
 
@@ -45,7 +45,7 @@ async def global_statistical(name: str = None):  # 全服统计 [奇遇]
     if token is None:
         return [PROMPT_NoToken]
     if name is not None:
-        final_url = f"{Config.jx3api_link}/view/luck/server/statistical?name={name}&token={token}&nickname={bot}"
+        final_url = f"{Config.jx3.api.url}/view/luck/server/statistical?name={name}&token={token}&nickname={bot}"
     data = await get_api(final_url)
     return data["data"]["url"]
 

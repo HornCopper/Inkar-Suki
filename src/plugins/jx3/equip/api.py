@@ -9,8 +9,8 @@ from src.tools.generate import get_uuid
 from ..attributes.api import kungfu_mapping, get_fs, local_save,  get_kf_icon, get_bg, data_process, enchant_mapping, judge_special_weapon
 
 
-async def post_url(url, proxy: dict = None, headers: str = None, timeout: int = 300, data: dict = None):
-    async with httpx.AsyncClient(proxies=proxy, follow_redirects=True) as client:
+async def post_url(url, headers: str = None, timeout: int = 300, data: dict = None):
+    async with httpx.AsyncClient(follow_redirects=True) as client:
         resp = await client.post(url, timeout=timeout, headers=headers, data=data)
         result = resp.text
         return result

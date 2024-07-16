@@ -64,7 +64,7 @@ async def _(bot: Bot, event: Event, args: Message = CommandArg()):
             await throw_in.finish(processd)
         else:
             id = processd[0]
-            for i in Config.notice_to[str(event.self_id)]:
+            for i in Config.bot_basic.bot_notice[str(event.self_id)]:
                 await bot.call_api("send_group_msg", group_id = int(i), message = f"用户「{str(event.user_id)}」举报了漂流瓶ID：「{str(id)}」")
             await report.finish("您的举报已投递至用户群，举报成功后会获得金币奖励！")
 

@@ -26,34 +26,7 @@ async def _(event: Event, args: Message = CommandArg()):
     else:
         await purge.finish("好的，已帮你清除图片缓存~")
 
-shutdown = on_command("shutdown", aliases={"poweroff"}, force_whitespace=True, priority=5)  # 关掉`Inkar-Suki`主程序
-
-
-@shutdown.handle()
-async def _(event: Event, args: Message = CommandArg()):
-    if args.extract_plain_text() == "":
-        return
-    if not checker(str(event.user_id), 10):
-        await shutdown.finish(error(10))
-    await shutdown.send("请稍候，正在关闭中……")
-    await shutdown.send("关闭成功！请联系Owner到后台手动开启哦~")
-    sys.exit(0)
-
-restart = on_command("restart", force_whitespace=True, priority=5)  # 重启`Inkar-Suki`，原理为`FastAPI`的文件监控自动重启
-
-
-@restart.handle()
-async def _(event: Event, args: Message = CommandArg()):
-    if args.extract_plain_text() == "":
-        return
-    if not checker(str(event.user_id), 5):
-        await restart.finish(error(5))
-    with open("./src/plugins/developer_tools/example.py", mode="w") as cache:
-        await restart.send("好啦，开始重启，整个过程需要些许时间，还请等我一下哦~")
-        cache.write("status=\"OK\"")
-
 echo = on_command("echo", force_whitespace=True, priority=5)  # 复读只因功能
-
 
 @echo.handle()
 async def _(event: Event, args: Message = CommandArg()):
@@ -63,7 +36,7 @@ async def _(event: Event, args: Message = CommandArg()):
         await echo.finish(error(9))
     await echo.finish(args)
 
-ping = on_command("ping", aliases={"-测试"}, force_whitespace=True, priority=5)  # 测试机器人是否在线
+ping = on_command("ping", force_whitespace=True, priority=5)  # 测试机器人是否在线
 
 @ping.handle()
 async def _(bot: Bot, event: Event, args: Message = CommandArg()):
@@ -89,7 +62,7 @@ post = on_command("post", force_whitespace=True, priority=5)  # 发送全域公�
 async def _(bot: Bot, event: Event, args: Message = CommandArg()):
     if args.extract_plain_text() == "":
         return
-    if str(event.user_id) not in Config.owner:
+    if str(event.user_id) not in Config.bot_basic.bot_owner:
         await post.finish("唔……只有机器人主人可以使用该命令哦~")
     cmd = args.extract_plain_text()
     groups = await bot.call_api("get_group_list")
@@ -99,21 +72,7 @@ async def _(bot: Bot, event: Event, args: Message = CommandArg()):
                            message=cmd
                            )
 
-call_api = on_command("call_api", aliases={"api"}, force_whitespace=True, priority=5)  # 调用`go-cqhttp`的`API`接口。
-
-
-@call_api.handle()
-async def _(event: Event, args: Message = CommandArg()):
-    if args.extract_plain_text() == "":
-        return
-    if not checker(str(event.user_id), 10):
-        await call_api.finish(error(10))
-    cmd = args.extract_plain_text()
-    result = await get_url(f"{Config.cqhttp}{cmd}")
-    await call_api.finish(f"已将您的接口调用完毕！\n{result}")
-
 git = on_command("-git", force_whitespace=True, priority=5)  # 调用`Git`，~~别问意义是什么~~
-
 
 @git.handle()
 async def _(event: Event, args: Message = CommandArg()):
@@ -138,7 +97,6 @@ async def _(event: Event, args: Message = CommandArg()):
     await git.finish(msg)
 
 voice = on_command("voice", force_whitespace=True, priority=5)  # 调用腾讯的语音TTS接口，生成语音。
-
 
 @voice.handle()
 async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):

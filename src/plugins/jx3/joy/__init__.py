@@ -14,7 +14,7 @@ async def jx3_saohua_random(args: Message = CommandArg()):
     """
     if args.extract_plain_text() != "":
         return
-    full_link = f"{Config.jx3api_link}/data/saohua/random"
+    full_link = f"{Config.jx3.api.url}/data/saohua/random"
     info = await get_api(full_link)
     msg = info["data"]["text"]
     await jx3_cmd_saohua_random.finish(msg)
@@ -31,7 +31,7 @@ async def jx3_saohua_tiangou(args: Message = CommandArg()):
     """
     if args.extract_plain_text() != "":
         return
-    full_link = f"{Config.jx3api_link}/data/saohua/content?token={token}"
+    full_link = f"{Config.jx3.api.url}/data/saohua/content?token={token}"
     info = await get_api(full_link)
     msg = info["data"]["text"]
     await jx3_cmd_saohua_tiangou.finish(msg)
@@ -46,7 +46,7 @@ watermelon = on_command("jx3_watermelon", aliases={"吃瓜"}, rule=to_me(), forc
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     tid = args.extract_plain_text()
     if tid == "":
-        url = f"{Config.jx3api_link}/data/tieba/random?subclass=818&token={token}&limit=1"
+        url = f"{Config.jx3.api.url}/data/tieba/random?subclass=818&token={token}&limit=1"
         data = await get_api(url)
         data = data["data"][0]
         name = data["name"]
