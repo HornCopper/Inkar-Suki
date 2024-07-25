@@ -36,11 +36,6 @@ async def jx3_saohua_tiangou(args: Message = CommandArg()):
     msg = info["data"]["text"]
     await jx3_cmd_saohua_tiangou.finish(msg)
 
-async def post_url(url: str, **kwargs):
-    async with httpx.AsyncClient(follow_redirects=False) as client:
-        resp = await client.post(url, **kwargs)
-        return resp.json()
-
 watermelon = on_command("jx3_watermelon", aliases={"吃瓜"}, rule=to_me(), force_whitespace=True, priority=5)
 @watermelon.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):

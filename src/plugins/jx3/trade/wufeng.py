@@ -17,7 +17,7 @@ def getAttrs(data: list):
     return attrs
 
 async def getData(name, quality):
-    url = f"https://node.jx3box.com/api/node/item/search?ids=&keyword={name}&client=std&MinLevel={quality}&MaxLevel={quality}&per=50&BindType=2"
+    url = f"https://node.jx3box.com/api/node/item/search?ids=&keyword={name}&client=std&MinLevel={quality}&MaxLevel={quality}&BindType=2"
     data = []
     getdata = await get_api(url)
     for x in getdata["data"]["data"]:

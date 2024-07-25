@@ -1,5 +1,4 @@
 import itertools
-import random
 
 from simpleeval import simple_eval
 

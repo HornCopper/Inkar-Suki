@@ -1,33 +1,27 @@
 import json
-import pathlib2
-import os
 
-tools_path = f"{os.getcwd()}/src/tools"
+from .data import group_db, Permission
 
-def get_path(path: str) -> str:
-    t = pathlib2.Path(tools_path)
-    return t.parent.joinpath(path).__str__()
-
-TOOLS = get_path("tools")
+def get_all_admin():
+    data: Permission = group_db.where_one(Permission(), default=Permission())
+    return data
 
 def judge(qqnumber):
-    with open(TOOLS + "/permission.json", mode="r") as file:
-        json_ = json.loads(file.read())
-    return qqnumber in json_
+    data = get_all_admin().permissions_list
+    return qqnumber in data
 
 def checker(qqnumber: str, score: int):
-    with open(TOOLS + "/permission.json", mode="r") as file:
-        json_ = json.loads(file.read())
-    return False if qqnumber not in json_ else int(json_[qqnumber]) >= score
-
+    data = get_all_admin()
+    data = data.permissions_list
+    return False if qqnumber not in data else int(data[qqnumber]) >= score
 
 def error(score):
     return f"唔……你权限不够哦，这条命令要至少{score}的权限哦~"
 
-
 def block(sb: str) -> bool:
-    with open(TOOLS + "/ban.json", mode="r") as cache:
-        for i in json.loads(cache.read()):
-            if i == sb:
-                return True
-        return False
+    data = get_all_admin()
+    data = data.permissions_list
+    for i in json.loads(data):
+        if i == sb:
+            return True
+    return False

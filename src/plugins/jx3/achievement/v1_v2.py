@@ -4,13 +4,6 @@ from src.plugins.jx3.dungeon.api import get_map, zone_mapping, mode_mapping
 from .box import *
 
 
-async def post_url(url, headers: str = None, timeout: int = 300, data: dict = None):
-    async with httpx.AsyncClient(follow_redirects=True) as client:
-        resp = await client.post(url, timeout=timeout, headers=headers, data=data)
-        result = resp.text
-        return result
-
-
 async def achievements_(server: str = None, name: str = None, achievement: str = None, group_id: str = None):
     if token is None:
         return [PROMPT_NoToken]

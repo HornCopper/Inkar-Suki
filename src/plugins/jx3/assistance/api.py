@@ -2,15 +2,15 @@ from src.tools.basic import *
 
 class Assistance:
     async def check_description(group: str, description: str):
-        file_content = json.loads(read(f"{DATA}/{group}/opening.json"))
-        for i in file_content:
+        opening: list = getGroupSettings(group, "opening")
+        for i in opening:
             if i["description"] == description:
                 return False
         return True
 
     async def create_group(group: str, description: str, creator: str):
         status = await Assistance.check_description(group, description)
-        if status == False:
+        if not status:
             return "开团失败，已经有相同的团队关键词！\n使用“团队列表”可查看本群目前正在进行的团队。"
         new = {
             "creator": creator,
@@ -19,10 +19,9 @@ class Assistance:
             "create_time": getCurrentTime(),
             "description": description
         }
-        now = json.loads(read(f"{DATA}/{group}/opening.json"))
-        now.append(new)
-        write(f"{DATA}/{group}/opening.json",
-              json.dumps(now, ensure_ascii=False))
+        opening: list = getGroupSettings(group, "opening")
+        opening.append(new)
+        setGroupSettings(group, "opening", opening)
         return "开团成功，团员可通过以下命令进行预定：\n预定 <团队关键词> <ID> <职业>\n上述命令使用时请勿带尖括号，职业请使用准确些的词语，避免使用“长歌”，“万花”等模棱两可的职业字眼，也可以是“躺拍”“老板”等词语。\n特别注意：团长请给自己预定，否则预定总人数将为26人！"
 
     async def apply_for_place(group: str, description: str, id: str, job: str, applyer: str):
@@ -32,8 +31,8 @@ class Assistance:
         if job in ["老板", "躺", "躺拍"]:
             job = "老板"
         else:
-            job = aliases(job)
-            if job is False:
+            job: Union[str, Literal[False]] = aliases(job)
+            if not job:
                 return f"唔……{Config.bot_basic.bot_name}暂时没办法识别您的职业，请检查一下呗？\n避免使用“长歌”“万花”“天策”等字眼，您可以使用“天策t”“奶咕”“qc”等准确些的词语方便理解哦~\n如果您使用的词语实在无法识别，请使用标准名称，例如“离经易道”。"
         job_icon = await Assistance.get_icon(job)
         new = {
@@ -53,7 +52,7 @@ class Assistance:
         status = await Assistance.check_apply(group, description, id)
         if status is False:
             return "唔……您似乎还没申请呢！"
-        now = json.loads(read(f"{DATA}/{group}/opening.json"))
+        now: list = getGroupSettings(group, "opening")
         for i in now:
             if i["description"] == description or now.index(i) == description:
                 for x in i["member"]:
@@ -62,31 +61,29 @@ class Assistance:
                             if y["apply"] != actor and i["creator"] != actor:
                                 return "请勿修改他人留坑！"
                             x.remove(y)
-                            write(f"{DATA}/{group}/opening.json",
-                                  json.dumps(now, ensure_ascii=False))
+                            setGroupSettings(group, "opening", now)
                             return "成功取消留坑！"
         return "取消失败，未知错误。"
 
     async def dissolve(group: str, description: str, actor: str):
-        now = json.loads(read(f"{DATA}/{group}/opening.json"))
+        now = getGroupSettings(group, "opening")
         for i in now:
             if i["description"] == description or now.index(i) == description:
                 if i["creator"] != actor:
                     return "非创建者无法解散团队哦~"
                 now.remove(i)
-                write(f"{DATA}/{group}/opening.json", json.dumps(now, ensure_ascii=False))
+                setGroupSettings(group, "opening", now)
                 return "解散团队成功！"
 
     async def storge(group: str, description: str, info: dict):
-        now = json.loads(read(f"{DATA}/{group}/opening.json"))
+        now = getGroupSettings(group, "opening")
         for i in now:
             if i["description"] == description or now.index(i) == description:
                 members = i["member"]
                 for x in members:
                     if len(x) != 5:
                         x.append(info)
-                        write(f"{DATA}/{group}/opening.json",
-                              json.dumps(now, ensure_ascii=False))
+                        setGroupSettings(group, "opening", now)
                         return True
                     else:
                         continue
@@ -99,7 +96,7 @@ class Assistance:
         return False
 
     async def check_apply(group: str, description: str, id: str):
-        file_content = json.loads(read(f"{DATA}/{group}/opening.json"))
+        file_content = getGroupSettings(group, "opening")
         for i in file_content:
             if i["description"] == description or file_content.index(i) == description:
                 for x in i["member"]:
@@ -119,7 +116,7 @@ class Assistance:
             return "D"
 
     async def generate_html(group: str, description):
-        now = json.loads(read(f"{DATA}/{group}/opening.json"))
+        now = getGroupSettings(group, "opening")
         for i in now:
             if i["description"] == description or now.index(i) == description:
                 colorList = await get_api("https://inkar-suki.codethink.cn/schoolcolors")

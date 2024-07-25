@@ -1,8 +1,4 @@
-from tabulate import tabulate
-
 from src.tools.basic import *
-from src.plugins.help import css
-from src.tools.generate import generate, get_uuid
 
 from .top100 import *
 

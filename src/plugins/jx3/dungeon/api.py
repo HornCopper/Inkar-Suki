@@ -2,7 +2,6 @@ import re
 
 from src.tools.basic import *
 from src.tools.generate import generate, get_uuid
-from src.plugins.help import css
 from src.plugins.jx3.attributes import Zone_mapping
 
 
@@ -25,14 +24,6 @@ async def get_cd(server: str, sep: str):
     time = data["date_str"]
     msg = f"「{server}」服务器上一次记录「{sep}」：\n{time}\n数据来源：@茗伊插件集"
     return msg
-
-
-async def post_url(url, headers: str = None, timeout: int = 300, data: dict = None):
-    async with httpx.AsyncClient(follow_redirects=True) as client:
-        resp = await client.post(url, timeout=timeout, headers=headers, data=data)
-        result = resp.text
-        return result
-
 
 async def get_map(name, mode):
     param = {

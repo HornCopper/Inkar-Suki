@@ -1,11 +1,5 @@
 from src.tools.basic import *
 
-from src.tools.generate import generate, get_uuid
-from src.plugins.help import css
-
-from bs4 import BeautifulSoup
-
-
 async def serendipity_(server: str = None, name: str = None, group_id: str = None):  # 奇遇 <服务器> <ID>
     if token is None:
         return [PROMPT_NoToken]

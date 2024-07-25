@@ -181,10 +181,7 @@ async def getSingleImg(name: str):
                 continue
             id = i["id"]
             itemAPIData = await get_api(f"https://next2.jx3box.com/api/item-price/{id}/logs?server={server}&limit=20")
-            if itemAPIData["data"]["logs"] == None:
-                continue
-            else:
-                new["data"] = itemAPIData["data"]
+            new["data"] = itemAPIData["data"]
             new["id"] = str(id)
             new["icon"] = f"https://icon.jx3box.com/icon/" + str(i["IconID"]) + ".png"
             new["name"] = i["Name"]

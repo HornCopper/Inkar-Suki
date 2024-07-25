@@ -18,8 +18,8 @@ template_subscribe = """
 async def generateGroupInfo(bot: Bot, group_id: str):
     subscribe_options = json.loads(read(PLUGINS + "/jx3/subscribe/options.json"))
     addtions_options = json.loads(read(PLUGINS + "/jx3/subscribe/addtions.json"))
-    current_subscribe = getGroupData(group_id, "subscribe")
-    current_addtions = getGroupData(group_id, "addtions")
+    current_subscribe = getGroupSettings(group_id, "subscribe")
+    current_addtions = getGroupSettings(group_id, "addtions")
     subscribe_contents = []
     addtions_contents = []
     for i in list(subscribe_options):

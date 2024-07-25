@@ -11,11 +11,13 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):  # 违禁�
     if not checker(str(event.user_id), 5):
         await banword.finish(error(5))
     if bw:
-        now = json.loads(read(TOOLS + "/banword.json"))
-        if bw in now:
+        current_data: BannedWordList = group_db.where_one(BannedWordList(), default=BannedWordList())
+        current_list = current_data.banned_word_list
+        if bw in current_list:
             await banword.finish("唔……封禁失败，已经封禁过了。")
-        now.append(bw)
-        write(TOOLS + "/banword.json", json.dumps(now, ensure_ascii=False))
+        current_list.append(bw)
+        current_data.banned_word_list = current_list
+        group_db.save(current_data)
         await banword.finish("已成功封禁词语！")
     else:
         await banword.finish("您封禁了什么？")
@@ -29,15 +31,16 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
         return
     if not checker(str(event.user_id), 5):
         await unbanword.finish(error(5))
-    cmd = args.extract_plain_text()
-    if cmd:
-        now = json.loads(read(TOOLS + "/banword.json"))
-        try:
-            now.remove(cmd)
-            write(TOOLS + "/banword.json",
-                  json.dumps(now, ensure_ascii=False))
+    bw = args.extract_plain_text()
+    if bw:
+        current_data: BannedWordList = group_db.where_one(BannedWordList(), default=BannedWordList())
+        current_list = current_data.banned_word_list
+        if bw in current_list:
+            current_list.remove(bw)
+            current_data.banned_word_list = current_list
+            group_db.save(current_data)
             await unbanword.finish("成功解封词语！")
-        except ValueError:
+        else:
             await unbanword.finish("您解封了什么？")
     else:
         await unbanword.finish("您解封了什么？")

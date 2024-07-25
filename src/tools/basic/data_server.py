@@ -1,5 +1,5 @@
 from src.tools.basic import *
-from .group_opeator import getGroupData
+from .group_opeator import getGroupSettings
 
 import json
 
@@ -39,7 +39,7 @@ def getGroupServer(group_id: str):
     """
     if not group_id:
         return None
-    group = getGroupData(group_id, "server")
+    group = getGroupSettings(group_id, "server")
     if not group:
         return None
     return group

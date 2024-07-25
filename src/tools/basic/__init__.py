@@ -19,6 +19,7 @@ from .data_server import server_mapping, getGroupServer, Zone_mapping
 from .message_process import *
 from .group_opeator import *
 from .spark import *
+from ..data import *
 
 from nonebot.adapters.onebot.v11 import MessageSegment as ms, Event, GroupMessageEvent, Bot
 from nonebot.adapters import Message
@@ -27,6 +28,8 @@ from nonebot import on_command, on, on_regex, on_request, on_notice, on_message
 from nonebot.typing import T_State
 from nonebot.matcher import Matcher
 from nonebot import get_driver
+
+from typing import List, Union, Any
 
 
 PROMPT_NoToken = "唔……该音卡实例没有填写JX3API的token，数据获取失败，请联系机器人主人！"
@@ -44,4 +47,3 @@ token = Config.jx3.api.token
 ticket = Config.jx3.api.ticket
 bot = "Inkar-Suki"
 device_id = ticket.split("::")[-1]
-

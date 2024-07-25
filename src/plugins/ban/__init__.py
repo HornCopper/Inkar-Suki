@@ -24,8 +24,10 @@ add_ = """“假如再无法遇见你，祝你早安、午安和晚安。”
 leave_msg = leave_msg + "\n" + add_
 
 def in_it(qq: str):
-    for i in json.loads(read(TOOLS + "/ban.json")):
-        if i == qq:
+    banned: BannedList = group_db.where_one(BannedList(), default=BannedList())
+    banned = banned.banned_list
+    for one in banned:
+        if one["uid"] == qq:
             return True
     return False
 
@@ -52,9 +54,13 @@ async def _(bot: Bot, event: Event, args: Message = CommandArg()):
     elif in_it(sb):
         return ban.finish("唔……全域封禁失败，这个人已经被封禁了。")
     else:
-        now = json.loads(read(TOOLS + "/ban.json"))
-        now.append(sb)
-        write(TOOLS + "/ban.json", json.dumps(now))
+        current: BannedList = group_db.where_one(BannedList(), default=BannedList())
+        current = current.banned_list
+        current.append({
+            "uid": sb,
+            "reason": ""
+        })
+        group_db.save(BannedList(**current))
         if self_protection:
             return
         await ban.finish(f"好的，已经全域封禁({sb})。")
@@ -75,18 +81,19 @@ async def _(bot: Bot, event: Event, args: Message = CommandArg()):
         await unban.finish("您输入了什么？")
     if in_it(sb) is False:
         await unban.finish("全域解封失败，并没有封禁此人哦~")
-    now = json.loads(read(TOOLS + "/ban.json"))
-    for i in now:
-        if i == sb:
-            now.remove(i)
-    write(TOOLS + "/ban.json", json.dumps(now))
+    current: BannedList = group_db.where_one(BannedList(), default=BannedList())
+    current = current.banned_list
+    for one in current:
+        if one["uid"] == sb:
+            current.remove(one)
+    group_db.save(BannedList(**current))
     await ban.finish(f"好的，已经全域解封({sb})。")
 
 
 @preprocess.handle()
 async def _(matcher: Matcher, event: Event):
-    info = json.loads(read(TOOLS + "/ban.json"))
-    if str(event.user_id) in info and not checker(str(event.user_id),10):
+    current: BannedList = group_db.where_one(BannedList(), default=BannedList())
+    if str(event.user_id) in current.banned_list and not checker(str(event.user_id),10):
         matcher.stop_propagation()
     else:
         pass
@@ -130,28 +137,11 @@ async def _(bot: Bot, event: Event, args: Message = CommandArg()):
     else:
         await recovery.send(f"确定要重置{Config.bot_basic.bot_name}数据吗？如果是，请再发送一次“重置音卡”。\n注意：所有本群数据将会清空，包括绑定和订阅，该操作不可逆！")
 
-import shutil
-
 @recovery.got("confirm")
 async def _(bot: Bot, event: Event, confirm: Message = Arg()):
     u_input = confirm.extract_plain_text()
     if u_input == "重置音卡":
-        if os.path.exists(DATA + "/" + str(event.group_id)):
-            shutil.rmtree(DATA + "/" + str(event.group_id))
-        group_id = str(event.group_id)
-        files = {
-            "blacklist.json": [],
-            "settings.json": {"server": "", "group": group_id, "subscribe": [], "addtions": [], "welcome": "欢迎入群！"},
-            "webhook.json": [],
-            "opening.json": [],
-            "wiki.json": {"startwiki":"","interwiki":[]},
-            "record.json": []
-        }
-        status = []
-        for i in list(files):
-            if os.path.exists(DATA + "/" + group_id + "/" + i):
-                status.append(True)
-                continue
-            status.append(False)
-            write(DATA + "/" + group_id + "/" + i, json.dumps(files[i]))
+        group_settings: GroupSettings = group_db.where_one(GroupSettings(), "group_id = ?", group_id = str(event.group_id), default=None)
+        group_settings = GroupSettings(id=group_settings.id, group_id=group_settings.group_id)
+        group_db.save(group_settings)
         await dismiss.send("重置成功！可以重新开始绑定本群数据了！")

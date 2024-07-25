@@ -53,13 +53,6 @@ async def roleInfo_(server, player, group_id):
     return msg
 
 
-async def post_url(url, headers: str = None, timeout: int = 300, data: dict = None):
-    async with httpx.AsyncClient(follow_redirects=True) as client:
-        resp = await client.post(url, timeout=timeout, headers=headers, data=data)
-        result = resp.text
-        return result
-
-
 def Zone_mapping(server, legacy: bool = False):
     if server in ["绝代天骄"]:
         return "电信区" if not legacy else "电信八区"

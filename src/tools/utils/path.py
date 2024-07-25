@@ -15,7 +15,3 @@ VIEWS = get_path("views")
 PLUGINS = get_path("plugins")
 CONSTANT = get_path("constant")
 TOOLS = tools_path
-
-common_data: str = "common"
-common_data_full: str = f"{DATA}/{common_data}/"
-"""DATA中的数据通用存储"""

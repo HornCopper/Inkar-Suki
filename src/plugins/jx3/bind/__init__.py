@@ -9,10 +9,7 @@ def server_bind(group_id: str, server: str):
         server = server_mapping(server)
         if not server:
             return [PROMPT_ServerNotExist]
-    path = f"{DATA}/{group_id}/settings.json"
-    now = json.loads(read(path))
-    now["server"] = server
-    write(path, json.dumps(now, ensure_ascii=False))
+    setGroupSettings(group_id, "server", server)
 
 jx3_cmd_server_bind = on_command("jx3_bind", aliases={"绑定", "绑定区服"}, force_whitespace=True, priority=5)
 

@@ -79,7 +79,7 @@ teamList = on_command("团队列表", priority=5, force_whitespace=True)
 
 @teamList.handle()
 async def _(event: GroupMessageEvent):
-    file_content = json.loads(read(f"{DATA}/{str(event.group_id)}/opening.json"))
+    file_content = getGroupSettings(str(event.group_id), "opening")
     if len(file_content) == 0:
         await teamList.finish("唔……本群没有任何团队！")
     msg = "本群有以下团队：\n"

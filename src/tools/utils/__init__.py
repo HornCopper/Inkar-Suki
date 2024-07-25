@@ -1,6 +1,6 @@
 from .common import *
 from .request import *
-from .global_path_cache import *
+from .path import *
 
 import os
 import random

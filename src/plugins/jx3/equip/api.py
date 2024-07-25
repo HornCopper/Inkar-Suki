@@ -9,20 +9,13 @@ from src.tools.generate import get_uuid
 from ..attributes.api import kungfu_mapping, get_fs, local_save,  get_kf_icon, get_bg, data_process, enchant_mapping, judge_special_weapon
 
 
-async def post_url(url, headers: str = None, timeout: int = 300, data: dict = None):
-    async with httpx.AsyncClient(follow_redirects=True) as client:
-        resp = await client.post(url, timeout=timeout, headers=headers, data=data)
-        result = resp.text
-        return result
-
-
 async def get_recommended_equips_list(forceId: str, condition):
     param = {
         "Kungfu": forceId,
         "EquipTags": condition,
         "Size": 10,
         "cursor": 0,
-        "matchSeasonId": "6629cd12ba3129001275fc58",
+        "matchSeasonId": "6629cd12ba3129001275fc58", # 赛季标识
         "ts": gen_ts()
     }
     param = format_body(param)

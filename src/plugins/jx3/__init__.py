@@ -23,11 +23,11 @@ async def _(event: RecvEvent):
     bots = get_bots()  
     for bot_name, bot_instance in bots.items():
         bot_groups = await bot_instance.call_api("get_group_list")
-        available_groups = [int(group["group_id"]) for group in bot_groups if str(group["group_id"]) in os.listdir(DATA)]
+        available_groups = [int(group["group_id"]) for group in bot_groups if str(group["group_id"]) in getAllGroups()]
         msg_type = message["type"]
         for group_id in available_groups:
-            group_data = getGroupData(str(group_id))
-            if msg_type not in getGroupData(str(group_id), "subscribe"):
+            group_data = getGroupSettings(str(group_id))
+            if msg_type not in getGroupSettings(str(group_id), "subscribe"):
                 continue
             if "server" not in message:
                 await bot_instance.call_api("send_group_msg", group_id=group_id, message=message["msg"])

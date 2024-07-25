@@ -6,6 +6,7 @@ from nonebot.log import logger
 from nonebot.matcher import Matcher
 from nonebot.message import run_preprocessor, run_postprocessor
 from nonebot.params import RawCommand
+
 from typing import Optional
 
 import os
@@ -14,8 +15,9 @@ import re
 import random
 
 from ..basic import DATA, write, Config, get_api, read, TOOLS
-
+from .group_opeator import getGroupSettings
 from .spark import chat_spark
+from ..data import group_db, Population, BannedWordList
 
 @run_postprocessor
 async def _(bot: Bot, event: Event, matcher: Matcher, exception: Optional[Exception], cmd = RawCommand()):
@@ -31,41 +33,16 @@ async def _(bot: Bot, event: Event, matcher: Matcher, exception: Optional[Except
 async def _(cmd = RawCommand()):
     if cmd == None:
         return
-    current_data = json.loads(read(TOOLS + "/population.json"))
-    if cmd not in current_data:
-        current_data[cmd] = 1
+    current_data: Population = group_db.where_one(Population(), default=Population())
+    current_populations = current_data.populations
+    if cmd not in current_populations:
+        current_populations[cmd] = 1
     else:
-        current_data[cmd] += 1
-    write(TOOLS + "/population.json", json.dumps(current_data, ensure_ascii=False))
-    
-    
-
-def getGroupData(group: str, key: str):
-    data = read(DATA + "/" + str(group) + "/settings.json")
-    if not data:
-        return False
-    else:
-        data = json.loads(data)
-    return data[key]
+        current_populations[cmd] += 1
+    current_data.populations = current_populations
+    group_db.save(current_data)
 
 preprocess = on_message(priority=0, block=False)
-
-"""
-new_path = f"{DATA}/{str(group_id)}"
-if os.path.exists(f"{new_path}/blacklist.json"):
-    return True
-os.mkdir(new_path)
-write(f"{new_path }/settings.json", "{\"group\":\"" + str(group_id) +
-        "\",\"server\":\"\",\"leader\":\"\",\"leaders\":[],\"name\":\"\",\"status\":false}")
-write(f"{new_path }/webhook.json", "[]")
-write(f"{new_path }/marry.json", "[]")
-write(f"{new_path }/banword.json", "[]")
-write(f"{new_path }/opening.json", "[]")
-write(f"{new_path }/wiki.json", "{\"startwiki\":\"\",\"interwiki\":[]}")
-write(f"{new_path }/arcaea.json", "{}")
-write(f"{new_path }/record.json", "[]")
-write(f"{new_path }/subscribe.json", "[]")
-write(f"{new_path }/blacklist.json", "[]")"""
 
 @Bot.on_calling_api
 async def _(bot: Bot, api: str, data: dict):
@@ -85,8 +62,8 @@ async def _(bot: Bot, api: str, data: dict):
 @preprocess.handle()
 async def _(event: Event, matcher: Matcher):
     msg = str(event.message)
-    banword = json.loads(read(TOOLS + "/banword.json"))
-    for i in banword:
+    banword_data: BannedWordList = group_db.where_one(BannedWordList(), default=BannedWordList())
+    for i in banword_data.banned_word_list:
         if msg.find(i) != -1:
             matcher.stop_propagation()
 
@@ -94,8 +71,8 @@ async def _(event: Event, matcher: Matcher):
 async def _(bot: Bot, event: GroupMessageEvent, matcher: Matcher):
     group_id = str(event.group_id)
     message = str(event.message)
-    group_cfg = getGroupData(str(event.group_id), "subscribe")
-    if "禁言" in getGroupData(group_id, "addtions") and ("订阅" not in message and "退订" not in message):
+    group_cfg = getGroupSettings(str(event.group_id), "subscribe")
+    if ("禁言" in getGroupSettings(group_id, "addtions")) and ("订阅" not in message and "退订" not in message):
         matcher.stop_propagation()
     if "骚话" in group_cfg:
         chance = random.randint(1, 100)

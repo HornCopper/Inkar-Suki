@@ -34,18 +34,19 @@ async def _(event: Event, args: Message = CommandArg()):
         await createIssue(user, msg)
         await feedback_.finish("已经将您的反馈内容提交至Inkar Suki GitHub，处理完毕后我们会通过电子邮件等方式通知您，音卡感谢您的反馈！")
 
-stastic = on_command("stastic", aliases={"统计", "统计数据", "命令统计"}, priority=5, force_whitespace=True)
+stastic = on_command("stastic", aliases={"统计数据", "命令统计"}, priority=5, force_whitespace=True)
 
 @stastic.handle()
 async def _(event: Event, args: Message = CommandArg()):
     if not checker(str(event.user_id), 10):
         await stastic.finish(error(10))
-    current_data = json.loads(read(TOOLS + "/population.json"))
+    current_data: Population = group_db.where_one(Population(), default=Population())
+    current_population = current_data.populations
     img: bytes
     if args.extract_plain_text() == "":
-        img = await generate_bar_chart(current_data)
+        img = await generate_bar_chart(current_population)
     else:
-        for name in current_data:
+        for name in current_population:
             if name == args.extract_plain_text():
                 await stastic.finish("该命令截至目前的总调用量为：" + str(current_data[name]))
         await stastic.finish("没有找到该命令的统计数据，可能是调用量为0或者不存在。")

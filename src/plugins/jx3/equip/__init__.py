@@ -1,8 +1,5 @@
-from src.plugins.help import css
 from src.tools.generate import generate, get_uuid
 from src.constant.jx3 import aliases
-
-from tabulate import tabulate
 
 from .api import *
 

@@ -20,16 +20,10 @@ from .parse import GithubBaseParser
 
 
 def already(reponame: str, group) -> bool:
-    final_path = DATA + "/" + group + "/" + "webhook.json"
-    repos = json.loads(read(final_path))
-    for i in repos:
-        if i == reponame:
-            return True
-    return False
-
+    group_data = group_db.where_one(GroupSettings(), "group_id = ?", group_id=group, default=GroupSettings(group_id=group))
+    return reponame in group_data
 
 repo = on_command("repo", force_whitespace=True, priority=5)
-
 
 @repo.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
@@ -43,12 +37,11 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     if status_code != 200:
         await repo.finish(f"仓库获取失败，请检查后重试哦~\n错误码：{status_code}")
     else:
-        img = ms.image(
-            "https://opengraph.githubassets.com/c9f4179f4d560950b2355c82aa2b7750bffd945744f9b8ea3f93cc24779745a0/" + reponame)
+        img = await get_content("https://opengraph.githubassets.com/c9f4179f4d560950b2355c82aa2b7750bffd945744f9b8ea3f93cc24779745a0/" + reponame)
+        img = ms.image(img)
         await repo.finish(img)
 
 webhook = on_command("bindrepo", aliases={"webhook"}, force_whitespace=True, priority=5)
-
 
 @webhook.handle()
 async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
@@ -68,12 +61,10 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
         await repo.finish(f"唔……绑定失败。\n错误码：{status_code}")
     else:
         group = str(event.group_id)
-        if already(repo_name, group) is False:
-            with open(DATA + "/" + group + "/" + "webhook.json", mode="r") as cache:
-                now = json.loads(cache.read())
-                now.append(repo_name)
-            with open(DATA + "/" + group + "/" + "webhook.json", mode="w") as cache:
-                cache.write(json.dumps(now))
+        if not already(repo_name, group):
+            current = getGroupSettings(str(event.group_id), "webhook")
+            current.append(repo_name)
+            setGroupSettings(str(event.group_id), "webhook", current)
             await webhook.finish("绑定成功！")
         else:
             await webhook.finish("唔……绑定失败：已经绑定过了。")
@@ -95,14 +86,12 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
             await unbind.finish(error(9))
     repo = args.extract_plain_text()
     group = str(event.group_id)
-    if already(repo, group) is False:
+    if not already(repo, group):
         await unbind.finish("唔……解绑失败：尚未绑定此仓库。")
     else:
-        with open(DATA + "/" + group + "/webhook.json", mode="r") as cache:
-            now = json.loads(cache.read())
-            now.remove(repo)
-        with open(DATA + "/" + group + "/webhook.json", mode="w") as cache:
-            cache.write(json.dumps(now))
+        current: list = getGroupSettings(str(event.group_id), "webhook")
+        current.remove(repo)
+        setGroupSettings(str(event.group_id), "webhook", current)
         await unbind.finish("解绑成功！")
 
 app: FastAPI = nonebot.get_app()
@@ -119,7 +108,6 @@ async def recWebHook(req: Request):
     current_handler = GithubBaseParser
     try:
         message = "[GitHub] " + getattr(current_handler, event)(body)
-        message = message.replace("codethink-cn", "CodeThink-CN")
     except Exception as e:
         msg = f"Event {event} has not been supported."
         return {"status": "500", "message": msg, "error": e}
@@ -129,16 +117,15 @@ async def recWebHook(req: Request):
         await sendm(bot, message, repo)
     return {"status": 200}
 
-
 async def sendm(bot, message, repo):
     """
     推送`Webhook`。
     """
-    groups = os.listdir(DATA)
+    groups = getAllGroups()
     send_group = [
         int(i)
         for i in groups
-        if repo in json.loads(read(DATA + "/" + i + "/webhook.json"))
+        if repo in group_db.where_one(GroupSettings(), "group_id = ?", group_id=str(i), default=GroupSettings(group_id=str(i)))
     ]
     for i in send_group:
         response = await bot.call_api("send_group_msg", group_id=int(i), message=message)

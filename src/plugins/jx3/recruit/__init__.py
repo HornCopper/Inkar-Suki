@@ -37,7 +37,7 @@ jx3_cmd_recruit_v2 = on_command("jx3_recruit", aliases={"招募"}, force_whitesp
 @jx3_cmd_recruit_v2.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     filter = False
-    if "招募过滤" in getGroupData(str(event.group_id), "addtions"):
+    if "招募过滤" in getGroupSettings(str(event.group_id), "addtions"):
         filter = True
     arg = args.extract_plain_text()
     if arg == "":
@@ -68,7 +68,7 @@ jx3_cmd_recruit_local = on_command("jx3_recruit_local", aliases={"本服招募"}
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     arg = args.extract_plain_text()
     filter = False
-    if "招募过滤" in getGroupData(str(event.group_id), "addtions"):
+    if "招募过滤" in getGroupSettings(str(event.group_id), "addtions"):
         filter = True
     if arg == "":
         group_server = getGroupServer(str(event.group_id))

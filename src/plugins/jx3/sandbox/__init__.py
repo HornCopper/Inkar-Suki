@@ -1,5 +1,4 @@
 from .api import *
-from src.plugins.sign import Sign
 
 sandbox = on_command("jx3_sandbox", aliases={"沙盘"}, force_whitespace=True, priority=5)
 

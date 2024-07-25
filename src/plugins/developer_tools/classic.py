@@ -50,7 +50,7 @@ async def _(bot: Bot, event: Event, args: Message = CommandArg()):
         group_count = len(groups)
         friends = await bot.call_api("get_friend_list")
         friend_count = len(friends)
-        registers = os.listdir(DATA)
+        registers = getAllGroups()
         register_count = len(registers)
         msg = f"咕咕咕，音卡来啦！\n现在是：{convert_time(getCurrentTime())}\n{group_count} | {register_count} | {friend_count}\n您拥有机器人的管理员权限！"
     await ping.finish(msg)
@@ -121,29 +121,3 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
         await randomnum.finish("唔……随机数的范围需要是数字哦~")
     num = random.randint(int(arg[0]), int(arg[1]))
     await randomnum.finish("好的，音卡已经为你生成了一个随机数：" + str(num))
-
-register = on_command("register", aliases={"注册"}, priority=5)
-
-@register.handle()
-async def _(event: GroupMessageEvent, args: Message = CommandArg()):
-    group_id = str(event.group_id)
-    files = {
-        "blacklist.json": [],
-        "settings.json": {"server": "", "group": group_id, "subscribe": [], "addtions": [], "welcome": "欢迎入群！"},
-        "webhook.json": [],
-        "opening.json": [],
-        "wiki.json": {"startwiki":"","interwiki":[]},
-        "record.json": []
-    }
-    status = []
-    for i in list(files):
-        if os.path.exists(DATA + "/" + group_id + "/" + i):
-            status.append(True)
-            continue
-        status.append(False)
-        write(DATA + "/" + group_id + "/" + i, json.dumps(files[i]))
-    ans = []
-    for i in range(len(list(files))):
-        ans.append(True)
-    if ans == status:
-        await register.finish("群聊基础文件已补充完毕！")

@@ -16,7 +16,7 @@ async def _(event: GroupMessageEvent, state: T_State, args: Message = CommandArg
     if args.extract_plain_text() == "":
         return
     title = args.extract_plain_text()
-    init_api = json.loads(read(DATA + "/"+str(event.group_id)+"/wiki.json"))["startwiki"]
+    init_api = getGroupSettings(str(event.group_id), "wiki")["startwiki"]
     if init_api == "":
         await wiki.finish("尚未指定起始Wiki，请尝试使用以下命令进行绑定：\n+setwiki 任意Wiki页面链接")
     info = await wiki_.simple(init_api, title)
@@ -63,14 +63,14 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
         await setwiki.finish("唔……此站点非有效的MediaWiki，请检查后重试~")
     else:
         link = api["data"]
-        now = json.loads(read(DATA + "/" + str(event.group_id) + "/wiki.json"))
+        now = getGroupSettings(str(event.group_id), "wiki")
         now["startwiki"] = link
-        write(DATA + "/" + str(event.group_id) + "/wiki.json", json.dumps(now))
+        setGroupSettings(str(event.group_id), "wiki", now)
         await setwiki.finish("初始Wiki修改成功！")
 
 
 def check_interwiki_prefix(group, prefix):
-    data = json.loads(read(DATA + "/" + group + "/wiki.json"))
+    data = getGroupSettings(group, "wiki")
     for i in data["interwiki"]:
         if i["prefix"] == prefix:
             return True
@@ -102,9 +102,9 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
             await interwiki.finish("唔……此站点非有效的MediaWiki，请检查后重试~")
         api = api["data"]
         new = {"prefix": prefix, "link": api}
-        now = json.loads(read(DATA + "/" + str(event.group_id) + "/wiki.json"))
+        now = getGroupSettings(str(event.group_id), "wiki")
         now["interwiki"].append(new)
-        write(DATA + "/" + str(event.group_id) + "/wiki.json", json.dumps(now))
+        setGroupSettings(str(event.group_id), "wiki", now)
         site_name = await wiki_.get_site_info(api)
         await interwiki.finish("成功添加Interwiki：\n" + site_name)
     elif args[0] == "del":
@@ -113,11 +113,11 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
         prefix = args[1]
         if check_interwiki_prefix(str(event.group_id), prefix) is False:
             await interwiki.finish("唔……该前缀未被使用，请检查后重试~")
-        now = json.loads(read(DATA + "/" + str(event.group_id) + "/wiki.json"))
+        now = getGroupSettings(str(event.group_id), "wiki")
         for i in now["interwiki"]:
             if i["prefix"] == prefix:
                 now["interwiki"].remove(i)
-        write(DATA + "/" + str(event.group_id) + "/wiki.json", json.dumps(now))
+        setGroupSettings(str(event.group_id), "wiki", now)
         await interwiki.finish("Interwiki移除成功！")
     elif args[0] == "upd":
         if len(args) != 3:
@@ -134,7 +134,7 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
         for i in now["interwiki"]:
             if i["prefix"] == prefix:
                 i["link"] = api
-        write(DATA + "/" + str(event.group_id) + "/wiki.json", json.dumps(now))
+        setGroupSettings(str(event.group_id), "wiki", now)
         site_name = await wiki_.get_site_info(api)
         await interwiki.finish("成功更新Interwiki：\n" + site_name)
 
@@ -142,7 +142,7 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
 
 
 def get_local_api(group, prefix):
-    local_data = json.loads(read(DATA + "/" + group + "/wiki.json"))
+    local_data = getGroupSettings(group, "wiki")
     for i in local_data["interwiki"]:
         if i["prefix"] == prefix:
             return i["link"]

@@ -14,7 +14,7 @@ op = on_command("setop", aliases={"admin", "setadmin"}, force_whitespace=True, p
 async def _(bot: Bot, event: Event, args: Message = CommandArg()):
     if args.extract_plain_text() == "":
         return
-    if not checker(str(event.user_id), 10):
+    if not checker(str(event.user_id), 10) and str(event.user_id) not in Config.bot_basic.bot_owner:
         await op.finish(error(10))
     info = args.extract_plain_text()
     if info:
@@ -28,24 +28,26 @@ async def _(bot: Bot, event: Event, args: Message = CommandArg()):
         except:
             await op.finish("唔，你好像少了点参数。")
         else:
-            adminlist = json.loads(read(TOOLS+"/permission.json"))
-            if arguments[0] in Config.bot_basic.bot_owner:
+            admin_data = get_all_admin()
+            admin_list = admin_data.permissions_list
+            if arguments[0] in Config.bot_basic.bot_owner and str(event.user_id) not in Config.bot_basic.bot_owner:
                 await op.finish("哈哈你改不了主人的权限的啦！")
             if arguments[1] not in ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10"]:
                 await op.finish("你这设置的什么鬼权限啊？！")
             if arguments[1] == "10" and str(event.user_id) not in Config.bot_basic.bot_owner:
                 await op.finish("这么高的权限还是请后台修改吧。")
-            if arguments[0] in adminlist:
+            if arguments[0] in admin_list:
                 if arguments[1] == "0":
-                    adminlist.pop(arguments[0])
+                    admin_list.pop(arguments[0])
                     msg = f"管理员账号({arguments[0]})已经被我撤了哦~"
                 else:
-                    msg = f"管理员账号({arguments[0]})已经有了，本来是{str(adminlist[arguments[0]])}，已经被我改成{str(arguments[1])}了哦~"
-                    adminlist[arguments[0]] = int(arguments[1])
+                    msg = f"管理员账号({arguments[0]})已经有了，本来是{str(admin_list[arguments[0]])}，已经被我改成{str(arguments[1])}了哦~"
+                    admin_list[arguments[0]] = int(arguments[1])
             else:
-                adminlist[arguments[0]] = int(arguments[1])
+                admin_list[arguments[0]] = int(arguments[1])
                 msg = f"已经帮你添加管理员账号({arguments[0]})及权限等级{str(arguments[1])}了哦~。"
-            write(TOOLS+"/permission.json", json.dumps(adminlist))
+            admin_data.permissions_list = admin_list
+            group_db.save(admin_data)
             await op.finish(msg)
 
     else:

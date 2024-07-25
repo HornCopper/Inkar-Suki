@@ -2,21 +2,16 @@ from src.tools.basic import *
 
 from src.plugins.jx3.rank.school_rank import colors
 
-global_file_path = TOOLS + "/affections.json"
-
 def getAffections():
-    if not os.path.exists(global_file_path):
-        write(global_file_path, "[]")
-        return []
-    else:
-        content = read(global_file_path)
-        data = json.loads(content)
-        return data
+    affections_data: AffectionsList = group_db.where_one(AffectionsList(), default=AffectionsList())
+    return affections_data
     
 def storgeAffections(new_data: dict):
-    current = getAffections()
-    current.append(new_data)
-    write(global_file_path, json.dumps(current, ensure_ascii=False))
+    current_data = getAffections()
+    current_list = current_data.affections_list
+    current_list.append(new_data)
+    current_data.affections_list = current_list
+    group_db.save(current_data)
     return True
     
 def checkUinStatus(uin: int):
@@ -57,10 +52,12 @@ async def delete_affection(uin: int):
     if not checkUinStatus(uin):
         return ["咱就是说，还没绑定情缘，在解除什么呢？"]
     data = getAffections()
-    for i in data:
+    all_list = data.affections_list
+    for i in all_list:
         if uin in i["uin"]:
-            data.remove(i)
-            write(global_file_path, json.dumps(data, ensure_ascii=False))
+            all_list.remove(i)
+            data.affections_list = all_list
+            group_db.save(data)
             return ["已解除情缘关系！"]
 
 def getColor(school: str):
