@@ -1,19 +1,32 @@
-from src.tools.basic import *
+from pathlib import Path
+
+from src.tools.config import Config
+from src.tools.utils.request import get_api
+from src.tools.basic.data_server import server_mapping
+from src.tools.basic.msg import PROMPT
+from src.tools.file import read, write
+from src.tools.generate import generate, get_uuid
+from src.tools.utils.path import ASSETS, CACHE, VIEWS
+
+import time
+
+token = Config.jx3.api.token
+bot_name = Config.bot_basic.bot_name_argument
 
 async def api_recruit(server: str, copy: str = ""):  # 团队招募 <服务器> [关键词]
     if token == None:
-        return [PROMPT_NoToken]
+        return [PROMPT.NoToken]
     server = server_mapping(server)
     if not server:
-        return [PROMPT_ServerNotExist]
-    final_url = f"{Config.jx3.api.url}/view/member/recruit?token={token}&server={server}&nickname={bot}&chrome=1&keyword="
+        return [PROMPT.ServerNotExist]
+    final_url = f"{Config.jx3.api.url}/view/member/recruit?token={token}&server={server}&nickname={bot_name}&chrome=1&keyword="
     if copy != "":
         final_url = final_url + copy
     data = await get_api(final_url)
     if data["code"] == 403:
-        return [PROMPT_InvalidToken]
+        return [PROMPT.InvalidToken]
     elif data["code"] == 400:
-        return [PROMPT_ServerNotExist]
+        return [PROMPT.ServerNotExist]
     elif data["code"] == 404:
         return ["未找到相关团队，请检查后重试~"]
     url = data["data"]["url"]
@@ -68,10 +81,10 @@ async def checkAd(msg: str, data: dict):
 
 async def recruit_v2(server: str, actvt: str = "", local: bool = False, filter: bool = False):
     if token == None:
-        return [PROMPT_NoToken]
+        return [PROMPT.NoToken]
     server = server_mapping(server)
     if not server:
-        return [PROMPT_ServerNotExist]
+        return [PROMPT.ServerNotExist]
     final_url = f"{Config.jx3.api.url}/data/member/recruit?token={token}&server={server}"
     if actvt != "":
         final_url = final_url + "&keyword=" + actvt

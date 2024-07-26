@@ -1,12 +1,16 @@
+from nonebot import on_command
+from nonebot.adapters import Message
+from nonebot.params import CommandArg
+from nonebot.adapters.onebot.v11 import GroupMessageEvent, MessageSegment as ms
+
+from src.tools.file import get_content_local
+from src.tools.utils.request import get_content
+
 from .api import *
 from .item import *
 from .item_v2 import *
 from .sl import *
-from .trend import *
 from .wufeng import *
-
-from src.plugins.sign import Sign
-
 
 trade = on_command("jx3_trade", aliases={"交易行"}, force_whitespace=True, priority=5)
 
@@ -87,11 +91,6 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     """
     if args.extract_plain_text() == "":
         return
-    coin = Sign.get_coin(str(event.user_id))
-    if coin < 50:
-        await item_v2_.finish("物价v2正在内测，需要50金币才能使用哦！")
-    else:
-        Sign.reduce(str(event.user_id), 50)
     image = await getSingleItemPrice(args.extract_plain_text())
     if type(image) == type([]):
         await item_v2_.finish(image[0])

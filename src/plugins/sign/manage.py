@@ -1,12 +1,12 @@
-from src.tools.basic import *
+from nonebot.adapters.onebot.v11 import MessageSegment as ms
+
 from src.tools.file import read, write
+from src.tools.utils.path import CLOCK
+
 import random
 import json
 import os
 import datetime
-
-from nonebot.adapters.onebot.v11 import MessageSegment as ms
-
 
 class SignInRecord:
     def init_lucky(self, luck: int = None):

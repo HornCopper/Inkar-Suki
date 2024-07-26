@@ -1,3 +1,11 @@
+from nonebot import on_command
+from nonebot.adapters import Message
+from nonebot.params import CommandArg
+from nonebot.adapters.onebot.v11 import GroupMessageEvent
+
+from src.tools.basic.data_server import server_mapping
+from src.tools.basic.msg import PROMPT
+
 from .api import *
 
 cmd_jx3_server = on_command("jx3_server", aliases={"开服"}, priority=5, force_whitespace=True)
@@ -13,6 +21,6 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     server = args.extract_plain_text()
     srv = server_mapping(server, str(event.group_id))
     if srv == None:
-        await cmd_jx3_server.finish(PROMPT_ServerNotExist)
+        await cmd_jx3_server.finish(PROMPT.ServerNotExist)
     msg = await server_status(srv)
     await cmd_jx3_server.finish(msg)

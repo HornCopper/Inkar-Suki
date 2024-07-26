@@ -1,3 +1,11 @@
+from nonebot import on_command
+from nonebot.adapters import Message
+from nonebot.params import CommandArg, Arg
+from nonebot.typing import T_State
+
+from src.tools.utils.common import checknumber
+from src.tools.basic.msg import PROMPT
+
 from .api import *
 
 task_ = on_command("jx3_task", aliases={"任务"}, force_whitespace=True, priority=5)
@@ -48,4 +56,4 @@ async def _(state: T_State, num: Message = Arg()):
         msg = msg + f"\n任务链：{chain}"
         await task_.finish(msg)
     else:
-        await task_.finish(PROMPT_NumberInvalid)
+        await task_.finish(PROMPT.NumberInvalid)

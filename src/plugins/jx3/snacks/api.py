@@ -1,4 +1,6 @@
-from src.tools.basic import *
+from src.constant.jx3 import aliases
+from src.tools.config import Config
+from src.tools.utils.request import get_api
 
 async def getSnack(school: str):
     actual_name = aliases(school)

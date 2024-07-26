@@ -1,3 +1,7 @@
+from nonebot import on_command
+from nonebot.adapters import Message
+from nonebot.params import CommandArg
+
 from .api import *
 
 exam = on_command("jx3_exam", aliases={"科举"}, force_whitespace=True, priority=5)

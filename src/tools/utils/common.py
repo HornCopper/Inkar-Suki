@@ -1,10 +1,10 @@
+from src.tools.file import write, read
+
 import re
 import time
 import datetime
 import pathlib2
 import os
-
-from ..file import write, read
 
 tools_path = f"{os.getcwd()}/src/tools"
 

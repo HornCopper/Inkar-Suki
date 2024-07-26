@@ -1,3 +1,12 @@
+from nonebot import on_command
+from nonebot.adapters import Message
+from nonebot.params import CommandArg, Arg
+from nonebot.typing import T_State
+from nonebot.adapters.onebot.v11 import GroupMessageEvent, MessageSegment as ms
+
+from src.tools.utils.common import checknumber
+from src.tools.basic.msg import PROMPT
+
 from .api import *
 
 dh_ = on_command("jx3_dh", aliases={"蹲号"}, force_whitespace=True, priority=5)
@@ -33,7 +42,7 @@ async def _(event: GroupMessageEvent, state: T_State, args: Message = CommandArg
 async def _(event: GroupMessageEvent, state: T_State, num: Message = Arg()):
     num = num.extract_plain_text()
     if not checknumber(num):
-        await dh_.finish(PROMPT_NumberInvalid)
+        await dh_.finish(PROMPT.NumberInvalid)
     else:
         links = state["links"]
         floors = state["floors"]
@@ -73,7 +82,7 @@ async def _(event: GroupMessageEvent, state: T_State, args: Message = CommandArg
 async def _(event: GroupMessageEvent, state: T_State, num: Message = Arg()):
     num = num.extract_plain_text()
     if not checknumber(num):
-        await wg_.finish(PROMPT_NumberInvalid)
+        await wg_.finish(PROMPT.NumberInvalid)
     else:
         links = state["links"]
         floors = state["floors"]

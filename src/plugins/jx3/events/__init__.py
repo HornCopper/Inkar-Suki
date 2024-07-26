@@ -1,3 +1,11 @@
+from nonebot import on_command
+from nonebot.adapters import Message
+from nonebot.adapters.onebot.v11 import GroupMessageEvent, MessageSegment as ms
+from nonebot.params import CommandArg
+
+from src.tools.basic.data_server import server_mapping
+from src.tools.basic.msg import PROMPT
+
 from .chutian import *
 from .yuncong import *
 from .zhue import *
@@ -26,7 +34,7 @@ zhue_ = on_command("jx3_zhue", aliases={"诛恶"}, force_whitespace=True, priori
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     server = server_mapping(args.extract_plain_text(), str(event.group_id))
     if server == None:
-        await zhue_.finish(PROMPT_ServerNotExist)
+        await zhue_.finish(PROMPT.ServerNotExist)
     else:
         image = await getZhueRecord(server)
         await zhue_.finish(ms.image(image))

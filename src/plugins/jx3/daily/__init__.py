@@ -1,10 +1,13 @@
-from .api import *
+from nonebot import on_command
+from nonebot.adapters.onebot.v11 import GroupMessageEvent
 
 from nonebot import require, get_bots
-
 require("nonebot_plugin_apscheduler")
-
 from nonebot_plugin_apscheduler import scheduler
+
+from src.tools.basic.group_opeator import getAllGroups, getGroupSettings
+
+from .api import *
 
 import datetime
 
@@ -63,7 +66,7 @@ async def boss():
                 if "世界BOSS" in getGroupSettings(str(group_id), "subscribe"):
                     await bots[x].call_api("send_group_msg", group_id=int(group_id), message=msg)
 
-@scheduler.scheduled_job("cron", hour="19", minute="30")
+@scheduler.scheduled_job("cron", hour="19", minute="20")
 async def small_gf():
     if datetime.date.today().weekday() in [1, 3]:
         activity = "逐鹿中原"

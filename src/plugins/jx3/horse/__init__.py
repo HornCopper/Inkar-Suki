@@ -1,3 +1,8 @@
+from nonebot import on_command
+from nonebot.adapters import Message
+from nonebot.params import CommandArg
+from nonebot.adapters.onebot.v11 import GroupMessageEvent
+
 from .api import *
 
 jx3_cmd_horse = on_command("jx3_horse_v1", aliases={"抓马v1", "马场v1"}, force_whitespace=True, priority=5)

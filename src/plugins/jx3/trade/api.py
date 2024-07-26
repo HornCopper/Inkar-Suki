@@ -1,6 +1,17 @@
-from src.tools.basic import *
+from pathlib import Path
+
+from src.constant.jx3 import brickl, goldl, silverl, copperl
+
+from src.tools.utils.request import get_api
+from src.tools.basic.msg import PROMPT
+from src.tools.basic.data_server import server_mapping
+from src.tools.utils.common import checknumber, convert_time, getCurrentTime
+from src.tools.generate import generate, get_uuid
+from src.tools.utils.path import ASSETS, CACHE, TOOLS, VIEWS
+from src.tools.file import read, write
 
 import datetime
+import json
 
 filters = ["无封","无皇","封头","封护","封裤","封项","封鞋","封囊"]
 banned = ["囊","头饰","裤","护臂","腰坠","项链","鞋"]
@@ -36,7 +47,7 @@ async def getImg(server: str, name: str, group: str, itemList: list = []):
         return data
     server = server_mapping(server, group)
     if not server:
-        return [PROMPT_ServerNotExist]
+        return [PROMPT.ServerNotExist]
     for i in filters:
         if name.find(i) != -1:
             return ["唔……请勿查找无封装备！\n如果您需要查找无封装备，可以使用“交易行无封”（注意没有空格），使用方法参考：交易行无封 服务器 词条\n词条示例：13550内功双会头"]

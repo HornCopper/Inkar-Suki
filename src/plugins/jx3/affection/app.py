@@ -1,6 +1,22 @@
-from src.tools.basic import *
+from pathlib import Path
+
+from src.constant.jx3 import kftosh
+
+from src.tools.data import group_db, AffectionsList
+from src.tools.utils.request import get_api
+from src.tools.file import read, write
+from src.tools.generate import get_uuid, generate
+from src.tools.utils.common import convert_time, getRelateTime, getCurrentTime
+from src.tools.config import Config
+from src.tools.basic.msg import PROMPT
+from src.tools.basic.data_server import getGroupServer
+from src.tools.utils.path import ASSETS, CACHE, VIEWS
 
 from src.plugins.jx3.rank.school_rank import colors
+
+import random
+
+token = Config.jx3.api.token
 
 def getAffections():
     affections_data: AffectionsList = group_db.where_one(AffectionsList(), default=AffectionsList())
@@ -33,7 +49,7 @@ async def bind_affection(uin_1: int, name_1: str, uin_2: int, name_2: str, group
         return ["唔……您已经绑定情缘了，无法再绑定新的情缘！"]
     server = getGroupServer(str(group_id))
     if not server: 
-        return [PROMPT_ServerNotExist]
+        return [PROMPT.ServerNotExist]
     school_1 = await getSchool(name_1, server)
     school_2 = await getSchool(name_2, server)
     if not school_1 or not school_2:

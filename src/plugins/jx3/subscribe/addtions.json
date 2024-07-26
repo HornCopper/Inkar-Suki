@@ -1,6 +1,4 @@
 {
     "招募过滤": ["查询招募时自动过滤广告", "https://inkar-suki.codethink.cn/Inkar-Suki-Docs/img/Barrier_JE2_BE2.png"],
-    "禁言": ["让机器人不再响应被动命令", "https://inkar-suki.codethink.cn/Inkar-Suki-Docs/img/Bubble_Column_JE1_BE1.png"],
-    "抓马过滤": ["只推送里飞沙和赤兔相关", "https://inkar-suki.codethink.cn/Inkar-Suki-Docs/img/White_Horse_Barrier_JE5_BE3.png"],
-    "奇遇过滤": ["只推送绝世奇遇", "https://inkar-suki.codethink.cn/Inkar-Suki-Docs/img/Luck_Barrier_JE3.png"]
+    "禁言": ["让机器人不再响应被动命令", "https://inkar-suki.codethink.cn/Inkar-Suki-Docs/img/Bubble_Column_JE1_BE1.png"]
 }

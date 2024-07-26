@@ -1,3 +1,10 @@
+from nonebot import on_command
+from nonebot.adapters import Message
+from nonebot.params import CommandArg
+from nonebot.adapters.onebot.v11 import GroupMessageEvent, MessageSegment as ms
+
+from src.tools.utils.request import get_content
+
 from .api import *
 
 demon = on_command("jx3_demon", aliases={"金价"}, force_whitespace=True, priority=5)

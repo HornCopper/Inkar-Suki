@@ -1,6 +1,14 @@
+from nonebot import on_command
+from nonebot.adapters import Message
+from nonebot.adapters.onebot.v11 import Event
+from nonebot.params import CommandArg, Received
+from nonebot.typing import T_State
+
 from src.plugins.sign import Sign
 
 from .api import *
+
+import random
 
 rdp = on_command("randomPoem", aliases={"对诗"}, force_whitespace=True, priority=5)
 

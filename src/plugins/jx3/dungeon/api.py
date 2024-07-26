@@ -1,13 +1,28 @@
-import re
+from pathlib import Path
+from nonebot.log import logger
 
-from src.tools.basic import *
 from src.tools.generate import generate, get_uuid
+from src.tools.basic.data_server import server_mapping
+from src.tools.config import Config
+from src.tools.utils.request import get_api, post_url
+from src.tools.basic.jx3 import gen_ts, gen_xsk, format_body, dungeon_sign
+from src.tools.utils.path import ASSETS, CACHE, PLUGINS, VIEWS
+from src.tools.utils.common import convert_time, getCurrentTime, getRelateTime
+from src.tools.file import read, write
 from src.plugins.jx3.attributes import Zone_mapping
 
+import json
+import re
+import time
+
+token = Config.jx3.api.token
+ticket = Config.jx3.api.ticket
+bot_name = Config.bot_basic.bot_name_argument
+device_id = ticket.split("::")[-1]
 
 async def zone(server, id):
     server = server_mapping(server)
-    final_url = f"{Config.jx3.api.url}/view/role/teamCdList?token={token}&server={server}&name={id}&ticket={ticket}&nickname={bot}&chrome=1"
+    final_url = f"{Config.jx3.api.url}/view/role/teamCdList?token={token}&server={server}&name={id}&ticket={ticket}&nickname={bot_name}&chrome=1"
     data = await get_api(final_url)
     if data["code"] == 404:
         return ["玩家不存在或尚未在世界频道发言哦~"]

@@ -1,5 +1,3 @@
-from src.tools.basic import *
-
 from .achievement import *
 from .pvp import *
 from .bind import *
@@ -13,7 +11,6 @@ from .matrix import *
 from .news import *
 from .announce import *
 from .pendant import *
-from .pet import *
 from .penzai import *
 from .gold import *
 from .rank import *

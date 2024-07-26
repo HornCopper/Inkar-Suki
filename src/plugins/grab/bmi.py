@@ -1,4 +1,9 @@
-from src.tools.basic import *
+from nonebot import on_command
+from nonebot.adapters.onebot.v11 import Event
+from nonebot.adapters import Message
+from nonebot.params import CommandArg
+
+from src.tools.utils.common import checknumber
 
 bmi = on_command("bmi", aliases={"BMI", "身体质量指数"}, force_whitespace=True, priority=5)
 

@@ -1,5 +1,5 @@
-from src.tools.basic import *
-
+from src.tools.config import Config
+from src.tools.utils.request import get_api
 
 async def server_status(server: str = None):
     full_link = f"{Config.jx3.api.url}/data/server/check"

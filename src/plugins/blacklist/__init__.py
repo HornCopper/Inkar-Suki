@@ -1,5 +1,15 @@
-from src.tools.basic import *
+from pathlib import Path
 
+from nonebot import on_command
+from nonebot.adapters import Message, Bot, Event
+from nonebot.adapters.onebot.v11 import GroupMessageEvent, MessageSegment as ms
+from nonebot.params import CommandArg
+
+from src.tools.permission import checker
+from src.tools.data import group_db, GroupSettings
+from src.tools.utils import read, write
+from src.tools.utils.path import ASSETS, CACHE, VIEWS
+from src.tools.generate import get_uuid, generate
 
 block = on_command("block", aliases={"避雷", "加入黑名单"}, force_whitespace=True, priority=5)  # 综合避雷名单-添加
 

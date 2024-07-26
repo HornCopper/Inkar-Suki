@@ -1,5 +1,6 @@
+from nonebot.adapters.onebot.v11 import MessageSegment as ms
+
 import re
-from nonebot.adapters.onebot.v11 import Event, MessageSegment as ms
 
 """
 解析类，没什么好看的。

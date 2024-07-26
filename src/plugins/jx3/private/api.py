@@ -1,7 +1,18 @@
-from src.tools.basic import *
+from pathlib import Path
+
 from src.constant.jx3 import brickl, goldl
+
+from src.tools.config import Config
+from src.tools.utils.request import get_api, post_url
+from src.tools.utils.common import convert_time, getCurrentTime
+from src.tools.file import read, write
+from src.tools.utils.path import ASSETS, CACHE, VIEWS
+from src.tools.generate import generate, get_uuid
+
+import json
 import re
 
+bot_name = Config.bot_basic.bot_name_argument
 ikst = Config.hidden.offcial_token
 
 
@@ -37,7 +48,7 @@ good = "<img src=\"https://jx3wbl.xoyocdn.com/img/icon-camp-good.0db444fe.png\">
 
 async def get_baizhan_img():
     url = await get_url_with_token("baizhan")
-    data = await get_api(url + f"&nickname={bot}")
+    data = await get_api(url + f"&nickname={bot_name}")
     return data["data"]["url"]
 
 async def get_dilu_data():

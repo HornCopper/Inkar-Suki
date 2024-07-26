@@ -1,6 +1,18 @@
-from .v1 import *
-
 from datetime import datetime
+from pathlib import Path
+
+from src.tools.config import Config
+from src.tools.utils.request import get_api
+from src.tools.basic.msg import PROMPT
+from src.tools.basic.data_server import server_mapping
+from src.tools.utils.path import ASSETS, CACHE, VIEWS
+from src.tools.generate import get_uuid, generate
+from src.tools.utils.common import convert_time
+from src.tools.file import read, write
+
+token = Config.jx3.api.token
+ticket = Config.jx3.api.ticket
+bot_name = Config.bot_basic.bot_name_argument
 
 poem = "<td class=\"short-column-content\" rowspan=\"114514\"></td>" # 来点诗句
 
@@ -17,10 +29,10 @@ template_serendity = """
 
 async def getImage_v2(server: str, name: str, group_id: str, type: bool):
     if token is None:
-        return [PROMPT_NoToken]
+        return [PROMPT.NoToken]
     server = server_mapping(server, group_id)
     if not server:
-        return [PROMPT_ServerNotExist]
+        return [PROMPT.ServerNotExist]
     data = await get_api(f"{Config.jx3.api.url}/data/luck/adventure?token={token}&server={server}&name={name}&ticket={ticket}")
     if data["code"] != 200:
         return ["唔……未找到该玩家的奇遇！"]

@@ -1,5 +1,10 @@
-from src.tools.basic import *
+from nonebot.adapters.onebot.v11 import MessageSegment as ms
+from pathlib import Path
 
+from src.tools.utils.request import get_api, get_content
+from src.tools.utils.path import ASSETS
+
+import os
 
 async def getAdventure(adventure: str):
     # 数据来源@JX3BOX

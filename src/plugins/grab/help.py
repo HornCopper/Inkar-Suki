@@ -1,4 +1,6 @@
-from src.tools.basic import *
+from nonebot import on_command
+from nonebot.adapters import Message
+from nonebot.params import CommandArg
 
 help = on_command("help", aliases={"帮助", "功能", "查看", "文档", "使用说明"}, force_whitespace=True, priority=5)
 

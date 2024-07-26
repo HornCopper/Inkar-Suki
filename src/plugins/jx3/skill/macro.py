@@ -1,5 +1,6 @@
+from src.tools.utils.request import get_api
 
-from src.tools.basic import *
+import json
 
 icon_to_xf = {
     "10175": "毒经",

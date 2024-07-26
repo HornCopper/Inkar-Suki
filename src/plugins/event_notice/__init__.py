@@ -1,18 +1,14 @@
-from src.tools.basic import *
-from src.tools.config import Config
-from src.tools.file import read, write
-from src.tools.permission import checker, error
-from src.tools.utils import checknumber
-from src.plugins.ban import in_it as banned 
-
-import json
-import os
-
-from nonebot.adapters.onebot.v11 import MessageSegment as ms
 from nonebot import on_notice, on_command, on_request
 from nonebot.adapters import Message
-from nonebot.adapters.onebot.v11 import Bot, GroupMessageEvent, RequestEvent, GroupIncreaseNoticeEvent, NoticeEvent
+from nonebot.adapters.onebot.v11 import Bot, GroupMessageEvent, RequestEvent, GroupIncreaseNoticeEvent, NoticeEvent, MessageSegment as ms
 from nonebot.params import CommandArg
+
+from src.tools.config import Config
+from src.tools.permission import checker, error
+from src.tools.data import group_db, BannedList, ApplicationsList, GroupSettings
+from src.tools.basic.group_opeator import getGroupSettings, setGroupSettings
+
+from src.plugins.ban import banned
 
 selfEnterMsg = """噔噔咚——音卡很荣幸受邀来到了「$GROUP_ID」~
 请先告诉我这个群聊需要绑定哪一个区服呢？这样我才可以更好地为您服务☆

@@ -1,13 +1,28 @@
-import json
-import httpx
-
 from PIL import Image, ImageFont, ImageDraw
 
-from src.tools.basic import *
+from src.constant.jx3 import kftosh
+
 from src.tools.generate import get_uuid
+from src.tools.basic.jx3 import gen_ts, gen_xsk, format_body
+from src.tools.utils.path import ASSETS, CACHE, PLUGINS
+from src.tools.config import Config
+from src.tools.utils.request import post_url
 
-from ..attributes.api import kungfu_mapping, get_fs, local_save,  get_kf_icon, get_bg, data_process, enchant_mapping, judge_special_weapon
+ticket = Config.jx3.api.ticket
+device_id = ticket.split("::")[-1]
 
+from ..attributes.api import (
+    kungfu_mapping,
+    get_fs,
+    local_save, 
+    get_kf_icon,
+    get_bg,
+    data_process,
+    enchant_mapping,
+    judge_special_weapon
+)
+
+import json
 
 async def get_recommended_equips_list(forceId: str, condition):
     param = {

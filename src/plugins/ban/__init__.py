@@ -1,19 +1,13 @@
-from nonebot import get_bot, on_command
-from nonebot.exception import ActionFailed
-from src.tools.basic import *
+from nonebot import on_command
+from nonebot.adapters import Message, Event, Bot
+from nonebot.matcher import Matcher
+from nonebot.params import CommandArg, Arg
+
 from src.tools.config import Config
 from src.tools.utils import checknumber
-from src.tools.file import read, write
 from src.tools.permission import checker, error
-
-import json
-
-from nonebot import on_command
-from nonebot.adapters import Message
-from nonebot.adapters.onebot.v11 import Event, Bot
-from nonebot.matcher import Matcher
-from nonebot.params import CommandArg, CommandStart
-
+from src.tools.data import group_db, BannedList, GroupSettings
+from src.tools.basic.message_process import preprocess
 
 leave_msg = f"{Config.bot_basic.bot_name}要离开这里啦，{Config.bot_basic.bot_name}还没有学会人类的告别语，但是数据库中有一句话似乎很适合现在使用——如果还想来找我的话，我一直在这里（650495414）。"
 
@@ -23,7 +17,7 @@ add_ = """“假如再无法遇见你，祝你早安、午安和晚安。”
 
 leave_msg = leave_msg + "\n" + add_
 
-def in_it(qq: str):
+def banned(qq: str):
     banned: BannedList = group_db.where_one(BannedList(), default=BannedList())
     banned = banned.banned_list
     for one in banned:
@@ -51,7 +45,7 @@ async def _(bot: Bot, event: Event, args: Message = CommandArg()):
         await ban.finish("您输入了什么？")
     elif not checknumber(sb):
         await ban.finish("不能全域封禁不是纯数字的QQ哦~")
-    elif in_it(sb):
+    elif banned(sb):
         return ban.finish("唔……全域封禁失败，这个人已经被封禁了。")
     else:
         current: BannedList = group_db.where_one(BannedList(), default=BannedList())
@@ -79,7 +73,7 @@ async def _(bot: Bot, event: Event, args: Message = CommandArg()):
         await ban.finish("不能全域封禁不是纯数字的QQ哦~")
     if sb is False:
         await unban.finish("您输入了什么？")
-    if in_it(sb) is False:
+    if banned(sb) is False:
         await unban.finish("全域解封失败，并没有封禁此人哦~")
     current: BannedList = group_db.where_one(BannedList(), default=BannedList())
     current = current.banned_list

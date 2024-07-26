@@ -1,6 +1,15 @@
-from src.tools.basic import *
+from pathlib import Path
+
+from src.tools.utils.request import get_api, post_url
+from src.tools.utils.common import convert_time, getCurrentTime
+from src.tools.generate import generate, get_uuid
+from src.tools.utils.path import ASSETS, CACHE, TOOLS, VIEWS
+from src.tools.file import read, write
+from src.tools.basic.data_server import Zone_mapping
 
 import datetime
+import json
+import random
 
 template_wujia = """
 <tr>
@@ -48,9 +57,9 @@ async def getItemDetail(item_name: str):
     item_name = item_data["goodsName"] # 物品名称
     item_alias = item_data["goodsAlias"] # 物品别称
     publish_time = convert_time(int(datetime.datetime.strptime(item_data["publishTime"], "%Y-%m-%dT%H:%M:%S.000+0000").timestamp()), "%Y-%m-%d") # 发行时间
-    publish_count_limit = item_data["publishNum"] if item_data["publishNum"] != None else "不限量" # 发行数量
-    publish_time_limit = item_data["publishLimitTime"] if item_data["publishLimitTime"] != None else "无限制" # 发行时长
-    binding_time_limit = item_data["limitTime"] if item_data["limitTime"] != None else "无限制" # 绑定时长
+    publish_count_limit = item_data["publishNum"] if item_data["publishNum"] != None else "--" # 发行数量
+    publish_time_limit = item_data["publishLimitTime"] if item_data["publishLimitTime"] != None else "--" # 发行时长
+    binding_time_limit = item_data["limitTime"] if item_data["limitTime"] != None else "--" # 绑定时长
     raw_price = str(item_data["priceNum"]) + "元" # 发行原价
     img = item_data["imgs"][0] if len(item_data["imgs"]) > 0 else "https://inkar-suki.codethink.cn/Inkar-Suki-Docs/img/Unknown.png"
     return [item_name, item_alias, publish_time, publish_count_limit, publish_time_limit, binding_time_limit, raw_price, img]
@@ -95,14 +104,14 @@ async def getSingleItemPrice(item_name: str):
     for each_part in aijx3_data:
         html = html.replace(f"${each_part}_data", aijx3_data[each_part])
     html = html.replace("$wbl_data", wbl_data)
-    html = html.replace("$item_name", basic_item_info[0])
-    html = html.replace("$item_alias", basic_item_info[1])
-    html = html.replace("$publish_time", basic_item_info[2])
-    html = html.replace("$publish_count", basic_item_info[3])
-    html = html.replace("$publish_remain", basic_item_info[4])
-    html = html.replace("$binding_time", basic_item_info[5])
-    html = html.replace("$publish_price", basic_item_info[6])
-    html = html.replace("$item_image", basic_item_info[7])
+    html = html.replace("$item_name", str(basic_item_info[0]))
+    html = html.replace("$item_alias", str(basic_item_info[1]))
+    html = html.replace("$publish_time", str(basic_item_info[2]))
+    html = html.replace("$publish_count", str(basic_item_info[3]))
+    html = html.replace("$publish_remain", str(basic_item_info[4]))
+    html = html.replace("$binding_time", str(basic_item_info[5]))
+    html = html.replace("$publish_price", str(basic_item_info[6]))
+    html = html.replace("$item_image", str(basic_item_info[7]))
     font = ASSETS + "/font/custom.ttf"
     random_background = ASSETS + "/image/assistance/" + str(random.randint(1, 10)) + ".jpg"
     custom_msg = await get_api("https://inkar-suki.codethink.cn/ajs_lu")

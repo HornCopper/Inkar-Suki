@@ -1,16 +1,23 @@
+from pathlib import Path
+
+from nonebot import on_regex
 from nonebot.adapters.onebot.v11 import MessageSegment as ms, MessageEvent, Bot, Message, GroupMessageEvent
 from nonebot.adapters.onebot.v11.permission import GROUP_ADMIN, GROUP_OWNER
 from nonebot.permission import SUPERUSER
 from nonebot.adapters.onebot.v11.helpers import extract_image_urls
 from nonebot.exception import ActionFailed
-from nonebot import require
 from nonebot.matcher import Matcher
+from nonebot.params import Arg
+from nonebot.typing import T_State
 
-from src.tools.basic import *
+from src.tools.config import Config
+from src.tools.permission import checker, error
 from src.plugins.sign import Sign
 
 import requests
+import random
 import base64
+import os
 
 from .check_pass import check_cd, check_max
 from .rdimg import *
@@ -189,18 +196,18 @@ async def _(bot: Bot, event: GroupMessageEvent):
     await bot.call_api("set_group_ban", user_id=event.user_id, group_id=event.group_id, duration=num*60)
     await self_ban.finish(f"自助禁言成功！音卡送您{num}分钟的红茶~")
 
-ai = on_command("chat", aliases={"AI"}, priority=5, force_whitespace=True)
+# ai = on_command("chat", aliases={"AI"}, priority=5, force_whitespace=True)
 
-@ai.handle()
-async def _(event: GroupMessageEvent, args: Message = CommandArg()):
-    if args.extract_plain_text() == "":
-        return
-    if not checker(str(event.user_id), 9):
-        coin = Sign.get_coin(str(event.user_id))
-        if len(args.extract_plain_text())*5 > coin:
-            await ai.finish(error(9) + "\n或者您也可以通过5金币/字进行使用，签到或与音卡玩游戏即可获得，但您当前金币余额不足。")
-        else:
-            Sign.reduce(str(event.user_id), len(args.extract_plain_text())*5)
-    msg = args.extract_plain_text()
-    resp = await chat_spark(msg)
-    await ai.finish(resp)
+# @ai.handle()
+# async def _(event: GroupMessageEvent, args: Message = CommandArg()):
+#     if args.extract_plain_text() == "":
+#         return
+#     if not checker(str(event.user_id), 9):
+#         coin = Sign.get_coin(str(event.user_id))
+#         if len(args.extract_plain_text())*5 > coin:
+#             await ai.finish(error(9) + "\n或者您也可以通过5金币/字进行使用，签到或与音卡玩游戏即可获得，但您当前金币余额不足。")
+#         else:
+#             Sign.reduce(str(event.user_id), len(args.extract_plain_text())*5)
+#     msg = args.extract_plain_text()
+#     resp = await chat_spark(msg)
+#     await ai.finish(resp)

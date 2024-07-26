@@ -1,3 +1,7 @@
+from nonebot import on_command
+from nonebot.adapters import Message
+from nonebot.params import CommandArg
+
 from .mcv import *
 from .mcs import *
 

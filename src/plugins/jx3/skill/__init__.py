@@ -1,4 +1,18 @@
-from .api import *
+from nonebot import on_command
+from nonebot.adapters import Message
+from nonebot.params import CommandArg
+from nonebot.adapters.onebot.v11 import GroupMessageEvent, MessageSegment as ms
+
+from src.constant.jx3 import getSingleSkill, aliases
+
+from src.tools.utils.request import get_api
+from src.tools.file import read, write
+from src.tools.utils.path import ASSETS
+
+from .macro import *
+
+import json
+import os
 
 skill = on_command("jx3_skill", aliases={"技能"}, force_whitespace=True, priority=5)
 

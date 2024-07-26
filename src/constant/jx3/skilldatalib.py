@@ -1,11 +1,14 @@
-from src.tools.basic import *
 from urllib.error import HTTPError
 from pathlib import Path
-from src.tools.utils import get_url, get_status, nodetemp, get_content, get_api
+
+from nonebot.adapters.onebot.v11 import MessageSegment as ms
+
+from src.tools.utils import get_url, get_status, get_content, get_api
 from src.tools.file import read, write
-from src.tools.config import Config
+from src.tools.utils.path import ASSETS
 
 import json
+import os
 
 CONSTANT = ASSETS[:-6] + "constant"
 

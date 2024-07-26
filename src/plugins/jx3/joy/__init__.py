@@ -1,6 +1,16 @@
+from nonebot import on_command
+from nonebot.adapters import Message
+from nonebot.params import CommandArg
+from nonebot.adapters.onebot.v11 import GroupMessageEvent
+from nonebot.rule import to_me
+
+from src.tools.config import Config
+from src.tools.utils.common import checknumber
+from src.tools.utils.request import get_api, post_url
+
 from .api import *
 
-from nonebot.rule import to_me
+token = Config.jx3.api.token
 
 jx3_cmd_saohua_random = on_command("jx3_random", aliases={"骚话", "烧话"}, force_whitespace=True, priority=5)
 

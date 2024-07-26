@@ -2,6 +2,7 @@
 
 bot_basic: # Bot 基础类信息
     bot_name: "" # Bot 名称: string
+    bot_name_argument: "" # 用于传参的 Bot 名称（通常使用英文）: string
     bot_owner: [""] # Bot 所有者: list[string]
     bot_repo: "" # Bot 对应GitHub仓库: string 
     bot_notice: # Bot 事件通知

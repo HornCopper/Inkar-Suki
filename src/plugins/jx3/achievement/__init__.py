@@ -1,5 +1,16 @@
+from nonebot import on_command
+from nonebot.adapters import Message
+from nonebot.adapters.onebot.v11 import Bot, GroupMessageEvent, MessageSegment as ms
+from nonebot.params import CommandArg, Arg
+from nonebot.typing import T_State
+
+from src.tools.basic.msg import PROMPT
+from src.tools.utils.common import checknumber
+from src.tools.file import get_content_local
+from src.tools.basic.data_server import getGroupServer
 from src.plugins.jx3.dungeon.api import mode_mapping
 
+from .box import *
 from .v1_v2 import *
 
 adventure_ = on_command("jx3_adventure", aliases={"成就"}, force_whitespace=True, priority=5)
@@ -76,7 +87,7 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
     """
     achievement = args.extract_plain_text().split(" ")
     if len(achievement) not in [2, 3]:
-        await achievements.finish(PROMPT_ArgumentInvalid)
+        await achievements.finish(PROMPT.ArgumentInvalid)
     if len(achievement) == 2:
         server = None
         id = achievement[0]
@@ -99,7 +110,7 @@ achievement_v2 = on_command("jx3_achievement_v2", aliases={"进度"}, force_whit
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     achievement = args.extract_plain_text().split(" ")
     if len(achievement) not in [2, 3]:
-        await achievement_v2.finish(PROMPT_ArgumentInvalid)
+        await achievement_v2.finish(PROMPT.ArgumentInvalid)
     if len(achievement) == 2:
         server = None
         id = achievement[0]
@@ -122,7 +133,7 @@ zone_achievement = on_command("jx3_zoneachi", aliases={"团本成就"}, force_wh
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     arg = args.extract_plain_text().split(" ")
     if len(arg) not in [2, 3, 4]:
-        await zone_achievement.finish(PROMPT_ArgumentInvalid)
+        await zone_achievement.finish(PROMPT.ArgumentInvalid)
     group = str(event.group_id)
     if len(arg) == 2:
         server = getGroupServer(group)

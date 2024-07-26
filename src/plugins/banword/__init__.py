@@ -1,4 +1,11 @@
-from src.tools.basic import *
+from nonebot import on_command
+from nonebot.adapters import Message
+from nonebot.adapters.onebot.v11 import GroupMessageEvent
+from nonebot.params import CommandArg
+
+from src.tools.permission import checker, error
+from src.tools.data import group_db, BannedWordList
+
 
 banword = on_command("banword", force_whitespace=True, priority=5)
 

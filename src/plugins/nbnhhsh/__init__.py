@@ -1,9 +1,9 @@
-import httpx
-
 from nonebot import on_command
 from nonebot.adapters import Message
 from nonebot.adapters.onebot.v11 import GroupMessageEvent
 from nonebot.params import CommandArg
+
+import httpx
 
 nbnhhsh = on_command("nbnhhsh", aliases={"能不能好好说话"}, force_whitespace=True, priority=5)
 

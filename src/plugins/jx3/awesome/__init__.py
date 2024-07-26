@@ -1,3 +1,11 @@
+from nonebot import on_command
+from nonebot.adapters import Message
+from nonebot.adapters.onebot.v11 import GroupMessageEvent, MessageSegment as ms
+from nonebot.params import CommandArg
+
+from src.tools.utils.common import checknumber
+from src.tools.file import get_content_local
+
 from .api import *
 
 cheater = on_command("jx3_cheater", aliases={"查人", "骗子"}, force_whitespace=True, priority=5)

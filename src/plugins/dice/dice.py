@@ -1,7 +1,6 @@
 import re
 import secrets
-
-import numpy as np
+import numpy
 
 MAX_DICE_COUNT = 100  # 一次摇动最多的骰子数量
 MAX_OUTPUT_CNT = 50  # 输出的最多数据量
@@ -110,7 +109,7 @@ class Dice(DiceItemBase):
             dice_results.append(secrets.randbelow(int(self.sides)) + 1)
         if adv != 0:
             new_results = []
-            indexes = np.array(dice_results).argsort()
+            indexes = numpy.array(dice_results).argsort()
             indexes = indexes[-adv:] if positive == 1 else indexes[:adv]
             output_buffer = "=["
             for i in range(self.count):

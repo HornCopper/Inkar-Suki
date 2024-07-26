@@ -1,25 +1,32 @@
-from src.tools.basic import *
-from src.tools.generate import get_uuid
-from src.tools.config import Config
-from src.constant.jx3.skilldatalib import kftosh
-from src.tools.utils import get_api, get_content
-import os
-import json
-import httpx
-
 from pathlib import Path
 from PIL import Image, ImageDraw, ImageFont
-from nonebot.log import logger
 
+from src.constant.jx3.skilldatalib import kftosh
+
+from src.tools.basic.msg import PROMPT
+from src.tools.generate import get_uuid
+from src.tools.config import Config
+from src.tools.utils.request import get_api, get_content, post_url
+from src.tools.basic.data_server import server_mapping, Zone_mapping
+from src.tools.file import read
+from src.tools.utils.path import ASSETS, CACHE, PLUGINS
+from src.tools.basic.jx3 import gen_ts, format_body, gen_xsk
+
+import os
+import json
+
+bot_name = Config.bot_basic.bot_name_argument
+token = Config.jx3.api.token
 ticket = Config.jx3.api.ticket
+device_id = ticket.split("::")[-1]
 
 async def addritube_(server: str = None, name: str = None, group_id: str = None):  # 查装 <服务器> <ID>
     if token == None or ticket == None:
-        return [PROMPT_NoTicket]
+        return [PROMPT.NoTicket]
     server = server_mapping(server, group_id)
     if not server:
-        return [PROMPT_ServerNotExist]
-    final_url = f"{Config.jx3.api.url}/view/role/attribute?ticket={ticket}&token={token}&nickname={bot}&server={server}&name={name}&chrome=1"
+        return [PROMPT.ServerNotExist]
+    final_url = f"{Config.jx3.api.url}/view/role/attribute?ticket={ticket}&token={token}&nickname={bot_name}&server={server}&name={name}&chrome=1"
     data = await get_api(final_url)
     if data["code"] == 404:
         return ["唔……玩家不存在。"]
@@ -33,10 +40,10 @@ async def addritube_(server: str = None, name: str = None, group_id: str = None)
 async def roleInfo_(server, player, group_id):
     server = server_mapping(server, group_id)
     if not token:
-        return PROMPT_NoToken
+        return PROMPT.NoToken
     final_url = f"{Config.jx3.api.url}/data/role/detailed?token={token}&name={player}&server={server}"
     if not server:
-        return PROMPT_ServerNotExist
+        return PROMPT.ServerNotExist
     data = await get_api(final_url)
     if data["code"] == 404:
         return "没有找到该玩家哦~\n需要该玩家在世界频道发言后方可查询。"
@@ -51,24 +58,6 @@ async def roleInfo_(server, player, group_id):
     cp = data["data"]["campName"]
     msg = msg + f"\n服务器：{zone} - {srv}\n角色名称：{nm}\nUID：{uid}\n体型：{fc}·{bd}\n帮会：{cp} - {tg}"
     return msg
-
-
-def Zone_mapping(server, legacy: bool = False):
-    if server in ["绝代天骄"]:
-        return "电信区" if not legacy else "电信八区"
-    if server in ["斗转星移", "唯我独尊", "乾坤一掷", "横刀断浪", "剑胆琴心", "幽月轮", "梦江南"]:
-        return "电信区" if not legacy else "电信五区"
-    if server in ["长安城", "蝶恋花", "龙争虎斗"]:
-        return "电信区" if not legacy else "电信一区"
-    if server in ["青梅煮酒"]:
-        return "双线区" if not legacy else "双线四区"
-    if server in ["破阵子", "天鹅坪"]:
-        return "双线区" if not legacy else "双线一区"
-    if server in ["飞龙在天"]:
-        return "双线区" if not legacy else "双线二区"
-    if server in ["英雄客", "自当狂", "九万里", "万象长安", "山海相逢", "有人赴约", "眉间雪"]:
-        return "无界区"
-    return None
 
 
 async def get_uid(server, id):
@@ -271,7 +260,7 @@ def kungfu_mapping(kf):
 async def get_attr_main(server, id, group_id):
     server = server_mapping(server, group_id)
     if not server:
-        return [PROMPT_ServerNotExist]
+        return [PROMPT.ServerNotExist]
     uid = await get_uid(server, id)
     if not uid:
         return ["唔……未找到该玩家。"]

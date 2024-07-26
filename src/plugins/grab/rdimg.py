@@ -1,4 +1,16 @@
-from src.tools.basic import *
+from pathlib import Path
+
+from nonebot import on_command
+from nonebot.adapters import Message
+from nonebot.params import CommandArg
+from nonebot.adapters.onebot.v11 import Event, MessageSegment as ms
+
+from src.tools.utils.request import get_content, get_api
+from src.tools.file import get_content_local
+from src.tools.utils.path import PLUGINS
+
+import random
+import httpx
 
 rdci = on_command("随机猫图", priority=5)
 

@@ -1,12 +1,19 @@
-import json
+from nonebot import on_command
+from nonebot.adapters import Message
+from nonebot.adapters.onebot.v11 import GroupMessageEvent, Bot
+from nonebot.params import CommandArg, Arg
+from nonebot.typing import T_State
 
-from src.tools.file import read, write
+from src.tools.file import read
 from src.tools.utils import checknumber
 from src.tools.permission import checker, error
-from src.tools.basic import *
+from src.tools.basic.group_opeator import getGroupSettings, setGroupSettings
+from src.tools.basic.msg import PROMPT
+from src.tools.utils.path import DATA
 
 from .wikilib import wiki as wiki_
 
+import json
 
 wiki = on_command("wiki", force_whitespace=True, priority=5)
 
@@ -92,7 +99,7 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
     args = args.extract_plain_text().split(" ")
     if args[0] == "add":
         if len(args) != 3:
-            await interwiki.finish(PROMPT_ArgumentInvalid)
+            await interwiki.finish(PROMPT.ArgumentInvalid)
         prefix = args[1]
         if check_interwiki_prefix(str(event.group_id), prefix) is True:
             await interwiki.finish("唔……该前缀已被使用，请删除或更新此前缀~")
@@ -109,7 +116,7 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
         await interwiki.finish("成功添加Interwiki：\n" + site_name)
     elif args[0] == "del":
         if len(args) != 2:
-            await interwiki.finish(PROMPT_ArgumentInvalid)
+            await interwiki.finish(PROMPT.ArgumentInvalid)
         prefix = args[1]
         if check_interwiki_prefix(str(event.group_id), prefix) is False:
             await interwiki.finish("唔……该前缀未被使用，请检查后重试~")
@@ -121,7 +128,7 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
         await interwiki.finish("Interwiki移除成功！")
     elif args[0] == "upd":
         if len(args) != 3:
-            await interwiki.finish(PROMPT_ArgumentInvalid)
+            await interwiki.finish(PROMPT.ArgumentInvalid)
         prefix = args[1]
         link = args[2]
         api = await wiki_.get_api(link)
@@ -138,7 +145,7 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
         site_name = await wiki_.get_site_info(api)
         await interwiki.finish("成功更新Interwiki：\n" + site_name)
 
-    await interwiki.finish(PROMPT_ArgumentInvalid)
+    await interwiki.finish(PROMPT.ArgumentInvalid)
 
 
 def get_local_api(group, prefix):
@@ -207,11 +214,11 @@ async def _(state: T_State, event: GroupMessageEvent, args: Message = CommandArg
 async def __(state: T_State, num: Message = Arg()):
     num = num.extract_plain_text()
     if not checknumber(num):
-        await wiki.finish(PROMPT_NumberInvalid)
+        await wiki.finish(PROMPT.NumberInvalid)
     api = state["wiki"]
     results = state["results"]
     if int(num) not in range(len(results)):
-        await wiki.finish(PROMPT_NumberNotExist)
+        await wiki.finish(PROMPT.NumberNotExist)
     title = results[int(num)]
     info = await wiki_.simple(api, title)
     link = info["link"]

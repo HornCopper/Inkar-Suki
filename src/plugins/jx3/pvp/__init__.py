@@ -1,3 +1,12 @@
+from nonebot import on_command
+from nonebot.adapters import Message
+from nonebot.params import CommandArg
+from nonebot.adapters.onebot.v11 import Bot, GroupMessageEvent, MessageSegment as ms
+
+from src.tools.basic.msg import PROMPT
+from src.tools.utils.request import get_content
+from src.tools.file import get_content_local
+
 from .leader import *
 from .api import *
 
@@ -12,7 +21,7 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
         # 1 -> 战绩 xxx
         # 2 -> 战绩 srv xx / 战绩 xx 22(33or55)
         # 3 -> 战绩 srv xx 22(33or55)
-        await arena_re.finish(PROMPT_ArgumentCountInvalid)
+        await arena_re.finish(PROMPT.ArgumentCountInvalid)
     if len(arg) == 1:
         server = None
         name = arg[0]

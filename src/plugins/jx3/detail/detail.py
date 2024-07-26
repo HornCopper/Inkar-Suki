@@ -1,11 +1,24 @@
-from src.tools.basic import *
-from src.plugins.jx3.dungeon.api import post_url
+from typing import Union
+from pathlib import Path
 
+from src.tools.basic.jx3 import gen_ts, gen_xsk, format_body
+from src.tools.config import Config
+from src.tools.utils.request import get_api, post_url
+from src.tools.file import read, write
+from src.tools.utils.path import ASSETS, CACHE, PLUGINS, VIEWS
+from src.tools.utils.common import convert_time, getCurrentTime
+from src.tools.generate import get_uuid, generate
+from src.tools.basic.msg import PROMPT
+from src.tools.basic.data_server import server_mapping
 
-async def get_tuilan_data(url: str, params: dict = None):
+import json
+
+ticket = Config.jx3.api.ticket
+device_id = ticket.split("::")[-1]
+
+async def get_tuilan_data(url: str, params: Union[dict, None] = None):
     if params is None:
         params = {"ts": gen_ts()}
-    ticket = Config.jx3.api.ticket
     params = format_body(params)
     xsk = gen_xsk(params)
     basic_headers = {
@@ -41,7 +54,6 @@ async def get_guid(server: str, name: str):
 
 async def get_menu():  # 获取总览分类
     menu_data = await get_tuilan_data("https://m.pvp.xoyo.com/achievement/list/menu")
-    logger.info(menu_data)
     for i in menu_data["data"]:
         if i["name"] == "江湖行":
             for x in i["subClass"]:
@@ -171,7 +183,7 @@ template_each_dungeon_header = """
 """
 
 async def get_personal_guid(server: str, id: str):
-    final_url = f"{Config.jx3.api.url}/data/role/detailed?token={token}&server={server}&name={id}"
+    final_url = f"{Config.jx3.api.url}/data/role/detailed?token={Config.jx3.api.token}&server={server}&name={id}"
     data = await get_api(final_url)
     if data["code"] != 200:
         return False
@@ -198,10 +210,10 @@ def calculate(raw_data: dict):
 async def get_all_dungeon_image(server: str, id: str, group_id: str):
     server = server_mapping(server, group_id)
     if server == None:
-        return [PROMPT_ServerNotExist]
+        return [PROMPT.ServerNotExist]
     guid = await get_personal_guid(server, id)
     if not guid:
-        return [PROMPT_PlayerNotExist]
+        return [PROMPT.PlayerNotExist]
     map_list = get_all_map()
     table = []
     for map in map_list:

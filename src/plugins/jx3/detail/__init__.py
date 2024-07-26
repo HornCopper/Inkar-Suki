@@ -1,4 +1,10 @@
-from src.plugins.sign import Sign
+from nonebot import on_command
+from nonebot.adapters import Message
+from nonebot.adapters.onebot.v11 import GroupMessageEvent, MessageSegment as ms
+from nonebot.params import CommandArg
+
+from src.tools.basic.data_server import getGroupServer
+from src.tools.file import get_content_local
 
 from .detail import *
 
@@ -33,11 +39,6 @@ global_dungeon_lookup = on_command("jx3_global_dungeon", aliases={"副本分览"
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     if args.extract_plain_text() == "":
         return
-    coin = Sign.get_coin(str(event.user_id))
-    if coin < 500:
-        await global_dungeon_lookup.finish("副本分览正在内测，需要500金币才能使用哦！")
-    else:
-        Sign.reduce(str(event.user_id), 500)
     arg = args.extract_plain_text().split(" ")
     if len(arg) not in [1, 2]:
         await global_dungeon_lookup.finish("唔……参数不正确哦，请检查后重试~")

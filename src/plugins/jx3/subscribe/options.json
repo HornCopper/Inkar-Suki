@@ -1,20 +1,12 @@
 {
     "818": ["全服贴吧八卦", "https://inkar-suki.codethink.cn/Inkar-Suki-Docs/img/Glistering_Melon_Slice_JE2_BE2.png"],
-    "玄晶": ["本服玄晶掉落", "https://inkar-suki.codethink.cn/Inkar-Suki-Docs/img/Diamond_JE2_BE2.png"],
-    "抓马": ["本服马驹刷新/捕获", "https://inkar-suki.codethink.cn/Inkar-Suki-Docs/img/Brown_Horse_JE5_BE3.png"],
-    "奇遇": ["本服奇遇触发", "https://inkar-suki.codethink.cn/Inkar-Suki-Docs/img/Luck_JE3.png"],
-    "追魂": ["全服追魂点名", "https://inkar-suki.codethink.cn/Inkar-Suki-Docs/img/Black_Horse_JE5_BE3.png"],
-    "的卢": ["本服的卢预告/刷新/捕获/竞拍", "https://inkar-suki.codethink.cn/Inkar-Suki-Docs/img/White_Horse_JE5_BE3.png"],
-    "扶摇": ["本服扶摇点名", "https://inkar-suki.codethink.cn/Inkar-Suki-Docs/img/Jump_Boost_JE2_BE2.png"],
     "关隘": ["本服关隘刷新", "https://inkar-suki.codethink.cn/Inkar-Suki-Docs/img/Iron_Sword_JE2_BE2.png"],
     "公告": ["官网公告更新", "https://inkar-suki.codethink.cn/Inkar-Suki-Docs/img/Portfolio.png"],
     "开服": ["本服开服/维护", "https://inkar-suki.codethink.cn/Inkar-Suki-Docs/img/Impulse_Command_Block.gif"],
     "更新": ["游戏内容更新", "https://inkar-suki.codethink.cn/Inkar-Suki-Docs/img/Written_Book_JE2_BE2.gif"],
-    "诛恶": ["本服诛恶事件", "https://inkar-suki.codethink.cn/Inkar-Suki-Docs/img/Golden_Sword_JE3_BE2.png"],
     "云从": ["全服云从预告", "https://inkar-suki.codethink.cn/Inkar-Suki-Docs/img/Diamond_Sword_JE3_BE3.png"],
     "骚话": ["随机群内骚话（4%）", "https://inkar-suki.codethink.cn/Inkar-Suki-Docs/img/Dragon_Head_JE1_BE1.png"],
     "日常": ["每天08:30推送日常", "https://inkar-suki.codethink.cn/Inkar-Suki-Docs/img/Knowledge_Book_JE2.png"],
-    "战况": ["本服攻防战况", "https://inkar-suki.codethink.cn/Inkar-Suki-Docs/img/Shield_JE2_BE1.png"],
     "攻防": ["阵营大小攻防时间提醒", "https://inkar-suki.codethink.cn/Inkar-Suki-Docs/img/Full_Map.png"],
     "世界BOSS": ["世界BOSS推送（19:30）", "https://inkar-suki.codethink.cn/Inkar-Suki-Docs/img/Wither_JE2_BE2.png"]
 }

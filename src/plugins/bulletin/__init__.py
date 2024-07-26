@@ -1,3 +1,8 @@
+from nonebot import on_command
+from nonebot.adapters import Message
+from nonebot.adapters.onebot.v11 import GroupMessageEvent, MessageSegment as ms
+from nonebot.params import CommandArg, Arg
+
 from .api import *
 
 bulletin_glad = on_command("喜报", force_whitespace=True, priority=5)

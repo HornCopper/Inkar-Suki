@@ -1,5 +1,15 @@
+from nonebot import on_command
+from nonebot.adapters import Message
+from nonebot.params import CommandArg
+from nonebot.adapters.onebot.v11 import GroupMessageEvent, MessageSegment as ms
+
+from src.tools.basic.data_server import server_mapping
+from src.tools.utils.request import get_content, get_api
+from src.tools.config import Config
+
 from .api import *
 from .school_rank import *
+from .top100 import *
 
 jx3_cmd_top100_ = on_command("jx3_top100", aliases={"百强"}, force_whitespace=True, priority=5)
 

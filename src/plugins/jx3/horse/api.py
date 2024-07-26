@@ -1,12 +1,15 @@
-from src.tools.basic import *
+from src.tools.utils.common import convert_time
+from src.tools.basic.msg import PROMPT
+from src.tools.basic.data_server import server_mapping
+from src.tools.utils.request import get_api
+from src.tools.basic.msg import PROMPT
 
 from datetime import datetime, timedelta
-
 
 async def get_horse_reporter(server: str, group_id: str = None):  # 数据来源@JX3BOX
     server = server_mapping(server, group_id)
     if not server:
-        return PROMPT_ServerNotExist
+        return PROMPT.ServerNotExist
     final_url = f"https://next2.jx3box.com/api/game/reporter/horse?type=horse&server={server}"
     data = await get_api(final_url)
     if data["data"]["page"]["total"] == 0:
@@ -48,7 +51,7 @@ async def get_horse_next_spawn(server, group_id: str):
         return ans if ans != "" else "时间尚久，无法预知。"
     server = server_mapping(server, group_id)
     if not server:
-        return PROMPT_ServerNotExist
+        return PROMPT.ServerNotExist
     web_data = await get_api(f"https://next2.jx3box.com/api/game/reporter/horse?pageIndex=1&pageSize=50&server={server}&type=horse&subtype=npc_chat")
     msg = {}
     ft = {}

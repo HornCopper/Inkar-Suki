@@ -2,21 +2,10 @@ from playwright.async_api import async_playwright
 from pathlib import Path
 from nonebot.log import logger
 
-import pathlib2
+from src.tools.utils.path import CACHE
+
 import uuid
-import os
 import time
-
-tools_path = f"{os.getcwd()}/src/tools"
-
-def get_path(path: str) -> str:
-    t = pathlib2.Path(tools_path)
-    return t.parent.joinpath(path).__str__()
-
-CACHE = get_path("cache")
-ASSETS = get_path("assets")
-TOOLS = get_path("tools")
-VIEWS = get_path("views")
 
 def get_uuid():
     return str(uuid.uuid1()).replace("-", "")

@@ -1,5 +1,5 @@
-from src.tools.basic import *
-
+from src.tools.config import Config
+from src.tools.utils.request import get_api
 
 async def search(platform_: str, song: str):
     """

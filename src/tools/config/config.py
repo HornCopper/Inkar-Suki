@@ -1,6 +1,5 @@
 import yaml
 import os
-import nonebot
 
 class config:
     def __init__(self, **kwargs):

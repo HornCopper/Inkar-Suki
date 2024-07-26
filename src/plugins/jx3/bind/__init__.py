@@ -1,14 +1,19 @@
-from src.tools.permission import checker
-from src.tools.basic import server_mapping
+from nonebot import on_command
+from nonebot.adapters import Message
+from nonebot.adapters.onebot.v11 import Bot, GroupMessageEvent
+from nonebot.params import CommandArg
 
-from .api import *
+from src.tools.basic.msg import PROMPT
+from src.tools.basic.data_server import server_mapping
+from src.tools.basic.group_opeator import setGroupSettings
+from src.tools.permission import checker
 
 def server_bind(group_id: str, server: str):
     if not server == "":
         # 当server为空表示要清空
         server = server_mapping(server)
         if not server:
-            return [PROMPT_ServerNotExist]
+            return [PROMPT.ServerNotExist]
     setGroupSettings(group_id, "server", server)
 
 jx3_cmd_server_bind = on_command("jx3_bind", aliases={"绑定", "绑定区服"}, force_whitespace=True, priority=5)

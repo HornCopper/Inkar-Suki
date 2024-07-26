@@ -1,6 +1,8 @@
+from pathlib import Path
 from PIL import Image, ImageDraw, ImageFont
 
-from src.tools.basic import *
+from src.tools.generate import get_uuid
+from src.tools.utils.path import ASSETS, CACHE, PLUGINS
 
 async def get_bulletinG(msg: str, type_: str):
     if type_ not in ["S", "G"]:

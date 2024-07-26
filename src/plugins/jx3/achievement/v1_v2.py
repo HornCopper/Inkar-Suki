@@ -1,21 +1,36 @@
-from src.tools.basic import *
+from pathlib import Path
+from nonebot.log import logger
+
+from src.tools.basic.data_server import server_mapping
+from src.tools.config import Config
+from src.tools.basic.msg import PROMPT
+from src.tools.utils.request import get_api, post_url
+from src.tools.utils.path import ASSETS, CACHE, VIEWS
+from src.tools.file import read, write
+from src.tools.generate import generate, get_uuid
+from src.tools.basic.jx3 import gen_ts, format_body, gen_xsk
+
 from src.plugins.jx3.dungeon.api import get_map, zone_mapping, mode_mapping
 
-from .box import *
+import json
 
+token = Config.jx3.api.token
+ticket = Config.jx3.api.ticket
+bot_name = Config.bot_basic.bot_name_argument
+device_id = ticket.split("::")[-1]
 
 async def achievements_(server: str = None, name: str = None, achievement: str = None, group_id: str = None):
     if token is None:
-        return [PROMPT_NoToken]
+        return [PROMPT.NoToken]
     if ticket is None:
-        return [PROMPT_NoTicket]
+        return [PROMPT.NoTicket]
     server = server_mapping(server, group_id)
     if not server:
-        return [PROMPT_ServerNotExist]
-    final_url = f"{Config.jx3.api.url}/view/role/achievement?server={server}&name={achievement}&role={name}&nickname={bot}&ticket={ticket}&token={token}&chrome=1"
+        return [PROMPT.ServerNotExist]
+    final_url = f"{Config.jx3.api.url}/view/role/achievement?server={server}&name={achievement}&role={name}&nickname={bot_name}&ticket={ticket}&token={token}&chrome=1"
     data = await get_api(final_url)
     if data["code"] == 400:
-        return [PROMPT_ServerInvalid]
+        return [PROMPT.ServerInvalid]
     if data["data"] == {}:
         return ["唔……未找到相应成就。"]
     if data["code"] == 404:
@@ -37,7 +52,7 @@ template = """
 async def achi_v2(server: str = None, name: str = None, achievement: str = None, group_id: str = None):
     server = server_mapping(server, group_id)
     if not server:
-        return [PROMPT_ServerNotExist]
+        return [PROMPT.ServerNotExist]
     personal_data_request = f"{Config.jx3.api.url}/data/role/detailed?token={token}&server={server}&name={name}"
     personal_data = await get_api(personal_data_request)
     if personal_data["code"] != 200:

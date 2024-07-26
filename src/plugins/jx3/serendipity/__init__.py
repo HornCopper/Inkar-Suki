@@ -1,3 +1,11 @@
+from nonebot import on_command
+from nonebot.adapters import Message
+from nonebot.params import CommandArg
+from nonebot.adapters.onebot.v11 import GroupMessageEvent, MessageSegment as ms
+
+from src.tools.file import get_content_local
+from src.tools.utils.request import get_content
+
 from .v1 import *
 from .v2 import *
 

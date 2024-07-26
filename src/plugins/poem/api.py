@@ -1,4 +1,4 @@
-from src.tools.basic import *
+from src.tools.utils.request import get_api
 
 async def getRandomPoem():
     data = await get_api("https://v1.jinrishici.com/all.json")

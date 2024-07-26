@@ -1,9 +1,14 @@
-from src.tools.basic import *
+from nonebot import on_command
+from nonebot.adapters import Message
+from nonebot.params import CommandArg
+from nonebot.adapters.onebot.v11 import GroupMessageEvent
+
+from src.tools.utils.request import get_content
 
 api = "https://api.qicaiyun.top/joke/api.php"
 
 async def get_joke():
-    data = await get_url(api)
+    data = await get_content(api)
     msg = "、".join(data.split("、")[1:])
     return msg
 

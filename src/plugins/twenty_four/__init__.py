@@ -1,7 +1,14 @@
+from nonebot import on_command
+from nonebot.adapters import Message
+from nonebot.adapters.onebot.v11 import Event
+from nonebot.params import CommandArg, Received
+from nonebot.typing import T_State
+
 from src.plugins.sign import Sign
 
 from .process import *
-from src.tools.basic import *
+
+import random
 
 tf = on_command("twentyFour", aliases={"24点"}, force_whitespace=True, priority=5)
 

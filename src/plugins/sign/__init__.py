@@ -1,5 +1,12 @@
-from src.tools.basic import *
+from nonebot import on_command
+from nonebot.adapters import Message
+from nonebot.adapters.onebot.v11 import Event, MessageSegment as ms
+from nonebot.params import CommandArg
+
 from src.tools.file import write
+from src.tools.utils.common import checknumber
+from src.tools.permission import checker, error
+from src.tools.utils.path import CLOCK
 
 from .manage import Sign
 

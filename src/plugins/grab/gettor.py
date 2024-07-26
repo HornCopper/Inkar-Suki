@@ -1,5 +1,3 @@
-from src.tools.basic import *
-
 from datetime import datetime
 from random import randint
 

@@ -1,6 +1,6 @@
 import json
 
-from .data import group_db, Permission
+from src.tools.data import group_db, Permission
 
 def get_all_admin():
     data: Permission = group_db.where_one(Permission(), default=Permission())

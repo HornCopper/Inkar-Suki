@@ -1,23 +1,19 @@
+from typing import Optional
+
 from nonebot import on_message
 from nonebot.adapters.onebot.v11 import GroupMessageEvent, PrivateMessageEvent, Bot, Event
 from nonebot.adapters import Bot
-from nonebot.exception import MockApiException
-from nonebot.log import logger
 from nonebot.matcher import Matcher
 from nonebot.message import run_preprocessor, run_postprocessor
 from nonebot.params import RawCommand
 
-from typing import Optional
+from .group_opeator import getGroupSettings
+from ..data import group_db, Population, BannedWordList
+from ..config import Config
+from ..utils import get_api
 
-import os
-import json
 import re
 import random
-
-from ..basic import DATA, write, Config, get_api, read, TOOLS
-from .group_opeator import getGroupSettings
-from .spark import chat_spark
-from ..data import group_db, Population, BannedWordList
 
 @run_postprocessor
 async def _(bot: Bot, event: Event, matcher: Matcher, exception: Optional[Exception], cmd = RawCommand()):
@@ -53,8 +49,9 @@ async def _(bot: Bot, api: str, data: dict):
         if "whitelist" in list(data):
             data.pop("whitelist")
             return
-        banword = json.loads(read(TOOLS + "/banword.json"))
-        for i in banword:
+        banword_data: BannedWordList = group_db.where_one(BannedWordList(), default=BannedWordList())
+        banword_list = banword_data.banned_word_list
+        for i in banword_list:
             if message.find(i) != -1:
                 data["message"] = "唔……音卡本来想给告诉你的，可是检测到了不好的内容，所以只能隐藏啦，不然音卡的小鱼干会被没收的T_T"
 

@@ -1,8 +1,26 @@
-from src.tools.basic import *
-from src.plugins.jx3.rank.school_rank import colors
+from pathlib import Path
+
+from src.constant.jx3 import kftosh
+
+from src.tools.utils.request import get_api
+from src.tools.config import Config
+from src.tools.file import read, write
+from src.tools.basic.data_server import server_mapping, Zone_mapping
+from src.tools.basic.msg import PROMPT
+from src.tools.basic.jx3 import gen_ts, format_body, gen_xsk
+from src.tools.utils.request import post_url
+from src.tools.generate import get_uuid, generate
+from src.tools.utils.path import ASSETS, CACHE, PLUGINS, VIEWS
+
 from src.plugins.jx3.affection import getColor
 
 from .api import kungfu_mapping, enchant_mapping, find_qx
+
+import json
+
+token = Config.jx3.api.token
+ticket= Config.jx3.api.ticket
+device_id = ticket.split("::")[-1]
 
 template_attrs_v4 = """
 <tr>
@@ -74,7 +92,7 @@ def get_equip_attr(data: list, job: str):
 async def get_attrs_v4(server: str, name: str, group_id: str):
     server = server_mapping(server, group_id)
     if not server:
-        return [PROMPT_ServerNotExist]
+        return [PROMPT.ServerNotExist]
     basic_info = await get_basic_info(server, name)
     if basic_info == 404:
         return ["唔……未找到该玩家，请检查角色名称或服务器后重试！"]
@@ -99,7 +117,7 @@ async def get_attrs_v4(server: str, name: str, group_id: str):
         "gamename": "jx3",
         "platform": "ios",
         "sign": "true",
-        "token": token,
+        "token": ticket,
         "deviceid": device_id,
         "User-Agent": "SeasunGame/193 CFNetwork/1240.0.4 Darwin/20.6.0",
         "x-sk": xsk

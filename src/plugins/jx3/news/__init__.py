@@ -1,3 +1,7 @@
+from nonebot import on_command
+from nonebot.adapters import Message
+from nonebot.params import CommandArg
+
 from .api import *
 
 news = on_command("jx3_news", aliases={"新闻"}, force_whitespace=True, priority=5)
@@ -13,6 +17,4 @@ async def _(args: Message = CommandArg()):
     if args.extract_plain_text() != "":
         return
     r = await news_()
-    # if isinstance(r, GloConfigException):
-    #     await r.finish(news)
     await news.finish(r)

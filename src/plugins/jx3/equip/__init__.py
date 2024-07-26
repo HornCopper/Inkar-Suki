@@ -1,4 +1,16 @@
+from pathlib import Path
+
+from nonebot import on_command
+from nonebot.adapters import Message
+from nonebot.adapters.onebot.v11 import GroupMessageEvent, MessageSegment as ms
+from nonebot.params import CommandArg, Arg
+from nonebot.typing import T_State
+
+from src.tools.file import read, write, get_content_local
+from src.tools.utils.path import ASSETS, CACHE, PLUGINS, VIEWS
+from src.tools.utils.common import checknumber
 from src.tools.generate import generate, get_uuid
+from src.tools.basic.msg import PROMPT
 from src.constant.jx3 import aliases
 
 from .api import *
@@ -71,7 +83,7 @@ async def _(event: GroupMessageEvent, state: T_State, args: Message = CommandArg
 async def jx3_equip_recommend_detail(state: T_State, index: Message = Arg()):
     index = index.extract_plain_text()
     if not checknumber(index):
-        await jx3_cmd_equip_recommend.finish(PROMPT_NumberInvalid)
+        await jx3_cmd_equip_recommend.finish(PROMPT.NumberInvalid)
     data = state["data"][int(index)]
     author = state["author"][int(index)]
     tag = state["tag"][int(index)]

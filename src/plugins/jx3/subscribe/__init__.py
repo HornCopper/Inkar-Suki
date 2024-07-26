@@ -1,6 +1,15 @@
-from src.tools.basic import *
+from nonebot import on_command
+from nonebot.adapters import Message
+from nonebot.params import CommandArg
+from nonebot.adapters.onebot.v11 import GroupMessageEvent, Bot, MessageSegment as ms
+
+from src.tools.file import read
+from src.tools.utils.path import PLUGINS
+from src.tools.basic.group_opeator import getGroupSettings, setGroupSettings
 
 from .about import *
+
+import json
 
 subscribe_enable = on_command("jx3_subscribe", aliases={"订阅", "开启"}, force_whitespace=True, priority=5)
 

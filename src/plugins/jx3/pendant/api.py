@@ -1,5 +1,7 @@
-from src.tools.basic import *
+from src.tools.utils.request import get_api
+from src.tools.config import Config
 
+token = Config.jx3.api.token
 
 async def pendant(name: str):
     final_url = f"{Config.jx3.api.url}/data/other/pendant?name={name}&token={token}"
