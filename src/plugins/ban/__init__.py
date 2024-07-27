@@ -87,10 +87,9 @@ async def _(bot: Bot, event: Event, args: Message = CommandArg()):
 @preprocess.handle()
 async def _(matcher: Matcher, event: Event):
     current: BannedList = group_db.where_one(BannedList(), default=BannedList())
-    if str(event.user_id) in current.banned_list and not checker(str(event.user_id),10):
-        matcher.stop_propagation()
-    else:
-        pass
+    for i in current.banned_list:
+        if str(event.user_id) == i["uid"] and not checker(str(event.user_id),10):
+            matcher.stop_propagation()
 
 
 dismiss = on_command("dismiss", aliases={"移除音卡"}, force_whitespace=True, priority=5)
