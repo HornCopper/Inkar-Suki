@@ -17,8 +17,8 @@ import nonebot
 from .parse import GithubBaseParser
 
 
-def already(reponame: str, group) -> bool:
-    group_data = group_db.where_one(GroupSettings(), "group_id = ?", group_id=group, default=GroupSettings(group_id=group))
+def already(reponame: str, group_id) -> bool:
+    group_data = group_db.where_one(GroupSettings(), "group_id = ?", group_id, default=GroupSettings(group_id=group))
     return reponame in group_data
 
 repo = on_command("repo", force_whitespace=True, priority=5)
@@ -121,9 +121,9 @@ async def sendm(bot, message, repo):
     """
     groups = getAllGroups()
     send_group = [
-        int(i)
-        for i in groups
-        if repo in group_db.where_one(GroupSettings(), "group_id = ?", group_id=str(i), default=GroupSettings(group_id=str(i)))
+        int(group_id)
+        for group_id in groups
+        if repo in group_db.where_one(GroupSettings(), "group_id = ?", str(group_id), default=GroupSettings(group_id=str(i)))
     ]
     for i in send_group:
         response = await bot.call_api("send_group_msg", group_id=int(i), message=message)

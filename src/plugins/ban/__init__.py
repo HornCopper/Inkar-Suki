@@ -1,6 +1,7 @@
 from nonebot import on_command
 from nonebot.adapters import Message, Event, Bot
 from nonebot.matcher import Matcher
+from nonebot.adapters.onebot.v11 import GroupMessageEvent
 from nonebot.params import CommandArg, Arg
 
 from src.tools.config import Config
@@ -132,10 +133,11 @@ async def _(bot: Bot, event: Event, args: Message = CommandArg()):
         await recovery.send(f"确定要重置{Config.bot_basic.bot_name}数据吗？如果是，请再发送一次“重置音卡”。\n注意：所有本群数据将会清空，包括绑定和订阅，该操作不可逆！")
 
 @recovery.got("confirm")
-async def _(bot: Bot, event: Event, confirm: Message = Arg()):
+async def _(bot: Bot, event: GroupMessageEvent, confirm: Message = Arg()):
     u_input = confirm.extract_plain_text()
     if u_input == "重置音卡":
-        group_settings: GroupSettings = group_db.where_one(GroupSettings(), "group_id = ?", group_id = str(event.group_id), default=None)
+        group_id = str(event.group_id)
+        group_settings: GroupSettings = group_db.where_one(GroupSettings(), "group_id = ?", group_id, default=None)
         group_settings = GroupSettings(id=group_settings.id, group_id=group_settings.group_id)
         group_db.save(group_settings)
         await dismiss.send("重置成功！可以重新开始绑定本群数据了！")

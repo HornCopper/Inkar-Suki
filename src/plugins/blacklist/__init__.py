@@ -29,7 +29,8 @@ async def _(bot: Bot, event: Event, args: Message = CommandArg()):
     sb = arg[0]
     reason = arg[1]
     new = {"ban": sb, "reason": reason}
-    current_data: GroupSettings = group_db.where_one(GroupSettings(), "group_id = ?", group_id=str(event.group_id), default=GroupSettings())
+    group_id = str(event.group_id)
+    current_data: GroupSettings = group_db.where_one(GroupSettings(), "group_id = ?", group_id, default=GroupSettings())
     current_blacklist = current_data.blacklist
     for i in current_blacklist:
         if i["ban"] == sb:
@@ -54,7 +55,8 @@ async def _(bot: Bot, event: Event, args: Message = CommandArg()):
     if len(arg) != 1:
         await unblock.finish("参数仅为玩家名，请勿附带任何信息！")
     sb = arg[0]
-    current_data: GroupSettings = group_db.where_one(GroupSettings(), "group_id = ?", group_id=str(event.group_id), default=GroupSettings(group_id=str(event.group_id)))
+    group_id = str(event.group_id)
+    current_data: GroupSettings = group_db.where_one(GroupSettings(), "group_id = ?", group_id, default=GroupSettings(group_id=str(event.group_id)))
     current_blacklist = current_data.blacklist
     for i in current_blacklist:
         if i["ban"] == sb:
@@ -74,7 +76,8 @@ async def _(event: Event, args: Message = CommandArg()):
     if len(arg) != 1:
         await sblock.finish("参数仅为玩家名，请勿附带任何信息！")
     sb = arg[0]
-    current_data: GroupSettings = group_db.where_one(GroupSettings(), "group_id = ?", group_id=str(event.group_id), default=GroupSettings(group_id=str(event.group_id)))
+    group_id = str(event.group_id)
+    current_data: GroupSettings = group_db.where_one(GroupSettings(), "group_id = ?", group_id, default=GroupSettings(group_id=str(event.group_id)))
     current_blacklist = current_data.blacklist
     for i in current_blacklist:
         if i["ban"] == sb:
@@ -97,7 +100,8 @@ lblock = on_command("lblock", aliases={"本群黑名单", "列出黑名单"}, fo
 async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
     if args.extract_plain_text() != "":
         return
-    current_data: GroupSettings = group_db.where_one(GroupSettings(), "group_id = ?", group_id=str(event.group_id), default=GroupSettings(group_id=str(event.group_id)))
+    group_id = str(event.group_id)
+    current_data: GroupSettings = group_db.where_one(GroupSettings(), "group_id = ?", group_id, default=GroupSettings(group_id=str(event.group_id)))
     current_blacklist = current_data.blacklist
     table = []
     if len(current_blacklist) == 0:

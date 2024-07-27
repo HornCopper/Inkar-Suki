@@ -23,7 +23,7 @@ def Zone_mapping(server, legacy: bool = False):
 
 
 def server_mapping(server: str = None, group_id: str = None):
-    with open(TOOLS + "/basic/server.json", mode="r") as servers_raw_data:
+    with open(TOOLS + "/basic/server.json", mode="r", encoding="utf8") as servers_raw_data:
         servers = json.loads(servers_raw_data.read())
         """
         根据服务器别名匹配服务器，若未输入则获取当前群所绑定的服务器
