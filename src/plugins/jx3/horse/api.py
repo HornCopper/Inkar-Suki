@@ -67,7 +67,6 @@ async def get_horse_next_spawn(server, group_id: str):
                 break
     final_msg = ""
     for map_name in maps:
-        print(ft[map_name])
         final_msg += f"\n{map_name}\n" + parse_info(msg[map_name], ft[map_name]) + "\n-------------------------------"
     final_msg = final_msg[1:-1]
     return server + "·马场告示\n" + final_msg + "\n今日未收到的卢刷新通知！" if not dl_flag else final_msg + "\n今日将有的卢出世，敬请留意！"

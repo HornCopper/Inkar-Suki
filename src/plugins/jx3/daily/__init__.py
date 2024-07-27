@@ -5,7 +5,7 @@ from nonebot import require, get_bots
 require("nonebot_plugin_apscheduler")
 from nonebot_plugin_apscheduler import scheduler
 
-from src.tools.basic.group_opeator import getAllGroups, getGroupSettings
+from src.tools.basic.group_opeator import getAllGroups, getGroupSettings, send_subscribe
 
 from .api import *
 
@@ -29,20 +29,7 @@ async def _(event: GroupMessageEvent):
 async def run_at_8_30():
     msg = await daily_()
     msg = "早安！音卡为您送上今天的日常：\n" + msg
-    bots = get_bots()
-    groups = getAllGroups()
-    group = {}
-    for i in list(bots):
-        single_groups = await bots[i].call_api("get_group_list")
-        group_id_s = []
-        for x in single_groups:
-            group_id_s.append(x["group_id"])
-        group[i] = group_id_s
-    for group_id in groups:
-        for x in list(group):
-            if int(group_id) in group[x]:
-                if "日常" in getGroupSettings(str(group_id), "subscribe"):
-                    await bots[x].call_api("send_group_msg", group_id=int(group_id), message=msg)
+    await send_subscribe("日常", msg)
 
 @scheduler.scheduled_job("cron", hour="19", minute="30")
 async def boss():
@@ -51,20 +38,7 @@ async def boss():
     else:
         return
     msg = activity + "即将开始，请提前到达对应地图等待吧！"
-    bots = get_bots()
-    groups = getAllGroups()
-    group = {}
-    for i in list(bots):
-        single_groups = await bots[i].call_api("get_group_list")
-        group_id_s = []
-        for x in single_groups:
-            group_id_s.append(x["group_id"])
-        group[i] = group_id_s
-    for group_id in groups:
-        for x in list(group):
-            if int(group_id) in group[x]:
-                if "世界BOSS" in getGroupSettings(str(group_id), "subscribe"):
-                    await bots[x].call_api("send_group_msg", group_id=int(group_id), message=msg)
+    await send_subscribe("世界BOSS", msg)
 
 @scheduler.scheduled_job("cron", hour="19", minute="20")
 async def small_gf():
@@ -73,20 +47,7 @@ async def small_gf():
     else:
         return
     msg = activity + "即将开始，请提前到达对应地图等待吧！"
-    bots = get_bots()
-    groups = getAllGroups()
-    group = {}
-    for i in list(bots):
-        single_groups = await bots[i].call_api("get_group_list")
-        group_id_s = []
-        for x in single_groups:
-            group_id_s.append(x["group_id"])
-        group[i] = group_id_s
-    for group_id in groups:
-        for x in list(group):
-            if int(group_id) in group[x]:
-                if "攻防" in getGroupSettings(str(group_id), "subscribe"):
-                    await bots[x].call_api("send_group_msg", group_id=int(group_id), message=msg)
+    await send_subscribe("攻防", msg)
 
 @scheduler.scheduled_job("cron", hour="18", minute="20")
 @scheduler.scheduled_job("cron", hour="12", minute="20")
@@ -98,17 +59,4 @@ async def gf_notice():
     else:
         return
     msg = f"阵营攻防还有40分钟开始啦，请提前半小时进入 {map} 地图！"
-    bots = get_bots()
-    groups = getAllGroups()
-    group = {}
-    for i in list(bots):
-        single_groups = await bots[i].call_api("get_group_list")
-        group_id_s = []
-        for x in single_groups:
-            group_id_s.append(x["group_id"])
-        group[i] = group_id_s
-    for group_id in groups:
-        for x in list(group):
-            if int(group_id) in group[x]:
-                if "攻防" in getGroupSettings(str(group_id), "subscribe"):
-                    await bots[x].call_api("send_group_msg", group_id=int(group_id), message=msg)
+    await send_subscribe("攻防", msg)

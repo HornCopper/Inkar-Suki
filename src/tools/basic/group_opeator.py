@@ -1,4 +1,5 @@
 from typing import Union, Any
+from nonebot import get_bots
 
 import os
 import pathlib2
@@ -37,3 +38,24 @@ def getAllGroups():
     for group_settings in all_db_obj:
         groups.append(group_settings.group_id)
     return groups
+
+async def send_subscribe(subscribe, msg, server=None):
+    bots = get_bots()
+    groups = getAllGroups()
+    group = {}
+
+    for i in list(bots):
+        single_groups = await bots[i].call_api("get_group_list")
+        group_id_s = []
+        for x in single_groups:
+            group_id_s.append(x["group_id"])
+        group[i] = group_id_s
+    
+    for group_id in groups:
+        for x in list(group):
+            if int(group_id) in group[x]:
+                if subscribe in getGroupSettings(str(group_id), "subscribe"):
+                    group_server = getGroupSettings(str(group_id), "server")
+                    if server is not None and (group_server == "" or group_server != server):
+                        continue
+                    await bots[x].call_api("send_group_msg", group_id=int(group_id), message=msg)
