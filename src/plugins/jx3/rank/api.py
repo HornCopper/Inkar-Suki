@@ -1,3 +1,4 @@
+from typing import Union
 from src.tools.config import Config
 from src.tools.utils.request import get_api
 from src.tools.basic.data_server import server_mapping
@@ -43,6 +44,9 @@ async def sl_rank_(server: str, group_id: str, school: str = None):
         return data["data"]["url"]
     else:
         # 区服试炼榜单
+        server: Union[str, None] = server_mapping(server, group_id)
+        if server == None:
+            return [PROMPT.ServerNotExist]
         final_url = f"{Config.jx3.api.url}/view/rank/statistical?token={token}&nickname={bot_name}&server={server}&table=试炼&name={school}&chrome=1"
         data = await get_api(final_url)
         if data["code"] == 400:
