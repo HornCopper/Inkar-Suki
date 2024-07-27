@@ -19,7 +19,8 @@ def getGroupSettings(group_id: str, key: str = None) -> Union[Any, bool]:
     if group_data is not None:
         return group_data.dump().get(key) if key else group_data.dump()
     else:
-        return False
+        group_db.save(GroupSettings(group_id=group_id))
+        return getattr(GroupSettings(), key)
 
 def setGroupSettings(group_id: str, key: str, content: Any) -> bool:
     group_data: Union[GroupSettings, None] = group_db.where_one(GroupSettings(), "group_id = ?", group_id, default=None)
