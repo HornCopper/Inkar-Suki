@@ -25,7 +25,7 @@ async def websocket_client(ws_url: str, headers: dict):
                         continue
                     logger.info("JX3API 解析成功: " + raw_response)
                     parsed = parse_data(response)
-                    msg = parsed.msg()
+                    msg: JX3APIOutputMsg = parsed.msg()
                     await send_subscribe(msg.name, msg.msg, msg.server)
                     logger.info(msg.msg)
         except websockets.exceptions.ConnectionClosed:
