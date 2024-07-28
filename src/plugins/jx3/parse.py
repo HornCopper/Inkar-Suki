@@ -61,8 +61,7 @@ class JX3API818Event(JX3APIPushEvent):
     server: str = ""
 
     def msg(self) -> JX3APIOutputMsg:
-        final_server = self.server if self.server != "-" else ""
-        return JX3APIOutputMsg(msg=f"有新的八卦推送来啦！\n标题：{self.title}\n{self.url}\n来源：{self.name}吧", server=final_server, name="818")
+        return JX3APIOutputMsg(msg=f"有新的八卦推送来啦！\n标题：{self.title}\n{self.url}\n来源：{self.name}吧", name="818")
 
 @handle_event(2005)
 class JX3APIPassEvent(JX3APIPushEvent):
