@@ -41,7 +41,9 @@ def getAllGroups():
     return groups
 
 async def send_subscribe(subscribe, msg, server=None):
-    bots = get_bots()
+    bots: Union[dict, None] = get_bots()
+    if bots is None:
+        return
     groups = getAllGroups()
     group = {}
 

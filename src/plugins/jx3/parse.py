@@ -64,6 +64,15 @@ class JX3API818Event(JX3APIPushEvent):
         final_server = self.server if self.server != "-" else ""
         return JX3APIOutputMsg(msg=f"有新的八卦推送来啦！\n标题：{self.title}\n{self.url}\n来源：{self.name}吧", server=final_server, name="818")
 
+@handle_event(2005)
+class JX3APIPassEvent(JX3APIPushEvent):
+    server: str = ""
+    castle: str = ""
+    start: int = 0
+
+    def msg(self) -> JX3APIOutputMsg:
+        return JX3APIOutputMsg(msg=f"{self.server} 的【{self.castle}】变为 可争夺 状态！", server=self.server, name="关隘")
+
 def parse_data(raw_data: dict):
     data = JX3APIPushEvent(**raw_data)
     action: int = data.action
