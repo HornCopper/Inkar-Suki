@@ -58,7 +58,7 @@ async def find_player(keyword: str):
 async def get_id_by_name(keyword: str, mode: str = "16.12.9.15.11.8"):
     final_url = koromo_api_sp.format(player=keyword)
     data = await get_api(final_url)
-    if len(data) != 1:
+    if len(data) == 0:
         return ["未找到任何玩家，或者该ID不准确，请检查后重试！"]
     else:
         return data[0]["id"]
