@@ -72,6 +72,16 @@ class JX3APIPassEvent(JX3APIPushEvent):
 
     def msg(self) -> JX3APIOutputMsg:
         return JX3APIOutputMsg(msg=f"{self.server} 的【{self.castle}】变为 可争夺 状态！", server=self.server, name="关隘")
+    
+
+@handle_event(2006)
+class JX3APIYuncongEvent(JX3APIPushEvent):
+    name: str = ""
+    site: str = ""
+    desc: str = ""
+
+    def msg(self) -> JX3APIOutputMsg:
+        return JX3APIOutputMsg(msg=f"云从社的 {self.name}（{self.desc}）活动即将在10分钟后开始，敬请留意！", name="云从")
 
 def parse_data(raw_data: dict):
     data = JX3APIPushEvent(**raw_data)
