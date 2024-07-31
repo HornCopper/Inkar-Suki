@@ -49,13 +49,14 @@ async def _(bot: Bot, event: Event, args: Message = CommandArg()):
     elif banned(sb):
         return ban.finish("唔……全域封禁失败，这个人已经被封禁了。")
     else:
-        current: BannedList = group_db.where_one(BannedList(), default=BannedList())
-        current = current.banned_list
+        current_data: BannedList = group_db.where_one(BannedList(), default=BannedList())
+        current = current_data.banned_list
         current.append({
             "uid": sb,
             "reason": ""
         })
-        group_db.save(BannedList(**current))
+        current_data.banned_list = current
+        group_db.save(current_data)
         if self_protection:
             return
         await ban.finish(f"好的，已经全域封禁({sb})。")
@@ -76,12 +77,13 @@ async def _(bot: Bot, event: Event, args: Message = CommandArg()):
         await unban.finish("您输入了什么？")
     if banned(sb) is False:
         await unban.finish("全域解封失败，并没有封禁此人哦~")
-    current: BannedList = group_db.where_one(BannedList(), default=BannedList())
-    current = current.banned_list
+    current_data: BannedList = group_db.where_one(BannedList(), default=BannedList())
+    current = current_data.banned_list
     for one in current:
         if one["uid"] == sb:
             current.remove(one)
-    group_db.save(BannedList(**current))
+    current_data.banned_list = current
+    group_db.save(current_data)
     await ban.finish(f"好的，已经全域解封({sb})。")
 
 
