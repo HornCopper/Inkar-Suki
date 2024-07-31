@@ -1,4 +1,4 @@
-from nonebot import get_driver, logger
+from nonebot import get_driver
 
 from src.tools.config import Config
 
@@ -8,6 +8,8 @@ from .parse import *
 import asyncio
 import websockets
 import json
+
+from nonebot.log import logger # 导入顺序要求
 
 driver = get_driver()
 

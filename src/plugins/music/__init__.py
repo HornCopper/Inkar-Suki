@@ -2,11 +2,11 @@ from pathlib import Path
 
 from nonebot import on_command
 from nonebot.adapters import Message
-from nonebot.log import logger
 from nonebot.params import CommandArg, Arg
 from nonebot.typing import T_State
 from nonebot.adapters.onebot.v11 import GroupMessageEvent, MessageSegment as ms
 
+from src.tools.utils import logger
 from src.tools.utils.path import CACHE
 from src.tools.utils.common import checknumber
 from src.tools.generate import get_uuid
@@ -114,7 +114,6 @@ async def _(event: GroupMessageEvent, state: T_State, args: Message = CommandArg
     rd = getRandomMusic()
     input = rd[1]
     name = rd[0]
-    logger.info(name)
     logger.info(name)
     state["ans"] = name[:-4]
     output = CACHE + "/" + get_uuid() + ".mp3"

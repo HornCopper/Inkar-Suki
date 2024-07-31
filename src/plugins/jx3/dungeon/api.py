@@ -1,6 +1,6 @@
 from pathlib import Path
-from nonebot.log import logger
 
+from src.tools.utils import logger
 from src.tools.generate import generate, get_uuid
 from src.tools.basic.data_server import server_mapping
 from src.tools.config import Config

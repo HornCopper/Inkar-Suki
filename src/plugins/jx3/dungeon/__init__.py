@@ -79,8 +79,6 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     mode = arg[1]
     boss = arg[2]
     data = await generater(map, mode, boss)
-    from nonebot.log import logger
-    logger.info(data)
     if not isinstance(data, list):
         data = get_content_local(data)
         await drops.send(ms.image(data))

@@ -1,8 +1,7 @@
 from playwright.async_api import async_playwright
 from pathlib import Path
-from nonebot.log import logger
 
-from src.tools.utils.common import convert_time
+from src.tools.utils import logger
 from src.tools.utils.path import CACHE
 
 import uuid

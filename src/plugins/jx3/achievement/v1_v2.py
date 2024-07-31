@@ -1,5 +1,4 @@
 from pathlib import Path
-from nonebot.log import logger
 
 from src.tools.basic.data_server import server_mapping
 from src.tools.config import Config
@@ -120,12 +119,10 @@ async def achi_v2(server: str = None, name: str = None, achievement: str = None,
 async def zone_achi(server: str = None, name: str = None, zone: str = None, mode: str = None):
     zone = zone_mapping(zone)
     mode = mode_mapping(mode)
-    logger.info(name)
     if zone is False or mode is False:
         return ["唔……难度或名称输入有误。"]
     personal_data_request = f"{Config.jx3.api.url}/data/role/detailed?token={token}&server={server}&name={name}"
     personal_data = await get_api(personal_data_request)
-    logger.info(personal_data_request)
     if personal_data["code"] != 200:
         guid = ""
         return [f"唔……未找到该玩家。\n请检查玩家[{name}]是否在本群聊所绑定的服务器中，以及本群聊是否绑定服务器。"]
