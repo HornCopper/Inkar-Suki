@@ -22,6 +22,8 @@ selfEnterMsg = """噔噔咚——音卡很荣幸受邀来到了「$GROUP_ID」~
 
 # 上述欢迎语内容为@厌睢(监狱牢头)制作，HornCopper修改
 
+notice_to = Config.bot_basic.bot_notice
+
 notice = on_notice(priority=5)
 
 
@@ -30,7 +32,7 @@ async def _(bot: Bot, event: GroupIncreaseNoticeEvent):
     """入群自动发送帮助信息。"""
     obj = event.user_id
     group = event.group_id
-    bots = Config.bot_basic.bot_notice.__dict__
+    bots = notice_to.__dict__
     if str(obj) not in bots:
         msg = ms.at(obj) + " " + getGroupSettings(str(event.group_id), "welcome")
         await bot.call_api("send_group_msg", group_id=group, message=msg)
@@ -42,14 +44,14 @@ async def _(bot: Bot, event: GroupIncreaseNoticeEvent):
 
 async def notice_and_ban(bot: Bot, event: NoticeEvent, action: str):
     message = f"唔……{Config.bot_basic.bot_name}在群聊（{event.group_id}）被{action}啦！\n操作者：{event.operator_id}，已自动封禁！"
-    for i in Config.notice_to:
-        await bot.call_api("send_group_msg", group_id=int(i), message=message)
+    notice = notice_to.__dict__
+    await bot.call_api("send_group_msg", group_id=int(notice[str(event.self_id)]), message=message)
     kicker = str(event.operator_id)
     if banned(kicker):
         return
     banlist_obj: BannedList = group_db.where_one(BannedList(), default=BannedList())
     banlist_data = banlist_obj.banned_list
-    banlist_data.append(kicker)
+    banlist_data.append({"uid": kicker, "reason": "T"})
     banlist_obj.banned_list = banlist_data
     group_db.save(banlist_obj)
 
@@ -58,7 +60,7 @@ async def _(bot: Bot, event: NoticeEvent):
     """被禁言了"""
     if event.notice_type != "group_ban":
         return
-    if str(event.user_id) not in Config.bot_basic.bot_notice:
+    if str(event.user_id) not in notice_to.__dict__:
         return
     await bot.call_api("set_group_leave", group_id=event.group_id)
     await notice_and_ban(bot, event, "禁言")
@@ -99,8 +101,7 @@ async def _(bot: Bot, event: RequestEvent):
         applications_data.applications_list = applications_list
         group_db.save(applications_data)
         msg = f"收到新的加群申请：\n邀请人：{user}\n群号：{group}"
-        for i in Config.bot_basic.bot_notice[str(event.self_id)]:
-            await bot.call_api("send_group_msg", group_id=int(i), message=msg)
+        await bot.call_api("send_group_msg", group_id=int(notice_to.__dict__[str(event.self_id)]), message=msg)
 
 
 notice_cmd_welcome_msg_edit = on_command("welcome", force_whitespace=True, priority=5)
