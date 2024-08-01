@@ -8,7 +8,7 @@ readme = "README.md"
 [tool.nonebot]
 # plugins = ["nonebot_plugin_apscheduler"]
 plugin_dirs = ["src/plugins"]
-plugins = ["nonebot_plugin_apscheduler", "nonebot_plugin_handle"]
+plugins = ["nonebot_plugin_apscheduler", "nonebot_plugin_handle", "nonebot_plugin_alconna"]
 
 [build-system]
 requires = ["poetry_core>=1.0.0"]

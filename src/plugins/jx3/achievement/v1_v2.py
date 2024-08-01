@@ -9,6 +9,7 @@ from src.tools.file import read, write
 from src.tools.generate import generate, get_uuid
 from src.tools.basic.jx3 import gen_ts, format_body, gen_xsk
 
+from src.plugins.jx3.bind import getPlayerLocalData
 from src.plugins.jx3.dungeon.api import get_map, zone_mapping, mode_mapping
 
 import json
@@ -52,8 +53,8 @@ async def achi_v2(server: str = None, name: str = None, achievement: str = None,
     server = server_mapping(server, group_id)
     if not server:
         return [PROMPT.ServerNotExist]
-    personal_data_request = f"{Config.jx3.api.url}/data/role/detailed?token={token}&server={server}&name={name}"
-    personal_data = await get_api(personal_data_request)
+    personal_data_request = getPlayerLocalData(roleName=name, serverName=server)
+    personal_data = personal_data_request.format_jx3api()
     if personal_data["code"] != 200:
         guid = ""
         return ["唔……玩家信息获取失败。"]
@@ -121,8 +122,8 @@ async def zone_achi(server: str = None, name: str = None, zone: str = None, mode
     mode = mode_mapping(mode)
     if zone is False or mode is False:
         return ["唔……难度或名称输入有误。"]
-    personal_data_request = f"{Config.jx3.api.url}/data/role/detailed?token={token}&server={server}&name={name}"
-    personal_data = await get_api(personal_data_request)
+    personal_data_request = getPlayerLocalData(roleName=name, serverName=server)
+    personal_data = personal_data_request.format_jx3api()
     if personal_data["code"] != 200:
         guid = ""
         return [f"唔……未找到该玩家。\n请检查玩家[{name}]是否在本群聊所绑定的服务器中，以及本群聊是否绑定服务器。"]

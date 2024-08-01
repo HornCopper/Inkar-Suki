@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from src.tools.utils import logger
+from nonebot.log import logger
 from src.tools.generate import generate, get_uuid
 from src.tools.basic.data_server import server_mapping
 from src.tools.config import Config
@@ -9,6 +9,8 @@ from src.tools.basic.jx3 import gen_ts, gen_xsk, format_body, dungeon_sign
 from src.tools.utils.path import ASSETS, CACHE, PLUGINS, VIEWS
 from src.tools.utils.common import convert_time, getCurrentTime, getRelateTime
 from src.tools.file import read, write
+
+from src.plugins.jx3.bind import getPlayerLocalData
 from src.plugins.jx3.attributes import Zone_mapping
 
 import json
@@ -377,8 +379,8 @@ available_ = """
 
 async def zone_v2(server, id):
     server = server_mapping(server)
-    details_request = f"{Config.jx3.api.url}/data/role/detailed?token={token}&server={server}&name={id}"
-    details_data = await get_api(details_request)
+    data = getPlayerLocalData(roleName=id, serverName=server)
+    details_data = data.format_jx3api()
     if details_data["code"] != 200:
         guid = ""
         return ["唔……获取玩家信息失败。"]

@@ -6,7 +6,7 @@ from nonebot.params import CommandArg, Arg
 from nonebot.typing import T_State
 from nonebot.adapters.onebot.v11 import GroupMessageEvent, MessageSegment as ms
 
-from src.tools.utils import logger
+from nonebot.log import logger
 from src.tools.utils.path import CACHE
 from src.tools.utils.common import checknumber
 from src.tools.generate import get_uuid

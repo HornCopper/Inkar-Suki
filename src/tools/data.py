@@ -448,6 +448,16 @@ class Population(LiteModel):
     TABLE_NAME: str = "population"
     populations: dict = {}
 
+class RoleData(LiteModel):
+    TABLE_NAME: str = "role_data"
+    bodyName: str = ""
+    campName: str = ""
+    forceName: str = ""
+    globalRoleId: str = ""
+    roleName: str = ""
+    roleId: str = ""
+    serverName: str = ""
+
 group_db = Database(DATA + "/Snowykami.db")
 
-group_db.auto_migrate(GroupSettings(), BannedList(), BannedWordList(), ApplicationsList(), Population(), AffectionsList(), Permission())
+group_db.auto_migrate(AffectionsList(), ApplicationsList(), BannedList(), BannedWordList(), GroupSettings(), Permission(), Population(), RoleData())

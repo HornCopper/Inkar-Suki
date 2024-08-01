@@ -11,6 +11,8 @@ from src.tools.generate import get_uuid, generate
 from src.tools.basic.msg import PROMPT
 from src.tools.basic.data_server import server_mapping
 
+from src.plugins.jx3.bind import getPlayerLocalData
+
 import json
 
 ticket = Config.jx3.api.ticket
@@ -44,8 +46,8 @@ async def get_tuilan_data(url: str, params: Union[dict, None] = None):
 
 
 async def get_guid(server: str, name: str):
-    url = f"{Config.jx3.api.url}/data/role/detailed?token={Config.jx3.api.token}&server={server}&name={name}"
-    data = await get_api(url)
+    data = getPlayerLocalData(roleName=name, serverName=server)
+    data = data.format_jx3api()
     if data["code"] != 200:
         return False
     else:
@@ -183,8 +185,8 @@ template_each_dungeon_header = """
 """
 
 async def get_personal_guid(server: str, id: str):
-    final_url = f"{Config.jx3.api.url}/data/role/detailed?token={Config.jx3.api.token}&server={server}&name={id}"
-    data = await get_api(final_url)
+    data = getPlayerLocalData(roleName=name, serverName=server)
+    data = data.format_jx3api()
     if data["code"] != 200:
         return False
     else:

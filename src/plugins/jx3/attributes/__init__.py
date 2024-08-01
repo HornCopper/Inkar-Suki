@@ -92,26 +92,3 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     else:
         data = get_content_local(data)
         await addritube_v4.finish(ms.image(data))
-
-roleInfo = on_command("jx3_player", aliases={"玩家信息"}, force_whitespace=True, priority=5)
-
-@roleInfo.handle()
-async def _(event: GroupMessageEvent, args: Message = CommandArg()):
-    """
-    获取玩家信息：
-
-    Example：-玩家信息 幽月轮 哭包猫@唯我独尊
-    """
-    if args.extract_plain_text() == "":
-        return
-    arg = args.extract_plain_text().split(" ")
-    if len(arg) not in [1, 2]:
-        await roleInfo.finish("唔……参数不正确哦，请检查后重试~")
-    if len(arg) == 1:
-        server = None
-        id = arg[0]
-    elif len(arg) == 2:
-        server = arg[0]
-        id = arg[1]
-    msg = await roleInfo_(server=server, player=id, group_id=str(event.group_id))
-    await roleInfo.finish(msg)

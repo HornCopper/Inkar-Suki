@@ -12,6 +12,8 @@ from src.tools.file import read
 from src.tools.utils.path import ASSETS, CACHE, PLUGINS
 from src.tools.basic.jx3 import gen_ts, format_body, gen_xsk
 
+from src.plugins.jx3.bind import getPlayerLocalData
+
 import os
 import json
 
@@ -36,34 +38,10 @@ async def addritube_(server: str = None, name: str = None, group_id: str = None)
         return ["仅互关好友可见哦~"]
     return data["data"]["url"]
 
-
-async def roleInfo_(server, player, group_id):
-    server = server_mapping(server, group_id)
-    if not token:
-        return PROMPT.NoToken
-    final_url = f"{Config.jx3.api.url}/data/role/detailed?token={token}&name={player}&server={server}"
-    if not server:
-        return PROMPT.ServerNotExist
-    data = await get_api(final_url)
-    if data["code"] == 404:
-        return "没有找到该玩家哦~\n需要该玩家在世界频道发言后方可查询。"
-    msg = "以下信息仅供参考！\n数据可能已经过期，但UID之类的仍可参考。"
-    zone = data["data"]["zoneName"]
-    srv = data["data"]["serverName"]
-    nm = data["data"]["roleName"]
-    uid = data["data"]["roleId"]
-    fc = data["data"]["forceName"]
-    bd = data["data"]["bodyName"]
-    tg = data["data"]["tongName"]
-    cp = data["data"]["campName"]
-    msg = msg + f"\n服务器：{zone} - {srv}\n角色名称：{nm}\nUID：{uid}\n体型：{fc}·{bd}\n帮会：{cp} - {tg}"
-    return msg
-
-
 async def get_uid(server, id):
     token = Config.jx3.api.token
-    url = f"{Config.jx3.api.url}/data/role/detailed?token={token}&server={server}&name={id}"
-    data = await get_api(url)
+    data = getPlayerLocalData(roleName=id, serverName=server)
+    data = data.format_jx3api()
     if data["code"] != 200:
         return False
     else:

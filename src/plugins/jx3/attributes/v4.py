@@ -12,6 +12,7 @@ from src.tools.utils.request import post_url
 from src.tools.generate import get_uuid, generate
 from src.tools.utils.path import ASSETS, CACHE, PLUGINS, VIEWS
 
+from src.plugins.jx3.bind import getPlayerLocalData
 from src.plugins.jx3.affection import getColor
 
 from .api import kungfu_mapping, enchant_mapping, find_qx
@@ -34,7 +35,8 @@ template_attrs_v4 = """
 </tr>"""
 
 async def get_basic_info(server: str, name: str):
-    data = await get_api(f"{Config.jx3.api.url}/data/role/detailed?token={token}&server={server}&name={name}")
+    data = getPlayerLocalData(roleName=name, serverName=server)
+    data = data.format_jx3api()
     if data["code"] != 200:
         return 404
     else:

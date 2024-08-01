@@ -12,6 +12,7 @@ from src.tools.basic.msg import PROMPT
 from src.tools.basic.data_server import getGroupServer
 from src.tools.utils.path import ASSETS, CACHE, VIEWS
 
+from src.plugins.jx3.bind import getPlayerLocalData
 from src.plugins.jx3.rank.school_rank import colors
 
 import random
@@ -38,7 +39,8 @@ def checkUinStatus(uin: int):
     return False
     
 async def getSchool(name: str, server: str):
-    data = await get_api(f"{Config.jx3.api.url}/data/role/detailed?token={token}&server={server}&name={name}")
+    data = getPlayerLocalData(roleName=name, serverName=server)
+    data = data.format_jx3api()
     if data["code"] != 200:
         return False
     else:

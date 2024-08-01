@@ -1,4 +1,4 @@
-from src.tools.utils import logger
+from nonebot.log import logger
 from src.tools.utils.path import ASSETS
 
 import random
