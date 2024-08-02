@@ -8,4 +8,4 @@ class PROMPT:
     NumberInvalid = "唔……输入的不是数字哦，取消搜索。"
     InvalidToken = "唔……该音卡实例的JX3API的token无效，请联系机器人主人！"
     NumberNotExist = "唔……输入的数字不在范围内哦，请检查后重试！"
-    PlayerNotExist = "唔……玩家不存在哦，请检查后重试！"
+    PlayerNotExist = "唔……未找到该玩家，请提交角色！\n提交角色 服务器 UID"

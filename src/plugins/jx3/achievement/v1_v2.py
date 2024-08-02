@@ -126,7 +126,7 @@ async def zone_achi(server: str = None, name: str = None, zone: str = None, mode
     personal_data = personal_data_request.format_jx3api()
     if personal_data["code"] != 200:
         guid = ""
-        return [f"唔……未找到该玩家。\n请检查玩家[{name}]是否在本群聊所绑定的服务器中，以及本群聊是否绑定服务器。"]
+        return [f"唔……未找到该玩家，请提交角色！\n提交角色 服务器 UID"]
     else:
         guid = personal_data["data"]["globalRoleId"]
     map_id = await get_map(zone, mode)

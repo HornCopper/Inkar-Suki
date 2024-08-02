@@ -109,7 +109,7 @@ async def recWebHook(req: Request):
     except Exception as e:
         msg = f"Event {event} has not been supported."
         return {"status": "500", "message": msg, "error": e}
-    bots: list = Config.bot_basic.bot_notice
+    bots: list = list(Config.bot_basic.bot_notice.__dict__)
     for i in bots:
         bot = get_bot(i)
         await sendm(bot, message, repo)

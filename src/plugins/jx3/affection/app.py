@@ -33,6 +33,7 @@ def storgeAffections(new_data: dict):
     
 def checkUinStatus(uin: int):
     data = getAffections()
+    data = data.affections_list
     for i in data:
         if uin in i["uin"]:
             return True

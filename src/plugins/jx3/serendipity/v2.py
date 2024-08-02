@@ -35,7 +35,7 @@ async def getImage_v2(server: str, name: str, group_id: str, type: bool):
         return [PROMPT.ServerNotExist]
     data = await get_api(f"{Config.jx3.api.url}/data/luck/adventure?token={token}&server={server}&name={name}&ticket={ticket}")
     if data["code"] != 200:
-        return ["唔……未找到该玩家的奇遇！"]
+        return [f"唔……未找到该玩家，请提交角色！\n提交角色 服务器 UID"]
     # 笔记：1 → 世界奇遇；2 → 绝世奇遇；3 → 宠物奇遇
     # 注：暂时忽略宠物奇遇，不做统计
     tables = []

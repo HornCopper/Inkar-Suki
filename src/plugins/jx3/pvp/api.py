@@ -20,7 +20,7 @@ async def arena_record(server: str = None, name: str = None, mode: str = "", gro
     if data["code"] == 400:
         return [PROMPT.ServerInvalid]
     if data["code"] == 404:
-        return ["唔……未找到该玩家的记录，请检查玩家名或服务器名。"]
+        return [f"唔……未找到该玩家，请提交角色！\n提交角色 服务器 UID"]
     return data["data"]["url"]
 
 async def arena_rank(mode: str = "33"):

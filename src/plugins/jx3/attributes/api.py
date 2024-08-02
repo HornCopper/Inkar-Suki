@@ -241,7 +241,7 @@ async def get_attr_main(server, id, group_id):
         return [PROMPT.ServerNotExist]
     uid = await get_uid(server, id)
     if not uid:
-        return ["唔……未找到该玩家。"]
+        return [f"唔……未找到该玩家，请提交角色！\n提交角色 服务器 UID"]
     param = {
         "zone": Zone_mapping(server),
         "server": server,

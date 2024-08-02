@@ -97,7 +97,7 @@ async def get_attrs_v4(server: str, name: str, group_id: str):
         return [PROMPT.ServerNotExist]
     basic_info = await get_basic_info(server, name)
     if basic_info == 404:
-        return ["唔……未找到该玩家，请检查角色名称或服务器后重试！"]
+        return [f"唔……未找到该玩家，请提交角色！\n提交角色 服务器 UID"]
     param = {
         "zone": Zone_mapping(server),
         "server": server,

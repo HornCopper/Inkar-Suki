@@ -27,7 +27,7 @@ async def zone(server, id):
     final_url = f"{Config.jx3.api.url}/view/role/teamCdList?token={token}&server={server}&name={id}&ticket={ticket}&nickname={bot_name}&chrome=1"
     data = await get_api(final_url)
     if data["code"] == 404:
-        return ["玩家不存在或尚未在世界频道发言哦~"]
+        return [f"唔……未找到该玩家，请提交角色！\n提交角色 服务器 UID"]
     return data["data"]["url"]
 
 
