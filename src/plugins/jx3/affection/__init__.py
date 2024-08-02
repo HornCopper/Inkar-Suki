@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from nonebot import on_command
 from nonebot.adapters import Message
 from nonebot.adapters.onebot.v11 import GroupMessageEvent, MessageSegment as ms
@@ -7,8 +9,6 @@ from src.tools.utils.common import checknumber
 from src.tools.file import get_content_local
 
 from .app import *
-
-import datetime
 
 bind_affection_ = on_command("jx3_affbind", aliases={"绑定情缘"}, force_whitespace=True, priority=5)
 
