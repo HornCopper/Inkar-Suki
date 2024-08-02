@@ -20,8 +20,6 @@ bot_name = Config.bot_basic.bot_name_argument
 device_id = ticket.split("::")[-1]
 
 async def achievements_(server: str = None, name: str = None, achievement: str = None, group_id: str = None):
-    if token is None:
-        return [PROMPT.NoToken]
     if ticket is None:
         return [PROMPT.NoTicket]
     server = server_mapping(server, group_id)

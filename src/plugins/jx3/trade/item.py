@@ -6,8 +6,6 @@ token = Config.jx3.api.token
 bot_name = Config.bot_basic.bot_name_argument
 
 async def item_(name: str = None):  # 物价 <物品>
-    if token is None:
-        return [PROMPT.NoToken]
     final_url = f"{Config.jx3.api.url}/view/trade/record?robot={bot_name}&name={name}&chrome=1"
     data = await get_api(final_url)
     if data["code"] == 400:

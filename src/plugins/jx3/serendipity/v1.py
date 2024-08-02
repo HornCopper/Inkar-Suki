@@ -10,8 +10,6 @@ ticket = Config.jx3.api.ticket
 bot_name = Config.bot_basic.bot_name_argument
 
 async def serendipity_(server: str = None, name: str = None, group_id: str = None):  # 奇遇 <服务器> <ID>
-    if token is None:
-        return [PROMPT.NoToken]
     server = server_mapping(server, group_id)
     if not server:
         return [PROMPT.ServerNotExist]
@@ -22,8 +20,6 @@ async def serendipity_(server: str = None, name: str = None, group_id: str = Non
 
 # 近期奇遇 <服务器> [奇遇]
 async def statistical_(server: str = None, serendipity: Union[str, None] = None, group_id: str = None):
-    if token is None:
-        return [PROMPT.NoToken]
     server = server_mapping(server, group_id)
     if not server:
         return [PROMPT.ServerNotExist]
@@ -36,8 +32,6 @@ async def statistical_(server: str = None, serendipity: Union[str, None] = None,
 
 
 async def global_serendipity(name: str = None):  # 全服奇遇 [奇遇]
-    if token is None:
-        return [PROMPT.NoToken]
     if name is not None:
         final_url = f"{Config.jx3.api.url}/view/luck/server/adventure?name={name}&token={token}&nickname={bot_name}&chrome=1"
     data = await get_api(final_url)
@@ -45,8 +39,6 @@ async def global_serendipity(name: str = None):  # 全服奇遇 [奇遇]
 
 
 async def global_statistical(name: str = None):  # 全服统计 [奇遇]
-    if token is None:
-        return [PROMPT.NoToken]
     if name is not None:
         final_url = f"{Config.jx3.api.url}/view/luck/server/statistical?name={name}&token={token}&nickname={bot_name}"
     data = await get_api(final_url)

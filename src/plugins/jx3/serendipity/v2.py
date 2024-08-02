@@ -10,6 +10,10 @@ from src.tools.generate import get_uuid, generate
 from src.tools.utils.common import convert_time
 from src.tools.file import read, write
 
+from src.plugins.jx3.bind import getPlayerLocalData
+
+from .without_jx3api import *
+
 token = Config.jx3.api.token
 ticket = Config.jx3.api.ticket
 bot_name = Config.bot_basic.bot_name_argument
@@ -27,25 +31,27 @@ template_serendity = """
     <td class="short-column">$actual_time<br>$relative_time</td>
 </tr>"""
 
+Serendipity = JX3Serendipity()
+
 async def getImage_v2(server: str, name: str, group_id: str, type: bool):
-    if token is None:
-        return [PROMPT.NoToken]
     server = server_mapping(server, group_id)
     if not server:
         return [PROMPT.ServerNotExist]
-    data = await get_api(f"{Config.jx3.api.url}/data/luck/adventure?token={token}&server={server}&name={name}&ticket={ticket}")
-    if data["code"] != 200:
-        return [f"唔……未找到该玩家，请提交角色！\n提交角色 服务器 UID"]
+    role_data = getPlayerLocalData(roleName=name, serverName=server)
+    if role_data.format_jx3api()["code"] != 200:
+        return [PROMPT.PlayerNotExist]
+    serendipity_data = await Serendipity.integration(server, name)
+    data = serendipity_data
     # 笔记：1 → 世界奇遇；2 → 绝世奇遇；3 → 宠物奇遇
     # 注：暂时忽略宠物奇遇，不做统计
     tables = []
     current_time = int(datetime.now().timestamp())
-    for i in data["data"]:
+    for i in data:
         if type and i["level"] >= 3: # 绝世+普通
             continue
         if not type and i["level"] != 3: # 宠物
             continue
-        serendity_name = i["event"]
+        serendity_name = i["name"]
         flag = ASSETS + "/serendipity/vector/peerless.png" if i["level"] == 2 else ""
         icon = ASSETS + "/serendipity/serendipity/" + serendity_name + ".png"
         if i["time"] != 0:
@@ -75,7 +81,6 @@ async def getImage_v2(server: str, name: str, group_id: str, type: bool):
         return ["唔……您似乎只有宠物奇遇哦，如果需要查看请使用V1版本的奇遇查询：\n查询v1/奇遇v1 区服 ID"]
     tables[0] = tables[0][:-5] + poem + "</tr>"
     saohua = "严禁将蓉蓉机器人与音卡共存，一经发现永久封禁！蓉蓉是抄袭音卡的劣质机器人！"
-    
     appinfo_time = convert_time(int(datetime.now().timestamp()), "%H:%M:%S")
     appinfo = f"个人奇遇记录 · {server} · {name} · {appinfo_time}"
     final_table = "\n".join(tables)

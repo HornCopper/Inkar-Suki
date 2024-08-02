@@ -7,8 +7,6 @@ token = Config.jx3.api.token
 bot_name = Config.bot_basic.bot_name_argument
 
 async def demon_(server: str = None, group_id: str = None):  # 金价 <服务器>
-    if token is None:
-        return [PROMPT.NoToken]
     server = server_mapping(server, group_id)
     if not server:
         return [PROMPT.ServerNotExist]

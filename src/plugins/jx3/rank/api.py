@@ -11,8 +11,6 @@ async def rank_(type_1: str, type_2: str, server: str, group_id: str):
     server = server_mapping(server, group_id)
     if not server:
         return [PROMPT.ServerNotExist]
-    if token is None:
-        return [PROMPT.NoToken]
     final_url = f"{Config.jx3.api.url}/view/rank/statistical?token={token}&nickname={bot_name}&server={server}&table={type_1}&name={type_2}&chrome=1"
     if type_1 == "个人":
         if type_2 not in ["名士五十强", "老江湖五十强", "兵甲藏家五十强", "名师五十强", "阵营英雄五十强", "薪火相传五十强", "庐园广记一百强"]:
