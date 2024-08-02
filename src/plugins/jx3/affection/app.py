@@ -86,7 +86,8 @@ def getColor(school: str):
     return "#FFFFFF"
 
 async def generateAffectionImage(uin: int):
-    for i in getAffections():
+    current_data = getAffections().affections_list
+    for i in current_data:
         if uin in i["uin"]:
             btxbfont = ASSETS + "/font/包图小白体.ttf"
             yozaifont = ASSETS + "/font/Yozai-Medium.ttf"
