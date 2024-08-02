@@ -61,7 +61,7 @@ async def getItemDetail(item_name: str):
     publish_time_limit = item_data["publishLimitTime"] if item_data["publishLimitTime"] != None else "--" # 发行时长
     binding_time_limit = item_data["limitTime"] if item_data["limitTime"] != None else "--" # 绑定时长
     raw_price = str(item_data["priceNum"]) + "元" # 发行原价
-    img = item_data["imgs"][0] if len(item_data["imgs"]) > 0 else "https://inkar-suki.codethink.cn/Inkar-Suki-Docs/img/Unknown.png"
+    img = item_data["imgs"][0] if item_data["imgs"] != None else "https://inkar-suki.codethink.cn/Inkar-Suki-Docs/img/Unknown.png"
     return [item_name, item_alias, publish_time, publish_count_limit, publish_time_limit, binding_time_limit, raw_price, img]
     # [物品名称, 物品别称, 发行时间, 发行数量, 发行时长, 绑定时长, 发行原价, 图片样例]
 
