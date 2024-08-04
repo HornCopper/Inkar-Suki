@@ -33,7 +33,7 @@ class JX3Serendipity:
         return serendipity_level
 
     async def get_tuilan_data(self, server: str, name: str):
-        role: Player = getPlayerLocalData(roleName=name, serverName=server)
+        role: Player = await getPlayerLocalData(roleName=name, serverName=server)
         data = role.format_jx3api()
         if data["code"] != 200:
             return False
@@ -83,7 +83,11 @@ class JX3Serendipity:
         final_url = f"https://pull.j3cx.com/api/serendipity?server={server}&role={name}&pageSize=50"
         data = await get_api(final_url)
         serendipities = []
-        for serendipity in data["data"]["data"]:
+        data = data["data"]["data"]
+        if data == None:
+            self.my = serendipities
+            return
+        for serendipity in data:
             serendipity_name = serendipity["serendipity"]
             serendipity_level = self.get_serendipity_level(serendipity_name)
             new = {

@@ -6,6 +6,12 @@ from src.tools.basic.jx3 import gen_ts, gen_xsk, format_body
 from src.tools.basic.data_server import server_mapping, Zone_mapping
 from src.tools.data import group_db, RoleData
 
+try:
+    from .uid import get_uid
+    # 如果有能够获取UID的方法，请在这里提供
+except:
+    pass
+
 import json
 
 ticket = Config.jx3.api.ticket
@@ -70,10 +76,16 @@ class Player:
         if self.__dict__ == {}:
             return {"code": 404, "data": None}
         return {"code": 200, "data": self.__dict__}
+    
+from src.tools.utils.request import get_api
 
-def getPlayerLocalData(roleName: str = "", roleId: str = "", serverName: str = None):
+async def getPlayerLocalData(roleName: str = "", roleId: str = "", serverName: str = None):
     player_data = group_db.where_one(RoleData(), "roleName = ? OR roleId = ? AND serverName = ?", roleName, roleId, serverName, default=None)
     if player_data is None:
-        return Player()
+        uid = await get_uid(roleName=roleName, serverName=serverName)
+        if uid == None:
+            return Player()
+        await getRoleData(uid, serverName)
+        return await getPlayerLocalData(roleName=roleName, roleId=uid)
     else:
         return Player(**player_data.dump())

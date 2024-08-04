@@ -40,7 +40,7 @@ async def addritube_(server: str = None, name: str = None, group_id: str = None)
 
 async def get_uid(server, id):
     token = Config.jx3.api.token
-    data = getPlayerLocalData(roleName=id, serverName=server)
+    data = await getPlayerLocalData(roleName=id, serverName=server)
     data = data.format_jx3api()
     if data["code"] != 200:
         return False
