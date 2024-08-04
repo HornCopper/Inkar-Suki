@@ -10,6 +10,7 @@ src/plugins/book/
 src/tools/order.json
 src/plugins/firework/
 src/assets/music/
+src/plugins/jx3/bind/uid.py
 
 affections.json
 

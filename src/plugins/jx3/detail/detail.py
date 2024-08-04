@@ -46,7 +46,7 @@ async def get_tuilan_data(url: str, params: Union[dict, None] = None):
 
 
 async def get_guid(server: str, name: str):
-    data = getPlayerLocalData(roleName=name, serverName=server)
+    data = await getPlayerLocalData(roleName=name, serverName=server)
     data = data.format_jx3api()
     if data["code"] != 200:
         return False
@@ -185,7 +185,7 @@ template_each_dungeon_header = """
 """
 
 async def get_personal_guid(server: str, id: str):
-    data = getPlayerLocalData(roleName=name, serverName=server)
+    data = await getPlayerLocalData(roleName=name, serverName=server)
     data = data.format_jx3api()
     if data["code"] != 200:
         return False

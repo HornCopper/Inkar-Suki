@@ -40,7 +40,7 @@ def checkUinStatus(uin: int):
     return False
     
 async def getSchool(name: str, server: str):
-    data = getPlayerLocalData(roleName=name, serverName=server)
+    data = await getPlayerLocalData(roleName=name, serverName=server)
     data = data.format_jx3api()
     if data["code"] != 200:
         return False

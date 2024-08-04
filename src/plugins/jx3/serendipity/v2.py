@@ -14,6 +14,8 @@ from src.plugins.jx3.bind import getPlayerLocalData
 
 from .without_jx3api import *
 
+import os
+
 token = Config.jx3.api.token
 ticket = Config.jx3.api.ticket
 bot_name = Config.bot_basic.bot_name_argument
@@ -37,7 +39,7 @@ async def getImage_v2(server: str, name: str, group_id: str, type: bool):
     server = server_mapping(server, group_id)
     if not server:
         return [PROMPT.ServerNotExist]
-    role_data = getPlayerLocalData(roleName=name, serverName=server)
+    role_data = await getPlayerLocalData(roleName=name, serverName=server)
     if role_data.format_jx3api()["code"] != 200:
         return [PROMPT.PlayerNotExist]
     serendipity_data = await Serendipity.integration(server, name)
@@ -54,6 +56,8 @@ async def getImage_v2(server: str, name: str, group_id: str, type: bool):
         serendity_name = i["name"]
         flag = ASSETS + "/serendipity/vector/peerless.png" if i["level"] == 2 else ""
         icon = ASSETS + "/serendipity/serendipity/" + serendity_name + ".png"
+        if not os.path.exists(icon):
+            continue
         if i["time"] != 0:
             timeGet = convert_time(i["time"], format="%Y-%m-%d %H:%M:%S")
             timeGet_int = int(i["time"])

@@ -379,7 +379,7 @@ available_ = """
 
 async def zone_v2(server, id):
     server = server_mapping(server)
-    data = getPlayerLocalData(roleName=id, serverName=server)
+    data = await getPlayerLocalData(roleName=id, serverName=server)
     details_data = data.format_jx3api()
     if details_data["code"] != 200:
         guid = ""

@@ -35,7 +35,7 @@ template_attrs_v4 = """
 </tr>"""
 
 async def get_basic_info(server: str, name: str):
-    data = getPlayerLocalData(roleName=name, serverName=server)
+    data = await getPlayerLocalData(roleName=name, serverName=server)
     data = data.format_jx3api()
     if data["code"] != 200:
         return 404
