@@ -14,7 +14,7 @@ zones = on_command("jx3_zones_v1", aliases={"副本v1"}, force_whitespace=True, 
 
 
 @zones.handle()
-async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
+async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     """
     获取玩家副本通关记录：
 
@@ -91,19 +91,8 @@ item = on_command("jx3_itemdrop", aliases={"掉落"}, force_whitespace=True, pri
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     if args.extract_plain_text() == "":
         return
-    group_server = getGroupServer(str(event.group_id))
     arg = args.extract_plain_text().split(" ")
-    if len(arg) not in [1, 2]:
-        await item.finish("唔……参数不正确哦，请检查后重试~")
-    if len(arg) == 1:
-        if group_server is False:
-            await item.finish("没有绑定服务器，请携带服务器参数使用！")
-        server = group_server
-        name = arg[0]
-    elif len(arg) == 2:
-        server = arg[0]
-        name = arg[1]
-    data = await get_item_record(server, name)
+    data = await get_item_record(arg)
     if isinstance(data, list):
         await item.finish(data[0])
     data = get_content_local(data)

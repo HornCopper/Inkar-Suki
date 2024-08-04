@@ -451,9 +451,7 @@ template_item = """
 """
 
 
-async def get_item_record(server: str, name: str):
-    server = server_mapping(server)
-    zone = Zone_mapping(server)
+async def get_item_record(name: str):
     headers = {
         "Accept": "application/json, text/javascript, */*; q=0.01",
         "Accept-Language": "zh-CN,zh;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6",
@@ -472,8 +470,8 @@ async def get_item_record(server: str, name: str):
         "Referer": "https://www.jx3mm.com/jx3fun/jevent/jcitem.html"
     }
     filter = {
-        "Zone": zone,
-        "Srv": server,
+        "Zone": "",
+        "Srv": "",
         "Droppedi": name
     }
     base_params = {
@@ -486,6 +484,8 @@ async def get_item_record(server: str, name: str):
         "op": "{\"Zone\":\"LIKE\",\"Srv\":\"LIKE\"}"
     }
     data = await get_api(url="https://www.jx3mm.com/jx3fun/jevent/jcitem", headers=headers, params=base_params)
+    if data["total"] == 0:
+        return ["未找到相关物品，请检查物品名称是否正确！"]
     known_time = []
     known_id = []
     tablecontents = []
