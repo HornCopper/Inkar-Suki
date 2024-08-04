@@ -477,9 +477,9 @@ async def get_item_record(name: str):
     base_params = {
         "sort": "Tm",
         "order": "desc",
-        "limit": "500",
-        "offset": "0",
-        "_": int(time.time()),
+        "limit": 30,
+        "offset": 0,
+        "_": int(time.time()) * 1000,
         "filter": json.dumps(filter, ensure_ascii=False),
         "op": "{\"Zone\":\"LIKE\",\"Srv\":\"LIKE\"}"
     }

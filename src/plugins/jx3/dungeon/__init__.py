@@ -91,7 +91,7 @@ item = on_command("jx3_itemdrop", aliases={"掉落"}, force_whitespace=True, pri
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     if args.extract_plain_text() == "":
         return
-    arg = args.extract_plain_text().split(" ")
+    arg = args.extract_plain_text()
     data = await get_item_record(arg)
     if isinstance(data, list):
         await item.finish(data[0])
