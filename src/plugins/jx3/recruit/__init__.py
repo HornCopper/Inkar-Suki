@@ -4,8 +4,6 @@ from nonebot.params import CommandArg
 from nonebot.adapters.onebot.v11 import Bot, GroupMessageEvent, MessageSegment as ms
 
 from src.tools.basic.data_server import getGroupServer, server_mapping
-from src.tools.basic.group_opeator import getGroupSettings
-from src.tools.file import get_content_local
 from src.tools.utils.request import get_content
 
 from .api import *
