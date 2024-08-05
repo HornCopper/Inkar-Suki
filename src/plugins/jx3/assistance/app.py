@@ -1,7 +1,7 @@
 from typing import Union, Literal
 from pathlib import Path
 
-from src.constant.jx3 import aliases, skill_icons
+from src.constant.jx3 import aliases, skill_icons, colorList
 
 from src.tools.basic.group_opeator import getGroupSettings, setGroupSettings
 from src.tools.utils.common import getCurrentTime
@@ -132,7 +132,6 @@ class Assistance:
         now = getGroupSettings(group, "opening")
         for i in now:
             if i["description"] == description or now.index(i) == description:
-                colorList = await get_api("https://inkar-suki.codethink.cn/schoolcolors")
                 creator = i["creator"]
                 count = {
                     "T": 0,

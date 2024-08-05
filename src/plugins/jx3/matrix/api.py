@@ -1,24 +1,52 @@
-from src.constant.jx3 import aliases
+from src.constant.jx3 import aliases, force_list
 
 from src.tools.config import Config
-from src.tools.utils.request import get_api
+from src.tools.utils.request import post_url
+from src.tools.basic.jx3 import gen_ts, gen_xsk, format_body
 
-token = Config.jx3.api.token
+import json
+
+ticket = Config.jx3.api.ticket
+device_id = ticket.split("::")[-1]
+
+def get_school_id(school_name: str) -> str:
+    for i in force_list:
+        if school_name == force_list[i]:
+            return i
+    return False
 
 async def matrix_(name):
     name = aliases(name)
     if name is False:
         return "此心法不存在哦~请检查后重试。"
-    full_link = f"{Config.jx3.api.url}/data/school/matrix?name={name}&token={token}"
-    info = await get_api(full_link)
-    if info["code"] == 400:
-        return "此心法不存在哦~请检查后重试。"
-    else:
-        description = ""
-
-        def fe(f, e):
-            return f"{f}：{e}\n"
-        for i in info["data"]["descs"]:
-            description = description + fe(i["name"], i["desc"])
-        skillName = info["data"]["skillName"]
-        return f"查到了{name}的{skillName}：\n" + description
+    param = {
+        "forceId": get_school_id(name),
+        "ts": gen_ts()
+    }
+    param = format_body(param)
+    headers = {
+        "Host": "m.pvp.xoyo.com",
+        "accept": "application/json",
+        "deviceid": device_id,
+        "platform": "ios",
+        "gamename": "jx3",
+        "clientkey": "1",
+        "cache-control": "no-cache",
+        "apiversion": "1",
+        "sign": "true",
+        "token": ticket,
+        "Content-Type": "application/json",
+        "Connection": "Keep-Alive",
+        "User-Agent": "SeasunGame/178 CFNetwork/1240.0.2 Darwin/20.5.0",
+        "X-Sk": gen_xsk(param)
+    }
+    tl_data = await post_url("https://m.pvp.xoyo.com/achievement/list/achievements", data=param, headers=headers)
+    tl_data = json.loads(tl_data)
+    data = tl_data["data"]["zhenFa"]["descs"]
+    description = ""
+    def fe(f, e):
+        return f"{f}：{e}\n"
+    for i in data:
+        description = description + fe(i["name"], i["desc"])
+    skillName = i["data"]["skillName"]
+    return f"查到了{name}的{skillName}：\n" + description

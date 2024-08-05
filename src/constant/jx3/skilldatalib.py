@@ -5,12 +5,16 @@ from nonebot.adapters.onebot.v11 import MessageSegment as ms
 
 from src.tools.utils import get_url, get_status, get_content, get_api
 from src.tools.file import read, write
-from src.tools.utils.path import ASSETS
+from src.tools.utils.path import CONSTANT, ASSETS
 
 import json
 import os
 
-CONSTANT = ASSETS[:-6] + "constant"
+with open(CONSTANT + "/jx3/schoolcolors.json", mode="r", encoding="utf-8") as colors:
+    colorList = json.load(colors)
+
+with open(CONSTANT + "/jx3/schoolid.json", mode="r", encoding="utf-8") as school:
+    force_list = json.loads(school)
 
 
 def kftosh(kf: str) -> str:
@@ -40,7 +44,6 @@ async def getTalents():
 
     数据来源：`JX3BOX` & `JX3API`
     """
-    force_list = await get_api("https://inkar-suki.codethink.cn/jx3boxdata")
     data_list = list(force_list)
     for i in data_list:
         if await get_status(url=f"https://data.jx3box.com/talent/{i}.json") != 404:
@@ -57,7 +60,6 @@ async def getSkills():
 
     数据来源：`JX3BOX` & `JX3API`。
     """
-    force_list = await get_api("https://inkar-suki.codethink.cn/jx3boxdata")
     data_list = list(force_list)
     for i in data_list:
         if await get_status(url=f"https://data.jx3box.com/bps/std/{i}/skill.json") != 404:
