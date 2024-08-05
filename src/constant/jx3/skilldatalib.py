@@ -14,7 +14,7 @@ with open(CONSTANT + "/jx3/schoolcolors.json", mode="r", encoding="utf-8") as co
     colorList = json.load(colors)
 
 with open(CONSTANT + "/jx3/schoolid.json", mode="r", encoding="utf-8") as school:
-    force_list = json.loads(school)
+    force_list = json.load(school)
 
 
 def kftosh(kf: str) -> str:
