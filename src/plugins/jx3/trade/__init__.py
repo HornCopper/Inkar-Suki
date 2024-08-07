@@ -79,7 +79,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
         await item_price.finish(ms.image(final_image))
     await item_price.finish(data[0])
 
-item_v2_ = on_command("jx3_item_v2", aliases={"物价", "物价v2"}, force_whitespace=True, priority=5)
+item_v2_ = on_command("jx3_item_v2", aliases={"物价v2"}, force_whitespace=True, priority=5)
 
 @item_v2_.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):

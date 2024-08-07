@@ -35,7 +35,7 @@ class JX3APIServerEvent(JX3APIPushEvent):
 
 @handle_event(2002)
 class JX3APINewsEvent(JX3APIPushEvent):
-    type: str = ""
+    type: str = "官方公告"
     title: str = ""
     url: str = ""
     date: str = ""

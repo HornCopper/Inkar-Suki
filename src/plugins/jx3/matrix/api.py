@@ -1,4 +1,4 @@
-from src.constant.jx3 import aliases, force_list
+from src.constant.jx3 import aliases, force_list, kftosh
 
 from src.tools.config import Config
 from src.tools.utils.request import post_url
@@ -16,11 +16,11 @@ def get_school_id(school_name: str) -> str:
     return False
 
 async def matrix_(name):
-    name = aliases(name)
+    school = kftosh(aliases(name))
     if name is False:
         return "此心法不存在哦~请检查后重试。"
     param = {
-        "forceId": get_school_id(name),
+        "forceId": get_school_id(school),
         "ts": gen_ts()
     }
     param = format_body(param)
@@ -40,13 +40,15 @@ async def matrix_(name):
         "User-Agent": "SeasunGame/178 CFNetwork/1240.0.2 Darwin/20.5.0",
         "X-Sk": gen_xsk(param)
     }
-    tl_data = await post_url("https://m.pvp.xoyo.com/achievement/list/achievements", data=param, headers=headers)
+    tl_data = await post_url("https://m.pvp.xoyo.com/force/gest", data=param, headers=headers)
     tl_data = json.loads(tl_data)
-    data = tl_data["data"]["zhenFa"]["descs"]
+    data = tl_data["data"]
     description = ""
     def fe(f, e):
         return f"{f}：{e}\n"
     for i in data:
-        description = description + fe(i["name"], i["desc"])
-    skillName = i["data"]["skillName"]
+        if i["kungfuName"] == name:
+            for x in i["zhenFa"]["descs"]:
+                description = description + fe(x["name"], x["desc"])
+                skillName = i["zhenFa"]["skillName"]
     return f"查到了{name}的{skillName}：\n" + description
