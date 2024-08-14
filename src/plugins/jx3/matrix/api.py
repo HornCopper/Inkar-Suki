@@ -16,7 +16,10 @@ def get_school_id(school_name: str) -> str:
     return False
 
 async def matrix_(name):
-    school = kftosh(aliases(name))
+    kf = aliases(name)
+    print(kf)
+    school = kftosh(kf)
+    print(school)
     if name is False:
         return "此心法不存在哦~请检查后重试。"
     param = {
@@ -47,7 +50,7 @@ async def matrix_(name):
     def fe(f, e):
         return f"{f}：{e}\n"
     for i in data:
-        if i["kungfuName"] == name:
+        if i["kungfuName"] == kf:
             for x in i["zhenFa"]["descs"]:
                 description = description + fe(x["name"], x["desc"])
                 skillName = i["zhenFa"]["skillName"]
