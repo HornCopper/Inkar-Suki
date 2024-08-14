@@ -22,22 +22,6 @@ token = Config.jx3.api.token
 ticket = Config.jx3.api.ticket
 device_id = ticket.split("::")[-1]
 
-async def addritube_(server: str = None, name: str = None, group_id: str = None):  # 查装 <服务器> <ID>
-    if token == None or ticket == None:
-        return [PROMPT.NoTicket]
-    server = server_mapping(server, group_id)
-    if not server:
-        return [PROMPT.ServerNotExist]
-    final_url = f"{Config.jx3.api.url}/view/role/attribute?ticket={ticket}&token={token}&nickname={bot_name}&server={server}&name={name}&chrome=1"
-    data = await get_api(final_url)
-    if data["code"] == 404:
-        return ["唔……玩家不存在。"]
-    if data["code"] == 403 and data["msg"] == "侠客隐藏了游戏信息":
-        return ["唔，该玩家隐藏了信息。"]
-    if data["code"] == 403 and data["msg"] == "仅互关好友可见":
-        return ["仅互关好友可见哦~"]
-    return data["data"]["url"]
-
 async def get_uid(server, id):
     token = Config.jx3.api.token
     data = await getPlayerLocalData(roleName=id, serverName=server)

@@ -22,15 +22,6 @@ ticket = Config.jx3.api.ticket
 bot_name = Config.bot_basic.bot_name_argument
 device_id = ticket.split("::")[-1]
 
-async def zone(server, id):
-    server = server_mapping(server)
-    final_url = f"{Config.jx3.api.url}/view/role/teamCdList?token={token}&server={server}&name={id}&ticket={ticket}&nickname={bot_name}&chrome=1"
-    data = await get_api(final_url)
-    if data["code"] == 404:
-        return [f"唔……未找到该玩家，请提交角色！\n提交角色 服务器 UID"]
-    return data["data"]["url"]
-
-
 async def get_cd(server: str, sep: str):
     url = f"https://pull.j3cx.com/api/serendipity?server={server}&serendipity={sep}&pageSize=1"
     data = await get_api(url)

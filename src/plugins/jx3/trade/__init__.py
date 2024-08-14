@@ -70,14 +70,14 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     """
     if args.extract_plain_text() == "":
         return
-    arg = args.extract_plain_text()
-    if arg == "":
-        await item_price.finish("缺少物品名称，没办法找哦~")
-    data = await item_(arg)
-    if isinstance(data, str):
-        final_image = await get_content(data)
-        await item_price.finish(ms.image(final_image))
-    await item_price.finish(data[0])
+    # arg = args.extract_plain_text()
+    # if arg == "":
+    #     await item_price.finish("缺少物品名称，没办法找哦~")
+    # data = await item_(arg)
+    # if isinstance(data, str):
+    #     final_image = await get_content(data)
+    #     await item_price.finish(ms.image(final_image))
+    # await item_price.finish(data[0])
 
 item_v2_ = on_command("jx3_item_v2", aliases={"物价v2"}, force_whitespace=True, priority=5)
 

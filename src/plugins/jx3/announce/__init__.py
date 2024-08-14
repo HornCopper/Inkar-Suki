@@ -18,6 +18,6 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     """
     if args.extract_plain_text() != "":
         return
-    url = await getAnnounce()
-    url = await get_content(url)
-    await announce.finish(ms.image(url))
+    # url = await getAnnounce()
+    # url = await get_content(url)
+    # await announce.finish(ms.image(url))

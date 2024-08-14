@@ -17,9 +17,11 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
 
     Example：-金价 幽月轮
     """
-    server = args.extract_plain_text()
-    data = await demon_(server, group_id=event.group_id)
-    if isinstance(data, list):
-        await demon.finish(data[0])
-    data = await get_content(data)
-    await demon.finish(ms.image(data))
+    if args.extract_plain_text() == "":
+        return
+    # server = args.extract_plain_text()
+    # data = await demon_(server, group_id=event.group_id)
+    # if isinstance(data, list):
+    #     await demon.finish(data[0])
+    # data = await get_content(data)
+    # await demon.finish(ms.image(data))

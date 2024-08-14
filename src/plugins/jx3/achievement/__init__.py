@@ -72,39 +72,7 @@ async def _(state: T_State, num: Message = Arg()):
     else:
         await adventure_.finish("唔……输入的不是数字哦，取消搜索。")
 
-achievements = on_command("jx3_machi", aliases={"进度v1"}, force_whitespace=True, priority=5)
-
-
-@achievements.handle()
-async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
-    """
-    查询玩家成就完成进度以及成就信息：
-
-    Example：-进度 幽月轮 哭包猫@唯我独尊 好久不见
-    Example：-进度 幽月轮 哭包猫@唯我独尊 25人英雄范阳夜变
-    Example：-进度 幽月轮 哭包猫@唯我独尊 扶摇九天
-    Example：-进度 哭包猫@唯我独尊 扶摇九天
-    """
-    achievement = args.extract_plain_text().split(" ")
-    if len(achievement) not in [2, 3]:
-        await achievements.finish(PROMPT.ArgumentInvalid)
-    if len(achievement) == 2:
-        server = None
-        id = achievement[0]
-        achi = achievement[1]
-    elif len(achievement) == 3:
-        server = achievement[0]
-        id = achievement[1]
-        achi = achievement[2]
-    data = await achievements_(server, id, achi, event.group_id)
-    if isinstance(data, list):
-        await achievements.finish(data[0])
-    else:
-        data = await get_content(data)
-        await achievements.finish(ms.image(data))
-
 achievement_v2 = on_command("jx3_achievement_v2", aliases={"进度"}, force_whitespace=True, priority=5)
-
 
 @achievement_v2.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):

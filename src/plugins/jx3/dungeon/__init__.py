@@ -10,36 +10,6 @@ from src.tools.utils.request import get_content
 from .api import *
 from .monster import *
 
-zones = on_command("jx3_zones_v1", aliases={"副本v1"}, force_whitespace=True, priority=5)
-
-
-@zones.handle()
-async def _(event: GroupMessageEvent, args: Message = CommandArg()):
-    """
-    获取玩家副本通关记录：
-
-    Example：-副本v1 幽月轮 哭包猫@唯我独尊
-    """
-    if args.extract_plain_text() == "":
-        return
-    group_server = getGroupServer(str(event.group_id))
-    arg = args.extract_plain_text().split(" ")
-    if len(arg) not in [1, 2]:
-        await zones.finish("唔……参数不正确哦，请检查后重试~")
-    if len(arg) == 1:
-        if group_server is False:
-            await zones.finish("没有绑定服务器，请携带服务器参数使用！")
-        server = group_server
-        id = arg[0]
-    elif len(arg) == 2:
-        server = arg[0]
-        id = arg[1]
-    data = await zone(server, id)
-    if isinstance(data, list):
-        await zones.finish(data[0])
-    data = await get_content(data)
-    await zones.finish(ms.image(data))
-
 zonesv2 = on_command("jx3_zones", aliases={"副本"}, force_whitespace=True, priority=5)
 
 

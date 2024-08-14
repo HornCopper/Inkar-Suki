@@ -32,9 +32,11 @@ zhue_ = on_command("jx3_zhue", aliases={"诛恶"}, force_whitespace=True, priori
 
 @zhue_.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
-    server = server_mapping(args.extract_plain_text(), str(event.group_id))
-    if server == None:
-        await zhue_.finish(PROMPT.ServerNotExist)
-    else:
-        image = await getZhueRecord(server)
-        await zhue_.finish(ms.image(image))
+    if args.extract_plain_text() != "":
+        return
+    # server = server_mapping(args.extract_plain_text(), str(event.group_id))
+    # if server == None:
+    #     await zhue_.finish(PROMPT.ServerNotExist)
+    # else:
+    #     image = await getZhueRecord(server)
+    #     await zhue_.finish(ms.image(image))
