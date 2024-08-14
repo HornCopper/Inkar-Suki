@@ -10,12 +10,9 @@ from .joy import *
 from .matrix import *
 from .news import *
 from .announce import *
-from .pendant import *
 from .penzai import *
 from .gold import *
 from .rank import *
-from .recruit import *
-from .sandbox import *
 from .server import *
 from .skill import *
 from .subscribe import *
@@ -29,8 +26,6 @@ from .private import *
 from .trade import *
 from .events import *
 from .calendar import *
-from .awesome import *
-from .duowan import *
 from .snacks import *
 from .assistance import *
 from .affection import *
