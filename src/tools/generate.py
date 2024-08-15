@@ -105,7 +105,8 @@ async def generate(
     viewport: dict = None,
     full_screen: bool = False,
     hide_classes: list = None,
-    device_scale_factor: float = 1.0
+    device_scale_factor: float = 1.0,
+    output: str = None
 ):
-    generator = ScreenshotGenerator(path, web, locate, first, delay, additional_css, viewport, full_screen, hide_classes, device_scale_factor)
+    generator = ScreenshotGenerator(path, web, locate, first, delay, additional_css, viewport, full_screen, hide_classes, device_scale_factor, output)
     return await generator.generate()
