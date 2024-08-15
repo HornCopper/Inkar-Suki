@@ -6,6 +6,9 @@ import uuid
 import asyncio
 import time
 
+def get_uuid():
+    return str(uuid.uuid1()).replace("-", "")
+
 class ScreenshotGenerator:
     def __init__(
             self, 
@@ -32,11 +35,7 @@ class ScreenshotGenerator:
         self.hide_classes = hide_classes
         self.device_scale_factor = device_scale_factor
         self.output_path = output_path
-        self.uuid = self._generate_uuid()
-
-    @staticmethod
-    def _generate_uuid():
-        return str(uuid.uuid1()).replace("-", "")
+        self.uuid = self.get_uuid()
 
     async def _launch_browser(self, playwright):
         return await playwright.chromium.launch(headless=True, slow_mo=0)
