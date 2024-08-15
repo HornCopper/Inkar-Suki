@@ -2,6 +2,9 @@ from src.tools.config import Config
 
 proxy = Config.bot_basic.proxy
 
+if proxy == "":
+    proxy = None
+
 import httpx
 
 async def get_url(url, **kwargs):
