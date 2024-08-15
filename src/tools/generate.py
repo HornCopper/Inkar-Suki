@@ -1,16 +1,100 @@
 from playwright.async_api import async_playwright
 from pathlib import Path
-
 from nonebot.log import logger
 from src.tools.utils.path import CACHE
-
 import uuid
 import asyncio
 import time
 
-def get_uuid():
-    return str(uuid.uuid1()).replace("-", "")
+class ScreenshotGenerator:
+    def __init__(
+            self, 
+            path: str,
+            web: bool = False, 
+            locate: str = None, 
+            first: bool = False, 
+            delay: int = 0, 
+            additional_css: str = "", 
+            viewport: dict = None, 
+            full_screen: bool = False, 
+            hide_classes: list = [],
+            device_scale_factor: float = 1.0,
+            output_path: str = None,
+        ):
+        self.path = Path(path).as_uri() if not web else path
+        self.web = web
+        self.locate = locate
+        self.first = first
+        self.delay = delay
+        self.additional_css = additional_css
+        self.viewport = viewport or {}
+        self.full_screen = full_screen
+        self.hide_classes = hide_classes
+        self.device_scale_factor = device_scale_factor
+        self.output_path = output_path
+        self.uuid = self._generate_uuid()
 
+    @staticmethod
+    def _generate_uuid():
+        return str(uuid.uuid1()).replace("-", "")
+
+    async def _launch_browser(self, playwright):
+        return await playwright.chromium.launch(headless=True, slow_mo=0)
+
+    async def _setup_context_and_page(self, browser):
+        context = await browser.new_context(device_scale_factor=self.device_scale_factor, viewport=self.viewport if self.viewport else None)
+        page = await context.new_page()
+        await page.goto(self.path)
+        return page
+
+    async def _apply_customizations(self, page):
+        if self.delay > 0:
+            await asyncio.sleep(self.delay / 1000)
+        if self.web:
+            await page.add_style_tag(content=self.additional_css)
+        if self.hide_classes:
+            await self._hide_elements_by_class(page)
+
+    async def _hide_elements_by_class(self, page):
+        if self.hide_classes:
+            combined_selector = ', '.join(f'.{cls}' for cls in self.hide_classes)
+            await page.evaluate(f"document.querySelectorAll('{combined_selector}').forEach(el => el.style.display = 'none')")
+
+    async def _capture_element_screenshot(self, locator, store_path):
+        if self.first:
+            locator = locator.first
+        await locator.screenshot(path=store_path)
+
+    async def _capture_full_screenshot(self, page, store_path):
+        await page.screenshot(path=store_path, full_page=self.full_screen)
+
+    async def _save_screenshot(self, page, store_path=None):
+        store_path = f"{CACHE}/{self.uuid}.png" if store_path is None else store_path
+        if self.locate:
+            locator = page.locator(self.locate)
+            await self._capture_element_screenshot(locator, store_path)
+        else:
+            await self._capture_full_screenshot(page, store_path)
+        return store_path
+
+    async def generate(self):
+        try:
+            time_start = time.time()
+            logger.opt(colors=True).info(f"<green>Generating source: {self.path}</green>")
+
+            async with async_playwright() as p:
+                browser = await self._launch_browser(p)
+                page = await self._setup_context_and_page(browser)
+                await self._apply_customizations(page)
+                store_path = await self._save_screenshot(page, self.output_path)
+
+            time_end = time.time()
+            logger.opt(colors=True).info(f"<green>Generated successfully: {store_path}, spent {round(time_end - time_start, 2)}s</green>")
+            return store_path
+
+        except Exception as ex:
+            logger.error(f"图片生成失败，请尝试执行 `playwright install`！: {ex}")
+            return False
 
 async def generate(
     path: str,
@@ -20,50 +104,9 @@ async def generate(
     delay: int = 0,
     additional_css: str = "",
     viewport: dict = None,
-    full_screen: bool = False
+    full_screen: bool = False,
+    hide_classes: list = None,
+    device_scale_factor: float = 1.0
 ):
-    """
-    生成指定路径下html文件的截图
-    @param path: HTML文件的本地路径或网络地址
-    @param web: 是否为外网截图
-    @param locate: 所截图的标签
-    @param first: 是否只截图第一个元素
-    @param delay: 等待时间，单位为毫秒（ms）
-    @param additional_css: 追加的CSS
-    @param viewport: 浏览器视口设置
-    @param full_screen: 是否截图整个页面
-    """
-    if viewport is None:
-        viewport = {}
-
-    final_path = Path(path).as_uri() if not web else path
-
-    try:
-        async with async_playwright() as p:
-            time_start = time.time()
-            logger.opt(colors=True).info(f"<green>Generating source: {final_path}</green>")
-            browser = await p.chromium.launch(headless=True, slow_mo=0)
-            context = await browser.new_context(viewport=viewport if viewport else None)
-            page = await context.new_page()
-            await page.goto(final_path)
-            if delay > 0:
-                await asyncio.sleep(delay / 1000)
-
-            uuid_ = get_uuid()
-            store_path = f"{CACHE}/{uuid_}.png"
-
-            if web:
-                await page.add_style_tag(content=additional_css)
-
-            if locate:
-                locator = page.locator(locate).first if first else page.locator(locate)
-                await locator.screenshot(path=store_path)
-            else:
-                await page.screenshot(path=store_path, full_page=full_screen)
-
-            time_end = time.time()
-            logger.opt(colors=True).info(f"<green>Generated successfully: {store_path}, spent {round(time_end - time_start, 2)}s</green>")
-            return store_path
-    except Exception as ex:
-        logger.info(f"音卡的图片生成失败啦！请尝试执行`playwright install`！: {ex}")
-        return False
+    generator = ScreenshotGenerator(path, web, locate, first, delay, additional_css, viewport, full_screen, hide_classes, device_scale_factor)
+    return await generator.generate()

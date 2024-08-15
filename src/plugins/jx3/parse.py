@@ -1,6 +1,6 @@
 from __future__ import annotations
 from pydantic import BaseModel
-from typing import Literal, Callable, Type, Dict
+from typing import Literal, Callable, Type, Dict, Tuple
 from dataclasses import dataclass
 
 from src.tools.utils.common import getCurrentTime, convert_time
@@ -35,13 +35,15 @@ class JX3APIServerEvent(JX3APIPushEvent):
 
 @handle_event(2002)
 class JX3APINewsEvent(JX3APIPushEvent):
-    type: str = "官方公告"
     title: str = ""
     url: str = ""
     date: str = ""
 
     def msg(self) -> JX3APIOutputMsg:
-        return JX3APIOutputMsg(msg=f"有新的{self.type}！\n标题：{self.title}\n链接：{self.url}\n日期：{self.date}", name="公告")
+        return JX3APIOutputMsg(msg=f"有新的官方公告！\n标题：{self.title}\n链接：{self.url}\n日期：{self.date}", name="公告")
+    
+    def provide_data(self) -> Tuple[str, str]:
+        return self.url, self.title
 
 @handle_event(2003)
 class JX3APIClientUpdateEvent(JX3APIPushEvent):
