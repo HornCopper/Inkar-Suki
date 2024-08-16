@@ -40,11 +40,10 @@ jobs:
             libx264-dev \
             libunwind-dev
 
-
-      - name: Install dependencies
+      - name: Install Python dependencies
         run: |
           python -m pip install --upgrade pip
-          python -m pip install pytest pytest-asyncio
+          python -m pip install pytest pytest-asyncio pytest-timeout
           python -m pip install -r requirements.txt
           playwright install chromium
 
