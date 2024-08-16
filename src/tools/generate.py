@@ -18,6 +18,7 @@ class ScreenshotGenerator:
             first: bool = False, 
             delay: int = 0, 
             additional_css: str = "", 
+            additional_js: str = "",
             viewport: dict = None, 
             full_screen: bool = False, 
             hide_classes: list = [],
@@ -29,7 +30,8 @@ class ScreenshotGenerator:
         self.locate = locate
         self.first = first
         self.delay = delay
-        self.additional_css = additional_css
+        self.additional_css = additional_css or ""
+        self.additional_js = additional_js or ""
         self.viewport = viewport or {}
         self.full_screen = full_screen
         self.hide_classes = hide_classes
@@ -50,7 +52,11 @@ class ScreenshotGenerator:
         if self.delay > 0:
             await asyncio.sleep(self.delay / 1000)
         if self.web:
-            await page.add_style_tag(content=self.additional_css)
+            if self.additional_css:
+                print(1)
+                await page.add_style_tag(content=self.additional_css)
+        if self.additional_js:
+            await page.evaluate(self.additional_js)
         if self.hide_classes:
             await self._hide_elements_by_class(page)
 
@@ -67,8 +73,8 @@ class ScreenshotGenerator:
     async def _capture_full_screenshot(self, page, store_path):
         await page.screenshot(path=store_path, full_page=self.full_screen)
 
-    async def _save_screenshot(self, page, store_path=None):
-        store_path = f"{CACHE}/{self.uuid}.png" if store_path is None else store_path
+    async def _save_screenshot(self, page, store_path):
+        store_path = f"{CACHE}/{self.uuid}.png" if not store_path else store_path
         if self.locate:
             locator = page.locator(self.locate)
             await self._capture_element_screenshot(locator, store_path)
@@ -92,7 +98,7 @@ class ScreenshotGenerator:
             return store_path
 
         except Exception as ex:
-            logger.error(f"图片生成失败，请尝试执行 `playwright install`！: {ex}")
+            print(f"图片生成失败，请尝试执行 `playwright install`！: {ex}")
             return False
 
 async def generate(
@@ -102,11 +108,12 @@ async def generate(
     first: bool = False,
     delay: int = 0,
     additional_css: str = "",
+    additional_js: str = "",
     viewport: dict = None,
     full_screen: bool = False,
     hide_classes: list = None,
     device_scale_factor: float = 1.0,
-    output: str = None
+    output: str = ""
 ):
-    generator = ScreenshotGenerator(path, web, locate, first, delay, additional_css, viewport, full_screen, hide_classes, device_scale_factor, output)
+    generator = ScreenshotGenerator(path, web, locate, first, delay, additional_css, additional_js, viewport, full_screen, hide_classes, device_scale_factor, output)
     return await generator.generate()

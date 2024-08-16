@@ -13,7 +13,21 @@ from src.tools.generate import generate
 
 import os
 import re
-import shutil
+
+js_content = f"""
+const style = document.createElement('style');
+style.textContent = `
+    @font-face {{
+        font-family: 'Custom';
+        src: url('$font_path') format('ttf');
+    }}
+
+    body {{
+        font-family: 'Custom', sans-serif !important;
+    }}
+`;
+document.head.appendChild(style);
+"""
 
 announce = on_command("jx3_announce", aliases={"维护公告", "更新公告", "公告", "更新"}, force_whitespace=True, priority=5)
 
@@ -28,24 +42,25 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
         return
     if os.path.exists(ASSETS + "/jx3/update.png"):
         img = get_content_local(Path(ASSETS + "/jx3/update.png").as_uri())
-        await announce.finish(ms.image(ms.image(img)))
+        await announce.finish(ms.image(img))
     else:
         data = await get_api(f"{Config.jx3.api.url}/data/news/allnews")
         for news in data["data"]:
             title = news["title"]
             url = news["url"]
             if re.match(r'(\d+)月(\d+)日(.*?)版本更新公告', title):
-                shutil.rmtree(ASSETS + "/jx3/update.png")
-                await generate(
+                final_js = js_content.replace("$font_path", Path(ASSETS + "/font/syst-mid.ttf").as_uri())
+                print(final_js)
+                store_path = await generate(
                     url, 
                     True, 
                     ".allnews_list_container", 
                     viewport={"height": 3840, "width": 2000}, 
                     hide_classes=["detail_bot", "bdshare-slide-button"], 
                     device_scale_factor=2.0,
+                    additional_js=final_js,
                     output=ASSETS + "/jx3/update.png"
                 )
-            break
-        if os.path.exists(ASSETS + "/jx3/update.png"):
-            img = get_content_local(Path(ASSETS + "/jx3/update.png").as_uri())
-            await announce.finish(ms.image(ms.image(img)))
+                img = get_content_local(Path(store_path).as_uri())
+                await announce.finish(ms.image(img))
+                
