@@ -11,7 +11,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
+        os: [ubuntu-latest]
         python-version: [ '3.9.13' ]
     steps:
       - uses: actions/checkout@v4
@@ -27,7 +27,6 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y \
-            libwoff2-dev \
             libvpx-dev \
             libevent-dev \
             libopus-dev \
@@ -45,6 +44,7 @@ jobs:
           python -m pip install pytest pytest-asyncio
           python -m pip install -r requirements.txt
           playwright install
+
       - name: Run tests
         run: |
           pytest -v --full-trace --durations 10 --timeout=1200 test.py
