@@ -1,0 +1,2347 @@
+文件夹 PATH 列表
+卷序列号为 8AD2-0116
+C:.
+|   .env
+|   .env.dev
+|   .gitignore
+|   .pre-commit-config.yaml
+|   bot.py
+|   colored.log
+|   config.py
+|   LICENSE
+|   poetry.lock
+|   project_structure.txt
+|   pyproject.toml
+|   README.md
+|   requirements.txt
+|   
++---.github
+|   |   FUNDING.yml
+|   |   
+|   +---ISSUE_TEMPLATE
+|   |       bug_report.md
+|   |       feature_request.md
+|   |       question.md
+|   |       
+|   \---workflows
+|           publish-pypi.yml
+|           pytest.yml
+|           
++---.vscode
+|       launch.json
+|       
++---src
+|   +---assets
+|   |   +---arcaea
+|   |   |   +---char
+|   |   |   |       1.png
+|   |   |   |       27.png
+|   |   |   |       
+|   |   |   +---icon
+|   |   |   \---song
+|   |   |           inkarusi.png
+|   |   |           kanagawa.png
+|   |   |           
+|   |   +---font
+|   |   |       calibri.ttf
+|   |   |       custom.ttf
+|   |   |       fzht.ttf
+|   |   |       msyh.ttf
+|   |   |       syst-bold.ttf
+|   |   |       syst-heavy.otf
+|   |   |       syst-mid.ttf
+|   |   |       Yozai-Medium.ttf
+|   |   |       包图小白体.ttf
+|   |   |       
+|   |   +---image
+|   |   |   |   brickl.png
+|   |   |   |   copperl.png
+|   |   |   |   gold.png
+|   |   |   |   goldl.png
+|   |   |   |   grey.png
+|   |   |   |   silverl.png
+|   |   |   |   
+|   |   |   +---assistance
+|   |   |   |       1.jpg
+|   |   |   |       10.jpg
+|   |   |   |       2.jpg
+|   |   |   |       3.jpg
+|   |   |   |       4.jpg
+|   |   |   |       5.jpg
+|   |   |   |       6.jpg
+|   |   |   |       7.jpg
+|   |   |   |       8.jpg
+|   |   |   |       9.jpg
+|   |   |   |       
+|   |   |   +---school
+|   |   |   |       七秀.png
+|   |   |   |       七秀.svg
+|   |   |   |       万灵.png
+|   |   |   |       万灵.svg
+|   |   |   |       万花.png
+|   |   |   |       万花.svg
+|   |   |   |       丐帮.png
+|   |   |   |       丐帮.svg
+|   |   |   |       五毒.png
+|   |   |   |       五毒.svg
+|   |   |   |       凌雪.png
+|   |   |   |       凌雪.svg
+|   |   |   |       刀宗.png
+|   |   |   |       刀宗.svg
+|   |   |   |       北天药宗.png
+|   |   |   |       唐门.png
+|   |   |   |       唐门.svg
+|   |   |   |       天策.png
+|   |   |   |       天策.svg
+|   |   |   |       少林.png
+|   |   |   |       少林.svg
+|   |   |   |       明教.png
+|   |   |   |       明教.svg
+|   |   |   |       纯阳.png
+|   |   |   |       纯阳.svg
+|   |   |   |       苍云.png
+|   |   |   |       苍云.svg
+|   |   |   |       药宗.svg
+|   |   |   |       蓬莱.png
+|   |   |   |       蓬莱.svg
+|   |   |   |       藏剑.png
+|   |   |   |       藏剑.svg
+|   |   |   |       衍天.svg
+|   |   |   |       衍天宗.png
+|   |   |   |       长歌.png
+|   |   |   |       长歌.svg
+|   |   |   |       霸刀.png
+|   |   |   |       霸刀.svg
+|   |   |   |       
+|   |   |   \---stone
+|   |   |           0.png
+|   |   |           1.png
+|   |   |           2.png
+|   |   |           3.png
+|   |   |           4.png
+|   |   |           5.png
+|   |   |           6.png
+|   |   |           7.png
+|   |   |           8.png
+|   |   |           
+|   |   +---jx3
+|   |   |   |   info_tradegoods.json
+|   |   |   |   v20220706.json
+|   |   |   |   v20221027.json
+|   |   |   |   v20230206.json
+|   |   |   |   v20230328.json
+|   |   |   |   v20230411.json
+|   |   |   |   v20230427.json
+|   |   |   |   
+|   |   |   +---achievement
+|   |   |   |       太行道.png
+|   |   |   |       枉叹恨.png
+|   |   |   |       
+|   |   |   +---adventure
+|   |   |   |       11884.png
+|   |   |   |       1471.png
+|   |   |   |       16.png
+|   |   |   |       212.png
+|   |   |   |       2131.png
+|   |   |   |       3444.png
+|   |   |   |       345.png
+|   |   |   |       3795.png
+|   |   |   |       444.png
+|   |   |   |       6234.png
+|   |   |   |       763.png
+|   |   |   |       776.png
+|   |   |   |       
+|   |   |   +---bg
+|   |   |   +---icons
+|   |   |   |       云裳心经_风袖低昂.png
+|   |   |   |       傲血战意_乘龙箭.png
+|   |   |   |       傲血战意_任驰骋.png
+|   |   |   |       傲血战意_啸如虎.png
+|   |   |   |       傲血战意_守如山.png
+|   |   |   |       傲血战意_御.png
+|   |   |   |       傲血战意_战八方.png
+|   |   |   |       傲血战意_撼如雷.png
+|   |   |   |       傲血战意_断魂刺.png
+|   |   |   |       傲血战意_沧月.png
+|   |   |   |       傲血战意_灭.png
+|   |   |   |       傲血战意_疾.png
+|   |   |   |       傲血战意_疾如风.png
+|   |   |   |       傲血战意_破坚阵.png
+|   |   |   |       傲血战意_穿云.png
+|   |   |   |       傲血战意_突.png
+|   |   |   |       傲血战意_龙吟.png
+|   |   |   |       傲血战意_龙牙.png
+|   |   |   |       冰心诀_婆罗门.png
+|   |   |   |       冰心诀_帝骖龙翔.png
+|   |   |   |       分山劲_劫刀.png
+|   |   |   |       分山劲_斩刀.png
+|   |   |   |       太虚剑意_万剑归宗.png
+|   |   |   |       太虚剑意_三环套月.png
+|   |   |   |       太虚剑意_人剑合一.png
+|   |   |   |       太虚剑意_八荒归元.png
+|   |   |   |       太虚剑意_凭虚御风.png
+|   |   |   |       太虚剑意_剑冲阴阳.png
+|   |   |   |       太虚剑意_吞日月.png
+|   |   |   |       太虚剑意_坐忘无我.png
+|   |   |   |       太虚剑意_大道无术.png
+|   |   |   |       太虚剑意_无我无剑.png
+|   |   |   |       太虚剑意_梯云纵.png
+|   |   |   |       太虚剑意_生太极.png
+|   |   |   |       太虚剑意_碎星辰.png
+|   |   |   |       太虚剑意_紫气东来.png
+|   |   |   |       太虚剑意_转乾坤.png
+|   |   |   |       山居剑意_九溪弥烟.png
+|   |   |   |       山居剑意_风来吴山.png
+|   |   |   |       明尊琉璃体_净世破魔击.png
+|   |   |   |       明尊琉璃体_慈悲愿.png
+|   |   |   |       明尊琉璃体_朝圣言.png
+|   |   |   |       明尊琉璃体_生死劫.png
+|   |   |   |       明尊琉璃体_贪魔体.png
+|   |   |   |       毒经_凤凰蛊.png
+|   |   |   |       毒经_化蝶.png
+|   |   |   |       毒经_千丝.png
+|   |   |   |       毒经_圣蝎引.png
+|   |   |   |       毒经_天蛛引.png
+|   |   |   |       毒经_灵蛇引.png
+|   |   |   |       毒经_灵蛊.png
+|   |   |   |       毒经_玄水蛊.png
+|   |   |   |       毒经_玉蟾引.png
+|   |   |   |       毒经_百足.png
+|   |   |   |       毒经_蛇影.png
+|   |   |   |       毒经_蛊虫献祭.png
+|   |   |   |       毒经_蝎心.png
+|   |   |   |       毒经_蟾啸.png
+|   |   |   |       毒经_风蜈引.png
+|   |   |   |       洗髓经_罗汉金身.png
+|   |   |   |       灵素_七情和合.png
+|   |   |   |       灵素_凌然天风.png
+|   |   |   |       灵素_千枝绽蕊.png
+|   |   |   |       灵素_回风微澜.png
+|   |   |   |       灵素_当归四逆.png
+|   |   |   |       灵素_惊鸿掠水.png
+|   |   |   |       灵素_枯木苏息.png
+|   |   |   |       灵素_灵素中和.png
+|   |   |   |       灵素_灵素还生.png
+|   |   |   |       灵素_白芷含芳.png
+|   |   |   |       灵素_绿野蔓生.png
+|   |   |   |       灵素_赤芍寒香.png
+|   |   |   |       灵素_逐云寒蕊.png
+|   |   |   |       灵素_银光照雪.png
+|   |   |   |       灵素_青川濯莲.png
+|   |   |   |       灵素_龙葵自苦.png
+|   |   |   |       相知_一指回鸾.png
+|   |   |   |       相知_宫.png
+|   |   |   |       相知_徵.png
+|   |   |   |       离经易道_利针.png
+|   |   |   |       离经易道_听风吹雪.png
+|   |   |   |       离经易道_商阳指.png
+|   |   |   |       离经易道_太阴指.png
+|   |   |   |       离经易道_彼针.png
+|   |   |   |       离经易道_提针.png
+|   |   |   |       离经易道_握针.png
+|   |   |   |       离经易道_星楼月影.png
+|   |   |   |       离经易道_春泥护花.png
+|   |   |   |       离经易道_水月无间.png
+|   |   |   |       离经易道_清心静气.png
+|   |   |   |       离经易道_玄素清脉.png
+|   |   |   |       离经易道_碧水滔天.png
+|   |   |   |       离经易道_落子无悔.png
+|   |   |   |       离经易道_锋针.png
+|   |   |   |       离经易道_长针.png
+|   |   |   |       离经易道_阳明指.png
+|   |   |   |       紫霞功_三才化生.png
+|   |   |   |       花间游_乱洒青荷.png
+|   |   |   |       莫问_云生结海.png
+|   |   |   |       莫问_商.png
+|   |   |   |       莫问_孤影化双.png
+|   |   |   |       莫问_宫.png
+|   |   |   |       莫问_平沙落雁.png
+|   |   |   |       莫问_徵.png
+|   |   |   |       莫问_曲动九州.png
+|   |   |   |       莫问_杯水留影.png
+|   |   |   |       莫问_歌尽影生.png
+|   |   |   |       莫问_江逐月天.png
+|   |   |   |       莫问_清绝影歌.png
+|   |   |   |       莫问_疏影横斜.png
+|   |   |   |       莫问_笑傲光阴.png
+|   |   |   |       莫问_羽.png
+|   |   |   |       莫问_角.png
+|   |   |   |       莫问_迴梦逐光.png
+|   |   |   |       莫问_阳春白雪.png
+|   |   |   |       莫问_青霄飞羽.png
+|   |   |   |       莫问_高山流水.png
+|   |   |   |       补天诀_千蝶吐瑞.png
+|   |   |   |       补天诀_圣手织天.png
+|   |   |   |       补天诀_蛊虫献祭.png
+|   |   |   |       补天诀_迷仙引梦.png
+|   |   |   |       补天诀_醉舞九天.png
+|   |   |   |       铁牢律_疾如风.png
+|   |   |   |       铁骨衣_盾墙.png
+|   |   |   |       
+|   |   |   +---kungfu
+|   |   |   +---pvx
+|   |   |   |   \---flower
+|   |   |   +---serendipity
+|   |   |   +---skills
+|   |   |   |       云裳心经.json
+|   |   |   |       傲血战意.json
+|   |   |   |       冰心诀.json
+|   |   |   |       凌海诀.json
+|   |   |   |       分山劲.json
+|   |   |   |       北傲诀.json
+|   |   |   |       天罗诡道.json
+|   |   |   |       太玄经.json
+|   |   |   |       太虚剑意.json
+|   |   |   |       孤锋诀.json
+|   |   |   |       山居剑意.json
+|   |   |   |       惊羽诀.json
+|   |   |   |       无方.json
+|   |   |   |       明尊琉璃体.json
+|   |   |   |       易筋经.json
+|   |   |   |       毒经.json
+|   |   |   |       洗髓经.json
+|   |   |   |       灵素.json
+|   |   |   |       焚影圣诀.json
+|   |   |   |       相知.json
+|   |   |   |       离经易道.json
+|   |   |   |       笑尘诀.json
+|   |   |   |       紫霞功.json
+|   |   |   |       花间游.json
+|   |   |   |       莫问.json
+|   |   |   |       补天诀.json
+|   |   |   |       铁牢律.json
+|   |   |   |       铁骨衣.json
+|   |   |   |       问水诀.json
+|   |   |   |       隐龙决.json
+|   |   |   |       
+|   |   |   \---talents
+|   |   |           云裳心经.json
+|   |   |           傲血战意.json
+|   |   |           冰心诀.json
+|   |   |           凌海诀.json
+|   |   |           分山劲.json
+|   |   |           北傲诀.json
+|   |   |           天罗诡道.json
+|   |   |           太玄经.json
+|   |   |           太虚剑意.json
+|   |   |           孤锋诀.json
+|   |   |           山居剑意.json
+|   |   |           惊羽诀.json
+|   |   |           无方.json
+|   |   |           明尊琉璃体.json
+|   |   |           易筋经.json
+|   |   |           毒经.json
+|   |   |           洗髓经.json
+|   |   |           灵素.json
+|   |   |           焚影圣诀.json
+|   |   |           相知.json
+|   |   |           离经易道.json
+|   |   |           笑尘诀.json
+|   |   |           紫霞功.json
+|   |   |           花间游.json
+|   |   |           莫问.json
+|   |   |           补天诀.json
+|   |   |           铁牢律.json
+|   |   |           铁骨衣.json
+|   |   |           问水诀.json
+|   |   |           隐龙决.json
+|   |   |           
+|   |   +---majsoul
+|   |   |       0.jpg
+|   |   |       1.jpg
+|   |   |       10.jpg
+|   |   |       11.jpg
+|   |   |       12.jpg
+|   |   |       13.jpg
+|   |   |       14.jpg
+|   |   |       15.jpg
+|   |   |       16.jpg
+|   |   |       17.jpg
+|   |   |       18.jpg
+|   |   |       19.jpg
+|   |   |       2.jpg
+|   |   |       20.jpg
+|   |   |       21.jpg
+|   |   |       22.jpg
+|   |   |       23.jpg
+|   |   |       24.jpg
+|   |   |       25.jpg
+|   |   |       26.jpg
+|   |   |       27.jpg
+|   |   |       28.jpg
+|   |   |       29.jpg
+|   |   |       3.jpg
+|   |   |       30.jpg
+|   |   |       31.jpg
+|   |   |       32.jpg
+|   |   |       33.jpg
+|   |   |       34.jpg
+|   |   |       35.jpg
+|   |   |       36.jpg
+|   |   |       37.jpg
+|   |   |       38.jpg
+|   |   |       39.jpg
+|   |   |       4.jpg
+|   |   |       40.jpg
+|   |   |       41.jpg
+|   |   |       42.jpg
+|   |   |       43.jpg
+|   |   |       44.jpg
+|   |   |       5.jpg
+|   |   |       6.jpg
+|   |   |       7.jpg
+|   |   |       8.jpg
+|   |   |       9.jpg
+|   |   |       
+|   |   +---serendipity
+|   |   |   +---serendipity
+|   |   |   |       一念间.png
+|   |   |   |       一枝栖.png
+|   |   |   |       万灵当歌.png
+|   |   |   |       三尺青锋.png
+|   |   |   |       三山四海.png
+|   |   |   |       东海客.png
+|   |   |   |       丹青记.png
+|   |   |   |       义千金.png
+|   |   |   |       乱世舞姬.png
+|   |   |   |       乱红鸾.png
+|   |   |   |       争铸吴钩.png
+|   |   |   |       侠者成歌.png
+|   |   |   |       侠行囧途.png
+|   |   |   |       儿女事.png
+|   |   |   |       兔江湖.png
+|   |   |   |       入蛟宫.png
+|   |   |   |       关外商.png
+|   |   |   |       兽王佩.png
+|   |   |   |       凌云梯.png
+|   |   |   |       劝学记.png
+|   |   |   |       北行镖.png
+|   |   |   |       千秋铸.png
+|   |   |   |       塞外宝驹.png
+|   |   |   |       塞外西风.png
+|   |   |   |       夜哀鸣.png
+|   |   |   |       天涯无归.png
+|   |   |   |       太行道.png
+|   |   |   |       子夜歌.png
+|   |   |   |       孩童书.png
+|   |   |   |       客江干.png
+|   |   |   |       寓天涯.png
+|   |   |   |       寻猫记.png
+|   |   |   |       少年行.png
+|   |   |   |       尘网中.png
+|   |   |   |       平生心愿.png
+|   |   |   |       幽海牧.png
+|   |   |   |       庆舞良宵.png
+|   |   |   |       度人心.png
+|   |   |   |       归乡路.png
+|   |   |   |       归安志·安.png
+|   |   |   |       归安志·归.png
+|   |   |   |       归安志·志.png
+|   |   |   |       念旧林.png
+|   |   |   |       惜往日.png
+|   |   |   |       戎马边.png
+|   |   |   |       扶摇九天.png
+|   |   |   |       护佑苍生.png
+|   |   |   |       拜春擂.png
+|   |   |   |       捉妖记.png
+|   |   |   |       捉贼记.png
+|   |   |   |       故园风雨.png
+|   |   |   |       故岁辞.png
+|   |   |   |       旧宴承欢.png
+|   |   |   |       昆吾余火.png
+|   |   |   |       枉叹恨.png
+|   |   |   |       枫林酒.png
+|   |   |   |       江湖录.png
+|   |   |   |       沙海谣.png
+|   |   |   |       沧海笛.png
+|   |   |   |       泛天河.png
+|   |   |   |       流年如虹.png
+|   |   |   |       济苍生.png
+|   |   |   |       浮光织梦.png
+|   |   |   |       清茗经.png
+|   |   |   |       清风捕王.png
+|   |   |   |       滇南行.png
+|   |   |   |       滴水恩.png
+|   |   |   |       瀛洲梦.png
+|   |   |   |       炼狱厨神.png
+|   |   |   |       烟花戏·春.png
+|   |   |   |       烟花戏·月.png
+|   |   |   |       烟花戏·秋.png
+|   |   |   |       烟花戏·风.png
+|   |   |   |       烹调法.png
+|   |   |   |       生死判.png
+|   |   |   |       白日梦.png
+|   |   |   |       白月皎.png
+|   |   |   |       白雪忆.png
+|   |   |   |       石敢当.png
+|   |   |   |       破巧言.png
+|   |   |   |       破晓鸣.png
+|   |   |   |       秘宝图.png
+|   |   |   |       稚子心.png
+|   |   |   |       空谷回音.png
+|   |   |   |       童蒙志.png
+|   |   |   |       竹马情.png
+|   |   |   |       红尘不渡.png
+|   |   |   |       红衣歌.png
+|   |   |   |       缘来会·瓜.png
+|   |   |   |       缘来会·铃.png
+|   |   |   |       胜负局.png
+|   |   |   |       至尊宝.png
+|   |   |   |       舞众生.png
+|   |   |   |       茶馆奇缘.png
+|   |   |   |       茶馆悬赏.png
+|   |   |   |       荆轲刺.png
+|   |   |   |       莫负初心.png
+|   |   |   |       莫贪杯.png
+|   |   |   |       虎啸山林.png
+|   |   |   |       觅知音.png
+|   |   |   |       解心语.png
+|   |   |   |       话玄虚.png
+|   |   |   |       谜书生.png
+|   |   |   |       赴九幽.png
+|   |   |   |       路投石.png
+|   |   |   |       追魂骨.png
+|   |   |   |       醉烟波.png
+|   |   |   |       重洋客.png
+|   |   |   |       锋芒展.png
+|   |   |   |       锻剑女.png
+|   |   |   |       镖行天下.png
+|   |   |   |       镜中琴音.png
+|   |   |   |       阴阳两界.png
+|   |   |   |       雪山恩仇.png
+|   |   |   |       露园事.png
+|   |   |   |       青草歌.png
+|   |   |   |       韶华故.png
+|   |   |   |       风雨意.png
+|   |   |   |       鸠雀记.png
+|   |   |   |       黑白路.png
+|   |   |   |       
+|   |   |   \---vector
+|   |   |           peerless.png
+|   |   |           poem.png
+|   |   |           title.png
+|   |   |           
+|   |   \---wuxingshi
+|   |           0.png
+|   |           1.png
+|   |           2.png
+|   |           3.png
+|   |           4.png
+|   |           5.png
+|   |           6.png
+|   |           7.png
+|   |           8.png
+|   |           
+|   +---cache
+|   |       00677d0911d111eeb32500e04c681e9c.png
+|   |       08848a35568011ef9eda001a7dda7111.html
+|   |       0920942b568011efb5a0001a7dda7111.png
+|   |       0ace95a011d611ee804c00e04c681e9c.html
+|   |       0b76a00b11d611ee9f2c00e04c681e9c.png
+|   |       0d69b3f911d811ee9b8500e04c681e9c.html
+|   |       0d7cffc902b911eeb39600e04c681e9c.html
+|   |       0e69cd9511d811ee96f900e04c681e9c.png
+|   |       15d81c20568011ef9282001a7dda7111.html
+|   |       16712dda568011efadd9001a7dda7111.png
+|   |       1cb4b54611d611eea79900e04c681e9c.html
+|   |       1d97675711d611ee879500e04c681e9c.png
+|   |       1ee3e1bd02b911eea43400e04c681e9c.html
+|   |       2bab88ef11d611eea62f00e04c681e9c.html
+|   |       2c56c12d11d611eeb28c00e04c681e9c.png
+|   |       3183c11002ba11ee9b9b00e04c681e9c.html
+|   |       31ae37d511d811eea85d00e04c681e9c.html
+|   |       329eeedc11d811eebfbf00e04c681e9c.png
+|   |       3440f12202ba11ee9d0900e04c681e9c.png
+|   |       3520df10501b11ef8629001a7dda7111.html
+|   |       3a83805a11d611eeb4cd00e04c681e9c.html
+|   |       3b68ceab11d611eeb4ad00e04c681e9c.png
+|   |       3bb1315c02b811eeb95800e04c681e9c.html
+|   |       3eed5b2102b911eeb08e00e04c681e9c.html
+|   |       4231f90a11d211eebeb100e04c681e9c.html
+|   |       42a6453f567911efb77d001a7dda7111.html
+|   |       431dfad611d211ee94ad00e04c681e9c.png
+|   |       44894c30567911ef9412001a7dda7111.png
+|   |       4ae34bf711d211eeb83b00e04c681e9c.html
+|   |       4b8b5fe911d211eeb8f000e04c681e9c.png
+|   |       4be1121911d111eebbf200e04c681e9c.html
+|   |       4c8bd24311d111ee956600e04c681e9c.png
+|   |       4cdd490411d811ee844d00e04c681e9c.html
+|   |       4da648d511d811eeb57b00e04c681e9c.png
+|   |       4e86ea3c02b911ee94fd00e04c681e9c.html
+|   |       56ca4805501b11ef85c3001a7dda7111.html
+|   |       572eaf4011d011ee8e8a00e04c681e9c.html
+|   |       5a9ae2b311d011ee9c1200e04c681e9c.png
+|   |       60c6171c11d611ee871800e04c681e9c.html
+|   |       6166c1b302b811ee999400e04c681e9c.html
+|   |       616ded7111d611eeaa5600e04c681e9c.png
+|   |       651c3c7a02ba11eea0e700e04c681e9c.html
+|   |       65b2000802ba11eea6ac00e04c681e9c.png
+|   |       6888db4c02ba11ee940500e04c681e9c.html
+|   |       690f1d6602ba11ee8e4b00e04c681e9c.png
+|   |       6bd8af0002b911eeb89b00e04c681e9c.html
+|   |       6d9e51bf567f11efbee2001a7dda7111.html
+|   |       6e68c80c567f11ef8361001a7dda7111.png
+|   |       770720fd02b911eea15600e04c681e9c.html
+|   |       7beba76e11d711ee83da00e04c681e9c.html
+|   |       7cfc411811d711ee8c0600e04c681e9c.png
+|   |       8114c8a702b911ee80d000e04c681e9c.html
+|   |       821d9d86061811eea0ea00e04c681e9c.html
+|   |       84ea02a311d111eebe1900e04c681e9c.html
+|   |       85e006bb11d111eea6d300e04c681e9c.png
+|   |       8610c150501b11efbdf1001a7dda7111.html
+|   |       875180a9501b11ef808f001a7dda7111.png
+|   |       8bd07b2e567f11efbc6b001a7dda7111.html
+|   |       8c8428cf567f11ef93f0001a7dda7111.png
+|   |       923266df061811ee85dd00e04c681e9c.html
+|   |       940eaa4a061811eeb7f200e04c681e9c.png
+|   |       94f0073d568011efb669001a7dda7111.html
+|   |       950f14be11d011ee9ef700e04c681e9c.html
+|   |       95854572568011ef924f001a7dda7111.png
+|   |       95d091d811d011ee93ee00e04c681e9c.png
+|   |       9614514b11d211ee976b00e04c681e9c.html
+|   |       96bdfffd11d211eebb4f00e04c681e9c.png
+|   |       96cb144b061811ee880800e04c681e9c.html
+|   |       976ef588061811eebbb600e04c681e9c.png
+|   |       98d6fa1002b911eeaf5600e04c681e9c.html
+|   |       9a2163c102b711ee996a00e04c681e9c.html
+|   |       a1c2da1111d211eeb47d00e04c681e9c.html
+|   |       a27befef11d211ee8bb900e04c681e9c.png
+|   |       a31569cf567f11ef9de5001a7dda7111.html
+|   |       a3ad37cc567f11efafd3001a7dda7111.png
+|   |       a3bc004511d711eeb11000e04c681e9c.html
+|   |       a496ced711d711ee96c300e04c681e9c.png
+|   |       a66d820c11d011ee8a4100e04c681e9c.html
+|   |       a761cd5611d011eea40a00e04c681e9c.png
+|   |       a9b2a76e11d511ee8b0200e04c681e9c.html
+|   |       aabb36d311d511ee85cc00e04c681e9c.png
+|   |       ae1a2e9c02b711ee9b3d00e04c681e9c.html
+|   |       b1c3e79502b911eeb45b00e04c681e9c.html
+|   |       b6152569567f11ef9e98001a7dda7111.html
+|   |       b6ed6fa6567f11efba8a001a7dda7111.png
+|   |       ba77dfc411d711ee830000e04c681e9c.html
+|   |       bb556b8f11d711eea2fd00e04c681e9c.png
+|   |       c0c9d1c011d811eeaa7300e04c681e9c.html
+|   |       c19bfd1211d811eeb5fe00e04c681e9c.png
+|   |       c3c281d002b811eebca400e04c681e9c.html
+|   |       e09091bb02b811ee805f00e04c681e9c.html
+|   |       e644022211d711ee8de800e04c681e9c.html
+|   |       e73d679d11d711eea2da00e04c681e9c.png
+|   |       f5c0ddd302b911ee98e700e04c681e9c.html
+|   |       fdb7211711d711eeb96500e04c681e9c.html
+|   |       fdd4d2fd501a11ef8d7c001a7dda7111.html
+|   |       fe63ac8211d711ee808d00e04c681e9c.png
+|   |       ff1bb3ee02b811eeb4b000e04c681e9c.html
+|   |       ffb3ae6611d011ee953800e04c681e9c.html
+|   |       
+|   +---clock
+|   |       account.json
+|   |       signed.json
+|   |       
+|   +---constant
+|   |   \---jx3
+|   |       |   coin.py
+|   |       |   image.py
+|   |       |   kungfu.json
+|   |       |   school.json
+|   |       |   schoolcolors.json
+|   |       |   schoolid.json
+|   |       |   skilldatalib.py
+|   |       |   __init__.py
+|   |       |   
+|   |       \---__pycache__
+|   |               coin.cpython-39.pyc
+|   |               image.cpython-39.pyc
+|   |               prompt.cpython-39.pyc
+|   |               skilldatalib.cpython-39.pyc
+|   |               __init__.cpython-39.pyc
+|   |               
+|   +---data
+|   |   |   Snowykami.db
+|   |   |   
+|   |   +---1042108288
+|   |   |       arcaea.json
+|   |   |       banword.json
+|   |   |       jx3group.json
+|   |   |       marry.json
+|   |   |       opening.json
+|   |   |       record.json
+|   |   |       subscribe.json
+|   |   |       webhook.json
+|   |   |       welcome.txt
+|   |   |       wiki.json
+|   |   |       
+|   |   +---1167411305
+|   |   |       arcaea.json
+|   |   |       banword.json
+|   |   |       jx3group.json
+|   |   |       marry.json
+|   |   |       opening.json
+|   |   |       record.json
+|   |   |       subscribe.json
+|   |   |       webhook.json
+|   |   |       welcome.txt
+|   |   |       wiki.json
+|   |   |       
+|   |   +---156651682
+|   |   |       arcaea.json
+|   |   |       banword.json
+|   |   |       jx3group.json
+|   |   |       marry.json
+|   |   |       opening.json
+|   |   |       record.json
+|   |   |       subscribe.json
+|   |   |       webhook.json
+|   |   |       welcome.txt
+|   |   |       wiki.json
+|   |   |       
+|   |   +---169406443
+|   |   |       arcaea.json
+|   |   |       banword.json
+|   |   |       jx3group.json
+|   |   |       marry.json
+|   |   |       opening.json
+|   |   |       record.json
+|   |   |       subscribe.json
+|   |   |       webhook.json
+|   |   |       welcome.txt
+|   |   |       wiki.json
+|   |   |       
+|   |   +---194176329
+|   |   |       arcaea.json
+|   |   |       banword.json
+|   |   |       jx3group.json
+|   |   |       marry.json
+|   |   |       opening.json
+|   |   |       record.json
+|   |   |       subscribe.json
+|   |   |       webhook.json
+|   |   |       welcome.txt
+|   |   |       wiki.json
+|   |   |       
+|   |   +---198823166
+|   |   |       arcaea.json
+|   |   |       banword.json
+|   |   |       jx3group.json
+|   |   |       marry.json
+|   |   |       opening.json
+|   |   |       record.json
+|   |   |       subscribe.json
+|   |   |       webhook.json
+|   |   |       welcome.txt
+|   |   |       wiki.json
+|   |   |       
+|   |   +---202988317
+|   |   |       arcaea.json
+|   |   |       banword.json
+|   |   |       jx3group.json
+|   |   |       marry.json
+|   |   |       opening.json
+|   |   |       record.json
+|   |   |       subscribe.json
+|   |   |       webhook.json
+|   |   |       welcome.txt
+|   |   |       wiki.json
+|   |   |       
+|   |   +---213065238
+|   |   |       arcaea.json
+|   |   |       banword.json
+|   |   |       jx3group.json
+|   |   |       marry.json
+|   |   |       opening.json
+|   |   |       record.json
+|   |   |       subscribe.json
+|   |   |       webhook.json
+|   |   |       welcome.txt
+|   |   |       wiki.json
+|   |   |       
+|   |   +---226756631
+|   |   |       arcaea.json
+|   |   |       banword.json
+|   |   |       jx3group.json
+|   |   |       marry.json
+|   |   |       opening.json
+|   |   |       record.json
+|   |   |       subscribe.json
+|   |   |       webhook.json
+|   |   |       welcome.txt
+|   |   |       wiki.json
+|   |   |       
+|   |   +---322950612
+|   |   |       arcaea.json
+|   |   |       banword.json
+|   |   |       block.json
+|   |   |       jx3group.json
+|   |   |       marry.json
+|   |   |       opening.json
+|   |   |       record.json
+|   |   |       subscribe.json
+|   |   |       webhook.json
+|   |   |       welcome.txt
+|   |   |       wiki.json
+|   |   |       
+|   |   +---362165724
+|   |   |       arcaea.json
+|   |   |       banword.json
+|   |   |       jx3group.json
+|   |   |       marry.json
+|   |   |       opening.json
+|   |   |       record.json
+|   |   |       subscribe.json
+|   |   |       webhook.json
+|   |   |       welcome.txt
+|   |   |       wiki.json
+|   |   |       
+|   |   +---437196970
+|   |   |       arcaea.json
+|   |   |       banword.json
+|   |   |       jx3group.json
+|   |   |       marry.json
+|   |   |       opening.json
+|   |   |       record.json
+|   |   |       subscribe.json
+|   |   |       webhook.json
+|   |   |       welcome.txt
+|   |   |       wiki.json
+|   |   |       
+|   |   +---439540413
+|   |   |       arcaea.json
+|   |   |       banword.json
+|   |   |       jx3group.json
+|   |   |       marry.json
+|   |   |       opening.json
+|   |   |       record.json
+|   |   |       subscribe.json
+|   |   |       webhook.json
+|   |   |       welcome.txt
+|   |   |       wiki.json
+|   |   |       
+|   |   +---472444787
+|   |   |       arcaea.json
+|   |   |       banword.json
+|   |   |       jx3group.json
+|   |   |       marry.json
+|   |   |       opening.json
+|   |   |       record.json
+|   |   |       subscribe.json
+|   |   |       webhook.json
+|   |   |       welcome.txt
+|   |   |       wiki.json
+|   |   |       
+|   |   +---486169375
+|   |   |       arcaea.json
+|   |   |       banword.json
+|   |   |       jx3group.json
+|   |   |       marry.json
+|   |   |       opening.json
+|   |   |       record.json
+|   |   |       subscribe.json
+|   |   |       webhook.json
+|   |   |       welcome.txt
+|   |   |       wiki.json
+|   |   |       
+|   |   +---492393746
+|   |   |       arcaea.json
+|   |   |       banword.json
+|   |   |       jx3group.json
+|   |   |       marry.json
+|   |   |       opening.json
+|   |   |       record.json
+|   |   |       subscribe.json
+|   |   |       webhook.json
+|   |   |       welcome.txt
+|   |   |       wiki.json
+|   |   |       
+|   |   +---533493372
+|   |   |       arcaea.json
+|   |   |       banword.json
+|   |   |       jx3group.json
+|   |   |       marry.json
+|   |   |       opening.json
+|   |   |       record.json
+|   |   |       subscribe.json
+|   |   |       webhook.json
+|   |   |       welcome.txt
+|   |   |       wiki.json
+|   |   |       
+|   |   +---543710917
+|   |   |       arcaea.json
+|   |   |       banword.json
+|   |   |       jx3group.json
+|   |   |       marry.json
+|   |   |       opening.json
+|   |   |       record.json
+|   |   |       subscribe.json
+|   |   |       webhook.json
+|   |   |       welcome.txt
+|   |   |       wiki.json
+|   |   |       
+|   |   +---556333642
+|   |   |       arcaea.json
+|   |   |       banword.json
+|   |   |       jx3group.json
+|   |   |       marry.json
+|   |   |       opening.json
+|   |   |       record.json
+|   |   |       subscribe.json
+|   |   |       webhook.json
+|   |   |       welcome.txt
+|   |   |       wiki.json
+|   |   |       
+|   |   +---559303490
+|   |   |       arcaea.json
+|   |   |       banword.json
+|   |   |       jx3group.json
+|   |   |       marry.json
+|   |   |       opening.json
+|   |   |       record.json
+|   |   |       subscribe.json
+|   |   |       webhook.json
+|   |   |       welcome.txt
+|   |   |       wiki.json
+|   |   |       
+|   |   +---564957924
+|   |   |       arcaea.json
+|   |   |       banword.json
+|   |   |       jx3group.json
+|   |   |       marry.json
+|   |   |       opening.json
+|   |   |       record.json
+|   |   |       subscribe.json
+|   |   |       webhook.json
+|   |   |       welcome.txt
+|   |   |       wiki.json
+|   |   |       
+|   |   +---566490403
+|   |   |       arcaea.json
+|   |   |       banword.json
+|   |   |       jx3group.json
+|   |   |       marry.json
+|   |   |       opening.json
+|   |   |       record.json
+|   |   |       subscribe.json
+|   |   |       webhook.json
+|   |   |       welcome.txt
+|   |   |       wiki.json
+|   |   |       
+|   |   +---570559222
+|   |   |       arcaea.json
+|   |   |       banword.json
+|   |   |       jx3group.json
+|   |   |       marry.json
+|   |   |       opening.json
+|   |   |       record.json
+|   |   |       subscribe.json
+|   |   |       webhook.json
+|   |   |       welcome.txt
+|   |   |       wiki.json
+|   |   |       
+|   |   +---591193526
+|   |   |       arcaea.json
+|   |   |       banword.json
+|   |   |       jx3group.json
+|   |   |       marry.json
+|   |   |       opening.json
+|   |   |       record.json
+|   |   |       subscribe.json
+|   |   |       webhook.json
+|   |   |       welcome.txt
+|   |   |       wiki.json
+|   |   |       
+|   |   +---591924775
+|   |   |       arcaea.json
+|   |   |       banword.json
+|   |   |       jx3group.json
+|   |   |       marry.json
+|   |   |       opening.json
+|   |   |       record.json
+|   |   |       subscribe.json
+|   |   |       webhook.json
+|   |   |       welcome.txt
+|   |   |       wiki.json
+|   |   |       
+|   |   +---594296893
+|   |   |       arcaea.json
+|   |   |       banword.json
+|   |   |       jx3group.json
+|   |   |       marry.json
+|   |   |       opening.json
+|   |   |       record.json
+|   |   |       subscribe.json
+|   |   |       webhook.json
+|   |   |       welcome.txt
+|   |   |       wiki.json
+|   |   |       
+|   |   +---610445998
+|   |   |       arcaea.json
+|   |   |       banword.json
+|   |   |       jx3group.json
+|   |   |       marry.json
+|   |   |       opening.json
+|   |   |       record.json
+|   |   |       subscribe.json
+|   |   |       webhook.json
+|   |   |       welcome.txt
+|   |   |       wiki.json
+|   |   |       
+|   |   +---629232718
+|   |   |       arcaea.json
+|   |   |       banword.json
+|   |   |       jx3group.json
+|   |   |       marry.json
+|   |   |       opening.json
+|   |   |       record.json
+|   |   |       subscribe.json
+|   |   |       webhook.json
+|   |   |       welcome.txt
+|   |   |       wiki.json
+|   |   |       
+|   |   +---630908705
+|   |   |       arcaea.json
+|   |   |       banword.json
+|   |   |       jx3group.json
+|   |   |       marry.json
+|   |   |       opening.json
+|   |   |       record.json
+|   |   |       subscribe.json
+|   |   |       webhook.json
+|   |   |       welcome.txt
+|   |   |       wiki.json
+|   |   |       
+|   |   +---650495414
+|   |   |       arcaea.json
+|   |   |       banword.json
+|   |   |       jx3group.json
+|   |   |       marry.json
+|   |   |       opening.json
+|   |   |       record.json
+|   |   |       subscribe.json
+|   |   |       webhook.json
+|   |   |       welcome.txt
+|   |   |       wiki.json
+|   |   |       
+|   |   +---654057399
+|   |   |       arcaea.json
+|   |   |       banword.json
+|   |   |       jx3group.json
+|   |   |       marry.json
+|   |   |       opening.json
+|   |   |       record.json
+|   |   |       subscribe.json
+|   |   |       webhook.json
+|   |   |       welcome.txt
+|   |   |       wiki.json
+|   |   |       
+|   |   +---654487231
+|   |   |       arcaea.json
+|   |   |       banword.json
+|   |   |       jx3group.json
+|   |   |       marry.json
+|   |   |       opening.json
+|   |   |       record.json
+|   |   |       subscribe.json
+|   |   |       webhook.json
+|   |   |       welcome.txt
+|   |   |       wiki.json
+|   |   |       
+|   |   +---669178000
+|   |   |       arcaea.json
+|   |   |       banword.json
+|   |   |       jx3group.json
+|   |   |       marry.json
+|   |   |       opening.json
+|   |   |       record.json
+|   |   |       subscribe.json
+|   |   |       webhook.json
+|   |   |       welcome.txt
+|   |   |       wiki.json
+|   |   |       
+|   |   +---670271457
+|   |   |       arcaea.json
+|   |   |       banword.json
+|   |   |       jx3group.json
+|   |   |       marry.json
+|   |   |       opening.json
+|   |   |       record.json
+|   |   |       subscribe.json
+|   |   |       webhook.json
+|   |   |       welcome.txt
+|   |   |       wiki.json
+|   |   |       
+|   |   +---671394731
+|   |   |       arcaea.json
+|   |   |       banword.json
+|   |   |       jx3group.json
+|   |   |       marry.json
+|   |   |       opening.json
+|   |   |       record.json
+|   |   |       subscribe.json
+|   |   |       webhook.json
+|   |   |       welcome.txt
+|   |   |       wiki.json
+|   |   |       
+|   |   +---671767064
+|   |   |       arcaea.json
+|   |   |       banword.json
+|   |   |       jx3group.json
+|   |   |       marry.json
+|   |   |       opening.json
+|   |   |       record.json
+|   |   |       subscribe.json
+|   |   |       webhook.json
+|   |   |       welcome.txt
+|   |   |       wiki.json
+|   |   |       
+|   |   +---677289423
+|   |   |       arcaea.json
+|   |   |       banword.json
+|   |   |       jx3group.json
+|   |   |       marry.json
+|   |   |       opening.json
+|   |   |       record.json
+|   |   |       subscribe.json
+|   |   |       webhook.json
+|   |   |       welcome.txt
+|   |   |       wiki.json
+|   |   |       
+|   |   +---677488249
+|   |   |       arcaea.json
+|   |   |       banword.json
+|   |   |       jx3group.json
+|   |   |       marry.json
+|   |   |       opening.json
+|   |   |       record.json
+|   |   |       subscribe.json
+|   |   |       webhook.json
+|   |   |       welcome.txt
+|   |   |       wiki.json
+|   |   |       
+|   |   +---689813237
+|   |   |       arcaea.json
+|   |   |       banword.json
+|   |   |       jx3group.json
+|   |   |       marry.json
+|   |   |       opening.json
+|   |   |       record.json
+|   |   |       subscribe.json
+|   |   |       webhook.json
+|   |   |       welcome.txt
+|   |   |       wiki.json
+|   |   |       
+|   |   +---690157003
+|   |   |       arcaea.json
+|   |   |       banword.json
+|   |   |       jx3group.json
+|   |   |       marry.json
+|   |   |       opening.json
+|   |   |       record.json
+|   |   |       subscribe.json
+|   |   |       webhook.json
+|   |   |       welcome.txt
+|   |   |       wiki.json
+|   |   |       
+|   |   +---705140466
+|   |   |       arcaea.json
+|   |   |       banword.json
+|   |   |       jx3group.json
+|   |   |       marry.json
+|   |   |       opening.json
+|   |   |       record.json
+|   |   |       subscribe.json
+|   |   |       webhook.json
+|   |   |       welcome.txt
+|   |   |       wiki.json
+|   |   |       
+|   |   +---727800181
+|   |   |       arcaea.json
+|   |   |       banword.json
+|   |   |       jx3group.json
+|   |   |       marry.json
+|   |   |       opening.json
+|   |   |       record.json
+|   |   |       subscribe.json
+|   |   |       webhook.json
+|   |   |       welcome.txt
+|   |   |       wiki.json
+|   |   |       
+|   |   +---729637896
+|   |   |       arcaea.json
+|   |   |       banword.json
+|   |   |       block.json
+|   |   |       jx3group.json
+|   |   |       marry.json
+|   |   |       opening.json
+|   |   |       record.json
+|   |   |       subscribe.json
+|   |   |       webhook.json
+|   |   |       welcome.txt
+|   |   |       wiki.json
+|   |   |       
+|   |   +---738773454
+|   |   |       arcaea.json
+|   |   |       banword.json
+|   |   |       jx3group.json
+|   |   |       marry.json
+|   |   |       opening.json
+|   |   |       record.json
+|   |   |       subscribe.json
+|   |   |       webhook.json
+|   |   |       welcome.txt
+|   |   |       wiki.json
+|   |   |       
+|   |   +---741827481
+|   |   |       arcaea.json
+|   |   |       banword.json
+|   |   |       jx3group.json
+|   |   |       marry.json
+|   |   |       opening.json
+|   |   |       record.json
+|   |   |       subscribe.json
+|   |   |       webhook.json
+|   |   |       welcome.txt
+|   |   |       wiki.json
+|   |   |       
+|   |   +---746946712
+|   |   |       arcaea.json
+|   |   |       banword.json
+|   |   |       jx3group.json
+|   |   |       marry.json
+|   |   |       opening.json
+|   |   |       record.json
+|   |   |       subscribe.json
+|   |   |       webhook.json
+|   |   |       welcome.txt
+|   |   |       wiki.json
+|   |   |       
+|   |   +---747590062
+|   |   |       arcaea.json
+|   |   |       banword.json
+|   |   |       block.json
+|   |   |       jx3group.json
+|   |   |       marry.json
+|   |   |       opening.json
+|   |   |       record.json
+|   |   |       subscribe.json
+|   |   |       webhook.json
+|   |   |       welcome.txt
+|   |   |       wiki.json
+|   |   |       
+|   |   +---750508369
+|   |   |       arcaea.json
+|   |   |       banword.json
+|   |   |       jx3group.json
+|   |   |       marry.json
+|   |   |       opening.json
+|   |   |       record.json
+|   |   |       subscribe.json
+|   |   |       webhook.json
+|   |   |       welcome.txt
+|   |   |       wiki.json
+|   |   |       
+|   |   +---751210863
+|   |   |       arcaea.json
+|   |   |       banword.json
+|   |   |       jx3group.json
+|   |   |       marry.json
+|   |   |       opening.json
+|   |   |       record.json
+|   |   |       subscribe.json
+|   |   |       webhook.json
+|   |   |       welcome.txt
+|   |   |       wiki.json
+|   |   |       
+|   |   +---760264386
+|   |   |       arcaea.json
+|   |   |       banword.json
+|   |   |       jx3group.json
+|   |   |       marry.json
+|   |   |       opening.json
+|   |   |       record.json
+|   |   |       subscribe.json
+|   |   |       webhook.json
+|   |   |       welcome.txt
+|   |   |       wiki.json
+|   |   |       
+|   |   +---760823209
+|   |   |       arcaea.json
+|   |   |       banword.json
+|   |   |       jx3group.json
+|   |   |       marry.json
+|   |   |       opening.json
+|   |   |       record.json
+|   |   |       subscribe.json
+|   |   |       webhook.json
+|   |   |       welcome.txt
+|   |   |       wiki.json
+|   |   |       
+|   |   +---762162072
+|   |   |       arcaea.json
+|   |   |       banword.json
+|   |   |       jx3group.json
+|   |   |       marry.json
+|   |   |       opening.json
+|   |   |       record.json
+|   |   |       subscribe.json
+|   |   |       webhook.json
+|   |   |       welcome.txt
+|   |   |       wiki.json
+|   |   |       
+|   |   +---771805075
+|   |   |       arcaea.json
+|   |   |       banword.json
+|   |   |       jx3group.json
+|   |   |       marry.json
+|   |   |       opening.json
+|   |   |       record.json
+|   |   |       subscribe.json
+|   |   |       webhook.json
+|   |   |       welcome.txt
+|   |   |       wiki.json
+|   |   |       
+|   |   +---774293043
+|   |   |       arcaea.json
+|   |   |       banword.json
+|   |   |       jx3group.json
+|   |   |       marry.json
+|   |   |       opening.json
+|   |   |       record.json
+|   |   |       subscribe.json
+|   |   |       webhook.json
+|   |   |       welcome.txt
+|   |   |       wiki.json
+|   |   |       
+|   |   +---776484255
+|   |   |       arcaea.json
+|   |   |       banword.json
+|   |   |       jx3group.json
+|   |   |       marry.json
+|   |   |       opening.json
+|   |   |       record.json
+|   |   |       subscribe.json
+|   |   |       webhook.json
+|   |   |       welcome.txt
+|   |   |       wiki.json
+|   |   |       
+|   |   +---784169509
+|   |   |       arcaea.json
+|   |   |       banword.json
+|   |   |       jx3group.json
+|   |   |       marry.json
+|   |   |       opening.json
+|   |   |       record.json
+|   |   |       subscribe.json
+|   |   |       webhook.json
+|   |   |       welcome.txt
+|   |   |       wiki.json
+|   |   |       
+|   |   +---784742692
+|   |   |       arcaea.json
+|   |   |       banword.json
+|   |   |       jx3group.json
+|   |   |       marry.json
+|   |   |       opening.json
+|   |   |       record.json
+|   |   |       subscribe.json
+|   |   |       webhook.json
+|   |   |       welcome.txt
+|   |   |       wiki.json
+|   |   |       
+|   |   +---78498872
+|   |   |       arcaea.json
+|   |   |       banword.json
+|   |   |       jx3group.json
+|   |   |       marry.json
+|   |   |       opening.json
+|   |   |       record.json
+|   |   |       subscribe.json
+|   |   |       webhook.json
+|   |   |       welcome.txt
+|   |   |       wiki.json
+|   |   |       
+|   |   +---813077289
+|   |   |       arcaea.json
+|   |   |       banword.json
+|   |   |       jx3group.json
+|   |   |       marry.json
+|   |   |       opening.json
+|   |   |       record.json
+|   |   |       subscribe.json
+|   |   |       webhook.json
+|   |   |       welcome.txt
+|   |   |       wiki.json
+|   |   |       
+|   |   +---818073798
+|   |   |       arcaea.json
+|   |   |       banword.json
+|   |   |       block.json
+|   |   |       jx3group.json
+|   |   |       marry.json
+|   |   |       opening.json
+|   |   |       record.json
+|   |   |       subscribe.json
+|   |   |       webhook.json
+|   |   |       welcome.txt
+|   |   |       wiki.json
+|   |   |       
+|   |   +---828401017
+|   |   |       arcaea.json
+|   |   |       banword.json
+|   |   |       block.json
+|   |   |       jx3group.json
+|   |   |       marry.json
+|   |   |       subscribe.json
+|   |   |       webhook.json
+|   |   |       welcome.txt
+|   |   |       wiki.json
+|   |   |       
+|   |   +---829384472
+|   |   |       arcaea.json
+|   |   |       banword.json
+|   |   |       block.json
+|   |   |       jx3group.json
+|   |   |       marry.json
+|   |   |       opening.json
+|   |   |       record.json
+|   |   |       subscribe.json
+|   |   |       webhook.json
+|   |   |       welcome.txt
+|   |   |       wiki.json
+|   |   |       
+|   |   +---863533264
+|   |   |       arcaea.json
+|   |   |       banword.json
+|   |   |       jx3group.json
+|   |   |       marry.json
+|   |   |       opening.json
+|   |   |       record.json
+|   |   |       subscribe.json
+|   |   |       webhook.json
+|   |   |       welcome.txt
+|   |   |       wiki.json
+|   |   |       
+|   |   +---866982371
+|   |   |       arcaea.json
+|   |   |       banword.json
+|   |   |       jx3group.json
+|   |   |       marry.json
+|   |   |       opening.json
+|   |   |       record.json
+|   |   |       subscribe.json
+|   |   |       webhook.json
+|   |   |       welcome.txt
+|   |   |       wiki.json
+|   |   |       
+|   |   +---869189594
+|   |   |       arcaea.json
+|   |   |       banword.json
+|   |   |       jx3group.json
+|   |   |       marry.json
+|   |   |       opening.json
+|   |   |       record.json
+|   |   |       subscribe.json
+|   |   |       webhook.json
+|   |   |       welcome.txt
+|   |   |       wiki.json
+|   |   |       
+|   |   +---878984301
+|   |   |       arcaea.json
+|   |   |       banword.json
+|   |   |       jx3group.json
+|   |   |       marry.json
+|   |   |       opening.json
+|   |   |       record.json
+|   |   |       subscribe.json
+|   |   |       webhook.json
+|   |   |       welcome.txt
+|   |   |       wiki.json
+|   |   |       
+|   |   +---917096722
+|   |   |       arcaea.json
+|   |   |       banword.json
+|   |   |       jx3group.json
+|   |   |       marry.json
+|   |   |       opening.json
+|   |   |       record.json
+|   |   |       subscribe.json
+|   |   |       webhook.json
+|   |   |       welcome.txt
+|   |   |       wiki.json
+|   |   |       
+|   |   +---951972345
+|   |   |       arcaea.json
+|   |   |       banword.json
+|   |   |       block.json
+|   |   |       jx3group.json
+|   |   |       marry.json
+|   |   |       opening.json
+|   |   |       record.json
+|   |   |       subscribe.json
+|   |   |       webhook.json
+|   |   |       welcome.txt
+|   |   |       wiki.json
+|   |   |       
+|   |   +---953996725
+|   |   |       arcaea.json
+|   |   |       banword.json
+|   |   |       jx3group.json
+|   |   |       marry.json
+|   |   |       opening.json
+|   |   |       record.json
+|   |   |       subscribe.json
+|   |   |       webhook.json
+|   |   |       welcome.txt
+|   |   |       wiki.json
+|   |   |       
+|   |   \---960568765
+|   |           arcaea.json
+|   |           banword.json
+|   |           jx3group.json
+|   |           marry.json
+|   |           opening.json
+|   |           record.json
+|   |           subscribe.json
+|   |           webhook.json
+|   |           welcome.txt
+|   |           wiki.json
+|   |           
+|   +---plugins
+|   |   +---ban
+|   |   |   |   __init__.py
+|   |   |   |   
+|   |   |   \---__pycache__
+|   |   |           __init__.cpython-39.pyc
+|   |   |           
+|   |   +---banword
+|   |   |   |   __init__.py
+|   |   |   |   
+|   |   |   \---__pycache__
+|   |   |           __init__.cpython-39.pyc
+|   |   |           
+|   |   +---blacklist
+|   |   |   |   __init__.py
+|   |   |   |   
+|   |   |   \---__pycache__
+|   |   |           __init__.cpython-39.pyc
+|   |   |           
+|   |   +---book
+|   |   |   |   app.py
+|   |   |   |   price.png
+|   |   |   |   __init__.py
+|   |   |   |   
+|   |   |   \---__pycache__
+|   |   |           app.cpython-39.pyc
+|   |   |           __init__.cpython-39.pyc
+|   |   |           
+|   |   +---bulletin
+|   |   |   |   api.py
+|   |   |   |   bulletinG.jpg
+|   |   |   |   bulletinS.jpg
+|   |   |   |   __init__.py
+|   |   |   |   
+|   |   |   \---__pycache__
+|   |   |           api.cpython-39.pyc
+|   |   |           __init__.cpython-39.pyc
+|   |   |           
+|   |   +---developer_tools
+|   |   |   |   application.py
+|   |   |   |   application_v2.py
+|   |   |   |   classic.py
+|   |   |   |   feedback.py
+|   |   |   |   stastic.py
+|   |   |   |   __init__.py
+|   |   |   |   
+|   |   |   \---__pycache__
+|   |   |           application.cpython-39.pyc
+|   |   |           application_v2.cpython-39.pyc
+|   |   |           classic.cpython-39.pyc
+|   |   |           example.cpython-39.pyc
+|   |   |           feedback.cpython-39.pyc
+|   |   |           stastic.cpython-39.pyc
+|   |   |           __init__.cpython-39.pyc
+|   |   |           
+|   |   +---dice
+|   |   |   |   dice.py
+|   |   |   |   __init__.py
+|   |   |   |   
+|   |   |   \---__pycache__
+|   |   |           dice.cpython-39.pyc
+|   |   |           __init__.cpython-39.pyc
+|   |   |           
+|   |   +---event_notice
+|   |   |   |   __init__.py
+|   |   |   |   
+|   |   |   \---__pycache__
+|   |   |           __init__.cpython-39.pyc
+|   |   |           
+|   |   +---github
+|   |   |   |   parse.py
+|   |   |   |   __init__.py
+|   |   |   |   
+|   |   |   \---__pycache__
+|   |   |           parse.cpython-39.pyc
+|   |   |           __init__.cpython-39.pyc
+|   |   |           
+|   |   +---grab
+|   |   |   |   bmi.py
+|   |   |   |   check_pass.py
+|   |   |   |   config.py
+|   |   |   |   gettor.py
+|   |   |   |   help.py
+|   |   |   |   joke.py
+|   |   |   |   lwx1.jpg
+|   |   |   |   lwx2.jpg
+|   |   |   |   lwx3.jpg
+|   |   |   |   lwx4.jpg
+|   |   |   |   rdimg.py
+|   |   |   |   __init__.py
+|   |   |   |   
+|   |   |   +---drink_pic
+|   |   |   |       书亦烧仙草.jpg
+|   |   |   |       冰摇桃桃乌龙茶.jpg
+|   |   |   |       冰摇红莓黑加仑茶.jpg
+|   |   |   |       冰摇芒果花草茶.jpg
+|   |   |   |       冰淇淋红茶.jpg
+|   |   |   |       冰鲜柠檬水.jpg
+|   |   |   |       冷萃浮乐朵.jpg
+|   |   |   |       凉白开.jpg
+|   |   |   |       卡布奇诺.jpg
+|   |   |   |       双拼奶茶.jpg
+|   |   |   |       可口可乐.jpg
+|   |   |   |       吃土摇摇奶昔.jpg
+|   |   |   |       喜茶轻芒芒甘露.jpg
+|   |   |   |       四季春燕麦奶茶.jpg
+|   |   |   |       四季春珍珠奶茶.jpg
+|   |   |   |       四季春茶.jpg
+|   |   |   |       奥利奥味雪王大圣代.jpg
+|   |   |   |       奥利奥大圣代.jpg
+|   |   |   |       抹茶星冰乐.jpg
+|   |   |   |       抹茶红豆拿铁.jpg
+|   |   |   |       招牌芋圆奶茶.png
+|   |   |   |       摩卡.jpg
+|   |   |   |       摩卡可可碎片星冰乐.jpg
+|   |   |   |       摩卡星冰乐.jpg
+|   |   |   |       晨露抹茶.jpg
+|   |   |   |       杨枝甘露.jpg
+|   |   |   |       杨枝甘露烧仙草.jpg
+|   |   |   |       柠檬红茶.jpg
+|   |   |   |       柠檬芦荟茶.jpg
+|   |   |   |       桂花酒酿.png
+|   |   |   |       桃气乌龙奶芙.jpg
+|   |   |   |       桃气乌龙豆乳.jpg
+|   |   |   |       梨光清润路芭茶.png
+|   |   |   |       棒打鲜橙.jpg
+|   |   |   |       椰乳芋泥茫茫.jpg
+|   |   |   |       榛果风味拿铁.jpg
+|   |   |   |       橙柚派对.jpg
+|   |   |   |       气炫冰山美式.jpg
+|   |   |   |       浓缩咖啡.jpg
+|   |   |   |       满杯橙海粒.jpg
+|   |   |   |       烤奶珍珠奶茶.jpg
+|   |   |   |       焦糖浓缩咖啡星冰乐.jpg
+|   |   |   |       焦糖玛奇朵.jpg
+|   |   |   |       焦糖珍珠.jpg
+|   |   |   |       牛魔王黑砖奶茶.jpg
+|   |   |   |       珍珠奶茶.jpg
+|   |   |   |       百事可乐.jpg
+|   |   |   |       百香凤梨.jpg
+|   |   |   |       百香金菠萝.png
+|   |   |   |       皇家九号奶茶.jpg
+|   |   |   |       红茶.jpg
+|   |   |   |       红豆奶茶.jpg
+|   |   |   |       绿茶.jpg
+|   |   |   |       美式咖啡.jpg
+|   |   |   |       芋泥厚厚牛乳.jpg
+|   |   |   |       芒果西番莲果茶星冰乐.jpg
+|   |   |   |       芝士四季春.jpg
+|   |   |   |       芝士奶盖四季春.jpg
+|   |   |   |       芝士奶盖绿茶.jpg
+|   |   |   |       芝士抹茶.jpg
+|   |   |   |       芝士鲜红茶.jpg
+|   |   |   |       芝士鲜绿茶.jpg
+|   |   |   |       草莓味雪王大圣代.jpg
+|   |   |   |       草莓雪王大圣代.jpg
+|   |   |   |       葡萄柚绿茶.png
+|   |   |   |       蓝莓味雪王大圣代.jpg
+|   |   |   |       蓝莓大圣代.jpg
+|   |   |   |       蓝莓摇摇奶昔.jpg
+|   |   |   |       蓝莓果粒茶.jpg
+|   |   |   |       蜂蜜柚子茶.jpg
+|   |   |   |       西北风.png
+|   |   |   |       豆乳绵绵奶茶.jpg
+|   |   |   |       酒香沁乌龙.jpg
+|   |   |   |       酸柠浮冷萃.jpg
+|   |   |   |       醋意桃桃.jpg
+|   |   |   |       阿馥奇朵.jpg
+|   |   |   |       香草风味拿铁.jpg
+|   |   |   |       馥芮白.jpg
+|   |   |   |       马来西亚白咖啡.jpg
+|   |   |   |       鲜橙葡萄柚.jpg
+|   |   |   |       鲜芒果绿茶.png
+|   |   |   |       鹿丸可可鲜奶.jpg
+|   |   |   |       麦芽雪冷萃.jpg
+|   |   |   |       黑巧橙香乌龙.jpg
+|   |   |   |       黑糖珍珠奶茶.jpg
+|   |   |   |       
+|   |   |   +---eat_pic
+|   |   |   |       一大锅龙虾.jpg
+|   |   |   |       凉皮.jpg
+|   |   |   |       卤粉.jpg
+|   |   |   |       台湾卤肉饭.jpg
+|   |   |   |       咖喱饭.jpg
+|   |   |   |       咦咦的龙虾.jpg
+|   |   |   |       咸肉菜饭.jpg
+|   |   |   |       嫩牛五方.jpg
+|   |   |   |       寿司.jpg
+|   |   |   |       新疆炒米粉.jpg
+|   |   |   |       日式拉面.jpg
+|   |   |   |       日式烧肉饭.jpg
+|   |   |   |       杀猪粉.jpg
+|   |   |   |       松鼠桂鱼.jpg
+|   |   |   |       板栗焖饭.jpg
+|   |   |   |       桥头排骨.jpg
+|   |   |   |       水煮肉片.jpg
+|   |   |   |       水饺.jpg
+|   |   |   |       汉堡薯条.jpg
+|   |   |   |       油炸烧烤.jpg
+|   |   |   |       泡面.jpg
+|   |   |   |       浏阳蒸菜.jpg
+|   |   |   |       海南椰子鸡.jpg
+|   |   |   |       潮汕砂锅粥.jpg
+|   |   |   |       火腿鹿茸菇炒荷兰豆.jpg
+|   |   |   |       火锅.jpg
+|   |   |   |       火锅鸡.jpg
+|   |   |   |       炒粉.jpg
+|   |   |   |       炒饭.jpg
+|   |   |   |       烤冷面.jpg
+|   |   |   |       烤肉拌饭.jpg
+|   |   |   |       烧腊饭.jpg
+|   |   |   |       煎饺.jpg
+|   |   |   |       煎饼果子.jpg
+|   |   |   |       牛丼饭.jpg
+|   |   |   |       牛肉焗米粉.jpg
+|   |   |   |       牛肉粉.jpg
+|   |   |   |       牛肉面.jpg
+|   |   |   |       猪肚鸡.jpg
+|   |   |   |       猪脚饭.jpg
+|   |   |   |       白萝卜焖牛排骨.jpg
+|   |   |   |       盖码饭.jpg
+|   |   |   |       肉夹馍.jpg
+|   |   |   |       肉汁拌饭.jpg
+|   |   |   |       肠粉.jpg
+|   |   |   |       臭豆腐.jpg
+|   |   |   |       芝士焗龙虾.jpg
+|   |   |   |       茴香肉包.jpg
+|   |   |   |       葱油拌面.jpg
+|   |   |   |       葱花饼.jpg
+|   |   |   |       蒸饺.jpg
+|   |   |   |       蛋包饭.jpg
+|   |   |   |       蛋挞.jpg
+|   |   |   |       蛋炒饭.jpg
+|   |   |   |       螺蛳粉.jpg
+|   |   |   |       辣椒炒肉.jpg
+|   |   |   |       过桥米线.jpg
+|   |   |   |       酸菜鱼.jpg
+|   |   |   |       重庆小面.jpg
+|   |   |   |       锅盔.jpg
+|   |   |   |       韩式炸鸡.jpg
+|   |   |   |       韩式烤肉.jpg
+|   |   |   |       韩式部队火锅.jpg
+|   |   |   |       馄饨.jpg
+|   |   |   |       鲜肉馄饨.jpg
+|   |   |   |       鸭血粉丝.jpg
+|   |   |   |       麻婆豆腐.jpg
+|   |   |   |       麻辣烫.jpg
+|   |   |   |       麻辣香锅.jpg
+|   |   |   |       黄焖鸡.jpg
+|   |   |   |       
+|   |   |   \---__pycache__
+|   |   |           bmi.cpython-39.pyc
+|   |   |           cheater.cpython-39.pyc
+|   |   |           check_pass.cpython-39.pyc
+|   |   |           config.cpython-39.pyc
+|   |   |           gettor.cpython-39.pyc
+|   |   |           help.cpython-39.pyc
+|   |   |           joke.cpython-39.pyc
+|   |   |           rdimg.cpython-39.pyc
+|   |   |           __init__.cpython-39.pyc
+|   |   |           
+|   |   +---help
+|   |   |   \---__pycache__
+|   |   |           __init__.cpython-39.pyc
+|   |   |           
+|   |   +---jx3
+|   |   |   |   jx3.py
+|   |   |   |   parse.py
+|   |   |   |   __init__.py
+|   |   |   |   
+|   |   |   +---achievement
+|   |   |   |   |   box.py
+|   |   |   |   |   v1_v2.py
+|   |   |   |   |   __init__.py
+|   |   |   |   |   
+|   |   |   |   \---__pycache__
+|   |   |   |           adventure.cpython-39.pyc
+|   |   |   |           api.cpython-39.pyc
+|   |   |   |           box.cpython-39.pyc
+|   |   |   |           v1_v2.cpython-39.pyc
+|   |   |   |           __init__.cpython-39.pyc
+|   |   |   |           
+|   |   |   +---affection
+|   |   |   |   |   app.py
+|   |   |   |   |   __init__.py
+|   |   |   |   |   
+|   |   |   |   \---__pycache__
+|   |   |   |           app.cpython-39.pyc
+|   |   |   |           __init__.cpython-39.pyc
+|   |   |   |           
+|   |   |   +---announce
+|   |   |   |   |   __init__.py
+|   |   |   |   |   
+|   |   |   |   \---__pycache__
+|   |   |   |           api.cpython-39.pyc
+|   |   |   |           __init__.cpython-39.pyc
+|   |   |   |           
+|   |   |   +---assistance
+|   |   |   |   |   app.py
+|   |   |   |   |   __init__.py
+|   |   |   |   |   
+|   |   |   |   \---__pycache__
+|   |   |   |           app.cpython-39.pyc
+|   |   |   |           __init__.cpython-39.pyc
+|   |   |   |           
+|   |   |   +---attributes
+|   |   |   |   |   api.py
+|   |   |   |   |   flicker.png
+|   |   |   |   |   henchant.png
+|   |   |   |   |   jl.png
+|   |   |   |   |   lenchant.png
+|   |   |   |   |   schoolmapping.json
+|   |   |   |   |   unjl.png
+|   |   |   |   |   unknown.png
+|   |   |   |   |   v4.py
+|   |   |   |   |   xy.png
+|   |   |   |   |   __init__.py
+|   |   |   |   |   
+|   |   |   |   \---__pycache__
+|   |   |   |           api.cpython-39.pyc
+|   |   |   |           v4.cpython-39.pyc
+|   |   |   |           __init__.cpython-39.pyc
+|   |   |   |           
+|   |   |   +---bind
+|   |   |   |   |   role.py
+|   |   |   |   |   __init__.py
+|   |   |   |   |   
+|   |   |   |   \---__pycache__
+|   |   |   |           api.cpython-39.pyc
+|   |   |   |           role.cpython-39.pyc
+|   |   |   |           __init__.cpython-39.pyc
+|   |   |   |           
+|   |   |   +---buff
+|   |   |   |   |   api.py
+|   |   |   |   |   __init__.py
+|   |   |   |   |   
+|   |   |   |   \---__pycache__
+|   |   |   |           api.cpython-39.pyc
+|   |   |   |           lib.cpython-39.pyc
+|   |   |   |           __init__.cpython-39.pyc
+|   |   |   |           
+|   |   |   +---calendar
+|   |   |   |   |   api.py
+|   |   |   |   |   __init__.py
+|   |   |   |   |   
+|   |   |   |   \---__pycache__
+|   |   |   |           api.cpython-39.pyc
+|   |   |   |           __init__.cpython-39.pyc
+|   |   |   |           
+|   |   |   +---daily
+|   |   |   |   |   api.py
+|   |   |   |   |   __init__.py
+|   |   |   |   |   
+|   |   |   |   \---__pycache__
+|   |   |   |           api.cpython-39.pyc
+|   |   |   |           __init__.cpython-39.pyc
+|   |   |   |           
+|   |   |   +---detail
+|   |   |   |   |   detail.py
+|   |   |   |   |   __init__.py
+|   |   |   |   |   
+|   |   |   |   \---__pycache__
+|   |   |   |           detail.cpython-39.pyc
+|   |   |   |           __init__.cpython-39.pyc
+|   |   |   |           
+|   |   |   +---dungeon
+|   |   |   |   |   api.py
+|   |   |   |   |   mode.json
+|   |   |   |   |   monster.py
+|   |   |   |   |   zone.json
+|   |   |   |   |   __init__.py
+|   |   |   |   |   
+|   |   |   |   \---__pycache__
+|   |   |   |           api.cpython-39.pyc
+|   |   |   |           monster.cpython-39.pyc
+|   |   |   |           xuanjing.cpython-39.pyc
+|   |   |   |           __init__.cpython-39.pyc
+|   |   |   |           
+|   |   |   +---emoji
+|   |   |   |   |   __init__.py
+|   |   |   |   |   
+|   |   |   |   \---__pycache__
+|   |   |   |           __init__.cpython-39.pyc
+|   |   |   |           
+|   |   |   +---equip
+|   |   |   |   |   api.py
+|   |   |   |   |   __init__.py
+|   |   |   |   |   
+|   |   |   |   \---__pycache__
+|   |   |   |           api.cpython-39.pyc
+|   |   |   |           __init__.cpython-39.pyc
+|   |   |   |           
+|   |   |   +---events
+|   |   |   |   |   chutian.py
+|   |   |   |   |   yuncong.py
+|   |   |   |   |   zhue.py
+|   |   |   |   |   __init__.py
+|   |   |   |   |   
+|   |   |   |   \---__pycache__
+|   |   |   |           chutian.cpython-39.pyc
+|   |   |   |           yuncong.cpython-39.pyc
+|   |   |   |           zhue.cpython-39.pyc
+|   |   |   |           __init__.cpython-39.pyc
+|   |   |   |           
+|   |   |   +---exam
+|   |   |   |   |   api.py
+|   |   |   |   |   __init__.py
+|   |   |   |   |   
+|   |   |   |   \---__pycache__
+|   |   |   |           api.cpython-39.pyc
+|   |   |   |           __init__.cpython-39.pyc
+|   |   |   |           
+|   |   |   +---gold
+|   |   |   |   |   api.py
+|   |   |   |   |   __init__.py
+|   |   |   |   |   
+|   |   |   |   \---__pycache__
+|   |   |   |           api.cpython-39.pyc
+|   |   |   |           __init__.cpython-39.pyc
+|   |   |   |           
+|   |   |   +---horse
+|   |   |   |   |   api.py
+|   |   |   |   |   __init__.py
+|   |   |   |   |   
+|   |   |   |   \---__pycache__
+|   |   |   |           api.cpython-39.pyc
+|   |   |   |           chitu.cpython-39.pyc
+|   |   |   |           __init__.cpython-39.pyc
+|   |   |   |           
+|   |   |   +---joy
+|   |   |   |   |   api.py
+|   |   |   |   |   __init__.py
+|   |   |   |   |   
+|   |   |   |   \---__pycache__
+|   |   |   |           api.cpython-39.pyc
+|   |   |   |           __init__.cpython-39.pyc
+|   |   |   |           
+|   |   |   +---matrix
+|   |   |   |   |   api.py
+|   |   |   |   |   __init__.py
+|   |   |   |   |   
+|   |   |   |   \---__pycache__
+|   |   |   |           api.cpython-39.pyc
+|   |   |   |           __init__.cpython-39.pyc
+|   |   |   |           
+|   |   |   +---news
+|   |   |   |   |   api.py
+|   |   |   |   |   __init__.py
+|   |   |   |   |   
+|   |   |   |   \---__pycache__
+|   |   |   |           api.cpython-39.pyc
+|   |   |   |           __init__.cpython-39.pyc
+|   |   |   |           
+|   |   |   +---penzai
+|   |   |   |   |   api.py
+|   |   |   |   |   dh.py
+|   |   |   |   |   wg.py
+|   |   |   |   |   __init__.py
+|   |   |   |   |   
+|   |   |   |   \---__pycache__
+|   |   |   |           api.cpython-39.pyc
+|   |   |   |           dh.cpython-39.pyc
+|   |   |   |           wg.cpython-39.pyc
+|   |   |   |           __init__.cpython-39.pyc
+|   |   |   |           
+|   |   |   +---private
+|   |   |   |   |   api.py
+|   |   |   |   |   README.md
+|   |   |   |   |   __init__.py
+|   |   |   |   |   
+|   |   |   |   \---__pycache__
+|   |   |   |           api.cpython-39.pyc
+|   |   |   |           __init__.cpython-39.pyc
+|   |   |   |           
+|   |   |   +---pvp
+|   |   |   |   |   api.py
+|   |   |   |   |   leader.py
+|   |   |   |   |   __init__.py
+|   |   |   |   |   
+|   |   |   |   \---__pycache__
+|   |   |   |           api.cpython-39.pyc
+|   |   |   |           leader.cpython-39.pyc
+|   |   |   |           __init__.cpython-39.pyc
+|   |   |   |           
+|   |   |   +---rank
+|   |   |   |   |   api.py
+|   |   |   |   |   school_rank.py
+|   |   |   |   |   top100.py
+|   |   |   |   |   __init__.py
+|   |   |   |   |   
+|   |   |   |   \---__pycache__
+|   |   |   |           api.cpython-39.pyc
+|   |   |   |           school_rank.cpython-39.pyc
+|   |   |   |           top100.cpython-39.pyc
+|   |   |   |           __init__.cpython-39.pyc
+|   |   |   |           
+|   |   |   +---serendipity
+|   |   |   |   |   v1.py
+|   |   |   |   |   v2.py
+|   |   |   |   |   without_jx3api.py
+|   |   |   |   |   __init__.py
+|   |   |   |   |   
+|   |   |   |   \---__pycache__
+|   |   |   |           v1.cpython-39.pyc
+|   |   |   |           v2.cpython-39.pyc
+|   |   |   |           without_jx3api.cpython-39.pyc
+|   |   |   |           __init__.cpython-39.pyc
+|   |   |   |           
+|   |   |   +---server
+|   |   |   |   |   api.py
+|   |   |   |   |   __init__.py
+|   |   |   |   |   
+|   |   |   |   \---__pycache__
+|   |   |   |           api.cpython-39.pyc
+|   |   |   |           __init__.cpython-39.pyc
+|   |   |   |           
+|   |   |   +---skill
+|   |   |   |   |   macro.py
+|   |   |   |   |   __init__.py
+|   |   |   |   |   
+|   |   |   |   \---__pycache__
+|   |   |   |           api.cpython-39.pyc
+|   |   |   |           macro.cpython-39.pyc
+|   |   |   |           __init__.cpython-39.pyc
+|   |   |   |           
+|   |   |   +---snacks
+|   |   |   |   |   api.py
+|   |   |   |   |   __init__.py
+|   |   |   |   |   
+|   |   |   |   \---__pycache__
+|   |   |   |           api.cpython-39.pyc
+|   |   |   |           __init__.cpython-39.pyc
+|   |   |   |           
+|   |   |   +---subscribe
+|   |   |   |   |   about.py
+|   |   |   |   |   addtions.json
+|   |   |   |   |   options.json
+|   |   |   |   |   __init__.py
+|   |   |   |   |   
+|   |   |   |   \---__pycache__
+|   |   |   |           about.cpython-39.pyc
+|   |   |   |           api.cpython-39.pyc
+|   |   |   |           __init__.cpython-39.pyc
+|   |   |   |           
+|   |   |   +---task
+|   |   |   |   |   api.py
+|   |   |   |   |   __init__.py
+|   |   |   |   |   
+|   |   |   |   \---__pycache__
+|   |   |   |           api.cpython-39.pyc
+|   |   |   |           lib.cpython-39.pyc
+|   |   |   |           __init__.cpython-39.pyc
+|   |   |   |           
+|   |   |   +---trade
+|   |   |   |   |   api.py
+|   |   |   |   |   item.py
+|   |   |   |   |   item_v2.py
+|   |   |   |   |   sl.py
+|   |   |   |   |   wufeng.py
+|   |   |   |   |   __init__.py
+|   |   |   |   |   
+|   |   |   |   \---__pycache__
+|   |   |   |           api.cpython-39.pyc
+|   |   |   |           item.cpython-39.pyc
+|   |   |   |           item_v2.cpython-39.pyc
+|   |   |   |           sl.cpython-39.pyc
+|   |   |   |           wufeng.cpython-39.pyc
+|   |   |   |           __init__.cpython-39.pyc
+|   |   |   |           
+|   |   |   \---__pycache__
+|   |   |           achievement.cpython-39.pyc
+|   |   |           adventure.cpython-39.pyc
+|   |   |           bind.cpython-39.pyc
+|   |   |           buff.cpython-39.pyc
+|   |   |           chitu.cpython-39.pyc
+|   |   |           coin.cpython-39.pyc
+|   |   |           dh.cpython-39.pyc
+|   |   |           image.cpython-39.pyc
+|   |   |           jx3.cpython-39.pyc
+|   |   |           jx3apiws.cpython-39.pyc
+|   |   |           jx3_event.cpython-39.pyc
+|   |   |           macro.cpython-39.pyc
+|   |   |           parse.cpython-39.pyc
+|   |   |           pet.cpython-39.pyc
+|   |   |           qualifications.cpython-39.pyc
+|   |   |           record.cpython-39.pyc
+|   |   |           seasun.cpython-39.pyc
+|   |   |           skilldatalib.cpython-39.pyc
+|   |   |           special_application.cpython-39.pyc
+|   |   |           task.cpython-39.pyc
+|   |   |           top100.cpython-39.pyc
+|   |   |           trade.cpython-39.pyc
+|   |   |           wanbaolou.cpython-39.pyc
+|   |   |           __init__.cpython-39.pyc
+|   |   |           
+|   |   +---majsoul
+|   |   |   |   koromo.py
+|   |   |   |   __init__.py
+|   |   |   |   
+|   |   |   \---__pycache__
+|   |   |           koromo.cpython-39.pyc
+|   |   |           __init__.cpython-39.pyc
+|   |   |           
+|   |   +---minecraft
+|   |   |   |   mcs.py
+|   |   |   |   mcv.py
+|   |   |   |   __init__.py
+|   |   |   |   
+|   |   |   \---__pycache__
+|   |   |           mcs.cpython-39.pyc
+|   |   |           mcv.cpython-39.pyc
+|   |   |           __init__.cpython-39.pyc
+|   |   |           
+|   |   +---music
+|   |   |   |   guess.py
+|   |   |   |   music.py
+|   |   |   |   __init__.py
+|   |   |   |   
+|   |   |   \---__pycache__
+|   |   |           guess.cpython-39.pyc
+|   |   |           music.cpython-39.pyc
+|   |   |           __init__.cpython-39.pyc
+|   |   |           
+|   |   +---nbnhhsh
+|   |   |   |   __init__.py
+|   |   |   |   
+|   |   |   \---__pycache__
+|   |   |           __init__.cpython-39.pyc
+|   |   |           
+|   |   +---op
+|   |   |   |   __init__.py
+|   |   |   |   
+|   |   |   \---__pycache__
+|   |   |           __init__.cpython-39.pyc
+|   |   |           
+|   |   +---poem
+|   |   |   |   api.py
+|   |   |   |   __init__.py
+|   |   |   |   
+|   |   |   \---__pycache__
+|   |   |           api.cpython-39.pyc
+|   |   |           __init__.cpython-39.pyc
+|   |   |           
+|   |   +---railway
+|   |   |   |   crt.py
+|   |   |   |   __init__.py
+|   |   |   |   
+|   |   |   \---__pycache__
+|   |   |           crt.cpython-39.pyc
+|   |   |           __init__.cpython-39.pyc
+|   |   |           
+|   |   +---sign
+|   |   |   |   manage.py
+|   |   |   |   message.py
+|   |   |   |   __init__.py
+|   |   |   |   
+|   |   |   \---__pycache__
+|   |   |           manage.cpython-39.pyc
+|   |   |           message.cpython-39.pyc
+|   |   |           __init__.cpython-39.pyc
+|   |   |           
+|   |   +---twenty_four
+|   |   |   |   process.py
+|   |   |   |   __init__.py
+|   |   |   |   
+|   |   |   \---__pycache__
+|   |   |           process.cpython-39.pyc
+|   |   |           __init__.cpython-39.pyc
+|   |   |           
+|   |   \---wiki
+|   |       |   wikilib.py
+|   |       |   __init__.py
+|   |       |   
+|   |       \---__pycache__
+|   |               wikilib.cpython-39.pyc
+|   |               __init__.cpython-39.pyc
+|   |               
+|   +---sign
+|   +---tools
+|   |   |   agl.json
+|   |   |   ban.json
+|   |   |   blacklist.json
+|   |   |   config.json
+|   |   |   data.py
+|   |   |   file.py
+|   |   |   generate.py
+|   |   |   password.txt
+|   |   |   permission.json
+|   |   |   permission.py
+|   |   |   size.txt
+|   |   |   subscribe.json
+|   |   |   xuanjing.json
+|   |   |   __init__.py
+|   |   |   
+|   |   +---basic
+|   |   |   |   data_server.py
+|   |   |   |   group_opeator.py
+|   |   |   |   message_process.py
+|   |   |   |   msg.py
+|   |   |   |   server.json
+|   |   |   |   spark.py
+|   |   |   |   
+|   |   |   +---jx3
+|   |   |   |   |   __init__.py
+|   |   |   |   |   
+|   |   |   |   +---tuilan
+|   |   |   |   |   |   __init__.py
+|   |   |   |   |   |   
+|   |   |   |   |   \---__pycache__
+|   |   |   |   |           __init__.cpython-39.pyc
+|   |   |   |   |           
+|   |   |   |   \---__pycache__
+|   |   |   |           __init__.cpython-39.pyc
+|   |   |   |           
+|   |   |   \---__pycache__
+|   |   |           data_server.cpython-39.pyc
+|   |   |           group_opeator.cpython-39.pyc
+|   |   |           message_process.cpython-39.pyc
+|   |   |           msg.cpython-39.pyc
+|   |   |           
+|   |   +---config
+|   |   |   |   config.py
+|   |   |   |   config.yml
+|   |   |   |   _config.yml
+|   |   |   |   __init__.py
+|   |   |   |   
+|   |   |   \---__pycache__
+|   |   |           config.cpython-39.pyc
+|   |   |           __init__.cpython-39.pyc
+|   |   |           
+|   |   +---utils
+|   |   |   |   common.py
+|   |   |   |   log.py
+|   |   |   |   markdown.py
+|   |   |   |   path.py
+|   |   |   |   request.py
+|   |   |   |   __init__.py
+|   |   |   |   
+|   |   |   \---__pycache__
+|   |   |           common.cpython-39.pyc
+|   |   |           log.cpython-39.pyc
+|   |   |           path.cpython-39.pyc
+|   |   |           request.cpython-39.pyc
+|   |   |           __init__.cpython-39.pyc
+|   |   |           
+|   |   \---__pycache__
+|   |           config.cpython-39.pyc
+|   |           configs.cpython-39.pyc
+|   |           data.cpython-39.pyc
+|   |           file.cpython-39.pyc
+|   |           gender.cpython-39.pyc
+|   |           generate.cpython-39.pyc
+|   |           local_version.cpython-39.pyc
+|   |           permission.cpython-39.pyc
+|   |           utils.cpython-39.pyc
+|   |           __init__.cpython-39.pyc
+|   |           
+|   \---views
+|       +---jx3
+|       |   +---achievement
+|       |   |       achievement.html
+|       |   |       global_dungeon.html
+|       |   |       
+|       |   +---affections
+|       |   |       affections.html
+|       |   |       
+|       |   +---assistance
+|       |   |       assistance.html
+|       |   |       
+|       |   +---blacklist
+|       |   |       blacklist.html
+|       |   |       
+|       |   +---celebrations
+|       |   |       calendar.html
+|       |   |       chutian.html
+|       |   |       zhue.html
+|       |   |       
+|       |   +---dilu
+|       |   |       dilu.html
+|       |   |       
+|       |   +---drop
+|       |   |       drop.html
+|       |   |       
+|       |   +---equip
+|       |   |       attributes_v4.html
+|       |   |       recommend.html
+|       |   |       
+|       |   +---firework
+|       |   |       firework.html
+|       |   |       
+|       |   +---item
+|       |   |       item.html
+|       |   |       
+|       |   +---monster
+|       |   |       monster.html
+|       |   |       
+|       |   +---pvp
+|       |   |       leaders.html
+|       |   |       sandbox.html
+|       |   |       tongzhan.html
+|       |   |       
+|       |   +---recruit
+|       |   |       recruit.html
+|       |   |       
+|       |   +---schoolrank
+|       |   |       schoolrank.html
+|       |   |       
+|       |   +---serendipity
+|       |   |       serendipity.html
+|       |   |       
+|       |   +---subscribe
+|       |   |       subscribe.html
+|       |   |       
+|       |   +---teamcd
+|       |   |       teamcd.html
+|       |   |       
+|       |   +---trade
+|       |   |       cheater.html
+|       |   |       dunhao.html
+|       |   |       sl.html
+|       |   |       trade.html
+|       |   |       waiguan.html
+|       |   |       wujia.html
+|       |   |       zoushi.html
+|       |   |       
+|       |   \---zone_detail
+|       |           zone_detail.html
+|       |           
+|       +---majsoul
+|       |   \---record
+|       |           record.html
+|       |           
+|       +---railway
+|       |   \---crt
+|       |           crt.html
+|       |           
+|       \---__pycache__
+|               __init__.cpython-39.pyc
+|               
+\---__pycache__
+        bot.cpython-39.pyc
+        
