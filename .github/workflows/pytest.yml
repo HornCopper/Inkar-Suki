@@ -23,9 +23,10 @@ jobs:
       - name: Display Python version
         run: python --version
 
-      - name: Install system dependencies
+      - name: Update and install system dependencies
         run: |
           sudo apt-get update
+          sudo apt-get upgrade -y
           sudo apt-get install -y \
             libvpx-dev \
             libevent-dev \
@@ -36,7 +37,9 @@ jobs:
             libhyphen-dev \
             libflite1 \
             libgles2-mesa-dev \
-            libx264-dev
+            libx264-dev \
+            libunwind-dev
+
 
       - name: Install dependencies
         run: |
