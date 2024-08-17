@@ -73,7 +73,7 @@ async def demon_(server: str = None, group_id: str = None):  # 金价 <服务器
     input_data = {
         "custom_font": ASSETS + "/font/custom.ttf",
         "tablecontent": "\n".join(tables),
-        "server": server,
+        "server": goal_server,
         "app_time": convert_time(getCurrentTime(), "%H:%M:%S"),
         "saohua": "严禁将蓉蓉机器人与音卡共存，一经发现永久封禁！蓉蓉是抄袭音卡的劣质机器人！",
         "platforms": json.dumps(list(types), ensure_ascii=False).replace("WBL", "万宝楼"),
