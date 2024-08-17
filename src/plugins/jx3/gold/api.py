@@ -1,17 +1,90 @@
+from jinja2 import Template
+from pathlib import Path
+
 from src.tools.config import Config
 from src.tools.basic.msg import PROMPT
 from src.tools.basic.data_server import server_mapping
 from src.tools.utils.request import get_api
+from src.tools.utils.path import ASSETS, CACHE, VIEWS
+from src.tools.utils.common import getCurrentTime, convert_time
+from src.tools.file import read, write
+from src.tools.generate import get_uuid, generate
+
+import json
 
 token = Config.jx3.api.token
 bot_name = Config.bot_basic.bot_name_argument
 
+template_jinjia = """
+<tr>
+    <td class="short-column">{{ date }}</td>
+    <td class="short-column">{{ _7881 }}</td>
+    <td class="short-column">{{ wbl }}</td>
+    <td class="short-column">{{ dd373 }}</td>
+    <td class="short-column">{{ _5173 }}</td>
+    <td class="short-column">{{ uu898 }}</td>
+</tr>"""
+
+types = {
+    "7881": "_7881",
+    "WBL": "wbl",
+    "DD373": "dd373",
+    "5173": "_5173",
+    "UU898": "uu898"
+}
+
 async def demon_(server: str = None, group_id: str = None):  # 金价 <服务器>
-    server = server_mapping(server, group_id)
-    if not server:
+    goal_server = server_mapping(server, group_id)
+    if not goal_server:
         return [PROMPT.ServerNotExist]
-    final_url = f"{Config.jx3.api.url}/view/trade/demon?robot={bot_name}&server={server}&chrome=1&token={token}"
-    data = await get_api(final_url)
-    if data["code"] == 400:
-        return ["服务器名输入错误，请检查后重试~"]
-    return data["data"]["url"]
+    data = await get_api("https://spider2.jx3box.com/api/spider/gold/trend")
+    server_data = data[goal_server]
+    rows = []
+    dates = []
+    date_to_data = {}
+
+    for platform_data in data[goal_server]["7881"]:
+        # 只拿日期，平台不影响
+        dates.append(platform_data["date"])
+
+    platform_to_averages = {param_name: [] for param_name in types.values()}
+
+    for platform_name, param_name in types.items():
+        if platform_name in server_data:
+            platform_data = server_data[platform_name]
+            for daily_data in platform_data:
+                date = daily_data["date"]
+                if date not in date_to_data:
+                    date_to_data[date] = {}
+                date_to_data[date][param_name] = round(daily_data["average"], 2)
+                platform_to_averages[param_name].append(int(daily_data["average"]))
+
+    sorted_dates = sorted(date_to_data.keys(), reverse=True)
+    recent_dates = sorted_dates[:7]
+    for date in recent_dates:
+        row_data = date_to_data[date]
+        row_data.update({"date": date})
+        rows.append(row_data)
+
+    tables = []
+    for row in rows:
+        tables.append(Template(template_jinjia).render(**row))
+    
+    input_data = {
+        "custom_font": ASSETS + "/font/custom.ttf",
+        "tablecontent": "\n".join(tables),
+        "server": server,
+        "app_time": convert_time(getCurrentTime(), "%H:%M:%S"),
+        "saohua": "严禁将蓉蓉机器人与音卡共存，一经发现永久封禁！蓉蓉是抄袭音卡的劣质机器人！",
+        "platforms": json.dumps(list(types), ensure_ascii=False).replace("WBL", "万宝楼"),
+        "dates": json.dumps(dates, ensure_ascii=False),
+        "app_name": "金币价格"
+    }
+    for platform in types:
+        input_data[types[platform]] = json.dumps(platform_to_averages[types[platform]], ensure_ascii=False)
+    
+    html = Template(read(VIEWS + "/jx3/trade/gold.html")).render(**input_data)
+    final_html = CACHE + "/" + get_uuid() + ".html"
+    write(final_html, html)
+    final_path = await generate(final_html, False, "table", False)
+    return Path(final_path).as_uri()

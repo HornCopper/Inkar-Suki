@@ -3,7 +3,7 @@ from nonebot.adapters import Message
 from nonebot.params import CommandArg
 from nonebot.adapters.onebot.v11 import GroupMessageEvent, MessageSegment as ms
 
-from src.tools.utils.request import get_content
+from src.tools.file import get_content_local
 
 from .api import *
 
@@ -17,11 +17,9 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
 
     Example：-金价 幽月轮
     """
-    if args.extract_plain_text() == "":
-        return
-    # server = args.extract_plain_text()
-    # data = await demon_(server, group_id=event.group_id)
-    # if isinstance(data, list):
-    #     await demon.finish(data[0])
-    # data = await get_content(data)
-    # await demon.finish(ms.image(data))
+    server = args.extract_plain_text()
+    data = await demon_(server, group_id=event.group_id)
+    if isinstance(data, list):
+        await demon.finish(data[0])
+    data = get_content_local(data)
+    await demon.finish(ms.image(data))
