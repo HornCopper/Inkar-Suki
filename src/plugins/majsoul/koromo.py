@@ -41,7 +41,7 @@ def getRank(raw_data):
         id = raw_data
     major = id % 10000
     minor = math.floor(major / 100)
-    rank = "初士杰豪圣"[minor-1] if minor != 6 else "魂"
+    rank = "初士杰豪圣"[minor-1] if minor != 7 else "魂天"
     label = rank + str(major % 100)
     return label
 
@@ -126,11 +126,11 @@ async def player_pt(name: str = None, mode="16.12.9.15.11.8"):
     final_url = koromo_api_ps.format(player_id=pid, end_timestamp=str(getCurrentTime()*1000), start_timestamp="1262304000000", mode=mode)
     data = await get_api(final_url)
     rank = getRank(data["level"]["id"])
-    level = max_points[rank]
-    score = str(data["level"]["score"] + data["level"]["delta"])
+    level = max_points[rank] if rank[0] != "魂" else "20.0"
+    score = str(data["level"]["score"] + data["level"]["delta"]) if rank[0] != "魂" else str(round((data["level"]["score"] + data["level"]["delta"]) / 100, 1))
     rank_max = getRank(data["max_level"]["id"])
-    level_max = max_points[rank_max]
-    score_max = str(data["max_level"]["score"] + data["max_level"]["delta"])
+    level_max = max_points[rank_max] if rank[0] != "魂" else "20.0"
+    score_max = str(data["max_level"]["score"] + data["max_level"]["delta"]) if rank[0] != "魂" else str(round((data["level"]["score"] + data["level"]["delta"]) / 100, 1))
     return f"[{rank}] {name}（{pid}）\n当前PT：[{rank}] {score}/{level}\n最高PT：[{rank_max}] {score_max}/{level_max}"
 
 async def get_records(name: str = None, mode: str = "16.12.9.15.11.8"):

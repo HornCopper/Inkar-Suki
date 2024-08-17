@@ -98,7 +98,7 @@ class ScreenshotGenerator:
             return store_path
 
         except Exception as ex:
-            print(f"图片生成失败，请尝试执行 `playwright install`！: {ex}")
+            logger.error(f"图片生成失败，请尝试执行 `playwright install`！: {ex}")
             return False
 
 async def generate(

@@ -5,6 +5,7 @@ from nonebot.params import CommandArg
 
 from src.tools.basic.data_server import server_mapping
 from src.tools.basic.msg import PROMPT
+from src.tools.file import get_content_local
 
 from .chutian import *
 from .yuncong import *
@@ -38,5 +39,5 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     if server == None:
         await zhue_.finish(PROMPT.ServerNotExist)
     else:
-        image = await getZhueRecord(server)
-        await zhue_.finish(ms.image(image))
+        img = get_content_local(await getZhueRecord(server))
+        await zhue_.finish(ms.image(img))

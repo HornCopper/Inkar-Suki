@@ -29,7 +29,7 @@ async def _(event: Event, args: Message = CommandArg()):
     if args.extract_plain_text() != "":
         return
     rdint = random.randint(1, 100)
-    if event.user_id == 1925648680:
+    if event.user_id in [1649157526, 1925648680]:
         if rdint >= 31:
             img = get_content_local(Path(PLUGINS + "/grab/lwx" + str(random.randint(1,4)) + ".jpg").as_uri())
             await rddi.finish(ms.image(img))
