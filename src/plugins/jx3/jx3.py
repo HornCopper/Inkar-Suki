@@ -22,7 +22,6 @@ from .serendipity import *
 from .equip import *
 from .emoji import *
 from .detail import *
-from .private import *
 from .trade import *
 from .events import *
 from .calendar import *
