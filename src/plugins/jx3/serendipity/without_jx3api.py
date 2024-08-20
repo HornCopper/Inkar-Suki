@@ -2,7 +2,7 @@ from src.tools.config import Config
 from src.tools.utils.request import post_url, get_api
 from src.tools.basic.jx3 import gen_ts, gen_xsk, format_body
 
-from src.plugins.jx3.bind import getPlayerLocalData, Player
+from src.plugins.jx3.bind import get_player_local_data, Player
 
 import json
 
@@ -33,7 +33,7 @@ class JX3Serendipity:
         return serendipity_level
 
     async def get_tuilan_data(self, server: str, name: str):
-        role: Player = await getPlayerLocalData(roleName=name, serverName=server)
+        role: Player = await get_player_local_data(role_name=name, server_name=server)
         data = role.format_jx3api()
         if data["code"] != 200:
             return False

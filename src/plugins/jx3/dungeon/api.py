@@ -10,7 +10,7 @@ from src.tools.utils.path import ASSETS, CACHE, PLUGINS, VIEWS
 from src.tools.utils.common import convert_time, getCurrentTime, getRelateTime
 from src.tools.file import read, write
 
-from src.plugins.jx3.bind import getPlayerLocalData
+from src.plugins.jx3.bind import get_player_local_data
 from src.plugins.jx3.attributes import Zone_mapping
 
 import json
@@ -370,7 +370,7 @@ available_ = """
 
 async def zone_v2(server, id):
     server = server_mapping(server)
-    data = await getPlayerLocalData(roleName=id, serverName=server)
+    data = await get_player_local_data(role_name=id, server_name=server)
     details_data = data.format_jx3api()
     if details_data["code"] != 200:
         guid = ""

@@ -9,7 +9,7 @@ from src.tools.file import read, write
 from src.tools.generate import generate, get_uuid
 from src.tools.basic.jx3 import gen_ts, format_body, gen_xsk
 
-from src.plugins.jx3.bind import getPlayerLocalData
+from src.plugins.jx3.bind import get_player_local_data
 from src.plugins.jx3.dungeon.api import get_map, zone_mapping, mode_mapping
 
 import json
@@ -51,7 +51,7 @@ async def achi_v2(server: str = None, name: str = None, achievement: str = None,
     server = server_mapping(server, group_id)
     if not server:
         return [PROMPT.ServerNotExist]
-    personal_data_request = await getPlayerLocalData(roleName=name, serverName=server)
+    personal_data_request = await get_player_local_data(role_name=name, server_name=server)
     personal_data = personal_data_request.format_jx3api()
     if personal_data["code"] != 200:
         guid = ""
@@ -120,7 +120,7 @@ async def zone_achi(server: str = None, name: str = None, zone: str = None, mode
     mode = mode_mapping(mode)
     if zone is False or mode is False:
         return ["唔……难度或名称输入有误。"]
-    personal_data_request = await getPlayerLocalData(roleName=name, serverName=server)
+    personal_data_request = await get_player_local_data(role_name=name, server_name=server)
     personal_data = personal_data_request.format_jx3api()
     if personal_data["code"] != 200:
         guid = ""

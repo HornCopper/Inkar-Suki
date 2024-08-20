@@ -79,13 +79,13 @@ class Player:
     
 from src.tools.utils.request import get_api
 
-async def getPlayerLocalData(roleName: str = "", roleId: str = "", serverName: str = None):
-    player_data = group_db.where_one(RoleData(), "roleName = ? OR roleId = ? AND serverName = ?", roleName, roleId, serverName, default=None)
+async def get_player_local_data(role_name: str = "", role_id: str = "", server_name: str = None):
+    player_data = group_db.where_one(RoleData(), "roleName = ? OR roleId = ? AND serverName = ?", role_name, role_id, server_name, default=None)
     if player_data is None:
-        uid = await get_uid(roleName=roleName, serverName=serverName)
+        uid = await get_uid(roleName=role_name, serverName=server_name)
         if uid == None:
             return Player()
-        await getRoleData(uid, serverName)
-        return await getPlayerLocalData(roleName=roleName, roleId=uid)
+        await getRoleData(uid, server_name)
+        return await get_player_local_data(role_name=role_name, role_id=uid)
     else:
         return Player(**player_data.dump())

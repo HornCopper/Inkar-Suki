@@ -10,7 +10,7 @@ from src.tools.generate import get_uuid, generate
 from src.tools.utils.common import convert_time
 from src.tools.file import read, write
 
-from src.plugins.jx3.bind import getPlayerLocalData
+from src.plugins.jx3.bind import get_player_local_data
 
 from .without_jx3api import *
 
@@ -39,7 +39,7 @@ async def getImage_v2(server: str, name: str, group_id: str, type: bool):
     server = server_mapping(server, group_id)
     if not server:
         return [PROMPT.ServerNotExist]
-    role_data = await getPlayerLocalData(roleName=name, serverName=server)
+    role_data = await get_player_local_data(role_name=name, server_name=server)
     if role_data.format_jx3api()["code"] != 200:
         return [PROMPT.PlayerNotExist]
     serendipity_data = await Serendipity.integration(server, name)

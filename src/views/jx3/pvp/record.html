@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <!--
+        该代码协议与Inkar Suki仓库协议相同。
+
+        禁止帝君和兔兔使用。
+
+        禁止任何人商用。
+
+        欢迎借鉴或用于开源项目。
+
+        ——HornCopper
+     -->
+    <style>
+        .message-box {
+            width: 778px;
+            display: flex;
+            /* 使用Flexbox布局 */
+            justify-content: space-between;
+            /* 列之间均匀分布 */
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #f5f5f5;
+        }
+
+        .element {
+            flex: 1;
+            /* 列占用可用空间的三分之一 */
+            display: flex;
+            /* 列内部也使用Flexbox布局 */
+            flex-direction: column;
+            /* 列内部的元素垂直排列 */
+            justify-content: space-between;
+            /* 行之间均匀分布（如果需要） */
+        }
+
+        .cell {
+            padding: 5px;
+            border-radius: 3px;
+            background-color: #fff;
+            /* 单元格背景色 */
+            text-align: center;
+        }
+
+        table {
+            width: 800px;
+            border-collapse: separate;
+            border-spacing: 0;
+            border: 1px solid #000;
+        }
+
+        th {
+            background-color: #333;
+            color: #fff;
+            padding: 8px;
+            text-align: center;
+        }
+
+        td {
+            padding: 8px;
+            text-align: center;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            border-bottom: 1px solid #D3D3D3;
+            margin-bottom: 1px;
+        }
+
+        tbody tr:not(:first-child) {
+            /* border-top: 1px solid #000; */
+            border: 1px solid black;
+        }
+
+        .short-column {
+            width: 150px;
+        }
+
+        tfoot {
+            text-align: center;
+            font-style: italic;
+            font-size: 12px;
+        }
+
+        @font-face {
+            font-family: Harmony;
+            src: url("{{ custom_font }}");
+        }
+
+        body {
+            font-family: Harmony, sans-serif;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="total" style="display: inline-block;">
+        {{ msgbox }}
+        <table style="background-color: #FFFFFF">
+            <thead>
+                <tr>
+                    <th class="short-column">心法</th>
+                    <th class="short-column">对局段位</th>
+                    <th class="short-column">时间</th>
+                    <th class="short-column">得分</th>
+                    <th class="short-column">结果</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{ table }}
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="7">&copy; Inkar Suki · {{ app }} · {{ server }} · {{ name }}<br>{{ saohua }}</td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+</body>
+
+</html>

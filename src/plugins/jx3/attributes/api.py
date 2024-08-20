@@ -12,7 +12,7 @@ from src.tools.file import read
 from src.tools.utils.path import ASSETS, CACHE, PLUGINS
 from src.tools.basic.jx3 import gen_ts, format_body, gen_xsk
 
-from src.plugins.jx3.bind import getPlayerLocalData
+from src.plugins.jx3.bind import get_player_local_data
 
 import os
 import json
@@ -24,7 +24,7 @@ device_id = ticket.split("::")[-1]
 
 async def get_uid(server, id):
     token = Config.jx3.api.token
-    data = await getPlayerLocalData(roleName=id, serverName=server)
+    data = await get_player_local_data(role_name=id, server_name=server)
     data = data.format_jx3api()
     if data["code"] != 200:
         return False
