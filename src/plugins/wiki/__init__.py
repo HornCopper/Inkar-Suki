@@ -94,8 +94,8 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
     personal_data = await bot.call_api("get_group_member_info", group_id=event.group_id, user_id=event.user_id, no_cache=True)
     group_admin = personal_data["role"] in ["owner", "admin"]
     if not group_admin:
-        if not checker(str(event.user_id), 10):
-            await interwiki.finish(error(10))
+        if not checker(str(event.user_id), 5):
+            await interwiki.finish(error(5))
     args = args.extract_plain_text().split(" ")
     if args[0] == "add":
         if len(args) != 3:

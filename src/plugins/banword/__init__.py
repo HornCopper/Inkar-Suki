@@ -15,7 +15,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):  # 违禁�
     if args.extract_plain_text() == "":
         return
     bw = args.extract_plain_text()
-    if not checker(str(event.user_id), 5):
+    if not checker(str(event.user_id), 10):
         await banword.finish(error(5))
     if bw:
         current_data: BannedWordList = group_db.where_one(BannedWordList(), default=BannedWordList())
@@ -36,7 +36,7 @@ unbanword = on_command("unbanword", force_whitespace=True, priority=5)  # 违禁
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     if args.extract_plain_text() == "":
         return
-    if not checker(str(event.user_id), 5):
+    if not checker(str(event.user_id), 10):
         await unbanword.finish(error(5))
     bw = args.extract_plain_text()
     if bw:

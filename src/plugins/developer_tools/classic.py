@@ -19,8 +19,8 @@ purge = on_command("purge", force_whitespace=True, priority=5)  # 清除所有`h
 async def _(event: Event, args: Message = CommandArg()):
     if args.extract_plain_text() != "":
         return
-    if not checker(str(event.user_id), 1):
-        await purge.finish(error(1))
+    if not checker(str(event.user_id), 10):
+        await purge.finish(error(10))
     try:
         for i in os.listdir(CACHE):
             os.remove(CACHE + "/" + i)
@@ -35,8 +35,8 @@ echo = on_command("echo", force_whitespace=True, priority=5)  # 复读只因功�
 async def _(event: Event, args: Message = CommandArg()):
     if args.extract_plain_text() == "":
         return
-    if not checker(str(event.user_id), 9):
-        await echo.finish(error(9))
+    if not checker(str(event.user_id), 10):
+        await echo.finish(error(10))
     await echo.finish(args)
 
 ping = on_command("ping", force_whitespace=True, priority=5)  # 测试机器人是否在线

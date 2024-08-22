@@ -5,6 +5,7 @@ from nonebot.adapters.onebot.v11 import GroupMessageEvent, MessageSegment as ms
 
 from src.tools.file import get_content_local
 from src.tools.utils.request import get_content
+from src.tools.permission import checker, error
 
 from .api import *
 from .item import *
@@ -109,6 +110,28 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     else:
         image = get_content_local(image)
         await sl_.finish(ms.image(image))
+
+item_aliases = on_command("jx3_aliases_item", aliases={"物品别名"}, force_whitespace=True, priority=5)
+
+@item_aliases.handle()
+async def _(event: GroupMessageEvent, args: Message = CommandArg()):
+    if args.extract_plain_text() == "":
+        return
+    if not checker(str(event.user_id), 8):
+        await item_aliases.finish(error(8))
+    arg = args.extract_plain_text().split(" ")
+    if len(arg) != 2:
+        await item_aliases.finish(PROMPT.ArgumentCountInvalid)
+    raw_name = arg[0]
+    formal_name = arg[1]
+    current_data = json.loads(read(TOOLS + "/item_aliases.json"), "{}")
+    if raw_name in current_data:
+        await item_aliases.finish("唔……该物品已经存在别称了，请联系机器人Owner进行后台删除后重新操作！")
+    else:
+        current_data[raw_name] = formal_name
+        write(TOOLS + "/item_aliases.json", json.dumps(current_data, ensure_ascii=False))
+        await item_aliases.finish("添加成功！")
+
 
 # 施工中
 # trade_trend = on_command("jx3_trend", aliases={"交易行走势"}, force_whitespace=True, priority=5)
