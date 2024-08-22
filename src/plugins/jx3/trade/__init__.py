@@ -124,7 +124,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
         await item_aliases.finish(PROMPT.ArgumentCountInvalid)
     raw_name = arg[0]
     formal_name = arg[1]
-    current_data = json.loads(read(TOOLS + "/item_aliases.json"), "{}")
+    current_data = json.loads(read(TOOLS + "/item_aliases.json", "{}"))
     if raw_name in current_data:
         await item_aliases.finish("唔……该物品已经存在别称了，请联系机器人Owner进行后台删除后重新操作！")
     else:
