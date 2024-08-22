@@ -123,7 +123,10 @@ async def getSingleItemPrice(item_name: str):
     wbl_data = await queryWBLInfo(standard_name)
     html = read(VIEWS + "/jx3/trade/wujia.html")
     for each_part in aijx3_data:
-        html = html.replace(f"${each_part}_data", aijx3_data[each_part])
+        data = aijx3_data[each_part]
+        if data == "":
+            data = "(｡•́︿•̀｡) 该大区目前没有数据"
+        html = html.replace(f"${each_part}_data", data)
     html = html.replace("$wbl_data", wbl_data)
     html = html.replace("$item_name", str(basic_item_info[0]))
     html = html.replace("$item_alias", str(basic_item_info[1]))
