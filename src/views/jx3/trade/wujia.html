@@ -13,7 +13,6 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            /* background: url('$custombackground') no-repeat; */
             background-color: #ffffff;
             background-size: cover;
             backdrop-filter: blur(5px);
@@ -99,13 +98,15 @@
 
         .chart-container {
             width: 100%;
+            max-width: 1000px;
             margin-top: 20px;
+            display: flex;
+            justify-content: center;
             background: rgba(255, 255, 255, 0.8);
             border-radius: 10px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
             backdrop-filter: blur(10px);
             text-align: center;
-            grid-column: span 2;
         }
 
         .chart {
@@ -125,10 +126,11 @@
 
         @font-face {
             font-family: Harmony;
-            src: url($customfont);
+            src: url("$customfont");
         }
 
         body {
+            max-width: 1000px;
             font-family: Harmony, sans-serif;
             font-size: 20px;
         }
@@ -163,7 +165,7 @@
 
     <div class="container">
         <div class="section">
-            <div class="section-title">电信一区/双线区</div>
+            <div class="section-title">电信区</div>
             <div class="section-content">
                 <table class="data-table">
 
@@ -173,11 +175,11 @@
         </div>
 
         <div class="section">
-            <div class="section-title">电信五区/电信八区</div>
+            <div class="section-title">双线区</div>
             <div class="section-content">
                 <table class="data-table">
 
-                    $电信五区_data
+                    $双线一区_data
                 </table>
             </div>
         </div>
@@ -192,7 +194,7 @@
         </div>
 
         <div class="section">
-            <div class="section-title">万宝楼</div>
+            <div class="section-title">万宝楼·在售</div>
             <div class="section-content">
                 <table class="data-table">
 
@@ -201,6 +203,64 @@
             </div>
         </div>
     </div>
+
+    <div class="chart-container">
+        <div id="price" class="chart"></div>
+    </div>
+
+    <script src="https://inkar-suki.codethink.cn/Inkar-Suki-Docs/js/echarts.min.js"></script>
+    <script>
+        const chart = echarts.init(document.getElementById("price"), null, { devicePixelRatio: 2 });
+
+        const option = {
+            animation: false,
+            tooltip: {
+                trigger: "axis"
+            },
+            legend: {
+                data: ["$item_name 近3月"],
+                textStyle: {
+                    color: "#000000",
+                    fontSize: 14
+                }
+            },
+            xAxis: {
+                type: "category",
+                boundaryGap: false,
+                data: $dates,
+                axisLabel: {
+                    color: "#000000",
+                    fontSize: 14
+                }
+            },
+            yAxis: {
+                type: "value",
+                boundaryGap: [0, "100%"],
+                axisLabel: {
+                    color: "#000000",
+                    fontSize: 14
+                }
+            },
+            series: [
+                {
+                    name: "$item_name 近3月",
+                    type: "line",
+                    data: $values,
+                    smooth: true,
+                    itemStyle: {
+                        color: "#ff7043"
+                    },
+                    areaStyle: {
+                        color: "rgba(255, 112, 67, 0.2)"
+                    },
+                    showSymbol: false  // 移除锚点
+                }
+            ]
+        };
+
+        chart.setOption(option);
+    </script>
+
 </body>
 
 </html>

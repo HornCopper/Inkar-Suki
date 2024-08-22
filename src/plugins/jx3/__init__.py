@@ -52,6 +52,7 @@ async def websocket_client(ws_url: str, headers: dict):
             logger.warning("WebSocket connection closed, retrying...")
         except Exception as e:
             logger.error(f"WebSocket connection error: {e}")
+        await asyncio.sleep(3)
 
 @driver.on_startup
 async def on_startup():

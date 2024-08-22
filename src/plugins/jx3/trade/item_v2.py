@@ -1,3 +1,4 @@
+from typing import Tuple, List
 from pathlib import Path
 
 from src.tools.utils.request import get_api, post_url
@@ -42,12 +43,27 @@ async def queryWj(url: str, params: dict = {}):
     return json.loads(data)
 
 async def getRawName(alias_name: str):
+    item_aliases_data = json.loads(read(TOOLS + "/item_aliases.json", "{}"))
+    if alias_name in item_aliases_data:
+        alias_name = item_aliases_data[alias_name]
     item_data = await queryWj("https://www.aijx3.cn/api/wj/basedata/getBaseGoodsList")
     item_data = item_data["data"]
     for each_item in item_data:
         if alias_name in each_item["goodsAliasAll"]:
             return each_item["goodsName"]
     return False
+
+async def getItemHistory(standard_name: str) -> Tuple[List[int], List[str]]:
+    current_timestamp = getCurrentTime()
+    start_timestamp = getCurrentTime() - 3*30*24*60*60 # 3个月前
+    data = await queryWj("https://www.aijx3.cn/api/wj/goods/getAvgGoodsPriceRecord", params={"goodsName":standard_name,"belongQf3":"", "endTime": convert_time(current_timestamp, "%Y-%m-%d"), "startTime": convert_time(start_timestamp, "%Y-%m-%d")})
+    data = data["data"]
+    dates = []
+    prices = []
+    for each_data in data:
+        dates.append(convert_time(int(datetime.datetime.strptime(each_data["tradeTime"], "%Y-%m-%dT%H:%M:%S.000+0000").timestamp()), "%Y-%m-%d"))
+        prices.append(each_data["price"])
+    return prices, dates
 
 async def getItemDetail(item_name: str):
     item_data = await queryWj("https://www.aijx3.cn/api/wj/goods/getGoodsDetail", params={"goodsName": item_name})
@@ -66,7 +82,7 @@ async def getItemDetail(item_name: str):
     # [物品名称, 物品别称, 发行时间, 发行数量, 发行时长, 绑定时长, 发行原价, 图片样例]
 
 async def queryWBLInfo(item_standard_name: str):
-    final_url = f"https://trade-api.seasunwbl.com/api/buyer/goods/list?filter[role_appearance]={item_standard_name}&filter[state]=0&goods_type=3"
+    final_url = f"https://trade-api.seasunwbl.com/api/buyer/goods/list?filter[role_appearance]={item_standard_name}&filter[state]=2&goods_type=3"
     data = await get_api(final_url)
     wbl_data = []
     for each_data in data["data"]["list"][0:6]:
@@ -78,18 +94,23 @@ async def queryWBLInfo(item_standard_name: str):
 
 async def quertAJ3Info(item_standard_name: str):
     data = await queryWj("https://www.aijx3.cn/api/wj/goods/getGoodsPriceRecord", params={"goodsName":item_standard_name,"belongQf3":"","current":1,"size":100})
-    servers = list(json.loads(read(TOOLS + "/basic/server.json")))
     full_table = {}
-    added_server = []
-    for zone in [["电信一区", "双线一区", "双线二区", "双线四区"], ["电信五区", "电信八区"], ["无界区"]]:
+    zone_record_count = {
+        "电信一区": 0,
+        "双线一区": 0,
+        "无界区": 0
+    }
+    for zone in [["电信一区", "电信五区", "电信八区"], ["双线一区", "双线二区", "双线四区"], ["无界区"]]:
         table = []
         for each_data in data["data"]["records"]:
-            for server in servers:
-                if each_data["belongQf3"] == server and Zone_mapping(server, True) in zone and server not in added_server:
-                    end_time = convert_time(int(datetime.datetime.strptime(each_data["tradeTime"], "%Y-%m-%dT%H:%M:%S.000+0000").timestamp()), "%Y-%m-%d")
-                    price = str(each_data["price"]) + "元"
-                    table.append(template_wujia.replace("$date", end_time).replace("$server", server).replace("$price", price))
-                    added_server.append(server)
+            server = each_data["belongQf3"]
+            if Zone_mapping(server, True) in zone:
+                if zone_record_count[zone[0]] == 10:
+                    continue
+                end_time = convert_time(int(datetime.datetime.strptime(each_data["tradeTime"], "%Y-%m-%dT%H:%M:%S.000+0000").timestamp()), "%Y-%m-%d")
+                price = str(each_data["price"]) + "元"
+                table.append(template_wujia.replace("$date", end_time).replace("$server", server).replace("$price", price))
+                zone_record_count[zone[0]] += 1
         full_table[zone[0]] = "\n".join(table)
     return full_table
 
@@ -112,6 +133,9 @@ async def getSingleItemPrice(item_name: str):
     html = html.replace("$binding_time", str(basic_item_info[5]))
     html = html.replace("$publish_price", str(basic_item_info[6]))
     html = html.replace("$item_image", str(basic_item_info[7]))
+    prices, dates = await getItemHistory(standard_name)
+    html = html.replace("$dates", json.dumps(dates, ensure_ascii=False))
+    html = html.replace("$values", json.dumps(prices, ensure_ascii=False))
     font = ASSETS + "/font/custom.ttf"
     random_background = ASSETS + "/image/assistance/" + str(random.randint(1, 10)) + ".jpg"
     custom_msg = await get_api("https://inkar-suki.codethink.cn/ajs_lu")

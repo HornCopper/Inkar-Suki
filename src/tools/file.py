@@ -1,13 +1,17 @@
 import pathlib2
 import urllib
 
-def read(Path) -> str:
+def read(Path, default_value: str = "") -> str:
     try:
         with open(Path, mode="r", encoding="utf-8") as cache:
             msg = cache.read()
-        return msg or "{}"
-    except Exception as _:
-        return "{}"  # 默认返回空对象
+        return msg
+    except FileNotFoundError:
+        if default_value == "":
+            return "{}"
+        with open(Path, mode="w", encoding="utf-8") as cache:
+            cache.write(default_value)
+        return default_value
 
 
 def write(Path, sth) -> bool:
