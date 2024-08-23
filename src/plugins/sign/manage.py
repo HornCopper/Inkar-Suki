@@ -75,7 +75,10 @@ class Sign:
             judge_date = last_date + datetime.timedelta(days=1)
             is_continued = judge_date == now.date()
         if is_continued:
-            user["continuity"] += 1
+            try:
+                user["continuity"] += 1
+            except KeyError:
+                user["continuity"] = 0
         user["coin"] += data.coin
         user["last"] = datetime.datetime.strftime(now, dateformat)
         Sign._flush_accounts()
@@ -86,7 +89,7 @@ class Sign:
         获取用户签到信息
         """
         qq = str(qq)
-        accounts = json.loads(read(f"{CLOCK}{os.sep}account.json")) or {}
+        accounts = json.loads(read(f"{CLOCK}/account.json")) or {}
         need_convert = isinstance(accounts, list)
         if need_convert:
             accounts = dict([[x["id"], x] for x in accounts])
@@ -107,7 +110,7 @@ class Sign:
         x = getattr(Sign, "accounts")
         if x is None:
             return
-        path = f"{CLOCK}{os.sep}account.json"
+        path = f"{CLOCK}/account.json"
         write(path, json.dumps(Sign.accounts, ensure_ascii=False))
 
     def get_continuity(qq):

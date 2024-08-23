@@ -111,7 +111,7 @@ guess_music = on_command("guess_music", aliases={"猜歌"}, force_whitespace=Tru
 async def _(event: GroupMessageEvent, state: T_State, args: Message = CommandArg()):
     if args.extract_plain_text() != "":
         return
-    await guess_music.finish(ms.record(file=Path("C:/Users/HornCopper/Inkar-Suki/src/assets/music/1.mp3").as_uri()))
+    # await guess_music.finish(ms.record(file=Path("C:/Users/HornCopper/Inkar-Suki/src/assets/music/1.mp3").as_uri()))
     # rd = getRandomMusic()
     # input = rd[1]
     # name = rd[0]

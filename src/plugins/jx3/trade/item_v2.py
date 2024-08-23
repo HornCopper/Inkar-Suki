@@ -38,6 +38,12 @@ headers = {
     "wjKey": "auHxiYtcg59JEtZ5nARiX8gLPcWt2ut9"
 }
 
+aliases_map = {
+    "金羁饰影礼盒": "金羁饰影三选一礼盒"
+}
+
+# 数据源和实际数据不一致 映射一次
+
 async def queryWj(url: str, params: dict = {}):
     data = await post_url(url, headers=headers, json=params)
     return json.loads(data)
@@ -82,6 +88,8 @@ async def getItemDetail(item_name: str):
     # [物品名称, 物品别称, 发行时间, 发行数量, 发行时长, 绑定时长, 发行原价, 图片样例]
 
 async def queryWBLInfo(item_standard_name: str):
+    if item_standard_name in aliases_map:
+        item_standard_name = aliases_map[item_standard_name]
     final_url = f"https://trade-api.seasunwbl.com/api/buyer/goods/list?filter[role_appearance]={item_standard_name}&filter[state]=2&goods_type=3"
     data = await get_api(final_url)
     wbl_data = []
@@ -118,7 +126,7 @@ async def getSingleItemPrice(item_name: str):
     standard_name = await getRawName(item_name)
     basic_item_info = await getItemDetail(standard_name)
     if basic_item_info == False:
-        return ["唔……未收录该物品！"]
+        return ["唔……未收录该物品！\n请到音卡用户群内进行反馈，我们会及时添加别名！"]
     aijx3_data = await quertAJ3Info(standard_name)
     wbl_data = await queryWBLInfo(standard_name)
     html = read(VIEWS + "/jx3/trade/wujia.html")
