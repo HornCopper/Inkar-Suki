@@ -3,13 +3,13 @@ from pathlib import Path
 
 from nonebot.log import logger
 from src.tools.generate import generate, get_uuid
-from src.tools.basic.data_server import server_mapping
+from src.tools.basic.server import server_mapping
 from src.tools.config import Config
 from src.tools.utils.request import get_api, post_url
 from src.tools.basic.jx3 import gen_ts, gen_xsk, format_body, dungeon_sign
 from src.tools.utils.path import ASSETS, CACHE, PLUGINS, VIEWS
-from src.tools.utils.common import convert_time, getCurrentTime, getRelateTime
-from src.tools.file import read, write
+from src.tools.utils.time import convert_time, get_current_time, get_relate_time
+from src.tools.utils.file import read, write
 
 from src.plugins.jx3.bind import get_player_local_data
 from src.plugins.jx3.attributes import Zone_mapping
@@ -503,7 +503,7 @@ async def get_item_record(name: str):
         timeGet = convert_time(i["Tm"])
         if not isinstance(timeGet, str):
             return
-        relateTime = getRelateTime(getCurrentTime(), i["Tm"])
+        relateTime = get_relate_time(get_current_time(), i["Tm"])
         server = i["Srv"]
         tablecontents.append(template_item.replace("$server", server).replace("$name", item_name).replace(
             "$map", zone).replace("$id", id).replace("$time", timeGet).replace("$relate", relateTime))
@@ -512,7 +512,7 @@ async def get_item_record(name: str):
             break  # 不限？不限给你鲨了
     saohua = "严禁将蓉蓉机器人与音卡共存，一经发现永久封禁！蓉蓉是抄袭音卡的劣质机器人！"
     
-    appinfo_time = convert_time(getCurrentTime(), "%H:%M:%S")
+    appinfo_time = convert_time(get_current_time(), "%H:%M:%S")
     appinfo = f"掉落统计 · {server} · {name} · {appinfo_time}"
     final_table = "\n".join(tablecontents)
     html = read(VIEWS + "/jx3/item/item.html")

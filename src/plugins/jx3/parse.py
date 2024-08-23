@@ -3,7 +3,7 @@ from pydantic import BaseModel
 from typing import Literal, Callable, Type, Dict, Tuple
 from dataclasses import dataclass
 
-from src.tools.utils.common import getCurrentTime, convert_time
+from src.tools.utils.time import get_current_time, convert_time
 
 handler: Dict[int, Callable[[dict], JX3APIPushEvent]] = {}
 
@@ -30,7 +30,7 @@ class JX3APIServerEvent(JX3APIPushEvent):
 
     def msg(self) -> JX3APIOutputMsg:
         status_str = "开服" if self.status else "维护"
-        current_time = convert_time(getCurrentTime(), "%H:%M")
+        current_time = convert_time(get_current_time(), "%H:%M")
         return JX3APIOutputMsg(msg=f"{self.server} {status_str}啦！ 在{current_time}", server=self.server, name="开服")
 
 @handle_event(2002)

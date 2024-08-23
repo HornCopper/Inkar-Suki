@@ -3,7 +3,7 @@ from nonebot.adapters import Message
 from nonebot.params import CommandArg
 from nonebot.adapters.onebot.v11 import GroupMessageEvent, MessageSegment as ms
 
-from src.tools.file import get_content_local
+from src.tools.utils.file import get_content_local
 from src.tools.utils.request import get_content
 from src.tools.permission import checker, error
 

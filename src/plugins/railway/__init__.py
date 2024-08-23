@@ -3,7 +3,7 @@ from nonebot.adapters import Message
 from nonebot.adapters.onebot.v11 import MessageEvent, MessageSegment as ms
 from nonebot.params import CommandArg
 
-from src.tools.file import get_content_local
+from src.tools.utils.file import get_content_local
 
 from .crt import *
 

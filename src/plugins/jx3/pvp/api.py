@@ -3,12 +3,12 @@ from pathlib import Path
 from jinja2 import Template
 
 from src.tools.config import Config
-from src.tools.basic.msg import PROMPT
-from src.tools.file import read, write
+from src.tools.basic.prompts import PROMPT
+from src.tools.utils.file import read, write
 from src.tools.generate import generate, get_uuid
-from src.tools.basic.data_server import server_mapping, Zone_mapping
+from src.tools.basic.server import server_mapping, Zone_mapping
 from src.tools.utils.request import post_url
-from src.tools.utils.common import convert_time, getRelateTime, getCurrentTime
+from src.tools.utils.time import convert_time, get_relate_time, get_current_time
 from src.tools.basic.jx3 import gen_ts, gen_xsk, format_body
 from src.tools.utils.path import ASSETS, CACHE, VIEWS
 
@@ -187,7 +187,7 @@ async def arena_record(server: Optional[str] = "", name: str = "", group_id: str
             "rank": str(i["avg_grade"]),
             "mode": str(i["pvp_type"]) + "v" + str(i["pvp_type"]),
             "time": convert_time(i["start_time"], "%m月%d日 %H:%M:%S"),
-            "relate": getRelateTime(getCurrentTime(), i["end_time"]),
+            "relate": get_relate_time(get_current_time(), i["end_time"]),
             "length": "共" + str(i["end_time"] - i["start_time"]) + "秒",
             "score": str(i["total_mmr"]),
             "delta": str(i["mmr"]),

@@ -6,10 +6,10 @@ from nonebot.params import CommandArg
 from nonebot.adapters import Message
 
 from src.tools.config import Config
-from src.tools.utils.common import convert_time, getCurrentTime
+from src.tools.utils.time import convert_time, get_current_time
 from src.tools.utils.request import post_url
 from src.tools.permission import checker, error
-from src.tools.data import group_db, Population
+from src.tools.database import group_db, Population
 
 from .stastic import generate_bar_chart
 
@@ -17,7 +17,7 @@ github_token = Config.github.github_personal_token
 
 async def createIssue(uin: str, comment: str):
     title = "【反馈】Inkar Suki · 使用反馈"
-    date = convert_time(getCurrentTime())
+    date = convert_time(get_current_time())
     msg = f"日期：{date}\n用户：{uin}\n留言：{comment}"
     url = f"https://api.github.com/repos/{Config.bot_basic.bot_repo}/issues"
     headers = {

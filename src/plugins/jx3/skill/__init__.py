@@ -6,7 +6,7 @@ from nonebot.adapters.onebot.v11 import GroupMessageEvent, MessageSegment as ms
 from src.constant.jx3 import getSingleSkill, school_name_aliases
 
 from src.tools.utils.request import get_api
-from src.tools.file import read, write
+from src.tools.utils.file import read, write
 from src.tools.utils.path import ASSETS
 
 from .macro import *

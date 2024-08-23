@@ -6,11 +6,11 @@ from nonebot.adapters.onebot.v11 import GroupMessageEvent, MessageSegment as ms
 from nonebot.params import CommandArg, Arg
 from nonebot.typing import T_State
 
-from src.tools.file import read, write, get_content_local
+from src.tools.utils.file import read, write, get_content_local
 from src.tools.utils.path import ASSETS, CACHE, PLUGINS, VIEWS
-from src.tools.utils.common import checknumber
+from src.tools.utils.num import checknumber
 from src.tools.generate import generate, get_uuid
-from src.tools.basic.msg import PROMPT
+from src.tools.basic.prompts import PROMPT
 from src.constant.jx3 import school_name_aliases
 
 from .api import *

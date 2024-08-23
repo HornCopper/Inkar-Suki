@@ -2,8 +2,8 @@ from pathlib import Path
 from typing import Optional, Union
 
 from src.tools.utils.request import get_api
-from src.tools.utils.common import convert_time, getCurrentTime
-from src.tools.file import read, write
+from src.tools.utils.time import convert_time, get_current_time
+from src.tools.utils.file import read, write
 from src.tools.utils.path import ASSETS, CACHE, VIEWS
 from src.tools.generate import get_uuid, generate
 
@@ -124,7 +124,7 @@ async def player_pt(name: str = "", mode="16.12.9.15.11.8"):
     pid = await get_id_by_name(name)
     if type(pid) == type([]):
         return pid[0]
-    final_url = koromo_api_ps.format(player_id=pid, end_timestamp=str(getCurrentTime()*1000), start_timestamp="1262304000000", mode=mode)
+    final_url = koromo_api_ps.format(player_id=pid, end_timestamp=str(get_current_time()*1000), start_timestamp="1262304000000", mode=mode)
     data = await get_api(final_url)
     rank = getRank(data["level"]["id"])
     level = max_points[rank] if rank[0] != "魂" else "20.0"
@@ -140,7 +140,7 @@ async def get_records(name: str = "", mode: str = "16.12.9.15.11.8") -> Union[Op
     pid = await get_id_by_name(name)
     if type(pid) == type([]):
         return pid[0]
-    final_url = koromo_api_pr.format(player_id=pid, end_timestamp=str(getCurrentTime()*1000), start_timestamp="1262304000000", mode=mode)
+    final_url = koromo_api_pr.format(player_id=pid, end_timestamp=str(get_current_time()*1000), start_timestamp="1262304000000", mode=mode)
     data = await get_api(final_url)
     if data == {}:
         return "PID输入错误，或该玩家没有任何记录！"

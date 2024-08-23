@@ -3,10 +3,11 @@ from nonebot.adapters.onebot.v11 import Bot, GroupMessageEvent, MessageEvent
 from nonebot.params import CommandArg
 from nonebot.adapters import Message
 
-from src.tools.utils.common import convert_time, getCurrentTime, checknumber
+from src.tools.utils.time import convert_time, get_current_time
+from src.tools.utils.num import checknumber
 from src.tools.permission import checker, error
 from src.tools.utils.path import CACHE
-from src.tools.basic.group_opeator import getAllGroups
+from src.tools.basic.group import getAllGroups
 from src.tools.config import Config
 
 import os
@@ -47,7 +48,7 @@ async def _(bot: Bot, event: MessageEvent, args: Message = CommandArg()):
         return
     permission = checker(str(event.user_id), 1)
     if not permission:
-        await ping.finish(f"咕咕咕，音卡来啦！\n当前时间为：{convert_time(getCurrentTime())}\n欢迎使用Inkar-Suki！")
+        await ping.finish(f"咕咕咕，音卡来啦！\n当前时间为：{convert_time(get_current_time())}\n欢迎使用Inkar-Suki！")
     else:
         groups = await bot.call_api("get_group_list")
         group_count = len(groups)
@@ -57,7 +58,7 @@ async def _(bot: Bot, event: MessageEvent, args: Message = CommandArg()):
         if not isinstance(registers, list):
             return
         register_count = len(registers)
-        msg = f"咕咕咕，音卡来啦！\n现在是：{convert_time(getCurrentTime())}\n{group_count} | {register_count} | {friend_count}\n您拥有机器人的管理员权限！"
+        msg = f"咕咕咕，音卡来啦！\n现在是：{convert_time(get_current_time())}\n{group_count} | {register_count} | {friend_count}\n您拥有机器人的管理员权限！"
     await ping.finish(msg)
 
 post = on_command("post", force_whitespace=True, priority=5)  # 发送全域公告至每一个机器人加入的QQ群。

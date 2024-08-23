@@ -1,7 +1,7 @@
 from typing import Tuple
 from nonebot import get_driver
 
-from src.tools.utils.common import getCurrentTime
+from src.tools.utils.time import get_current_time
 
 from .config import Config as eat_Config
 
@@ -12,7 +12,7 @@ max_count = eat_Config.parse_obj(get_driver().config.dict()).whateat_max
 
 def check_cd(last_time: int) -> Tuple[bool, int, int]:
     # 检查cd
-    current_time = getCurrentTime()
+    current_time = get_current_time()
     delta_time = current_time - last_time
     if not isinstance(cd, int):
         return True, 0, current_time

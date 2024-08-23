@@ -1,6 +1,6 @@
 from typing import Union, Any
 
-from src.tools.data import group_db, Permission
+from src.tools.database import group_db, Permission
 
 def get_all_admin() -> Permission:
     data: Union[Permission, Any] = group_db.where_one(Permission(), default=Permission())

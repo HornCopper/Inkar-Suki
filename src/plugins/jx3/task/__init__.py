@@ -3,8 +3,8 @@ from nonebot.adapters import Message
 from nonebot.params import CommandArg, Arg
 from nonebot.typing import T_State
 
-from src.tools.utils.common import checknumber
-from src.tools.basic.msg import PROMPT
+from src.tools.utils.num import checknumber
+from src.tools.basic.prompts import PROMPT
 
 from .api import *
 

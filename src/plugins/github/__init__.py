@@ -10,8 +10,8 @@ from nonebot.log import logger
 from src.tools.config import Config
 from src.tools.utils.request import get_status, get_content
 from src.tools.permission import checker, error
-from src.tools.data import group_db, GroupSettings
-from src.tools.basic.group_opeator import getGroupSettings, setGroupSettings, getAllGroups
+from src.tools.database import group_db, GroupSettings
+from src.tools.basic.group import getGroupSettings, setGroupSettings, getAllGroups
 
 import nonebot
 

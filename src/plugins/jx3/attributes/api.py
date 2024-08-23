@@ -4,12 +4,12 @@ from typing import Union, Optional
 
 from src.constant.jx3.skilldatalib import kungfu_to_school
 
-from src.tools.basic.msg import PROMPT
+from src.tools.basic.prompts import PROMPT
 from src.tools.generate import get_uuid
 from src.tools.config import Config
 from src.tools.utils.request import get_api, get_content, post_url
-from src.tools.basic.data_server import server_mapping, Zone_mapping
-from src.tools.file import read
+from src.tools.basic.server import server_mapping, Zone_mapping
+from src.tools.utils.file import read
 from src.tools.utils.path import ASSETS, CACHE, PLUGINS
 from src.tools.basic.jx3 import gen_ts, format_body, gen_xsk
 

@@ -4,12 +4,12 @@ from typing import Optional
 
 from src.tools.config import Config
 from src.tools.utils.request import get_api
-from src.tools.basic.msg import PROMPT
-from src.tools.basic.data_server import server_mapping
+from src.tools.basic.prompts import PROMPT
+from src.tools.basic.server import server_mapping
 from src.tools.utils.path import ASSETS, CACHE, VIEWS
 from src.tools.generate import get_uuid, generate
-from src.tools.utils.common import convert_time
-from src.tools.file import read, write
+from src.tools.utils.time import convert_time
+from src.tools.utils.file import read, write
 
 from src.plugins.jx3.bind import get_player_local_data
 

@@ -7,8 +7,8 @@ from nonebot.matcher import Matcher
 from nonebot.message import run_preprocessor, run_postprocessor
 from nonebot.params import RawCommand
 
-from .group_opeator import getGroupSettings
-from ..data import group_db, Population, BannedWordList
+from .group import getGroupSettings
+from ..database import group_db, Population, BannedWordList
 from ..config import Config
 from ..utils import get_api
 

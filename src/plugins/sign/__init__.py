@@ -3,8 +3,8 @@ from nonebot.adapters import Message
 from nonebot.adapters.onebot.v11 import MessageEvent, MessageSegment as ms
 from nonebot.params import CommandArg
 
-from src.tools.file import write
-from src.tools.utils.common import checknumber
+from src.tools.utils.file import write
+from src.tools.utils.num import checknumber
 from src.tools.permission import checker, error
 from src.tools.utils.path import CLOCK
 

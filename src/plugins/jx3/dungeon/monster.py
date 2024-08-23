@@ -3,8 +3,8 @@ from pathlib import Path
 from src.tools.generate import generate, get_uuid
 from src.tools.utils.request import get_api
 from src.tools.utils.path import ASSETS, CACHE, VIEWS
-from src.tools.utils.common import convert_time, getCurrentTime
-from src.tools.file import read, write
+from src.tools.utils.time import convert_time, get_current_time
+from src.tools.utils.file import read, write
 
 import re
 
@@ -74,7 +74,7 @@ async def get_monsters_map():
     font = ASSETS + "/font/custom.ttf"
     saohua = "严禁将蓉蓉机器人与音卡共存，一经发现永久封禁！蓉蓉是抄袭音卡的劣质机器人！"
     
-    appinfo_time = convert_time(getCurrentTime(), "%H:%M:%S")
+    appinfo_time = convert_time(get_current_time(), "%H:%M:%S")
     appinfo = f"自{start}起7天 · 当前时间：{appinfo_time}<br>{saohua}"
     html = html.replace("$content", "\n".join(content)).replace(
         "$customfont", font).replace("$appinfo", appinfo)

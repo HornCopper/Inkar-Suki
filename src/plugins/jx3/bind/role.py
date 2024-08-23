@@ -3,8 +3,8 @@ from typing import Union, Optional, Any
 from src.tools.config import Config
 from src.tools.utils.request import post_url
 from src.tools.basic.jx3 import gen_ts, gen_xsk, format_body
-from src.tools.basic.data_server import server_mapping, Zone_mapping
-from src.tools.data import group_db, RoleData
+from src.tools.basic.server import server_mapping, Zone_mapping
+from src.tools.database import group_db, RoleData
 
 try:
     from .uid import get_uid

@@ -3,8 +3,8 @@ from nonebot.adapters import Message
 from nonebot.adapters.onebot.v11 import GroupMessageEvent, MessageSegment as ms
 from nonebot.params import CommandArg
 
-from src.tools.basic.data_server import getGroupServer
-from src.tools.file import get_content_local
+from src.tools.basic.server import getGroupServer
+from src.tools.utils.file import get_content_local
 
 from .detail import *
 

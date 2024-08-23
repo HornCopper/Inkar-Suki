@@ -4,12 +4,12 @@ from pathlib import Path
 from src.tools.basic.jx3 import gen_ts, gen_xsk, format_body
 from src.tools.config import Config
 from src.tools.utils.request import get_api, post_url
-from src.tools.file import read, write
+from src.tools.utils.file import read, write
 from src.tools.utils.path import ASSETS, CACHE, PLUGINS, VIEWS
-from src.tools.utils.common import convert_time, getCurrentTime
+from src.tools.utils.time import convert_time, get_current_time
 from src.tools.generate import get_uuid, generate
-from src.tools.basic.msg import PROMPT
-from src.tools.basic.data_server import server_mapping
+from src.tools.basic.prompts import PROMPT
+from src.tools.basic.server import server_mapping
 
 from src.plugins.jx3.bind import get_player_local_data
 
@@ -162,7 +162,7 @@ async def generate_zd_image(server: Optional[str], id: str):
     font = ASSETS + "/font/custom.ttf"
     saohua = "严禁将蓉蓉机器人与音卡共存，一经发现永久封禁！蓉蓉是抄袭音卡的劣质机器人！"
     
-    appinfo_time = convert_time(getCurrentTime(), "%H:%M")
+    appinfo_time = convert_time(get_current_time(), "%H:%M")
     html = html.replace("$customfont", font).replace("$tablecontent", content).replace("$randomsaohua", saohua).replace("$appinfo", f" 副本总览 · {server} · {id} · {appinfo_time}")
     final_html = CACHE + "/" + get_uuid() + ".html"
     write(final_html, html)
@@ -247,7 +247,7 @@ async def get_all_dungeon_image(server: Optional[str], id: str, group_id: str):
     html = read(VIEWS + "/jx3/achievement/global_dungeon.html")
     font = ASSETS + "/font/custom.ttf"
     saohua = "严禁将蓉蓉机器人与音卡共存，一经发现永久封禁！蓉蓉是抄袭音卡的劣质机器人！"
-    appinfo_time = convert_time(getCurrentTime(), "%H:%M")
+    appinfo_time = convert_time(get_current_time(), "%H:%M")
     html = html.replace("$customfont", font).replace("$tablecontent", "\n".join(table)).replace("$randomsaohua", saohua).replace("$appinfo", f"副本分览 · {server} · {id} · {appinfo_time}")
     final_html = CACHE + "/" + get_uuid() + ".html"
     write(final_html, html)

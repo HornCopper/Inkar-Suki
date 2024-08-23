@@ -1,15 +1,11 @@
-from pathlib import Path
-
 from nonebot import on_command
 from nonebot.adapters import Message
 from nonebot.params import CommandArg, Arg
 from nonebot.typing import T_State
 from nonebot.adapters.onebot.v11 import GroupMessageEvent, MessageSegment as ms
 
-from nonebot.log import logger
 from src.tools.utils.path import CACHE
-from src.tools.utils.common import checknumber
-from src.tools.generate import get_uuid
+from src.tools.utils.num import checknumber
 
 from src.plugins.sign import Sign
 

@@ -3,8 +3,8 @@ from nonebot.adapters import Message
 from nonebot.params import CommandArg
 from nonebot.adapters.onebot.v11 import GroupMessageEvent
 
-from src.tools.basic.data_server import server_mapping
-from src.tools.basic.msg import PROMPT
+from src.tools.basic.server import server_mapping
+from src.tools.basic.prompts import PROMPT
 
 from .api import *
 

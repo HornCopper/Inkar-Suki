@@ -3,12 +3,12 @@ from pathlib import Path
 from nonebot.adapters.onebot.v11 import MessageSegment as ms
 
 from src.tools.utils.request import get_api, get_content
-from src.tools.utils.common import convert_time, getCurrentTime
+from src.tools.utils.time import convert_time, get_current_time
 from src.tools.generate import generate, get_uuid
 from src.tools.utils.path import ASSETS, CACHE, TOOLS, VIEWS
-from src.tools.file import read, write
-from src.tools.basic.data_server import server_mapping
-from src.tools.basic.msg import PROMPT
+from src.tools.utils.file import read, write
+from src.tools.basic.server import server_mapping
+from src.tools.basic.prompts import PROMPT
 
 from .sl import convertAttrs
 from .api import toCoinImage, convert, template_msgbox, template_table
@@ -161,7 +161,7 @@ async def getAllServerWufengImg(raw: str):
         name = data["Name"]
         if (not currentStatus or yesterdayFlag) and detailData["data"]["prices"] == None:
             if not yesterdayFlag:
-                toReplace_word = [["$icon", icon], ["$color", color], ["$name", name + f"（{server}）<br><span style=\"color:rgb(0, 210, 75)\">" + " ".join(getAttrs(data["attributes"])) + "</span>"], ["$time", convert_time(getCurrentTime(), "%m月%d日 %H:%M:%S")], ["$limit", "N/A"], ["$price", "<span style=\"color:red\">没有数据</span>"]]
+                toReplace_word = [["$icon", icon], ["$color", color], ["$name", name + f"（{server}）<br><span style=\"color:rgb(0, 210, 75)\">" + " ".join(getAttrs(data["attributes"])) + "</span>"], ["$time", convert_time(get_current_time(), "%m月%d日 %H:%M:%S")], ["$limit", "N/A"], ["$price", "<span style=\"color:red\">没有数据</span>"]]
                 table_content = template_table
                 for word in toReplace_word:
                     table_content = table_content.replace(word[0], word[1])
@@ -169,7 +169,7 @@ async def getAllServerWufengImg(raw: str):
                 continue
             else:
                 avg = convert(current["AvgPrice"])
-                toReplace_word = [["$icon", icon], ["$color", color], ["$name", name + f"（{server}）<br><span style=\"color:rgb(0, 210, 75)\">" + " ".join(getAttrs(data["attributes"])) + "</span>"], ["$time", convert_time(getCurrentTime(), "%m月%d日 %H:%M:%S")], ["$limit", "N/A"], ["$price", toCoinImage(avg)]]
+                toReplace_word = [["$icon", icon], ["$color", color], ["$name", name + f"（{server}）<br><span style=\"color:rgb(0, 210, 75)\">" + " ".join(getAttrs(data["attributes"])) + "</span>"], ["$time", convert_time(get_current_time(), "%m月%d日 %H:%M:%S")], ["$limit", "N/A"], ["$price", toCoinImage(avg)]]
                 table_content = template_table
                 for word in toReplace_word:
                     table_content = table_content.replace(word[0], word[1])

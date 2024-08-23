@@ -5,7 +5,7 @@ from nonebot.params import CommandArg
 
 from pathlib import Path
 
-from src.tools.file import get_content_local
+from src.tools.utils.file import get_content_local
 from src.tools.utils.path import ASSETS
 from src.tools.utils.request import get_api
 from src.tools.config import Config

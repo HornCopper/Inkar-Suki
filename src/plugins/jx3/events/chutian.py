@@ -2,10 +2,10 @@ from pathlib import Path
 
 from src.tools.config import Config
 from src.tools.utils.request import get_api
-from src.tools.file import read, write
+from src.tools.utils.file import read, write
 from src.tools.generate import generate, get_uuid
 from src.tools.utils.path import ASSETS, CACHE, VIEWS
-from src.tools.utils.common import getCurrentTime, convert_time
+from src.tools.utils.time import get_current_time, convert_time
 
 template_chutian = """
 <tr>
@@ -33,7 +33,7 @@ async def getChutianImg():
     font = ASSETS + "/font/custom.ttf"
     saohua = "严禁将蓉蓉机器人与音卡共存，一经发现永久封禁！蓉蓉是抄袭音卡的劣质机器人！"
     
-    current_time = convert_time(getCurrentTime(), "%H:%M:%S")
+    current_time = convert_time(get_current_time(), "%H:%M:%S")
     html = html.replace("$customfont", font).replace("$tablecontent", final_table).replace("$randomsaohua", saohua).replace("$appinfo", f"楚天社 · {current_time}")
     final_html = CACHE + "/" + get_uuid() + ".html"
     write(final_html, html)

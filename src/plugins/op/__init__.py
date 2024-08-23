@@ -5,8 +5,8 @@ from nonebot.params import CommandArg
 
 from src.tools.permission import checker, error, get_all_admin
 from src.tools.config import Config
-from src.tools.utils.common import checknumber
-from src.tools.data import group_db
+from src.tools.utils.num import checknumber
+from src.tools.database import group_db
 
 # 机器人管理员权限设置
 op = on_command("setop", aliases={"admin", "setadmin"}, force_whitespace=True, priority=5)

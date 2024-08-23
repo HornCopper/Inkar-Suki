@@ -2,8 +2,8 @@ from typing import Union, Optional
 
 from src.tools.config import Config
 from src.tools.utils.request import get_api
-from src.tools.basic.msg import PROMPT
-from src.tools.basic.data_server import server_mapping
+from src.tools.basic.prompts import PROMPT
+from src.tools.basic.server import server_mapping
 
 token = Config.jx3.api.token
 ticket = Config.jx3.api.ticket

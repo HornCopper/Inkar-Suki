@@ -7,10 +7,10 @@ from nonebot.adapters.onebot.v11 import GroupMessageEvent, MessageEvent
 from nonebot.params import CommandArg, Arg
 
 from src.tools.config import Config
-from src.tools.utils import checknumber
+from src.tools.utils.num import checknumber
 from src.tools.permission import checker, error
-from src.tools.data import group_db, BannedList, GroupSettings
-from src.tools.basic.message_process import preprocess
+from src.tools.database import group_db, BannedList, GroupSettings
+from src.tools.basic.process import preprocess
 
 leave_msg = f"{Config.bot_basic.bot_name}要离开这里啦，{Config.bot_basic.bot_name}还没有学会人类的告别语，但是数据库中有一句话似乎很适合现在使用——如果还想来找我的话，我一直在这里（650495414）。"
 

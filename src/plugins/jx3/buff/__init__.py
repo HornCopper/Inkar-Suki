@@ -4,7 +4,7 @@ from nonebot.adapters.onebot.v11 import GroupMessageEvent, MessageSegment as ms
 from nonebot.params import CommandArg, Arg
 from nonebot.typing import T_State
 
-from src.tools.utils.common import checknumber
+from src.tools.utils.time import checknumber
 
 from .api import *
 

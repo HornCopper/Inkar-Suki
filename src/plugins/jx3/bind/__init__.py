@@ -5,9 +5,9 @@ from nonebot.adapters import Message
 from nonebot.adapters.onebot.v11 import Bot, GroupMessageEvent
 from nonebot.params import CommandArg
 
-from src.tools.basic.msg import PROMPT
-from src.tools.basic.data_server import server_mapping
-from src.tools.basic.group_opeator import setGroupSettings
+from src.tools.basic.prompts import PROMPT
+from src.tools.basic.server import server_mapping
+from src.tools.basic.group import setGroupSettings
 from src.tools.permission import checker
 
 from .role import *

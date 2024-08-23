@@ -5,7 +5,7 @@ from nonebot.adapters.onebot.v11 import GroupMessageEvent
 from nonebot.rule import to_me
 
 from src.tools.config import Config
-from src.tools.utils.common import checknumber
+from src.tools.utils.num import checknumber
 from src.tools.utils.request import get_api, post_url
 
 from .api import *

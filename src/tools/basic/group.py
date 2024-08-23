@@ -4,7 +4,7 @@ from nonebot import get_bots
 import os
 import pathlib2
 
-from ..data import group_db, GroupSettings
+from src.tools.database import group_db, GroupSettings
 
 tools_path = f"{os.getcwd()}/src/tools"
 

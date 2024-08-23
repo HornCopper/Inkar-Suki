@@ -4,9 +4,9 @@ from pathlib import Path
 
 from src.constant.jx3 import brickl, goldl
 
-from src.tools.file import read, write
+from src.tools.utils.file import read, write
 from src.tools.utils.request import get_api
-from src.tools.utils.common import convert_time, getCurrentTime
+from src.tools.utils.time import convert_time, get_current_time
 from src.tools.utils.path import ASSETS, CACHE, TOOLS, VIEWS
 from src.tools.generate import get_uuid, generate
 
@@ -154,7 +154,7 @@ async def get_dilu_data():
     html = read(VIEWS + "/jx3/dilu/dilu.html")
     font = ASSETS + "/font/custom.ttf"
     saohua = "严禁将蓉蓉机器人与音卡共存，一经发现永久封禁！蓉蓉是抄袭音卡的劣质机器人！"
-    appinfo_time = convert_time(getCurrentTime(), "%H:%M:%S")
+    appinfo_time = convert_time(get_current_time(), "%H:%M:%S")
     html = html.replace("$customfont", font).replace("$tablecontent", content).replace(
         "$randomsaohua", saohua).replace("$appinfo", f"的卢统计 · {appinfo_time}")
     final_html = CACHE + "/" + get_uuid() + ".html"

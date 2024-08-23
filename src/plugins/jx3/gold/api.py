@@ -2,12 +2,12 @@ from jinja2 import Template
 from pathlib import Path
 
 from src.tools.config import Config
-from src.tools.basic.msg import PROMPT
-from src.tools.basic.data_server import server_mapping
+from src.tools.basic.prompts import PROMPT
+from src.tools.basic.server import server_mapping
 from src.tools.utils.request import get_api
 from src.tools.utils.path import ASSETS, CACHE, VIEWS
-from src.tools.utils.common import getCurrentTime, convert_time
-from src.tools.file import read, write
+from src.tools.utils.time import get_current_time, convert_time
+from src.tools.utils.file import read, write
 from src.tools.generate import get_uuid, generate
 
 import json
@@ -74,7 +74,7 @@ async def demon_(server: str = "", group_id: str = ""):  # 金价 <服务器>
         "custom_font": ASSETS + "/font/custom.ttf",
         "tablecontent": "\n".join(tables),
         "server": goal_server,
-        "app_time": convert_time(getCurrentTime(), "%H:%M:%S"),
+        "app_time": convert_time(get_current_time(), "%H:%M:%S"),
         "saohua": "严禁将蓉蓉机器人与音卡共存，一经发现永久封禁！蓉蓉是抄袭音卡的劣质机器人！",
         "platforms": json.dumps(list(types), ensure_ascii=False).replace("WBL", "万宝楼"),
         "dates": json.dumps(dates, ensure_ascii=False),

@@ -5,8 +5,8 @@ from nonebot.adapters import Message
 from nonebot.adapters.onebot.v11 import GroupMessageEvent, MessageSegment as ms
 from nonebot.params import CommandArg
 
-from src.tools.utils.common import checknumber
-from src.tools.file import get_content_local
+from src.tools.utils.num import checknumber
+from src.tools.utils.file import get_content_local
 
 from .app import *
 
@@ -23,7 +23,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     self_qq = event.user_id
     other_name = arg[1]
     other_qq = int(arg[2])
-    custom_time = arg[3] if len(arg) == 4 else convert_time(getCurrentTime(), "%Y-%m-%d")
+    custom_time = arg[3] if len(arg) == 4 else convert_time(get_current_time(), "%Y-%m-%d")
     if not isinstance(custom_time, str):
         return
     timestamp = 0

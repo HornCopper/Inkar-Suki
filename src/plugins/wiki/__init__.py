@@ -4,11 +4,11 @@ from nonebot.adapters.onebot.v11 import GroupMessageEvent, Bot
 from nonebot.params import CommandArg, Arg
 from nonebot.typing import T_State
 
-from src.tools.file import read
-from src.tools.utils import checknumber
+from src.tools.utils.file import read
+from src.tools.utils.num import checknumber
 from src.tools.permission import checker, error
-from src.tools.basic.group_opeator import getGroupSettings, setGroupSettings
-from src.tools.basic.msg import PROMPT
+from src.tools.basic.group import getGroupSettings, setGroupSettings
+from src.tools.basic.prompts import PROMPT
 from src.tools.utils.path import DATA
 
 from .wikilib import wiki as wiki_

@@ -3,12 +3,12 @@ from pathlib import Path
 
 from src.constant.jx3 import school_name_aliases, skill_icons, colorList
 
-from src.tools.basic.group_opeator import getGroupSettings, setGroupSettings
-from src.tools.utils.common import getCurrentTime
+from src.tools.basic.group import getGroupSettings, setGroupSettings
+from src.tools.utils.time import get_current_time
 from src.tools.utils.request import get_api
 from src.tools.generate import generate, get_uuid
 from src.tools.utils.path import ASSETS, CACHE, VIEWS
-from src.tools.file import read, write
+from src.tools.utils.file import read, write
 from src.tools.config import Config
 
 import random
@@ -34,7 +34,7 @@ class Assistance:
             "creator": creator,
             "applying": [],
             "member": [[], [], [], [], []],
-            "create_time": getCurrentTime(),
+            "create_time": get_current_time(),
             "description": description
         }
         opening = getGroupSettings(group, "opening")
@@ -60,7 +60,7 @@ class Assistance:
             "job": job_,
             "img": job_icon,
             "apply": applyer,
-            "time": getCurrentTime()
+            "time": get_current_time()
         }
         stg = await self.storge(group, description, new)
         if stg is False:

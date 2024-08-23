@@ -5,7 +5,7 @@ from nonebot import require
 require("nonebot_plugin_apscheduler")
 from nonebot_plugin_apscheduler import scheduler
 
-from src.tools.basic.group_opeator import  send_subscribe
+from src.tools.basic.group import  send_subscribe
 
 from .api import *
 

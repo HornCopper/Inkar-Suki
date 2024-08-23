@@ -1,8 +1,8 @@
-from src.tools.utils.common import convert_time
-from src.tools.basic.msg import PROMPT
-from src.tools.basic.data_server import server_mapping
+from src.tools.utils.time import convert_time
+from src.tools.basic.prompts import PROMPT
+from src.tools.basic.server import server_mapping
 from src.tools.utils.request import get_api
-from src.tools.basic.msg import PROMPT
+from src.tools.basic.prompts import PROMPT
 
 from datetime import datetime, timedelta
 

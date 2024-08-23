@@ -3,14 +3,14 @@ from typing import Union, Any, List, Optional
 
 from src.constant.jx3 import kungfu_to_school, colorList as colors
 
-from src.tools.data import group_db, AffectionsList
+from src.tools.database import group_db, AffectionsList
 from src.tools.utils.request import get_api
-from src.tools.file import read, write
+from src.tools.utils.file import read, write
 from src.tools.generate import get_uuid, generate
-from src.tools.utils.common import convert_time, getRelateTime, getCurrentTime
+from src.tools.utils.time import convert_time, get_relate_time, get_current_time
 from src.tools.config import Config
-from src.tools.basic.msg import PROMPT
-from src.tools.basic.data_server import getGroupServer
+from src.tools.basic.prompts import PROMPT
+from src.tools.basic.server import getGroupServer
 from src.tools.utils.path import ASSETS, CACHE, VIEWS
 
 from src.plugins.jx3.bind import get_player_local_data
@@ -105,7 +105,7 @@ async def generateAffectionImage(uin: int):
             recognization = convert_time(i["time"], "%Y年%m月%d日")
             if not isinstance(recognization, str):
                 return
-            relate = getRelateTime(getCurrentTime(), i["time"])[:-1]
+            relate = get_relate_time(get_current_time(), i["time"])[:-1]
             html = read(VIEWS + "/jx3/affections/affections.html")
             html = html.replace("$btxbfont", btxbfont).replace("$yozaifont", yozaifont).replace("$bg", bg).replace("$uin1", str(uin_1)).replace("$uin2", str(uin_2)).replace("$color1", color_1).replace("$color2", color_2).replace("$img1", img_1).replace("$img2", img_2).replace("$name1", name_1).replace("$name2", name_2).replace("$server", server).replace("$time", recognization).replace("$relate", relate)
             final_html = CACHE + "/" + get_uuid() + ".html"

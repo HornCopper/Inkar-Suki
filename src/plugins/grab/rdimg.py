@@ -6,7 +6,7 @@ from nonebot.params import CommandArg
 from nonebot.adapters.onebot.v11 import MessageEvent, MessageSegment as ms
 
 from src.tools.utils.request import get_content, get_api
-from src.tools.file import get_content_local
+from src.tools.utils.file import get_content_local
 from src.tools.utils.path import PLUGINS
 
 import random

@@ -1,5 +1,5 @@
 from src.tools.utils.request import get_api
-from src.tools.basic.msg import PROMPT
+from src.tools.basic.prompts import PROMPT
 from src.tools.config import Config
 
 token = Config.jx3.api.token

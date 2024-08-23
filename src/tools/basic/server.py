@@ -2,7 +2,7 @@ from typing import Optional
 
 from src.tools.utils.path import TOOLS
 
-from .group_opeator import getGroupSettings
+from .group import getGroupSettings
 
 import json
 

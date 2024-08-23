@@ -4,8 +4,8 @@ from nonebot.params import CommandArg, Arg
 from nonebot.typing import T_State
 from nonebot.adapters.onebot.v11 import GroupMessageEvent, MessageSegment as ms
 
-from src.tools.utils.common import checknumber
-from src.tools.basic.msg import PROMPT
+from src.tools.utils.num import checknumber
+from src.tools.basic.prompts import PROMPT
 
 from .api import *
 
@@ -68,7 +68,7 @@ async def _(event: GroupMessageEvent, state: T_State, args: Message = CommandArg
     if len(details) < 1:
         await wg_.finish("您没有输入条件哦，请检查后重试~\n条件以空格分割哦~")
     final_details = ",".join(details)
-    data = await get_wg(final_details)
+    data = await get_wg(final_details) # type: ignore
     if isinstance(data, list):
         image = data[0]
         state["links"] = data[1]

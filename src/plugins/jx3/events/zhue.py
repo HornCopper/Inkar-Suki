@@ -2,11 +2,11 @@ from pathlib import Path
 
 from src.tools.config import Config
 from src.tools.utils.request import get_api
-from src.tools.file import read, write
+from src.tools.utils.file import read, write
 from src.tools.generate import generate, get_uuid
 from src.tools.utils.path import ASSETS, CACHE, VIEWS
-from src.tools.utils.common import getCurrentTime, convert_time, getRelateTime
-from src.tools.basic.data_server import Zone_mapping
+from src.tools.utils.time import get_current_time, convert_time, get_relate_time
+from src.tools.basic.server import Zone_mapping
 
 import json
 import time
@@ -56,10 +56,10 @@ async def getZhueRecord(server: str):
     data = data["rows"]
     tables = []
     for i in data:
-        relateTime = getRelateTime(getCurrentTime(), i["Tm"])
+        relateTime = get_relate_time(get_current_time(), i["Tm"])
         tables.append(template_zhue.replace("$time", str(convert_time(i["Tm"]))).replace("$map", i["Content"]).replace("$relate", relateTime))
     saohua = "严禁将蓉蓉机器人与音卡共存，一经发现永久封禁！蓉蓉是抄袭音卡的劣质机器人！"
-    appinfo_time = convert_time(getCurrentTime(), "%H:%M:%S")
+    appinfo_time = convert_time(get_current_time(), "%H:%M:%S")
     appinfo = f" · 诛恶记录 · {server} · {appinfo_time}"
     final_table = "\n".join(tables)
     html = read(VIEWS + "/jx3/celebrations/zhue.html")
