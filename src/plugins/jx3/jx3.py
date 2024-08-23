@@ -12,7 +12,6 @@ from .news import *
 from .announce import *
 from .penzai import *
 from .gold import *
-from .rank import *
 from .server import *
 from .skill import *
 from .subscribe import *
@@ -25,6 +24,5 @@ from .detail import *
 from .trade import *
 from .events import *
 from .calendar import *
-from .snacks import *
 from .assistance import *
 from .affection import *

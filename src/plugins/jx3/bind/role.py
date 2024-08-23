@@ -1,4 +1,4 @@
-from typing import Union
+from typing import Union, Optional, Any
 
 from src.tools.config import Config
 from src.tools.utils.request import post_url
@@ -16,20 +16,20 @@ import json
 
 ticket = Config.jx3.api.ticket
 
-async def getRoleData(role_id: str = "", server: str = None, group_id: str = None):
-    server: Union[str, None] = server_mapping(server, group_id)
-    if server is None:
+async def getRoleData(role_id: str = "", server: Optional[str] = "", group_id: str = "") -> Union[str, list]:
+    server_: Union[str, None] = server_mapping(server, group_id)
+    if server_ is None:
         return ["唔……本群尚未绑定服务器，请绑定后重试！"]
     else:
-        current_data: RoleData = group_db.where_one(RoleData(), "roleId = ?", role_id, default=RoleData())
+        current_data: Union[RoleData, Any] = group_db.where_one(RoleData(), "roleId = ?", role_id, default=RoleData())
         if current_data.roleName != "":
             prefix = f"绑定成功！\n覆盖数据：[{current_data.roleName} · {current_data.serverName}] -> "
         else:
             prefix = f"绑定成功！\n记录数据："
         param = {
             "role_id": role_id,
-            "zone": Zone_mapping(server),
-            "server": server,
+            "zone": Zone_mapping(server_),
+            "server": server_,
             "ts": gen_ts()
         }
         param = format_body(param)
@@ -72,14 +72,14 @@ class Player:
         for key, value in kwargs.items():
             setattr(self, key, value)
     
-    def format_jx3api(self):
+    def format_jx3api(self) -> dict:
         if self.__dict__ == {}:
             return {"code": 404, "data": None}
         return {"code": 200, "data": self.__dict__}
     
 from src.tools.utils.request import get_api
 
-async def get_player_local_data(role_name: str = "", role_id: str = "", server_name: str = None):
+async def get_player_local_data(role_name: str = "", role_id: str = "", server_name: str = "") -> Player:
     player_data = group_db.where_one(RoleData(), "roleName = ? OR roleId = ? AND serverName = ?", role_name, role_id, server_name, default=None)
     if player_data is None:
         uid = await get_uid(roleName=role_name, serverName=server_name)

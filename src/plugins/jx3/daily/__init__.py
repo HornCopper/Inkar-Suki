@@ -1,11 +1,11 @@
 from nonebot import on_command
 from nonebot.adapters.onebot.v11 import GroupMessageEvent
 
-from nonebot import require, get_bots
+from nonebot import require
 require("nonebot_plugin_apscheduler")
 from nonebot_plugin_apscheduler import scheduler
 
-from src.tools.basic.group_opeator import getAllGroups, getGroupSettings, send_subscribe
+from src.tools.basic.group_opeator import  send_subscribe
 
 from .api import *
 

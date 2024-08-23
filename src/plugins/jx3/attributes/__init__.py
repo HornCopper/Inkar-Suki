@@ -60,6 +60,6 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     data = await get_attrs_v4(server, id, str(event.group_id))
     if isinstance(data, list):
         await addritube_v4.finish(data[0])
-    else:
+    elif isinstance(data, str):
         data = get_content_local(data)
         await addritube_v4.finish(ms.image(data))

@@ -160,4 +160,6 @@ async def get_dilu_data():
     final_html = CACHE + "/" + get_uuid() + ".html"
     write(final_html, html)
     final_path = await generate(final_html, False, "table", False)
+    if not isinstance(final_path, str):
+        return
     return Path(final_path).as_uri()

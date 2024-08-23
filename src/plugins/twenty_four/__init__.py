@@ -1,6 +1,6 @@
 from nonebot import on_command
 from nonebot.adapters import Message
-from nonebot.adapters.onebot.v11 import Event
+from nonebot.adapters.onebot.v11 import MessageEvent
 from nonebot.params import CommandArg, Received
 from nonebot.typing import T_State
 
@@ -14,7 +14,7 @@ tf = on_command("twentyFour", aliases={"24点"}, force_whitespace=True, priority
 
 
 @tf.handle()
-async def _(state: T_State, event: Event, args: Message = CommandArg()):
+async def _(state: T_State, event: MessageEvent, args: Message = CommandArg()):
     if args.extract_plain_text() != "":
         return
     numbers = [random.randint(1, 13) for _ in range(4)]
@@ -23,7 +23,7 @@ async def _(state: T_State, event: Event, args: Message = CommandArg()):
     return
 
 @tf.receive("answer")
-async def __(state: T_State, event: Event = Received("answer")):
+async def __(state: T_State, event: MessageEvent = Received("answer")):
     expr = str(event.message)
     numbers = state["numbers"]
     solution = await find_solution(numbers)

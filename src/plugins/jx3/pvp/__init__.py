@@ -6,7 +6,6 @@ from nonebot.adapters.onebot.v11 import Bot, GroupMessageEvent, MessageSegment a
 from src.tools.basic.msg import PROMPT
 from src.tools.file import get_content_local
 
-from .leader import *
 from .api import *
 
 arena_re = on_command("jx3_arena_record", aliases={"战绩"}, force_whitespace=True, priority=5)
@@ -29,7 +28,7 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
     data = await arena_record(server, id, group_id=str(event.group_id))
     if isinstance(data, list):
         await arena_re.finish(data[0])
-    else:
+    elif isinstance(data, str):
         data = get_content_local(data)
         await arena_re.finish(ms.image(data))
     # arg = args.extract_plain_text().split(" ")
@@ -91,13 +90,3 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
     # else:
     #     data = await get_content(data)
     #     await arena_s.finish(ms.image(data))
-
-lks = on_command("jx3_lks", aliases={"烂柯山"}, force_whitespace=True, priority=5)
-
-@lks.handle()
-async def _(event: GroupMessageEvent, args: Message = CommandArg()):
-    if args.extract_plain_text() != "":
-        return
-    # img = await getLKSImage()
-    # data = get_content_local(img)
-    # await lks.finish(ms.image(data))

@@ -1,6 +1,7 @@
 from pathlib import Path
+from typing import Union, Any, List, Optional
 
-from src.constant.jx3 import kftosh
+from src.constant.jx3 import kungfu_to_school, colorList as colors
 
 from src.tools.data import group_db, AffectionsList
 from src.tools.utils.request import get_api
@@ -13,14 +14,13 @@ from src.tools.basic.data_server import getGroupServer
 from src.tools.utils.path import ASSETS, CACHE, VIEWS
 
 from src.plugins.jx3.bind import get_player_local_data
-from src.plugins.jx3.rank.school_rank import colors
 
 import random
 
 token = Config.jx3.api.token
 
 def getAffections():
-    affections_data: AffectionsList = group_db.where_one(AffectionsList(), default=AffectionsList())
+    affections_data: Union[AffectionsList, Any] = group_db.where_one(AffectionsList(), default=AffectionsList())
     return affections_data
     
 def storgeAffections(new_data: dict):
@@ -67,7 +67,7 @@ async def bind_affection(uin_1: int, name_1: str, uin_2: int, name_2: str, group
     storgeAffections(new_data)
     return ["成功绑定情缘！\n可通过“查看情缘证书”生成一张情缘证书图！"]
 
-async def delete_affection(uin: int):
+async def delete_affection(uin: int) -> Optional[List[str]]:
     if not checkUinStatus(uin):
         return ["咱就是说，还没绑定情缘，在解除什么呢？"]
     data = getAffections()
@@ -82,7 +82,7 @@ async def delete_affection(uin: int):
 def getColor(school: str):
     data = colors
     for i in data:
-        if kftosh(i) == school:
+        if kungfu_to_school(i) == school:
             return data[i]
     return "#FFFFFF"
 
@@ -103,11 +103,15 @@ async def generateAffectionImage(uin: int):
             name_2 = i["name"][1]
             server = i["server"]
             recognization = convert_time(i["time"], "%Y年%m月%d日")
+            if not isinstance(recognization, str):
+                return
             relate = getRelateTime(getCurrentTime(), i["time"])[:-1]
             html = read(VIEWS + "/jx3/affections/affections.html")
             html = html.replace("$btxbfont", btxbfont).replace("$yozaifont", yozaifont).replace("$bg", bg).replace("$uin1", str(uin_1)).replace("$uin2", str(uin_2)).replace("$color1", color_1).replace("$color2", color_2).replace("$img1", img_1).replace("$img2", img_2).replace("$name1", name_1).replace("$name2", name_2).replace("$server", server).replace("$time", recognization).replace("$relate", relate)
             final_html = CACHE + "/" + get_uuid() + ".html"
             write(final_html, html)
             final_path = await generate(final_html, False, ".background-container", False)
+            if not isinstance(final_path, str):
+                return
             return Path(final_path).as_uri()
     return ["咱就是说，还没绑定情缘，在生成什么呢？"]

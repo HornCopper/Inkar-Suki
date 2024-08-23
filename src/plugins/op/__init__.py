@@ -1,6 +1,6 @@
 from nonebot import on_command
 from nonebot.adapters import Message
-from nonebot.adapters.onebot.v11 import Event, Bot
+from nonebot.adapters.onebot.v11 import MessageEvent, Bot
 from nonebot.params import CommandArg
 
 from src.tools.permission import checker, error, get_all_admin
@@ -13,7 +13,7 @@ op = on_command("setop", aliases={"admin", "setadmin"}, force_whitespace=True, p
 
 
 @op.handle()
-async def _(bot: Bot, event: Event, args: Message = CommandArg()):
+async def _(bot: Bot, event: MessageEvent, args: Message = CommandArg()):
     if args.extract_plain_text() == "":
         return
     if not checker(str(event.user_id), 10) and str(event.user_id) not in Config.bot_basic.bot_owner:

@@ -3,7 +3,7 @@
 原作者：@Snowykami
 本文件按原始仓库：LiteyukiStudio/LiteyukiBot
 """
-from typing import Any, Callable, Union, List, Dict
+from typing import Any, Callable, Union, List, Dict, Optional
 from packaging.version import parse
 from pydantic import BaseModel
 
@@ -19,8 +19,8 @@ NoneType = type(None)
 
 
 class LiteModel(BaseModel):
-    TABLE_NAME: str = None
-    id: int = None
+    TABLE_NAME: str = ""
+    id: int = 0
 
     def dump(self, *args, **kwargs):
         
@@ -316,7 +316,7 @@ class Database:
         Returns:
         """
 
-        def wrapper(model):
+        def wrapper(model: LiteModel):
             
             sign = inspect.signature(func)
             if param := sign.parameters.get("model"):
@@ -326,7 +326,7 @@ class Database:
                     return
             else:
                 return
-            result = func(model)
+            result = func(model) # type: ignore
             for callback in self._on_save_callbacks:
                 callback(result)
             return result
@@ -371,16 +371,16 @@ class Database:
     BYTES_PREFIX = "PICKLE_BYTES_"
 
     
-    def first(self, model: LiteModel) -> "Database":
+    def first(self, model: LiteModel) -> Optional["Database"]:
         pass
 
-    def where(self, condition: str, *args) -> "Database":
+    def where(self, condition: str, *args) -> Optional["Database"]:
         pass
 
-    def limit(self, limit: int) -> "Database":
+    def limit(self, limit: int) -> Optional["Database"]:
         pass
 
-    def order(self, order: str) -> "Database":
+    def order(self, order: str) -> Optional["Database"]:
         pass
 
 

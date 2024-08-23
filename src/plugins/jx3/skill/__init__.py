@@ -3,7 +3,7 @@ from nonebot.adapters import Message
 from nonebot.params import CommandArg
 from nonebot.adapters.onebot.v11 import GroupMessageEvent, MessageSegment as ms
 
-from src.constant.jx3 import getSingleSkill, aliases
+from src.constant.jx3 import getSingleSkill, school_name_aliases
 
 from src.tools.utils.request import get_api
 from src.tools.file import read, write
@@ -64,7 +64,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
         for i in versions:
             if ver == i["name"]:
                 ver = i["version"]
-    name = aliases(kf)
+    name = school_name_aliases(kf)
     if name is False:
         await _talent.finish("未找到该心法，请检查后重试~")
     if os.path.exists(ASSETS + "/jx3/" + f"{ver}.json") is False:
@@ -106,7 +106,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     if args.extract_plain_text() == "":
         return
     xf = args.extract_plain_text()
-    xf = aliases(xf)
+    xf = school_name_aliases(xf)
     if xf is False:
         await macro_.finish("唔……心法输入有误，请检查后重试~")
     data = await get_macro(xf)

@@ -60,4 +60,6 @@ async def generateGroupInfo(bot: Bot, group_id: str):
     final_html = CACHE + "/" + get_uuid() + ".html"
     write(final_html, html)
     final_path = await generate(final_html, False, ".total", False)
+    if not isinstance(final_path, str):
+        return
     return Path(final_path).as_uri()

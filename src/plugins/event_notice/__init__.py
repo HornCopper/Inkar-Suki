@@ -1,6 +1,17 @@
+from typing import Union, Any
+
 from nonebot import on_notice, on_command, on_request
 from nonebot.adapters import Message
-from nonebot.adapters.onebot.v11 import Bot, GroupMessageEvent, RequestEvent, GroupIncreaseNoticeEvent, NoticeEvent, MessageSegment as ms
+from nonebot.adapters.onebot.v11 import (
+    Bot, 
+    GroupMessageEvent, 
+    RequestEvent, 
+    GroupIncreaseNoticeEvent, 
+    GroupRequestEvent,
+    GroupDecreaseNoticeEvent, 
+    GroupBanNoticeEvent,
+    MessageSegment as ms
+)
 from nonebot.params import CommandArg
 
 from src.tools.config import Config
@@ -34,7 +45,10 @@ async def _(bot: Bot, event: GroupIncreaseNoticeEvent):
     group = event.group_id
     bots = notice_to.__dict__
     if str(obj) not in bots:
-        msg = ms.at(obj) + " " + getGroupSettings(str(event.group_id), "welcome")
+        welcome_msg = getGroupSettings(str(event.group_id), "welcome")
+        if not isinstance(welcome_msg, str):
+            return
+        msg = ms.at(obj) + " " + welcome_msg
         await bot.call_api("send_group_msg", group_id=group, message=msg)
         return
     await bot.call_api("send_group_msg", group_id=event.group_id, message=selfEnterMsg.replace("$GROUP_ID", str(event.group_id)))
@@ -42,21 +56,21 @@ async def _(bot: Bot, event: GroupIncreaseNoticeEvent):
     new_settings = GroupSettings(group_id=group_id)
     group_db.save(new_settings)
 
-async def notice_and_ban(bot: Bot, event: NoticeEvent, action: str):
+async def notice_and_ban(bot: Bot, event: Union[GroupDecreaseNoticeEvent, GroupBanNoticeEvent], action: str):
     message = f"唔……{Config.bot_basic.bot_name}在群聊（{event.group_id}）被{action}啦！\n操作者：{event.operator_id}，已自动封禁！"
     notice = notice_to.__dict__
     await bot.call_api("send_group_msg", group_id=int(notice[str(event.self_id)]), message=message)
     kicker = str(event.operator_id)
     if banned(kicker):
         return
-    banlist_obj: BannedList = group_db.where_one(BannedList(), default=BannedList())
+    banlist_obj: Union[BannedList, Any] = group_db.where_one(BannedList(), default=BannedList())
     banlist_data = banlist_obj.banned_list
     banlist_data.append({"uid": kicker, "reason": "T"})
     banlist_obj.banned_list = banlist_data
     group_db.save(banlist_obj)
 
 @notice.handle()
-async def _(bot: Bot, event: NoticeEvent):
+async def _(bot: Bot, event: GroupBanNoticeEvent):
     """被禁言了"""
     if event.notice_type != "group_ban":
         return
@@ -67,7 +81,7 @@ async def _(bot: Bot, event: NoticeEvent):
 
 
 @notice.handle()
-async def _(bot: Bot, event: NoticeEvent):
+async def _(bot: Bot, event: GroupDecreaseNoticeEvent):
     """被踢了"""
     if not event.notice_type == "group_decrease":
         return
@@ -78,11 +92,11 @@ async def _(bot: Bot, event: NoticeEvent):
 request = on_request(priority=5)
 
 @request.handle()
-async def _(bot: Bot, event: RequestEvent):
+async def _(bot: Bot, event: GroupRequestEvent):
     if event.request_type == "group" and event.sub_type == "invite":
         group = event.group_id
         user = event.user_id
-        banned_data: BannedList = group_db.where_one(BannedList(), default=BannedList())
+        banned_data: Union[BannedList, Any] = group_db.where_one(BannedList(), default=BannedList())
         if str(user) in banned_data.banned_list:
             await bot.call_api("set_group_add_request", flag=event.flag, sub_type="invite", approve=False, reason="邀请人已被音卡封禁！无法邀请音卡入群！")
         flag = event.flag
@@ -93,7 +107,7 @@ async def _(bot: Bot, event: RequestEvent):
             "flag": flag,
             "time": time
         }
-        applications_data: ApplicationsList = group_db.where_one(ApplicationsList(), default=ApplicationsList())
+        applications_data: Union[ApplicationsList, Any] = group_db.where_one(ApplicationsList(), default=ApplicationsList())
         applications_list = applications_data.applications_list
         if new in applications_list:
             return

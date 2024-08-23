@@ -42,25 +42,25 @@ async def find_solution(numbers):
         for expr in exprs:  # 穷举就完事了
             exp = "(({}{}{}){}{}){}{}".format(perm[0], expr[0], perm[1], expr[1], perm[2], expr[2], perm[3])
             try:
-                if (calc(exp) == 24 or 0 < 24 - calc(exp) < 1e-13):
+                if (calc(exp) == 24 or 0 < 24 - calc(exp) < 1e-13): # type: ignore
                     return exp
             except:
                 pass
             exp = "({}{}{}){}({}{}{})".format(perm[0], expr[0], perm[1], expr[1], perm[2], expr[2], perm[3])
             try:
-                if (calc(exp) == 24 or 0 < 24 - calc(exp) < 1e-13):
+                if (calc(exp) == 24 or 0 < 24 - calc(exp) < 1e-13): # type: ignore
                     return exp
             except:
                 pass
             exp = "{}{}({}{}({}{}{}))".format(perm[0], expr[0], perm[1], expr[1], perm[2], expr[2], perm[3])
             try:
-                if (calc(exp) == 24 or 0 < 24 - calc(exp) < 1e-13):
+                if (calc(exp) == 24 or 0 < 24 - calc(exp) < 1e-13): # type: ignore
                     return exp
             except:
                 pass
             exp = "{}{}({}{}{}){}{}".format(perm[0], expr[0], perm[1], expr[1], perm[2], expr[2], perm[3])
             try:
-                if (calc(exp) == 24 or 0 < 24 - calc(exp) < 1e-13):
+                if (calc(exp) == 24 or 0 < 24 - calc(exp) < 1e-13): # type: ignore
                     return exp
             except:
                 pass
@@ -73,9 +73,9 @@ def contains_all_numbers(expr, numbers):
     i = 0
     while i < len(expr):
         char = expr[i]
-        if isint(char):
+        if isint(char): # type: ignore
             number = char
-            while i + 1 < len(expr) and isint(expr[i + 1]):
+            while i + 1 < len(expr) and isint(expr[i + 1]): # type: ignore
                 number += expr[i + 1]
                 i += 1
             if number in used_numbers:

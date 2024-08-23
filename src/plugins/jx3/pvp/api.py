@@ -25,8 +25,8 @@ device_id = ticket.split("::")[-1]
 async def get_tuilan_data(url: str, params: Union[dict, None] = None) -> dict:
     if params is None:
         params = {"ts": gen_ts()}
-    params = format_body(params)
-    xsk = gen_xsk(params)
+    params_ = format_body(params)
+    xsk = gen_xsk(params_)
     basic_headers = {
         "Host": "m.pvp.xoyo.com",
         "Connection": "keep-alive",
@@ -45,7 +45,7 @@ async def get_tuilan_data(url: str, params: Union[dict, None] = None) -> dict:
         "sign": "true",
         "x-sk": xsk
     }
-    data = await post_url(url, headers=basic_headers, data=params)
+    data = await post_url(url, headers=basic_headers, data=params_)
     return json.loads(data)
 
 class Indicator:
@@ -76,9 +76,11 @@ class Indicator:
             self._person_data = await get_tuilan_data("https://m.pvp.xoyo.com/role/indicator", params=params)
         return self._person_data
 
-    async def get_person_id(self) -> Union[bool, str]:
+    async def get_person_id(self) -> Optional[Union[bool, str]]:
         if self._person_id is None:
             role_id = await self.get_role_id()
+            if not isinstance(role_id, str):
+                return
             person_data = await self.get_person_info(role_id)
             if not person_data or "data" not in person_data:
                 return False
@@ -89,6 +91,8 @@ class Indicator:
         person_id = await self.get_person_id()
         if not person_id:
             return None
+        if not isinstance(person_id, str):
+            return
         data = await self.get_person_info(person_id)
         if data and "data" in data:
             match_key = mode[0] + "c"
@@ -151,28 +155,28 @@ template_arena_record = """
     <td class="short-column"><span style="color: {{ color }}">{{ status }}</span></td>
 </tr>"""
 
-async def arena_record(server: str = "", name: str = "", group_id: str = "") -> Union[list, str]:
+async def arena_record(server: Optional[str] = "", name: str = "", group_id: str = "") -> Optional[Union[list, str]]:
     server = server_mapping(server, group_id)
     if not server:
         return [PROMPT.ServerNotExist]
     indicator = Indicator(server, name)
     role_id = await indicator.get_role_id()
-    if not role_id:
+    if not role_id or not isinstance(role_id, str):
         return [PROMPT.PlayerNotExist]
     await indicator.get_person_info(role_id)
     msgbox = []
     for mode in ["22", "33", "55"]:
-        data = await indicator.get_arena_info(mode)
+        data = await indicator.get_arena_info(mode) # type: ignore
         if data == None:
             continue
         input_params = {
-            "rank": f"{mode[0]}v{mode[-1]} · " + str(data["grade"]) + "段",
-            "count": str(data["total_count"]),
-            "win": str(data["win_count"]),
-            "percent": str(round(data["win_count"] / data["total_count"] * 100, 2)) + "%",
-            "score": str(data["mmr"]),
-            "best": str(data["mvp_count"]),
-            "rank_": data["ranking"]                
+            "rank": f"{mode[0]}v{mode[-1]} · " + str(data["grade"]) + "段", # type: ignore
+            "count": str(data["total_count"]), # type: ignore
+            "win": str(data["win_count"]), # type: ignore
+            "percent": str(round(data["win_count"] / data["total_count"] * 100, 2)) + "%", # type: ignore
+            "score": str(data["mmr"]), # type: ignore
+            "best": str(data["mvp_count"]), # type: ignore
+            "rank_": data["ranking"] # type: ignore
         }
         msgbox.append(Template(msg_box).render(**input_params))
     record = await indicator.get_person_arena_record()
@@ -206,6 +210,8 @@ async def arena_record(server: str = "", name: str = "", group_id: str = "") -> 
     final_html = CACHE + "/" + get_uuid() + ".html"
     write(final_html, html)
     final_path = await generate(final_html, False, ".total", False)
+    if not isinstance(final_path, str):
+        return
     return Path(final_path).as_uri()
         
     

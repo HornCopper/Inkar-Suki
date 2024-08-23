@@ -61,6 +61,8 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
                     additional_js=final_js,
                     output=ASSETS + "/jx3/update.png"
                 )
+                if not isinstance(store_path, str):
+                    return
                 img = get_content_local(Path(store_path).as_uri())
                 await announce.finish(ms.image(img))
                 

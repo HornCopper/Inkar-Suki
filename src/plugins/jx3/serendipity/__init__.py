@@ -61,7 +61,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     data = await getImage_v2(server, id, str(event.group_id), True)
     if isinstance(data, list):
         await serendipity_v2.finish(data[0])
-    else:
+    elif isinstance(data, str):
         data = get_content_local(data)
         await serendipity_v2.finish(ms.image(data))
 
@@ -89,7 +89,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     data = await getImage_v2(server, id, str(event.group_id), False)
     if isinstance(data, list):
         await pet_serendipity.finish(data[0])
-    else:
+    elif isinstance(data, str):
         data = get_content_local(data)
         await pet_serendipity.finish(ms.image(data))
 

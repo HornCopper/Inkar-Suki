@@ -42,7 +42,7 @@ async def search(platform_: str, song: str):
         return [song_, id, platform]
 
 
-async def get(platform_: str, song: str, singer: str = None):
+async def get(platform_: str, song: str, singer: str = ""):
     """
     请求型函数。
 

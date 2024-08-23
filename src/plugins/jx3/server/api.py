@@ -1,7 +1,7 @@
 from src.tools.config import Config
 from src.tools.utils.request import get_api
 
-async def server_status(server: str = None):
+async def server_status(server: str = ""):
     full_link = f"{Config.jx3.api.url}/data/server/check"
     info = await get_api(full_link)
     data = info["data"]

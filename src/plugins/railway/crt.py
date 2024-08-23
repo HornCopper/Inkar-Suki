@@ -255,4 +255,6 @@ async def cq_crt(start: str, end: str):
     final_path = CACHE + "/" + get_uuid() + ".html"
     write(final_path, final_html)
     generated = await generate(final_path, False, ".search-result", False)
+    if not isinstance(generated, str):
+        return
     return Path(generated).as_uri()

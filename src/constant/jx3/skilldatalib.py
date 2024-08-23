@@ -1,9 +1,9 @@
-from urllib.error import HTTPError
 from pathlib import Path
+from typing import Union, Literal, Optional
 
 from nonebot.adapters.onebot.v11 import MessageSegment as ms
 
-from src.tools.utils import get_url, get_status, get_content, get_api
+from src.tools.utils import get_url, get_status, get_content
 from src.tools.file import read, write
 from src.tools.utils.path import CONSTANT, ASSETS
 
@@ -17,28 +17,28 @@ with open(CONSTANT + "/jx3/schoolid.json", mode="r", encoding="utf-8") as school
     force_list = json.load(school)
 
 
-def kftosh(kf: str) -> str:
+def kungfu_to_school(kungfu_name: str) -> Union[str, Literal[False]]:
     with open(CONSTANT + "/jx3/school.json", "r", encoding="utf-8") as f:
         kf_dict = json.load(f)
-    for k, v_list in kf_dict.items():
-        if kf in v_list:
-            return k
-        elif kf == k:
-            return k  # 如果传入参数本身就是键，直接返回该键
+    for school_name, school_aliases in kf_dict.items():
+        if kungfu_name in school_aliases:
+            return school_name
+        elif kungfu_name == school_name:
+            return school_name  # 如果传入参数本身就是键，直接返回该键
     return False
 
 
-def aliases(SkillName: str) -> str:
+def school_name_aliases(SkillName: str) -> Union[str, Literal[False]]:
     with open(CONSTANT + "/jx3/kungfu.json", "r", encoding="utf-8") as f:
         aliases_dict = json.load(f)
 
-    for k, v in aliases_dict.items():
-        if SkillName in v:
-            return k
+    for kungfu, kungfu_aliases in aliases_dict.items():
+        if SkillName in kungfu_aliases:
+            return kungfu
     return False
 
 
-async def getTalents():
+async def get_talents():
     """
     获取所有门派的奇穴。
 
@@ -46,12 +46,12 @@ async def getTalents():
     """
     data_list = list(force_list)
     for i in data_list:
-        if await get_status(url=f"https://data.jx3box.com/talent/{i}.json") != 404:
-            info = await get_url(url=f"https://data.jx3box.com/bps/std/{i}/talent.json")
+        status_code = await get_status(f"https://data.jx3box.com/talent/{i}.json")
+        if status_code != 404:
+            info = await get_url(f"https://data.jx3box.com/bps/std/{i}/talent.json")
             data = json.loads(info)
             for a in data:
-                write(ASSETS + "/jx3/talents/" +
-                      a["kungfu"] + ".json", json.dumps(a, ensure_ascii=False))
+                write(ASSETS + "/jx3/talents/" + a["kungfu"] + ".json", json.dumps(a, ensure_ascii=False))
 
 
 async def getSkills():
@@ -62,15 +62,16 @@ async def getSkills():
     """
     data_list = list(force_list)
     for i in data_list:
-        if await get_status(url=f"https://data.jx3box.com/bps/std/{i}/skill.json") != 404:
-            info = await get_url(url=f"https://data.jx3box.com/bps/std/{i}/skill.json")
+        status_code = await get_status(f"https://data.jx3box.com/bps/std/{i}/skill.json")
+        if status_code != 404:
+            info = await get_url(f"https://data.jx3box.com/bps/std/{i}/skill.json")
             data = json.loads(info)
             for a in data:
                 write(ASSETS + "/jx3/skills/" +
                       a["kungfuName"] + ".json", json.dumps(a, ensure_ascii=False))
 
 
-async def get_icon(skillName: str, type_: str, api_icon: str = None, kungfu: str = None) -> str:
+async def get_icon(skillName: str, type_: str, api_icon: str = "", kungfu: Optional[str] = "") -> Union[str, ms]:
     if kungfu is None:
         raise ValueError("Key value `kungfu` was not found.")
     final_path = ASSETS + "/jx3/icons/" + kungfu + "_" + skillName + ".png"
@@ -81,10 +82,7 @@ async def get_icon(skillName: str, type_: str, api_icon: str = None, kungfu: str
             return ms.image(Path(final_path).as_uri())
     else:
         api_icon_url = api_icon
-        try:
-            icon = await get_content(api_icon_url)
-        except:
-            raise HTTPError(msg="Can't connect to " + api_icon_url + ".")
+        icon = await get_content(api_icon_url)
         cache = open(ASSETS + "/jx3/icons/" + kungfu +
                      "_" + skillName + ".png", mode="wb")
         cache.write(icon)
@@ -94,23 +92,23 @@ async def get_icon(skillName: str, type_: str, api_icon: str = None, kungfu: str
         else:
             return ms.image(Path(final_path).as_uri())
 
-async def getSingleSkill(kungfu: str, skillName: str):
-    kungfu = aliases(kungfu)
-    if kungfu == "隐龙诀":
-        kungfu == "隐龙决"  # 由于`JX3Box`的`API`的数据错误问题，目前只能这样适配，等到数据纠正后删除这块代码。其实是推栏的代码错了笑死。
-    if not kungfu:
+async def getSingleSkill(kungfu_name: str, skillName: str):
+    final_kungfu_name = school_name_aliases(kungfu_name)
+    if final_kungfu_name == "隐龙诀":
+        final_kungfu_name = "隐龙决"
+    if not final_kungfu_name:
         return False
     try:
-        data = json.loads(read(ASSETS + "/jx3/skills/" + kungfu + ".json"))
+        data = json.loads(read(ASSETS + "/jx3/skills/" + final_kungfu_name + ".json"))
     except Exception:
         await getSkills()
-        await getSingleSkill(kungfu, skillName)
+        await getSingleSkill(final_kungfu_name, skillName)
     moreInfo = data["remarks"]
     msg = ""
     for i in moreInfo:
         for x in i["forceSkills"]:
             if x["skillName"] == skillName:
-                image = await get_icon(x["skillName"], "ms", x["icon"]["FileName"], kungfu)
+                image = await get_icon(x["skillName"], "ms", x["icon"]["FileName"], final_kungfu_name)
                 releaseType = x["releaseType"]  # 释放类型
                 if releaseType != "瞬间释放":
                     releaseType = releaseType + "释放"
@@ -141,14 +139,14 @@ async def getSingleSkill(kungfu: str, skillName: str):
 
 
 async def getSingleTalent(Kungfu: str, TalentName: str):
-    kungfuname = aliases(Kungfu)
+    kungfuname = school_name_aliases(Kungfu)
     if not kungfuname:
         return "此心法不存在哦，请检查后重试~"
     try:
         data = json.loads(
             read(ASSETS + "/jx3/talents/" + kungfuname + ".json"))
     except Exception:
-        await getTalents()
+        await get_talents()
         await getSingleTalent(kungfuname, TalentName)
     detail = data["kungfuLevel"]
     correct = {str(i["level"]): i for i in detail}

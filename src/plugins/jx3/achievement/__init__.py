@@ -1,6 +1,6 @@
 from nonebot import on_command
 from nonebot.adapters import Message
-from nonebot.adapters.onebot.v11 import Bot, GroupMessageEvent, MessageSegment as ms
+from nonebot.adapters.onebot.v11 import GroupMessageEvent, MessageSegment as ms
 from nonebot.params import CommandArg, Arg
 from nonebot.typing import T_State
 
@@ -12,7 +12,6 @@ from src.plugins.jx3.dungeon.api import mode_mapping
 
 from .box import *
 from .v1_v2 import *
-
 adventure_ = on_command("jx3_adventure", aliases={"成就"}, force_whitespace=True, priority=5)
 
 
@@ -47,6 +46,8 @@ async def _(state: T_State, args: Message = CommandArg()):
         state["fullDesc"] = fullDesc
         state["subAchievements"] = subAchievements
         msg = ""
+        if not isinstance(achievement_list, list):
+            return
         for i in range(len(achievement_list)):
             msg = msg + f"{i}." + achievement_list[i] + "\n"
         msg = msg[:-1]
@@ -56,17 +57,17 @@ async def _(state: T_State, args: Message = CommandArg()):
 
 @adventure_.got("num", prompt="发送序号以搜索，发送其他内容则取消搜索。")
 async def _(state: T_State, num: Message = Arg()):
-    num = num.extract_plain_text()
-    if checknumber(num):
-        num = int(num)
-        map = state["map"][num]
-        achievement = state["achievement_list"][num]
-        icon = state["icon_list"][num]
-        id = state["id_list"][num]
-        simpleDesc = state["simpleDesc"][num]
-        point = state["point"][num]
-        fullDesc = state["fullDesc"][num]
-        subAchievement = state["subAchievements"][num]
+    num_ = num.extract_plain_text()
+    if checknumber(num_):
+        num_ = int(num_)
+        map = state["map"][num_]
+        achievement = state["achievement_list"][num_]
+        icon = state["icon_list"][num_]
+        id = state["id_list"][num_]
+        simpleDesc = state["simpleDesc"][num_]
+        point = state["point"][num_]
+        fullDesc = state["fullDesc"][num_]
+        subAchievement = state["subAchievements"][num_]
         msg = f"查询到「{achievement}」：\n" + await getAchievementsIcon(icon) + f"\nhttps://www.jx3box.com/cj/view/{id}\n{simpleDesc}\n{fullDesc}\n地图：{map}\n资历：{point}点\n附属成就：{subAchievement}"
         await adventure_.finish(msg)
     else:
@@ -80,7 +81,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     if len(achievement) not in [2, 3]:
         await achievement_v2.finish(PROMPT.ArgumentInvalid)
     if len(achievement) == 2:
-        server = None
+        server = ""
         id = achievement[0]
         achi = achievement[1]
     elif len(achievement) == 3:
@@ -91,6 +92,8 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     if isinstance(data, list):
         await achievement_v2.finish(data[0])
     else:
+        if not isinstance(data, str):
+            return
         data = get_content_local(data)
         await achievement_v2.finish(ms.image(data))
 
@@ -132,5 +135,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     if isinstance(data, list):
         await zone_achievement.finish(data[0])
     else:
+        if not isinstance(data, str):
+            return
         data = get_content_local(data)
         await zone_achievement.finish(ms.image(data))

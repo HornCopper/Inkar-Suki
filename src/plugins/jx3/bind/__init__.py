@@ -1,3 +1,5 @@
+from typing import Optional
+
 from nonebot import on_command
 from nonebot.adapters import Message
 from nonebot.adapters.onebot.v11 import Bot, GroupMessageEvent
@@ -10,13 +12,13 @@ from src.tools.permission import checker
 
 from .role import *
 
-def bind_srv(group_id: str, server: str):
+def bind_srv(group_id: str, server: Optional[str]):
     if not server == "":
         # 当server为空表示要清空
-        server = server_mapping(server)
-        if not server:
+        server_ = server_mapping(server)
+        if not server_:
             return [PROMPT.ServerNotExist]
-    setGroupSettings(group_id, "server", server)
+    setGroupSettings(group_id, "server", server_)
 
 server_bind = on_command("jx3_bind", aliases={"绑定", "绑定区服"}, force_whitespace=True, priority=5)
 
@@ -35,6 +37,8 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
         await server_bind.finish("已清除本群的绑定信息！")
     if server == None:
         await server_bind.finish("您给出的服务器名称音卡似乎没有办法理解，尝试使用一个更通俗的名称或者官方标准名称？")
+    if not isinstance(exact_server, str):
+        return
     await server_bind.finish("绑定成功！\n当前区服为：" + exact_server)
 
 
@@ -54,4 +58,6 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
         server = arg[0]
         id = arg[1]
     msg = await getRoleData(id, server, group_id=str(event.group_id))
+    if not isinstance(msg, str):
+        return
     await check_role.finish(msg)

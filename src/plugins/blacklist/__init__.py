@@ -1,7 +1,8 @@
 from pathlib import Path
+from typing import Union, Any
 
 from nonebot import on_command
-from nonebot.adapters import Message, Bot, Event
+from nonebot.adapters import Message, Bot
 from nonebot.adapters.onebot.v11 import GroupMessageEvent, MessageSegment as ms
 from nonebot.params import CommandArg
 
@@ -15,7 +16,7 @@ block = on_command("block", aliases={"避雷", "加入黑名单"}, force_whitesp
 
 
 @block.handle()
-async def _(bot: Bot, event: Event, args: Message = CommandArg()):
+async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
     if args.extract_plain_text() == "":
         return
     arg = args.extract_plain_text().split(" ")
@@ -30,7 +31,7 @@ async def _(bot: Bot, event: Event, args: Message = CommandArg()):
     reason = arg[1]
     new = {"ban": sb, "reason": reason}
     group_id = str(event.group_id)
-    current_data: GroupSettings = group_db.where_one(GroupSettings(), "group_id = ?", group_id, default=GroupSettings())
+    current_data: Union[GroupSettings, Any] = group_db.where_one(GroupSettings(), "group_id = ?", group_id, default=GroupSettings())
     current_blacklist = current_data.blacklist
     for i in current_blacklist:
         if i["ban"] == sb:
@@ -43,7 +44,7 @@ async def _(bot: Bot, event: Event, args: Message = CommandArg()):
 unblock = on_command("unblock", aliases={"移出黑名单"}, force_whitespace=True, priority=5)  # 解除避雷
 
 @unblock.handle()
-async def _(bot: Bot, event: Event, args: Message = CommandArg()):
+async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
     if args.extract_plain_text() == "":
         return
     arg = args.extract_plain_text().split(" ")
@@ -56,7 +57,7 @@ async def _(bot: Bot, event: Event, args: Message = CommandArg()):
         await unblock.finish("参数仅为玩家名，请勿附带任何信息！")
     sb = arg[0]
     group_id = str(event.group_id)
-    current_data: GroupSettings = group_db.where_one(GroupSettings(), "group_id = ?", group_id, default=GroupSettings(group_id=str(event.group_id)))
+    current_data: Union[GroupSettings, Any] = group_db.where_one(GroupSettings(), "group_id = ?", group_id, default=GroupSettings(group_id=str(event.group_id)))
     current_blacklist = current_data.blacklist
     for i in current_blacklist:
         if i["ban"] == sb:
@@ -69,7 +70,7 @@ async def _(bot: Bot, event: Event, args: Message = CommandArg()):
 sblock = on_command("sblock", aliases={"查找黑名单"}, force_whitespace=True, priority=5)  # 查询是否在避雷名单
 
 @sblock.handle()
-async def _(event: Event, args: Message = CommandArg()):
+async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     if args.extract_plain_text() == "":
         return
     arg = args.extract_plain_text().split(" ")
@@ -77,7 +78,7 @@ async def _(event: Event, args: Message = CommandArg()):
         await sblock.finish("参数仅为玩家名，请勿附带任何信息！")
     sb = arg[0]
     group_id = str(event.group_id)
-    current_data: GroupSettings = group_db.where_one(GroupSettings(), "group_id = ?", group_id, default=GroupSettings(group_id=str(event.group_id)))
+    current_data: Union[GroupSettings, Any] = group_db.where_one(GroupSettings(), "group_id = ?", group_id, default=GroupSettings(group_id=str(event.group_id)))
     current_blacklist = current_data.blacklist
     for i in current_blacklist:
         if i["ban"] == sb:
@@ -101,7 +102,7 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
     if args.extract_plain_text() != "":
         return
     group_id = str(event.group_id)
-    current_data: GroupSettings = group_db.where_one(GroupSettings(), "group_id = ?", group_id, default=GroupSettings(group_id=str(event.group_id)))
+    current_data: Union[GroupSettings, Any] = group_db.where_one(GroupSettings(), "group_id = ?", group_id, default=GroupSettings(group_id=str(event.group_id)))
     current_blacklist = current_data.blacklist
     table = []
     if len(current_blacklist) == 0:
@@ -116,5 +117,7 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
     final_html = CACHE + "/" + get_uuid() + ".html"
     write(final_html, html)
     final_path = await generate(final_html, False, "table", False)
+    if not isinstance(final_path, str):
+        return
     send_path = Path(final_path).as_uri()
     await lblock.finish(ms.image(send_path))

@@ -24,6 +24,8 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     other_name = arg[1]
     other_qq = int(arg[2])
     custom_time = arg[3] if len(arg) == 4 else convert_time(getCurrentTime(), "%Y-%m-%d")
+    if not isinstance(custom_time, str):
+        return
     timestamp = 0
     try:
         timestamp = int(datetime.strptime(custom_time, "%Y年%m月%d日").timestamp())
@@ -45,6 +47,8 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
         return
     self_id = event.user_id
     ans = await delete_affection(self_id)
+    if not isinstance(ans, list):
+        return
     await delete_affection_.finish(ans[0])
 
 affections_crt = on_command("jx3_affcrt", aliases={"查看情缘证书"}, force_whitespace=True, priority=5)
@@ -54,8 +58,9 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     if args.extract_plain_text() != "":
         return
     img = await generateAffectionImage(event.user_id)
-    if type(img) == type([]):
-        await affections_crt.finish(img[0])
-    else:
-        img = get_content_local(img)
-        await affections_crt.finish(ms.image(img))
+    if not isinstance(img, Union[list, str]):
+        if isinstance(img, list):
+            await affections_crt.finish(img[0])
+        elif isinstance(img, str):
+            img = get_content_local(img)
+            await affections_crt.finish(ms.image(img))

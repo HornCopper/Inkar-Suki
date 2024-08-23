@@ -35,6 +35,8 @@ async def _(state: T_State, args: Message = CommandArg()):
     state["target"] = target
     state["level"] = level
     msg = ""
+    if not isinstance(map, list) or not isinstance(task___, dict):
+        return
     for i in range(len(map)):
         msg = msg + f"{i}.{map[i]}：{task___[i]}\n"
     msg = msg[:-1]
@@ -43,14 +45,14 @@ async def _(state: T_State, args: Message = CommandArg()):
 
 @task_.got("num", prompt="发送序号以搜索，发送其他内容则取消搜索。")
 async def _(state: T_State, num: Message = Arg()):
-    num = num.extract_plain_text()
-    if checknumber(num):
-        num = int(num)
-        map = state["map"][num]
-        id = state["id"][num]
-        task__ = state["task"][num]
-        target = state["target"][num]
-        level = state["level"][num]
+    num_ = num.extract_plain_text()
+    if checknumber(num_):
+        num_ = int(num_)
+        map = state["map"][num_]
+        id = state["id"][num_]
+        task__ = state["task"][num_]
+        target = state["target"][num_]
+        level = state["level"][num_]
         msg = f"查询到「{task__}」：\nhttps://www.jx3box.com/quest/view/{id}\n开始等级：{level}\n地图：{map}\n任务目标：{target}"
         chain = await getTaskChain(id)
         msg = msg + f"\n任务链：{chain}"

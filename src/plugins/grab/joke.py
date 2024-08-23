@@ -7,13 +7,13 @@ import httpx
 
 api = "https://api.qicaiyun.top/joke/api.php"
 
-async def get_joke():
+async def get_joke() -> str:
     async with httpx.AsyncClient(follow_redirects=True) as client:
         resp = await client.get(api)
         resp.encoding = "gbk"
         data = resp.text
         msg = data.split("、")[1:]
-        return msg
+        return str(msg)
 
 rdcoldjoke = on_command("冷笑话", priority=5, force_whitespace=True)
 

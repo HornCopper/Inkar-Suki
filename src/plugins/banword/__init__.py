@@ -1,3 +1,5 @@
+from typing import Union, Any
+
 from nonebot import on_command
 from nonebot.adapters import Message
 from nonebot.adapters.onebot.v11 import GroupMessageEvent
@@ -18,7 +20,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):  # 违禁�
     if not checker(str(event.user_id), 10):
         await banword.finish(error(5))
     if bw:
-        current_data: BannedWordList = group_db.where_one(BannedWordList(), default=BannedWordList())
+        current_data: Union[BannedWordList, Any] = group_db.where_one(BannedWordList(), default=BannedWordList())
         current_list = current_data.banned_word_list
         if bw in current_list:
             await banword.finish("唔……封禁失败，已经封禁过了。")
@@ -40,7 +42,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
         await unbanword.finish(error(5))
     bw = args.extract_plain_text()
     if bw:
-        current_data: BannedWordList = group_db.where_one(BannedWordList(), default=BannedWordList())
+        current_data: Union[BannedWordList, Any] = group_db.where_one(BannedWordList(), default=BannedWordList())
         current_list = current_data.banned_word_list
         if bw in current_list:
             current_list.remove(bw)

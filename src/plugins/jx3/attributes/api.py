@@ -1,7 +1,8 @@
 from pathlib import Path
 from PIL import Image, ImageDraw, ImageFont
+from typing import Union, Optional
 
-from src.constant.jx3.skilldatalib import kftosh
+from src.constant.jx3.skilldatalib import kungfu_to_school
 
 from src.tools.basic.msg import PROMPT
 from src.tools.generate import get_uuid
@@ -40,7 +41,7 @@ async def get_personal_kf(kfid):
     return False
 
 
-def find_qx(data, kf, qx):
+def find_qx(data, kf, qx) -> Optional[int]:
     kfdt = json.loads(read(PLUGINS + "/jx3/attributes/schoolmapping.json"))
     if kf not in kfdt:
         return None
@@ -202,7 +203,7 @@ async def get_kf_icon(kf):
         return final_path
 
 
-def kungfu_mapping(kf):
+def kungfu_mapping(kf) -> Union[str, bool]:
     if kf in ["紫霞功", "莫问", "毒经", "无方", "冰心诀"]:
         return "根骨"
     elif kf in ["花间游", "易筋经", "焚影圣诀", "太玄经", "天罗诡道"]:
@@ -306,13 +307,13 @@ async def get_attr_main(server, id, group_id):
         index = find_qx(qxdata, kf, i)
         if index == None:
             continue
-        qx[index] = i
-    for i in range(12):
+        qx[index] = i # type: ignore
+    for i in range(12): # type: ignore
         for x in data["data"]["Person"]["qixueList"]:
             qx_name = x["name"].replace(" ", "")
-            if qx_name == qx[i]:
-                qx_icon[i] = x["icon"]["FileName"]
-    for i in equip_data:
+            if qx_name == qx[i]: # type: ignore
+                qx_icon[i] = x["icon"]["FileName"] # type: ignore
+    for i in equip_data: # type: ignore
         if i == "":
             equip_quailty.append("")
         else:
@@ -337,7 +338,8 @@ async def get_attr_main(server, id, group_id):
                 if attr != "":
                     msg = msg + f" {attr}"
             equip_quailty.append(msg)
-    for i in equip_data:
+    for i in equip_data: # type: ignore
+        i: dict
         if i == "":
             maxjl_list.append(6)
             jl_list.append(0)
@@ -349,16 +351,16 @@ async def get_attr_main(server, id, group_id):
             equip_list.append(i["Name"] + "(" + i["StrengthLevel"] +
                               "/" + i["MaxStrengthLevel"] + ")")
             equip_icon_list.append(i["Icon"]["FileName"])
-    for i in equip_data:
+    for i in equip_data: # type: ignore
         if i == "":
-            if equip_data.index(i) in [0, 1, 2, 3, 5]:
-                henchant[equip_data.index(i)] = ""
+            if equip_data.index(i) in [0, 1, 2, 3, 5]: # type: ignore
+                henchant[equip_data.index(i)] = "" # type: ignore
                 continue
         try:
             i["Icon"]["SubKind"]
         except:
-            if equip_data.index(i) in [0, 1, 2, 3, 5]:
-                henchant[equip_data.index(i)] = ""
+            if equip_data.index(i) in [0, 1, 2, 3, 5]: # type: ignore
+                henchant[equip_data.index(i)] = "" # type: ignore
                 continue
         if type(i) != type({}):
             continue
@@ -371,7 +373,7 @@ async def get_attr_main(server, id, group_id):
                     type_ = "疗"
                 else:
                     type_ = "御"
-                name = enchant_mapping(i["Quality"]) + "·" + type_ + "·帽"
+                name = enchant_mapping(i["Quality"]) + "·" + type_ + "·帽" # type: ignore
                 henchant[0] = name
             else:
                 henchant[0] = ""
@@ -384,7 +386,7 @@ async def get_attr_main(server, id, group_id):
                     type_ = "疗"
                 else:
                     type_ = "御"
-                name = enchant_mapping(i["Quality"]) + "·" + type_ + "·衣"
+                name = enchant_mapping(i["Quality"]) + "·" + type_ + "·衣" # type: ignore
                 henchant[1] = name
             else:
                 henchant[1] = ""
@@ -397,7 +399,7 @@ async def get_attr_main(server, id, group_id):
                     type_ = "疗"
                 else:
                     type_ = "御"
-                name = enchant_mapping(i["Quality"]) + "·" + type_ + "·腰"
+                name = enchant_mapping(i["Quality"]) + "·" + type_ + "·腰" # type: ignore
                 henchant[2] = name
             else:
                 henchant[2] = ""
@@ -409,8 +411,8 @@ async def get_attr_main(server, id, group_id):
                 elif attrs_.find("治疗") != -1:
                     type_ = "疗"
                 else:
-                    type_ = "御"
-                name = enchant_mapping(i["Quality"]) + "·" + type_ + "·腕"
+                    type_ = "御" 
+                name = enchant_mapping(i["Quality"]) + "·" + type_ + "·腕" # type: ignore
                 henchant[3] = name
             else:
                 henchant[3] = ""
@@ -423,12 +425,12 @@ async def get_attr_main(server, id, group_id):
                     type_ = "疗"
                 else:
                     type_ = "御"
-                name = enchant_mapping(i["Quality"]) + "·" + type_ + "·鞋"
+                name = enchant_mapping(i["Quality"]) + "·" + type_ + "·鞋" # type: ignore
                 henchant[4] = name
             else:
                 henchant[4] = ""
     num = 0
-    for i in equip_data:
+    for i in equip_data: # type: ignore
         if i != "":
             if "WPermanentEnchant" in list(i):
                 lenchant[num] = i["WPermanentEnchant"]["Name"]
@@ -441,7 +443,7 @@ async def get_attr_main(server, id, group_id):
             continue
     fs = []
     num = 0
-    for i in equip_data:
+    for i in equip_data: # type: ignore
         num = num + 1
         if i == "" and num in [7, 8, 11]:
             fs.append(0)
@@ -465,14 +467,14 @@ async def get_attr_main(server, id, group_id):
             else:
                 fs.append(0)
     try:
-        wcs = equip_data[11]["ColorStone"]["Name"]
-        wcs_icon = equip_data[11]["ColorStone"]["Icon"]["FileName"]
+        wcs = equip_data[11]["ColorStone"]["Name"] # type: ignore
+        wcs_icon = equip_data[11]["ColorStone"]["Icon"]["FileName"] # type: ignore
     except:
         wcs = ""
         wcs_icon = ""
     try:
-        wcs1 = equip_data[12]["ColorStone"]["Name"]
-        wcs_icon1 = equip_data[12]["ColorStone"]["Icon"]["FileName"]
+        wcs1 = equip_data[12]["ColorStone"]["Name"] # type: ignore
+        wcs_icon1 = equip_data[12]["ColorStone"]["Icon"]["FileName"] # type: ignore
     except:
         wcs1 = ""
         wcs_icon1 = ""
@@ -481,81 +483,81 @@ async def get_attr_main(server, id, group_id):
         panel = data["data"]["PersonalPanel"]
         for i in panel:
             if i["name"] == "攻击力":
-                values[0] = str(i["value"])
+                values[0] = str(i["value"]) # type: ignore
             if i["name"] == "基础攻击力":
-                values[1] = str(i["value"])
+                values[1] = str(i["value"]) # type: ignore
             if i["name"] == "会心":
-                values[2] = str(i["value"]) + "%"
+                values[2] = str(i["value"]) + "%" # type: ignore
             if i["name"] == "会心效果":
-                values[3] = str(i["value"]) + "%"
+                values[3] = str(i["value"]) + "%" # type: ignore
             if i["name"] == "加速":
-                values[4] = str(i["value"])
+                values[4] = str(i["value"]) # type: ignore
             if i["name"] == att:
-                values[5] = str(i["value"])
+                values[5] = str(i["value"]) # type: ignore
             if i["name"] == "破防":
-                values[6] = str(i["value"]) + "%"
+                values[6] = str(i["value"]) + "%" # type: ignore
             if i["name"] == "无双":
-                values[7] = str(i["value"]) + "%"
+                values[7] = str(i["value"]) + "%" # type: ignore
             if i["name"] == "破招":
-                values[8] = str(i["value"])
+                values[8] = str(i["value"]) # type: ignore
             if i["name"] == "气血":
-                values[9] = str(i["value"])
+                values[9] = str(i["value"]) # type: ignore
             if i["name"] == "御劲":
-                values[10] = str(i["value"]) + "%"
+                values[10] = str(i["value"]) + "%" # type: ignore
             if i["name"] == "化劲":
-                values[11] = str(i["value"]) + "%"
+                values[11] = str(i["value"]) + "%" # type: ignore
     elif flag == 2:
         panel = data["data"]["PersonalPanel"]
         for i in panel:
             if i["name"] == "治疗量":
-                values[0] = str(i["value"])
+                values[0] = str(i["value"]) # type: ignore
             if i["name"] == "治疗量":
-                values[1] = str(i["value"])
+                values[1] = str(i["value"]) # type: ignore
             if i["name"] == "会心":
-                values[2] = str(i["value"]) + "%"
+                values[2] = str(i["value"]) + "%" # type: ignore
             if i["name"] == "会心效果":
-                values[3] = str(i["value"]) + "%"
+                values[3] = str(i["value"]) + "%" # type: ignore
             if i["name"] == "加速":
-                values[4] = str(i["value"])
+                values[4] = str(i["value"]) # type: ignore
             if i["name"] == "根骨":
-                values[5] = str(i["value"])
+                values[5] = str(i["value"]) # type: ignore
             if i["name"] == "外功防御":
-                values[6] = str(i["value"]) + "%"
+                values[6] = str(i["value"]) + "%" # type: ignore
             if i["name"] == "内功防御":
-                values[7] = str(i["value"]) + "%"
+                values[7] = str(i["value"]) + "%" # type: ignore
             if i["name"] == "破招":
-                values[8] = str(i["value"])
+                values[8] = str(i["value"]) # type: ignore
             if i["name"] == "气血":
-                values[9] = str(i["value"])
+                values[9] = str(i["value"]) # type: ignore
             if i["name"] == "御劲":
-                values[10] = str(i["value"]) + "%"
+                values[10] = str(i["value"]) + "%" # type: ignore
             if i["name"] == "化劲":
-                values[11] = str(i["value"]) + "%"
+                values[11] = str(i["value"]) + "%" # type: ignore
     elif flag == 3:
         panel = data["data"]["PersonalPanel"]
         for i in panel:
             if i["name"] == "外功防御":
-                values[0] = str(i["value"]) + "%"
+                values[0] = str(i["value"]) + "%" # type: ignore
             if i["name"] == "内功防御":
-                values[1] = str(i["value"]) + "%"
+                values[1] = str(i["value"]) + "%" # type: ignore
             if i["name"] == "气血":
-                values[2] = str(i["value"])
+                values[2] = str(i["value"]) # type: ignore
             if i["name"] == "破招":
-                values[3] = str(i["value"])
+                values[3] = str(i["value"]) # type: ignore
             if i["name"] == "御劲":
-                values[4] = str(i["value"]) + "%"
+                values[4] = str(i["value"]) + "%" # type: ignore
             if i["name"] == "闪避":
-                values[5] = str(i["value"]) + "%"
+                values[5] = str(i["value"]) + "%" # type: ignore
             if i["name"] == "招架":
-                values[6] = str(i["value"]) + "%"
+                values[6] = str(i["value"]) + "%" # type: ignore
             if i["name"] == "拆招":
-                values[7] = str(i["value"])
+                values[7] = str(i["value"]) # type: ignore
             if i["name"] == "体质":
-                values[8] = str(i["value"])
+                values[8] = str(i["value"]) # type: ignore
             if i["name"] == "无双":
-                values[10] = str(i["value"]) + "%"
+                values[10] = str(i["value"]) + "%" # type: ignore
             if i["name"] == "加速":
-                values[11] = str(i["value"])
+                values[11] = str(i["value"]) # type: ignore
                 values[9] = "%.2f%%" % (i["value"]/96483.75 * 100)
     else:
         values = ["未知属性", "未知属性", "未知属性", "未知属性", "未知属性", "未知属性", "未知属性", "未知属性", "未知属性", "未知属性", "未知属性", "未知属性"]
@@ -603,7 +605,7 @@ async def get_attr(kungfu: str, maxjl_list: list, jl_list: list, equip_list: lis
         objects = ["外防", "内防", "最大气血值", "破招", "御劲", "闪避", "招架", "拆招", "体质", "加速率", "无双", "加速"]
     else:
         objects = ["N/A", "N/A", "N/A", "N/A", "N/A", "N/A", "N/A", "N/A", "N/A", "N/A", "N/A", "N/A"]
-    background = Image.open(await get_bg(kftosh(kungfu)))
+    background = Image.open(await get_bg(kungfu_to_school(kungfu)))
     draw = ImageDraw.Draw(background)
     flickering = Image.open(PLUGINS + "/jx3/attributes/flicker.png").resize((38, 38))
     precious = Image.open(PLUGINS + "/jx3/attributes/xy.png")

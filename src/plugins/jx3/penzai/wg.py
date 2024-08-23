@@ -53,7 +53,7 @@ async def get_wg(name):
                 floor = x["Floor"]
                 links.append(link)
                 floors.append(floor)
-                table.append(template_wg.replace("$num", str(i + 1)).replace("$context", title).replace("$time", final_time).replace("$place", place))
+                table.append(template_wg.replace("$num", str(i + 1)).replace("$context", title).replace("$time", str(final_time)).replace("$place", place))
                 num = num + 1
                 if num == 10:
                     break
@@ -68,4 +68,6 @@ async def get_wg(name):
             final_html = CACHE + "/" + get_uuid() + ".html"
             write(final_html, html)
             final_path = await generate(final_html, False, "table", False)
+            if not isinstance(final_path, str):
+                return
             return [Path(final_path).as_uri(), links, floors]

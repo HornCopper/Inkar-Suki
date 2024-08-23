@@ -1,4 +1,6 @@
-from src.constant.jx3 import aliases, force_list, kftosh
+from typing import Union
+
+from src.constant.jx3 import school_name_aliases, force_list, kungfu_to_school
 
 from src.tools.config import Config
 from src.tools.utils.request import post_url
@@ -9,21 +11,19 @@ import json
 ticket = Config.jx3.api.ticket
 device_id = ticket.split("::")[-1]
 
-def get_school_id(school_name: str) -> str:
+def get_school_id(school_name: str) -> Union[str, bool]:
     for i in force_list:
         if school_name == force_list[i]:
             return i
     return False
 
 async def matrix_(name):
-    kf = aliases(name)
-    print(kf)
-    school = kftosh(kf)
-    print(school)
+    kf = school_name_aliases(name)
+    school = kungfu_to_school(kf) # type: ignore
     if name is False:
         return "此心法不存在哦~请检查后重试。"
     param = {
-        "forceId": get_school_id(school),
+        "forceId": get_school_id(school), # type: ignore
         "ts": gen_ts()
     }
     param = format_body(param)

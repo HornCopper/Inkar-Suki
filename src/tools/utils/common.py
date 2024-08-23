@@ -1,3 +1,5 @@
+from typing import Union
+
 from src.tools.file import write, read
 
 import re
@@ -48,7 +50,7 @@ def checknumber(value):
     return value.isdecimal()
 
 
-def convert_time(timestamp: int, format: str = "%Y年%m月%d日 %H:%M:%S"):
+def convert_time(timestamp: int, format: str = "%Y年%m月%d日 %H:%M:%S") -> Union[str, bool]:
     if checknumber(timestamp):
         try:
             timestamp = int(timestamp)
@@ -110,6 +112,8 @@ def getRelateTime(current, goal):
 
 def record_info(record_content: str):
     msg = convert_time(getCurrentTime(), "[%Y-%m-%d %H:%M:%S] "+ record_content)
+    if not isinstance(msg, str):
+        return
     raw = read(CLOCK + "/logs/InkarSuki.log")
     msg = raw + "\n" + msg
     write(CLOCK + "/logs/InkarSuki.log", msg)

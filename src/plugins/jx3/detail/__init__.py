@@ -29,7 +29,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     data = await generate_zd_image(server, id)
     if isinstance(data, list):
         await zone_detail.finish(data[0])
-    else:
+    elif isinstance(data, str):
         data = get_content_local(data)
         await zone_detail.finish(ms.image(data))
 
@@ -51,6 +51,6 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     data = await get_all_dungeon_image(server, id, str(event.group_id))
     if isinstance(data, list):
         await global_dungeon_lookup.finish(data[0])
-    else:
+    elif isinstance(data, str):
         data = get_content_local(data)
         await global_dungeon_lookup.finish(ms.image(data))

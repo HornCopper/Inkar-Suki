@@ -47,7 +47,7 @@ all_file_drink_name = os.listdir(str(img_drink_path))
 Bot_NICKNAME = Config.bot_basic.bot_name
 
 @del_dish.handle()
-async def got_dish_name(matcher: Matcher, state: T_State):
+async def _(matcher: Matcher, state: T_State):
     args = list(state["_matched_groups"])
     state["type"] = args[1]
     if args[2]:
@@ -55,7 +55,7 @@ async def got_dish_name(matcher: Matcher, state: T_State):
 
 
 @del_dish.got("name", prompt="请告诉我你要删除哪个菜品或饮料,发送“取消”可取消操作")
-async def del_(state: T_State, name: Message = Arg()):
+async def _(state: T_State, name: Message = Arg()):
     if str(name) == "取消":
         await del_dish.finish("已取消")
     if state["type"] in ["菜单", "菜品"]:
@@ -80,17 +80,17 @@ async def got_dish_name(matcher: Matcher, state: T_State):
 
 
 @add_dish.got("dish_name", prompt="⭐请发送名字\n发送“取消”可取消添加")
-async def got(state: T_State, dish_name: Message = Arg()):
+async def _(state: T_State, dish_name: Message = Arg()):
     state["name"] = str(dish_name)
     if str(dish_name) == "取消":
         await add_dish.finish("已取消")
 
 
 @add_dish.got("img", prompt="⭐图片也发给我吧\n发送“取消”可取消添加")
-async def handle(state: T_State, img: Message = Arg()):
+async def _(state: T_State, img: Message = Arg()):
     if str(img) == "取消":
         await add_dish.finish("已取消")
-    img_url = extract_image_urls(img)
+    img_url = extract_image_urls(img) # type: ignore
     if not img_url:
         await add_dish.finish("没有找到图片(╯▔皿▔)╯，请稍后重试", at_sender=True)
 
@@ -100,15 +100,15 @@ async def handle(state: T_State, img: Message = Arg()):
         path = img_drink_path
 
     dish_img = requests.get(url=img_url[0])
-    with open(path / str(state["name"]+".jpg"), "wb") as f:
+    with open(path / str(state["name"]+".jpg"), "wb") as f: # type: ignore
         f.write(dish_img.content)
     name = state["name"]
     type_ = state["type"]
-    await add_dish.finish(f"成功添加{type_}:{name}\n" + ms.image(img_url))
+    await add_dish.finish(f"成功添加{type_}:{name}\n" + ms.image(img_url)) # type: ignore
 
 
 @view_dish.handle()
-async def got_name(matcher: Matcher, state: T_State, event: MessageEvent):
+async def _(matcher: Matcher, state: T_State, event: MessageEvent):
     # 正则匹配组
     args = list(state["_matched_groups"])
     if args[1] in ["菜单", "菜品"]:
@@ -121,7 +121,7 @@ async def got_name(matcher: Matcher, state: T_State, event: MessageEvent):
 
 
 @view_dish.got("name", prompt=f"请告诉{Bot_NICKNAME}具体菜名或者饮品名吧")
-async def handle(state: T_State, name: Message = Arg()):
+async def _(state: T_State, name: Message = Arg()):
     if state["type"] == "吃的":
         img = img_eat_path / (str(name)+".jpg")
     elif state["type"] == "喝的":
@@ -138,7 +138,7 @@ user_count = {}
 
 
 @what_drink.handle()
-async def wtd(msg: MessageEvent):
+async def _(msg: MessageEvent):
     global time, user_count
     check_result, remain_time, new_last_time = check_cd(time)
     if not check_result:
@@ -154,16 +154,16 @@ async def wtd(msg: MessageEvent):
         with open(img, "rb") as im:
             img_bytes = im.read()
         base64_str = "base64://" + base64.b64encode(img_bytes).decode()
-        msg = (f"{Bot_NICKNAME}建议你喝: \n⭐{img.stem}⭐\n" + ms.image(base64_str))
+        msg = (f"{Bot_NICKNAME}建议你喝: \n⭐{img.stem}⭐\n" + ms.image(base64_str)) # type: ignore
         try:
             await what_drink.send("正在为你找好喝的……")
-            await what_drink.send(msg, at_sender=True)
+            await what_drink.send(msg, at_sender=True) # type: ignore
         except ActionFailed:
             await what_drink.finish("出错啦！没有找到好喝的~")
 
 
 @what_eat.handle()
-async def wte(msg: MessageEvent):
+async def _(msg: MessageEvent):
     global time, user_count
     check_result, remain_time, new_last_time = check_cd(time)
     if not check_result:
@@ -179,10 +179,10 @@ async def wte(msg: MessageEvent):
         with open(img, "rb") as im:
             img_bytes = im.read()
         base64_str = "base64://" + base64.b64encode(img_bytes).decode()
-        msg = (f"{Bot_NICKNAME}建议你吃: \n⭐{img.stem}⭐\n" + ms.image(base64_str))
+        msg = (f"{Bot_NICKNAME}建议你吃: \n⭐{img.stem}⭐\n" + ms.image(base64_str)) # type: ignore
         try:
             await what_eat.send("正在为你找好吃的……")
-            await what_eat.send(msg, at_sender=True)
+            await what_eat.send(msg, at_sender=True) # type: ignore
         except ActionFailed:
             await what_eat.finish("出错啦！没有找到好吃的~")
 

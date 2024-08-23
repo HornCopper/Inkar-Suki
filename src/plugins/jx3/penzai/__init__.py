@@ -40,14 +40,14 @@ async def _(event: GroupMessageEvent, state: T_State, args: Message = CommandArg
 
 @dh_.got("num", prompt="回复标题前方的序号，音卡就可以给你链接啦！")
 async def _(event: GroupMessageEvent, state: T_State, num: Message = Arg()):
-    num = num.extract_plain_text()
-    if not checknumber(num):
+    num_ = num.extract_plain_text()
+    if not checknumber(num_):
         await dh_.finish(PROMPT.NumberInvalid)
     else:
         links = state["links"]
         floors = state["floors"]
-        floor = str(floors[int(num)-1])
-        await dh_.finish(links[int(num)-1] + f"\n请前往{floor}楼哦~")
+        floor = str(floors[int(num_)-1])
+        await dh_.finish(links[int(num_)-1] + f"\n请前往{floor}楼哦~")
 
 wg_ = on_command("jx3_wg", aliases={"贴吧物价"}, force_whitespace=True, priority=5)
 
@@ -80,11 +80,11 @@ async def _(event: GroupMessageEvent, state: T_State, args: Message = CommandArg
 
 @wg_.got("num", prompt="回复标题前方的序号，音卡就可以给你链接啦！")
 async def _(event: GroupMessageEvent, state: T_State, num: Message = Arg()):
-    num = num.extract_plain_text()
-    if not checknumber(num):
+    num_ = num.extract_plain_text()
+    if not checknumber(num_):
         await wg_.finish(PROMPT.NumberInvalid)
     else:
         links = state["links"]
         floors = state["floors"]
-        floor = str(floors[int(num)-1])
-        await wg_.finish(links[int(num)-1] + f"\n请前往{floor}楼哦~")
+        floor = str(floors[int(num_)-1])
+        await wg_.finish(links[int(num_)-1] + f"\n请前往{floor}楼哦~")

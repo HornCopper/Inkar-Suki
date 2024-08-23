@@ -1,6 +1,7 @@
 from pathlib import Path
+from typing import Optional
 
-from src.constant.jx3 import kftosh
+from src.constant.jx3 import kungfu_to_school
 
 from src.tools.utils.request import get_api
 from src.tools.config import Config
@@ -44,13 +45,13 @@ async def get_basic_info(server: str, name: str):
         tuilan_status = "已绑定" if data.get("personId") != "" else "未绑定"
         return [data.get("roleName"), str(data.get("roleId")), data.get("tongName"), data.get("forceName"), data.get("bodyName"), data.get("campName"), tuilan_status]
 
-def school_mapping(school_num: int) -> str:
+def school_mapping(school_num: int) -> Optional[str]:
     map = json.loads(read(PLUGINS + "/jx3/attributes/schoolmapping.json"))
     for i in map:
         if map[i] == school_num:
             return i
         
-def get_qixue_place(qixueList: dict, qixueName: str) -> int:
+def get_qixue_place(qixueList: dict, qixueName: str) -> Optional[int]:
     for a in qixueList:
         for b in qixueList[a]:
             if qixueList[a][b]["name"] == qixueName:
@@ -91,7 +92,7 @@ def get_equip_attr(data: list, job: str):
                 msg = msg + f" {attr}"
     return msg
 
-async def get_attrs_v4(server: str, name: str, group_id: str):
+async def get_attrs_v4(server: Optional[str], name: str, group_id: str):
     server = server_mapping(server, group_id)
     if not server:
         return [PROMPT.ServerNotExist]
@@ -228,7 +229,7 @@ async def get_attrs_v4(server: str, name: str, group_id: str):
             if each_location["Icon"]["SubKind"] == location:
                 eicon = each_location["Icon"]["FileName"]
                 ename = each_location["Name"] + "（" + each_location["Quality"] + "）"
-                eattr = get_equip_attr(each_location["ModifyType"], type)
+                eattr = get_equip_attr(each_location["ModifyType"], type) # type: ignore
                 ecurrent_strength = each_location["StrengthLevel"]
                 emax_strength = each_location["MaxStrengthLevel"]
                 erest_strength = str(int(emax_strength) - int(ecurrent_strength))
@@ -252,7 +253,7 @@ async def get_attrs_v4(server: str, name: str, group_id: str):
                         type_ = "疗"
                     else:
                         type_ = "御"
-                    henchant_name = enchant_mapping(each_location["Quality"]) + "·" + type_ + "·" + location_mapping(location)
+                    henchant_name = enchant_mapping(each_location["Quality"]) + "·" + type_ + "·" + location_mapping(location) # type: ignore
                 if "WPermanentEnchant" in each_location:
                     lenchant_flag = True
                     lenchant_name = each_location["WPermanentEnchant"]["Name"]
@@ -280,7 +281,7 @@ async def get_attrs_v4(server: str, name: str, group_id: str):
     for each_location in data["data"]["Equips"]:
         eicon = each_location["Icon"]["FileName"]
         ename = each_location["Name"] + "（" + each_location["Quality"] + "）"
-        eattr = get_equip_attr(each_location["ModifyType"], type)
+        eattr = get_equip_attr(each_location["ModifyType"], type) # type: ignore
         ecurrent_strength = each_location["StrengthLevel"]
         emax_strength = each_location["MaxStrengthLevel"]
         erest_strength = str(int(emax_strength) - int(ecurrent_strength))
@@ -327,11 +328,13 @@ async def get_attrs_v4(server: str, name: str, group_id: str):
         table.append(template_attrs_v4.replace("$icon", eicon).replace("$name", ename).replace("$attr", eattr).replace("$enable", ecurrent_strength).replace("$available", erest_strength).replace("$fivestone", fivestones).replace("$enchant", display_enchant).replace("$source", source))
     final_table = "\n".join(table)
     font = ASSETS + "/font/custom.ttf"
-    school = kftosh(kungfu)
+    school = kungfu_to_school(kungfu) # type: ignore
     if not school:
         school = ""
     html = html.replace("$customfont", font).replace("$tablecontent", final_table).replace("$school", ASSETS + "/image/school/" + school + ".svg").replace("$color", getColor(school))
     final_html = CACHE + "/" + get_uuid() + ".html"
     write(final_html, html)
-    final_path = await generate(final_html, False, None, False, viewport={"width": 2200, "height": 1250}, full_screen=True)
+    final_path = await generate(final_html, False, "", False, viewport={"width": 2200, "height": 1250}, full_screen=True) 
+    if not isinstance(final_path, str):
+        return
     return Path(final_path).as_uri()

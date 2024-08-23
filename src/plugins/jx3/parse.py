@@ -9,7 +9,7 @@ handler: Dict[int, Callable[[dict], JX3APIPushEvent]] = {}
 
 def handle_event(action: int):
     def decorator_func(event_class: Type[JX3APIPushEvent]):
-        handler[action] = event_class
+        handler[action] = event_class # type: ignore
         return event_class
     return decorator_func
 
@@ -17,7 +17,7 @@ def handle_event(action: int):
 class JX3APIOutputMsg:
     name: str = ""
     msg: str = ""
-    server: str = None
+    server: str = ""
 
 class JX3APIPushEvent(BaseModel):
     action: int = 0
@@ -89,7 +89,7 @@ def parse_data(raw_data: dict):
     action: int = data.action
     body: dict = data.data
     handler_class = handler.get(action)
-    return handler_class(**body)
+    return handler_class(**body)  # type: ignore
 
 def get_registered_actions():
     return list(handler.keys())

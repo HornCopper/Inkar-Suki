@@ -6,8 +6,8 @@ def clean(string: str) -> str:
     return re.sub(r"§.", "", string)
 
 
-async def jes(ip: str) -> str:
-    ip = ip.split(":")
+async def jes(raw_ip: str) -> str:
+    ip = raw_ip.split(":") 
     if len(ip) > 2:
         return "唔……暂时无法识别IPv6地址，或者是您的地址输入有误哦~"
     elif len(ip) == 2:
@@ -36,8 +36,8 @@ async def jes(ip: str) -> str:
         return f"已经查到Java版服务器啦：\n地址：{ip}:{port}\n在线人数：{onlp}/{maxp}\n介绍：{desc}"
 
 
-async def bes(ip: str) -> str:
-    ip = ip.split(":")
+async def bes(raw_ip: str) -> str:
+    ip = raw_ip.split(":")
     if len(ip) > 2:
         return "唔……暂时无法识别IPv6地址，或者是您的地址输入有误哦~"
     elif len(ip) == 2:

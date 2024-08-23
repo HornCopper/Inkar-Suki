@@ -1,14 +1,15 @@
-import json
+from typing import Union, Any
 
 from src.tools.data import group_db, Permission
 
-def get_all_admin():
-    data: Permission = group_db.where_one(Permission(), default=Permission())
+def get_all_admin() -> Permission:
+    data: Union[Permission, Any] = group_db.where_one(Permission(), default=Permission())
     return data
 
 def judge(user_id: str) -> bool:
-    data = get_all_admin().permissions_list
-    return user_id in data
+    data = get_all_admin()
+    permission = data.permissions_list
+    return user_id in permission
 
 def checker(user_id: str, level: int):
     data = get_all_admin()
@@ -17,11 +18,3 @@ def checker(user_id: str, level: int):
 
 def error(level):
     return f"唔……你权限不够哦，这条命令要至少{level}的权限哦~"
-
-def block(user_id: str) -> bool:
-    data = get_all_admin()
-    data = data.permissions_list
-    for i in json.loads(data):
-        if i == user_id:
-            return True
-    return False

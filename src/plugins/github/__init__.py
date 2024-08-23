@@ -1,4 +1,5 @@
 from fastapi import Request, FastAPI
+from typing import Union, Any
 
 from nonebot import get_bot, on_command
 from nonebot.adapters import Message
@@ -17,9 +18,9 @@ import nonebot
 from .parse import GithubBaseParser
 
 
-def already(reponame: str, group_id) -> bool:
-    group_data = group_db.where_one(GroupSettings(), "group_id = ?", group_id, default=GroupSettings(group_id=group))
-    return reponame in group_data
+def repo_binded(repo_name: str, group_id) -> bool:
+    group_data: Union[GroupSettings, Any] = group_db.where_one(GroupSettings(), "group_id = ?", group_id, default=GroupSettings(group_id=group_id))
+    return repo_name in group_data.webhook
 
 repo = on_command("repo", force_whitespace=True, priority=5)
 
@@ -59,8 +60,10 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
         await repo.finish(f"唔……绑定失败。\n错误码：{status_code}")
     else:
         group = str(event.group_id)
-        if not already(repo_name, group):
+        if not repo_binded(repo_name, group):
             current = getGroupSettings(str(event.group_id), "webhook")
+            if not isinstance(current, list):
+                return
             current.append(repo_name)
             setGroupSettings(str(event.group_id), "webhook", current)
             await webhook.finish("绑定成功！")
@@ -84,10 +87,12 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
             await unbind.finish(error(5))
     repo = args.extract_plain_text()
     group = str(event.group_id)
-    if not already(repo, group):
+    if not repo_binded(repo, group):
         await unbind.finish("唔……解绑失败：尚未绑定此仓库。")
     else:
-        current: list = getGroupSettings(str(event.group_id), "webhook")
+        current = getGroupSettings(str(event.group_id), "webhook")
+        if not isinstance(current, list):
+            return
         current.remove(repo)
         setGroupSettings(str(event.group_id), "webhook", current)
         await unbind.finish("解绑成功！")
@@ -103,7 +108,9 @@ async def recWebHook(req: Request):
     body = await req.json()
     repo = body["repository"]["full_name"]
     event = req.headers.get("X-GitHub-Event")
-    current_handler = GithubBaseParser
+    if not isinstance(event, str):
+        return 
+    current_handler = GithubBaseParser()
     try:
         message = "[GitHub] " + getattr(current_handler, event)(body)
     except Exception as e:
@@ -120,10 +127,12 @@ async def sendm(bot, message, repo):
     推送`Webhook`。
     """
     groups = getAllGroups()
+    if not isinstance(groups, list):
+        return
     send_group = [
         int(group_id)
         for group_id in groups
-        if repo in group_db.where_one(GroupSettings(), "group_id = ?", str(group_id), default=GroupSettings(group_id=str(i)))
+        if repo in group_db.where_one(GroupSettings(), "group_id = ?", str(group_id), default=GroupSettings(group_id=str(group_id)))
     ]
     for i in send_group:
         response = await bot.call_api("send_group_msg", group_id=int(i), message=message)

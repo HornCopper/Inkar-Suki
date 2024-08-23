@@ -42,6 +42,8 @@ async def get_url(xf):
 
 async def get_macro(xf):
     url = await get_url(xf)
+    if not isinstance(url, str):
+        return
     data = await get_api(url)
     talent_flag = True
     title = data["data"]["post_title"]

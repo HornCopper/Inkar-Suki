@@ -1,5 +1,5 @@
 import pathlib2
-import urllib
+from urllib.request import urlopen
 
 def read(Path, default_value: str = "") -> str:
     try:
@@ -26,6 +26,6 @@ def get_content_local(path: str) -> str:
     """
     直接获取文件内容。
     """
-    with urllib.request.urlopen(path) as f:  
+    with urlopen(path) as f:  
         content = f.read()
         return content

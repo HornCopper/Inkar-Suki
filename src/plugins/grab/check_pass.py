@@ -14,6 +14,8 @@ def check_cd(last_time: int) -> Tuple[bool, int, int]:
     # 检查cd
     current_time = getCurrentTime()
     delta_time = current_time - last_time
+    if not isinstance(cd, int):
+        return True, 0, current_time
     if delta_time < cd:
         return False, cd-delta_time, last_time
     else:

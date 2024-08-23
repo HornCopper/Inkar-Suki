@@ -3,7 +3,7 @@ from pathlib import Path
 from nonebot import on_command
 from nonebot.adapters import Message
 from nonebot.params import CommandArg
-from nonebot.adapters.onebot.v11 import Event, MessageSegment as ms
+from nonebot.adapters.onebot.v11 import MessageEvent, MessageSegment as ms
 
 from src.tools.utils.request import get_content, get_api
 from src.tools.file import get_content_local
@@ -25,7 +25,7 @@ async def _(args: Message = CommandArg()):
     await rdci.finish(ms.image(image))
 
 @rddi.handle()
-async def _(event: Event, args: Message = CommandArg()):
+async def _(event: MessageEvent, args: Message = CommandArg()):
     if args.extract_plain_text() != "":
         return
     rdint = random.randint(1, 100)

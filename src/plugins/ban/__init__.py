@@ -1,7 +1,9 @@
+from typing import Union, Any, List, Dict
+
 from nonebot import on_command
-from nonebot.adapters import Message, Event, Bot
+from nonebot.adapters import Message, Bot
 from nonebot.matcher import Matcher
-from nonebot.adapters.onebot.v11 import GroupMessageEvent
+from nonebot.adapters.onebot.v11 import GroupMessageEvent, MessageEvent
 from nonebot.params import CommandArg, Arg
 
 from src.tools.config import Config
@@ -18,11 +20,11 @@ add_ = """“假如再无法遇见你，祝你早安、午安和晚安。”
 
 leave_msg = leave_msg + "\n" + add_
 
-def banned(qq: str):
-    banned: BannedList = group_db.where_one(BannedList(), default=BannedList())
-    banned = banned.banned_list
+def banned(user_id: str) -> bool:
+    banned_data: Union[BannedList, Any] = group_db.where_one(BannedList(), default=BannedList())
+    banned: List[Dict[str, str]] = banned_data.banned_list
     for one in banned:
-        if one["uid"] == qq:
+        if one["uid"] == user_id:
             return True
     return False
 
@@ -31,7 +33,7 @@ ban = on_command("ban", force_whitespace=True, priority=5)  # 封禁，≥10的�
 
 
 @ban.handle()
-async def _(bot: Bot, event: Event, args: Message = CommandArg()):
+async def _(bot: Bot, event: MessageEvent, args: Message = CommandArg()):
     if args.extract_plain_text() == "":
         return
     if not checker(str(event.user_id), 10):
@@ -49,7 +51,7 @@ async def _(bot: Bot, event: Event, args: Message = CommandArg()):
     elif banned(sb):
         return ban.finish("唔……全域封禁失败，这个人已经被封禁了。")
     else:
-        current_data: BannedList = group_db.where_one(BannedList(), default=BannedList())
+        current_data: Union[BannedList, Any] = group_db.where_one(BannedList(), default=BannedList())
         current = current_data.banned_list
         current.append({
             "uid": sb,
@@ -65,7 +67,7 @@ unban = on_command("unban", force_whitespace=True, priority=5)  # 解封
 
 
 @unban.handle()
-async def _(bot: Bot, event: Event, args: Message = CommandArg()):
+async def _(bot: Bot, event: MessageEvent, args: Message = CommandArg()):
     if args.extract_plain_text() == "":
         return
     if not checker(str(event.user_id), 10):
@@ -77,7 +79,7 @@ async def _(bot: Bot, event: Event, args: Message = CommandArg()):
         await unban.finish("您输入了什么？")
     if banned(sb) is False:
         await unban.finish("全域解封失败，并没有封禁此人哦~")
-    current_data: BannedList = group_db.where_one(BannedList(), default=BannedList())
+    current_data: Union[BannedList, Any] = group_db.where_one(BannedList(), default=BannedList())
     current = current_data.banned_list
     for one in current:
         if one["uid"] == sb:
@@ -88,8 +90,8 @@ async def _(bot: Bot, event: Event, args: Message = CommandArg()):
 
 
 @preprocess.handle()
-async def _(matcher: Matcher, event: Event):
-    current: BannedList = group_db.where_one(BannedList(), default=BannedList())
+async def _(matcher: Matcher, event: MessageEvent):
+    current: Union[BannedList, Any] = group_db.where_one(BannedList(), default=BannedList())
     for i in current.banned_list:
         if str(event.user_id) == i["uid"] and not checker(str(event.user_id),10):
             matcher.stop_propagation()
@@ -99,7 +101,7 @@ dismiss = on_command("dismiss", aliases={"移除音卡"}, force_whitespace=True,
 
 
 @dismiss.handle()
-async def _(bot: Bot, event: Event, args: Message = CommandArg()):
+async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
     if args.extract_plain_text() != "":
         return
     personal_data = await bot.call_api("get_group_member_info", group_id=event.group_id, user_id=event.user_id, no_cache=True)
@@ -111,7 +113,7 @@ async def _(bot: Bot, event: Event, args: Message = CommandArg()):
 
 
 @dismiss.got("confirm")
-async def _(bot: Bot, event: Event, confirm: Message = Arg()):
+async def _(bot: Bot, event: GroupMessageEvent, confirm: Message = Arg()):
     u_input = confirm.extract_plain_text()
     if u_input == "移除音卡":
         await dismiss.send(leave_msg)
@@ -122,7 +124,7 @@ async def _(bot: Bot, event: Event, confirm: Message = Arg()):
 recovery = on_command("recovery", aliases={"重置音卡"}, force_whitespace=True, priority=5)
 
 @recovery.handle()
-async def _(bot: Bot, event: Event, args: Message = CommandArg()):
+async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
     if args.extract_plain_text() != "":
         return
     personal_data = await bot.call_api("get_group_member_info", group_id=event.group_id, user_id=event.user_id, no_cache=True)
@@ -137,7 +139,7 @@ async def _(bot: Bot, event: GroupMessageEvent, confirm: Message = Arg()):
     u_input = confirm.extract_plain_text()
     if u_input == "重置音卡":
         group_id = str(event.group_id)
-        group_settings: GroupSettings = group_db.where_one(GroupSettings(), "group_id = ?", group_id, default=None)
+        group_settings: Union[GroupSettings, Any] = group_db.where_one(GroupSettings(), "group_id = ?", group_id, default=None)
         group_settings = GroupSettings(id=group_settings.id, group_id=group_settings.group_id)
         group_db.save(group_settings)
         await dismiss.send("重置成功！可以重新开始绑定本群数据了！")

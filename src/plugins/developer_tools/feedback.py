@@ -1,5 +1,7 @@
+from typing import Union, Any
+
 from nonebot import on_command
-from nonebot.adapters.onebot.v11 import Event, MessageSegment as ms
+from nonebot.adapters.onebot.v11 import MessageEvent, MessageSegment as ms
 from nonebot.params import CommandArg
 from nonebot.adapters import Message
 
@@ -32,7 +34,7 @@ async def createIssue(uin: str, comment: str):
 feedback_ = on_command("feedback", aliases={"反馈"}, force_whitespace=True, priority=5)
 
 @feedback_.handle()
-async def _(event: Event, args: Message = CommandArg()):
+async def _(event: MessageEvent, args: Message = CommandArg()):
     if args.extract_plain_text() == "":
         return
     msg = args.extract_plain_text()
@@ -46,17 +48,17 @@ async def _(event: Event, args: Message = CommandArg()):
 stastic = on_command("stastic", aliases={"统计数据", "命令统计"}, priority=5, force_whitespace=True)
 
 @stastic.handle()
-async def _(event: Event, args: Message = CommandArg()):
+async def _(event: MessageEvent, args: Message = CommandArg()):
     if not checker(str(event.user_id), 10):
         await stastic.finish(error(10))
-    current_data: Population = group_db.where_one(Population(), default=Population())
-    current_population = current_data.populations
+    current_data: Union[Population, Any] = group_db.where_one(Population(), default=Population())
+    current_population: dict = current_data.populations
     img: bytes
     if args.extract_plain_text() == "":
         img = await generate_bar_chart(current_population)
     else:
         for name in current_population:
             if name == args.extract_plain_text():
-                await stastic.finish("该命令截至目前的总调用量为：" + str(current_data[name]))
+                await stastic.finish("该命令截至目前的总调用量为：" + str(current_population[name]))
         await stastic.finish("没有找到该命令的统计数据，可能是调用量为0或者不存在。")
     await stastic.finish(ms.image(img))

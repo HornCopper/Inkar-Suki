@@ -1,5 +1,7 @@
+from typing import Union, Any
+
 from nonebot import on_command
-from nonebot.adapters.onebot.v11 import Bot, Event
+from nonebot.adapters.onebot.v11 import Bot, MessageEvent
 from nonebot.params import CommandArg
 from nonebot.adapters import Message
 
@@ -11,12 +13,12 @@ current_application = on_command("邀请列表", force_whitespace=True, priority
 
 
 @current_application.handle()
-async def _(event: Event, args: Message = CommandArg()):
+async def _(event: MessageEvent, args: Message = CommandArg()):
     if args.extract_plain_text() != "":
         return
     if not checker(str(event.user_id), 10):
         await current_application.finish(error(10))
-    current_data: ApplicationsList = group_db.where_one(ApplicationsList(), default=ApplicationsList())
+    current_data: Union[ApplicationsList, Any] = group_db.where_one(ApplicationsList(), default=ApplicationsList())
     current_applications = current_data.applications_list
     prefix = "当前有下列群聊可以处理：\n"
     msgs = []
@@ -33,25 +35,25 @@ process_application = on_command("同意邀请", aliases={"同意申请"}, force
 
 
 @process_application.handle()
-async def _(bot: Bot, event: Event, args: Message = CommandArg()):
+async def _(bot: Bot, event: MessageEvent, args: Message = CommandArg()):
     if args.extract_plain_text() == "":
         return
     if not checker(str(event.user_id), 10):
         await process_application.finish(error(10))
-    args = args.extract_plain_text()
-    if not checknumber(args):
+    arg = args.extract_plain_text()
+    if not checknumber(arg):
         await process_application.finish("唔……同意申请的命令后面直接加群号即可哦~")
-    current_data: ApplicationsList = group_db.where_one(ApplicationsList(), default=ApplicationsList())
+    current_data: Union[ApplicationsList, Any] = group_db.where_one(ApplicationsList(), default=ApplicationsList())
     current_applications = current_data.applications_list
     flag = False
     for i in current_applications:
-        if i["group_id"] == int(args):
+        if i["group_id"] == int(arg):
             await bot.call_api("set_group_add_request", flag=i["flag"], sub_type="invite", approve=True)
             await process_application.send("已经将该群聊的申请处理完毕啦，音卡已经前往那里了！")
             flag = True
     if flag:
         for i in current_applications:
-            if i["group_id"] == int(args):
+            if i["group_id"] == int(arg):
                 current_applications.remove(i)
         return
     await process_application.finish("呜喵……真的有这个群申请了吗？")
@@ -60,24 +62,24 @@ async def _(bot: Bot, event: Event, args: Message = CommandArg()):
 deny_application = on_command("拒绝邀请", aliases={"拒绝邀请"}, force_whitespace=True, priority=5)
 
 
-async def _(bot: Bot, event: Event, args: Message = CommandArg()):
+async def _(bot: Bot, event: MessageEvent, args: Message = CommandArg()):
     if args.extract_plain_text() == "":
         return
     if not checker(str(event.user_id), 10):
         await deny_application.finish(error(10))
-    args = args.extract_plain_text()
-    if not checknumber(args):
+    arg = args.extract_plain_text()
+    if not checknumber(arg):
         await deny_application.finish("唔……同意申请的命令后面直接加群号即可哦~")
-    current_data: ApplicationsList = group_db.where_one(ApplicationsList(), default=ApplicationsList())
+    current_data: Union[ApplicationsList, Any] = group_db.where_one(ApplicationsList(), default=ApplicationsList())
     current_applications = current_data.applications_list
     for i in current_applications:
-        if i["group_id"] == int(args):
+        if i["group_id"] == int(arg):
             await bot.call_api("set_group_add_request", flag=i["flag"], sub_type="invite", approve=True)
             await deny_application.send("音卡已拒绝该申请！")
             flag = True
     if flag:
         for i in current_applications:
-            if i["group_id"] == int(args):
+            if i["group_id"] == int(arg):
                 current_applications.remove(i)
         return
     await deny_application.finish("呜喵……真的有这个群申请了吗？")

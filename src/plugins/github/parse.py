@@ -31,7 +31,10 @@ def process(raw: str):
     return process2(processed_text)
 
 class GithubBaseParser:
-    def push(body):
+    def __init__(self):
+        pass
+
+    def push(self, body):
         pusher = body["pusher"]["name"]
         repo_name = body["repository"]["full_name"]
         if body["ref"].find("tags") != -1:
@@ -46,7 +49,7 @@ class GithubBaseParser:
         msg = f"{pusher} pushed to {repo_name}:{branch}.\n[{ver}]{commit}"
         return msg
 
-    def pull_request(body):
+    def pull_request(self, body):
         action = body["action"]
         if action == "opened":
             source = body["pull_request"]["head"]["label"]
@@ -70,7 +73,7 @@ class GithubBaseParser:
                 msg = f"{sender} closed the pull request on {repo}#{num}.\nFrom {source} to {goal}.\nTitle:{title}"
         return msg
 
-    def issues(body):
+    def issues(self, body):
         action = body["action"]
         if action == "opened" or action == "closed" or action == "reopened":
             issue_actter = body["sender"]["login"]
@@ -113,7 +116,7 @@ class GithubBaseParser:
             msg = f"{sender} {action} the comment by {user} on {repo_name}#{issue_num}.\nTitle: {issue_title}\nComment: {to_}"
             return msg
 
-    def issue_comment(body):
+    def issue_comment(self, body):
         action = body["action"]
         if action == "created":
             try:
@@ -129,7 +132,7 @@ class GithubBaseParser:
             msg = f"{sender} commented on {itype} on {repo_name}#{issue_num}.\nTitle:{issue_title}\nComment: {msg}"
             return msg
 
-    def commit_comment(body):
+    def commit_comment(self, body):
         action = body["action"]
         if action == "created":
             sender = body["sender"]["login"]
@@ -139,7 +142,7 @@ class GithubBaseParser:
             msg = f"{sender} commented on {repo_name} commit {commit}.\n{msg}"
             return msg
 
-    def release(body):
+    def release(self, body):
         action = body["action"]
         if action == "created":
             sender = body["sender"]["login"]
@@ -164,7 +167,7 @@ class GithubBaseParser:
             msg = f"{sender} released a release on {repo_name}.\n{tag_name} - {release_name}"
             return msg
 
-    def fork(body):
+    def fork(self, body):
         to_ = body["forkee"]["full_name"]
         from_ = body["repository"]["full_name"]
         forker = body["sender"]["login"]
@@ -172,11 +175,11 @@ class GithubBaseParser:
         msg = f"{forker} forked from {from_} to {to_}.\n(total {total} forks)"
         return msg
 
-    def ping(body):
+    def ping(self, body):
         repo_name = body["repository"]["full_name"]
         return f"{repo_name} has already binded successfully."
 
-    def watch(body):
+    def watch(self, body):
         if body["action"] == "started":
             repo = body["repository"]["full_name"]
             sender = body["sender"]["login"]
@@ -184,7 +187,7 @@ class GithubBaseParser:
             msg = f"{sender} started watching {repo}.\n(total {total} watchers)"
         return msg
 
-    def star(body):
+    def star(self, body):
         if body["action"] == "created":
             sender = body["sender"]["login"]
             repo = body["repository"]["full_name"]

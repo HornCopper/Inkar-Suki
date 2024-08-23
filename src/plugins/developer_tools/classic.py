@@ -1,5 +1,5 @@
 from nonebot import on_command
-from nonebot.adapters.onebot.v11 import Bot, GroupMessageEvent, Event
+from nonebot.adapters.onebot.v11 import Bot, GroupMessageEvent, MessageEvent
 from nonebot.params import CommandArg
 from nonebot.adapters import Message
 
@@ -16,7 +16,7 @@ purge = on_command("purge", force_whitespace=True, priority=5)  # 清除所有`h
 
 
 @purge.handle()
-async def _(event: Event, args: Message = CommandArg()):
+async def _(event: MessageEvent, args: Message = CommandArg()):
     if args.extract_plain_text() != "":
         return
     if not checker(str(event.user_id), 10):
@@ -32,7 +32,7 @@ async def _(event: Event, args: Message = CommandArg()):
 echo = on_command("echo", force_whitespace=True, priority=5)  # 复读只因功能
 
 @echo.handle()
-async def _(event: Event, args: Message = CommandArg()):
+async def _(event: MessageEvent, args: Message = CommandArg()):
     if args.extract_plain_text() == "":
         return
     if not checker(str(event.user_id), 10):
@@ -42,7 +42,7 @@ async def _(event: Event, args: Message = CommandArg()):
 ping = on_command("ping", force_whitespace=True, priority=5)  # 测试机器人是否在线
 
 @ping.handle()
-async def _(bot: Bot, event: Event, args: Message = CommandArg()):
+async def _(bot: Bot, event: MessageEvent, args: Message = CommandArg()):
     if args.extract_plain_text() != "":
         return
     permission = checker(str(event.user_id), 1)
@@ -54,6 +54,8 @@ async def _(bot: Bot, event: Event, args: Message = CommandArg()):
         friends = await bot.call_api("get_friend_list")
         friend_count = len(friends)
         registers = getAllGroups()
+        if not isinstance(registers, list):
+            return
         register_count = len(registers)
         msg = f"咕咕咕，音卡来啦！\n现在是：{convert_time(getCurrentTime())}\n{group_count} | {register_count} | {friend_count}\n您拥有机器人的管理员权限！"
     await ping.finish(msg)
@@ -62,7 +64,7 @@ post = on_command("post", force_whitespace=True, priority=5)  # 发送全域公�
 
 
 @post.handle()
-async def _(bot: Bot, event: Event, args: Message = CommandArg()):
+async def _(bot: Bot, event: MessageEvent, args: Message = CommandArg()):
     if args.extract_plain_text() == "":
         return
     if str(event.user_id) not in Config.bot_basic.bot_owner:
@@ -78,7 +80,7 @@ async def _(bot: Bot, event: Event, args: Message = CommandArg()):
 git = on_command("-git", force_whitespace=True, priority=5)  # 调用`Git`，~~别问意义是什么~~
 
 @git.handle()
-async def _(event: Event, args: Message = CommandArg()):
+async def _(event: MessageEvent, args: Message = CommandArg()):
     if args.extract_plain_text() == "":
         return
     if not checker(str(event.user_id), 10):

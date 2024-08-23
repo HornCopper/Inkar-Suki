@@ -45,10 +45,10 @@ math_funcs = {
 se = SimpleEval()
 se.functions.update(math_funcs)
 
-dice = on_command("rd", aliases={"dice", "掷骰子"}, force_whitespace=True, priority=5)
+dice_ = on_command("rd", aliases={"dice", "掷骰子"}, force_whitespace=True, priority=5)
 
 
-@dice.handle()
+@dice_.handle()
 async def _(args: Message = CommandArg()):
     if args.extract_plain_text() == "":
         return
@@ -59,7 +59,7 @@ async def _(args: Message = CommandArg()):
     else:
         dc = part[1]
     output = await process_expression(dices, dc)
-    await dice.finish(output)
+    await dice_.finish(output)
 
 
 async def process_expression(expr: str, dc):
@@ -172,8 +172,8 @@ def generate_dice_message(expr, dice_expr_list, dice_count, times, dc):
                 if times * dice_count < MAX_DETAIL_CNT:
                     dice_detail_list[i] = f"({item.GetDetail()})"
                 else:
-                    dice_detail_list[i] = f"({str(res)})" if res < 0 else str(res)  # 负数加括号
-                dice_res_list[i] = f"({str(res)})" if res < 0 else str(res)
+                    dice_detail_list[i] = f"({str(res)})" if res < 0 else str(res) # type: ignore # 负数加括号
+                dice_res_list[i] = f"({str(res)})" if res < 0 else str(res) # type: ignore
             else:
                 continue
         dice_detail_list = insert_multiply(dice_detail_list)
@@ -184,7 +184,7 @@ def generate_dice_message(expr, dice_expr_list, dice_count, times, dc):
         try:
             if dice_res_list:
                 dice_res = "".join(dice_res_list)
-                dice_res = dice_res.replace("\*", "*")
+                dice_res = dice_res.replace("\*", "*") # type: ignore
                 logger.debug(dice_res)
                 result = int(se.eval(dice_res))
             else:

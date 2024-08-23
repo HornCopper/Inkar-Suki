@@ -1,4 +1,5 @@
 from pathlib import Path
+from typing import Optional, Union
 
 from src.tools.utils.request import get_api
 from src.tools.utils.common import convert_time, getCurrentTime
@@ -71,7 +72,7 @@ def get_mode_name(mode: int):
 def get_player_sort(player: int, sorted_data: dict):
     for i in sorted_data:
         if player == i["accountId"]:
-            return "一二三四"[sorted_data.index(i)]
+            return "一二三四"[sorted_data.index(i)]  # type: ignore
 
 template_majsoul_record = """
 <tr>
@@ -117,7 +118,7 @@ def process_nickname(string: str, match: str):
     else:
         return string
     
-async def player_pt(name: str = None, mode="16.12.9.15.11.8"):
+async def player_pt(name: str = "", mode="16.12.9.15.11.8"):
     if name is None:
         return "请输入玩家名！"
     pid = await get_id_by_name(name)
@@ -133,7 +134,7 @@ async def player_pt(name: str = None, mode="16.12.9.15.11.8"):
     score_max = str(data["max_level"]["score"] + data["max_level"]["delta"]) if rank[0] != "魂" else str(round((data["level"]["score"] + data["level"]["delta"]) / 100, 1))
     return f"[{rank}] {name}（{pid}）\n当前PT：[{rank}] {score}/{level}\n最高PT：[{rank_max}] {score_max}/{level_max}"
 
-async def get_records(name: str = None, mode: str = "16.12.9.15.11.8"):
+async def get_records(name: str = "", mode: str = "16.12.9.15.11.8") -> Union[Optional[str], list]:
     if name is None:
         return "请输入玩家名！"
     pid = await get_id_by_name(name)
@@ -148,9 +149,9 @@ async def get_records(name: str = None, mode: str = "16.12.9.15.11.8"):
         for i in data:
             level = get_mode_name(i["modeId"])
             sorted_players = list(reversed(sort_list_of_dicts(i["players"], "score")))
-            place = get_player_sort(pid, sorted_players)
-            done_time = convert_time(i["endTime"], "%Y-%m-%d<br>%H:%M:%S")
-            template = template_majsoul_record.replace("$level", level).replace("$num", place).replace("$time", done_time)
+            place = get_player_sort(pid, sorted_players)  # type: ignore
+            done_time = convert_time(i["endTime"], "%Y-%m-%d<br>%H:%M:%S") 
+            template = template_majsoul_record.replace("$level", level).replace("$num", place).replace("$time", done_time)  # type: ignore
             name_1st = "[" + getRank(sorted_players[0]["level"]) + "] " + process_nickname(sorted_players[0]["nickname"], name)
             name_2nd = "[" + getRank(sorted_players[1]["level"]) + "] " + process_nickname(sorted_players[1]["nickname"], name)
             name_3rd = "[" + getRank(sorted_players[2]["level"]) + "] " + process_nickname(sorted_players[2]["nickname"], name)
@@ -174,4 +175,6 @@ async def get_records(name: str = None, mode: str = "16.12.9.15.11.8"):
         final_html = CACHE + "/" + get_uuid() + ".html"
         write(final_html, html)
         final_path = await generate(final_html, False, ".background-container", False)
+        if not isinstance(final_path, str):
+            return
         return [Path(final_path).as_uri()]

@@ -1,5 +1,6 @@
 from datetime import datetime
 from pathlib import Path
+from typing import Optional
 
 from src.tools.config import Config
 from src.tools.utils.request import get_api
@@ -35,7 +36,7 @@ template_serendity = """
 
 Serendipity = JX3Serendipity()
 
-async def getImage_v2(server: str, name: str, group_id: str, type: bool):
+async def getImage_v2(server: Optional[str], name: str, group_id: str, type: bool):
     server = server_mapping(server, group_id)
     if not server:
         return [PROMPT.ServerNotExist]
@@ -80,7 +81,7 @@ async def getImage_v2(server: str, name: str, group_id: str, type: bool):
         else:
             timeGet = "遗忘的时间"
             relativeTime = ""
-        tables.append(template_serendity.replace("$peerless_flag", flag).replace("$serendipity_icon", icon).replace("$actual_time", timeGet).replace("$relative_time", relativeTime).replace("$serendipity_name", serendity_name))
+        tables.append(template_serendity.replace("$peerless_flag", flag).replace("$serendipity_icon", icon).replace("$actual_time", str(timeGet)).replace("$relative_time", relativeTime).replace("$serendipity_name", serendity_name))
     if len(tables) == 0:
         return ["唔……您似乎只有宠物奇遇哦，如果需要查看请使用V1版本的奇遇查询：\n查询v1/奇遇v1 区服 ID"]
     tables[0] = tables[0][:-5] + poem + "</tr>"
@@ -96,4 +97,6 @@ async def getImage_v2(server: str, name: str, group_id: str, type: bool):
     final_html = CACHE + "/" + get_uuid() + ".html"
     write(final_html, html)
     final_path = await generate(final_html, False, "table", False)
+    if not isinstance(final_path, str):
+        return
     return Path(final_path).as_uri()

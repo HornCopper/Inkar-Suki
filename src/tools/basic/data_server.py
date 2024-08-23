@@ -1,10 +1,12 @@
+from typing import Optional
+
 from src.tools.utils.path import TOOLS
 
 from .group_opeator import getGroupSettings
 
 import json
 
-def Zone_mapping(server, legacy: bool = False):
+def Zone_mapping(server, legacy: bool = False) -> Optional[str]:
     if server in ["绝代天骄"]:
         return "电信区" if not legacy else "电信八区"
     if server in ["斗转星移", "唯我独尊", "乾坤一掷", "横刀断浪", "剑胆琴心", "幽月轮", "梦江南"]:
@@ -22,7 +24,7 @@ def Zone_mapping(server, legacy: bool = False):
     return None
 
 
-def server_mapping(server: str = None, group_id: str = None):
+def server_mapping(server: Optional[str] = "", group_id: Optional[str] = "") -> Optional[str]:
     with open(TOOLS + "/basic/server.json", mode="r", encoding="utf8") as servers_raw_data:
         servers = json.loads(servers_raw_data.read())
         """
@@ -35,13 +37,15 @@ def server_mapping(server: str = None, group_id: str = None):
         return getGroupServer(group_id=group_id)
 
 
-def getGroupServer(group_id: str):
+def getGroupServer(group_id: Optional[str]) -> Optional[str]:
     """
     获取当前群所绑定的服务器，若未绑定则返回None
     """
     if not group_id:
         return None
     group = getGroupSettings(group_id, "server")
+    if not isinstance(group, Optional[str]):
+        return
     if not group:
         return None
     return group

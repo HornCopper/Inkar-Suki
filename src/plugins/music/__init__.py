@@ -39,9 +39,9 @@ async def _(state: T_State, event: GroupMessageEvent, args: Message = CommandArg
     info = await search(platform, song)
     if info == "404":
         await search_music.finish("唔……没有找到您要的音乐哦~")
-    songs = info[0]
-    id = info[1]
-    platform = info[2]
+    songs = info[0] # type: ignore
+    id = info[1] # type: ignore
+    platform = info[2] # type: ignore
     state["id"] = id
     state["platform"] = platform
     msg = ""
@@ -52,13 +52,13 @@ async def _(state: T_State, event: GroupMessageEvent, args: Message = CommandArg
 
 @search_music.got("num", prompt="输入序号即可搜索搜索歌曲，其他内容则无视~")
 async def __(state: T_State, num: Message = Arg()):
-    num = num.extract_plain_text()
-    if not checknumber(num):
+    num_ = num.extract_plain_text()
+    if not checknumber(num_):
         pass
     id = state["id"]
     platform = state["platform"]
-    num = int(num)
-    song = id[num]
+    num_ = int(num_)
+    song = id[num_]
     if platform == 1:
         p = "qq"
     else:
@@ -81,15 +81,15 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
         singer = data[2]
     platform = data[0]
     song_name = data[1]
-    info = await get(platform, song_name, singer)
+    info = await get(platform, song_name, singer) # type: ignore
     if info == "404":
         await get_music.finish("唔……没有找到您要的歌曲~")
-    platform = info[2]
+    platform = info[2] # type: ignore
     if platform == 1:
         p = "qq"
     else:
         p = "163"
-    msg = ms.music(p, info[1])
+    msg = ms.music(p, info[1]) # type: ignore
     await get_music.finish(msg)
 
 get_lyrics = on_command("get_lyrics", aliases={"搜歌词"}, force_whitespace=True, priority=5)
@@ -125,12 +125,12 @@ async def _(event: GroupMessageEvent, state: T_State, args: Message = CommandArg
 @guess_music.got("music", prompt="请告诉我歌曲名！")
 
 async def _(event: GroupMessageEvent, state: T_State, music: Message = Arg()):
-    music = music.extract_plain_text()
+    music = music.extract_plain_text() # type: ignore
     if music == "":
         await guess_music.finish("唔……没有告诉我歌曲名哦~")
     if music == state["ans"]:
-        Sign.add(str(event.user_id), 200)
+        Sign.add(str(event.user_id), 200) # type: ignore
         await guess_music.finish("恭喜你答对了！\n你获得了200枚金币！")
     else:
-        Sign.reduce(str(event.user_id), 100)
+        Sign.reduce(str(event.user_id), 100) # type: ignore
         await guess_music.finish("唔……你答错了哦~\n你失去了100枚金币！")

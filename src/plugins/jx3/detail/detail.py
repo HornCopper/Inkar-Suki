@@ -1,4 +1,4 @@
-from typing import Union
+from typing import Union, Optional
 from pathlib import Path
 
 from src.tools.basic.jx3 import gen_ts, gen_xsk, format_body
@@ -21,8 +21,8 @@ device_id = ticket.split("::")[-1]
 async def get_tuilan_data(url: str, params: Union[dict, None] = None):
     if params is None:
         params = {"ts": gen_ts()}
-    params = format_body(params)
-    xsk = gen_xsk(params)
+    params_ = format_body(params)
+    xsk = gen_xsk(params_)
     basic_headers = {
         "Host": "m.pvp.xoyo.com",
         "Connection": "keep-alive",
@@ -41,11 +41,13 @@ async def get_tuilan_data(url: str, params: Union[dict, None] = None):
         "sign": "true",
         "x-sk": xsk
     }
-    data = await post_url(url, headers=basic_headers, data=params)
+    data = await post_url(url, headers=basic_headers, data=params_)
     return json.loads(data)
 
 
-async def get_guid(server: str, name: str):
+async def get_guid(server: Optional[str], name: str):
+    if not isinstance(server, str):
+        return
     data = await get_player_local_data(role_name=name, server_name=server)
     data = data.format_jx3api()
     if data["code"] != 200:
@@ -132,7 +134,7 @@ def judge_relate(proportion: str):
         raise ValueError(f"Unsupport value {num} appeared in the proportion!")
 
 
-async def generate_zd_image(server: str, id: str):
+async def generate_zd_image(server: Optional[str], id: str):
     # 暂时锁死秘境总览
     # 地图总览后面再做
     detail = await get_menu()
@@ -165,6 +167,8 @@ async def generate_zd_image(server: str, id: str):
     final_html = CACHE + "/" + get_uuid() + ".html"
     write(final_html, html)
     final_path = await generate(final_html, False, "table", False)
+    if not isinstance(final_path, str):
+        return
     return Path(final_path).as_uri()
 
 template_each_dungeon = """
@@ -184,7 +188,7 @@ template_each_dungeon_header = """
 <td class="short-column" rowspan="$count">$name</td>
 """
 
-async def get_personal_guid(server: str, id: str):
+async def get_personal_guid(server: str, name: str):
     data = await get_player_local_data(role_name=name, server_name=server)
     data = data.format_jx3api()
     if data["code"] != 200:
@@ -209,7 +213,7 @@ def calculate(raw_data: dict):
         total += achievement["reward_point"]
     return done, total
 
-async def get_all_dungeon_image(server: str, id: str, group_id: str):
+async def get_all_dungeon_image(server: Optional[str], id: str, group_id: str):
     server = server_mapping(server, group_id)
     if server == None:
         return [PROMPT.ServerNotExist]
@@ -248,4 +252,6 @@ async def get_all_dungeon_image(server: str, id: str, group_id: str):
     final_html = CACHE + "/" + get_uuid() + ".html"
     write(final_html, html)
     final_path = await generate(final_html, False, "table", False)
+    if not isinstance(final_path, str):
+        return
     return Path(final_path).as_uri()

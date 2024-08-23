@@ -1,3 +1,4 @@
+from typing import Union, Literal, Optional
 from pathlib import Path
 
 from nonebot.log import logger
@@ -33,7 +34,7 @@ async def get_cd(server: str, sep: str):
     msg = f"「{server}」服务器上一次记录「{sep}」：\n{time}\n数据来源：@茗伊插件集"
     return msg
 
-async def get_map(name, mode):
+async def get_map(name, mode) -> Optional[int]:
     param = {
         "mode": 2,
         "ts": gen_ts()
@@ -135,7 +136,7 @@ async def get_drops(map, mode, boss):
 # 5人：https://m.pvp.xoyo.com/dungeon/list-all
 # 暂时未知数据是否相同，后续考虑是否添加。
 
-def mode_mapping(mode):
+def mode_mapping(mode: Union[Optional[str], Literal[False]] = "") -> Union[str, Literal[False]]:
     with open(PLUGINS + "/jx3/dungeon/mode.json", "r", encoding="utf-8") as f:
         mode_mapping_dict = json.load(f)
 
@@ -144,7 +145,7 @@ def mode_mapping(mode):
             return k
     return False
 
-def zone_mapping(zone):
+def zone_mapping(zone: Union[Optional[str], Literal[False]] = "") -> Union[str, Literal[False]]:
     with open(PLUGINS + "/jx3/dungeon/zone.json", "r", encoding="utf-8") as f:
         zone_mapping_dict = json.load(f)
 
@@ -347,6 +348,8 @@ async def generater(map, mode, boss):
         final_html = CACHE + "/" + get_uuid() + ".html"
         write(final_html, html)
         final_path = await generate(final_html, False, "table", False)
+        if not isinstance(final_path, str):
+            return
         return Path(final_path).as_uri()
 
 template = """
@@ -369,8 +372,10 @@ available_ = """
 
 
 async def zone_v2(server, id):
-    server = server_mapping(server)
-    data = await get_player_local_data(role_name=id, server_name=server)
+    server_ = server_mapping(server)
+    if not isinstance(server_, str):
+        return
+    data = await get_player_local_data(role_name=id, server_name=server_)
     details_data = data.format_jx3api()
     if details_data["code"] != 200:
         guid = ""
@@ -428,6 +433,8 @@ async def zone_v2(server, id):
         final_html = CACHE + "/" + get_uuid() + ".html"
         write(final_html, html)
         final_path = await generate(final_html, False, "table", False)
+        if not isinstance(final_path, str):
+            return
         return Path(final_path).as_uri()
 
 template_item = """
@@ -494,6 +501,8 @@ async def get_item_record(name: str):
         else:
             zone = i["Copyname"]
         timeGet = convert_time(i["Tm"])
+        if not isinstance(timeGet, str):
+            return
         relateTime = getRelateTime(getCurrentTime(), i["Tm"])
         server = i["Srv"]
         tablecontents.append(template_item.replace("$server", server).replace("$name", item_name).replace(
@@ -511,4 +520,6 @@ async def get_item_record(name: str):
     final_html = CACHE + "/" + get_uuid() + ".html"
     write(final_html, html)
     final_path = await generate(final_html, False, "table", False)
+    if not isinstance(final_path, str):
+        return
     return Path(final_path).as_uri()

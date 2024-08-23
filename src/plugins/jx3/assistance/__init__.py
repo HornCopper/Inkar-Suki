@@ -9,7 +9,7 @@ from src.tools.basic.group_opeator import getGroupSettings
 
 from .app import *
 
-aic = Assistance
+aic = Assistance()
 
 create = on_command("创建团队", force_whitespace=True, priority=5)
 
@@ -30,13 +30,13 @@ apply = on_command("预定", aliases={"预订", "报名"}, force_whitespace=True
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     if args.extract_plain_text() == "":
         return
-    args = args.extract_plain_text().split(" ")
-    if len(args) != 3:
+    arg = args.extract_plain_text().split(" ")
+    if len(arg) != 3:
         await apply.finish("请检查命令后，重试哦~\n格式为：预定 <团队关键词> <ID> <职业>")
     else:
-        keyword = args[0]
-        id = args[1]
-        job = args[2]
+        keyword = arg[0]
+        id = arg[1]
+        job = arg[2]
         resp = await aic.apply_for_place(str(event.group_id), keyword, id, job, str(event.user_id))
         await apply.finish(resp)
 
@@ -47,12 +47,12 @@ disapply = on_command("取消预定", aliases={"取消预订", "取消报名"}, 
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     if args.extract_plain_text() == "":
         return
-    args = args.extract_plain_text().split(" ")
-    if len(args) != 2:
+    arg = args.extract_plain_text().split(" ")
+    if len(arg) != 2:
         await disapply.finish("请检查命令后，重试哦~\n格式为：取消预定 <团队关键词> <ID>")
     else:
-        keyword = args[0]
-        id = args[1]
+        keyword = arg[0]
+        id = arg[1]
         resp = await aic.cancel_apply(str(event.group_id), keyword, id, str(event.user_id))
         await disapply.finish(resp)
 
@@ -80,6 +80,8 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     if keyword == "":
         await team.finish("唔……没有输入关键词哦，请检查后重试~")
     img_path = await aic.generate_html(str(event.group_id), keyword)
+    if not isinstance(img_path, str):
+        return
     img = get_content_local(img_path)
     await team.finish(ms.image(img))
 
@@ -89,6 +91,8 @@ teamList = on_command("团队列表", priority=5, force_whitespace=True)
 @teamList.handle()
 async def _(event: GroupMessageEvent):
     file_content = getGroupSettings(str(event.group_id), "opening")
+    if not isinstance(file_content, list):
+        return
     if len(file_content) == 0:
         await teamList.finish("唔……本群没有任何团队！")
     msg = "本群有以下团队：\n"

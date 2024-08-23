@@ -27,9 +27,9 @@ async def websocket_client(ws_url: str, headers: dict):
                     raw_response = response
                     response = json.loads(response)
                     if response["action"] not in get_registered_actions():
-                        logger.warning("未知JX3API 消息: " + raw_response)
+                        logger.warning("未知JX3API 消息: " + str(raw_response))
                         continue
-                    logger.info("JX3API 解析成功: " + raw_response)
+                    logger.info("JX3API 解析成功: " + str(raw_response))
                     parsed = parse_data(response)
                     msg: JX3APIOutputMsg = parsed.msg()
                     name = msg.name

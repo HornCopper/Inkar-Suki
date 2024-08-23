@@ -43,12 +43,15 @@ class wiki:
     `wiki`插件的核心部分。
     包含了获取API、简单搜索、跨维搜索等。
     """
+
+    @staticmethod
     async def get_site_info(api: str):
         final_link = api + "?action=query&meta=siteinfo&siprop=general&format=json"
         info = await get_api(final_link, headers=headers)
         sitename = info["query"]["general"]["sitename"]
         return sitename
 
+    @staticmethod
     async def get_iw_url(api: str, iwprefix: str):
         """
         工具型函数：不参与对话
@@ -60,7 +63,8 @@ class wiki:
                 return {"status": 200, "data": i["url"]}
         return {"status": 404}
 
-    async def extension_checker(api: str, extension: str) -> bool:
+    @staticmethod
+    async def extension_checker(api: str, extension: str) -> dict:
         """
         工具型函数：不参与对话
         """
@@ -71,6 +75,7 @@ class wiki:
                 return {"status": 200}
         return {"status": 404}
 
+    @staticmethod
     async def get_api(init_link: str) -> str:
         page_info = await get_url(init_link, headers=headers)
         api_links = re.findall(
@@ -81,10 +86,11 @@ class wiki:
         except Exception as _:
             api_link = "http:"+api_link
         if len(api_links) != 1:
-            return {"status": 500}
+            return {"status": 500} # type: ignore
         else:
-            return {"status": 200, "data": api_link}
+            return {"status": 200, "data": api_link} # type: ignore
 
+    @staticmethod
     async def simple(api: str, title: str):
         final_link = api + \
             f"?action=query&titles={title}&prop=extracts&format=json&redirects=True&explaintext=True"
@@ -97,7 +103,7 @@ class wiki:
         try:
             iw_flag = page["query"]["interwiki"]
             iw = iw_flag[0]["iw"]
-            await wiki.interwiki_search(api, iw, title[len(iw)+1:])
+            await wiki.interwiki_search(api, iw, title[len(iw)+1:]) # type: ignore
         except Exception as _:
             curid_dict = page["query"]["pages"]
         for i in curid_dict:
@@ -131,7 +137,7 @@ class wiki:
                     desc = page["query"]["pages"][i]["extract"].split("\n")
                     desc = "\n" + desc[0]
                 except Exception as _:
-                    desc = await wiki.get_wiki_content(api, actually_title)
+                    desc = await wiki.get_wiki_content(api, actually_title) # type: ignore
                     if desc != "":
                         desc = "\n" + desc
                 if actually_title != title:
@@ -139,15 +145,17 @@ class wiki:
                 else:
                     return {"status": 200, "link": link, "desc": desc}
 
+    @staticmethod
     async def interwiki_search(source_wiki: str, interwiki: str, title: str):
         if not await wiki.extension_checker(source_wiki, "Interwiki"):
             return {"status": 201, "link": source_wiki + interwiki + f":{title}"}
         iwdata = await wiki.get_iw_url(source_wiki, interwiki)
         iwlink = iwdata["data"]
-        data = await wiki.get_api(iwlink)
-        new_api = data["data"]
+        data = await wiki.get_api(iwlink) # type: ignore
+        new_api = data["data"] # type: ignore
         await wiki.simple(new_api, title)
 
+    @staticmethod
     async def search(api, title):
         final_link = api + f"?action=query&list=search&format=json&srsearch={title}"
         info = await get_api(final_link, headers=headers)
@@ -161,15 +169,16 @@ class wiki:
         else:
             return {"status": 404}
 
+    @staticmethod
     async def get_wiki_content(api, title):
-        final_url = api.replace("api.php", "index.php") + "?title=" + title
+        final_url = api.replace("api.php", "index.php") + "?title=" + title # type: ignore
         data = await get_url(final_url)
         bs_obj_data = BeautifulSoup(data, "html.parser")
-        main_content = bs_obj_data.body.find(id="mw-content-text").find(class_="mw-parser-output")
-        div_s = main_content.find_all("div")
+        main_content = bs_obj_data.body.find(id="mw-content-text").find(class_="mw-parser-output") # type: ignore
+        div_s = main_content.find_all("div") # type: ignore
         for i in div_s:
             i.decompose()
-        text = main_content.get_text()
+        text = main_content.get_text() # type: ignore
         ans = re.sub("\n\n+", "\n\n", text).split("\n\n")
         try:
             for i in range(128):

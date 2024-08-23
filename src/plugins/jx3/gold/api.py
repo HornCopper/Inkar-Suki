@@ -33,7 +33,7 @@ types = {
     "UU898": "uu898"
 }
 
-async def demon_(server: str = None, group_id: str = None):  # 金价 <服务器>
+async def demon_(server: str = "", group_id: str = ""):  # 金价 <服务器>
     goal_server = server_mapping(server, group_id)
     if not goal_server:
         return [PROMPT.ServerNotExist]
@@ -87,4 +87,6 @@ async def demon_(server: str = None, group_id: str = None):  # 金价 <服务器
     final_html = CACHE + "/" + get_uuid() + ".html"
     write(final_html, html)
     final_path = await generate(final_html, False, "table", False)
+    if not isinstance(final_path, str):
+        return
     return Path(final_path).as_uri()

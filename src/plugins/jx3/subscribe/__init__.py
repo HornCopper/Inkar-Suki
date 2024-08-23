@@ -27,6 +27,8 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
             await subscribe_enable.finish("唔……开启失败，虽然音卡可以一次开启多个订阅，但是好像您这里包含了不应该存在的订阅内容，请检查后重试！")
         currentSubscribe = getGroupSettings(str(event.group_id), "subscribe")
         currentAddtion = getGroupSettings(str(event.group_id), "addtions")
+        if not isinstance(currentAddtion, list) or not isinstance(currentSubscribe, list):
+            return
         for i in arg:
             if i in currentSubscribe or i in currentAddtion:
                 continue
@@ -54,6 +56,8 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
             await subscribe_enable.finish("唔……关闭失败，虽然音卡可以一次关闭多个订阅，但是好像您这里包含了不应该存在的退订内容，请检查后重试！")
         currentSubscribe = getGroupSettings(str(event.group_id), "subscribe")
         currentAddtion = getGroupSettings(str(event.group_id), "addtions")
+        if not isinstance(currentAddtion, list) or not isinstance(currentSubscribe, list):
+            return
         for i in arg:
             if i not in currentSubscribe and i not in currentAddtion:
                 continue
@@ -72,4 +76,6 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
     if args.extract_plain_text() != "":
         return
     about_img = await generateGroupInfo(bot, str(event.group_id))
+    if not isinstance(about_img, str):
+        return
     await info.finish(ms.image(about_img))

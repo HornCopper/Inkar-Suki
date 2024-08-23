@@ -1,6 +1,6 @@
 from PIL import Image, ImageFont, ImageDraw
 
-from src.constant.jx3 import kftosh
+from src.constant.jx3 import kungfu_to_school
 
 from src.tools.generate import get_uuid
 from src.tools.basic.jx3 import gen_ts, gen_xsk, format_body
@@ -97,7 +97,6 @@ async def get_single_recequips(data: dict, author: str, name: str, tag: str, kf:
     equip_list = []
     equip_icon_list = []
     equip_quailty = []
-    PLUGINS + "/jx3/attributes/v2/unknown.png"
     henchant = ["", "", "", "", "", ""]
     lenchant = ["", "", "", "", "", "", "", "", "", "", "", ""]
     if kf in ["问水诀", "山居剑意"]:
@@ -106,9 +105,9 @@ async def get_single_recequips(data: dict, author: str, name: str, tag: str, kf:
         if i == "":
             equip_quailty.append("")
         else:
-            msg = i["Quality"]
-            for x in i["ModifyType"]:
-                content = x["Attrib"]["GeneratedMagic"].split("提高")
+            msg = i["Quality"] # type: ignore
+            for x in i["ModifyType"]: # type: ignore
+                content = x["Attrib"]["GeneratedMagic"].split("提高") # type: ignore
                 if len(content) == 1:
                     content = content[0].split("增加")
                 attr = content[0]
@@ -129,74 +128,74 @@ async def get_single_recequips(data: dict, author: str, name: str, tag: str, kf:
             equip_list.append("")
             equip_icon_list.append("")
         else:
-            maxjl_list.append(i["MaxStrengthLevel"])
-            jl_list.append(i["StrengthLevel"])
-            equip_list.append(i["Name"] + "(" + i["StrengthLevel"] +
-                              "/" + i["MaxStrengthLevel"] + ")")
-            equip_icon_list.append(i["Icon"]["FileName"])
+            maxjl_list.append(i["MaxStrengthLevel"]) # type: ignore
+            jl_list.append(i["StrengthLevel"]) # type: ignore
+            equip_list.append(i["Name"] + "(" + i["StrengthLevel"] + # type: ignore
+                              "/" + i["MaxStrengthLevel"] + ")") # type: ignore
+            equip_icon_list.append(i["Icon"]["FileName"]) # type: ignore
     for i in equip_data:
-        if i["Icon"]["SubKind"] == "帽子":
+        if i["Icon"]["SubKind"] == "帽子": # type: ignore
             if "WCommonEnchant" in list(i):
-                attrs_ = json.dumps(i["ModifyType"], ensure_ascii=False)
+                attrs_ = json.dumps(i["ModifyType"], ensure_ascii=False) # type: ignore
                 if attrs_.find("攻击") != -1:
                     type_ = "伤"
                 elif attrs_.find("治疗") != -1:
                     type_ = "疗"
                 else:
                     type_ = "御"
-                name = enchant_mapping(i["Quality"]) + "·" + type_ + "·帽"
+                name = enchant_mapping(i["Quality"]) + "·" + type_ + "·帽" # type: ignore
                 henchant[0] = name
             else:
                 henchant[0] = ""
-        elif i["Icon"]["SubKind"] == "上衣":
+        elif i["Icon"]["SubKind"] == "上衣": # type: ignore
             if "WCommonEnchant" in list(i):
-                attrs_ = json.dumps(i["ModifyType"], ensure_ascii=False)
+                attrs_ = json.dumps(i["ModifyType"], ensure_ascii=False) # type: ignore
                 if attrs_.find("攻击") != -1:
                     type_ = "伤"
                 elif attrs_.find("治疗") != -1:
                     type_ = "疗"
                 else:
                     type_ = "御"
-                name = enchant_mapping(i["Quality"]) + "·" + type_ + "·衣"
+                name = enchant_mapping(i["Quality"]) + "·" + type_ + "·衣" # type: ignore
                 henchant[1] = name
             else:
                 henchant[1] = ""
-        elif i["Icon"]["SubKind"] == "腰带":
+        elif i["Icon"]["SubKind"] == "腰带": # type: ignore
             if "WCommonEnchant" in list(i):
-                attrs_ = json.dumps(i["ModifyType"], ensure_ascii=False)
+                attrs_ = json.dumps(i["ModifyType"], ensure_ascii=False) # type: ignore
                 if attrs_.find("攻击") != -1:
                     type_ = "伤"
                 elif attrs_.find("治疗") != -1:
                     type_ = "疗"
                 else:
                     type_ = "御"
-                name = enchant_mapping(i["Quality"]) + "·" + type_ + "·腰"
+                name = enchant_mapping(i["Quality"]) + "·" + type_ + "·腰" # type: ignore
                 henchant[2] = name
             else:
                 henchant[2] = ""
-        elif i["Icon"]["SubKind"] == "护臂":
+        elif i["Icon"]["SubKind"] == "护臂": # type: ignore
             if "WCommonEnchant" in list(i):
-                attrs_ = json.dumps(i["ModifyType"], ensure_ascii=False)
+                attrs_ = json.dumps(i["ModifyType"], ensure_ascii=False) # type: ignore
                 if attrs_.find("攻击") != -1:
                     type_ = "伤"
                 elif attrs_.find("治疗") != -1:
                     type_ = "疗"
                 else:
                     type_ = "御"
-                name = enchant_mapping(i["Quality"]) + "·" + type_ + "·腕"
+                name = enchant_mapping(i["Quality"]) + "·" + type_ + "·腕" # type: ignore
                 henchant[3] = name
             else:
                 henchant[3] = ""
-        elif i["Icon"]["SubKind"] == "鞋":
+        elif i["Icon"]["SubKind"] == "鞋": # type: ignore
             if "WCommonEnchant" in list(i):
-                attrs_ = json.dumps(i["ModifyType"], ensure_ascii=False)
+                attrs_ = json.dumps(i["ModifyType"], ensure_ascii=False) # type: ignore
                 if attrs_.find("攻击") != -1:
                     type_ = "伤"
                 elif attrs_.find("治疗") != -1:
                     type_ = "疗"
                 else:
                     type_ = "御"
-                name = enchant_mapping(i["Quality"]) + "·" + type_ + "·鞋"
+                name = enchant_mapping(i["Quality"]) + "·" + type_ + "·鞋" # type: ignore
                 henchant[4] = name
             else:
                 henchant[4] = ""
@@ -204,7 +203,7 @@ async def get_single_recequips(data: dict, author: str, name: str, tag: str, kf:
     for i in equip_data:
         if i != "":
             if "WPermanentEnchant" in list(i):
-                lenchant[num] = i["WPermanentEnchant"]["Name"]
+                lenchant[num] = i["WPermanentEnchant"]["Name"] # type: ignore
                 num = num + 1
             else:
                 num = num + 1
@@ -215,23 +214,23 @@ async def get_single_recequips(data: dict, author: str, name: str, tag: str, kf:
     fs = []
     for i in equip_data:
         try:
-            i["FiveStone"]
+            i["FiveStone"] # type: ignore
         except Exception as _:
             continue
-        for x in i["FiveStone"]:
-            if x["Name"] != "" or int(x["Level"]) >= 1:
-                fs.append(int(x["Level"]))
+        for x in i["FiveStone"]: # type: ignore
+            if x["Name"] != "" or int(x["Level"]) >= 1: # type: ignore
+                fs.append(int(x["Level"])) # type: ignore
             else:
                 fs.append(0)
     try:
-        wcs = equip_data[11]["ColorStone"]["Name"]
-        wcs_icon = equip_data[11]["ColorStone"]["Icon"]["FileName"]
+        wcs = equip_data[11]["ColorStone"]["Name"] # type: ignore
+        wcs_icon = equip_data[11]["ColorStone"]["Icon"]["FileName"] # type: ignore
     except Exception as _:
         wcs = ""
         wcs_icon = ""
     try:
-        wcs1 = equip_data[12]["ColorStone"]["Name"]
-        wcs_icon1 = equip_data[12]["ColorStone"]["Icon"]["FileName"]
+        wcs1 = equip_data[12]["ColorStone"]["Name"] # type: ignore
+        wcs_icon1 = equip_data[12]["ColorStone"]["Icon"]["FileName"] # type: ignore
     except Exception as _:
         wcs1 = ""
         wcs_icon1 = ""
@@ -240,81 +239,81 @@ async def get_single_recequips(data: dict, author: str, name: str, tag: str, kf:
         panel = data["matchDetail"]
         for i in list(panel):
             if i == "totalAttack":
-                values[0] = str(panel[i])
+                values[0] = str(panel[i]) # type: ignore
             if i == "baseAttack":
-                values[1] = str(panel[i])
-            if i == "atCriticalStrikeLevel":
-                values[2] = str(panel[i]) + "%"
+                values[1] = str(panel[i]) # type: ignore
+            if i == "atCriticalStrikeLevel": 
+                values[2] = str(panel[i]) + "%" # type: ignore
             if i == "atCriticalDamagePowerBaseLevel":
-                values[3] = str(panel[i]) + "%"
+                values[3] = str(panel[i]) + "%" # type: ignore
             if i == "atHasteBaseLevel":
-                values[4] = str(panel[i])
+                values[4] = str(panel[i]) # type: ignore
             if i == att_mapping(att):
-                values[5] = str(panel[i])
+                values[5] = str(panel[i]) # type: ignore
             if i == "atOvercomeBaseLevel":
-                values[6] = str(panel[i]) + "%"
+                values[6] = str(panel[i]) + "%" # type: ignore
             if i == "atStrainBaseLevel":
-                values[7] = str(panel[i]) + "%"
+                values[7] = str(panel[i]) + "%" # type: ignore
             if i == "atSurplusValueBase":
-                values[8] = str(panel[i])
+                values[8] = str(panel[i]) # type: ignore
             if i == "totalLift":
-                values[9] = str(panel[i])
-            if i == "atToughnessBaseLevel":
-                values[10] = str(panel[i]) + "%"
+                values[9] = str(panel[i]) # type: ignore
+            if i == "atToughnessBaseLevel": 
+                values[10] = str(panel[i]) + "%" # type: ignore
             if i == "atDecriticalDamagePowerBaseLevel":
-                values[11] = str(panel[i]) + "%"
+                values[11] = str(panel[i]) + "%" # type: ignore
     elif flag == 2:
         panel = data["matchDetail"]
         for i in list(panel):
             if i == "totaltherapyPowerBase":
-                values[0] = str(panel[i])
+                values[0] = str(panel[i]) # type: ignore
             if i == "therapyPowerBase":
-                values[1] = str(panel[i])
+                values[1] = str(panel[i]) # type: ignore
             if i == "atCriticalStrikeLevel":
-                values[2] = str(panel[i]) + "%"
+                values[2] = str(panel[i]) + "%" # type: ignore
             if i == "atCriticalDamagePowerBaseLevel":
-                values[3] = str(panel[i]) + "%"
+                values[3] = str(panel[i]) + "%" # type: ignore
             if i == "atHasteBaseLevel":
-                values[4] = str(panel[i])
+                values[4] = str(panel[i]) # type: ignore
             if i == "atSpiritBase":
-                values[5] = str(panel[i])
+                values[5] = str(panel[i]) # type: ignore
             if i == "atPhysicsShieldBaseLevel":
-                values[6] = str(panel[i]) + "%"
+                values[6] = str(panel[i]) + "%" # type: ignore
             if i == "atMagicShieldLevel":
-                values[7] = str(panel[i]) + "%"
+                values[7] = str(panel[i]) + "%" # type: ignore
             if i == "atSurplusValueBase":
-                values[8] = str(panel[i])
+                values[8] = str(panel[i]) # type: ignore
             if i == "totalLift":
-                values[9] = str(panel[i])
+                values[9] = str(panel[i]) # type: ignore
             if i == "atToughnessBaseLevel":
-                values[10] = str(panel[i]) + "%"
+                values[10] = str(panel[i]) + "%" # type: ignore
             if i == "atDecriticalDamagePowerBaseLevel":
-                values[11] = str(panel[i]) + "%"
+                values[11] = str(panel[i]) + "%" # type: ignore
     else:
         panel = data["matchDetail"]
         for i in list(panel):
             if i == "atPhysicsShieldBaseLevel":
-                values[0] = str(panel[i]) + "%"
-            if i == "atMagicShieldLevel":
-                values[1] = str(panel[i]) + "%"
+                values[0] = str(panel[i]) + "%" # type: ignore
+            if i == "atMagicShieldLevel": 
+                values[1] = str(panel[i]) + "%" # type: ignore
             if i == "totalLift":
-                values[2] = str(panel[i])
+                values[2] = str(panel[i]) # type: ignore
             if i == "atSurplusValueBase":
-                values[3] = str(panel[i])
+                values[3] = str(panel[i]) # type: ignore
             if i == "atToughnessBaseLevel":
-                values[4] = str(panel[i]) + "%"
+                values[4] = str(panel[i]) + "%" # type: ignore
             if i == "atDodgeLevel":
-                values[5] = str(panel[i]) + "%"
+                values[5] = str(panel[i]) + "%" # type: ignore
             if i == "atParryBaseLevel":
-                values[6] = str(panel[i]) + "%"
+                values[6] = str(panel[i]) + "%" # type: ignore
             if i == "atParryValue":
-                values[7] = str(panel[i])
+                values[7] = str(panel[i]) # type: ignore
             if i == "atVitalityBase":
-                values[8] = str(panel[i])
+                values[8] = str(panel[i]) # type: ignore
             if i == "atStrainBaseLevel":
-                values[10] = str(panel[i]) + "%"
+                values[10] = str(panel[i]) + "%" # type: ignore
             if i == "atHasteBaseLevel":
-                values[11] = str(panel[i])
+                values[11] = str(panel[i]) # type: ignore
                 values[9] = "%.2f%%" % (panel[i]/96483.75 * 100)
     img = await get_attr(kf, maxjl_list, jl_list, equip_list, equip_icon_list, equip_quailty, basic, henchant, lenchant, fs, wcs_icon, wcs, values, wcs1, wcs_icon1)
     return img
@@ -335,7 +334,7 @@ async def get_attr(kungfu: str, maxjl_list: list, jl_list: list, equip_list: lis
         objects = ["外防", "内防", "最大气血值", "破招", "御劲", "闪避", "招架", "拆招", "体质", "加速率", "无双", "加速"]
     else:
         raise ValueError("Unknown type of kungfu!")
-    background = Image.open(await get_bg(kftosh(kungfu)))
+    background = Image.open(await get_bg(kungfu_to_school(kungfu)))
     draw = ImageDraw.Draw(background)
     flickering = Image.open(PLUGINS + "/jx3/attributes/flicker.png").resize((38, 38))
     precious = Image.open(PLUGINS + "/jx3/attributes/xy.png")

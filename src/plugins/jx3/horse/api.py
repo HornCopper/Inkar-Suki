@@ -6,11 +6,11 @@ from src.tools.basic.msg import PROMPT
 
 from datetime import datetime, timedelta
 
-async def get_horse_reporter(server: str, group_id: str = None):  # 数据来源@JX3BOX
-    server = server_mapping(server, group_id)
-    if not server:
+async def get_horse_reporter(server: str, group_id: str = ""):  # 数据来源@JX3BOX
+    server_ = server_mapping(server, group_id)
+    if not server_:
         return PROMPT.ServerNotExist
-    final_url = f"https://next2.jx3box.com/api/game/reporter/horse?type=horse&server={server}"
+    final_url = f"https://next2.jx3box.com/api/game/reporter/horse?type=horse&server={server_}"
     data = await get_api(final_url)
     if data["data"]["page"]["total"] == 0:
         return "没有找到该服务器信息哦，请检查后重试~"

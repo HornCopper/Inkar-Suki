@@ -70,6 +70,6 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
             json = {"gossip_id": tid, "only_thread_author": True},
             timeout = None
         )
-        msg = data["msg"]
+        msg = data["msg"] # type: ignore
         msg = msg + "\n以上内容由AI自动生成，请注意甄别！"
         await watermelon.finish(msg)

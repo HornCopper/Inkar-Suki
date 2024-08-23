@@ -14,16 +14,16 @@ class ScreenshotGenerator:
             self, 
             path: str,
             web: bool = False, 
-            locate: str = None, 
+            locate: str = "", 
             first: bool = False, 
             delay: int = 0, 
             additional_css: str = "", 
             additional_js: str = "",
-            viewport: dict = None, 
+            viewport: dict = {}, 
             full_screen: bool = False, 
             hide_classes: list = [],
             device_scale_factor: float = 1.0,
-            output_path: str = None,
+            output_path: str = "",
         ):
         self.path = Path(path).as_uri() if not web else path
         self.web = web
@@ -104,14 +104,14 @@ class ScreenshotGenerator:
 async def generate(
     path: str,
     web: bool = False,
-    locate: str = None,
+    locate: str = "",
     first: bool = False,
     delay: int = 0,
     additional_css: str = "",
     additional_js: str = "",
-    viewport: dict = None,
+    viewport: dict = {},
     full_screen: bool = False,
-    hide_classes: list = None,
+    hide_classes: list = [],
     device_scale_factor: float = 1.0,
     output: str = ""
 ):

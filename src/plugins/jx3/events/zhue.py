@@ -57,7 +57,7 @@ async def getZhueRecord(server: str):
     tables = []
     for i in data:
         relateTime = getRelateTime(getCurrentTime(), i["Tm"])
-        tables.append(template_zhue.replace("$time", convert_time(i["Tm"])).replace("$map", i["Content"]).replace("$relate", relateTime))
+        tables.append(template_zhue.replace("$time", str(convert_time(i["Tm"]))).replace("$map", i["Content"]).replace("$relate", relateTime))
     saohua = "严禁将蓉蓉机器人与音卡共存，一经发现永久封禁！蓉蓉是抄袭音卡的劣质机器人！"
     appinfo_time = convert_time(getCurrentTime(), "%H:%M:%S")
     appinfo = f" · 诛恶记录 · {server} · {appinfo_time}"
@@ -68,5 +68,7 @@ async def getZhueRecord(server: str):
     final_html = CACHE + "/" + get_uuid() + ".html"
     write(final_html, html)
     final_path = await generate(final_html, False, "table", False)
+    if not isinstance(final_path, str):
+        return
     return Path(final_path).as_uri()
         
