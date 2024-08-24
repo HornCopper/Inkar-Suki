@@ -3,7 +3,7 @@ from nonebot.adapters.onebot.v11 import MessageEvent
 from nonebot.adapters import Message
 from nonebot.params import CommandArg
 
-from src.tools.utils.num import checknumber
+from src.tools.utils.num import check_number
 
 bmi = on_command("bmi", aliases={"BMI", "身体质量指数"}, force_whitespace=True, priority=5)
 
@@ -15,7 +15,7 @@ async def _(event: MessageEvent, args: Message = CommandArg()):
     if len(arg) != 2:
         await bmi.finish("唔……参数数量不正确哦，请参考以下格式，注意两个参数都是纯数字哦~\nBMI 身高(米) 体重(千克)")
     for i in arg:
-        if not checknumber(i):
+        if not check_number(i):
             await bmi.finish("唔……请参考以下格式，注意两个参数都是纯数字哦~\nBMI 身高(米) 体重(千克)")
     height = float(arg[0])
     weight = float(arg[1])

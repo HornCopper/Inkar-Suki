@@ -8,7 +8,6 @@ from src.tools.utils.request import get_content
 from src.tools.permission import checker, error
 
 from .api import *
-from .item import *
 from .item_v2 import *
 from .sl import *
 from .wufeng import *
@@ -32,9 +31,9 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     if len(id_cut) <= 1:
         id_cut = []
     img = await getImg(server, id, str(event.group_id), id_cut)
-    if type(img) == type([]):
+    if isinstance(img, list):
         await trade.finish(img[0])
-    else:
+    elif isinstance(img, str):
         await trade.finish(ms.image(img))
 
 
@@ -54,9 +53,9 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
         server = arg[0]
         msg = arg[1]
     img = await getWufengImg(msg, server, str(event.group_id))
-    if type(img) == type([]):
+    if isinstance(img, list):
         await trade.finish(img[0])
-    else:
+    elif isinstance(img, str):
         await trade.finish(ms.image(img))
 
 
@@ -92,9 +91,9 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     if args.extract_plain_text() == "":
         return
     image = await getSingleItemPrice(args.extract_plain_text())
-    if type(image) == type([]):
+    if isinstance(image, list):
         await item_v2_.finish(image[0])
-    else:
+    elif isinstance(image, str):
         img = get_content_local(image)
         await item_v2_.finish(ms.image(img))    
 
@@ -105,9 +104,9 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     if args.extract_plain_text() == "":
         return
     image = await getSingleEquipment(args.extract_plain_text())
-    if type(image) == type([]):
+    if isinstance(image, list):
         await sl_.finish(image[0])
-    else:
+    elif isinstance(image, str):
         image = get_content_local(image)
         await sl_.finish(ms.image(image))
 

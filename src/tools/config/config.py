@@ -19,6 +19,7 @@ class Jx3API(BaseModel):
     token_v2: str = ""
     ticket: str
     url: str
+    enable: bool = False
 
 class Jx3WS(BaseModel):
     url: str

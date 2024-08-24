@@ -4,7 +4,7 @@ from nonebot.adapters.onebot.v11 import MessageEvent, MessageSegment as ms
 from nonebot.params import CommandArg
 
 from src.tools.utils.file import write
-from src.tools.utils.num import checknumber
+from src.tools.utils.num import check_number
 from src.tools.permission import checker, error
 from src.tools.utils.path import CLOCK
 
@@ -100,7 +100,7 @@ async def _(event: MessageEvent, args: Message = CommandArg()):
     arg = args.extract_plain_text().split(" ")
     if len(arg) != 2:
         await addc.finish("唔……参数数量不正确哦~")
-    if not checknumber(arg[0]) or not checknumber(arg[1]):
+    if not check_number(arg[0]) or not check_number(arg[1]):
         await addc.finish("唔……参数需要是数字哦~")
     Sign.add(arg[0], arg[1]) # type: ignore
     await addc.finish("已向该账户添加了" + arg[1] + "枚金币！")
@@ -116,7 +116,7 @@ async def _(event: MessageEvent, args: Message = CommandArg()):
     arg = args.extract_plain_text().split(" ")
     if len(arg) != 2:
         await reducec.finish("唔……参数数量不正确哦~")
-    if not checknumber(arg[0]) or not checknumber(arg[1]):
+    if not check_number(arg[0]) or not check_number(arg[1]):
         await reducec.finish("唔……参数需要是数字哦~")
     Sign.reduce(arg[0], arg[1])
     await reducec.finish("已向该账户扣除了" + arg[1] + "枚金币！")
@@ -130,7 +130,7 @@ async def _(event: MessageEvent, args: Message = CommandArg()):
     arg = args.extract_plain_text().split(" ")
     if len(arg) != 2:
         await tradec.finish("唔……参数数量不正确哦~")
-    if not checknumber(arg[0]) or not checknumber(arg[1]):
+    if not check_number(arg[0]) or not check_number(arg[1]):
         await tradec.finish("唔……参数需要是数字哦~")
     if Sign.get_coin(str(event.user_id)) < int(arg[1]): # type: ignore
         await tradec.finish("唔……你没有那么多的金币！")

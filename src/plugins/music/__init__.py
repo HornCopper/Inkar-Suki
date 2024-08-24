@@ -5,7 +5,7 @@ from nonebot.typing import T_State
 from nonebot.adapters.onebot.v11 import GroupMessageEvent, MessageSegment as ms
 
 from src.tools.utils.path import CACHE
-from src.tools.utils.num import checknumber
+from src.tools.utils.num import check_number
 
 from src.plugins.sign import Sign
 
@@ -49,7 +49,7 @@ async def _(state: T_State, event: GroupMessageEvent, args: Message = CommandArg
 @search_music.got("num", prompt="输入序号即可搜索搜索歌曲，其他内容则无视~")
 async def __(state: T_State, num: Message = Arg()):
     num_ = num.extract_plain_text()
-    if not checknumber(num_):
+    if not check_number(num_):
         pass
     id = state["id"]
     platform = state["platform"]

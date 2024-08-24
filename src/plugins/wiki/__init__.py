@@ -5,7 +5,7 @@ from nonebot.params import CommandArg, Arg
 from nonebot.typing import T_State
 
 from src.tools.utils.file import read
-from src.tools.utils.num import checknumber
+from src.tools.utils.num import check_number
 from src.tools.permission import checker, error
 from src.tools.basic.group import getGroupSettings, setGroupSettings
 from src.tools.basic.prompts import PROMPT
@@ -213,7 +213,7 @@ async def _(state: T_State, event: GroupMessageEvent, args: Message = CommandArg
 @wiki.got("num", prompt="发送序号以搜索，发送其他内容则取消搜索。")
 async def __(state: T_State, num: Message = Arg()):
     num = num.extract_plain_text() # type: ignore
-    if not checknumber(num):
+    if not check_number(num):
         await wiki.finish(PROMPT.NumberInvalid)
     api = state["wiki"]
     results = state["results"]

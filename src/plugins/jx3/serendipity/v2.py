@@ -3,7 +3,6 @@ from pathlib import Path
 from typing import Optional
 
 from src.tools.config import Config
-from src.tools.utils.request import get_api
 from src.tools.basic.prompts import PROMPT
 from src.tools.basic.server import server_mapping
 from src.tools.utils.path import ASSETS, CACHE, VIEWS
@@ -43,7 +42,10 @@ async def getImage_v2(server: Optional[str], name: str, group_id: str, type: boo
     role_data = await get_player_local_data(role_name=name, server_name=server)
     if role_data.format_jx3api()["code"] != 200:
         return [PROMPT.PlayerNotExist]
-    serendipity_data = await Serendipity.integration(server, name)
+    if Config.jx3.api.enable:
+        serendipity_data = await get_api(f"{Config.jx3.api.url}/data/luck/adventure?server={server}&name={name}&ticket={ticket}&token={token}")
+    else:
+        serendipity_data = await Serendipity.integration(server, name)
     data = serendipity_data
     # 笔记：1 → 世界奇遇；2 → 绝世奇遇；3 → 宠物奇遇
     # 注：暂时忽略宠物奇遇，不做统计

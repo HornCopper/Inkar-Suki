@@ -8,7 +8,7 @@ from nonebot.adapters import Message
 from src.tools.permission import checker, error
 from src.tools.database import group_db, ApplicationsList
 from src.tools.utils.time import convert_time
-from src.tools.utils.num import checknumber
+from src.tools.utils.num import check_number
 
 current_application = on_command("邀请列表", force_whitespace=True, priority=5)
 
@@ -42,7 +42,7 @@ async def _(bot: Bot, event: MessageEvent, args: Message = CommandArg()):
     if not checker(str(event.user_id), 10):
         await process_application.finish(error(10))
     arg = args.extract_plain_text()
-    if not checknumber(arg):
+    if not check_number(arg):
         await process_application.finish("唔……同意申请的命令后面直接加群号即可哦~")
     current_data: Union[ApplicationsList, Any] = group_db.where_one(ApplicationsList(), default=ApplicationsList())
     current_applications = current_data.applications_list
@@ -69,7 +69,7 @@ async def _(bot: Bot, event: MessageEvent, args: Message = CommandArg()):
     if not checker(str(event.user_id), 10):
         await deny_application.finish(error(10))
     arg = args.extract_plain_text()
-    if not checknumber(arg):
+    if not check_number(arg):
         await deny_application.finish("唔……同意申请的命令后面直接加群号即可哦~")
     current_data: Union[ApplicationsList, Any] = group_db.where_one(ApplicationsList(), default=ApplicationsList())
     current_applications = current_data.applications_list

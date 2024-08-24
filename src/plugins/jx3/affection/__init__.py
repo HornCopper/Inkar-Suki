@@ -5,7 +5,7 @@ from nonebot.adapters import Message
 from nonebot.adapters.onebot.v11 import GroupMessageEvent, MessageSegment as ms
 from nonebot.params import CommandArg
 
-from src.tools.utils.num import checknumber
+from src.tools.utils.num import check_number
 from src.tools.utils.file import get_content_local
 
 from .app import *
@@ -34,7 +34,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
             timestamp = int(datetime.strptime(custom_time, "%Y-%m-%d").timestamp())
         except ValueError:
             await bind_affection_.finish("唔……您给出的时间无法识别，只接受下面的两种格式：\nYYYY年mm月dd日\nYYYY-mm-dd")
-    if not checknumber(other_qq):
+    if not check_number(other_qq):
         await bind_affection_.finish("绑定失败！对方QQ需要为纯数字！")
     ans = await bind_affection(self_qq, self_name, other_qq, other_name, event.group_id, timestamp)
     await bind_affection_.finish(ans[0])

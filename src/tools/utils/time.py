@@ -1,12 +1,12 @@
 from typing import Union
 
-from src.tools.utils.num import checknumber
+from src.tools.utils.num import check_number
 
 import time
 import datetime
 
 def convert_time(timestamp: int, format: str = "%Y年%m月%d日 %H:%M:%S") -> Union[str, bool]:
-    if checknumber(timestamp):
+    if check_number(timestamp):
         try:
             timestamp = int(timestamp)
         except:

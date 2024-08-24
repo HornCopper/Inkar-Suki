@@ -1,11 +1,12 @@
 from pathlib import Path
+from typing import Optional
 
 from src.constant.jx3 import brickl, goldl, silverl, copperl
 
 from src.tools.utils.request import get_api
 from src.tools.basic.prompts import PROMPT
 from src.tools.basic.server import server_mapping
-from src.tools.utils.num import checknumber
+from src.tools.utils.num import check_number
 from src.tools.utils.time import convert_time, get_current_time
 from src.tools.generate import generate, get_uuid
 from src.tools.utils.path import ASSETS, CACHE, TOOLS, VIEWS
@@ -42,7 +43,7 @@ template_table = """
     <td class="short-column">$price</td>
 </tr>"""
 
-async def getImg(server: str, name: str, group: str, itemList: list = []):
+async def getImg(server: Optional[str], name: str, group: str, itemList: list = []):
     if server == "全服":
         data = await getSingleImg(name)
         return data
@@ -83,7 +84,7 @@ async def getImg(server: str, name: str, group: str, itemList: list = []):
         new["id"] = str(id)
         new["icon"] = f"https://icon.jx3box.com/icon/" + str(i["IconID"]) + ".png"
         new["name"] = i["Name"]
-        new["quality"] = i["Quality"] if checknumber(i["Quality"]) else 0
+        new["quality"] = i["Quality"] if check_number(i["Quality"]) else 0
         itemList_searchable.append(new)
     if len(itemList_searchable) == 1:
         currentStatus = 0 # 当日是否具有该物品在交易行
@@ -201,7 +202,7 @@ async def getSingleImg(name: str):
             new["id"] = str(id)
             new["icon"] = f"https://icon.jx3box.com/icon/" + str(i["IconID"]) + ".png"
             new["name"] = i["Name"]
-            new["quality"] = i["Quality"] if checknumber(i["Quality"]) else 0
+            new["quality"] = i["Quality"] if check_number(i["Quality"]) else 0
             itemList_searchable.append(new)
         if len(itemList_searchable) == 1:
             currentStatus = 0 # 当日是否具有该物品在交易行

@@ -4,7 +4,7 @@ from nonebot.params import CommandArg
 from nonebot.adapters import Message
 
 from src.tools.utils.time import convert_time, get_current_time
-from src.tools.utils.num import checknumber
+from src.tools.utils.num import check_number
 from src.tools.permission import checker, error
 from src.tools.utils.path import CACHE
 from src.tools.basic.group import getAllGroups
@@ -123,7 +123,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     arg = args.extract_plain_text().split(" ")
     if len(arg) != 2:
         await randomnum.finish("唔……请参考下面的随机数生成格式：\n随机数 起始 终止")
-    if not checknumber(arg[0]) or not checknumber(arg[1]):
+    if not check_number(arg[0]) or not check_number(arg[1]):
         await randomnum.finish("唔……随机数的范围需要是数字哦~")
     num = random.randint(int(arg[0]), int(arg[1]))
     await randomnum.finish("好的，音卡已经为你生成了一个随机数：" + str(num))

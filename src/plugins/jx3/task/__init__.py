@@ -3,7 +3,7 @@ from nonebot.adapters import Message
 from nonebot.params import CommandArg, Arg
 from nonebot.typing import T_State
 
-from src.tools.utils.num import checknumber
+from src.tools.utils.num import check_number
 from src.tools.basic.prompts import PROMPT
 
 from .api import *
@@ -46,7 +46,7 @@ async def _(state: T_State, args: Message = CommandArg()):
 @task_.got("num", prompt="发送序号以搜索，发送其他内容则取消搜索。")
 async def _(state: T_State, num: Message = Arg()):
     num_ = num.extract_plain_text()
-    if checknumber(num_):
+    if check_number(num_):
         num_ = int(num_)
         map = state["map"][num_]
         id = state["id"][num_]

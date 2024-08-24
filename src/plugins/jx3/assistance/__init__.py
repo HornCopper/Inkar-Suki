@@ -3,7 +3,7 @@ from nonebot.adapters import Message
 from nonebot.adapters.onebot.v11 import GroupMessageEvent, MessageSegment as ms
 from nonebot.params import CommandArg
 
-from src.tools.utils.num import checknumber
+from src.tools.utils.num import check_number
 from src.tools.utils.file import get_content_local
 from src.tools.basic.group import getGroupSettings
 
@@ -18,7 +18,7 @@ create = on_command("创建团队", force_whitespace=True, priority=5)
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     if args.extract_plain_text() == "":
         return
-    if checknumber(args.extract_plain_text()):
+    if check_number(args.extract_plain_text()):
         await create.finish("唔……请勿使用纯数字作为关键词！")
     resp = await aic.create_group(str(event.group_id), args.extract_plain_text(), str(event.user_id))
     await create.finish(resp)

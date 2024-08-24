@@ -5,7 +5,7 @@ from nonebot.adapters.onebot.v11 import GroupMessageEvent
 from nonebot.rule import to_me
 
 from src.tools.config import Config
-from src.tools.utils.num import checknumber
+from src.tools.utils.num import check_number
 from src.tools.utils.request import get_api, post_url
 
 from .api import *
@@ -61,7 +61,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
         date = data["date"]
         msg = f"咚！音卡为您找了一个瓜！\n标题：{title}\nhttps://tieba.baidu.com/p/{url}\n来源：{name}吧（{server}）\n日期：{date}"
         await watermelon.finish(msg)
-    if not checknumber(tid):
+    if not check_number(tid):
         await watermelon.finish("唔……请直接给出帖子的ID（通常是链接最后那一串数字）！")
     else:
         data = await post_url(

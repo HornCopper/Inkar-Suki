@@ -20,6 +20,8 @@ jx3: # 剑网3 相关配置
         token_v2: "" # JX3API Token (V2)
         ticket: "" # 推栏 Token
         url: "" # JX3API 地址(不带斜杠)
+        enable: false # 是否启用JX3API
+        # 启用之后：沙盘、招募、榜单可用，奇遇统计时间补全
     ws:
         url: "" # JX3API WebSocket 地址
         token: "" # JX3API WebSocket Token

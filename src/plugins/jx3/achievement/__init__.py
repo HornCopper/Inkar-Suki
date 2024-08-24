@@ -5,7 +5,7 @@ from nonebot.params import CommandArg, Arg
 from nonebot.typing import T_State
 
 from src.tools.basic.prompts import PROMPT
-from src.tools.utils.num import checknumber
+from src.tools.utils.num import check_number
 from src.tools.utils.file import get_content_local
 from src.tools.basic.server import getGroupServer
 from src.plugins.jx3.dungeon.api import mode_mapping
@@ -58,7 +58,7 @@ async def _(state: T_State, args: Message = CommandArg()):
 @adventure_.got("num", prompt="发送序号以搜索，发送其他内容则取消搜索。")
 async def _(state: T_State, num: Message = Arg()):
     num_ = num.extract_plain_text()
-    if checknumber(num_):
+    if check_number(num_):
         num_ = int(num_)
         map = state["map"][num_]
         achievement = state["achievement_list"][num_]

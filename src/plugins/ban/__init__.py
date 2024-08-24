@@ -7,7 +7,7 @@ from nonebot.adapters.onebot.v11 import GroupMessageEvent, MessageEvent
 from nonebot.params import CommandArg, Arg
 
 from src.tools.config import Config
-from src.tools.utils.num import checknumber
+from src.tools.utils.num import check_number
 from src.tools.permission import checker, error
 from src.tools.database import group_db, BannedList, GroupSettings
 from src.tools.basic.process import preprocess
@@ -46,7 +46,7 @@ async def _(bot: Bot, event: MessageEvent, args: Message = CommandArg()):
         self_protection = True
     if not sb:
         await ban.finish("您输入了什么？")
-    elif not checknumber(sb):
+    elif not check_number(sb):
         await ban.finish("不能全域封禁不是纯数字的QQ哦~")
     elif banned(sb):
         return ban.finish("唔……全域封禁失败，这个人已经被封禁了。")
@@ -73,7 +73,7 @@ async def _(bot: Bot, event: MessageEvent, args: Message = CommandArg()):
     if not checker(str(event.user_id), 10):
         await ban.finish(error(10))
     sb = args.extract_plain_text()
-    if checknumber(sb) is False:
+    if check_number(sb) is False:
         await ban.finish("不能全域封禁不是纯数字的QQ哦~")
     if sb is False:
         await unban.finish("您输入了什么？")

@@ -4,7 +4,7 @@ from nonebot.adapters.onebot.v11 import GroupMessageEvent, MessageSegment as ms
 from nonebot.params import CommandArg, Arg
 from nonebot.typing import T_State
 
-from src.tools.utils.time import checknumber
+from src.tools.utils.time import check_number
 
 from .api import *
 
@@ -40,7 +40,7 @@ async def _(event: GroupMessageEvent, state: T_State, args: Message = CommandArg
 @buff_.got("num", prompt="输入数字搜索状态效果，输入其他内容则无视。")
 async def _(event: GroupMessageEvent, state: T_State, num: Message = Arg()):
     num_ = num.extract_plain_text()
-    if checknumber(num_):
+    if check_number(num_):
         icon = state["icon"]
         remark = state["remark"]
         desc = state["desc"]

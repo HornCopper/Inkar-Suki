@@ -8,7 +8,7 @@ from nonebot.typing import T_State
 
 from src.tools.utils.file import read, write, get_content_local
 from src.tools.utils.path import ASSETS, CACHE, PLUGINS, VIEWS
-from src.tools.utils.num import checknumber
+from src.tools.utils.num import check_number
 from src.tools.generate import generate, get_uuid
 from src.tools.basic.prompts import PROMPT
 from src.constant.jx3 import school_name_aliases
@@ -82,7 +82,7 @@ async def _(event: GroupMessageEvent, state: T_State, args: Message = CommandArg
 @jx3_cmd_equip_recommend.got("index", prompt="请选择配装查看哦，回复我只需要数字就行啦！")
 async def jx3_equip_recommend_detail(state: T_State, index: Message = Arg()):
     index_ = index.extract_plain_text()
-    if not checknumber(index_):
+    if not check_number(index_):
         await jx3_cmd_equip_recommend.finish(PROMPT.NumberInvalid)
     data = state["data"][int(index_)] # type: ignore
     author = state["author"][int(index_)] # type: ignore

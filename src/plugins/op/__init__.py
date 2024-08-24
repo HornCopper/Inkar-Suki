@@ -5,7 +5,7 @@ from nonebot.params import CommandArg
 
 from src.tools.permission import checker, error, get_all_admin
 from src.tools.config import Config
-from src.tools.utils.num import checknumber
+from src.tools.utils.num import check_number
 from src.tools.database import group_db
 
 # 机器人管理员权限设置
@@ -25,7 +25,7 @@ async def _(bot: Bot, event: MessageEvent, args: Message = CommandArg()):
         except:
             pass
         try:
-            if not checknumber(str(arguments[0])) or not checknumber(str(arguments[1])):
+            if not check_number(str(arguments[0])) or not check_number(str(arguments[1])):
                 await op.finish("唔……QQ号和权限等级都必须是数字哦~")
         except:
             await op.finish("唔，你好像少了点参数。")

@@ -4,7 +4,7 @@ from nonebot.params import CommandArg, Arg
 from nonebot.typing import T_State
 from nonebot.adapters.onebot.v11 import GroupMessageEvent, MessageSegment as ms
 
-from src.tools.utils.num import checknumber
+from src.tools.utils.num import check_number
 from src.tools.basic.prompts import PROMPT
 
 from .api import *
@@ -41,7 +41,7 @@ async def _(event: GroupMessageEvent, state: T_State, args: Message = CommandArg
 @dh_.got("num", prompt="回复标题前方的序号，音卡就可以给你链接啦！")
 async def _(event: GroupMessageEvent, state: T_State, num: Message = Arg()):
     num_ = num.extract_plain_text()
-    if not checknumber(num_):
+    if not check_number(num_):
         await dh_.finish(PROMPT.NumberInvalid)
     else:
         links = state["links"]
@@ -81,7 +81,7 @@ async def _(event: GroupMessageEvent, state: T_State, args: Message = CommandArg
 @wg_.got("num", prompt="回复标题前方的序号，音卡就可以给你链接啦！")
 async def _(event: GroupMessageEvent, state: T_State, num: Message = Arg()):
     num_ = num.extract_plain_text()
-    if not checknumber(num_):
+    if not check_number(num_):
         await wg_.finish(PROMPT.NumberInvalid)
     else:
         links = state["links"]

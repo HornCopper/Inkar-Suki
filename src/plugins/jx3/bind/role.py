@@ -1,7 +1,7 @@
 from typing import Union, Optional, Any
 
 from src.tools.config import Config
-from src.tools.utils.request import post_url
+from src.tools.utils.request import post_url, get_api
 from src.tools.basic.jx3 import gen_ts, gen_xsk, format_body
 from src.tools.basic.server import server_mapping, Zone_mapping
 from src.tools.database import group_db, RoleData
@@ -15,6 +15,15 @@ except:
 import json
 
 ticket = Config.jx3.api.ticket
+token = Config.jx3.api.token
+
+if Config.jx3.api.enable:
+    # 当 JX3API 被启用的时候，定义 `get_uid` 函数
+    async def get_uid(roleName: str, serverName: str):
+        data = await get_api(f"{Config.jx3.api.url}/data/role/detailed?token={token}&server={serverName}&name={roleName}&ticket={ticket}", timeout=600)
+        if data["code"] != 200:
+            return None
+        return data["data"]["roleId"]
 
 async def getRoleData(role_id: str = "", server: Optional[str] = "", group_id: str = "") -> Union[str, list]:
     server_: Union[str, None] = server_mapping(server, group_id)
@@ -76,8 +85,6 @@ class Player:
         if self.__dict__ == {}:
             return {"code": 404, "data": None}
         return {"code": 200, "data": self.__dict__}
-    
-from src.tools.utils.request import get_api
 
 async def get_player_local_data(role_name: str = "", role_id: str = "", server_name: str = "") -> Player:
     player_data = group_db.where_one(RoleData(), "roleName = ? OR roleId = ? AND serverName = ?", role_name, role_id, server_name, default=None)

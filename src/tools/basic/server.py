@@ -1,8 +1,7 @@
 from typing import Optional
 
 from src.tools.utils.path import TOOLS
-
-from .group import getGroupSettings
+from src.tools.basic.group import getGroupSettings
 
 import json
 

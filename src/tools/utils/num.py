@@ -1,6 +1,6 @@
 import re
 
-def checknumber(value):
+def check_number(value):
     """
     检查参数是否是数值
     """
