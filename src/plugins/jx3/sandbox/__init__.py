@@ -5,6 +5,7 @@ from nonebot.adapters.onebot.v11 import GroupMessageEvent, MessageSegment as ms
 
 from src.tools.basic.server import server_mapping
 from src.tools.utils.file import get_content_local
+from src.tools.config import Config
 
 from .api import *
 
@@ -16,6 +17,8 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     获取服务器沙盘：
     Example：-沙盘v2 幽月轮
     """
+    if not Config.jx3.api.enable:
+        return
     server = args.extract_plain_text()
     server_ = server_mapping(server, str(event.group_id))
     data = await sandbox_v2_(server_)
