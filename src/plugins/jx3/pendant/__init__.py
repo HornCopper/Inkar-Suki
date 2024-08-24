@@ -12,6 +12,6 @@ pendents = on_command("jx3_pendents", aliases={"挂件"}, force_whitespace=True,
 
 @pendents.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
-    if args.extract_plain_text() == "" or Config.jx3.api.enable:
+    if args.extract_plain_text() == "" or not Config.jx3.api.enable:
         return
     await pendents.finish(await pendant(name=args.extract_plain_text()))
