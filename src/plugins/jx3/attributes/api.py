@@ -220,7 +220,7 @@ def kungfu_mapping(kf) -> Union[str, bool]:
         return False
 
 
-async def get_attr_main(server, id, group_id):
+async def get_attr_main(server, id, group_id, exist_data: dict = {}):
     server = server_mapping(server, group_id)
     if not server:
         return [PROMPT.ServerNotExist]
@@ -253,8 +253,11 @@ async def get_attr_main(server, id, group_id):
         "User-Agent": "SeasunGame/193 CFNetwork/1240.0.4 Darwin/20.6.0",
         "x-sk": xsk
     }
-    data = await post_url(url="https://m.pvp.xoyo.com/mine/equip/get-role-equip", data=param, headers=headers)
-    data = json.loads(data)
+    if exist_data:
+        data = exist_data
+    else:
+        data = await post_url(url="https://m.pvp.xoyo.com/mine/equip/get-role-equip", data=param, headers=headers)
+        data = json.loads(data)
     kfid = data["data"]["Kungfu"]["KungfuID"]
     kf = await get_personal_kf(kfid)
     if not kf:

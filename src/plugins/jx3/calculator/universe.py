@@ -1,0 +1,1 @@
+from .dj import generate_calculator_img_dujing as dj_calculator

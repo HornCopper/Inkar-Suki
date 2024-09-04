@@ -1,11 +1,11 @@
 import os
-import pathlib2
+from pathlib import Path
 
 tools_path = f"{os.getcwd()}/src/tools"
 
 def get_path(path: str) -> str:
-    t = pathlib2.Path(tools_path)
-    return t.parent.joinpath(path).__str__()
+    t = Path(tools_path)
+    return str(t.parent.joinpath(path))
 
 DATA = get_path("data")
 CACHE = get_path("cache")

@@ -14,5 +14,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     if args.extract_plain_text() != "":
         return
     image = await getCalendar()
+    if not isinstance(image, str):
+        return
     image = get_content_local(image)
     await calendar.finish(ms.image(image))

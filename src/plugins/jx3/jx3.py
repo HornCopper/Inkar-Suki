@@ -5,6 +5,7 @@ from .assistance import *
 from .awesome import *
 from .bind import *
 from .buff import *
+from .calculator import *
 from .calendar import *
 from .daily import *
 from .detail import *

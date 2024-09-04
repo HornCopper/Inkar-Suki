@@ -1,10 +1,11 @@
 from src.tools.config import Config
-from src.tools.utils.request import post_url, get_api
+from src.tools.utils.request import post_url, get_api, get_url
 from src.tools.basic.jx3 import gen_ts, gen_xsk, format_body
 
 from src.plugins.jx3.bind import get_player_local_data, Player
 
 import json
+import re
 
 ticket = Config.jx3.api.ticket
 device_id = ticket.split("::")[-1]
@@ -22,6 +23,7 @@ class JX3Serendipity:
     def __init__(self):
         self.tl = []
         self.my = []
+        self.jx3pet = []
 
     def get_serendipity_level(self, serendipity_name: str) -> int:
         if serendipity_name.find("宠物奇缘") != -1:
@@ -97,8 +99,24 @@ class JX3Serendipity:
             }
             serendipities.append(new)
         self.my = serendipities
-    
+
+    async def get_jx3pet_data(self, server: str, name: str):
+        final_url = f"https://www.jx3pet.com/api/serendipity?server={server}&type=不限&serendipity=不限&name={name}&limit=30"
+        data = await get_url(final_url)
+        data = json.loads(re.search(r'\{.*\}', data, re.DOTALL)[0]) # type: ignore
+        serendipities = []
+        for serendipity in data["data"]:
+            serendipities.append(
+                {
+                    "name": serendipity["serendipity"],
+                    "level": self.get_serendipity_level(serendipity["serendipity"]),
+                    "time": serendipity["time"]
+                }
+            )
+        self.jx3pet = serendipities
+
     async def integration(self, server: str, name: str):
         await self.get_tuilan_data(server, name)
         await self.get_my_data(server, name)
-        return merge_dict_lists(self.tl, self.my)
+        await self.get_jx3pet_data(server, name)
+        return merge_dict_lists(self.jx3pet, merge_dict_lists(self.tl, self.my))
