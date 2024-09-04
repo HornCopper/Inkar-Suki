@@ -215,7 +215,11 @@ class Database:
             condition = f"id = {model.id}"
         if not condition and not allow_empty:
             raise ValueError("删除操作必须提供条件")
-        self.cursor.execute(f"DELETE FROM {table_name} WHERE {condition}", args)
+        print(f"DELETE FROM {table_name} WHERE {condition}")
+        try:
+            self.cursor.execute(f"DELETE FROM {table_name} WHERE {condition}", args)
+        except sqlite3.ProgrammingError:
+            self.cursor.execute(f"DELETE FROM {table_name} WHERE {condition}")
         self.conn.commit()
 
     def auto_migrate(self, *args: LiteModel):

@@ -43,7 +43,7 @@ def getGroupServer(group_id: Optional[str]) -> Optional[str]:
     if not group_id:
         return None
     group = getGroupSettings(group_id, "server")
-    if not isinstance(group, Optional[str]):
+    if not isinstance(group, type(None)) and not isinstance(group, str):
         return
     if not group:
         return None

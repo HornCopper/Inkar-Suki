@@ -117,7 +117,7 @@ async def _(bot: Bot, event: GroupMessageEvent, confirm: Message = Arg()):
     u_input = confirm.extract_plain_text()
     if u_input == "移除音卡":
         await dismiss.send(leave_msg)
-        await bot.call_api("send_group_msg", group_id=int(Config.bot_basic.bot_notice.__dict__[str(event.self_id)]), message=f"{Config.bot_basic.bot_name}按他们的要求，离开了{event.group_id}。")
+        await bot.call_api("send_group_msg", group_id=int(Config.bot_basic.bot_notice[str(event.self_id)]), message=f"{Config.bot_basic.bot_name}按他们的要求，离开了{event.group_id}。")
         await bot.call_api("set_group_leave", group_id=event.group_id)
 
 
