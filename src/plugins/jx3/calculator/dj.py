@@ -59,7 +59,8 @@ async def get_calculated_data(
         json = params,
         headers = {
             "token": inkarsuki_offical_token
-        }
+        },
+        timeout=10000
     )
     return json.loads(data)
 
@@ -154,8 +155,8 @@ async def generate_calculator_img_dujing(server: Optional[str], name: str, group
     calculated_data = await get_calculated_data(**(analyzed_data.__dict__))
     tables = []
     max_dps = calculated_data["data"]["result"] # 理论DPS
-    avg_dps = max_dps*0.95 # 一般手法
-    min_dps = max_dps*0.825 # 一键宏
+    avg_dps = int(max_dps*0.95) # 一般手法
+    min_dps = int(max_dps*0.825) # 一键宏
     for skill_sort in range(len(calculated_data["data"]["skills"])):
         tables.append(
             Template(template_calculator_dujing).render(**{
@@ -163,7 +164,7 @@ async def generate_calculator_img_dujing(server: Optional[str], name: str, group
                 "display": str(int(round(float(calculated_data["data"]["percent"][skill_sort][:-1])/float(calculated_data["data"]["percent"][0][:-1]), 2)*100)) + "%",
                 "percent": calculated_data["data"]["percent"][skill_sort],
                 "count": calculated_data["data"]["counts"][skill_sort],
-                "value": calculated_data["data"]["damages"]
+                "value": calculated_data["data"]["damages"][skill_sort]
             })
         )
     html = Template(read(VIEWS + "/jx3/calculator/calculator.html")).render(**{
@@ -180,7 +181,7 @@ async def generate_calculator_img_dujing(server: Optional[str], name: str, group
     })
     final_html = CACHE + "/" + get_uuid() + ".html"
     write(final_html, html)
-    final_path = await generate(final_html, False, "table", False)
+    final_path = await generate(final_html, False, ".total", False)
     if not isinstance(final_path, str):
         return
     return Path(final_path).as_uri()
