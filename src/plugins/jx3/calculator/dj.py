@@ -37,6 +37,7 @@ class ExcelRequest(BaseModel):
     sash: Literal["", "秋风韵"]
     enchant: List[bool]
     suit: List[bool]
+    qixue: Literal["曲致", "固灵"]
 
 inkarsuki_offical_token = Config.hidden.offcial_token
 
@@ -45,14 +46,16 @@ async def get_calculated_data(
     weapon: Literal["", "墨语沉香", "13950水特效", "龙门飞剑", "小橙武特效"],
     sash: Literal["", "秋风韵"],
     enchant: List[bool],
-    suit: List[bool]
+    suit: List[bool],
+    qixue: Literal["曲致", "固灵"]
 ) -> dict:
     params = {
         "attrs": attrs,
         "weapon": weapon,
         "sash": sash,
         "enchant": enchant,
-        "suit": suit
+        "suit": suit,
+        "qixue": qixue
     }
     data = await post_url(
         url = "http://117.50.178.116:2333/calculator",
@@ -81,6 +84,14 @@ def check_set_effects(equip_list):
                     set_equipment_recipe_activated = True
 
     return [skill_event_handler_activated, set_equipment_recipe_activated]
+
+def get_key_qixue(qixue_list: list):
+    for qx in qixue_list:
+        if qx["name"] == "曲致":
+            return "曲致"
+        if qx["name"] == "固灵":
+            return "固灵"
+    return "曲致"
 
 async def analyze_attrs(attrs_raw_data: dict) -> ExcelRequest:
     weapon = ""
@@ -129,7 +140,8 @@ async def analyze_attrs(attrs_raw_data: dict) -> ExcelRequest:
         weapon=weapon,
         sash=sash,
         enchant=enchant,
-        suit=suit
+        suit=suit,
+        qixue=get_key_qixue(attrs_raw_data["data"]["Person"]["qixueList"])
     )
 
 async def generate_calculator_img_dujing(server: Optional[str], name: str, group_id: str = ""):
@@ -153,9 +165,8 @@ async def generate_calculator_img_dujing(server: Optional[str], name: str, group
     analyzed_data: ExcelRequest = await analyze_attrs(equip_data)
     calculated_data = await get_calculated_data(**(analyzed_data.__dict__))
     tables = []
-    max_dps = calculated_data["data"]["result"] # 理论DPS
-    avg_dps = max_dps*0.95 # 一般手法
-    min_dps = max_dps*0.825 # 一键宏
+    max_dps = calculated_data["data"]["result"] # 手打
+    min_dps = max_dps*0.985 # 一键宏
     for skill_sort in range(len(calculated_data["data"]["skills"])):
         tables.append(
             Template(template_calculator_dujing).render(**{
@@ -170,7 +181,6 @@ async def generate_calculator_img_dujing(server: Optional[str], name: str, group
         "font": ASSETS + "/font/custom.ttf",
         "yozai": ASSETS + "/font/Yozai-Medium.ttf",
         "max": max_dps,
-        "avg": avg_dps,
         "min": min_dps,
         "tables": "\n".join(tables),
         "school": "毒经",
