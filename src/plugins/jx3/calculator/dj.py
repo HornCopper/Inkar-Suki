@@ -187,7 +187,7 @@ async def generate_calculator_img_dujing(server: Optional[str], name: str, group
         "school": "毒经",
         "server": server,
         "name": name,
-        "calculator": "【雾海寻龙】毒经DPS计算器 20240530"
+        "calculator": "【雾海寻龙】毒经DPS计算器 240806"
     })
     final_html = CACHE + "/" + get_uuid() + ".html"
     write(final_html, html)
