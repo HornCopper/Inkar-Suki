@@ -137,27 +137,27 @@
             <div class="cell-title"><span>一键宏</span></div>
             <div class="cell">{{ min }}</div>
         </div>
+        <table style="background-color: #FFFFFF">
+            <thead>
+                <tr>
+                    <th class="short-column" style="height:20px">技能</th>
+                    <th class="short-column" style="height:20px">占比</th>
+                    <th class="short-column" style="height:20px">次数</th>
+                    <th class="short-column" style="height:20px">伤害</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{ tables }}
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="7">&copy; Inkar Suki · {{ school }}DPS计算器 · {{ server }} · {{ name }} ·
+                        06:41<br>计算器数据来源：{{ calculator }}
+                    </td>
+                </tr>
+            </tfoot>
+        </table>
     </div>
-    <table style="background-color: #FFFFFF">
-        <thead>
-            <tr>
-                <th class="short-column" style="height:20px">技能</th>
-                <th class="short-column" style="height:20px">占比</th>
-                <th class="short-column" style="height:20px">次数</th>
-                <th class="short-column" style="height:20px">伤害</th>
-            </tr>
-        </thead>
-        <tbody>
-            {{ tables }}
-        </tbody>
-        <tfoot>
-            <tr>
-                <td colspan="7">&copy; Inkar Suki · {{ school }}DPS计算器 · {{ server }} · {{ name }} ·
-                    06:41<br>计算器数据来源：{{ calculator }}
-                </td>
-            </tr>
-        </tfoot>
-    </table>
 </body>
 
 </html>
