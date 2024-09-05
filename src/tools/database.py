@@ -19,8 +19,8 @@ NoneType = type(None)
 
 
 class LiteModel(BaseModel):
-    TABLE_NAME: str = ""
-    id: int = 0
+    TABLE_NAME: str = None # type: ignore
+    id: int = None # type: ignore
 
     def dump(self, *args, **kwargs):
         
