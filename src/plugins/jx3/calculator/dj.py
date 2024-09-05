@@ -167,7 +167,7 @@ async def generate_calculator_img_dujing(server: Optional[str], name: str, group
     calculated_data = await get_calculated_data(**(analyzed_data.__dict__))
     tables = []
     max_dps = calculated_data["data"]["result"] # 手打
-    min_dps = max_dps*0.985 # 一键宏
+    min_dps = int(max_dps*0.985) # 一键宏
     for skill_sort in range(len(calculated_data["data"]["skills"])):
         tables.append(
             Template(template_calculator_dujing).render(**{
