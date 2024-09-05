@@ -127,7 +127,7 @@ async def analyze_attrs(attrs_raw_data: dict) -> ExcelRequest:
     suit = check_set_effects(attrs_raw_data["data"]["Equips"])
     panel = attrs_raw_data["data"]["PersonalPanel"]
     attrs = []
-    for attr_name in ["根骨", "基础攻击力", "会心", "会心效果", "破防", "破招", "无双", "加速"]:
+    for attr_name in ["根骨", "攻击力", "会心", "会心效果", "破防", "破招", "无双", "加速"]:
         for attr_data in panel:
             if attr_data["name"] == attr_name:
                 if attr_data["percent"] and attr_name != "加速":
