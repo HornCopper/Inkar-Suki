@@ -15,6 +15,7 @@ from src.plugins.jx3.detail.detail import get_tuilan_data
 from src.plugins.jx3.attributes.api import get_personal_kf, enchant_mapping
 
 import json
+import pydantic
 
 inkarsuki_offical_token = Config.hidden.offcial_token
 
@@ -163,7 +164,10 @@ class JX3PlayerAttributes:
     @staticmethod
     def convert_to_dict(obj: Any) -> Any:
         if isinstance(obj, BaseModel):
-            return obj.model_dump(by_alias=True)
+            if pydantic.VERSION.startswith("1"):
+                return obj.dict(by_alias=True)  # Pydantic v1
+            else:
+                return obj.model_dump(by_alias=True)  # Pydantic v2
         elif isinstance(obj, list):
             return [JX3PlayerAttributes.convert_to_dict(item) for item in obj]
         elif isinstance(obj, dict):
