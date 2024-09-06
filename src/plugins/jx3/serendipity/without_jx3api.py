@@ -3,6 +3,7 @@ from src.tools.utils.request import post_url, get_api, get_url
 from src.tools.basic.jx3 import gen_ts, gen_xsk, format_body
 
 from src.plugins.jx3.bind import get_player_local_data, Player
+from src.plugins.majsoul.koromo import sort_list_of_dicts
 
 import json
 import re
@@ -114,9 +115,10 @@ class JX3Serendipity:
                 }
             )
         self.jx3pet = serendipities
+        print(self.jx3pet)
 
     async def integration(self, server: str, name: str):
         await self.get_tuilan_data(server, name)
         await self.get_my_data(server, name)
         await self.get_jx3pet_data(server, name)
-        return merge_dict_lists(self.jx3pet, merge_dict_lists(self.tl, self.my))
+        return sort_list_of_dicts(merge_dict_lists(merge_dict_lists(self.tl, self.my), self.jx3pet), "time")[::-1]

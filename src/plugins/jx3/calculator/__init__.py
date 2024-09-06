@@ -18,10 +18,10 @@ calc = on_command("jx3_calculator_dj", aliases={"毒经计算器"}, priority=5) 
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     if args.extract_plain_text() == "":
         return
-    if not checker(str(event.user_id), 10) and Sign.get_coin(str(event.user_id)) < 500:
-        await calc.finish(error(10))
-    if not checker(str(event.user_id), 10):
-        Sign.reduce(str(event.user_id), 500)
+    # if not checker(str(event.user_id), 10) and Sign.get_coin(str(event.user_id)) < 500:
+    #     await calc.finish(error(10))
+    # if not checker(str(event.user_id), 10):
+    #     Sign.reduce(str(event.user_id), 500)
     arg = args.extract_plain_text().split(" ")
     if len(arg) not in [1, 2]:
         await calc.finish("唔……参数不正确哦，请检查后重试~")
