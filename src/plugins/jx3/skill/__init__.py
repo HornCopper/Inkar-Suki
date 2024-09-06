@@ -70,7 +70,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     if os.path.exists(ASSETS + "/jx3/" + f"{ver}.json") is False:
         final_url = f"https://data.jx3box.com/talent/{ver}.json"
         data = await get_api(final_url)
-        write(ASSETS + "/jx3/" + f"v{ver}.json", json.dumps(data, ensure_ascii=False))
+        write(ASSETS + "/jx3/" + f"{ver}.json", json.dumps(data, ensure_ascii=False))
     else:
         data = json.loads(read(ASSETS + "/jx3/" + f"{ver}.json"))
     try:

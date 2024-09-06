@@ -21,6 +21,8 @@ device_id = ticket.split("::")[-1]
 async def get_tuilan_data(url: str, params: Union[dict, None] = None):
     if params is None:
         params = {"ts": gen_ts()}
+    if "ts" not in params:
+        params["ts"] = gen_ts()
     params_ = format_body(params)
     xsk = gen_xsk(params_)
     basic_headers = {

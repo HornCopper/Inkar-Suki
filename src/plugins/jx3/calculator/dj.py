@@ -174,7 +174,7 @@ async def generate_calculator_img_dujing(server: Optional[str], name: str, group
                 "skill": calculated_data["data"]["skills"][skill_sort],
                 "display": str(int(round(float(calculated_data["data"]["percent"][skill_sort][:-1])/float(calculated_data["data"]["percent"][0][:-1]), 2)*100)) + "%",
                 "percent": calculated_data["data"]["percent"][skill_sort],
-                "count": calculated_data["data"]["counts"][skill_sort],
+                "count": str(calculated_data["data"]["counts"][skill_sort]) + "（" + calculated_data["data"]["critical"] + "会心）",
                 "value": calculated_data["data"]["damages"][skill_sort]
             })
         )
