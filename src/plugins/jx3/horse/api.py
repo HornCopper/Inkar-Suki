@@ -21,7 +21,31 @@ async def get_horse_reporter(server: str, group_id: str = ""):  # 数据来源@J
             map = i["map_name"]
             msg = f"{content}\n刷新时间：{time_}\n地图：{map}"
             return msg
-        
+
+def is_in_current_cycle(timestamp):
+    now = datetime.now()
+    current_weekday = now.weekday()
+    if current_weekday == 1 and now.hour < 7:
+        start_of_cycle = datetime(now.year, now.month, now.day, 7) - timedelta(days=7)
+    else:
+        days_to_tuesday = (current_weekday - 1) % 7
+        start_of_cycle = datetime(now.year, now.month, now.day, 7) - timedelta(days=days_to_tuesday)
+    end_of_cycle = start_of_cycle + timedelta(days=6, hours=24)
+    timestamp_dt = datetime.fromtimestamp(timestamp)
+    return start_of_cycle <= timestamp_dt < end_of_cycle
+
+def is_in_current_week(timestamp):
+    now = datetime.now()
+    current_weekday = now.weekday()
+    if current_weekday == 0 and now.hour < 7:
+        start_of_week = datetime(now.year, now.month, now.day, 7) - timedelta(days=7)
+    else:
+        days_to_monday = current_weekday % 7
+        start_of_week = datetime(now.year, now.month, now.day, 7) - timedelta(days=days_to_monday)
+    end_of_week = start_of_week + timedelta(days=7)
+    timestamp_dt = datetime.fromtimestamp(timestamp)
+    return start_of_week <= timestamp_dt < end_of_week
+
 async def get_horse_next_spawn(server, group_id: str):
     def parse_info(raw_msg: str, flush_time: str):
         next_times = {}
@@ -52,6 +76,14 @@ async def get_horse_next_spawn(server, group_id: str):
     server = server_mapping(server, group_id)
     if not server:
         return PROMPT.ServerNotExist
+    ct_data = await get_api(f"https://next2.jx3box.com/api/game/reporter/horse?pageIndex=1&pageSize=50&server={server}&type=chitu-horse&subtype=share_msg")
+    chitu_flushed = False
+    if is_in_current_cycle(ct_data["data"]["list"][0]["time"]):
+        chitu_flushed = True
+    dl_data = await get_api(f"https://next2.jx3box.com/api/game/reporter/horse?pageIndex=1&pageSize=50&server{server}&type=dilu-horse&subtype=share_msg")
+    dilu_flushed = False
+    if is_in_current_week(dl_data["data"]["list"][0]["time"]):
+        dilu_flushed = True
     web_data = await get_api(f"https://next2.jx3box.com/api/game/reporter/horse?pageIndex=1&pageSize=50&server={server}&type=horse&subtype=npc_chat")
     msg = {}
     ft = {}
@@ -69,4 +101,15 @@ async def get_horse_next_spawn(server, group_id: str):
     for map_name in maps:
         final_msg += f"\n{map_name}\n" + parse_info(msg[map_name], ft[map_name]) + "\n-------------------------------"
     final_msg = final_msg[1:-1]
-    return server + "·马场告示\n" + final_msg + "\n今日未收到的卢刷新通知！" if not dl_flag else final_msg + "\n今日将有的卢出世，敬请留意！"
+    add_msg = ""
+    if dilu_flushed:
+        add_msg = add_msg + "\n的卢本周期内已刷新！（周期：一周）"
+    else:
+        add_msg = add_msg + "\n的卢本周期内未刷新！（周期：一周）"
+    if chitu_flushed:
+        add_msg = add_msg + "\n赤兔本周期内已刷新！（周期：周二7点至下周一7点）"
+    else:
+        add_msg = add_msg + "\n赤兔本周期内未刷新！（周期：周二7点至下周一7点）"
+    final_msg = server + "·马场告示\n" + final_msg + "\n今日未收到的卢刷新通知！" if not dl_flag else final_msg + "\n今日将有的卢出世，敬请留意！"
+    final_msg = final_msg + "\n-------------------------------" + add_msg
+    return final_msg
