@@ -363,5 +363,4 @@ async def get_calculated_data(server: Optional[str], name: str, group_id: Option
         headers = {"token": inkarsuki_offical_token},
         json = jx3api_format_data
     )
-    print(data)
     return json.loads(data)
