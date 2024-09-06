@@ -1,7 +1,7 @@
 from pathlib import Path
 from typing import Union, Any, List, Optional
 
-from src.constant.jx3 import kungfu_to_school, colorList as colors
+from src.constant.jx3 import kungfu_to_school, color_list as colors
 
 from src.tools.database import group_db, AffectionsList
 from src.tools.utils.request import get_api

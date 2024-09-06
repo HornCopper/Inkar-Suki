@@ -1,7 +1,11 @@
+# DPS计算器 毒经
+
 from typing import List, Union, Literal, Optional
 from jinja2 import Template
 from pathlib import Path
 from pydantic import BaseModel
+
+from src.constant.jx3 import color_list
 
 from src.tools.utils.request import post_url
 from src.tools.basic.server import server_mapping, Zone_mapping
@@ -17,6 +21,18 @@ from src.plugins.jx3.detail.detail import get_tuilan_data
 from src.plugins.jx3.attributes.api import get_personal_kf
 
 import json
+
+inkarsuki_offical_token = Config.hidden.offcial_token
+
+msgbox_dujing = """
+<div class="element">
+    <div class="cell-title"><span>手打</span></div>
+    <div class="cell">{{ max }}</div>
+</div>
+<div class="element">
+    <div class="cell-title"><span>一键宏</span></div>
+    <div class="cell">{{ min }}</div>
+</div>"""
 
 template_calculator_dujing = """
 <tr>
@@ -38,8 +54,6 @@ class ExcelRequest(BaseModel):
     enchant: List[bool]
     suit: List[bool]
     qixue: Literal["曲致", "固灵"]
-
-inkarsuki_offical_token = Config.hidden.offcial_token
 
 async def get_calculated_data(
     attrs: List[Union[int, str]],
@@ -181,10 +195,13 @@ async def generate_calculator_img_dujing(server: Optional[str], name: str, group
     html = Template(read(VIEWS + "/jx3/calculator/calculator.html")).render(**{
         "font": ASSETS + "/font/custom.ttf",
         "yozai": ASSETS + "/font/Yozai-Medium.ttf",
-        "max": max_dps,
-        "min": min_dps,
+        "msgbox": Template(msgbox_dujing).render(**{
+            "max": max_dps,
+            "min": min_dps
+        }),
         "tables": "\n".join(tables),
         "school": "毒经",
+        "color": color_list["毒经"],
         "server": server,
         "name": name,
         "calculator": "【雾海寻龙】毒经DPS计算器 240806"

@@ -1,13 +1,22 @@
+# 在线DPS计算器 by 唐宋
+# https://github.com/LynTss/jx3dps-online
+
 from typing import Optional, Union, Literal, List, Any
 from pydantic import BaseModel, Field
 
 from src.tools.basic.server import server_mapping, Zone_mapping
 from src.tools.basic.prompts import PROMPT
 from src.tools.utils.time import get_current_time
+from src.tools.utils.request import post_url
+from src.tools.config import Config
 
 from src.plugins.jx3.bind import get_player_local_data
 from src.plugins.jx3.detail.detail import get_tuilan_data
 from src.plugins.jx3.attributes.api import get_personal_kf, enchant_mapping
+
+import json
+
+inkarsuki_offical_token = Config.hidden.offcial_token
 
 async def get_tuilan_raw_data(server: str, uid: str) -> dict:
     param = {
@@ -164,33 +173,29 @@ class JX3PlayerAttributes:
     @staticmethod
     def sort_equipments(equip_list: list) -> list:
         order = {
-            "项链": 3,
-            "腰坠": 2,
-            "戒指": 1
+            "项链": 4,
+            "腰坠": 3,
+            "戒指": 2
         }
 
         def get_priority(item):
             sub_kind = item.get("subKind", "")
             return order.get(sub_kind, 0)
 
-        weapons_and_pouches = []
-        last_four_gear = []
-        others = []
-
-        for item in equip_list:
-            if item.get("kind") == "武器" or item.get("class") == "投掷囊":
-                weapons_and_pouches.append(item)
-            else:
-                last_four_gear.append(item)
-
-        last_four_gear_sorted = sorted(last_four_gear, key=lambda x: get_priority(x), reverse=True)
+        weapons = [item for item in equip_list if item.get("kind") == "武器" and item.get("subKind") != "投掷囊"]
+        pouches = [item for item in equip_list if item.get("class") == "投掷"]
+        
+        other_gears = [item for item in equip_list if item.get("kind") != "武器" and item.get("class") != "投掷"]
+        
+        last_four_gear_sorted = sorted(other_gears, key=lambda x: get_priority(x), reverse=True)
+        
         final_last_four = last_four_gear_sorted[-4:]
         final_last_four.sort(key=lambda x: ["项链", "腰坠", "戒指"].index(x.get("subKind", "")) if x.get("subKind") in ["项链", "腰坠", "戒指"] else len(["项链", "腰坠", "戒指"]))
-
-        other_gears = [item for item in last_four_gear_sorted if item not in final_last_four]
-
-        sorted_data = weapons_and_pouches + other_gears + final_last_four
-
+        
+        remaining_gears = [item for item in last_four_gear_sorted if item not in final_last_four]
+        
+        sorted_data = weapons + pouches + remaining_gears + final_last_four
+        
         return sorted_data
 
     async def _fetch_data(self):
@@ -261,7 +266,7 @@ class JX3PlayerAttributes:
                             )
                         ]
                     )
-                ] if "WPermanentEnchant" in equip else [],
+                ] if "WPermanentEnchant" in equip else self.convert_to_dict(PermanentEnchant()),
                 commonEnchant=CommonEnchant(
                     name=str(enchant_mapping(equip["Quality"])) + "·伤·" + "帽衣腰腕鞋"[["帽子", "上衣", "腰带", "护臂", "鞋"].index(equip["Icon"]["SubKind"])]
                 ) if equip["Icon"]["SubKind"] in ["帽子", "上衣", "腰带", "护臂", "鞋"] else CommonEnchant(),
@@ -311,9 +316,9 @@ class JX3PlayerAttributes:
         kungfu_name = await self.get_kungfu(self.tl_data["data"]["Kungfu"]["KungfuID"]) # type: ignore
         panel_data = await self.get_panel()
         for equip in equip_data:
-            if check_key_empty(equip, "permanentEnchant"):
+            if equip["permanentEnchant"] == self.convert_to_dict(PermanentEnchant()):
                 equip.pop("permanentEnchant")
-            if check_key_empty(equip, "commonEnchant"):
+            if equip["commonEnchant"] == CommonEnchant().__dict__:
                 equip.pop("commonEnchant")
         return {
             "code": 200,
@@ -326,3 +331,33 @@ class JX3PlayerAttributes:
             },
             "time": get_current_time()
         }
+    
+async def get_calculated_data(server: Optional[str], name: str, group_id: Optional[str] = "", school: str = "") -> Union[dict, Literal[False]]:
+    server_ = server_mapping(server, group_id)
+    if not isinstance(server_, str):
+        return False
+    player_info = await get_local_data(server, name, group_id)
+    if not player_info:
+        return False
+    uid = player_info["roleId"]
+    instance = JX3PlayerAttributes(
+        server = server_,
+        name = name,
+        group_id = group_id,
+        tl_data = await get_tuilan_raw_data(
+            server = server_,
+            uid = uid
+        )
+    )
+    jx3api_format_data = await instance.format_jx3api()
+    if not isinstance(jx3api_format_data, dict):
+        return False
+    if jx3api_format_data["data"]["kungfuName"] != school:
+        return False
+    data = await post_url(
+        "https://inkar-suki.codethink.cn/calculator",
+        headers = {"token": inkarsuki_offical_token},
+        json = jx3api_format_data
+    )
+    print(data)
+    return json.loads(data)

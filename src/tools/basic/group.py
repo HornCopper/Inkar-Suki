@@ -42,7 +42,7 @@ def getAllGroups() -> Union[bool, list]:
         groups.append(group_settings.group_id)
     return groups
 
-async def send_subscribe(subscribe: str = "", msg: str = "", server: str = ""):
+async def send_subscribe(subscribe: str = "", msg: str = "", server: Optional[str] = ""):
     bots: Optional[dict] = get_bots()
     if bots is {}:
         return
@@ -66,6 +66,6 @@ async def send_subscribe(subscribe: str = "", msg: str = "", server: str = ""):
                     return
                 if subscribe in group_data:
                     group_server = getGroupSettings(str(group_id), "server")
-                    if server is not None and (group_server == "" or group_server != server):
+                    if server != "" and (group_server == "" or group_server != server):
                         continue
                     await bots[x].call_api("send_group_msg", group_id=int(group_id), message=msg)

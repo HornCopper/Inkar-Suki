@@ -318,7 +318,7 @@ async def get_attr_main(server, id, group_id, exist_data: dict = {}):
             qx_name = x["name"].replace(" ", "")
             if qx_name == qx[i]: # type: ignore
                 if qx_name == "烟霞":
-                    qx_icon[i] = "https://icon.jx3box.com/icon/4219.png" # 烟霞特别优待
+                    qx_icon[i] = "https://icon.jx3box.com/icon/4219.png" # 烟霞特别优待 # type: ignore
                 qx_icon[i] = x["icon"]["FileName"] # type: ignore
     for i in equip_data: # type: ignore
         if i == "":

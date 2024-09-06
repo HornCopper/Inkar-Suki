@@ -11,7 +11,7 @@ import json
 import os
 
 with open(CONSTANT + "/jx3/schoolcolors.json", mode="r", encoding="utf-8") as colors:
-    colorList = json.load(colors)
+    color_list = json.load(colors)
 
 with open(CONSTANT + "/jx3/schoolid.json", mode="r", encoding="utf-8") as school:
     force_list = json.load(school)

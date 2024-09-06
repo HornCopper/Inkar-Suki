@@ -102,7 +102,7 @@
 
         .progress {
             height: 100%;
-            background-color: #5ebfd7;
+            background-color: {{ color }};
             border-radius: 10px;
         }
 
@@ -130,14 +130,7 @@
 <body>
     <div class="total" style="display: inline-block;">
         <div class="message-box">
-            <div class="element">
-                <div class="cell-title"><span>手打</span></div>
-                <div class="cell">{{ max }}</div>
-            </div>
-            <div class="element">
-                <div class="cell-title"><span>一键宏</span></div>
-                <div class="cell">{{ min }}</div>
-            </div>
+            {{ msgbox }}
         </div>
             <table style="background-color: #FFFFFF">
                 <thead>

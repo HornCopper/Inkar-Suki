@@ -1,7 +1,7 @@
 from typing import Union, Literal
 from pathlib import Path
 
-from src.constant.jx3 import school_name_aliases, skill_icons, colorList
+from src.constant.jx3 import school_name_aliases, skill_icons, color_list
 
 from src.tools.basic.group import getGroupSettings, setGroupSettings
 from src.tools.utils.time import get_current_time
@@ -164,7 +164,7 @@ class Assistance:
                             a = row[x]
                             count[self.job_to_type(a["job"])] += 1
                             img_src = a["img"]
-                            job_color = colorList.get(a["job"], "#000000")  # 默认颜色为黑色
+                            job_color = color_list.get(a["job"], "#000000")  # 默认颜色为黑色
                             id_text = a["id"]
                             qq_text = a["apply"]
                             cell_content = f"""
