@@ -3,6 +3,7 @@ from nonebot.adapters import Message
 from nonebot.adapters.onebot.v11 import GroupMessageEvent, MessageSegment as ms
 from nonebot.params import CommandArg, Arg
 from nonebot.typing import T_State
+from nonebot.matcher import Matcher
 
 from src.tools.basic.prompts import PROMPT
 from src.tools.utils.num import check_number
@@ -16,13 +17,14 @@ adventure_ = on_command("jx3_adventure", aliases={"成就"}, force_whitespace=Tr
 
 
 @adventure_.handle()
-async def _(state: T_State, args: Message = CommandArg()):
+async def _(matcher: Matcher, state: T_State, args: Message = CommandArg()):
     """
     查询成就信息：
 
     Example：-成就 好久不见
     """
     if args.extract_plain_text() == "":
+        matcher.stop_propagation()
         return
     achievement_name = args.extract_plain_text()
     data = await getAdventure(achievement_name)

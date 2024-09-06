@@ -51,6 +51,8 @@ def find_qx(data, kf, qx) -> Optional[int]:
         qx = "桑柘"
     if qx.find("素矰") != -1:
         qx = "素矰"
+    if qx == "烟霞":
+        return 0
     real_data = data[kf]
     for i in range(1, 13):
         for x in range(1, 6):
@@ -315,6 +317,8 @@ async def get_attr_main(server, id, group_id, exist_data: dict = {}):
         for x in data["data"]["Person"]["qixueList"]:
             qx_name = x["name"].replace(" ", "")
             if qx_name == qx[i]: # type: ignore
+                if qx_name == "烟霞":
+                    qx_icon[i] = "https://icon.jx3box.com/icon/4219.png" # 烟霞特别优待
                 qx_icon[i] = x["icon"]["FileName"] # type: ignore
     for i in equip_data: # type: ignore
         if i == "":
