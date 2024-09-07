@@ -16,7 +16,7 @@ from .universe import (
 
 from .wf import *
 
-calc_dj = on_command("jx3_calculator_dj", aliases={"毒经计算器"}, priority=5) # 目前先对毒经的计算器进行响应，后续尽可能多地支持
+calc_dj = on_command("jx3_calculator_dj", aliases={"毒经计算器"}, priority=5, force_whitespace=True) # 目前先对毒经的计算器进行响应，后续尽可能多地支持
 
 @calc_dj.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
@@ -38,7 +38,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
         data = get_content_local(data)
         await calc_dj.finish(ms.image(data))
 
-calc_wf = on_command("jx3_calculator_wf", aliases={"无方计算器"}, priority=5) # 目前先对无方的计算器进行响应，后续尽可能多地支持
+calc_wf = on_command("jx3_calculator_wf", aliases={"无方计算器"}, priority=5, force_whitespace=True) # 目前先对无方的计算器进行响应，后续尽可能多地支持
 
 @calc_wf.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
@@ -60,7 +60,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
         data = get_content_local(data)
         await calc_wf.finish(ms.image(data))
 
-calc_ylj = on_command("jx3_calculator_lyj", aliases={"凌雪计算器"}, priority=5) # 目前先对无方的计算器进行响应，后续尽可能多地支持
+calc_ylj = on_command("jx3_calculator_lyj", aliases={"凌雪计算器"}, priority=5, force_whitespace=True) # 目前先对无方的计算器进行响应，后续尽可能多地支持
 
 @calc_ylj.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
