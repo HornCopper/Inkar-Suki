@@ -270,7 +270,7 @@ class JX3PlayerAttributes:
                             )
                         ]
                     )
-                ] if "WPermanentEnchant" in equip else self.convert_to_dict(PermanentEnchant()),
+                ] if "WPermanentEnchant" in equip else [PermanentEnchant()],
                 commonEnchant=CommonEnchant(
                     name=str(enchant_mapping(equip["Quality"])) + "·伤·" + "帽衣腰腕鞋"[["帽子", "上衣", "腰带", "护臂", "鞋"].index(equip["Icon"]["SubKind"])]
                 ) if equip["Icon"]["SubKind"] in ["帽子", "上衣", "腰带", "护臂", "鞋"] else CommonEnchant(),
@@ -320,7 +320,7 @@ class JX3PlayerAttributes:
         kungfu_name = await self.get_kungfu(self.tl_data["data"]["Kungfu"]["KungfuID"]) # type: ignore
         panel_data = await self.get_panel()
         for equip in equip_data:
-            if equip["permanentEnchant"] == self.convert_to_dict(PermanentEnchant()):
+            if equip["permanentEnchant"] == [self.convert_to_dict(PermanentEnchant())]:
                 equip.pop("permanentEnchant")
             if equip["commonEnchant"] == CommonEnchant().__dict__:
                 equip.pop("commonEnchant")
