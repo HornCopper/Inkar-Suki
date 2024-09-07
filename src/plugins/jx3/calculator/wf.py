@@ -42,7 +42,7 @@ async def generate_calculator_img_wufang(server: Optional[str], name: str, group
     role_data = await get_player_local_data(role_name=name, server_name=server)
     if role_data.format_jx3api()["code"] != 200:
         return [PROMPT.PlayerNotExist]
-    data = await get_calculated_data("唯我独尊", "生菜卷烤肉", group_id, "无方")
+    data = await get_calculated_data(server, name, group_id, "无方")
     if not data:
         return ["唔……无法计算玩家数据！请检查装备、属性、职业！"]
     stake_data = data["data"]["木桩计算结果"]
