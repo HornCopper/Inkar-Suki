@@ -102,8 +102,6 @@ def check_set_effects(equip_list):
 
 def get_key_qixue(qixue_list: list):
     for qx in qixue_list:
-        if qx["name"] == "曲致":
-            return "曲致"
         if qx["name"] == "固灵":
             return "固灵"
     return "曲致"
@@ -115,13 +113,13 @@ async def analyze_attrs(attrs_raw_data: dict) -> ExcelRequest:
     suit = []
     for equip in attrs_raw_data["data"]["Equips"]:
         if equip["Icon"]["Kind"] == "武器" and equip["Icon"]["SubKind"] != "投掷囊":
-            if equip["Name"] == "十方断魂笛·虫魂" and equip["Quality"] == "13200":
+            if (equip["Name"], equip["Quality"]) == ("十方断魂笛·虫魂", "13200"):
                 weapon = "龙门飞剑"
-            if equip["Name"] == "墨语沉香" and equip["Quality"] == "12500":
+            if (equip["Name"], equip["Quality"]) == ("墨语沉香", "12500"):
                 weapon = "墨语沉香"
             if equip["Name"] == "悠哉乐土":
                 weapon = "13950水特效"
-            if equip["Name"] == "死生往复·牵丝" and equip["Quality"] == "11650":
+            if (equip["Name"], equip["Quality"]) == ("死生往复·牵丝", "11650"):
                 weapon = "小橙武特效"
         if equip["Icon"]["SubKind"] == "腰坠":
             if equip["Name"] == "秋风韵":

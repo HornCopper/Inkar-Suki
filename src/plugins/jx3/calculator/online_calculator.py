@@ -80,9 +80,9 @@ class FiveStone(BaseModel):
     level: str = ""
     max: str = ""
     min: str = ""
-    icon: str = ""
-    kind: str = ""
-    subKind: str = ""
+    icon: Optional[str] = ""
+    kind: Optional[str] = ""
+    subKind: Optional[str] = ""
     desc: str = ""
     percent: bool = False
 
@@ -239,19 +239,21 @@ class JX3PlayerAttributes:
                 EquipType=_EquipType(**equip["EquipType"]),
                 ID=equip["ID"],
                 UID=equip["UID"],
-                fiveStone=[
-                    FiveStone(
-                        name=item["Name"],
-                        level=item["Level"],
-                        max=item["Param1Max"],
-                        min=item["Param1Min"],
-                        icon=item["Icon"]["FileName"],
-                        kind=item["Icon"]["Kind"],
-                        subKind=item["Icon"]["SubKind"],
-                        desc=item["Attrib"]["GeneratedMagic"],
-                        percent=False
-                    ) for item in equip["FiveStone"]
-                ] if equip["Icon"]["SubKind"] != "戒指" else [],
+                fiveStone = [
+                    (
+                        FiveStone(
+                            name=item["Name"],
+                            level=item["Level"],
+                            max=item["Param1Max"],
+                            min=item["Param1Min"],
+                            icon=item["Icon"]["FileName"] if "Icon" in item and item["Icon"] is not None else None,
+                            kind=item["Icon"]["Kind"] if "Icon" in item and item["Icon"] is not None else None,
+                            subKind=item["Icon"]["SubKind"] if "Icon" in item and item["Icon"] is not None else None,
+                            desc=item["Attrib"]["GeneratedMagic"],
+                            percent=False
+                        ) if "Icon" in item and item["Icon"] is not None else FiveStone()
+                    ) for item in equip.get("FiveStone", [])
+                ] if "Icon" not in equip or (equip["Icon"] and equip["Icon"].get("SubKind") != "戒指") else [],
                 permanentEnchant=[
                     PermanentEnchant(
                         id=equip["WPermanentEnchant"]["ID"],

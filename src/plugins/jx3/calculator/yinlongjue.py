@@ -1,6 +1,6 @@
 # 隐龙诀
 
-from typing import Tuple, Literal, Optional, List, Union
+from typing import Tuple, Literal, Optional, List, Union, Dict, Callable
 from jinja2 import Template
 from pathlib import Path
 
@@ -149,7 +149,7 @@ async def get_tuilan_raw_data(server: str, uid: str) -> dict:
     return equip_data
 
 class JX3Attributes:
-    map = {
+    map: Dict[str, Tuple[Callable, str]] = {
         "基础攻击力": (lambda percent: percent, "jcgj"),
         "会心": (lambda percent: percent/100*78622.5, "jchx"),
         "会心效果": (lambda percent: (percent-175)/100*27513.75, "jchxxg"),
@@ -173,7 +173,7 @@ class JX3Attributes:
 
 
     @property
-    def panel(self):
+    def panel(self) -> dict:
         panel: list = self.data["data"]["PersonalPanel"]
         min_weapon, max_weapon = self.weapon_damage
         new_dict = {
@@ -189,7 +189,7 @@ class JX3Attributes:
         return new_dict
     
     @property
-    def special(self):
+    def special(self) -> list:
         equip_list: list = self.data["data"]["Equips"]
         result = []
         equip_map = {
@@ -236,7 +236,7 @@ class JX3Attributes:
         return []
         
     @property
-    def enchant(self):
+    def enchant(self) -> list:
         enchant_ = []
         for place in ["帽子", "上衣", "腰带", "护臂", "鞋"]:
             flag = False
