@@ -6,7 +6,9 @@ from src.tools.utils.path import ASSETS
 from src.tools.generate import generate
 
 from .jx3 import *
-from .parse import *
+
+from .parse import get_registered_actions, parse_data, JX3APIOutputMsg
+from .weibo import poll_weibo_api
 
 import re
 import shutil
@@ -63,3 +65,4 @@ async def on_startup():
         "token": Config.jx3.ws.token
     }
     asyncio.create_task(websocket_client(ws_url, headers))
+    asyncio.create_task(poll_weibo_api("2046281757", interval=600))
