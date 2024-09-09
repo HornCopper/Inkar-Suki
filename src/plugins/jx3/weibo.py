@@ -3,6 +3,8 @@ from datetime import datetime, timedelta
 
 from nonebot.log import logger
 
+from src.tools.basic.group import send_subscribe
+
 import asyncio
 
 def trim_to_last_period(s: str) -> str:
@@ -17,7 +19,7 @@ def check_time(timestamp: str) -> bool:
 async def execute_on_new_post(post):
     data = trim_to_last_period(post.get("text_raw"))
     logger.info({"data": data})
-    return {"text": data}
+    await send_subscribe("咸鱼", data)
 
 async def poll_weibo_api(uid, interval=60):
     async with async_playwright() as p:
