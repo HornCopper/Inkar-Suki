@@ -69,7 +69,7 @@ async def getItemHistory(standard_name: str) -> Tuple[List[int], List[str]]:
     for each_data in data:
         dates.append(convert_time(int(datetime.datetime.strptime(each_data["tradeTime"], "%Y-%m-%dT%H:%M:%S.000+0000").timestamp()), "%Y-%m-%d"))
         prices.append(each_data["price"])
-    return prices, dates
+    return prices[::-1], dates[::-1]
 
 async def getItemDetail(item_name: str):
     item_data = await queryWj("https://www.aijx3.cn/api/wj/goods/getGoodsDetail", params={"goodsName": item_name})
