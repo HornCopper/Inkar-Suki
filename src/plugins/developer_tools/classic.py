@@ -33,7 +33,7 @@ async def _(event: MessageEvent, args: Message = CommandArg()):
 echo = on_command("echo", force_whitespace=True, priority=5)  # 复读只因功能
 
 @echo.handle()
-async def _(event: MessageEvent, args: Message = CommandArg()):
+async def _(bot: Bot, event: MessageEvent, args: Message = CommandArg()):
     if args.extract_plain_text() == "":
         return
     if not checker(str(event.user_id), 10):

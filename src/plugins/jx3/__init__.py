@@ -35,7 +35,10 @@ async def websocket_client(ws_url: str, headers: dict):
                     if name == "公告":
                         url, title = parsed.provide_data()
                         if re.match(r'(\d+)月(\d+)日(.*?)版本更新公告', title):
-                            shutil.rmtree(ASSETS + "/jx3/update.png")
+                            try:    
+                                shutil.rmtree(ASSETS + "/jx3/update.png")
+                            except FileNotFoundError:
+                                pass
                             await generate(
                                 url, 
                                 True, 
