@@ -1,12 +1,14 @@
 from src.tools.config import Config
 from src.tools.utils.request import post_url, get_api, get_url
 from src.tools.basic.jx3 import gen_ts, gen_xsk, format_body
+from src.tools.utils.path import ASSETS
 
 from src.plugins.jx3.bind import get_player_local_data, Player
 from src.plugins.majsoul.koromo import sort_list_of_dicts
 
 import json
 import re
+import os
 
 ticket = Config.jx3.api.ticket
 device_id = ticket.split("::")[-1]
@@ -29,7 +31,9 @@ class JX3Serendipity:
     def get_serendipity_level(self, serendipity_name: str) -> int:
         if serendipity_name.find("宠物奇缘") != -1:
             serendipity_level = 3
-        elif serendipity_name in ["昆吾余火", "浮光织梦", "塞外西风", "入蛟宫", "追魂骨", "千秋铸", "万灵当歌", "流年如虹", "侠行囧途", "争铸吴钩", "兔江湖", "济苍生", "塞外宝驹", "阴阳两界", "三尺青锋", "三山四海"]:
+        elif serendipity_name in [serendipity[:-4] for serendipity in os.listdir(ASSETS + "/serendipity/serendipity/pet")]:
+            serendipity_level = 3
+        elif serendipity_name in [serendipity[:-4] for serendipity in os.listdir(ASSETS + "/serendipity/serendipity/peerless")]:
             serendipity_level = 2
         else:
             serendipity_level = 1
@@ -115,7 +119,6 @@ class JX3Serendipity:
                 }
             )
         self.jx3pet = serendipities
-        print(self.jx3pet)
 
     async def integration(self, server: str, name: str):
         await self.get_tuilan_data(server, name)

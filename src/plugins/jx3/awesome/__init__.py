@@ -3,6 +3,7 @@ from nonebot.adapters import Message
 from nonebot.adapters.onebot.v11 import GroupMessageEvent, MessageSegment as ms
 from nonebot.params import CommandArg
 
+from src.tools.config import Config
 from src.tools.utils.num import check_number
 from src.tools.utils.file import get_content_local
 
@@ -12,7 +13,7 @@ cheater = on_command("jx3_cheater", aliases={"查人", "骗子"}, force_whitespa
 
 @cheater.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
-    if args.extract_plain_text() == "":
+    if args.extract_plain_text() == "" or not Config.jx3.api.enable:
         return
     uin = args.extract_plain_text()
     if not check_number(uin):

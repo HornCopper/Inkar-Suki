@@ -3,11 +3,13 @@ from nonebot.adapters import Message
 from nonebot.params import CommandArg
 from nonebot.adapters.onebot.v11 import GroupMessageEvent, MessageSegment as ms
 
+from src.tools.config import Config
 from src.tools.utils.file import get_content_local
 from src.tools.utils.request import get_content
 
-from .v1 import *
-from .v2 import *
+from .v1 import serendipity_ as v1_serendipity, statistical_, global_serendipity, global_statistical, get_preposition
+from .v2 import getImage_v2 as v2_serendipity
+from .v3 import get_serendipity_image_v3 as v3_serendipity
 
 jx3_cmd_serendipity = on_command("jx3_serendipity", aliases={"奇遇v1", "查询v1"}, force_whitespace=True, priority=5)
 
@@ -19,7 +21,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
 
     Example：-奇遇 幽月轮 哭包猫@唯我独尊
     """
-    if args.extract_plain_text() == "":
+    if args.extract_plain_text() == "" or not Config.jx3.api.enable:
         return
     arg = args.extract_plain_text().split(" ")
     if len(arg) not in [1, 2]:
@@ -30,7 +32,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     elif len(arg) == 2:
         server = arg[0]
         id = arg[1]
-    data = await serendipity_(server, id, group_id=str(event.group_id))
+    data = await v1_serendipity(server, id, group_id=str(event.group_id))
     if isinstance(data, list):
         await jx3_cmd_serendipity.finish(data[0])
     else:
@@ -58,12 +60,40 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     elif len(arg) == 2:
         server = arg[0]
         id = arg[1]
-    data = await getImage_v2(server, id, str(event.group_id), True)
+    data = await v2_serendipity(server, id, str(event.group_id), True)
     if isinstance(data, list):
         await serendipity_v2.finish(data[0])
     elif isinstance(data, str):
         data = get_content_local(data)
         await serendipity_v2.finish(ms.image(data))
+
+serendipity_v3 = on_command("jx3_serendipity_v3", aliases={"奇遇v3", "查询v3"}, force_whitespace=True, priority=5)
+
+
+@serendipity_v3.handle()
+async def _(event: GroupMessageEvent, args: Message = CommandArg()):
+    """
+    获取个人奇遇记录：
+
+    Example：-奇遇v3 幽月轮 哭包猫@唯我独尊
+    """
+    if args.extract_plain_text() == "":
+        return
+    arg = args.extract_plain_text().split(" ")
+    if len(arg) not in [1, 2]:
+        await serendipity_v3.finish("唔……参数不正确哦，请检查后重试~")
+    if len(arg) == 1:
+        server = None
+        id = arg[0]
+    elif len(arg) == 2:
+        server = arg[0]
+        id = arg[1]
+    data = await v3_serendipity(server, id, str(event.group_id))
+    if isinstance(data, list):
+        await serendipity_v3.finish(data[0])
+    elif isinstance(data, str):
+        data = get_content_local(data)
+        await serendipity_v3.finish(ms.image(data))
 
 pet_serendipity = on_command("jx3_pet_serendipity", aliases={"宠物奇遇"}, force_whitespace=True, priority=5)
 
@@ -86,7 +116,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     elif len(arg) == 2:
         server = arg[0]
         id = arg[1]
-    data = await getImage_v2(server, id, str(event.group_id), False)
+    data = await v2_serendipity(server, id, str(event.group_id), False)
     if isinstance(data, list):
         await pet_serendipity.finish(data[0])
     elif isinstance(data, str):

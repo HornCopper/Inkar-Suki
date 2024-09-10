@@ -7,12 +7,13 @@ from src.tools.basic.prompts import PROMPT
 from src.tools.basic.server import server_mapping
 from src.tools.utils.path import ASSETS, CACHE, VIEWS
 from src.tools.generate import get_uuid, generate
+from src.tools.utils.request import get_api
 from src.tools.utils.time import convert_time
 from src.tools.utils.file import read, write
 
 from src.plugins.jx3.bind import get_player_local_data
 
-from .without_jx3api import *
+from .without_jx3api import JX3Serendipity
 
 import os
 
@@ -44,6 +45,7 @@ async def getImage_v2(server: Optional[str], name: str, group_id: str, type: boo
         return [PROMPT.PlayerNotExist]
     if Config.jx3.api.enable:
         serendipity_data = await get_api(f"{Config.jx3.api.url}/data/luck/adventure?server={server}&name={name}&ticket={ticket}&token={token}")
+        serendipity_data = serendipity_data["data"]
     else:
         serendipity_data = await Serendipity.integration(server, name)
     data = serendipity_data
@@ -51,6 +53,7 @@ async def getImage_v2(server: Optional[str], name: str, group_id: str, type: boo
     # 注：暂时忽略宠物奇遇，不做统计
     tables = []
     current_time = int(datetime.now().timestamp())
+    type_map = ["common", "peerless", "pet"]
     for i in data:
         if type and i["level"] >= 3: # 绝世+普通
             continue
@@ -58,7 +61,7 @@ async def getImage_v2(server: Optional[str], name: str, group_id: str, type: boo
             continue
         serendity_name = i["name"]
         flag = ASSETS + "/serendipity/vector/peerless.png" if i["level"] == 2 else ""
-        icon = ASSETS + "/serendipity/serendipity/" + serendity_name + ".png"
+        icon = ASSETS + "/serendipity/serendipity/" + type_map[i["level"]-1] + "/" + serendity_name + ".png"
         if not os.path.exists(icon):
             continue
         if i["time"] != 0:

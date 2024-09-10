@@ -5,12 +5,7 @@ from src.tools.utils.num import check_number
 import time
 import datetime
 
-def convert_time(timestamp: int, format: str = "%Y年%m月%d日 %H:%M:%S") -> Union[str, bool]:
-    if check_number(timestamp):
-        try:
-            timestamp = int(timestamp)
-        except:
-            return False
+def convert_time(timestamp: int, format: str = "%Y年%m月%d日 %H:%M:%S") -> str:
     """
     时间转换，自适应时间长度。
     """
@@ -25,10 +20,10 @@ def convert_time(timestamp: int, format: str = "%Y年%m月%d日 %H:%M:%S") -> Un
     dt = time.strftime(format, time_local)
     return dt
 
-def get_current_time():
+def get_current_time() -> int:
     return int(datetime.datetime.now().timestamp())
 
-def get_relate_time(current, goal):
+def get_relate_time(current: int, goal: int) -> str:
     current_time = int(current)
     timeGet_int = int(goal)
     datetime_1 = datetime.datetime.fromtimestamp(current_time)

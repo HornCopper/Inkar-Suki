@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <style>
+        table {
+            width: 2000px;
+            border-collapse: separate;
+            border-spacing: 0;
+            border: 1px solid #ffbebe;
+            table-layout: fixed;
+        }
+
+        th,
+        td {
+            padding: 10px;
+            text-align: center;
+            word-wrap: break-word;
+        }
+
+        th {
+            background-color: #ffdede;
+            color: #fff;
+        }
+
+        tbody tr:not(:first-child) {
+            border-top: 1px solid #000000;
+        }
+
+        .element-column {
+            width: 768px;
+            vertical-align: middle;
+        }
+
+        .element-container {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+        }
+
+        .element-container img {
+            margin-right: 10px;
+        }
+
+        .element-container div {
+            text-align: left;
+            width: 100%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .no-color {
+            filter: grayscale(100%);
+        }
+
+        .yes-color {
+            content: '';
+        }
+
+        tfoot {
+            text-align: center;
+            font-style: italic;
+            font-size: 12px;
+        }
+
+        .yes-serendipity {
+            color: green;
+        }
+
+
+        .no-serendipity {
+            color: red;
+        }
+
+        @font-face {
+            font-family: Harmony;
+            src: url("{{ font }}");
+        }
+
+        body {
+            overflow: hidden;
+            font-family: Harmony, sans-serif;
+        }
+    </style>
+</head>
+
+<body>
+    <table class="total" style="background-color: #FFFFFF">
+        <thead>
+            <tr>
+                <th colspan="5" style="text-align: center;color:#000000">{{ name }}·{{ server }}<br>共计：{{ total }} 番奇遇（绝世 {{ peerless }}/宠物 {{ pet }}）</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <th colspan="5" style="text-align: center;color:#000000">绝世奇遇</th>
+            </tr>
+            {{ table_content_peerless }}
+            <tr>
+                <th colspan="5" style="text-align: center;color:#000000">珍奇奇遇</th>
+            </tr>
+            {{ table_content_common }}
+            <tr>
+                <th colspan="5" style="text-align: center;color:#000000">宠物奇遇</th>
+            </tr>
+            {{ table_content_pet }}
+        </tbody>
+    </table>
+</body>
+
+
+</html>
