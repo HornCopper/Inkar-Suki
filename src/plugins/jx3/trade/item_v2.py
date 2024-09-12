@@ -92,6 +92,8 @@ async def queryWBLInfo(item_standard_name: str):
         item_standard_name = aliases_map[item_standard_name]
     final_url = f"https://trade-api.seasunwbl.com/api/buyer/goods/list?filter[role_appearance]={item_standard_name}&filter[state]=2&goods_type=3"
     data = await get_api(final_url)
+    if data["code"] == -11:
+        return "万宝楼正在维护中……暂时没有数据"
     wbl_data = []
     for each_data in data["data"]["list"][0:6]:
         server = each_data["server_name"]
