@@ -1,4 +1,4 @@
-from typing import Tuple, List
+from typing import Tuple, List, Literal, Union
 from pathlib import Path
 
 from src.tools.utils.request import get_api, post_url
@@ -48,7 +48,7 @@ async def queryWj(url: str, params: dict = {}):
     data = await post_url(url, headers=headers, json=params)
     return json.loads(data)
 
-async def getRawName(alias_name: str):
+async def getRawName(alias_name: str) -> Union[str, Literal[False]]:
     item_aliases_data = json.loads(read(TOOLS + "/item_aliases.json", "{}"))
     if alias_name in item_aliases_data:
         alias_name = item_aliases_data[alias_name]
@@ -71,7 +71,7 @@ async def getItemHistory(standard_name: str) -> Tuple[List[int], List[str]]:
         prices.append(each_data["price"])
     return prices[::-1], dates[::-1]
 
-async def getItemDetail(item_name: str):
+async def getItemDetail(item_name: str) -> Union[list, Literal[False]]:
     item_data = await queryWj("https://www.aijx3.cn/api/wj/goods/getGoodsDetail", params={"goodsName": item_name})
     item_data = item_data["data"]
     if item_data == None:
@@ -124,8 +124,28 @@ async def quertAJ3Info(item_standard_name: str):
         full_table[zone[0]] = "\n".join(table)
     return full_table
 
+def select_min_max(data: list, margin: float = 0.1, round_to: int = 10) -> tuple[int, int]:
+    if not data:
+        raise ValueError("数据列表为空")
+    data = [float(item) for item in data]
+    data_min = min(data)
+    data_max = max(data)
+    data_range = data_max - data_min
+    extend = data_range * margin
+    optimal_min = data_min - extend
+    optimal_max = data_max + extend
+    def round_down(value: float, round_to: int) -> float:
+        return (value // round_to) * round_to
+    def round_up(value: float, round_to: int) -> float:
+        return ((value + round_to - 1) // round_to) * round_to
+    adjusted_min = round_down(optimal_min, round_to)
+    adjusted_max = round_up(optimal_max, round_to)
+    return int(adjusted_min), int(adjusted_max)
+
 async def getSingleItemPrice(item_name: str):
     standard_name = await getRawName(item_name)
+    if standard_name == False:
+        return ["唔……未收录该物品！\n请到音卡用户群内进行反馈，我们会及时添加别名！"]
     basic_item_info = await getItemDetail(standard_name)
     if basic_item_info == False:
         return ["唔……未收录该物品！\n请到音卡用户群内进行反馈，我们会及时添加别名！"]
@@ -147,6 +167,9 @@ async def getSingleItemPrice(item_name: str):
     html = html.replace("$publish_price", str(basic_item_info[6]))
     html = html.replace("$item_image", str(basic_item_info[7]))
     prices, dates = await getItemHistory(standard_name)
+    max, min = select_min_max(prices)
+    html = html.replace("$max", str(max))
+    html = html.replace("$min", str(min))
     html = html.replace("$dates", json.dumps(dates, ensure_ascii=False))
     html = html.replace("$values", json.dumps(prices, ensure_ascii=False))
     font = ASSETS + "/font/custom.ttf"

@@ -15,8 +15,6 @@ recruit_v2_ = on_command("jx3_recruit", aliases={"招募"}, force_whitespace=Tru
 
 @recruit_v2_.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
-    if not Config.jx3.api.enable:
-        return
     filter = False
     addtions = getGroupSettings(str(event.group_id), "addtions")
     if not isinstance(addtions, list):
@@ -51,8 +49,6 @@ jx3_cmd_recruit_local = on_command("jx3_recruit_local", aliases={"本服招募"}
 
 @jx3_cmd_recruit_local.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
-    if not Config.jx3.api.enable:
-        return
     arg = args.extract_plain_text()
     filter = False
     addtions = getGroupSettings(str(event.group_id), "addtions")
@@ -71,10 +67,10 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
             await jx3_cmd_recruit_local.finish("参数不正确哦，只能有1或2个参数~")
         server = server_mapping(arg[0], str(event.group_id))
         if len(arg) == 1:
-            copy = arg[0] if not server_mapping(arg[0]) else ""  # 当第一个参数是服务器的话则为空
+            kw = arg[0] if not server_mapping(arg[0]) else ""  # 当第一个参数是服务器的话则为空
         else:
-            copy = arg[1]
-        data = await recruit_v2(server, copy, True, filter)
+            kw = arg[1]
+        data = await recruit_v2(server, kw, True, filter)
     if isinstance(data, list):
         await jx3_cmd_recruit_local.finish(data[0])
     elif isinstance(data, str):

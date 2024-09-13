@@ -2,14 +2,15 @@ from pathlib import Path
 from typing import Optional
 
 from src.tools.config import Config
-from src.tools.utils.request import get_api
-from src.tools.basic.server import server_mapping
+from src.tools.utils.request import get_api, post_url
+from src.tools.basic.server import server_mapping, Zone_mapping
 from src.tools.basic.prompts import PROMPT
 from src.tools.utils.file import read, write
 from src.tools.generate import generate, get_uuid
 from src.tools.utils.path import ASSETS, CACHE, VIEWS
 
 import time
+import json
 
 token = Config.jx3.api.token
 bot_name = Config.bot_basic.bot_name_argument
@@ -80,16 +81,30 @@ async def checkAd(msg: str, data: dict):
             return True
     return False
 
-async def recruit_v2(server: Optional[str], actvt: str = "", local: bool = False, filter: bool = False):
+async def query_recruit(server: str, keyword: Optional[str] = ""):
+    if Config.jx3.api.enable:
+        final_url = f"{Config.jx3.api.url}/data/member/recruit?token={token}&server={server}"
+        return await get_api(final_url)
+    else:
+        final_url = "https://www.jx3mm.com/api/uniqueapi/Apiinterface/mrecruit"
+        params = {
+            "S": Zone_mapping(server),
+            "v": server,
+            "k": keyword,
+            "t": 1,
+            "offset":0,
+            "limit":10
+        }
+        data = await post_url(final_url, json=params)
+        return json.loads(data)
+
+async def recruit_v2(server: Optional[str], keyword: str = "", local: bool = False, filter: bool = False):
     if token == None:
         return [PROMPT.NoToken]
     server_ = server_mapping(server)
     if not server_:
         return [PROMPT.ServerNotExist]
-    final_url = f"{Config.jx3.api.url}/data/member/recruit?token={token}&server={server_}"
-    if actvt != "":
-        final_url = final_url + "&keyword=" + actvt
-    data = await get_api(final_url)
+    data = await query_recruit(server_, keyword)
     if data["code"] != 200:
         return ["唔……未找到相关团队，请检查后重试！"]
     adFlags = await get_api("https://inkar-suki.codethink.cn/filters")

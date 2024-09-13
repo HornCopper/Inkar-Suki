@@ -5,7 +5,7 @@ from src.tools.basic.group import getGroupSettings
 
 import json
 
-def Zone_mapping(server, legacy: bool = False) -> Optional[str]:
+def Zone_mapping(server: str, legacy: bool = False) -> Optional[str]:
     if server in ["绝代天骄"]:
         return "电信区" if not legacy else "电信八区"
     if server in ["斗转星移", "唯我独尊", "乾坤一掷", "横刀断浪", "剑胆琴心", "幽月轮", "梦江南"]:

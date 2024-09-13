@@ -71,6 +71,7 @@
         <thead>
             <tr>
                 <th class="short-column">日期</th>
+                <th class="short-column">贴吧</th>
                 <th class="short-column">7881</th>
                 <th class="short-column">万宝楼</th>
                 <th class="short-column">DD373</th>
@@ -81,19 +82,19 @@
         <tbody>
             {{ tablecontent }}
             <tr>
-                <td colspan="6">
+                <td colspan="7">
                     <div id="Chart"></div>
                 </td>
             </tr>
         </tbody>
         <tfoot>
             <tr>
-                <td colspan="6">&copy; Inkar Suki · {{ app_name }} · {{ server }} · {{ app_time }}<br>{{ saohua }}</td>
+                <td colspan="7">&copy; Inkar Suki · {{ app_name }} · {{ server }} · {{ app_time }}<br>{{ saohua }}</td>
             </tr>
         </tfoot>
     </table>
 
-    <script src="https://cdn.jsdelivr.net/npm/echarts/dist/echarts.min.js"></script>
+    <script src="https://inkar-suki.codethink.cn/Inkar-Suki-Docs/js/echarts.min.js"></script>
     <script>
         const chart = echarts.init(document.getElementById("Chart"), null, { devicePixelRatio: 2 });
 
@@ -112,19 +113,33 @@
             },
             yAxis: {
                 type: "value",
-                boundaryGap: [0, "100%"]
+                boundaryGap: [0, "100%"],
+                min: 700,
+                max: 900
             },
             series: [
+                {
+                    name: "贴吧",
+                    type: "line",
+                    data: {{ tieba }},
+                    smooth: true,
+                    itemStyle: {
+                        color: "#01ce00"
+                    },
+                    areaStyle: {
+                        color: "rgba(1, 206, 0, 0.2)"
+                    }
+                },
                 {
                     name: "7881",
                     type: "line",
                     data: {{ _7881 }},
                     smooth: true,
                     itemStyle: {
-                        color: "#42a5f5"
+                        color: "#dd7a54"
                     },
                     areaStyle: {
-                        color: "rgba(66, 165, 245, 0.2)"
+                        color: "rgba(221, 122, 84, 0.2)"
                     }
                 },
                 {
@@ -133,10 +148,10 @@
                     data: {{ wbl }},
                     smooth: true,
                     itemStyle: {
-                        color: "#ff7043"
+                        color: "#225f29"
                     },
                     areaStyle: {
-                        color: "rgba(255, 112, 67, 0.2)"
+                        color: "rgba(34, 95, 41, 0.2)"
                     }
                 },
                 {
@@ -145,10 +160,10 @@
                     data: {{ dd373 }},
                     smooth: true,
                     itemStyle: {
-                        color: "#30C701"
+                        color: "#314b2a"
                     },
                     areaStyle: {
-                        color: "rgba(48, 199, 1, 0.2)"
+                        color: "rgba(49, 75, 42, 0.2)"
                     }
                 },
                 {
@@ -157,10 +172,10 @@
                     data: {{ _5173 }},
                     smooth: true,
                     itemStyle: {
-                        color: "#FF768B"
+                        color: "#84d45f"
                     },
                     areaStyle: {
-                        color: "rgba(255, 118, 139, 0.2)"
+                        color: "rgba(132, 212, 95, 0.2)"
                     }
                 },
                 {
@@ -169,10 +184,10 @@
                     data: {{ uu898 }},
                     smooth: true,
                     itemStyle: {
-                        color: "#5DA0ED"
+                        color: "#4fa20c"
                     },
                     areaStyle: {
-                        color: "rgba(93, 160, 237, 0.2)"
+                        color: "rgba(79, 162, 12, 0.2)"
                     }
                 }
             ]
