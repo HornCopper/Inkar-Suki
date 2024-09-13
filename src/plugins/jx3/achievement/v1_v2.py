@@ -138,7 +138,7 @@ async def zone_achi(
     else:
         guid = personal_data["data"]["globalRoleId"]
     map_id = await get_map(zone_, mode_)
-    if not isinstance(map_id, int):
+    if not isinstance(map_id, str):
         return
     param = {
         "cursor": 0,
