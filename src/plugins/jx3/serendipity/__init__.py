@@ -39,7 +39,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
         data = await get_content(data)
         await jx3_cmd_serendipity.finish(ms.image(data))
 
-serendipity_v2 = on_command("jx3_serendipity_v2", aliases={"奇遇", "查询"}, force_whitespace=True, priority=5)
+serendipity_v2 = on_command("jx3_serendipity_v2", aliases={"奇遇v2", "查询v2"}, force_whitespace=True, priority=5)
 
 
 @serendipity_v2.handle()
@@ -67,7 +67,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
         data = get_content_local(data)
         await serendipity_v2.finish(ms.image(data))
 
-serendipity_v3 = on_command("jx3_serendipity_v3", aliases={"奇遇v3", "查询v3"}, force_whitespace=True, priority=5)
+serendipity_v3 = on_command("jx3_serendipity_v3", aliases={"奇遇v3", "查询v3", "奇遇", "查询"}, force_whitespace=True, priority=5)
 
 
 @serendipity_v3.handle()
