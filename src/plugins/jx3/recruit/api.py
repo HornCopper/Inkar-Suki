@@ -105,6 +105,8 @@ async def recruit_v2(server: Optional[str], keyword: str = "", local: bool = Fal
     if not server_:
         return [PROMPT.ServerNotExist]
     data = await query_recruit(server_, keyword)
+    if "code" not in data:
+        return
     if data["code"] != 200:
         return ["唔……未找到相关团队，请检查后重试！"]
     adFlags = await get_api("https://inkar-suki.codethink.cn/filters")
