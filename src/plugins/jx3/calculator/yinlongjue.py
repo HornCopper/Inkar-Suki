@@ -1,4 +1,4 @@
-# 隐龙诀
+# DPS计算器 隐龙诀
 
 from typing import Tuple, Literal, Optional, List, Union, Dict, Callable
 from jinja2 import Template

@@ -18,7 +18,7 @@ import json
 ticket = Config.jx3.api.ticket
 device_id = ticket.split("::")[-1]
 
-async def get_tuilan_data(url: str, params: Union[dict, None] = None):
+async def get_tuilan_data(url: str, params: Union[dict, None] = None) -> dict:
     if params is None:
         params = {"ts": gen_ts()}
     if "ts" not in params:

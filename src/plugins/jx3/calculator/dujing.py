@@ -72,7 +72,7 @@ async def get_calculated_data(
         "qixue": qixue
     }
     data = await post_url(
-        url = "http://117.50.178.116:2333/calculator",
+        url = "http://117.50.178.116:2333/calculator_dj",
         json = params,
         headers = {
             "token": inkarsuki_offical_token

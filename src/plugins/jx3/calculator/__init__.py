@@ -13,6 +13,7 @@ from .universe import (
     wf_calculator, # 无方
     ylj_calculator, # 隐龙诀
     shxj_calculator, # 山海心诀
+    zxg_calculator, # 紫霞功
 )
 
 calc_dj = on_command("jx3_calculator_dj", aliases={"毒经计算器"}, priority=5, force_whitespace=True) # 目前先对毒经的计算器进行响应，后续尽可能多地支持
@@ -102,3 +103,25 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     elif isinstance(data, str):
         data = get_content_local(data)
         await calc_shxj.finish(ms.image(data))
+
+calc_zxg = on_command("jx3_calculator_zxg", aliases={"气纯计算器"}, priority=5, force_whitespace=True) # 目前先对紫霞功的计算器进行响应，后续尽可能多地支持
+
+@calc_zxg.handle()
+async def _(event: GroupMessageEvent, args: Message = CommandArg()):
+    if args.extract_plain_text() == "":
+        return
+    arg = args.extract_plain_text().split(" ")
+    if len(arg) not in [1, 2]:
+        await calc_zxg.finish("唔……参数不正确哦，请检查后重试~")
+    if len(arg) == 1:
+        server = None
+        id = arg[0]
+    elif len(arg) == 2:
+        server = arg[0]
+        id = arg[1]
+    data = await zxg_calculator(server, id, str(event.group_id))
+    if isinstance(data, list):
+        await calc_zxg.finish(data[0])
+    elif isinstance(data, str):
+        data = get_content_local(data)
+        await calc_zxg.finish(ms.image(data))
