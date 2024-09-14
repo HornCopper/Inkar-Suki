@@ -22,7 +22,7 @@ async def demon_(server: str = "", group_id: str = ""):  # 金价 <服务器>
     
     data = await post_url("https://www.jx3mm.com/api/uniqueapi/Apiinterface/gettrade", json={"v": goal_server})
     data = json.loads(data)
-    if "error" not in data:
+    if "data" in data:
         template_jinjia = """
         <tr>
             <td class="short-column">{{ date }}</td>
