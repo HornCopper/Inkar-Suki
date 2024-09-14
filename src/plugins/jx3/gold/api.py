@@ -70,7 +70,7 @@ async def demon_(server: str = "", group_id: str = ""):  # 金价 <服务器>
 
         for platform in types:
             input_data[types[platform]] = json.dumps([each_price[platform] for each_price in data["data"]], ensure_ascii=False)
-        html = Template(read(VIEWS + "/jx3/trade/gold_v1.html")).render(**input_data)
+        html = Template(read(VIEWS + "/jx3/trade/gold_v2.html")).render(**input_data)
     else:
         template_jinjia = """
         <tr>
@@ -133,7 +133,7 @@ async def demon_(server: str = "", group_id: str = ""):  # 金价 <服务器>
         }
         for platform in types:
             input_data[types[platform]] = json.dumps(platform_to_averages[types[platform]], ensure_ascii=False)
-        html = Template(read(VIEWS + "/jx3/trade/gold_v2.html")).render(**input_data)
+        html = Template(read(VIEWS + "/jx3/trade/gold_v1.html")).render(**input_data)
     
     final_html = CACHE + "/" + get_uuid() + ".html"
     write(final_html, html)
