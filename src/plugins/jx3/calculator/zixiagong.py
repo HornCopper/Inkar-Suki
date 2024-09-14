@@ -100,7 +100,7 @@ class ZiXiaGongAttributes:
                     enchant_name = enchant_mapping(equip["Quality"])
                     if not isinstance(enchant_name, str):
                         raise ValueError("Unknown enchant of \"" + equip["Name"] + "(" + equip["Quality"] + ")`.")
-                    return self.enchant_map[enchant_name]
+                    return self.enchant_map[enchant_name] + "护腕大附魔"
         return "无"
     
     @property
@@ -111,7 +111,7 @@ class ZiXiaGongAttributes:
                     enchant_name = enchant_mapping(equip["Quality"])
                     if not isinstance(enchant_name, str):
                         raise ValueError("Unknown enchant of \"" + equip["Name"] + "(" + equip["Quality"] + ")`.")
-                    return self.enchant_map[enchant_name]
+                    return self.enchant_map[enchant_name] + "鞋子大附魔"
         return "无"
     
     @property
@@ -137,8 +137,29 @@ class ZiXiaGongAttributes:
                     if attr_data["percent"]:
                         result.append(str(attr_data["value"]) + "%")
                     else:
-                        result.append(attr_data["value"])
+                        result.append(str(attr_data["value"]))
         return result
+    
+    @property
+    def mode(self) -> str:
+        dcw = self.is_dcw
+        xcw = self.is_xcw
+        speed = 0
+        for attr_data in self.data["PersonalPanel"]:
+            if attr_data["name"] == "加速":
+                speed = attr_data["value"]
+        if not dcw and not xcw:
+            return "紫武技能数标准模式"
+        if dcw:
+            if speed >= 4241:
+                return "橙武二段加速技能标准值"
+            if speed >= 95:
+                return "橙武一段加速技能标准值"
+        if xcw:
+            if speed >= 4241:
+                return "小橙武二段技能数标准值"
+        return "紫武技能数标准模式"
+            
             
     
     @property
@@ -188,6 +209,7 @@ async def get_calculated_img_zixiagong(server: Optional[str], name: str, group_i
     enchant = [belt, data_obj.is_wristband_enchant, data_obj.is_shoe_enchant]
     sash = data_obj.is_special_sash
     weapon = data_obj.is_special_weapon
+    mode = data_obj.mode
     qixue: List[bool] = []
     for qixue_name in ["万物", "正气", "破势", "抱阳", "若冲"]:
         qixue.append(data_obj.check_qixue(qixue_name))
@@ -198,7 +220,8 @@ async def get_calculated_img_zixiagong(server: Optional[str], name: str, group_i
         "enchant": enchant,
         "sash": sash,
         "weapon": weapon,
-        "qixue": qixue
+        "qixue": qixue,
+        "mode": mode
     }
     calculated_data = await post_url("http://117.50.178.116:2333/calculator_zxg", json=params, headers={"token": inkarsuki_offical_token}, timeout=10000)
     calculated_data = json.loads(calculated_data)
