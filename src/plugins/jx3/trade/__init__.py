@@ -1,6 +1,7 @@
 from nonebot import on_command
+from nonebot.typing import T_State
 from nonebot.adapters import Message
-from nonebot.params import CommandArg
+from nonebot.params import CommandArg, Arg
 from nonebot.adapters.onebot.v11 import GroupMessageEvent, MessageSegment as ms
 
 from src.tools.utils.file import get_content_local
@@ -82,7 +83,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
 item_v2_ = on_command("jx3_item_v2", aliases={"物价v2", "物价"}, force_whitespace=True, priority=5)
 
 @item_v2_.handle()
-async def _(event: GroupMessageEvent, args: Message = CommandArg()):
+async def _(event: GroupMessageEvent, state: T_State, args: Message = CommandArg()):
     """
     获取外观物价：
     Example：-物价v2 山神盒子
@@ -90,16 +91,48 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     """
     if args.extract_plain_text() == "":
         return
-    image = await getSingleItemPrice(args.extract_plain_text())
-    if isinstance(image, list):
-        await item_v2_.finish(image[0])
-    elif isinstance(image, str):
-        img = get_content_local(image)
-        await item_v2_.finish(ms.image(img))    
+    data = await getSingleItemPrice(args.extract_plain_text())
+    if isinstance(data, list):
+        await item_v2_.finish(data[0])
+    elif isinstance(data, dict):
+        aliases = data["v"]
+        if len(aliases) > 20:
+            aliases = aliases[:20]
+        if len(aliases) == 0:
+            await item_v2_.finish("唔……未找到该物品！")
+        if len(aliases) == 1:
+            img = await getSingleItemPrice(aliases[0], True)
+            if not isinstance(img, str):
+                return
+            img_content = get_content_local(img)
+            await item_v2_.finish(ms.image(img_content))
+        state["v"] = aliases
+        msg = "音卡找到下面的相关物品，请回复前方序号来搜索！"
+        for num, name in enumerate(aliases, start=1):
+            msg += f"\n[{num}] {name}"
+        await item_v2_.send(msg)
+        return
+    elif isinstance(data, str):
+        img = get_content_local(data)
+        await item_v2_.finish(ms.image(img))
+
+@item_v2_.got("num")
+async def _(event: GroupMessageEvent, state: T_State, num: Message = Arg()):
+    num_ = num.extract_plain_text()
+    data = state["v"]
+    if not check_number(num_):
+        await item_v2_.finish("唔……输入的不是数字，取消搜索。")
+    if int(num_) > len(data):
+        await item_v2_.finish("唔……不存在该数字对应的搜索结果，请重新搜索！")
+    name = data[int(num_)-1]
+    img = await getSingleItemPrice(name, True)
+    if not isinstance(img, str):
+        return
+    img_content = get_content_local(img)
+    await item_v2_.finish(ms.image(img_content))
 
 sl_ = on_command("jx3_sl", aliases={"无封"}, priority=5, force_whitespace=True)
 
-@sl_.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     if args.extract_plain_text() == "":
         return

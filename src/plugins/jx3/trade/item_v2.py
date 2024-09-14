@@ -1,4 +1,4 @@
-from typing import Tuple, List, Literal, Union
+from typing import Tuple, List, Literal, Union, Optional
 from pathlib import Path
 
 from src.tools.utils.request import get_api, post_url
@@ -48,16 +48,26 @@ async def queryWj(url: str, params: dict = {}):
     data = await post_url(url, headers=headers, json=params)
     return json.loads(data)
 
-async def getRawName(alias_name: str) -> Union[str, Literal[False]]:
+async def getRawName(alias_name: str) -> Union[str, list]:
     item_aliases_data = json.loads(read(TOOLS + "/item_aliases.json", "{}"))
     if alias_name in item_aliases_data:
         alias_name = item_aliases_data[alias_name]
     item_data = await queryWj("https://www.aijx3.cn/api/wj/basedata/getBaseGoodsList")
     item_data = item_data["data"]
+    
+    # 精准匹配 如果成功匹配不再模糊搜索
     for each_item in item_data:
-        if alias_name in each_item["goodsAliasAll"]:
+        if alias_name in each_item["goodsAliasAll"] or alias_name == each_item["goodsName"]:
             return each_item["goodsName"]
-    return False
+    
+    # 模糊搜索 给出列表
+    matched = []
+    for each_item in item_data:
+        aliases = each_item["goodsAliasAll"]
+        for alias in aliases:
+            if alias_name in alias:
+                matched.append(each_item["goodsName"])
+    return matched
 
 async def getItemHistory(standard_name: str) -> Tuple[List[int], List[str]]:
     current_timestamp = get_current_time()
@@ -126,7 +136,7 @@ async def quertAJ3Info(item_standard_name: str):
 
 def select_min_max(data: list, margin: float = 0.1, round_to: int = 10) -> tuple[int, int]:
     if not data:
-        raise ValueError("数据列表为空")
+        return 0, 100000
     data = [float(item) for item in data]
     data_min = min(data)
     data_max = max(data)
@@ -142,10 +152,12 @@ def select_min_max(data: list, margin: float = 0.1, round_to: int = 10) -> tuple
     adjusted_max = round_up(optimal_max, round_to)
     return int(adjusted_min), int(adjusted_max)
 
-async def getSingleItemPrice(item_name: str):
+async def getSingleItemPrice(item_name: str, exact: bool = False) -> Optional[Union[str, dict, list]]:
     standard_name = await getRawName(item_name)
-    if standard_name == False:
-        return ["唔……未收录该物品！\n请到音卡用户群内进行反馈，我们会及时添加别名！"]
+    if isinstance(standard_name, list):
+        return {"v": standard_name}
+    if exact:
+        standard_name = item_name
     basic_item_info = await getItemDetail(standard_name)
     if basic_item_info == False:
         return ["唔……未收录该物品！\n请到音卡用户群内进行反馈，我们会及时添加别名！"]
@@ -180,4 +192,6 @@ async def getSingleItemPrice(item_name: str):
     final_html = CACHE + "/" + get_uuid() + ".html"
     write(final_html, html)
     final_path = await generate(final_html, False, "body", False)
+    if not isinstance(final_path, str):
+        return
     return Path(final_path).as_uri()
