@@ -80,7 +80,7 @@ async def get_horse_next_spawn(server, group_id: str):
     chitu_flushed = False
     if is_in_current_cycle(ct_data["data"]["list"][0]["time"]):
         chitu_flushed = True
-    dl_data = await get_api(f"https://next2.jx3box.com/api/game/reporter/horse?pageIndex=1&pageSize=50&server{server}&type=dilu-horse&subtype=share_msg")
+    dl_data = await get_api(f"https://next2.jx3box.com/api/game/reporter/horse?pageIndex=1&pageSize=50&server={server}&type=dilu-horse&subtype=share_msg")
     dilu_flushed = False
     if is_in_current_week(dl_data["data"]["list"][0]["time"]):
         dilu_flushed = True

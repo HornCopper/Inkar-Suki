@@ -1,6 +1,7 @@
 from src.tools.config import Config
 from src.tools.utils.request import post_url, get_api, get_url
 from src.tools.basic.jx3 import gen_ts, gen_xsk, format_body
+from src.tools.basic.server import Zone_mapping
 from src.tools.utils.path import ASSETS
 
 from src.plugins.jx3.bind import get_player_local_data, Player
@@ -27,6 +28,7 @@ class JX3Serendipity:
         self.tl = []
         self.my = []
         self.jx3pet = []
+        self.jx3mm = []
 
     def get_serendipity_level(self, serendipity_name: str) -> int:
         if serendipity_name.find("宠物奇缘") != -1:
@@ -120,8 +122,23 @@ class JX3Serendipity:
             )
         self.jx3pet = serendipities
 
+    async def get_jx3mm_data(self, server: str, name: str):
+        final_url = f"https://www.jx3mm.com/home/qyinfo?m=1&R={Zone_mapping(server)}&S={server}&t=&u=&n={name}"
+        data = await get_api(final_url)
+        serendipities = []
+        for serendipity in data["result"]:
+            serendipities.append(
+                {
+                    "name": serendipity["serendipity"],
+                    "level": self.get_serendipity_level(serendipity["serendipity"]),
+                    "time": serendipity["time"]
+                }
+            )
+        self.jx3mm = serendipities
+
     async def integration(self, server: str, name: str):
         await self.get_tuilan_data(server, name)
         await self.get_my_data(server, name)
         await self.get_jx3pet_data(server, name)
-        return sort_list_of_dicts(merge_dict_lists(merge_dict_lists(self.tl, self.my), self.jx3pet), "time")[::-1]
+        await self.get_jx3mm_data(server, name)
+        return sort_list_of_dicts(merge_dict_lists(merge_dict_lists(merge_dict_lists(self.tl, self.my), self.jx3pet), self.jx3mm), "time")[::-1]
