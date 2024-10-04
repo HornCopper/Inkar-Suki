@@ -1,35 +1,30 @@
 from urllib.parse import unquote
 from pathlib import Path
+from typing import List
+from jinja2 import Template
 
-from src.tools.utils.request import get_api, get_url
-from src.tools.utils.path import ASSETS, CACHE, VIEWS
-from src.tools.utils.file import read, write
-from src.tools.generate import get_uuid, generate
-from src.tools.utils.time import convert_time
+from src.const.path import TEMPLATES, build_path
+from src.utils.network import Request
+from src.utils.time import Time
+from src.utils.generate import generate
+from src.templates import HTMLSourceCode
+
+from ._template import template_wg, table_waiguan_head
 
 import datetime
 import re
 
-template_wg = """
-<tr>
-    <td class="short-column">$num</td>
-    <td class="short-column"><div id="context">$context</div></td>
-    <td class="short-column">$place吧</td>
-    <td class="short-column">$time</td>
-</tr>
-"""
-
-async def get_from(url: str):
-    data = await get_url(url)
+async def get_tieba_source(url: str) -> str:
+    data = (await Request(url).get()).text
     try:
         final = unquote(re.findall(r"<meta furl=\".+fname", data)[0][33:-16])
     except:
         final = "未知"
     return final
 
-async def get_wg(name):
+async def get_wg(name) -> str | None | List[str | list]:
     timestamp = int(datetime.datetime.now().timestamp())
-    data = await get_api(f"https://www.j3dh.com/v1/wg/data/exterior?exterior={name}&ignorePriceFlag=true&page=0&refresh=v1&time={timestamp}")
+    data = (await Request(f"https://www.j3dh.com/v1/wg/data/exterior?exterior={name}&ignorePriceFlag=true&page=0&refresh=v1&time={timestamp}").get()).json()
     if data["Code"] != 0:
         return "唔……API请求失败！"
     else:
@@ -47,27 +42,34 @@ async def get_wg(name):
                 post = x["PostId"]
                 title = x["Details"]
                 timestamp = datetime.datetime.strptime(time_, "%Y-%m-%dT%H:%M:%SZ")
-                final_time = convert_time(int(timestamp.timestamp()), "%m月%d日 %H:%M:%S")
+                final_time = Time(int(timestamp.timestamp())).format()
                 link = f"http://c.tieba.baidu.com/p/{thread}?pid={post}0&cid=0#{post}"
-                place = await get_from(link)
+                place = await get_tieba_source(link)
                 floor = x["Floor"]
                 links.append(link)
                 floors.append(floor)
-                table.append(template_wg.replace("$num", str(i + 1)).replace("$context", title).replace("$time", str(final_time)).replace("$place", place))
+                table.append(
+                    Template(template_wg).render(
+                        num = str(i + 1),
+                        context = title,
+                        time = str(final_time),
+                        place = place
+                    )
+                )
                 num = num + 1
                 if num == 10:
                     break
             if len(table) < 1:
                 return "唔……没有获取到任何信息！"
-            final_table = "\n".join(table)
-            html = read(VIEWS + "/jx3/trade/waiguan.html")
-            font = ASSETS + "/font/custom.ttf"
-            saohua = "严禁将蓉蓉机器人与音卡共存，一经发现永久封禁！蓉蓉是抄袭音卡的劣质机器人！"
-            
-            html = html.replace("$customfont", font).replace("$tablecontent", final_table).replace("$randomsaohua", saohua).replace("$appinfo", f"贴吧物价 · {name}")
-            final_html = CACHE + "/" + get_uuid() + ".html"
-            write(final_html, html)
-            final_path = await generate(final_html, False, "table", False)
+            html = str(
+                HTMLSourceCode(
+                    application_name = f" · 贴吧物价 · " + Time().format("%H:%M:%S"),
+                    additional_js = Path(build_path(TEMPLATES, ["jx3", "waiguan.js"])),
+                    table_head = table_waiguan_head,
+                    table_body = "\n".join(table)
+                )
+            )
+            final_path = await generate(html, "table", False)
             if not isinstance(final_path, str):
                 return
             return [Path(final_path).as_uri(), links, floors]

@@ -1,35 +1,24 @@
 from pathlib import Path
+from jinja2 import Template
 from nonebot.adapters.onebot.v11 import Bot
 
-from src.tools.utils.path import ASSETS, CACHE, PLUGINS, VIEWS
-from src.tools.basic.group import getGroupSettings
-from src.tools.generate import get_uuid, generate
-from src.tools.utils.file import read, write
+from src.const.path import ASSETS, TEMPLATES, build_path
+from src.utils.file import read
+from src.utils.database.operation import get_group_settings
+from src.utils.generate import generate
+from src.templates import SimpleHTML
+
+from ._template import template_subscribe
 
 import json
 
-template_subscribe = """
-<div class="el-col">
-    <div class="el-box">
-        <div class="el-image" style="margin-left: 10px;">
-            <img src="$image" style="object-fit:contain">
-        </div>
-        <!-- 两个文字 -->
-        <div class="el-text">
-            <div class="element-text-up">$subject</div>
-            <div class="element-text-down">$description</div>
-        </div>
-    </div>
-    <div class="el-status $status">$flag</div>
-</div>"""
-
-async def generateGroupInfo(bot: Bot, group_id: str):
-    subscribe_options = json.loads(read(PLUGINS + "/jx3/subscribe/options.json"))
-    addtions_options = json.loads(read(PLUGINS + "/jx3/subscribe/addtions.json"))
-    current_subscribe = getGroupSettings(group_id, "subscribe")
-    current_addtions = getGroupSettings(group_id, "addtions")
+async def generate_group_info(bot: Bot, group_id: str):
+    subscribe_options = json.loads(read(build_path(ASSETS, ["source", "subscribe"], end_with_slash=True) + "options.json"))
+    additions_options = json.loads(read(build_path(ASSETS, ["source", "subscribe"], end_with_slash=True) + "additions.json"))
+    current_subscribe = get_group_settings(group_id, "subscribe")
+    current_additions = get_group_settings(group_id, "additions")
     subscribe_contents = []
-    addtions_contents = []
+    additions_contents = []
     for i in list(subscribe_options):
         desc = subscribe_options[i][0]
         icon = subscribe_options[i][1]
@@ -39,27 +28,51 @@ async def generateGroupInfo(bot: Bot, group_id: str):
         else:
             status = "disabled"
             flag = "✖"
-        subscribe_contents.append(template_subscribe.replace("$image", icon).replace("$subject", i).replace("$description", desc).replace("$status", status).replace("$flag", flag))
-    for i in list(addtions_options):
-        desc = addtions_options[i][0]
-        icon = addtions_options[i][1]
-        if i in current_addtions:
+        subscribe_contents.append(
+            Template(template_subscribe).render(
+                image = icon,
+                subject = i,
+                description = desc,
+                status = status,
+                flag = flag
+            )
+        )
+    for i in list(additions_options):
+        desc = additions_options[i][0]
+        icon = additions_options[i][1]
+        if i in current_additions:
             status = "enabled"
             flag = "✔"
         else:
             status = "disabled"
             flag = "✖"
-        addtions_contents.append(template_subscribe.replace("$image", icon).replace("$subject", i).replace("$description", desc).replace("$status", status).replace("$flag", flag))
+        additions_contents.append(
+            Template(template_subscribe).render(
+                image = icon,
+                subject = i,
+                description = desc,
+                status = status,
+                flag = flag
+            )
+        )
     final_subscribe_contents = "\n".join(subscribe_contents)
-    final_options_contents = "\n".join(addtions_contents)
-    html = read(VIEWS + "/jx3/subscribe/subscribe.html")
-    font = ASSETS + "/font/custom.ttf"
+    final_additions_contents = "\n".join(additions_contents)
     group_info = await bot.call_api("get_group_info", group_id=int(group_id))
     group_name = group_info["group_name"]
-    html = html.replace("$customfont", font).replace("$subscribe_contents", final_subscribe_contents).replace("$addtion_contents", final_options_contents).replace("$group_id", group_id).replace("$group_name", group_name)
-    final_html = CACHE + "/" + get_uuid() + ".html"
-    write(final_html, html)
-    final_path = await generate(final_html, False, ".total", False)
+    html = str(
+        SimpleHTML(
+            "jx3",
+            "subscribe.html",
+            css_ = Path(build_path(TEMPLATES, ["jx3", "subscribe.css"])),
+            font = build_path(ASSETS, ["font", "custom.ttf"]),
+            subscribe_contents = final_subscribe_contents,
+            additions_contents = final_additions_contents,
+            group_id = group_id,
+            group_name = group_name,
+            grass_image = Path(build_path(ASSETS, ["image", "minecraft", "grass.png"])).as_uri()
+        )
+    )
+    final_path = await generate(html, ".total", False)
     if not isinstance(final_path, str):
         return
     return Path(final_path).as_uri()

@@ -1,71 +1,17 @@
 from pathlib import Path
-from typing import Optional
+from jinja2 import Template
 
-from src.tools.config import Config
-from src.tools.utils.request import get_api, post_url
-from src.tools.basic.server import server_mapping, Zone_mapping
-from src.tools.basic.prompts import PROMPT
-from src.tools.utils.file import read, write
-from src.tools.generate import generate, get_uuid
-from src.tools.utils.path import ASSETS, CACHE, VIEWS
+from src.config import Config
+from src.const.path import ASSETS, build_path
+from src.utils.decorators import token_required
+from src.utils.network import Request
+from src.utils.time import Time
+from src.utils.generate import generate
+from src.templates import HTMLSourceCode
 
-import time
-import json
+from ._template import template_interserver, template_local, table_recruit_head
 
-token = Config.jx3.api.token
-bot_name = Config.bot_basic.bot_name_argument
-
-async def api_recruit(server: str, copy: str = ""):  # 团队招募 <服务器> [关键词]
-    if token == None:
-        return [PROMPT.NoToken]
-    server_ = server_mapping(server)
-    if not server_:
-        return [PROMPT.ServerNotExist]
-    final_url = f"{Config.jx3.api.url}/view/member/recruit?token={token}&server={server_}&nickname={bot_name}&chrome=1&keyword="
-    if copy != "":
-        final_url = final_url + copy
-    data = await get_api(final_url)
-    if data["code"] == 403:
-        return [PROMPT.InvalidToken]
-    elif data["code"] == 400:
-        return [PROMPT.ServerNotExist]
-    elif data["code"] == 404:
-        return ["未找到相关团队，请检查后重试~"]
-    url = data["data"]["url"]
-
-    return url
-
-def convert_time(timestamp: int):
-    time_local = time.localtime(timestamp)
-    dt = time.strftime("%H:%M:%S", time_local)
-    return dt
-
-template_interserver = """
-<tr>
-    <td class="short-column">$sort</td>
-    <td class="short-column">$flag</td>
-    <td class="short-column">$name</td>
-    <td class="short-column">$level</td>
-    <td class="short-column">$leader</td>
-    <td class="short-column">$count</td>
-    <td class="short-column">$content</td>
-    <td class="short-column">$time</td>
-</tr>
-"""
-
-template_local = """
-<tr>
-    <td class="short-column">$sort</td>
-    <td class="short-column">$name</td>
-    <td class="short-column">$level</td>
-    <td class="short-column">$leader</td>
-    <td class="short-column">$count</td>
-    <td class="short-column">$content</td>
-    <td class="short-column">$time</td>
-</tr>
-"""
-
-async def checkAd(msg: str, data: dict):
+async def check_ad(msg: str, data: dict) -> bool:
     data = data["data"]
     for x in data:
         status = []
@@ -81,45 +27,21 @@ async def checkAd(msg: str, data: dict):
             return True
     return False
 
-async def query_recruit(server: str, keyword: Optional[str] = ""):
-    if Config.jx3.api.enable:
-        final_url = f"{Config.jx3.api.url}/data/member/recruit?token={token}&server={server}"
-        return await get_api(final_url)
-    else:
-        final_url = "https://www.jx3mm.com/api/uniqueapi/Apiinterface/mrecruit"
-        params = {
-            "S": Zone_mapping(server),
-            "v": server,
-            "k": keyword,
-            "t": 1,
-            "offset":0,
-            "limit":10
-        }
-        data = await post_url(final_url, json=params)
-        return json.loads(data)
-
-async def recruit_v2(server: Optional[str], keyword: str = "", local: bool = False, filter: bool = False):
-    if token == None:
-        return [PROMPT.NoToken]
-    server_ = server_mapping(server)
-    if not server_:
-        return [PROMPT.ServerNotExist]
-    data = await query_recruit(server_, keyword)
-    if "code" not in data:
-        return
+@token_required
+async def get_recruit_image(server: str, keyword: str = "", local: bool = False, filter: bool = False, token: str = ""):
+    final_url = f"{Config.jx3.api.url}/data/member/recruit?token={token}&server={server}"
+    data = (await Request(final_url).get()).json()
     if data["code"] != 200:
         return ["唔……未找到相关团队，请检查后重试！"]
-    adFlags = await get_api("https://inkar-suki.codethink.cn/filters")
-    time_now = convert_time(data["data"]["time"])
-    appinfo = f" · 招募信息 · {server_} · {time_now}"
-    font = ASSETS + "/font/custom.ttf"
+    adFlags = (await Request("https://inkar-suki.codethink.cn/filters").get()).json()
+    time_now = Time(data["data"]["time"]).format("%H:%M:%S")
     data = data["data"]["data"]
     contents = []
     for i in range(len(data)):
         detail = data[i]
         content = detail["content"]
         if filter:
-            to_filter = await checkAd(content, adFlags)
+            to_filter = await check_ad(content, adFlags)
             if to_filter:
                 continue
         flag = False if not detail["roomID"] else True
@@ -131,23 +53,34 @@ async def recruit_v2(server: Optional[str], keyword: str = "", local: bool = Fal
         level = str(detail["level"])
         leader = detail["leader"]
         count = str(detail["number"]) + "/" + str(detail["maxNumber"])
-        create_time = convert_time(detail["createTime"])
+        create_time = Time(detail["createTime"]).format()
         if local:
             template = template_local
             flag = ""
         else:
             template = template_interserver
-        new = template.replace("$sort", num).replace("$name", name).replace("$level", level).replace("$leader", leader).replace("$count", count).replace("$content", content).replace("$time", create_time).replace("$flag", flag)
-        contents.append(new)
+        contents.append(
+            Template(template).render(
+                sort = num,
+                name = name,
+                level = level,
+                leader = leader,
+                count = count,
+                content = content,
+                time = create_time,
+                flag = flag
+            )
+        )
         if len(contents) == 50:
             break
-    table ="\n".join(contents)
-    html = read(VIEWS + "/jx3/recruit/recruit.html")
-    saohua = "严禁将蓉蓉机器人与音卡共存，一经发现永久封禁！蓉蓉是抄袭音卡的劣质机器人！"
-    html = html.replace("$customfont", font).replace("$appinfo", appinfo).replace("$recruitcontent", table).replace("$randomsaohua", saohua)
-    final_html = CACHE + "/" + get_uuid() + ".html"
-    write(final_html, html)
-    final_path = await generate(final_html, False, "table", False)
+    html = str(
+        HTMLSourceCode(
+            application_name = f" · 团队招募 · {keyword} · {time_now}",
+            table_head = table_recruit_head,
+            table_body = "\n".join(contents)
+        )
+    )
+    final_path = await generate(html, "table", False)
     if not isinstance(final_path, str):
         return
     return Path(final_path).as_uri()

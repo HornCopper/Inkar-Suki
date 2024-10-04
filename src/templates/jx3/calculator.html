@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <style>
+        .message-box {
+            width: 778px;
+            display: flex;
+            justify-content: space-between;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #f5f5f5;
+        }
+
+        .element {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        @font-face {
+            font-family: Yozai;
+            src: url("{{ yozai }}");
+        }
+
+        .cell {
+            padding: 5px;
+            border-radius: 3px;
+            background-color: #fff;
+            text-align: center;
+            font-family: Yozai;
+            font-size: 30px;
+        }
+
+        .cell-title {
+            padding: 5px;
+            border-radius: 3px;
+            background-color: #fff;
+            text-align: center;
+            font-size: 30px;
+        }
+
+        table {
+            width: 800px;
+            border-collapse: separate;
+            border-spacing: 0;
+            border: 1px solid #000;
+        }
+
+        th {
+            background-color: #333;
+            color: #fff;
+            padding: 8px;
+            text-align: center;
+        }
+
+        td {
+            padding: 20px;
+            text-align: center;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            border-bottom: 1px solid #D3D3D3;
+            margin-bottom: 1px;
+        }
+
+        tbody tr:not(:first-child) {
+            border: 1px solid black;
+        }
+
+        .short-column {
+            width: 150px;
+        }
+
+        tfoot {
+            text-align: center;
+            font-size: 15px;
+        }
+
+        .progress-bar {
+            width: 300px;
+            height: 20px;
+            background-color: #cfcfcf;
+            position: relative;
+            border-radius: 10px;
+        }
+
+        .progress {
+            height: 100%;
+            background-color: {{ color }};
+            border-radius: 10px;
+        }
+
+        .progress-text {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            line-height: 20px;
+            color: black;
+            font-weight: bold;
+        }
+
+        @font-face {
+            font-family: Harmony;
+            src: url("{{ font }}");
+        }
+
+        body {
+            font-family: Harmony, sans-serif;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="total" style="display: inline-block;">
+        <div class="message-box">
+            {{ msgbox }}
+        </div>
+            <table style="background-color: #FFFFFF">
+                <thead>
+                    <tr>
+                        <th class="short-column" style="height:20px">技能</th>
+                        <th class="short-column" style="height:20px">占比</th>
+                        <th class="short-column" style="height:20px">次数</th>
+                        <th class="short-column" style="height:20px">伤害</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{ tables }}
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td colspan="7">&copy; Inkar Suki · {{ school }}DPS计算器 · {{ server }} · {{ name }} ·
+                            06:41<br>计算器数据来源：{{ calculator }}
+                        </td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+</body>
+
+</html>

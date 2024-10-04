@@ -1,58 +1,25 @@
-from typing import Tuple, List, Literal, Union, Optional
+from typing import Tuple, List, Literal
 from pathlib import Path
+from jinja2 import Template
 
-from src.tools.utils.request import get_api, post_url
-from src.tools.utils.time import convert_time, get_current_time
-from src.tools.generate import generate, get_uuid
-from src.tools.utils.path import ASSETS, CACHE, TOOLS, VIEWS
-from src.tools.utils.file import read, write
-from src.tools.basic.server import Zone_mapping
+from src.const.jx3.server import Server
+from src.const.path import ASSETS, TEMPLATES, build_path
+from src.utils.network import Request
+from src.utils.time import Time
+from src.utils.file import read
+from src.utils.generate import generate
+
+from ._template import headers, template_wujia
 
 import datetime
 import json
-import random
 
-template_wujia = """
-<tr>
-    <td>$date</td>
-    <td>$server</td>
-    <td>$price</td>
-</tr>"""
+async def query_aijx3_data(url: str, params: dict = {}):
+    data = (await Request(url, headers=headers, params=params).post()).json()
+    return data
 
-headers = {
-    "Accept": "application/json, text/plain, */*",
-    "Accept-Encoding": "gzip, deflate, br, zstd",
-    "Accept-Language": "zh-CN,zh;q=0.9",
-    "Connection": "keep-alive",
-    "Content-Type": "application/json",
-    "Host": "www.aijx3.cn",
-    "Origin": "https://wj.aijx3.cn",
-    "Referer": "https://wj.aijx3.cn/",
-    "Sec-Fetch-Dest": "empty",
-    "Sec-Fetch-Mode": "cors",
-    "Sec-Fetch-Site": "same-site",
-    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36",
-    "sec-ch-ua": "\"Not/A)Brand\";v=\"8\", \"Chromium\";v=\"126\", \"Google Chrome\";v=\"126\"",
-    "sec-ch-ua-mobile": "?0",
-    "sec-ch-ua-platform": "\"Windows\"",
-    "wjKey": "auHxiYtcg59JEtZ5nARiX8gLPcWt2ut9"
-}
-
-aliases_map = {
-    "金羁饰影礼盒": "金羁饰影三选一礼盒"
-}
-
-# 数据源和实际数据不一致 映射一次
-
-async def queryWj(url: str, params: dict = {}):
-    data = await post_url(url, headers=headers, json=params)
-    return json.loads(data)
-
-async def getRawName(alias_name: str) -> Union[str, list]:
-    item_aliases_data = json.loads(read(TOOLS + "/item_aliases.json", "{}"))
-    if alias_name in item_aliases_data:
-        alias_name = item_aliases_data[alias_name]
-    item_data = await queryWj("https://www.aijx3.cn/api/wj/basedata/getBaseGoodsList")
+async def get_standard_name(alias_name: str) -> str | list:
+    item_data = await query_aijx3_data("https://www.aijx3.cn/api/wj/basedata/getBaseGoodsList")
     item_data = item_data["data"]
     
     # 精准匹配 如果成功匹配不再模糊搜索
@@ -69,26 +36,42 @@ async def getRawName(alias_name: str) -> Union[str, list]:
                 matched.append(each_item["goodsName"])
     return matched
 
-async def getItemHistory(standard_name: str) -> Tuple[List[int], List[str]]:
-    current_timestamp = get_current_time()
-    start_timestamp = get_current_time() - 3*30*24*60*60 # 3个月前
-    data = await queryWj("https://www.aijx3.cn/api/wj/goods/getAvgGoodsPriceRecord", params={"goodsName":standard_name,"belongQf3":"", "endTime": convert_time(current_timestamp, "%Y-%m-%d"), "startTime": convert_time(start_timestamp, "%Y-%m-%d")})
+async def get_item_history(standard_name: str) -> Tuple[List[int], List[str]]:
+    current_timestamp = Time().raw_time
+    start_timestamp = current_timestamp - 3*30*24*60*60 # 3个月前
+    params = {
+        "goodsName":standard_name,
+        "belongQf3":"", 
+        "endTime": Time(current_timestamp).format("%Y-%m-%d"), 
+        "startTime": Time(start_timestamp).format("%Y-%m-%d")
+    }
+    data = await query_aijx3_data("https://www.aijx3.cn/api/wj/goods/getAvgGoodsPriceRecord", params=params)
     data = data["data"]
     dates = []
     prices = []
     for each_data in data:
-        dates.append(convert_time(int(datetime.datetime.strptime(each_data["tradeTime"], "%Y-%m-%dT%H:%M:%S.000+0000").timestamp()), "%Y-%m-%d"))
+        dates.append(
+            Time(
+                int(
+                    datetime.datetime.strptime(
+                        each_data["tradeTime"], "%Y-%m-%dT%H:%M:%S.000+0000"
+                    ).timestamp()
+                )
+            ).format(
+                "%Y-%m-%d"
+                )
+            )
         prices.append(each_data["price"])
     return prices[::-1], dates[::-1]
 
-async def getItemDetail(item_name: str) -> Union[list, Literal[False]]:
-    item_data = await queryWj("https://www.aijx3.cn/api/wj/goods/getGoodsDetail", params={"goodsName": item_name})
+async def get_item_detail(item_name: str) -> list | Literal[False]:
+    item_data = await query_aijx3_data("https://www.aijx3.cn/api/wj/goods/getGoodsDetail", params={"goodsName": item_name})
     item_data = item_data["data"]
-    if item_data == None:
+    if item_data is None:
         return False
-    item_name = item_data["goodsName"] # 物品名称
-    item_alias = item_data["goodsAlias"] # 物品别称
-    publish_time = convert_time(int(datetime.datetime.strptime(item_data["publishTime"], "%Y-%m-%dT%H:%M:%S.000+0000").timestamp()), "%Y-%m-%d") # 发行时间
+    item_name = item_data["goodsName"]
+    item_alias = item_data["goodsAlias"]
+    publish_time = Time(int(datetime.datetime.strptime(item_data["publishTime"], "%Y-%m-%dT%H:%M:%S.000+0000").timestamp())).format("%Y-%m-%d") # 发行时间
     publish_count_limit = item_data["publishNum"] if item_data["publishNum"] != None else "--" # 发行数量
     publish_time_limit = item_data["publishLimitTime"] if item_data["publishLimitTime"] != None else "--" # 发行时长
     binding_time_limit = item_data["limitTime"] if item_data["limitTime"] != None else "--" # 绑定时长
@@ -97,23 +80,27 @@ async def getItemDetail(item_name: str) -> Union[list, Literal[False]]:
     return [item_name, item_alias, publish_time, publish_count_limit, publish_time_limit, binding_time_limit, raw_price, img]
     # [物品名称, 物品别称, 发行时间, 发行数量, 发行时长, 绑定时长, 发行原价, 图片样例]
 
-async def queryWBLInfo(item_standard_name: str):
-    if item_standard_name in aliases_map:
-        item_standard_name = aliases_map[item_standard_name]
+async def get_wanbaolou_data(item_standard_name: str):
     final_url = f"https://trade-api.seasunwbl.com/api/buyer/goods/list?filter[role_appearance]={item_standard_name}&filter[state]=2&goods_type=3"
-    data = await get_api(final_url)
+    data = (await Request(final_url).get()).json()
     if data["code"] == -11:
         return "万宝楼正在维护中……暂时没有数据"
     wbl_data = []
     for each_data in data["data"]["list"][0:6]:
         server = each_data["server_name"]
-        end_time = convert_time(get_current_time() + each_data["remaining_time"], "%Y-%m-%d")
+        end_time = Time(Time().raw_time + each_data["remaining_time"]).format("%Y-%m-%d")
         price = str(each_data["single_unit_price"] / 100) + "元"
-        wbl_data.append(template_wujia.replace("$date", end_time).replace("$server", server).replace("$price", price))
+        wbl_data.append(
+            Template(template_wujia).render(
+                date = end_time,
+                server = server,
+                price = price
+            )
+        )
     return "\n".join(wbl_data)
 
-async def quertAJ3Info(item_standard_name: str):
-    data = await queryWj("https://www.aijx3.cn/api/wj/goods/getGoodsPriceRecord", params={"goodsName":item_standard_name,"belongQf3":"","current":1,"size":100})
+async def get_item_price(item_standard_name: str):
+    data = await query_aijx3_data("https://www.aijx3.cn/api/wj/goods/getGoodsPriceRecord", params={"goodsName":item_standard_name,"belongQf3":"","current":1,"size":100})
     full_table = {}
     zone_record_count = {
         "电信一区": 0,
@@ -124,12 +111,18 @@ async def quertAJ3Info(item_standard_name: str):
         table = []
         for each_data in data["data"]["records"]:
             server = each_data["belongQf3"]
-            if Zone_mapping(server, True) in zone:
+            if Server(server).zone_legacy in zone:
                 if zone_record_count[zone[0]] == 10:
                     continue
-                end_time = convert_time(int(datetime.datetime.strptime(each_data["tradeTime"], "%Y-%m-%dT%H:%M:%S.000+0000").timestamp()), "%Y-%m-%d")
+                end_time = Time(int(datetime.datetime.strptime(each_data["tradeTime"], "%Y-%m-%dT%H:%M:%S.000+0000").timestamp())).format("%Y-%m-%d")
                 price = str(each_data["price"]) + "元"
-                table.append(template_wujia.replace("$date", end_time).replace("$server", server).replace("$price", price))
+                table.append(
+                    Template(template_wujia).render(
+                        date = end_time,
+                        server = server,
+                        price = price
+                    )
+                )
                 zone_record_count[zone[0]] += 1
         full_table[zone[0]] = "\n".join(table)
     return full_table
@@ -152,46 +145,38 @@ def select_min_max(data: list, margin: float = 0.1, round_to: int = 10) -> tuple
     adjusted_max = round_up(optimal_max, round_to)
     return int(adjusted_min), int(adjusted_max)
 
-async def getSingleItemPrice(item_name: str, exact: bool = False) -> Optional[Union[str, dict, list]]:
-    standard_name = await getRawName(item_name)
+async def get_single_item_price(item_name: str, exact: bool = False) -> str | dict | list | None:
+    standard_name = await get_standard_name(item_name)
     if isinstance(standard_name, list):
         return {"v": standard_name}
     if exact:
         standard_name = item_name
-    basic_item_info = await getItemDetail(standard_name)
+    basic_item_info = await get_item_detail(standard_name)
     if basic_item_info == False:
         return ["唔……未收录该物品！\n请到音卡用户群内进行反馈，我们会及时添加别名！"]
-    aijx3_data = await quertAJ3Info(standard_name)
-    wbl_data = await queryWBLInfo(standard_name)
-    html = read(VIEWS + "/jx3/trade/wujia.html")
-    for each_part in aijx3_data:
-        data = aijx3_data[each_part]
-        if data == "":
-            data = "(｡•́︿•̀｡) 该大区目前没有数据"
-        html = html.replace(f"${each_part}_data", data)
-    html = html.replace("$wbl_data", wbl_data)
-    html = html.replace("$item_name", str(basic_item_info[0]))
-    html = html.replace("$item_alias", str(basic_item_info[1]))
-    html = html.replace("$publish_time", str(basic_item_info[2]))
-    html = html.replace("$publish_count", str(basic_item_info[3]))
-    html = html.replace("$publish_remain", str(basic_item_info[4]))
-    html = html.replace("$binding_time", str(basic_item_info[5]))
-    html = html.replace("$publish_price", str(basic_item_info[6]))
-    html = html.replace("$item_image", str(basic_item_info[7]))
-    prices, dates = await getItemHistory(standard_name)
+    aijx3_data = await get_item_price(standard_name)
+    wbl_data = await get_wanbaolou_data(standard_name)
+    prices, dates = await get_item_history(standard_name)
     max, min = select_min_max(prices)
-    html = html.replace("$max", str(max))
-    html = html.replace("$min", str(min))
-    html = html.replace("$dates", json.dumps(dates, ensure_ascii=False))
-    html = html.replace("$values", json.dumps(prices, ensure_ascii=False))
-    font = ASSETS + "/font/custom.ttf"
-    random_background = ASSETS + "/image/assistance/" + str(random.randint(1, 10)) + ".jpg"
-    custom_msg = await get_api("https://inkar-suki.codethink.cn/ajs_lu")
-    msg = custom_msg["msg"]
-    html = html.replace(f"$customfont", font).replace("$custombackground", random_background).replace("$custom_msg", msg)
-    final_html = CACHE + "/" + get_uuid() + ".html"
-    write(final_html, html)
-    final_path = await generate(final_html, False, "body", False)
+    html = Template(read(build_path(TEMPLATES, ["jx3", "item_price.html"]))).render(
+        font = build_path(ASSETS, ["font", "custom.ttf"]),
+        item_image = str(basic_item_info[7]),
+        item_name = str(basic_item_info[0]),
+        item_alias = str(str(basic_item_info[1])),
+        custom_msg = (await Request("https://inkar-suki.codethink.cn/ajs_lu").get()).json()["msg"],
+        publish_time = str(basic_item_info[2]),
+        publish_count = str(basic_item_info[3]),
+        publish_remain = str(basic_item_info[4]),
+        binding_time = str(basic_item_info[5]),
+        publish_price = str(basic_item_info[6]),
+        aijx3_data = aijx3_data,
+        wanbaolou = wbl_data,
+        dates = json.dumps(dates, ensure_ascii=False),
+        max = max,
+        min = min,
+        values = json.dumps(prices, ensure_ascii=False)
+    )
+    final_path = await generate(html, "body", False)
     if not isinstance(final_path, str):
         return
     return Path(final_path).as_uri()

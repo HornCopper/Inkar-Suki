@@ -1,76 +1,71 @@
 from pathlib import Path
-from typing import Optional
+from typing import List
+from jinja2 import Template
 
 from nonebot.adapters.onebot.v11 import MessageSegment as ms
 
-from src.tools.utils.request import get_api, get_content
-from src.tools.utils.time import convert_time, get_current_time
-from src.tools.generate import generate, get_uuid
-from src.tools.utils.path import ASSETS, CACHE, TOOLS, VIEWS
-from src.tools.utils.file import read, write
-from src.tools.basic.server import server_mapping
-from src.tools.basic.prompts import PROMPT
+from src.const.path import ASSETS, build_path
+from src.const.jx3.constant import server_aliases_data as servers
+from src.utils.analyze import check_number, extract_numbers
+from src.utils.network import Request
+from src.utils.time import Time
+from src.utils.generate import generate
+from src.templates import SimpleHTML
 
-from .sl import convertAttrs
-from .api import toCoinImage, convert, template_msgbox, template_table
+from .api import template_msgbox, template_table
+
+from ._parse import AttrsConverter, coin_to_image, calculator_price
 
 import json
-
 basic_name = "无封"
 
-def getAttrs(data: list):
+def get_exist_attrs(data: List[dict]) -> List[str]:
     attrs = []
-    for i in data:
-        if i["color"] == "green":
-            label = i["label"].split("提高")
-            if len(label) == 1:
-                label = i["label"].split("增加")
-            label = label[0].replace("等级", "").replace("值", "")
+    for item in data:
+        if item.get("color") == "green":
+            label: str = item["label"].split("提高" if "提高" in item["label"] else "增加")[0]
+            label = label.replace("等级", "").replace("值", "")
             attrs.append(label)
     return attrs
 
-async def getData(name, quality):
+async def get_equips_data(name: str, quality: int):
     url = f"https://node.jx3box.com/api/node/item/search?ids=&keyword={name}&client=std&MinLevel={quality}&MaxLevel={quality}&BindType=2"
-    data = []
-    getdata = await get_api(url)
-    for x in getdata["data"]["data"]:
+    satisfied = []
+    data = (await Request(url).get()).json()
+    for x in data["data"]["data"]:
         if str(x["Level"]) == str(quality):
-            data.append(x)
-    return data
+            satisfied.append(x)
+    return satisfied
 
-async def getArmor(raw: str):
-    attrs = convertAttrs(raw)
+async def get_equip_data(raw: str):
+    attrsInstance = AttrsConverter(raw)
+    attrs, location, quality = attrsInstance.attributes, attrsInstance.location, attrsInstance.quality
     if not attrs:
         return [f"您输入的装备词条有误，请确保包含以下四个要素：\n品级、属性、部位、内外功\n示例：13550内功双会头"]
-    parsed = attrs[0]
-    place = attrs[1]
-    quality = attrs[2]
-    final_name = basic_name + place
-    data = await getData(final_name, quality)
+    final_name = basic_name + location
+    data = await get_equips_data(final_name, quality)
     if len(data) == 0:
         return [f"未查找到该{basic_name}装备！"]
     else:
         for i in data:
-            if set(getAttrs(i["attributes"])) == set(parsed):
+            if set(get_exist_attrs(i["attributes"])) == set(attrs):
                 return i
+        raise ValueError
             
-async def getWufengImg(raw: str, server: Optional[str], group: str):
+async def get_wufeng_image(raw: str, server: str):
     if server == "全服":
-        result = await getAllServerWufengImg(raw)
+        result = await get_wufeng_image_allserver(raw)
         return result
-    server = server_mapping(server, group)
-    if not server:
-        return [PROMPT.ServerNotExist]
-    data = await getArmor(raw)
+    data = await get_equip_data(raw)
     if isinstance(data, list):
         return data
     currentStatus = 0 # 当日是否具有该物品在交易行
     try:
-        itemId = data["id"] # type: ignore
+        itemId = data["id"]
     except:
-        emg = await get_content("https://inkar-suki.codethink.cn/Inkar-Suki-Docs/img/emoji.jpg")
+        emg = (await Request("https://inkar-suki.codethink.cn/Inkar-Suki-Docs/img/emoji.jpg").get()).content
         return ["音卡建议您不要造无封装备了，因为没有。\n" + ms.image(emg)]
-    logs = await get_api(f"https://next2.jx3box.com/api/item-price/{itemId}/logs?server={server}")
+    logs = (await Request(f"https://next2.jx3box.com/api/item-price/{itemId}/logs?server={server}").get()).json()
     current = logs["data"]["today"]
     yesterdayFlag = False
     if current != None:
@@ -81,69 +76,77 @@ async def getWufengImg(raw: str, server: Optional[str], group: str):
             currentStatus = 1
             current = logs["data"]["yesterday"]
     if currentStatus:
-        toReplace = [["$low", toCoinImage(str(convert(current["LowestPrice"])))], ["$equal", toCoinImage(str(convert(current["AvgPrice"])))], ["$high", toCoinImage(str(convert(current["HighestPrice"])))]]
-        msgbox = template_msgbox
-        for toReplace_word in toReplace:
-            msgbox = msgbox.replace(toReplace_word[0], toReplace_word[1])
+        msgbox = Template(template_msgbox).render(
+            low = coin_to_image(str(calculator_price(current["LowestPrice"]))),
+            avg = coin_to_image(str(calculator_price(current["AvgPrice"]))),
+            high = coin_to_image(str(calculator_price(current["HighestPrice"])))
+        )
     else:
         msgbox = ""
-    color = ["(167, 167, 167)", "(255, 255, 255)", "(0, 210, 75)", "(0, 126, 255)", "(254, 45, 254)", "(255, 165, 0)"][data["Quality"]] # type: ignore
-    detailData = await get_api(f"https://next2.jx3box.com/api/item-price/{itemId}/detail?server={server}&limit=20")
-    if (not currentStatus or yesterdayFlag) and detailData["data"]["prices"] == None:
+    color = ["(167, 167, 167)", "(255, 255, 255)", "(0, 210, 75)", "(0, 126, 255)", "(254, 45, 254)", "(255, 165, 0)"][data["Quality"]]
+    detailData = (await Request(f"https://next2.jx3box.com/api/item-price/{itemId}/detail?server={server}&limit=20").get()).json()
+    if (not currentStatus or yesterdayFlag) and detailData["data"]["prices"] is None:
         if not yesterdayFlag:
             return ["唔……该物品目前交易行没有数据。"]
         else:
-            low = convert(current["LowestPrice"])
-            avg = convert(current["AvgPrice"])
-            high = convert(current["HighestPrice"])
+            low = calculator_price(current["LowestPrice"])
+            avg = calculator_price(current["AvgPrice"])
+            high = calculator_price(current["HighestPrice"])
             return [f"唔……该物品目前交易行没有数据，但是音卡找到了昨日的数据：\n昨日低价：{low}\n昨日均价：{avg}\n昨日高价：{high}"]
     table = []
-    icon = "https://icon.jx3box.com/icon/" + str(data["IconID"]) + ".png" # type: ignore
-    name = data["Name"] # type: ignore
+    icon = "https://icon.jx3box.com/icon/" + str(data["IconID"]) + ".png"
+    name = data["Name"]
     for each_price in detailData["data"]["prices"]:
-        table_content = template_table
-        toReplace_word = [["$icon", icon], ["$color", color], ["$name", name + "<br><span style=\"color:rgb(0, 210, 75)\">" + " ".join(getAttrs(data["attributes"])) + "</span>"], ["$time", convert_time(each_price["created"], "%m月%d日 %H:%M:%S")], ["$limit", str(each_price["n_count"])], ["$price", toCoinImage(convert(each_price["unit_price"]))]] # type: ignore
-        for word in toReplace_word:
-            table_content = table_content.replace(word[0], word[1])
-        table.append(table_content)
+        table.append(
+            Template(template_table).render(
+                icon = icon,
+                color = color,
+                name = name + "<br><span style=\"color:rgb(0, 210, 75)\">" + " ".join(get_exist_attrs(data["attributes"])) + "</span>",
+                time = Time(each_price["created"]).format("%m月%d日 %H:%M:%S"),
+                limit = str(each_price["n_count"]),
+                price = coin_to_image(calculator_price(each_price["unit_price"]))
+            )
+        )
         if len(table) == 12:
             break
-    final_table = "\n".join(table)
-    html = read(VIEWS + "/jx3/trade/trade.html")
-    font = ASSETS + "/font/custom.ttf"
-    saohua = "严禁将蓉蓉机器人与音卡共存，一经发现永久封禁！蓉蓉是抄袭音卡的劣质机器人！"
-    
-    html = html.replace("$customfont", font).replace("$tablecontent", final_table).replace("$randomsaohua", saohua).replace("$appinfo", f"交易行 · {server} · {name}").replace("$msgbox", msgbox)
-    final_html = CACHE + "/" + get_uuid() + ".html"
-    write(final_html, html)
-    final_path = await generate(final_html, False, ".total", False)
+    html = str(
+        SimpleHTML(
+            "jx3",
+            "trade",
+            font=build_path(ASSETS, ["font", "custom.ttf"]),
+            msgbox=msgbox,
+            table_content="\n".join(table),
+            appinfo=f"交易行 · {server} · {name}",
+            saohua="严禁将蓉蓉机器人与音卡共存，一经发现永久封禁！蓉蓉是抄袭音卡的劣质机器人！"
+        )
+    )
+    final_path = await generate(html, ".total", False)
     if not isinstance(final_path, str):
         return
     return Path(final_path).as_uri()
 
-async def getAllServerWufengImg(raw: str):
-    servers = list(json.loads(read(TOOLS + "/basic/server.json")))
+async def get_wufeng_image_allserver(raw: str):
     highs = []
     lows = []
     avgs = []
     table = []
-    data = await getArmor(raw)
+    data = await get_equip_data(raw)
     if isinstance(data, list):
         return data
     currentStatus = 0 # 当日是否具有该物品在交易行
     try:
-        itemId = data["id"] # type: ignore
-    except:
-        emg = await get_content("https://inkar-suki.codethink.cn/Inkar-Suki-Docs/img/emoji.jpg")
+        itemId = data["id"]
+    except KeyError:
+        emg = (await Request("https://inkar-suki.codethink.cn/Inkar-Suki-Docs/img/emoji.jpg").get()).content
         return ["音卡建议您不要造无封装备了，因为没有。\n" + ms.image(emg)]
     for server in servers:
-        logs = await get_api(f"https://next2.jx3box.com/api/item-price/{itemId}/logs?server={server}")
+        logs = (await Request(f"https://next2.jx3box.com/api/item-price/{itemId}/logs?server={server}").get()).json()
         current = logs["data"]["today"]
         yesterdayFlag = False
         if current != None:
             currentStatus = 1
         else:
-            if logs["data"]["yesterday"] != None:
+            if logs["data"]["yesterday"] is not None:
                 yesterdayFlag = True
                 currentStatus = 1
                 current = logs["data"]["yesterday"]
@@ -158,32 +161,46 @@ async def getAllServerWufengImg(raw: str):
             highs.append(0)
             avgs.append(0)
             lows.append(0)
-        color = ["(167, 167, 167)", "(255, 255, 255)", "(0, 210, 75)", "(0, 126, 255)", "(254, 45, 254)", "(255, 165, 0)"][data["Quality"]] # type: ignore
-        detailData = await get_api(f"https://next2.jx3box.com/api/item-price/{itemId}/detail?server={server}&limit=20")
-        icon = "https://icon.jx3box.com/icon/" + str(data["IconID"]) + ".png" # type: ignore
-        name = data["Name"] # type: ignore
-        if (not currentStatus or yesterdayFlag) and detailData["data"]["prices"] == None:
+        color = ["(167, 167, 167)", "(255, 255, 255)", "(0, 210, 75)", "(0, 126, 255)", "(254, 45, 254)", "(255, 165, 0)"][data["Quality"]]
+        detailData = (await Request(f"https://next2.jx3box.com/api/item-price/{itemId}/detail?server={server}&limit=20").get()).json()
+        icon = "https://icon.jx3box.com/icon/" + str(data["IconID"]) + ".png"
+        name = data["Name"]
+        if (not currentStatus or yesterdayFlag) and detailData["data"]["prices"] is None:
             if not yesterdayFlag:
-                toReplace_word = [["$icon", icon], ["$color", color], ["$name", name + f"（{server}）<br><span style=\"color:rgb(0, 210, 75)\">" + " ".join(getAttrs(data["attributes"])) + "</span>"], ["$time", convert_time(get_current_time(), "%m月%d日 %H:%M:%S")], ["$limit", "N/A"], ["$price", "<span style=\"color:red\">没有数据</span>"]] # type: ignore
-                table_content = template_table
-                for word in toReplace_word:
-                    table_content = table_content.replace(word[0], word[1])
-                table.append(table_content)
+                table.append(
+                    Template(template_table).render(
+                        icon = icon,
+                        color = color,
+                        name = name + f"（{server}）<br><span style=\"color:rgb(0, 210, 75)\">" + " ".join(get_exist_attrs(data["attributes"])) + "</span>",
+                        time = Time().format("%m月%d日 %H:%M:%S"),
+                        limit = "N/A",
+                        price = "<span style=\"color:red\">没有数据</span>"
+                    )
+                )
                 continue
             else:
-                avg = convert(current["AvgPrice"])
-                toReplace_word = [["$icon", icon], ["$color", color], ["$name", name + f"（{server}）<br><span style=\"color:rgb(0, 210, 75)\">" + " ".join(getAttrs(data["attributes"])) + "</span>"], ["$time", convert_time(get_current_time(), "%m月%d日 %H:%M:%S")], ["$limit", "N/A"], ["$price", toCoinImage(avg)]] # type: ignore
-                table_content = template_table
-                for word in toReplace_word:
-                    table_content = table_content.replace(word[0], word[1])
-                table.append(table_content)
+                table.append(
+                    Template(template_table).render(
+                        icon = icon,
+                        color = color,
+                        name = name + f"（{server}）<br><span style=\"color:rgb(0, 210, 75)\">" + " ".join(get_exist_attrs(data["attributes"])) + "</span>",
+                        time = Time().format("%m月%d日 %H:%M:%S"),
+                        limit = "N/A",
+                        price = coin_to_image(calculator_price(current["AvgPrice"]))
+                    )
+                )
                 continue
         each_price = detailData["data"]["prices"][0]
-        table_content = template_table
-        toReplace_word = [["$icon", icon], ["$color", color], ["$name", name + f"（{server}）<br><span style=\"color:rgb(0, 210, 75)\">" + " ".join(getAttrs(data["attributes"])) + "</span>"], ["$time", convert_time(each_price["created"], "%m月%d日 %H:%M:%S")], ["$limit", str(each_price["n_count"])], ["$price", toCoinImage(convert(each_price["unit_price"]))]] # type: ignore
-        for word in toReplace_word:
-            table_content = table_content.replace(word[0], word[1])
-        table.append(table_content)
+        table.append(
+            Template(template_table).render(
+                icon = icon,
+                color = color,
+                name = name + f"（{server}）<br><span style=\"color:rgb(0, 210, 75)\">" + " ".join(get_exist_attrs(data["attributes"])) + "</span>",
+                time = Time(each_price["created"]).format("%m月%d日 %H:%M:%S"),
+                limit = str(each_price["n_count"]),
+                price = coin_to_image(calculator_price(each_price["unit_price"]))
+            )
+        )
 
     fhighs = [x for x in highs if x != 0]
     favgs = [x for x in avgs if x != 0]
@@ -196,22 +213,24 @@ async def getAllServerWufengImg(raw: str):
         exist_info_flag = True
     except:
         pass
-    if exist_info_flag:
-        toReplace = [["$low", toCoinImage(convert(final_lowest))], ["$equal", toCoinImage(convert(final_avg))], ["$high", toCoinImage(convert(final_highest))]] # type: ignore
-    else:
-        toReplace = [["$low", "未知"], ["$equal", "未知"], ["$high", "未知"]]
     msgbox = template_msgbox.replace("当日", "全服")
-    for toReplace_word in toReplace:
-        msgbox = msgbox.replace(toReplace_word[0], toReplace_word[1])
-    final_table = "\n".join(table)
-    html = read(VIEWS + "/jx3/trade/trade.html")
-    font = ASSETS + "/font/custom.ttf"
-    saohua = "严禁将蓉蓉机器人与音卡共存，一经发现永久封禁！蓉蓉是抄袭音卡的劣质机器人！"
-    
-    html = html.replace("$customfont", font).replace("$tablecontent", final_table).replace("$randomsaohua", saohua).replace("$appinfo", f"交易行 · 全服 · {name}").replace("$msgbox", msgbox)
-    final_html = CACHE + "/" + get_uuid() + ".html"
-    write(final_html, html)
-    final_path = await generate(final_html, False, ".total", False)
+    msgbox = Template(msgbox).render(
+        low = coin_to_image(calculator_price(final_lowest)) if exist_info_flag else "未知",
+        avg = coin_to_image(calculator_price(final_avg)) if exist_info_flag else "未知",
+        high = coin_to_image(calculator_price(final_highest)) if exist_info_flag else "未知"
+    )
+    html = str(
+        SimpleHTML(
+            "jx3",
+            "trade",
+            font=build_path(ASSETS, ["font", "custom.ttf"]),
+            msgbox=msgbox,
+            table_content="\n".join(table),
+            appinfo=f"交易行 · {server} · {name}",
+            saohua="严禁将蓉蓉机器人与音卡共存，一经发现永久封禁！蓉蓉是抄袭音卡的劣质机器人！"
+        )
+    )
+    final_path = await generate(html, ".total", False)
     if not isinstance(final_path, str):
         return
     return Path(final_path).as_uri()

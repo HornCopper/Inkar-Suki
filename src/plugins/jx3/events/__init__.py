@@ -3,41 +3,42 @@ from nonebot.adapters import Message
 from nonebot.adapters.onebot.v11 import GroupMessageEvent, MessageSegment as ms
 from nonebot.params import CommandArg
 
-from src.tools.basic.server import server_mapping
-from src.tools.basic.prompts import PROMPT
-from src.tools.utils.file import get_content_local
+from src.const.prompts import PROMPT
+from src.const.jx3.server import Server
+from src.utils.network import Request
 
-from .chutian import *
-from .yuncong import *
-from .zhue import *
+from .chutian import get_chutian_image
+from .yuncong import get_yuncong_image
+from .zhue import get_zhue_image
 
-cts = on_command("jx3_chutian", aliases={"楚天社"}, force_whitespace=True, priority=5)
+ChutianMatcher = on_command("jx3_chutian", aliases={"楚天社"}, force_whitespace=True, priority=5)
 
-@cts.handle()
+@ChutianMatcher.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     if args.extract_plain_text() != "":
         return
-    image = await getChutianImg()
-    await cts.finish(ms.image(image))
+    image = await get_chutian_image()
+    if isinstance(image, str):
+        await ChutianMatcher.finish(ms.image(Request(image).local_content))
 
-ycs = on_command("jx3_yuncong", aliases={"云从社"}, force_whitespace=True, priority=5)
+YuncongMatcher = on_command("jx3_yuncong", aliases={"云从社"}, force_whitespace=True, priority=5)
 
-@ycs.handle()
+@YuncongMatcher.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     if args.extract_plain_text() != "":
         return
-    image = await getYuncongImg()
-    await ycs.finish(ms.image(image))
+    image = await get_yuncong_image()
+    if isinstance(image, str):
+        await YuncongMatcher.finish(ms.image(Request(image).local_content))
 
-zhue_ = on_command("jx3_zhue", aliases={"诛恶"}, force_whitespace=True, priority=5)
+ZhueMatcher = on_command("jx3_zhue", aliases={"诛恶"}, force_whitespace=True, priority=5)
 
-@zhue_.handle()
+@ZhueMatcher.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
-    if args.extract_plain_text() != "":
-        return
-    server = server_mapping(args.extract_plain_text(), str(event.group_id))
-    if server == None:
-        await zhue_.finish(PROMPT.ServerNotExist)
+    serverInstance = Server(args.extract_plain_text(), event.group_id)
+    if serverInstance.server is None:
+        await ZhueMatcher.finish(PROMPT.ServerNotExist)
     else:
-        img = get_content_local(await getZhueRecord(server))
-        await zhue_.finish(ms.image(img))
+        image = await get_zhue_image(serverInstance.server)
+        if isinstance(image, str):
+            await ZhueMatcher.finish(ms.image(Request(image).local_content))

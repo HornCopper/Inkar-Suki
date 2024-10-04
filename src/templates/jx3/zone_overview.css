@@ -1,0 +1,47 @@
+.progress-bar {
+    width: 300px;
+    height: 20px;
+    background-color: #cfcfcf;
+    position: relative;
+    border-radius: 10px;
+}
+
+.progress-0 {
+    height: 100%;
+    background-color: #5ebfd7;
+    border-radius: 10px;
+}
+
+.progress-25 {
+    height: 100%;
+    background-color: #4caf50;
+    border-radius: 10px;
+}
+
+.progress-50 {
+    height: 100%;
+    background-color: #ece44a;
+    border-radius: 10px;
+}
+
+.progress-75 {
+    height: 100%;
+    background-color: #ff8929;
+    border-radius: 10px;
+}
+
+.progress-100 {
+    height: 100%;
+    background-color: #ff2929;
+    border-radius: 10px;
+}
+
+.progress-text {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    line-height: 20px;
+    color: black;
+    font-weight: bold;
+}

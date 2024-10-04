@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>情缘绑定证书</title>
+    <style>
+        @font-face {
+            font-family: "BaotuXiaobai";
+            src: url("{{ btxbfont }}");
+        }
+
+        @font-face {
+            font-family: "Youzai";
+            src: url("{{ yozaifont }}");
+        }
+
+        body,
+        html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #000;
+        }
+
+        .background-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            background-image: url("{{ bg }}");
+            background-size: cover;
+            background-position: center;
+        }
+
+        .blur-container {
+            position: absolute;
+            top: 5%;
+            left: 5%;
+            width: 90%;
+            height: 90%;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            overflow: hidden;
+        }
+
+        .content {
+            display: flex;
+            justify-content: center;
+            gap: 200px;
+        }
+
+        .profile {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .circle {
+            width: 150px;
+            height: 150px;
+            border: 2px solid #000;
+            border-radius: 50%;
+            overflow: hidden;
+        }
+
+        .circle img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .name {
+            margin-top: 10px;
+            font-size: 18px;
+            font-weight: bold;
+            color: white;
+        }
+
+        .title {
+            position: absolute;
+            top: 0;
+            width: 100%;
+            text-align: center;
+            font-size: 2em;
+            color: #ff6fd4;
+            opacity: 0.8;
+        }
+
+        .footer {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            text-align: center;
+            font-size: 0.9em;
+            color: #ffffff;
+            opacity: 0.8;
+        }
+
+        .outlined-text {
+            text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
+        }
+
+        .seal {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+        }
+
+        .quote {
+            position: absolute;
+            bottom: 100px;
+            left: 0;
+            width: 100%;
+            text-align: center;
+            font-size: 1.5em;
+            color: #ffffff;
+            opacity: 0.8;
+        }
+    </style>
+</head>
+<body>
+    <div class="background-container">        
+        <div class="blur-container">
+            <div class="title outlined-text", style="font-family: BaotuXiaobai;font-size: 80px;">情缘绑定证书</div>
+            <div class="content">
+                <div class="profile">
+                    <div class="circle">
+                        <img src="https://q1.qlogo.cn/g?b=qq&nk={{ uin_1 }}&s=160">
+                    </div>
+                    <span class="name outlined-text" style="color: {{ color_1 }}; display: flex; align-items: center;"><img src="{{ img_1 }}" width="60px" height="60px" style="margin-right: 5px;">{{ name_1 }}</span>
+                </div>
+                <div class="profile">
+                    <div class="circle">
+                        <img src="https://q1.qlogo.cn/g?b=qq&nk={{ uin_2 }}&s=160">
+                    </div>
+                    <span class="name outlined-text" style="color: {{ color_2 }}; display: flex; align-items: center;"><img src="{{ img_2 }}" width="60px" height="60px" style="margin-right: 5px;">{{ name_2 }}</span>
+                </div>
+            </div>
+            <div class="quote outlined-text", style="font-family: Youzai;">你们在 {{ server }} 相识，愿你们的爱情如同这份结缘证书一般，永恒美好，幸福长存。<br>结缘日期：{{ time }}<br>你们已经相遇了 {{ relate }}！</div>
+            <img class="seal" src="https://inkar-suki.codethink.cn/Inkar-Suki-Docs/img/公章.png" alt="公章" width="200vw" height="200vw">
+        </div>
+    </div>
+</body>
+</html>

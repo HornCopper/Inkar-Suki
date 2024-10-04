@@ -1,50 +1,24 @@
-from src.tools.utils.request import get_api
+from src.const.jx3.kungfu import Kungfu
+from src.const.jx3.school import School
+from src.utils.network import Request
 
 import json
 
-icon_to_xf = {
-    "10175": "毒经",
-    "10447": "莫问",
-    "10021": "花间游",
-    "10081": "冰心诀",
-    "10026": "傲血战意",
-    "10003": "易筋经",
-    "10242": "焚影圣诀",
-    "10390": "分山劲",
-    "10014": "紫霞功",
-    "10015": "太虚剑意",
-    "10225": "天罗诡道",
-    "10224": "惊羽诀",
-    "10585": "隐龙诀",
-    "10533": "凌海诀",
-    "10268": "笑尘诀",
-    "10464": "北傲诀",
-    "10615": "太玄经",
-    "10144": "问水诀",
-    "10627": "无方",
-    "10062": "铁牢律",
-    "10002": "洗髓经",
-    "10243": "明尊琉璃体",
-    "10389": "铁骨衣",
-    "10698": "孤锋诀",
-    "10756": "山海心诀"
-}
 
-
-async def get_url(xf):
-    data = await get_api("https://helper.jx3box.com/api/menu_group/macro-rec")
+async def get_url(kungfu: str) -> str | None:
+    data = (await Request("https://helper.jx3box.com/api/menu_group/macro-rec").get()).json()
     macro_list = data["data"]["menu_group"]["menus"]
     for i in macro_list:
-        xf_ = icon_to_xf[i["icon"]]
-        if xf_ == xf:
+        kungfu_ = Kungfu.with_internel_id(i["icon"]).name
+        if kungfu_ == kungfu:
             return "https://cms.jx3box.com/api/cms" + i["link"].replace("macro", "post")
 
 
-async def get_macro(xf):
-    url = await get_url(xf)
+async def get_macro(kungfu: str) -> str | None:
+    url = await get_url(kungfu)
     if not isinstance(url, str):
         return
-    data = await get_api(url)
+    data = (await Request(url).get()).json()
     talent_flag = True
     title = data["data"]["post_title"]
     detail = data["data"]["post_meta"]["data"][0]
@@ -65,9 +39,9 @@ async def get_macro(xf):
     return msg
 
 
-async def get_talent(talent):
+async def get_talent(talent: dict) -> str:
     ver = talent["version"]
-    data = await get_api(url=f"https://data.jx3box.com/talent/{ver}.json")
+    data = (await Request(url=f"https://data.jx3box.com/talent/{ver}.json").get()).json()
     xf_data = data[talent["xf"]]
     talents = []
     num = 1
@@ -76,3 +50,22 @@ async def get_talent(talent):
         num = num + 1
     talents_msg = ",".join(talents)
     return talents_msg
+
+async def get_matrix(kungfu: Kungfu):
+    name = kungfu.name
+    if kungfu.name is None or kungfu.school is None:
+        return "此心法不存在哦~请检查后重试。"
+    school = School(kungfu.school)
+    params = {
+        "forceId": str(school.internel_id),
+    }
+    tl_data = (await Request("https://m.pvp.xoyo.com/force/gest", params=params).post(tuilan=True)).json()
+    tl_data = json.loads(tl_data)
+    data = tl_data["data"]
+    description = ""
+    for i in data:
+        if i["kungfuName"] == name:
+            for x in i["zhenFa"]["descs"]:
+                description = description + x["name"] + "：" + x["desc"] + "\n"
+                skillName = i["zhenFa"]["skillName"]
+    return f"查到了{name}的{skillName}：\n" + description

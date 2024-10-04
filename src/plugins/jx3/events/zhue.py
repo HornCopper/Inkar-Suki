@@ -1,26 +1,20 @@
 from pathlib import Path
+from jinja2 import Template
 
-from src.tools.config import Config
-from src.tools.utils.request import get_api
-from src.tools.utils.file import read, write
-from src.tools.generate import generate, get_uuid
-from src.tools.utils.path import ASSETS, CACHE, VIEWS
-from src.tools.utils.time import get_current_time, convert_time, get_relate_time
-from src.tools.basic.server import Zone_mapping
+from src.config import Config
+from src.const.jx3.server import Server
+from src.utils.time import Time
+from src.utils.network import Request
+from src.utils.generate import generate
+
+from src.templates import HTMLSourceCode
+
+from ._template import table_zhue_head, template_zhue
 
 import json
 import time
 
-token = Config.jx3.api.token
-
-template_zhue = """
-<tr>
-    <td class="short-column">$time</td>
-    <td class="short-column">$map</td>
-    <td class="short-column">$relate</td>
-</tr>"""
-
-async def getZhueRecord(server: str):
+async def get_zhue_image(server: str):
     headers = {
         "Accept": "application/json, text/javascript, */*; q=0.01",
         "Accept-Language": "zh-CN,zh;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6",
@@ -39,7 +33,7 @@ async def getZhueRecord(server: str):
         "Referer": "https://www.jx3mm.com/jx3fun/jevent/index.html"
     }
     filter = {
-        "Zone": Zone_mapping(server),
+        "Zone": Server(server).zone,
         "Srv": server
     }
     base_params = {
@@ -52,23 +46,26 @@ async def getZhueRecord(server: str):
         "op": "{\"Zone\":\"LIKE\",\"Srv\":\"LIKE\"}"
     }
     api = "https://www.jx3mm.com/jx3fun/jevent"
-    data = await get_api(api, headers=headers, params=base_params)
+    data = (await Request(api, headers=headers, params=base_params).get()).json()
     data = data["rows"]
     tables = []
     for i in data:
-        relateTime = get_relate_time(get_current_time(), i["Tm"])
-        tables.append(template_zhue.replace("$time", str(convert_time(i["Tm"]))).replace("$map", i["Content"]).replace("$relate", relateTime))
-    saohua = "严禁将蓉蓉机器人与音卡共存，一经发现永久封禁！蓉蓉是抄袭音卡的劣质机器人！"
-    appinfo_time = convert_time(get_current_time(), "%H:%M:%S")
-    appinfo = f" · 诛恶记录 · {server} · {appinfo_time}"
-    final_table = "\n".join(tables)
-    html = read(VIEWS + "/jx3/celebrations/zhue.html")
-    font = ASSETS + "/font/custom.ttf"
-    html = html.replace("$customfont", font).replace("$tablecontent", final_table).replace("$randomsaohua", saohua).replace("$appinfo", appinfo)
-    final_html = CACHE + "/" + get_uuid() + ".html"
-    write(final_html, html)
-    final_path = await generate(final_html, False, "table", False)
+        relateTime = Time().relate(i["Tm"])
+        tables.append(
+            Template(template_zhue).render(
+                time = Time(i["Tm"]).format(),
+                map = i["Content"],
+                relate = relateTime
+            )
+        )
+    html = str(
+        HTMLSourceCode(
+            application_name = " · 诛恶事件 · " + Time().format("%H:%M:%S"),
+            table_head = table_zhue_head,
+            table_body = "\n".join(tables)
+        )
+    )
+    final_path = await generate(html, "table", False)
     if not isinstance(final_path, str):
         return
     return Path(final_path).as_uri()
-        

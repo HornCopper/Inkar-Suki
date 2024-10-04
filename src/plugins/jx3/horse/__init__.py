@@ -3,32 +3,39 @@ from nonebot.adapters import Message
 from nonebot.params import CommandArg
 from nonebot.adapters.onebot.v11 import GroupMessageEvent, MessageSegment as ms
 
-from .api import *
+from src.const.prompts import PROMPT
+from src.const.jx3.server import Server
+
+from .api import get_horse_reporter, get_horse_next_spawn
 from .dilu import get_dilu_data
 
-jx3_cmd_horse = on_command("jx3_horse_v1", aliases={"抓马v1", "马场v1"}, force_whitespace=True, priority=5)
+HorseChatMatcher = on_command("jx3_horse_v1", aliases={"抓马v1", "马场v1"}, force_whitespace=True, priority=5)
 
-@jx3_cmd_horse.handle()
+@HorseChatMatcher.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
-    server = args.extract_plain_text()
-    msg = await get_horse_reporter(server, str(event.group_id))
-    await jx3_cmd_horse.finish(msg)
+    server = Server(args.extract_plain_text(), event.group_id).server
+    if server is None:
+        await HorseChatMatcher.finish(PROMPT.ServerNotExist)
+    msg = await get_horse_reporter(server)
+    await HorseChatMatcher.finish(msg)
 
-jx3_cmd_horse_v2 = on_command("jx3_horse_v2", aliases={"抓马", "马场"}, force_whitespace=True, priority=5)
+HorseSpawnMatcher = on_command("jx3_horse_v2", aliases={"抓马", "马场"}, force_whitespace=True, priority=5)
 
-@jx3_cmd_horse_v2.handle()
+@HorseSpawnMatcher.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
-    server = args.extract_plain_text()
-    msg = await get_horse_next_spawn(server, str(event.group_id))
-    await jx3_cmd_horse_v2.finish(msg)
+    server = Server(args.extract_plain_text(), event.group_id).server
+    if server is None:
+        await HorseSpawnMatcher.finish(PROMPT.ServerNotExist)
+    msg = await get_horse_next_spawn(server)
+    await HorseSpawnMatcher.finish(msg)
 
-dilu_ = on_command("jx3_dilu", aliases={"的卢统计"}, force_whitespace=True, priority=5)
+DiluMatcher = on_command("jx3_dilu", aliases={"的卢统计"}, force_whitespace=True, priority=5)
 
-@dilu_.handle()
+@DiluMatcher.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     if args.extract_plain_text() != "":
         return
     img = await get_dilu_data()
     if not isinstance(img, str):
         return
-    await dilu_.finish(ms.image(img))
+    await DiluMatcher.finish(ms.image(img))

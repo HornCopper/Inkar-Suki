@@ -1,33 +1,22 @@
 from nonebot import on_command
 from nonebot.adapters.onebot.v11 import GroupMessageEvent
 
-from nonebot import require
-require("nonebot_plugin_apscheduler")
-from nonebot_plugin_apscheduler import scheduler
+from src.utils.nonebot_plugins import scheduler
+from src.utils.database.operation import send_subscribe
 
-from src.tools.basic.group import  send_subscribe
-
-from .api import *
+from .api import get_daily_info
 
 import datetime
 
-jx3_cmd_daily = on_command("jx3_daily", aliases={"日常"}, force_whitespace=True, priority=5)
-@jx3_cmd_daily.handle()
+DailyMatcher = on_command("jx3_daily", aliases={"日常"}, force_whitespace=True, priority=5)
+@DailyMatcher.handle()
 async def _(event: GroupMessageEvent):
-    """
-    查询日常。
-
-    Notice：每个服务器的日常相同，仅美人图有可能存在不同。
-
-    Example：-日常
-    Example：-周常
-    """
-    info = await daily_()
-    await jx3_cmd_daily.finish(info)
+    msg = await get_daily_info()
+    await DailyMatcher.finish(msg)
 
 @scheduler.scheduled_job("cron", hour="8", minute="30")
 async def run_at_8_30():
-    msg = await daily_()
+    msg = await get_daily_info()
     msg = "早安！音卡为您送上今天的日常：\n" + msg
     await send_subscribe("日常", msg)
 

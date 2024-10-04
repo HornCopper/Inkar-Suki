@@ -1,49 +1,27 @@
 # DPS计算器 紫霞功
 
-from typing import Tuple, Literal, Optional, List, Union, Dict, Callable
+from typing import Tuple, List
 from jinja2 import Template
 from pathlib import Path
 
-from src.constant.jx3 import color_list
+from src.config import Config
+from src.const.jx3.server import Server
+from src.const.jx3.kungfu import Kungfu
+from src.const.prompts import PROMPT
+from src.const.path import ASSETS, build_path
+from src.utils.network import Request
+from src.utils.generate import generate
+from src.utils.database.player import search_player
+from src.templates import SimpleHTML
 
-from src.tools.basic.server import Zone_mapping, server_mapping
-from src.tools.utils.request import get_api, post_url
-from src.tools.utils.path import ASSETS, CACHE, VIEWS
-from src.tools.utils.file import read, write
-from src.tools.generate import generate, get_uuid
-from src.tools.basic.prompts import PROMPT
-from src.tools.config import Config
-
-from src.plugins.jx3.detail.detail import get_tuilan_data
-from src.plugins.jx3.bind.role import get_player_local_data
-from src.plugins.jx3.attributes.api import get_personal_kf, enchant_mapping
+from src.plugins.jx3.attributes.v2 import Enchant
 
 import json
 
+from ._template import msgbox_zixiagong, template_calculator_zixiagong
+
 inkarsuki_offical_token = Config.hidden.offcial_token
 
-msgbox_dujing = """
-<div class="element">
-    <div class="cell-title"><span>理论DPS</span></div>
-    <div class="cell">{{ max }}</div>
-</div>
-<div class="element">
-    <div class="cell-title"><span>脸黑DPS</span></div>
-    <div class="cell">{{ min }}</div>
-</div>"""
-
-template_calculator_dujing = """
-<tr>
-    <td class="short-column">{{ skill }}</td>
-    <td class="short-column">
-        <div class="progress-bar" style="margin: 0 auto;">
-            <div class="progress" style="width: {{ display }};"></div>
-            <span class="progress-text">{{ percent }}</span>
-        </div>
-    </td>
-    <td class="short-column">{{ count }}</td>
-    <td class="short-column">{{ value }}</td>
-</tr>"""
 
 def process_skill_data(skills, counts, damages, percent):
     combined_list = [
@@ -97,7 +75,7 @@ class ZiXiaGongAttributes:
         for equip in self.data["Equips"]:
             if equip["Icon"]["SubKind"] == "护臂":
                 if "WPermanentEnchant" in equip:
-                    enchant_name = enchant_mapping(equip["Quality"])
+                    enchant_name = Enchant(equip["Quality"]).name
                     if not isinstance(enchant_name, str):
                         raise ValueError("Unknown enchant of \"" + equip["Name"] + "(" + equip["Quality"] + ")`.")
                     return self.enchant_map[enchant_name] + "护腕大附魔"
@@ -108,7 +86,7 @@ class ZiXiaGongAttributes:
         for equip in self.data["Equips"]:
             if equip["Icon"]["SubKind"] == "鞋":
                 if "WPermanentEnchant" in equip:
-                    enchant_name = enchant_mapping(equip["Quality"])
+                    enchant_name = Enchant(equip["Quality"]).name
                     if not isinstance(enchant_name, str):
                         raise ValueError("Unknown enchant of \"" + equip["Name"] + "(" + equip["Quality"] + ")`.")
                     return self.enchant_map[enchant_name] + "鞋子大附魔"
@@ -183,22 +161,19 @@ class ZiXiaGongAttributes:
                 return True
         return False
     
-async def get_calculated_img_zixiagong(server: Optional[str], name: str, group_id: Optional[str]):
-    server_ = server_mapping(server, group_id)
-    if not server_:
-        return [PROMPT.ServerNotExist]
-    player_data = await get_player_local_data(role_name=name, server_name=server_)
+async def get_calculated_img_zixiagong(server: str, name: str):
+    player_data = await search_player(role_name=name, server_name=server)
     if player_data.format_jx3api()["code"] != 200:
         return [PROMPT.PlayerNotExist]
     params = {
-        "zone": Zone_mapping(server_),
-        "server": server_,
+        "zone": Server(server).zone,
+        "server": server,
         "game_role_id": player_data.format_jx3api()["data"]["roleId"]
     }
-    tuilan_data = await get_tuilan_data("https://m.pvp.xoyo.com/mine/equip/get-role-equip", params=params)
-    school = await get_personal_kf(tuilan_data["data"]["Kungfu"]["KungfuID"])
-    if school != "紫霞功":
-        return ["唔……门派与计算器不匹配！"]
+    tuilan_data = (await Request("https://m.pvp.xoyo.com/mine/equip/get-role-equip", params=params).post(tuilan=True)).json()
+    school = Kungfu.with_internel_id(tuilan_data["data"]["Kungfu"]["KungfuID"])
+    if school.name != "紫霞功":
+        return [PROMPT.CalculatorNotMatch]
     data_obj = ZiXiaGongAttributes(tuilan_data)
     attrs = data_obj.attributes
     cw = [data_obj.is_dcw, data_obj.is_xcw]
@@ -223,8 +198,7 @@ async def get_calculated_img_zixiagong(server: Optional[str], name: str, group_i
         "qixue": qixue,
         "mode": mode
     }
-    calculated_data = await post_url("http://117.50.178.116:2333/calculator_zxg", json=params, headers={"token": inkarsuki_offical_token}, timeout=10000)
-    calculated_data = json.loads(calculated_data)
+    calculated_data = (await Request("http://206.237.21.122:25765/calculator_zxg", params=params, headers={"token": inkarsuki_offical_token}).post(timeout=10000)).json()
     dps = calculated_data["data"]["result"]
     bad_dps = calculated_data["data"]["bad_result"]
     final_data = process_skill_data(
@@ -236,7 +210,7 @@ async def get_calculated_img_zixiagong(server: Optional[str], name: str, group_i
     tables = []
     for skill in final_data:
         tables.append(
-            Template(template_calculator_dujing).render(**{
+            Template(template_calculator_zixiagong).render(**{
                 "skill": skill["skill"],
                 "display": str(round(skill["damage"]/final_data[0]["damage"]*100, 2)) + "%",
                 "percent": skill["percent"],
@@ -244,23 +218,27 @@ async def get_calculated_img_zixiagong(server: Optional[str], name: str, group_i
                 "value": str(skill["damage"])
             })
         )
-    html = Template(read(VIEWS + "/jx3/calculator/calculator.html")).render(**{
-        "font": ASSETS + "/font/custom.ttf",
-        "yozai": ASSETS + "/font/Yozai-Medium.ttf",
-        "msgbox": Template(msgbox_dujing).render(**{
-            "max": dps,
-            "min": bad_dps
-        }),
-        "tables": "\n".join(tables),
-        "school": "紫霞功",
-        "color": color_list["紫霞功"],
-        "server": server,
-        "name": name,
-        "calculator": "【雾海寻龙】气纯dps计算器 v1.247(240912) by @月慕青尘"
-    })
-    final_html = CACHE + "/" + get_uuid() + ".html"
-    write(final_html, html)
-    final_path = await generate(final_html, False, ".total", False)
+    html = str(
+        SimpleHTML(
+            html_type = "jx3",
+            html_template = "calculator",
+            **{
+                "font": build_path(ASSETS, ["font", "custom.ttf"]),
+                "yozai": build_path(ASSETS, ["font", "Yozai-Medium.ttf"]),
+                "msgbox": Template(msgbox_zixiagong).render(**{
+                    "max": dps,
+                    "min": bad_dps
+                }),
+                "tables": "\n".join(tables),
+                "school": "紫霞功",
+                "color": Kungfu("紫霞功").color,
+                "server": server,
+                "name": name,
+                "calculator": "【雾海寻龙】气纯dps计算器 v1.247(240912) by @月慕青尘"
+            }
+        )
+    )
+    final_path = await generate(html, ".total", False)
     if not isinstance(final_path, str):
         return
     return Path(final_path).as_uri()

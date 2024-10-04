@@ -1,22 +1,16 @@
-from src.tools.utils.time import convert_time
-from src.tools.basic.prompts import PROMPT
-from src.tools.basic.server import server_mapping
-from src.tools.utils.request import get_api
-from src.tools.basic.prompts import PROMPT
+from src.utils.network import Request
+from src.utils.time import Time
 
 from datetime import datetime, timedelta
 
-async def get_horse_reporter(server: str, group_id: str = ""):  # 数据来源@JX3BOX
-    server_ = server_mapping(server, group_id)
-    if not server_:
-        return PROMPT.ServerNotExist
-    final_url = f"https://next2.jx3box.com/api/game/reporter/horse?type=horse&server={server_}"
-    data = await get_api(final_url)
+async def get_horse_reporter(server: str):  # 数据来源@JX3BOX
+    final_url = f"https://next2.jx3box.com/api/game/reporter/horse?type=horse&server={server}"
+    data = (await Request(final_url).get()).json()
     if data["data"]["page"]["total"] == 0:
         return "没有找到该服务器信息哦，请检查后重试~"
     for i in data["data"]["list"]:
         if i["subtype"] == "npc_chat":
-            time_ = convert_time(i["time"], "%m-%d %H:%M:%S")
+            time_ = Time(i["time"]).format("%m-%d %H:%M:%S")
             content = i["content"]
             map = i["map_name"]
             msg = f"{content}\n刷新时间：{time_}\n地图：{map}"
@@ -46,7 +40,7 @@ def is_in_current_week(timestamp):
     timestamp_dt = datetime.fromtimestamp(timestamp)
     return start_of_week <= timestamp_dt < end_of_week
 
-async def get_horse_next_spawn(server, group_id: str):
+async def get_horse_next_spawn(server):
     def parse_info(raw_msg: str, flush_time: str):
         next_times = {}
 
@@ -73,18 +67,15 @@ async def get_horse_next_spawn(server, group_id: str):
             result += f"\n{horse[:-2]} 将于{time}后刷新"
         ans = result.strip()
         return ans if ans != "" else "时间尚久，无法预知。"
-    server = server_mapping(server, group_id)
-    if not server:
-        return PROMPT.ServerNotExist
-    ct_data = await get_api(f"https://next2.jx3box.com/api/game/reporter/horse?pageIndex=1&pageSize=50&server={server}&type=chitu-horse&subtype=share_msg")
+    ct_data = (await Request(f"https://next2.jx3box.com/api/game/reporter/horse?pageIndex=1&pageSize=50&server={server}&type=chitu-horse&subtype=share_msg").get()).json()
     chitu_flushed = False
     if is_in_current_cycle(ct_data["data"]["list"][0]["time"]):
         chitu_flushed = True
-    dl_data = await get_api(f"https://next2.jx3box.com/api/game/reporter/horse?pageIndex=1&pageSize=50&server={server}&type=dilu-horse&subtype=share_msg")
+    dl_data = (await Request(f"https://next2.jx3box.com/api/game/reporter/horse?pageIndex=1&pageSize=50&server={server}&type=dilu-horse&subtype=share_msg").get()).json()
     dilu_flushed = False
     if is_in_current_week(dl_data["data"]["list"][0]["time"]):
         dilu_flushed = True
-    web_data = await get_api(f"https://next2.jx3box.com/api/game/reporter/horse?pageIndex=1&pageSize=50&server={server}&type=horse&subtype=npc_chat")
+    web_data = (await Request(f"https://next2.jx3box.com/api/game/reporter/horse?pageIndex=1&pageSize=50&server={server}&type=horse&subtype=npc_chat").get()).json()
     msg = {}
     ft = {}
     maps = ["鲲鹏岛", "阴山大草原", "黑戈壁"]

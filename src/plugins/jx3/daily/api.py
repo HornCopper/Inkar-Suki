@@ -1,21 +1,27 @@
-from src.tools.config import Config
-from src.tools.utils.request import get_api
-from src.tools.utils.time import convert_time
+from src.config import Config
+from src.utils.network import Request
+from src.utils.time import Time
 
 import datetime
 
-async def daily_(predict_day_num: int = 0):
+async def get_daily_info(predict: int = 0):
     """
-    @param predict_day_num 向后预测天数
+    获取日常信息。
+
+    Args:
+        predict (int): 向后预测天数。
+
+    Returns:
+        msg (str): 日常消息。
     """
-    full_link = f"{Config.jx3.api.url}/data/active/calendar?num={predict_day_num}"
-    data = await get_api(full_link)
+    full_link = f"{Config.jx3.api.url}/data/active/calendar?num={predict}"
+    data = (await Request(full_link).get()).json()
     data = data["data"]
     leader = "今日无世界首领"
-    if "leader" in list(data):
+    if "leader" in data:
         leader = ";".join(data["leader"])
     timestamp = datetime.datetime.strptime(data["date"], "%Y-%m-%d")
-    date = convert_time(int(timestamp.timestamp()), "%Y年%m月%d日")
+    date = Time(int((timestamp.timestamp()))).format("%Y年%m月%d日")
     week = data["week"]
     war = data["war"]
     battle = data["battle"]

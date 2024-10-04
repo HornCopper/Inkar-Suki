@@ -1,17 +1,14 @@
-from datetime import datetime
 from pathlib import Path
-from typing import Optional, Dict, List
+from typing import List
 from jinja2 import Template
 
-from src.tools.config import Config
-from src.tools.basic.prompts import PROMPT
-from src.tools.basic.server import server_mapping
-from src.tools.utils.path import ASSETS, CACHE, VIEWS
-from src.tools.generate import get_uuid, generate
-from src.tools.utils.time import convert_time, get_relate_time, get_current_time
-from src.tools.utils.file import read, write
-
-from src.plugins.jx3.bind import get_player_local_data, Player
+from src.config import Config
+from src.const.prompts import PROMPT
+from src.const.path import ASSETS, build_path
+from src.utils.generate import generate
+from src.utils.time import Time
+from src.utils.database.player import search_player, Player
+from src.templates import SimpleHTML
 
 from .without_jx3api import JX3Serendipity
 
@@ -55,7 +52,7 @@ class JX3Serendipities:
         return new
 
 async def check_role(server: str, name: str) -> bool:
-    player_data: Player = await get_player_local_data(role_name=name, server_name=server)
+    player_data: Player = await search_player(role_name=name, server_name=server)
     if player_data.format_jx3api()["code"] != 200:
         return False
     return True
@@ -74,10 +71,10 @@ def generate_table(local_data, comparison_data, path_map, template):
         cache_table.append(
             Template(template).render(
                 **{
-                    "image_path": ASSETS + "/serendipity/serendipity/" + path_map[int(serendipity["level"]) - 1] + "/" + serendipity["name"] + ".png",
+                    "image_path": build_path(ASSETS, ["image", "jx3", "serendipity", "serendipity", path_map[int(serendipity["level"]) - 1]], end_with_slash=True) + serendipity["name"] + ".png",
                     "name": serendipity["name"],
                     "status": "yes" if status else "no",
-                    "msg": "尚未触发" if not status else "遗忘的时间" if corresponding["time"] == 0 else convert_time(corresponding["time"], "%Y-%m-%d %H:%M:%S") + "<br>" + get_relate_time(get_current_time(), corresponding["time"])
+                    "msg": "尚未触发" if not status else "遗忘的时间" if corresponding["time"] == 0 else Time(corresponding["time"]).format("%Y-%m-%d %H:%M:%S") + "<br>" + Time().relate(corresponding["time"])
                 }
             )
         )
@@ -94,10 +91,7 @@ def generate_table(local_data, comparison_data, path_map, template):
         )
     return table_list
 
-async def get_serendipity_image_v3(server: Optional[str], name: str, group_id: Optional[str] = ""):
-    server = server_mapping(server, group_id)
-    if not server:
-        return [PROMPT.ServerNotExist]
+async def get_serendipity_image_v3(server: str, name: str):
     player_exist = await check_role(server, name)
     if not player_exist:
         return [PROMPT.PlayerNotExist]
@@ -109,9 +103,9 @@ async def get_serendipity_image_v3(server: Optional[str], name: str, group_id: O
     peerless: List[dict] = data_obj.peerless
     pet: List[dict] = data_obj.pet
 
-    local_common: List[dict] = [{"name": serendipity[:-4], "level": 1} for serendipity in os.listdir(ASSETS + "/serendipity/serendipity/common/")]
-    local_peerless: List[dict] = [{"name": serendipity[:-4], "level": 2} for serendipity in os.listdir(ASSETS + "/serendipity/serendipity/peerless/")]
-    local_pet: List[dict] = [{"name": serendipity[:-4], "level": 3} for serendipity in os.listdir(ASSETS + "/serendipity/serendipity/pet/")]
+    local_common: List[dict] = [{"name": serendipity[:-4], "level": 1} for serendipity in os.listdir(build_path(ASSETS, ["image", "jx3", "serendipity", "serendipity", "common"], end_with_slash=True))]
+    local_peerless: List[dict] = [{"name": serendipity[:-4], "level": 2} for serendipity in os.listdir(build_path(ASSETS, ["image", "jx3", "serendipity", "serendipity", "peerless"], end_with_slash=True))]
+    local_pet: List[dict] = [{"name": serendipity[:-4], "level": 3} for serendipity in os.listdir(build_path(ASSETS, ["image", "jx3", "serendipity", "serendipity", "pet"], end_with_slash=True))]
     
     path_map: List[str] = ["common", "peerless", "pet"]
  
@@ -119,11 +113,12 @@ async def get_serendipity_image_v3(server: Optional[str], name: str, group_id: O
     peerless_table = generate_table(local_peerless, peerless, path_map, template)
     pet_table = generate_table(local_pet, pet, path_map, template)
 
-    font = ASSETS + "/font/custom.ttf"
-    html = read(VIEWS + "/jx3/serendipity/v3.html")
-    html = Template(html).render(
-        **{
-            "font": font,
+    html = str(
+        SimpleHTML(
+            "jx3",
+            "serendipity_v3",
+            **{
+            "font": build_path(ASSETS, ["font", "custom.ttf"]),
             "name": name,
             "server": server,
             "total": f"{len(data)}/{len(local_common + local_peerless + local_pet)}",
@@ -133,10 +128,9 @@ async def get_serendipity_image_v3(server: Optional[str], name: str, group_id: O
             "table_content_common": "\n".join(common_table),
             "table_content_pet": "\n".join(pet_table)
         }
+        )
     )
-    final_html = CACHE + "/" + get_uuid() + ".html"
-    write(final_html, html)
-    final_path = await generate(final_html, False, ".total", False)
+    final_path = await generate(html, ".total", False)
     if not isinstance(final_path, str):
         return
     return Path(final_path).as_uri()

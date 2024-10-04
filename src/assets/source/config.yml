@@ -1,0 +1,32 @@
+# 如果本文件位于`src/assets/source/config.yml`，请**绝对**不要修改本文件的内容，如果在`src/config/config.yml`，您可以修改。
+
+bot_basic: # Bot 基础类信息
+    bot_name: "" # Bot 名称: string
+    bot_name_argument: "" # 用于传参的 Bot 名称（通常使用英文）: string
+    bot_owner: [""] # Bot 所有者: list[string]
+    bot_repo: "" # Bot 对应GitHub仓库: string 
+    bot_notice: # Bot 事件通知
+        "": 
+            "" # Bot QQ号: Bot 通知群号 (string: string)
+    proxy: ""
+
+github: # GitHub 相关配置
+    web_path: "" # Webhook 接收路径
+    github_personal_token: "" # Rest API Token
+
+jx3: # 剑网3 相关配置
+    api: # JX3API/推栏API
+        token: "" # JX3API Token (V1/V2)
+        token_v2: "" # JX3API Token (V2)
+        ticket: "" # 推栏 Token
+        url: "" # JX3API 地址(不带斜杠)
+        xsk_secret: "" # X-SK 密钥
+        sign_secret: "" # Sign 密钥
+        enable: False # 是否启用 JX3API
+        weibo: False # 是否启用 轮询微博
+        # 注意！轮询微博使用浏览器模拟请求，占用可能会很高，请谨慎开启！
+    ws:
+        url: "" # JX3API WebSocket 地址
+        token: "" # JX3API WebSocket Token
+hidden:
+    offcial_token: "" # Inkar Suki 官方API Token 非官方Bot请留空

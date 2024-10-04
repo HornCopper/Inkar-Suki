@@ -1,7 +1,7 @@
 from urllib import parse
 from bs4 import BeautifulSoup
 
-from src.tools.utils.request import get_api, get_url
+from src.utils.network import Request
 
 import json
 import re
@@ -47,17 +47,17 @@ class wiki:
     @staticmethod
     async def get_site_info(api: str):
         final_link = api + "?action=query&meta=siteinfo&siprop=general&format=json"
-        info = await get_api(final_link, headers=headers)
+        info = (await Request(final_link, headers=headers).get()).json()
         sitename = info["query"]["general"]["sitename"]
         return sitename
 
     @staticmethod
-    async def get_iw_url(api: str, iwprefix: str):
+    async def get_iw_url(api: str, iwprefix: str) -> dict:
         """
         工具型函数：不参与对话
         """
         final_link = api + "?action=query&meta=siteinfo&siprop=interwikimap&sifilteriw=local&format=json"
-        data = await get_api(final_link, headers=headers)
+        data = (await Request(final_link, headers=headers).get()).json()
         for i in data["query"]["interwikimap"]:
             if i["prefix"] == iwprefix:
                 return {"status": 200, "data": i["url"]}
@@ -69,32 +69,31 @@ class wiki:
         工具型函数：不参与对话
         """
         final_link = api + "?action=query&meta=siteinfo&siprop=extensions&format=json"
-        data = await get_api(final_link, headers=headers)
+        data = (await Request(final_link, headers=headers).get()).json()
         for i in data["query"]["extensions"]:
             if i["name"] == extension:
                 return {"status": 200}
         return {"status": 404}
 
     @staticmethod
-    async def get_api(init_link: str) -> str:
-        page_info = await get_url(init_link, headers=headers)
+    async def get_api(init_link: str) -> dict:
+        page_info = (await Request(init_link, headers=headers).get()).text
         api_links = re.findall(
             r"(?im)<\s*link\s*rel=\"EditURI\"\s*type=\"application/rsd\+xml\"\s*href=\"([^>]+?)\?action=rsd\"\s*/?\s*>", page_info)
         api_link = api_links[0]
         try:
-            await get_url(api_link)
+            await Request(api_link).get()
         except Exception as _:
-            api_link = "http:"+api_link
+            api_link = "http:" + api_link
         if len(api_links) != 1:
-            return {"status": 500} # type: ignore
+            return {"status": 500}
         else:
-            return {"status": 200, "data": api_link} # type: ignore
+            return {"status": 200, "data": api_link}
 
     @staticmethod
-    async def simple(api: str, title: str):
-        final_link = api + \
-            f"?action=query&titles={title}&prop=extracts&format=json&redirects=True&explaintext=True"
-        info = await get_url(final_link, headers=headers)
+    async def simple(api: str, title: str) -> dict | None:
+        final_link = api + f"?action=query&titles={title}&prop=extracts&format=json&redirects=True&explaintext=True"
+        info = (await Request(final_link, headers=headers).get()).json()
         try:
             page = json.loads(info)
         except Exception as _:
@@ -103,7 +102,7 @@ class wiki:
         try:
             iw_flag = page["query"]["interwiki"]
             iw = iw_flag[0]["iw"]
-            await wiki.interwiki_search(api, iw, title[len(iw)+1:]) # type: ignore
+            await wiki.interwiki_search(api, iw, title[len(iw)+1:])
         except Exception as _:
             curid_dict = page["query"]["pages"]
         for i in curid_dict:
@@ -137,7 +136,7 @@ class wiki:
                     desc = page["query"]["pages"][i]["extract"].split("\n")
                     desc = "\n" + desc[0]
                 except Exception as _:
-                    desc = await wiki.get_wiki_content(api, actually_title) # type: ignore
+                    desc = await wiki.get_wiki_content(api, actually_title)
                     if desc != "":
                         desc = "\n" + desc
                 if actually_title != title:
@@ -151,14 +150,14 @@ class wiki:
             return {"status": 201, "link": source_wiki + interwiki + f":{title}"}
         iwdata = await wiki.get_iw_url(source_wiki, interwiki)
         iwlink = iwdata["data"]
-        data = await wiki.get_api(iwlink) # type: ignore
-        new_api = data["data"] # type: ignore
+        data = await wiki.get_api(iwlink)
+        new_api = data["data"]
         await wiki.simple(new_api, title)
 
     @staticmethod
     async def search(api, title):
         final_link = api + f"?action=query&list=search&format=json&srsearch={title}"
-        info = await get_api(final_link, headers=headers)
+        info = (await Request(final_link, headers=headers).get()).json()
         results = []
         curids = []
         for i in info["query"]["search"]:
@@ -171,8 +170,8 @@ class wiki:
 
     @staticmethod
     async def get_wiki_content(api, title):
-        final_url = api.replace("api.php", "index.php") + "?title=" + title # type: ignore
-        data = await get_url(final_url)
+        final_url = api.replace("api.php", "index.php") + "?title=" + title
+        data = (await Request(final_url).get()).text
         bs_obj_data = BeautifulSoup(data, "html.parser")
         main_content = bs_obj_data.body.find(id="mw-content-text").find(class_="mw-parser-output") # type: ignore
         div_s = main_content.find_all("div") # type: ignore

@@ -1,12 +1,13 @@
 from pathlib import Path
+from jinja2 import Template
 
-from src.tools.config import Config
-from src.tools.utils.request import get_api
-from src.tools.utils.file import read, write
-from src.tools.generate import generate, get_uuid
-from src.tools.utils.path import ASSETS, CACHE, VIEWS
-from src.tools.utils.time import get_current_time, convert_time
+from src.config import Config
+from src.utils.network import Request
+from src.utils.generate import generate
+from src.utils.time import Time
+from src.templates import HTMLSourceCode
 
+from ._template import table_chutian_head
 from .chutian import template_chutian
 
 def parity(num: int):
@@ -14,9 +15,9 @@ def parity(num: int):
         return True
     return False
 
-async def getYuncongImg():
-    url = f"{Config.jx3.api.url}/data/active/celebrity?season=3"
-    data = await get_api(url)
+async def get_yuncong_image():
+    url = f"{Config.jx3.api.url}/data/active/celebs?name=云从社"
+    data = (await Request(url).get()).json()
     tables = []
     for i in data["data"]:
         time = i["time"]
@@ -26,17 +27,23 @@ async def getYuncongImg():
         section = i["event"]
         map = i["map_name"]
         site = i["site"]
-        tables.append(template_chutian.replace("$time", time).replace("$site", map + "·" + site).replace("$icon", icon).replace("$desc", desc).replace("$section", section))
-    final_table = "\n".join(tables)
-    html = read(VIEWS + "/jx3/celebrations/chutian.html")
-    font = ASSETS + "/font/custom.ttf"
-    saohua = "严禁将蓉蓉机器人与音卡共存，一经发现永久封禁！蓉蓉是抄袭音卡的劣质机器人！"
-    
-    current_time = convert_time(get_current_time(), "%H:%M:%S")
-    html = html.replace("$customfont", font).replace("$tablecontent", final_table).replace("$randomsaohua", saohua).replace("$appinfo", f"楚天社 · {current_time}")
-    final_html = CACHE + "/" + get_uuid() + ".html"
-    write(final_html, html)
-    final_path = await generate(final_html, False, "table", False)
+        tables.append(
+            Template(template_chutian).render(
+                time = time,
+                site = map + "·" + site,
+                icon = icon,
+                desc = desc,
+                section = section
+            )
+        )
+    html = str(
+        HTMLSourceCode(
+            application_name = " · 楚天社 · " + Time().format("%H:%M:%S"),
+            table_head = table_chutian_head,
+            table_body = "\n".join(tables)
+        )
+    )
+    final_path = await generate(html, "table", False)
     if not isinstance(final_path, str):
         return
     return Path(final_path).as_uri()

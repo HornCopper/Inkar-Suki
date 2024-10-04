@@ -1,27 +1,12 @@
-from src.tools.config import Config
-from src.tools.utils.request import post_url, get_api, get_url
-from src.tools.basic.jx3 import gen_ts, gen_xsk, format_body
-from src.tools.basic.server import Zone_mapping
-from src.tools.utils.path import ASSETS
-
-from src.plugins.jx3.bind import get_player_local_data, Player
-from src.plugins.majsoul.koromo import sort_list_of_dicts
+from src.const.path import ASSETS, build_path
+from src.const.jx3.server import Server
+from src.utils.analyze import sort_dict_list, merge_dict_lists
+from src.utils.network import Request
+from src.utils.database.player import search_player, Player
 
 import json
 import re
 import os
-
-ticket = Config.jx3.api.ticket
-device_id = ticket.split("::")[-1]
-
-def merge_dict_lists(list1, list2):
-    name_to_dict = {d["name"]: d for d in list1}
-    for d in list2:
-        if d["name"] in name_to_dict:
-            name_to_dict[d["name"]]["time"] = d["time"]
-        else:
-            list1.append(d)
-    return list1
 
 class JX3Serendipity:
     def __init__(self):
@@ -33,45 +18,26 @@ class JX3Serendipity:
     def get_serendipity_level(self, serendipity_name: str) -> int:
         if serendipity_name.find("宠物奇缘") != -1:
             serendipity_level = 3
-        elif serendipity_name in [serendipity[:-4] for serendipity in os.listdir(ASSETS + "/serendipity/serendipity/pet")]:
+        elif serendipity_name in [serendipity[:-4] for serendipity in os.listdir(build_path(ASSETS, ["image", "jx3", "serendipity", "serendipity", "common"], end_with_slash=True))]:
             serendipity_level = 3
-        elif serendipity_name in [serendipity[:-4] for serendipity in os.listdir(ASSETS + "/serendipity/serendipity/peerless")]:
+        elif serendipity_name in [serendipity[:-4] for serendipity in os.listdir(build_path(ASSETS, ["image", "jx3", "serendipity", "serendipity", "peerless"], end_with_slash=True))]:
             serendipity_level = 2
         else:
             serendipity_level = 1
         return serendipity_level
 
     async def get_tuilan_data(self, server: str, name: str):
-        role: Player = await get_player_local_data(role_name=name, server_name=server)
+        role: Player = await search_player(role_name=name, server_name=server)
         data = role.format_jx3api()
         if data["code"] != 200:
             return False
         global_role_id = data["data"]["globalRoleId"]
-        param = {
+        params = {
             "name": "完成奇遇",
             "gameRoleId": global_role_id,
-            "size": 200,
-            "ts": gen_ts()
+            "size": 200
         }
-        param = format_body(param)
-        headers = {
-            "Host": "m.pvp.xoyo.com",
-            "accept": "application/json",
-            "deviceid": device_id,
-            "platform": "ios",
-            "gamename": "jx3",
-            "clientkey": "1",
-            "cache-control": "no-cache",
-            "apiversion": "1",
-            "sign": "true",
-            "token": ticket,
-            "Content-Type": "application/json",
-            "Connection": "Keep-Alive",
-            "User-Agent": "SeasunGame/178 CFNetwork/1240.0.2 Darwin/20.5.0",
-            "X-Sk": gen_xsk(param)
-        }
-        tl_data = await post_url("https://m.pvp.xoyo.com/achievement/list/achievements", data=param, headers=headers)
-        tl_data = json.loads(tl_data)
+        tl_data = (await Request("https://m.pvp.xoyo.com/achievement/list/achievements", params=params).post(tuilan=True)).json()
         serendipities = []
         for serendipity in tl_data["data"]["data"]:
             if serendipity["isFinished"]:
@@ -90,10 +56,10 @@ class JX3Serendipity:
 
     async def get_my_data(self, server: str, name: str):
         final_url = f"https://pull.j3cx.com/api/serendipity?server={server}&role={name}&pageSize=50"
-        data = await get_api(final_url)
+        data = (await Request(final_url).get()).json()
         serendipities = []
         data = data["data"]["data"]
-        if data == None:
+        if data is None:
             self.my = serendipities
             return
         for serendipity in data:
@@ -109,7 +75,11 @@ class JX3Serendipity:
 
     async def get_jx3pet_data(self, server: str, name: str):
         final_url = f"https://www.jx3pet.com/api/serendipity?server={server}&type=不限&serendipity=不限&name={name}&limit=30"
-        data = await get_url(final_url)
+        try:
+            data = (await Request(final_url).get(timeout=2)).json()
+        except:
+            self.jx3pet = []
+            return
         data = json.loads(re.search(r'\{.*\}', data, re.DOTALL)[0]) # type: ignore
         serendipities = []
         for serendipity in data["data"]:
@@ -123,8 +93,8 @@ class JX3Serendipity:
         self.jx3pet = serendipities
 
     async def get_jx3mm_data(self, server: str, name: str):
-        final_url = f"https://www.jx3mm.com/home/qyinfo?m=1&R={Zone_mapping(server)}&S={server}&t=&u=&n={name}"
-        data = await get_api(final_url)
+        final_url = f"https://www.jx3mm.com/home/qyinfo?m=1&R={Server(server).zone}&S={server}&t=&u=&n={name}"
+        data = (await Request(final_url).get()).json()
         serendipities = []
         for serendipity in data["result"]:
             serendipities.append(
@@ -141,4 +111,4 @@ class JX3Serendipity:
         await self.get_my_data(server, name)
         await self.get_jx3pet_data(server, name)
         await self.get_jx3mm_data(server, name)
-        return sort_list_of_dicts(merge_dict_lists(merge_dict_lists(merge_dict_lists(self.tl, self.my), self.jx3pet), self.jx3mm), "time")[::-1]
+        return sort_dict_list(merge_dict_lists(merge_dict_lists(merge_dict_lists(self.tl, self.my), self.jx3pet), self.jx3mm), "time")[::-1]

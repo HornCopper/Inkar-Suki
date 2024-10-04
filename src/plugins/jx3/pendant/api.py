@@ -1,11 +1,11 @@
-from src.tools.utils.request import get_api
-from src.tools.config import Config
+from src.config import Config
+from src.utils.network import Request
+from src.utils.decorators import token_required
 
-token = Config.jx3.api.token
-
-async def pendant(name: str):
+@token_required
+async def pendant(name: str, token: str):
     final_url = f"{Config.jx3.api.url}/data/other/pendant?name={name}&token={token}"
-    data = await get_api(final_url)
+    data = (await Request(final_url).get()).json()
     if data["code"] != 200:
         return "没有找到该挂件哦~"
     else:

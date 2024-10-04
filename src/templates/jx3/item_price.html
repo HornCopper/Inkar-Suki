@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title></title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: #ffffff;
+            background-size: cover;
+            backdrop-filter: blur(5px);
+            min-height: 100vh;
+        }
+
+        .header {
+            width: 100%;
+            max-width: 900px;
+            margin: 20px 0;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            text-align: center;
+        }
+
+        .header img {
+            max-width: 100%;
+            border-radius: 10px;
+        }
+
+        .description {
+            margin-top: 10px;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1000px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+        }
+
+        .section {
+            width: 45%;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 10px;
+            margin: 10px 0;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        @media screen and (max-width: 900px) {
+            .section {
+                width: 100%;
+            }
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 1.5em;
+            margin-bottom: 10px;
+        }
+
+        .section-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .data-table th,
+        .data-table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center;
+        }
+
+        .data-table th {
+            background-color: #37d5ca;
+        }
+
+        .data-table tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        .chart-container {
+            width: 100%;
+            max-width: 1000px;
+            margin-top: 20px;
+            display: flex;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            text-align: center;
+        }
+
+        .chart {
+            width: 100%;
+            height: 300px;
+        }
+
+        .footer {
+            position: absolute;
+            bottom: 0px;
+            width: 100%;
+            text-align: center;
+            font-size: 0.9em;
+            color: #ffffff;
+            opacity: 0.8;
+        }
+
+        @font-face {
+            font-family: Harmony;
+            src: url("{{ font }}");
+        }
+
+        body {
+            max-width: 1000px;
+            font-family: Harmony, sans-serif;
+            font-size: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="header">
+        <img src="{{ item_image }}" alt="Header Image">
+        <div class="description">
+            <p><span style="font-size:30px">{{ item_name }}</span>（{{ item_alias }}）</p>
+            <p>{{ custom_msg }}</p>
+            <p>数据来源：&copy; 爱剑三<br>图片生成：&copy; Inkar Suki</p>
+            <table class="data-table">
+                <tr>
+                    <th>发行时间</th>
+                    <th>不绑定限量</th>
+                    <th>不绑定限时</th>
+                    <th>绑定限时</th>
+                    <th>发行原价</th>
+                </tr>
+                <tr>
+                    <td>{{ publish_time }}</td>
+                    <td>{{ publish_count }}</td>
+                    <td>{{ publish_remain }}</td>
+                    <td>{{ binding_time }}</td>
+                    <td>{{ publish_price }}</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="section">
+            <div class="section-title">电信区</div>
+            <div class="section-content">
+                <table class="data-table">
+                    {{ aijx3_data["电信一区"] or "(｡•́︿•̀｡) 该大区目前没有数据" }}
+                </table>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">双线区</div>
+            <div class="section-content">
+                <table class="data-table">
+                    {{ aijx3_data["双线一区"] or "(｡•́︿•̀｡) 该大区目前没有数据" }}
+                </table>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">无界区</div>
+            <div class="section-content">
+                <table class="data-table">
+                    {{ aijx3_data["无界区"] or "(｡•́︿•̀｡) 该大区目前没有数据" }}
+                </table>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">万宝楼·在售</div>
+            <div class="section-content">
+                <table class="data-table">
+                    {{ wanbaolou }}
+                </table>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="chart-container">
+        <div id="price" class="chart"></div>
+    </div>
+
+    <script src="https://inkar-suki.codethink.cn/Inkar-Suki-Docs/js/echarts.min.js"></script>
+    <script>
+        const chart = echarts.init(document.getElementById("price"), null, { devicePixelRatio: 2 });
+
+        const option = {
+            animation: false,
+            tooltip: {
+                trigger: "axis"
+            },
+            legend: {
+                data: ["{{ item_name }} 近3月"],
+                textStyle: {
+                    color: "#000000",
+                    fontSize: 14
+                }
+            },
+            xAxis: {
+                type: "category",
+                boundaryGap: false,
+                data: {{ dates }},
+                axisLabel: {
+                    color: "#000000",
+                    fontSize: 14
+                }
+            },
+            yAxis: {
+                type: "value",
+                boundaryGap: [0, "100%"],
+                axisLabel: {
+                    color: "#000000",
+                    fontSize: 14
+                },
+                max: {{ max }},
+                min: {{ min }}
+            },
+            series: [
+                {
+                    name: "{{ item_name }} 近3月",
+                    type: "line",
+                    data: {{ values }},
+                    smooth: true,
+                    itemStyle: {
+                        color: "#ff7043"
+                    },
+                    areaStyle: {
+                        color: "rgba(255, 112, 67, 0.2)"
+                    },
+                    showSymbol: false  // 移除锚点
+                }
+            ]
+        };
+
+        chart.setOption(option);
+    </script>
+
+</body>
+
+</html>

@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <!--
+        该代码协议与Inkar Suki仓库协议相同。
+
+        禁止帝君和兔兔使用。
+
+        禁止任何人商用。
+
+        欢迎借鉴或用于开源项目。
+
+        ——HornCopper
+     -->
+    <style>
+        table {
+            width: 600px;
+            border-collapse: separate;
+            border-spacing: 0;
+            border: 1px solid #ffbebe;
+        }
+
+        th {
+            background-color: #ffdede;
+            color: #fff;
+            padding: 10px;
+            text-align: center;
+        }
+
+        td {
+            padding: 10px;
+            text-align: center;
+        }
+
+        tbody tr:not(:first-child) {
+            border-top: 1px solid #000000;
+        }
+
+        .short-column {
+            width: 200px;
+            color: #000000;
+        }
+
+        .empty-column {
+            width: 20px;
+        }
+
+        .short-column-content {
+            color: #000000;
+            background-image: url("{{ poem_image }}");
+            background-size: contain;
+            background-repeat: no-repeat;
+        }
+
+        .long-column {
+            width: 40px;
+        }
+
+        tfoot {
+            text-align: center;
+            font-style: italic;
+            font-size: 12px;
+        }
+
+        @font-face {
+            font-family: Harmony;
+            src: url("{{ font }}");
+        }
+
+        body {
+            font-family: Harmony, sans-serif;
+        }
+    </style>
+</head>
+
+<body>
+    <table style="background-color: #FFFFFF">
+        <thead>
+            <tr>
+                <th class="empty-column"><img src="{{ title_image }}",style="background-repeat:no-repeat;background-size:contain;height:20px;"></th>
+                <th class="short-column">名称</th>
+                <th class="short-column">时间</th>
+                <th class="long-column"> </th>
+            </tr>
+        </thead>
+        <tbody>
+            {{ table_content }}
+        </tbody>
+        <tfoot>
+            <span style="text-align: center;">
+                <tr>
+                    <td colspan="3">&copy; Inkar Suki · {{ app_info }}</td>
+                </tr>
+            </span>
+        </tfoot>
+    </table>
+</body>
+
+</html>

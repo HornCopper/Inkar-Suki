@@ -1,0 +1,33 @@
+.icon-column {
+    width: 60px;
+}
+
+.name-column {
+    width: 200px;
+}
+
+.description-column {
+    width: 400px;
+}
+
+.qualification-column {
+    width: 80px;
+}
+
+.type-column {
+    width: 120px;
+}
+
+.status-column {
+    width: 60px;
+}
+
+.correct {
+    font-size: 20px;
+    color: #008b8b;
+}
+
+.incorrect {
+    font-size: 20px;
+    color: #b90000;
+}

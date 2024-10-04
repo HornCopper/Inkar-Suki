@@ -1,54 +1,29 @@
 # DPS计算器 毒经
 
-from typing import List, Union, Literal, Optional
+from typing import List, Literal
 from jinja2 import Template
 from pathlib import Path
 from pydantic import BaseModel
 
-from src.constant.jx3 import color_list
+from src.utils.network import Request
+from src.const.jx3.server import Server
+from src.const.jx3.kungfu import Kungfu
+from src.const.prompts import PROMPT
+from src.templates import SimpleHTML
+from src.const.path import ASSETS, CACHE, build_path
+from src.utils.generate import get_uuid, generate
+from src.config import Config
 
-from src.tools.utils.request import post_url
-from src.tools.basic.server import server_mapping, Zone_mapping
-from src.tools.basic.prompts import PROMPT
-from src.tools.basic.jx3 import gen_ts
-from src.tools.utils.file import read, write
-from src.tools.utils.path import ASSETS, CACHE, VIEWS
-from src.tools.generate import get_uuid, generate
-from src.tools.config import Config
+from src.utils.database.player import search_player
 
-from src.plugins.jx3.bind.role import get_player_local_data
-from src.plugins.jx3.detail.detail import get_tuilan_data
-from src.plugins.jx3.attributes.api import get_personal_kf
+from ._template import template_calculator_dujing, msgbox_dujing
 
 import json
 
 inkarsuki_offical_token = Config.hidden.offcial_token
 
-msgbox_dujing = """
-<div class="element">
-    <div class="cell-title"><span>手打</span></div>
-    <div class="cell">{{ max }}</div>
-</div>
-<div class="element">
-    <div class="cell-title"><span>一键宏</span></div>
-    <div class="cell">{{ min }}</div>
-</div>"""
-
-template_calculator_dujing = """
-<tr>
-    <td class="short-column">{{ skill }}</td>
-    <td class="short-column">
-        <div class="progress-bar" style="margin: 0 auto;">
-            <div class="progress" style="width: {{ display }};"></div>
-            <span class="progress-text">{{ percent }}</span>
-        </div>
-    </td>
-    <td class="short-column">{{ count }}</td>
-    <td class="short-column">{{ value }}</td>
-</tr>"""
-
 class ExcelRequest(BaseModel):
-    attrs: List[Union[int, str]]
+    attrs: List[int | str]
     weapon: Literal["", "墨语沉香", "13950水特效", "龙门飞剑", "小橙武特效"]
     sash: Literal["", "秋风韵"]
     enchant: List[bool]
@@ -56,7 +31,7 @@ class ExcelRequest(BaseModel):
     qixue: Literal["曲致", "固灵"]
 
 async def get_calculated_data(
-    attrs: List[Union[int, str]],
+    attrs: List[int | str],
     weapon: Literal["", "墨语沉香", "13950水特效", "龙门飞剑", "小橙武特效"],
     sash: Literal["", "秋风韵"],
     enchant: List[bool],
@@ -71,15 +46,8 @@ async def get_calculated_data(
         "suit": suit,
         "qixue": qixue
     }
-    data = await post_url(
-        url = "http://117.50.178.116:2333/calculator_dj",
-        json = params,
-        headers = {
-            "token": inkarsuki_offical_token
-        },
-        timeout=10000
-    )
-    return json.loads(data)
+    data = (await Request("http://206.237.21.122:25765/calculator_dj", params=params, headers={"token": inkarsuki_offical_token}).post(timeout=12000)).json()
+    return data
 
 def check_set_effects(equip_list):
     skill_event_handler_activated = False
@@ -157,24 +125,20 @@ async def analyze_attrs(attrs_raw_data: dict) -> ExcelRequest:
         qixue=get_key_qixue(attrs_raw_data["data"]["Person"]["qixueList"])
     )
 
-async def generate_calculator_img_dujing(server: Optional[str], name: str, group_id: str = ""):
-    server = server_mapping(server, group_id)
-    if not server:
-        return [PROMPT.ServerNotExist]
-    role_data = await get_player_local_data(role_name=name, server_name=server)
+async def generate_calculator_img_dujing(server: str, name: str):
+    role_data = await search_player(role_name=name, server_name=server)
     if role_data.format_jx3api()["code"] != 200:
         return [PROMPT.PlayerNotExist]
     uid = role_data.format_jx3api()["data"]["roleId"]
-    param = {
-        "zone": Zone_mapping(server),
+    params = {
+        "zone": Server(server).zone,
         "server": server,
-        "game_role_id": uid,
-        "ts": gen_ts()
+        "game_role_id": uid
     }
-    equip_data = await get_tuilan_data("https://m.pvp.xoyo.com/mine/equip/get-role-equip", param)
-    kungfu = await get_personal_kf(equip_data["data"]["Kungfu"]["KungfuID"])
-    if kungfu != "毒经":
-        return ["唔……门派与计算器不匹配！"]
+    equip_data = (await Request("https://m.pvp.xoyo.com/mine/equip/get-role-equip", params=params).post(tuilan=True)).json()
+    kungfu = Kungfu.with_internel_id(equip_data["data"]["Kungfu"]["KungfuID"])
+    if kungfu.name != "毒经":
+        return [PROMPT.CalculatorNotMatch]
     analyzed_data: ExcelRequest = await analyze_attrs(equip_data)
     calculated_data = await get_calculated_data(**(analyzed_data.__dict__))
     tables = []
@@ -190,23 +154,27 @@ async def generate_calculator_img_dujing(server: Optional[str], name: str, group
                 "value": calculated_data["data"]["damages"][skill_sort]
             })
         )
-    html = Template(read(VIEWS + "/jx3/calculator/calculator.html")).render(**{
-        "font": ASSETS + "/font/custom.ttf",
-        "yozai": ASSETS + "/font/Yozai-Medium.ttf",
-        "msgbox": Template(msgbox_dujing).render(**{
-            "max": max_dps,
-            "min": min_dps
-        }),
-        "tables": "\n".join(tables),
-        "school": "毒经",
-        "color": color_list["毒经"],
-        "server": server,
-        "name": name,
-        "calculator": "【雾海寻龙】毒经DPS计算器 240806"
-    })
-    final_html = CACHE + "/" + get_uuid() + ".html"
-    write(final_html, html)
-    final_path = await generate(final_html, False, ".total", False)
+    html = str(
+        SimpleHTML(
+            html_type = "jx3",
+            html_template = "calculator",
+            **{
+                "font": build_path(ASSETS, ["font", "custom.ttf"]),
+                "yozai": build_path(ASSETS, ["font", "Yozai-Medium.ttf"]),
+                "msgbox": Template(msgbox_dujing).render(**{
+                    "max": max_dps,
+                    "min": min_dps
+                }),
+                "tables": "\n".join(tables),
+                "school": "毒经",
+                "color": Kungfu("毒经").color,
+                "server": server,
+                "name": name,
+                "calculator": "【雾海寻龙】毒经DPS计算器 240806"
+            }
+        )
+    )
+    final_path = await generate(html, ".total", False)
     if not isinstance(final_path, str):
         return
     return Path(final_path).as_uri()

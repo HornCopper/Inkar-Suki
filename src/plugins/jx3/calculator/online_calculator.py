@@ -1,48 +1,37 @@
 # 在线DPS计算器 by 唐宋
 # https://github.com/LynTss/jx3dps-online
 
-from typing import Optional, Union, Literal, List, Any
+from typing import Literal, List, Any
 from pydantic import BaseModel, Field
 
-from src.tools.basic.server import server_mapping, Zone_mapping
-from src.tools.basic.prompts import PROMPT
-from src.tools.utils.time import get_current_time
-from src.tools.utils.request import post_url
-from src.tools.config import Config
+from src.const.jx3.server import Server
+from src.const.jx3.kungfu import Kungfu
+from src.const.prompts import PROMPT
+from src.utils.time import Time
+from src.utils.network import Request
+from src.config import Config
 
-from src.plugins.jx3.bind import get_player_local_data
-from src.plugins.jx3.detail.detail import get_tuilan_data
-from src.plugins.jx3.attributes.api import get_personal_kf, enchant_mapping
+from src.utils.database.player import search_player
+from src.plugins.jx3.attributes.v2 import Enchant
 
-import json
 import pydantic
 
 inkarsuki_offical_token = Config.hidden.offcial_token
 
 async def get_tuilan_raw_data(server: str, uid: str) -> dict:
-    param = {
-        "zone": Zone_mapping(server),
+    params = {
+        "zone": Server(server).zone,
         "server": server,
         "game_role_id": uid
     }
-    equip_data = await get_tuilan_data("https://m.pvp.xoyo.com/mine/equip/get-role-equip", param)
+    equip_data = (await Request("https://m.pvp.xoyo.com/mine/equip/get-role-equip", params=params).post(tuilan=True)).json()
     return equip_data
 
-async def get_local_data(server: Optional[str], name: str, group_id: Optional[str] = "") -> Union[dict, Literal[False]]:
-    server = server_mapping(server, group_id)
-    if not server:
-        return False
-    result = await get_player_local_data(role_name=name, server_name=server)
+async def get_local_data(server: str, name: str) -> dict | Literal[False]:
+    result = await search_player(role_name=name, server_name=server)
     if result.format_jx3api()["code"] != 200:
         return False
     return result.format_jx3api()["data"]
-
-def server_required(func):
-    def wrapper(self, *args, **kwargs):
-        if not isinstance(self.server, str):
-            return False
-        return func(self, *args, **kwargs)
-    return wrapper
 
 def is_empty(value):
     if value is None:
@@ -80,9 +69,9 @@ class FiveStone(BaseModel):
     level: str = ""
     max: str = ""
     min: str = ""
-    icon: Optional[str] = ""
-    kind: Optional[str] = ""
-    subKind: Optional[str] = ""
+    icon: str | None = ""
+    kind: str | None = ""
+    subKind: str | None = ""
     desc: str = ""
     percent: bool = False
 
@@ -147,18 +136,18 @@ class Equip(BaseModel):
     UID: str = ""
     permanentEnchant: List[PermanentEnchant] = []
     commonEnchant: CommonEnchant = CommonEnchant()
-    colorStone: ColorStone = ColorStone() # type: ignore
+    colorStone: ColorStone = ColorStone(**{})
 
 class JX3PlayerAttributes:
-    def __init__(self, server: Optional[str], name: str, group_id: Optional[str] = "", tl_data: dict = {}):
-        self.server = server_mapping(server, group_id)
+    def __init__(self, server: str, name: str, tl_data: dict = {}):
+        self.server = server
         self.name = name
-        self.tl_data: Optional[dict] = tl_data
-        self.role_data: Optional[dict] = None
+        self.tl_data: dict | None = tl_data
+        self.role_data: dict | None = None
 
     @staticmethod
-    async def get_kungfu(kungfu_id: str) -> Union[str, Literal[False]]:
-        result = await get_personal_kf(kungfu_id)
+    async def get_kungfu(kungfu_id: str) -> str | Literal[False]:
+        result = Kungfu.with_internel_id(kungfu_id).name
         return result if result else False
 
     @staticmethod
@@ -211,7 +200,7 @@ class JX3PlayerAttributes:
         self.role_data = role_data
         return True
 
-    async def analyze_equip_list(self) -> Union[list, Literal[False]]:
+    async def analyze_equip_list(self) -> list | Literal[False]:
         if not self.tl_data:
             if not await self._fetch_data():
                 return False
@@ -274,7 +263,7 @@ class JX3PlayerAttributes:
                     )
                 ] if "WPermanentEnchant" in equip else [PermanentEnchant()],
                 commonEnchant=CommonEnchant(
-                    name=str(enchant_mapping(equip["Quality"])) + "·伤·" + "帽衣腰腕鞋"[["帽子", "上衣", "腰带", "护臂", "鞋"].index(equip["Icon"]["SubKind"])]
+                    name=str(Enchant(equip["Quality"]).name) + "·伤·" + "帽衣腰腕鞋"[["帽子", "上衣", "腰带", "护臂", "鞋"].index(equip["Icon"]["SubKind"])]
                 ) if equip["Icon"]["SubKind"] in ["帽子", "上衣", "腰带", "护臂", "鞋"] else CommonEnchant(),
                 colorStone=ColorStone(
                     id=equip["ColorStone"]["ID"],
@@ -298,7 +287,7 @@ class JX3PlayerAttributes:
             equips.append(self.convert_to_dict(equip_data))
         return self.sort_equipments(equips)
 
-    async def get_panel(self) -> Union[dict, Literal[False]]:
+    async def get_panel(self) -> dict | Literal[False]:
         if not self.tl_data:
             if not await self._fetch_data():
                 return False
@@ -309,7 +298,7 @@ class JX3PlayerAttributes:
             }
         return False
 
-    async def format_jx3api(self) -> Union[dict, Literal[False]]:
+    async def format_jx3api(self) -> dict | Literal[False]:
         if not self.role_data:
             if not await self._fetch_data():
                 return False
@@ -335,23 +324,19 @@ class JX3PlayerAttributes:
                 "equipList": equip_data,
                 "panelList": panel_data
             },
-            "time": get_current_time()
+            "time": Time().raw_time
         }
     
-async def get_calculated_data(server: Optional[str], name: str, group_id: Optional[str] = "", school: str = "") -> Union[dict, Literal[False]]:
-    server_ = server_mapping(server, group_id)
-    if not isinstance(server_, str):
-        return False
-    player_info = await get_local_data(server, name, group_id)
+async def get_calculated_data(server: str, name: str, school: str = "") -> dict | Literal[False]:
+    player_info = await get_local_data(server, name)
     if not player_info:
         return False
     uid = player_info["roleId"]
     instance = JX3PlayerAttributes(
-        server = server_,
+        server = server,
         name = name,
-        group_id = group_id,
         tl_data = await get_tuilan_raw_data(
-            server = server_,
+            server = server,
             uid = uid
         )
     )
@@ -360,9 +345,5 @@ async def get_calculated_data(server: Optional[str], name: str, group_id: Option
         return False
     if jx3api_format_data["data"]["kungfuName"] != school:
         return False
-    data = await post_url(
-        "https://inkar-suki.codethink.cn/calculator",
-        headers = {"token": inkarsuki_offical_token},
-        json = jx3api_format_data
-    )
-    return json.loads(data)
+    data = (await Request("https://inkar-suki.codethink.cn/calculator", headers={"token": inkarsuki_offical_token}, params=jx3api_format_data).post()).json()
+    return data

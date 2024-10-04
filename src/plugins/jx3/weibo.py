@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 
 from nonebot.log import logger
 
-from src.tools.basic.group import send_subscribe
+from src.utils.database.operation import send_subscribe
 
 import asyncio
 
@@ -43,6 +43,8 @@ async def poll_weibo_api(uid, interval=60):
                         if last_seen_id != post_id and not check_time(latest_post.get("created_at")):
                             await execute_on_new_post(latest_post)
                             last_seen_id = post_id
+                        
+                        logger.info(f"Request completed! {last_seen_id}")
                     else:
                         logger.info("No new information!")
                 else:

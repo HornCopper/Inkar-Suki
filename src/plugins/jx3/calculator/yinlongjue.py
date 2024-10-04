@@ -1,52 +1,35 @@
 # DPS计算器 隐龙诀
 
-from typing import Tuple, Literal, Optional, List, Union, Dict, Callable
+"""
+！！！！警告！！！！
+
+务必获得凌雪阁计算器作者同意后再使用！！！！！
+"""
+
+from typing import Tuple, Literal, List, Dict, Callable
 from jinja2 import Template
 from pathlib import Path
 
-from src.constant.jx3 import color_list
+from src.const.jx3.server import Server
+from src.const.jx3.kungfu import Kungfu
+from src.const.prompts import PROMPT
+from src.const.path import ASSETS, build_path
+from src.utils.network import Request
+from src.utils.generate import generate
+from src.utils.database.player import search_player
+from src.templates import SimpleHTML
 
-from src.tools.basic.server import Zone_mapping, server_mapping
-from src.tools.utils.request import get_api, post_url
-from src.tools.utils.path import ASSETS, CACHE, VIEWS
-from src.tools.utils.file import read, write
-from src.tools.generate import generate, get_uuid
-from src.tools.basic.prompts import PROMPT
-
-from src.plugins.jx3.detail.detail import get_tuilan_data
-from src.plugins.jx3.bind.role import get_player_local_data
-from src.plugins.jx3.attributes.api import get_personal_kf
-
-import json
-
-msgbox_yinlongjue = """
-<div class="element">
-    <div class="cell-title"><span>理论DPS</span></div>
-    <div class="cell">{{ dps }}</div>
-</div>"""
-
-template_calculator_yinlongjue = """
-<tr>
-    <td class="short-column">{{ skill }}</td>
-    <td class="short-column">
-        <div class="progress-bar" style="margin: 0 auto;">
-            <div class="progress" style="width: {{ display }};"></div>
-            <span class="progress-text">{{ percent }}</span>
-        </div>
-    </td>
-    <td class="short-column">{{ count }}</td>
-    <td class="short-column">{{ value }}</td>
-</tr>"""
+from ._template import msgbox_yinlongjue, template_calculator_yinlongjue
 
 def generate_params(
     loop_name: str,
     loop_skill: List[str],
     attrs: dict,
     input_enchant: List[bool],
-    set_list: List[Optional[str]],
-    special_equip: List[Optional[str]]
+    set_list: List[str | None],
+    special_equip: List[None | str]
 ) -> dict:
-    enchant: List[Union[int, str]] = [12206, 12205, 12202, 12204, 12203]
+    enchant: List[int | str] = [12206, 12205, 12202, 12204, 12203]
     for num in range(5):
         if not input_enchant[num]:
             enchant[num] = ""
@@ -125,7 +108,7 @@ def generate_params(
     }
     return params
 
-async def get_loop(loop_name: Literal["橙武遗恨", "猴王遗恨", "遗恨保百节", "猴王特效", "猴王"] = "遗恨保百节") -> Tuple[Optional[str], Optional[List[str]]]:
+async def get_loop(loop_name: Literal["橙武遗恨", "猴王遗恨", "遗恨保百节", "猴王特效", "猴王"] = "遗恨保百节") -> Tuple[str | None, None | List[str]]:
     kw = {
         "橙武遗恨": "lxgCWYiHenLoop",
         "猴王遗恨": "lxgQiWangYiHenLoop",
@@ -133,19 +116,19 @@ async def get_loop(loop_name: Literal["橙武遗恨", "猴王遗恨", "遗恨保
         "猴王特效": "lxgQiWangHouWangLoop",
         "猴王循环": "lxgHouWangLoop"
     }[loop_name]
-    data = await get_api("http://www.j3lxg.cn/j3dps/api/public/v1/compute/getLoop")
+    data = (await Request("http://www.j3lxg.cn/j3dps/api/public/v1/compute/getLoop").get()).json()
     for loop in data["data"]:
         if loop["code"] == kw:
             return kw, loop["extraPointList"]
     return None, None
 
 async def get_tuilan_raw_data(server: str, uid: str) -> dict:
-    param = {
-        "zone": Zone_mapping(server),
+    params = {
+        "zone": Server(server).zone,
         "server": server,
         "game_role_id": uid
     }
-    equip_data = await get_tuilan_data("https://m.pvp.xoyo.com/mine/equip/get-role-equip", param)
+    equip_data = (await Request("https://m.pvp.xoyo.com/mine/equip/get-role-equip", params=params).post(tuilan=True)).json()
     return equip_data
 
 class JX3Attributes:
@@ -209,7 +192,7 @@ class JX3Attributes:
         return result
 
     @property
-    def effect(self) -> List[Optional[str]]:
+    def effect(self) -> List[None | str]:
         equip_list: list = self.data["data"]["Equips"]
         skill_event_handler_activated = False
         set_equipment_recipe_activated = False
@@ -252,16 +235,13 @@ class JX3Attributes:
                 enchant_.append(False)
         return enchant_
         
-async def generate_calculator_img_yinlongjue(server: Optional[str], name: str, group_id: str = ""):
-    server = server_mapping(server, group_id)
-    if not server:
-        return [PROMPT.ServerNotExist]
-    role_data = await get_player_local_data(role_name=name, server_name=server)
+async def generate_calculator_img_yinlongjue(server: str, name: str):
+    role_data = await search_player(role_name=name, server_name=server)
     role = role_data.format_jx3api()
     if role["code"] != 200:
         return [PROMPT.PlayerNotExist]
     data = await get_tuilan_raw_data(server, role["data"]["roleId"])
-    kf_name = await get_personal_kf(data["data"]["Kungfu"]["KungfuID"])
+    kf_name = Kungfu.with_internel_id(data["data"]["Kungfu"]["KungfuID"])
     if kf_name != "隐龙诀":
         return False
     instance = JX3Attributes(data)
@@ -276,8 +256,7 @@ async def generate_calculator_img_yinlongjue(server: Optional[str], name: str, g
         set_list=instance.effect,
         special_equip=instance.special
     )
-    data = await post_url("http://121.41.84.37/j3dps/api/public/v1/compute/dps", json=params)
-    data = json.loads(data)
+    data = (await Request("http://121.41.84.37/j3dps/api/public/v1/compute/dps", params=params).post()).json()
     tables = []
     for skill_data in data["data"]["mergeSkillDpsBoList"]:
         tables.append(
@@ -289,22 +268,23 @@ async def generate_calculator_img_yinlongjue(server: Optional[str], name: str, g
                 "value": str(int(skill_data["damage"]))
             })
         )
-    html = Template(read(VIEWS + "/jx3/calculator/calculator.html")).render(**{
-        "font": ASSETS + "/font/custom.ttf",
-        "yozai": ASSETS + "/font/Yozai-Medium.ttf",
-        "msgbox": Template(msgbox_yinlongjue).render(**{
-            "dps": str(int(data["data"]["dps"]))
-        }),
-        "tables": "\n".join(tables),
-        "school": "隐龙诀",
-        "color": color_list["隐龙诀"],
-        "server": server,
-        "name": name,
-        "calculator": "【雾海寻龙】凌雪阁DPS计算器 by @猜猜<br>当前循环：遗恨保百节"
-    })
-    final_html = CACHE + "/" + get_uuid() + ".html"
-    write(final_html, html)
-    final_path = await generate(final_html, False, ".total", False)
+    html = str(SimpleHTML(
+        html_type = "jx3",
+        html_template = "calculator",
+        **{
+            "font": build_path(ASSETS, ["font", "custom.ttf"]),
+            "yozai": build_path(ASSETS, ["font", "Yozai-Medium.ttf"]),
+            "msgbox": Template(msgbox_yinlongjue).render(**{
+                "dps": str(int(data["data"]["dps"]))
+            }),
+            "tables": "\n".join(tables),
+            "school": "隐龙诀",
+            "color": Kungfu("隐龙诀").color,
+            "server": server,
+            "name": name,
+            "calculator": "【雾海寻龙】凌雪阁DPS计算器 by @猜猜<br>当前循环：遗恨保百节"
+    }))
+    final_path = await generate(html, ".total", False)
     if not isinstance(final_path, str):
         return
     return Path(final_path).as_uri()

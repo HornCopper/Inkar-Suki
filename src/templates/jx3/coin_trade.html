@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <style>
+        table {
+            width: 800px;
+            border-collapse: separate;
+            border-spacing: 0;
+            border: 1px solid #000;
+        }
+
+        th {
+            background-color: #333;
+            color: #fff;
+            padding: 8px;
+            text-align: center;
+        }
+
+        td {
+            padding: 20px;
+            text-align: center;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            border-bottom: 1px solid #D3D3D3;
+            margin-bottom: 1px;
+        }
+
+        tbody tr:not(:first-child) {
+            border: 1px solid black;
+        }
+
+        .short-column {
+            width: 150px;
+        }
+
+        tfoot {
+            text-align: center;
+            font-style: italic;
+            font-size: 12px;
+        }
+
+        #Chart {
+            width: 800px;
+            height: 400px;
+            margin: 0 auto;
+        }
+
+        @font-face {
+            font-family: Harmony;
+            src: url("{{ custom_font }}");
+        }
+
+        body {
+            font-family: Harmony, sans-serif;
+            font-size: 24px;
+        }
+    </style>
+</head>
+
+<body>
+    <table style="background-color: #FFFFFF">
+        <thead>
+            <tr>
+                <th class="short-column">日期</th>
+                <th class="short-column">7881</th>
+                <th class="short-column">万宝楼</th>
+                <th class="short-column">DD373</th>
+                <th class="short-column">5173</th>
+                <th class="short-column">UU898</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{ tablecontent }}
+            <tr>
+                <td colspan="6">
+                    <div id="Chart"></div>
+                </td>
+            </tr>
+        </tbody>
+        <tfoot>
+            <tr>
+                <td colspan="6">&copy; Inkar Suki · {{ app_name }} · {{ server }} · {{ app_time }}<br>{{ saohua }}</td>
+            </tr>
+        </tfoot>
+    </table>
+
+    <script src="https://inkar-suki.codethink.cn/Inkar-Suki-Docs/js/echarts.min.js"></script>
+    <script>
+        const chart = echarts.init(document.getElementById("Chart"), null, { devicePixelRatio: 2 });
+
+        const option = {
+            animation: false,
+            tooltip: {
+                trigger: "axis"
+            },
+            legend: {
+                data: {{ platforms }}
+            },
+            xAxis: {
+                type: "category",
+                boundaryGap: false,
+                data: {{ dates }}
+            },
+            yAxis: {
+                type: "value",
+                boundaryGap: [0, "100%"],
+                min: 600,
+                max: 1000
+            },
+            series: [
+                {
+                    name: "7881",
+                    type: "line",
+                    data: {{ _7881 }},
+                    smooth: true,
+                    itemStyle: {
+                        color: "#42a5f5"
+                    },
+                    areaStyle: {
+                        color: "rgba(66, 165, 245, 0.2)"
+                    }
+                },
+                {
+                    name: "万宝楼",
+                    type: "line",
+                    data: {{ wbl }},
+                    smooth: true,
+                    itemStyle: {
+                        color: "#ff7043"
+                    },
+                    areaStyle: {
+                        color: "rgba(255, 112, 67, 0.2)"
+                    }
+                },
+                {
+                    name: "DD373",
+                    type: "line",
+                    data: {{ dd373 }},
+                    smooth: true,
+                    itemStyle: {
+                        color: "#30C701"
+                    },
+                    areaStyle: {
+                        color: "rgba(48, 199, 1, 0.2)"
+                    }
+                },
+                {
+                    name: "5173",
+                    type: "line",
+                    data: {{ _5173 }},
+                    smooth: true,
+                    itemStyle: {
+                        color: "#FF768B"
+                    },
+                    areaStyle: {
+                        color: "rgba(255, 118, 139, 0.2)"
+                    }
+                },
+                {
+                    name: "UU898",
+                    type: "line",
+                    data: {{ uu898 }},
+                    smooth: true,
+                    itemStyle: {
+                        color: "#5DA0ED"
+                    },
+                    areaStyle: {
+                        color: "rgba(93, 160, 237, 0.2)"
+                    }
+                }
+            ]
+        };
+
+        chart.setOption(option);
+    </script>
+</body>
+
+</html>

@@ -2,18 +2,20 @@ from nonebot import on_command
 from nonebot.adapters import Message
 from nonebot.params import CommandArg, Arg
 from nonebot.typing import T_State
+from nonebot.matcher import Matcher
 from nonebot.adapters.onebot.v11 import GroupMessageEvent, MessageSegment as ms
 
-from src.tools.utils.num import check_number
-from src.tools.basic.prompts import PROMPT
+from src.utils.analyze import check_number
+from src.const.prompts import PROMPT
 
-from .api import *
+from .dh import get_dh
+from .wg import get_wg
 
-dh_ = on_command("jx3_dh", aliases={"蹲号"}, force_whitespace=True, priority=5)
+DHMatcher = on_command("jx3_dh", aliases={"蹲号"}, force_whitespace=True, priority=5)
 
 
-@dh_.handle()
-async def _(event: GroupMessageEvent, state: T_State, args: Message = CommandArg()):
+@DHMatcher.handle()
+async def _(event: GroupMessageEvent, matcher: Matcher, state: T_State, args: Message = CommandArg()):
     """
     获取盆栽蹲号信息：
 
@@ -23,37 +25,40 @@ async def _(event: GroupMessageEvent, state: T_State, args: Message = CommandArg
         return
     details = args.extract_plain_text()
     if details == "":
-        await dh_.finish("您没有输入条件哦，请检查后重试~\n条件以空格分割哦~")
+        await DHMatcher.finish(PROMPT.NoCondition)
     details = details.split(" ")
     if len(details) < 1:
-        await dh_.finish("您没有输入条件哦，请检查后重试~\n条件以空格分割哦~")
+        await DHMatcher.finish(PROMPT.NoCondition)
     final_details = ",".join(details)
     data = await get_dh(final_details)
     if isinstance(data, list):
         image = data[0]
+        if not isinstance(image, str):
+            matcher.stop_propagation()
+            return
         state["links"] = data[1]
         state["floors"] = data[2]
-        await dh_.send(ms.image(image))
+        await DHMatcher.send(ms.image(image))
         return
     else:
-        await dh_.finish(data)
+        await DHMatcher.finish(data)
 
-@dh_.got("num", prompt="回复标题前方的序号，音卡就可以给你链接啦！")
+@DHMatcher.got("num", prompt="回复标题前方的序号，音卡就可以给你链接啦！")
 async def _(event: GroupMessageEvent, state: T_State, num: Message = Arg()):
     num_ = num.extract_plain_text()
     if not check_number(num_):
-        await dh_.finish(PROMPT.NumberInvalid)
+        await DHMatcher.finish(PROMPT.NumberInvalid)
     else:
         links = state["links"]
         floors = state["floors"]
         floor = str(floors[int(num_)-1])
-        await dh_.finish(links[int(num_)-1] + f"\n请前往{floor}楼哦~")
+        await DHMatcher.finish(links[int(num_)-1] + f"\n请前往{floor}楼哦~")
 
-wg_ = on_command("jx3_wg", aliases={"贴吧物价"}, force_whitespace=True, priority=5)
+WGMatcher = on_command("jx3_wg", aliases={"贴吧物价"}, force_whitespace=True, priority=5)
 
 
-@wg_.handle()
-async def _(event: GroupMessageEvent, state: T_State, args: Message = CommandArg()):
+@WGMatcher.handle()
+async def _(event: GroupMessageEvent, matcher: Matcher, state: T_State, args: Message = CommandArg()):
     """
     获取盆栽蹲号信息：
 
@@ -63,28 +68,31 @@ async def _(event: GroupMessageEvent, state: T_State, args: Message = CommandArg
         return
     details = args.extract_plain_text()
     if details == "":
-        await wg_.finish("您没有输入条件哦，请检查后重试~\n条件以空格分割哦~")
+        await WGMatcher.finish(PROMPT.NoCondition)
     details = details.split(" ")
     if len(details) < 1:
-        await wg_.finish("您没有输入条件哦，请检查后重试~\n条件以空格分割哦~")
+        await WGMatcher.finish(PROMPT.NoCondition)
     final_details = ",".join(details)
-    data = await get_wg(final_details) # type: ignore
+    data = await get_wg(final_details)
     if isinstance(data, list):
         image = data[0]
+        if not isinstance(image, str):
+            matcher.stop_propagation()
+            return
         state["links"] = data[1]
         state["floors"] = data[2]
-        await wg_.send(ms.image(image))
+        await WGMatcher.send(ms.image(image))
         return
     else:
-        await wg_.finish(data)
+        await WGMatcher.finish(data)
 
-@wg_.got("num", prompt="回复标题前方的序号，音卡就可以给你链接啦！")
+@WGMatcher.got("num", prompt="回复标题前方的序号，音卡就可以给你链接啦！")
 async def _(event: GroupMessageEvent, state: T_State, num: Message = Arg()):
     num_ = num.extract_plain_text()
     if not check_number(num_):
-        await wg_.finish(PROMPT.NumberInvalid)
+        await WGMatcher.finish(PROMPT.NumberInvalid)
     else:
         links = state["links"]
         floors = state["floors"]
         floor = str(floors[int(num_)-1])
-        await wg_.finish(links[int(num_)-1] + f"\n请前往{floor}楼哦~")
+        await WGMatcher.finish(links[int(num_)-1] + f"\n请前往{floor}楼哦~")

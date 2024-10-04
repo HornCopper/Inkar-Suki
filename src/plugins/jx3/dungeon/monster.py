@@ -1,33 +1,25 @@
 from pathlib import Path
+from jinja2 import Template
 
-from src.tools.generate import generate, get_uuid
-from src.tools.utils.request import get_api
-from src.tools.utils.path import ASSETS, CACHE, VIEWS
-from src.tools.utils.time import convert_time, get_current_time
-from src.tools.utils.file import read, write
+from src.const.path import ASSETS, build_path
+from src.utils.network import Request
+from src.utils.time import Time
+from src.utils.generate import generate
+from src.templates import SimpleHTML
+
+from ._template import template_monsters
 
 import re
 
-level_desc = ["", "+300", "秒杀首领;+80", "稀有提高;+80", "随机前进;+80",
-              "后六翻倍;+50", "前六减半;+50", "+100", "后跃三步;+100", "+300", "逆向前进"]
+level_desc = ["", "+800", "秒杀首领;+150", "稀有提高;+200", "随机前进;+150",
+              "后六翻倍;+100", "前六减半;+100", "+300", "后跃三步;+200", "+300", "逆向前进"]
 level_icon = [18505, 4533, 13548, 13547, 3313, 4577, 4543, 4558, 4576, 4573]
-
-template = """
-<div class="el-tooltip u-column$Flag">
-    <div class="u-img"><img src="$Icon" class="u-effect"></div>
-    <div class="u-index"><span class="u-index-number">$Count</span></div>
-    <div class="u-name">$bossName</div>
-    <div class="u-gift"><span class="u-tag">$Desc</span><span class="u-coin">$Coin</span></div>
-    <div class="u-elite"></div>
-</div>
-"""
 
 # $Flag 特殊层标识 ; $Icon 图标 ; $Count 层数 ; $bossName 首领名称 ; $Desc 描述 ; $Coin 修罗之印
 
-
 async def get_monsters_map():
-    map_data = await get_api("https://cms.jx3box.com/api/cms/app/monster/map")
-    boss = await get_api("https://node.jx3box.com/monster/boss")
+    map_data = (await Request("https://cms.jx3box.com/api/cms/app/monster/map").get()).json()
+    boss = (await Request("https://node.jx3box.com/monster/boss").get()).json()
     content = ["<div class=\"u-row\">"]
     for i in range(len(map_data["data"]["data"])):
         bid = map_data["data"]["data"][i]["dwBossID"]
@@ -59,8 +51,14 @@ async def get_monsters_map():
         count = i + 1
         if count % 10 == 0:
             flag = flag + " is-elite"  # 勿除空格
-        new = template.replace("$Flag", flag).replace("$Icon", icon).replace("$Count", str(
-            count)).replace("$bossName", name).replace("$Desc", desc).replace("$Coin", coin)
+        new = Template(template_monsters).render(
+            flag = flag,
+            icon = icon,
+            count = str(count),
+            name = name,
+            desc = desc,
+            coin = coin
+        )
         if count % 10 == 0:
             content.append(new)
             if count / 10 in [1, 2, 3, 4, 5, 6]:
@@ -70,17 +68,18 @@ async def get_monsters_map():
         else:
             content.append(new)
     start = re.sub(r"\..+\Z", "", map_data["data"]["start"].replace("T", " ")).split(" ")[0]
-    html = read(VIEWS + "/jx3/monster/monster.html")
-    font = ASSETS + "/font/custom.ttf"
-    saohua = "严禁将蓉蓉机器人与音卡共存，一经发现永久封禁！蓉蓉是抄袭音卡的劣质机器人！"
-    
-    appinfo_time = convert_time(get_current_time(), "%H:%M:%S")
-    appinfo = f"自{start}起7天 · 当前时间：{appinfo_time}<br>{saohua}"
-    html = html.replace("$content", "\n".join(content)).replace(
-        "$customfont", font).replace("$appinfo", appinfo)
-    final_html = CACHE + "/" + get_uuid() + ".html"
-    write(final_html, html)
-    final_path = await generate(final_html, False, ".m-bmap.is-map-phone", False)
+    current_time = Time().format("%H:%M:%S")
+    msg = "严禁将蓉蓉机器人与音卡共存，一经发现永久封禁！蓉蓉是抄袭音卡的劣质机器人！"
+    html = str(
+        SimpleHTML(
+            "jx3",
+            "monsters.html",
+            font = build_path(ASSETS, ["font", "custom.ttf"]),
+            table_content = "\n".join(content),
+            application_name = f"自{start}起7天 · 当前时间：{current_time}<br>{msg}"
+        )
+    )
+    final_path = await generate(html, ".m-bmap.is-map-phone", False)
     if not isinstance(final_path, str):
         return
     return Path(final_path).as_uri()

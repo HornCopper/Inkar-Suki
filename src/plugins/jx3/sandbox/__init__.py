@@ -3,27 +3,41 @@ from nonebot.adapters import Message
 from nonebot.params import CommandArg
 from nonebot.adapters.onebot.v11 import GroupMessageEvent, MessageSegment as ms
 
-from src.tools.basic.server import server_mapping
-from src.tools.utils.file import get_content_local
-from src.tools.config import Config
+from src.const.jx3.server import Server
+from src.const.prompts import PROMPT
+from src.utils.network import Request
 
-from .api import *
+from .api import get_sandbox_image
 
-sandbox_v2 = on_command("jx3_sandbox_v2", aliases={"沙盘v2", "沙盘"}, force_whitespace=True, priority=5)
+SandboxMatcher = on_command("jx3_sandbox_v2", aliases={"沙盘v2", "沙盘"}, force_whitespace=True, priority=5)
 
-@sandbox_v2.handle()
+@SandboxMatcher.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     """
     获取服务器沙盘：
     Example：-沙盘v2 幽月轮
     """
-    if not Config.jx3.api.enable:
+    args.extract_plain_text()
+    if args.extract_plain_text() == "":
+        """
+        沙盘
+        """
+        server = Server(None, event.group_id).server
+        if server is None:
+            await SandboxMatcher.finish(PROMPT.ServerNotExist)
+        image = await get_sandbox_image(server)
+    else:
+        """
+        沙盘 服务器
+        """
+        server = Server(args.extract_plain_text(), event.group_id)
+        if server is None:
+            await SandboxMatcher.finish(PROMPT.ServerNotExist)
+        image = await get_sandbox_image(server)
+    if not isinstance(image, str):
         return
-    server = args.extract_plain_text()
-    server_ = server_mapping(server, str(event.group_id))
-    data = await sandbox_v2_(server_)
-    if isinstance(data, list):
-        await sandbox_v2.finish(data[0])
-    elif isinstance(data, str):
-        data = get_content_local(data)
-        await sandbox_v2.finish(ms.image(data))
+    await SandboxMatcher.finish(
+        ms.image(
+            Request(image).local_content
+        )
+    )

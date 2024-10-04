@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <link href="{{ css_ }}" rel="stylesheet">
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+        }
+
+        .el-row {
+            width: 850px;
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .el-col {
+            margin-left: 15px;
+            margin-bottom: 10px;
+            width: 250px;
+            height: 90px;
+            border: 1px solid rgb(179, 179, 179);
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-left: 5px;
+            padding-right: 10px;
+        }
+
+        .el-box {
+
+            display: flex;
+            align-items: center;
+        }
+
+        .el-status {
+
+            display: flex;
+            align-items: center;
+        }
+
+        .disabled {
+            font-size: 35px;
+            color: red;
+        }
+
+        .enabled {
+            font-size: 35px;
+            color: green;
+        }
+
+        .el-image {
+            width: 30px;
+            height: 30px;
+        }
+
+        .el-text {
+            display: flex;
+            flex-direction: column;
+            padding-left: 10px;
+        }
+
+        .element-text-up {
+            font-weight: 800;
+        }
+
+        .element-text-down {
+            color: grey;
+            font-size: small;
+        }
+
+        .el-divider--horizontal {
+            display: block;
+            height: 1px;
+            width: 100%;
+            margin: 24px 0
+        }
+
+        .el-divider {
+            background-color: #ff2571;
+            position: relative;
+            height: 3px;
+        }
+
+        .el-mini-divider {
+            background-color: #4a4aff;
+            position: relative;
+            height: 1px;
+        }
+
+        .el-divider__text {
+            position: absolute;
+            background-color: #fff;
+            padding: 0 20px;
+            color: #303133
+        }
+
+        .el-divider__text.is-left {
+            left: 20px;
+            -webkit-transform: translateY(-50%);
+            transform: translateY(-50%)
+        }
+
+
+        .mc_design {
+            background-image: url("{{ grass_image }}");
+            background-position: bottom;
+            padding-bottom: 90px;
+            background-repeat: repeat-x;
+        }
+
+        @font-face {
+            font-family: Harmony;
+            src: url("{{ font}}");
+        }
+
+        body {
+            font-family: Harmony, sans-serif;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="total mc_design" style="width:860px;padding-top:5px">
+        <!-- 通用划线 -->
+        <div class="el-divider el-divider--horizontal" style="width:850px">
+            <div class="el-divider__text is-left">群聊 {{ group_name }}（{{ group_id }}）关于本群</div>
+        </div>
+
+        <div class="el-mini-divider el-divider--horizontal" style="width:850px">
+            <div class="el-divider__text is-left">订阅内容（使用 订阅/开启 加上下面的小标题即可订阅，多个请用空格分隔，如需关闭请使用 退订/关闭）</div>
+        </div>
+
+        <!-- 图标库 -->
+        <div class="el-row">
+            {{ subscribe_contents }}
+        </div>
+
+        <div class="el-mini-divider el-divider--horizontal" style="width:850px">
+            <div class="el-divider__text is-left">功能附加（使用 开启/订阅 加上下面的小标题即可订阅，多个请用空格分隔，如需关闭请使用 退订/关闭）</div>
+        </div>
+
+        <div class="el-row">
+            {{ additions_contents }}
+        </div>
+    </div>
+</body>
+
+</html>

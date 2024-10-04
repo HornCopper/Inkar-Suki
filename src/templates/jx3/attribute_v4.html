@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>角色信息</title>
+    <style>
+        @font-face {
+            font-family: Inkar-Suki;
+            src: url("{{ font }}");
+        }
+
+        .outlined-text {
+            color: white;
+            text-shadow:
+                -1px -1px 0 #000,
+                1px -1px 0 #000,
+                -1px 1px 0 #000,
+                1px 1px 0 #000;
+        }
+
+        body {
+            font-family: Inkar-Suki, sans-serif;
+            font-size: 28px;
+            font-weight: bold;
+            color: white;
+            margin: 0;
+            padding: 0;
+            background-image: url("{{ background }}");
+            background-size: cover;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+
+        .left-section {
+            position: relative;
+            flex: 1;
+            margin-right: 20px;
+            max-width: 30%;
+            align-items: flex-start;
+        }
+
+        .left-section::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url("{{ school }}") no-repeat center center;
+            background-size: contain;
+            filter: opacity(0.5) drop-shadow(0 0 0 {{ color }});
+            z-index: 1;
+        }
+
+        .left-section .section {
+            position: relative;
+            z-index: 1;
+        }
+
+        .wrapper {
+            width: 100%;
+            max-width: 100%;
+            max-height: 100%;
+            background: rgba(0, 0, 0, 0);
+            padding: 20px;
+            box-sizing: border-box;
+            overflow-y: auto;
+            border-radius: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .right-section {
+            flex: 2;
+            max-width: 70%;
+            align-items: flex-end;
+        }
+
+        .section {
+            margin-bottom: 80px;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            border: 2px solid white;
+        }
+
+        .title {
+            font-size: 40px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .attributes,
+        .skills {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+        }
+
+        .attribute,
+        .skill {
+            margin: 10px;
+        }
+
+        .attribute {
+            display: flex;
+            justify-content: space-between;
+            width: 45%;
+            border-bottom: 1px solid white;
+        }
+
+        .skills img {
+            margin: 30px;
+            width: 40px;
+            height: 40px;
+            vertical-align: middle;
+        }
+
+        .skill-description {
+            font-size: 32px;
+            text-align: center;
+            margin-top: 2px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: center;
+        }
+
+        table,
+        th,
+        td {
+            border: 1px solid rgba(255, 255, 255, 0.5);
+        }
+
+        th,
+        td {
+            padding: 10px;
+        }
+
+        #skill-image {
+            width: 80px;
+            height: 80px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="wrapper outlined-text">
+        <div class="left-section">
+            <div class="section">
+                <div class="title">角色信息</div>
+                <div class="attributes">
+                    <div class="attribute">
+                        <div id="key"></div>
+                        <div id="value"></div>
+                    </div>
+                    <div class="attribute">
+                        <div id="key"></div>
+                        <div id="value"></div>
+                    </div>
+                    <div class="attribute">
+                        <div id="key"></div>
+                        <div id="value"></div>
+                    </div>
+                    <div class="attribute">
+                        <div id="key"></div>
+                        <div id="value"></div>
+                    </div>
+                    <div class="attribute">
+                        <div id="key"></div>
+                        <div id="value"></div>
+                    </div>
+                    <div class="attribute">
+                        <div id="key"></div>
+                        <div id="value"></div>
+                    </div>
+                    <div class="attribute">
+                        <div id="key"></div>
+                        <div id="value"></div>
+                    </div>
+                    <div class="attribute">
+                        <div id="key"></div>
+                        <div id="value"></div>
+                    </div>
+                    <div class="attribute">
+                        <div id="key"></div>
+                        <div id="value"></div>
+                    </div>
+                    <div class="attribute">
+                        <div id="key"></div>
+                        <div id="value"></div>
+                    </div>
+
+                </div>
+            </div>
+            <div class="section">
+                <div class="title">奇穴</div>
+                <div class="skills">
+                    <div>
+                        <img id="skill-image" src="">
+                        <div class="skill-description"></div>
+                    </div>
+                    <div>
+                        <img id="skill-image" src="">
+                        <div class="skill-description"></div>
+                    </div>
+                    <div>
+                        <img id="skill-image" src="">
+                        <div class="skill-description"></div>
+                    </div>
+                    <div>
+                        <img id="skill-image" src="">
+                        <div class="skill-description"></div>
+                    </div>
+                    <div>
+                        <img id="skill-image" src="">
+                        <div class="skill-description"></div>
+                    </div>
+                    <div>
+                        <img id="skill-image" src="">
+                        <div class="skill-description"></div>
+                    </div>
+                    <div>
+                        <img id="skill-image" src="">
+                        <div class="skill-description"></div>
+                    </div>
+                    <div>
+                        <img id="skill-image" src="">
+                        <div class="skill-description"></div>
+                    </div>
+                    <div>
+                        <img id="skill-image" src="">
+                        <div class="skill-description"></div>
+                    </div>
+                    <div>
+                        <img id="skill-image" src="">
+                        <div class="skill-description"></div>
+                    </div>
+                    <div>
+                        <img id="skill-image" src="">
+                        <div class="skill-description"></div>
+                    </div>
+                    <div>
+                        <img id="skill-image" src="">
+                        <div class="skill-description"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="right-section">
+            <div class="section">
+                <div class="title">装备列表</div>
+                <table id="equip-list">
+                    <tr>
+                        <th>图标</th>
+                        <th>名称</th>
+                        <th>精炼</th>
+                        <th>附魔</th>
+                        <th>来源</th>
+                    </tr>
+                    {{ table_content }}
+                </table>
+            </div>
+        </div>
+    </div>
+    <script>
+        function fillAttrs(selector, list) {
+            const containers = document.querySelectorAll(".attributes > .attribute");
+            list.forEach((value, index) => {
+                let container = containers[index];
+                if (!container) {
+                    container = document.createElement("div");
+                    container.classList.add("attribute");
+                    document.querySelector(".attributes").appendChild(container);
+                }
+                let keyElement = container.querySelector(selector);
+                if (!keyElement) {
+                    keyElement = document.createElement("div");
+                    keyElement.id = selector.slice(1);
+                    container.appendChild(keyElement);
+                }
+                keyElement.textContent = value;
+            });
+        }
+
+        fillAttrs("#key", {{ panel_key }});
+        fillAttrs("#value", {{ panel_value }});
+
+        function replaceElements(selector, list) {
+            const elements = document.querySelectorAll(selector);
+
+            elements.forEach((element, index) => {
+                if (index < list.length) {
+                    element.textContent = list[index];
+                } else {
+                    element.textContent = "";
+                }
+            });
+        }
+        replaceElements(".skill-description", {{ qixue_name }});
+
+        function replaceImgLink(selector, list) {
+            const elements = document.querySelectorAll(selector);
+
+            elements.forEach((element, index) => {
+                if (index < list.length) {
+                    element.src = list[index];
+                } else {
+                    element.src = "";
+                }
+            });
+        }
+        replaceImgLink("#skill-image", {{ qixue_img }});
+        window.addEventListener("load", function () {
+            document.body.style.overflow = "visible";
+            document.documentElement.style.overflow = "visible";
+            document.documentElement.style.height = "auto";
+            document.body.style.height = "auto";
+        });
+
+        function removeEmptyColumns(tableId) {
+            const table = document.getElementById(tableId);
+            const rows = table.rows;
+            const columnCount = rows[0].cells.length;
+
+            for (let colIndex = columnCount - 1; colIndex >= 0; colIndex--) {
+                let isEmpty = true;
+
+                for (let rowIndex = 1; rowIndex < rows.length; rowIndex++) {
+                    const cell = rows[rowIndex].cells[colIndex];
+                    if (cell && (cell.textContent.trim() !== "" || cell.querySelector('img'))) {
+                        isEmpty = false;
+                        break;
+                    }
+                }
+
+                if (isEmpty) {
+                    for (let rowIndex = 0; rowIndex < rows.length; rowIndex++) {
+                        rows[rowIndex].deleteCell(colIndex);
+                    }
+                }
+            }
+        }
+
+        removeEmptyColumns("equip-list");
+
+    </script>
+</body>
+
+</html>

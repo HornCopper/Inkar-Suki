@@ -3,39 +3,39 @@ from nonebot.adapters import Message
 from nonebot.params import CommandArg
 from nonebot.adapters.onebot.v11 import GroupMessageEvent, MessageSegment as ms
 
-from src.tools.utils.file import get_content_local
+from src.utils.network import Request
 
-from .koromo import *
+from .koromo import find_player, get_records, player_pt
 
-search_player = on_command("search_player", aliases={"mssp"}, priority=5, force_whitespace=True)
+MSSearchPlayerMatcher = on_command("search_player", aliases={"mssp"}, priority=5, force_whitespace=True)
 
-@search_player.handle()
+@MSSearchPlayerMatcher.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     if args.extract_plain_text() == "":
         return
     data = await find_player(args.extract_plain_text())
-    await search_player.finish(data)
+    await MSSearchPlayerMatcher.finish(data)
 
 
-generate_record = on_command("get_records", aliases={"msgr"}, priority=5, force_whitespace=True)
+MSGameRecordMatcher = on_command("get_records", aliases={"msgr"}, priority=5, force_whitespace=True)
 
-@generate_record.handle()
+@MSGameRecordMatcher.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     if args.extract_plain_text() == "":
         return
     data = await get_records(args.extract_plain_text())
     if isinstance(data, list):
-        img = get_content_local(data[0])
-        await generate_record.finish(ms.image(img))
+        img = Request(data[0]).local_content
+        await MSGameRecordMatcher.finish(ms.image(img))
     else:
-        await generate_record.finish(data)
+        await MSGameRecordMatcher.finish(data)
 
 
-get_pt = on_command("get_pt", aliases={"mspt"}, priority=5, force_whitespace=True)
+MSGetPTMatcher = on_command("get_pt", aliases={"mspt"}, priority=5, force_whitespace=True)
 
-@get_pt.handle()
+@MSGetPTMatcher.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     if args.extract_plain_text() == "":
         return
     data = await player_pt(args.extract_plain_text())
-    await get_pt.finish(data)
+    await MSGetPTMatcher.finish(data)
