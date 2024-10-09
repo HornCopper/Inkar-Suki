@@ -110,7 +110,7 @@ async def _(bot: Bot, event: GroupRequestEvent):
         await bot.call_api("send_group_msg", group_id=int(notice_to[str(event.self_id)]), message=msg)
 
 
-WelcomeEditMatcher = on_command("welcome", force_whitespace=True, priority=5)
+WelcomeEditMatcher = on_command("welcome", aliases={"修改欢迎语"}, force_whitespace=True, priority=5)
 
 @WelcomeEditMatcher.handle()
 async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
