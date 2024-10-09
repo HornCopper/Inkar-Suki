@@ -80,8 +80,7 @@ class Qixue:
     @staticmethod
     async def get_qixue_data() -> dict:
         qixue_data_path = build_path(ASSETS, ["source", "jx3", "qixue_latest.json"])
-        qixue_data_exist: bool = False
-        if os.path.exists(qixue_data_exist):
+        if os.path.exists(qixue_data_path):
             return json.loads(read(qixue_data_path))
         data = (await Request("https://data.jx3box.com/talent/index.json").get()).json()
         for each_ver in data:

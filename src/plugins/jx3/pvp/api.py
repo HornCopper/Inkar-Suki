@@ -1,4 +1,4 @@
-from typing import Union, Literal, Optional
+from typing import Literal
 from pathlib import Path
 from jinja2 import Template
 
@@ -24,7 +24,7 @@ class Indicator:
         self._person_id = None
         self._person_data = None
 
-    async def get_role_id(self) -> Union[bool, str]:
+    async def get_role_id(self) -> bool | str:
         if self._role_id is None:
             role: Player = await search_player(role_name=self.name, server_name=self.server)
             role_data = role.format_jx3api()
@@ -33,7 +33,7 @@ class Indicator:
             self._role_id = role_data["data"]["roleId"]
         return self._role_id
 
-    async def get_person_info(self, roleId: str) -> Optional[dict]:
+    async def get_person_info(self, roleId: str) -> dict | None:
         if self._person_data is None:
             params = {
                 "role_id": roleId,
@@ -43,7 +43,7 @@ class Indicator:
             self._person_data = (await Request("https://m.pvp.xoyo.com/role/indicator", params=params).post(tuilan=True)).json()
         return self._person_data
 
-    async def get_person_id(self) -> Optional[Union[bool, str]]:
+    async def get_person_id(self) -> bool | str | None:
         if self._person_id is None:
             role_id = await self.get_role_id()
             if not isinstance(role_id, str):
@@ -54,7 +54,7 @@ class Indicator:
             self._person_id = person_data["data"]["person_info"]["person_id"]
         return self._person_id
 
-    async def get_arena_info(self, mode: Literal["22", "33", "55"] = "22") -> Optional[list]:
+    async def get_arena_info(self, mode: Literal["22", "33", "55"] = "22") -> list | None:
         person_id = await self.get_person_id()
         if not person_id:
             return None
@@ -78,7 +78,7 @@ class Indicator:
         arena_record_data = (await Request("https://m.pvp.xoyo.com/mine/match/person-history", params=params).post(tuilan=True)).json()
         return arena_record_data
 
-async def get_arena_record(server: str = "", name: str = "") -> Optional[Union[list, str]]:
+async def get_arena_record(server: str = "", name: str = "") -> list | str | None:
     indicator = Indicator(server, name)
     role_id = await indicator.get_role_id()
     if not role_id or not isinstance(role_id, str):
@@ -86,17 +86,17 @@ async def get_arena_record(server: str = "", name: str = "") -> Optional[Union[l
     await indicator.get_person_info(role_id)
     msgbox = []
     for mode in ["22", "33", "55"]:
-        data = await indicator.get_arena_info(mode) # type: ignore
+        data = await indicator.get_arena_info(mode)
         if data is None:
             continue
         input_params = {
-            "rank": f"{mode[0]}v{mode[-1]} · " + str(data["grade"]) + "段", # type: ignore
-            "count": str(data["total_count"]), # type: ignore
-            "win": str(data["win_count"]), # type: ignore
-            "percent": str(round(data["win_count"] / data["total_count"] * 100, 2)) + "%", # type: ignore
-            "score": str(data["mmr"]), # type: ignore
-            "best": str(data["mvp_count"]), # type: ignore
-            "rank_": data["ranking"] # type: ignore
+            "rank": f"{mode[0]}v{mode[-1]} · " + str(data["grade"]) + "段",
+            "count": str(data["total_count"]),
+            "win": str(data["win_count"]),
+            "percent": str(round(data["win_count"] / data["total_count"] * 100, 2)) + "%",
+            "score": str(data["mmr"]),
+            "best": str(data["mvp_count"]),
+            "rank_": data["ranking"]
         }
         msgbox.append(Template(msg_box).render(**input_params))
     record = await indicator.get_person_arena_record()

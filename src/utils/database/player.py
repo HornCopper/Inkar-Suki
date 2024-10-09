@@ -15,18 +15,16 @@ try:
     from .uid import get_uid # type: ignore
     # 如果有能够获取UID的方法，请在这里提供
 except:
-    pass
-
-@token_required
-@ticket_required
-async def get_uid(roleName: str, serverName: str, token: str, ticket: str):
-    if Config.jx3.api.enable:
-        data = (await Request(f"{Config.jx3.api.url}/data/role/detailed?token={token}&server={serverName}&name={roleName}&ticket={ticket}").get()).json()
-        if data["code"] != 200:
+    @token_required
+    @ticket_required
+    async def get_uid(roleName: str, serverName: str, token: str, ticket: str):
+        if Config.jx3.api.enable:
+            data = (await Request(f"{Config.jx3.api.url}/data/role/detailed?token={token}&server={serverName}&name={roleName}&ticket={ticket}").get()).json()
+            if data["code"] != 200:
+                return None
+            return data["data"]["roleId"]
+        else:
             return None
-        return data["data"]["roleId"]
-    else:
-        return None
 
 async def get_uid_data(role_id: str = "", server: str = "") -> str | list:
     current_data: RoleData | Any = db.where_one(RoleData(), "roleId = ?", role_id, default=RoleData())

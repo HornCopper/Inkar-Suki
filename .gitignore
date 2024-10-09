@@ -178,7 +178,7 @@ src/utils/database/uid.py
 
 # Configuration file
 src/config/config.yml
-.env/dev
+.env.dev
 
 # Data files
 src/data/
