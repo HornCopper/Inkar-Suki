@@ -31,7 +31,7 @@ async def _(event: MessageEvent):
             [
                 "image",
                 "what2eat",
-                "eat"
+                "drink"
             ]
         )
     ))
@@ -41,7 +41,7 @@ async def _(event: MessageEvent):
             [
                 "image",
                 "what2eat",
-                "eat"
+                "drink"
             ],
             end_with_slash=True
         ) + image_name
@@ -58,7 +58,7 @@ async def _(event: MessageEvent):
             [
                 "image",
                 "what2eat",
-                "drink"
+                "eat"
             ]
         )
     ))
@@ -68,7 +68,7 @@ async def _(event: MessageEvent):
             [
                 "image",
                 "what2eat",
-                "drink"
+                "eat"
             ],
             end_with_slash=True
         ) + image_name
@@ -122,17 +122,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     msg = resp.text.split("、")[1:]
     await rdcoldjoke.finish(str(msg))
 
-rdci = on_command("随机猫图", priority=5)
-
 rddi = on_command("随机狗图", aliases={"随机lwx"}, priority=5)
-
-@rdci.handle()
-async def _(args: Message = CommandArg()):
-    if args.extract_plain_text() != "":
-        return
-    data = (await Request("https://api.thecatapi.com/v1/images/search?size=full").get()).json()
-    image = (await Request(data[0]["url"]).get()).content
-    await rdci.finish(ms.image(image))
 
 @rddi.handle()
 async def _(event: MessageEvent, args: Message = CommandArg()):
@@ -146,6 +136,7 @@ async def _(event: MessageEvent, args: Message = CommandArg()):
                     build_path(
                         ASSETS,
                         [
+                            "image",
                             "lwx"
                         ]
                         ,
@@ -160,6 +151,7 @@ async def _(event: MessageEvent, args: Message = CommandArg()):
                 build_path(
                     ASSETS,
                     [
+                        "image",
                         "lwx"
                     ]
                     ,

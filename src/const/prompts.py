@@ -32,6 +32,7 @@ class PROMPT:
     AffectionBindComplete = "成功绑定情缘！\n可通过“查看情缘证书”生成一张情缘证书图！"
     AffectionUnbindWithNo = "咱就是说，还没绑定情缘，在解除什么呢？"
     AffectionGenerateWithNo = "咱就是说，还没绑定情缘，在生成什么呢？"
+    AffectionUnbindSuccessfully = "已解除情缘关系！"
 
     # jx3/calculator
     CalculatorNotMatch = "唔……门派和计算器不匹配！"

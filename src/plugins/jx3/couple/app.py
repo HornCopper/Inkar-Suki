@@ -59,7 +59,8 @@ async def bind_affection(uin_1: int, name_1: str, uin_2: int, name_2: str, group
 async def delete_affection(uin: int) -> List[str] | None:
     if not check_status(uin):
         return [PROMPT.AffectionUnbindWithNo]
-    db.delete(Affections(), "uin_1 = ? OR uin_2 = ?", (uin, uin))
+    db.delete(Affections(), "uin_1 = ? OR uin_2 = ?", uin, uin)
+    return [PROMPT.AffectionUnbindSuccessfully]
 
 async def generate_affection_image(uin: int):
     if not check_status(uin):
@@ -83,6 +84,7 @@ async def generate_affection_image(uin: int):
         ASSETS,
         [
             "image",
+            "jx3",
             "assistance"
         ],
         end_with_slash=True
