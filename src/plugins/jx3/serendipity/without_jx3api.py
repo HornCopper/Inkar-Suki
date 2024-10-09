@@ -18,7 +18,7 @@ class JX3Serendipity:
     def get_serendipity_level(self, serendipity_name: str) -> int:
         if serendipity_name.find("宠物奇缘") != -1:
             serendipity_level = 3
-        elif serendipity_name in [serendipity[:-4] for serendipity in os.listdir(build_path(ASSETS, ["image", "jx3", "serendipity", "serendipity", "common"], end_with_slash=True))]:
+        elif serendipity_name in [serendipity[:-4] for serendipity in os.listdir(build_path(ASSETS, ["image", "jx3", "serendipity", "serendipity", "pet"], end_with_slash=True))]:
             serendipity_level = 3
         elif serendipity_name in [serendipity[:-4] for serendipity in os.listdir(build_path(ASSETS, ["image", "jx3", "serendipity", "serendipity", "peerless"], end_with_slash=True))]:
             serendipity_level = 2
@@ -75,12 +75,7 @@ class JX3Serendipity:
 
     async def get_jx3pet_data(self, server: str, name: str):
         final_url = f"https://www.jx3pet.com/api/serendipity?server={server}&type=不限&serendipity=不限&name={name}&limit=30"
-        try:
-            data = (await Request(final_url).get(timeout=2)).json()
-        except:
-            self.jx3pet = []
-            return
-        data = json.loads(re.search(r'\{.*\}', data, re.DOTALL)[0]) # type: ignore
+        data = (await Request(final_url).get(timeout=2)).json()
         serendipities = []
         for serendipity in data["data"]:
             serendipities.append(
