@@ -73,8 +73,8 @@ async def _(event: MessageEvent):
             end_with_slash=True
         ) + image_name
     )
-    msg = (f"{Config.bot_basic.bot_name}建议你喝: \n⭐{image_path.stem}⭐\n" + ms.image(Request(image_path.as_uri()).local_content))
-    await what_eat.send("正在为你找好喝的……")
+    msg = (f"{Config.bot_basic.bot_name}建议你吃: \n⭐{image_path.stem}⭐\n" + ms.image(Request(image_path.as_uri()).local_content))
+    await what_eat.send("正在为你找好吃的……")
     await what_eat.send(msg, at_sender=True)
 
 bmi = on_command("bmi", aliases={"BMI", "身体质量指数"}, force_whitespace=True, priority=5)

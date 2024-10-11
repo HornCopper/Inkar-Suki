@@ -32,6 +32,8 @@ import os
 driver = get_driver()
 
 async def websocket_client(ws_url: str, headers: dict):
+    if not Config.jx3.ws.enable:
+        return
     while True:
         try:
             async with websockets.connect(ws_url, extra_headers=headers) as websocket:

@@ -28,5 +28,6 @@ jx3: # 剑网3 相关配置
     ws:
         url: "" # JX3API WebSocket 地址
         token: "" # JX3API WebSocket Token
+        enable: False # 是否启用 JX3API Websocket
 hidden:
     offcial_token: "" # Inkar Suki 官方API Token 非官方Bot请留空

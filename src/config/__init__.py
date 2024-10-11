@@ -32,6 +32,7 @@ class Jx3API(BaseModel):
 class Jx3WS(BaseModel):
     url: str
     token: str = ""
+    enable: bool = False
 
 class Jx3Config(BaseModel):
     api: Jx3API
