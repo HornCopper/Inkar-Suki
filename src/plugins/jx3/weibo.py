@@ -19,7 +19,7 @@ def check_time(timestamp: str) -> bool:
 async def execute_on_new_post(post):
     data = trim_to_last_period(post.get("text_raw"))
     logger.info({"data": data})
-    await send_subscribe("咸鱼", data)
+    await send_subscribe("咸鱼", f"@剑网3余玉贤 发表了新微博：\n{data}\nhttps://weibo.com/u/2046281757")
 
 async def poll_weibo_api(uid, interval=60):
     async with async_playwright() as p:
