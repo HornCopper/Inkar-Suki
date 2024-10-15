@@ -5,7 +5,7 @@ from src.utils.network import Request
 from src.utils.database.player import search_player, Player
 
 import json
-import re
+import httpx
 import os
 
 class JX3Serendipity:
@@ -56,7 +56,11 @@ class JX3Serendipity:
 
     async def get_my_data(self, server: str, name: str):
         final_url = f"https://pull.j3cx.com/api/serendipity?server={server}&role={name}&pageSize=50"
-        data = (await Request(final_url).get()).json()
+        try:
+            data = (await Request(final_url).get(timeout=3)).json()
+        except httpx.ConnectTimeout:
+            self.my = []
+            return
         serendipities = []
         data = data["data"]["data"]
         if data is None:

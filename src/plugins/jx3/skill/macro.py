@@ -60,7 +60,6 @@ async def get_matrix(kungfu: Kungfu):
         "forceId": str(school.internel_id),
     }
     tl_data = (await Request("https://m.pvp.xoyo.com/force/gest", params=params).post(tuilan=True)).json()
-    tl_data = json.loads(tl_data)
     data = tl_data["data"]
     description = ""
     for i in data:
