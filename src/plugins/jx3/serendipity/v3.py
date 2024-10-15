@@ -1,8 +1,7 @@
 from pathlib import Path
-from typing import List
+from typing import List, Literal
 from jinja2 import Template
 
-from src.config import Config
 from src.const.prompts import PROMPT
 from src.const.path import ASSETS, build_path
 from src.utils.generate import generate
@@ -51,11 +50,11 @@ class JX3Serendipities:
                 new.append(serendipity)
         return new
 
-async def check_role(server: str, name: str) -> bool:
+async def check_role(server: str, name: str) -> Literal[False] | str:
     player_data: Player = await search_player(role_name=name, server_name=server)
     if player_data.format_jx3api()["code"] != 200:
         return False
-    return True
+    return player_data.format_jx3api()["data"]["roleId"]
 
 def generate_table(local_data, comparison_data, path_map, template):
     table_list = []
@@ -92,11 +91,11 @@ def generate_table(local_data, comparison_data, path_map, template):
     return table_list
 
 async def get_serendipity_image_v3(server: str, name: str):
-    player_exist = await check_role(server, name)
-    if not player_exist:
+    uid = await check_role(server, name)
+    if not uid:
         return [PROMPT.PlayerNotExist]
 
-    data: list = await JX3Serendipity().integration(server, name)
+    data: list = await JX3Serendipity().integration(server, name, uid)
     data_obj = JX3Serendipities(data)
 
     common: List[dict] = data_obj.common

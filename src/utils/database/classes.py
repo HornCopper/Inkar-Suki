@@ -70,3 +70,12 @@ class RoleData(LiteModel):
     roleName: str = ""
     roleId: str = ""
     serverName: str = ""
+
+class SerendipityData(LiteModel):
+    TABLE_NAME: str = "serendipities"
+    roleName: str = ""
+    roleId: str = ""
+    level: int = 0
+    server: str = ""
+    serendipityName: str = ""
+    time: int = 0

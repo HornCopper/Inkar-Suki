@@ -1,7 +1,11 @@
+from typing import List, Any, Dict
+
 from src.const.path import ASSETS, build_path
 from src.const.jx3.server import Server
 from src.utils.analyze import sort_dict_list, merge_dict_lists
 from src.utils.network import Request
+from src.utils.database import serendipity_db
+from src.utils.database.classes import SerendipityData
 from src.utils.database.player import search_player, Player
 
 import json
@@ -109,9 +113,59 @@ class JX3Serendipity:
             )
         self.jx3mm = serendipities
 
-    async def integration(self, server: str, name: str):
+    def get_local_data(self, local_data: List[SerendipityData]) -> List[Dict[str, int | str]]:
+        result = []
+        for data in local_data:
+            result.append(
+                {
+                    "name": data.serendipityName,
+                    "level": data.level,
+                    "time": data.time
+                }
+            )
+        return result
+
+    async def integration(self, server: str, name: str, uid: str) -> List[dict]:
         await self.get_tuilan_data(server, name)
         await self.get_my_data(server, name)
         await self.get_jx3pet_data(server, name)
         await self.get_jx3mm_data(server, name)
-        return sort_dict_list(merge_dict_lists(merge_dict_lists(merge_dict_lists(self.tl, self.my), self.jx3pet), self.jx3mm), "time")[::-1]
+        final_data = sort_dict_list(
+            merge_dict_lists(
+                merge_dict_lists(
+                    merge_dict_lists(
+                        self.tl, 
+                        self.my),
+                    self.jx3pet
+                ),
+                self.jx3mm)
+            ,
+            "time"
+        )[::-1]
+        local_data: List[SerendipityData] | Any = serendipity_db.where_all(SerendipityData(), "server = ? AND roleId = ?", server, uid, default=[])
+        local_data_dict = self.get_local_data(local_data)
+        self.save(local_data, final_data, name, server, uid)
+        return merge_dict_lists(final_data, local_data_dict)
+
+    @staticmethod
+    def save(local_data: List[SerendipityData], remote_data: List[dict], name: str, server: str, uid: str, /):
+        local_names = [data.serendipityName for data in local_data]
+        if len(local_data) > 0:
+            if local_data[0].roleName != name: # player name changed
+                for data in local_data:
+                    data.roleName = name
+                    serendipity_db.save(data)
+        for tp_serendipity in remote_data:
+            if tp_serendipity["name"] in local_names:
+                continue
+            else:
+                serendipity_db.save(
+                    SerendipityData(
+                        roleName=name,
+                        roleId=uid,
+                        level=tp_serendipity["level"],
+                        server=server,
+                        serendipityName=tp_serendipity["name"],
+                        time=tp_serendipity["time"]
+                    )
+                )

@@ -1,10 +1,6 @@
-from typing import Tuple, Literal
-
-from src.config import Config
 from src.utils.network import Request
 
 import socket
-import time
 
 def tcping(host, port, timeout=3):
     try:

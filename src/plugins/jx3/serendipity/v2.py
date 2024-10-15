@@ -1,4 +1,3 @@
-from datetime import datetime
 from pathlib import Path
 from jinja2 import Template
 
@@ -30,12 +29,11 @@ async def get_serendipity_v2(server: str, name: str, type: bool):
         serendipity_data = (await Request(f"{Config.jx3.api.url}/data/luck/adventure?server={server}&name={name}&ticket={ticket}&token={token}").get()).json()
         serendipity_data = serendipity_data["data"]
     else:
-        serendipity_data = await Serendipity.integration(server, name)
+        serendipity_data = await Serendipity.integration(server, name, role_data.format_jx3api()["data"]["roleId"])
     data = serendipity_data
     # 笔记：1 → 世界奇遇；2 → 绝世奇遇；3 → 宠物奇遇
     # 注：暂时忽略宠物奇遇，不做统计
     tables = []
-    current_time = int(datetime.now().timestamp())
     type_map = ["common", "peerless", "pet"]
     for i in data:
         if type and i["level"] >= 3: # 绝世+普通

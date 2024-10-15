@@ -8,7 +8,8 @@ from src.utils.database.classes import (
     Population,
     RoleData,
     JX3APIWSData,
-    RequestData
+    RequestData,
+    SerendipityData
 )
 
 from src.const.path import DATA, build_path
@@ -30,4 +31,10 @@ cache_db = Database(build_path(DATA, ["cache.db"]))
 cache_db.auto_migrate(
     JX3APIWSData(),
     RequestData()
+)
+
+serendipity_db = Database(build_path(DATA, ["serendipity.db"]))
+
+serendipity_db.auto_migrate(
+    SerendipityData()
 )
