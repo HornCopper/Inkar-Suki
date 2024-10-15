@@ -2,10 +2,10 @@ template_majsoul_record = """
 <tr>
     <td>{{ level }}</td>
     <td>{{ num }}</td>
-    <td>{{ _1st }} <br>（{{ sc1）}} <br> {{ gr1 }}</td>
-    <td>{{ _2nd }} <br>（{{ sc2）}} <br> {{ gr2 }}</td>
-    <td>{{ _3rd }} <br>（{{ sc3）}} <br> {{ gr3 }}</td>
-    <td>{{ _4th }} <br>（{{ sc4）}} <br> {{ gr4 }}</td>
+    <td>{{ _1st }} <br>（{{ sc1}}） <br> {{ gr1 }}</td>
+    <td>{{ _2nd }} <br>（{{ sc2}}） <br> {{ gr2 }}</td>
+    <td>{{ _3rd }} <br>（{{ sc3}}） <br> {{ gr3 }}</td>
+    <td>{{ _4th }} <br>（{{ sc4}}） <br> {{ gr4 }}</td>
     <td>{{ time }}</td>
 </tr>"""
 

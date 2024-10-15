@@ -4,11 +4,9 @@ from jinja2 import Template
 from src.utils.network import Request
 from src.utils.time import Time
 from src.templates import SimpleHTML
-from src.const.path import ASSETS, CACHE
 from src.utils.generate import generate
 
 import math
-import random
 
 from ._template import (
     koromo_api_sp,
