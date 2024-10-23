@@ -99,7 +99,7 @@ async def get_single_recommend_equips(data: dict, author: str, name: str, tag: s
         c2n, c2i = color_stones[1]
     else:
         c1n, c1i = color_stones[0]
-        c2n, c2i = ""
+        c2n, c2i = ("", "")
     image = await get_recommend_equip_image(
         kungfu_obj,
         background,

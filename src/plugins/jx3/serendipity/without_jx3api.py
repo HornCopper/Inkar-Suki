@@ -85,7 +85,7 @@ class JX3Serendipity:
         final_url = f"https://www.jx3pet.com/api/serendipity?server={server}&type=不限&serendipity=不限&name={name}&limit=30"
         try:
             data = (await Request(final_url).get(timeout=2)).json()
-        except json.decoder.JSONDecodeError:
+        except (json.decoder.JSONDecodeError, httpx.ReadTimeout):
             self.jx3pet = []
             return
         serendipities = []
@@ -135,11 +135,12 @@ class JX3Serendipity:
                 merge_dict_lists(
                     merge_dict_lists(
                         self.tl, 
-                        self.my),
+                        self.my
+                    ),
                     self.jx3pet
                 ),
-                self.jx3mm)
-            ,
+                self.jx3mm
+            ),
             "time"
         )[::-1]
         local_data: List[SerendipityData] | Any = serendipity_db.where_all(SerendipityData(), "server = ? AND roleId = ?", server, uid, default=[])
