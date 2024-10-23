@@ -1,4 +1,3 @@
-from playwright.async_api import Browser
 from nonebot import get_driver
 from nonebot.log import logger
 
@@ -20,10 +19,9 @@ from .parse import (
 )
 from .weibo import poll_weibo_api
 
-from .universe import * # 要不你来一个一个导？
+from .universe import * # 要不你来一个一个导？  # noqa: F403
 
 import re
-import shutil
 import asyncio
 import websockets
 import json
@@ -63,11 +61,10 @@ async def websocket_client(ws_url: str, headers: dict):
                             if os.path.exists(build_path(ASSETS, ["image", "jx3", "update.png"])):
                                 os.remove(build_path(ASSETS, ["image", "jx3", "update.png"]))
                             await generate(
-                                url, 
-                                ".allnews_list_container", 
+                                "https://jx3.xoyo.com/launcher/update/latest.html", 
+                                "div", 
                                 True,
-                                viewport={"height": 3840, "width": 2000}, 
-                                hide_classes=["detail_bot", "bdshare-slide-button"], 
+                                viewport={"height": 1920, "width": 1080}, 
                                 device_scale_factor=2.0,
                                 output_path=build_path(ASSETS, ["image", "jx3", "update.png"])
                             )

@@ -6,7 +6,6 @@ from pydantic import BaseModel, Field
 
 from src.const.jx3.server import Server
 from src.const.jx3.kungfu import Kungfu
-from src.const.prompts import PROMPT
 from src.utils.time import Time
 from src.utils.network import Request
 from src.config import Config
@@ -33,7 +32,7 @@ async def get_local_data(server: str, name: str) -> dict | Literal[False]:
         return False
     return result.format_jx3api()["data"]
 
-def is_empty(value):
+def is_empty(value) -> bool:
     if value is None:
         return True
     if isinstance(value, bool):

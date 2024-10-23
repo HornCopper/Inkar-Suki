@@ -5,13 +5,11 @@ from nonebot.adapters import Message
 from nonebot.adapters.onebot.v11 import GroupMessageEvent, MessageSegment as ms
 from nonebot.params import CommandArg
 
-from src.config import Config
 from src.const.path import ASSETS, build_path
 from src.utils.network import Request
 from src.utils.generate import generate
 
 import os
-import re
 
 
 AnnounceMatcher = on_command("jx3_announce", aliases={"维护公告", "更新公告", "公告", "更新"}, force_whitespace=True, priority=5)
@@ -40,3 +38,22 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
             return
         img = Request(Path(store_path).as_uri()).local_content
         await AnnounceMatcher.finish(ms.image(img))
+
+BetaAnnounceMatcher = on_command("jx3_beta_announce", aliases={"体服公告"}, priority=5, force_whitespace=True)
+
+@BetaAnnounceMatcher.handle()
+async def _(event: GroupMessageEvent, args: Message = CommandArg()):
+    """
+    获取体服维护公告。
+    """
+    if args.extract_plain_text() != "":
+        return
+    image = Request(
+        await generate(
+            "https://jx3.xoyo.com/launcher/update/latest_exp.html",
+            "div",
+            viewport={"height": 1920, "width": 1080},
+            first=True
+        )
+    ).local_content
+    await AnnounceMatcher.finish(ms.image(image))

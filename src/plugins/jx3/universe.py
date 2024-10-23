@@ -4,7 +4,8 @@ from .achievement import (
     JX3ProgressV2Matcher
 )
 from .announce import (
-    AnnounceMatcher
+    AnnounceMatcher,
+    BetaAnnounceMatcher
 )
 from .assistance import (
     BookTeamMatcher,
