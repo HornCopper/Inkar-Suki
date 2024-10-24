@@ -18,9 +18,6 @@ from ._template import (
     template_zone_overview
 )
 
-import json
-
-
 async def get_guid(server: str, name: str) -> Literal[False] | str:
     if not isinstance(server, str):
         return
@@ -46,35 +43,23 @@ async def get_menu() -> Literal[False] | list:
     return False
 
 
-async def get_total_data(guid: str, detail: str) -> Tuple[str, str]:
+async def get_total_data(guid: str) -> dict:
     params = {
         "gameRoleId": guid,
         "cursor": 0,
         "size": 10000,
         "class": "江湖行",
         "sub_class": "秘境",
-        "detail": detail,
+        "detail": "",
     }
     data = (await Request("https://m.pvp.xoyo.com/achievement/list/achievements", params=params).post(tuilan=True)).json()
-    finished = await get_value(data, guid)
-    return finished
+    return data
 
-
-async def get_value(data: dict, guid: str) -> Tuple[str, str]:
-    ids = []
-    for i in data["data"]["data"]:
-        ids.append(int(i["id"]))
-        if len(i["subset"]) != 0:
-            for x in i["subset"]:
-                ids.append(int((x["id"])))
-    params = {
-        "gameRoleId": guid,
-        "ids": ids
-    }
-    data = (await Request("https://m.pvp.xoyo.com/achievement/detail/achievement", params=params).post(tuilan=True)).json()
+async def get_value(data: dict, detail: str) -> Tuple[str, str]:
+    filtered_data = {"data": [e for e in data["data"]["data"] if e["detail"] == detail]}
     total = 0
     finished = 0
-    for i in data["data"]:
+    for i in filtered_data["data"]:
         if i["isFinished"]:
             finished = finished + i["reward_point"]
         total = total + i["reward_point"]
@@ -98,8 +83,6 @@ def get_color_type(proportion: str) -> str:
 
 
 async def get_zone_overview_image(server: str, id: str) -> List[str] | str | None:
-    # 暂时锁死秘境总览
-    # 地图总览后面再做
     detail = await get_menu()
     if not detail:
         return ["唔……获取目录失败！"]
@@ -107,11 +90,12 @@ async def get_zone_overview_image(server: str, id: str) -> List[str] | str | Non
     if not guid:
         return ["唔……未查找到该玩家！"]
     content = []
+    data = await get_total_data(guid)
     for i in detail:
-        data = await get_total_data(guid, i)
-        value = data[0]
         name = i
-        proportion = str(data[1])
+        filtered_data = await get_value(data, name)
+        value = filtered_data[0]
+        proportion = str(filtered_data[1])
         relate = get_color_type(proportion)
         content.append(
             Template(template_zone_overview).render(

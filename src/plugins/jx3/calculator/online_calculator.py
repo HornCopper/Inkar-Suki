@@ -32,30 +32,6 @@ async def get_local_data(server: str, name: str) -> dict | Literal[False]:
         return False
     return result.format_jx3api()["data"]
 
-def is_empty(value) -> bool:
-    if value is None:
-        return True
-    if isinstance(value, bool):
-        return not value
-    if isinstance(value, (int, float)):
-        return value == 0
-    if isinstance(value, str):
-        return value == ""
-    if isinstance(value, list):
-        if not value:
-            return True
-        return is_empty(value[0])
-    if isinstance(value, dict):
-        if not value:
-            return True
-        return all(is_empty(v) for v in value.values())
-    return False
-
-def check_key_empty(dictionary, key):
-    if key not in dictionary:
-        return True
-    return is_empty(dictionary[key])
-
 class ModifyType(BaseModel):
     name: str = ""
     max: str = ""
