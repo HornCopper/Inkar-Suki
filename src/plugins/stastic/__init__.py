@@ -33,7 +33,8 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
                 for m
                 in group_data
             }.items(),
-            key=lambda item: len(item[1])
+            key=lambda item: len(item[1]),
+            reverse=True
         )
     )
     if all(value == [] for value in data.values()):
@@ -59,6 +60,8 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
                 count = msg_count
             )
         )
+        if num == 50:
+            break
     html = str(
         HTMLSourceCode(
             application_name=f" · 发言统计 · {event.group_id}",
