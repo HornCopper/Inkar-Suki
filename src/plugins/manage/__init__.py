@@ -4,6 +4,7 @@ from nonebot import on_command
 from nonebot.adapters import Message, Bot
 from nonebot.adapters.onebot.v11 import GroupMessageEvent, MessageEvent
 from nonebot.params import CommandArg, Arg, RawCommand
+from nonebot.matcher import Matcher
 
 from src.config import Config
 from src.const.path import (
@@ -15,19 +16,21 @@ from src.utils.time import Time
 from src.utils.permission import check_permission, denied
 from src.utils.database import db
 from src.utils.database.classes import GroupSettings, Account
-from src.utils.database.operation import get_groups
+from src.utils.database.operation import get_groups, get_group_settings
 from src.utils.message import post_process
 from src.utils.exceptions import ConnectTimeout
+from src.utils.message import message_universal
 
 from ._message import leave_msg
 
 try:
-    from .auto_accept import * # type: ignore
+    from .auto_accept import *  # type: ignore  # noqa: F403
     # 仅用于公共实例，个人实例如有需要可自行创建`auto_accept.py`并写入逻辑。
-except:
+except:  # noqa: E722
     pass
 
 import os
+import random
 
 DismissMatcher = on_command("dismiss", aliases={"移除音卡"}, force_whitespace=True, priority=5)
 
@@ -182,3 +185,13 @@ async def _(bot: Bot, event: MessageEvent, exception: None | Exception, cmd = Ra
             return # 不回了爱咋咋地
         if isinstance(event, GroupMessageEvent):
             await bot.call_api("send_group_msg", group_id=event.group_id, message=f"呜……音卡处理消息中遇到了代码错误，请将本消息告知开发者！\n{exception.__class__}: {exception}\n原始命令：\n{event.raw_message}")
+
+@message_universal.handle()
+async def _(bot: Bot, matcher: Matcher, event: GroupMessageEvent):
+    group_cfg: list[str] = get_group_settings(event.group_id, "subscribe")
+    if "禁言" in group_cfg and "退订" not in event.raw_message:
+        matcher.stop_propagation()
+        return
+    if "骚话" in group_cfg and random.random() < 0.04: # 4%
+        random_saohua_data = (await Request("https://www.jx3api.com/data/saohua/random").get()).json()
+        await bot.call_api("send_group_msg", message=random_saohua_data["data"]["text"], group_id=event.group_id)

@@ -79,3 +79,12 @@ class SerendipityData(LiteModel):
     server: str = ""
     serendipityName: str = ""
     time: int = 0
+
+class MemberMessage(LiteModel):
+    timestamp: int = 0
+
+class GroupMessage(LiteModel):
+    TABLE_NAME: str = "group_message"
+    group_id: int = 0
+    user_id: int = 0
+    messages: List[MemberMessage] = []

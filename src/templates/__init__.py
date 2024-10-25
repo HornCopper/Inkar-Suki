@@ -43,6 +43,8 @@ class HTMLSourceCode:
             additional_css (str): 额外定义的`CSS`，如果需要使用请提前定义！
             additional_js (Path, None): 额外定义的`JS`，只支持路径！
             **kwargs (dict)：其他替换参数，按键值对直接进行替换，请确保存在。
+
+        **务必传入`table_head`和`table_body`参数！哪怕没有提示！！**
         """
         self.name = application_name
         self.font = font_path    

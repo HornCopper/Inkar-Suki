@@ -3,6 +3,8 @@ from datetime import datetime
 class Time:
     """
     时间处理对象。
+
+    ~~整挺好，一个时间处理我还要专门发个包去PyPI投厕.jpg~~
     """
     def __init__(self, time: int = 0):
         """

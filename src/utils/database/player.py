@@ -14,7 +14,7 @@ from src.utils.decorators import (
 try:
     from .uid import get_uid # type: ignore
     # 如果有能够获取UID的方法，请在这里提供
-except:
+except ImportError:
     @token_required
     @ticket_required
     async def get_uid(roleName: str, serverName: str, token: str, ticket: str):
@@ -31,7 +31,7 @@ async def get_uid_data(role_id: str = "", server: str = "") -> str | list:
     if current_data.roleName != "":
         prefix = f"绑定成功！\n覆盖数据：[{current_data.roleName} · {current_data.serverName}] -> "
     else:
-        prefix = f"绑定成功！\n记录数据："
+        prefix = "绑定成功！\n记录数据："
     params = {
         "role_id": role_id,
         "zone": Server(server).zone,
