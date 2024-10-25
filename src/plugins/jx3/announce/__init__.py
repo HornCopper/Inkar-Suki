@@ -49,11 +49,13 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     if args.extract_plain_text() != "":
         return
     image = Request(
-        await generate(
-            "https://jx3.xoyo.com/launcher/update/latest_exp.html",
-            "div",
-            viewport={"height": 1920, "width": 1080},
-            first=True
-        )
+        Path(
+            await generate(
+                "https://jx3.xoyo.com/launcher/update/latest_exp.html",
+                "div",
+                viewport={"height": 1920, "width": 1080},
+                first=True
+            )
+        ).as_uri()
     ).local_content
     await AnnounceMatcher.finish(ms.image(image))

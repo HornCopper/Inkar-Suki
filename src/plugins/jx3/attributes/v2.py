@@ -225,6 +225,9 @@ class JX3AttributeV2:
         for attr in self.data["data"]["PersonalPanel"]:
             if attr["name"] == panel_attr_name:
                 return SingleAttr(attr, speed_percent)
+        for attr in self.data["data"]["PersonalPanel"]:
+            if attr["name"] == "加速":
+                return SingleAttr(attr, speed_percent)
         raise ValueError(f"Unexpected attribute `{panel_attr_name}`!")
 
     @property
