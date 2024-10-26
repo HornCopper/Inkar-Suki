@@ -44,6 +44,8 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
     for each_data in data.items():
         user_id, msgs = each_data
         msg_count = len(msgs)
+        if msg_count == 0:
+            continue
         member_data: list[dict] = [g for g in group_member_data if g["user_id"] == int(user_id)]
         if len(member_data) != 1:
             continue
