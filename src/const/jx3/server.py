@@ -22,6 +22,11 @@ class Server:
 
     @property
     def server(self) -> str | None:
+        """
+        服务器实际名称。
+
+        如果初始化传入错误的服务器名且没有传入群号，或传入的群号也没有绑定服务器，那么本值为`None`。
+        """
         if self._server is None and self.group_id is not None:
             final_server = get_group_settings(self.group_id, "server") or None
         elif self._server is not None:

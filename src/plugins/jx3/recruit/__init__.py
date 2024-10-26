@@ -3,6 +3,7 @@ from nonebot.adapters import Message
 from nonebot.params import CommandArg
 from nonebot.adapters.onebot.v11 import GroupMessageEvent, MessageSegment as ms
 
+from src.config import Config
 from src.const.jx3.server import Server
 from src.const.prompts import PROMPT
 from src.utils.network import Request
@@ -15,6 +16,8 @@ RecruitMatcher = on_command("jx3_recruit", aliases={"招募"}, force_whitespace=
 
 @RecruitMatcher.handle()
 async def _(event: GroupMessageEvent, full_argument: Message = CommandArg()):
+    if not Config.jx3.api.enable:
+        return
     filter = False
     additions = get_group_settings(str(event.group_id), "additions")
     if not isinstance(additions, list):

@@ -86,6 +86,9 @@ from .penzai import (
 from .pvp import (
     ArenaRecordMatcher
 )
+from .rank import (
+    ZiliRankMatcher
+)
 from .recruit import (
     RecruitMatcher
 )

@@ -27,6 +27,11 @@ class School:
     
     @property
     def name(self) -> str | None:
+        """
+        获取门派实际名称。
+
+        如果初始化传入错误的门派名称，则本值为`None`。
+        """
         data = self.school_aliases
         for school_name in data:
             if self.school_name in data[school_name] or self.school_name == school_name:

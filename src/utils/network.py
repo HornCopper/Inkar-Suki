@@ -111,7 +111,7 @@ class Request:
         Returns:
             arguments (dict): 关键字参数字典。
         """
-        if params is {}:
+        if params == {}:
             params = {"ts": gen_ts()}
         if "ts" not in params:
             params["ts"] = gen_ts()

@@ -72,11 +72,11 @@ async def get_item_detail(item_name: str) -> list | Literal[False]:
     item_name = item_data["goodsName"]
     item_alias = item_data["goodsAlias"]
     publish_time = Time(int(datetime.datetime.strptime(item_data["publishTime"], "%Y-%m-%dT%H:%M:%S.000+0000").timestamp())).format("%Y-%m-%d") # 发行时间
-    publish_count_limit = item_data["publishNum"] if item_data["publishNum"] != None else "--" # 发行数量
-    publish_time_limit = item_data["publishLimitTime"] if item_data["publishLimitTime"] != None else "--" # 发行时长
-    binding_time_limit = item_data["limitTime"] if item_data["limitTime"] != None else "--" # 绑定时长
+    publish_count_limit = item_data["publishNum"] if item_data["publishNum"] is not None else "--" # 发行数量
+    publish_time_limit = item_data["publishLimitTime"] if item_data["publishLimitTime"] is not None else "--" # 发行时长
+    binding_time_limit = item_data["limitTime"] if item_data["limitTime"] is not None else "--" # 绑定时长
     raw_price = str(item_data["priceNum"]) + "元" # 发行原价
-    img = item_data["imgs"][0] if item_data["imgs"] != None else "https://inkar-suki.codethink.cn/Inkar-Suki-Docs/img/Unknown.png"
+    img = item_data["imgs"][0] if item_data["imgs"] is not None else "https://inkar-suki.codethink.cn/Inkar-Suki-Docs/img/Unknown.png"
     return [item_name, item_alias, publish_time, publish_count_limit, publish_time_limit, binding_time_limit, raw_price, img]
     # [物品名称, 物品别称, 发行时间, 发行数量, 发行时长, 绑定时长, 发行原价, 图片样例]
 
@@ -152,7 +152,7 @@ async def get_single_item_price(item_name: str, exact: bool = False) -> str | di
     if exact:
         standard_name = item_name
     basic_item_info = await get_item_detail(standard_name)
-    if basic_item_info == False:
+    if not basic_item_info:
         return ["唔……未收录该物品！\n请到音卡用户群内进行反馈，我们会及时添加别名！"]
     aijx3_data = await get_item_price(standard_name)
     wbl_data = await get_wanbaolou_data(standard_name)

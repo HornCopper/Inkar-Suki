@@ -3,6 +3,7 @@ from nonebot.adapters import Message
 from nonebot.params import CommandArg
 from nonebot.adapters.onebot.v11 import GroupMessageEvent, MessageSegment as ms
 
+from src.config import Config
 from src.const.jx3.server import Server
 from src.const.prompts import PROMPT
 from src.utils.network import Request
@@ -17,6 +18,8 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     获取服务器沙盘：
     Example：-沙盘v2 幽月轮
     """
+    if not Config.jx3.api.enable:
+        return
     args.extract_plain_text()
     if args.extract_plain_text() == "":
         """
