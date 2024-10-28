@@ -85,7 +85,7 @@ async def get_qixue(name: str, kungfu: str, season: str = "") -> str | Message |
     kungfu_name = Kungfu(kungfu).name
     if kungfu_name is None:
         return "无法识别该心法，请检查后重试！"
-    info = await Qixue.create(name, kungfu, season)
+    info = await Qixue.create(name, kungfu_name, season)
     if not info:
         return "没有找到匹配的赛季名称，请检查赛季名称是否正确？"
     info = info.info
