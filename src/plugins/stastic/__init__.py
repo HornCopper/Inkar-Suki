@@ -1,6 +1,7 @@
 from typing import Any
 from jinja2 import Template
 from pathlib import Path
+from datetime import datetime
 from nonebot import on_command
 from nonebot.adapters import Message
 from nonebot.params import CommandArg
@@ -22,6 +23,8 @@ today_message_count = on_command("today_message_count", aliases={"本群发言�
 @today_message_count.handle()
 async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
     start, end = get_date_timestamp(args.extract_plain_text())
+    if args.extract_plain_text() == "all":
+        start, end = (0, int(datetime.now().timestamp()))
     group_data: list[GroupMessage] | Any = cache_db.where_all(GroupMessage(), "group_id = ?", event.group_id, default=[])
     if len(group_data) == 0:
         await today_message_count.finish("唔……目前没有任何发言记录！")
