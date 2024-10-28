@@ -49,7 +49,7 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
         member_data: list[dict] = [g for g in group_member_data if g["user_id"] == int(user_id)]
         if len(member_data) != 1:
             continue
-        nickname: str = member_data[0]["nickname"]
+        nickname: str = member_data[0]["card"] or member_data[0]["nickname"]
         num += 1
         table.append(
             Template(

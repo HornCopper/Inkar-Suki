@@ -53,7 +53,7 @@ async def get_trade_image(server: str, name: str, items: list = []):
         else:
             new["data"] = itemAPIData["data"]
         new["id"] = str(id)
-        new["icon"] = f"https://icon.jx3box.com/icon/" + str(i["IconID"]) + ".png"
+        new["icon"] = "https://icon.jx3box.com/icon/" + str(i["IconID"]) + ".png"
         new["name"] = i["Name"]
         new["quality"] = i["Quality"] if check_number(i["Quality"]) else 0
         itemList_searchable.append(new)
@@ -61,10 +61,10 @@ async def get_trade_image(server: str, name: str, items: list = []):
         currentStatus = 0 # 当日是否具有该物品在交易行
         yesterdayFlag = False
         current = itemList_searchable[0]["data"]["today"]
-        if current != None:
+        if current is not None:
             currentStatus = 1
         else:
-            if itemList_searchable[0]["data"]["yesterday"] != None:
+            if itemList_searchable[0]["data"]["yesterday"] is not None:
                 yesterdayFlag = True
                 currentStatus = 1
                 current = itemList_searchable[0]["data"]["yesterday"]
@@ -78,8 +78,8 @@ async def get_trade_image(server: str, name: str, items: list = []):
             msgbox = ""
         color = ["(167, 167, 167)", "(255, 255, 255)", "(0, 210, 75)", "(0, 126, 255)", "(254, 45, 254)", "(255, 165, 0)"][itemList_searchable[0]["quality"]]
         itemId = itemList_searchable[0]["id"]
-        detailData = (await Request(f"https://next2.jx3box.com/api/item-price/{itemId}/detail?server={server}&limit=20").get()).json()
-        if (not currentStatus or yesterdayFlag) and detailData["data"]["prices"] is None:
+        detail_data = (await Request(f"https://next2.jx3box.com/api/item-price/{itemId}/detail?server={server}&limit=20").get()).json()
+        if (not currentStatus or yesterdayFlag) and detail_data["data"]["prices"] is None:
             if not yesterdayFlag:
                 return ["唔……该物品目前交易行没有数据。"]
             else:
@@ -88,7 +88,7 @@ async def get_trade_image(server: str, name: str, items: list = []):
                 high = calculator_price(current["HighestPrice"])
                 return [f"唔……该物品目前交易行没有数据，但是音卡找到了昨日的数据：\n昨日低价：{low}\n昨日均价：{avg}\n昨日高价：{high}"]
         table = []
-        for each_price in detailData["data"]["prices"]:
+        for each_price in detail_data["data"]["prices"]:
             table_content = Template(template_table).render(
                 icon=itemList_searchable[0]["icon"],
                 color=color,
@@ -198,7 +198,7 @@ async def get_trade_image_allserver(name: str):
             itemAPIData = (await Request(f"https://next2.jx3box.com/api/item-price/{id}/logs?server={server}&limit=20").get()).json()
             new["data"] = itemAPIData["data"]
             new["id"] = str(id)
-            new["icon"] = f"https://icon.jx3box.com/icon/" + str(i["IconID"]) + ".png"
+            new["icon"] = "https://icon.jx3box.com/icon/" + str(i["IconID"]) + ".png"
             new["name"] = i["Name"]
             new["quality"] = i["Quality"] if check_number(i["Quality"]) else 0
             itemList_searchable.append(new)
@@ -206,10 +206,10 @@ async def get_trade_image_allserver(name: str):
             currentStatus = 0 # 当日是否具有该物品在交易行
             yesterdayFlag = False
             current = itemList_searchable[0]["data"]["today"]
-            if current != None:
+            if current is not None:
                 currentStatus = 1
             else:
-                if itemList_searchable[0]["data"]["yesterday"]  != None:
+                if itemList_searchable[0]["data"]["yesterday"] is not None:
                     yesterdayFlag = True
                     currentStatus = 1
                     current = itemList_searchable[0]["data"]["yesterday"] 
@@ -269,7 +269,7 @@ async def get_trade_image_allserver(name: str):
         final_highest = int(sum(fhighs) / len(fhighs))
         final_avg = int(sum(favgs) / len(favgs))
         final_lowest = int(sum(flows) / len(flows))
-    except:
+    except:  # noqa: E722
         return ["唔……该物品全服均没有数据！"]
     msgbox = Template(template_msgbox).render(
         low=coin_to_image(str(calculator_price(final_lowest))),

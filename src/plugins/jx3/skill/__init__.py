@@ -1,11 +1,15 @@
+from pathlib import Path
+
 from nonebot import on_command
 from nonebot.adapters import Message
 from nonebot.params import CommandArg
-from nonebot.adapters.onebot.v11 import GroupMessageEvent
+from nonebot.adapters.onebot.v11 import GroupMessageEvent, MessageSegment as ms
 
 from src.const.jx3.kungfu import Kungfu
 
-from .macro import get_macro, get_matrix
+from .macro import get_macro
+from .martix import get_matrix
+from .qixue import get_qixue
 
 MacroMatcher = on_command("jx3_macro_v2", aliases={"宏"}, force_whitespace=True, priority=5)
 
@@ -35,3 +39,31 @@ async def _(args: Message = CommandArg()):
         await MatrixMatcher.finish(msg)
     else:
         await MatrixMatcher.finish("没有输入任何心法名称哦，没办法帮你找啦。")
+
+QixueMatcher = on_command("jx3_qixue", aliases={"奇穴"}, force_whitespace=True, priority=5)
+
+@QixueMatcher.handle()
+async def _(argument: Message = CommandArg()):
+    """
+    查询奇穴。
+    """
+    args = argument.extract_plain_text().split(" ")
+    if len(args) not in [1, 2, 3]:
+        await QixueMatcher.finish("唔……格式错误，请参考下面的格式：\n奇穴 心法 奇穴 赛季\n赛季非必须，可以省略。")
+    if len(args) == 3:
+        kungfu = args[0]
+        qixue = args[1]
+        season = args[2]
+    elif len(args) == 2:
+        kungfu = args[0]
+        qixue = args[1]
+        season = ""
+    elif len(args) == 1:
+        kungfu = args[0]
+        qixue = ""
+        season = ""
+    msg = await get_qixue(qixue, kungfu, season)
+    if isinstance(msg, Path):
+        await QixueMatcher.finish(ms.image(msg.as_uri()))
+    else:
+        await QixueMatcher.finish(msg)

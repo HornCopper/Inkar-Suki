@@ -25,7 +25,6 @@ ticket = Config.jx3.api.ticket
 device_id = ticket.split("::")[-1]
 
 async def get_personal_data(server, id) -> Literal[False] | Tuple[str, str, str]:
-    token = Config.jx3.api.token
     data = await search_player(role_name=id, server_name=server)
     data = data.format_jx3api()
     if data["code"] != 200:
@@ -473,7 +472,7 @@ async def local_save(image_url: str) -> str:
     else:
         try:
             main = (await Request(image_url).get()).content
-        except:
+        except:  # noqa: E722
             return image_url
         write(final_path, main, "wb")
         return final_path

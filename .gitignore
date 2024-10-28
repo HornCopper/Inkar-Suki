@@ -183,5 +183,6 @@ src/config/config.yml
 # Data files
 src/data/
 src/cache/
+src/const/cache
 src/assets/image/jx3/attributes/school_bg
 src/assets/image/jx3/update.png
