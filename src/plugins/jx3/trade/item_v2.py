@@ -1,4 +1,4 @@
-from typing import Tuple, List, Literal
+from typing import Literal, Any
 from pathlib import Path
 from jinja2 import Template
 
@@ -8,6 +8,8 @@ from src.utils.network import Request
 from src.utils.time import Time
 from src.utils.file import read
 from src.utils.generate import generate
+from src.utils.database import db
+from src.utils.database.classes import ItemKeywordMap
 
 from ._template import headers, template_wujia
 
@@ -19,6 +21,9 @@ async def query_aijx3_data(url: str, params: dict = {}):
     return data
 
 async def get_standard_name(alias_name: str) -> str | list:
+    local_data: ItemKeywordMap | None | Any = db.where_one(ItemKeywordMap(), "map_name = ?", alias_name, default=None)
+    if local_data is not None:
+        alias_name = local_data.raw_name
     item_data = await query_aijx3_data("https://www.aijx3.cn/api/wj/basedata/getBaseGoodsList")
     item_data = item_data["data"]
     
@@ -31,12 +36,15 @@ async def get_standard_name(alias_name: str) -> str | list:
     matched = []
     for each_item in item_data:
         aliases = each_item["goodsAliasAll"]
+        if alias_name in each_item["goodsName"]:
+            matched.append(each_item["goodsName"])
+            continue
         for alias in aliases:
             if alias_name in alias:
                 matched.append(each_item["goodsName"])
     return matched
 
-async def get_item_history(standard_name: str) -> Tuple[List[int], List[str]]:
+async def get_item_history(standard_name: str) -> tuple[list[int], list[str]]:
     current_timestamp = Time().raw_time
     start_timestamp = current_timestamp - 3*30*24*60*60 # 3个月前
     params = {
@@ -80,7 +88,7 @@ async def get_item_detail(item_name: str) -> list | Literal[False]:
     return [item_name, item_alias, publish_time, publish_count_limit, publish_time_limit, binding_time_limit, raw_price, img]
     # [物品名称, 物品别称, 发行时间, 发行数量, 发行时长, 绑定时长, 发行原价, 图片样例]
 
-async def get_wanbaolou_data(item_standard_name: str):
+async def get_wanbaolou_data(item_standard_name: str) -> str:
     final_url = f"https://trade-api.seasunwbl.com/api/buyer/goods/list?filter[role_appearance]={item_standard_name}&filter[state]=2&goods_type=3"
     data = (await Request(final_url).get()).json()
     if data["code"] == -11:
@@ -99,7 +107,7 @@ async def get_wanbaolou_data(item_standard_name: str):
         )
     return "\n".join(wbl_data)
 
-async def get_item_price(item_standard_name: str):
+async def get_item_price(item_standard_name: str) -> str:
     data = await query_aijx3_data("https://www.aijx3.cn/api/wj/goods/getGoodsPriceRecord", params={"goodsName":item_standard_name,"belongQf3":"","current":1,"size":100})
     full_table = {}
     zone_record_count = {

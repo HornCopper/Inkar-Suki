@@ -42,6 +42,11 @@ class GroupSettings(LiteModel):
     webhook: List[str] = []
     opening: list = []
 
+class ItemKeywordMap(LiteModel):
+    TABLE_NAME: str = "item_keyword"
+    map_name: str = ""
+    raw_name: str = ""
+
 class JX3APIWSData(LiteModel):
     TABLE_NAME: str = "jx3api_wsdata"
     action: int = 0

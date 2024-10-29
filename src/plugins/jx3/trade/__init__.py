@@ -1,3 +1,5 @@
+from typing import Any
+
 from nonebot import on_command
 from nonebot.typing import T_State
 from nonebot.adapters import Message
@@ -6,9 +8,12 @@ from nonebot.adapters.onebot.v11 import GroupMessageEvent, MessageSegment as ms
 
 from src.const.prompts import PROMPT
 from src.const.jx3.server import Server
+from src.utils.permission import check_permission, denied
 from src.utils.analyze import check_number
 from src.utils.typing import override
 from src.utils.network import Request
+from src.utils.database import db
+from src.utils.database.classes import ItemKeywordMap
 from src.utils.database.operation import get_group_settings
 
 from .api import get_trade_image
@@ -99,7 +104,7 @@ async def _(event: GroupMessageEvent, state: T_State, args: Message = CommandArg
     if isinstance(data, list):
         await V2ItemPriceMatcher.finish(data[0])
     elif isinstance(data, dict):
-        aliases = data["v"]
+        aliases = list(set(data["v"]))
         if len(aliases) > 20:
             aliases = aliases[:20]
         if len(aliases) == 0:
@@ -134,3 +139,25 @@ async def _(event: GroupMessageEvent, state: T_State, num: Message = Arg()):
         return
     img_content = Request(img).local_content
     await V2ItemPriceMatcher.finish(ms.image(img_content))
+
+ItemPriceAliasMatcher = on_command("jx3_itemaliases", aliases={"物品别名", "物品别称"}, priority=5, force_whitespace=True)
+
+@ItemPriceAliasMatcher.handle()
+async def _(event: GroupMessageEvent, argument: Message = CommandArg()):
+    if not check_permission(event.user_id, 3):
+        await ItemPriceAliasMatcher.finish(denied(3))
+    args = argument.extract_plain_text().split(" ")
+    if len(args) != 2:
+        await ItemPriceAliasMatcher.finish("唔……参数数量不正确，请参考命令格式：\n物品别名 别名 实际名")
+    map_name = args[0]
+    raw_name = args[1]
+    local_data: ItemKeywordMap | None | Any = db.where_one(ItemKeywordMap(), "raw_name = ?", map_name, default=None)
+    if local_data is not None:
+        await ItemPriceAliasMatcher.finish("无法继续添加别名映射：检测到重复别名！")
+    db.save(
+        ItemKeywordMap(
+            map_name=map_name,
+            raw_name=raw_name
+        )
+    )
+    await ItemPriceAliasMatcher.finish(f"已添加物品别名映射：{map_name} -> {raw_name}！")
