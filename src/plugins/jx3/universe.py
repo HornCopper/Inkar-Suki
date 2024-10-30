@@ -39,7 +39,7 @@ from .daily import (
     DailyMatcher
 )
 from .detail import (
-    ZoneDetailMatcher,
+    TeamZoneOverviewMatcher,
     ZoneOverviewMatcher
 )
 from .dungeon import (

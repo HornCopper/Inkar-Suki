@@ -37,15 +37,15 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
         data = Request(data).local_content
         await ZoneOverviewMatcher.finish(ms.image(data))
 
-ZoneDetailMatcher = on_command("jx3_global_dungeon", aliases={"副本分览"}, force_whitespace=True, priority=5)
+TeamZoneOverviewMatcher = on_command("jx3_teamoverview", aliases={"团本总览"}, force_whitespace=True, priority=5)
 
-@ZoneDetailMatcher.handle()
+@TeamZoneOverviewMatcher.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     if args.extract_plain_text() == "":
         return
     arg = args.extract_plain_text().split(" ")
     if len(arg) not in [1, 2]:
-        await ZoneDetailMatcher.finish(PROMPT.ArgumentCountInvalid)
+        await TeamZoneOverviewMatcher.finish(PROMPT.ArgumentCountInvalid)
     if len(arg) == 1:
         server = None
         id = arg[0]
@@ -54,10 +54,35 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
         id = arg[1]
     serverInstance = Server(server, event.group_id)
     if not serverInstance.server:
-        await ZoneDetailMatcher.finish(PROMPT.ServerNotExist)
-    data = await get_zone_detail_image(serverInstance.server, id)
+        await TeamZoneOverviewMatcher.finish(PROMPT.ServerNotExist)
+    data = await get_zone_detail_image(serverInstance.server, id, True)
     if isinstance(data, list):
-        await ZoneDetailMatcher.finish(data[0])
+        await TeamZoneOverviewMatcher.finish(data[0])
     elif isinstance(data, str):
         data = Request(data).local_content
-        await ZoneDetailMatcher.finish(ms.image(data))
+        await TeamZoneOverviewMatcher.finish(ms.image(data))
+
+FiveZoneOverviewMatcher = on_command("jx3_5overview", aliases={"五人总览"}, force_whitespace=True, priority=5)
+
+@FiveZoneOverviewMatcher.handle()
+async def _(event: GroupMessageEvent, args: Message = CommandArg()):
+    if args.extract_plain_text() == "":
+        return
+    arg = args.extract_plain_text().split(" ")
+    if len(arg) not in [1, 2]:
+        await FiveZoneOverviewMatcher.finish(PROMPT.ArgumentCountInvalid)
+    if len(arg) == 1:
+        server = None
+        id = arg[0]
+    elif len(arg) == 2:
+        server = arg[0]
+        id = arg[1]
+    serverInstance = Server(server, event.group_id)
+    if not serverInstance.server:
+        await FiveZoneOverviewMatcher.finish(PROMPT.ServerNotExist)
+    data = await get_zone_detail_image(serverInstance.server, id, False)
+    if isinstance(data, list):
+        await FiveZoneOverviewMatcher.finish(data[0])
+    elif isinstance(data, str):
+        data = Request(data).local_content
+        await FiveZoneOverviewMatcher.finish(ms.image(data))

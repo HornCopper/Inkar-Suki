@@ -1,5 +1,6 @@
 from pathlib import Path
 from jinja2 import Template
+from json.decoder import JSONDecodeError
 from typing import Tuple, Literal, List
 
 from src.const.jx3.constant import dungeon_name_data as map_list
@@ -126,15 +127,13 @@ async def get_zone_overview_image(server: str, id: str) -> List[str] | str | Non
         return
     return Path(final_path).as_uri()
 
-async def get_map_all_id(map_name: str):
-    params = {
-        "name": map_name, 
-        "detail": True
-    }
-    data = (await Request("https://m.pvp.xoyo.com/achievement/list/dungeon-maps", params=params).post(tuilan=True)).json()
-    return data["data"][0]["maps"]
+def get_map_all_id(data: dict, map_name: str) -> list[dict]:
+    for zone in data["data"]:
+        if zone["name"] == map_name:
+            return zone["maps"]
+    raise ValueError(f"Cannot match the zone `{map_name}`!")
 
-def calculate(raw_data: dict):
+def calculate(raw_data: dict) -> tuple[int, int]:
     done = 0
     total = 0
     for achievement in raw_data["data"]["data"]:
@@ -143,13 +142,16 @@ def calculate(raw_data: dict):
         total += achievement["reward_point"]
     return done, total
 
-async def get_zone_detail_image(server: str, name: str):
+async def get_zone_detail_image(server: str, name: str, team: bool = True):
     guid = await get_guid(server, name)
     if not guid:
         return [PROMPT.PlayerNotExist]
     table = []
+    map_id_data: dict = (await Request("https://m.pvp.xoyo.com/achievement/list/dungeon-maps", params={"detail": True}).post(tuilan=True)).json()
     for map in map_list:
-        map_data = await get_map_all_id(map)
+        map_data: list[dict[str, str]] = get_map_all_id(map_id_data, map) # actually list[dict[str, str | int]]
+        if map_data[0]["name"].startswith("5人") == team:
+            continue
         mode_count = len(map_data)
         is_first = True
         for mode in map_data:
@@ -173,9 +175,18 @@ async def get_zone_detail_image(server: str, name: str):
                 "dungeon_map_id": mode["id"], 
                 "gameRoleId": guid
             }
-            single_map_data = (await Request("https://m.pvp.xoyo.com/achievement/list/achievements", params=params).post(tuilan=True)).json()
-            done, total = calculate(single_map_data)
-            schedule = str(int(done / total * 100)) + "%"
+            try:
+                single_map_data = (await Request("https://m.pvp.xoyo.com/achievement/list/achievements", params=params).post(tuilan=True)).json()
+                done, total = calculate(single_map_data)
+                schedule = str(int(done / total * 100)) + "%"
+            except JSONDecodeError:
+                try:
+                    single_map_data = (await Request("https://m.pvp.xoyo.com/achievement/list/achievements", params=params).post(tuilan=True)).json()
+                    done, total = calculate(single_map_data)
+                    schedule = str(int(done / total * 100)) + "%"
+                except JSONDecodeError:
+                    done, total = 0, 1
+                    schedule = "获取失败！"
             table.append(
                 Template(template).render(
                     mode = mode["name"],
