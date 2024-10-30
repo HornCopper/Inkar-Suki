@@ -11,6 +11,8 @@ from src.utils.generate import generate
 from src.utils.database.player import search_player
 from src.templates import HTMLSourceCode
 
+from src.plugins.jx3.detail.detail import get_map_all_id
+
 from ._template import table_head, template_body
 
 async def get_progress_v2(
@@ -97,13 +99,19 @@ async def zone_achievement(
         return [PROMPT.PlayerNotExist]
     else:
         guid = personal_data["data"]["globalRoleId"]
-    map_id = await get_map(zone, mode)
-    if not isinstance(map_id, str):
+    map_id_data: dict = (await Request("https://m.pvp.xoyo.com/achievement/list/dungeon-maps", params={"detail": True}).post(tuilan=True)).json()
+    map_id = get_map_all_id(map_id_data, zone)
+    flag = False
+    for each_map_id in map_id:
+        if each_map_id["name"] == mode:
+            _map_id = each_map_id["id"]
+            flag = True
+    if not flag:
         return
     params = {
         "cursor": 0,
         "size": 200,
-        "dungeon_map_id": int(map_id),
+        "dungeon_map_id": int(_map_id),
         "gameRoleId": guid
     }
     data = (await Request("https://m.pvp.xoyo.com/achievement/list/achievements", params=params).post(tuilan=True)).json()
