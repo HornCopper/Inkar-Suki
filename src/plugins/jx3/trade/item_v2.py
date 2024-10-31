@@ -79,7 +79,8 @@ async def get_item_detail(item_name: str) -> list | Literal[False]:
         return False
     item_name = item_data["goodsName"]
     item_alias = item_data["goodsAlias"]
-    publish_time = Time(int(datetime.datetime.strptime(item_data["publishTime"], "%Y-%m-%dT%H:%M:%S.000+0000").timestamp())).format("%Y-%m-%d") # 发行时间
+    publish_timestamp = item_data["publishTime"] if item_data["publishTime"] is not None else 0
+    publish_time = Time(int(datetime.datetime.strptime(item_data["publishTime"], "%Y-%m-%dT%H:%M:%S.000+0000").timestamp())).format("%Y-%m-%d") if publish_timestamp != 0 else "未知" # 发行时间
     publish_count_limit = item_data["publishNum"] if item_data["publishNum"] is not None else "--" # 发行数量
     publish_time_limit = item_data["publishLimitTime"] if item_data["publishLimitTime"] is not None else "--" # 发行时长
     binding_time_limit = item_data["limitTime"] if item_data["limitTime"] is not None else "--" # 绑定时长
