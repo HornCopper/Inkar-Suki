@@ -65,7 +65,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
         await TradeMatcher.finish(ms.image(img))
 
 
-WFTradeMatcher = on_command("jx3_wufeng", aliases={"交易行无封"}, force_whitespace=True, priority=5)
+WFTradeMatcher = on_command("jx3_wufeng", aliases={"交易行试炼"}, force_whitespace=True, priority=5)
 
 @WFTradeMatcher.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):

@@ -108,7 +108,7 @@ async def get_wanbaolou_data(item_standard_name: str) -> str:
         )
     return "\n".join(wbl_data)
 
-async def get_item_price(item_standard_name: str) -> str:
+async def get_item_price(item_standard_name: str) -> dict:
     data = await query_aijx3_data("https://www.aijx3.cn/api/wj/goods/getGoodsPriceRecord", params={"goodsName":item_standard_name,"belongQf3":"","current":1,"size":100})
     full_table = {}
     zone_record_count = {

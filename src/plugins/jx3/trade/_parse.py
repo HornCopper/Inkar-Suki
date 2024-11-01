@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Literal
 
 from src.const.path import ASSETS, build_path
 
@@ -95,6 +95,13 @@ class AttrsConverter:
     @property
     def quality(self) -> int:
         return self._quality
+    
+    @property
+    def type_(self) -> Literal["内", "外"]:
+        if "内" in self.raw:
+            return "内"
+        else:
+            return "外"
 
 def coin_to_image(rawString: str):
     brick = build_path(ASSETS, ["image", "jx3", "trade", "brick.png"])

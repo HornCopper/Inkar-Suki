@@ -14,7 +14,7 @@ from ._template import template_msgbox, template_table
 
 import datetime
 
-filters = ["无封","无皇","封头","封护","封裤","封项","封鞋","封囊"]
+filters = ["无封","无皇","封头","封护","封裤","封项","封鞋","封囊", "无修"]
 banned = ["囊","头饰","裤","护臂","腰坠","项链","鞋"]
 
 async def get_trade_image(server: str, name: str, items: list = []):

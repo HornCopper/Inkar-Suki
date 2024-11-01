@@ -6,7 +6,6 @@ from nonebot.adapters.onebot.v11 import MessageSegment as ms
 
 from src.const.path import ASSETS, build_path
 from src.const.jx3.constant import server_aliases_data as servers
-from src.utils.analyze import check_number, extract_numbers
 from src.utils.network import Request
 from src.utils.time import Time
 from src.utils.generate import generate
@@ -17,7 +16,7 @@ from .api import template_msgbox, template_table
 from ._parse import AttrsConverter, coin_to_image, calculator_price
 
 import json
-basic_name = "无封"
+basic_name = "无修"
 
 def get_exist_attrs(data: List[dict]) -> List[str]:
     attrs = []
@@ -39,10 +38,10 @@ async def get_equips_data(name: str, quality: int):
 
 async def get_equip_data(raw: str):
     attrsInstance = AttrsConverter(raw)
-    attrs, location, quality = attrsInstance.attributes, attrsInstance.location, attrsInstance.quality
+    attrs, location, quality, type_ = attrsInstance.attributes, attrsInstance.location, attrsInstance.quality, attrsInstance.type_
     if not attrs:
         return [f"您输入的装备词条有误，请确保包含以下四个要素：\n品级、属性、部位、内外功\n示例：13550内功双会头"]
-    final_name = basic_name + location
+    final_name = basic_name + location + "·" + type_
     data = await get_equips_data(final_name, quality)
     if len(data) == 0:
         return [f"未查找到该{basic_name}装备！"]
@@ -64,7 +63,7 @@ async def get_wufeng_image(raw: str, server: str):
         itemId = data["id"]
     except:
         emg = (await Request("https://inkar-suki.codethink.cn/Inkar-Suki-Docs/img/emoji.jpg").get()).content
-        return ["音卡建议您不要造无封装备了，因为没有。\n" + ms.image(emg)]
+        return ["音卡建议您不要造无修装备了，因为没有。\n" + ms.image(emg)]
     logs = (await Request(f"https://next2.jx3box.com/api/item-price/{itemId}/logs?server={server}").get()).json()
     current = logs["data"]["today"]
     yesterdayFlag = False
@@ -138,7 +137,7 @@ async def get_wufeng_image_allserver(raw: str):
         itemId = data["id"]
     except KeyError:
         emg = (await Request("https://inkar-suki.codethink.cn/Inkar-Suki-Docs/img/emoji.jpg").get()).content
-        return ["音卡建议您不要造无封装备了，因为没有。\n" + ms.image(emg)]
+        return ["音卡建议您不要造无修装备了，因为没有。\n" + ms.image(emg)]
     for server in servers:
         logs = (await Request(f"https://next2.jx3box.com/api/item-price/{itemId}/logs?server={server}").get()).json()
         current = logs["data"]["today"]
