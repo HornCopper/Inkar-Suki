@@ -23,13 +23,14 @@ from .bind import (
     BindServerMatcher,
     RoleCheckMatcher
 )
-from .calculator import (
-    DJCalcMatcher,
-    WFCalcMatcher,
-    YLJCalcMatcher,
-    ZXGCalcMatcher,
-    SHXJCalcMatcher
-)
+# from .calculator import (
+#     DJCalcMatcher,
+#     WFCalcMatcher,
+#     YLJCalcMatcher,
+#     ZXGCalcMatcher,
+#     SHXJCalcMatcher
+# )
+# RIP: not adapted
 from .couple import (
     BindAffectionMatcher,
     DeleteAffectionMatcher,

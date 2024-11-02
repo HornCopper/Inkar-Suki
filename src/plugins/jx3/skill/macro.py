@@ -40,7 +40,7 @@ async def get_macro(kungfu: str) -> str | None:
 
 async def get_talent(talent: dict) -> str:
     ver = talent["version"]
-    data = (await Request(url=f"https://data.jx3box.com/talent/{ver}.json").get()).json()
+    data = (await Request(url=f"https://data.jx3box.com/talent/std/{ver}.json").get()).json()
     xf_data = data[talent["xf"]]
     talents = []
     num = 1

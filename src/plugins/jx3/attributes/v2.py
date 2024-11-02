@@ -81,10 +81,10 @@ class Qixue:
         qixue_data_path = build_path(ASSETS, ["source", "jx3", "qixue_latest.json"])
         if os.path.exists(qixue_data_path):
             return json.loads(read(qixue_data_path))
-        data = (await Request("https://data.jx3box.com/talent/index.json").get()).json()
+        data = (await Request("https://data.jx3box.com/talent/std/index.json").get()).json()
         for each_ver in data:
             if each_ver["name"].find("体服") == -1:
-                qixue_data = (await Request("https://data.jx3box.com/talent/" + each_ver["version"] + ".json").get()).json()
+                qixue_data = (await Request("https://data.jx3box.com/talent/std/" + each_ver["version"] + ".json").get()).json()
                 write(qixue_data_path, json.dumps(qixue_data, ensure_ascii=False))
                 return qixue_data
         raise QixueDataUnavailable
@@ -373,11 +373,10 @@ class JX3AttributeV2:
             attr = attr.replace("会心效果", "会效")
             filter_string = ["全", "阴性", "阳性", "阴阳", "毒性", "攻击", "值", "成效", "内功", "外功", "体质", "根骨", "力道", "元气", "身法", "等级", "混元性", "招式产生威胁", "水下呼吸时间", "抗摔系数", "马术气力上限"]
             for y in filter_string:
-                if attr == "全能":
-                    continue
                 attr = attr.replace(y, "")
-            if attr != "":
+            if attr != "" and len(attr) <= 5:
                 msg = msg + f" {attr}"
+        msg = msg.replace(" 能 ", " 全能 ")
         return msg
 
     @property
@@ -440,7 +439,7 @@ async def get_attr_v2(server: str, role_name: str) -> str | List[str]:
         c2n, c2i = "", ""
     image = await get_attributes_image_v2(
         kungfu = Kungfu(attrsObject.kungfu),
-        school_background = await attrsObject.background(str(attrsObject.school)),
+        school_background = await attrsObject.background(school),
         max_strength = max,
         strength = current,
         equip_list = equips,

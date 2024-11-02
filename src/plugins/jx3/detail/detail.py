@@ -149,6 +149,8 @@ async def get_zone_detail_image(server: str, name: str, team: bool = True):
     table = []
     map_id_data: dict = (await Request("https://m.pvp.xoyo.com/achievement/list/dungeon-maps", params={"detail": True}).post(tuilan=True)).json()
     for map in map_list:
+        if map in ["一之窟", "天龙寺", "冰川宫宝库", "风砂旧垒", "不染窟"]:
+            continue # 丝路风语
         map_data: list[dict[str, str]] = get_map_all_id(map_id_data, map) # actually list[dict[str, str | int]]
         if map_data[0]["name"].startswith("5人") == team:
             continue

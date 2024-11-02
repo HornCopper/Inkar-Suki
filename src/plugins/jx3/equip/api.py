@@ -1,4 +1,3 @@
-from typing import Tuple, List, Dict
 from pathlib import Path
 from PIL import Image, ImageFont, ImageDraw
 
@@ -16,13 +15,13 @@ from src.plugins.jx3.attributes.v2 import (
 
 import json
 
-async def get_recommended_equips_list(forceId: str, condition: list) -> Tuple[list, list, list, list, list]:
+async def get_recommended_equips_list(force_id: str, condition: list) -> tuple[list, list, list, list, list]:
     params = {
-        "Kungfu": forceId,
+        "Kungfu": force_id,
         "EquipTags": condition,
         "Size": 10,
         "cursor": 0,
-        "matchSeasonId": "6629cd12ba3129001275fc58"
+        "matchSeasonId": "67235a43ba3129001696e4a3"
     }
     source_data = (await Request("https://m.pvp.xoyo.com/socialgw/dynamic/equip/query", params=params).post(tuilan=True)).json()
     data = []
@@ -53,7 +52,7 @@ class JX3AttributeV2_M(JX3AttributeV2):
         """
         将面板展示的属性转换为实际需要的属性，并传出已有数据的对应属性字典。
         """
-        panel_attr_map: Dict[str, Tuple[str, bool]] = {
+        panel_attr_map: dict[str, tuple[str, bool]] = {
             "面板攻击": ("totalAttack", False),
             "基础攻击": ("baseAttack", False),
             "会心": ("atCriticalStrikeLevel", True),
@@ -139,7 +138,7 @@ async def get_recommend_equip_image(
     attribute_values: list, 
     color_stone_name_2: str, 
     color_stone_icon_2: str,
-    attr_types: List[str]
+    attr_types: list[str]
 ):
     syst_bold = build_path(ASSETS, ["font", "syst-bold.ttf"])
     syst_mid = build_path(ASSETS, ["font", "syst-mid.ttf"])
