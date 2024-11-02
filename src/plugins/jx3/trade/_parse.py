@@ -68,17 +68,17 @@ class AttrsConverter:
 
     def _determine_place(self) -> str:
         if any(self._fd(k) for k in ["头", "帽", "脑壳"]):
-            return "头饰"
-        elif any(self._fd(k) for k in ["手", "臂"]):
-            return "护臂"
+            return "冠"
+        # elif any(self._fd(k) for k in ["手", "臂"]):
+        #     return "护臂"
         elif any(self._fd(k) for k in ["裤", "下装"]):
             return "裤"
         elif any(self._fd(k) for k in ["鞋", "jio", "脚"]):
             return "鞋"
         elif any(self._fd(k) for k in ["链", "项"]):
-            return "项链"
+            return "链"
         elif self._fd("腰坠") or (self._fd("坠") and not self._fd("腰带")):
-            return "腰坠"
+            return "坠"
         elif any(self._fd(k) for k in ["暗器", "囊", "弓弦"]):
             return "囊"
         else:
