@@ -58,7 +58,7 @@ class Qixue:
                 path = build_path(CONST, ["cache", each_ver["version"] + ".json"])
                 if os.path.exists(path):
                     return json.loads(read(path))
-                qxdata = (await Request("https://data.jx3box.com/talent/" + each_ver["version"] + ".json").get()).json()
+                qxdata = (await Request("https://data.jx3box.com/talent/std/" + each_ver["version"] + ".json").get()).json()
                 write(path, json.dumps(qxdata, ensure_ascii=False))
                 return qxdata
         return False
