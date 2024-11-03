@@ -1,5 +1,3 @@
-from typing import List, Dict
-
 from src.utils.database.lib import LiteModel
 
 class Account(LiteModel):
@@ -21,7 +19,7 @@ class Affections(LiteModel):
     school_1: str = ""
     school_2: str = ""
 
-class ApplicationsList(LiteModel):
+class Applicationslist(LiteModel):
     TABLE_NAME: str = "applications"
     applications_list: list = []
 
@@ -34,12 +32,12 @@ class GroupSettings(LiteModel):
     TABLE_NAME: str = "settings"
     server: str = ""
     group_id: str = ""
-    subscribe: List[str] = []
-    additions: List[str] = []
+    subscribe: list[str] = []
+    additions: list[str] = []
     welcome: str = "欢迎入群！"
-    blacklist: List[Dict[str, str]] = [] 
+    blacklist: list[dict[str, str]] = [] 
     wiki: dict = {"startwiki": "", "interwiki": []}
-    webhook: List[str] = []
+    webhook: list[str] = []
     opening: list = []
 
 class ItemKeywordMap(LiteModel):
@@ -92,4 +90,4 @@ class GroupMessage(LiteModel):
     TABLE_NAME: str = "group_message"
     group_id: int = 0
     user_id: int = 0
-    messages: List[MemberMessage] = []
+    messages: list[MemberMessage] = []

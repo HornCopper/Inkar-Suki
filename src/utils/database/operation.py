@@ -1,4 +1,4 @@
-from typing import Any, List, Dict
+from typing import Any
 from nonebot import get_bots
 
 from src.utils.database.classes import GroupSettings
@@ -24,7 +24,7 @@ def set_group_settings(group_id: int | str, key: str, content: Any) -> None:
     db.save(group_data)
 
 def get_groups() -> bool | list:
-    all_db_obj: List[GroupSettings | Any] | None = db.where_all(GroupSettings()) or []
+    all_db_obj: list[GroupSettings | Any] | None = db.where_all(GroupSettings()) or []
     groups = []
     if not isinstance(all_db_obj, list):
         return False
@@ -39,7 +39,7 @@ async def send_subscribe(subscribe: str = "", msg: str = "", server: str | None 
     groups = get_groups()
     if isinstance(groups, bool):
         return
-    group: Dict[str, List[str]] = {}
+    group: dict[str, list[str]] = {}
 
     for i in list(bots):
         single_groups = await bots[i].call_api("get_group_list")

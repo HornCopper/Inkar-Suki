@@ -1,6 +1,6 @@
 from pathlib import Path
 from PIL import Image, ImageDraw, ImageFont
-from typing import Literal, Tuple, List
+from typing import Literal
 
 from src.config import Config
 from src.const.jx3.kungfu import Kungfu
@@ -24,7 +24,7 @@ token = Config.jx3.api.token
 ticket = Config.jx3.api.ticket
 device_id = ticket.split("::")[-1]
 
-async def get_personal_data(server, id) -> Literal[False] | Tuple[str, str, str]:
+async def get_personal_data(server, id) -> Literal[False] | tuple[str, str, str]:
     data = await search_player(role_name=id, server_name=server)
     data = data.format_jx3api()
     if data["code"] != 200:
@@ -94,7 +94,7 @@ class Qixue:
         return self.data["name"]
     
     @property
-    def location(self) -> Tuple[str, str, str] | None:
+    def location(self) -> tuple[str, str, str] | None:
         for x in self.qixue_data[self.kungfu]:
             for y in self.qixue_data[self.kungfu][x]:
                 if self.qixue_data[self.kungfu][x][y]["name"] == self.name:
@@ -193,7 +193,7 @@ class JX3AttributeV2:
         )
 
     @property
-    def attr_types(self) -> List[str]:
+    def attr_types(self) -> list[str]:
         if self._meta_school.base in ["根骨", "元气", "力道", "身法"]:
             return ["面板攻击", "基础攻击", "会心", "会心效果", "加速", self._meta_school.base, "破防", "无双", "破招", "最大气血值", "御劲", "化劲"]   
         elif self._meta_school.base == "治疗":
@@ -230,7 +230,7 @@ class JX3AttributeV2:
         raise ValueError(f"Unexpected attribute `{panel_attr_name}`!")
 
     @property
-    def attr_values(self) -> List[str]:
+    def attr_values(self) -> list[str]:
         attr_types = self.attr_types
         result = []
         if self._meta_school.base is not None:
@@ -241,7 +241,7 @@ class JX3AttributeV2:
             return ["N/A"] * 12
     
     @property
-    def equips(self) -> Literal[False] | List[dict]:
+    def equips(self) -> Literal[False] | list[dict]:
         if self._cached_equips is not None:
             return self._cached_equips
         
@@ -271,7 +271,7 @@ class JX3AttributeV2:
         return self._cached_equips
 
     @property
-    def five_stones(self) -> List[str]:
+    def five_stones(self) -> list[str]:
         results = []
         equips = self.equips
         if not equips:
@@ -283,11 +283,11 @@ class JX3AttributeV2:
         return results
     
     @property
-    def color_stone(self) -> Literal[False] | List[Tuple[str, str]]:
+    def color_stone(self) -> Literal[False] | list[tuple[str, str]]:
         equips = self.equips
         if not equips:
             return False
-        color_stones: List[Tuple[str, str]] = []
+        color_stones: list[tuple[str, str]] = []
         if self.kungfu == "问水诀":
             equips = equips[-2:]
         else:
@@ -301,7 +301,7 @@ class JX3AttributeV2:
         return color_stones
     
     @property
-    def permanent_enchant(self) -> Literal[False] | List[str]:
+    def permanent_enchant(self) -> Literal[False] | list[str]:
         equips = self.equips
         result = []
         if not equips:
@@ -314,7 +314,7 @@ class JX3AttributeV2:
         return result
     
     @property
-    def common_enchant(self) -> Literal[False] | List[str]:
+    def common_enchant(self) -> Literal[False] | list[str]:
         equips = self.equips
         if not equips:
             return False
@@ -338,7 +338,7 @@ class JX3AttributeV2:
         return result
     
     @property
-    def equips_and_icons(self) -> Literal[False] | Tuple[List[str], List[str]]:
+    def equips_and_icons(self) -> Literal[False] | tuple[list[str], list[str]]:
         equips = self.equips
         if not equips:
             return False
@@ -350,7 +350,7 @@ class JX3AttributeV2:
         return name, icon
     
     @property
-    def strength(self) -> Literal[False] | Tuple[List[str], List[str]]:
+    def strength(self) -> Literal[False] | tuple[list[str], list[str]]:
         equips = self.equips
         if not equips:
             return False
@@ -380,7 +380,7 @@ class JX3AttributeV2:
         return msg
 
     @property
-    def qualities(self) -> Literal[False] | List[str]:
+    def qualities(self) -> Literal[False] | list[str]:
         equips = self.equips
         if not equips:
             return False
@@ -391,8 +391,8 @@ class JX3AttributeV2:
             )
         return quality
 
-    async def qixue(self) -> Tuple[List[str], List[str]]:
-        qixue_list = self.data["data"]["Person"]["qixueList"]
+    async def qixue(self) -> tuple[list[str], list[str]]:
+        qixue_list = self.data["data"]["Person"]["qixuelist"]
         unknown_img = build_path(ASSETS, ["image", "jx3", "attributes", "unknown.png"])
         name = ["未知", "未知", "未知", "未知", "未知", "未知", "未知", "未知", "未知", "未知", "未知", "未知"]
         icon = [unknown_img, unknown_img, unknown_img, unknown_img, unknown_img, unknown_img, unknown_img, unknown_img, unknown_img, unknown_img, unknown_img, unknown_img]
@@ -413,7 +413,7 @@ class JX3AttributeV2:
         return self.data["data"]["TotalEquipsScore"]
         
 
-async def get_attr_v2(server: str, role_name: str) -> str | List[str]:
+async def get_attr_v2(server: str, role_name: str) -> str | list[str]:
     personal_data = await get_personal_data(server, role_name)
     if not personal_data:
         return ["唔……未找到该玩家，请提交角色！\n提交角色 服务器 UID"]
@@ -504,7 +504,7 @@ async def get_attributes_image_v2(
     attribute_values: list, 
     color_stone_name_2: str, 
     color_stone_icon_2: str,
-    attr_types: List[str]
+    attr_types: list[str]
 ):
     syst_bold = build_path(ASSETS, ["font", "syst-bold.ttf"])
     syst_mid = build_path(ASSETS, ["font", "syst-mid.ttf"])

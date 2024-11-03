@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import List, Literal
+from typing import Literal
 from jinja2 import Template
 
 from src.const.prompts import PROMPT
@@ -98,15 +98,15 @@ async def get_serendipity_image_v3(server: str, name: str):
     data: list = await JX3Serendipity().integration(server, name, uid)
     data_obj = JX3Serendipities(data)
 
-    common: List[dict] = data_obj.common
-    peerless: List[dict] = data_obj.peerless
-    pet: List[dict] = data_obj.pet
+    common: list[dict] = data_obj.common
+    peerless: list[dict] = data_obj.peerless
+    pet: list[dict] = data_obj.pet
 
-    local_common: List[dict] = [{"name": serendipity[:-4], "level": 1} for serendipity in os.listdir(build_path(ASSETS, ["image", "jx3", "serendipity", "serendipity", "common"], end_with_slash=True))]
-    local_peerless: List[dict] = [{"name": serendipity[:-4], "level": 2} for serendipity in os.listdir(build_path(ASSETS, ["image", "jx3", "serendipity", "serendipity", "peerless"], end_with_slash=True))]
-    local_pet: List[dict] = [{"name": serendipity[:-4], "level": 3} for serendipity in os.listdir(build_path(ASSETS, ["image", "jx3", "serendipity", "serendipity", "pet"], end_with_slash=True))]
+    local_common: list[dict] = [{"name": serendipity[:-4], "level": 1} for serendipity in os.listdir(build_path(ASSETS, ["image", "jx3", "serendipity", "serendipity", "common"], end_with_slash=True))]
+    local_peerless: list[dict] = [{"name": serendipity[:-4], "level": 2} for serendipity in os.listdir(build_path(ASSETS, ["image", "jx3", "serendipity", "serendipity", "peerless"], end_with_slash=True))]
+    local_pet: list[dict] = [{"name": serendipity[:-4], "level": 3} for serendipity in os.listdir(build_path(ASSETS, ["image", "jx3", "serendipity", "serendipity", "pet"], end_with_slash=True))]
     
-    path_map: List[str] = ["common", "peerless", "pet"]
+    path_map: list[str] = ["common", "peerless", "pet"]
  
     common_table = generate_table(local_common, common, path_map, template)
     peerless_table = generate_table(local_peerless, peerless, path_map, template)

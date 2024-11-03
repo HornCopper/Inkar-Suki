@@ -280,7 +280,7 @@
                 let container = containers[index];
                 if (!container) {
                     container = document.createElement("div");
-                    container.classList.add("attribute");
+                    container.classlist.add("attribute");
                     document.querySelector(".attributes").appendChild(container);
                 }
                 let keyElement = container.querySelector(selector);
@@ -321,7 +321,7 @@
             });
         }
         replaceImgLink("#skill-image", {{ qixue_img }});
-        window.addEventListener("load", function () {
+        window.addEventlistener("load", function () {
             document.body.style.overflow = "visible";
             document.documentElement.style.overflow = "visible";
             document.documentElement.style.height = "auto";

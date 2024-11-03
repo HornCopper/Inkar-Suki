@@ -1,12 +1,12 @@
 from __future__ import annotations
 from pydantic import BaseModel
-from typing import Literal, Callable, Type, Dict, Tuple
+from typing import Literal, Callable, Type
 from dataclasses import dataclass
 
 from src.utils.typing import override
 from src.utils.time import Time
 
-handler: Dict[int, Callable[[dict], JX3APIPushEvent]] = {}
+handler: dict[int, Callable[[dict], JX3APIPushEvent]] = {}
 
 def handle_event(action: int):
     """
@@ -30,7 +30,7 @@ class JX3APIPushEvent(BaseModel):
     def msg(self) -> JX3APIOutputMsg:
         ...
 
-    def provide_data(self) -> Tuple[str, str]:
+    def provide_data(self) -> tuple[str, str]:
         ...
 
 @handle_event(2001)
@@ -55,7 +55,7 @@ class JX3APINewsEvent(JX3APIPushEvent):
         return JX3APIOutputMsg(msg=f"有新的官方公告！\n标题：{self.title}\n链接：{self.url}\n日期：{self.date}", name="公告")
     
     @override
-    def provide_data(self) -> Tuple[str, str]:
+    def provide_data(self) -> tuple[str, str]:
         return self.url, self.title
 
 @handle_event(2003)

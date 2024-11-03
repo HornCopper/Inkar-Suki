@@ -1,12 +1,10 @@
-from typing import List, Dict
-
 from src.utils.database.operation import get_group_settings
 
 from .constant import server_aliases_data, server_zones_mapping_data
 
 class Server:
-    server_aliases: Dict[str, List[str]] = server_aliases_data
-    server_zones_mapping: Dict[str, List[str]] = server_zones_mapping_data
+    server_aliases: dict[str, list[str]] = server_aliases_data
+    server_zones_mapping: dict[str, list[str]] = server_zones_mapping_data
 
     def __init__(self, server_name: str | None = None, group_id: int | None = None):
         self._server = server_name

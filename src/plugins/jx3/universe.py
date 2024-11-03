@@ -9,7 +9,7 @@ from .announce import (
 )
 from .assistance import (
     BookTeamMatcher,
-    TeamListMatcher,
+    TeamlistMatcher,
     CancelTeamMatcher,
     CreateTeamMatcher,
     LookupTeamMatcher,
@@ -45,7 +45,7 @@ from .detail import (
 )
 from .dungeon import (
     MonstersMatcher,
-    DropsListMatcher,
+    DropslistMatcher,
     ZoneRecordMatcher
 )
 from .emoji import (

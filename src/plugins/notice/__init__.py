@@ -17,7 +17,7 @@ from nonebot.params import CommandArg
 from src.config import Config
 from src.utils.permission import check_permission, denied
 from src.utils.database import db
-from src.utils.database.classes import BannedUser, ApplicationsList, GroupSettings
+from src.utils.database.classes import BannedUser, Applicationslist, GroupSettings
 from src.utils.database.operation import get_group_settings, set_group_settings
 
 from src.plugins.ban.process import Ban
@@ -99,7 +99,7 @@ async def _(bot: Bot, event: GroupRequestEvent):
             "flag": flag,
             "time": time
         }
-        applications_data: ApplicationsList | Any = db.where_one(ApplicationsList(), default=ApplicationsList())
+        applications_data: Applicationslist | Any = db.where_one(Applicationslist(), default=Applicationslist())
         applications_list = applications_data.applications_list
         if new in applications_list:
             return

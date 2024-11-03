@@ -1,17 +1,15 @@
-from typing import Dict, List
-
 from src.utils.database import db
 from src.utils.database.classes import GroupSettings
 from src.utils.database.operation import set_group_settings, get_group_settings
 
-class BlackList:
+class Blacklist:
     def __init__(self, name: str, group_id: int | str):
         self._name = name
         self._group_id = str(group_id)
 
     @property
     def status(self) -> bool | str:
-        group_data: List[Dict[str, str]] = get_group_settings(self._group_id, "blacklist")
+        group_data: list[dict[str, str]] = get_group_settings(self._group_id, "blacklist")
         self._data = group_data
         for each in group_data:
             if each["ban"] == self._name:

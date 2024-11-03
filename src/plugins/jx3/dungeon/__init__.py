@@ -40,28 +40,28 @@ async def _(event: GroupMessageEvent, full_argument: Message = CommandArg()):
         data = Request(data).local_content
         await ZoneRecordMatcher.finish(ms.image(data))
 
-DropsListMatcher = on_command("jx3_drops", aliases={"掉落列表"}, force_whitespace=True, priority=5)
+DropslistMatcher = on_command("jx3_drops", aliases={"掉落列表"}, force_whitespace=True, priority=5)
 
 
-@DropsListMatcher.handle()
+@DropslistMatcher.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     if args.extract_plain_text() == "":
         return
     arg = args.extract_plain_text().split(" ")
     if len(arg) != 3:
-        await DropsListMatcher.finish("唔……参数不正确哦~")
+        await DropslistMatcher.finish("唔……参数不正确哦~")
     map = arg[0]
     mode = arg[1]
     boss = arg[2]
     dungeonInstance = Dungeon(map, mode)
     if dungeonInstance.name is None or dungeonInstance.mode is None:
-        await DropsListMatcher.finish(PROMPT.DungeonInvalid)
+        await DropslistMatcher.finish(PROMPT.DungeonInvalid)
     data = await get_drop_list_image(dungeonInstance.name, dungeonInstance.mode, boss)
     if isinstance(data, str):
         data = Request(data).local_content
-        await DropsListMatcher.send(ms.image(data))
+        await DropslistMatcher.send(ms.image(data))
     elif isinstance(data, list):
-        await DropsListMatcher.finish(data[0])
+        await DropslistMatcher.finish(data[0])
 
 MonstersMatcher = on_command("jx3_monsters_v2", aliases={"百战v2", "百战"}, force_whitespace=True, priority=5)
 

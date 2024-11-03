@@ -1,4 +1,4 @@
-from typing import Literal, List
+from typing import Literal
 from pydantic import BaseModel
 
 from src.utils.network import Request
@@ -12,12 +12,12 @@ class AchievementInformation(BaseModel):
     point: str
     map: str
 
-async def get_adventure(adventure: str) -> Literal[False] | List[AchievementInformation]:
+async def get_adventure(adventure: str) -> Literal[False] | list[AchievementInformation]:
     info = (await Request(f"https://helper.jx3box.com/api/achievement/search?keyword={adventure}&page=1&limit=15&client=std").get()).json()
     data = info["data"]["achievements"]
     if len(data) == 0:
         return False
-    achievement_list: List[AchievementInformation] = []
+    achievement_list: list[AchievementInformation] = []
     for each_achievement in data:
         mode = each_achievement["LayerName"] if each_achievement["LayerName"] is not None else ""
         map_name = each_achievement["SceneName"] if each_achievement["SceneName"] is not None else ""

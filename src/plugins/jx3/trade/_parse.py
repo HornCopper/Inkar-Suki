@@ -1,4 +1,4 @@
-from typing import List, Literal
+from typing import Literal
 
 from src.const.path import ASSETS, build_path
 
@@ -63,7 +63,7 @@ class AttrsConverter:
         return num_list[0]
 
     @staticmethod
-    def _extract_numbers(text: str) -> List[int]:
+    def _extract_numbers(text: str) -> list[int]:
         return list(map(int, re.findall(r'\d+', text)))
 
     def _determine_place(self) -> str:
@@ -71,8 +71,8 @@ class AttrsConverter:
             return "冠"
         # elif any(self._fd(k) for k in ["手", "臂"]):
         #     return "护臂"
-        elif any(self._fd(k) for k in ["裤", "下装"]):
-            return "裤"
+        # elif any(self._fd(k) for k in ["裤", "下装"]):
+        #     return "裤"
         elif any(self._fd(k) for k in ["鞋", "jio", "脚"]):
             return "鞋"
         elif any(self._fd(k) for k in ["链", "项"]):
@@ -85,7 +85,7 @@ class AttrsConverter:
             raise ValueError("无法确定装备部位")
 
     @property
-    def attributes(self) -> List[str]:
+    def attributes(self) -> list[str]:
         return self._attrs
 
     @property

@@ -1,4 +1,4 @@
-from typing import List, Any
+from typing import Any
 
 from src.utils.database import db
 from src.utils.database.classes import BannedUser
@@ -9,7 +9,7 @@ class Ban:
 
     @property
     def _data(self) -> list:
-        data: List[BannedUser] | Any = db.where_all(BannedUser()) or []
+        data: list[BannedUser] | Any = db.where_all(BannedUser()) or []
         return data
 
     @property

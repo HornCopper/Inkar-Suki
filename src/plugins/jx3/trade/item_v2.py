@@ -24,7 +24,7 @@ async def get_standard_name(alias_name: str) -> str | list:
     local_data: ItemKeywordMap | None | Any = db.where_one(ItemKeywordMap(), "map_name = ?", alias_name, default=None)
     if local_data is not None:
         alias_name = local_data.raw_name
-    item_data = await query_aijx3_data("https://www.aijx3.cn/api/wj/basedata/getBaseGoodsList")
+    item_data = await query_aijx3_data("https://www.aijx3.cn/api/wj/basedata/getBaseGoodslist")
     item_data = item_data["data"]
     
     # 精准匹配 如果成功匹配不再模糊搜索

@@ -129,7 +129,7 @@ async def get_attrs_v4(server: str, name: str):
         ]
     qixue = ["未知"] * 12
     qixue_image = [build_path(ASSETS, ["image", "jx3", "attributes", "unknown.png"])] * 12
-    for qixue_ in data["data"]["Person"]["qixueList"]:
+    for qixue_ in data["data"]["Person"]["qixuelist"]:
         qixueInstance = await Qixue.create(qixue_, kungfu=kungfuInstance.name or "")
         location = qixueInstance.location
         if location is None:

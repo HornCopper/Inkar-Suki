@@ -1,4 +1,4 @@
-from typing import List, Any, Dict
+from typing import Any
 
 from src.const.path import ASSETS, build_path
 from src.const.jx3.server import Server
@@ -113,7 +113,7 @@ class JX3Serendipity:
             )
         self.jx3mm = serendipities
 
-    def get_local_data(self, local_data: List[SerendipityData]) -> List[Dict[str, int | str]]:
+    def get_local_data(self, local_data: list[SerendipityData]) -> list[dict[str, int | str]]:
         result = []
         for data in local_data:
             result.append(
@@ -125,7 +125,7 @@ class JX3Serendipity:
             )
         return result
 
-    async def integration(self, server: str, name: str, uid: str) -> List[dict]:
+    async def integration(self, server: str, name: str, uid: str) -> list[dict]:
         await self.get_tuilan_data(server, name)
         await self.get_my_data(server, name)
         await self.get_jx3pet_data(server, name)
@@ -143,13 +143,13 @@ class JX3Serendipity:
             ),
             "time"
         )[::-1]
-        local_data: List[SerendipityData] | Any = serendipity_db.where_all(SerendipityData(), "server = ? AND roleId = ?", server, uid, default=[])
+        local_data: list[SerendipityData] | Any = serendipity_db.where_all(SerendipityData(), "server = ? AND roleId = ?", server, uid, default=[])
         local_data_dict = self.get_local_data(local_data)
         self.save(local_data, final_data, name, server, uid)
         return merge_dict_lists(final_data, local_data_dict)
 
     @staticmethod
-    def save(local_data: List[SerendipityData], remote_data: List[dict], name: str, server: str, uid: str, /):
+    def save(local_data: list[SerendipityData], remote_data: list[dict], name: str, server: str, uid: str, /):
         local_names = [data.serendipityName for data in local_data]
         if len(local_data) > 0:
             if local_data[0].roleName != name: # player name changed

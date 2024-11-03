@@ -1,6 +1,5 @@
 from pathlib import Path
 from jinja2 import Template
-from typing import List
 
 from src.utils.network import Request
 from src.utils.time import Time
@@ -11,7 +10,7 @@ from ._template import template_dh, table_dunhao_head
 
 import datetime
 
-async def get_dh(type_: str) -> str | List[str | list] | None:
+async def get_dh(type_: str) -> str | list[str | list] | None:
     url = f"https://www.j3dh.com/v1/h/data/hero?ifKnownDaishou=false&exterior={type_}&school=0&figure=0&page=0"
     data = (await Request(url).get()).json()
     if data["Code"] != 0:

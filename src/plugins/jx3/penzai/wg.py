@@ -1,6 +1,5 @@
 from urllib.parse import unquote
 from pathlib import Path
-from typing import List
 from jinja2 import Template
 
 from src.const.path import TEMPLATES, build_path
@@ -22,7 +21,7 @@ async def get_tieba_source(url: str) -> str:
         final = "未知"
     return final
 
-async def get_wg(name) -> str | None | List[str | list]:
+async def get_wg(name) -> str | None | list[str | list]:
     timestamp = int(datetime.datetime.now().timestamp())
     data = (await Request(f"https://www.j3dh.com/v1/wg/data/exterior?exterior={name}&ignorePriceFlag=true&page=0&refresh=v1&time={timestamp}").get()).json()
     if data["Code"] != 0:

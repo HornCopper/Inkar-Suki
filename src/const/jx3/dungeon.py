@@ -1,10 +1,8 @@
-from typing import List, Dict
-
 from .constant import dungeon_mode_data, dungeon_name_data
 
 class Dungeon:
-    dungeon_name: Dict[str, List[str]] = dungeon_name_data
-    dungeon_mode: Dict[str, List[str]] = dungeon_mode_data
+    dungeon_name: dict[str, list[str]] = dungeon_name_data
+    dungeon_mode: dict[str, list[str]] = dungeon_mode_data
 
     def __init__(self, name: str, mode: str):
         self._name = name

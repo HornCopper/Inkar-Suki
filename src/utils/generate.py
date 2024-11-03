@@ -5,7 +5,7 @@ from playwright.async_api import (
 )
 from pathlib import Path
 from nonebot.log import logger
-from typing import Any, Dict, Literal
+from typing import Any, Literal
 
 from src.const.path import CACHE, build_path
 from src.utils.file import write
@@ -31,7 +31,7 @@ class ScreenshotConfig:
         additional_js (str): Additional JavaScript to execute before taking the screenshot. Defaults to an empty string.
         viewport (dict): Viewport dimensions (e.g., {"width": 1920, "height": 1080}). Defaults to 1920x1080.
         full_screen (bool): If True, capture the entire page. Defaults to False.
-        hide_classes (list): List of class names for elements to hide before taking the screenshot. Defaults to an empty list.
+        hide_classes (list): list of class names for elements to hide before taking the screenshot. Defaults to an empty list.
         device_scale_factor (float): Device scale factor for higher resolution screenshots. Defaults to 1.0.
         output_path (str): Path to save the screenshot. Defaults to an auto-generated file if not specified.
     """
@@ -54,7 +54,7 @@ class ScreenshotConfig:
         self.delay = delay
         self.additional_css = additional_css
         self.additional_js = additional_js
-        self.viewport: Dict[Literal["width", "height"], int] = viewport or {"width": 1920, "height": 1080}
+        self.viewport: dict[Literal["width", "height"], int] = viewport or {"width": 1920, "height": 1080}
         self.full_screen = full_screen
         self.hide_classes = hide_classes or []
         self.device_scale_factor = device_scale_factor

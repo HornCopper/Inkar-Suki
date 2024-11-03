@@ -1,5 +1,5 @@
 from datetime import datetime, timedelta
-from typing import List, Dict, Any
+from typing import Any
 from pathlib import Path
 from jinja2 import Template
 
@@ -20,7 +20,7 @@ brick = build_path(ASSETS, ["jx3", "trade", "brick.png"])
 gold = build_path(ASSETS, ["jx3", "trade", "gold.png"])
 
 class DiluData:
-    def __init__(self, raw_data: Dict[str, Any]):
+    def __init__(self, raw_data: dict[str, Any]):
         self.raw_data = raw_data
         self.all_servers = list(servers)
         self.servers_data = {server: [] for server in self.all_servers}
@@ -44,7 +44,7 @@ class DiluData:
 
         return week_start <= dt <= now
 
-    def as_jx3api(self) -> List[Dict[str, Any]]:
+    def as_jx3api(self) -> list[dict[str, Any]]:
         
         for item in self.raw_data["rows"]:
             server = item['Srv']

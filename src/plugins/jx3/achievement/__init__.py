@@ -1,5 +1,3 @@
-from typing import List
-
 from nonebot import on_command
 from nonebot.adapters import Message
 from nonebot.adapters.onebot.v11 import GroupMessageEvent, MessageSegment as ms
@@ -69,7 +67,7 @@ async def _(
     num: Message = Arg()
 ):
     num_ = num.extract_plain_text()
-    data: List[AchievementInformation] = state["v"]
+    data: list[AchievementInformation] = state["v"]
     if check_number(num_) and int(num_) <= len(data):
         image_url = data[int(num_)].icon
         image = (await Request(image_url).get()).content

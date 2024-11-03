@@ -80,16 +80,16 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     img = Request(img_path).local_content
     await LookupTeamMatcher.finish(ms.image(img))
 
-TeamListMatcher = on_command("团队列表", priority=5, force_whitespace=True)
+TeamlistMatcher = on_command("团队列表", priority=5, force_whitespace=True)
 
-@TeamListMatcher.handle()
+@TeamlistMatcher.handle()
 async def _(event: GroupMessageEvent):
     file_content = get_group_settings(str(event.group_id), "opening")
     if not isinstance(file_content, list):
         return
     if len(file_content) == 0:
-        await TeamListMatcher.finish("唔……本群没有任何团队！")
+        await TeamlistMatcher.finish("唔……本群没有任何团队！")
     msg = "本群有以下团队：\n"
     for i in range(len(file_content)):
         msg += str(i) + ". " + file_content[i]["description"] + "\n创建者：" + str(file_content[i]["creator"]) + "\n"
-    await TeamListMatcher.finish(msg[:-1])
+    await TeamlistMatcher.finish(msg[:-1])

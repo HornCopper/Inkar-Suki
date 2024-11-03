@@ -3,7 +3,7 @@
 原作者：@Snowykami
 本文件按原始仓库：LiteyukiStudio/LiteyukiBot
 """
-from typing import Any, Callable, List, TypeVar
+from typing import Any, Callable, TypeVar
 from packaging.version import parse
 from pydantic import BaseModel
 
@@ -55,7 +55,7 @@ class Database:
         all_results = self.where_all(model, condition, *args)
         return all_results[0] if all_results else default
 
-    def where_all(self, model: LiteModel, condition: str = "", *args: Any, default: T = None) -> List[LiteModel | T] | T | None:
+    def where_all(self, model: LiteModel, condition: str = "", *args: Any, default: T = None) -> list[LiteModel | T] | T | None:
         """查询所有
         Args:
             model: 数据模型实例

@@ -1,5 +1,4 @@
 from pathlib import Path
-from typing import List
 from jinja2 import Template
 
 from nonebot.adapters.onebot.v11 import MessageSegment as ms
@@ -18,7 +17,7 @@ from ._parse import AttrsConverter, coin_to_image, calculator_price
 import json
 basic_name = "无修"
 
-def get_exist_attrs(data: List[dict]) -> List[str]:
+def get_exist_attrs(data: list[dict]) -> list[str]:
     attrs = []
     for item in data:
         if item.get("color") == "green":

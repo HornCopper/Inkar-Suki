@@ -41,7 +41,7 @@ async def get_trade_image(server: str, name: str, items: list = []):
             else:
                 for x in itemData["data"]["data"]:
                     final_list.append(x)
-    itemList_searchable = []
+    itemlist_searchable = []
     for i in final_list:
         new = {}
         if i["BindType"] not in [0, 1, 2, None]:
@@ -56,18 +56,18 @@ async def get_trade_image(server: str, name: str, items: list = []):
         new["icon"] = "https://icon.jx3box.com/icon/" + str(i["IconID"]) + ".png"
         new["name"] = i["Name"]
         new["quality"] = i["Quality"] if check_number(i["Quality"]) else 0
-        itemList_searchable.append(new)
-    if len(itemList_searchable) == 1:
+        itemlist_searchable.append(new)
+    if len(itemlist_searchable) == 1:
         currentStatus = 0 # 当日是否具有该物品在交易行
         yesterdayFlag = False
-        current = itemList_searchable[0]["data"]["today"]
+        current = itemlist_searchable[0]["data"]["today"]
         if current is not None:
             currentStatus = 1
         else:
-            if itemList_searchable[0]["data"]["yesterday"] is not None:
+            if itemlist_searchable[0]["data"]["yesterday"] is not None:
                 yesterdayFlag = True
                 currentStatus = 1
-                current = itemList_searchable[0]["data"]["yesterday"]
+                current = itemlist_searchable[0]["data"]["yesterday"]
         if currentStatus:
             msgbox = Template(template_msgbox).render(
                 low=coin_to_image(str(calculator_price(current["LowestPrice"]))),
@@ -76,8 +76,8 @@ async def get_trade_image(server: str, name: str, items: list = []):
             )
         else:
             msgbox = ""
-        color = ["(167, 167, 167)", "(255, 255, 255)", "(0, 210, 75)", "(0, 126, 255)", "(254, 45, 254)", "(255, 165, 0)"][itemList_searchable[0]["quality"]]
-        itemId = itemList_searchable[0]["id"]
+        color = ["(167, 167, 167)", "(255, 255, 255)", "(0, 210, 75)", "(0, 126, 255)", "(254, 45, 254)", "(255, 165, 0)"][itemlist_searchable[0]["quality"]]
+        itemId = itemlist_searchable[0]["id"]
         detail_data = (await Request(f"https://next2.jx3box.com/api/item-price/{itemId}/detail?server={server}&limit=20").get()).json()
         if (not currentStatus or yesterdayFlag) and detail_data["data"]["prices"] is None:
             if not yesterdayFlag:
@@ -90,9 +90,9 @@ async def get_trade_image(server: str, name: str, items: list = []):
         table = []
         for each_price in detail_data["data"]["prices"]:
             table_content = Template(template_table).render(
-                icon=itemList_searchable[0]["icon"],
+                icon=itemlist_searchable[0]["icon"],
                 color=color,
-                name=itemList_searchable[0]["name"],
+                name=itemlist_searchable[0]["name"],
                 time=Time(each_price["created"]).format("%m月%d日 %H:%M:%S"),
                 limit=str(each_price["n_count"]),
                 price=coin_to_image(str(calculator_price(each_price["unit_price"])))
@@ -118,7 +118,7 @@ async def get_trade_image(server: str, name: str, items: list = []):
     else:
         # 如果有多个，则分别显示近期价格，只显示最新一条
         table = []
-        for each_item in itemList_searchable:
+        for each_item in itemlist_searchable:
             color = ["(167, 167, 167)", "(255, 255, 255)", "(0, 210, 75)", "(0, 126, 255)", "(254, 45, 254)", "(255, 165, 0)"][each_item["quality"]]
             itemId = each_item["id"]
             final_name = each_item["name"]
@@ -189,7 +189,7 @@ async def get_trade_image_allserver(name: str):
         return ["唔……您搜索的物品尚未收录！"]
     final_list = itemData["data"]["data"]
     for server in servers:
-        itemList_searchable = []
+        itemlist_searchable = []
         for i in final_list:
             new = {}
             if i["BindType"] not in [0, 1, 2, None]:
@@ -201,18 +201,18 @@ async def get_trade_image_allserver(name: str):
             new["icon"] = "https://icon.jx3box.com/icon/" + str(i["IconID"]) + ".png"
             new["name"] = i["Name"]
             new["quality"] = i["Quality"] if check_number(i["Quality"]) else 0
-            itemList_searchable.append(new)
-        if len(itemList_searchable) == 1:
+            itemlist_searchable.append(new)
+        if len(itemlist_searchable) == 1:
             currentStatus = 0 # 当日是否具有该物品在交易行
             yesterdayFlag = False
-            current = itemList_searchable[0]["data"]["today"]
+            current = itemlist_searchable[0]["data"]["today"]
             if current is not None:
                 currentStatus = 1
             else:
-                if itemList_searchable[0]["data"]["yesterday"] is not None:
+                if itemlist_searchable[0]["data"]["yesterday"] is not None:
                     yesterdayFlag = True
                     currentStatus = 1
-                    current = itemList_searchable[0]["data"]["yesterday"] 
+                    current = itemlist_searchable[0]["data"]["yesterday"] 
                 else:
                     yesterdayFlag = 0
                     currentStatus = 0
@@ -224,9 +224,9 @@ async def get_trade_image_allserver(name: str):
                 highs.append(0)
                 avgs.append(0)
                 lows.append(0)
-            color = ["(167, 167, 167)", "(255, 255, 255)", "(0, 210, 75)", "(0, 126, 255)", "(254, 45, 254)", "(255, 165, 0)"][itemList_searchable[0]["quality"]]
-            itemId = itemList_searchable[0]["id"]
-            icon = itemList_searchable[0]["icon"]
+            color = ["(167, 167, 167)", "(255, 255, 255)", "(0, 210, 75)", "(0, 126, 255)", "(254, 45, 254)", "(255, 165, 0)"][itemlist_searchable[0]["quality"]]
+            itemId = itemlist_searchable[0]["id"]
+            icon = itemlist_searchable[0]["icon"]
             detailData = (await Request(f"https://next2.jx3box.com/api/item-price/{itemId}/detail?server={server}&limit=20").get()).json()
             if (not currentStatus or yesterdayFlag) and detailData["data"]["prices"] is None:
                 if not yesterdayFlag:
@@ -252,9 +252,9 @@ async def get_trade_image_allserver(name: str):
                     )
                     continue
             table.append(Template(template_table).render(
-                    icon=itemList_searchable[0]["icon"],
+                    icon=itemlist_searchable[0]["icon"],
                     color=color,
-                    name=itemList_searchable[0]["name"] + f"（{server}）",
+                    name=itemlist_searchable[0]["name"] + f"（{server}）",
                     time=Time().format("%m月%d日 %H:%M:%S"),
                     limit=str(detailData["data"]["prices"][0]["n_count"]),
                     price=coin_to_image(str(calculator_price(detailData["data"]["prices"][0]["unit_price"])))

@@ -1,4 +1,4 @@
-document.addEventListener("DOMContentLoaded", function () {
+document.addEventlistener("DOMContentLoaded", function () {
     const progressBars = document.querySelectorAll(".progress-bar .progress");
     progressBars.forEach(function (bar) {
         const width = parseFloat(bar.style.width);

@@ -1,6 +1,6 @@
 from pathlib import Path
 from jinja2 import Template
-from typing import Any, List
+from typing import Any
 
 from src.const.jx3.school import School
 from src.const.jx3.server import Server
@@ -56,7 +56,7 @@ async def bind_affection(uin_1: int, name_1: str, uin_2: int, name_2: str, group
     db.save(new_data)
     return [PROMPT.AffectionBindComplete]
 
-async def delete_affection(uin: int) -> List[str] | None:
+async def delete_affection(uin: int) -> list[str] | None:
     if not check_status(uin):
         return [PROMPT.AffectionUnbindWithNo]
     db.delete(Affections(), "uin_1 = ? OR uin_2 = ?", uin, uin)

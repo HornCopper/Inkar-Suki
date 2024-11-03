@@ -1,7 +1,7 @@
 from pathlib import Path
 from jinja2 import Template
 from json.decoder import JSONDecodeError
-from typing import Tuple, Literal, List
+from typing import Literal
 
 from src.const.jx3.constant import dungeon_name_data as map_list
 from src.const.path import build_path, TEMPLATES
@@ -56,7 +56,7 @@ async def get_total_data(guid: str) -> dict:
     data = (await Request("https://m.pvp.xoyo.com/achievement/list/achievements", params=params).post(tuilan=True)).json()
     return data
 
-async def get_value(data: dict, detail: str) -> Tuple[str, str]:
+async def get_value(data: dict, detail: str) -> tuple[str, str]:
     filtered_data = {"data": [e for e in data["data"]["data"] if e["detail"] == detail]}
     total = 0
     finished = 0
@@ -83,7 +83,7 @@ def get_color_type(proportion: str) -> str:
         raise ValueError(f"Unsupport value {num} appeared in the proportion!")
 
 
-async def get_zone_overview_image(server: str, id: str) -> List[str] | str | None:
+async def get_zone_overview_image(server: str, id: str) -> list[str] | str | None:
     detail = await get_menu()
     if not detail:
         return ["唔……获取目录失败！"]

@@ -1,4 +1,3 @@
-from typing import List, Dict
 from typing_extensions import Self
 
 from src.utils.analyze import invert_dict
@@ -16,12 +15,12 @@ from .constant import (
 )
 
 class Kungfu:
-    kungfu_aliases: Dict[str, List[str]] = kungfu_aliases_data
-    kungfu_colors_data: Dict[str, str] = kungfu_colors_data
-    kungfu_internel_id: Dict[str, str] = kungfu_internel_id_data
-    kungfu_baseattr: Dict[str, List[str]] = kungfu_baseattr_data
+    kungfu_aliases: dict[str, list[str]] = kungfu_aliases_data
+    kungfu_colors_data: dict[str, str] = kungfu_colors_data
+    kungfu_internel_id: dict[str, str] = kungfu_internel_id_data
+    kungfu_baseattr: dict[str, list[str]] = kungfu_baseattr_data
 
-    school_aliases: Dict[str, List[str]] = school_aliases_data
+    school_aliases: dict[str, list[str]] = school_aliases_data
 
     def __init__(self, kungfu_name: str | None = ""):
         self.kungfu_name = kungfu_name
