@@ -5,7 +5,7 @@ from src.utils.database import cache_db
 from src.utils.database.classes import RequestData
 from src.utils.exceptions import RequestDataException
 from src.utils.decorators import ticket_required
-from src.utils.tuilan import gen_xsk, gen_ts, format_body
+from src.utils.tuilan import generate_x_sk, generate_timestamp, format_request_body
 from src.utils.time import Time
 
 import httpx
@@ -112,12 +112,12 @@ class Request:
             arguments (dict): 关键字参数字典。
         """
         if params == {}:
-            params = {"ts": gen_ts()}
+            params = {"ts": generate_timestamp()}
         if "ts" not in params:
-            params["ts"] = gen_ts()
+            params["ts"] = generate_timestamp()
         device_id = ticket.split("::")[-1]
-        params_ = format_body(params)
-        xsk = gen_xsk(params_)
+        params_ = format_request_body(params)
+        xsk = generate_x_sk(params_)
         basic_headers = {
             "Host": "m.pvp.xoyo.com",
             "Connection": "keep-alive",

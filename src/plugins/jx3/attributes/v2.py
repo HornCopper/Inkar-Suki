@@ -376,7 +376,7 @@ class JX3AttributeV2:
                 attr = attr.replace(y, "")
             if attr != "" and len(attr) <= 5:
                 msg = msg + f" {attr}"
-        msg = msg.replace(" 能 ", " 全能 ")
+        msg = msg.replace(" 能 ", " 全能 ").replace(" 能", " 全能")
         return msg
 
     @property

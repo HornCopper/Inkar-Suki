@@ -6,7 +6,7 @@ from src.const.path import ASSETS, TEMPLATES, build_path
 from src.utils.network import Request
 from src.utils.generate import generate
 from src.utils.database.player import search_player
-from src.utils.tuilan import gen_ts, dungeon_sign
+from src.utils.tuilan import generate_timestamp, generate_dungeon_sign
 from src.utils.time import Time
 from src.templates import HTMLSourceCode
 
@@ -262,10 +262,10 @@ async def get_zone_record_image(server: str, role: str):
         return ["唔……获取玩家信息失败。"]
     else:
         guid = details_data["data"]["globalRoleId"]
-    ts = gen_ts()
+    ts = generate_timestamp()
     params = {
         "globalRoleId": guid,
-        "sign": dungeon_sign(f"globalRoleId={guid}&ts={ts}"),
+        "sign": generate_dungeon_sign(f"globalRoleId={guid}&ts={ts}"),
         "ts": ts
     }
     data = (await Request("https://m.pvp.xoyo.com/h5/parser/cd-process/get-by-role", params=params).post(tuilan=True)).json()
