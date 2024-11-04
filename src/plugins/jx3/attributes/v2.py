@@ -157,6 +157,10 @@ class JX3AttributeV2:
         Args:
             school (str): 可能存在无界玩家的`KungfuId`无法识别，建议自行传入门派。
         """
+        if school in ["万灵山庄", "衍天宗", "凌雪阁"]:
+            school = school[0:2]
+        if school == "北天药宗":
+            school = school[-2:]
         final_path = build_path(ASSETS, ["image", "jx3", "attributes", "school_bg", school + ".png"])
         if os.path.exists(final_path):
             return final_path
