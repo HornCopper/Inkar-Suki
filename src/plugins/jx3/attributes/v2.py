@@ -392,7 +392,7 @@ class JX3AttributeV2:
         return quality
 
     async def qixue(self) -> tuple[list[str], list[str]]:
-        qixue_list = self.data["data"]["Person"]["qixuelist"]
+        qixue_list = self.data["data"]["Person"]["qixueList"]
         unknown_img = build_path(ASSETS, ["image", "jx3", "attributes", "unknown.png"])
         name = ["未知", "未知", "未知", "未知", "未知", "未知", "未知", "未知", "未知", "未知", "未知", "未知"]
         icon = [unknown_img, unknown_img, unknown_img, unknown_img, unknown_img, unknown_img, unknown_img, unknown_img, unknown_img, unknown_img, unknown_img, unknown_img]
