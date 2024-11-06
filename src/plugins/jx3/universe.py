@@ -13,7 +13,8 @@ from .assistance import (
     CancelTeamMatcher,
     CreateTeamMatcher,
     LookupTeamMatcher,
-    DissolveTeamMatcher
+    DissolveTeamMatcher,
+    ShareTeamMatcher
 )
 from .attributes import (
     AttributeV2Matcher,
@@ -46,7 +47,8 @@ from .detail import (
 from .dungeon import (
     MonstersMatcher,
     DropslistMatcher,
-    ZoneRecordMatcher
+    ZoneRecordMatcher,
+    ItemRecordMatcher
 )
 from .emoji import (
     EmojiMatcher

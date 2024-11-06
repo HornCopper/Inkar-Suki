@@ -20,9 +20,7 @@ from ._template import (
     table_drop_head,
     image_template,
     template_zone_record,
-    table_zone_record_head,
-    template_item,
-    table_item_head
+    table_zone_record_head
 )
 
 async def get_map(name: str, mode: str) -> int | None:

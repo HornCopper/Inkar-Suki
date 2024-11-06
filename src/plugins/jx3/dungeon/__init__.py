@@ -8,11 +8,12 @@ from src.const.prompts import PROMPT
 from src.const.jx3.server import Server
 from src.utils.network import Request
 
-from .api import (
+from .zone_drop import (
     get_zone_record_image,
     get_drop_list_image
 )
 from .monster import get_monsters_map
+from .record import get_item_record
 
 ZoneRecordMatcher = on_command("jx3_zones", aliases={"副本"}, force_whitespace=True, priority=5)
 
@@ -72,3 +73,13 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     img = await get_monsters_map()
     if isinstance(img, str):
         await MonstersMatcher.finish(ms.image(Request(img).local_content))
+
+ItemRecordMatcher = on_command("jx3_itemrecord", aliases={"掉落"}, force_whitespace=True, priority=5)
+
+@ItemRecordMatcher.handle()
+async def _(event: GroupMessageEvent, args: Message = CommandArg()):
+    item_name = args.extract_plain_text()
+    data = await get_item_record(item_name)
+    if isinstance(data, str):
+        await ItemRecordMatcher.finish(data)
+    await ItemRecordMatcher.finish(ms.image(Request(data.as_uri()).local_content))
