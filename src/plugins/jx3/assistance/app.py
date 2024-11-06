@@ -140,7 +140,7 @@ class Assistance:
             return "D"
         
     def share_team(self, from_group: int, to_group: int, keyword: str, creator: int) -> bool:
-        if not self.check_description(str(from_group), keyword) or self.check_description(str(to_group), keyword):
+        if self.check_description(str(from_group), keyword) or not self.check_description(str(to_group), keyword):
             return False
         raw_teams: list[dict] = get_group_settings(str(from_group), "opening")
         goal_teams: list[dict] = get_group_settings(str(to_group), "opening")
