@@ -7,6 +7,7 @@ from src.const.path import (
     ASSETS,
     build_path
 )
+from src.utils.analyze import check_number
 from src.utils.time import Time
 from src.utils.generate import generate
 from src.utils.database.operation import get_group_settings, set_group_settings
@@ -44,7 +45,7 @@ class Assistance:
             return
         opening.append(new)
         set_group_settings(group_id, "opening", opening)
-        return "开团成功，团员可通过以下命令进行预定：\n预定 <团队关键词> <ID> <职业>\n上述命令使用时请勿带尖括号，职业请使用准确些的词语，避免使用“长歌”，“万花”等模棱两可的职业字眼，也可以是“躺拍”“老板”等词语。\n特别注意：团长请给自己预定，否则预定总人数将为26人！"
+        return "开团成功，团员可通过以下命令进行预定：\n预定 <团队关键词/序号> <ID> <职业>\n可使用“团队列表”查看该团队的序号！"
 
     def apply_for_place(self, group_id: str, keyword: str, role_name: str, role_type: str, user_id: str) -> str:
         status = self.check_apply(group_id, keyword, role_name)
@@ -94,7 +95,7 @@ class Assistance:
         if not isinstance(now, list):
             return
         for i in now:
-            if i["description"] == keyword or now.index(i) == keyword:
+            if i["description"] == keyword or str(now.index(i)) == keyword:
                 if i["creator"] != user_id:
                     return "非创建者无法解散团队哦~"
                 now.remove(i)
@@ -106,7 +107,7 @@ class Assistance:
         if not isinstance(now, list):
             return
         for i in now:
-            if i["description"] == keyword or now.index(i) == keyword:
+            if i["description"] == keyword or str(now.index(i)) == keyword:
                 members = i["member"]
                 for x in members:
                     if len(x) != 5:
@@ -156,7 +157,7 @@ class Assistance:
         if not isinstance(now, list):
             return
         for i in now:
-            if i["description"] == keyword or now.index(i) == keyword:
+            if i["description"] == keyword or str(now.index(i)) == keyword:
                 creator = i["creator"]
                 count = {
                     "T": 0,
@@ -209,7 +210,7 @@ class Assistance:
                     B_count = str(count["B"]),
                     font = font,
                     background = bg,
-                    title = keyword
+                    title = keyword if not check_number(keyword) else i["description"]
                 )
                 final_path = await generate(str(html), ".background-container", False)
                 if not isinstance(final_path, str):
