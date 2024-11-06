@@ -79,7 +79,7 @@ class Assistance:
         if not isinstance(now, list):
             return
         for i in now:
-            if i["description"] == keyword or now.index(i) == keyword:
+            if i["description"] == keyword or str(now.index(i)) == keyword:
                 for x in i["member"]:
                     for y in x:
                         if y["role"] == role_name:
@@ -196,7 +196,7 @@ class Assistance:
                             cell_content = "<div class=\"content-cell\"></div>"
                         html_table += f"<td>{cell_content}</td>\n"
                     html_table += "</tr>\n"
-                bg = build_path(ASSETS, ["image", "assistance", str(random.randint(1, 10)) + ".jpg"])
+                bg = build_path(ASSETS, ["image", "jx3", "assistance", str(random.randint(1, 10)) + ".jpg"])
                 html_table += "</table>"
                 font = build_path(ASSETS, ["font", "custom.ttf"])
                 html = SimpleHTML(
