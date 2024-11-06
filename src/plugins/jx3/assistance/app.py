@@ -19,7 +19,7 @@ class Assistance:
     def __init__(self):
         pass
 
-    async def check_description(self, group_id: str, keyword: str) -> bool | None:
+    def check_description(self, group_id: str, keyword: str) -> bool | None:
         opening = get_group_settings(group_id, "opening")
         if not isinstance(opening, list):
             return
@@ -28,8 +28,8 @@ class Assistance:
                 return False
         return True
 
-    async def create_group(self, group_id: str, keyword: str, creator_id: str) -> str | None:
-        status = await self.check_description(group_id, keyword)
+    def create_group(self, group_id: str, keyword: str, creator_id: str) -> str | None:
+        status = self.check_description(group_id, keyword)
         if not status:
             return "开团失败，已经有相同的团队关键词！\n使用“团队列表”可查看本群目前正在进行的团队。"
         new = {
@@ -46,8 +46,8 @@ class Assistance:
         set_group_settings(group_id, "opening", opening)
         return "开团成功，团员可通过以下命令进行预定：\n预定 <团队关键词> <ID> <职业>\n上述命令使用时请勿带尖括号，职业请使用准确些的词语，避免使用“长歌”，“万花”等模棱两可的职业字眼，也可以是“躺拍”“老板”等词语。\n特别注意：团长请给自己预定，否则预定总人数将为26人！"
 
-    async def apply_for_place(self, group_id: str, keyword: str, role_name: str, role_type: str, user_id: str) -> str:
-        status = await self.check_apply(group_id, keyword, role_name)
+    def apply_for_place(self, group_id: str, keyword: str, role_name: str, role_type: str, user_id: str) -> str:
+        status = self.check_apply(group_id, keyword, role_name)
         if status:
             return "唔……您似乎已经申请过了，请不要重复申请哦~\n如需修改请先发送“取消申请 <团队关键词> <ID>”，随后重新申请！"
         if role_type in ["老板", "躺", "躺拍"]:
@@ -64,14 +64,14 @@ class Assistance:
             "apply": user_id,
             "time": Time().raw_time
         }
-        stg = await self.storge(group_id, keyword, new)
+        stg = self.storge(group_id, keyword, new)
         if stg is False:
             return "唔……该团队似乎已满，申请失败！"
         else:
             return "预定成功！"
 
-    async def cancel_apply(self, group_id: str, keyword: str, role_name: str, user_id: str) -> str | None:
-        status = await self.check_apply(group_id, keyword, role_name)
+    def cancel_apply(self, group_id: str, keyword: str, role_name: str, user_id: str) -> str | None:
+        status = self.check_apply(group_id, keyword, role_name)
         if status is False:
             return "唔……您似乎还没申请呢！"
         now = get_group_settings(group_id, "opening")
@@ -89,7 +89,7 @@ class Assistance:
                             return "成功取消留坑！"
         return "取消失败，未知错误。"
 
-    async def dissolve(self, group_id: str, keyword: str, user_id: str) -> str | None:
+    def dissolve(self, group_id: str, keyword: str, user_id: str) -> str | None:
         now = get_group_settings(group_id, "opening")
         if not isinstance(now, list):
             return
@@ -101,7 +101,7 @@ class Assistance:
                 set_group_settings(group_id, "opening", now)
                 return "解散团队成功！"
 
-    async def storge(self, group_id: str, keyword: str, content: dict) -> bool | None:
+    def storge(self, group_id: str, keyword: str, content: dict) -> bool | None:
         now = get_group_settings(group_id, "opening")
         if not isinstance(now, list):
             return
@@ -117,7 +117,7 @@ class Assistance:
                         continue
         return False
 
-    async def check_apply(self, group_id: str, keyword: str, role_name: str) -> bool | None:
+    def check_apply(self, group_id: str, keyword: str, role_name: str) -> bool | None:
         file_content = get_group_settings(group_id, "opening")
         if not isinstance(file_content, list):
             return
@@ -138,6 +138,18 @@ class Assistance:
             return "B"
         else:
             return "D"
+        
+    def share_team(self, from_group: int, to_group: int, keyword: str, creator: int) -> bool:
+        if not self.check_description(str(from_group), keyword) or self.check_description(str(to_group), keyword):
+            return False
+        raw_teams: list[dict] = get_group_settings(str(from_group), "opening")
+        goal_teams: list[dict] = get_group_settings(str(to_group), "opening")
+        for each_team in raw_teams:
+            if str(each_team["creator"]) == str(creator) and each_team["description"] == keyword:
+                goal_teams.append(each_team)
+                set_group_settings(str(to_group), "opening", goal_teams)
+                return True
+        return False
 
     async def generate_html(self, group_id: str, keyword: str) -> Literal[False] | str | None:
         now = get_group_settings(group_id, "opening")
