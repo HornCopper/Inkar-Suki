@@ -41,7 +41,7 @@ async def _(bot: Bot, event: MessageEvent, args: Message = CommandArg()):
     if not check_number(user_id):
         await UnbanMatcher.finish(PROMPT.ArgumentInvalid)    
     status = Ban(event.user_id).unban()
-    if not status:
+    if status:
         await UnbanMatcher.finish(PROMPT.BanRepeatInvalid)
     await UnbanMatcher.finish(f"好的，已经全域解封({user_id})。")
 
