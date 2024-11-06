@@ -25,7 +25,7 @@ class Assistance:
         if not isinstance(opening, list):
             return
         for i in opening:
-            if i["description"] == keyword or str(opening.index(i)) == keyword:
+            if i["description"] == keyword or str(opening.index(i) + 1) == keyword:
                 return False
         return True
 
@@ -79,7 +79,7 @@ class Assistance:
         if not isinstance(now, list):
             return
         for i in now:
-            if i["description"] == keyword or str(now.index(i)) == keyword:
+            if i["description"] == keyword or str(now.index(i) + 1) == keyword:
                 for x in i["member"]:
                     for y in x:
                         if y["role"] == role_name:
@@ -95,7 +95,7 @@ class Assistance:
         if not isinstance(now, list):
             return
         for i in now:
-            if i["description"] == keyword or str(now.index(i)) == keyword:
+            if i["description"] == keyword or str(now.index(i) + 1) == keyword:
                 if i["creator"] != user_id:
                     return "非创建者无法解散团队哦~"
                 now.remove(i)
@@ -107,7 +107,7 @@ class Assistance:
         if not isinstance(now, list):
             return
         for i in now:
-            if i["description"] == keyword or str(now.index(i)) == keyword:
+            if i["description"] == keyword or str(now.index(i) + 1) == keyword:
                 members = i["member"]
                 for x in members:
                     if len(x) != 5:
@@ -123,7 +123,7 @@ class Assistance:
         if not isinstance(file_content, list):
             return
         for i in file_content:
-            if i["description"] == keyword or str(file_content.index(i)) == keyword:
+            if i["description"] == keyword or str(file_content.index(i) + 1) == keyword:
                 for x in i["member"]:
                     for y in x:
                         if y["role"] == role_name:
@@ -146,7 +146,7 @@ class Assistance:
         raw_teams: list[dict] = get_group_settings(str(from_group), "opening")
         goal_teams: list[dict] = get_group_settings(str(to_group), "opening")
         for each_team in raw_teams:
-            if str(each_team["creator"]) == str(creator) and (each_team["description"] == keyword or str(raw_teams.index(each_team)) == keyword):
+            if str(each_team["creator"]) == str(creator) and (each_team["description"] == keyword or str(raw_teams.index(each_team) + 1) == keyword):
                 goal_teams.append(each_team)
                 set_group_settings(str(to_group), "opening", goal_teams)
                 return True
@@ -157,7 +157,7 @@ class Assistance:
         if not isinstance(now, list):
             return
         for i in now:
-            if i["description"] == keyword or str(now.index(i)) == keyword:
+            if i["description"] == keyword or str(now.index(i) + 1) == keyword:
                 creator = i["creator"]
                 count = {
                     "T": 0,

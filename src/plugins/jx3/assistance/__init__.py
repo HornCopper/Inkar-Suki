@@ -92,7 +92,7 @@ async def _(event: GroupMessageEvent):
         await TeamlistMatcher.finish("唔……本群没有任何团队！")
     msg = "本群有以下团队：\n"
     for i in range(len(file_content)):
-        msg += str(i) + ". " + file_content[i]["description"] + "\n创建者：" + str(file_content[i]["creator"]) + "\n"
+        msg += str(i + 1) + ". " + file_content[i]["description"] + "\n创建者：" + str(file_content[i]["creator"]) + "\n"
     await TeamlistMatcher.finish(msg[:-1])
 
 ShareTeamMatcher = on_command("共享团队", priority=5, force_whitespace=True)
