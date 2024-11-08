@@ -235,7 +235,7 @@ class Assistance:
                             qq_text = a["apply"]
                             if id_text[0] == "#":
                                 id_text = f"<s>{id_text}</s>"
-                                qq_text = f"可报名此职业"
+                                qq_text = "<span style=\"color:gold\"><b>可报名此职业</b></span>"
                             cell_content = f"""
                             <div class="content-cell">
                                 <img width="48px" height="48px" src={img_src}>
