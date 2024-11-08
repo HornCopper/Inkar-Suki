@@ -8,19 +8,26 @@ from src.utils.analyze import check_number
 from src.utils.network import Request
 from src.utils.database.operation import get_group_settings
 
-from .app import Assistance
+from .app import Assistance, parse_limit
 
 AssistanceInstance = Assistance()
 
 CreateTeamMatcher = on_command("创建团队", force_whitespace=True, priority=5)
 
 @CreateTeamMatcher.handle()
-async def _(event: GroupMessageEvent, args: Message = CommandArg()):
-    if args.extract_plain_text() == "":
+async def _(event: GroupMessageEvent, argument: Message = CommandArg()):
+    if argument.extract_plain_text() == "":
         return
-    if check_number(args.extract_plain_text()):
+    if check_number(argument.extract_plain_text()):
         await CreateTeamMatcher.finish("唔……请勿使用纯数字作为关键词！")
-    resp = AssistanceInstance.create_group(str(event.group_id), args.extract_plain_text(), str(event.user_id))
+    args = argument.extract_plain_text().split(" ")
+    if not parse_limit(args[-1]):
+        team_name = argument.extract_plain_text()
+        resp = AssistanceInstance.create_group(str(event.group_id), team_name, str(event.user_id))
+    else:
+        team_name = " ".join(args[:-1])
+        team_limit = args[-1]
+        resp = AssistanceInstance.create_group(str(event.group_id), team_name, str(event.user_id), team_limit)
     await CreateTeamMatcher.finish(resp)
 
 BookTeamMatcher = on_command("预定", aliases={"预订", "报名"}, force_whitespace=True, priority=5)
@@ -92,7 +99,20 @@ async def _(event: GroupMessageEvent):
         await TeamlistMatcher.finish("唔……本群没有任何团队！")
     msg = "本群有以下团队：\n"
     for i in range(len(file_content)):
-        msg += str(i + 1) + ". " + file_content[i]["description"] + "\n创建者：" + str(file_content[i]["creator"]) + "\n"
+        name = file_content[i]["description"]
+        leader = str(file_content[i]["creator"])
+        if "limit" not in file_content[i]:
+            print(1)
+            limit = "无"
+        else:
+            parsed_limit = parse_limit(file_content[i]["limit"])
+            if not parsed_limit:
+                print(2)
+                limit = "无"
+            else:
+                print(3)
+                limit = file_content[i]["limit"]
+        msg += str(i + 1) + ". " + name + "\n创建者：" + leader + "\n职业限制：" + limit + "\n"
     await TeamlistMatcher.finish(msg[:-1])
 
 ShareTeamMatcher = on_command("共享团队", priority=5, force_whitespace=True)

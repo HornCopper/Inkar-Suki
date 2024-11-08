@@ -15,10 +15,31 @@ from src.utils.database.operation import get_group_settings, set_group_settings
 from src.templates import SimpleHTML
 
 import random
+import re
+
+def parse_limit(s: str) -> dict[str, int] | Literal[False]:
+    pattern = r"([0-1]?[0-9]|2[0-5])([TNBD])"
+    matches = re.findall(pattern, s)
+    if len(matches) == 0 or len(matches) > 4:
+        return False
+    result = {key: 25 for key in "TNBD"}
+    for value, key in matches:
+        result[key] = int(value)
+    return result
 
 class Assistance:
     def __init__(self):
         pass
+
+    def stastic_roles(self, nested_list: list[list[dict[str, str]]]) -> dict[str, int]:
+        result = {"T": 0, "N": 0, "B": 0, "D": 0}
+        for inner_list in nested_list:
+            for item in inner_list:
+                if "role_type" in item:
+                    role_type = self.role_type_abbr(item["role_type"])
+                    if role_type in result:
+                        result[role_type] += 1
+        return result
 
     def check_description(self, group_id: str, keyword: str) -> bool | None:
         opening = get_group_settings(group_id, "opening")
@@ -29,7 +50,7 @@ class Assistance:
                 return False
         return True
 
-    def create_group(self, group_id: str, keyword: str, creator_id: str) -> str | None:
+    def create_group(self, group_id: str, keyword: str, creator_id: str, /, limit: str = "") -> str | None:
         status = self.check_description(group_id, keyword)
         if not status:
             return "开团失败，已经有相同的团队关键词！\n使用“团队列表”可查看本群目前正在进行的团队。"
@@ -38,7 +59,8 @@ class Assistance:
             "applying": [],
             "member": [[], [], [], [], []],
             "create_time": Time().raw_time,
-            "description": keyword
+            "description": keyword,
+            "limit": limit
         }
         opening = get_group_settings(group_id, "opening")
         if not isinstance(opening, list):
@@ -49,14 +71,32 @@ class Assistance:
 
     def apply_for_place(self, group_id: str, keyword: str, role_name: str, role_type: str, user_id: str) -> str:
         status = self.check_apply(group_id, keyword, role_name)
-        if status:
+        if status is True:
             return "唔……您似乎已经申请过了，请不要重复申请哦~\n如需修改请先发送“取消申请 <团队关键词> <ID>”，随后重新申请！"
+        if status is False:
+            return "未找到对应团队！请检查后重试！"
+        applyable = False
         if role_type in ["老板", "躺", "躺拍"]:
             role_actual_type = "老板"
         else:
             role_actual_type: str | None = Kungfu(role_type).name
-            if not role_actual_type:
-                return f"唔……{Config.bot_basic.bot_name}暂时没办法识别您的职业，请检查一下呗？\n避免使用“长歌”“万花”“天策”等字眼，您可以使用“天策t”“奶咕”“qc”等准确些的词语方便理解哦~\n如果您使用的词语实在无法识别，请使用标准名称，例如“离经易道”。"
+            if role_actual_type is None:
+                return f"唔……{Config.bot_basic.bot_name}暂时没办法识别您的职业，请检查一下呗？"\
+                    "\n避免使用“长歌”“万花”“天策”等字眼，您可以使用“天策t”“奶咕”“qc”等准确些的词语方便理解哦~"\
+                    "\n如果您使用的词语实在无法识别，请使用标准名称，例如“离经易道”。"
+        if isinstance(status, dict):
+            if "limit" not in status:
+                applyable = True
+            else:
+                limit = status["limit"]
+                parsed_limit = parse_limit(limit)
+                if not parsed_limit:
+                    applyable = True
+                else:
+                    if self.stastic_roles(status["member"]).get(self.role_type_abbr(role_actual_type), 0) < parsed_limit.get(self.role_type_abbr(role_actual_type), 0):
+                        applyable = True
+        if not applyable:
+            return "您所申请的职业类型已达到团长限制的最大数量，您可以更换其他职业参与本次团队活动！\n可使用“团队列表”查看该团队的职业人数限制！\n可使用“查看团队”查看该团队目前报名情况！"
         job_icon = Kungfu(role_actual_type).icon if role_actual_type != "老板" else build_path(ASSETS, ["image", "jx3", "kungfu"], end_with_slash=True) + "老板.png"
         new = {
             "role": role_name,
@@ -73,8 +113,8 @@ class Assistance:
 
     def cancel_apply(self, group_id: str, keyword: str, role_name: str, user_id: str) -> str | None:
         status = self.check_apply(group_id, keyword, role_name)
-        if status is False:
-            return "唔……您似乎还没申请呢！"
+        if status is not True:
+            return "唔……未找到该报名信息，或团队不存在！"
         now = get_group_settings(group_id, "opening")
         if not isinstance(now, list):
             return
@@ -88,7 +128,7 @@ class Assistance:
                             x.remove(y)
                             set_group_settings(group_id, "opening", now)
                             return "成功取消留坑！"
-        return "取消失败，未知错误。"
+        raise ValueError("Please check the `assistance` app.py class `Assistance` method `cancel apply`!")
 
     def dissolve(self, group_id: str, keyword: str, user_id: str) -> str | None:
         now = get_group_settings(group_id, "opening")
@@ -118,16 +158,21 @@ class Assistance:
                         continue
         return False
 
-    def check_apply(self, group_id: str, keyword: str, role_name: str) -> bool | None:
-        file_content = get_group_settings(group_id, "opening")
-        if not isinstance(file_content, list):
-            return
+    def check_apply(self, group_id: str, keyword: str, role_name: str) -> bool | dict:
+        """
+        Returns:
+            (True): User has applied the team.
+            (False): Team not found.
+            (type(dict)): Team found, but user has not applied.
+        """
+        file_content: list[dict] = get_group_settings(group_id, "opening")
         for i in file_content:
             if i["description"] == keyword or str(file_content.index(i) + 1) == keyword:
                 for x in i["member"]:
                     for y in x:
                         if y["role"] == role_name:
                             return True
+                return i
         return False
     
     def role_type_abbr(self, role_type: str) -> str:
