@@ -17,6 +17,93 @@ from src.templates import SimpleHTML
 import random
 import re
 
+def rearrange_teams(input_teams):
+    # 心法类型和阵眼定义
+    phisical_core = ["凌海诀", "隐龙诀", "太虚剑意", "孤锋诀", "惊羽诀"]
+    general_core = ["山海心诀"]
+    magical_core = ["天罗诡道", "莫问", "紫霞功", "周天功", "花间游"]
+    phisical = ["傲血战意", "分山劲", "太虚剑意", "惊羽诀", "问水诀", "笑尘诀", "北傲诀", "凌海诀", "隐龙诀", "孤锋诀", "山海心诀"]
+    magical = ["冰心诀", "花间游", "毒经", "莫问", "无方", "易筋经", "焚影圣诀", "紫霞功", "天罗诡道", "太玄经", "周天功"]
+    all_cores = phisical_core + general_core + magical_core
+    
+    # 将input转换成一维列表，过滤掉空值
+    all_members = [item for sublist in input_teams for item in sublist if item]
+    original_count = len(all_members)
+    columns = [[] for _ in range(5)]
+    used_members = set()
+
+    # 分类成员
+    core_members, phisical_members, magical_members, other_members = [], [], [], []
+    for member in all_members:
+        if member["role_type"] in all_cores:
+            core_members.append(member)
+        elif member["role_type"] in phisical:
+            phisical_members.append(member)
+        elif member["role_type"] in magical:
+            magical_members.append(member)
+        else:
+            other_members.append(member)
+
+    # 按优先级排序阵眼成员
+    core_members.sort(key=lambda x: all_cores.index(x["role_type"]) if x["role_type"] in all_cores else float("inf"))
+
+    total_used_members = 0  # 记录已分配成员数
+
+    # 为每列尝试分配一个阵眼
+    for col_idx in range(5):
+        if core_members:
+            core = core_members.pop(0)
+            columns[col_idx].append(core)
+            used_members.add(core["role"])
+            total_used_members += 1  # 记录使用的阵眼成员
+
+    # 将未使用的阵眼成员加入到相应的普通成员池中
+    for remaining_core in core_members:
+        if remaining_core["role_type"] in phisical:
+            phisical_members.append(remaining_core)
+        elif remaining_core["role_type"] in magical:
+            magical_members.append(remaining_core)
+
+    # 填充剩余成员，确保每列成员类型一致
+    for col_idx in range(5):
+        preferred_list = phisical_members if len(columns[col_idx]) == 0 or columns[col_idx][0]["role_type"] not in magical_core else magical_members
+
+        # 填充当前列
+        while len(columns[col_idx]) < 5:
+            member_added = False
+            for member in preferred_list[:]:
+                if member["role"] not in used_members:
+                    columns[col_idx].append(member)
+                    used_members.add(member["role"])
+                    total_used_members += 1
+                    member_added = True
+                    preferred_list.remove(member)
+                    break
+            
+            if not member_added:
+                for member in other_members[:]:
+                    if member["role"] not in used_members:
+                        columns[col_idx].append(member)
+                        used_members.add(member["role"])
+                        total_used_members += 1
+                        member_added=True
+                        other_members.remove(member)
+                        break
+            
+            if not member_added:
+                columns[col_idx].append({"role": None, "role_type": None})
+
+    # 转置列为行
+    output_teams = [[columns[j][i] for j in range(5)] for i in range(5)]
+
+    # 兜底逻辑
+    if total_used_members < original_count:
+        # 补充None以形成5x5的输出
+        output_teams = [row + [{"role": None, "role_type": None}] * (5 - len(row)) for row in input_teams]
+        output_teams += [[{"role": None, "role_type": None}] * 5] * (5 - len(output_teams))
+
+    return output_teams
+
 def parse_limit(s: str) -> dict[str, int] | Literal[False]:
     pattern = r"([0-1]?[0-9]|2[0-5])([TNBD])"
     matches = re.findall(pattern, s)
@@ -223,11 +310,16 @@ class Assistance:
                     "B": 0
                 }
                 html_table = "<table>"
-                for row in i["member"]:
+                sorted_team = rearrange_teams(i["member"])
+                for row in sorted_team:
                     html_table += "  <tr>\n"
                     for x in range(5):
                         if x < len(row) and row[x]:  # 如果索引在范围内且元素不为空
                             a = row[x]
+                            if a["role_type"] is None:
+                                cell_content = "<div class=\"content-cell\"></div>"
+                                html_table += f"<td>{cell_content}</td>\n"
+                                continue
                             count[self.role_type_abbr(a["role_type"])] += 1
                             img_src = a["img"]
                             job_color = Kungfu(a["role_type"]).color  # 默认颜色为白色

@@ -92,26 +92,23 @@ TeamlistMatcher = on_command("团队列表", priority=5, force_whitespace=True)
 
 @TeamlistMatcher.handle()
 async def _(event: GroupMessageEvent):
-    file_content = get_group_settings(str(event.group_id), "opening")
-    if not isinstance(file_content, list):
+    all_teams = get_group_settings(str(event.group_id), "opening")
+    if not isinstance(all_teams, list):
         return
-    if len(file_content) == 0:
+    if len(all_teams) == 0:
         await TeamlistMatcher.finish("唔……本群没有任何团队！")
     msg = "本群有以下团队：\n"
-    for i in range(len(file_content)):
-        name = file_content[i]["description"]
-        leader = str(file_content[i]["creator"])
-        if "limit" not in file_content[i]:
-            print(1)
+    for i in range(len(all_teams)):
+        name = all_teams[i]["description"]
+        leader = str(all_teams[i]["creator"])
+        if "limit" not in all_teams[i]:
             limit = "无"
         else:
-            parsed_limit = parse_limit(file_content[i]["limit"])
+            parsed_limit = parse_limit(all_teams[i]["limit"])
             if not parsed_limit:
-                print(2)
                 limit = "无"
             else:
-                print(3)
-                limit = file_content[i]["limit"]
+                limit = all_teams[i]["limit"]
         msg += str(i + 1) + ". " + name + "\n创建者：" + leader + "\n职业限制：" + limit + "\n"
     await TeamlistMatcher.finish(msg[:-1])
 
