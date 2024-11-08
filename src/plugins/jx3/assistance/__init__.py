@@ -6,7 +6,7 @@ from nonebot.params import CommandArg
 from src.const.prompts import PROMPT
 from src.utils.analyze import check_number
 from src.utils.network import Request
-from src.utils.database.operation import get_group_settings
+from src.utils.database.operation import get_group_settings, set_group_settings
 
 from .app import Assistance, parse_limit
 
@@ -130,3 +130,24 @@ async def _(event: GroupMessageEvent, argument: Message = CommandArg()):
     if not status:
         await ShareTeamMatcher.finish("共享团队失败！请检查源群是否有该团队，以及是否为您创建，关键词是否正确，然后重试！")
     await ShareTeamMatcher.finish("已共享团队至本群！")
+
+ModifyLimitMatcher = on_command("修改团队限制", priority=5, force_whitespace=True)
+
+@ModifyLimitMatcher.handle()
+async def _(event: GroupMessageEvent, argument: Message = CommandArg()):
+    args = argument.extract_plain_text().split(" ")
+    if len(args) != 2:
+        await ModifyLimitMatcher.finish(PROMPT.ArgumentCountInvalid)
+    keyword = args[0]
+    limit = args[1]
+    if limit != "无" and not parse_limit(limit):
+        await ModifyLimitMatcher.finish("无法解析您的限制！请参考下面的示例：\n修改团队限制 3T5N15D1B\n该词条代表，3防御5治疗15输出1老板")
+    if limit == "无":
+        limit = ""
+    teams: list[dict] = get_group_settings(event.group_id, "opening")
+    for each_team in teams:
+        if each_team["creator"] == str(event.user_id) and (str(teams.index(each_team) + 1) == keyword or each_team["description"] == keyword):
+            each_team["limit"] = limit
+            set_group_settings(event.group_id, "opening", teams)
+            await ModifyLimitMatcher.finish("修改限制成功，下次报名将会检查是否满足该限制！")
+    await ModifyLimitMatcher.finish("未找到该序号/关键词且为您创建的团队，请检查后重试！")

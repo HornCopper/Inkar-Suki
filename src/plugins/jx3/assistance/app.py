@@ -35,7 +35,7 @@ class Assistance:
         result = {"T": 0, "N": 0, "B": 0, "D": 0}
         for inner_list in nested_list:
             for item in inner_list:
-                if "role_type" in item:
+                if "role_type" in item and item["role"][0] != "#":
                     role_type = self.role_type_abbr(item["role_type"])
                     if role_type in result:
                         result[role_type] += 1
@@ -70,6 +70,8 @@ class Assistance:
         return "开团成功，团员可通过以下命令进行预定：\n预定 <团队关键词/序号> <ID> <职业>\n可使用“团队列表”查看该团队的序号！"
 
     def apply_for_place(self, group_id: str, keyword: str, role_name: str, role_type: str, user_id: str) -> str:
+        if role_name == "#":
+            return "请不要以单个井号创建预留位，可在井号后追加任意文字！"
         status = self.check_apply(group_id, keyword, role_name)
         if status is True:
             return "唔……您似乎已经申请过了，请不要重复申请哦~\n如需修改请先发送“取消申请 <团队关键词> <ID>”，随后重新申请！"
@@ -84,19 +86,20 @@ class Assistance:
                 return f"唔……{Config.bot_basic.bot_name}暂时没办法识别您的职业，请检查一下呗？"\
                     "\n避免使用“长歌”“万花”“天策”等字眼，您可以使用“天策t”“奶咕”“qc”等准确些的词语方便理解哦~"\
                     "\n如果您使用的词语实在无法识别，请使用标准名称，例如“离经易道”。"
-        if isinstance(status, dict):
-            if "limit" not in status:
+        if role_name[0] == "#" and user_id != status["creator"]:
+            return "只有团长才可创建预留职业位，请联系团长！"
+        if "limit" not in status:
+            applyable = True
+        else:
+            limit = status["limit"]
+            parsed_limit = parse_limit(limit)
+            if not parsed_limit:
                 applyable = True
             else:
-                limit = status["limit"]
-                parsed_limit = parse_limit(limit)
-                if not parsed_limit:
+                if self.stastic_roles(status["member"]).get(self.role_type_abbr(role_actual_type), 0) < parsed_limit.get(self.role_type_abbr(role_actual_type), 0):
                     applyable = True
-                else:
-                    if self.stastic_roles(status["member"]).get(self.role_type_abbr(role_actual_type), 0) < parsed_limit.get(self.role_type_abbr(role_actual_type), 0):
-                        applyable = True
         if not applyable:
-            return "您所申请的职业类型已达到团长限制的最大数量，您可以更换其他职业参与本次团队活动！\n可使用“团队列表”查看该团队的职业人数限制！\n可使用“查看团队”查看该团队目前报名情况！"
+            return "您所申请或预留的职业类型已达到团长限制的最大数量，您可以更换其他职业参与本次团队活动！\n可使用“团队列表”查看该团队的职业人数限制！\n可使用“查看团队”查看该团队目前报名情况！"
         job_icon = Kungfu(role_actual_type).icon if role_actual_type != "老板" else build_path(ASSETS, ["image", "jx3", "kungfu"], end_with_slash=True) + "老板.png"
         new = {
             "role": role_name,
@@ -149,13 +152,20 @@ class Assistance:
         for i in now:
             if i["description"] == keyword or str(now.index(i) + 1) == keyword:
                 members = i["member"]
+                replaced = False
                 for x in members:
-                    if len(x) != 5:
-                        x.append(content)
-                        set_group_settings(group_id, "opening", now)
-                        return True
-                    else:
-                        continue
+                    for item in x:
+                        if item["role"][0] == "#" and item["role_type"] == content["role_type"]:
+                            x[x.index(item)] = content
+                            replaced = True
+                            set_group_settings(group_id, "opening", now)
+                            return True
+                if not replaced:
+                    for x in members:
+                        if len(x) < 5:
+                            x.append(content)
+                            set_group_settings(group_id, "opening", now)
+                            return True
         return False
 
     def check_apply(self, group_id: str, keyword: str, role_name: str) -> bool | dict:
@@ -168,6 +178,8 @@ class Assistance:
         file_content: list[dict] = get_group_settings(group_id, "opening")
         for i in file_content:
             if i["description"] == keyword or str(file_content.index(i) + 1) == keyword:
+                if role_name[0] == "#":
+                    return i
                 for x in i["member"]:
                     for y in x:
                         if y["role"] == role_name:
@@ -221,6 +233,9 @@ class Assistance:
                             job_color = Kungfu(a["role_type"]).color  # 默认颜色为白色
                             id_text = a["role"]
                             qq_text = a["apply"]
+                            if id_text[0] == "#":
+                                id_text = f"<s>{id_text}</s>"
+                                qq_text = f"可报名此职业"
                             cell_content = f"""
                             <div class="content-cell">
                                 <img width="48px" height="48px" src={img_src}>
