@@ -210,9 +210,7 @@ class Assistance:
         else:
             role_actual_type: str | None = Kungfu(role_type).name
             if role_actual_type is None:
-                return f"唔……{Config.bot_basic.bot_name}暂时没办法识别您的职业，请检查一下呗？"\
-                    "\n避免使用“长歌”“万花”“天策”等字眼，您可以使用“天策t”“奶咕”“qc”等准确些的词语方便理解哦~"\
-                    "\n如果您使用的词语实在无法识别，请使用标准名称，例如“离经易道”。"
+                return f"报名失败！请参考格式：\n报名 关键词/序号 ID 职业\n目前您可能是将最后两个参数写反导致无法识别职业，可参考命令格式后重试！"
         if role_name[0] == "#" and user_id != status["creator"]:
             return "只有团长才可创建预留职业位，请联系团长！"
         if "limit" not in status:
@@ -243,11 +241,12 @@ class Assistance:
 
     def cancel_apply(self, group_id: str, keyword: str, role_name: str, user_id: str) -> str | None:
         status = self.check_apply(group_id, keyword, role_name)
-        if status is not True:
+        if status is not True and not (isinstance(status, dict) and role_name[0] == "#"):
             return "唔……未找到该报名信息，或团队不存在！"
         now = get_group_settings(group_id, "opening")
         if not isinstance(now, list):
             return
+        cancelled = False
         for i in now:
             if i["description"] == keyword or str(now.index(i) + 1) == keyword:
                 for x in i["member"]:
@@ -257,8 +256,10 @@ class Assistance:
                                 return "请勿修改他人留坑！"
                             x.remove(y)
                             set_group_settings(group_id, "opening", now)
+                            cancelled = True
                             return "成功取消留坑！"
-        raise ValueError("Please check the `assistance` app.py class `Assistance` method `cancel apply`!")
+        if not cancelled:
+            raise ValueError("Please check the `assistance` app.py class `Assistance` method `cancel apply`!")
 
     def dissolve(self, group_id: str, keyword: str, user_id: str) -> str | None:
         now = get_group_settings(group_id, "opening")
