@@ -71,7 +71,10 @@ async def get_attrs_v4(server: str, name: str):
     data = (await Request(url="https://m.pvp.xoyo.com/mine/equip/get-role-equip", params=params).post(tuilan=True)).json()
     basic_info_key = ["角色名", "UID", "帮会", "门派", "体型", "阵营", "推栏", "装分", "气血"]
     basic_info.append(data["data"]["TotalEquipsScore"])
-    basic_info.append(data["data"]["MatchDetail"]["totalLift"])
+    try:
+        basic_info.append(data["data"]["MatchDetail"]["totalLift"])
+    except:
+        basic_info.append("未知")
     kungfuInstance = Kungfu.with_internel_id(data["data"]["Kungfu"]["KungfuID"])
     kungfu = kungfuInstance.name
     if kungfu == "山居剑意":

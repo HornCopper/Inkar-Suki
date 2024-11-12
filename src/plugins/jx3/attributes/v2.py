@@ -256,8 +256,11 @@ class JX3AttributeV2:
         }
         equips_list = [{}] * 13
         rings = iter(equip_map["戒指"])
-        data = self.data["data"]["Equips"]
-        
+        try:
+            data = self.data["data"]["Equips"]
+        except TypeError:
+            raise ValueError("玩家似乎在提交角色给音卡后删除了账号！")
+
         if len(data) != (12 if self.kungfu != "问水诀" else 13):
             return False
         
