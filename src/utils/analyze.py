@@ -13,6 +13,8 @@ def sort_dict_list(dict_list: list[dict], key_name: str) ->list[dict]:
     """
     将`list[dict]`类型的变量，按`dict`的共有`key`的`value`进行排序。
 
+    默认为从低到高，如需反过来请对结果进行`[::-1]`！
+
     Args:
         dict_list (list[dict]): 传入的字典列表。
         key_name (str): 排序依据`key`。

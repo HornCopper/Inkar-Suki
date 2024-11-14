@@ -1,15 +1,24 @@
-from typing import Literal
+from typing import Literal, Any
+from jinja2 import Template
+from pathlib import Path
 
 from nonebot import on_command
 from nonebot.adapters import Message
-from nonebot.adapters.onebot.v11 import MessageEvent, MessageSegment as ms
+from nonebot.adapters.onebot.v11 import GroupMessageEvent, MessageEvent, MessageSegment as ms
 from nonebot.params import CommandArg, ArgPlainText
 
 from src.accounts.manage import AccountManage, CheckinRewards
+from src.utils.analyze import sort_dict_list
+from src.utils.database.classes import Account
+from src.utils.database import db
 from src.utils.permission import check_permission, denied
 from src.utils.analyze import check_number
+from src.utils.generate import generate
+from src.utils.network import Request
+from src.templates import HTMLSourceCode
 
 from ._message import message_sign
+from ._template import template_body, table_head
 
 import random
 
@@ -122,3 +131,62 @@ async def _(event: MessageEvent, args: Message = CommandArg()):
         AccountManage(event.user_id).reduce_coin(int(arg[1]))
         AccountManage(int(arg[0])).add_coin(int(arg[1]))
         await TradeCoinMatcher.finish("已成功将" + arg[1] + "枚金币从您的账户转到" + str(arg[0]) + "的账户！")
+
+CoinRankMatcher = on_command("金币排行", force_whitespace=True, priority=5)
+
+@CoinRankMatcher.handle()
+async def _(event: GroupMessageEvent, args: Message = CommandArg()):
+    if args.extract_plain_text() != "":
+        return
+    accounts: list[Account] | Any = db.where_all(Account(), default=[])
+    accounts_data: list[dict[str, Any]] = sort_dict_list([a.dump() for a in accounts], "coins")[::-1]
+    table = []
+    num = 0
+    in_forward_30 = False
+    for account in accounts_data:
+        num += 1
+        if num == 31:
+            break
+        if account["user_id"] == event.user_id:
+            in_forward_30 = True
+        table.append(
+            Template(template_body).render(
+                rank = str(num),
+                avatar = "https://q.qlogo.cn/headimg_dl?dst_uin=" + str(account["user_id"]) + "&spec=100&img_type=jpg",
+                user_id = str(account["user_id"])[:2] + "*" * (len(str(account["user_id"])) - 4) + str(account["user_id"])[-2:],
+                coins = account["coins"],
+                count = account["checkin_counts"]
+            )
+        )
+    if not in_forward_30:
+        rank = next((i for i, d in enumerate(accounts_data) if d["user_id"] == event.user_id), False)
+        if isinstance(rank, int):
+            account = accounts_data[rank]
+            table.append(
+                Template(template_body).render(
+                    rank = rank + 1,
+                    avatar = "https://q.qlogo.cn/headimg_dl?dst_uin=" + str(account["user_id"]) + "&spec=100&img_type=jpg",
+                    user_id = account["user_id"],
+                    coins = account["coins"],
+                    count = account["checkin_counts"]
+                )
+            )
+        else:
+            table.append(
+                Template(template_body).render(
+                    rank = "未上榜",
+                    avatar = "https://q.qlogo.cn/headimg_dl?dst_uin=" + str(event.user_id) + "&spec=100&img_type=jpg",
+                    user_id = str(event.user_id),
+                    coins = "0",
+                    count = "0"
+                )
+            )
+    html = str(
+        HTMLSourceCode(
+            application_name = f" · 金币统计",
+            table_head = table_head,
+            table_body = "\n".join(table)
+        )
+    )
+    image = await generate(html, "table", True)
+    await CoinRankMatcher.finish(ms.image(Request(Path(image).as_uri()).local_content))
