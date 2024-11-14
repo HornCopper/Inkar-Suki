@@ -3,7 +3,7 @@ from nonebot.adapters import Message
 from nonebot.adapters.onebot.v11 import GroupMessageEvent, MessageSegment as ms
 from nonebot.params import CommandArg
 
-from .api import get_bulletin_img
+from .app import get_bulletin_img
 
 GladBulletinMatcher = on_command(
     "bulletin_glad", 

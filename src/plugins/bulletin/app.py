@@ -15,6 +15,7 @@ async def get_bulletin_img(msg: str, type_: str):
         build_path(
             ASSETS,
             [
+                "image",
                 "bulletin",
                 {"S": "sad.jpg", "G": "glad.jpg"}[type_]
             ]

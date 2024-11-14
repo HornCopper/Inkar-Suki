@@ -10,6 +10,7 @@ from src.const.path import (
     CACHE,
     build_path
 )
+from src.utils.decorators import time_record
 from src.utils.file import read, write
 from src.utils.generate import get_uuid
 from src.utils.exceptions import QixueDataUnavailable
@@ -245,7 +246,7 @@ class JX3AttributeV2:
             return ["N/A"] * 12
     
     @property
-    def equips(self) -> Literal[False] | list[dict]:
+    def equips(self) -> list[dict]:
         if self._cached_equips is not None:
             return self._cached_equips
         
@@ -281,9 +282,9 @@ class JX3AttributeV2:
     def five_stones(self) -> list[str]:
         results = []
         equips = self.equips
-        if not equips:
-            return [build_path(ASSETS, ["image", "jx3", "attributes", "wuxingshi", "0.png"])] * (18 if self.kungfu != "问水诀" else 21)
         for equip in equips:
+            if equip == {}:
+                return [build_path(ASSETS, ["image", "jx3", "attributes", "wuxingshi", "0.png"])] * (18 if self.school != "藏剑" else 21)
             if isinstance(equip, dict) and equip["Icon"]["SubKind"] != "戒指":
                 five_stones_list = equip.get("FiveStone", [])
                 results.extend([build_path(ASSETS, ["image", "jx3", "attributes", "wuxingshi", str(b["Level"]) + ".png"]) for b in five_stones_list])
@@ -311,8 +312,6 @@ class JX3AttributeV2:
     def permanent_enchant(self) -> Literal[False] | list[str]:
         equips = self.equips
         result = []
-        if not equips:
-            return False
         for each_equip in equips:
             if "WPermanentEnchant" in each_equip:
                 result.append(each_equip["WPermanentEnchant"]["Name"])
@@ -323,11 +322,11 @@ class JX3AttributeV2:
     @property
     def common_enchant(self) -> Literal[False] | list[str]:
         equips = self.equips
-        if not equips:
-            return False
         result = []
         for location in ["帽子", "上衣", "腰带", "护臂", "鞋"]:
             for equip in equips:
+                if equip == {}:
+                    continue
                 if equip["Icon"]["SubKind"] == location:
                     if "WCommonEnchant" in equip:
                         attrs_ = json.dumps(equip["ModifyType"], ensure_ascii=False)
@@ -347,11 +346,17 @@ class JX3AttributeV2:
     @property
     def equips_and_icons(self) -> Literal[False] | tuple[list[str], list[str]]:
         equips = self.equips
-        if not equips:
-            return False
         name = []
         icon = []
         for each in equips:
+            if each == {}:
+                name.append(
+                    "未知（0/6）"
+                )
+                icon.append(
+                    "unknown.png"
+                )
+                continue
             name.append(each["Name"] + "(" + each["StrengthLevel"] + "/" + each["MaxStrengthLevel"] + ")")
             icon.append(each["Icon"]["FileName"])
         return name, icon
@@ -359,11 +364,13 @@ class JX3AttributeV2:
     @property
     def strength(self) -> Literal[False] | tuple[list[str], list[str]]:
         equips = self.equips
-        if not equips:
-            return False
         max = []
         current = []
         for each in equips:
+            if each == {}:
+                max.append("6")
+                current.append("0")
+                continue
             max.append(each["MaxStrengthLevel"])
             current.append(each["StrengthLevel"])
         return max, current
@@ -389,10 +396,11 @@ class JX3AttributeV2:
     @property
     def qualities(self) -> Literal[False] | list[str]:
         equips = self.equips
-        if not equips:
-            return False
         quality = []
         for each in equips:
+            if each == {}:
+                quality.append("可能是推栏未识别？")
+                continue
             quality.append(
                 str(each["Quality"]) + " " + self._parse_attr(each)
             )
@@ -419,7 +427,7 @@ class JX3AttributeV2:
     def score(self) -> int:
         return self.data["data"]["TotalEquipsScore"]
         
-
+@time_record
 async def get_attr_v2(server: str, role_name: str) -> str | list[str]:
     personal_data = await get_personal_data(server, role_name)
     if not personal_data:
@@ -433,14 +441,17 @@ async def get_attr_v2(server: str, role_name: str) -> str | list[str]:
     data = (await Request(url="https://m.pvp.xoyo.com/mine/equip/get-role-equip", params=params).post(tuilan=True)).json()
     attrsObject = JX3AttributeV2(data)
     if not attrsObject.equips:
-        return ["唔……请把装备穿戴完整再来查询！"]
+        return ["唔……请把装备穿戴完整再来查询！\n有可能是推栏未识别部分装备，等待推栏更新即可！"]
     max, current = attrsObject.strength or ([], [])
     equips, icons = attrsObject.equips_and_icons or ([], [])
     qixue_n, qixue_i = await attrsObject.qixue()
     color_stones = attrsObject.color_stone or [("", "")]
     if school == "藏剑":
         c1n, c1i = color_stones[0]
-        c2n, c2i = color_stones[1]
+        try:
+            c2n, c2i = color_stones[1]
+        except IndexError:
+            c2n, c2i = "", ""
     else:
         c1n, c1i = color_stones[0]
         c2n, c2i = "", ""

@@ -9,7 +9,7 @@ from src.utils.database.operation import set_group_settings
 from src.utils.database.player import get_uid_data
 from src.utils.permission import check_permission
 
-def bind_srv(group_id: str, server: str | None):
+def group_server_bind(group_id: str, server: str | None) -> None:
     if server != "":
         server_ = Server(server).server
         if not server_:
@@ -31,7 +31,7 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
     server = args.extract_plain_text()
     group_id = str(event.group_id)
     exact_server = Server(server).server
-    bind_srv(group_id=group_id, server=exact_server if server else "")
+    group_server_bind(group_id=group_id, server=exact_server if server else "")
     if server == "":
         await BindServerMatcher.finish("已清除本群的绑定信息！")
     if server is None:

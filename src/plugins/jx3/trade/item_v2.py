@@ -16,7 +16,7 @@ from ._template import headers, template_wujia
 import datetime
 import json
 
-async def query_aijx3_data(url: str, params: dict = {}):
+async def query_aijx3_data(url: str, params: dict = {}) -> dict | list:
     data = (await Request(url, headers=headers, params=params).post()).json()
     return data
 

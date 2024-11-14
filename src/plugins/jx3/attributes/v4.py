@@ -18,7 +18,7 @@ from ._template import template_attrs_v4
 
 import json
 
-async def get_basic_info(server: str, name: str):
+async def get_basic_info(server: str, name: str) -> list[str]:
     data = await search_player(role_name=name, server_name=server)
     data = data.format_jx3api()
     if data["code"] != 200:
@@ -28,7 +28,7 @@ async def get_basic_info(server: str, name: str):
         tuilan_status = "已绑定" if data.get("personId") != "" else "未绑定"
         return [data.get("roleName"), str(data.get("roleId")), data.get("tongName"), data.get("forceName"), data.get("bodyName"), data.get("campName"), tuilan_status]
     
-def location_mapping(location: str):
+def location_mapping(location: str) -> str:
     return {
         "帽子": "帽",
         "上衣": "衣",
@@ -37,7 +37,7 @@ def location_mapping(location: str):
         "鞋": "鞋"
     }[location]
 
-def get_equip_attr(data: list, role_type: str):
+def get_equip_attr(data: list, role_type: str) -> str:
     msg = ""
     for i in data:
         content = i["Attrib"]["GeneratedMagic"].split("提高")
@@ -59,7 +59,7 @@ def get_equip_attr(data: list, role_type: str):
                 msg = msg + f" {attr}"
     return msg
 
-async def get_attrs_v4(server: str, name: str):
+async def get_attrs_v4(server: str, name: str) -> str:
     basic_info = await get_basic_info(server, name)
     if basic_info == 404:
         return [PROMPT.PlayerNotExist]
