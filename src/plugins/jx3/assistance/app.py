@@ -17,12 +17,12 @@ from src.templates import SimpleHTML
 import random
 import re
 
-def rearrange_teams(input_teams):
+def rearrange_teams(input_teams: list[list[dict]]) -> list[list[dict]]: # actually list[list[dict | None]]
     # 心法类型定义
     phisical_core = ["凌海诀", "隐龙诀", "太虚剑意", "孤锋诀", "惊羽诀"]
-    general_core = ["山海心决"]
+    general_core = ["山海心诀"]
     magical_core = ["天罗诡道", "莫问", "紫霞功", "周天功", "花间游"]
-    phisical = ["傲血战意", "分山劲", "太虚剑意", "惊羽诀", "问水诀", "笑尘诀", "北傲诀", "凌海诀", "隐龙诀", "孤锋诀", "山海心决"]
+    phisical = ["傲血战意", "分山劲", "太虚剑意", "惊羽诀", "问水诀", "笑尘诀", "北傲诀", "凌海诀", "隐龙诀", "孤锋诀", "山海心诀"]
     magical = ["冰心诀", "花间游", "毒经", "莫问", "无方", "易筋经", "焚影圣诀", "紫霞功", "天罗诡道", "太玄经", "周天功"]
     all_cores = phisical_core + general_core + magical_core
     

@@ -144,7 +144,7 @@ async def get_recommend_equip_image(
     syst_mid = build_path(ASSETS, ["font", "syst-mid.ttf"])
     msyh = build_path(ASSETS, ["font", "msyh.ttf"])
     calibri = build_path(ASSETS, ["font", "calibri.ttf"])
-    background = Image.open(school_background)
+    background = Image.open(school_background).convert("RGBA")
     draw = ImageDraw.Draw(background)
     flickering = Image.open(build_path(ASSETS, ["image", "jx3", "attributes", "flicker.png"])).resize((38, 38))
     precious = Image.open(build_path(ASSETS, ["image", "jx3", "attributes", "peerless.png"]))
@@ -154,7 +154,8 @@ async def get_recommend_equip_image(
     permanent_enchant_icon = Image.open(build_path(ASSETS, ["image", "jx3", "attributes", "permanent_enchant.png"])).resize((20, 20))
 
     # 心法图标
-    background.alpha_composite(Image.open(str(kungfu.icon)).resize((50, 50)), (61, 62))
+    kungfu_icon = Image.open(str(kungfu.icon)).resize((50, 50))
+    background.alpha_composite(kungfu_icon, (61, 62))
 
     # 武器图标
     if kungfu.name not in ["问水诀", "山居剑意"]:

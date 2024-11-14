@@ -246,7 +246,7 @@ class JX3AttributeV2:
             return ["N/A"] * 12
     
     @property
-    def equips(self) -> list[dict]:
+    def equips(self) -> list[dict] | Literal[False]:
         if self._cached_equips is not None:
             return self._cached_equips
         
@@ -282,6 +282,8 @@ class JX3AttributeV2:
     def five_stones(self) -> list[str]:
         results = []
         equips = self.equips
+        if not equips:
+            return [build_path(ASSETS, ["image", "jx3", "attributes", "wuxingshi", "0.png"])] * (18 if self.school != "藏剑" else 21)
         for equip in equips:
             if equip == {}:
                 return [build_path(ASSETS, ["image", "jx3", "attributes", "wuxingshi", "0.png"])] * (18 if self.school != "藏剑" else 21)
@@ -312,6 +314,8 @@ class JX3AttributeV2:
     def permanent_enchant(self) -> Literal[False] | list[str]:
         equips = self.equips
         result = []
+        if not equips:
+            return False
         for each_equip in equips:
             if "WPermanentEnchant" in each_equip:
                 result.append(each_equip["WPermanentEnchant"]["Name"])
@@ -323,6 +327,8 @@ class JX3AttributeV2:
     def common_enchant(self) -> Literal[False] | list[str]:
         equips = self.equips
         result = []
+        if not equips:
+            return False
         for location in ["帽子", "上衣", "腰带", "护臂", "鞋"]:
             for equip in equips:
                 if equip == {}:
@@ -346,6 +352,8 @@ class JX3AttributeV2:
     @property
     def equips_and_icons(self) -> Literal[False] | tuple[list[str], list[str]]:
         equips = self.equips
+        if not equips:
+            return False
         name = []
         icon = []
         for each in equips:
@@ -364,6 +372,8 @@ class JX3AttributeV2:
     @property
     def strength(self) -> Literal[False] | tuple[list[str], list[str]]:
         equips = self.equips
+        if not equips:
+            return False
         max = []
         current = []
         for each in equips:
@@ -396,6 +406,8 @@ class JX3AttributeV2:
     @property
     def qualities(self) -> Literal[False] | list[str]:
         equips = self.equips
+        if not equips:
+            return False
         quality = []
         for each in equips:
             if each == {}:
@@ -528,7 +540,7 @@ async def get_attributes_image_v2(
     syst_mid = build_path(ASSETS, ["font", "syst-mid.ttf"])
     msyh = build_path(ASSETS, ["font", "msyh.ttf"])
     calibri = build_path(ASSETS, ["font", "calibri.ttf"])
-    background = Image.open(school_background)
+    background = Image.open(school_background).convert("RGBA")
     draw = ImageDraw.Draw(background)
     flickering = Image.open(build_path(ASSETS, ["image", "jx3", "attributes", "flicker.png"])).resize((38, 38))
     precious = Image.open(build_path(ASSETS, ["image", "jx3", "attributes", "peerless.png"]))
