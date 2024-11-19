@@ -8,7 +8,7 @@ from src.utils.analyze import check_number
 from src.utils.network import Request
 from src.utils.database.operation import get_group_settings, set_group_settings
 
-from .app import Assistance, parse_limit
+from .app import Assistance, parse_limit, get_answer
 
 AssistanceInstance = Assistance()
 
@@ -148,3 +148,10 @@ async def _(event: GroupMessageEvent, argument: Message = CommandArg()):
             set_group_settings(event.group_id, "opening", teams)
             await ModifyLimitMatcher.finish("修改限制成功，下次报名将会检查是否满足该限制！")
     await ModifyLimitMatcher.finish("未找到该序号/关键词且为您创建的团队，请检查后重试！")
+
+YZKSecretMatcher = on_command("解密", aliases={"解谜", "揭秘"}, priority=5)
+
+@YZKSecretMatcher.handle()
+async def _(event: GroupMessageEvent):
+    msg = get_answer()
+    await YZKSecretMatcher.finish(msg)

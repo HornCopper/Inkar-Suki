@@ -175,6 +175,7 @@ src/assets/image/jx3/attributes/equips/
 
 # Require user themselves to write
 src/utils/database/uid.py
+src/plugins/manage/application_v2.py
 
 # Configuration file
 src/config/config.yml
