@@ -3,7 +3,7 @@ name = "Inkar-Suki"
 version = "0.8.7"
 description = "A IM chat bot based on OneBot V11."
 readme = "README.md"
-requires-python = ">=3.9, <4.0"
+requires-python = ">=3.10, <4.0"
 dependencies = [
     "nonebot2[fastapi]>=2.3.3",
     "nonebot-plugin-alconna>=0.52.2",
@@ -20,6 +20,7 @@ dependencies = [
     "nb-cli>=1.4.2",
     "nonebot-plugin-handle>=0.4.1",
     "beautifulsoup4>=4.12.3",
+    "nonebot-plugin-liteyukibot>=0.1.9",
 ]
 
 [tool.nonebot]
