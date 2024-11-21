@@ -10,12 +10,8 @@ from src.utils.database.player import get_uid_data
 from src.utils.permission import check_permission
 
 def group_server_bind(group_id: str, server: str | None) -> None:
-    if server != "":
-        server_ = Server(server).server
-        if not server_:
-            return [PROMPT.ServerNotExist]
-        else:
-            set_group_settings(group_id, "server", server_)
+    if server is not None:
+        set_group_settings(group_id, "server", server)
     else:
         set_group_settings(group_id, "server", "")
 
