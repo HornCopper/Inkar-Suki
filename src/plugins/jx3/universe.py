@@ -108,7 +108,8 @@ from .server import (
 )
 from .skill import (
     MatrixMatcher,
-    MacroMatcher
+    MacroMatcher,
+    SkillMatcher
 )
 from .subscribe import (
     EnableMatcher,

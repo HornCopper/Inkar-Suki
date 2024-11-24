@@ -15,7 +15,7 @@ class School:
 
     kungfu_colors: dict[str, str] = kungfu_colors_data
 
-    def __init__(self, school_name: str = ""):
+    def __init__(self, school_name: str | None = ""):
         self.school_name = school_name
 
     @classmethod

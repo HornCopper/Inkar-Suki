@@ -10,6 +10,7 @@ from src.const.jx3.kungfu import Kungfu
 from .macro import get_macro
 from .martix import get_matrix
 from .qixue import get_qixue
+from .skill import get_skill
 
 MacroMatcher = on_command("jx3_macro_v2", aliases={"宏"}, force_whitespace=True, priority=5)
 
@@ -67,3 +68,18 @@ async def _(argument: Message = CommandArg()):
         await QixueMatcher.finish(ms.image(msg.as_uri()))
     else:
         await QixueMatcher.finish(msg)
+
+SkillMatcher = on_command("jx3_qixue", aliases={"奇穴"}, force_whitespace=True, priority=5)
+
+@SkillMatcher.handle()
+async def _(argument: Message = CommandArg()):
+    """
+    查询技能。
+    """
+    args = argument.extract_plain_text().split(" ")
+    if len(args) != 2:
+        await SkillMatcher.finish("唔……格式错误，请参考下面的格式：\n技能 心法 名称")
+    kungfu = args[0]
+    skill = args[1]
+    msg = await get_skill(kungfu, skill)
+    await SkillMatcher.finish(msg)
