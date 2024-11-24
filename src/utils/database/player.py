@@ -71,6 +71,10 @@ async def search_player(role_name: str = "", role_id: str = "", server_name: str
         if uid is None:
             return Player()
         await get_uid_data(uid, server_name)
-        return await search_player(role_name=role_name, role_id=uid)
+        player_data = db.where_one(RoleData(), "(roleName = ? OR roleId = ?) AND serverName = ?", role_name, role_id, server_name, default=None)
+        if player_data is None:
+            return Player()
+        else:
+            return Player(**player_data.dump())
     else:
         return Player(**player_data.dump())

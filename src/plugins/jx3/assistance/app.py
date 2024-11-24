@@ -524,5 +524,6 @@ def get_answer() -> str:
     time_key = f"{hours}:{str(quarter).zfill(2)}:00"
     result = time_table.get(time_key, "无匹配结果")
     fixed_order = ["东", "南", "西", "北"]
-    data = {item.split("-")[0]: item.split("-")[1] for item in f"当前时间: {time_key}\n结果: {result}".split(",")}
-    return ",".join([f"{direction}-{data[direction]}" for direction in fixed_order])
+    data = {item.split("-")[0]: item.split("-")[1] for item in result.split(",")}
+    result = ",".join([f"{direction}-{data[direction]}" for direction in fixed_order])
+    return f"当前时间: {time_key}\n结果: {result}"
