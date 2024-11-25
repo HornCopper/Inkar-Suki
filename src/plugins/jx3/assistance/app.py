@@ -216,7 +216,7 @@ class Assistance:
         else:
             role_actual_type: str | None = Kungfu(role_type).name
             if role_actual_type is None:
-                return f"报名失败！请参考格式：\n报名 关键词/序号 ID 职业\n目前您可能是将最后两个参数写反导致无法识别职业，可参考命令格式后重试！"
+                return f"报名失败！请参考格式：\n报名 关键词/序号 职业 ID\n目前您可能是将最后两个参数写反导致无法识别职业，可参考命令格式后重试！"
         if role_name[0] == "#" and user_id != status["creator"]:
             return "只有团长才可创建预留职业位，请联系团长！"
         if "limit" not in status:
