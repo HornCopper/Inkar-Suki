@@ -69,7 +69,7 @@ async def _(argument: Message = CommandArg()):
     else:
         await QixueMatcher.finish(msg)
 
-SkillMatcher = on_command("jx3_qixue", aliases={"奇穴"}, force_whitespace=True, priority=5)
+SkillMatcher = on_command("jx3_skill", aliases={"技能"}, force_whitespace=True, priority=5)
 
 @SkillMatcher.handle()
 async def _(argument: Message = CommandArg()):

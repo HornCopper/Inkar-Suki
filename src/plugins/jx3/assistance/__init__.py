@@ -36,15 +36,21 @@ BookTeamMatcher = on_command("预定", aliases={"预订", "报名"}, force_white
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     if args.extract_plain_text() == "":
         return
-    arg = args.extract_plain_text().split(" ")
-    if len(arg) != 3:
-        await BookTeamMatcher.finish("请检查命令后，重试哦~\n格式为：预定 <团队关键词> <ID> <职业>")
-    else:
+    arg = args.extract_plain_text().strip().split(" ")
+    if len(arg) not in [2, 3]:
+        await BookTeamMatcher.finish("请检查命令后，重试哦~\n格式为：预定 <团队关键词/序号> <职业> <ID>\n若当前只有一个团队进行，可以省略关键词或序号！")
+    if len(arg) == 3:
         keyword = arg[0]
+        job = arg[1]
+        id = arg[2]
+    elif len(arg) == 2:
+        keyword = "1" if len(get_group_settings(event.group_id, "opening")) == 1 else False
+        job = arg[0]
         id = arg[1]
-        job = arg[2]
-        resp = AssistanceInstance.apply_for_place(str(event.group_id), keyword, id, job, str(event.user_id))
-        await BookTeamMatcher.finish(resp)
+    if not keyword:
+        await BookTeamMatcher.finish("当前进行中的团队超过1个，请携带团队关键词/序号！")
+    resp = AssistanceInstance.apply_for_place(str(event.group_id), keyword, id, job, str(event.user_id))
+    await BookTeamMatcher.finish(resp)
 
 CancelTeamMatcher = on_command("取消预定", aliases={"取消预订", "取消报名"}, force_whitespace=True, priority=5)
 
@@ -53,13 +59,19 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     if args.extract_plain_text() == "":
         return
     arg = args.extract_plain_text().split(" ")
-    if len(arg) != 2:
+    unique = len(get_group_settings(event.group_id, "opening")) == 1
+    if len(arg) not in [1, 2]:
         await CancelTeamMatcher.finish("请检查命令后，重试哦~\n格式为：取消预定 <团队关键词> <ID>")
-    else:
+    if len(arg) == 2:
         keyword = arg[0]
         id = arg[1]
-        resp = AssistanceInstance.cancel_apply(str(event.group_id), keyword, id, str(event.user_id))
-        await CancelTeamMatcher.finish(resp)
+    elif len(arg) == 1:
+        if not unique:
+            await CancelTeamMatcher.finish("当前进行中的团队超过1个，请携带团队关键词/序号！")
+        keyword = "1"
+        id = arg[0]
+    resp = AssistanceInstance.cancel_apply(str(event.group_id), keyword, id, str(event.user_id))
+    await CancelTeamMatcher.finish(resp)
 
 DissolveTeamMatcher = on_command("解散团队", aliases={"取消开团"}, force_whitespace=True, priority=5)
 
@@ -68,8 +80,11 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     if args.extract_plain_text() == "":
         return
     keyword = args.extract_plain_text()
-    if keyword == "":
+    unique = len(get_group_settings(event.group_id, "opening")) == 1
+    if keyword == "" and not unique:
         await DissolveTeamMatcher.finish("唔……没有输入关键词哦，请检查后重试~")
+    if keyword == "" and unique:
+        keyword = "1"
     resp = AssistanceInstance.dissolve(str(event.group_id), keyword, str(event.user_id))
     await DissolveTeamMatcher.finish(resp)
 
@@ -77,11 +92,12 @@ LookupTeamMatcher = on_command("查看团队", priority=5, force_whitespace=True
 
 @LookupTeamMatcher.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
-    if args.extract_plain_text() == "":
-        return
     keyword = args.extract_plain_text()
-    if keyword == "":
+    unique = len(get_group_settings(event.group_id, "opening")) == 1
+    if keyword == "" and not unique:
         await LookupTeamMatcher.finish("唔……没有输入关键词哦，请检查后重试~")
+    if keyword == "" and unique:
+        keyword = "1"
     img_path = await AssistanceInstance.generate_html(str(event.group_id), keyword)
     if not isinstance(img_path, str):
         return

@@ -1,8 +1,20 @@
-from typing import Any
+from typing import Any, Literal, overload
 from nonebot import get_bots
 
 from src.utils.database.classes import GroupSettings
 from src.utils.database import db
+
+@overload
+def get_group_settings(group_id: int | str, key: Literal["subscribe"]) -> list[str]: ...
+
+@overload
+def get_group_settings(group_id: int | str, key: Literal["welcome"]) -> str: ...
+
+@overload
+def get_group_settings(group_id: int | str, key: Literal["server"]) -> str: ...
+
+@overload
+def get_group_settings(group_id: int | str, key: Literal["opening"]) -> list[dict]: ...
 
 def get_group_settings(group_id: int | str, key: str = "") -> Any:
     group_data: GroupSettings | Any = db.where_one(GroupSettings(), "group_id = ?", str(group_id), default=None)
