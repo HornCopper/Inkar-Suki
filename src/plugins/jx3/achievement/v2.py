@@ -24,7 +24,7 @@ async def get_progress_v2(
     personal_data = personal_data_request.format_jx3api()
     if personal_data["code"] != 200:
         guid = ""
-        return ["唔……玩家信息获取失败。"]
+        return PROMPT.PlayerNotExist
     else:
         guid = personal_data["data"]["globalRoleId"]
     params = {
@@ -35,7 +35,7 @@ async def get_progress_v2(
     data = (await Request("https://m.pvp.xoyo.com/achievement/list/achievements", params=params).post(tuilan=True)).json()
     data = data["data"]["data"]
     if len(data) == 0:
-        return ["唔……未找到相关成就。"]
+        return "唔……未找到相关成就。"
     else:
         contents = []
         for i in data:
@@ -66,10 +66,8 @@ async def get_progress_v2(
                 table_body = "\n".join(contents)
             )
         )
-        final_path = await generate(html, "table", False)
-        if not isinstance(final_path, str):
-            return
-        return Path(final_path).as_uri()
+        image = await generate(html, "table", segment=True)
+        return image
     
 async def get_map(
     name: str,
@@ -91,12 +89,12 @@ async def zone_achievement(
         name: str = "", 
         zone: str = "", 
         mode: str = ""
-    ) -> str | None | list:
+    ):
     personal_data_request = await search_player(role_name=name, server_name=server)
     personal_data = personal_data_request.format_jx3api()
     if personal_data["code"] != 200:
         guid = ""
-        return [PROMPT.PlayerNotExist]
+        return PROMPT.PlayerNotExist
     else:
         guid = personal_data["data"]["globalRoleId"]
     map_id_data: dict = (await Request("https://m.pvp.xoyo.com/achievement/list/dungeon-maps", params={"detail": True}).post(tuilan=True)).json()
@@ -107,7 +105,7 @@ async def zone_achievement(
             _map_id = each_map_id["id"]
             flag = True
     if not flag:
-        return
+        return "未找到相关副本信息！"
     params = {
         "cursor": 0,
         "size": 200,
@@ -117,7 +115,7 @@ async def zone_achievement(
     data = (await Request("https://m.pvp.xoyo.com/achievement/list/achievements", params=params).post(tuilan=True)).json()
     data = data["data"]["data"]
     if len(data) == 0:
-        return ["唔……未找到相关成就。"]
+        return "唔……未找到相关成就。"
     else:
         contents = []
         for i in data:
@@ -148,7 +146,5 @@ async def zone_achievement(
                 table_body = "\n".join(contents)
             )
         )
-        final_path = await generate(html, "table", False)
-        if not isinstance(final_path, str):
-            return
-        return Path(final_path).as_uri()
+        image = await generate(html, "table", segment=True)
+        return image

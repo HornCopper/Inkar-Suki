@@ -1,15 +1,18 @@
 from playwright.async_api import (
     async_playwright,
     Browser,
-    BrowserContext
+    BrowserContext,
+    Page
 )
 from pathlib import Path
 from nonebot.log import logger
-from typing import Any, Literal
+from nonebot import get_driver
+from nonebot.adapters.onebot.v11 import MessageSegment as ms
+from typing import Any, Literal, overload
 
 from src.const.path import CACHE, build_path
 from src.utils.file import write
-from src.utils.exceptions import BrowserNotInitializedException
+from src.utils.network import Request
 from src.utils.decorators import time_record
 
 import uuid
@@ -37,17 +40,18 @@ class ScreenshotConfig:
     """
 
     def __init__(self, 
-                 web: bool = False, 
-                 locate: str = "", 
-                 first: bool = False, 
-                 delay: int = 0, 
-                 additional_css: str = "", 
-                 additional_js: str = "",
-                 viewport: dict = {}, 
-                 full_screen: bool = False, 
-                 hide_classes: list = [],
-                 device_scale_factor: float = 1.0,
-                 output_path: str = ""):
+                web: bool = False, 
+                locate: str = "", 
+                first: bool = False, 
+                delay: int = 0, 
+                additional_css: str = "", 
+                additional_js: str = "",
+                viewport: dict = {}, 
+                full_screen: bool = False, 
+                hide_classes: list = [],
+                device_scale_factor: float = 1.0,
+                output_path: str = "",
+                wait_for_network: int = 20):
         self.web = web
         self.locate = locate
         self.first = first
@@ -59,6 +63,7 @@ class ScreenshotConfig:
         self.hide_classes = hide_classes or []
         self.device_scale_factor = device_scale_factor
         self.output_path = output_path
+        self.wait_for_network = wait_for_network
 
 class ScreenshotGenerator:
     _browser: Browser | Any = None
@@ -90,10 +95,13 @@ class ScreenshotGenerator:
         根据配置生成截图。
         """
         if self._browser is None or self._context is None:
-            raise BrowserNotInitializedException()
+            raise ValueError("Browser has not been initialized!")
 
         page = await self._browser.new_page(viewport=config.viewport) # type: ignore
-        await page.goto(page_source)  # 使用 page_source 加载页面
+        if config.wait_for_network:
+            await page.goto(page_source, wait_until="networkidle")
+        else:
+            await page.goto(page_source)
 
         # 应用自定义的 CSS 和 JS
         await self._apply_customizations(page, config)
@@ -120,7 +128,7 @@ class ScreenshotGenerator:
             combined_selector = ', '.join(f'.{cls}' for cls in config.hide_classes)
             await page.evaluate(f"document.querySelectorAll('{combined_selector}').forEach(el => el.style.display = 'none')")
 
-    async def _save_screenshot(self, page, config: ScreenshotConfig):
+    async def _save_screenshot(self, page: Page, config: ScreenshotConfig):
         """
         保存截图到指定路径。
         """
@@ -134,6 +142,44 @@ class ScreenshotGenerator:
             await page.screenshot(path=output_path, full_page=config.full_screen)
         return output_path
 
+@overload
+async def generate(
+    source: str,
+    locate: str = "",
+    first: bool = False,
+    delay: int = 0,
+    additional_css: str = "",
+    additional_js: str = "",
+    viewport: dict = {},
+    full_screen: bool = False,
+    hide_classes: list = [],
+    device_scale_factor: float = 1.0,
+    output_path: str = "",
+    wait_for_network: bool = False,
+    *,
+    segment: Literal[False] = False
+) -> str:
+    ...
+
+@overload
+async def generate(
+    source: str,
+    locate: str = "",
+    first: bool = False,
+    delay: int = 0,
+    additional_css: str = "",
+    additional_js: str = "",
+    viewport: dict = {},
+    full_screen: bool = False,
+    hide_classes: list = [],
+    device_scale_factor: float = 1.0,
+    output_path: str = "",
+    wait_for_network: bool = False,
+    *,
+    segment: Literal[True] = True
+) -> ms:
+    ...
+
 @time_record
 async def generate(
     source: str,
@@ -146,8 +192,11 @@ async def generate(
     full_screen: bool = False,
     hide_classes: list = [],
     device_scale_factor: float = 1.0,
-    output_path: str = ""
-):
+    output_path: str = "",
+    wait_for_network: bool = False,
+    *,
+    segment: bool = False
+) -> str | ms:
     """
     Args:
         source (str): 可以是 HTML 源代码、文件路径或者 URL。
@@ -161,6 +210,7 @@ async def generate(
         hide_classes (list): 需要隐藏的元素类名。
         device_scale_factor (float): 设备像素比。
         output_path (str): 保存截图的路径。
+        wait_for_network (bool): 是否等待页面网络元素加载完毕。
     """
     
     # 确定 source 类型
@@ -192,8 +242,18 @@ async def generate(
         full_screen=full_screen,
         hide_classes=hide_classes,
         device_scale_factor=device_scale_factor,
-        output_path=output_path
+        output_path=output_path,
+        wait_for_network=wait_for_network
     )
     
     generator = ScreenshotGenerator()
-    return await generator.generate(config, page_source)
+    image = await generator.generate(config, page_source)
+    if segment:
+        image = ms.image(
+            Request(
+                Path(
+                    image
+                ).as_uri()
+            ).local_content
+        )
+    return image

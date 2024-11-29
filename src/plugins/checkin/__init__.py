@@ -1,6 +1,5 @@
 from typing import Literal, Any
 from jinja2 import Template
-from pathlib import Path
 
 from nonebot import on_command
 from nonebot.adapters import Message
@@ -14,7 +13,6 @@ from src.utils.database import db
 from src.utils.permission import check_permission, denied
 from src.utils.analyze import check_number
 from src.utils.generate import generate
-from src.utils.network import Request
 from src.templates import HTMLSourceCode
 
 from ._message import message_sign
@@ -188,5 +186,5 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
             table_body = "\n".join(table)
         )
     )
-    image = await generate(html, "table", True)
-    await CoinRankMatcher.finish(ms.image(Request(Path(image).as_uri()).local_content))
+    image = await generate(html, "table", segment=True)
+    await CoinRankMatcher.finish(image)

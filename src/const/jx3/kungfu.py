@@ -11,7 +11,8 @@ from .constant import (
     kungfu_colors_data, 
     kungfu_internel_id_data,
     kungfu_baseattr_data, 
-    school_aliases_data
+    school_aliases_data,
+    school_snacks_data
 )
 
 class Kungfu:
@@ -19,6 +20,7 @@ class Kungfu:
     kungfu_colors_data: dict[str, str] = kungfu_colors_data
     kungfu_internel_id: dict[str, str] = kungfu_internel_id_data
     kungfu_baseattr: dict[str, list[str]] = kungfu_baseattr_data
+    kungfu_snacks: dict[str, list[str]] = school_snacks_data
 
     school_aliases: dict[str, list[str]] = school_aliases_data
 
@@ -109,3 +111,6 @@ class Kungfu:
         for kungfu in self.kungfu_internel_id:
             if kungfu == self.name:
                 return int(self.kungfu_internel_id[kungfu])
+            
+    @property
+    def snack(self): ...

@@ -64,9 +64,15 @@ class Player:
             return {"code": 404, "data": None}
         return {"code": 200, "data": self.__dict__}
 
-async def search_player(role_name: str = "", role_id: str = "", server_name: str = "") -> Player:
+async def search_player(
+    role_name: str = "",
+    role_id: str = "",
+    server_name: str = "",
+    *,
+    local_lookup: bool = False
+) -> Player:
     player_data = db.where_one(RoleData(), "(roleName = ? OR roleId = ?) AND serverName = ?", role_name, role_id, server_name, default=None)
-    if player_data is None:
+    if player_data is None and not local_lookup:
         uid = await get_uid(roleName=role_name, serverName=server_name)
         if uid is None:
             return Player()
@@ -76,5 +82,7 @@ async def search_player(role_name: str = "", role_id: str = "", server_name: str
             return Player()
         else:
             return Player(**player_data.dump())
-    else:
+    elif player_data is not None:
         return Player(**player_data.dump())
+    else:
+        return Player()

@@ -1,5 +1,4 @@
 from jinja2 import Template
-from pathlib import Path
 
 from src.utils.network import Request
 from src.utils.time import Time
@@ -15,7 +14,7 @@ from ._template import (
     table_item_head
 )
 
-async def get_item_record(name: str) -> str | Path:
+async def get_item_record(name: str):
     filter = {
         "Zone": "",
         "Srv": "",
@@ -75,5 +74,5 @@ async def get_item_record(name: str) -> str | Path:
             table_body = "\n".join(tables)
         )
     )
-    path = await generate(html, "table", True)
-    return Path(path)
+    image = await generate(html, "table", segment=True)
+    return image

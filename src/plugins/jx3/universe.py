@@ -111,6 +111,9 @@ from .skill import (
     MacroMatcher,
     SkillMatcher
 )
+from .snacks import (
+    SchoolSnacksMatcher
+)
 from .subscribe import (
     EnableMatcher,
     DisableMatcher

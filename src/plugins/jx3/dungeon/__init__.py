@@ -1,22 +1,20 @@
 from nonebot import on_command
 from nonebot.adapters import Message
-from nonebot.adapters.onebot.v11 import Bot, GroupMessageEvent, MessageSegment as ms
+from nonebot.adapters.onebot.v11 import GroupMessageEvent, MessageSegment as ms
 from nonebot.params import CommandArg
 
 from src.const.jx3.dungeon import Dungeon
 from src.const.prompts import PROMPT
 from src.const.jx3.server import Server
 from src.utils.network import Request
+from src.utils.permission import check_permission
 
-from .zone_drop import (
-    get_zone_record_image,
-    get_drop_list_image
-)
+from .zone_drop import get_drop_list_image
 from .monster import get_monsters_map
 from .record import get_item_record
+from .teamcd import get_zone_record_image, get_mulit_record_image
 
 ZoneRecordMatcher = on_command("jx3_zones", aliases={"副本"}, force_whitespace=True, priority=5)
-
 
 @ZoneRecordMatcher.handle()
 async def _(event: GroupMessageEvent, full_argument: Message = CommandArg()):
@@ -34,15 +32,16 @@ async def _(event: GroupMessageEvent, full_argument: Message = CommandArg()):
     server = Server(server, event.group_id).server
     if server is None:
         await ZoneRecordMatcher.finish(PROMPT.ServerNotExist)
-    data = await get_zone_record_image(server, name)
-    if isinstance(data, list):
-        await ZoneRecordMatcher.finish(data[0])
-    elif isinstance(data, str):
-        data = Request(data).local_content
-        await ZoneRecordMatcher.finish(ms.image(data))
+    if ";" in name:
+        roles = name.split(";")
+        if len(roles) > 6 and not check_permission(event.user_id, 10):
+            await ZoneRecordMatcher.finish("最多一次只可以查询6个角色！")
+        data = await get_mulit_record_image(server, roles)
+    else:
+        data = await get_zone_record_image(server, name)
+    await ZoneRecordMatcher.finish(data)
 
 DropslistMatcher = on_command("jx3_drops", aliases={"掉落列表"}, force_whitespace=True, priority=5)
-
 
 @DropslistMatcher.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
@@ -71,8 +70,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     if args.extract_plain_text() != "":
         return
     img = await get_monsters_map()
-    if isinstance(img, str):
-        await MonstersMatcher.finish(ms.image(Request(img).local_content))
+    await MonstersMatcher.finish(img)
 
 ItemRecordMatcher = on_command("jx3_itemrecord", aliases={"掉落"}, force_whitespace=True, priority=5)
 
@@ -80,6 +78,4 @@ ItemRecordMatcher = on_command("jx3_itemrecord", aliases={"掉落"}, force_white
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     item_name = args.extract_plain_text()
     data = await get_item_record(item_name)
-    if isinstance(data, str):
-        await ItemRecordMatcher.finish(data)
-    await ItemRecordMatcher.finish(ms.image(Request(data.as_uri()).local_content))
+    await ItemRecordMatcher.finish(data)

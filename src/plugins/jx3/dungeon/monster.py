@@ -79,7 +79,5 @@ async def get_monsters_map():
             application_name = f"自{start}起7天 · 当前时间：{current_time}<br>{msg}"
         )
     )
-    final_path = await generate(html, ".m-bmap.is-map-phone", False)
-    if not isinstance(final_path, str):
-        return
-    return Path(final_path).as_uri()
+    image = await generate(html, ".m-bmap.is-map-phone", segment=True)
+    return image

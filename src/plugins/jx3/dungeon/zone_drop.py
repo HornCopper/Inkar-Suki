@@ -1,26 +1,18 @@
 from pathlib import Path
-from nonebot.log import logger
 from jinja2 import Template
 
-from src.const.path import ASSETS, TEMPLATES, build_path
+from src.const.path import TEMPLATES, build_path
 from src.utils.network import Request
 from src.utils.generate import generate
-from src.utils.database.player import search_player
-from src.utils.tuilan import generate_timestamp, generate_dungeon_sign
-from src.utils.time import Time
+
 from src.templates import HTMLSourceCode
 
-import json
 import re
-import time
 
 from ._template import (
     star, 
     template_drop, 
-    table_drop_head,
-    image_template,
-    template_zone_record,
-    table_zone_record_head
+    table_drop_head
 )
 
 async def get_map(name: str, mode: str) -> int | None:
@@ -248,62 +240,6 @@ async def get_drop_list_image(map: str, mode: str, boss: str):
             )
         )
         final_path = await generate(html, "table", False, 500)
-        if not isinstance(final_path, str):
-            return
-        return Path(final_path).as_uri()
-
-async def get_zone_record_image(server: str, role: str):
-    data = await search_player(role_name=role, server_name=server)
-    details_data = data.format_jx3api()
-    if details_data["code"] != 200:
-        guid = ""
-        return ["唔……获取玩家信息失败。"]
-    else:
-        guid = details_data["data"]["globalRoleId"]
-    ts = generate_timestamp()
-    params = {
-        "globalRoleId": guid,
-        "sign": generate_dungeon_sign(f"globalRoleId={guid}&ts={ts}"),
-        "ts": ts
-    }
-    data = (await Request("https://m.pvp.xoyo.com/h5/parser/cd-process/get-by-role", params=params).post(tuilan=True)).json()
-    unable = Template(image_template).render(
-        image_path = build_path(ASSETS, ["image", "jx3", "cat", "grey.png"])
-    )
-    available = Template(image_template).render(
-        image_path = build_path(ASSETS, ["image", "jx3", "cat", "gold.png"])
-    )
-    if data["data"] == []:
-        return ["该玩家目前尚未打过任何副本哦~\n注意：10人普通副本会在周五刷新一次。"]
-    else:
-        contents = []
-        if data is None:
-            return ["获取玩家信息失败！"]
-        for i in data["data"]:
-            images = []
-            map_name = i["mapName"]
-            map_type = i["mapType"]
-            for x in i["bossProgress"]:
-                if x["finished"] is True:
-                    images.append(unable)
-                else:
-                    images.append(available)
-            image_content = "\n".join(images)
-            contents.append(
-                Template(template_zone_record).render(
-                    zone_name = map_name,
-                    zone_mode = map_type,
-                    images = image_content
-                )
-            )
-        html = str(
-            HTMLSourceCode(
-                application_name = f" · 副本记录 · {server} · {role}",
-                table_head = table_zone_record_head,
-                table_body = "\n".join(contents)
-            )
-        )
-        final_path = await generate(html, "table", False)
         if not isinstance(final_path, str):
             return
         return Path(final_path).as_uri()

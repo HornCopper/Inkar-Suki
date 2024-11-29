@@ -109,11 +109,7 @@ async def _(
         await JX3ProgressV2Matcher.finish(PROMPT.ServerNotExist)
 
     data = await get_progress_v2(group_server.server, role_name, achievement_name)
-    if isinstance(data, list):
-        await JX3ProgressV2Matcher.finish(data[0])
-    elif isinstance(data, str):
-        data = Request(data).local_content
-        await JX3ProgressV2Matcher.finish(ms.image(data))
+    await JX3ProgressV2Matcher.finish(data)
 
 ZoneAchiMatcher = on_command("jx3_zoneachi", aliases={"团本成就"}, force_whitespace=True, priority=5)
 
@@ -192,10 +188,4 @@ async def _(event: GroupMessageEvent, full_argument: Message = CommandArg()):
             await ZoneAchiMatcher.finish(PROMPT.DungeonInvalid)
 
     data = await zone_achievement(server, id, zone, mode)
-    if isinstance(data, list):
-        await ZoneAchiMatcher.finish(data[0])
-    else:
-        if not isinstance(data, str):
-            return
-        data = Request(data).local_content
-        await ZoneAchiMatcher.finish(ms.image(data))
+    await ZoneAchiMatcher.finish(data)

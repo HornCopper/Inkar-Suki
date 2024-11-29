@@ -1,9 +1,8 @@
-from pathlib import Path
 from jinja2 import Template
 
 from nonebot import on_command
 from nonebot.adapters import Message, Bot
-from nonebot.adapters.onebot.v11 import GroupMessageEvent, MessageSegment as ms
+from nonebot.adapters.onebot.v11 import GroupMessageEvent
 from nonebot.params import CommandArg
 
 from src.utils.database.operation import get_group_settings
@@ -102,8 +101,5 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
             table_body = "\n".join(table)
         )
     )
-    final_path = await generate(html, "table", False)
-    if not isinstance(final_path, str):
-        return
-    send_path = Path(final_path).as_uri()
-    await listBlockMatcher.finish(ms.image(send_path))
+    image = await generate(html, "table", segment=True)
+    await listBlockMatcher.finish(image)

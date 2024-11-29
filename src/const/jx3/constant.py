@@ -29,6 +29,10 @@ with open(build_path(ASSETS, ["source", "jx3", "school_aliases.json"]), encoding
 with open(build_path(ASSETS, ["source", "jx3", "school_internel_id.json"]), encoding="utf-8", mode="r") as school_internel_id:
     school_internel_id_data = json.loads(school_internel_id.read())
 
+with open(build_path(ASSETS, ["source", "jx3", "school_snacks.json"]), encoding="utf-8", mode="r") as school_snacks:
+    school_snacks_data = json.loads(school_snacks.read())
+
+
 with open(build_path(ASSETS, ["source", "jx3", "server_aliases.json"]), encoding="utf-8", mode="r") as server_aliases:
     server_aliases_data = json.loads(server_aliases.read())
 

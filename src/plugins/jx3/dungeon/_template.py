@@ -56,7 +56,7 @@ template_item = """
 """
 
 image_template = """
-<img src="{{ image_path }}", height="20",width="20"></img>
+<img src="{{ image_path }}" height="20" width="20"></img>
 """
 
 table_zone_record_head = """
