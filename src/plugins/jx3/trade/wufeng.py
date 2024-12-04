@@ -38,11 +38,11 @@ async def get_equip_data(raw: str):
     attrsInstance = AttrsConverter(raw)
     attrs, location, quality, type_ = attrsInstance.attributes, attrsInstance.location, attrsInstance.quality, attrsInstance.type_
     if not attrs:
-        return [f"您输入的装备词条有误，请确保包含以下四个要素：\n品级、属性、部位、内外功\n示例：13550内功双会头"]
+        return f"您输入的装备词条有误，请确保包含以下四个要素：\n品级、属性、部位、内外功\n示例：13550内功双会头"
     final_name = basic_name + location + "·" + type_
     data = await get_equips_data(final_name, quality)
     if len(data) == 0:
-        return [f"未查找到该{basic_name}装备！"]
+        return f"未查找到该{basic_name}装备！"
     else:
         for i in data:
             if set(get_exist_attrs(i["attributes"])) == set(attrs):
@@ -55,13 +55,13 @@ async def get_wufeng_image(raw: str, server: str):
         return result
     data = await get_equip_data(raw)
     if isinstance(data, list):
-        return data
+        return data[0]
     currentStatus = 0 # 当日是否具有该物品在交易行
     try:
         itemId = data["id"]
     except:
         emg = (await Request("https://inkar-suki.codethink.cn/Inkar-Suki-Docs/img/emoji.jpg").get()).content
-        return ["音卡建议您不要造装备了，因为没有。\n" + ms.image(emg)]
+        return "音卡建议您不要造装备了，因为没有。\n" + ms.image(emg)
     logs = (await Request(f"https://next2.jx3box.com/api/item-price/{itemId}/logs?server={server}").get()).json()
     current = logs["data"]["today"]
     yesterdayFlag = False
@@ -84,12 +84,12 @@ async def get_wufeng_image(raw: str, server: str):
     detailData = (await Request(f"https://next2.jx3box.com/api/item-price/{itemId}/detail?server={server}&limit=20").get()).json()
     if (not currentStatus or yesterdayFlag) and detailData["data"]["prices"] is None:
         if not yesterdayFlag:
-            return ["唔……该物品目前交易行没有数据。"]
+            return "唔……该物品目前交易行没有数据。"
         else:
             low = calculator_price(current["LowestPrice"])
             avg = calculator_price(current["AvgPrice"])
             high = calculator_price(current["HighestPrice"])
-            return [f"唔……该物品目前交易行没有数据，但是音卡找到了昨日的数据：\n昨日低价：{low}\n昨日均价：{avg}\n昨日高价：{high}"]
+            return f"唔……该物品目前交易行没有数据，但是音卡找到了昨日的数据：\n昨日低价：{low}\n昨日均价：{avg}\n昨日高价：{high}"
     table = []
     icon = "https://icon.jx3box.com/icon/" + str(data["IconID"]) + ".png"
     name = data["Name"]
@@ -120,20 +120,20 @@ async def get_wufeng_image(raw: str, server: str):
     image = await generate(html, ".total", segment=True)
     return image
 
-async def get_wufeng_image_allserver(raw: str) -> list | ms:
+async def get_wufeng_image_allserver(raw: str):
     highs = []
     lows = []
     avgs = []
     table = []
     data: list[str] = await get_equip_data(raw)
     if isinstance(data, list):
-        return data
+        return data[0]
     currentStatus = 0 # 当日是否具有该物品在交易行
     try:
         itemId = data["id"]
     except KeyError:
         emg = (await Request("https://inkar-suki.codethink.cn/Inkar-Suki-Docs/img/emoji.jpg").get()).content
-        return ["音卡建议您不要造无修装备了，因为没有。\n" + ms.image(emg)]
+        return "音卡建议您不要造无修装备了，因为没有。\n" + ms.image(emg)
     for server in servers:
         logs = (await Request(f"https://next2.jx3box.com/api/item-price/{itemId}/logs?server={server}").get()).json()
         current = logs["data"]["today"]

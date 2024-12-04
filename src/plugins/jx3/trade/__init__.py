@@ -58,10 +58,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     if server is None:
         await TradeMatcher.finish(PROMPT.ServerNotExist)
     img = await get_trade_image(server, name, multi_items)
-    if isinstance(img, list):
-        await TradeMatcher.finish(img[0])
-    elif isinstance(img, str):
-        await TradeMatcher.finish(ms.image(img))
+    await TradeMatcher.finish(img)
 
 
 WFTradeMatcher = on_command("jx3_wufeng", aliases={"交易行试炼"}, force_whitespace=True, priority=5)
@@ -83,10 +80,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     if server is None:
         await TradeMatcher.finish(PROMPT.ServerNotExist)
     img = await get_wufeng_image(msg, server)
-    if isinstance(img, list):
-        await WFTradeMatcher.finish(img[0])
-    elif isinstance(img, str):
-        await WFTradeMatcher.finish(ms.image(img))
+    await WFTradeMatcher.finish(img)
 
 V2ItemPriceMatcher = on_command("jx3_item_v2", aliases={"物价v2", "物价"}, force_whitespace=True, priority=5)
 

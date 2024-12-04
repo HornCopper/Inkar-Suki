@@ -196,7 +196,7 @@ async def get_zone_detail_image(server: str, name: str, team: bool = True):
             )
     html = str(
         HTMLSourceCode(
-            application_name = f" · 副本分览 · {server} · {name}",
+            application_name = f" · 副本总览 · {server} · {name}",
             additional_css = Path(
                 build_path(
                     TEMPLATES,

@@ -209,7 +209,7 @@ class EquipDataProcesser:
         if "effectColorStone" in equip_data:
             enchant.append(
                 Enchant(
-                    icon = equip_data["Icon"]["FileName"],
+                    icon = equip_data["effectColorStone"]["Icon"]["FileName"],
                     name = equip_data["effectColorStone"]["Name"]
                 )
             )
@@ -220,7 +220,11 @@ class EquipDataProcesser:
         ] if location != "戒指" else []
         icon = equip_data["Icon"]["FileName"]
         name = equip_data["Name"]
-        peerless = (equip_data["BelongForce"] in ["内功门派", "外功门派"]) or (equip_data["MaxStrengthLevel"] == "8") or (equip_data["Name"] in self.special_weapons)
+        peerless = (equip_data["BelongForce"] in ["内功门派", "外功门派"]) \
+        or (equip_data["MaxStrengthLevel"] == "8") \
+        or (equip_data["Name"] in self.special_weapons) \
+        or (any(d.get('Desc') == 'atSkillEventHandler' for d in equip_data["ModifyType"])) \
+        or (equip_data.get("Desc", "").startswith("使用："))
         quality = equip_data["Quality"]
         strength = (int(equip_data["StrengthLevel"]), int(equip_data["MaxStrengthLevel"]))
         return Equip(
@@ -372,7 +376,10 @@ async def get_attr_v2_remake(server: str, role_name: str):
     }
     data = (await Request("https://m.pvp.xoyo.com/mine/equip/get-role-equip", params=params).post(tuilan=True)).json()
     data_object = EquipDataProcesser(data)
-    data_object.equips
+    try:
+        data_object.equips
+    except TypeError:
+        return "玩家似乎在提交角色之后转服或删除！"
     image = await get_attr_v2_remake_img(
         role_name,
         player["data"]["bodyName"],
@@ -506,19 +513,21 @@ async def get_attr_v2_remake_img(
                 (
                     permanent_enchant_icon
                     if (
-                        not equip.enchant[dy].name.startswith("彩·")
+                        (not equip.enchant[dy].name.startswith("彩·"))
                         and "（" in equip.enchant[dy].name
                     ) or equip.enchant[dy].name == "龙血磨石"
+                    or equip.enchant[dy].name.startswith("连雾·")
                     else common_enchant_icon
-                    if "（" not in equip.enchant[dy].name
-                    else Image.open(await download_image(equip.enchant[dy].icon))
+                    if ("（" not in equip.enchant[dy].name and not equip.enchant[dy].name.startswith("彩·"))
+                    else Image.open(await download_image(equip.enchant[dy].icon)).resize((20, 20))
                 ),
                 (x + 351, y - 3 + dy * 24)
             )
             draw.text((x + 375, y + 6 + dy*24), equip.enchant[dy].name, fill=(255, 255, 255),
                 font=ImageFont.truetype(semibold, size=12), anchor="lm")
+        if equip.strength[1] == 8:
+            background.alpha_composite(flickering, (x, y))
         y += 49
-    
     final_path = build_path(CACHE, [get_uuid() + ".png"])
     background.save(final_path)
     return ms.image(Request(Path(final_path).as_uri()).local_content)

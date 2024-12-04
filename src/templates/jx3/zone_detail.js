@@ -1,7 +1,8 @@
-document.addEventlistener("DOMContentLoaded", function () {
+document.addEventListener("DOMContentLoaded", function () {
     const progressBars = document.querySelectorAll(".progress-bar .progress");
+    
     progressBars.forEach(function (bar) {
-        const width = parseFloat(bar.style.width);
+        const width = parseFloat(window.getComputedStyle(bar).width);
         let color = "#5ebfd7";
 
         if (width >= 75) {
