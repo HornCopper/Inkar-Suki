@@ -1,4 +1,5 @@
 from pathlib import Path
+from typing import Literal
 from PIL import Image, ImageDraw, ImageFont
 from pydantic import BaseModel
 
@@ -45,6 +46,7 @@ class Enchant(BaseModel):
 
 class Equip(BaseModel):
     attribute: list[str] = []
+    belong: Literal["pve", "pvp", "pvx"] = "pvx"
     enchant: list[Enchant] = [] # 包含五彩石
     fivestone: list[int] = []
     icon: str = ""
@@ -169,6 +171,7 @@ class EquipDataProcesser:
         if not equip_data:
             return Equip()
         attributes = self._parse_attributes(equip_data)
+        belong: Literal["pve", "pvx", "pvp"] = equip_data["EquipType"]["Icon"][-7:-4]
         enchant = []
         if "WPermanentEnchant" in equip_data:
             enchant.append(
@@ -229,6 +232,7 @@ class EquipDataProcesser:
         strength = (int(equip_data["StrengthLevel"]), int(equip_data["MaxStrengthLevel"]))
         return Equip(
             attribute=attributes.split(" "),
+            belong=belong,
             enchant=enchant,
             fivestone=fivestone,
             icon=icon,
@@ -418,6 +422,9 @@ async def get_attr_v2_remake_img(
     permanent_enchant_icon = Image.open(build_path(ASSETS, ["image", "jx3", "attributes", "permanent_enchant.png"])).resize((20, 20)) # 小附魔
     filled_star = Image.open(build_path(ASSETS, ["image", "jx3", "attributes", "star_fill.png"])).convert("RGBA")
     empty_star = Image.open(build_path(ASSETS, ["image", "jx3", "attributes", "star_empty.png"])).convert("RGBA")
+    pve = Image.open(build_path(ASSETS, ["image", "jx3", "attributes", "pve.png"])).convert("RGBA")
+    pvx = Image.open(build_path(ASSETS, ["image", "jx3", "attributes", "pvx.png"])).convert("RGBA")
+    pvp = Image.open(build_path(ASSETS, ["image", "jx3", "attributes", "pvp.png"])).convert("RGBA")
 
     # 心法图标
     background.alpha_composite(Image.open(str(kungfu.icon)).resize((50, 50)), (61, 62))
@@ -527,6 +534,12 @@ async def get_attr_v2_remake_img(
                 font=ImageFont.truetype(semibold, size=12), anchor="lm")
         if equip.strength[1] == 8:
             background.alpha_composite(flickering, (x, y))
+        if equip.belong == "pve":
+            background.alpha_composite(pve, (x + 5, y + 5))
+        if equip.belong == "pvp":
+            background.alpha_composite(pvp, (x + 5, y + 5))   
+        if equip.belong == "pvx":
+            background.alpha_composite(pvx, (x + 5, y + 5))
         y += 49
     final_path = build_path(CACHE, [get_uuid() + ".png"])
     background.save(final_path)
