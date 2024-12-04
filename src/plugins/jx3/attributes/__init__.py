@@ -9,6 +9,7 @@ from nonebot.params import CommandArg
 from src.const.jx3.server import Server
 from src.const.prompts import PROMPT
 from src.utils.network import Request
+from src.utils.permission import check_permission
 
 from .v2 import get_attr_v2
 from .v2_remake import get_attr_v2_remake
@@ -51,6 +52,8 @@ AttributeV2RemakeMatcher = on_command("jx3_addritube_v2_remake", aliases={"属�
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     if args.extract_plain_text() == "":
         return
+    if not check_permission(event.user_id, 10):
+        await AttributeV2RemakeMatcher.finish("目前该功能内测中，敬请期待！")
     arg = args.extract_plain_text().split(" ")
     if len(arg) not in [1, 2]:
         await AttributeV2RemakeMatcher.finish("唔……参数不正确哦，请检查后重试~")
