@@ -2,8 +2,12 @@ from typing import Literal, Any
 from jinja2 import Template
 
 from nonebot import on_command
-from nonebot.adapters import Message
-from nonebot.adapters.onebot.v11 import GroupMessageEvent, MessageEvent, MessageSegment as ms
+from nonebot.adapters.onebot.v11 import (
+    Message,
+    GroupMessageEvent,
+    MessageEvent,
+    MessageSegment as ms
+)
 from nonebot.params import CommandArg, ArgPlainText
 
 from src.accounts.manage import AccountManage, CheckinRewards

@@ -1,8 +1,12 @@
 from typing import Any
 
 from nonebot import on_command
-from nonebot.adapters import Message, Bot
-from nonebot.adapters.onebot.v11 import GroupMessageEvent, MessageEvent
+from nonebot.adapters.onebot.v11 import (
+    GroupMessageEvent,
+    MessageEvent,
+    Bot,
+    Message
+)
 from nonebot.params import CommandArg, Arg, RawCommand
 from nonebot.matcher import Matcher
 

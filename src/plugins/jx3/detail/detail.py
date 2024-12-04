@@ -83,13 +83,13 @@ def get_color_type(proportion: str) -> str:
         raise ValueError(f"Unsupport value {num} appeared in the proportion!")
 
 
-async def get_zone_overview_image(server: str, id: str) -> list[str] | str | None:
+async def get_zone_overview_image(server: str, id: str):
     detail = await get_menu()
     if not detail:
-        return ["唔……获取目录失败！"]
+        return "唔……获取目录失败！"
     guid = await get_guid(server, id)
     if not guid:
-        return ["唔……未查找到该玩家！"]
+        return PROMPT.PlayerNotExist
     content = []
     data = await get_total_data(guid)
     for i in detail:
@@ -122,10 +122,8 @@ async def get_zone_overview_image(server: str, id: str) -> list[str] | str | Non
             table_body = "\n".join(content)
         )
     )
-    final_path = await generate(html, "table", False)
-    if not isinstance(final_path, str):
-        return
-    return Path(final_path).as_uri()
+    image = await generate(html, "table", segment=True)
+    return image
 
 def get_map_all_id(data: dict, map_name: str) -> list[dict]:
     for zone in data["data"]:
@@ -145,7 +143,7 @@ def calculate(raw_data: dict) -> tuple[int, int]:
 async def get_zone_detail_image(server: str, name: str, team: bool = True):
     guid = await get_guid(server, name)
     if not guid:
-        return [PROMPT.PlayerNotExist]
+        return PROMPT.PlayerNotExist
     table = []
     map_id_data: dict = (await Request("https://m.pvp.xoyo.com/achievement/list/dungeon-maps", params={"detail": True}).post(tuilan=True)).json()
     for map in map_list:
@@ -221,7 +219,5 @@ async def get_zone_detail_image(server: str, name: str, team: bool = True):
             table_body = "\n".join(table)
         )
     )
-    final_path = await generate(html, "table", False)
-    if not isinstance(final_path, str):
-        return
-    return Path(final_path).as_uri()
+    image = await generate(html, "table", segment=True)
+    return image

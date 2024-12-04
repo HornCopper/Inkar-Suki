@@ -27,7 +27,7 @@ class HTMLSourceCode:
     def __init__(
             self,
             application_name: str,
-            font_path: str = build_path(ASSETS, ["font", "custom.ttf"]),
+            font_path: str = build_path(ASSETS, ["font", "PingFangSC-Medium.otf"]),
             footer: str = choice(
                 ["我想在你那里买一块死心塌地",
                 "我对你没有非分之想，想你是本分",
@@ -100,7 +100,7 @@ class HTMLSourceCode:
 
         Args:
             application_name (str): 需要生成的`HTML`的模块名。
-            font_path (str): 非必需。`HTML`整体字体，不传入则使用`src/assets/font/custom.ttf`。
+            font_path (str): 非必需。`HTML`整体字体，不传入则使用`src/assets/font/PingFangSC-Medium.otf`。
             footer (str): 非必需。页面最底部的字符串，推荐剑网3模块使用骚话，其他模块使用说明。
             additional_css (str): 额外定义的`CSS`，如果需要使用请提前定义！
             additional_js (Path, None): 额外定义的`JS`，只支持路径！
@@ -110,6 +110,7 @@ class HTMLSourceCode:
         """
         self.name = application_name
         self.font = font_path    
+        self.font_extra = "font-weight: 700;" if font_path.endswith("PingFangSC-Semibold-Bold.otf") else ""
         self.footer = footer
         self.css = additional_css
         self.kwargs = kwargs
@@ -127,6 +128,7 @@ class HTMLSourceCode:
             css_link = css_path,
             css = css_content,
             font = self.font,
+            font_extra = self.font_extra,
             bot_name = Config.bot_basic.bot_name_argument,
             app_info = self.name,
             footer_msg = self.footer,

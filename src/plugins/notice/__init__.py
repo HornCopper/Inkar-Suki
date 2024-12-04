@@ -1,9 +1,9 @@
 from typing import Any
 
 from nonebot import on_notice, on_command, on_request
-from nonebot.adapters import Message
 from nonebot.adapters.onebot.v11 import (
     Bot, 
+    Message,
     GroupMessageEvent,
     GroupIncreaseNoticeEvent, 
     GroupRequestEvent,

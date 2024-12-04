@@ -1,6 +1,5 @@
 from nonebot import on_command
-from nonebot.adapters import Message
-from nonebot.adapters.onebot.v11 import GroupMessageEvent, MessageSegment as ms
+from nonebot.adapters.onebot.v11 import Message, GroupMessageEvent
 from nonebot.params import CommandArg
 
 from src.const.prompts import PROMPT
@@ -18,8 +17,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     if args.extract_plain_text() != "":
         return
     image = await get_chutian_image()
-    if isinstance(image, str):
-        await ChutianMatcher.finish(ms.image(Request(image).local_content))
+    await ChutianMatcher.finish(image)
 
 YuncongMatcher = on_command("jx3_yuncong", aliases={"云从社"}, force_whitespace=True, priority=5)
 
@@ -28,8 +26,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     if args.extract_plain_text() != "":
         return
     image = await get_yuncong_image()
-    if isinstance(image, str):
-        await YuncongMatcher.finish(ms.image(Request(image).local_content))
+    await YuncongMatcher.finish(image)
 
 ZhueMatcher = on_command("jx3_zhue", aliases={"诛恶"}, force_whitespace=True, priority=5)
 
@@ -40,5 +37,4 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
         await ZhueMatcher.finish(PROMPT.ServerNotExist)
     else:
         image = await get_zhue_image(serverInstance.server)
-        if isinstance(image, str):
-            await ZhueMatcher.finish(ms.image(Request(image).local_content))
+        await ZhueMatcher.finish(image)

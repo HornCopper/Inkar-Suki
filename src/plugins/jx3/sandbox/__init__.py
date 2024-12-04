@@ -1,7 +1,10 @@
 from nonebot import on_command
-from nonebot.adapters import Message
 from nonebot.params import CommandArg
-from nonebot.adapters.onebot.v11 import GroupMessageEvent, MessageSegment as ms
+from nonebot.adapters.onebot.v11 import (
+    Message,
+    GroupMessageEvent,
+    MessageSegment as ms
+)
 
 from src.config import Config
 from src.const.jx3.server import Server
@@ -37,10 +40,4 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
         if server is None:
             await SandboxMatcher.finish(PROMPT.ServerNotExist)
         image = await get_sandbox_image(server)
-    if not isinstance(image, str):
-        return
-    await SandboxMatcher.finish(
-        ms.image(
-            Request(image).local_content
-        )
-    )
+    await SandboxMatcher.finish(image)

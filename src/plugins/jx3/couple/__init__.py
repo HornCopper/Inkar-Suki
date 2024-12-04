@@ -1,13 +1,11 @@
 from datetime import datetime
 
 from nonebot import on_command
-from nonebot.adapters import Message
-from nonebot.adapters.onebot.v11 import GroupMessageEvent, MessageSegment as ms
+from nonebot.adapters.onebot.v11 import Message, GroupMessageEvent
 from nonebot.params import CommandArg
 
 from src.const.prompts import PROMPT
 from src.utils.analyze import check_number
-from src.utils.network import Request
 from src.utils.time import Time
 
 from .app import (
@@ -64,8 +62,4 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     if args.extract_plain_text() != "":
         return
     img = await generate_affection_image(event.user_id)
-    if isinstance(img, list):
-        await AffectionsCrtMatcher.finish(img[0])
-    elif isinstance(img, str):
-        img = Request(img).local_content
-        await AffectionsCrtMatcher.finish(ms.image(img))
+    await AffectionsCrtMatcher.finish(img)

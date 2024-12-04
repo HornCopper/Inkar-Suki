@@ -2,10 +2,15 @@ from typing import Any
 from jinja2 import Template
 from pathlib import Path
 from datetime import datetime
+
 from nonebot import on_command
-from nonebot.adapters import Message
 from nonebot.params import CommandArg
-from nonebot.adapters.onebot.v11 import Bot, GroupMessageEvent, MessageSegment as ms
+from nonebot.adapters.onebot.v11 import (
+    Bot,
+    Message,
+    GroupMessageEvent,
+    MessageSegment as ms
+)
 
 from src.utils.message import message_universal
 from src.utils.database import cache_db
@@ -74,11 +79,8 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
             table_body="\n".join(table)
         )
     )
-    final_path = await generate(html, "table", False)
-    if not isinstance(final_path, str):
-        return
-    image = Request(Path(final_path).as_uri()).local_content
-    await today_message_count.finish(ms.image(image))
+    image = await generate(html, "table", segment=True)
+    await today_message_count.finish(image)
     
     
 

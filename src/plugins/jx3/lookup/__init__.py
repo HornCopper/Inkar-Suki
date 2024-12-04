@@ -1,9 +1,7 @@
 from nonebot import on_command
-from nonebot.adapters import Message
-from nonebot.adapters.onebot.v11 import Bot, GroupMessageEvent, MessageSegment as ms
+from nonebot.adapters.onebot.v11 import Bot, Message, GroupMessageEvent
 from nonebot.params import CommandArg
 
-from src.config import Config
 from src.utils.analyze import check_number
 
 from .api import get_daren_count

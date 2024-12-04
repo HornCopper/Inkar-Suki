@@ -1,6 +1,8 @@
 from pathlib import Path
 from PIL import Image, ImageFont, ImageDraw
 
+from nonebot.adapters.onebot.v11 import MessageSegment as ms
+
 from src.const.path import ASSETS, CACHE, build_path
 from src.const.jx3.kungfu import Kungfu
 from src.utils.network import Request
@@ -118,7 +120,7 @@ async def get_single_recommend_equips(data: dict, author: str, name: str, tag: s
         c2i,
         data_obj.attr_types
     )
-    return image
+    return ms.image(Request(image).local_content)
     
 
 async def get_recommend_equip_image(

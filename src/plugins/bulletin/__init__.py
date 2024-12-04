@@ -1,6 +1,5 @@
 from nonebot import on_command
-from nonebot.adapters import Message
-from nonebot.adapters.onebot.v11 import GroupMessageEvent, MessageSegment as ms
+from nonebot.adapters.onebot.v11 import GroupMessageEvent, Message
 from nonebot.params import CommandArg
 
 from .app import get_bulletin_img
@@ -26,9 +25,7 @@ async def _(
         await GladBulletinMatcher.finish("字数请控制在20字以内！")
     else:
         img = await get_bulletin_img(msg, "G")
-        if not isinstance(img, str):
-            return
-        await GladBulletinMatcher.finish(ms.image(img))
+        await GladBulletinMatcher.finish(img)
 
 SadBulletinMatcher = on_command(
     "bulletin_sad", 
@@ -51,6 +48,4 @@ async def _(
         await SadBulletinMatcher.finish("字数请控制在20字以内！")
     else:
         img = await get_bulletin_img(msg, "S")
-        if not isinstance(img, str):
-            return
-        await SadBulletinMatcher.finish(ms.image(img))
+        await SadBulletinMatcher.finish(img)

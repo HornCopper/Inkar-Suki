@@ -1,11 +1,9 @@
 from nonebot import on_command
-from nonebot.adapters import Message
-from nonebot.adapters.onebot.v11 import GroupMessageEvent, MessageSegment as ms
+from nonebot.adapters.onebot.v11 import Message, GroupMessageEvent
 from nonebot.params import CommandArg
 
 from src.const.jx3.server import Server
 from src.const.prompts import PROMPT
-from src.utils.network import Request
 
 from .detail import (
     get_zone_detail_image,
@@ -31,11 +29,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     if not serverInstance.server:
         await ZoneOverviewMatcher.finish(PROMPT.ServerNotExist)
     data = await get_zone_overview_image(serverInstance.server, id)
-    if isinstance(data, list):
-        await ZoneOverviewMatcher.finish(data[0])
-    elif isinstance(data, str):
-        data = Request(data).local_content
-        await ZoneOverviewMatcher.finish(ms.image(data))
+    await ZoneOverviewMatcher.finish(data)
 
 TeamZoneOverviewMatcher = on_command("jx3_teamoverview", aliases={"团本总览"}, force_whitespace=True, priority=5)
 
@@ -56,11 +50,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     if not serverInstance.server:
         await TeamZoneOverviewMatcher.finish(PROMPT.ServerNotExist)
     data = await get_zone_detail_image(serverInstance.server, id, True)
-    if isinstance(data, list):
-        await TeamZoneOverviewMatcher.finish(data[0])
-    elif isinstance(data, str):
-        data = Request(data).local_content
-        await TeamZoneOverviewMatcher.finish(ms.image(data))
+    await TeamZoneOverviewMatcher.finish(data)
 
 FiveZoneOverviewMatcher = on_command("jx3_5overview", aliases={"五人总览"}, force_whitespace=True, priority=5)
 
@@ -81,8 +71,4 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     if not serverInstance.server:
         await FiveZoneOverviewMatcher.finish(PROMPT.ServerNotExist)
     data = await get_zone_detail_image(serverInstance.server, id, False)
-    if isinstance(data, list):
-        await FiveZoneOverviewMatcher.finish(data[0])
-    elif isinstance(data, str):
-        data = Request(data).local_content
-        await FiveZoneOverviewMatcher.finish(ms.image(data))
+    await FiveZoneOverviewMatcher.finish(data)

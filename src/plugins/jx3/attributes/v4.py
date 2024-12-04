@@ -18,11 +18,11 @@ from ._template import template_attrs_v4
 
 import json
 
-async def get_basic_info(server: str, name: str) -> list[str]:
+async def get_basic_info(server: str, name: str) -> list[str] | None:
     data = await search_player(role_name=name, server_name=server)
     data = data.format_jx3api()
     if data["code"] != 200:
-        return 404
+        return
     else:
         data = data["data"]
         tuilan_status = "已绑定" if data.get("personId") != "" else "未绑定"
@@ -59,10 +59,10 @@ def get_equip_attr(data: list, role_type: str) -> str:
                 msg = msg + f" {attr}"
     return msg
 
-async def get_attrs_v4(server: str, name: str) -> str:
+async def get_attrs_v4(server: str, name: str):
     basic_info = await get_basic_info(server, name)
-    if basic_info == 404:
-        return [PROMPT.PlayerNotExist]
+    if basic_info is None:
+        return PROMPT.PlayerNotExist
     params = {
         "zone": Server(server).zone,
         "server": server,
@@ -157,7 +157,7 @@ async def get_attrs_v4(server: str, name: str) -> str:
             qixue_img = json.dumps(qixue_image, ensure_ascii=False),
             background = build_path(ASSETS, ["image", "jx3", "assistance", "10.jpg"]),
             table_content = "{{ table_content }}",
-            font = build_path(ASSETS, ["font", "custom.ttf"]),
+            font = build_path(ASSETS, ["font", "PingFangSC-Medium.otf"]),
             school = build_path(ASSETS, ["image", "school", school + ".svg"]),
             color = kungfuInstance.color
         )
@@ -289,7 +289,5 @@ async def get_attrs_v4(server: str, name: str) -> str:
     html = Template(html).render(
         table_content = "\n".join(table)
     )
-    final_path = await generate(html, "", False, viewport={"width": 2200, "height": 1250}, full_screen=True) 
-    if not isinstance(final_path, str):
-        return
-    return Path(final_path).as_uri()
+    image = await generate(html, "", False, viewport={"width": 2200, "height": 1250}, full_screen=True, segment=True) 
+    return image

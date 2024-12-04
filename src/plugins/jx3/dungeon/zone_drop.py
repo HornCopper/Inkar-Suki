@@ -60,7 +60,7 @@ async def get_drop_list_image(map: str, mode: str, boss: str):
     try:
         data = await get_drops(map, mode, boss)
     except KeyError:
-        return ["唔……没有找到该掉落列表，请检查副本名称、BOSS名称或难度~"]
+        return "唔……没有找到该掉落列表，请检查副本名称、BOSS名称或难度~"
     data = data["data"]
     armors = data["armors"]
     others = data["others"]
@@ -72,7 +72,7 @@ async def get_drop_list_image(map: str, mode: str, boss: str):
     if weapons is None:
         weapons = []
     if len(armors) == 0 and len(others) == 0 and len(weapons) == 0:
-        return ["唔……没有找到该boss的掉落哦~\n您确定" + f"{boss}住在{mode}{map}吗？"]
+        return "唔……没有找到该boss的掉落哦~\n您确定" + f"{boss}住在{mode}{map}吗？"
     else:
         table_content = []
         for i in armors:
@@ -239,7 +239,5 @@ async def get_drop_list_image(map: str, mode: str, boss: str):
                 table_body = "\n".join(table_content)
             )
         )
-        final_path = await generate(html, "table", False, 500)
-        if not isinstance(final_path, str):
-            return
-        return Path(final_path).as_uri()
+        image = await generate(html, "table", False, 500, segment=True)
+        return image

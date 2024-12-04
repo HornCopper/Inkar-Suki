@@ -54,6 +54,4 @@ async def get_dh(type_: str) -> str | list[str | list] | None:
             )
         )
         final_path = await generate(html, "table", False)
-        if not isinstance(final_path, str):
-            return
         return [Path(final_path).as_uri(), links, floors]

@@ -15,7 +15,7 @@ async def get_sandbox_image(server: str, token: str = ""):
         final_url = f"{Config.jx3.api.url}/data/server/sand?token={token}&server={server}"
     data = (await Request(final_url).get()).json()
     if data["code"] != 200:
-        return [PROMPT.ServerInvalid]
+        return PROMPT.ServerInvalid
     html = read(build_path(TEMPLATES, ["jx3", "sandbox.html"]))
     update_time = str(Time(data["data"]["update"]).format())
     html = html.replace("$time", update_time)
@@ -24,7 +24,5 @@ async def get_sandbox_image(server: str, token: str = ""):
     for i in data["data"]["data"]:
         camp = "haoqi" if i["campName"] == "浩气盟" else "eren"
         html = html.replace("$" + i["castleName"], camp)
-    final_path = await generate(html, ".m-sandbox-map", False)
-    if not isinstance(final_path, str):
-        return
-    return Path(final_path).as_uri()
+    image = await generate(html, ".m-sandbox-map", segment=True)
+    return image

@@ -8,7 +8,7 @@ from src.utils.generate import generate
 
 from ._template import template_body, table_head
 
-async def get_zlrank(server: str, school: str) -> str:
+async def get_zlrank(server: str, school: str):
     params = {
         "cursor": 0,
         "size": 50,
@@ -39,5 +39,5 @@ async def get_zlrank(server: str, school: str) -> str:
             table_body = "\n".join(tables)
         )
     )
-    image_path = await generate(html, "table", True)
-    return image_path
+    image = await generate(html, "table", segment=True)
+    return image

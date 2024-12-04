@@ -343,10 +343,10 @@ class Assistance:
                 return True
         return False
 
-    async def generate_html(self, group_id: str, keyword: str) -> Literal[False] | str | None:
+    async def generate_html(self, group_id: str, keyword: str):
         now = get_group_settings(group_id, "opening")
         if not isinstance(now, list):
-            return
+            return "数据异常，请先重置音卡！"
         for i in now:
             if i["description"] == keyword or str(now.index(i) + 1) == keyword:
                 creator = i["creator"]
@@ -397,7 +397,7 @@ class Assistance:
                     html_table += "</tr>\n"
                 bg = build_path(ASSETS, ["image", "jx3", "assistance", str(random.randint(1, 10)) + ".jpg"])
                 html_table += "</table>"
-                font = build_path(ASSETS, ["font", "custom.ttf"])
+                font = build_path(ASSETS, ["font", "PingFangSC-Medium.otf"])
                 html = SimpleHTML(
                     "jx3",
                     "assistance",
@@ -411,11 +411,9 @@ class Assistance:
                     background = bg,
                     title = keyword if not check_number(keyword) else i["description"]
                 )
-                final_path = await generate(str(html), ".background-container", False)
-                if not isinstance(final_path, str):
-                    return
-                return Path(final_path).as_uri()
-        return False
+                image = await generate(str(html), ".background-container", segment=True)
+                return image
+        return "未找到相关团队！"
     
 
 def get_answer() -> str:

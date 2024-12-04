@@ -2,13 +2,11 @@ from typing import Any
 from datetime import datetime
 
 from nonebot import on_command
-from nonebot.adapters import Message
 from nonebot.params import CommandArg
-from nonebot.adapters.onebot.v11 import GroupMessageEvent, MessageSegment as ms
+from nonebot.adapters.onebot.v11 import Message, GroupMessageEvent
 
 from src.const.prompts import PROMPT
 from src.const.jx3.server import Server
-from src.utils.network import Request
 from src.utils.database import serendipity_db
 from src.utils.database.classes import SerendipityData
 
@@ -41,11 +39,7 @@ async def _(event: GroupMessageEvent, argument: Message = CommandArg()):
     if server is None:
         await V2SerendipityMatcher.finish(PROMPT.ServerNotExist)
     data = await v2_serendipity(server, name, True)
-    if isinstance(data, list):
-        await V2SerendipityMatcher.finish(data[0])
-    elif isinstance(data, str):
-        data = Request(data).local_content
-        await V2SerendipityMatcher.finish(ms.image(data))
+    await V2SerendipityMatcher.finish(data)
 
 V3SerendipityMatcher = on_command("jx3_serendipity_v3", aliases={"奇遇v3", "查询v3", "奇遇", "查询"}, force_whitespace=True, priority=5)
 
@@ -72,11 +66,7 @@ async def _(event: GroupMessageEvent, argument: Message = CommandArg()):
     if server is None:
         await V3SerendipityMatcher.finish(PROMPT.ServerNotExist)
     data = await v3_serendipity(server, id)
-    if isinstance(data, list):
-        await V3SerendipityMatcher.finish(data[0])
-    elif isinstance(data, str):
-        data = Request(data).local_content
-        await V3SerendipityMatcher.finish(ms.image(data))
+    await V3SerendipityMatcher.finish(data)
 
 PetSerendipityMatcher = on_command("jx3_pet_serendipity", aliases={"宠物奇遇"}, force_whitespace=True, priority=5)
 
@@ -108,11 +98,7 @@ async def _(event: GroupMessageEvent, argument: Message = CommandArg()):
     if server is None:
         await PetSerendipityMatcher.finish(PROMPT.ServerNotExist)
     data = await v2_serendipity(server, name, False)
-    if isinstance(data, list):
-        await PetSerendipityMatcher.finish(data[0])
-    elif isinstance(data, str):
-        data = Request(data).local_content
-        await PetSerendipityMatcher.finish(ms.image(data))
+    await PetSerendipityMatcher.finish(data)
 
 PrepositionMatcher = on_command("jx3_preposition", aliases={"前置", "攻略"}, force_whitespace=True, priority=5)
 

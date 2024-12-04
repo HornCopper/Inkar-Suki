@@ -1,7 +1,6 @@
 from nonebot import on_command
-from nonebot.adapters import Message
 from nonebot.params import CommandArg
-from nonebot.adapters.onebot.v11 import GroupMessageEvent, MessageSegment as ms
+from nonebot.adapters.onebot.v11 import Message, GroupMessageEvent
 
 from src.const.prompts import PROMPT
 from src.const.jx3.server import Server
@@ -36,6 +35,4 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     if args.extract_plain_text() != "":
         return
     img = await get_dilu_data()
-    if not isinstance(img, str):
-        return
-    await DiluMatcher.finish(ms.image(img))
+    await DiluMatcher.finish(img)

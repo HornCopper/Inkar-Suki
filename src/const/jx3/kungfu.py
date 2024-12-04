@@ -38,8 +38,13 @@ class Kungfu:
         """
         心法实际名称。
         """
+        name = self.kungfu_name
+        if name is None:
+            return None
+        if name.endswith("·悟"):
+            return name
         for kungfu_name, aliases in self.kungfu_aliases.items():
-            if self.kungfu_name == kungfu_name or self.kungfu_name in aliases:
+            if name == kungfu_name or name in aliases:
                 return kungfu_name
         return None
     
@@ -48,8 +53,15 @@ class Kungfu:
         """
         所属门派。
         """
+        name = self.name
+        if name is None:
+            return None
+        if name == "山居问水剑·悟":
+            name = "问水诀"
+        if name.endswith("·悟"):
+            name = name[:-2]
         for school_name, aliases in self.school_aliases.items():
-            if self.name in aliases:
+            if name in aliases:
                 return school_name
         return None
     
@@ -60,6 +72,10 @@ class Kungfu:
         """
         if self.name is None:
             return "#FFFFFF"
+        if self.name == "山居问水剑·悟":
+            return self.kungfu_colors_data.get("问水诀", "#FFFFFF")
+        if self.name.endswith("·悟"):
+            return self.kungfu_colors_data.get(self.name[:-2], "#FFFFFF")
         return self.kungfu_colors_data.get(self.name, "#FFFFFF")
     
     @property
@@ -94,10 +110,15 @@ class Kungfu:
 
         防御与治疗不参与。
         """
-        if self.name is None:
+        name = self.name
+        if name is None:
             return
+        if name == "山居问水剑·悟":
+            name = "问水诀"
+        if name.endswith("·悟"):
+            name = name[:-2]
         for base_attr, kungfus in self.kungfu_baseattr.items():
-            if self.name in kungfus:
+            if name in kungfus:
                 return base_attr
         return None
     

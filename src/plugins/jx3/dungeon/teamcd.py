@@ -84,11 +84,11 @@ def parse_data(data) -> dict:
         result[key] = progress_finished
     return result
 
-def synchronize_keys(data: list[list[dict]]):
+def synchronize_keys(data: list[list[dict[str, list[bool]]]]) -> list[list[dict[str, list[bool]]]]:
     all_keys = set(k for sublist in data for d in sublist for k in d.keys())
     for sublist in data:
-        current_keys = set(k for d in sublist for k in d.keys())
-        missing_keys = all_keys - current_keys
+        current_keys: set[str] = set(k for d in sublist for k in d.keys())
+        missing_keys: set[str] = all_keys - current_keys
         for key in missing_keys:
             value_length = max(len(d[key]) for sublist_inner in data for d in sublist_inner if key in d)
             for d in sublist:

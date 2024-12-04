@@ -1,6 +1,9 @@
 from nonebot import on_command
-from nonebot.adapters import Message
-from nonebot.adapters.onebot.v11 import GroupMessageEvent, MessageSegment as ms
+from nonebot.adapters.onebot.v11 import (
+    Message,
+    GroupMessageEvent,
+    MessageSegment as ms
+)
 from nonebot.params import CommandArg, Arg
 from nonebot.typing import T_State
 from nonebot.matcher import Matcher

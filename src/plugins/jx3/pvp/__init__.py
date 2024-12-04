@@ -1,11 +1,9 @@
 from nonebot import on_command
-from nonebot.adapters import Message
 from nonebot.params import CommandArg
-from nonebot.adapters.onebot.v11 import Bot, GroupMessageEvent, MessageSegment as ms
+from nonebot.adapters.onebot.v11 import Bot, Message, GroupMessageEvent
 
 from src.const.prompts import PROMPT
 from src.const.jx3.server import Server
-from src.utils.network import Request
 
 from .api import get_arena_record
 
@@ -28,8 +26,4 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
     if server is None:
         await ArenaRecordMatcher.finish(PROMPT.ServerNotExist)
     data = await get_arena_record(server, name)
-    if isinstance(data, list):
-        await ArenaRecordMatcher.finish(data[0])
-    elif isinstance(data, str):
-        data = Request(data).local_content
-        await ArenaRecordMatcher.finish(ms.image(data))
+    await ArenaRecordMatcher.finish(data)

@@ -1,7 +1,6 @@
 from nonebot import on_command
-from nonebot.adapters import Message
 from nonebot.params import CommandArg
-from nonebot.adapters.onebot.v11 import GroupMessageEvent, MessageSegment as ms
+from nonebot.adapters.onebot.v11 import Message, GroupMessageEvent
 
 from src.utils.network import Request
 
@@ -24,11 +23,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     if args.extract_plain_text() == "":
         return
     data = await get_records(args.extract_plain_text())
-    if isinstance(data, list):
-        img = Request(data[0]).local_content
-        await MSGameRecordMatcher.finish(ms.image(img))
-    else:
-        await MSGameRecordMatcher.finish(data)
+    await MSGameRecordMatcher.finish(data)
 
 
 MSGetPTMatcher = on_command("get_pt", aliases={"mspt"}, priority=5, force_whitespace=True)

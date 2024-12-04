@@ -91,7 +91,7 @@ async def player_pt(name: str = "", mode="16.12.9.15.11.8") -> str:
     score_max = str(data["max_level"]["score"] + data["max_level"]["delta"]) if rank[0] != "魂" else str(round((data["level"]["score"] + data["level"]["delta"]) / 100, 1))
     return f"[{rank}] {name}（{pid}）\n当前PT：[{rank}] {score}/{level}\n最高PT：[{rank_max}] {score_max}/{level_max}"
 
-async def get_records(name: str = "", mode: str = "16.12.9.15.11.8") -> str | list | None:
+async def get_records(name: str = "", mode: str = "16.12.9.15.11.8"):
     if name is None:
         return "请输入玩家名！"
     pid = await get_id_by_name(name)
@@ -146,7 +146,5 @@ async def get_records(name: str = "", mode: str = "16.12.9.15.11.8") -> str | li
                 table_content = "\n".join(tables)
             )
         )
-        final_path = await generate(html, ".background-container", False)
-        if not isinstance(final_path, str):
-            return
-        return [Path(final_path).as_uri()]
+        image = await generate(html, ".background-container", segment=True)
+        return image

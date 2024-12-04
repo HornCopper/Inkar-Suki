@@ -93,7 +93,7 @@ def generate_table(local_data, comparison_data, path_map, template):
 async def get_serendipity_image_v3(server: str, name: str):
     uid = await check_role(server, name)
     if not uid:
-        return [PROMPT.PlayerNotExist]
+        return PROMPT.PlayerNotExist
 
     data: list = await JX3Serendipity().integration(server, name, uid)
     data_obj = JX3Serendipities(data)
@@ -117,7 +117,7 @@ async def get_serendipity_image_v3(server: str, name: str):
             "jx3",
             "serendipity_v3",
             **{
-            "font": build_path(ASSETS, ["font", "custom.ttf"]),
+            "font": build_path(ASSETS, ["font", "PingFangSC-Medium.otf"]),
             "name": name,
             "server": server,
             "total": f"{len(data)}/{len(local_common + local_peerless + local_pet)}",
@@ -129,7 +129,5 @@ async def get_serendipity_image_v3(server: str, name: str):
         }
         )
     )
-    final_path = await generate(html, ".total", False)
-    if not isinstance(final_path, str):
-        return
-    return Path(final_path).as_uri()
+    image = await generate(html, ".total", segment=True)
+    return image

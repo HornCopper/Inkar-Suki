@@ -11,7 +11,7 @@ from src.utils.generate import generate
 
 from ._template import template_table, table_head
 
-async def generate_snacks_image(season: str = "风语", data: dict[str, list[str]] = {}):
+async def generate_snacks_image(season: str = "风语", *, data: dict[str, list[str]] = {}):
     tables = []
     for kungfu in data:
         image = Path(Kungfu(kungfu).icon).as_uri()

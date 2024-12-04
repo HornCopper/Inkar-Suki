@@ -2,8 +2,7 @@ from pathlib import Path
 from jinja2 import Template
 
 from nonebot import on_command
-from nonebot.adapters import Message
-from nonebot.adapters.onebot.v11 import GroupMessageEvent, MessageSegment as ms
+from nonebot.adapters.onebot.v11 import Message, GroupMessageEvent, MessageSegment as ms
 from nonebot.params import CommandArg, Arg
 from nonebot.typing import T_State
 
@@ -87,7 +86,4 @@ async def _(state: T_State, num: Message = Arg()):
     name = state["name"][int(index)]
     kungfu = state["kungfu"]
     data = await get_single_recommend_equips(data, author, name, tag, kungfu)
-    if isinstance(data, list):
-        await RecommendEquipMatcher.finish(data[0])
-    elif isinstance(data, str):
-        await RecommendEquipMatcher.finish(ms.image(Request(data).local_content))
+    await RecommendEquipMatcher.finish(data)
