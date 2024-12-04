@@ -137,7 +137,7 @@ async def get_mulit_record_image(server: str, roles: list[str]):
         row = ["<td class=\"short-column\">" + roles[num] + "</td>"]
         for each_zone in zones:
             progress = data[each_zone]
-            image = "\n".join(["<img src=\"" + build_path(ASSETS, ["image", "jx3", "cat", "gold.png" if value else "grey.png"]) + "\" height=\"20\" width=\"20\">" for value in progress])
+            image = "\n".join(["<img src=\"" + build_path(ASSETS, ["image", "jx3", "cat", "gold.png" if not value else "grey.png"]) + "\" height=\"20\" width=\"20\">" for value in progress])
             row.append("<td class=\"short-column\">" + image + "</td>")
         tables.append(
             "<tr>\n" + "\n".join(row) + "\n</tr>"
