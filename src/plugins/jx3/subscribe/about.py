@@ -64,7 +64,7 @@ async def generate_group_info(bot: Bot, group_id: str):
             "jx3",
             "subscribe.html",
             css_ = Path(build_path(TEMPLATES, ["jx3", "subscribe.css"])),
-            font = build_path(ASSETS, ["font", "custom.ttf"]),
+            font = build_path(ASSETS, ["font", "PingFangSC-Medium.otf"]),
             subscribe_contents = final_subscribe_contents,
             additions_contents = final_additions_contents,
             group_id = group_id,
@@ -72,7 +72,5 @@ async def generate_group_info(bot: Bot, group_id: str):
             grass_image = Path(build_path(ASSETS, ["image", "minecraft", "grass.png"])).as_uri()
         )
     )
-    final_path = await generate(html, ".total", False)
-    if not isinstance(final_path, str):
-        return
-    return Path(final_path).as_uri()
+    image = await generate(html, ".total", segment=True)
+    return image

@@ -1,7 +1,9 @@
 from nonebot import on_command
-from nonebot.adapters import Message
 from nonebot.params import CommandArg
-from nonebot.adapters.onebot.v11 import GroupMessageEvent, MessageSegment as ms
+from nonebot.adapters.onebot.v11 import (
+    Message,
+    GroupMessageEvent
+)
 
 from src.config import Config
 from src.const.jx3.server import Server
@@ -62,7 +64,4 @@ async def _(event: GroupMessageEvent, full_argument: Message = CommandArg()):
         data = await get_recruit_image(server, args[1], False, filter)
     else:
         await get_recruit_image(PROMPT.ArgumentCountInvalid)
-    if not isinstance(data, str):
-        return
-    image = Request(data).local_content
-    await RecruitMatcher.finish(ms.image(image))
+    await RecruitMatcher.finish(data)

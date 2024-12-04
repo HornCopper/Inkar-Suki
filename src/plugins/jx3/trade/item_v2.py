@@ -16,7 +16,7 @@ from ._template import headers, template_wujia
 import datetime
 import json
 
-async def query_aijx3_data(url: str, params: dict = {}) -> dict | list:
+async def query_aijx3_data(url: str, params: dict = {}):
     data = (await Request(url, headers=headers, params=params).post()).json()
     return data
 
@@ -168,7 +168,7 @@ async def get_single_item_price(item_name: str, exact: bool = False) -> str | di
     prices, dates = await get_item_history(standard_name)
     max, min = select_min_max(prices)
     html = Template(read(build_path(TEMPLATES, ["jx3", "item_price.html"]))).render(
-        font = build_path(ASSETS, ["font", "custom.ttf"]),
+        font = build_path(ASSETS, ["font", "PingFangSC-Medium.otf"]),
         item_image = str(basic_item_info[7]),
         item_name = str(basic_item_info[0]),
         item_alias = str(str(basic_item_info[1])),

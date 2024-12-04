@@ -2,9 +2,8 @@ from typing import Any
 
 from nonebot import on_command
 from nonebot.typing import T_State
-from nonebot.adapters import Message
 from nonebot.params import CommandArg, Arg
-from nonebot.adapters.onebot.v11 import GroupMessageEvent, MessageSegment as ms
+from nonebot.adapters.onebot.v11 import Message, GroupMessageEvent, MessageSegment as ms
 
 from src.const.prompts import PROMPT
 from src.const.jx3.server import Server

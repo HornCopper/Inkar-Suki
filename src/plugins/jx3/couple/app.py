@@ -64,7 +64,7 @@ async def delete_affection(uin: int) -> list[str] | None:
 
 async def generate_affection_image(uin: int):
     if not check_status(uin):
-        return [PROMPT.AffectionGenerateWithNo]
+        return PROMPT.AffectionGenerateWithNo
     current_data: Affections | Any = db.where_one(Affections(), "uin_1 = ? OR uin_2 = ?", uin, uin, default=None)
     btxbfont = build_path(
         ASSETS,
@@ -99,8 +99,6 @@ async def generate_affection_image(uin: int):
     name_2 = current_data.name_2
     server = current_data.server
     recognization = Time(current_data.time).format()
-    if not isinstance(recognization, str):
-        return
     relate = Time().relate(current_data.time)[:-1]
     html = read(
         build_path(
@@ -127,7 +125,5 @@ async def generate_affection_image(uin: int):
         recognization=recognization,
         relate=relate,
     )
-    final_path = await generate(html, ".background-container", False)
-    if not isinstance(final_path, str):
-        return
-    return Path(final_path).as_uri()
+    image = await generate(html, ".background-container", segment=True)
+    return image

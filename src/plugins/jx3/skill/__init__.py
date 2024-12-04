@@ -1,9 +1,8 @@
 from pathlib import Path
 
 from nonebot import on_command
-from nonebot.adapters import Message
 from nonebot.params import CommandArg
-from nonebot.adapters.onebot.v11 import GroupMessageEvent, MessageSegment as ms
+from nonebot.adapters.onebot.v11 import Message, GroupMessageEvent, MessageSegment as ms
 
 from src.const.jx3.kungfu import Kungfu
 

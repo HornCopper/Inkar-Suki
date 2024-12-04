@@ -1,4 +1,3 @@
-from typing import Literal
 from pathlib import Path
 from jinja2 import Template
 
@@ -54,7 +53,7 @@ class Indicator:
             self._person_id = person_data["data"]["person_info"]["person_id"]
         return self._person_id
 
-    async def get_arena_info(self, mode: Literal["22", "33", "55"] = "22") -> list | None:
+    async def get_arena_info(self, mode: str = "22") -> dict | None:
         person_id = await self.get_person_id()
         if not person_id:
             return None
@@ -78,11 +77,11 @@ class Indicator:
         arena_record_data = (await Request("https://m.pvp.xoyo.com/mine/match/person-history", params=params).post(tuilan=True)).json()
         return arena_record_data
 
-async def get_arena_record(server: str = "", name: str = "") -> list | str | None:
+async def get_arena_record(server: str = "", name: str = ""):
     indicator = Indicator(server, name)
     role_id = await indicator.get_role_id()
     if not role_id or not isinstance(role_id, str):
-        return [PROMPT.PlayerNotExist]
+        return PROMPT.PlayerNotExist
     await indicator.get_person_info(role_id)
     msgbox = []
     for mode in ["22", "33", "55"]:
@@ -118,7 +117,7 @@ async def get_arena_record(server: str = "", name: str = "") -> list | str | Non
             input_params["status"] = input_params["status"] + "(MVP)"
         tables.append(Template(template_arena_record).render(**input_params))
     final_input = {
-        "custom_font": build_path(ASSETS, ["font", "custom.ttf"]),
+        "custom_font": build_path(ASSETS, ["font", "PingFangSC-Medium.otf"]),
         "msgbox": "\n".join(msgbox),
         "table": "\n".join(tables),
         "app": "名剑战绩",
@@ -133,7 +132,5 @@ async def get_arena_record(server: str = "", name: str = "") -> list | str | Non
             **final_input
         )
     )
-    final_path = await generate(html, ".total", False)
-    if not isinstance(final_path, str):
-        return
-    return Path(final_path).as_uri()
+    image = await generate(html, ".total", segment=True)
+    return image

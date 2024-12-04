@@ -1,11 +1,9 @@
 from nonebot import on_command
-from nonebot.adapters import Message
-from nonebot.adapters.onebot.v11 import GroupMessageEvent, MessageSegment as ms
+from nonebot.adapters.onebot.v11 import Message, GroupMessageEvent
 from nonebot.params import CommandArg
 
 from src.const.prompts import PROMPT
 from src.utils.analyze import check_number
-from src.utils.network import Request
 from src.utils.database.operation import get_group_settings, set_group_settings
 
 from .app import Assistance, parse_limit, get_answer
@@ -98,11 +96,8 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
         await LookupTeamMatcher.finish("唔……没有输入关键词哦，请检查后重试~")
     if keyword == "" and unique:
         keyword = "1"
-    img_path = await AssistanceInstance.generate_html(str(event.group_id), keyword)
-    if not isinstance(img_path, str):
-        return
-    img = Request(img_path).local_content
-    await LookupTeamMatcher.finish(ms.image(img))
+    image = await AssistanceInstance.generate_html(str(event.group_id), keyword)
+    await LookupTeamMatcher.finish(image)
 
 TeamlistMatcher = on_command("团队列表", priority=5, force_whitespace=True)
 

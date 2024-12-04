@@ -74,7 +74,7 @@ async def get_monsters_map():
         SimpleHTML(
             "jx3",
             "monsters.html",
-            font = build_path(ASSETS, ["font", "custom.ttf"]),
+            font = build_path(ASSETS, ["font", "PingFangSC-Medium.otf"]),
             table_content = "\n".join(content),
             application_name = f"自{start}起7天 · 当前时间：{current_time}<br>{msg}"
         )

@@ -238,7 +238,7 @@ class JX3AttributeV2:
     def attr_values(self) -> list[str]:
         attr_types = self.attr_types
         result = []
-        if self._meta_school.base is not None:
+        if self._meta_school.base is not None and self.data["data"]["PersonalPanel"] is not None:
             for attr_type in attr_types:
                 result.append(self._panel_type(attr_type).value)
             return result
@@ -398,7 +398,7 @@ class JX3AttributeV2:
             filter_string = ["全", "阴性", "阳性", "阴阳", "毒性", "攻击", "值", "成效", "内功", "外功", "体质", "根骨", "力道", "元气", "身法", "等级", "混元性", "招式产生威胁", "水下呼吸时间", "抗摔系数", "马术气力上限"]
             for y in filter_string:
                 attr = attr.replace(y, "")
-            if attr != "" and len(attr) <= 5:
+            if attr != "" and len(attr) <= 4:
                 msg = msg + f" {attr}"
         msg = msg.replace(" 能 ", " 全能 ").replace(" 能", " 全能")
         return msg
@@ -545,7 +545,7 @@ async def get_attributes_image_v2(
     flickering = Image.open(build_path(ASSETS, ["image", "jx3", "attributes", "flicker.png"])).resize((38, 38))
     precious = Image.open(build_path(ASSETS, ["image", "jx3", "attributes", "peerless.png"]))
     max_strength_approching = Image.open(build_path(ASSETS, ["image", "jx3", "attributes", "max_strength.png"]))
-    max_strength_unapproching = Image.open(build_path(ASSETS, ["image", "jx3", "attributes", "not_max_strength.png"]))
+    max_strength_unapproching = Image.open(build_path(ASSETS, ["image", "jx3", "attributes", "not_max_strength.png"])).resize((38, 38))
     common_enchant_icon = Image.open(build_path(ASSETS, ["image", "jx3", "attributes", "common_enchant.png"])).resize((20, 20))
     permanent_enchant_icon = Image.open(build_path(ASSETS, ["image", "jx3", "attributes", "permanent_enchant.png"])).resize((20, 20))
 

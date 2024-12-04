@@ -1,7 +1,6 @@
 from nonebot import on_command
-from nonebot.adapters import Message
 from nonebot.params import CommandArg
-from nonebot.adapters.onebot.v11 import GroupMessageEvent, Bot, MessageSegment as ms
+from nonebot.adapters.onebot.v11 import GroupMessageEvent, Bot, Message
 
 from src.const.path import ASSETS, build_path
 from src.utils.file import read
@@ -76,6 +75,4 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
     if args.extract_plain_text() != "":
         return
     about_img = await generate_group_info(bot, str(event.group_id))
-    if not isinstance(about_img, str):
-        return
-    await info.finish(ms.image(about_img))
+    await info.finish(about_img)

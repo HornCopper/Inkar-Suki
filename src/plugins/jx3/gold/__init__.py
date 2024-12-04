@@ -1,9 +1,7 @@
 from nonebot import on_command
-from nonebot.adapters import Message
 from nonebot.params import CommandArg
-from nonebot.adapters.onebot.v11 import GroupMessageEvent, MessageSegment as ms
+from nonebot.adapters.onebot.v11 import Message, GroupMessageEvent
 
-from src.utils.network import Request
 from src.const.jx3.server import Server
 from src.const.prompts import PROMPT
 
@@ -23,8 +21,4 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     if server is None:
         await CoinPriceMatcher.finish(PROMPT.ServerNotExist)
     data = await get_coin_price_image(server)
-    if isinstance(data, list):
-        await CoinPriceMatcher.finish(data[0])
-    if isinstance(data, str):
-        data = Request(data).local_content
-        await CoinPriceMatcher.finish(ms.image(data))
+    await CoinPriceMatcher.finish(data)

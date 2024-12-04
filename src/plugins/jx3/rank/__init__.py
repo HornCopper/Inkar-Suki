@@ -1,14 +1,11 @@
-from pathlib import Path
-
 from nonebot import on_command
 from nonebot.adapters import Message
 from nonebot.params import CommandArg
-from nonebot.adapters.onebot.v11 import GroupMessageEvent, MessageSegment as ms
+from nonebot.adapters.onebot.v11 import Message, GroupMessageEvent
 
 from src.const.prompts import PROMPT
 from src.const.jx3.server import Server
 from src.const.jx3.school import School
-from src.utils.network import Request
 
 from .api import get_zlrank
 
@@ -46,9 +43,5 @@ async def _(event: GroupMessageEvent, argument: Message = CommandArg()):
     elif len(args) == 2:
         server = Server(args[0], event.group_id).server or ""
         school = School(args[1]).name or ""
-    image = Request(
-        Path(
-            await get_zlrank(server, school)
-        ).as_uri()
-    ).local_content
-    await ZiliRankMatcher.finish(ms.image(image))
+    image = await get_zlrank(server, school)
+    await ZiliRankMatcher.finish(image)

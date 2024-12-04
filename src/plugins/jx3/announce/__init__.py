@@ -1,8 +1,11 @@
 from pathlib import Path
 
 from nonebot import on_command
-from nonebot.adapters import Message
-from nonebot.adapters.onebot.v11 import GroupMessageEvent, MessageSegment as ms
+from nonebot.adapters.onebot.v11 import (
+    Message,
+    GroupMessageEvent,
+    MessageSegment as ms
+)
 from nonebot.params import CommandArg
 
 from src.const.path import ASSETS, build_path
@@ -10,7 +13,6 @@ from src.utils.network import Request
 from src.utils.generate import generate
 
 import os
-
 
 AnnounceMatcher = on_command("jx3_announce", aliases={"维护公告", "更新公告", "公告", "更新"}, force_whitespace=True, priority=5)
 

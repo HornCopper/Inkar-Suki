@@ -23,15 +23,15 @@ async def get_trade_image(server: str, name: str, items: list = []):
         return data
     for i in filters:
         if name.find(i) != -1:
-            return ["唔……请勿查找无封装备！\n如果您需要查找无封装备，可以使用“交易行无封”（注意没有空格），使用方法参考：交易行无封 服务器 词条\n词条示例：13550内功双会头"]
+            return "唔……请勿查找无封装备！\n如果您需要查找无封装备，可以使用“交易行无封”（注意没有空格），使用方法参考：交易行无封 服务器 词条\n词条示例：13550内功双会头"
     for i in banned:
         if name == i:
-            return ["唔……请勿查找无封装备！"]
+            return "唔……请勿查找无封装备！"
     final_list = []
     if items == []:
         itemData = (await Request(f"https://node.jx3box.com/api/node/item/search?ids=&keyword={name}&client=std&per=35").get()).json()
         if itemData["data"]["total"] == 0:
-            return ["唔……您搜索的物品尚未收录！"]
+            return "唔……您搜索的物品尚未收录！"
         final_list = itemData["data"]["data"]
     else:
         for i in items:
@@ -81,12 +81,12 @@ async def get_trade_image(server: str, name: str, items: list = []):
         detail_data = (await Request(f"https://next2.jx3box.com/api/item-price/{itemId}/detail?server={server}&limit=20").get()).json()
         if (not currentStatus or yesterdayFlag) and detail_data["data"]["prices"] is None:
             if not yesterdayFlag:
-                return ["唔……该物品目前交易行没有数据。"]
+                return "唔……该物品目前交易行没有数据。"
             else:
                 low = calculator_price(current["LowestPrice"])
                 avg = calculator_price(current["AvgPrice"])
                 high = calculator_price(current["HighestPrice"])
-                return [f"唔……该物品目前交易行没有数据，但是音卡找到了昨日的数据：\n昨日低价：{low}\n昨日均价：{avg}\n昨日高价：{high}"]
+                return f"唔……该物品目前交易行没有数据，但是音卡找到了昨日的数据：\n昨日低价：{low}\n昨日均价：{avg}\n昨日高价：{high}"
         table = []
         for each_price in detail_data["data"]["prices"]:
             table_content = Template(template_table).render(
@@ -104,17 +104,15 @@ async def get_trade_image(server: str, name: str, items: list = []):
             SimpleHTML(
                 "jx3",
                 "trade",
-                font=build_path(ASSETS, ["font", "custom.ttf"]),
+                font=build_path(ASSETS, ["font", "PingFangSC-Medium.otf"]),
                 msgbox=msgbox,
                 table_content="\n".join(table),
                 appinfo=f"交易行 · {server} · {name}",
                 saohua="严禁将蓉蓉机器人与音卡共存，一经发现永久封禁！蓉蓉是抄袭音卡的劣质机器人！"
             )
         )
-        final_path = await generate(html, ".total", False)
-        if not isinstance(final_path, str):
-            return
-        return Path(final_path).as_uri()
+        image = await generate(html, ".total", segment=True)
+        return image
     else:
         # 如果有多个，则分别显示近期价格，只显示最新一条
         table = []
@@ -160,17 +158,15 @@ async def get_trade_image(server: str, name: str, items: list = []):
             SimpleHTML(
                 "jx3",
                 "trade",
-                font = build_path(ASSETS, ["font", "custom.ttf"]),
+                font = build_path(ASSETS, ["font", "PingFangSC-Medium.otf"]),
                 msgbox = "",
                 table_content = "\n".join(table),
                 appinfo = f"交易行 · {server} · {name}",
                 saohua = "严禁将蓉蓉机器人与音卡共存，一经发现永久封禁！蓉蓉是抄袭音卡的劣质机器人！"
             )
         )
-        final_path = await generate(html, ".total", False)
-        if not isinstance(final_path, str):
-            return
-        return Path(final_path).as_uri()
+        image = await generate(html, ".total", segment=True)
+        return image
 
 async def get_trade_image_allserver(name: str):
     table = []
@@ -179,14 +175,14 @@ async def get_trade_image_allserver(name: str):
     highs = []
     for i in filters:
         if name.find(i) != -1:
-            return ["唔……请勿查找无封装备！\n如果您需要查找无封装备，可以使用“交易行无封”（注意没有空格），使用方法参考：交易行无封 服务器 词条\n词条示例：13550内功双会头"]
+            return "唔……请勿查找无封装备！\n如果您需要查找无封装备，可以使用“交易行无封”（注意没有空格），使用方法参考：交易行无封 服务器 词条\n词条示例：13550内功双会头"
     for i in banned:
         if name == i:
-            return ["唔……请勿查找无封装备！"]
+            return "唔……请勿查找无封装备！"
     final_list = []
     itemData = (await Request(f"https://node.jx3box.com/api/node/item/search?ids=&keyword={name}&client=std&per=35").get()).json()
     if itemData["data"]["total"] == 0:
-        return ["唔……您搜索的物品尚未收录！"]
+        return "唔……您搜索的物品尚未收录！"
     final_list = itemData["data"]["data"]
     for server in servers:
         itemlist_searchable = []
@@ -261,7 +257,7 @@ async def get_trade_image_allserver(name: str):
                 )
             )
         else:
-            return ["唔……您给出的物品名称似乎不够精准，全服交易行价格查询最好给出准确名称哦！"]
+            return "唔……您给出的物品名称似乎不够精准，全服交易行价格查询最好给出准确名称哦！"
     fhighs = [x for x in highs if x != 0]
     favgs = [x for x in avgs if x != 0]
     flows = [x for x in lows if x != 0]
@@ -270,7 +266,7 @@ async def get_trade_image_allserver(name: str):
         final_avg = int(sum(favgs) / len(favgs))
         final_lowest = int(sum(flows) / len(flows))
     except:  # noqa: E722
-        return ["唔……该物品全服均没有数据！"]
+        return "唔……该物品全服均没有数据！"
     msgbox = Template(template_msgbox).render(
         low=coin_to_image(str(calculator_price(final_lowest))),
         avg=coin_to_image(str(calculator_price(final_avg))),
@@ -280,14 +276,12 @@ async def get_trade_image_allserver(name: str):
         SimpleHTML(
             "jx3",
             "trade",
-            font=build_path(ASSETS, ["font", "custom.ttf"]),
+            font=build_path(ASSETS, ["font", "PingFangSC-Medium.otf"]),
             msgbox=msgbox,
             table_content="\n".join(table),
             appinfo=f"交易行 · {server} · {name}",
             saohua="严禁将蓉蓉机器人与音卡共存，一经发现永久封禁！蓉蓉是抄袭音卡的劣质机器人！"
         )
     )
-    final_path = await generate(html, ".total", False)
-    if not isinstance(final_path, str):
-        return
-    return Path(final_path).as_uri()
+    image = await generate(html, ".total", segment=True)
+    return image

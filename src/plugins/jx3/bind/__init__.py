@@ -1,6 +1,5 @@
 from nonebot import on_command
-from nonebot.adapters import Message
-from nonebot.adapters.onebot.v11 import Bot, GroupMessageEvent
+from nonebot.adapters.onebot.v11 import Bot, Message, GroupMessageEvent
 from nonebot.params import CommandArg
 
 from src.const.prompts import PROMPT

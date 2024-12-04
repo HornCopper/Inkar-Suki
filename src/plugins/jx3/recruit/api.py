@@ -1,8 +1,6 @@
-from pathlib import Path
 from jinja2 import Template
 
 from src.config import Config
-from src.const.path import ASSETS, build_path
 from src.utils.decorators import token_required
 from src.utils.network import Request
 from src.utils.time import Time
@@ -32,7 +30,7 @@ async def get_recruit_image(server: str, keyword: str = "", local: bool = False,
     final_url = f"{Config.jx3.api.url}/data/member/recruit?token={token}&server={server}"
     data = (await Request(final_url).get()).json()
     if data["code"] != 200:
-        return ["唔……未找到相关团队，请检查后重试！"]
+        return "唔……未找到相关团队，请检查后重试！"
     adFlags = (await Request("https://inkar-suki.codethink.cn/filters").get()).json()
     time_now = Time(data["data"]["time"]).format("%H:%M:%S")
     data = data["data"]["data"]
@@ -80,7 +78,5 @@ async def get_recruit_image(server: str, keyword: str = "", local: bool = False,
             table_body = "\n".join(contents)
         )
     )
-    final_path = await generate(html, "table", False)
-    if not isinstance(final_path, str):
-        return
-    return Path(final_path).as_uri()
+    image = await generate(html, "table", segment=True)
+    return image

@@ -24,7 +24,7 @@ Serendipity = JX3Serendipity()
 async def get_serendipity_v2(server: str, name: str, type: bool):
     role_data = await search_player(role_name=name, server_name=server)
     if role_data.format_jx3api()["code"] != 200:
-        return [PROMPT.PlayerNotExist]
+        return PROMPT.PlayerNotExist
     if Config.jx3.api.enable:
         serendipity_data = (await Request(f"{Config.jx3.api.url}/data/luck/adventure?server={server}&name={name}&ticket={ticket}&token={token}").get()).json()
         serendipity_data = serendipity_data["data"]
@@ -61,20 +61,18 @@ async def get_serendipity_v2(server: str, name: str, type: bool):
             )
         )
     if len(tables) == 0:
-        return ["唔……您似乎只有宠物奇遇哦。"]
+        return "唔……您似乎只有宠物奇遇哦。"
     tables[0] = tables[0][:-5] + poem + "</tr>"
     html = str(
         SimpleHTML(
             "jx3",
             "serendipity_v2",
-            font = build_path(ASSETS, ["font", "custom.ttf"]),
+            font = build_path(ASSETS, ["font", "PingFangSC-Medium.otf"]),
             table_content = "\n".join(tables),
             app_info = f"个人奇遇记录 · {server} · {name} · " + Time().format("%H:%M:%S"),
             title_image = build_path(ASSETS, ["image", "jx3", "serendipity", "vector", "title.png"]),
             poem_image = build_path(ASSETS, ["image", "jx3", "serendipity", "vector", "poem.png"])
         )
     )
-    final_path = await generate(html, "table", False)
-    if not isinstance(final_path, str):
-        return
-    return Path(final_path).as_uri()
+    image = await generate(html, "table", segment=True)
+    return image

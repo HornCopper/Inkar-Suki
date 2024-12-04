@@ -1,4 +1,3 @@
-from pathlib import Path
 from jinja2 import Template
 
 from nonebot.adapters.onebot.v11 import MessageSegment as ms
@@ -48,7 +47,7 @@ async def get_equip_data(raw: str):
         for i in data:
             if set(get_exist_attrs(i["attributes"])) == set(attrs):
                 return i
-        raise ValueError
+        raise ValueError("不存在这样的试炼之地装备，请不要徒手造装备！")
             
 async def get_wufeng_image(raw: str, server: str):
     if server == "全服":
@@ -62,7 +61,7 @@ async def get_wufeng_image(raw: str, server: str):
         itemId = data["id"]
     except:
         emg = (await Request("https://inkar-suki.codethink.cn/Inkar-Suki-Docs/img/emoji.jpg").get()).content
-        return ["音卡建议您不要造无修装备了，因为没有。\n" + ms.image(emg)]
+        return ["音卡建议您不要造装备了，因为没有。\n" + ms.image(emg)]
     logs = (await Request(f"https://next2.jx3box.com/api/item-price/{itemId}/logs?server={server}").get()).json()
     current = logs["data"]["today"]
     yesterdayFlag = False
@@ -111,24 +110,22 @@ async def get_wufeng_image(raw: str, server: str):
         SimpleHTML(
             "jx3",
             "trade",
-            font=build_path(ASSETS, ["font", "custom.ttf"]),
+            font=build_path(ASSETS, ["font", "PingFangSC-Medium.otf"]),
             msgbox=msgbox,
             table_content="\n".join(table),
             appinfo=f"交易行 · {server} · {name}",
             saohua="严禁将蓉蓉机器人与音卡共存，一经发现永久封禁！蓉蓉是抄袭音卡的劣质机器人！"
         )
     )
-    final_path = await generate(html, ".total", False)
-    if not isinstance(final_path, str):
-        return
-    return Path(final_path).as_uri()
+    image = await generate(html, ".total", segment=True)
+    return image
 
-async def get_wufeng_image_allserver(raw: str):
+async def get_wufeng_image_allserver(raw: str) -> list | ms:
     highs = []
     lows = []
     avgs = []
     table = []
-    data = await get_equip_data(raw)
+    data: list[str] = await get_equip_data(raw)
     if isinstance(data, list):
         return data
     currentStatus = 0 # 当日是否具有该物品在交易行
@@ -221,14 +218,12 @@ async def get_wufeng_image_allserver(raw: str):
         SimpleHTML(
             "jx3",
             "trade",
-            font=build_path(ASSETS, ["font", "custom.ttf"]),
+            font=build_path(ASSETS, ["font", "PingFangSC-Medium.otf"]),
             msgbox=msgbox,
             table_content="\n".join(table),
             appinfo=f"交易行 · {server} · {name}",
             saohua="严禁将蓉蓉机器人与音卡共存，一经发现永久封禁！蓉蓉是抄袭音卡的劣质机器人！"
         )
     )
-    final_path = await generate(html, ".total", False)
-    if not isinstance(final_path, str):
-        return
-    return Path(final_path).as_uri()
+    image = await generate(html, ".total", segment=True)
+    return image

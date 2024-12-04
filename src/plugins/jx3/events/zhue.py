@@ -65,7 +65,5 @@ async def get_zhue_image(server: str):
             table_body = "\n".join(tables)
         )
     )
-    final_path = await generate(html, "table", False)
-    if not isinstance(final_path, str):
-        return
-    return Path(final_path).as_uri()
+    image = await generate(html, "table", segment=True)
+    return image

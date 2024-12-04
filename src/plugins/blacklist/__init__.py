@@ -1,8 +1,7 @@
 from jinja2 import Template
 
 from nonebot import on_command
-from nonebot.adapters import Message, Bot
-from nonebot.adapters.onebot.v11 import GroupMessageEvent
+from nonebot.adapters.onebot.v11 import GroupMessageEvent, Message, Bot
 from nonebot.params import CommandArg
 
 from src.utils.database.operation import get_group_settings

@@ -1,16 +1,19 @@
 from pathlib import Path
 from PIL import Image, ImageDraw, ImageFont
 
+from nonebot.adapters.onebot.v11 import MessageSegment as ms
+
 from src.const.path import (
     ASSETS,
     CACHE,
     build_path
 )
 from src.utils.generate import get_uuid
+from src.utils.network import Request
 
 async def get_bulletin_img(msg: str, type_: str):
     if type_ not in ["S", "G"]:
-        return False
+        raise ValueError(f"Cannot accept the type `{type_}` of bulletin!!")
     background = Image.open(
         build_path(
             ASSETS,
@@ -59,4 +62,4 @@ async def get_bulletin_img(msg: str, type_: str):
         ]
     )
     background.save(new_file)
-    return Path(new_file).as_uri()
+    return ms.image(Request(Path(new_file).as_uri()).local_content)
