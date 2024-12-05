@@ -226,15 +226,15 @@ async def get_trade_image_allserver(name: str):
             detailData = (await Request(f"https://next2.jx3box.com/api/item-price/{itemId}/detail?server={server}&limit=20").get()).json()
             if (not currentStatus or yesterdayFlag) and detailData["data"]["prices"] is None:
                 if not yesterdayFlag:
-                    table.append(Template(template_table).render(
-                            icon=icon,
-                            color=color,
-                            name=f"{name}（{server}）",
-                            time=Time().format("%m月%d日 %H:%M:%S"),
-                            limit="N/A",
-                            price="<span style=\"color:red\">没有数据</span>"
-                        )
-                    )
+                    # table.append(Template(template_table).render(
+                    #         icon=icon,
+                    #         color=color,
+                    #         name=f"{name}（{server}）",
+                    #         time=Time().format("%m月%d日 %H:%M:%S"),
+                    #         limit="N/A",
+                    #         price="<span style=\"color:red\">没有数据</span>"
+                    #     )
+                    # )
                     continue
                 else:
                     table.append(Template(template_table).render(

@@ -162,16 +162,16 @@ async def get_wufeng_image_allserver(raw: str):
         name = data["Name"]
         if (not currentStatus or yesterdayFlag) and detailData["data"]["prices"] is None:
             if not yesterdayFlag:
-                table.append(
-                    Template(template_table).render(
-                        icon = icon,
-                        color = color,
-                        name = name + f"（{server}）<br><span style=\"color:rgb(0, 210, 75)\">" + " ".join(get_exist_attrs(data["attributes"])) + "</span>",
-                        time = Time().format("%m月%d日 %H:%M:%S"),
-                        limit = "N/A",
-                        price = "<span style=\"color:red\">没有数据</span>"
-                    )
-                )
+                # table.append(
+                #     Template(template_table).render(
+                #         icon = icon,
+                #         color = color,
+                #         name = name + f"（{server}）<br><span style=\"color:rgb(0, 210, 75)\">" + " ".join(get_exist_attrs(data["attributes"])) + "</span>",
+                #         time = Time().format("%m月%d日 %H:%M:%S"),
+                #         limit = "N/A",
+                #         price = "<span style=\"color:red\">没有数据</span>"
+                #     )
+                # )
                 continue
             else:
                 table.append(
@@ -206,8 +206,8 @@ async def get_wufeng_image_allserver(raw: str):
         final_avg = int(sum(favgs) / len(favgs))
         final_lowest = int(sum(flows) / len(flows))
         exist_info_flag = True
-    except:
-        pass
+    except ZeroDivisionError:
+        exist_info_flag = False
     msgbox = template_msgbox.replace("当日", "全服")
     msgbox = Template(msgbox).render(
         low = coin_to_image(calculator_price(final_lowest)) if exist_info_flag else "未知",

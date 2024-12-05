@@ -422,9 +422,9 @@ async def get_attr_v2_remake_img(
     permanent_enchant_icon = Image.open(build_path(ASSETS, ["image", "jx3", "attributes", "permanent_enchant.png"])).resize((20, 20)) # 小附魔
     filled_star = Image.open(build_path(ASSETS, ["image", "jx3", "attributes", "star_fill.png"])).convert("RGBA")
     empty_star = Image.open(build_path(ASSETS, ["image", "jx3", "attributes", "star_empty.png"])).convert("RGBA")
-    pve = Image.open(build_path(ASSETS, ["image", "jx3", "attributes", "pve.png"])).convert("RGBA")
-    pvx = Image.open(build_path(ASSETS, ["image", "jx3", "attributes", "pvx.png"])).convert("RGBA")
-    pvp = Image.open(build_path(ASSETS, ["image", "jx3", "attributes", "pvp.png"])).convert("RGBA")
+    pve = Image.open(build_path(ASSETS, ["image", "jx3", "attributes", "pve.png"])).resize((8, 8)).convert("RGBA")
+    pvx = Image.open(build_path(ASSETS, ["image", "jx3", "attributes", "pvx.png"])).resize((8, 8)).convert("RGBA")
+    pvp = Image.open(build_path(ASSETS, ["image", "jx3", "attributes", "pvp.png"])).resize((8, 8)).convert("RGBA")
 
     # 心法图标
     background.alpha_composite(Image.open(str(kungfu.icon)).resize((50, 50)), (61, 62))
