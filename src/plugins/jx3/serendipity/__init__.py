@@ -142,7 +142,6 @@ async def _(event: GroupMessageEvent, argument: Message = CommandArg()):
         role = args[1]
         name = args[2]
         time = args[3]
-    print([server, role, name, time])
     lawful_data: SerendipityData | None | Any = serendipity_db.where_one(SerendipityData(), "server = ? AND roleName = ? AND time = ? AND serendipityName = ?", server, role, 0, name, default=None)
     if lawful_data is None:
         await SubmitSerendipityTimeMatcher.finish(

@@ -355,7 +355,6 @@ class EquipDataProcesser:
             if name.endswith("·悟"):
                 name = name[:-2]
             result = mobile_attribute_calculator(self.data["data"]["Equips"], name, attr_types)
-            print(result)
             return result
         if self.kungfu.base is not None and self.data["data"]["PersonalPanel"] is not None:
             for attr_type in attr_types:
