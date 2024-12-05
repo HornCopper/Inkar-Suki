@@ -113,7 +113,7 @@ class SingleAttr:
         if self.percent:
             return str(self._value) + "%"
         if self.speed_percent and self.name == "加速":
-            return "%.2f%%" % (self._value/96483.75 * 100)
+            return "%.2f%%" % (self._value / 210078.0 * 100)
         return str(self._value)
 
 class JX3AttributeV2:

@@ -73,3 +73,24 @@ def extract_numbers(string: str) -> list[int]:
     pattern = r"\d+"
     numbers = re.findall(pattern, string)
     return [int(num) for num in numbers]
+
+def merge_dicts(dict1: dict[str, float], dict2: dict[str, float]) -> dict[str, float]:
+    """
+    合并`dict[str, float]`。
+    
+    如果含有相同`Key`则求和放入新字典中。
+
+    Args:
+        dict1 (dict[str, float]): 第一个字典。
+        dict2 (dict[str, float]): 第二个字典。
+
+    Returns:
+        result (dict[str, float]): 合并的字典。
+    """
+    result = dict1.copy()
+    for key, value in dict2.items():
+        if key in result:
+            result[key] += value
+        else:
+            result[key] = value
+    return result
