@@ -173,6 +173,8 @@ class EquipDataProcesser:
             return Equip()
         attributes = self._parse_attributes(equip_data)
         belong: Literal["pve", "pvx", "pvp"] = equip_data["EquipType"]["Icon"][-7:-4]
+        if belong not in ["pve", "pvx", "pvp"]:
+            belong = "pve"
         enchant = []
         if "WPermanentEnchant" in equip_data:
             enchant.append(
