@@ -1,5 +1,6 @@
-from typing_extensions import Self
+from typing_extensions import Self, Any
 
+from src.utils.analyze import merge_dicts
 from src.utils.analyze import invert_dict
 from src.const.path import (
     ASSETS,
@@ -10,6 +11,8 @@ from .constant import (
     kungfu_aliases_data, 
     kungfu_colors_data, 
     kungfu_internel_id_data,
+    kungfu_basic_data,
+    kungfu_coefficient_data,
     kungfu_baseattr_data, 
     school_aliases_data,
     school_snacks_data
@@ -21,6 +24,8 @@ class Kungfu:
     kungfu_internel_id: dict[str, str] = kungfu_internel_id_data
     kungfu_baseattr: dict[str, list[str]] = kungfu_baseattr_data
     kungfu_snacks: dict[str, list[str]] = school_snacks_data
+    kungfu_basic: dict[str, dict] = kungfu_basic_data
+    kungfu_coefficient: dict[str, list[float]] = kungfu_coefficient_data
 
     school_aliases: dict[str, list[str]] = school_aliases_data
 
@@ -134,4 +139,12 @@ class Kungfu:
                 return int(self.kungfu_internel_id[kungfu])
             
     @property
-    def snack(self): ...
+    def snack(self):
+        if self.name is None:
+            return None
+        name = self.name
+        if name == "山居问水剑·悟":
+            name = "问水诀"
+        if name.endswith("·悟"):
+            name = name[:-2]
+        return self.kungfu_snacks[self.name]

@@ -5,7 +5,6 @@ from pydantic import BaseModel
 
 from nonebot.adapters.onebot.v11 import MessageSegment as ms
 
-from src.config import Config
 from src.const.prompts import PROMPT
 from src.const.jx3.kungfu import Kungfu
 from src.const.jx3.school import School
@@ -25,6 +24,8 @@ from src.utils.network import Request
 import os
 import json
 
+from .mobile_attr import mobile_attribute_calculator
+
 class SingleAttr:
     def __init__(self, data: dict, speed_percent: bool = False):
         self.name: str = data["name"]
@@ -37,7 +38,7 @@ class SingleAttr:
         if self.percent:
             return str(self._value) + "%"
         if self.speed_percent and self.name == "加速":
-            return "%.2f%%" % (self._value/96483.75 * 100)
+            return "%.2f%%" % (self._value / 210078.0 * 100)
         return str(self._value)
 
 class Enchant(BaseModel):
@@ -311,9 +312,9 @@ class EquipDataProcesser:
         if self.kungfu.base in ["根骨", "元气", "力道", "身法"]:
             return ["面板攻击", "基础攻击", "会心", "会心效果", "加速", self.kungfu.base, "破防", "无双", "破招", "最大气血值", "御劲", "化劲"]   
         elif self.kungfu.base == "治疗":
-            return ["面板治疗量", "基础治疗量", "会心", "会心效果", "加速", "根骨", "外防", "内防", "破招", "最大气血值", "御劲", "化劲"]
+            return ["面板治疗量", "基础治疗量", "会心", "会心效果", "加速", "根骨", "外功防御", "内功防御", "破招", "最大气血值", "御劲", "化劲"]
         elif self.kungfu.base == "防御":
-            return ["外防", "内防", "最大气血值", "破招", "御劲", "闪避", "招架", "拆招", "体质", "加速率", "无双", "加速"]
+            return ["外功防御", "内功防御", "最大气血值", "破招", "御劲", "闪避", "招架", "拆招", "体质", "加速率", "无双", "加速"]
         else:
             return ["未知属性"] * 12
 
@@ -347,6 +348,14 @@ class EquipDataProcesser:
     def panel_values(self) -> list[str]:
         attr_types = self.panel_types
         result = []
+        if self.data["data"]["PersonalPanel"] is None:
+            name = self.kungfu.name
+            if name is None:
+                return ["N/A"] * 12
+            if name.endswith("·悟"):
+                name = name[:-2]
+            result = mobile_attribute_calculator(self.data["data"]["Equips"], name, attr_types)
+            return result
         if self.kungfu.base is not None and self.data["data"]["PersonalPanel"] is not None:
             for attr_type in attr_types:
                 result.append(self._panel_type(attr_type).value)
@@ -524,6 +533,7 @@ async def get_attr_v2_remake_img(
                         and "（" in equip.enchant[dy].name
                     ) or equip.enchant[dy].name == "龙血磨石"
                     or equip.enchant[dy].name.startswith("连雾·")
+                    or equip.enchant[dy].name.startswith("远风·")
                     else common_enchant_icon
                     if ("（" not in equip.enchant[dy].name and not equip.enchant[dy].name.startswith("彩·"))
                     else Image.open(await download_image(equip.enchant[dy].icon)).resize((20, 20))

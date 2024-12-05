@@ -114,9 +114,3 @@ async def get_qixue(name: str, kungfu: str, season: str = "") -> str | Message |
         )
         image = await generate(html, "table", True)
         return Path(image)
-
-# import asyncio
-# async def main():
-#     instance = await Qixue.create("", "莫问", "怒海争锋")
-#     print(instance.info)
-# asyncio.run(main())

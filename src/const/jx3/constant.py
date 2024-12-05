@@ -20,6 +20,12 @@ with open(build_path(ASSETS, ["source", "jx3", "kungfu_colors.json"]), encoding=
 with open(build_path(ASSETS, ["source", "jx3", "kungfu_internel_id.json"]), encoding="utf-8", mode="r") as kungfu_internel_id:
     kungfu_internel_id_data = json.loads(kungfu_internel_id.read())
 
+with open(build_path(ASSETS, ["source", "jx3", "kungfu_basic.json"]), encoding="utf-8", mode="r") as kungfu_basic:
+    kungfu_basic_data = json.loads(kungfu_basic.read())
+
+with open(build_path(ASSETS, ["source", "jx3", "kungfu_coefficient.json"]), encoding="utf-8", mode="r") as kungfu_coefficient:
+    kungfu_coefficient_data = json.loads(kungfu_coefficient.read())
+
 with open(build_path(ASSETS, ["source", "jx3", "kungfu_baseattr.json"]), encoding="utf-8", mode="r") as kungfu_baseattr:
     kungfu_baseattr_data = json.loads(kungfu_baseattr.read())
 
@@ -31,7 +37,6 @@ with open(build_path(ASSETS, ["source", "jx3", "school_internel_id.json"]), enco
 
 with open(build_path(ASSETS, ["source", "jx3", "school_snacks.json"]), encoding="utf-8", mode="r") as school_snacks:
     school_snacks_data = json.loads(school_snacks.read())
-
 
 with open(build_path(ASSETS, ["source", "jx3", "server_aliases.json"]), encoding="utf-8", mode="r") as server_aliases:
     server_aliases_data = json.loads(server_aliases.read())
