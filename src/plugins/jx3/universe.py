@@ -72,6 +72,9 @@ from .horse import (
     HorseChatMatcher,
     HorseSpawnMatcher
 )
+from .item import (
+    ItemSearcherMatcher
+)
 from .joy import (
     SaohuaMatcher,
     TiangouMatcher
