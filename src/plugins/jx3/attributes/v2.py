@@ -424,7 +424,7 @@ class JX3AttributeV2:
         name = ["未知", "未知", "未知", "未知", "未知", "未知", "未知", "未知", "未知", "未知", "未知", "未知"]
         icon = [unknown_img, unknown_img, unknown_img, unknown_img, unknown_img, unknown_img, unknown_img, unknown_img, unknown_img, unknown_img, unknown_img, unknown_img]
         kungfu = self.kungfu
-        if qixue_list == [] or kungfu is None:
+        if qixue_list == [] or kungfu is None or kungfu.endswith("·悟"):
             return name, icon
         for single_qixue in qixue_list:
             location = (await Qixue.create(single_qixue, kungfu)).location
