@@ -60,4 +60,4 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
             )
         ).as_uri()
     ).local_content
-    await AnnounceMatcher.finish(ms.image(image))
+    await BetaAnnounceMatcher.finish(ms.image(image))
