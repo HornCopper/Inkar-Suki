@@ -9,13 +9,12 @@ from nonebot.params import CommandArg
 from src.const.jx3.server import Server
 from src.const.prompts import PROMPT
 from src.utils.network import Request
-from src.utils.permission import check_permission
 
 from .v2 import get_attr_v2
 from .v2_remake import get_attr_v2_remake
 from .v4 import get_attrs_v4
 
-AttributeV2Matcher = on_command("jx3_addritube_v2", aliases={"属性", "查装", "属性v2", "查装v2"}, force_whitespace=True, priority=5)
+AttributeV2Matcher = on_command("jx3_addritube_v2", aliases={"属性v2", "查装v2"}, force_whitespace=True, priority=5)
 
 @AttributeV2Matcher.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
@@ -46,14 +45,12 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
         data = Request(data).local_content
         await AttributeV2Matcher.finish(ms.image(data))
 
-AttributeV2RemakeMatcher = on_command("jx3_addritube_v2_remake", aliases={"属性v2r", "查装v2r"}, force_whitespace=True, priority=5)
+AttributeV2RemakeMatcher = on_command("jx3_addritube_v2_remake", aliases={"属性v2r", "查装v2r", "属性", "查装"}, force_whitespace=True, priority=5)
 
 @AttributeV2RemakeMatcher.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     if args.extract_plain_text() == "":
         return
-    if not check_permission(event.user_id, 10):
-        await AttributeV2RemakeMatcher.finish("目前该功能内测中，敬请期待！")
     arg = args.extract_plain_text().split(" ")
     if len(arg) not in [1, 2]:
         await AttributeV2RemakeMatcher.finish("唔……参数不正确哦，请检查后重试~")

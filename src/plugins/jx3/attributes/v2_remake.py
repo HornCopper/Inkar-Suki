@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Literal
+from typing import Literal, overload
 from PIL import Image, ImageDraw, ImageFont
 from pydantic import BaseModel
 
@@ -26,6 +26,14 @@ import json
 
 from .mobile_attr import mobile_attribute_calculator
 
+class BasicItem(BaseModel):
+    icon: str = ""
+    name: str = ""
+
+class Panel(BaseModel):
+    name: str = ""
+    value: str = ""
+
 class SingleAttr:
     def __init__(self, data: dict, speed_percent: bool = False):
         self.name: str = data["name"]
@@ -41,25 +49,21 @@ class SingleAttr:
             return "%.2f%%" % (self._value / 210078.0 * 100)
         return str(self._value)
 
-class Enchant(BaseModel):
-    icon: str = ""
-    name: str = ""
+class Enchant(BasicItem):
+    type: Literal["cs", "pe", "ce"] = "pe"
 
-class Equip(BaseModel):
+class Equip(BasicItem):
     attribute: list[str] = []
     belong: Literal["pve", "pvp", "pvx"] = "pvx"
     enchant: list[Enchant] = [] # 包含五彩石
     fivestone: list[int] = []
-    icon: str = ""
     location: str = ""
-    name: str = ""
     peerless: bool = False # 精简/特效/神兵
     quality: int = 0
     strength: tuple[int, int] = (0, 0)
 
-class Talent(BaseModel):
-    icon: str = ""
-    name: str = ""
+class Talent(BasicItem):
+    ...
 
 class Qixue:
     qixue_data: dict = {}
@@ -103,10 +107,6 @@ class Qixue:
             for y in self.qixue_data[self.kungfu][x]:
                 if self.qixue_data[self.kungfu][x][y]["name"] == self.name:
                     return x, y, "https://icon.jx3box.com/icon/" + str(self.qixue_data[self.kungfu][x][y]["icon"]) + ".png"
-
-class Panel(BaseModel):
-    name: str = ""
-    value: str = ""
 
 async def get_school_background(school: str) -> str:
     image_path = build_path(ASSETS, ["image", "jx3", "attributes", "school_bg", school + ".png"])
@@ -160,13 +160,13 @@ class EquipDataProcesser:
             attr = attr.replace("外功防御", "外防")
             attr = attr.replace("内功防御", "内防")
             attr = attr.replace("会心效果", "会效")
-            filter_string = ["全", "阴性", "阳性", "阴阳", "毒性", "攻击", "值", "成效", "内功", "外功", "体质", "根骨", "力道", "元气", "身法", "等级", "混元性", "招式产生威胁", "水下呼吸时间", "抗摔系数", "马术气力上限"]
+            filter_string = ["全", "阴性", "阳性", "阴阳", "毒性", "攻击", "值", "成效", "内功", "外功", "体质", "根骨", "力道", "元气", "身法", "等级", "混元性", "招式产生威胁", "水下呼吸时间", "抗摔系数", "马术气力上限", "气力上限"]
             for y in filter_string:
                 attr = attr.replace(y, "")
             if attr != "" and len(attr) <= 4:
                 msg = msg + f" {attr}"
         msg = msg.replace(" 能 ", " 全能 ").replace(" 能", " 全能")
-        return msg
+        return msg.strip()
 
     def _format_equip(self, equip_data: dict, location: str) -> Equip:
         if not equip_data:
@@ -180,7 +180,8 @@ class EquipDataProcesser:
             enchant.append(
                 Enchant(
                     icon = build_path(ASSETS, ["image", "jx3", "attributes", "permanent_enchant.png"]),
-                    name = equip_data["WPermanentEnchant"]["Name"]
+                    name = equip_data["WPermanentEnchant"]["Name"],
+                    type = "pe"
                 )
             )
         if "WCommonEnchant" in equip_data:
@@ -209,14 +210,16 @@ class EquipDataProcesser:
                         enchant.append(
                             Enchant(
                                 icon = build_path(ASSETS, ["image", "jx3", "attributes", "common_enchant.png"]),
-                                name = f"{enchant_name}·{type_}·" + {"帽子": "帽","上衣": "衣","腰带": "腰","护臂": "腕","鞋": "鞋"}[equip_data["Icon"]["SubKind"]]
+                                name = f"{enchant_name}·{type_}·" + {"帽子": "帽","上衣": "衣","腰带": "腰","护臂": "腕","鞋": "鞋"}[equip_data["Icon"]["SubKind"]],
+                                type = "ce"
                             )
                         )
         if "effectColorStone" in equip_data:
             enchant.append(
                 Enchant(
                     icon = equip_data["effectColorStone"]["Icon"]["FileName"],
-                    name = equip_data["effectColorStone"]["Name"]
+                    name = equip_data["effectColorStone"]["Name"],
+                    type = "cs"
                 )
             )
         fivestone = [
@@ -379,8 +382,13 @@ class EquipDataProcesser:
             )
         ]
     
-@time_record
-async def get_attr_v2_remake(server: str, role_name: str):
+@overload
+async def get_attr_v2_remake(server: str, role_name: str, segment: Literal[True]) -> ms | str: ...
+
+@overload
+async def get_attr_v2_remake(server: str, role_name: str, segment: Literal[False]) -> bytes | str: ...
+
+async def get_attr_v2_remake(server: str, role_name: str, segment: bool = True):
     player = (await search_player(role_name=role_name, server_name=server)).format_jx3api()
     if player["code"] != 200:
         return PROMPT.PlayerNotExist
@@ -406,7 +414,9 @@ async def get_attr_v2_remake(server: str, role_name: str):
         panel=data_object.panel,
         score=data_object.score
     )
-    return image
+    if not segment:
+        return image
+    return ms.image(image)
 
 async def get_attr_v2_remake_img(
     name: str = "",
@@ -530,14 +540,9 @@ async def get_attr_v2_remake_img(
             background.alpha_composite(
                 (
                     permanent_enchant_icon
-                    if (
-                        (not equip.enchant[dy].name.startswith("彩·"))
-                        and "（" in equip.enchant[dy].name
-                    ) or equip.enchant[dy].name == "龙血磨石"
-                    or equip.enchant[dy].name.startswith("连雾·")
-                    or equip.enchant[dy].name.startswith("远风·")
+                    if equip.enchant[dy].name == "pe"
                     else common_enchant_icon
-                    if ("（" not in equip.enchant[dy].name and not equip.enchant[dy].name.startswith("彩·"))
+                    if equip.enchant[dy].name == "ce"
                     else Image.open(await download_image(equip.enchant[dy].icon)).resize((20, 20))
                 ),
                 (x + 351, y - 3 + dy * 24)
@@ -555,4 +560,4 @@ async def get_attr_v2_remake_img(
         y += 49
     final_path = build_path(CACHE, [get_uuid() + ".png"])
     background.save(final_path)
-    return ms.image(Request(Path(final_path).as_uri()).local_content)
+    return Request(Path(final_path).as_uri()).local_content

@@ -238,7 +238,7 @@ class JX3AttributeV2:
     def attr_values(self) -> list[str]:
         attr_types = self.attr_types
         result = []
-        if self._meta_school.base is not None and self.data["data"]["PersonalPanel"] is not None:
+        if self._meta_school.base is not None and self.data["data"]["PersonalPanel"] is not None if "PersonalPanel" in self.data["data"] else True:
             for attr_type in attr_types:
                 result.append(self._panel_type(attr_type).value)
             return result

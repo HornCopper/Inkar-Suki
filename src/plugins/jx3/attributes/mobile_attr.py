@@ -150,7 +150,7 @@ def mobile_attribute_calculator(equip_data: list[dict[str, Any]], kungfu_name: s
             format_attr["内功防御"] = percent(str(round(attr["atMagicShield"] / (attr["atMagicShield"] + 126007.2), 4) * 100) + "%")
             format_attr["招架"] = percent(str(round(attr.get("atParryBase", 0) / (attr.get("atParryBase", 0) + 107553.6) + 0.03, 4) * 100) + "%")
             format_attr["拆招"] = str(int(attr.get("atParryValueBase", 0)))
-            format_attr["闪避"] = percent(str(round(attr["atDodge"] / (attr["atDodge"] + 91634.4), 4) * 100) + "%")
+            format_attr["闪避"] = percent(str(round(attr.get("atDodge", 0) / (attr.get("atDodge", 0) + 91634.4), 4) * 100) + "%")
             format_attr["加速率"] = percent(str(round(attr["atHasteBase"] / 210078.0, 4) * 100) + "%")
     format_attr["会心"] = percent(str(round(sum_attr(attr, "CriticalStrike") / 197703.0 * 100, 2)) + "%")
     format_attr["会心效果"] = percent(str(round(sum_attr(attr, "CriticalDamagePowerBase") / 72844.2 * 100, 2) + 175) + "%")
