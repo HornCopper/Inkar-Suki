@@ -136,9 +136,10 @@ class EquipDataProcesser:
     locations = ["帽子", "上衣", "腰带", "护手", "下装", "鞋子", "项链", "腰坠", "戒指", "戒指", "远程武器", "近身武器"]
     special_weapons = ["雪凤冰王笛", "血影天宇舞姬", "炎枪重黎", "腾空", "画影", "金刚", "岚尘金蛇", "苌弘化碧", "蝎心忘情", "抱朴狩天", "八相连珠", "圆月双角", "九龙升景", "斩马刑天", "风雷瑶琴剑", "五相斩", "雪海散华", "麒王逐魂"]
 
-    def __init__(self, data: dict):
+    def __init__(self, data: dict, name: str = ""):
         self.data = data
-        self._cached_equips = None 
+        self._cached_equips = None
+        self.name = name
 
     @property
     def kungfu(self) -> Kungfu:
@@ -222,6 +223,25 @@ class EquipDataProcesser:
                     type = "cs"
                 )
             )
+        if location != "戒指" and "FiveStone" not in equip_data:
+            equip_data["FiveStone"] = [
+                {
+                    "Level": "0"
+                }
+                for _
+                in {
+                    "帽子": 2,
+                    "上衣": 2,
+                    "腰带": 2,
+                    "护手": 2,
+                    "下装": 2,
+                    "鞋子": 2,
+                    "项链": 1,
+                    "腰坠": 1,
+                    "远程武器": 1,
+                    "近身武器": 3
+                }[location]
+            ]
         fivestone = [
             int(fivestone["Level"])
             for fivestone
@@ -398,11 +418,11 @@ async def get_attr_v2_remake(server: str, role_name: str, segment: bool = True):
         "game_role_id": player["data"]["roleId"]
     }
     data = (await Request("https://m.pvp.xoyo.com/mine/equip/get-role-equip", params=params).post(tuilan=True)).json()
-    data_object = EquipDataProcesser(data)
+    data_object = EquipDataProcesser(data, role_name)
     try:
         data_object.equips
     except TypeError:
-        return "玩家似乎在提交角色之后转服或删除！"
+        return "玩家似乎在提交角色之后转服或删除！\n或是装备并未穿戴完整，例如浪客行装备，请检查后重试！"
     image = await get_attr_v2_remake_img(
         role_name,
         player["data"]["bodyName"],
