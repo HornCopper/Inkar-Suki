@@ -4,7 +4,8 @@ from .achievement import (
     JX3ProgressV2Matcher
 )
 from .almanac import (
-    AlmanacMatcher
+    AlmanacMatcher,
+    AlmanacImageMatcher
 )
 from .announce import (
     AnnounceMatcher,

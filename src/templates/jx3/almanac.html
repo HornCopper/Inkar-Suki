@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2024.12.10 剑三黄历</title>
+    <style>
+        body {
+            font-family: "Noto Serif", serif;
+            background-color: #f8f2e8;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+        .container {
+            max-width: 1200px;
+            width: 100%;
+            padding: 40px;
+            background-color: #fff8e1;
+            border: 2px solid #deb887;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        h1 {
+            font-size: 36px;
+            text-align: center;
+            color: #d46e27;
+            margin-bottom: 20px;
+            grid-column: span 2;
+        }
+        h2 {
+            font-size: 24px;
+            text-align: center;
+            color: #d46e27;
+            border-bottom: 2px solid #d46e27;
+            padding-bottom: 5px;
+            margin-bottom: 15px;
+        }
+        .section {
+            margin-bottom: 20px;
+            font-size: 18px;
+        }
+        .highlight {
+            color: #ff6600;
+            font-weight: bold;
+        }
+        .recommendation {
+            background-color: #f0f8ff;
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+        ul {
+            list-style-type: none;
+            padding-left: 0;
+        }
+        ul li {
+            font-size: 18px;
+            line-height: 1.6;
+        }
+        .bordered {
+            border: 1px dashed #deb887;
+            padding: 10px;
+            border-radius: 8px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        th, td {
+            border: 1px solid #deb887;
+            padding: 8px 12px;
+            text-align: center;
+        }
+        th {
+            background-color: #d46e27;
+            color: white;
+        }
+        .faction-icon {
+            width: 30px;
+            height: 30px;
+            vertical-align: middle;
+            margin-right: 0px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>
+            <img src="C:/Users/HornCopper/Inkar-Suki/src/assets/image/jx3/kungfu/通用.png" class="faction-icon">
+            2024.12.10 剑三黄历 <strong>{{ day_type }}</strong>
+            <br>
+            <span style="font-size:25px">by 哒哒哒哒咻@唯我独尊 / 小红书：【剑三黄历】</span>
+        </h1>
+
+        <div class="section">
+            <h2>今日奇遇福源门派</h2>
+            <p>
+                <span class="highlight">福源门派：</span>
+                {{ s_schools }}
+            </p>
+            <p><span class="highlight">其他门派：</span>{{ s_color }}</p>
+        </div>
+
+        <div class="section">
+            <h2>今日副本福源门派</h2>
+            <p>
+                <span class="highlight">福源门派：</span>
+                {{ d_schools }}
+            </p>
+            <p><span class="highlight">其他门派：</span>{{ d_color }}</p>
+        </div>
+
+        <div class="section">
+            <h2>吉时</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>时间段</th>
+                        <th>五行</th>
+                        <th>备注</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for time_, elem in lucky_time.items() %}
+                    <tr>
+                        <td>{{ time_ }}</td>
+                        <td>{{ elem }}</td>
+                        <td>吉时</td>
+                    </tr>
+                    {% endfor %}
+                    <!-- <tr>
+                        <td>1-3</td>
+                        <td>火</td>
+                        <td>吉时</td>
+                    </tr>
+                    <tr>
+                        <td>7-9</td>
+                        <td>金</td>
+                        <td>吉时</td>
+                    </tr>
+                    <tr>
+                        <td>9-11</td>
+                        <td>金</td>
+                        <td>吉时</td>
+                    </tr>
+                    <tr>
+                        <td>13-15</td>
+                        <td>土</td>
+                        <td>吉时</td>
+                    </tr>
+                    <tr>
+                        <td>19-21</td>
+                        <td>木</td>
+                        <td>吉时</td>
+                    </tr>
+                    <tr>
+                        <td>23-24</td>
+                        <td>火</td>
+                        <td>吉时</td>
+                    </tr> -->
+                </tbody>
+            </table>
+        </div>
+
+        <div class="section recommendation bordered">
+            <h2>通用推荐</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>事件</th>
+                        <th>推荐</th>
+                        <th>备注</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{ general }}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="section">
+            <h2>阴阳类野外奇遇推荐</h2>
+            <img src="C:/Users/HornCopper/Inkar-Suki/src/assets/image/jx3/serendipity/serendipity/peerless/阴阳两界.png">
+            <img src="C:/Users/HornCopper/Inkar-Suki/src/assets/image/jx3/serendipity/serendipity/common/赴九幽.png">
+            {{ drop_recommend }}
+        </div>
+    </div>
+
+</body>
+</html>

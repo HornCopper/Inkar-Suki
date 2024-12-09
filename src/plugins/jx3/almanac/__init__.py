@@ -13,10 +13,13 @@ from src.config import Config
 from src.const.path import CONST
 from src.utils.time import Time
 from src.utils.network import Request
+from src.utils.generate import generate
 
 import os
 import re
 import httpx
+
+from .image import x as get_almanac_image
 
 def extract_chinese(text):
     chinese_chars = re.findall(r'[\u4e00-\u9fa5]+', text)
@@ -61,3 +64,15 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
                 ref_attr = most_common_element(words_attr)
                 msg = f"{words} 对应五行：\n" + "|".join(words_attr) + f"\n参考属性：{ref_attr}\n" + image + "数据来自小红书【剑三黄历】欢迎关注！"
                 await AlmanacMatcher.finish(msg)
+
+AlmanacImageMatcher = on_command("jx3_almanac_image", aliases={"黄历图片生成"}, priority=5)
+
+@AlmanacImageMatcher.handle()
+async def _(event: GroupMessageEvent, msg: Message = CommandArg()):
+    full_msg = msg.extract_plain_text().strip()
+    try:
+        html: str = get_almanac_image(full_msg)
+    except:
+        await AlmanacImageMatcher.finish("解析失败！")
+    image = await generate(html, ".container", segment=True)
+    await AlmanacImageMatcher.finish(image)
