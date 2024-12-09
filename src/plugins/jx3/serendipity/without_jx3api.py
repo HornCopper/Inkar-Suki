@@ -85,7 +85,7 @@ class JX3Serendipity:
         final_url = f"https://www.jx3pet.com/api/serendipity?server={server}&type=不限&serendipity=不限&name={name}&limit=30"
         try:
             data = (await Request(final_url).get(timeout=2)).json()
-        except (json.decoder.JSONDecodeError, httpx.ReadTimeout):
+        except (json.decoder.JSONDecodeError, httpx.ReadTimeout, httpx.ConnectError):
             self.jx3pet = []
             return
         serendipities = []

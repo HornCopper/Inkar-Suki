@@ -3,6 +3,9 @@ from .achievement import (
     JX3AdventureMatcher,
     JX3ProgressV2Matcher
 )
+from .almanac import (
+    AlmanacMatcher
+)
 from .announce import (
     AnnounceMatcher,
     BetaAnnounceMatcher
