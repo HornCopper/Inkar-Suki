@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <link rel="stylesheet" href="{{ css }}">
+    <style>
+        table {
+            width: 900px;
+            border-collapse: separate;
+            border-spacing: 0;
+            border: 1px solid #000;
+        }
+
+        th {
+            background-color: #333;
+            color: #fff;
+            padding: 8px;
+            text-align: center;
+        }
+
+        td {
+            padding: 20px;
+            text-align: center;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            border-bottom: 1px solid #D3D3D3;
+            margin-bottom: 1px;
+        }
+
+        tfoot {
+            text-align: center;
+            font-size: 12px;
+        }
+
+        .total {
+            max-width: 900px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .message-box {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            padding-top: 10px;
+            padding-bottom: 10px;
+        }
+
+        .progress-wrapper {
+            display: flex;
+            align-items: center;
+        }
+
+        .progress-label {
+            font-size: 14px;
+            color: #333;
+            margin-right: 10px;
+        }
+
+
+
+        @font-face {
+            font-family: Harmony;
+            src: url("{{ font }}");
+
+        }
+
+        body {
+            font-family: Harmony, sans-serif;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="total">
+        <div class="message-box">
+            <div class="progress-wrapper" style="display: flex; align-items: center;">
+                <span class="progress-label" style="margin-right: 10px;font-size: 25px">{{ name}} · {{ server }} / {{ subject }}：</span>
+                <div class="progress-bar">
+                    <div class="progress-0" style="width: {{ width }}%;"></div>
+                    <span class="progress-text">{{ finish }}/{{ total }}</span>
+                </div>
+            </div>
+        </div>
+
+
+        <table style="background-color: #FFFFFF">
+            <thead>
+                {{ head }}
+            </thead>
+            <tbody>
+                {{ table }}
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="3">&copy; Inkar-Suki · 资历分布<br>{{ saohua }}</td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+
+
+</body>
+
+</html>

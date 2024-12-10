@@ -11,9 +11,13 @@ from src.utils.generate import generate
 from src.utils.database.player import search_player
 from src.templates import HTMLSourceCode
 
-from src.plugins.jx3.detail.detail import get_map_all_id
-
 from ._template import table_head, template_body
+
+def get_map_all_id(data: dict, map_name: str) -> list[dict]:
+    for zone in data["data"]:
+        if zone["name"] == map_name:
+            return zone["maps"]
+    raise ValueError(f"Cannot match the zone `{map_name}`!")
 
 async def get_progress_v2(
     server: str = "", 

@@ -45,8 +45,7 @@ from .daily import (
     DailyMatcher
 )
 from .detail import (
-    TeamZoneOverviewMatcher,
-    ZoneOverviewMatcher
+    AchievementMatcher
 )
 from .dungeon import (
     MonstersMatcher,
