@@ -249,6 +249,16 @@ class EquipDataProcesser:
             for fivestone
             in equip_data["FiveStone"]
         ] if location != "戒指" else []
+        if location in ["项链", "腰坠", "戒指", "远程武器"]:
+            if "atSkillEventHandler" in [a["Desc"] for a in equip_data["ModifyType"]]:
+                effect: str = [a["Attrib"] for a in equip_data["ModifyType"] if a["Desc"] == "atSkillEventHandler"][0]["Desc"].split("，")[0]
+                enchant.append(
+                    Enchant(
+                        icon = build_path(ASSETS, ["image", "jx3", "attributes", "common_enchant.png"]),
+                        name = effect.replace("招式", "").replace("少量", ""),
+                        type = "ce"
+                    )
+                )
         icon = equip_data["Icon"]["FileName"]
         name = equip_data["Name"]
         peerless = (equip_data["BelongForce"] in ["内功门派", "外功门派"]) \

@@ -1,8 +1,10 @@
 from typing import Any
 from jinja2 import Template
+from datetime import datetime, timedelta
 
 from src.const.path import TEMPLATES, ASSETS
 from src.utils.file import read
+from src.utils.time import Time
 
 import re
 
@@ -80,7 +82,7 @@ def x(y: str) -> Any:
     _, ad, ae = d(z[2])
     af = k(z[3:z.index("")])
     ag = []
-    for ah in z[z.index("")+1:-3]:
+    for ah in z[z.index("")+1:-2]:
         ag.append(
             Template(
                 c
@@ -90,10 +92,11 @@ def x(y: str) -> Any:
                 p3 = p(ah)
             )
         )
-    ai = [f"<p>{aj}</p>" for aj in z[-3:-1]]
+    ai = [f"<p>{aj}</p>" for aj in z[-2:]]
     html = Template(
         read(TEMPLATES + "/jx3/almanac.html")
     ).render(
+        date = (datetime.now() + timedelta(days=1)).strftime("%Y.%m.%d"),
         day_type = aa,
         s_schools = "\n".join([t(ab) for ab in ab.split("，")]),
         d_schools = "\n".join([t(ad) for ad in ad.split("，")]),

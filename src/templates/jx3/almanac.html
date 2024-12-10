@@ -5,8 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>2024.12.10 剑三黄历</title>
     <style>
+        @font-face {
+            font-family: Harmony;
+            src: url("/home/horncopper/Inkar-Suki/src/assets/font/PingFangSC-Medium.otf");
+        }
+
         body {
-            font-family: "Noto Serif", serif;
+            font-family: Harmony, sans-serif;
             background-color: #f8f2e8;
             color: #333;
             margin: 0;
@@ -14,6 +19,7 @@
             display: flex;
             justify-content: center;
         }
+
         .container {
             max-width: 1200px;
             width: 100%;
@@ -94,8 +100,8 @@
 
     <div class="container">
         <h1>
-            <img src="C:/Users/HornCopper/Inkar-Suki/src/assets/image/jx3/kungfu/通用.png" class="faction-icon">
-            2024.12.10 剑三黄历 <strong>{{ day_type }}</strong>
+            <img src="/home/horncopper/Inkar-Suki/src/assets/image/jx3/kungfu/通用.png" class="faction-icon">
+            {{ date }} 剑三黄历 <strong>{{ day_type }}</strong>
             <br>
             <span style="font-size:25px">by 哒哒哒哒咻@唯我独尊 / 小红书：【剑三黄历】</span>
         </h1>
@@ -188,8 +194,8 @@
 
         <div class="section">
             <h2>阴阳类野外奇遇推荐</h2>
-            <img src="C:/Users/HornCopper/Inkar-Suki/src/assets/image/jx3/serendipity/serendipity/peerless/阴阳两界.png">
-            <img src="C:/Users/HornCopper/Inkar-Suki/src/assets/image/jx3/serendipity/serendipity/common/赴九幽.png">
+            <img src="/home/horncopper/Inkar-Suki/src/assets/image/jx3/serendipity/serendipity/peerless/阴阳两界.png">
+            <img src="/home/horncopper/Inkar-Suki/src/assets/image/jx3/serendipity/serendipity/common/赴九幽.png">
             {{ drop_recommend }}
         </div>
     </div>
