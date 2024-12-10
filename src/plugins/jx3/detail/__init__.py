@@ -46,8 +46,7 @@ async def _(event: GroupMessageEvent, state: T_State, argument: Message = Comman
     for num, type_name in enumerate(VIEW_TYPES, start=1):
         msg += f"\n{num}. {type_name}"
 
-    # await AchievementMatcher.send(ms.at(event.user_id) + f" {msg}")
-    await AchievementMatcher.send(msg)
+    await AchievementMatcher.send(ms.at(event.user_id) + f" {msg}")
 
 @AchievementMatcher.got("choice")
 async def _(event: GroupMessageEvent, state: T_State, choice: Message = Arg()):

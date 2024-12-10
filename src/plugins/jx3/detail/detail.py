@@ -90,7 +90,8 @@ async def get_exp_info(
             ),
             name = name,
             server = server,
-            width = str(int(round(finish_point / total_point, 2))),
+            width = str(int(round(finish_point / total_point, 2) * 100)),
+            progress = match_css_key(finish_point / total_point),
             finish = str(finish_point),
             total = str(total_point),
             head = global_view_head,
@@ -146,6 +147,8 @@ async def get_exp_info(
             name = name,
             server = server,
             finish = str(finish_point),
+            progress = match_css_key(finish_point / total_point),
+            width = str(int(round(finish_point / total_point, 2) * 100)),
             total = str(total_point),
             head = global_view_head,
             table = "\n".join(tables),
@@ -219,12 +222,6 @@ async def get_exp_info(
                         )
                     )
                     appended_dungeons.append(dungeon)
-        elif "25人" in object:
-            ...
-        elif "10人" in object:
-            ...
-        else:
-            ...
         html = Template(
             read(
                 build_path(
@@ -246,6 +243,7 @@ async def get_exp_info(
             name = name,
             server = server,
             finish = str(finish_count),
+            progress = match_css_key(finish_count / total_count),
             total = str(total_count),
             width = str(int(round(finish_count / total_count, 2) * 100)),
             head = dungeon_view_head,
