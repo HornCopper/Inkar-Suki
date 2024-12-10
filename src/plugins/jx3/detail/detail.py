@@ -174,7 +174,7 @@ async def get_exp_info(
         tz25 = ["永王行宫·花月别院", "永王行宫·仙侣庭园", "太原之战·夜守孤城", "太原之战·逐虎驱狼"]
         only_yx = ["荻花洞窟", "南诏皇宫"]
         yx10 = ["龙渊泽", "荻花圣殿"]
-        if object == "秘境总览(全部)":
+        if object == "秘境总览":
             appended_dungeons = []
             for dungeon, mode in dungeons.items():
                 if dungeon in ["古剑台", "神剑冢", "原野奇踪", "百战异闻录", "一之窟", "不染窟", "风砂旧垒", "冰川宫宝库", "天龙寺"]:
