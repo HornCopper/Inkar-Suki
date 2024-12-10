@@ -229,18 +229,20 @@ class EquipDataProcesser:
                     "Level": "0"
                 }
                 for _
-                in {
-                    "帽子": 2,
-                    "上衣": 2,
-                    "腰带": 2,
-                    "护手": 2,
-                    "下装": 2,
-                    "鞋子": 2,
-                    "项链": 1,
-                    "腰坠": 1,
-                    "远程武器": 1,
-                    "近身武器": 3
-                }[location]
+                in range(
+                    {
+                        "帽子": 2,
+                        "上衣": 2,
+                        "腰带": 2,
+                        "护手": 2,
+                        "下装": 2,
+                        "鞋子": 2,
+                        "项链": 1,
+                        "腰坠": 1,
+                        "远程武器": 1,
+                        "近身武器": 3
+                    }[location]
+                )
             ]
         fivestone = [
             int(fivestone["Level"])
@@ -258,7 +260,7 @@ class EquipDataProcesser:
         strength = (int(equip_data["StrengthLevel"]), int(equip_data["MaxStrengthLevel"]))
         return Equip(
             attribute=attributes.split(" "),
-            belong=belong,
+            belong=belong, # type: ignore
             enchant=enchant,
             fivestone=fivestone,
             icon=icon,
@@ -377,6 +379,8 @@ class EquipDataProcesser:
             name = self.kungfu.name
             if name is None:
                 return ["N/A"] * 12
+            if name == "山居问水剑·悟":
+                name = "问水诀"
             if name.endswith("·悟"):
                 name = name[:-2]
             result = mobile_attribute_calculator(self.data["data"]["Equips"], name, attr_types)
