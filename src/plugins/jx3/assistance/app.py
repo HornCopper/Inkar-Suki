@@ -521,7 +521,14 @@ def get_answer() -> str:
     quarter = (int(minutes) // 15) * 15
     time_key = f"{hours}:{str(quarter).zfill(2)}:00"
     result = time_table.get(time_key, "无匹配结果")
+    time_key_index = list(time_table.keys()).index(time_key)
+    if time_key_index == len(time_table.keys()) - 1:
+        next_result = time_table.get(list(time_table.keys())[0])
+    else:
+        next_result = time_table.get(list(time_table.keys())[time_key_index + 1])
     fixed_order = ["东", "南", "西", "北"]
     data = {item.split("-")[0]: item.split("-")[1] for item in result.split(",")}
+    next_data = {item.split("-")[0]: item.split("-")[1] for item in next_result.split(",")}
     result = ",".join([f"{direction}-{data[direction]}" for direction in fixed_order])
-    return f"当前时间: {time_key}\n结果: {result}"
+    next_result = ",".join([f"{direction}-{next_data[direction]}" for direction in fixed_order])
+    return f"当前时间: {time_key}\n结果: {result}\n下一结果：{next_result}"
