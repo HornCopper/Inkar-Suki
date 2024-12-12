@@ -58,6 +58,15 @@ def mobile_attribute_calculator(equip_data: list[dict[str, Any]], kungfu_name: s
     attr.pop("atSkillEventHandler", None) # 套装效果（施展招式）
     attr.pop("atSetEquipmentRecipe", None) # 套装效果（伤害提高）
     attr.pop("atPVXAllRound", None) # 煞笔全能
+    for b in ["根骨", "力道", "元气", "身法"]:
+        key = {
+            "根骨": "atSpiritBase",
+            "力道": "atStrengthBase",
+            "身法": "atAgilityBase",
+            "元气": "atSpunkBase"
+        }[b]
+        if key in attr:
+            attr[key] += attr.get("atBasePotentialAdd", 0)
     kungfu = Kungfu(kungfu_name)
     base_type = kungfu.base
     if base_type is None:
