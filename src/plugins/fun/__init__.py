@@ -20,6 +20,8 @@ from src.utils.analyze import check_number
 import random
 import os
 
+from ._message import answers as a
+
 what_eat = on_regex(r"^(/)?[今|明|后]?[天|日]?(早|中|晚)?(上|午|餐|饭|夜宵|宵夜)?吃(什么|啥|点啥)$", priority=5)
 what_drink = on_regex(r"^(/)?[今|明|后]?[天|日]?(早|中|晚)?(上|午|餐|饭|夜宵|宵夜)?喝(什么|啥|点啥)$", priority=5)
 
@@ -188,3 +190,13 @@ async def _(args: Message = CommandArg()):
         if resp.status_code == 200:
             image = resp.content
             await rdli.finish(ms.image(image))
+
+AnswerBookMatcher = on_command("答案之书", priority=5, force_whitespace=True)
+
+@AnswerBookMatcher.handle()
+async def _(event: GroupMessageEvent, args: Message = CommandArg()):
+    if args.extract_plain_text() == "":
+        return
+    else:
+        answer = random.choice(a)
+        await AnswerBookMatcher.finish("答案之书给出的建议是：\n" + answer)

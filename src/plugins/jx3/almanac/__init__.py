@@ -69,7 +69,7 @@ AlmanacImageMatcher = on_command("jx3_almanac_image", aliases={"黄历图片生�
 
 @AlmanacImageMatcher.handle()
 async def _(event: GroupMessageEvent, msg: Message = CommandArg()):
-    full_msg = msg.extract_plain_text().strip()
+    full_msg = msg.extract_plain_text().strip().replace("\r", "\n")
     try:
         html: str = get_almanac_image(full_msg)
     except:
