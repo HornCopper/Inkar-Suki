@@ -75,8 +75,6 @@ DissolveTeamMatcher = on_command("解散团队", aliases={"取消开团"}, force
 
 @DissolveTeamMatcher.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
-    if args.extract_plain_text() == "":
-        return
     keyword = args.extract_plain_text()
     unique = len(get_group_settings(event.group_id, "opening")) == 1
     if keyword == "" and not unique:

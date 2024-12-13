@@ -1,5 +1,4 @@
 from typing import Literal
-from pathlib import Path
 from datetime import datetime
 
 from src.const.jx3.kungfu import Kungfu
@@ -200,7 +199,7 @@ class Assistance:
             return
         opening.append(new)
         set_group_settings(group_id, "opening", opening)
-        return "开团成功，团员可通过以下命令进行预定：\n预定 <团队关键词/序号> <ID> <职业>\n可使用“团队列表”查看该团队的序号！"
+        return "开团成功，团员可通过以下命令进行报名：\n报名 <团队关键词/序号> <ID> <职业>\n可使用“团队列表”查看该团队的序号！"
 
     def apply_for_place(self, group_id: str, keyword: str, role_name: str, role_type: str, user_id: str) -> str:
         if role_name == "#":
@@ -239,11 +238,11 @@ class Assistance:
             "apply": user_id,
             "time": Time().raw_time
         }
-        stg = self.storge(group_id, keyword, new)
-        if stg is False:
+        storge_status = self.storge(group_id, keyword, new)
+        if not storge_status:
             return "唔……该团队似乎已满，申请失败！"
         else:
-            return "预定成功！"
+            return "报名成功！"
 
     def cancel_apply(self, group_id: str, keyword: str, role_name: str, user_id: str) -> str | None:
         status = self.check_apply(group_id, keyword, role_name)
@@ -274,7 +273,7 @@ class Assistance:
         for i in now:
             if i["description"] == keyword or str(now.index(i) + 1) == keyword:
                 if i["creator"] != user_id:
-                    return "非创建者无法解散团队哦~"
+                    return "非创建者无法解散团队！"
                 now.remove(i)
                 set_group_settings(group_id, "opening", now)
                 return "解散团队成功！"
