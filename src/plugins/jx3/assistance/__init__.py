@@ -7,6 +7,7 @@ from src.utils.analyze import check_number
 from src.utils.database.operation import get_group_settings, set_group_settings
 
 from .app import Assistance, parse_limit, get_answer
+from .random_card import get_card
 
 AssistanceInstance = Assistance()
 
@@ -164,3 +165,10 @@ YZKSecretMatcher = on_command("解密", aliases={"解谜", "揭秘"}, priority=5
 async def _(event: GroupMessageEvent):
     msg = get_answer()
     await YZKSecretMatcher.finish(msg)
+
+RandomCardMatcher = on_command("翻牌", priority=5)
+
+@RandomCardMatcher.handle()
+async def _(event: GroupMessageEvent):
+    num = get_card()
+    await RandomCardMatcher.finish(f"推荐今日翻牌为：{num}")

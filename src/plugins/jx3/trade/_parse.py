@@ -67,7 +67,7 @@ class AttrsConverter:
         return list(map(int, re.findall(r'\d+', text)))
 
     def _determine_place(self) -> str:
-        if any(self._fd(k) for k in ["头", "帽", "脑壳"]):
+        if any(self._fd(k) for k in ["头", "帽", "脑壳", "冠"]):
             return "冠"
         # elif any(self._fd(k) for k in ["手", "臂"]):
         #     return "护臂"

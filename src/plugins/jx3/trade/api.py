@@ -175,7 +175,7 @@ async def get_trade_image_allserver(name: str):
     highs = []
     for i in filters:
         if name.find(i) != -1:
-            return "唔……请勿查找无封装备！\n如果您需要查找无封装备，可以使用“交易行无封”（注意没有空格），使用方法参考：交易行无封 服务器 词条\n词条示例：13550内功双会头"
+            return "唔……请勿查找试炼装备！\n如果您需要查找试炼装备，可以使用“交易行试炼”（注意没有空格），使用方法参考：交易行试炼 服务器 词条\n词条示例：13550内功双会头"
     for i in banned:
         if name == i:
             return "唔……请勿查找无封装备！"

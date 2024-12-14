@@ -53,7 +53,11 @@ async def get_wufeng_image(raw: str, server: str):
     if server == "全服":
         result = await get_wufeng_image_allserver(raw)
         return result
-    data = await get_equip_data(raw)
+    try:
+        data = await get_equip_data(raw)
+    except ValueError:
+        emg = (await Request("https://inkar-suki.codethink.cn/Inkar-Suki-Docs/img/emoji.jpg").get()).content
+        return "音卡建议您不要造装备了，因为没有。\n" + ms.image(emg)
     if isinstance(data, list):
         return data[0]
     currentStatus = 0 # 当日是否具有该物品在交易行
@@ -214,6 +218,8 @@ async def get_wufeng_image_allserver(raw: str):
         avg = coin_to_image(calculator_price(final_avg)) if exist_info_flag else "未知",
         high = coin_to_image(calculator_price(final_highest)) if exist_info_flag else "未知"
     )
+    if len(table) == 0:
+        return "已找到该试炼之地装备，但目前全服均无报价！"
     html = str(
         SimpleHTML(
             "jx3",
