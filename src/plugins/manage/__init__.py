@@ -190,12 +190,31 @@ async def _(bot: Bot, event: MessageEvent, exception: None | Exception, cmd = Ra
         if isinstance(event, GroupMessageEvent):
             await bot.call_api("send_group_msg", group_id=event.group_id, message=f"呜……音卡处理消息中遇到了代码错误，请将本消息告知开发者！\n{exception.__class__}: {exception}\n原始命令：\n{event.raw_message}")
 
+async def get_emoji():
+    api = "https://cms.jx3box.com/api/cms/post/emotions?type=&search=&star=&original=&page=1&per=50"
+    data = (await Request(api).get()).json()
+    data = data["data"]["list"]
+    rdnum = random.randint(0, len(data) - 1)
+    response = (await Request(data[rdnum]["url"]).get())
+    if response.status_code == 200:
+        return ms.image(data[rdnum]["url"])
+    return None
+
 @message_universal.handle()
 async def _(bot: Bot, matcher: Matcher, event: GroupMessageEvent):
-    group_cfg: list[str] = get_group_settings(event.group_id, "subscribe")
-    if "禁言" in group_cfg and "退订" not in event.raw_message:
+    group_subscribes = get_group_settings(event.group_id, "subscribe")
+    group_additions = get_group_settings(event.group_id, "additions")
+    if "禁言" in group_additions and "退订" not in event.raw_message:
         matcher.stop_propagation()
         return
-    if "骚话" in group_cfg and random.random() < 0.04: # 4%
-        random_saohua_data = (await Request("https://www.jx3api.com/data/saohua/random").get()).json()
-        await bot.call_api("send_group_msg", message=random_saohua_data["data"]["text"], group_id=event.group_id)
+    if "骚话" in group_subscribes and random.random() < 0.04: # 4%
+        t = random.randint(0, 1)
+        if t:
+            data = (await Request("https://www.jx3api.com/data/saohua/random").get()).json()
+            msg = data["data"]["text"]
+            await bot.send_group_msg(group_id=event.group_id, message=msg)
+        else:
+            image = Message(await get_emoji())
+            if image is None:
+                return
+            await bot.send_group_msg(group_id=event.group_id, message=image)
