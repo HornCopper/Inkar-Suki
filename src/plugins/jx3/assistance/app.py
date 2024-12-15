@@ -215,7 +215,7 @@ class Assistance:
         else:
             role_actual_type: str | None = Kungfu(role_type).name
             if role_actual_type is None:
-                return f"报名失败！请参考格式：\n报名 关键词/序号 职业 ID\n目前您可能是将最后两个参数写反导致无法识别职业，可参考命令格式后重试！"
+                return "报名失败！请参考格式：\n报名 关键词/序号 职业 ID\n目前您可能是将最后两个参数写反导致无法识别职业，可参考命令格式后重试！"
         if role_name[0] == "#" and user_id != status["creator"]:
             return "只有团长才可创建预留职业位，请联系团长！"
         if "limit" not in status:
@@ -522,9 +522,9 @@ def get_answer() -> str:
     result = time_table.get(time_key, "无匹配结果")
     time_key_index = list(time_table.keys()).index(time_key)
     if time_key_index == len(time_table.keys()) - 1:
-        next_result = time_table.get(list(time_table.keys())[0])
+        next_result = time_table.get(list(time_table.keys())[0], "")
     else:
-        next_result = time_table.get(list(time_table.keys())[time_key_index + 1])
+        next_result = time_table.get(list(time_table.keys())[time_key_index + 1], "")
     fixed_order = ["东", "南", "西", "北"]
     data = {item.split("-")[0]: item.split("-")[1] for item in result.split(",")}
     next_data = {item.split("-")[0]: item.split("-")[1] for item in next_result.split(",")}

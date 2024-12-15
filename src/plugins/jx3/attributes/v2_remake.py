@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Literal, overload
+from typing import Literal, overload, Any
 from PIL import Image, ImageDraw, ImageFont
 from pydantic import BaseModel
 
@@ -14,7 +14,6 @@ from src.const.path import (
     CACHE,
     build_path
 )
-from src.utils.decorators import time_record
 from src.utils.file import read, write
 from src.utils.generate import get_uuid
 from src.utils.exceptions import QixueDataUnavailable
@@ -22,9 +21,38 @@ from src.utils.database.player import search_player
 from src.utils.network import Request
 
 import os
+import random
 import json
 
 from .mobile_attr import mobile_attribute_calculator
+
+async def random_wujie_qixue(kungfu: str) -> tuple[list[str], list[str]]:
+    wujie_index: list[dict[str, str]] = (await Request("https://data.jx3box.com/talent/wujie/index.json").get()).json()
+    for version_data in wujie_index:
+        if version_data["name"].find("体服") == -1:
+            version_key = version_data["version"]
+            qixue_data: dict[str, dict[str, dict[str, dict[str, Any]]]] = (await Request(f"https://data.jx3box.com/talent/wujie/{version_key}.json").get()).json()
+            kungfu_qixue_data = qixue_data[kungfu]
+            names = []
+            icons = []
+            for x in range(1, 5):
+                qixue_data_x = kungfu_qixue_data[str(x)]
+                random_qixue = qixue_data_x[
+                    random.choice(
+                        list(
+                            qixue_data_x.keys()
+                        )
+                    )
+                ]
+                names.append(
+                    random_qixue["name"]
+                )
+                icons.append(
+                    "https://icon.jx3box.com/icon/" + str(random_qixue["icon"]) + ".png"
+                )
+            return names, icons
+    raise ValueError("无法识别该无界心法！")
+
 
 class BasicItem(BaseModel):
     icon: str = ""
@@ -259,13 +287,18 @@ class EquipDataProcesser:
                         type = "ce"
                     )
                 )
+        try:
+            source = equip_data["equipBelongs"][0]["source"]
+        except (TypeError, IndexError, ValueError):
+            source = ""
         icon = equip_data["Icon"]["FileName"]
         name = equip_data["Name"]
         peerless = (equip_data["BelongForce"] in ["内功门派", "外功门派"]) \
         or (equip_data["MaxStrengthLevel"] == "8") \
         or (equip_data["Name"] in self.special_weapons) \
         or (any(d.get('Desc') == 'atSkillEventHandler' for d in equip_data["ModifyType"])) \
-        or (equip_data.get("Desc", "").startswith("使用："))
+        or (equip_data.get("Desc", "").startswith("使用：")) \
+        or (source.startswith("商店：叶鸦"))
         quality = equip_data["Quality"]
         strength = (int(equip_data["StrengthLevel"]), int(equip_data["MaxStrengthLevel"]))
         return Equip(
@@ -325,7 +358,22 @@ class EquipDataProcesser:
         name = ["未知", "未知", "未知", "未知", "未知", "未知", "未知", "未知", "未知", "未知", "未知", "未知"]
         icon = [unknown_img, unknown_img, unknown_img, unknown_img, unknown_img, unknown_img, unknown_img, unknown_img, unknown_img, unknown_img, unknown_img, unknown_img]
         kungfu = self.kungfu.name
-        if qixue_list == [] or kungfu is None or kungfu.endswith("·悟"):
+        if kungfu is None:
+            return [
+                Talent(icon=each_icon, name=each_name)
+                for each_name, each_icon
+                in zip(name, icon)
+            ]
+        if kungfu.endswith("·悟"):
+            kungfu = "问水诀" if kungfu == "山居问水剑·悟" else kungfu[:-2]
+            return [
+                Talent(icon=each_icon, name=each_name)
+                for each_name, each_icon,
+                in zip(
+                    *(await random_wujie_qixue(kungfu))
+                )
+            ]
+        if qixue_list == []:
             return [
                 Talent(icon=each_icon, name=each_name)
                 for each_name, each_icon
@@ -496,41 +544,76 @@ async def get_attr_v2_remake_img(
     # 奇穴
     draw.text((320, 435), "奇穴", fill=(255, 255, 255),
             font=ImageFont.truetype(semibold, size=20), anchor="mm")
-    
-    init_icon = 179
-    init_text = 199
-    y_icon = 479
-    y_text = 530
-    limit = 0
-    done_time = 0
 
-    for talent in talents:
-        image = Image.open(await download_image(talent.icon)).resize((39, 39))
-        background.alpha_composite(image, (init_icon, y_icon))
 
-        # 绘制文字
-        draw.text(
-            (init_text, y_text),
-            talent.name,
-            fill=(255, 255, 255),
-            font=ImageFont.truetype(semibold, size=12),
-            anchor="mm",
-        )
+    if len(talents) == 12:
+        init_icon = 179
+        init_text = 198
+        y_icon = 479
+        y_text = 530
+        limit = 0
+        done_time = 0
+        for talent in talents:
+            image = Image.open(await download_image(talent.icon)).resize((39, 39))
+            background.alpha_composite(image, (init_icon, y_icon))
 
-        # 更新位置
-        init_icon += 48
-        init_text += 48
-        limit += 1
+            # 绘制文字
+            draw.text(
+                (init_text, y_text),
+                talent.name,
+                fill=(255, 255, 255),
+                font=ImageFont.truetype(semibold, size=12),
+                anchor="mm",
+            )
 
-        if limit == 6:
-            limit = 0
-            init_icon = 179
-            init_text = 199
-            y_icon += 68
-            y_text += 68
-            done_time += 1
-            if done_time == 2:
-                break
+            # 更新位置
+            init_icon += 48
+            init_text += 48
+            limit += 1
+
+            if limit == 6:
+                limit = 0
+                init_icon = 179
+                init_text = 199
+                y_icon += 68
+                y_text += 68
+                done_time += 1
+                if done_time == 2:
+                    break
+    else:
+        init_icon = 227
+        init_text = 246
+        y_icon = 479
+        y_text = 530
+        limit = 0
+        done_time = 0
+        for talent in talents:
+            image = Image.open(await download_image(talent.icon)).resize((39, 39))
+            background.alpha_composite(image, (init_icon, y_icon))
+
+            # 绘制文字
+            draw.text(
+                (init_text, y_text),
+                talent.name,
+                fill=(255, 255, 255),
+                font=ImageFont.truetype(semibold, size=12),
+                anchor="mm",
+            )
+
+            # 更新位置
+            init_icon += 48*3
+            init_text += 48*3
+            limit += 1
+
+            if limit == 2:
+                limit = 0
+                init_icon = 227
+                init_text = 246
+                y_icon += 68
+                y_text += 68
+                done_time += 1
+                if done_time == 2:
+                    break
 
     for dy in range(4):
         for dx in range(4):

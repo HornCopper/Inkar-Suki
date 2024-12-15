@@ -3,7 +3,8 @@ from typing import Any
 from src.utils.analyze import merge_dicts
 from src.const.jx3.kungfu import Kungfu
 
-percent = lambda v: (f"{float(v[:-1]):.10g}".rstrip('0').rstrip('.') or "0") + "%"
+def percent(v):
+    return (f"{float(v[:-1]):.10g}".rstrip("0").rstrip(".") or "0") + "%"
 
 def sum_attr(d: dict[str, float], a: str) -> float:
     return sum(value for key, value in d.items() if a in key)

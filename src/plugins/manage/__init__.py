@@ -5,7 +5,8 @@ from nonebot.adapters.onebot.v11 import (
     GroupMessageEvent,
     MessageEvent,
     Bot,
-    Message
+    Message,
+    MessageSegment as ms
 )
 from nonebot.params import CommandArg, Arg, RawCommand
 from nonebot.matcher import Matcher
@@ -204,7 +205,7 @@ async def get_emoji():
 async def _(bot: Bot, matcher: Matcher, event: GroupMessageEvent):
     group_subscribes = get_group_settings(event.group_id, "subscribe")
     group_additions = get_group_settings(event.group_id, "additions")
-    if "禁言" in group_additions and "退订" not in event.raw_message:
+    if "禁言" in group_additions and "退订" not in event.raw_message and not event.raw_message.startswith("ping"):
         matcher.stop_propagation()
         return
     if "骚话" in group_subscribes and random.random() < 0.04: # 4%

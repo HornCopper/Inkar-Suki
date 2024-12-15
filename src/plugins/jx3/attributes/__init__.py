@@ -63,7 +63,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     ServerInstance = Server(server, event.group_id)
     if not ServerInstance.server:
         await AttributeV2RemakeMatcher.finish(PROMPT.ServerNotExist)
-    data = await get_attr_v2_remake(ServerInstance.server, id)
+    data = await get_attr_v2_remake(ServerInstance.server, id, segment=True)
     await AttributeV2RemakeMatcher.finish(data)
 
 AttributeV4Matcher = on_command("jx3_addritube_v4", aliases={"属性v4", "查装v4"}, force_whitespace=True, priority=5)
