@@ -4,13 +4,13 @@ from nonebot.log import logger
 from src.config import Config
 from src.const.path import ASSETS, build_path
 from src.utils.generate import (
-    ScreenshotGenerator,
-    generate
+    ScreenshotGenerator
 )
 from src.utils.time import Time
 from src.utils.database import cache_db
 from src.utils.database.classes import JX3APIWSData
 from src.utils.database.operation import send_subscribe
+from src.plugins.jx3.announce.image import get_image as get_announce_image
 
 from .parse import (
     get_registered_actions,
@@ -18,7 +18,6 @@ from .parse import (
     JX3APIOutputMsg
 )
 from .weibo import poll_weibo_api
-
 from .universe import * # 要不你来一个一个导？  # noqa: F403
 
 import re
@@ -60,14 +59,7 @@ async def websocket_client(ws_url: str, headers: dict):
                         if re.match(r"(\d+)月(\d+)日(.*?)版本更新公告", title):
                             if os.path.exists(build_path(ASSETS, ["image", "jx3", "update.png"])):
                                 os.remove(build_path(ASSETS, ["image", "jx3", "update.png"]))
-                            await generate(
-                                "https://jx3.xoyo.com/launcher/update/latest.html", 
-                                "div", 
-                                True,
-                                viewport={"height": 1920, "width": 1080}, 
-                                device_scale_factor=2.0,
-                                output_path=build_path(ASSETS, ["image", "jx3", "update.png"])
-                            )
+                            await get_announce_image()
                     await send_subscribe(name, msg.msg, msg.server)
                     logger.info(msg.msg)
         except websockets.exceptions.ConnectionClosed:

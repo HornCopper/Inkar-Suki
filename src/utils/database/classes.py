@@ -39,6 +39,7 @@ class GroupSettings(LiteModel):
     wiki: dict = {"startwiki": "", "interwiki": []}
     webhook: list[str] = []
     opening: list = []
+    expire: int = 0
 
 class ItemKeywordMap(LiteModel):
     TABLE_NAME: str = "item_keyword"
