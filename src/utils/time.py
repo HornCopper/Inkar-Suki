@@ -15,6 +15,10 @@ class Time:
         """
         time = int(datetime.now().timestamp()) if time == 0 else time
         self.current: int = time
+    
+    @classmethod
+    def from_string(cls, time_str: str, format: str = "") -> "Time":
+        return cls(int(datetime.strptime(time_str, format).timestamp()))
 
     @property
     def raw_time(self):

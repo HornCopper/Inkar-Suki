@@ -47,3 +47,5 @@ koromo_api_sp = "https://5-data.amae-koromo.com/api/v2/pl4/search_player/{player
 koromo_api_pr = "https://5-data.amae-koromo.com/api/v2/pl4/player_records/{player_id}/{end_timestamp}/{start_timestamp}?limit=8&mode={mode}&descending=true"
 
 koromo_api_ps = "https://5-data.amae-koromo.com/api/v2/pl4/player_stats/{player_id}/{start_timestamp}/{end_timestamp}?mode={mode}"
+
+koromo_api_pes = "https://5-data.amae-koromo.com/api/v2/pl4/player_extended_stats/{player_id}/{start_timestamp}/{end_timestamp}?mode={mode}"

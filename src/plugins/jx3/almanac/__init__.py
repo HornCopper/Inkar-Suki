@@ -1,4 +1,5 @@
 from pathlib import Path
+from datetime import datetime, timedelta
 from collections import Counter
 
 from nonebot import on_command
@@ -41,13 +42,13 @@ AlmanacMatcher = on_command("jx3_almanac", aliases={"剑三黄历"}, priority=5)
 @AlmanacMatcher.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     today = Time().format("%Y-%m-%d")
-    if not os.path.exists(CONST + "/cache/" + today + ".jpg"):
+    if not os.path.exists(CONST + "/cache/" + today + ".png"):
         await AlmanacMatcher.finish("今日剑三黄历尚未更新，请稍后再查询！\n（还没更新？快去敲音卡作者起床！")
     else:
         image = ms.image(
             Request(
                 Path(
-                    CONST + "/cache/" + today + ".jpg"
+                    CONST + "/cache/" + today + ".png"
                 ).as_uri()
             ).local_content
         )
@@ -72,7 +73,7 @@ async def _(event: GroupMessageEvent, msg: Message = CommandArg()):
     full_msg = msg.extract_plain_text().strip().replace("\r", "\n")
     try:
         html: str = get_almanac_image(full_msg)
-    except:
+    except:  # noqa: E722
         await AlmanacImageMatcher.finish("解析失败！")
-    image = await generate(html, ".container", segment=True)
+    image = await generate(html, ".container", segment=True, output_path=CONST + "/cache/" + (datetime.now() + timedelta(days=1)).strftime("%Y-%m-%d") + ".png")
     await AlmanacImageMatcher.finish(image)

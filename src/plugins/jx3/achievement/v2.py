@@ -51,7 +51,10 @@ async def get_progress_v2(
                     desc = i["desc"],
                     value = i["reward_point"],
                     status = "correct" if i["isFinished"] else "incorrect",
-                    flag = "✔" if i["isFinished"] else "✖"
+                    flag = "✔" if i["isFinished"] else "✖",
+                    current = i["currentValue"],
+                    target = i["triggerValue"],
+                    progress = str(round(i["currentValue"] / i["triggerValue"], 4) * 100)
                 )
             )
         html = str(

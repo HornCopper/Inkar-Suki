@@ -141,7 +141,7 @@ async def get_trade_image(server: str, name: str, items: list = []):
                 )
             else:
                 # 使用最新一条数据
-                itemData = itemData["data"]["prices"][0]
+                itemData = itemData["data"]["prices"][-1]
                 final_time = str(Time(itemData["created"]).format("%m月%d日 %H:%M:%S"))
                 count = str(itemData["n_count"])
                 table.append(
@@ -252,8 +252,8 @@ async def get_trade_image_allserver(name: str):
                     color=color,
                     name=itemlist_searchable[0]["name"] + f"（{server}）",
                     time=Time().format("%m月%d日 %H:%M:%S"),
-                    limit=str(detailData["data"]["prices"][0]["n_count"]),
-                    price=coin_to_image(str(calculator_price(detailData["data"]["prices"][0]["unit_price"])))
+                    limit=str(detailData["data"]["prices"][-1]["n_count"]),
+                    price=coin_to_image(str(calculator_price(detailData["data"]["prices"][-1]["unit_price"])))
                 )
             )
         else:

@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title></title>
+    <script src="https://inkar-suki.codethink.cn/Inkar-Suki-Docs/js/echarts.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+
+        header {
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 10px;
+        }
+
+        .section {
+            margin-bottom: 40px;
+        }
+
+        .row {
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+        }
+
+        .box {
+            flex: 1;
+            padding: 20px;
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .table,
+        .table th,
+        .table td {
+            border: 1px solid #ddd;
+        }
+
+        .table th,
+        .table td {
+            padding: 10px;
+            text-align: center;
+        }
+
+        .chart {
+            width: 100%;
+            height: 400px;
+        }
+
+        h2 {
+            text-decoration: underline;
+            color: #71addf;
+        }
+
+        @font-face {
+            font-family: Harmony;
+            src: url("{{ font }}");
+        }
+
+        body {
+            font-family: Harmony, sans-serif;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <div class="row">
+            <div class="box">
+                <h2>基础信息</h2>
+                <p><strong>玩家昵称:</strong> {{ nickname }}</p>
+                <p><strong>玩家ID:</strong> {{ id }}</p>
+                <p><strong>对局数:</strong> {{ count }}</p>
+                <p><strong>总PT变化:</strong> {{ total_pt }}</p>
+                <p><strong>区间:</strong> {{ month }}</p>
+            </div>
+
+            <div class="box">
+                <h2>表现数据</h2>
+                {% for key, value in show_data.items() %}
+                <p><strong>{{ key }}:</strong> {{ value }}</p>
+                {% endfor %}
+            </div>
+
+            <div class="box">
+                <h2>顺位分布</h2>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>顺位</th>
+                            <th>次数</th>
+                            <th>占比</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for rank, rank_count, rank_percent in rank_data %}
+                        <tr>
+                            <td>{{ rank }}</td>
+                            <td>{{ rank_count }}</td>
+                            <td>{{ rank_percent }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                <p><strong>平均顺位:</strong> {{ avg_rank }}</p>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>总PT变化</h2>
+            <div id="lineChart" class="chart"></div>
+        </div>
+
+        <div class="section">
+            <h2>PT得失</h2>
+            <div id="barChart" class="chart"></div>
+        </div>
+
+    </div>
+
+    <script>
+        const ptData = {{ pt_change }}.reverse();
+        const ptLabels = ptData.map((_, index) => `局${index + 1}`);
+
+        const initialPT = {{ init_pt }};
+        const totalPTData = ptData.reduce((acc, val, index) => {
+            acc.push((acc[index - 1] || initialPT) + val);
+            return acc;
+        }, []);
+
+        const maxPT = Math.max(...totalPTData);
+        const minPT = Math.min(...totalPTData);
+
+        const padding = 100;
+        const maxRange = maxPT + padding;
+        const minRange = minPT - padding;
+
+        const barChart = echarts.init(document.getElementById('barChart'));
+        const barOption = {
+            title: { text: '' },
+            tooltip: {},
+            xAxis: {
+                type: 'category',
+                data: ptLabels
+            },
+            yAxis: {
+                type: 'value',
+                name: 'PT得失',
+                min: Math.min(...ptData),
+                max: Math.max(...ptData),
+                axisLabel: {
+                    formatter: '{value}'
+                }
+            },
+            series: [{
+                data: ptData,
+                type: 'bar',
+                itemStyle: {
+                    color: (params) => params.value >= 0 ? '#00FFFF' : 'red',
+                },
+                animation: false,
+                animationDuration: 0
+            }]
+        };
+        barChart.setOption(barOption);
+
+        const lineChart = echarts.init(document.getElementById('lineChart'));
+        const lineOption = {
+            title: { text: '' },
+            tooltip: {},
+            xAxis: {
+                type: 'category',
+                data: ptLabels
+            },
+            yAxis: {
+                type: 'value',
+                name: '累计PT',
+                min: minRange,
+                max: maxRange
+            },
+            series: [{
+                data: totalPTData,
+                type: 'line',
+                smooth: true,
+                lineStyle: {
+                    color: 'green'
+                },
+                symbol: 'none',
+                areaStyle: {
+                    color: '#71addf'
+                },
+                animation: false,
+                animationDuration: 0
+            }]
+        };
+        lineChart.setOption(lineOption);
+
+    </script>
+
+</body>
+
+</html>

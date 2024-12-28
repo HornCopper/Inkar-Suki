@@ -485,6 +485,8 @@ async def get_attr_v2_remake(server: str, role_name: str, segment: bool = True):
         data_object.equips
     except TypeError:
         return "玩家似乎在提交角色之后转服或删除！\n或是装备并未穿戴完整，例如浪客行装备，请检查后重试！"
+    except IsADirectoryError:
+        return "玩家似乎正在浪客行中，无法获取装备！"
     image = await get_attr_v2_remake_img(
         role_name,
         player["data"]["bodyName"],

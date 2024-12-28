@@ -1,10 +1,10 @@
-from pathlib import Path
 from jinja2 import Template
 
 from src.utils.network import Request
 from src.utils.time import Time
-from src.templates import SimpleHTML
+from src.utils.analyze import sort_dict_list
 from src.utils.generate import generate
+from src.templates import SimpleHTML
 
 import math
 
@@ -16,10 +16,6 @@ from ._template import (
     max_points,
     template_majsoul_record
 )
-
-def sort_list_of_dicts(list_of_dicts, key_name):
-    sorted_list = sorted(list_of_dicts, key=lambda x: x[key_name])
-    return sorted_list
 
 def getRank(raw_data: dict | int) -> str:
     if isinstance(raw_data, dict):
@@ -105,7 +101,7 @@ async def get_records(name: str = "", mode: str = "16.12.9.15.11.8"):
         tables = []
         for i in data:
             level = get_mode_name(i["modeId"])
-            sorted_players = list(reversed(sort_list_of_dicts(i["players"], "score")))
+            sorted_players = list(reversed(sort_dict_list(i["players"], "score")))
             place = get_player_sort(pid, sorted_players)
             done_time = Time(i["endTime"]).format("%Y-%m-%d<br>%H:%M:%S") 
             name_1st = "[" + getRank(sorted_players[0]["level"]) + "] " + process_nickname(sorted_players[0]["nickname"], name)
