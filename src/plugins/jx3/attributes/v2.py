@@ -417,6 +417,28 @@ class JX3AttributeV2:
                 str(each["Quality"]) + " " + self._parse_attr(each)
             )
         return quality
+    
+    @property
+    def precious(self) -> list[bool] | Literal[False]:
+        equips = self.equips
+        result = []
+        if not equips:
+            return False
+        for each in equips:
+            try:
+                source = each["equipBelongs"][0]["source"]
+            except (TypeError, IndexError, ValueError):
+                source = ""
+            if (each["BelongForce"] in ["内功门派", "外功门派"]) \
+                or (each["MaxStrengthLevel"] == "8") \
+                or special_weapon(each["Name"]) \
+                or (any(d.get('Desc') == 'atSkillEventHandler' for d in each["ModifyType"])) \
+                or (each.get("Desc", "").startswith("使用：")) \
+                or (source.startswith("商店：叶鸦")):
+                result.append(True)
+            else:
+                result.append(False)
+        return result
 
     async def qixue(self) -> tuple[list[str], list[str]]:
         qixue_list = self.data["data"]["Person"]["qixueList"]
@@ -458,6 +480,7 @@ async def get_attr_v2(server: str, role_name: str) -> str | list[str]:
     equips, icons = attrsObject.equips_and_icons or ([], [])
     qixue_n, qixue_i = await attrsObject.qixue()
     color_stones = attrsObject.color_stone or [("", "")]
+    precious_list = attrsObject.precious
     if school == "藏剑":
         c1n, c1i = color_stones[0]
         try:
@@ -486,7 +509,8 @@ async def get_attr_v2(server: str, role_name: str) -> str | list[str]:
         attribute_values = attrsObject.attr_values,
         color_stone_icon_2 = c2i,
         color_stone_name_2 = c2n,
-        attr_types = attrsObject.attr_types
+        attr_types = attrsObject.attr_types,
+        precious_list = precious_list or []
     )
     return image
 
@@ -534,7 +558,8 @@ async def get_attributes_image_v2(
     attribute_values: list, 
     color_stone_name_2: str, 
     color_stone_icon_2: str,
-    attr_types: list[str]
+    attr_types: list[str],
+    precious_list: list[bool]
 ):
     syst_bold = build_path(ASSETS, ["font", "syst-bold.ttf"])
     syst_mid = build_path(ASSETS, ["font", "syst-mid.ttf"])
@@ -556,7 +581,7 @@ async def get_attributes_image_v2(
     if kungfu.name not in ["问水诀", "山居剑意"]:
         if equip_icon[11] != "":
             background.alpha_composite(Image.open(await local_save(equip_icon[11])).resize((38, 38)), (708, 587))
-            if max_strength[11] in ["3", "4", "8"] or special_weapon(equip_list[11]):
+            if max_strength[11] in ["3", "4", "8"] or special_weapon(equip_list[11]) or precious_list[11]:
                 background.alpha_composite(precious, (688, 586))
                 if max_strength[11] == "8":
                     background.alpha_composite(flickering, (707, 586))
@@ -571,7 +596,7 @@ async def get_attributes_image_v2(
     else:
         if equip_icon[11] != "":
             background.alpha_composite(Image.open(await local_save(equip_icon[11])).resize((38, 38)), (708, 587))
-            if max_strength[11] in ["3", "4", "8"] or special_weapon(equip_list[11]):
+            if max_strength[11] in ["3", "4", "8"] or special_weapon(equip_list[11]) or precious_list[11]:
                 background.alpha_composite(precious, (688, 586))
                 if max_strength[11] == "8":
                     background.alpha_composite(flickering, (708, 587))
@@ -584,7 +609,7 @@ async def get_attributes_image_v2(
                 else:
                     background.alpha_composite(max_strength_unapproching, (708, 587))
         if equip_icon[12] != "":
-            if special_weapon(equip_list[12]):
+            if special_weapon(equip_list[12]) or precious_list[12]:
                 background.alpha_composite(precious, (688, 635))
             background.alpha_composite(Image.open(await local_save(equip_icon[12])).resize((38, 38)), (708, 636))
             if max_strength[12] in ["3", "4", "8"]:
@@ -617,7 +642,7 @@ async def get_attributes_image_v2(
     if kungfu.name in ["问水诀", "山居剑意"]:
         range_time = range_time + 1
     for i in range(range_time):
-        if special_weapon(equip_list[i]):
+        if special_weapon(equip_list[i]) or precious_list[i]:
             background.alpha_composite(precious, (687, init - 1))
         if max_strength[i] in ["3", "4", "8"]:
             background.alpha_composite(precious, (687, init - 1))

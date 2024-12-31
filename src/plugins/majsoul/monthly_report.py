@@ -35,7 +35,7 @@ def get_month_timestamps(month_str: str) -> tuple[int, int]:
 
 class MSMRG: # Majsoul Monthly Report Generator
     search_player_url = sp
-    player_record_url = pr.replace("limit=8&", "")
+    player_record_url = pr.replace("limit=8&", "limit=400&")
     player_stats_url = ps
     player_extended_stats_url = pes
 
@@ -124,25 +124,17 @@ class MSMRG: # Majsoul Monthly Report Generator
     def percent(x: float):
         return str(round(x*100, 2)) + "%"
 
-    @property # 立直 副露 和牌 放铳 默听 打点 铳点
-    def basic_attr(self) -> list[dict[str, str]]:
+    @property
+    def basic_attr(self) -> dict[str, str]:
         data = self.stats
-        values = [
-            {
-                attr:
-                self.percent(data.get(attr, 0))
-            }
-            for attr
-            in ["立直率", "副露率", "和牌率", "放铳率", "默听率"]
-        ]
-        values += [
-                {
-                    attr:
-                    str(data.get(attr, 0))
-                }
-                for attr
-                in ["平均打点", "平均铳点"]
-            ]
+        values = {
+            attr: self.percent(data.get(attr, 0))
+            for attr in ["立直率", "副露率", "和牌率", "放铳率", "默听率"]
+        }
+        values.update({
+            attr: str(data.get(attr, 0))
+            for attr in ["平均打点", "平均铳点"]
+        })
         return values
     
     async def get_pt(self) -> int:
@@ -166,9 +158,7 @@ class MSMRG: # Majsoul Monthly Report Generator
         input_data["id"] = self.role_id
         input_data["count"] = self.count
         input_data["total_pt"] = self.pt_change
-        basic_attr = self.basic_attr
-        final_attr = {key: next(d[key] for d in basic_attr if key in d) for key in {k for d in basic_attr for k in d}}
-        input_data["show_data"] = final_attr
+        input_data["show_data"] = self.basic_attr
         input_data["rank_data"] = zip(
             ["一位", "二位", "三位", "四位"],
             [
