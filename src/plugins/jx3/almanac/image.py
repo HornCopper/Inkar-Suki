@@ -81,7 +81,7 @@ def x(y: str) -> Any:
     _, ad, ae = d(z[2])
     af = k(z[3:z.index("")])
     ag = []
-    for ah in z[z.index("")+1:-2]:
+    for ah in z[z.index("")+1:-3]:
         ag.append(
             Template(
                 c
@@ -91,7 +91,8 @@ def x(y: str) -> Any:
                 p3 = p(ah)
             )
         )
-    ai = [f"<p>{aj}</p>" for aj in z[-2:]]
+    ai = [f"<p>{aj}</p>" for aj in z[-3:-1]]
+    ak = f"<p>{z[-1]}</p>"
     html = Template(
         read(TEMPLATES + "/jx3/almanac.html")
     ).render(
@@ -103,6 +104,7 @@ def x(y: str) -> Any:
         d_color = ae[:2] + "<strong>" + ae[2:4] + "</strong>" + ae[4:],
         lucky_time = af,
         general = "\n".join(ag),
-        drop_recommend = "\n".join(ai)
+        drop_recommend = "\n".join(ai),
+        shilian_recommend = ak
     )
     return html

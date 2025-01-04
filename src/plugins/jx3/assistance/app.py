@@ -199,7 +199,7 @@ class Assistance:
             return
         opening.append(new)
         set_group_settings(group_id, "opening", opening)
-        return "开团成功，团员可通过以下命令进行报名：\n报名 <团队关键词/序号> <ID> <职业>\n可使用“团队列表”查看该团队的序号！"
+        return "开团成功，团员可通过以下命令进行报名：\n报名 <团队关键词/序号> <职业> <ID>\n可使用“团队列表”查看该团队的序号！"
 
     def apply_for_place(self, group_id: str, keyword: str, role_name: str, role_type: str, user_id: str) -> str:
         if role_name == "#":

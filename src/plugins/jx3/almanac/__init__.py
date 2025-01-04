@@ -71,9 +71,6 @@ AlmanacImageMatcher = on_command("jx3_almanac_image", aliases={"黄历图片生�
 @AlmanacImageMatcher.handle()
 async def _(event: GroupMessageEvent, msg: Message = CommandArg()):
     full_msg = msg.extract_plain_text().strip().replace("\r", "\n")
-    try:
-        html: str = get_almanac_image(full_msg)
-    except:  # noqa: E722
-        await AlmanacImageMatcher.finish("解析失败！")
+    html: str = get_almanac_image(full_msg)
     image = await generate(html, ".container", segment=True, output_path=CONST + "/cache/" + (datetime.now() + timedelta(days=1)).strftime("%Y-%m-%d") + ".png")
     await AlmanacImageMatcher.finish(image)

@@ -83,8 +83,8 @@ async def player_pt(name: str = "", mode="16.12.9.15.11.8") -> str:
     level = max_points[rank] if rank[0] != "魂" else "20.0"
     score = str(data["level"]["score"] + data["level"]["delta"]) if rank[0] != "魂" else str(round((data["level"]["score"] + data["level"]["delta"]) / 100, 1))
     rank_max = getRank(data["max_level"]["id"])
-    level_max = max_points[rank_max] if rank[0] != "魂" else "20.0"
-    score_max = str(data["max_level"]["score"] + data["max_level"]["delta"]) if rank[0] != "魂" else str(round((data["level"]["score"] + data["level"]["delta"]) / 100, 1))
+    level_max = max_points[rank_max] if rank_max[0] != "魂" else "20.0"
+    score_max = str(data["max_level"]["score"] + data["max_level"]["delta"]) if rank_max[0] != "魂" else str(round((data["max_level"]["score"] + data["max_level"]["delta"]) / 100, 1))
     return f"[{rank}] {name}（{pid}）\n当前PT：[{rank}] {score}/{level}\n最高PT：[{rank_max}] {score_max}/{level_max}"
 
 async def get_records(name: str = "", mode: str = "16.12.9.15.11.8"):

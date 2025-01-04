@@ -26,7 +26,7 @@ except ImportError:
         else:
             return None
 
-async def get_uid_data(role_id: str = "", server: str = "") -> str:
+async def get_uid_data(role_id: str = "", server: str = "", role_name: str = "") -> str:
     current_data: RoleData | Any = db.where_one(RoleData(), "roleId = ?", role_id, default=RoleData())
     if current_data.roleName != "":
         prefix = f"绑定成功！\n覆盖数据：[{current_data.roleName} · {current_data.serverName}] -> "
@@ -45,7 +45,8 @@ async def get_uid_data(role_id: str = "", server: str = "") -> str:
     data["campName"] = data.pop("camp")
     data["forceName"] = data.pop("force")
     data["globalRoleId"] = data.pop("global_role_id")
-    data["roleName"] = data.pop("name")
+    _role_name = data.pop("name")
+    data["roleName"] = _role_name if "*" not in _role_name else role_name
     data["roleId"] = data.pop("role_id")
     data["serverName"] = data.pop("server")
     for key, value in data.items():
@@ -76,7 +77,7 @@ async def search_player(
         uid = await get_uid(roleName=role_name, serverName=server_name)
         if uid is None:
             return Player()
-        await get_uid_data(uid, server_name)
+        await get_uid_data(uid, server_name, role_name)
         player_data = db.where_one(RoleData(), "(roleName = ? OR roleId = ?) AND serverName = ?", role_name, role_id, server_name, default=None)
         if player_data is None:
             return Player()
