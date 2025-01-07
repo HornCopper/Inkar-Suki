@@ -1,9 +1,20 @@
 from typing import Any
+from collections import defaultdict
 from datetime import datetime, timedelta
 
 from src.utils.database import db
+from src.utils.database.lib import Database
 from src.utils.database.classes import GroupSettings
 from src.utils.time import Time
+
+def process_group_settings(db: Database, group_settings_list: list[GroupSettings]):
+    group_id_map = defaultdict(list)
+    for g in group_settings_list:
+        group_id_map[g.group_id].append(g)
+    for group_id, groups in group_id_map.items():
+        if len(groups) > 1:
+            db.delete(GroupSettings(), "group_id = ?", str(group_id))
+            db.save(GroupSettings(group_id=str(group_id)))
 
 def is_within_48_hours(timestamp: int) -> bool:
     current_time = datetime.utcnow()
