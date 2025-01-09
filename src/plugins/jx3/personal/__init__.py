@@ -25,7 +25,7 @@ PersonalBindMathcer = on_command("绑定角色", priority=5, force_whitespace=Tr
 @PersonalBindMathcer.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     arg = args.extract_plain_text().strip()
-    roles: list[str] = re.findall(r"\[(.*?)\]", arg)
+    roles: list[str] = re.findall(r"\[(.*?)\]", arg) if "、" not in arg else arg.split("、")
     server = Server(None, event.group_id).server
     if server is None:
         await PersonalBindMathcer.finish(PROMPT.ServerNotExist)

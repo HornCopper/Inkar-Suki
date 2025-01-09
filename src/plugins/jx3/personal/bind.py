@@ -8,7 +8,6 @@ class RoleBind:
     def __init__(self, user_id: str | int, roles: list[tuple[str, str]]):
         self.user_id = int(user_id)
         self.roles = roles
-        print(self.roles)
 
     def bind(self) -> str:
         exist_roles: list[RoleData] = []
