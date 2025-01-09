@@ -43,7 +43,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
         parsed_roles = []
         all = True
     else:
-        roles: list[str] = re.findall(r"\[(.*?)\]", arg)
+        roles: list[str] = re.findall(r"\[(.*?)\]", arg) if "、" not in arg else arg.split("、")
         server = Server(None, event.group_id).server
         if server is None:
             await PersonalUnbindMathcer.finish(PROMPT.ServerNotExist)
