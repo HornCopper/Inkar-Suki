@@ -78,9 +78,8 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
 async def _(bot: Bot, event: GroupMessageEvent, confirm: Message = Arg()):
     u_input = confirm.extract_plain_text()
     if u_input == "重置音卡":
-        group_id = str(event.group_id)
-        group_settings: GroupSettings | Any = db.where_one(GroupSettings(), "group_id = ?", group_id, default=None)
-        group_settings = GroupSettings(id=group_settings.id, group_id=group_settings.group_id)
+        db.delete(GroupSettings(), "group_id = ?", str(event.group_id))
+        group_settings = GroupSettings(group_id=str(event.group_id))
         db.save(group_settings)
         await DismissMatcher.send("重置成功！可以重新开始绑定本群数据了！")
 

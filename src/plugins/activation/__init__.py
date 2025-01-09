@@ -12,7 +12,7 @@ from src.utils.database.classes import GroupSettings
 from src.utils.database import db
 from src.utils.time import Time
 
-from .app import get_expire_at, update_expire_time, is_within_48_hours, process_group_settings
+from .app import get_expire_at, update_expire_time, is_within_48_hours
 
 expire_at = on_command("查看授权", rule=to_me(), priority=5)
 
@@ -38,7 +38,6 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
 async def check_activation():
     bots = get_bots()
     database: list[GroupSettings] | Any = db.where_all(GroupSettings(), default=[])
-    process_group_settings(db, database)
     for bot in bots.values():
         account_groups: list[str] = [
             str(g["group_id"])
