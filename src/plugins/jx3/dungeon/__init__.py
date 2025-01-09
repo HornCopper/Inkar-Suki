@@ -10,7 +10,7 @@ from src.utils.permission import check_permission
 from .zone_drop import get_drop_list_image
 # from .monster import get_monsters_map
 # from .record import get_item_record
-from .teamcd import get_zone_record_image, get_mulit_record_image
+from .teamcd import get_zone_record_image, get_mulit_record_image, get_personal_roles_teamcd_image
 
 ZoneRecordMatcher = on_command("jx3_zones", aliases={"副本"}, force_whitespace=True, priority=5)
 
@@ -30,7 +30,11 @@ async def _(event: GroupMessageEvent, full_argument: Message = CommandArg()):
     server = Server(server, event.group_id).server
     if server is None:
         await ZoneRecordMatcher.finish(PROMPT.ServerNotExist)
-    if ";" in name:
+    if name == "*":
+        if not check_permission(event.user_id, 10):
+            await ZoneRecordMatcher.finish("该功能内测中，敬请期待！")
+        data = await get_personal_roles_teamcd_image(event.user_id)
+    elif ";" in name:
         roles = name.split(";")
         if len(roles) > 6 and not check_permission(event.user_id, 10):
             await ZoneRecordMatcher.finish("最多一次只可以查询6个角色！")

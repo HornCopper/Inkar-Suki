@@ -11,6 +11,8 @@ from src.utils.decorators import (
     token_required
 )
 
+import re
+
 try:
     from .uid import get_uid # type: ignore
     # 如果有能够获取UID的方法，请在这里提供
@@ -72,6 +74,8 @@ async def search_player(
     *,
     local_lookup: bool = False
 ) -> Player:
+    if not bool(re.match(r"^[\u4e00-\u9fff0-9@]*$", role_name)):
+        return Player()
     player_data = db.where_one(RoleData(), "(roleName = ? OR roleId = ?) AND serverName = ?", role_name, role_id, server_name, default=None)
     if player_data is None and not local_lookup:
         uid = await get_uid(roleName=role_name, serverName=server_name)

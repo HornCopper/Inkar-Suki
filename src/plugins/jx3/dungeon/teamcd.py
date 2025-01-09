@@ -1,8 +1,11 @@
 from jinja2 import Template
 from itertools import chain
+from typing import Any
 
 from src.const.prompts import PROMPT
 from src.const.path import ASSETS, build_path
+from src.utils.database import db
+from src.utils.database.classes import PersonalSettings
 from src.utils.database.player import search_player
 from src.utils.tuilan import generate_timestamp, generate_dungeon_sign
 from src.utils.generate import generate
@@ -116,7 +119,7 @@ async def get_mulit_record_image(server: str, roles: list[str]):
     responses = [
         (await request.post(tuilan=True)).json()
         for request
-        in  [
+        in [
             build_teamcd_request(each_guid)
             for each_guid
             in found_roles
@@ -146,6 +149,51 @@ async def get_mulit_record_image(server: str, roles: list[str]):
     html = str(
             HTMLSourceCode(
                 application_name = f" · 副本记录 · {server} · " + "+".join(roles),
+                table_head = table_head,
+                table_body = "\n".join(tables)
+            )
+        )
+    image = await generate(html, "table", segment=True)
+    return image
+
+async def get_personal_roles_teamcd_image(user_id: int):
+    personal_settings: PersonalSettings | Any = db.where_one(PersonalSettings(), "user_id = ?", str(user_id), default=None)
+    if personal_settings is None:
+        return "您尚未绑定任何角色！请绑定后再尝试查询！"
+    roles = personal_settings.roles
+    responses = [
+        (await request.post(tuilan=True)).json()
+        for request
+        in [
+            build_teamcd_request(r.globalRoleId)
+            for r
+            in roles
+        ]
+    ]
+    roles_data: list[list[dict[str, list[bool]]]] = [[] for _ in range(len(roles))]
+    num = 0
+    for each_response in responses:
+        roles_data[num].append(parse_data(each_response))
+        num += 1
+    final_data = synchronize_keys(roles_data)
+    zones: list[str] = list(set(chain.from_iterable(d.keys() for sublist in final_data for d in sublist)))
+    table_head = "<tr><th class=\"short-column\">角色</th>" + "\n".join([f"<th class=\"short-column\">{zone}</th>" for zone in zones]) + "</tr>"
+    tables: list[str] = []
+    num = 0
+    for each_role_data in roles_data:
+        data = each_role_data[0]
+        row = ["<td class=\"short-column\">" + roles[num].roleName + "·" + roles[num].serverName + "</td>"]
+        for each_zone in zones:
+            progress = data[each_zone]
+            image = "\n".join(["<img src=\"" + build_path(ASSETS, ["image", "jx3", "cat", "gold.png" if not value else "grey.png"]) + "\" height=\"20\" width=\"20\">" for value in progress])
+            row.append("<td class=\"short-column\">" + image + "</td>")
+        tables.append(
+            "<tr>\n" + "\n".join(row) + "\n</tr>"
+        )
+        num += 1
+    html = str(
+            HTMLSourceCode(
+                application_name = f" · 所有角色副本记录 ",
                 table_head = table_head,
                 table_body = "\n".join(tables)
             )

@@ -53,6 +53,12 @@ class JX3APIWSData(LiteModel):
     data: dict = {}
     timestamp: int = 0
 
+class PersonalSettings(LiteModel):
+    TABLE_NAME: str = "personal_settings"
+    user_id: int = 0
+    roles: list["RoleData"] = []
+    settings: list[dict] = []
+
 class Population(LiteModel):
     TABLE_NAME: str = "population"
     populations: dict = {}
@@ -74,6 +80,22 @@ class RoleData(LiteModel):
     roleName: str = ""
     roleId: str = ""
     serverName: str = ""
+
+    def __eq__(self, other):
+        if not isinstance(other, RoleData):
+            return False
+        return (self.serverName == other.serverName and
+                self.roleName == other.roleName and
+                self.roleId == other.roleId and
+                self.globalRoleId == other.globalRoleId)
+
+    def __hash__(self):
+        return hash((self.serverName, self.roleName, self.roleId, self.globalRoleId))
+
+    def __repr__(self):
+        return (f"RoleData(serverName={self.serverName}, "
+                f"roleName={self.roleName}, roleId={self.roleId}, "
+                f"globalRoleId={self.globalRoleId})")
 
 class SerendipityData(LiteModel):
     TABLE_NAME: str = "serendipities"

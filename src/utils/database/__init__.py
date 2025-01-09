@@ -6,6 +6,7 @@ from src.utils.database.classes import (
     BannedUser,
     GroupSettings,
     ItemKeywordMap,
+    PersonalSettings,
     Population,
     RoleData,
     JX3APIWSData,
@@ -25,6 +26,7 @@ db.auto_migrate(
     BannedUser(),
     GroupSettings(),
     ItemKeywordMap(),
+    PersonalSettings(),
     Population(),
     RoleData()
 )

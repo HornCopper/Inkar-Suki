@@ -92,6 +92,11 @@ from .penzai import (
     DHMatcher,
     WGMatcher
 )
+from .personal import (
+    AllBoundRolesMatcher,
+    PersonalBindMathcer,
+    PersonalUnbindMathcer
+)
 from .pvp import (
     ArenaRecordMatcher
 )

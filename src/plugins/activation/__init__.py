@@ -14,7 +14,7 @@ from src.utils.time import Time
 
 from .app import get_expire_at, update_expire_time, is_within_48_hours
 
-expire_at = on_command("查看授权", rule=to_me(), priority=5)
+expire_at = on_command("查看授权", rule=to_me(), priority=5, force_whitespace=True)
 
 @expire_at.handle()
 async def _(event: GroupMessageEvent):
@@ -22,7 +22,7 @@ async def _(event: GroupMessageEvent):
     msg = f"本群（{event.group_id}）授权情况如下：\n{expire_msg}"
     await expire_at.finish(msg)
 
-update_activation = on_command("授权", priority=5)
+update_activation = on_command("授权", priority=5, force_whitespace=True)
 
 @update_activation.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
