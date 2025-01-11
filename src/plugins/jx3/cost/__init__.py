@@ -37,8 +37,10 @@ async def _(event: GroupMessageEvent, state: T_State, argument: Message = Comman
         state["d"] = item_data
         state["s"] = server
         for num, name in enumerate(item_data, start=1):
-            n, u = next(iter(name.items()))
+            n, _ = next(iter(name.items()))
             msg += f"\n[{num}] {n}"
+            if num == 20:
+                break
         await CostCalculatorMatcher.send(msg)
     else:
         image = await DataProcesser(item_data).render_image(server)
