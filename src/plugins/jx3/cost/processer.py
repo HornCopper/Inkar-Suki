@@ -71,7 +71,7 @@ class DataProcesser:
         _, _, output_id = self.output
         all_items_id = materials_id + [output_id]
         trade_price_data: dict[str, dict[str, Any]] = (await Request("https://next2.jx3box.com/api/item-price/list?itemIds=" + ",".join(all_items_id) + f"&server={server}").get()).json()
-        npc_price_data: list[dict[str, Any]] = (await Request(f"https://node.jx3box.com/craft/price?ids=" + ",".join([i.split("_")[-1] for i in materials_id]) + "&client=std").get()).json()
+        npc_price_data: list[dict[str, Any]] = (await Request("https://node.jx3box.com/craft/price?ids=" + ",".join([i.split("_")[-1] for i in materials_id]) + "&client=std").get()).json()
         trade_item_ids = list(trade_price_data["data"].keys())
         for trade_item_id in trade_item_ids:
             if trade_item_id.split("_")[-1] in [str(i["ItemIndex"]) for i in npc_price_data]:
@@ -93,7 +93,7 @@ class DataProcesser:
         return results
     
     async def get_materials_info(self, materials_id: list[str]) -> list[tuple[str, str]]: # list[1 icon 2 name]
-        final_url = f"https://node.jx3box.com/api/node/item/search?ids=" + ",".join(materials_id) + "&page=1&per=50&client=std"
+        final_url = "https://node.jx3box.com/api/node/item/search?ids=" + ",".join(materials_id) + "&page=1&per=50&client=std"
         data = (await Request(final_url).get()).json()
         results: list[tuple[str, str]] = []
         for each_id in materials_id:
