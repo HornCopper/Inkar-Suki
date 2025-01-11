@@ -122,10 +122,10 @@ class DataProcesser:
         npc_item_price = self.get_npc_prices(npc_item, npc_trade)
         npc_item_count = []
         record_npc_item = []
-        for each_material_count in materials_count:
+        for i in range(len(materials_id)):
             for each_npc_item_id in npc_item:
-                if materials_id[materials_count.index(each_material_count)].split("_")[-1] == each_npc_item_id.split("_")[-1] and each_npc_item_id not in record_npc_item:
-                    npc_item_count.append(each_material_count)
+                if materials_id[i].split("_")[-1] == each_npc_item_id.split("_")[-1] and each_npc_item_id not in record_npc_item:
+                    npc_item_count.append(materials_count[i])
                     record_npc_item.append(each_npc_item_id)
         trade = int(terminal_item_price["AvgPrice"] * average_count)
         materials_info = await self.get_materials_info(materials_id)
