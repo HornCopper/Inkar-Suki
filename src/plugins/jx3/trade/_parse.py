@@ -115,7 +115,11 @@ def coin_to_image(raw_string: str):
     return processedString
 
 def calculate_price(price: int) -> str:
-    if 1 <= price <= 99:  # 铜
+    if price < 0:
+        return "-" + calculate_price(0 - price)
+    elif price == 0:
+        return "0 铜"
+    elif 1 <= price <= 99:  # 铜
         return f"{price} 铜"
     elif 100 <= price <= 9999:  # 银
         silver = price // 100
@@ -147,4 +151,4 @@ def calculate_price(price: int) -> str:
         if copper:
             result += f" {copper} 铜"
         return result
-    return "0 铜"
+    raise ValueError
