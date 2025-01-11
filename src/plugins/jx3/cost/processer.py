@@ -9,13 +9,23 @@ from src.plugins.jx3.trade._parse import calculate_price, coin_to_image
 
 from ._template import template_cost
 
-async def get_item_data(name: str) -> dict[str, Any] | Literal[False]:
+async def get_item_data(name: str) -> dict[str, Any] | list[dict[str, str]] | Literal[False]:
+    possible_results: list[dict[str, str]] = []
     for t in ["tailoring", "cooking", "medicine", "founding", "furniture"]:
         menu = (await Request(f"https://node.jx3box.com/manufactures?client=std&mode=simple&type={t}").get()).json()
         for i in menu:
             if i["Name"] == name:
                 return (await Request(f"https://node.jx3box.com/manufacture/{t}/" + str(i["ID"]) + "?client=std").get()).json()
-    return False
+            if name in i["Name"]:
+                possible_results.append(
+                    {i["Name"]: f"https://node.jx3box.com/manufacture/{t}/" + str(i["ID"]) + "?client=std"}
+                )
+    if len(possible_results) == 0:
+        return False
+    if len(possible_results) == 1:
+        return (await Request(list(possible_results[0].values())[0]).get()).json()
+    else:
+        return possible_results
 
 class DataProcesser:
     coin_image = staticmethod(coin_to_image)

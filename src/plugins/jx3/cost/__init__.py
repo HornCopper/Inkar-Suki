@@ -1,9 +1,12 @@
 from nonebot import on_command
-from nonebot.params import CommandArg
+from nonebot.params import CommandArg, Arg
+from nonebot.typing import T_State
 from nonebot.adapters.onebot.v11 import GroupMessageEvent, Message
 
 from src.const.prompts import PROMPT
 from src.const.jx3.server import Server
+from src.utils.analyze import check_number
+from src.utils.network import Request
 from src.utils.permission import check_permission
 
 from .processer import get_item_data, DataProcesser
@@ -11,7 +14,7 @@ from .processer import get_item_data, DataProcesser
 CostCalculatorMatcher = on_command("成本", priority=5, force_whitespace=True)
 
 @CostCalculatorMatcher.handle()
-async def _(event: GroupMessageEvent, argument: Message = CommandArg()):
+async def _(event: GroupMessageEvent, state: T_State, argument: Message = CommandArg()):
     if argument.extract_plain_text() == "":
         return
     if not check_permission(event.user_id, 10):
@@ -31,5 +34,30 @@ async def _(event: GroupMessageEvent, argument: Message = CommandArg()):
     item_data = await get_item_data(name)
     if not item_data:
         await CostCalculatorMatcher.finish("未找到该物品，请检查后重试！")
-    image = await DataProcesser(item_data).render_image(server)
+    if isinstance(item_data, list):
+        msg = "音卡找到下面的相关物品，请回复前方序号来搜索！"
+        state["d"] = item_data
+        state["s"] = server
+        for num, name in enumerate(item_data, start=1):
+            n, u = next(iter(name.items()))
+            msg += f"\n[{num}] {n}"
+        await CostCalculatorMatcher.send(msg)
+    else:
+        image = await DataProcesser(item_data).render_image(server)
+        await CostCalculatorMatcher.finish(image)
+
+@CostCalculatorMatcher.got("num")
+async def _(event: GroupMessageEvent, state: T_State, num: Message = Arg()):
+    num_ = num.extract_plain_text()
+    data: list[dict[str, str]] = state["d"]
+    server: str = state["s"]
+    if not check_number(num_):
+        await CostCalculatorMatcher.finish("唔……输入的不是数字，取消搜索。")
+    if int(num_) > len(data):
+        await CostCalculatorMatcher.finish("唔……不存在该数字对应的搜索结果，请重新搜索！")
+    name_with_url = data[int(num_)-1]
+    _, url = next(iter(name_with_url.items()))
+    image = await DataProcesser(
+        (await Request(url).get()).json()
+    ).render_image(server)
     await CostCalculatorMatcher.finish(image)
