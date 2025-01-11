@@ -29,7 +29,7 @@ except ImportError:
             return None
 
 async def get_uid_data(role_id: str = "", server: str = "", role_name: str = "") -> str:
-    current_data: RoleData | Any = db.where_one(RoleData(), "roleId = ?", role_id, default=RoleData())
+    current_data: RoleData | Any = db.where_one(RoleData(), "roleId = ? AND serverName = ?", role_id, server, default=RoleData())
     if current_data.roleName != "":
         prefix = f"绑定成功！\n覆盖数据：[{current_data.roleName} · {current_data.serverName}] -> "
     else:

@@ -14,7 +14,7 @@ def check_time(timestamp: str) -> bool:
     given_time = datetime.strptime(timestamp, "%a %b %d %H:%M:%S %z %Y")
     now = datetime.now(given_time.tzinfo)
     time_difference = now - given_time
-    return time_difference > timedelta(hours=2)
+    return time_difference > timedelta(minutes=20)
 
 async def execute_on_new_post(post):
     data = trim_to_last_period(post.get("text_raw"))
