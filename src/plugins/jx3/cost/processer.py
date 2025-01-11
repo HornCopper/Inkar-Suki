@@ -135,17 +135,23 @@ class DataProcesser:
             index = materials_id.index(each_material)
             icon, name = materials_info[index]
             require_count = materials_count[index]
-            if each_material not in list(all_prices.keys()):
-                price = npc_item_price[npc_item.index(each_material)]
+            if each_material in npc_item:
+                if npc_item.index(each_material) >= len(npc_item_price):
+                    price = 0
+                else:
+                    price = npc_item_price[npc_item.index(each_material)]
             else:
-                price = all_prices[each_material]["AvgPrice"]
+                if each_material not in all_prices:
+                    price = 0
+                else:
+                    price = all_prices[each_material]["AvgPrice"]
             total_price = price * require_count
             total += total_price
             materials_table.append(
                 Template(template_cost).render(
                     icon = icon,
                     name = name,
-                    count = ("(NPC)<br>" if each_material not in all_prices.keys() else "(交易行)<br>") + str(require_count),
+                    count = ("(NPC)<br>" if each_material in npc_item else "(交易行)<br>") + str(require_count),
                     unit = self.coin_image(self.calculate_price(price)),
                     total = self.coin_image(self.calculate_price(total_price))
                 )
