@@ -16,6 +16,8 @@ class School:
     kungfu_colors: dict[str, str] = kungfu_colors_data
 
     def __init__(self, school_name: str | None = ""):
+        if school_name == "北天药宗":
+            school_name = "药宗"
         self.school_name = school_name
 
     @classmethod
