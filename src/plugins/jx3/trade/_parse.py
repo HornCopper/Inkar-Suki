@@ -103,18 +103,18 @@ class AttrsConverter:
         else:
             return "外"
 
-def coin_to_image(rawString: str):
+def coin_to_image(raw_string: str):
     brick = build_path(ASSETS, ["image", "jx3", "trade", "brick.png"])
     gold = build_path(ASSETS, ["image", "jx3", "trade", "gold.png"])
     silver = build_path(ASSETS, ["image", "jx3", "trade", "silver.png"])
     copper = build_path(ASSETS, ["image", "jx3", "trade", "copper.png"])
     to_replace = [["砖", f"<img src=\"{brick}\">"], ["金", f"<img src=\"{gold}\">"], ["银", f"<img src=\"{silver}\">"], ["铜", f"<img src=\"{copper}\">"]]
     for waiting in to_replace:
-        rawString = rawString.replace(waiting[0], waiting[1])
-    processedString = rawString
+        raw_string = raw_string.replace(waiting[0], waiting[1])
+    processedString = raw_string
     return processedString
 
-def calculator_price(price: int) -> str:
+def calculate_price(price: int) -> str:
     if 1 <= price <= 99:  # 铜
         return f"{price} 铜"
     elif 100 <= price <= 9999:  # 银
@@ -147,4 +147,4 @@ def calculator_price(price: int) -> str:
         if copper:
             result += f" {copper} 铜"
         return result
-    raise ValueError(f"Cannot recognize the price `{price}`!")
+    return "0 铜"

@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f9f9f9;
+            color: #333;
+        }
+
+        .container {
+            width: 800px;
+            margin: auto;
+            background: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            border-radius: 8px;
+        }
+
+        .title {
+            text-align: center;
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            text-align: center;
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        .section {
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        .item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .item img {
+            width: 60px;
+            height: 60px;
+            margin-right: 10px;
+            border-radius: 8px;
+        }
+
+        .item-details {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .item-details .name {
+            font-weight: bold;
+        }
+
+        .item-details .info {
+            font-size: 14px;
+            color: #666;
+            text-align: center;
+        }
+
+        table {
+            width: 80%;
+            border-collapse: collapse;
+        }
+
+        table,
+        th,
+        td {
+            border: 1px solid #ddd;
+        }
+
+        th,
+        td {
+            padding: 8px;
+            text-align: center;
+        }
+
+        th {
+            background-color: #57f0f5;
+        }
+
+        .message-box {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 0 auto;
+            border: 1px solid #57f0f5;
+            border-radius: 5px;
+            background-color: #f5f5f5;
+        }
+
+
+        .cell {
+            padding: 5px;
+            border-radius: 3px;
+            background-color: #fff;
+            text-align: center;
+        }
+
+        @font-face {
+            font-family: Harmony;
+            src: url("{{ font }}");
+        }
+
+        body {
+            font-family: Harmony, sans-serif;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+
+        <div class="section">
+            <div class="item">
+                <img src="{{ icon }}"
+                    style="width: 48px;height: 48px;">
+                <div class="item-details">
+                    <span class="name">{{ name }}</span>
+                </div>
+            </div>
+            <div class="subtitle">需求等级: <strong>{{ level }}</strong> | 消耗精力: <strong>{{ vigor }}</strong> | 经验值: <strong>{{ experience }}</strong></div>
+            <div class="subtitle">预计单次产出 {{ count }} 个</div>
+        </div>
+
+        <div class="section">
+            <div class="message-box" style="width: 60%;">
+                <div class="element">
+                    <div class="cell">昨日最高价</div>
+                    <div class="cell">{{ highest }}</div>
+                </div>
+                <div class="element">
+                    <div class="cell">昨日平均价</div>
+                    <div class="cell">{{ average }}</div>
+                </div>
+                <div class="element">
+                    <div class="cell">昨日最低价</div>
+                    <div class="cell">{{ lowest }}</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="message-box" style="width: 70%;">
+                <div class="element">
+                    <div class="cell">总成本</div>
+                    <div class="cell">{{ cost }}</div>
+                </div>
+                <div class="element">
+                    <div class="cell">预计总售</div>
+                    <div class="cell">{{ trade }}</div>
+                </div>
+                <div class="element">
+                    <div class="cell">预计收益</div>
+                    <div class="cell">{{ profit }}</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <table>
+                <thead>
+                    <tr>
+                        <th>图标</th>
+                        <th>材料名称</th>
+                        <th>需求数</th>
+                        <th>昨日均价</th>
+                        <th>预计成本</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{ materials }}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="section">
+            <div style="text-align: center;font-size: 14px;color: #666;">Inkar Suki · 技艺成本 · {{ server }} · {{ name }}<br>若出现交易行价格为零则是没有获取到价格，请自行查询！</div>
+        </div>
+    </div>
+</body>
+
+</html>

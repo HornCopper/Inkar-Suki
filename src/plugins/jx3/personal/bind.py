@@ -52,7 +52,7 @@ class RoleBind:
             msg = "解绑成功，当前剩余绑定的角色如下：\n" + \
                 "\n".join(
                     [
-                        r.roleName + r.serverName
+                        f"○ {r.roleName}·{r.serverName}"
                         for r
                         in final_roles
                     ]

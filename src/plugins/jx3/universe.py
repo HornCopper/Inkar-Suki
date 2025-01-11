@@ -36,6 +36,9 @@ from .bind import (
 #     SHXJCalcMatcher
 # )
 # RIP: not adapted
+from .cost import (
+    CostCalculatorMatcher
+)
 from .couple import (
     BindAffectionMatcher,
     DeleteAffectionMatcher,

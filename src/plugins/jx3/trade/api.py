@@ -9,7 +9,7 @@ from src.utils.time import Time
 from src.utils.generate import generate
 from src.templates import SimpleHTML
 
-from ._parse import coin_to_image, calculator_price
+from ._parse import coin_to_image, calculate_price
 from ._template import template_msgbox, template_table
 
 import datetime
@@ -70,9 +70,9 @@ async def get_trade_image(server: str, name: str, items: list = []):
                 current = itemlist_searchable[0]["data"]["yesterday"]
         if currentStatus:
             msgbox = Template(template_msgbox).render(
-                low=coin_to_image(str(calculator_price(current["LowestPrice"]))),
-                avg=coin_to_image(str(calculator_price(current["AvgPrice"]))),
-                high=coin_to_image(str(calculator_price(current["HighestPrice"])))
+                low=coin_to_image(str(calculate_price(current["LowestPrice"]))),
+                avg=coin_to_image(str(calculate_price(current["AvgPrice"]))),
+                high=coin_to_image(str(calculate_price(current["HighestPrice"])))
             )
         else:
             msgbox = ""
@@ -83,9 +83,9 @@ async def get_trade_image(server: str, name: str, items: list = []):
             if not yesterdayFlag:
                 return "唔……该物品目前交易行没有数据。"
             else:
-                low = calculator_price(current["LowestPrice"])
-                avg = calculator_price(current["AvgPrice"])
-                high = calculator_price(current["HighestPrice"])
+                low = calculate_price(current["LowestPrice"])
+                avg = calculate_price(current["AvgPrice"])
+                high = calculate_price(current["HighestPrice"])
                 return f"唔……该物品目前交易行没有数据，但是音卡找到了昨日的数据：\n昨日低价：{low}\n昨日均价：{avg}\n昨日高价：{high}"
         table = []
         for each_price in detail_data["data"]["prices"]:
@@ -95,7 +95,7 @@ async def get_trade_image(server: str, name: str, items: list = []):
                 name=itemlist_searchable[0]["name"],
                 time=Time(each_price["created"]).format("%m月%d日 %H:%M:%S"),
                 limit=str(each_price["n_count"]),
-                price=coin_to_image(str(calculator_price(each_price["unit_price"])))
+                price=coin_to_image(str(calculate_price(each_price["unit_price"])))
             )
             table.append(table_content)
             if len(table) == 12:
@@ -136,7 +136,7 @@ async def get_trade_image(server: str, name: str, items: list = []):
                         name=final_name,
                         time=final_time,
                         limit=count,
-                        price=coin_to_image(str(calculator_price(itemData["AvgPrice"])))
+                        price=coin_to_image(str(calculate_price(itemData["AvgPrice"])))
                     )
                 )
             else:
@@ -151,7 +151,7 @@ async def get_trade_image(server: str, name: str, items: list = []):
                         name=final_name,
                         time=final_time,
                         limit=count,
-                        price=coin_to_image(str(calculator_price(itemData["unit_price"])))
+                        price=coin_to_image(str(calculate_price(itemData["unit_price"])))
                     )
                 )
         html = str(
@@ -243,7 +243,7 @@ async def get_trade_image_allserver(name: str):
                             name=f"{name}（{server}）",
                             time=Time().format("%m月%d日 %H:%M:%S"),
                             limit="N/A",
-                            price=coin_to_image(str(calculator_price(current["AvgPrice"])))
+                            price=coin_to_image(str(calculate_price(current["AvgPrice"])))
                         )
                     )
                     continue
@@ -253,7 +253,7 @@ async def get_trade_image_allserver(name: str):
                     name=itemlist_searchable[0]["name"] + f"（{server}）",
                     time=Time().format("%m月%d日 %H:%M:%S"),
                     limit=str(detailData["data"]["prices"][-1]["n_count"]),
-                    price=coin_to_image(str(calculator_price(detailData["data"]["prices"][-1]["unit_price"])))
+                    price=coin_to_image(str(calculate_price(detailData["data"]["prices"][-1]["unit_price"])))
                 )
             )
         else:
@@ -268,9 +268,9 @@ async def get_trade_image_allserver(name: str):
     except:  # noqa: E722
         return "唔……该物品全服均没有数据！"
     msgbox = Template(template_msgbox).render(
-        low=coin_to_image(str(calculator_price(final_lowest))),
-        avg=coin_to_image(str(calculator_price(final_avg))),
-        high=coin_to_image(str(calculator_price(final_highest)))
+        low=coin_to_image(str(calculate_price(final_lowest))),
+        avg=coin_to_image(str(calculate_price(final_avg))),
+        high=coin_to_image(str(calculate_price(final_highest)))
     )
     html = str(
         SimpleHTML(

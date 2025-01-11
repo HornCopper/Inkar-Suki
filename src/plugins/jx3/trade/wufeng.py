@@ -11,7 +11,7 @@ from src.templates import SimpleHTML
 
 from .api import template_msgbox, template_table
 
-from ._parse import AttrsConverter, coin_to_image, calculator_price
+from ._parse import AttrsConverter, coin_to_image, calculate_price
 
 import json
 basic_name = "无修"
@@ -78,9 +78,9 @@ async def get_wufeng_image(raw: str, server: str):
             current = logs["data"]["yesterday"]
     if currentStatus:
         msgbox = Template(template_msgbox).render(
-            low = coin_to_image(str(calculator_price(current["LowestPrice"]))),
-            avg = coin_to_image(str(calculator_price(current["AvgPrice"]))),
-            high = coin_to_image(str(calculator_price(current["HighestPrice"])))
+            low = coin_to_image(str(calculate_price(current["LowestPrice"]))),
+            avg = coin_to_image(str(calculate_price(current["AvgPrice"]))),
+            high = coin_to_image(str(calculate_price(current["HighestPrice"])))
         )
     else:
         msgbox = ""
@@ -90,9 +90,9 @@ async def get_wufeng_image(raw: str, server: str):
         if not yesterdayFlag:
             return "唔……该物品目前交易行没有数据。"
         else:
-            low = calculator_price(current["LowestPrice"])
-            avg = calculator_price(current["AvgPrice"])
-            high = calculator_price(current["HighestPrice"])
+            low = calculate_price(current["LowestPrice"])
+            avg = calculate_price(current["AvgPrice"])
+            high = calculate_price(current["HighestPrice"])
             return f"唔……该物品目前交易行没有数据，但是音卡找到了昨日的数据：\n昨日低价：{low}\n昨日均价：{avg}\n昨日高价：{high}"
     table = []
     icon = "https://icon.jx3box.com/icon/" + str(data["IconID"]) + ".png"
@@ -105,7 +105,7 @@ async def get_wufeng_image(raw: str, server: str):
                 name = name + "<br><span style=\"color:rgb(0, 210, 75)\">" + " ".join(get_exist_attrs(data["attributes"])) + "</span>",
                 time = Time(each_price["created"]).format("%m月%d日 %H:%M:%S"),
                 limit = str(each_price["n_count"]),
-                price = coin_to_image(calculator_price(each_price["unit_price"]))
+                price = coin_to_image(calculate_price(each_price["unit_price"]))
             )
         )
         if len(table) == 12:
@@ -185,7 +185,7 @@ async def get_wufeng_image_allserver(raw: str):
                         name = name + f"（{server}）<br><span style=\"color:rgb(0, 210, 75)\">" + " ".join(get_exist_attrs(data["attributes"])) + "</span>",
                         time = Time().format("%m月%d日 %H:%M:%S"),
                         limit = "N/A",
-                        price = coin_to_image(calculator_price(current["AvgPrice"]))
+                        price = coin_to_image(calculate_price(current["AvgPrice"]))
                     )
                 )
                 continue
@@ -197,7 +197,7 @@ async def get_wufeng_image_allserver(raw: str):
                 name = name + f"（{server}）<br><span style=\"color:rgb(0, 210, 75)\">" + " ".join(get_exist_attrs(data["attributes"])) + "</span>",
                 time = Time(each_price["created"]).format("%m月%d日 %H:%M:%S"),
                 limit = str(each_price["n_count"]),
-                price = coin_to_image(calculator_price(each_price["unit_price"]))
+                price = coin_to_image(calculate_price(each_price["unit_price"]))
             )
         )
 
@@ -214,9 +214,9 @@ async def get_wufeng_image_allserver(raw: str):
         exist_info_flag = False
     msgbox = template_msgbox.replace("当日", "全服")
     msgbox = Template(msgbox).render(
-        low = coin_to_image(calculator_price(final_lowest)) if exist_info_flag else "未知",
-        avg = coin_to_image(calculator_price(final_avg)) if exist_info_flag else "未知",
-        high = coin_to_image(calculator_price(final_highest)) if exist_info_flag else "未知"
+        low = coin_to_image(calculate_price(final_lowest)) if exist_info_flag else "未知",
+        avg = coin_to_image(calculate_price(final_avg)) if exist_info_flag else "未知",
+        high = coin_to_image(calculate_price(final_highest)) if exist_info_flag else "未知"
     )
     if len(table) == 0:
         return "已找到该试炼之地装备，但目前全服均无报价！"
