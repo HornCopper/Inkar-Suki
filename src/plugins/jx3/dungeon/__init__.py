@@ -31,8 +31,6 @@ async def _(event: GroupMessageEvent, full_argument: Message = CommandArg()):
     if server is None:
         await ZoneRecordMatcher.finish(PROMPT.ServerNotExist)
     if name == "*":
-        if not check_permission(event.user_id, 10):
-            await ZoneRecordMatcher.finish("该功能内测中，敬请期待！")
         data = await get_personal_roles_teamcd_image(event.user_id)
     elif ";" in name:
         roles = name.split(";")
