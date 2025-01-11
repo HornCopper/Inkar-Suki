@@ -120,22 +120,17 @@ class DataProcesser:
         else:
             terminal_item_price = all_prices[terminal_item_id]
         npc_item_price = self.get_npc_prices(npc_item, npc_trade)
-        cost = sum(
-            npc_item_price + \
-            [
-                int(p["AvgPrice"])
-                for _, p
-                in {
-                    k: v
-                    for k ,v
-                    in all_prices.items()
-                    if k != terminal_item_id
-                }.items()
-            ]
-        )
+        npc_item_count = []
+        record_npc_item = []
+        for each_material_count in materials_count:
+            for each_npc_item_id in npc_item:
+                if materials_id[materials_count.index(each_material_count)].split("_")[-1] == each_npc_item_id.split("_")[-1] and each_npc_item_id not in record_npc_item:
+                    npc_item_count.append(each_material_count)
+                    record_npc_item.append(each_npc_item_id)
         trade = int(terminal_item_price["AvgPrice"] * average_count)
         materials_info = await self.get_materials_info(materials_id)
         materials_table = []
+        total = 0
         for each_material in materials_id:
             index = materials_id.index(each_material)
             icon, name = materials_info[index]
@@ -145,11 +140,12 @@ class DataProcesser:
             else:
                 price = all_prices[each_material]["AvgPrice"]
             total_price = price * require_count
+            total += total_price
             materials_table.append(
                 Template(template_cost).render(
                     icon = icon,
                     name = name,
-                    count = ("(NPC)<br>" if each_material not in all_prices.keys() else "") + str(require_count),
+                    count = ("(NPC)<br>" if each_material not in all_prices.keys() else "(交易行)<br>") + str(require_count),
                     unit = self.coin_image(self.calculate_price(price)),
                     total = self.coin_image(self.calculate_price(total_price))
                 )
@@ -183,7 +179,7 @@ class DataProcesser:
             ),
             cost = self.coin_image(
                 self.calculate_price(
-                    cost
+                    total
                 )
             ),
             trade = self.coin_image(
@@ -193,7 +189,7 @@ class DataProcesser:
             ),
             profit = self.coin_image(
                 self.calculate_price(
-                    trade - cost
+                    trade - total
                 )
             ),
             materials = "\n".join(materials_table),
