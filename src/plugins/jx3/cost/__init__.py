@@ -17,8 +17,6 @@ CostCalculatorMatcher = on_command("成本", priority=5, force_whitespace=True)
 async def _(event: GroupMessageEvent, state: T_State, argument: Message = CommandArg()):
     if argument.extract_plain_text() == "":
         return
-    if not check_permission(event.user_id, 10):
-        await CostCalculatorMatcher.finish("该功能内测中，敬请期待！")
     args = argument.extract_plain_text().split(" ")
     if len(args) not in [1, 2]:
         await CostCalculatorMatcher.finish("唔……参数不正确哦，请检查后重试~")
