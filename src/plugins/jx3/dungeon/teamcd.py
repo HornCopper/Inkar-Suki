@@ -2,12 +2,13 @@ from jinja2 import Template
 from itertools import chain
 from typing import Any
 from pathlib import Path
+from collections import Counter
 
 from src.const.jx3.school import School
 from src.const.prompts import PROMPT
 from src.const.path import ASSETS, TEMPLATES, build_path
 from src.utils.database import db
-from src.utils.database.classes import PersonalSettings
+from src.utils.database.classes import PersonalSettings, RoleData
 from src.utils.database.player import search_player
 from src.utils.tuilan import generate_timestamp, generate_dungeon_sign
 from src.utils.generate import generate
@@ -19,6 +20,10 @@ from ._template import (
     template_zone_record,
     table_zone_record_head
 )
+
+def sort_role_daa(objects: list[RoleData]) -> list[RoleData]:
+    server_counts = Counter(obj.serverName for obj in objects)
+    return sorted(objects, key=lambda obj: server_counts[obj.serverName], reverse=True)
 
 def build_teamcd_request(guid: str) -> Request:
     ts = generate_timestamp()
@@ -162,7 +167,7 @@ async def get_personal_roles_teamcd_image(user_id: int):
     personal_settings: PersonalSettings | Any = db.where_one(PersonalSettings(), "user_id = ?", str(user_id), default=None)
     if personal_settings is None:
         return "您尚未绑定任何角色！请绑定后再尝试查询！"
-    roles = personal_settings.roles
+    roles = sort_role_daa(personal_settings.roles)
     responses = [
         (await request.post(tuilan=True)).json()
         for request

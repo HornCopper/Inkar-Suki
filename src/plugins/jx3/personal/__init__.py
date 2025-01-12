@@ -25,7 +25,6 @@ def parse_role_names(input_str: str) -> list[str]:
     cleaned_str = re.sub(r"\[.*?\]", '', input_str)
     result = re.split(r'[，、,。/.\\]', cleaned_str)
     result = [item.strip() for item in result if item.strip()]
-    print(extracted_items + result)
     return extracted_items + result
 
 PersonalBindMathcer = on_command("绑定角色", priority=5, force_whitespace=True)
