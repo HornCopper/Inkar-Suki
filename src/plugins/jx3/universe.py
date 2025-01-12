@@ -22,7 +22,7 @@ from .assistance import (
 )
 from .attributes import (
     AttributeV2Matcher,
-    AttributeV4Matcher
+    AttributeV2RemakeMatcher
 )
 from .bind import (
     BindServerMatcher,

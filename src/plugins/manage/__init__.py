@@ -27,6 +27,7 @@ from src.utils.exceptions import ConnectTimeout
 from src.utils.message import message_universal
 
 from ._message import leave_msg
+from .developer import *
 
 try:
     from .auto_accept import *  # type: ignore  # noqa: F403
