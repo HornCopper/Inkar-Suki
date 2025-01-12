@@ -189,7 +189,7 @@ async def get_personal_roles_teamcd_image(user_id: int):
     num = 0
     for each_role_data in roles_data:
         data = each_role_data[0]
-        row = ["<td class=\"short-column\" style=\"color:" + (School(roles[num].forceName).color or "") + "\">" + roles[num].serverName + "</td><td class=\"short-column\" style=\"color:" + (School(roles[num].forceName).color or "") + "\">" + roles[num].roleName + "<td class=\"short-column\" style=\"color:" + (School(roles[num].forceName).color or "") + "\">" + roles[num].forceName + "</td></td>"]
+        row = ["<td class=\"short-column\">" + roles[num].serverName + "</td><td class=\"short-column\" style=\"color:" + (School(roles[num].forceName).color or "") + "\">" + roles[num].roleName + "<td class=\"short-column\" style=\"color:" + (School(roles[num].forceName).color or "") + "\">" + roles[num].forceName + "</td></td>"]
         for each_zone in zones:
             progress = data[each_zone]
             image = "\n".join(["<img src=\"" + build_path(ASSETS, ["image", "jx3", "cat", "gold.png" if not value else "grey.png"]) + "\" height=\"20\" width=\"20\">" for value in progress])
