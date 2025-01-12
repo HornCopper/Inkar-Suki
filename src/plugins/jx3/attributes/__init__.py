@@ -12,7 +12,6 @@ from src.utils.network import Request
 
 from .v2 import get_attr_v2
 from .v2_remake import get_attr_v2_remake
-from .v4 import get_attrs_v4
 
 AttributeV2Matcher = on_command("jx3_addritube_v2", aliases={"属性v2", "查装v2"}, force_whitespace=True, priority=5)
 
