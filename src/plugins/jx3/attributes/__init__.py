@@ -65,30 +65,3 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
         await AttributeV2RemakeMatcher.finish(PROMPT.ServerNotExist)
     data = await get_attr_v2_remake(ServerInstance.server, id, segment=True)
     await AttributeV2RemakeMatcher.finish(data)
-
-AttributeV4Matcher = on_command("jx3_addritube_v4", aliases={"属性v4", "查装v4"}, force_whitespace=True, priority=5)
-
-@AttributeV4Matcher.handle()
-async def _(event: GroupMessageEvent, args: Message = CommandArg()):
-    """
-    查询某玩家的装备：
-
-    Example：-属性v4 幽月轮 哭包猫@唯我独尊
-    Example：-查装v4 幽月轮 哭包猫@唯我独尊
-    """
-    if args.extract_plain_text() == "":
-        return
-    arg = args.extract_plain_text().split(" ")
-    if len(arg) not in [1, 2]:
-        await AttributeV4Matcher.finish("唔……参数不正确哦，请检查后重试~")
-    if len(arg) == 1:
-        server = None
-        id = arg[0]
-    elif len(arg) == 2:
-        server = arg[0]
-        id = arg[1]
-    ServerInstance = Server(server, event.group_id)
-    if not ServerInstance.server:
-        await AttributeV2Matcher.finish(PROMPT.ServerNotExist)
-    data = await get_attrs_v4(ServerInstance.server, id)
-    await AttributeV4Matcher.finish(data)

@@ -179,12 +179,12 @@ async def get_personal_roles_teamcd_image(user_id: int):
         num += 1
     final_data = synchronize_keys(roles_data)
     zones: list[str] = list(set(chain.from_iterable(d.keys() for sublist in final_data for d in sublist)))
-    table_head = "<tr><th class=\"short-column\">角色</th>" + "\n".join([f"<th class=\"short-column\">{zone}</th>" for zone in zones]) + "</tr>"
+    table_head = "<tr><th class=\"short-column\">角色</th><th class=\"short-column\">门派</th>" + "\n".join([f"<th class=\"short-column\">{zone}</th>" for zone in zones]) + "</tr>"
     tables: list[str] = []
     num = 0
     for each_role_data in roles_data:
         data = each_role_data[0]
-        row = ["<td class=\"short-column outlined-text\" style=\"color:" + (School(roles[num].forceName).color or "") + "\">" + roles[num].roleName + "·" + roles[num].serverName + "<br>（" + roles[num].forceName + "）</td>"]
+        row = ["<td class=\"short-column\" style=\"color:" + (School(roles[num].forceName).color or "") + "\">" + roles[num].roleName + "·" + roles[num].serverName + "<td class=\"short-column\" style=\"color:" + (School(roles[num].forceName).color or "") + "\">" + roles[num].forceName + "</td></td>"]
         for each_zone in zones:
             progress = data[each_zone]
             image = "\n".join(["<img src=\"" + build_path(ASSETS, ["image", "jx3", "cat", "gold.png" if not value else "grey.png"]) + "\" height=\"20\" width=\"20\">" for value in progress])
@@ -195,7 +195,7 @@ async def get_personal_roles_teamcd_image(user_id: int):
         num += 1
     html = str(
             HTMLSourceCode(
-                application_name = f" · 所有角色副本记录 ",
+                application_name = " · 所有角色副本记录 ",
                 table_head = table_head,
                 table_body = "\n".join(tables),
                 additional_css = Path(TEMPLATES + "/jx3/teamcd.css").as_uri()

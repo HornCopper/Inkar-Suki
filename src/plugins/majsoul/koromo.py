@@ -85,7 +85,7 @@ async def player_pt(name: str = "", mode="16.12.9.15.11.8") -> str:
     rank_max = getRank(data["max_level"]["id"])
     level_max = max_points[rank_max] if rank_max[0] != "魂" else "20.0"
     score_max = str(data["max_level"]["score"] + data["max_level"]["delta"]) if rank_max[0] != "魂" else str(round((data["max_level"]["score"] + data["max_level"]["delta"]) / 100, 1))
-    return f"[{rank}] {name}（{pid}）\n当前PT：[{rank}] {score}/{level}\n最高PT：[{rank_max}] {score_max}/{level_max}"
+    return f"[{rank}] {name}（{pid}）\n当前PT：[{rank}] {score}/{level}\n最高PT：[{rank_max}] {score_max}/{level_max}\n来源：雀魂牌谱屋"
 
 async def get_records(name: str = "", mode: str = "16.12.9.15.11.8"):
     if name is None:
