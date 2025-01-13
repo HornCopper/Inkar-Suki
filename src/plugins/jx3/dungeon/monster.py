@@ -61,9 +61,9 @@ async def get_monsters_map():
         )
         if count % 10 == 0:
             content.append(new)
-            if count / 10 in [1, 2, 3, 4, 5, 6]:
+            if count / 10 in [1, 2, 3, 4, 5, 6, 7, 8, 9]:
                 content.append("</div>\n<div class=\"u-row\">")
-            elif count / 10 == 7:
+            elif count / 10 == 10:
                 content.append("</div>")
         else:
             content.append(new)

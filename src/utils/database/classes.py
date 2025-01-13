@@ -59,6 +59,7 @@ class PersonalSettings(LiteModel):
     roles: list["RoleData"] = []
     settings: list[dict] = []
 
+
 class Population(LiteModel):
     TABLE_NAME: str = "population"
     populations: dict = {}

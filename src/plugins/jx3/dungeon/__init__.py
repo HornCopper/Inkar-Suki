@@ -63,11 +63,11 @@ MonstersMatcher = on_command("jx3_monsters_v2", aliases={"百战v2", "百战"}, 
 
 @MonstersMatcher.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
-    # if args.extract_plain_text() != "":
-    #     return
-    # img = await get_monsters_map()
-    # await MonstersMatcher.finish(img)
-    ...
+    if args.extract_plain_text() != "":
+        return
+    from .monster import get_monsters_map
+    img = await get_monsters_map()
+    await MonstersMatcher.finish(img)
 
 ItemRecordMatcher = on_command("jx3_itemrecord", aliases={"掉落"}, force_whitespace=True, priority=5)
 
