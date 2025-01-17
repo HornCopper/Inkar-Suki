@@ -7,7 +7,6 @@ from src.const.prompts import PROMPT
 from src.const.jx3.server import Server
 from src.utils.analyze import check_number
 from src.utils.network import Request
-from src.utils.permission import check_permission
 
 from .processer import get_item_data, DataProcesser
 

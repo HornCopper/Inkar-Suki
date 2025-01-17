@@ -48,7 +48,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     if len(arg) == 1:
         generator = await MSMRG.with_role_name(arg[0])
     elif len(arg) == 2:
-        if not bool(re.match(r'^\d{4}-\d{2}$', arg[1])):
+        if not bool(re.match(r"^\d{4}-\d{2}$", arg[1])):
             await MSMonthReport.finish("月份格式错误！请给出yyyy-mm的格式！")
         generator = await MSMRG.with_role_name(arg[0], arg[1])
     if isinstance(generator, str):

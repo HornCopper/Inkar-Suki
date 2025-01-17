@@ -200,12 +200,12 @@ class DataProcesser:
             ),
             trade = self.coin_image(
                 self.calculate_price(
-                    trade
+                    int(trade*0.95)
                 )
             ),
             profit = self.coin_image(
                 self.calculate_price(
-                    trade - total
+                    int(trade*0.95) - total
                 )
             ),
             materials = "\n".join(materials_table),

@@ -185,7 +185,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
             )
     html = str(
         HTMLSourceCode(
-            application_name = f" · 金币统计",
+            application_name = " · 金币统计",
             table_head = table_head,
             table_body = "\n".join(table)
         )

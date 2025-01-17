@@ -111,7 +111,7 @@ help = on_command("help", aliases={"帮助", "功能", "查看", "文档", "使�
 async def help_(args: Message = CommandArg()):
     if args.extract_plain_text() != "":
         return
-    await help.finish(f"Inkar Suki · 音卡使用文档：\nhttps://inkar-suki.codethink.cn/Inkar-Suki-Docs/#/\n点击下面的链接直达剑网3模块简化版文档：\nhttps://inkar-suki.codethink.cn/Inkar-Suki-Docs/#/jx3_easy")
+    await help.finish("Inkar Suki · 音卡使用文档：\nhttps://inkar-suki.codethink.cn/Inkar-Suki-Docs/#/\n点击下面的链接直达剑网3模块简化版文档：\nhttps://inkar-suki.codethink.cn/Inkar-Suki-Docs/#/jx3_easy")
 
 rdcoldjoke = on_command("冷笑话", priority=5, force_whitespace=True)
 
