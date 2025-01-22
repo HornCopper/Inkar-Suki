@@ -1,6 +1,4 @@
-from typing_extensions import Self, Any
-
-from src.utils.analyze import merge_dicts
+from typing_extensions import Self
 from src.utils.analyze import invert_dict
 from src.const.path import (
     ASSETS,
@@ -148,3 +146,12 @@ class Kungfu:
         if name.endswith("·悟"):
             name = name[:-2]
         return self.kungfu_snacks[self.name]
+
+    @property
+    def abbr(self) -> str:
+        if self.base not in ["治疗", "防御"]:
+            return "D"
+        elif self.base == "防御":
+            return "T"
+        else:
+            return "N"

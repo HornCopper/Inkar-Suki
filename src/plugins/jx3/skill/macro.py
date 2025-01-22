@@ -5,8 +5,8 @@ import json
 
 
 async def get_url(kungfu: str) -> str | None:
-    data = (await Request("https://helper.jx3box.com/api/menu_group/macro-rec").get()).json()
-    macro_list = data["data"]["menu_group"]["menus"]
+    data = (await Request("https://cms.jx3box.com/api/cms/menu-group/macro-rec").get()).json()
+    macro_list = data["data"]["menus"]
     for i in macro_list:
         kungfu_ = Kungfu.with_internel_id(i["icon"]).name
         if kungfu_ == kungfu:

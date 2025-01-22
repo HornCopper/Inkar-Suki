@@ -60,7 +60,7 @@ from .emoji import (
     EmojiMatcher
 )
 from .equip import (
-    RecommendEquipMatcher
+    EquipRecommendMatcher
 )
 from .events import (
     ZhueMatcher,
