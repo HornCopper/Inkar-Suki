@@ -99,14 +99,14 @@ async def get_attr_recommend_image(
             )
 
             # 更新位置
-            init_icon += 48
-            init_text += 48
+            init_icon += 54
+            init_text += 54
             limit += 1
 
             if limit == 6:
                 limit = 0
                 init_icon = 179
-                init_text = 199
+                init_text = 198
                 y_icon += 68
                 y_text += 68
                 done_time += 1
