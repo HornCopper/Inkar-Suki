@@ -79,7 +79,7 @@ async def get_attr_recommend_image(
 
 
     if len(talents) == 12:
-        init_icon = 179
+        init_icon = 164
         init_text = 198
         y_icon = 479
         y_text = 530
@@ -91,7 +91,7 @@ async def get_attr_recommend_image(
 
             # 绘制文字
             draw.text(
-                (init_text, y_text),
+                (init_text-15, y_text),
                 talent.name,
                 fill=(255, 255, 255),
                 font=ImageFont.truetype(semibold, size=12),
@@ -105,10 +105,10 @@ async def get_attr_recommend_image(
 
             if limit == 6:
                 limit = 0
-                init_icon = 179
+                init_icon = 164
                 init_text = 198
-                y_icon += 68
-                y_text += 68
+                y_icon += 78
+                y_text += 78
                 done_time += 1
                 if done_time == 2:
                     break
