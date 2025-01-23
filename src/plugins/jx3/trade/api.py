@@ -240,7 +240,7 @@ async def get_trade_image_allserver(name: str):
                     table.append(Template(template_table).render(
                             icon=icon,
                             color=color,
-                            name=f"{name}（{server}）",
+                            name=itemlist_searchable[0]["name"] + f"（{server}）",
                             time=Time().format("%m月%d日 %H:%M:%S"),
                             limit="N/A",
                             price=coin_to_image(str(calculate_price(current["AvgPrice"])))
@@ -279,7 +279,7 @@ async def get_trade_image_allserver(name: str):
             font=build_path(ASSETS, ["font", "PingFangSC-Medium.otf"]),
             msgbox=msgbox,
             table_content="\n".join(table),
-            appinfo=f"交易行 · {server} · {name}",
+            appinfo=f"交易行 · 全服 · {name}",
             saohua="严禁将蓉蓉机器人与音卡共存，一经发现永久封禁！蓉蓉是抄袭音卡的劣质机器人！"
         )
     )

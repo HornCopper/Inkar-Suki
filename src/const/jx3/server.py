@@ -2,6 +2,7 @@ from src.utils.database.operation import get_group_settings
 
 from .constant import server_aliases_data, server_zones_mapping_data
 
+
 class Server:
     server_aliases: dict[str, list[str]] = server_aliases_data
     server_zones_mapping: dict[str, list[str]] = server_zones_mapping_data
@@ -34,7 +35,7 @@ class Server:
         else:
             final_server = None
         return final_server
-    
+
     @property
     def zone_legacy(self) -> str | None:
         data = self.server_zones_mapping
@@ -48,4 +49,8 @@ class Server:
         zone_legacy_name = self.zone_legacy
         if zone_legacy_name is None:
             return None
-        return zone_legacy_name if zone_legacy_name == "无界区" else zone_legacy_name[:2] + "区"
+        return (
+            zone_legacy_name
+            if zone_legacy_name == "无界区"
+            else zone_legacy_name[:2] + "区"
+        )

@@ -1,5 +1,6 @@
 from typing import Any, Literal, overload
 from nonebot import get_bots
+from nonebot.exception import ActionFailed
 
 from src.utils.database.classes import GroupSettings
 from src.utils.database import db
@@ -79,4 +80,7 @@ async def send_subscribe(subscribe: str = "", msg: str = "", server: str | None 
                     group_server = get_group_settings(str(group_id), "server")
                     if server != "" and (group_server == "" or group_server != server):
                         continue
-                    await bots[x].call_api("send_group_msg", group_id=int(group_id), message=msg)
+                    try:
+                        await bots[x].call_api("send_group_msg", group_id=int(group_id), message=msg)
+                    except ActionFailed:
+                        continue

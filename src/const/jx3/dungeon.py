@@ -1,5 +1,6 @@
 from .constant import dungeon_mode_data, dungeon_name_data
 
+
 class Dungeon:
     dungeon_name: dict[str, list[str]] = dungeon_name_data
     dungeon_mode: dict[str, list[str]] = dungeon_mode_data
@@ -18,7 +19,7 @@ class Dungeon:
             if self._name in data[zone_name]:
                 return zone_name
         return None
-        
+
     @property
     def mode(self) -> str | None:
         """

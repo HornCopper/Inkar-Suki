@@ -22,13 +22,15 @@ async def _(bot: Bot, event: MessageEvent, args: Message = CommandArg()):
         await BanMatcher.finish(denied(10))
     user_id = args.extract_plain_text()
     if not check_number(user_id):
-        await BanMatcher.finish(PROMPT.ArgumentInvalid)    
+        await BanMatcher.finish(PROMPT.ArgumentInvalid)
     status = Ban(user_id).ban()
     if not status:
         await BanMatcher.finish(PROMPT.BanRepeatInvalid)
     await BanMatcher.finish(f"好的，{Config.bot_basic.bot_name}已经封禁({user_id})！")
 
+
 UnbanMatcher = on_command("unban", force_whitespace=True, priority=5)
+
 
 @UnbanMatcher.handle()
 async def _(bot: Bot, event: MessageEvent, args: Message = CommandArg()):
@@ -38,7 +40,7 @@ async def _(bot: Bot, event: MessageEvent, args: Message = CommandArg()):
         await UnbanMatcher.finish(denied(10))
     user_id = args.extract_plain_text()
     if not check_number(user_id):
-        await UnbanMatcher.finish(PROMPT.ArgumentInvalid)    
+        await UnbanMatcher.finish(PROMPT.ArgumentInvalid)
     status = Ban(user_id).unban()
     if not status:
         await UnbanMatcher.finish("唔……解封失败（尚未封禁）。")

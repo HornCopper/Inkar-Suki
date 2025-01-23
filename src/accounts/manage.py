@@ -8,17 +8,24 @@ from src.utils.time import Time
 
 import random
 
+
 class CheckinRewards(BaseModel):
-    total_days: int # 累计签到
-    is_lucky: bool # 是否触发额外奖励
-    coin: int # 签到获得的金币（包含额外）
-    lucky_value: int # 幸运值
+    total_days: int  # 累计签到
+    is_lucky: bool  # 是否触发额外奖励
+    coin: int  # 签到获得的金币（包含额外）
+    lucky_value: int  # 幸运值
+
 
 class AccountManage:
     def __init__(self, user_id: int | str):
         self.user_id = user_id
-        self.data: Account | Any = db.where_one(Account(), "user_id = ?", int(user_id), default=Account(user_id=int(user_id)))
-    
+        self.data: Account | Any = db.where_one(
+            Account(),
+            "user_id = ?",
+            int(user_id),
+            default=Account(user_id=int(user_id)),
+        )
+
     @property
     def checkin_counts(self) -> int:
         return self.data.checkin_counts
@@ -26,16 +33,16 @@ class AccountManage:
     @property
     def permission(self) -> int:
         return self.data.permission
-    
+
     @property
     def coins(self) -> int:
         return self.data.coins
-    
+
     @property
     def checkin_status(self) -> bool:
         """
         判断上次签到时间是否在当前周期内
-        
+
         Returns:
             is_in_cycle (bool): 是否在本周期内。
         """
@@ -53,7 +60,7 @@ class AccountManage:
     def checkin(self) -> Literal[False] | CheckinRewards:
         if self.checkin_status:
             return False
-    
+
         coin = random.randint(0, 4000)
         lucky = True if random.randint(0, 100) % 25 == 0 else False
         if lucky:
@@ -64,14 +71,14 @@ class AccountManage:
         self._update_last_checkin_data()
 
         db.save(self.data)
-        
+
         return CheckinRewards(
             total_days=self.checkin_counts,
             is_lucky=lucky,
             coin=coin,
-            lucky_value=random.randint(0, 100)
-        )    
-    
+            lucky_value=random.randint(0, 100),
+        )
+
     def add_coin(self, counts: int) -> None:
         final_coins = self.coins + counts
         self.data.coins = final_coins

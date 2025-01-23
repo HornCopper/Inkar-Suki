@@ -13,7 +13,6 @@ from .api import template_msgbox, template_table
 
 from ._parse import AttrsConverter, coin_to_image, calculate_price
 
-import json
 basic_name = "无修"
 
 def get_exist_attrs(data: list[dict]) -> list[str]:
@@ -227,7 +226,7 @@ async def get_wufeng_image_allserver(raw: str):
             font=build_path(ASSETS, ["font", "PingFangSC-Medium.otf"]),
             msgbox=msgbox,
             table_content="\n".join(table),
-            appinfo=f"交易行 · {server} · {name}",
+            appinfo=f"交易行 · 全服 · {name}",
             saohua="严禁将蓉蓉机器人与音卡共存，一经发现永久封禁！蓉蓉是抄袭音卡的劣质机器人！"
         )
     )

@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title></title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 30px auto;
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+            overflow: hidden;
+        }
+
+        .header {
+            background-color: {{ color }};
+            color: white;
+            text-align: center;
+            padding: 20px;
+            font-size: 1.5em;
+            font-weight: bold;
+        }
+
+        .dps-display {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            font-size: 2em;
+            color: #e74c3c;
+            font-weight: bold;
+        }
+
+        .content {
+            padding: 20px;
+        }
+
+        .desc {
+            text-align: center;
+            font-size: 0.9em;
+            color: #555;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        .card {
+            background: #f9f9f9;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .card h3 {
+            margin: 0;
+            font-size: 1.2em;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .attributes {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 15px;
+        }
+
+        .attribute {
+            padding: 10px;
+            background: #ffffff;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .skills-list {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .skill {
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 5px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .skill-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+
+        .skill-header span {
+            font-size: 0.9em;
+            color: #555;
+        }
+
+        .progress-bar-container {
+            background: #f4f4f4;
+            height: 10px;
+            border-radius: 5px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background-color: {{ color }};
+            transition: width 0.3s ease;
+        }
+
+        footer {
+            background: #f0f0f0;
+            text-align: center;
+            padding: 15px;
+            font-size: 0.9em;
+            color: #777;
+        }
+
+        .talents {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+            text-align: center;
+        }
+
+        .talent {
+            font-size: 16px;
+            margin: 10px;
+        }
+
+        .talent img {
+            width: 50px;
+            height: 50px;
+            border-radius: 4px;
+        }
+
+        .talent span {
+            display: block;
+            margin-top: 5px;
+            font-size: 12px;
+            color: #555;
+        }
+
+        @font-face {
+            font-family: Harmony;
+            src: url("{{ font }}");
+        }
+
+        body {
+            font-family: Harmony, sans-serif;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">{{ kungfu }} - DPS计算器</div>
+        <div class="dps-display">期望DPS: {{ dps }}</div>
+        <div class="content">
+            <div class="desc">
+                {{ desc }}
+            </div>
+            <div class="card">
+                <h3>属性统计</h3>
+                <div class="attributes">
+                    {% for attr in attrs %}
+                    {{ attr }}
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="card">
+                <h3>技能伤害统计</h3>
+                <div class="skills-list">
+                    {% for skill in skills %}
+                    {{ skill }}
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="card">
+                <h3>玩家当前奇穴</h3>
+                <div class="talents">
+                    {% for k, v in talents.items() %}
+                    <div class="talent">
+                        <img src="{{ v }}">
+                        <span style="font-size: 16px">{{ k }}</span>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="card">
+                <h3>循环要求奇穴</h3>
+                <div class="talents">
+                    {% for k, v in loop_talents.items() %}
+                    <div class="talent">
+                        <img src="{{ v }}">
+                        <span style="font-size: 16px">{{ k }}</span>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            <footer>Inkar Suki :{{ saohua }}</footer>
+        </div>
+    </div>
+
+</body>
+
+</html>

@@ -1,11 +1,9 @@
 from pydantic import BaseModel
 
-from src.const.path import (
-    CONFIG,
-    build_path
-)
+from src.const.path import CONFIG, build_path
 
 import yaml
+
 
 class BotBasic(BaseModel):
     bot_name: str
@@ -15,9 +13,11 @@ class BotBasic(BaseModel):
     bot_notice: dict[str, str]
     proxy: str = ""
 
+
 class GitHubConfig(BaseModel):
     web_path: str
     github_personal_token: str = ""
+
 
 class Jx3API(BaseModel):
     token: str
@@ -29,17 +29,21 @@ class Jx3API(BaseModel):
     enable: bool = False
     weibo: bool = False
 
+
 class Jx3WS(BaseModel):
     url: str
     token: str = ""
     enable: bool = False
 
+
 class Jx3Config(BaseModel):
     api: Jx3API
     ws: Jx3WS
 
+
 class Hidden(BaseModel):
     offcial_token: str = ""
+
 
 class config(BaseModel):
     bot_basic: BotBasic
@@ -51,6 +55,7 @@ class config(BaseModel):
     def from_yaml(cls, yaml_str: str) -> "config":
         config_data = yaml.safe_load(yaml_str)
         return cls(**config_data)
+
 
 with open(build_path(CONFIG, ["config.yml"]), "r", encoding="utf8") as f:
     Config = config.from_yaml(f.read())

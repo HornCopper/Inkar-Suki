@@ -1,13 +1,11 @@
 from typing_extensions import Self
 
 from src.utils.analyze import invert_dict
-from src.const.path import (
-    ASSETS,
-    build_path
-)
+from src.const.path import ASSETS, build_path
 from src.const.jx3.kungfu import Kungfu, kungfu_colors_data
 
 from .constant import school_aliases_data, school_internel_id_data
+
 
 class School:
     school_aliases: dict[str, list[str]] = school_aliases_data
@@ -25,7 +23,7 @@ class School:
         if str(internel_id) not in cls.school_internel_id:
             return cls()
         return cls(cls.school_internel_id[str(internel_id)])
-    
+
     @property
     def name(self) -> str | None:
         """
@@ -38,14 +36,14 @@ class School:
             if self.school_name in data[school_name] or self.school_name == school_name:
                 return school_name
         return None
-    
+
     @property
     def internel_id(self) -> int | None:
         data = invert_dict(self.school_internel_id)
         if self.name in data:
             return int(data[self.name])
         return None
-        
+
     @property
     def color(self) -> str:
         """
@@ -55,7 +53,7 @@ class School:
             if Kungfu(kungfu).school == self.school_name:
                 return color
         return "#FFFFFF"
-    
+
     @property
     def icon(self) -> str:
         """
@@ -63,12 +61,4 @@ class School:
         """
         if self.name is None:
             return ""
-        return build_path(
-            ASSETS,
-            [
-                "image",
-                "jx3",
-                "school",
-                self.name + ".png"
-            ]
-        )
+        return build_path(ASSETS, ["image", "jx3", "school", self.name + ".png"])
