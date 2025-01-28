@@ -8,14 +8,14 @@
 
 from typing import Tuple, Literal, List, Dict, Callable
 from jinja2 import Template
-from pathlib import Path
 
 from src.const.jx3.server import Server
 from src.const.jx3.kungfu import Kungfu
 from src.const.prompts import PROMPT
-from src.const.path import ASSETS, build_path
+from src.const.path import ASSETS, CACHE, build_path
+from src.utils.file import write
 from src.utils.network import Request
-from src.utils.generate import generate
+from src.utils.generate import generate, get_uuid
 from src.utils.database.player import search_player
 from src.plugins.jx3.attributes.v2_remake import (
     Talent,
@@ -24,6 +24,8 @@ from src.plugins.jx3.attributes.v2_remake import (
     EquipDataProcesser,
 )
 from src.templates import SimpleHTML, get_saohua
+
+import json
 
 from ._template import template_calculator, template_attr
 
@@ -36,9 +38,12 @@ def generate_params(
     set_list: List[str | None],
     special_equip: List[None | str],
     pvx_attr: int = 0,
+    equips: list[dict] = [],
+    enchants: list[str] = [],
+    colorstone: str = "",
     sect_code: Literal["lxg", "lxgW"] = "lxg",
 ) -> dict:
-    enchant: List[int | str] = [12206, 12205, 12202, 12204, 12203]
+    enchant: List[int | str] = [12393, 12392, 12389, 12376, 12390]
     for num in range(5):
         if not input_enchant[num]:
             enchant[num] = ""
@@ -74,9 +79,11 @@ def generate_params(
             "equipmentList": special_equip,
             "enchant2List": enchant,
             "position": "",
-            "pzEquipmentReqDtoList": [],
-            "stone": None,
+            "stone": colorstone,
             "isWuJie": False,
+            "pzEquipmentReqDtoList": equips,
+            "enchant1List": enchants
+
         },
         "enemyReqDto": {
             "sectName": "muZhuang134",
@@ -90,6 +97,7 @@ def generate_params(
         "loopReqDto": {
             "computeStrategy": "commonComputeStrategyImpl",
             "loopCode": loop_name,
+            "skillDelay": "1"
         },
     }
     return params
@@ -151,6 +159,15 @@ class JX3Attributes:
                 base_damage = equip["Base1Type"]["Base1Min"]
                 delta_damage = equip["Base2Type"]["Base2Min"]
                 return int(base_damage), int(base_damage) + int(delta_damage)
+        raise ValueError("Cannot find weapon!")
+
+    @property
+    def colorstone_id(self) -> str:
+        equips: list = self.data["data"]["Equips"]
+        for equip in equips:
+            if equip["Icon"]["Kind"] == "武器" and equip["Icon"]["SubKind"] != "投掷囊":
+                if "ColorStone" in equip:
+                    return equip["ColorStone"]["ID"]
         raise ValueError("Cannot find weapon!")
 
     @property
@@ -280,6 +297,36 @@ class JX3Attributes:
         if "长安" in equips:
             return True
         return False
+    
+    @property
+    def permanent_enchants(self) -> list[str]:
+        result = []
+        self.parser.equips
+        for equip in (self.parser._cached_equips or []):
+            if "WPermanentEnchant" in equip:
+                result.append(equip["WPermanentEnchant"]["ID"])
+            else:
+                result.append(None)
+        if self.parser.kungfu.school != "藏剑":
+            result.append(None)
+        return result
+    
+    @property
+    def detailed_equips(self) -> list[dict]:
+        result = []
+        self.parser.equips
+        for equip in (self.parser._cached_equips or []):
+            new = {
+                "equipmentId": int(equip["ID"]),
+                "strengthLevel": equip["StrengthLevel"]
+            }
+            if "FiveStone" in equip:
+                if isinstance(equip["FiveStone"], list):
+                    for n in range(len(equip["FiveStone"])):
+                        new[f"diamondLevel{n+1}"] = equip["FiveStone"][n]["Level"]
+            result.append(new)
+        return result
+                        
 
 
 async def generate_calculator_img_yinlongjue(server: str, name: str):
@@ -318,7 +365,11 @@ async def generate_calculator_img_yinlongjue(server: str, name: str):
         set_list=instance.effect,
         special_equip=instance.special,
         pvx_attr=instance._pvxallround,
+        equips=instance.detailed_equips,
+        enchants=instance.permanent_enchants,
+        colorstone=instance.colorstone_id
     )
+    write(CACHE + "/" + get_uuid() + ".json", json.dumps(params, ensure_ascii=False), "w")
     data = (
         await Request(
             "http://121.41.84.37/j3dps/api/public/v1/compute/dps", params=params

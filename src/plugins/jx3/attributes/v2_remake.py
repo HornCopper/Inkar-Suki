@@ -279,11 +279,11 @@ class EquipDataProcesser:
         ] if location != "戒指" else []
         if location in ["项链", "腰坠", "戒指", "远程武器"]:
             if "atSkillEventHandler" in [a["Desc"] for a in equip_data["ModifyType"]]:
-                effect: str = [a["Attrib"] for a in equip_data["ModifyType"] if a["Desc"] == "atSkillEventHandler"][0]["Desc"].split("，")[0]
+                effect: str = [a["Attrib"] for a in equip_data["ModifyType"] if a["Desc"] == "atSkillEventHandler"][0]["Desc"].replace("进入战斗后，", "").split("，")[0]
                 enchant.append(
                     Enchant(
                         icon = build_path(ASSETS, ["image", "jx3", "attributes", "common_enchant.png"]),
-                        name = effect.replace("招式", "").replace("少量", ""),
+                        name = effect.replace("招式", "").replace("少量", "").replace("自身", "").replace("基础", "").replace("等级", "").split("。")[0],
                         type = "ce"
                     )
                 )

@@ -3,7 +3,7 @@ from jinja2 import Template
 
 from src.const.path import ASSETS, build_path
 from src.const.jx3.constant import server_aliases_data as servers
-from src.utils.analyze import check_number
+from src.utils.analyze import check_number, sort_dict_list
 from src.utils.network import Request
 from src.utils.time import Time
 from src.utils.generate import generate
@@ -88,7 +88,7 @@ async def get_trade_image(server: str, name: str, items: list = []):
                 high = calculate_price(current["HighestPrice"])
                 return f"唔……该物品目前交易行没有数据，但是音卡找到了昨日的数据：\n昨日低价：{low}\n昨日均价：{avg}\n昨日高价：{high}"
         table = []
-        for each_price in detail_data["data"]["prices"]:
+        for each_price in sort_dict_list(detail_data["data"]["prices"], "unit_price"):
             table_content = Template(template_table).render(
                 icon=itemlist_searchable[0]["icon"],
                 color=color,
