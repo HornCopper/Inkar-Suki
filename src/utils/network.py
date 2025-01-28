@@ -9,7 +9,6 @@ from src.utils.tuilan import generate_x_sk, generate_timestamp, format_request_b
 from src.utils.time import Time
 
 import httpx
-import json
 
 class Request:
     def __init__(self, url: str, *, headers: dict = {}, params: str | dict = {}):

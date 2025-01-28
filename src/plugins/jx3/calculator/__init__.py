@@ -5,7 +5,7 @@ from nonebot.adapters.onebot.v11 import Message, GroupMessageEvent
 from src.const.prompts import PROMPT
 from src.const.jx3.server import Server
 
-from .lxg import generate_calculator_img_yinlongjue
+from .lxg import LingxueCalculator
 
 YLJCalcMatcher = on_command("jx3_calculator_lyj", aliases={"凌雪计算器"}, priority=5, force_whitespace=True)
 
@@ -18,12 +18,12 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
         await YLJCalcMatcher.finish("唔……参数不正确哦，请检查后重试~")
     if len(arg) == 1:
         server = None
-        id = arg[0]
+        name = arg[0]
     elif len(arg) == 2:
         server = arg[0]
-        id = arg[1]
+        name = arg[1]
     server = Server(server, event.group_id).server
     if server is None:
         await YLJCalcMatcher.finish(PROMPT.ServerNotExist)
-    data = await generate_calculator_img_yinlongjue(server, id)
+    data = await (await LingxueCalculator.with_name(name, server)).image()
     await YLJCalcMatcher.finish(data)

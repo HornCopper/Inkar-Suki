@@ -163,8 +163,8 @@ class SimpleHTML:
         """
         if not html_template.endswith(".html"):
             html_template = html_template + ".html"
-        css = "" if not outside_css else f"<link rel=\"stylesheet\" href=\"" + outside_css + "\">"
-        js = "" if not outside_js else f"<script src=\"" + outside_js + "\"></script>"
+        css = "" if not outside_css else "<link rel=\"stylesheet\" href=\"" + outside_css + "\">"
+        js = "" if not outside_js else "<script src=\"" + outside_js + "\"></script>"
         self.html_source = Template(
             read(
                 build_path(

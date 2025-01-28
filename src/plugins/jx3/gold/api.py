@@ -1,11 +1,10 @@
 from jinja2 import Template
-from pathlib import Path
 
 from src.config import Config
 from src.const.path import ASSETS, build_path
 from src.utils.time import Time
 from src.utils.network import Request
-from src.utils.generate import get_uuid, generate
+from src.utils.generate import generate
 from src.templates import SimpleHTML
 
 from ._template import template_jinjia, types
@@ -22,7 +21,7 @@ async def get_coin_price_image(server: str = ""):
     dates = []
     date_to_data = {}
 
-    for platform_data in data[server]["7881"]:
+    for platform_data in data[server]["WBL"]:
         # 只拿日期，平台不影响
         dates.append(platform_data["date"])
 
