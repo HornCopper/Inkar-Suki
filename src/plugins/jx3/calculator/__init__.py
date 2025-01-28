@@ -25,5 +25,8 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     server = Server(server, event.group_id).server
     if server is None:
         await YLJCalcMatcher.finish(PROMPT.ServerNotExist)
-    data = await (await LingxueCalculator.with_name(name, server)).image()
+    instance = await LingxueCalculator.with_name(name, server)
+    if isinstance(instance, str):
+        await YLJCalcMatcher.finish(instance)
+    data = await instance.image()
     await YLJCalcMatcher.finish(data)

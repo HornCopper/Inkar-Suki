@@ -70,7 +70,7 @@ class LingxueCalculator(BaseCalculator):
         """
         self.parser.equips
         sorted_equips = self.parser._cached_equips
-        return sorted_equips
+        return sorted_equips or []
         
     @property
     def equips(self) -> dict[str, dict[str, Any]]:
