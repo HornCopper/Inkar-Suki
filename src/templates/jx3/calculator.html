@@ -206,13 +206,17 @@
             <div class="card">
                 <h3>循环要求奇穴</h3>
                 <div class="talents">
+                    {% if loop_talents %}
                     {% for k, v in loop_talents.items() %}
                     <div class="talent">
                         <img src="{{ v }}">
                         <span style="font-size: 16px">{{ k }}</span>
                     </div>
                     {% endfor %}
-                </div>
+                    {% else %}
+                        循环无要求
+                    {% endif %}
+                </div>                
             </div>
             <footer>Inkar Suki :{{ saohua }}</footer>
         </div>
