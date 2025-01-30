@@ -16,7 +16,8 @@ YLJCalcMatcher = on_command("jx3_calculator_lyj", aliases={"凌雪计算器"}, p
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     if args.extract_plain_text() == "":
         return
-    arg = args.extract_plain_text().split(" ")
+    raw_arg = args.extract_plain_text().split(" ")
+    arg = [a for a in raw_arg if a != "-A"]
     if len(arg) not in [1, 2]:
         await YLJCalcMatcher.finish("唔……参数不正确哦，请检查后重试~")
     if len(arg) == 1:
@@ -31,7 +32,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     instance = await LingxueCalculator.with_name(name, server)
     if isinstance(instance, str):
         await YLJCalcMatcher.finish(instance)
-    data = await instance.image()
+    data = await instance.image(len(raw_arg) > len(arg))
     await YLJCalcMatcher.finish(data)
 
 ZXGCalculator = on_command("jx3_calculator_zxg", aliases={"气纯计算器"}, priority=5, force_whitespace=True)

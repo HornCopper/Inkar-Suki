@@ -224,8 +224,9 @@ class LingxueCalculator(BaseCalculator):
         data = (await Request("http://www.j3lxg.cn/j3dps/api/public/v1/compute/robot/dps", params=params).post()).json()
         return data
     
-    async def image(self):
+    async def image(self, full_income: bool = False):
         data = await self.calculate()
+        flag = "allIncomeData" if full_income else "noIncomeData"
         loop_name, loop_talents = str(data["data"]["loopName"]).split(":")
         _loop_talents = {}
         for t in loop_talents.split("/"):
@@ -239,7 +240,7 @@ class LingxueCalculator(BaseCalculator):
             _loop_talents[t] = icon
         loop_talents = _loop_talents
         tables = []
-        for skill_data in data["data"]["noIncomeData"]["mergeSkillDpsBoList"]:
+        for skill_data in data["data"][flag]["mergeSkillDpsBoList"]:
             tables.append(
                 Template(template_calculator).render(
                     **{
@@ -247,7 +248,7 @@ class LingxueCalculator(BaseCalculator):
                         "display": str(
                             round(
                                 skill_data["proportion"]
-                                / data["data"]["noIncomeData"]["mergeSkillDpsBoList"][0]["proportion"]
+                                / data["data"][flag]["mergeSkillDpsBoList"][0]["proportion"]
                                 * 100,
                                 2,
                             )
@@ -262,7 +263,7 @@ class LingxueCalculator(BaseCalculator):
         attributes = self.attr
         attrs = []
         for panel in attributes:
-            for income_data in data["data"]["noIncomeData"]["attributeIncomeBoList"]:
+            for income_data in data["data"][flag]["attributeIncomeBoList"]:
                 if income_data["attributeName"] == panel.name:
                     attrs.append(
                         Template(template_attr).render(
@@ -280,9 +281,9 @@ class LingxueCalculator(BaseCalculator):
                     "font": build_path(ASSETS, ["font", "PingFangSC-Semibold.otf"]),
                     "color": self.kungfu.color,
                     "kungfu": self.kungfu.name,
-                    "dps": str(int(data["data"]["noIncomeData"]["dps"])),
+                    "dps": str(int(data["data"][flag]["dps"])),
                     "desc": f"计算器来源：【丝路风语】凌雪阁DPS计算器 by @猜猜<br>当前循环：{loop_name} / 战斗时长："
-                    + str(data["data"]["noIncomeData"]["totalTime"])
+                    + str(data["data"][flag]["totalTime"])
                     + f"s<br>玩家：{name}·{server}",
                     "attrs": attrs,
                     "skills": tables,
