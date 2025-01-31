@@ -8,6 +8,7 @@ from src.utils.database.classes import (
     ItemKeywordMap,
     PersonalSettings,
     Population,
+    PlayerEquipsCache,
     RoleData,
     JX3APIWSData,
     RequestData,
@@ -43,4 +44,10 @@ serendipity_db = Database(build_path(DATA, ["serendipity.db"]))
 
 serendipity_db.auto_migrate(
     SerendipityData()
+)
+
+attribute_db = Database(build_path(DATA, ["attributes.db"]))
+
+attribute_db.auto_migrate(
+    PlayerEquipsCache()
 )

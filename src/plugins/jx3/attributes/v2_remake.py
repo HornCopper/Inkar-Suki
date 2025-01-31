@@ -109,6 +109,10 @@ class Qixue:
     @classmethod
     async def create(cls, qixue: dict, kungfu: str):
         """异步创建实例，并确保 qixue_data 被初始化"""
+        if kungfu == "山居问水剑·悟":
+            kungfu = "问水诀"
+        if kungfu.endswith("·悟"):
+            kungfu = kungfu[:-2]
         await cls.initialize_qixue_data()
         return cls(qixue, kungfu)
     
@@ -364,7 +368,7 @@ class EquipDataProcesser:
                 for each_name, each_icon
                 in zip(name, icon)
             ]
-        if kungfu.endswith("·悟"):
+        if kungfu.endswith("·悟") and qixue_list == []:
             kungfu = "问水诀" if kungfu == "山居问水剑·悟" else kungfu[:-2]
             return [
                 Talent(icon=each_icon, name=each_name)

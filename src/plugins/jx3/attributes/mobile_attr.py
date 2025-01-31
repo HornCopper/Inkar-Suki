@@ -1,7 +1,8 @@
 from typing import Any
 
-from src.utils.analyze import merge_dicts
 from src.const.jx3.kungfu import Kungfu
+from src.utils.analyze import merge_dicts
+from src.utils.typing import overload
 
 def percent(v):
     return (f"{float(v[:-1]):.10g}".rstrip("0").rstrip(".") or "0") + "%"
@@ -19,7 +20,12 @@ def input_attr(keys: list[str], data_dict: dict[str, int | float | str]) -> list
             result.append(value)
     return result
 
-def mobile_attribute_calculator(equip_data: list[dict[str, Any]], kungfu_name: str, panel_types: list[str]) -> list[str]:
+@overload
+def mobile_attribute_calculator(equip_data: list[dict[str, Any]], kungfu_name: str, panel_types: list[str]) -> list[str]: ...
+@overload
+def mobile_attribute_calculator(equip_data: list[dict[str, Any]], kungfu_name: str, panel_types: None = None) -> dict[str, Any]: ...
+
+def mobile_attribute_calculator(equip_data: list[dict[str, Any]], kungfu_name: str, panel_types: list[str] | None = None) -> dict[str, Any] | list[str]:
     attr: dict[str, float] = {
         "atSpiritBase": 44,
         "atStrengthBase": 44,
@@ -169,4 +175,6 @@ def mobile_attribute_calculator(equip_data: list[dict[str, Any]], kungfu_name: s
     format_attr["御劲"] = percent(str(round(sum_attr(attr, "atToughnessBase") / 197703.0 * 100, 2)) + "%")
     decritical = sum_attr(attr, "atDecriticalDamagePowerBase")
     format_attr["化劲"] = percent(str(round(decritical / (decritical + 33046.2) + 0.099609375, 4) * 100) + "%")
+    if panel_types is None:
+        return format_attr
     return input_attr(panel_types, format_attr)

@@ -11,11 +11,11 @@ from src.const.path import (
     build_path
 )
 from src.utils.decorators import time_record
-from src.utils.file import read, write
+from src.utils.file import write
 from src.utils.generate import get_uuid
-from src.utils.exceptions import QixueDataUnavailable
 from src.utils.database.player import search_player
 from src.utils.network import Request
+from src.plugins.jx3.attributes.v2_remake import Qixue
 
 import os
 import json
@@ -57,49 +57,6 @@ class Enchant:
         for enchant_name in self.enchant_data:
             if self.enchant_data[enchant_name]["min"] <= self.quality <= self.enchant_data[enchant_name]["max"]:
                 return enchant_name
-
-class Qixue:
-    qixue_data: dict = {}
-
-    def __init__(self, qixue: dict, kungfu: str):
-        self.data = qixue
-        self.kungfu = kungfu
-
-    @classmethod
-    async def initialize_qixue_data(cls):
-        """类方法，用于异步初始化 qixue_data"""
-        if cls.qixue_data == {}:
-            cls.qixue_data = await cls.get_qixue_data()
-
-    @classmethod
-    async def create(cls, qixue: dict, kungfu: str):
-        """异步创建实例，并确保 qixue_data 被初始化"""
-        await cls.initialize_qixue_data()
-        return cls(qixue, kungfu)
-    
-    @staticmethod
-    async def get_qixue_data() -> dict:
-        qixue_data_path = build_path(ASSETS, ["source", "jx3", "qixue_latest.json"])
-        if os.path.exists(qixue_data_path):
-            return json.loads(read(qixue_data_path))
-        data = (await Request("https://data.jx3box.com/talent/std/index.json").get()).json()
-        for each_ver in data:
-            if each_ver["name"].find("体服") == -1:
-                qixue_data = (await Request("https://data.jx3box.com/talent/std/" + each_ver["version"] + ".json").get()).json()
-                write(qixue_data_path, json.dumps(qixue_data, ensure_ascii=False))
-                return qixue_data
-        raise QixueDataUnavailable
-    
-    @property
-    def name(self) -> str:
-        return self.data["name"]
-    
-    @property
-    def location(self) -> tuple[str, str, str] | None:
-        for x in self.qixue_data[self.kungfu]:
-            for y in self.qixue_data[self.kungfu][x]:
-                if self.qixue_data[self.kungfu][x][y]["name"] == self.name:
-                    return x, y, "https://icon.jx3box.com/icon/" + str(self.qixue_data[self.kungfu][x][y]["icon"]) + ".png"
 
 class SingleAttr:
     def __init__(self, data: dict, speed_percent: bool = False):
@@ -446,7 +403,9 @@ class JX3AttributeV2:
         name = ["未知", "未知", "未知", "未知", "未知", "未知", "未知", "未知", "未知", "未知", "未知", "未知"]
         icon = [unknown_img, unknown_img, unknown_img, unknown_img, unknown_img, unknown_img, unknown_img, unknown_img, unknown_img, unknown_img, unknown_img, unknown_img]
         kungfu = self.kungfu
-        if qixue_list == [] or kungfu is None or kungfu.endswith("·悟"):
+        if qixue_list == [] or kungfu is None:
+            return name, icon
+        if qixue_list == [] and kungfu.endswith("·悟"):
             return name, icon
         for single_qixue in qixue_list:
             location = (await Qixue.create(single_qixue, kungfu)).location

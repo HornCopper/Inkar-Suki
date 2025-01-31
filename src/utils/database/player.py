@@ -62,7 +62,7 @@ class Player:
         for key, value in kwargs.items():
             setattr(self, key, value)
     
-    def format_jx3api(self) -> dict:
+    def format_jx3api(self) -> dict[str, Any]:
         if self.__dict__ == {}:
             return {"code": 404, "data": None}
         return {"code": 200, "data": self.__dict__}

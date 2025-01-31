@@ -64,6 +64,17 @@ class Population(LiteModel):
     TABLE_NAME: str = "population"
     populations: dict = {}
 
+class PlayerEquipsCache(LiteModel):
+    TABLE_NAME: str = "player_equip"
+    equips_data: dict = {}
+    globalRoleId: str = ""
+    kungfu: str = ""
+    roleId: str = ""
+    roleName: str = ""
+    score: str = ""
+    serverName: str = ""
+    tag: str = ""
+
 class RequestData(LiteModel):
     TABLE_NAME: str = "request_data"
     url: str = ""
