@@ -3,6 +3,7 @@ from PIL import Image, ImageDraw, ImageFont
 from typing import Literal
 
 from src.config import Config
+from src.const.prompts import PROMPT
 from src.const.jx3.kungfu import Kungfu
 from src.const.jx3.server import Server
 from src.const.path import (
@@ -14,6 +15,7 @@ from src.utils.decorators import time_record
 from src.utils.file import write
 from src.utils.generate import get_uuid
 from src.utils.database.player import search_player
+from src.utils.database.attributes import AttributesRequest
 from src.utils.network import Request
 from src.plugins.jx3.attributes.v2_remake import Qixue
 
@@ -426,13 +428,13 @@ async def get_attr_v2(server: str, role_name: str) -> str | list[str]:
     if not personal_data:
         return ["唔……未找到该玩家，请提交角色！\n提交角色 服务器 UID"]
     uid, body, school = personal_data
-    params = {
-        "zone": Server(server).zone,
-        "server": server,
-        "game_role_id": uid
-    }
-    data = (await Request(url="https://m.pvp.xoyo.com/mine/equip/get-role-equip", params=params).post(tuilan=True)).json()
-    attrsObject = JX3AttributeV2(data)
+    instance = await AttributesRequest.with_name(server, role_name)
+    if not instance:
+        return PROMPT.PlayerNotExist
+    equip_data = instance.get_equip()
+    if not equip_data:
+        return PROMPT.EquipNotFound
+    attrsObject = JX3AttributeV2(equip_data)
     if not attrsObject.equips:
         return ["唔……请把装备穿戴完整再来查询！\n有可能是推栏未识别部分装备，等待推栏更新即可！"]
     max, current = attrsObject.strength or ([], [])

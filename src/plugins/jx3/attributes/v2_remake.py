@@ -8,7 +8,6 @@ from nonebot.adapters.onebot.v11 import MessageSegment as ms
 from src.const.prompts import PROMPT
 from src.const.jx3.kungfu import Kungfu
 from src.const.jx3.school import School
-from src.const.jx3.server import Server
 from src.const.path import (
     ASSETS,
     CACHE,
@@ -18,6 +17,7 @@ from src.utils.file import read, write
 from src.utils.generate import get_uuid
 from src.utils.exceptions import QixueDataUnavailable
 from src.utils.database.player import search_player
+from src.utils.database.attributes import AttributesRequest
 from src.utils.network import Request
 
 import os
@@ -478,13 +478,13 @@ async def get_attr_v2_remake(server: str, role_name: str, segment: bool = True):
     player = (await search_player(role_name=role_name, server_name=server)).format_jx3api()
     if player["code"] != 200:
         return PROMPT.PlayerNotExist
-    params = {
-        "zone": Server(server).zone,
-        "server": server,
-        "game_role_id": player["data"]["roleId"]
-    }
-    data = (await Request("https://m.pvp.xoyo.com/mine/equip/get-role-equip", params=params).post(tuilan=True)).json()
-    data_object = EquipDataProcesser(data, role_name)
+    instance = await AttributesRequest.with_name(server, role_name)
+    if not instance:
+        return PROMPT.PlayerNotExist
+    equip_data = instance.get_equip()
+    if not equip_data:
+        return PROMPT.EquipNotFound
+    data_object = EquipDataProcesser(equip_data, role_name)
     try:
         data_object.equips
     except TypeError:
