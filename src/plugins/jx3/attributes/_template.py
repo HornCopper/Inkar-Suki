@@ -1,6 +1,7 @@
 template_equip = """
 <div class="equipment-item">
-    <div class="image-container">
+    <div class="image-container" style="position: relative;">
+        {{ peerless }}
         <img src="{{ icon }}" class="bottom-image">
         <img src="{{ box }}" class="top-image">
     </div>

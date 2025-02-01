@@ -12,7 +12,7 @@ from src.utils.file import read
 from src.utils.database.player import search_player
 from src.utils.database.attributes import AttributesRequest, AttributeParser
 from src.utils.generate import generate
-from src.plugins.jx3.attributes.v2_remake import Qixue
+from src.plugins.jx3.attributes.v2_remake import Qixue, EquipDataProcesser
 
 import json
 
@@ -142,6 +142,16 @@ class Equip:
     def fivestones(self) -> list[str]:
         return [] if "FiveStone" not in self.equip_data else [Path(ASSETS + "/image/jx3/attributes/wuxingshi/" + item["Level"] + ".png").as_uri() for item in self.equip_data["FiveStone"]]
 
+    @property
+    def peerless(self) -> bool:
+        peerless = (self.equip_data["BelongForce"] in ["内功门派", "外功门派"]) \
+        or (self.equip_data["MaxStrengthLevel"] == "8") \
+        or (self.equip_data["Name"] in EquipDataProcesser.special_weapons) \
+        or (any(d.get("Desc") == "atSkillEventHandler" for d in self.equip_data["ModifyType"])) \
+        or (self.equip_data.get("Desc", "").startswith("使用：")) \
+        or (self.source.startswith("商店：叶鸦"))
+        return peerless
+
 class JX3AttributeParser:
     def __init__(self, role_data: dict, equip_data: dict, name: str, server: str, other_equips: list[AttributeParser] = []):
         self.role = role_data
@@ -233,7 +243,8 @@ class JX3AttributeParser:
                 strength = e.strength,
                 box = Path(build_path(ASSETS, ["image", "jx3", "attributes", "not_max_strength.png" if not e.full_strengthen else "max_strength.png"])).as_uri(),
                 enchants = e.enchants,
-                fivestones = e.fivestones
+                fivestones = e.fivestones,
+                peerless = "<img src=\"" + Path(build_path(ASSETS, ["image", "jx3", "attributes", "peerless.png"])).as_uri() +"\" style=\"position: absolute;top: 0; left: -20px;\">" if e.peerless else ""
             )
             for e
             in equip_list
