@@ -60,7 +60,10 @@ class AttributeParser:
             "休闲": 0
         }
         for equip in self.data["data"]["Equips"]:
-            count[equip["EquipType"]["Desc"]] += 1
+            et = equip["EquipType"]["Desc"]
+            if et not in count.keys():
+                et = "秘境挑战"
+            count[et] += 1
         most_type = max(count, key=lambda k: (count[k], -list(count).index(k)))
         final_type = {
             "秘境挑战": "PVE",
