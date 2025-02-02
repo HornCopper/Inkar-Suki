@@ -13,6 +13,7 @@ from src.utils.database.player import search_player
 from src.utils.database.attributes import AttributesRequest, AttributeParser
 from src.utils.generate import generate
 from src.plugins.jx3.attributes.v2_remake import Qixue, EquipDataProcesser
+from plugins.jx3.trade.shilian import basic_name
 
 import json
 
@@ -62,6 +63,14 @@ class Equip:
     @property
     def color(self) -> str:
         return ["(167, 167, 167)", "(255, 255, 255)", "(0, 210, 75)", "(0, 126, 255)", "(254, 45, 254)", "(255, 165, 0)"][int(self.equip_data["Color"])]
+    
+    @property
+    def effect(self) -> str:
+        if str(self.equip_data["Name"]).startswith(basic_name):
+            for each_attr in self.equip_data["ModifyType"]:
+                if each_attr["Desc"] == "atSkillEventHandler":
+                    return "，".join(str(each_attr["Attrib"]["Desc"])[:-1].split("。")[:-1]) + "。"
+        return ""
     
     @property
     def quality(self) -> str:
@@ -241,6 +250,7 @@ class JX3AttributeParser:
                 quality = e.quality,
                 source = e.source,
                 strength = e.strength,
+                effect = e.effect,
                 box = Path(build_path(ASSETS, ["image", "jx3", "attributes", "not_max_strength.png" if not e.full_strengthen else "max_strength.png"])).as_uri(),
                 enchants = e.enchants,
                 fivestones = e.fivestones,
