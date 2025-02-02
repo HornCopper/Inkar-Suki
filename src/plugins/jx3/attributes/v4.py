@@ -15,8 +15,6 @@ from src.utils.generate import generate
 from src.plugins.jx3.attributes.v2_remake import Qixue, EquipDataProcesser
 from src.plugins.jx3.trade.shilian import basic_name
 
-basic_name = "无修"
-
 import json
 
 from .mobile_attr import mobile_attribute_calculator
