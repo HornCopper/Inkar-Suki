@@ -13,7 +13,9 @@ from src.utils.database.player import search_player
 from src.utils.database.attributes import AttributesRequest, AttributeParser
 from src.utils.generate import generate
 from src.plugins.jx3.attributes.v2_remake import Qixue, EquipDataProcesser
-from plugins.jx3.trade.shilian import basic_name
+from src.plugins.jx3.trade.shilian import basic_name
+
+basic_name = "无修"
 
 import json
 
