@@ -80,11 +80,15 @@ class SingleAttr:
 class Enchant(BasicItem):
     type: Literal["cs", "pe", "ce"] = "pe"
 
+class FiveStone(BaseModel):
+    level: int = 0
+    attr: str | None = ""
+
 class Equip(BasicItem):
     attribute: list[str] = []
     belong: Literal["pve", "pvp", "pvx"] = "pvx"
     enchant: list[Enchant] = [] # 包含五彩石
-    fivestone: list[int] = []
+    fivestone: list[FiveStone] = []
     location: str = ""
     peerless: bool = False # 精简/特效/神兵
     quality: int = 0
@@ -183,23 +187,40 @@ class EquipDataProcesser:
     def score(self) -> int:
         return self.data["data"]["TotalEquipsScore"]
     
-    def _parse_attributes(self, data: dict) -> str:
+    def _parse_attributes(self, data: dict | str) -> str:
         msg = ""
-        for i in data["ModifyType"]:
-            content = i["Attrib"]["GeneratedMagic"].split("提高")
+        filter_word = ["全", "阴性", "阳性", "阴阳", "毒性", "值", "成效", "内功", "外功", "等级", "混元性", "水下呼吸时间", "抗摔系数", "马术气力上限", "气力上限"]
+        if isinstance(data, dict):
+            for i in data["ModifyType"]:
+                content = i["Attrib"]["GeneratedMagic"].split("提高")
+                if len(content) == 1:
+                    content = content[0].split("增加")
+                attr = content[0]
+                attr = attr.replace("外功防御", "外防")
+                attr = attr.replace("内功防御", "内防")
+                attr = attr.replace("会心效果", "会效")
+                filter_string = filter_word
+                filter_string.extend(["攻击", "体质", "根骨", "力道", "元气", "身法", "招式产生威胁"])
+                for y in filter_string:
+                    attr = attr.replace(y, "")
+                if attr != "" and len(attr) <= 4:
+                    msg = msg + f" {attr}"
+            msg = msg.replace(" 能 ", " 全能 ").replace(" 能", " 全能")
+            return msg.strip()
+        else:
+            content = data.split("提高")
             if len(content) == 1:
                 content = content[0].split("增加")
             attr = content[0]
+            if attr == "招式产生威胁":
+                return "仇恨"
             attr = attr.replace("外功防御", "外防")
             attr = attr.replace("内功防御", "内防")
             attr = attr.replace("会心效果", "会效")
-            filter_string = ["全", "阴性", "阳性", "阴阳", "毒性", "攻击", "值", "成效", "内功", "外功", "体质", "根骨", "力道", "元气", "身法", "等级", "混元性", "招式产生威胁", "水下呼吸时间", "抗摔系数", "马术气力上限", "气力上限"]
+            filter_string = filter_word
             for y in filter_string:
                 attr = attr.replace(y, "")
-            if attr != "" and len(attr) <= 4:
-                msg = msg + f" {attr}"
-        msg = msg.replace(" 能 ", " 全能 ").replace(" 能", " 全能")
-        return msg.strip()
+            return attr.strip()
 
     def _format_equip(self, equip_data: dict, location: str) -> Equip:
         if not equip_data:
@@ -277,8 +298,11 @@ class EquipDataProcesser:
                 )
             ]
         fivestone = [
-            int(fivestone["Level"])
-            for fivestone
+            FiveStone(
+                level = int(fs["Level"]),
+                attr = self._parse_attributes(str(fs["Attrib"]["GeneratedMagic"]))
+            )
+            for fs
             in equip_data["FiveStone"]
         ] if location != "戒指" else []
         if location in ["项链", "腰坠", "戒指", "远程武器"]:
@@ -291,6 +315,7 @@ class EquipDataProcesser:
                         type = "ce"
                     )
                 )
+        
         try:
             source = equip_data["equipBelongs"][0]["source"]
         except (TypeError, IndexError, ValueError):
@@ -655,10 +680,27 @@ async def get_attr_v2_remake_img(
                 Image.open(
                     build_path(
                         ASSETS,
-                        ["image", "jx3", "attributes", "wuxingshi", str(equip.fivestone[dy]) + ".png"]
+                        ["image", "jx3", "attributes", "wuxingshi", str(equip.fivestone[dy].level) + ".png"]
                     )
                 ).resize((20, 20)),
                 (x + 242 + dy*20, y + 21))
+        if len(equip.fivestone) == 1:
+            draw.text((x + 242 + 20, y + 31), equip.fivestone[0].attr, fill=(255, 255, 255),
+                font=ImageFont.truetype(semibold, size=12), anchor="lm")
+        if len(equip.fivestone) == 2:
+            text = ""
+            for f in equip.fivestone:
+                text = text + "/" + str(f.attr)
+            draw.text((x + 242 + 40, y + 31), text[1:], fill=(255, 255, 255),
+                font=ImageFont.truetype(semibold, size=12), anchor="lm")
+        if len(equip.fivestone) == 3:
+            text = ""
+            for f in equip.fivestone[1:]:
+                text = text + "/" + str(f.attr)
+            draw.text((x + 242 + 60, y + 11), equip.fivestone[0].attr, fill=(255, 255, 255),
+                font=ImageFont.truetype(semibold, size=12), anchor="lm")
+            draw.text((x + 242 + 60, y + 31), text[1:], fill=(255, 255, 255),
+                font=ImageFont.truetype(semibold, size=12), anchor="lm")
         for dy in range(len(equip.enchant)):
             background.alpha_composite(
                 (
@@ -668,9 +710,9 @@ async def get_attr_v2_remake_img(
                     if equip.enchant[dy].name == "ce"
                     else Image.open(await download_image(equip.enchant[dy].icon)).resize((20, 20))
                 ),
-                (x + 351, y - 3 + dy * 24)
+                (x + 358, y - 3 + dy * 24)
             )
-            draw.text((x + 375, y + 6 + dy*24), equip.enchant[dy].name, fill=(255, 255, 255),
+            draw.text((x + 383, y + 6 + dy*24), equip.enchant[dy].name, fill=(255, 255, 255),
                 font=ImageFont.truetype(semibold, size=12), anchor="lm")
         if equip.strength[1] == 8:
             background.alpha_composite(flickering, (x, y))
