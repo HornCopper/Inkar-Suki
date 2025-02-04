@@ -1,41 +1,23 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <!-- 通用`HTML`模板 -->
+    <!--
+        通用`HTML`模板。
+     -->
     {{ css_link }}
     <style>
-        body {
-            font-family: Harmony, sans-serif;
-            background: #121212;
-            margin: 0;
-            padding: 20px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            color: #EEE;
-        }
-
         table {
             width: 900px;
             border-collapse: separate;
             border-spacing: 0;
-            border-radius: 12px;
-            overflow: hidden;
-            background: rgba(25, 25, 25, 0.9);
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6);
-            backdrop-filter: blur(10px);
-            color: #EEE;
+            border: 1px solid #000;
         }
 
         th {
-            background: rgba(40, 40, 40, 0.9);
-            color: #FFD700;
-            padding: 16px;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            border-bottom: 1px solid rgba(200, 200, 200, 0.3);
+            background-color: #333;
+            color: #fff;
+            padding: 8px;
+            text-align: center;
         }
 
         td {
@@ -44,39 +26,16 @@
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            color: #CCC;
-            font-size: 14px;
-            line-height: 1.4;
-            transition: all 0.3s ease;
+            border-bottom: 1px solid #D3D3D3;
+            margin-bottom: 1px;
         }
 
-        tr:nth-child(odd) td {
-            background: rgba(30, 30, 30, 0.7);
-        }
-
-        tr:nth-child(even) td {
-            background: rgba(45, 45, 45, 0.7);
-        }
-
-        tfoot td {
+        tfoot {
+            text-align: center;
             font-size: 12px;
-            background: rgba(40, 40, 40, 0.9);
-            color: #AAA;
-            padding: 12px;
-            border-top: 1px solid rgba(255, 255, 255, 0.2);
         }
 
-        td:hover {
-            background: rgba(60, 60, 60, 0.9);
-            transform: scale(1.03);
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
-        }
-
-        th:hover {
-            color: #FFFFFF;
-            background: rgba(55, 55, 55, 0.9);
-        }
+        {{ css }}
 
         @font-face {
             font-family: Harmony;
@@ -84,20 +43,22 @@
             {{ font_extra }}
         }
 
-        {{ css }}
+        body {
+            font-family: Harmony, sans-serif;
+        }
     </style>
 </head>
 <body>
-    <table>
+    <table style="background-color: #FFFFFF">
         <thead>
             {{ table_head }}
         </thead>
-        <tbody>
+        <tbody>     
             {{ table_body }}
         </tbody>
         <tfoot>
             <tr>
-                <td colspan="10">&copy; {{ bot_name }}{{ app_info }}<br>{{ footer_msg }}</td>
+                <td colspan="{{ table_width_length }}">&copy; {{ bot_name }}{{ app_info }}<br>{{ footer_msg }}</td>
             </tr>
         </tfoot>
     </table>
