@@ -13,10 +13,6 @@
 
         body {
             font-family: Harmony, sans-serif;
-        }
-
-        body {
-            font-family: Arial, sans-serif;
             margin: 0;
             padding: 20px;
             background-color: #f4f4f9;
@@ -27,10 +23,10 @@
             flex-direction: column;
             gap: 16px;
             width: 100%;
-            max-width: 1000px;
+            max-width: 1500px;
             margin: 0 auto;
             background-color: #fff;
-            padding: 20px;
+            padding: 60px;
             border-radius: 8px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
@@ -38,7 +34,7 @@
         .preference-header {
             display: flex;
             justify-content: space-between;
-            font-size: 16px;
+            font-size: 36px;
             font-weight: bold;
             border-bottom: 2px solid #ddd;
             padding-bottom: 8px;
@@ -60,19 +56,23 @@
         }
 
         .preference-name {
-            font-size: 16px;
+            font-size: 36px;
             font-weight: bold;
-            color: #333;
         }
 
         .preference-values {
-            font-size: 14px;
-            color: #333;
+            font-size: 36px;
         }
 
         .preference-description {
-            font-size: 14px;
-            color: #666;
+            font-size: 36px;
+        }
+
+        .section {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
         }
 
     </style>
@@ -90,6 +90,10 @@
         {% for prefeernce_item in prefeernce_items %}
         {{ prefeernce_item }}
         {% endfor %}
+
+        <div class="section">
+            <div style="text-align: center;font-size: 24px;color: #666;">&copy; Inkar Suki · 个人偏好设置<br>可使用“<span style="color:#000">偏好</span>”查看所有偏好设置<br>可使用“<span style="color:#000">偏好 偏好项</span>”查询某一项的当前设置：偏好 属性<br>可使用“<span style="color:#000">偏好 偏好项 设定值</span>”进行更改：偏好 属性 v4</div>
+        </div>
 </body>
 
 </html>
