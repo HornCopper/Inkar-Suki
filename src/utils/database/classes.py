@@ -1,4 +1,4 @@
-from src.utils.database.lib import LiteModel
+from src.utils.database.lib import LiteModel, BaseModel
 
 class Account(LiteModel):
     TABLE_NAME: str = "accounts"
@@ -53,12 +53,15 @@ class JX3APIWSData(LiteModel):
     data: dict = {}
     timestamp: int = 0
 
+class PersonalSetting(BaseModel):
+    attribute: str = "v2r"
+    theme: str = "浅色"
+
 class PersonalSettings(LiteModel):
     TABLE_NAME: str = "personal_settings"
     user_id: int = 0
     roles: list["RoleData"] = []
-    settings: list[dict] = []
-
+    setting: PersonalSetting = PersonalSetting()
 
 class Population(LiteModel):
     TABLE_NAME: str = "population"

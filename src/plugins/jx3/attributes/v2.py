@@ -1,11 +1,11 @@
 from pathlib import Path
 from PIL import Image, ImageDraw, ImageFont
 from typing import Literal
+from nonebot.adapters.onebot.v11 import MessageSegment as ms
 
 from src.config import Config
 from src.const.prompts import PROMPT
 from src.const.jx3.kungfu import Kungfu
-from src.const.jx3.server import Server
 from src.const.path import (
     ASSETS,
     CACHE,
@@ -423,10 +423,10 @@ class JX3AttributeV2:
         return self.data["data"]["TotalEquipsScore"]
         
 @time_record
-async def get_attr_v2(server: str, role_name: str) -> str | list[str]:
+async def get_attr_v2(server: str, role_name: str):
     personal_data = await get_personal_data(server, role_name)
     if not personal_data:
-        return ["唔……未找到该玩家，请提交角色！\n提交角色 服务器 UID"]
+        return "唔……未找到该玩家，请提交角色！\n提交角色 服务器 UID"
     uid, body, school = personal_data
     instance = await AttributesRequest.with_name(server, role_name)
     if not instance:
@@ -436,7 +436,7 @@ async def get_attr_v2(server: str, role_name: str) -> str | list[str]:
         return PROMPT.EquipNotFound
     attrsObject = JX3AttributeV2(equip_data)
     if not attrsObject.equips:
-        return ["唔……请把装备穿戴完整再来查询！\n有可能是推栏未识别部分装备，等待推栏更新即可！"]
+        return "唔……请把装备穿戴完整再来查询！\n有可能是推栏未识别部分装备，等待推栏更新即可！"
     max, current = attrsObject.strength or ([], [])
     equips, icons = attrsObject.equips_and_icons or ([], [])
     qixue_n, qixue_i = await attrsObject.qixue()
@@ -473,7 +473,7 @@ async def get_attr_v2(server: str, role_name: str) -> str | list[str]:
         attr_types = attrsObject.attr_types,
         precious_list = precious_list or []
     )
-    return image
+    return ms.image(Request(image).local_content)
 
 
 async def local_save(image_url: str) -> str:
