@@ -16,6 +16,10 @@ class School:
     def __init__(self, school_name: str | None = ""):
         if school_name == "北天药宗":
             school_name = "药宗"
+        if school_name == "万灵山庄":
+            school_name = "万灵"
+        if school_name == "衍天宗":
+            school_name = "衍天"
         self.school_name = school_name
 
     @classmethod
