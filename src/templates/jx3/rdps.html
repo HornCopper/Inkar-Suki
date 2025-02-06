@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>剑三警长 - RDPS复盘工具</title>
+    <style>
+        @font-face {
+            font-family: Harmony;
+            src: url("C:/Users/HornCopper/Inkar-Suki/src/assets/font/PingFangSC-Semibold.otf");
+        }
+
+        body {
+            font-family: Harmony, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+
+        .desc {
+            text-align: center;
+            font-size: 0.9em;
+            color: #555;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 30px auto;
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+            overflow: hidden;
+        }
+
+        .header {
+            background-color: #37d5ca;
+            color: white;
+            text-align: center;
+            padding: 20px;
+            font-size: 1.5em;
+            font-weight: bold;
+        }
+
+        .dps-display {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            font-size: 2em;
+            font-weight: bold;
+        }
+
+        .content {
+            padding: 20px;
+        }
+
+        .card {
+            background: #f9f9f9;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .card h3 {
+            margin: 0;
+            font-size: 1.2em;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        /* 技能统计 */
+        .skill {
+            display: flex;
+            align-items: center;
+            /* 让图标和文字垂直居中 */
+            gap: 10px;
+            /* 图标和文字之间的间距 */
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 10px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            width: 100%;
+        }
+
+        .skill img {
+            width: 50px;
+            height: 50px;
+            border-radius: 4px;
+        }
+
+        .skill-content {
+            flex-grow: 1;
+            /* 让内容区域占据剩余空间 */
+        }
+
+        .skill-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .progress-bar-container {
+            background: #f4f4f4;
+            height: 10px;
+            border-radius: 5px;
+            overflow: hidden;
+            width: 100%;
+        }
+
+        .progress-bar {
+            height: 100%;
+            transition: width 0.3s ease;
+        }
+
+        footer {
+            background: #f0f0f0;
+            text-align: center;
+            padding: 15px;
+            font-size: 0.9em;
+            color: #777;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">剑三警长 - RDPS复盘工具</div>
+        <div class="dps-display">团队总RDPS：{{ rdps }}</div>
+        <div class="content">
+            <div class="desc">
+                剑三警长是一款剑网三战斗日志分析工具，在使用本工具之前，我们需要部分授权，需要您的同意：<br>
+                1. 本工具会读取茗伊插件集生成的战斗复盘日志，其中的信息包括但不限于：全部技能与buff的时间与数值、玩家ID与门派、区服、重伤记录。这些读取的内容只会在本地进行运算。<br>
+                2.
+                本工具会上传战斗复盘结果图中的所有信息到作者的服务器，包括但不限于：DPS/HPS统计，区服，玩家ID与门派，打分，犯错记录。收集这些信息是为了进行进一步研究，对之后的的开发提供数据支持。由于上传的数据只有全局信息，因此您无需担心打法被泄漏。<br>
+                3.
+                对于上传的数据，可能会以HPS天梯/评分百分比的形式，进行数据公开。作者在公开数据时，有对玩家个人信息进行保密的义务，包括玩家ID与团队构建等信息，应在去特征化后再发布。但演员不在此列，对于表现明显低于正常水平的玩家，可能会有其它安排。<br>
+                4. 即使没有显式同意本协议，使用本工具依然需要协议的内容经过授权。尝试绕过本协议并不能免除您的义务。<br>
+                5. 本协议仅对jx3bla主仓库的主分支有效，开发者如果需要修改代码，需要同时维护此协议，否则视为本协议无效。<br>
+                6. 本工具使用花姐的“剑三警长”进行分析，上述协议从程序内复制而来，使用本功能也需要遵守上述协议！
+            </div>
+            <div class="card">
+                <h3>玩家RDPS统计</h3>
+                <div class="skills-list">
+                    {{ players }}
+                </div>
+            </div>
+            <footer>Inkar Suki: {{ saohua }}/footer>
+        </div>
+    </div>
+</body>
+
+</html>

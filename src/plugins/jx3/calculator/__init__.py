@@ -1,14 +1,18 @@
 from nonebot import on_command
 from nonebot.params import CommandArg
-from nonebot.adapters.onebot.v11 import Message, GroupMessageEvent
+from nonebot.adapters.onebot.v11 import Bot, Message, GroupMessageEvent, GroupUploadNoticeEvent
 
 from src.const.prompts import PROMPT
 from src.const.jx3.server import Server
 from src.utils.permission import check_permission, denied
+from src.plugins.notice import notice
 
 from .lxg import LingxueCalculator
 from .zxg import ZixiagongCalculator
 from .bxj import BingxinjueCalculator
+from .rdps import RDPSCalculator
+
+import re
 
 YLJCalcMatcher = on_command("jx3_calculator_lyj", aliases={"凌雪计算器"}, priority=5, force_whitespace=True)
 
@@ -84,3 +88,19 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
         await BXJCalculator.finish(instance)
     data = await instance.image()
     await BXJCalculator.finish(data)
+
+def check_jcl_name(filename: str) -> bool:
+    if not filename.startswith("IKS-"):
+        return False
+    pattern = re.compile(
+        r"^\d{4}-\d{2}-\d{2}-\d{2}-\d{2}-\d{2}-[\u4e00-\u9fff\d]+(?:\(\d+\))?-[\u4e00-\u9fff\d]+(?:\(\d+\))?\.jcl$"
+    )
+    return bool(pattern.match(filename[4:]))
+
+@notice.handle()
+async def _(bot: Bot, event: GroupUploadNoticeEvent):
+    if not check_jcl_name(event.file.name) or not check_permission(event.user_id, 1):
+        return
+    else:
+        image = await RDPSCalculator(event.file.name[4:], event.model_dump()["file"]["url"])
+        await bot.send_group_msg(group_id=event.group_id, message=Message(image))
