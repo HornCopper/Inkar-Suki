@@ -1,4 +1,5 @@
 from pathlib import Path
+from typing import Literal
 from PIL import Image, ImageFont, ImageDraw
 
 from src.const.path import ASSETS, CACHE, build_path
@@ -7,7 +8,7 @@ from src.const.jx3.school import School
 from src.utils.network import Request
 from src.utils.generate import get_uuid
 from src.plugins.jx3.attributes.v2_remake import (
-    Equip,
+    BasicItem,
     Panel,
     Talent,
     Enchant,
@@ -16,6 +17,16 @@ from src.plugins.jx3.attributes.v2_remake import (
 )
 
 from ._template import attr_map, location_map, panel_attr_d, panel_attr_n, panel_attr_t
+
+class Equip(BasicItem):
+    attribute: list[str] = []
+    belong: Literal["pve", "pvp", "pvx"] = "pvx"
+    enchant: list[Enchant] = [] # 包含五彩石
+    fivestone: list[int] = []
+    location: str = ""
+    peerless: bool = False # 精简/特效/神兵
+    quality: int = 0
+    strength: tuple[int, int] = (0, 0)
 
 def percent(v: float):
     return str(round(v, 2)) + "%"
