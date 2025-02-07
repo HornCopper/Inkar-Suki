@@ -14,6 +14,7 @@ from src.utils.database.attributes import AttributesRequest, AttributeParser
 from src.utils.generate import generate
 from src.plugins.jx3.attributes.v2_remake import Qixue, EquipDataProcesser
 from src.plugins.jx3.trade.shilian import basic_name
+from src.templates import get_saohua
 
 import json
 
@@ -356,6 +357,7 @@ async def get_attr_v4(server: str, name: str, conditions: str = ""):
         equips = attr_parser.equips,
         talents = await attr_parser.talents(),
         other_equips = attr_parser.other_equips_str,
-        font = ASSETS + "/font/PingFangSC-Semibold.otf"
+        font = ASSETS + "/font/PingFangSC-Semibold.otf",
+        saohua = get_saohua()
     )
     return await generate(html, ".container", segment=True, wait_for_network=True, viewport={"height": 1080, "width": 1920})
