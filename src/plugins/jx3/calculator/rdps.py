@@ -2,6 +2,7 @@ from typing import Any
 from jinja2 import Template
 from httpx import AsyncClient
 
+from src.const.path import ASSETS
 from src.const.jx3.kungfu import Kungfu
 from src.const.jx3.school import School
 from src.utils.analyze import check_number, sort_dict_list
@@ -95,7 +96,8 @@ async def RDPSCalculator(file_name: str, url: str):
             "rdps",
             rdps = total_rdps,
             players = "\n".join(final_rdps),
-            saohua = get_saohua()
+            saohua = get_saohua(),
+            font = ASSETS + "/font/PingFangSC-Semibold.otf"
         )
     )
     return await generate(html, ".container", segment=True)
