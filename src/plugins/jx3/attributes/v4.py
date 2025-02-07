@@ -148,8 +148,8 @@ class Equip:
         return enchants
     
     @property
-    def fivestones(self) -> list[str]:
-        return [] if "FiveStone" not in self.equip_data else [Path(ASSETS + "/image/jx3/attributes/wuxingshi/" + item["Level"] + ".png").as_uri() for item in self.equip_data["FiveStone"]]
+    def fivestones(self) -> dict[str, str]:
+        return {} if "FiveStone" not in self.equip_data else {EquipDataProcesser._parse_attributes(str(item["Attrib"]["GeneratedMagic"])): Path(ASSETS + "/image/jx3/attributes/wuxingshi/" + item["Level"] + ".png").as_uri() for item in self.equip_data["FiveStone"]}
 
     @property
     def peerless(self) -> bool:

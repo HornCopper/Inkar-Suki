@@ -187,7 +187,8 @@ class EquipDataProcesser:
     def score(self) -> int:
         return self.data["data"]["TotalEquipsScore"]
     
-    def _parse_attributes(self, data: dict | str) -> str:
+    @staticmethod
+    def _parse_attributes(data: dict | str) -> str:
         msg = ""
         filter_word = ["全", "阴性", "阳性", "阴阳", "毒性", "值", "成效", "内功", "外功", "等级", "混元性", "水下呼吸时间", "抗摔系数", "马术气力上限", "气力上限"]
         if isinstance(data, dict):
@@ -300,7 +301,7 @@ class EquipDataProcesser:
         fivestone = [
             FiveStone(
                 level = int(fs["Level"]),
-                attr = self._parse_attributes(str(fs["Attrib"]["GeneratedMagic"]))
+                attr = self._parse_attributes(str(fs["Attrib"]["GeneratedMagic"])) # type: ignore
             )
             for fs
             in equip_data["FiveStone"]

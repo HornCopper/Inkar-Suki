@@ -18,9 +18,10 @@ template_equip = """
                 {{ enchant }}{% if not loop.last %}{% endif %}
             {% endfor %}
         </div>
-        <div class="equipment-icons">
-            {% for fivestone in fivestones %}
-            <img src="{{ fivestone }}">
+        <div class="equipment-enchant-wrapper">
+            {% for attr, icon in fivestones.items() %}
+            <img src="{{ icon }}" style="width: 20px; height: 20px;margin-right: 3px;margin-left: 5px">
+            <span>{{ attr }}</span>
             {% endfor %}
         </div>
     </div>
