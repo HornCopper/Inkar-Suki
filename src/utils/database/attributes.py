@@ -161,6 +161,29 @@ class AttributesRequest:
             )
         self.school = school
         self.all_data = all_equip_cache
+        if not self.all_data:
+            db.save(
+                PlayerEquipsCache(
+                    equips_data=current_data.data,
+                    globalRoleId=guid,
+                    kungfu=current_data.kungfu_name,
+                    roleId=uid,
+                    roleName=name,
+                    score=current_data.score,
+                    serverName=server,
+                    tag=current_data.equip_type
+                )
+            )
+            self.all_data = [PlayerEquipsCache(
+                equips_data=current_data.data,
+                globalRoleId=guid,
+                kungfu=current_data.kungfu_name,
+                roleId=uid,
+                roleName=name,
+                score=current_data.score,
+                serverName=server,
+                tag=current_data.equip_type
+            )]
 
     def get_equip(self, tag: str = "") -> dict | Literal[False]:
         tags = parse_conditions(tag)

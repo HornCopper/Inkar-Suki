@@ -154,3 +154,53 @@ async def _(event: GroupMessageEvent, argument: Message = CommandArg()):
         )
     )
     await ItemPriceAliasMatcher.finish(f"已添加物品别名映射：{map_name} -> {raw_name}！")
+
+V3TradeMatcher = on_command("jx3_trade_v3", aliases={"交易行v3"}, force_whitespace=True, priority=5)
+
+@V3TradeMatcher.handle()
+async def _(event: GroupMessageEvent, args: Message = CommandArg()):
+    if args.extract_plain_text() == "":
+        return
+    arg = args.extract_plain_text().split(" ")
+    if len(arg) not in [1, 2]:
+        await V3TradeMatcher.finish("唔……参数不正确哦，请检查后重试~")
+    if len(arg) == 1:
+        server = None
+        name = arg[0]
+    elif len(arg) == 2:
+        server = arg[0]
+        name = arg[1]
+    server = S(server, event.group_id).server
+    if server is None:
+        await V3TradeMatcher.finish(PROMPT.ServerNotExist)
+    from .trade import JX3Trade
+    instance = await JX3Trade.common(name, server)
+    if isinstance(instance, str):
+        await V3TradeMatcher.finish(instance)
+    msg = await instance.generate_image()
+    await V3TradeMatcher.finish(msg)
+
+V3TradeShilianMatcher = on_command("jx3_trade_shilian_v3", aliases={"交易行试炼v3"}, force_whitespace=True, priority=5)
+
+@V3TradeShilianMatcher.handle()
+async def _(event: GroupMessageEvent, args: Message = CommandArg()):
+    if args.extract_plain_text() == "":
+        return
+    arg = args.extract_plain_text().split(" ")
+    if len(arg) not in [1, 2]:
+        await V3TradeShilianMatcher.finish("唔……参数不正确哦，请检查后重试~")
+    if len(arg) == 1:
+        server = None
+        name = arg[0]
+    elif len(arg) == 2:
+        server = arg[0]
+        name = arg[1]
+    server = S(server, event.group_id).server
+    if server is None:
+        await V3TradeShilianMatcher.finish(PROMPT.ServerNotExist)
+    from .trade import JX3Trade
+    instance = await JX3Trade.shilian(name, server)
+    if isinstance(instance, str):
+        await V3TradeShilianMatcher.finish(instance)
+    msg = await instance.generate_image()
+    await V3TradeShilianMatcher.finish(msg)

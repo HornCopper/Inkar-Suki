@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <style>
+        .container {
+            max-width: 1300px;
+            margin: 20px auto;
+            padding: 20px;
+        }
+
+        .price-summary {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .summary-card {
+            padding: 16px;
+            border-radius: 4px;
+            background: #f8f9fa;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .summary-card h3 {
+            margin: 0 0 8px 0;
+            font-size: 24px;
+            color: #666;
+        }
+
+        .summary-value {
+            font-size: 36px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .item-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+
+        .item-table th {
+            padding: 12px;
+            text-align: left;
+            background: #f8f9fa;
+            font-weight: 600;
+            color: #444;
+            font-size: 24px;
+        }
+
+        .item-table td {
+            padding: 12px;
+            border-top: 1px solid #eee;
+            font-size: 24px;
+        }
+
+        .server-tag {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 12px;
+            background: #e8f4ff;
+            color: #2c7be5;
+            font-size: 24px;
+        }
+
+        .price-cell {
+            width: 250px;
+            font-weight: 500;
+        }
+
+        .time-cell {
+            color: #7f8c8d;
+            font-size: 24px;
+        }
+
+        .item-info {
+            margin-bottom: 20px;
+            padding: 16px;
+            background: #f8f9fa;
+            border-radius: 4px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .item-info-left {
+            flex: 1;
+            margin-right: 20px;
+        }
+
+        .item-info-right {
+            width: 20%;
+            padding: 12px;
+            border-radius: 4px;
+        }
+
+        .item-info h2 {
+            margin: 0 0 12px 0;
+            font-size: 24px;
+            color: #2c3e50;
+            display: flex;
+            align-items: center;
+        }
+
+        .item-info p {
+            margin: 0 0 8px 0;
+            font-size: 24px;
+            color: #444;
+        }
+
+        footer {
+            background: #f0f0f0;
+            text-align: center;
+            padding: 15px;
+            font-size: 20px;
+            color: #777;
+        }
+
+        @font-face {
+            font-family: Harmony;
+            src: url("{{ font }}");
+        }
+
+        body {
+            font-family: Harmony, sans-serif;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <div class="price-summary">
+            {{ summary }}
+        </div>
+        <table class="item-table">
+            <thead>
+                <tr>
+                    <th>服务器</th>
+                    <th>物品名称</th>
+                    <th>上架时间</th>
+                    <th>数量</th>
+                    <th>单价</th>
+                    <th>同比增长</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{ table }}
+            </tbody>
+        </table>
+        {{ info }}
+        <footer>Inkar Suki: {{ saohua }}</footer>
+    </div>
+
+</body>
+
+</html>

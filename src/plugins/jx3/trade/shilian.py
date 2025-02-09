@@ -11,7 +11,7 @@ from src.templates import SimpleHTML
 
 from .api import template_msgbox, template_table
 
-from ._parse import AttrsConverter, coin_to_image, calculate_price
+from ._parse import ShilianEquipParser, coin_to_image, calculate_price
 
 basic_name = "无修"
 
@@ -34,8 +34,8 @@ async def get_equips_data(name: str, quality: int):
     return satisfied
 
 async def get_equip_data(raw: str):
-    attrsInstance = AttrsConverter(raw)
-    attrs, location, quality, type_ = attrsInstance.attributes, attrsInstance.location, attrsInstance.quality, attrsInstance.type_
+    attrsInstance = ShilianEquipParser(raw)
+    attrs, location, quality, type_ = attrsInstance.attributes, attrsInstance.location, attrsInstance.quality, attrsInstance.kungfu_type
     if not attrs:
         return f"您输入的装备词条有误，请确保包含以下四个要素：\n品级、属性、部位、内外功\n示例：13550内功双会头"
     final_name = basic_name + location + "·" + type_
