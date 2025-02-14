@@ -54,7 +54,7 @@ class JX3APIWSData(LiteModel):
     timestamp: int = 0
 
 class PersonalSetting(BaseModel):
-    attribute: str = "v2r"
+    attribute: str = "v4"
     theme: str = "浅色"
 
 class PersonalSettings(LiteModel):
