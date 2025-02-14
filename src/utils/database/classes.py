@@ -56,6 +56,7 @@ class JX3APIWSData(LiteModel):
 class PersonalSetting(BaseModel):
     attribute: str = "v2r"
     theme: str = "浅色"
+    trade: str = "v2"
 
 class PersonalSettings(LiteModel):
     TABLE_NAME: str = "personal_settings"

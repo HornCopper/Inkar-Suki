@@ -136,7 +136,7 @@ from .subscribe import (
     DisableMatcher
 )
 from .trade import (
-    TradeMatcher,
-    WFTradeMatcher,
+    V2TradeMatcher,
+    V2SLTradeMatcher,
     V2ItemPriceMatcher
 )

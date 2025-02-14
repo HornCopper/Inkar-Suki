@@ -52,3 +52,72 @@ headers = {
 aliases_map = {
     "金羁饰影礼盒": "金羁饰影三选一礼盒"
 }
+
+template_v3_name_one = """
+<span style="color: rgb{{ color }}">{{ name }}</span>"""
+
+template_v3_name_mulit = """
+<div style="display: flex;align-items: center;">
+        <img src="{{ icon }}" style="margin-right: 10px;">
+        <span style="color: rgb{{ color }}">{{ name }}</span>
+</div>
+"""
+
+template_v3_price = """
+<tr>
+    <td><span class="server-tag">{{ server }}</span></td>
+    <td>{{ name }}</td>
+    <td class="time-cell">{{ time }}</td>
+    <td>{{ count }}</td>
+    <td class="price-cell">
+        {{ price }}
+    </td>
+    <td>{{ percent }}</td>
+</tr>
+"""
+
+template_v3_log = """
+<div class="summary-card">
+    <h3>最低价</h3>
+    <div class="summary-value">
+        {{ lowest }}
+    </div>
+</div>
+<div class="summary-card">
+    <h3>均价</h3>
+    <div class="summary-value">
+        {{ avg }}
+    </div>
+</div>
+<div class="summary-card">
+    <h3>最高价</h3>
+    <div class="summary-value">
+        {{ highest }}
+    </div>
+</div>
+"""
+
+template_v3_element_prefix = """
+<p><strong>品级</strong>：{{ quality }}</p>
+<p><strong>属性</strong>：<span style="color: rgb(0, 210, 75)">{{ attr }}</span></p>
+"""
+template_v3_element = """
+<p><strong>效果</strong>：<span style="color: rgb(0, 210, 75);font-size: 18px">{{ effect }}</span></p>"""
+
+template_v3_element_shilian = """
+<p><strong>无修</strong>：<span style="color: rgb(255, 165, 0);font-size: 18px">{{ special }}</span></p>"""
+
+template_v3_info = """
+<div class="item-info">
+    <div class="item-info-left">
+        <h2 style="display: flex;align-items: center">
+            <img src="{{ icon }}"
+                style="width: 50px;height: 50px;margin-right: 10px;">
+            <span style="color: rgb{{ color }}">{{ name }}</span>
+        </h2>
+        {{ element }}
+    </div>
+    <div class="item-info-right">
+        <p><strong>页眉价参考日期</strong>：<br>{{ date }}</p>
+    </div>
+</div>"""
