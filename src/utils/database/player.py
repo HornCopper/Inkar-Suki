@@ -46,9 +46,14 @@ async def get_uid_data(role_id: str = "", server: str = "", role_name: str = "")
     data["bodyName"] = data.pop("body_type")
     data["campName"] = data.pop("camp")
     data["forceName"] = data.pop("force")
-    data["globalRoleId"] = data.pop("global_role_id")
+
+    _global_role_id = data.pop("global_role_id")
+    db.delete(RoleData(), "globalRoleId = ?", _global_role_id)
+    data["globalRoleId"] = _global_role_id
+
     _role_name = data.pop("name")
     data["roleName"] = _role_name if "*" not in _role_name else role_name
+
     data["roleId"] = data.pop("role_id")
     data["serverName"] = data.pop("server")
     for key, value in data.items():
