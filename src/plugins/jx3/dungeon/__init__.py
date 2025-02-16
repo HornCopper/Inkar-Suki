@@ -18,7 +18,7 @@ ZoneRecordMatcher = on_command("jx3_zones", aliases={"副本"}, force_whitespace
 async def _(event: GroupMessageEvent, full_argument: Message = CommandArg()):
     if full_argument.extract_plain_text() == "":
         return
-    args = full_argument.extract_plain_text().split(" ")
+    args = full_argument.extract_plain_text().strip().split(" ")
     if len(args) not in [1, 2]:
         await ZoneRecordMatcher.finish("唔……参数不正确哦，请检查后重试~")
     if len(args) == 1:
