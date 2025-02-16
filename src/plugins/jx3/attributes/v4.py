@@ -161,6 +161,10 @@ class Equip:
         or (self.equip_data.get("Desc", "").startswith("使用：")) \
         or (self.source.startswith("商店：叶鸦"))
         return peerless
+    
+    @property
+    def flicker(self) -> bool:
+        return self.equip_data["MaxStrengthLevel"] == "8"
 
 class JX3AttributeParser:
     def __init__(self, role_data: dict, equip_data: dict, name: str, server: str, other_equips: list[AttributeParser] = []):
@@ -252,7 +256,7 @@ class JX3AttributeParser:
                 source = e.source,
                 strength = e.strength,
                 effect = e.effect,
-                box = Path(build_path(ASSETS, ["image", "jx3", "attributes", "not_max_strength.png" if not e.full_strengthen else "max_strength.png"])).as_uri(),
+                box = (Path(build_path(ASSETS, ["image", "jx3", "attributes", "not_max_strength.png" if not e.full_strengthen else "max_strength.png"])).as_uri()) if not e.flicker else Path(build_path(ASSETS, ["image", "jx3", "attributes", "flicker.png"])),
                 enchants = e.enchants,
                 fivestones = e.fivestones,
                 peerless = "<img src=\"" + Path(build_path(ASSETS, ["image", "jx3", "attributes", "peerless.png"])).as_uri() +"\" style=\"position: absolute;top: 0; left: -20px;\">" if e.peerless else ""
