@@ -1,5 +1,4 @@
 from typing_extensions import Self
-from typing import Any
 from datetime import datetime
 from jinja2 import Template
 
@@ -73,11 +72,9 @@ class JX3Item:
         else:
             return " ".join(
                 [
-                    (
-                        attr["label"].split("提高" if "提高" in attr["label"] else "增加")[0]
-                    ).replace("等级", "").replace("值", "")
-                    for attr in self.data["attributes"]
-                    if attr.get("color") == "green"
+                        (attr["label"].split("提高" if "提高" in attr["label"] else "增加")[0]).replace("等级", "").replace("值", "") + "(" + str(list(map(int, re.findall(r"\d+", attr["label"])))[0]) + ")"
+                        for attr in self.data["attributes"]
+                        if attr.get("color") == "green"
                 ]
             )
         
@@ -375,12 +372,12 @@ class JX3Trade:
             min_price = "未知"
             if len(logs) != 0:
                 max_price = n2i(max([l.highest for l in logs]))
-                avg_price = n2i(max([l.average for l in logs]))
-                min_price = n2i(max([l.lowest for l in logs]))
+                avg_price = n2i(min([l.average for l in logs]))
+                min_price = n2i(min([l.lowest for l in logs]))
             final_log = Template(template_v3_log).render(
-                lowest = max_price,
+                lowest = min_price,
                 avg = avg_price,
-                highest = min_price
+                highest = max_price
             )
             final_prices = "\n".join(table)
             template_element = ""

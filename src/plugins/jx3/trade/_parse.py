@@ -64,7 +64,7 @@ class ShilianEquipParser:
 
     @staticmethod
     def _extract_numbers(text: str) -> list[int]:
-        return list(map(int, re.findall(r'\d+', text)))
+        return list(map(int, re.findall(r"\d+", text)))
 
     def _determine_place(self) -> str:
         if any(self._fd(k) for k in ["头", "帽", "脑壳", "冠"]):

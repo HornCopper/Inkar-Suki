@@ -1,8 +1,7 @@
-from typing import Any
+from typing import Any, overload
 
 from src.const.jx3.kungfu import Kungfu
 from src.utils.analyze import merge_dicts
-from src.utils.typing import overload
 
 def percent(v):
     return (f"{float(v[:-1]):.10g}".rstrip("0").rstrip(".") or "0") + "%"

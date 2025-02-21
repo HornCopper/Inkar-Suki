@@ -37,7 +37,7 @@ async def get_equip_data(raw: str):
     attrsInstance = ShilianEquipParser(raw)
     attrs, location, quality, type_ = attrsInstance.attributes, attrsInstance.location, attrsInstance.quality, attrsInstance.kungfu_type
     if not attrs:
-        return f"您输入的装备词条有误，请确保包含以下四个要素：\n品级、属性、部位、内外功\n示例：13550内功双会头"
+        return "您输入的装备词条有误，请确保包含以下四个要素：\n品级、属性、部位、内外功\n示例：13550内功双会头"
     final_name = basic_name + location + "·" + type_
     data = await get_equips_data(final_name, quality)
     if len(data) == 0:
@@ -68,10 +68,10 @@ async def get_wufeng_image(raw: str, server: str):
     logs = (await Request(f"https://next2.jx3box.com/api/item-price/{itemId}/logs?server={server}").get()).json()
     current = logs["data"]["today"]
     yesterdayFlag = False
-    if current != None:
+    if current is not None:
         currentStatus = 1
     else:
-        if logs["data"]["yesterday"] != None:
+        if logs["data"]["yesterday"] is not None:
             yesterdayFlag = True
             currentStatus = 1
             current = logs["data"]["yesterday"]

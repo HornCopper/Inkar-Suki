@@ -230,7 +230,14 @@ class JX3AttributeParser:
         name = self.kungfu.name
         if str(name).endswith("·悟"):
             name = str(name)[:-2]
-            return mobile_attribute_calculator(self.equip["Equips"], name or "")
+            result = mobile_attribute_calculator(self.equip["Equips"], name or "")
+            if self.kungfu.base not in ["治疗", "防御"]:
+                result["攻击力"] = result.pop("面板攻击")
+                result["基础攻击力"] = result.pop("基础攻击")
+            if self.kungfu.base == "治疗":
+                result["治疗量"] = result.pop("面板治疗量")
+                result.pop("基础治疗量")
+            return result
         else:
             return {
                 item["name"]: f"{item['value']}%" if item["percent"] else str(item["value"])
