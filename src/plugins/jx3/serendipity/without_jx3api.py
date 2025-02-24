@@ -8,7 +8,6 @@ from src.utils.database import serendipity_db
 from src.utils.database.classes import SerendipityData
 from src.utils.database.player import search_player, Player
 
-import json
 import httpx
 import os
 
@@ -16,7 +15,6 @@ class JX3Serendipity:
     def __init__(self):
         self.tl = []
         self.my = []
-        self.jx3pet = []
         self.jx3mm = []
 
     def get_serendipity_level(self, serendipity_name: str) -> int:
@@ -81,24 +79,6 @@ class JX3Serendipity:
             serendipities.append(new)
         self.my = serendipities
 
-    async def get_jx3pet_data(self, server: str, name: str):
-        final_url = f"https://www.jx3pet.com/api/serendipity?server={server}&type=不限&serendipity=不限&name={name}&limit=30"
-        try:
-            data = (await Request(final_url).get(timeout=2)).json()
-        except (json.decoder.JSONDecodeError, httpx.ReadTimeout, httpx.ConnectError):
-            self.jx3pet = []
-            return
-        serendipities = []
-        for serendipity in data["data"]:
-            serendipities.append(
-                {
-                    "name": serendipity["serendipity"],
-                    "level": self.get_serendipity_level(serendipity["serendipity"]),
-                    "time": serendipity["time"]
-                }
-            )
-        self.jx3pet = serendipities
-
     async def get_jx3mm_data(self, server: str, name: str):
         final_url = f"https://www.jx3mm.com/home/qyinfo?m=1&R={Server(server).zone}&S={server}&t=&u=&n={name}"
         data = (await Request(final_url).get()).json()
@@ -128,16 +108,12 @@ class JX3Serendipity:
     async def integration(self, server: str, name: str, uid: str) -> list[dict]:
         await self.get_tuilan_data(server, name)
         await self.get_my_data(server, name)
-        await self.get_jx3pet_data(server, name)
         await self.get_jx3mm_data(server, name)
         final_data = sort_dict_list(
             merge_dict_lists(
                 merge_dict_lists(
-                    merge_dict_lists(
-                        self.tl, 
-                        self.my
-                    ),
-                    self.jx3pet
+                    self.tl, 
+                    self.my
                 ),
                 self.jx3mm
             ),

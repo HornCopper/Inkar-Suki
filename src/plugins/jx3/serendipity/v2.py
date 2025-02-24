@@ -40,7 +40,7 @@ async def get_serendipity_v2(server: str, name: str, type: bool):
             continue
         if not type and i["level"] != 3: # 宠物
             continue
-        serendipity_name = i["name"]
+        serendipity_name = i["name"] if not Config.jx3.api.enable else i["event"]
         flag = build_path(ASSETS, ["image", "jx3", "serendipity", "vector", "peerless.png"]) if i["level"] == 2 else ""
         icon = build_path(ASSETS, ["image", "jx3", "serendipity", "serendipity", type_map[i["level"]-1]], end_with_slash=True) + serendipity_name + ".png"
         if not os.path.exists(icon):

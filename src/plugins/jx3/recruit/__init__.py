@@ -18,7 +18,8 @@ RecruitMatcher = on_command("jx3_recruit", aliases={"招募"}, force_whitespace=
 
 @RecruitMatcher.handle()
 async def _(event: GroupMessageEvent, full_argument: Message = CommandArg()):
-    if not Config.jx3.api.enable and not check_permission(event.user_id, 10):
+    additions = get_group_settings(str(event.group_id), "additions")
+    if not Config.jx3.api.enable and not "Preview" in additions:
         return
     filter = False
     additions = get_group_settings(str(event.group_id), "additions")

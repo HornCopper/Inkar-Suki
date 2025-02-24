@@ -39,7 +39,7 @@ async def generate_group_info(bot: Bot, group_id: str):
         )
     for i in list(additions_options):
         desc = additions_options[i][0]
-        icon = additions_options[i][1]
+        icon = Path(ASSETS + "/image/subscribes/" + additions_options[i][1]).as_uri()
         if i in current_additions:
             status = "enabled"
             flag = "✔"

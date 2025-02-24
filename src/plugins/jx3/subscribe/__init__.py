@@ -5,6 +5,7 @@ from nonebot.adapters.onebot.v11 import GroupMessageEvent, Bot, Message
 from src.const.path import ASSETS, build_path
 from src.utils.file import read
 from src.utils.database.operation import set_group_settings, get_group_settings
+from src.utils.permission import check_permission
 
 from .about import generate_group_info
 
@@ -20,6 +21,8 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     if len(arg) == 0:
         await EnableMatcher.finish("唔……开启失败，您似乎没有告诉我您要订阅的内容？")
     else:
+        if "Preview" in arg and not check_permission(event.user_id, 10):
+            await EnableMatcher.finish("权限不足！无法订阅Preview！")
         subscribe_options = json.loads(read(build_path(ASSETS, ["source", "subscribe"], end_with_slash=True) + "options.json"))
         addition_options = json.loads(read(build_path(ASSETS, ["source", "subscribe"], end_with_slash=True) + "additions.json"))
         if not set(arg).issubset(set(list(subscribe_options) + list(addition_options))):

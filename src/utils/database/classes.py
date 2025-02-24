@@ -57,6 +57,7 @@ class PersonalSetting(BaseModel):
     attribute: str = "v4"
     theme: str = "浅色"
     trade: str = "v2"
+    serendipity: str = "v2"
 
 class PersonalSettings(LiteModel):
     TABLE_NAME: str = "personal_settings"

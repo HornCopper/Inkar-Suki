@@ -2,10 +2,12 @@ from pathlib import Path
 from typing import Literal
 from jinja2 import Template
 
+from src.config import Config
 from src.const.prompts import PROMPT
 from src.const.path import ASSETS, build_path
 from src.utils.generate import generate
 from src.utils.time import Time
+from src.utils.network import Request
 from src.utils.database.player import search_player, Player
 from src.templates import SimpleHTML
 
@@ -56,15 +58,16 @@ async def check_role(server: str, name: str) -> Literal[False] | str:
         return False
     return player_data.format_jx3api()["data"]["roleId"]
 
-def generate_table(local_data, comparison_data, path_map, template):
+def generate_table(local_data: list[dict], comparison_data: list[dict], path_map: list[str], template: str):
     table_list = []
     cache_table = []
     
     for serendipity in local_data:
-        status = serendipity["name"] in [item["name"] for item in comparison_data]
+        k = "name" if not Config.jx3.api.enable else "event"
+        status = serendipity["name"] in [item[k] for item in comparison_data]
         corresponding = {}
         for item in comparison_data:
-            if item["name"] == serendipity["name"]:
+            if item[k] == serendipity["name"]:
                 corresponding = item
 
         cache_table.append(
@@ -95,7 +98,11 @@ async def get_serendipity_image_v3(server: str, name: str):
     if not uid:
         return PROMPT.PlayerNotExist
 
-    data: list = await JX3Serendipity().integration(server, name, uid)
+    if Config.jx3.api.enable:
+        serendipity_data = (await Request(f"{Config.jx3.api.url}/data/luck/adventure?server={server}&name={name}&ticket={Config.jx3.api.ticket}&token={Config.jx3.api.token}").get()).json()
+        data: list[dict] = serendipity_data["data"]
+    else:
+        data: list[dict] = await JX3Serendipity().integration(server, name, uid)
     data_obj = JX3Serendipities(data)
 
     common: list[dict] = data_obj.common

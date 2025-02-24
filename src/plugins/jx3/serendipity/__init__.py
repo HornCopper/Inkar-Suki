@@ -9,10 +9,42 @@ from src.const.prompts import PROMPT
 from src.const.jx3.server import Server
 from src.utils.database import serendipity_db
 from src.utils.database.classes import SerendipityData
+from src.plugins.preferences.app import Preference
 
 from .v1 import get_preposition # v1 deleted
 from .v2 import get_serendipity_v2 as v2_serendipity
 from .v3 import get_serendipity_image_v3 as v3_serendipity
+
+SerendipityMatcher = on_command("jx3_serendipity", aliases={"查询", "奇遇"}, force_whitespace=True, priority=5)
+
+@SerendipityMatcher.handle()
+async def _(event: GroupMessageEvent, argument: Message = CommandArg()):
+    if argument.extract_plain_text() == "":
+        return
+    args = argument.extract_plain_text().split(" ")
+    if len(args) not in [1, 2]:
+        await SerendipityMatcher.finish("唔……参数不正确哦，请检查后重试~")
+    if len(args) == 1:
+        """
+        查询 ID
+        """
+        server = None
+        name = args[0]
+    elif len(args) == 2:
+        """
+        查询 SRV ID
+        """
+        server = args[0]
+        name = args[1]
+    server = Server(server, event.group_id).server
+    if server is None:
+        await SerendipityMatcher.finish(PROMPT.ServerNotExist)
+    ver = Preference(event.user_id, "", "").setting("奇遇")
+    if ver == "v2":
+        data = await v2_serendipity(server, name, True)
+    elif ver == "v3":
+        data = await v3_serendipity(server, name)
+    await SerendipityMatcher.finish(data)
 
 V2SerendipityMatcher = on_command("jx3_serendipity_v2", aliases={"奇遇v2", "查询v2"}, force_whitespace=True, priority=5)
 
@@ -41,7 +73,7 @@ async def _(event: GroupMessageEvent, argument: Message = CommandArg()):
     data = await v2_serendipity(server, name, True)
     await V2SerendipityMatcher.finish(data)
 
-V3SerendipityMatcher = on_command("jx3_serendipity_v3", aliases={"奇遇v3", "查询v3", "奇遇", "查询"}, force_whitespace=True, priority=5)
+V3SerendipityMatcher = on_command("jx3_serendipity_v3", aliases={"奇遇v3", "查询v3"}, force_whitespace=True, priority=5)
 
 @V3SerendipityMatcher.handle()
 async def _(event: GroupMessageEvent, argument: Message = CommandArg()):
