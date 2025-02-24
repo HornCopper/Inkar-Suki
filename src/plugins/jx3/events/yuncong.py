@@ -24,8 +24,8 @@ async def get_yuncong_image():
         icon = i["icon"] if i["icon"] != "10" else "12"
         icon = "https://img.jx3box.com/pve/minimap/minimap_" + icon + ".png"
         desc = i["desc"]
-        section = i["event"]
-        map = i["map_name"]
+        section = i["stage"]
+        map = i["map"]
         site = i["site"]
         tables.append(
             Template(template_chutian).render(

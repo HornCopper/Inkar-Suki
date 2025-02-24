@@ -28,6 +28,8 @@ async def check_ad(msg: str, data: dict) -> bool:
 @token_required
 async def get_recruit_image(server: str, keyword: str = "", local: bool = False, filter: bool = False, token: str = ""):
     final_url = f"{Config.jx3.api.url}/data/member/recruit?token={token}&server={server}"
+    if keyword != "":
+        final_url += f"&keyword={keyword}"
     data = (await Request(final_url).get()).json()
     if data["code"] != 200:
         return "唔……未找到相关团队，请检查后重试！"

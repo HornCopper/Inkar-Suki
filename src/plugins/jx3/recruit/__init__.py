@@ -8,7 +8,7 @@ from nonebot.adapters.onebot.v11 import (
 from src.config import Config
 from src.const.jx3.server import Server
 from src.const.prompts import PROMPT
-from src.utils.network import Request
+from src.utils.permission import check_permission
 from src.utils.database.operation import get_group_settings
 
 from .api import get_recruit_image
@@ -18,7 +18,7 @@ RecruitMatcher = on_command("jx3_recruit", aliases={"招募"}, force_whitespace=
 
 @RecruitMatcher.handle()
 async def _(event: GroupMessageEvent, full_argument: Message = CommandArg()):
-    if not Config.jx3.api.enable:
+    if not Config.jx3.api.enable and not check_permission(event.user_id, 10):
         return
     filter = False
     additions = get_group_settings(str(event.group_id), "additions")
@@ -63,5 +63,5 @@ async def _(event: GroupMessageEvent, full_argument: Message = CommandArg()):
             await RecruitMatcher.finish(PROMPT.ServerNotExist)
         data = await get_recruit_image(server, args[1], False, filter)
     else:
-        await get_recruit_image(PROMPT.ArgumentCountInvalid)
+        await RecruitMatcher.finish(PROMPT.ArgumentCountInvalid)
     await RecruitMatcher.finish(data)

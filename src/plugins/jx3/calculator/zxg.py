@@ -180,7 +180,7 @@ class ZixiagongCalculator(BaseCalculator):
             "http://10.0.10.13:17171/calculator_zxg",
             params=params,
             headers={"token": Config.hidden.offcial_token}
-        ).post()).json()
+        ).post(timeout=40)).json()
         return final_result
     
     def parse_attr(self, role_attr: list[Panel], income_data: list) -> list[str]:
