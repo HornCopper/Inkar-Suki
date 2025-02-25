@@ -286,6 +286,14 @@
             height: 100%;
             pointer-events: none;
         }
+
+        footer {
+            background: #f0f0f0;
+            text-align: center;
+            padding: 15px;
+            font-size: 0.9em;
+            color: #777;
+        }
     </style>
 </head>
 
@@ -342,7 +350,7 @@
                 {{ talent }}
                 {% endfor %}
             </div>
-            <div style="text-align: center; box-sizing: border-box; border-top: 1px solid #f1f3f5;font-size:18px;color:#555">&copy; Inkar Suki · 属性v4<br>{{ saohua }}</div>
+            <footer>Inkar Suki: {{ saohua }}</footer>
         </div>
     </div>
 </body>

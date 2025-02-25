@@ -8,7 +8,6 @@ from nonebot.adapters.onebot.v11 import (
 from src.config import Config
 from src.const.jx3.server import Server
 from src.const.prompts import PROMPT
-from src.utils.permission import check_permission
 from src.utils.database.operation import get_group_settings
 
 from .api import get_recruit_image

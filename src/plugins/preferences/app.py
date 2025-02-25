@@ -39,7 +39,7 @@ class Preference:
     def set(self) -> str:
         if not self.available:
             return "未找到相关偏好项！"
-        if not self.value in self.data[self.key].keys():
+        if self.value not in self.data[self.key].keys():
             return "该偏好不满足可选值，请先发送“偏好”查看所有可用值！"
         setattr(self.current, self.mapping[self.key], self.value)
         self.settings.setting = self.current

@@ -1,11 +1,12 @@
 from jinja2 import Template
 
 from src.config import Config
-from src.const.path import ASSETS, build_path
+from src.const.path import ASSETS, TEMPLATES
 from src.utils.time import Time
 from src.utils.network import Request
 from src.utils.generate import generate
-from src.templates import SimpleHTML
+from src.utils.file import read
+from src.templates import get_saohua
 
 from ._template import template_jinjia, types
 
@@ -15,57 +16,35 @@ token = Config.jx3.api.token
 bot_name = Config.bot_basic.bot_name_argument
 
 async def get_coin_price_image(server: str = ""):
-    data = (await Request("https://spider2.jx3box.com/api/spider/gold/trend").get()).json()
-    server_data = data[server]
-    rows = []
-    dates = []
-    date_to_data = {}
-
-    for platform_data in data[server]["WBL"]:
-        # 只拿日期，平台不影响
-        dates.append(platform_data["date"])
-
-    platform_to_averages = {param_name: [] for param_name in types.values()}
-
-    for platform_name, param_name in types.items():
-        if platform_name in server_data:
-            platform_data = server_data[platform_name]
-            for daily_data in platform_data:
-                date = daily_data["date"]
-                if date not in date_to_data:
-                    date_to_data[date] = {}
-                date_to_data[date][param_name] = round(daily_data["average"], 2)
-                platform_to_averages[param_name].append(int(daily_data["average"]))
-
-    sorted_dates = sorted(date_to_data.keys(), reverse=True)
-    recent_dates = sorted_dates[:7]
-    for date in recent_dates:
-        row_data = date_to_data[date]
-        row_data.update({"date": date})
-        rows.append(row_data)
-
+    data = (await Request(f"{Config.jx3.api.url}/data/trade/demon?token={Config.jx3.api.token}&server={server}").get()).json()
     tables = []
-    for row in rows:
-        tables.append(Template(template_jinjia).render(**row))
-
+    for each_price in data["data"]:
+        tables.append(Template(template_jinjia).render(
+            **
+                {
+                    "date": each_price["date"],
+                    "tieba": each_price["tieba"],
+                    "_7881": each_price["7881"],
+                    "wbl": each_price["wanbaolou"],
+                    "dd373": each_price["dd373"],
+                    "_5173": each_price["5173"],
+                    "uu898": each_price["uu898"]
+                }
+            )
+        )
+    
     input_data = {
-        "custom_font": build_path(ASSETS, ["font", "PingFangSC-Medium.otf"]),
-        "tablecontent": "\n".join(tables),
+        "custom_font": ASSETS + "/font/custom.ttf",
+        "table_content": "\n".join(tables),
         "server": server,
         "app_time": Time().format("%H:%M:%S"),
-        "saohua": "严禁将蓉蓉机器人与音卡共存，一经发现永久封禁！蓉蓉是抄袭音卡的劣质机器人！",
-        "platforms": json.dumps(list(types), ensure_ascii=False).replace("WBL", "万宝楼"),
-        "dates": json.dumps(dates, ensure_ascii=False),
+        "saohua": get_saohua(),
+        "platforms": json.dumps(list(types), ensure_ascii=False).replace("wanbaolou", "万宝楼").replace("tieba", "贴吧").replace("dd", "DD").replace("uu", "UU"),
+        "dates": json.dumps([each_price["date"] for each_price in data["data"]], ensure_ascii=False),
         "app_name": "金币价格"
     }
+
     for platform in types:
-        input_data[types[platform]] = json.dumps(platform_to_averages[types[platform]], ensure_ascii=False)
-    html = str(
-        SimpleHTML(
-            "jx3",
-            "coin_trade",
-            **input_data
-        )
-    )
-    image = await generate(html, "table", segment=True)
-    return image
+        input_data[types[platform]] = json.dumps([each_price[platform] for each_price in data["data"]], ensure_ascii=False)
+    html = Template(read(TEMPLATES + "/jx3/coin_trade.html")).render(**input_data)
+    return await generate(html, "table", segment=True)

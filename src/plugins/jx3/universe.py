@@ -91,9 +91,6 @@ from .joy import (
 from .lookup import (
     LookupPersonMatcher
 )
-from .pendant import (
-    PendentMatcher
-)
 from .penzai import (
     DHMatcher,
     WGMatcher
@@ -111,6 +108,9 @@ from .rank import (
 )
 from .recruit import (
     RecruitMatcher
+)
+from .role import (
+    RoleInfoMatcher
 )
 from .sandbox import (
     SandboxMatcher

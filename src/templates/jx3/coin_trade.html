@@ -1,6 +1,14 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
+
 <head>
+    <!--
+        该代码协议与Inkar Suki仓库协议相同。
+        禁止帝君和兔兔使用。
+        禁止任何人商用。
+        欢迎借鉴或用于开源项目。
+        ——HornCopper
+    -->
     <style>
         table {
             width: 800px;
@@ -36,7 +44,6 @@
 
         tfoot {
             text-align: center;
-            font-style: italic;
             font-size: 12px;
         }
 
@@ -63,15 +70,14 @@
         <thead>
             <tr>
                 <th class="short-column">日期</th>
-                <th class="short-column">7881</th>
+                <th class="short-column">贴吧</th>
                 <th class="short-column">万宝楼</th>
                 <th class="short-column">DD373</th>
-                <th class="short-column">5173</th>
                 <th class="short-column">UU898</th>
             </tr>
         </thead>
         <tbody>
-            {{ tablecontent }}
+            {{ table_content }}
             <tr>
                 <td colspan="6">
                     <div id="Chart"></div>
@@ -105,20 +111,20 @@
             yAxis: {
                 type: "value",
                 boundaryGap: [0, "100%"],
-                min: 600,
+                min: 700,
                 max: 1000
             },
             series: [
                 {
-                    name: "7881",
+                    name: "贴吧",
                     type: "line",
-                    data: {{ _7881 }},
+                    data: {{ tieba }},
                     smooth: true,
                     itemStyle: {
-                        color: "#42a5f5"
+                        color: "#483D8B"
                     },
                     areaStyle: {
-                        color: "rgba(66, 165, 245, 0.2)"
+                        color: "rgba(72, 61, 139, 0.2)"
                     }
                 },
                 {
@@ -143,18 +149,6 @@
                     },
                     areaStyle: {
                         color: "rgba(48, 199, 1, 0.2)"
-                    }
-                },
-                {
-                    name: "5173",
-                    type: "line",
-                    data: {{ _5173 }},
-                    smooth: true,
-                    itemStyle: {
-                        color: "#FF768B"
-                    },
-                    areaStyle: {
-                        color: "rgba(255, 118, 139, 0.2)"
                     }
                 },
                 {
