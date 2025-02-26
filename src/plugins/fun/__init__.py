@@ -1,8 +1,9 @@
 from pathlib import Path
 
 from nonebot import on_regex, on_command
-from nonebot.params import CommandArg
+from nonebot.params import CommandArg, RawCommand
 from nonebot.adapters.onebot.v11 import (
+    Bot,
     Message,
     MessageEvent,
     GroupMessageEvent,
@@ -16,16 +17,17 @@ from src.const.path import (
 )
 from src.utils.network import Request
 from src.utils.analyze import check_number
+from src.utils.database.operation import get_group_settings
 
 import random
 import os
 
 from ._message import answers as a
 
-what_eat = on_regex(r"^(/)?[今|明|后]?[天|日]?(早|中|晚)?(上|午|餐|饭|夜宵|宵夜)?吃(什么|啥|点啥)$", priority=5)
-what_drink = on_regex(r"^(/)?[今|明|后]?[天|日]?(早|中|晚)?(上|午|餐|饭|夜宵|宵夜)?喝(什么|啥|点啥)$", priority=5)
+What2EatMatcher = on_regex(r"^(/)?[今|明|后]?[天|日]?(早|中|晚)?(上|午|餐|饭|夜宵|宵夜)?吃(什么|啥|点啥)$", priority=5)
+What2DrinkMatcher = on_regex(r"^(/)?[今|明|后]?[天|日]?(早|中|晚)?(上|午|餐|饭|夜宵|宵夜)?喝(什么|啥|点啥)$", priority=5)
 
-@what_drink.handle()
+@What2DrinkMatcher.handle()
 async def _(event: MessageEvent):
     image_name = random.choice(os.listdir(
         build_path(
@@ -49,10 +51,10 @@ async def _(event: MessageEvent):
         ) + image_name
     )
     msg = (f"{Config.bot_basic.bot_name}建议你喝: \n⭐{image_path.stem}⭐\n" + ms.image(Request(image_path.as_uri()).local_content))
-    await what_drink.send("正在为你找好喝的……")
-    await what_drink.send(msg, at_sender=True)
+    await What2DrinkMatcher.send("正在为你找好喝的……")
+    await What2DrinkMatcher.send(msg, at_sender=True)
 
-@what_eat.handle()
+@What2EatMatcher.handle()
 async def _(event: MessageEvent):
     image_name = random.choice(os.listdir(
         build_path(
@@ -76,21 +78,21 @@ async def _(event: MessageEvent):
         ) + image_name
     )
     msg = (f"{Config.bot_basic.bot_name}建议你吃: \n⭐{image_path.stem}⭐\n" + ms.image(Request(image_path.as_uri()).local_content))
-    await what_eat.send("正在为你找好吃的……")
-    await what_eat.send(msg, at_sender=True)
+    await What2EatMatcher.send("正在为你找好吃的……")
+    await What2EatMatcher.send(msg, at_sender=True)
 
-bmi = on_command("bmi", aliases={"BMI", "身体质量指数"}, force_whitespace=True, priority=5)
+BMIMatcher = on_command("bmi", aliases={"BMI", "身体质量指数"}, force_whitespace=True, priority=5)
 
-@bmi.handle()
+@BMIMatcher.handle()
 async def _(event: MessageEvent, args: Message = CommandArg()):
     if args.extract_plain_text() == "":
         return
     arg = args.extract_plain_text().split(" ")
     if len(arg) != 2:
-        await bmi.finish("唔……参数数量不正确哦，请参考以下格式，注意两个参数都是纯数字哦~\nBMI 身高(米) 体重(千克)")
+        await BMIMatcher.finish("唔……参数数量不正确哦，请参考以下格式，注意两个参数都是纯数字哦~\nBMI 身高(米) 体重(千克)")
     for i in arg:
         if not check_number(i):
-            await bmi.finish("唔……请参考以下格式，注意两个参数都是纯数字哦~\nBMI 身高(米) 体重(千克)")
+            await BMIMatcher.finish("唔……请参考以下格式，注意两个参数都是纯数字哦~\nBMI 身高(米) 体重(千克)")
     height = float(arg[0])
     weight = float(arg[1])
     bmi_value = weight / (height*height)
@@ -103,30 +105,30 @@ async def _(event: MessageEvent, args: Message = CommandArg()):
         msg = f"您的BMI计算结果是：{final_result}，属于偏胖（24.0~27.9）哦~"
     elif final_result >= 28.0:
         msg = f"您的BMI计算结果是：{final_result}，属于肥胖（28.0+）哦~\n音卡建议您少吃高热量食物，多多运动保持健康身体哦！"
-    await bmi.finish(msg)
+    await BMIMatcher.finish(msg)
 
-help = on_command("help", aliases={"帮助", "功能", "查看", "文档", "使用说明"}, force_whitespace=True, priority=5)
+HelpMatcher = on_command("help", aliases={"帮助", "功能", "查看", "文档", "使用说明"}, force_whitespace=True, priority=5)
 
-@help.handle()
+@HelpMatcher.handle()
 async def help_(args: Message = CommandArg()):
     if args.extract_plain_text() != "":
         return
-    await help.finish("Inkar Suki · 音卡使用文档：\nhttps://inkar-suki.codethink.cn/Inkar-Suki-Docs/#/\n点击下面的链接直达剑网3模块简化版文档：\nhttps://inkar-suki.codethink.cn/Inkar-Suki-Docs/#/jx3_easy")
+    await HelpMatcher.finish("Inkar Suki · 音卡使用文档：\nhttps://inkar-suki.codethink.cn/Inkar-Suki-Docs/#/usage")
 
-rdcoldjoke = on_command("冷笑话", priority=5, force_whitespace=True)
+RandomColdJokeMatcher = on_command("冷笑话", priority=5, force_whitespace=True)
 
-@rdcoldjoke.handle()
+@RandomColdJokeMatcher.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     if args.extract_plain_text() != "":
         return
     resp = (await Request("https://api.qicaiyun.top/joke/api.php").get())
     resp.encoding = "gbk"
     msg = resp.text.split("、")[1:]
-    await rdcoldjoke.finish(str(msg))
+    await RandomColdJokeMatcher.finish(str(msg))
 
-rddi = on_command("随机狗图", aliases={"随机lwx"}, priority=5)
+RandomDogImageMatcher = on_command("随机狗图", aliases={"随机lwx"}, priority=5)
 
-@rddi.handle()
+@RandomDogImageMatcher.handle()
 async def _(event: MessageEvent, args: Message = CommandArg()):
     if args.extract_plain_text() != "":
         return
@@ -146,7 +148,7 @@ async def _(event: MessageEvent, args: Message = CommandArg()):
                     ) + str(random.randint(1,4)) + ".jpg"
                 ).as_uri()
             ).local_content
-            await rddi.finish(ms.image(img))
+            await RandomDogImageMatcher.finish(ms.image(img))
     if rdint <= 10:
         img = Request(
             Path(
@@ -161,14 +163,14 @@ async def _(event: MessageEvent, args: Message = CommandArg()):
                 ) + str(random.randint(1,4)) + ".jpg"
             ).as_uri()
         ).local_content
-        await rddi.finish(ms.image(img))
+        await RandomDogImageMatcher.finish(ms.image(img))
     data = (await Request("https://api.thedogapi.com/v1/images/search?size=full").get()).json()
     image = (await Request(data[0]["url"]).get()).content
-    await rddi.finish(ms.image(image))
+    await RandomDogImageMatcher.finish(ms.image(image))
 
-rdli = on_command("随机龙图", priority=5)
+RandomDragonImageMatcher = on_command("随机龙图", priority=5)
 
-@rdli.handle()
+@RandomDragonImageMatcher.handle()
 async def _(args: Message = CommandArg()):
     if args.extract_plain_text() != "":
         return
@@ -189,7 +191,7 @@ async def _(args: Message = CommandArg()):
         resp = await Request(image_url).get()
         if resp.status_code == 200:
             image = resp.content
-            await rdli.finish(ms.image(image))
+            await RandomDragonImageMatcher.finish(ms.image(image))
 
 AnswerBookMatcher = on_command("答案之书", priority=5, force_whitespace=True)
 
@@ -200,3 +202,21 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     else:
         answer = random.choice(a)
         await AnswerBookMatcher.finish("答案之书给出的建议是：\n" + answer)
+
+LiftMatcher = on_command("抽奖", aliases={"抽大奖", "十连抽", "百连抽"}, priority=5)
+
+@LiftMatcher.handle()
+async def _(bot: Bot, event: GroupMessageEvent, cmd: str = RawCommand()):
+    subscribes = get_group_settings(event.group_id, "subscribe")
+    self_role = await bot.get_group_member_info(group_id=event.group_id, user_id=event.self_id)
+    if self_role["role"] not in ["owner", "admin"] or "抽奖" not in subscribes:
+        return
+    max_time = {
+        "抽奖": 15,
+        "抽大奖": 60,
+        "十连抽": 150,
+        "百连抽": 1500
+    }
+    reward_time = random.randint(0, max_time[cmd])
+    await bot.send_group_msg(group_id=event.group_id, message=f"恭喜你{cmd}的奖励时长：{reward_time}分钟！")
+    await bot.set_group_ban(group_id=event.group_id, user_id=event.user_id, duration=reward_time*60)
