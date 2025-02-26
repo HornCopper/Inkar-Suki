@@ -209,7 +209,8 @@ LiftMatcher = on_command("抽奖", aliases={"抽大奖", "十连抽", "百连抽
 async def _(bot: Bot, event: GroupMessageEvent, cmd: str = RawCommand()):
     subscribes = get_group_settings(event.group_id, "subscribe")
     self_role = await bot.get_group_member_info(group_id=event.group_id, user_id=event.self_id)
-    if self_role["role"] not in ["owner", "admin"] or "抽奖" not in subscribes:
+    terminal_role = await bot.get_group_member_info(group_id=event.group_id, user_id=event.user_id)
+    if self_role["role"] not in ["owner", "admin"] or "抽奖" not in subscribes or terminal_role["role"] in ["owner", "admin"]:
         return
     max_time = {
         "抽奖": 15,
