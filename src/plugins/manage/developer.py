@@ -12,7 +12,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     url = args.extract_plain_text()
     if not url.startswith("http"):
         return
-    if not check_permission(event.user_id, 10):
+    if not check_permission(event.user_id, 8):
         return
     try:
         image = await generate(url, full_screen=True, viewport={"height": 1080, "width": 1920}, segment=True)

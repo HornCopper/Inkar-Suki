@@ -29,11 +29,6 @@ async def _(
     if full_argument.extract_plain_text() == "":
         return
     args = full_argument.extract_plain_text().split(" ")
-    personal_data = await bot.call_api("get_group_member_info", group_id=event.group_id, user_id=event.user_id, no_cache=True)
-    group_admin = personal_data["role"] in ["owner", "admin"]
-    permission = check_permission(str(event.user_id), 5)
-    if not permission and not group_admin:
-        await BlockMatcher.finish("唔……只有群主或管理员才能修改哦~")
     if len(args) != 2:
         await BlockMatcher.finish("唔……需要2个参数，第一个参数为玩家名，第二个参数是原因~\n提示：理由中请勿包含空格。")
     status = Blacklist(args[0], event.group_id).add(args[1])
@@ -48,11 +43,6 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
     if args.extract_plain_text() == "":
         return
     arg = args.extract_plain_text().split(" ")
-    personal_data = await bot.call_api("get_group_member_info", group_id=event.group_id, user_id=event.user_id, no_cache=True)
-    group_admin = personal_data["role"] in ["owner", "admin"]
-    permission = check_permission(str(event.user_id), 5)
-    if not permission and not group_admin:
-        await BlockMatcher.finish("唔……只有群主或管理员才能修改哦~")
     if len(arg) != 1:
         await UnblockMatcher.finish("参数仅为玩家名，请勿附带任何信息！")
     status = Blacklist(arg[0], event.group_id).remove()

@@ -117,7 +117,7 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
     if args.extract_plain_text() == "":
         return
     arg_msg = args.extract_plain_text()
-    permission = check_permission(str(event.user_id), 5)
+    permission = check_permission(str(event.user_id), 8)
     personal_data = await bot.call_api("get_group_member_info", group_id=event.group_id, user_id=event.user_id, no_cache=True)
     group_admin = personal_data["role"] in ["owner", "admin"]
     if not permission and not group_admin:

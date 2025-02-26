@@ -34,7 +34,7 @@ async def _(event: GroupMessageEvent, full_argument: Message = CommandArg()):
         data = await get_personal_roles_teamcd_image(event.user_id)
     elif ";" in name:
         roles = name.split(";")
-        if len(roles) > 6 and not check_permission(event.user_id, 10):
+        if len(roles) > 6 and not check_permission(event.user_id, 6):
             await ZoneRecordMatcher.finish("最多一次只可以查询6个角色！")
         data = await get_mulit_record_image(server, roles)
     else:

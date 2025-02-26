@@ -18,7 +18,7 @@ BanMatcher = on_command("ban", force_whitespace=True, priority=5)
 async def _(bot: Bot, event: MessageEvent, args: Message = CommandArg()):
     if args.extract_plain_text() == "":
         return
-    if not check_permission(str(event.user_id), 10):
+    if not check_permission(str(event.user_id), 9):
         await BanMatcher.finish(denied(10))
     user_id = args.extract_plain_text()
     if not check_number(user_id):
@@ -36,7 +36,7 @@ UnbanMatcher = on_command("unban", force_whitespace=True, priority=5)
 async def _(bot: Bot, event: MessageEvent, args: Message = CommandArg()):
     if args.extract_plain_text() == "":
         return
-    if not check_permission(str(event.user_id), 10):
+    if not check_permission(str(event.user_id), 9):
         await UnbanMatcher.finish(denied(10))
     user_id = args.extract_plain_text()
     if not check_number(user_id):

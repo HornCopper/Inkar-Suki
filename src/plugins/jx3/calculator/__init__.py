@@ -13,6 +13,7 @@ from .bxj import BingxinjueCalculator
 from .rdps import RDPSCalculator
 
 import re
+import json
 
 YLJCalcMatcher = on_command("jx3_calculator_lyj", aliases={"凌雪计算器"}, priority=5, force_whitespace=True)
 
@@ -67,8 +68,8 @@ BXJCalculator = on_command("jx3_calculator_bxj", aliases={"冰心计算器"}, pr
 
 @BXJCalculator.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
-    if not check_permission(event.user_id, 1):
-        await BXJCalculator.finish(denied(1))
+    if not check_permission(event.user_id, 5):
+        await BXJCalculator.finish(denied(5))
     if args.extract_plain_text() == "":
         return
     arg = args.extract_plain_text().split(" ")
@@ -99,8 +100,11 @@ def check_jcl_name(filename: str) -> bool:
 
 @notice.handle()
 async def _(bot: Bot, event: GroupUploadNoticeEvent):
-    if not check_jcl_name(event.file.name) or not check_permission(event.user_id, 1):
+    if not check_jcl_name(event.file.name):
         return
     else:
-        image = await RDPSCalculator(event.file.name[4:], event.model_dump()["file"]["url"])
+        try:
+            image = await RDPSCalculator(event.file.name[4:], event.model_dump()["file"]["url"])
+        except json.decoder.JSONDecodeError:
+            await bot.send_group_msg(group_id=event.group_id, message="啊哦，警长的服务器目前似乎暂时有些小问题，请稍后再使用JCL分析？")
         await bot.send_group_msg(group_id=event.group_id, message=Message(image))

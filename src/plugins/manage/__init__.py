@@ -47,7 +47,7 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
         return
     personal_data = await bot.call_api("get_group_member_info", group_id=event.group_id, user_id=event.user_id, no_cache=True)
     user_permission = personal_data["role"] in ["owner", "admin"]
-    if not (check_permission(str(event.user_id), 10) or user_permission):
+    if not (check_permission(str(event.user_id), 9) or user_permission):
         await DismissMatcher.finish(f"唔……只有群主或管理员才能移除{Config.bot_basic.bot_name}哦~")
     else:
         await DismissMatcher.send(f"确定要让{Config.bot_basic.bot_name}离开吗？如果是，请再发送一次“移除音卡”。")
@@ -70,7 +70,7 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
         return
     personal_data = await bot.call_api("get_group_member_info", group_id=event.group_id, user_id=event.user_id, no_cache=True)
     user_permission = personal_data["role"] in ["owner", "admin"]
-    if not (check_permission(str(event.user_id), 10) or user_permission):
+    if not (check_permission(str(event.user_id), 9) or user_permission):
         await ResetMatcher.finish(f"唔……只有群主或管理员才能重置{Config.bot_basic.bot_name}哦~")
     else:
         await ResetMatcher.send(f"确定要重置{Config.bot_basic.bot_name}数据吗？如果是，请再发送一次“重置音卡”。\n注意：所有本群数据将会清空，包括绑定和订阅，该操作不可逆！")
@@ -115,14 +115,14 @@ async def _(event: MessageEvent, args: Message = CommandArg()):
         await create_issue(user, msg)
         await FeedbackMatcher.finish("已经将您的反馈内容提交至Inkar Suki GitHub，处理完毕后我们会通过电子邮件等方式通知您，音卡感谢您的反馈！")
 
-EchoMatcher = on_command("echo", force_whitespace=True, priority=5)  # 复读只因功能
+EchoMatcher = on_command("echo", force_whitespace=True, priority=5)  # 复读机功能
 
 @EchoMatcher.handle()
 async def _(bot: Bot, event: MessageEvent, args: Message = CommandArg()):
     if args.extract_plain_text() == "":
         return
-    if not check_permission(str(event.user_id), 10):
-        await EchoMatcher.finish(denied(10))
+    if not check_permission(str(event.user_id), 8):
+        await EchoMatcher.finish(denied(8))
     await EchoMatcher.finish(args)
 
 PingMatcher = on_command("ping", force_whitespace=True, priority=5)  # 测试机器人是否在线
@@ -168,13 +168,16 @@ AdminMatcher = on_command("setop", aliases={"admin", "setadmin"}, force_whitespa
 async def _(bot: Bot, event: MessageEvent, full_argument: Message = CommandArg()):
     if full_argument.extract_plain_text() == "":
         return
-    if not check_permission(str(event.user_id), 10) and str(event.user_id) not in Config.bot_basic.bot_owner:
+    not_owner = str(event.user_id) not in Config.bot_basic.bot_owner
+    if not check_permission(str(event.user_id), 8) and not_owner:
         await AdminMatcher.finish(denied(10))
     args = full_argument.extract_plain_text().split(" ")
     user_id = args[0]
-    if user_id in Config.bot_basic.bot_owner and str(event.user_id) not in Config.bot_basic.bot_owner:
+    if user_id in Config.bot_basic.bot_owner and not_owner:
         await AdminMatcher.finish("无法修改Bot主人的权限！")
     level = args[1]
+    if not check_permission(event.user_id, int(level)-1) and not_owner:
+        await AdminMatcher.finish("无法将权限提升至比自身更高的权限！")
     data: Account | Any = db.where_one(Account(), "user_id = ?", int(user_id), default=Account(user_id=int(user_id)))
     raw_permission = data.permission
     data.permission = int(level)

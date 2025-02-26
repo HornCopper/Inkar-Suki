@@ -21,7 +21,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     if len(arg) == 0:
         await EnableMatcher.finish("唔……开启失败，您似乎没有告诉我您要订阅的内容？")
     else:
-        if "Preview" in arg and not check_permission(event.user_id, 10):
+        if "Preview" in arg and not check_permission(event.user_id, 6):
             await EnableMatcher.finish("权限不足！无法订阅Preview！")
         subscribe_options = json.loads(read(build_path(ASSETS, ["source", "subscribe"], end_with_slash=True) + "options.json"))
         addition_options = json.loads(read(build_path(ASSETS, ["source", "subscribe"], end_with_slash=True) + "additions.json"))
