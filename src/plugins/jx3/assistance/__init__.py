@@ -1,5 +1,5 @@
 from nonebot import on_command
-from nonebot.adapters.onebot.v11 import Message, GroupMessageEvent
+from nonebot.adapters.onebot.v11 import Bot, Message, GroupMessageEvent
 from nonebot.params import CommandArg
 
 from src.const.prompts import PROMPT
@@ -75,14 +75,16 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
 DissolveTeamMatcher = on_command("解散团队", aliases={"取消开团"}, force_whitespace=True, priority=5)
 
 @DissolveTeamMatcher.handle()
-async def _(event: GroupMessageEvent, args: Message = CommandArg()):
+async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
     keyword = args.extract_plain_text()
     unique = len(get_group_settings(event.group_id, "opening")) == 1
     if keyword == "" and not unique:
         await DissolveTeamMatcher.finish("唔……没有输入关键词哦，请检查后重试~")
     if keyword == "" and unique:
         keyword = "1"
-    resp = AssistanceInstance.dissolve(str(event.group_id), keyword, str(event.user_id))
+    user_data = await bot.get_group_member_info(group_id=event.group_id, user_id=event.user_id)
+    admin = user_data["role"] in ["admin", "owner"]
+    resp = AssistanceInstance.dissolve(str(event.group_id), keyword, str(event.user_id), admin)
     await DissolveTeamMatcher.finish(resp)
 
 LookupTeamMatcher = on_command("查看团队", priority=5, force_whitespace=True)

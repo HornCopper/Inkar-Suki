@@ -266,13 +266,13 @@ class Assistance:
         if not cancelled:
             raise ValueError("Please check the `assistance` app.py class `Assistance` method `cancel apply`!")
 
-    def dissolve(self, group_id: str, keyword: str, user_id: str) -> str | None:
+    def dissolve(self, group_id: str, keyword: str, user_id: str, is_admin: bool) -> str | None:
         now = get_group_settings(group_id, "opening")
         if not isinstance(now, list):
             return
         for i in now:
             if i["description"] == keyword or str(now.index(i) + 1) == keyword:
-                if i["creator"] != user_id:
+                if i["creator"] != user_id and not is_admin:
                     return "非创建者无法解散团队！"
                 now.remove(i)
                 set_group_settings(group_id, "opening", now)
