@@ -2,14 +2,16 @@ from nonebot import on_command
 from nonebot.adapters.onebot.v11 import Message, GroupMessageEvent
 from nonebot.params import CommandArg
 
+from src.config import Config
 from src.const.jx3.dungeon import Dungeon
 from src.const.prompts import PROMPT
 from src.const.jx3.server import Server
 from src.utils.permission import check_permission
+from src.utils.database.operation import get_group_settings
 
 from .zone_drop import get_drop_list_image
 # from .monster import get_monsters_map
-# from .record import get_item_record
+from .record import get_item_record
 from .teamcd import get_zone_record_image, get_mulit_record_image, get_personal_roles_teamcd_image
 
 ZoneRecordMatcher = on_command("jx3_zones", aliases={"副本"}, force_whitespace=True, priority=5)
@@ -69,11 +71,13 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     img = await get_monsters_map()
     await MonstersMatcher.finish(img)
 
-ItemRecordMatcher = on_command("jx3_itemrecord", aliases={"掉落"}, force_whitespace=True, priority=5)
+AllServerItemRecordMatcher = on_command("jx3_itemrecord_allserver", aliases={"全服掉落"}, force_whitespace=True, priority=5)
 
-@ItemRecordMatcher.handle()
+@AllServerItemRecordMatcher.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
-    # item_name = args.extract_plain_text()
-    # data = await get_item_record(item_name)
-    # await ItemRecordMatcher.finish(data)
-    ...
+    additions = get_group_settings(str(event.group_id), "additions")
+    if not Config.jx3.api.enable and not "Preview" in additions:
+        return
+    item_name = args.extract_plain_text()
+    data = await get_item_record(item_name)
+    await AllServerItemRecordMatcher.finish(data)

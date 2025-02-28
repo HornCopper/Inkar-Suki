@@ -1,12 +1,11 @@
 from jinja2 import Template
 
+from src.config import Config
 from src.utils.network import Request
 from src.utils.time import Time
+from src.utils.decorators import token_required
 from src.utils.generate import generate
 from src.templates import HTMLSourceCode
-
-import time
-import json
 
 from ._template import (
     headers,
@@ -14,59 +13,30 @@ from ._template import (
     table_item_head
 )
 
-async def get_item_record(name: str):
-    filter = {
-        "Zone": "",
-        "Srv": "",
-        "Droppedi": name
-    }
-    params = {
-        "sort": "Tm",
-        "order": "desc",
-        "limit": 30,
-        "offset": 0,
-        "_": int(time.time()) * 1000,
-        "filter": json.dumps(filter, ensure_ascii=False),
-        "op": "{\"Zone\":\"LIKE\",\"Srv\":\"LIKE\"}"
-    }
-    data = (await Request("https://www.jx3mm.com/jx3fun/jevent/jcitem", headers=headers, params=params).get()).json()
-    if data["total"] == 0:
+@token_required
+async def get_item_record(name: str, token: str = ""):
+    final_url = f"{Config.jx3.api.url}/data/reward/server/statistical?name={name}&token={token}"
+    data = (await Request(final_url).get()).json()
+    if data["code"] == 404:
         return "未找到相关物品，请检查物品名称是否正确！"
-    known_time = []
-    known_id = []
     tables = []
-    num = 0
-    for i in data["rows"]:
-        if i["Tm"] in known_time and i["Nike"] in known_id:
-            continue
-        known_time.append(i["Tm"])
-        known_id.append(i["Nike"])
-        id = i["Nike"]
-        item_name = i["Droppedi"]
-        if i["Copyname"][0:2] in ["英雄", "普通"]:
-            zone = "25人" + i["Copyname"]
-        else:
-            zone = i["Copyname"]
-        pick_time = Time(i["Tm"]).format()
-        if not isinstance(pick_time, str):
-            continue
-        relate_time = Time().relate(i["Tm"])
-        server = i["Srv"]
+    for i in data["data"]:
+        role_name = i["role_name"]
+        item_name = i["name"]
+        map_name = i["map_name"]
+        pick_time = Time(i["time"]).format()
+        relate_time = Time().relate(i["time"])
+        server = i["server"]
         tables.append(
             Template(template_item).render(
                 server = server,
                 name = item_name,
-                map = zone,
-                role = id,
+                map = map_name,
+                role = role_name,
                 time = pick_time,
                 relate = relate_time
             )
         )
-        num += 1
-        if num == 30:
-            break
-    if num == 0:
-        return "未找到相关物品！"
     html = str(
         HTMLSourceCode(
             application_name=f" · 掉落统计 · 全服 · {name}",
