@@ -210,8 +210,10 @@ async def _(bot: Bot, event: GroupMessageEvent, cmd: str = RawCommand()):
     subscribes = get_group_settings(event.group_id, "subscribe")
     self_role = await bot.get_group_member_info(group_id=event.group_id, user_id=event.self_id)
     terminal_role = await bot.get_group_member_info(group_id=event.group_id, user_id=event.user_id)
-    if self_role["role"] not in ["owner", "admin"] or "抽奖" not in subscribes or terminal_role["role"] in ["owner", "admin"]:
-        return
+    if "抽奖" not in subscribes:
+        await LiftMatcher.finish("本群尚未启用抽奖！\n发送“订阅 抽奖”即可启用。包含以下命令：\n抽奖、抽大奖、十连抽、百连抽")
+    if self_role["role"] not in ["owner", "admin"] or terminal_role["role"] in ["owner", "admin"]:
+        await LiftMatcher.finish("音卡的权限似乎不对？请检查音卡是否为管理员，自身是否为非管理员？")
     max_time = {
         "抽奖": 15,
         "抽大奖": 60,
