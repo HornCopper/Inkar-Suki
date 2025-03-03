@@ -4,8 +4,11 @@ from typing_extensions import Self
 from jinja2 import Template
 
 from src.config import Config
+from src.const.prompts import PROMPT
 from src.const.jx3.kungfu import Kungfu
 from src.const.path import ASSETS, build_path
+from src.utils.database.player import search_player
+from src.utils.database.attributes import AttributesRequest
 from src.utils.analyze import sort_dict_list
 from src.utils.network import Request
 from src.utils.generate import generate
@@ -27,6 +30,19 @@ class Zixiagong(Kungfu):
         return super().with_internel_id(internel_id)
     
 class ZixiagongCalculator(BaseCalculator):
+    @classmethod
+    async def with_name(cls, name: str, server: str) -> "Self | str":
+        player_data = (await search_player(role_name = name, server_name = server)).format_jx3api()
+        if player_data["code"] != 200:
+            return PROMPT.PlayerNotExist
+        instance = await AttributesRequest.with_name(server, name)
+        if not instance:
+            return PROMPT.PlayerNotExist
+        equip_data = instance.get_equip("QCPVE")
+        if not equip_data:
+            return PROMPT.EquipNotFound
+        return cls(equip_data, (name, server))
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.parser = EquipDataProcesser(self.data)

@@ -6,7 +6,7 @@
 务必获得凌雪阁计算器作者同意后再使用！！！！！
 """
 
-from typing import Literal, Union, Any
+from typing import Literal, Any
 from typing_extensions import Self
 from jinja2 import Template
 
@@ -167,7 +167,7 @@ class LingxueCalculator(BaseCalculator):
     @overload
     async def talents(self, with_icon: Literal[False]) -> list[dict[str, int | str]]: ... # noqa: F811
 
-    async def talents(self, with_icon: bool = False) -> Union[list[dict[str, int | str]], list[Talent]]: # noqa: F811
+    async def talents(self, with_icon: bool = False) -> list[dict[str, int | str]] | list[Talent]: # noqa: F811
         kungfu = self.kungfu.name
         if kungfu == "隐龙诀·悟":
             return []

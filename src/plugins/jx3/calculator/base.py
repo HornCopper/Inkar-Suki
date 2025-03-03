@@ -1,10 +1,8 @@
 from typing_extensions import Self
 
 from src.const.prompts import PROMPT
-from src.const.jx3.server import Server
 from src.utils.database.player import search_player
 from src.utils.database.attributes import AttributesRequest
-from src.utils.network import Request
 
 class BaseCalculator:
     @classmethod

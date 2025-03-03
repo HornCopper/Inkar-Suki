@@ -9,6 +9,7 @@ from src.plugins.jx3.trade._parse import calculate_price, coin_to_image
 
 from ._template import template_cost
 
+import re
 
 async def get_item_data(
     name: str,
@@ -99,6 +100,21 @@ class DataProcesser:
             if isinstance(c, int):
                 counts.append(c)
         return ids, counts
+    
+    @property
+    def tip(self) -> str:
+        tip = self.data["szTip"]
+        if tip is None:
+            return ""
+        if not tip:
+            return ""
+        else:
+            data = tip
+            decoded_data = data.encode("utf-8").decode("unicode_escape").encode("latin1").decode("utf-8").replace("\n", "")
+            pattern = rf"<Text>\s*text=\"(.*?)\"\s+font={18}\s*</text>"
+            match = re.search(pattern, decoded_data, re.IGNORECASE)
+            result = match.group(1).strip() if match else ""
+            return " | " + re.sub(r"\\+", "", result).strip()
 
     async def get_prices(
         self, server: str
@@ -219,6 +235,7 @@ class DataProcesser:
                 )
             )
         html = Template(read(TEMPLATES + "/jx3/cost.html")).render(
+            tip=self.tip,
             font=ASSETS + "/font/PingFangSC-Semibold.otf",
             icon=self.icon,
             name=self.name,

@@ -203,7 +203,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
         answer = random.choice(a)
         await AnswerBookMatcher.finish("答案之书给出的建议是：\n" + answer)
 
-LiftMatcher = on_command("抽奖", aliases={"抽大奖", "十连抽", "百连抽"}, priority=5)
+LiftMatcher = on_command("抽奖", aliases={"抽大奖", "十连抽", "百连抽", "抽巨奖"}, priority=5)
 
 @LiftMatcher.handle()
 async def _(bot: Bot, event: GroupMessageEvent, cmd: str = RawCommand()):
@@ -218,7 +218,8 @@ async def _(bot: Bot, event: GroupMessageEvent, cmd: str = RawCommand()):
         "抽奖": 15,
         "抽大奖": 60,
         "十连抽": 150,
-        "百连抽": 1500
+        "百连抽": 1500,
+        "抽巨奖": 43200
     }
     reward_time = random.randint(0, max_time[cmd])
     await bot.send_group_msg(group_id=event.group_id, message=f"恭喜你{cmd}的奖励时长：{reward_time}分钟！")

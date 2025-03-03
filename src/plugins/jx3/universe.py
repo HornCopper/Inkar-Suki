@@ -37,7 +37,10 @@ from .bind import (
 # )
 # RIP: not adapted
 from .calculator import (
-    YLJCalcMatcher
+    YLJCalcMatcher,
+    MWCalculatorMatcher,
+    BXJCalculatorMatcher,
+    ZXGCalculatorMatcher
 )
 from .cost import (
     CostCalculatorMatcher

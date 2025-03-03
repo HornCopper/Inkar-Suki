@@ -10,6 +10,7 @@ from src.plugins.notice import notice
 from .lxg import LingxueCalculator
 from .zxg import ZixiagongCalculator
 from .bxj import BingxinjueCalculator
+from .mw import MowenCalculator
 from .rdps import RDPSCalculator
 
 import re
@@ -40,15 +41,15 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     data = await instance.image(len(raw_arg) > len(arg))
     await YLJCalcMatcher.finish(data)
 
-ZXGCalculator = on_command("jx3_calculator_zxg", aliases={"气纯计算器"}, priority=5, force_whitespace=True)
+ZXGCalculatorMatcher = on_command("jx3_calculator_zxg", aliases={"气纯计算器"}, priority=5, force_whitespace=True)
 
-@ZXGCalculator.handle()
+@ZXGCalculatorMatcher.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     if args.extract_plain_text() == "":
         return
     arg = args.extract_plain_text().split(" ")
     if len(arg) not in [1, 2]:
-        await ZXGCalculator.finish("唔……参数不正确哦，请检查后重试~")
+        await ZXGCalculatorMatcher.finish("唔……参数不正确哦，请检查后重试~")
     if len(arg) == 1:
         server = None
         name = arg[0]
@@ -57,24 +58,24 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
         name = arg[1]
     server = Server(server, event.group_id).server
     if server is None:
-        await ZXGCalculator.finish(PROMPT.ServerNotExist)
+        await ZXGCalculatorMatcher.finish(PROMPT.ServerNotExist)
     instance = await ZixiagongCalculator.with_name(name, server)
     if isinstance(instance, str):
-        await ZXGCalculator.finish(instance)
+        await ZXGCalculatorMatcher.finish(instance)
     data = await instance.image()
-    await ZXGCalculator.finish(data)
+    await ZXGCalculatorMatcher.finish(data)
 
-BXJCalculator = on_command("jx3_calculator_bxj", aliases={"冰心计算器"}, priority=5, force_whitespace=True)
+BXJCalculatorMatcher = on_command("jx3_calculator_bxj", aliases={"冰心计算器"}, priority=5, force_whitespace=True)
 
-@BXJCalculator.handle()
+@BXJCalculatorMatcher.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     if not check_permission(event.user_id, 5):
-        await BXJCalculator.finish(denied(5))
+        await BXJCalculatorMatcher.finish(denied(5))
     if args.extract_plain_text() == "":
         return
     arg = args.extract_plain_text().split(" ")
     if len(arg) not in [1, 2]:
-        await BXJCalculator.finish("唔……参数不正确哦，请检查后重试~")
+        await BXJCalculatorMatcher.finish("唔……参数不正确哦，请检查后重试~")
     if len(arg) == 1:
         server = None
         name = arg[0]
@@ -83,12 +84,38 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
         name = arg[1]
     server = Server(server, event.group_id).server
     if server is None:
-        await BXJCalculator.finish(PROMPT.ServerNotExist)
+        await BXJCalculatorMatcher.finish(PROMPT.ServerNotExist)
     instance = await BingxinjueCalculator.with_name(name, server)
     if isinstance(instance, str):
-        await BXJCalculator.finish(instance)
+        await BXJCalculatorMatcher.finish(instance)
     data = await instance.image()
-    await BXJCalculator.finish(data)
+    await BXJCalculatorMatcher.finish(data)
+
+MWCalculatorMatcher = on_command("jx3_calculator_mw", aliases={"莫问计算器"}, priority=5, force_whitespace=True)
+
+@MWCalculatorMatcher.handle()
+async def _(event: GroupMessageEvent, args: Message = CommandArg()):
+    if not check_permission(event.user_id, 5):
+        await MWCalculatorMatcher.finish(denied(5))
+    if args.extract_plain_text() == "":
+        return
+    arg = args.extract_plain_text().split(" ")
+    if len(arg) not in [1, 2]:
+        await MWCalculatorMatcher.finish("唔……参数不正确哦，请检查后重试~")
+    if len(arg) == 1:
+        server = None
+        name = arg[0]
+    elif len(arg) == 2:
+        server = arg[0]
+        name = arg[1]
+    server = Server(server, event.group_id).server
+    if server is None:
+        await MWCalculatorMatcher.finish(PROMPT.ServerNotExist)
+    instance = await MowenCalculator.with_name(name, server)
+    if isinstance(instance, str):
+        await MWCalculatorMatcher.finish(instance)
+    data = await instance.image()
+    await MWCalculatorMatcher.finish(data)
 
 def check_jcl_name(filename: str) -> bool:
     if not filename.startswith("IKS-"):

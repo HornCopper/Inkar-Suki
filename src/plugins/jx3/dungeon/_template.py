@@ -46,12 +46,12 @@ template_zone_record = """
 
 template_item = """
 <tr>
-    <td class="short-column">{{ server }}</td>
-    <td class="short-column">{{ name }}</td>
-    <td class="short-column">{{ map }}</td>
-    <td class="short-column">{{ role }}</td>
     <td class="short-column">{{ time }}</td>
     <td class="short-column">{{ relate }}</td>
+    <td class="short-column">{{ name }}</td>
+    <td class="short-column">{{ role }}</td>
+    <td class="short-column">{{ server }}</td>
+    <td class="short-column">{{ map }}</td>
 </tr>
 """
 
@@ -68,12 +68,12 @@ table_zone_record_head = """
 
 table_item_head = """
 <tr>
-    <th class="short-column">区服</th>
-    <th class="short-column">物品</th>
-    <th class="short-column">地图</th>
-    <th class="short-column">角色</th>
     <th class="short-column">时间</th>
     <th class="short-column">参考</th>
+    <th class="short-column">物品</th>
+    <th class="short-column">角色</th>
+    <th class="short-column">区服</th>
+    <th class="short-column">地图</th>
 </tr>"""
 
 template_monsters = """
