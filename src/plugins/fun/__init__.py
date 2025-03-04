@@ -119,17 +119,6 @@ async def help_(args: Message = CommandArg()):
         return
     await HelpMatcher.finish("Inkar Suki · 音卡使用文档：\nhttps://inkar-suki.codethink.cn/Inkar-Suki-Docs/#/usage")
 
-RandomColdJokeMatcher = on_command("冷笑话", priority=5, force_whitespace=True)
-
-@RandomColdJokeMatcher.handle()
-async def _(event: GroupMessageEvent, args: Message = CommandArg()):
-    if args.extract_plain_text() != "":
-        return
-    resp = (await Request("https://api.qicaiyun.top/joke/api.php").get())
-    resp.encoding = "gbk"
-    msg = resp.text.split("、")[1:]
-    await RandomColdJokeMatcher.finish(str(msg))
-
 RandomDogImageMatcher = on_command("随机狗图", aliases={"随机lwx"}, priority=5)
 
 @RandomDogImageMatcher.handle()
@@ -240,6 +229,9 @@ AllLiftBanMatcher = on_command("大赦天下", priority=5, force_whitespace=True
 
 @AllLiftBanMatcher.handle()
 async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
+    terminal_role = await bot.get_group_member_info(group_id=event.group_id, user_id=event.user_id)
+    if terminal_role["role"] not in ["owner", "admin"]:
+        await AllLiftBanMatcher.finish("只有群主或管理员才可以大赦天下！")
     ban_record: list[BanRecord] | Any = cache_db.where_all(BanRecord(), "group_id = ?", str(event.group_id), default=[])
     if not ban_record:
         await AllLiftBanMatcher.finish("当前没有抽奖人员处于禁言状态！")
@@ -247,4 +239,5 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
         unban_persons: list[int] = [b.user_id for b in ban_record]
         for p in unban_persons:
             await bot.set_group_ban(group_id=event.group_id, user_id=p, duration=0)
+        cache_db.delete(BanRecord(), "group_id = ?", str(event.group_id))
         await AllLiftBanMatcher.finish("已解除所有抽奖的禁言！")
