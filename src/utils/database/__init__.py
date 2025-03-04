@@ -4,6 +4,7 @@ from src.utils.database.classes import (
     Applicationslist,
     Affections,
     BannedUser,
+    BanRecord,
     GroupSettings,
     ItemKeywordMap,
     PersonalSettings,
@@ -35,6 +36,7 @@ db.auto_migrate(
 cache_db = Database(build_path(DATA, ["cache.db"]))
 
 cache_db.auto_migrate(
+    BanRecord(),
     JX3APIWSData(),
     RequestData(),
     GroupMessage()

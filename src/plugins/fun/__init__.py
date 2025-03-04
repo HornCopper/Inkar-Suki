@@ -1,4 +1,5 @@
 from pathlib import Path
+from typing import Any
 
 from nonebot import on_regex, on_command
 from nonebot.params import CommandArg, RawCommand
@@ -17,6 +18,9 @@ from src.const.path import (
 )
 from src.utils.network import Request
 from src.utils.analyze import check_number
+from src.utils.time import Time
+from src.utils.database import cache_db
+from src.utils.database.classes import BanRecord
 from src.utils.database.operation import get_group_settings
 
 import random
@@ -203,17 +207,17 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
         answer = random.choice(a)
         await AnswerBookMatcher.finish("答案之书给出的建议是：\n" + answer)
 
-LiftMatcher = on_command("抽奖", aliases={"抽大奖", "十连抽", "百连抽", "抽巨奖"}, priority=5)
+CustomBanMatcher = on_command("抽奖", aliases={"抽大奖", "十连抽", "百连抽", "抽巨奖"}, priority=5)
 
-@LiftMatcher.handle()
+@CustomBanMatcher.handle()
 async def _(bot: Bot, event: GroupMessageEvent, cmd: str = RawCommand()):
     additions = get_group_settings(event.group_id, "additions")
     self_role = await bot.get_group_member_info(group_id=event.group_id, user_id=event.self_id)
     terminal_role = await bot.get_group_member_info(group_id=event.group_id, user_id=event.user_id)
     if "抽奖" not in additions:
-        await LiftMatcher.finish("本群尚未启用抽奖！\n发送“订阅 抽奖”即可启用。包含以下命令：\n抽奖、抽大奖、十连抽、百连抽")
+        await CustomBanMatcher.finish("本群尚未启用抽奖！\n发送“订阅 抽奖”即可启用。包含以下命令：\n抽奖、抽大奖、十连抽、百连抽")
     if self_role["role"] not in ["owner", "admin"] or terminal_role["role"] in ["owner", "admin"]:
-        await LiftMatcher.finish("音卡的权限似乎不对？请检查音卡是否为管理员，自身是否为非管理员？")
+        await CustomBanMatcher.finish("音卡的权限似乎不对？请检查音卡是否为管理员，自身是否为非管理员？")
     max_time = {
         "抽奖": 15,
         "抽大奖": 60,
@@ -223,4 +227,24 @@ async def _(bot: Bot, event: GroupMessageEvent, cmd: str = RawCommand()):
     }
     reward_time = random.randint(0, max_time[cmd])
     await bot.send_group_msg(group_id=event.group_id, message=f"恭喜你{cmd}的奖励时长：{reward_time}分钟！")
+    cache_db.save(
+        BanRecord(
+            user_id = event.user_id,
+            group_id = event.group_id,
+            expire = Time().raw_time + reward_time * 60
+        )
+    )
     await bot.set_group_ban(group_id=event.group_id, user_id=event.user_id, duration=reward_time*60)
+
+AllLiftBanMatcher = on_command("大赦天下", priority=5, force_whitespace=True)
+
+@AllLiftBanMatcher.handle()
+async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
+    ban_record: list[BanRecord] | Any = cache_db.where_all(BanRecord(), "group_id = ?", str(event.group_id), default=[])
+    if not ban_record:
+        await AllLiftBanMatcher.finish("当前没有抽奖人员处于禁言状态！")
+    else:
+        unban_persons: list[int] = [b.user_id for b in ban_record]
+        for p in unban_persons:
+            await bot.set_group_ban(group_id=event.group_id, user_id=p, duration=0)
+        await AllLiftBanMatcher.finish("已解除所有抽奖的禁言！")

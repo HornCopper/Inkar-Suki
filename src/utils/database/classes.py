@@ -28,6 +28,12 @@ class BannedUser(LiteModel):
     user_id: int = 0
     reason: str = ""    
 
+class BanRecord(LiteModel):
+    TABLE_NAME: str = "ban_record"
+    user_id: int = 0
+    group_id: int = 0
+    expire: int = 0
+
 class GroupSettings(LiteModel):
     TABLE_NAME: str = "settings"
     server: str = ""
