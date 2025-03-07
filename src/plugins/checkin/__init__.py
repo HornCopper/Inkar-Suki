@@ -97,6 +97,8 @@ async def _(event: MessageEvent, args: Message = CommandArg()):
         await AddCoinMatcher.finish("唔……参数数量不正确哦~")
     if not check_number(arg[0]) or not check_number(arg[1]):
         await AddCoinMatcher.finish("唔……参数需要是数字哦~")
+    if int(arg[1]) <= 0:
+        await AddCoinMatcher.finish("金币数量需要是正整数！")
     AccountManage(int(arg[0])).add_coin(int(arg[1]))
     await AddCoinMatcher.finish("已向该账户添加了" + arg[1] + "枚金币！")
 
@@ -113,6 +115,8 @@ async def _(event: MessageEvent, args: Message = CommandArg()):
         await ReduceCoinMatcher.finish("唔……参数数量不正确哦~")
     if not check_number(arg[0]) or not check_number(arg[1]):
         await ReduceCoinMatcher.finish("唔……参数需要是数字哦~")
+    if int(arg[1]) <= 0:
+        await ReduceCoinMatcher.finish("金币数量需要是正整数！")
     AccountManage(int(arg[0])).reduce_coin(int(arg[1]))
     await ReduceCoinMatcher.finish("已向该账户扣除了" + arg[1] + "枚金币！")
 

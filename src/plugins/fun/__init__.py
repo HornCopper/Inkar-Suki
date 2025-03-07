@@ -199,7 +199,9 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
 CustomBanMatcher = on_command("抽奖", aliases={"抽大奖", "十连抽", "百连抽", "抽巨奖"}, priority=5)
 
 @CustomBanMatcher.handle()
-async def _(bot: Bot, event: GroupMessageEvent, cmd: str = RawCommand()):
+async def _(bot: Bot, event: GroupMessageEvent, cmd: str = RawCommand(), args: Message = CommandArg()):
+    if args.extract_plain_text() != "":
+        return
     additions = get_group_settings(event.group_id, "additions")
     self_role = await bot.get_group_member_info(group_id=event.group_id, user_id=event.self_id)
     terminal_role = await bot.get_group_member_info(group_id=event.group_id, user_id=event.user_id)
