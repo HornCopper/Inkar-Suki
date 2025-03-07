@@ -50,7 +50,7 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
         await UnblockMatcher.finish("移除失败！尚未避雷该玩家！")
     await UnblockMatcher.finish("移除避雷成功！")
 
-ListBlockMatcher = on_command("lblock", aliases={"本群黑名单", "列出黑名单", "黑名单", "避雷名单"}, force_whitespace=True, priority=5)  # 列出所有黑名单
+ListBlockMatcher = on_command("lblock", aliases={"本群黑名单", "列出黑名单", "黑名单", "避雷名单", "查看避雷"}, force_whitespace=True, priority=5)  # 列出所有黑名单
 
 @ListBlockMatcher.handle()
 async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):

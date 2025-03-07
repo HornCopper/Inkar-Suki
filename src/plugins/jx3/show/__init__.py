@@ -21,6 +21,8 @@ async def _(event: GroupMessageEvent, full_argument: Message = CommandArg()):
     additions = get_group_settings(str(event.group_id), "additions")
     if not Config.jx3.api.enable and not "Preview" in additions:
         return
+    if full_argument.extract_plain_text() == "":
+        return
     args = full_argument.extract_plain_text().split(" ")
     if len(args) not in [1, 2]:
         await ShowMatcher.finish("唔……参数不正确哦，请检查后重试~")
