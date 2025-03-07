@@ -126,6 +126,9 @@ from .serendipity import (
 from .server import (
     ServerMatcher
 )
+from .show import (
+    ShowMatcher
+)
 from .skill import (
     MatrixMatcher,
     MacroMatcher,

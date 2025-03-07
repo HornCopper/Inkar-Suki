@@ -43,6 +43,9 @@ async def _(bot: Bot, event: GroupIncreaseNoticeEvent):
         return
     await bot.call_api("send_group_msg", group_id=event.group_id, message=self_enter_msg.replace("$GROUP_ID", str(event.group_id)))
     group_id = str(event.group_id)
+    exist_db = db.where_one(GroupSettings(), "group_id = ?", group_id, default=None)
+    if exist_db is not None:
+        return
     new_settings = GroupSettings(group_id=group_id)
     db.save(new_settings)
 

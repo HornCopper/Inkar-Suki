@@ -73,7 +73,7 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
     if not (check_permission(str(event.user_id), 9) or user_permission):
         await ResetMatcher.finish(f"唔……只有群主或管理员才能重置{Config.bot_basic.bot_name}哦~")
     else:
-        await ResetMatcher.send(f"确定要重置{Config.bot_basic.bot_name}数据吗？如果是，请再发送一次“重置音卡”。\n注意：所有本群数据将会清空，包括绑定和订阅，该操作不可逆！")
+        await ResetMatcher.send(f"确定要重置{Config.bot_basic.bot_name}数据吗？如果是，请再发送一次“重置音卡”。\n注意：所有本群数据将会清空，包括绑定、订阅和邀请人等，该操作不可逆！")
 
 @ResetMatcher.got("confirm")
 async def _(bot: Bot, event: GroupMessageEvent, confirm: Message = Arg()):

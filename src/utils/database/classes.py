@@ -46,6 +46,7 @@ class GroupSettings(LiteModel):
     webhook: list[str] = []
     opening: list = []
     expire: int = 0
+    invitor: int = 0
 
 class ItemKeywordMap(LiteModel):
     TABLE_NAME: str = "item_keyword"
