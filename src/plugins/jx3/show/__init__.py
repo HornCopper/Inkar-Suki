@@ -19,7 +19,7 @@ ShowMatcher = on_command("jx3_show", aliases={"名片", "qq秀", "QQ秀", "名�
 @ShowMatcher.handle()
 async def _(event: GroupMessageEvent, full_argument: Message = CommandArg()):
     additions = get_group_settings(str(event.group_id), "additions")
-    if not Config.jx3.api.enable and not "Preview" in additions:
+    if not Config.jx3.api.enable or "Preview" not in additions:
         return
     if full_argument.extract_plain_text() == "":
         return

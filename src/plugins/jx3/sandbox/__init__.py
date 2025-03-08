@@ -21,7 +21,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     Example：-沙盘v2 幽月轮
     """
     additions = get_group_settings(str(event.group_id), "additions")
-    if not Config.jx3.api.enable and not "Preview" in additions:
+    if not Config.jx3.api.enable or "Preview" not in additions:
         return
     if args.extract_plain_text() == "":
         """

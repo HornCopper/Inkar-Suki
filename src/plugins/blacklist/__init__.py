@@ -46,7 +46,7 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
     if len(arg) != 1:
         await UnblockMatcher.finish("参数仅为玩家名，请勿附带任何信息！")
     status = Blacklist(arg[0], event.group_id).remove()
-    if not status:
+    if status:
         await UnblockMatcher.finish("移除失败！尚未避雷该玩家！")
     await UnblockMatcher.finish("移除避雷成功！")
 
