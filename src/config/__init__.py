@@ -4,7 +4,6 @@ from src.const.path import CONFIG, build_path
 
 import yaml
 
-
 class BotBasic(BaseModel):
     bot_name: str
     bot_name_argument: str
@@ -12,7 +11,6 @@ class BotBasic(BaseModel):
     bot_repo: str
     bot_notice: dict[str, str]
     proxy: str = ""
-
 
 class GitHubConfig(BaseModel):
     web_path: str
@@ -40,15 +38,18 @@ class Jx3Config(BaseModel):
     api: Jx3API
     ws: Jx3WS
 
+class QWeather(BaseModel):
+    url: str
+    token: str
 
 class Hidden(BaseModel):
     offcial_token: str = ""
-
 
 class config(BaseModel):
     bot_basic: BotBasic
     github: GitHubConfig
     jx3: Jx3Config
+    weather: QWeather
     hidden: Hidden
 
     @classmethod

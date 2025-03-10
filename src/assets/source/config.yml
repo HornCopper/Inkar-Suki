@@ -29,5 +29,10 @@ jx3: # 剑网3 相关配置
         url: "" # JX3API WebSocket 地址
         token: "" # JX3API WebSocket Token
         enable: False # 是否启用 JX3API Websocket
+
+weather: # 天气(和风天气)相关数据
+    url: "" # 和风天气API地址(不带斜杠)
+    token: "" # 和风天气API KEY
+
 hidden:
     offcial_token: "" # Inkar Suki 官方API Token 非官方Bot请留空
