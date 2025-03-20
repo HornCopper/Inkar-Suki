@@ -188,7 +188,7 @@ class JX3Trade:
                 items = [each_item["id"]]
         if not unique:
             items = [i["id"] for i in data["data"]["data"] if i["BindType"] in [0, 1, 2, None]]
-        items = [i for i in items if (await cls.check_trade(i))]
+        items = [i for i in items if (await cls.check_trade(i, server))]
         return cls(items, server)
 
     def __init__(self, item_id: list[str], server: str):
@@ -202,8 +202,8 @@ class JX3Trade:
         self._next_log = []
 
     @staticmethod
-    async def check_trade(item_id: str) -> bool:
-        url = f"https://next2.jx3box.com/api/item-price/{item_id}/detail"
+    async def check_trade(item_id: str, server: str) -> bool:
+        url = f"https://next2.jx3box.com/api/item-price/{item_id}/detail?server=" + server
         data = (await Request(url).get()).json()
         if "data" in data:
             return True
@@ -329,7 +329,7 @@ class JX3Trade:
                 final_prices = "\n".join(table)
                 info = ""
         else:
-            if len(self.item_id) != 1:
+            if len(self.item_id) > 1:
                 return "该关键词已匹配到多个物品，如需使用全服交易行功能，请给出准确的物品名称！"
             unique_item_id = self.item_id[0]
             unique_item = self.item_info(unique_item_id)
