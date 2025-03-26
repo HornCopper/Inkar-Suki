@@ -230,6 +230,8 @@ class JX3AttributeParser:
         name = self.kungfu.name
         if str(name).endswith("·悟"):
             name = str(name)[:-2]
+            if name == "山居问水剑":
+                name = "问水诀"
             result = mobile_attribute_calculator(self.equip["Equips"], name or "")
             if self.kungfu.base not in ["治疗", "防御"]:
                 result["攻击力"] = result.pop("面板攻击")

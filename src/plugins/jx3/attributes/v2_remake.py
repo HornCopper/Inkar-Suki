@@ -657,7 +657,8 @@ async def get_attr_v2_remake_img(
                 font=ImageFont.truetype(medium, size=14), anchor="mm")
     x, y = (703, 47)
     for equip in equips:
-        background.alpha_composite(Image.open(await download_image(equip.icon)).resize((38, 38)), (x, y))
+        if equip.icon:
+            background.alpha_composite(Image.open(await download_image(equip.icon)).resize((38, 38)), (x, y))
         if equip.peerless:
             background.alpha_composite(precious, (x - 20, y))
         if equip.strength[0] == equip.strength[1]:
