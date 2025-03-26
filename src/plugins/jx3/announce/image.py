@@ -19,7 +19,7 @@ prefix_html_code = """
 </style>
 """.replace("font_url", Path(build_path(ASSETS, ["font", "PingFangSC-Semibold.otf"])).as_uri())
 
-async def get_image():
-    raw_html = (await Request("https://jx3.xoyo.com/launcher/update/latest.html").get()).text
+async def get_image(ver: str = "latest"):
+    raw_html = (await Request(f"https://jx3.xoyo.com/launcher/update/{ver}.html").get()).text
     html = prefix_html_code + raw_html + "</div></html>"
     return await generate(html.replace("font-family:微软雅黑;", ""), "div", True, segment=True, output_path=build_path(ASSETS, ["image", "jx3", "update.png"]))

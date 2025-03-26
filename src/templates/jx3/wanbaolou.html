@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        @font-face {
+            font-family: Harmony;
+            src: url("{{ font }}");
+        }
+
+        body {
+            font-family: Harmony, sans-serif;
+            max-width: 900px;
+            margin: auto;
+            padding: 20px;
+            background-color: #f8f8f8;
+        }
+
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #ddd;
+        }
+
+        .left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .character-img {
+            width: 80px;
+            height: 80px;
+            border-radius: 10px;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #ddd;
+        }
+
+        .character-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .info {
+            line-height: 1.5;
+        }
+
+        .price {
+            color: red;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-top: 15px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #ddd;
+        }
+
+        .section {
+            margin-top: 15px;
+        }
+
+        .section-title {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        footer {
+            background: #f0f0f0;
+            text-align: center;
+            padding: 15px;
+            font-size: 0.9em;
+            color: #777;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="left">
+                <div class="character-img">
+
+                </div>
+
+                <div style="display: flex;gap: 20px;">
+                    <div class="info">
+                        <p><strong>角色：</strong>{{ name }} {{ level }}</p>
+                        <p><strong>门派：</strong>{{ school }} {{ body }}</p>
+                    </div>
+                    <div class="info">
+                        <p><strong>区服：</strong>{{ zone }}/{{ server }}</p>
+                        <p><strong>阵营：</strong>{{ camp }}</p>
+                    </div>
+                    <div class="info">
+                        <p><strong>结售：</strong>{{ date }}</p>
+                        <p><strong>编号：</strong>{{ sequence }}</p>
+                    </div>
+                </div>
+            </div>
+            <div class="price">
+                <span>￥{{ price }}</span>
+                <br>
+                <span style="font-size: 15px;color: grey">{{ price_change}}</span>
+            </div>
+        </div>
+        <div class="info-grid">
+            <div><strong>装分：</strong>{{ score }}</div>
+            <div><strong>资历：</strong>{{ experience }}</div>
+        </div>
+        <div class="section">
+            {% for title, content in details.items() %}
+            <div style="padding-top: 15px">【{{ title }}】: {{ content }}
+            </div>
+            {% endfor %}
+        </div>
+        <footer>Inkar Suki: {{ saohua }}</footer>
+</body>
+
+</html>

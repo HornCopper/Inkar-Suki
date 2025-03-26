@@ -19,6 +19,7 @@ from src.plugins.preferences.app import Preference
 from .api import get_trade_image_v2
 from .item_v2 import get_single_item_price
 from .shilian import get_wufeng_image
+from .wanbaolou import get_wbl_role
 
 from .trade import JX3Trade
 
@@ -244,6 +245,18 @@ async def _(event: GroupMessageEvent, state: T_State, num: Message = Arg()):
         return
     img_content = Request(img).local_content
     await V2ItemPriceMatcher.finish(ms.image(img_content))
+
+WBLRolePriceMatcher = on_command("jx3_wbl", aliases={"万宝楼"}, priority=5, force_whitespace=True)
+
+@WBLRolePriceMatcher.handle()
+async def _(event: GroupMessageEvent, args: Message = CommandArg()):
+    num = args.extract_plain_text()
+    if num == "":
+        return
+    if not check_number(num):
+        return
+    msg = await get_wbl_role(int(num))
+    await WBLRolePriceMatcher.finish(msg)
 
 ItemPriceAliasMatcher = on_command("jx3_itemaliases", aliases={"物品别名", "物品别称"}, priority=5, force_whitespace=True)
 

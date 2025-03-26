@@ -144,5 +144,9 @@ from .subscribe import (
 from .trade import (
     V2TradeMatcher,
     V2SLTradeMatcher,
-    V2ItemPriceMatcher
+    V2ItemPriceMatcher,
+    WBLRolePriceMatcher
+)
+from .version import (
+    VersionMatcher
 )

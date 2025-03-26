@@ -54,7 +54,8 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
         )
         words = extract_chinese(args.extract_plain_text())
         if not words:
-            await AlmanacMatcher.finish("未检测到中文字符！")
+            msg = image + "数据来自小红书【剑三黄历】欢迎关注！"
+            await AlmanacMatcher.finish(msg)
         else:
             async with httpx.AsyncClient(verify=False, follow_redirects=True) as client:
                 words_attr_data = (await client.post("https://inkar-suki.codethink.cn/words_attr", params={"token": Config.hidden.offcial_token,"words": words})).json()
