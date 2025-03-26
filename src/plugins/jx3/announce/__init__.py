@@ -35,7 +35,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
         img = await get_image()
         await AnnounceMatcher.finish(img)
 
-BetaAnnounceMatcher = on_command("jx3_beta_announce", aliases={"体服公告"}, priority=5, force_whitespace=True)
+BetaAnnounceMatcher = on_command("jx3_beta_announce", aliases={"体服公告", "体服更新"}, priority=5, force_whitespace=True)
 
 @BetaAnnounceMatcher.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
@@ -44,14 +44,5 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     """
     if args.extract_plain_text() != "":
         return
-    image = Request(
-        Path(
-            await generate(
-                "https://jx3.xoyo.com/launcher/update/latest_exp.html",
-                "div",
-                viewport={"height": 1920, "width": 1080},
-                first=True
-            )
-        ).as_uri()
-    ).local_content
-    await BetaAnnounceMatcher.finish(ms.image(image))
+    img = await get_image(ver="latest_exp")
+    await AnnounceMatcher.finish(img)
