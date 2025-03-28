@@ -5,7 +5,7 @@ from jinja2 import Template
 
 from nonebot.adapters.onebot.v11 import Message, MessageSegment as ms
 
-from src.const.jx3.kungfu import Kungfu
+from src.const.jx3.kungfu import Kungfu, season as s
 from src.const.path import build_path, CONST, TEMPLATES
 from src.templates import HTMLSourceCode
 from src.utils.network import Request
@@ -30,9 +30,10 @@ class Qixue:
     def __init__(self, qixue: str, kungfu: str, season: str = ""):
         self.name = qixue
         self.kungfu = kungfu
+        self.season = season
 
     @classmethod
-    async def initialize_qixue_data(cls, season) -> bool:
+    async def initialize_qixue_data(cls, season: str = "") -> bool:
         """类方法，用于异步初始化 qixue_data"""
         if cls.qixue_data == {}:
             data = await cls.get_qixue_data(season)
@@ -45,16 +46,17 @@ class Qixue:
     @classmethod
     async def create(cls, qixue: str, kungfu: str, season: str) -> "Qixue | Literal[False]":
         """异步创建实例，并确保 qixue_data 被初始化"""
+        cls.qixue_data = {}
         status = await cls.initialize_qixue_data(season)
         if not status:
             return False
-        return cls(qixue, kungfu)
+        return cls(qixue, kungfu, season)
     
     @staticmethod
     async def get_qixue_data(season: str = "") -> dict | Literal[False]:
         data = (await Request("https://data.jx3box.com/talent/std/index.json").get()).json()
         for each_ver in data:
-            if (each_ver["name"].find("体服") == -1 and season == "") or (season in each_ver["name"] and season != ""):
+            if (s in each_ver["name"] and season == "") or (season in each_ver["name"] and season != ""):
                 path = build_path(CONST, ["cache", each_ver["version"] + ".json"])
                 if os.path.exists(path):
                     return json.loads(read(path))

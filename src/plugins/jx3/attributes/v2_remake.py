@@ -6,7 +6,7 @@ from pydantic import BaseModel
 from nonebot.adapters.onebot.v11 import MessageSegment as ms
 
 from src.const.prompts import PROMPT
-from src.const.jx3.kungfu import Kungfu
+from src.const.jx3.kungfu import Kungfu, season
 from src.const.jx3.school import School
 from src.const.path import (
     ASSETS,
@@ -29,7 +29,7 @@ from .mobile_attr import mobile_attribute_calculator
 async def random_wujie_qixue(kungfu: str) -> tuple[list[str], list[str]]:
     wujie_index: list[dict[str, str]] = (await Request("https://data.jx3box.com/talent/wujie/index.json").get()).json()
     for version_data in wujie_index:
-        if version_data["name"].find("体服") == -1:
+        if version_data["name"].find(season) != -1:
             version_key = version_data["version"]
             qixue_data: dict[str, dict[str, dict[str, dict[str, Any]]]] = (await Request(f"https://data.jx3box.com/talent/wujie/{version_key}.json").get()).json()
             kungfu_qixue_data = qixue_data[kungfu]
@@ -127,7 +127,7 @@ class Qixue:
             return json.loads(read(qixue_data_path))
         data = (await Request("https://data.jx3box.com/talent/std/index.json").get()).json()
         for each_ver in data:
-            if each_ver["name"].find("体服") == -1:
+            if each_ver["name"].find(season) != -1:
                 qixue_data = (await Request("https://data.jx3box.com/talent/std/" + each_ver["version"] + ".json").get()).json()
                 write(qixue_data_path, json.dumps(qixue_data, ensure_ascii=False))
                 return qixue_data
