@@ -10,7 +10,6 @@ from nonebot.params import CommandArg
 
 from src.const.path import ASSETS, build_path
 from src.utils.network import Request
-from src.utils.generate import generate
 
 import os
 
@@ -45,4 +44,4 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     if args.extract_plain_text() != "":
         return
     img = await get_image(ver="latest_exp")
-    await AnnounceMatcher.finish(img)
+    await BetaAnnounceMatcher.finish(img)
