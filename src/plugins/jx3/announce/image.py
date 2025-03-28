@@ -22,4 +22,4 @@ prefix_html_code = """
 async def get_image(ver: str = "latest"):
     raw_html = (await Request(f"https://jx3.xoyo.com/launcher/update/{ver}.html").get()).text
     html = prefix_html_code + raw_html + "</div></html>"
-    return await generate(html.replace("font-family:微软雅黑;", ""), "div", True, segment=True, output_path=build_path(ASSETS, ["image", "jx3", "update.png"]))
+    return await generate(html.replace("font-family:微软雅黑;", ""), "div", True, segment=True, output_path=build_path(ASSETS, ["image", "jx3", "update.png"]) if ver != "latest_exp" else "")
