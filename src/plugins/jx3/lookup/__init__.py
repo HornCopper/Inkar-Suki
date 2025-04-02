@@ -4,7 +4,7 @@ from nonebot.params import CommandArg
 
 from src.utils.analyze import check_number
 
-from .api import get_daren_count
+from .api import get_daren_count, get_tieba_records
 
 LookupPersonMatcher = on_command("jx3_cheater", aliases={"查人", "骗子"}, force_whitespace=True, priority=5)
 
@@ -22,5 +22,6 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
     count = await get_daren_count(event.self_id, int(uin), pskey)
     info = await bot.call_api("get_stranger_info", user_id=int(uin))
     nickname = info["nickname"]
-    msg = f"查询到以下信息：\nQQ号：{uin}\n昵称：{nickname}\n达人：{count}天\n贴吧：https://tieba.baidu.com/f/search/res?qw={uin}"
+    tieba = await get_tieba_records(int(uin))
+    msg = f"查询到以下信息：\nQQ号：{uin}\n昵称：{nickname}\n达人：{count}天\n强制打开主页：https://ti.qq.com/friends/recall?uin={uin}\n\n贴吧：{tieba}\n\n线下交易需谨慎，交易请至万宝楼！"
     await LookupPersonMatcher.finish(msg)
