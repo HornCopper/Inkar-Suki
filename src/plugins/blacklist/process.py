@@ -1,4 +1,5 @@
 from src.utils.database.operation import set_group_settings, get_group_settings
+from src.utils.time import Time
 
 class Blacklist:
     def __init__(self, name: str, group_id: int | str, submit_id: int = 0):
@@ -22,7 +23,8 @@ class Blacklist:
             {
                 "ban": self._name,
                 "reason": reason,
-                "source": str(self._submit_id)
+                "source": str(self._submit_id),
+                "time": str(Time().raw_time)
             }
         )
         set_group_settings(self._group_id, "blacklist", self._data)

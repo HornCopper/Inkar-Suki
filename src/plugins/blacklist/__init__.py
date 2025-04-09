@@ -6,6 +6,7 @@ from nonebot.params import CommandArg
 
 from src.utils.database.operation import get_group_settings
 from src.utils.generate import generate
+from src.utils.time import Time
 from src.templates import HTMLSourceCode
 
 from .process import Blacklist
@@ -60,11 +61,16 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
             source = "未知"
         else:
             source = i["source"]
+        if "time" not in i:
+            t = "未知"
+        else:
+            t = Time(int(i["time"])).format()
         table.append(
             Template(template_body).render(
                 name = i["ban"],
                 source = source,
-                reason = i["reason"]
+                reason = i["reason"],
+                time = t
             )
         )
     html = str(
