@@ -8,7 +8,7 @@ from src.const.jx3.server import Server
 from src.utils.analyze import check_number
 from src.utils.network import Request
 
-from .processer import get_item_data, DataProcesser
+from .processer import get_item_data, JX3CostCalc
 
 CostCalculatorMatcher = on_command("成本", priority=5, force_whitespace=True)
 
@@ -42,7 +42,7 @@ async def _(event: GroupMessageEvent, state: T_State, argument: Message = Comman
                 break
         await CostCalculatorMatcher.send(msg)
     else:
-        image = await DataProcesser(item_data).render_image(server)
+        image = await JX3CostCalc(item_data, server).render_image()
         await CostCalculatorMatcher.finish(image)
 
 @CostCalculatorMatcher.got("num")
@@ -56,7 +56,5 @@ async def _(event: GroupMessageEvent, state: T_State, num: Message = Arg()):
         await CostCalculatorMatcher.finish("唔……不存在该数字对应的搜索结果，请重新搜索！")
     name_with_url = data[int(num_)-1]
     _, url = next(iter(name_with_url.items()))
-    image = await DataProcesser(
-        (await Request(url).get()).json()
-    ).render_image(server)
+    image = await JX3CostCalc((await Request(url).get()).json(), server).render_image()
     await CostCalculatorMatcher.finish(image)

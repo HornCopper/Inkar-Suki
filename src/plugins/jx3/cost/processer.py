@@ -1,7 +1,9 @@
 from typing import Any, Literal
 from jinja2 import Template
+from pydantic import BaseModel
 
 from src.const.path import ASSETS, TEMPLATES
+from src.utils.analyze import sort_dict_list
 from src.utils.file import read
 from src.utils.network import Request
 from src.utils.generate import generate
@@ -11,9 +13,7 @@ from ._template import template_cost
 
 import re
 
-async def get_item_data(
-    name: str,
-) -> dict[str, Any] | list[dict[str, str]] | Literal[False]:
+async def get_item_data(name: str) -> dict[str, Any] | list[dict[str, str]] | Literal[False]:
     possible_results: list[dict[str, str]] = []
     for t in ["tailoring", "cooking", "medicine", "founding", "furniture"]:
         menu = (
@@ -45,65 +45,43 @@ async def get_item_data(
     else:
         return possible_results
 
+class Material(BaseModel):
+    item_type: int
+    item_index: int
+    count: int
 
-class DataProcesser:
+class JX3CostCalc:
     coin_image = staticmethod(coin_to_image)
     calculate_price = staticmethod(calculate_price)
 
-    def __init__(self, data: dict[str, Any]):
-        self.data = data
+    def __init__(self, data: dict[str, Any], server: str):
+        self.name = data["Name"]
+        self.raw_data = data
+        self.npc_price: dict[str, int] = {}
+        self.trade_price: dict[str, int] = {}
+
+        self.server = server
+        self.item_id = str(data["CreateItemType1"]) + "_" + str(data["CreateItemIndex1"])
 
     @property
     def icon(self) -> str:
-        return "https://icon.jx3box.com/icon/" + str(self.data["IconID"]) + ".png"
-
-    @property
-    def name(self) -> str:
-        return self.data["Name"]
+        return "https://icon.jx3box.com/icon/" + str(self.raw_data["IconID"]) + ".png"
 
     @property
     def level(self) -> int:
-        return self.data["nLevel"] or 0
+        return self.raw_data["nLevel"] or 0
 
     @property
     def vigor(self) -> int:
-        return self.data["CostVigor"] or 0
+        return self.raw_data["CostVigor"] or 0
 
     @property
     def experience(self) -> int:
-        return self.data["Exp"] or 0
+        return self.raw_data["Exp"] or 0
 
-    @property
-    def output(
-        self,
-    ) -> tuple[str, float, str]:  # 1 item_count 2 average count 3 item_id
-        min_count = self.data["CreateItemMin1"] or 0
-        max_count = self.data["CreateItemMax1"] or 0
-        return (
-            str(min_count) if min_count == max_count else f"{min_count} ~ {max_count}",
-            (min_count + max_count) / 2,
-            str(self.data["CreateItemType1"])
-            + "_"
-            + str(self.data["CreateItemIndex1"]),
-        )
-
-    @property
-    def materials(self) -> tuple[list[str], list[int]]:  # 1 item_id 2 item_count
-        ids: list[str] = []
-        counts: list[int] = []
-        for index in range(1, 9):
-            t = self.data[f"RequireItemType{index}"]
-            i = self.data[f"RequireItemIndex{index}"]
-            c = self.data[f"RequireItemCount{index}"]
-            if isinstance(t, int) and isinstance(i, int):
-                ids.append(f"{t}_{i}")
-            if isinstance(c, int):
-                counts.append(c)
-        return ids, counts
-    
     @property
     def tip(self) -> str:
-        tip = self.data["szTip"]
+        tip = self.raw_data["szTip"]
         if tip is None:
             return ""
         if not tip:
@@ -116,64 +94,88 @@ class DataProcesser:
             result = match.group(1).strip() if match else ""
             return " | " + re.sub(r"\\+", "", result).strip()
 
-    async def get_prices(
-        self, server: str
-    ) -> tuple[
-        dict[str, dict], list[str], list[dict[str, Any]]
-    ]:  # 1 item_price 2 not in trade 3 npc trade data
-        materials_id, _ = self.materials
-        _, _, output_id = self.output
-        all_items_id = materials_id + [output_id]
-        trade_price_data: dict[str, dict[str, Any]] = (
-            await Request(
-                "https://next2.jx3box.com/api/item-price/list?itemIds="
-                + ",".join(all_items_id)
-                + f"&server={server}"
-            ).get()
-        ).json()
-        npc_price_data: list[dict[str, Any]] = (
-            await Request(
-                "https://node.jx3box.com/craft/price?ids="
-                + ",".join([i.split("_")[-1] for i in materials_id])
-                + "&client=std"
-            ).get()
-        ).json()
-        trade_item_ids = list(trade_price_data["data"].keys())
-        for trade_item_id in trade_item_ids:
-            if trade_item_id.split("_")[-1] in [
-                str(i["ItemIndex"]) for i in npc_price_data
-            ]:
-                trade_price_data["data"].pop(trade_item_id)
+    @property
+    def output(self) -> str:
+        min_count = self.raw_data["CreateItemMin1"] or 0
+        max_count = self.raw_data["CreateItemMax1"] or 0
+        return str(min_count) if min_count == max_count else f"{min_count} ~ {max_count}"
+    
+    @property
+    def avg_output(self) -> float:
+        min_count = self.raw_data["CreateItemMin1"] or 0
+        max_count = self.raw_data["CreateItemMax1"] or 0
+        return (min_count + max_count) / 2
+
+    @property
+    def materials(self) -> list[Material]:
+        results: list[Material] = []
+        for index in range(1, 9):
+            if self.raw_data[f"RequireItemType{index}"] is None:
+                break
+            results.append(
+                Material(
+                    item_type = self.raw_data[f"RequireItemType{index}"],
+                    item_index = self.raw_data[f"RequireItemIndex{index}"],
+                    count = self.raw_data[f"RequireItemCount{index}"]
+                )
+            )
+        return results
+    
+    async def get_craft_price(self):
+        """
+        获取NPC出售的物品。
+        """
+        materials = self.materials
+        item_ids = ",".join(
+            [str(i.item_index) for i in materials]
+        )
+        url = f"https://node.jx3box.com/craft/price?ids={item_ids}&client=std"
+        data: list[dict] = (await Request(url).get()).json()
+        for item in data:
+            for material in materials:
+                if material.item_index == item["ItemIndex"]:
+                    self.npc_price[f"{material.item_type}_{material.item_index}"] = item["Price"]
+
+    @staticmethod
+    async def get_trade_price(item_id: str, server: str) -> int:
+        url = "https://next2.jx3box.com/api/auction/"
+        data = (await Request(url, params={"server": server, "item_id": item_id, "aggregate_type": "hourly"}).post()).json()
+        if not data:
+            data = (await Request(url, params={"server": server, "item_id": item_id, "aggregate_type": "daily"}).post()).json()
+            if not data:
+                return 0
+        return sort_dict_list(data, "timestamp")[::-1][0]["price"]
+        
+    async def get_last_price(self):
+        """
+        获取剩余物品。
+        """
+        materials = [m for m in self.materials if f"{m.item_type}_{m.item_index}" not in self.npc_price]
+        for m in materials:
+            price = await self.get_trade_price(f"{m.item_type}_{m.item_index}", self.server)
+            self.trade_price[f"{m.item_type}_{m.item_index}"] = price
+        
+    async def get_30d_price(self) -> tuple[int, int, int]:
+        """
+        获取30日价格。
+        """
+        url = "https://next2.jx3box.com/api/auction/"
+        data: list[dict] = (await Request(url, params={"server": self.server, "item_id": self.item_id, "aggregate_type": "daily"}).post()).json()
+        data = sort_dict_list(data, "timestamp")[::-1]
         return (
-            trade_price_data["data"],
-            [m for m in materials_id if m not in list(trade_price_data["data"].keys())],
-            npc_price_data,
+            data[-1]["price"],
+            data[int(len(data)/2)]["price"],
+            data[0]["price"]
         )
 
-    def get_npc_prices(
-        self, npc_item: list[str], data: list[dict[str, Any]]
-    ) -> list[int]:
-        if len(npc_item) == 0:
-            return []
-        ids = [i.split("_")[-1] for i in npc_item]
-        results = []
-        for id in ids:
-            for each_item in data:
-                if str(each_item["ItemIndex"]) == id:
-                    results.append(each_item["Price"])
-                    continue
-        return results
-
-    async def get_materials_info(
-        self, materials_id: list[str]
-    ) -> list[tuple[str, str]]:  # list[1 icon 2 name]
+    async def get_materials_info(self, materials_id: list[str]) -> dict[str, tuple[str, str]]:
         final_url = (
             "https://node.jx3box.com/api/node/item/search?ids="
             + ",".join(materials_id)
             + "&page=1&per=50&client=std"
         )
         data = (await Request(final_url).get()).json()
-        results: list[tuple[str, str]] = []
+        results = {}
         for each_id in materials_id:
             for item in data["data"]["data"]:
                 if item["id"] == each_id:
@@ -181,59 +183,39 @@ class DataProcesser:
                         "https://icon.jx3box.com/icon/" + str(item["IconID"]) + ".png"
                     )
                     name = item["Name"]
-                    results.append((icon, name))
+                    results[item["id"]] = (icon, name)
                     continue
         return results
 
-    async def render_image(self, server: str):
-        materials_id, materials_count = self.materials
-        all_prices, npc_item, npc_trade = await self.get_prices(server)
-        count, average_count, terminal_item_id = self.output
-        if terminal_item_id not in all_prices:
-            terminal_item_price = {"HighestPrice": 0, "AvgPrice": 0, "LowestPrice": 0}
-        else:
-            terminal_item_price = all_prices[terminal_item_id]
-        npc_item_price = self.get_npc_prices(npc_item, npc_trade)
-        npc_item_count = []
-        record_npc_item = []
-        for i in range(len(materials_id)):
-            for each_npc_item_id in npc_item:
-                if (
-                    materials_id[i].split("_")[-1] == each_npc_item_id.split("_")[-1]
-                    and each_npc_item_id not in record_npc_item
-                ):
-                    npc_item_count.append(materials_count[i])
-                    record_npc_item.append(each_npc_item_id)
-        trade = int(terminal_item_price["AvgPrice"] * average_count)
-        materials_info = await self.get_materials_info(materials_id)
+    async def render_image(self):
+        materials = self.materials
+        await self.get_craft_price()
+        await self.get_last_price()
+        materials_info = await self.get_materials_info(
+            [f"{m.item_type}_{m.item_index}" for m in materials]
+        )
         materials_table = []
         total = 0
-        for each_material in materials_id:
-            index = materials_id.index(each_material)
-            icon, name = materials_info[index]
-            require_count = materials_count[index]
-            if each_material in npc_item:
-                if npc_item.index(each_material) >= len(npc_item_price):
-                    price = 0
-                else:
-                    price = npc_item_price[npc_item.index(each_material)]
-            else:
-                if each_material not in all_prices:
-                    price = 0
-                else:
-                    price = all_prices[each_material]["AvgPrice"]
+        for each_material in materials:
+            item_id = f"{each_material.item_type}_{each_material.item_index}"
+            icon, name = materials_info[item_id]
+            require_count = each_material.count
+            item_type = "npc" if item_id in self.npc_price else "trade"
+            price = (self.npc_price if item_type == "npc" else self.trade_price)[item_id]
             total_price = price * require_count
             total += total_price
             materials_table.append(
                 Template(template_cost).render(
                     icon=icon,
                     name=name,
-                    count=("(NPC)<br>" if each_material in npc_item else "(交易行)<br>")
-                    + str(require_count),
+                    count=("(NPC)<br>" if item_type == "npc" else "(交易行)<br>") + str(require_count),
                     unit=self.coin_image(self.calculate_price(price)),
                     total=self.coin_image(self.calculate_price(total_price)),
                 )
             )
+        highest, average, lowest = await self.get_30d_price()
+        item_latest_price = await self.get_trade_price(self.item_id, self.server)
+        trade = self.avg_output * item_latest_price
         html = Template(read(TEMPLATES + "/jx3/cost.html")).render(
             tip=self.tip,
             font=ASSETS + "/font/PingFangSC-Semibold.otf",
@@ -242,20 +224,20 @@ class DataProcesser:
             level=self.level,
             vigor=self.vigor,
             experience=self.experience,
-            count=count,
+            count=self.output,
             highest=self.coin_image(
-                self.calculate_price(terminal_item_price["HighestPrice"])
+                self.calculate_price(highest)
             ),
             average=self.coin_image(
-                self.calculate_price(terminal_item_price["AvgPrice"])
+                self.calculate_price(average)
             ),
             lowest=self.coin_image(
-                self.calculate_price(terminal_item_price["LowestPrice"])
+                self.calculate_price(lowest)
             ),
             cost=self.coin_image(self.calculate_price(total)),
             trade=self.coin_image(self.calculate_price(int(trade * 0.95))),
             profit=self.coin_image(self.calculate_price(int(trade * 0.95) - total)),
             materials="\n".join(materials_table),
-            server=server,
+            server=self.server,
         )
         return await generate(html, ".container", True, segment=True)
