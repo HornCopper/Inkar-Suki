@@ -163,9 +163,9 @@ class JX3CostCalc:
         data: list[dict] = (await Request(url, params={"server": self.server, "item_id": self.item_id, "aggregate_type": "daily"}).post()).json()
         data = sort_dict_list(data, "timestamp")[::-1]
         return (
-            data[-1]["price"],
+            data[0]["price"],
             data[int(len(data)/2)]["price"],
-            data[0]["price"]
+            data[-1]["price"]
         )
 
     async def get_materials_info(self, materials_id: list[str]) -> dict[str, tuple[str, str]]:
