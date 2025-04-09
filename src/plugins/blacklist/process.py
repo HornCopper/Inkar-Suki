@@ -1,11 +1,10 @@
-from src.utils.database import db
-from src.utils.database.classes import GroupSettings
 from src.utils.database.operation import set_group_settings, get_group_settings
 
 class Blacklist:
-    def __init__(self, name: str, group_id: int | str):
+    def __init__(self, name: str, group_id: int | str, submit_id: int = 0):
         self._name = name
         self._group_id = str(group_id)
+        self._submit_id = submit_id
 
     @property
     def status(self) -> bool | str:
@@ -22,7 +21,8 @@ class Blacklist:
         self._data.append(
             {
                 "ban": self._name,
-                "reason": reason
+                "reason": reason,
+                "source": str(self._submit_id)
             }
         )
         set_group_settings(self._group_id, "blacklist", self._data)

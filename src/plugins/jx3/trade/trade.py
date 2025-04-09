@@ -72,9 +72,9 @@ class JX3Item:
         else:
             return " ".join(
                 [
-                        (attr["label"].split("提高" if "提高" in attr["label"] else "增加")[0]).replace("等级", "").replace("值", "") + "(" + str(list(map(int, re.findall(r"\d+", attr["label"])))[0]) + ")"
-                        for attr in self.data["attributes"]
-                        if attr.get("color") == "green"
+                    (attr["label"].split("提高" if "提高" in attr["label"] else "增加")[0]).replace("等级", "").replace("值", "") + "(" + str(list(map(int, re.findall(r"\d+", attr["label"])))[0]) + ")"
+                    for attr in self.data["attributes"]
+                    if attr.get("color") == "green"
                 ]
             )
         
@@ -97,26 +97,23 @@ class JX3Item:
         return ["(167, 167, 167)", "(255, 255, 255)", "(0, 210, 75)", "(0, 126, 255)", "(254, 45, 254)", "(255, 165, 0)"][self.data["Quality"]]
     
 class ItemPriceLog:
-    def __init__(self, data: dict):
+    def __init__(self, data: list, item_id: str, server: str):
         self.data = data
-        self.item_id = data["ItemId"]
-        self.server = data["Server"]
+        self.item_id = item_id
+        self.server = server
+        self.sorted_data = sort_dict_list(data, "price")[::-1]
     
     @property
     def lowest(self) -> int:
-        return self.data["LowestPrice"]
+        return self.sorted_data[-1]["price"]
     
     @property
     def average(self) -> int:
-        return self.data["AvgPrice"]
+        return self.sorted_data[int(len(self.sorted_data)/2)]["price"]
     
     @property
     def highest(self) -> int:
-        return self.data["HighestPrice"]
-    
-    @property
-    def timestamp(self) -> int:
-        return int((datetime.strptime(self.data["CreatedAt"], "%Y-%m-%dT%H:%M:%S+08:00")).timestamp())
+        return self.sorted_data[0]["price"]
     
 class ItemPriceDetail:
     def __init__(self, data: dict):
@@ -124,19 +121,19 @@ class ItemPriceDetail:
 
     @property
     def timestamp(self) -> int:
-        return self.data["created"]
+        return self.data["timestamp"]
     
     @property
     def count(self) -> int:
-        return self.data["n_count"]
+        return self.data["sample"]
 
     @property
     def price(self) -> int:
-        return self.data["unit_price"]
+        return self.data["price"]
 
 class JX3Trade:
-    _node_data: list = []
-    _next_log: list[ItemPriceLog] = []
+    _node_data: list[dict] = []
+    _daily_data: dict[tuple[str, str], list] = {}
 
     shilian_basic = "无修"
 
@@ -201,11 +198,14 @@ class JX3Trade:
         self._no_data_items_muilt_server: dict[str, list] = {s: [] for s in server_list}
         self._next_log = []
 
-    @staticmethod
-    async def check_trade(item_id: str, server: str) -> bool:
-        url = f"https://next2.jx3box.com/api/item-price/{item_id}/detail?server=" + server
-        data = (await Request(url).get()).json()
-        if "data" in data:
+    @classmethod
+    async def check_trade(cls, item_id: str, server: str = "") -> bool:
+        url = "https://next2.jx3box.com/api/auction/"
+        if server == "全服":
+            server = ""
+        data: list[dict] = (await Request(url, params={"server": server or None, "item_id": item_id, "aggregate_type": "daily"}).post()).json()
+        cls._daily_data[(item_id, server)] = data
+        if data:
             return True
         return False
 
@@ -216,28 +216,28 @@ class JX3Trade:
         raise ValueError
     
     async def get_logs(self, item_id: str, server: str) -> ItemPriceLog | None:
-        for log in self._next_log:
-            if log.item_id == item_id and log.server == server:
-                return log
-        url = f"https://next2.jx3box.com/api/item-price/{item_id}/logs"
-        data = (await Request(url, params={"server": server}).get()).json()
-        if data["data"]["logs"] is None:
+        if (item_id, server) in self._daily_data:
+            return ItemPriceLog(self._daily_data[(item_id, server)], item_id, server)
+        url = "https://next2.jx3box.com/api/auction/"
+        data: list[dict] = (await Request(url, params={"server": server, "item_id": item_id, "aggregate_type": "daily"}).post()).json()
+        if not data:
             if not self.all_server:
                 self._no_data_items.append(item_id)
             else:
                 self._no_data_items_muilt_server[server].append(item_id)
         else:
-            result = ItemPriceLog(data["data"]["logs"][-1])
+            result = ItemPriceLog(data, item_id, server)
             self._next_log.append(
                 result
             )
             return result
     
     async def get_prices(self, item_id: str, server: str) -> list[ItemPriceDetail] | None:
-        url = f"https://next2.jx3box.com/api/item-price/{item_id}/detail"
-        data = (await Request(url, params={"server": server}).get()).json()
-        if data["data"]["prices"] is not None:
-            return [ItemPriceDetail(i) for i in sort_dict_list(data["data"]["prices"], "unit_price")]
+        url = "https://next2.jx3box.com/api/auction/"
+        data = (await Request(url, params={"server": server, "item_id": item_id, "aggregate_type": "hourly"}).post()).json()
+        if len(data) > 20:
+            data = sort_dict_list(data, "timestamp")[::-1][:20]
+        return [ItemPriceDetail(i) for i in sort_dict_list(data, "price")] if data else None
     
     async def generate_image(self):
         if not self.all_server:
@@ -292,7 +292,7 @@ class JX3Trade:
                     color = unique_item.color,
                     name = unique_item.name,
                     element = element,
-                    date = "未知" if log is None else Time(log.timestamp).format(),
+                    date = "未知" if log is None else Time(sort_dict_list(log.data, "timestamp")[-1]["timestamp"]).format(),
                 )
             else:
                 table = []
@@ -304,12 +304,12 @@ class JX3Trade:
                         color = item_info.color
                     )
                     price = await self.get_prices(item, self.server)
-                    log = await self.get_logs(item, self.server) or ItemPriceLog({})
+                    log = await self.get_logs(item, self.server) or ItemPriceLog([], "", "")
                     if price is None:
                         content = Template(template_v3_price).render(
                             server = self.server,
                             name = name,
-                            time = Time(log.timestamp).format(),
+                            time = Time(sort_dict_list(log.data, "timestamp")[-1]["timestamp"]).format(),
                             count = "0",
                             price = n2i(log.lowest),
                             percent = "0%"
@@ -349,7 +349,7 @@ class JX3Trade:
                     content = Template(template_v3_price).render(
                         server = server,
                         name = name,
-                        time = Time(log.timestamp).format(),
+                        time = Time(sort_dict_list(log.data, "timestamp")[-1]["timestamp"]).format(),
                         count = "0",
                         price = n2i(log.lowest),
                         percent = "0%"

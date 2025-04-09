@@ -5,7 +5,6 @@ from nonebot.adapters.onebot.v11 import GroupMessageEvent, Message, Bot
 from nonebot.params import CommandArg
 
 from src.utils.database.operation import get_group_settings
-from src.utils.permission import check_permission
 from src.utils.generate import generate
 from src.templates import HTMLSourceCode
 
@@ -21,17 +20,13 @@ BlockMatcher = on_command(
 
 
 @BlockMatcher.handle()
-async def _(
-    bot: Bot, 
-    event: GroupMessageEvent, 
-    full_argument: Message = CommandArg()
-):
-    if full_argument.extract_plain_text() == "":
+async def _(event: GroupMessageEvent, message: Message = CommandArg()):
+    if message.extract_plain_text() == "":
         return
-    args = full_argument.extract_plain_text().split(" ")
+    args = message.extract_plain_text().split(" ")
     if len(args) != 2:
         await BlockMatcher.finish("唔……需要2个参数，第一个参数为玩家名，第二个参数是原因~\n提示：理由中请勿包含空格。")
-    status = Blacklist(args[0], event.group_id).add(args[1])
+    status = Blacklist(args[0], event.group_id, event.user_id).add(args[1])
     if status:
         await BlockMatcher.finish("该玩家已加入黑名单，请勿重复添加，如需更新理由可以先移除再重新添加。")
     await BlockMatcher.finish("成功将该玩家加入黑名单！")
@@ -61,9 +56,14 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
         await ListBlockMatcher.finish("唔……本群没有设置任何避雷名单哦~")
     table = []
     for i in current_blacklist:
+        if "source" not in i:
+            source = "未知"
+        else:
+            source = i["source"]
         table.append(
             Template(template_body).render(
                 name = i["ban"],
+                source = source,
                 reason = i["reason"]
             )
         )

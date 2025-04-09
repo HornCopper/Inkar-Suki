@@ -78,19 +78,19 @@ template_v3_price = """
 
 template_v3_log = """
 <div class="summary-card">
-    <h3>最低价</h3>
+    <h3>30日底价</h3>
     <div class="summary-value">
         {{ lowest }}
     </div>
 </div>
 <div class="summary-card">
-    <h3>均价</h3>
+    <h3>30日均价</h3>
     <div class="summary-value">
         {{ avg }}
     </div>
 </div>
 <div class="summary-card">
-    <h3>最高价</h3>
+    <h3>30日顶价</h3>
     <div class="summary-value">
         {{ highest }}
     </div>

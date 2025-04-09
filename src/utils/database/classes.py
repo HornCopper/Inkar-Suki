@@ -63,7 +63,7 @@ class JX3APIWSData(LiteModel):
 class PersonalSetting(BaseModel):
     attribute: str = "v4"
     theme: str = "浅色"
-    trade: str = "v2"
+    trade: str = "v3"
     serendipity: str = "v2"
 
 class PersonalSettings(LiteModel):
