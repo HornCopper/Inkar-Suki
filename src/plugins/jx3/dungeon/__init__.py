@@ -17,10 +17,10 @@ from .teamcd import get_zone_record_image, get_mulit_record_image, get_personal_
 ZoneRecordMatcher = on_command("jx3_zones", aliases={"副本"}, force_whitespace=True, priority=5)
 
 @ZoneRecordMatcher.handle()
-async def _(event: GroupMessageEvent, full_argument: Message = CommandArg()):
-    if full_argument.extract_plain_text() == "":
+async def _(event: GroupMessageEvent, message: Message = CommandArg()):
+    if message.extract_plain_text() == "":
         return
-    args = full_argument.extract_plain_text().strip().split(" ")
+    args = message.extract_plain_text().strip().split(" ")
     if len(args) not in [1, 2]:
         await ZoneRecordMatcher.finish("唔……参数不正确哦，请检查后重试~")
     if len(args) == 1:
@@ -33,6 +33,7 @@ async def _(event: GroupMessageEvent, full_argument: Message = CommandArg()):
     if server is None:
         await ZoneRecordMatcher.finish(PROMPT.ServerNotExist)
     if name == "*":
+        await ZoneRecordMatcher.send("提示：“副本 *”用法将在4月17日新赛季开启后停止使用。\n请移步“副本列表”命令。\n用法：副本列表 [副本名(可留空)]")
         data = await get_personal_roles_teamcd_image(event.user_id)
     elif ";" in name:
         roles = name.split(";")
@@ -42,6 +43,14 @@ async def _(event: GroupMessageEvent, full_argument: Message = CommandArg()):
     else:
         data = await get_zone_record_image(server, name)
     await ZoneRecordMatcher.finish(data)
+
+AllRolesTeamcdMatcher = on_command("jx3_zoneslist", aliases={"副本列表"}, force_whitespace=True, priority=5)
+
+@AllRolesTeamcdMatcher.handle()
+async def _(event: GroupMessageEvent, message: Message = CommandArg()):
+    msg = message.extract_plain_text().strip()
+    image = await get_personal_roles_teamcd_image(event.user_id, msg)
+    await AllRolesTeamcdMatcher.finish(image)
 
 DropslistMatcher = on_command("jx3_drops", aliases={"掉落列表"}, force_whitespace=True, priority=5)
 

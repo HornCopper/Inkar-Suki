@@ -1,9 +1,9 @@
 from jinja2 import Template
 from itertools import chain
 from typing import Any
-from pathlib import Path
 from collections import Counter
 
+from src.config import Config
 from src.const.jx3.school import School
 from src.const.prompts import PROMPT
 from src.const.path import ASSETS, TEMPLATES, build_path
@@ -13,7 +13,7 @@ from src.utils.database.player import search_player
 from src.utils.tuilan import generate_timestamp, generate_dungeon_sign
 from src.utils.generate import generate
 from src.utils.network import Request
-from src.templates import HTMLSourceCode
+from src.templates import HTMLSourceCode, SimpleHTML, get_saohua
 
 from ._template import (
     image_template,
@@ -163,7 +163,21 @@ async def get_mulit_record_image(server: str, roles: list[str]):
     image = await generate(html, "table", segment=True)
     return image
 
-async def get_personal_roles_teamcd_image(user_id: int):
+def get_color(color: str) -> str:
+    hex_color = color.lstrip("#")
+    r, g, b = tuple(int(hex_color[i:i+2], 16) for i in (0, 2, 4)) 
+    brightness = (0.299 * r + 0.587 * g + 0.114 * b) / 255
+    if brightness > 0.5:
+        bg_r = max(0, min(255, int(r * 0.2)))
+        bg_g = max(0, min(255, int(g * 0.2)))
+        bg_b = max(0, min(255, int(b * 0.2)))
+    else:
+        bg_r = max(0, min(255, int(255 - (255 - r) * 0.2)))
+        bg_g = max(0, min(255, int(255 - (255 - g) * 0.2)))
+        bg_b = max(0, min(255, int(255 - (255 - b) * 0.2)))
+    return "#{:02X}{:02X}{:02X}".format(bg_r, bg_g, bg_b)
+
+async def get_personal_roles_teamcd_image(user_id: int, keyword: str = ""):
     personal_settings: PersonalSettings | Any = db.where_one(PersonalSettings(), "user_id = ?", str(user_id), default=None)
     if personal_settings is None:
         return "您尚未绑定任何角色！请绑定后再尝试查询！"
@@ -184,27 +198,55 @@ async def get_personal_roles_teamcd_image(user_id: int):
         num += 1
     final_data = synchronize_keys(roles_data)
     zones: list[str] = list(set(chain.from_iterable(d.keys() for sublist in final_data for d in sublist)))
-    table_head = "<tr><th class=\"short-column\">服务器</th><th class=\"short-column\">角色</th><th class=\"short-column\">门派</th>" + "\n".join([f"<th class=\"short-column\">{zone}</th>" for zone in zones]) + "</tr>"
+    zones = [z for z in zones if keyword in z]
+    if len(zones) == 0:
+        return "未找到相关副本，请检查后重试！"
+    width = 730 + len(zones) * 200
+    zones = [z.lstrip("10人普通") for z in zones]
+    table_head = "<tr><th style=\"width: 160px\">服务器</th><th style=\"width: 240px\">角色</th><th style=\"width: 160px\">门派</th>" + "\n".join([f"<th>{zone}</th>" for zone in zones]) + "</tr>"
     tables: list[str] = []
     num = 0
     for each_role_data in roles_data:
         data = each_role_data[0]
-        row = ["<td class=\"short-column\">" + roles[num].serverName + "</td><td class=\"short-column\" style=\"color:" + (School(roles[num].forceName).color or "") + "\">" + roles[num].roleName + "<td class=\"short-column\" style=\"color:" + (School(roles[num].forceName).color or "") + "\">" + roles[num].forceName + "</td></td>"]
+        row = [
+            "<td><span class=\"server-tag\">" \
+            + roles[num].serverName \
+            + "</span></td><td><span style=\"display: inline-block;padding: 2px 8px;border-radius: 12px;background: " \
+            + get_color(School(roles[num].forceName).color or "") \
+            + ";color: " \
+            + (School(roles[num].forceName).color or "") \
+            + ";font-size: 24px;\">" \
+            + roles[num].roleName + "</span></td>" \
+            + "<td><span style=\"display: inline-block;padding: 2px 8px;border-radius: 12px;background: " \
+            + get_color(School(roles[num].forceName).color or "") \
+            + ";color: " \
+            + (School(roles[num].forceName).color or "") \
+            + ";font-size: 24px;\">" \
+            + roles[num].forceName \
+            + "</span></td>"
+        ]
         for each_zone in zones:
+            if each_zone not in data:
+                each_zone = "10人普通" + each_zone
             progress = data[each_zone]
             image = "\n".join(["<img src=\"" + build_path(ASSETS, ["image", "jx3", "cat", "gold.png" if not value else "grey.png"]) + "\" height=\"20\" width=\"20\">" for value in progress])
-            row.append("<td class=\"short-column\">" + image + "</td>")
+            row.append("<td>" + image + "</td>")
         tables.append(
             "<tr>\n" + "\n".join(row) + "\n</tr>"
         )
         num += 1
     html = str(
-            HTMLSourceCode(
-                application_name = " · 所有角色副本记录 ",
-                table_head = table_head,
-                table_body = "\n".join(tables),
-                additional_css = Path(TEMPLATES + "/jx3/teamcd.css").as_uri()
-            )
+        SimpleHTML(
+            html_type = "jx3",
+            html_template = "teamcd",
+            width = width,
+            app_info = "所有角色副本记录",
+            font = build_path(ASSETS, ["font", "PingFangSC-Medium.otf"]),
+            bot_name = Config.bot_basic.bot_name_argument,
+            footer_msg = get_saohua(),
+            table_head = table_head,
+            table_body = "\n".join(tables)
         )
-    image = await generate(html, "table", segment=True)
+    )
+    image = await generate(html, ".container", segment=True)
     return image

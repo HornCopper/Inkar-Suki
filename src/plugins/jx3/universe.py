@@ -57,7 +57,8 @@ from .dungeon import (
     MonstersMatcher,
     DropslistMatcher,
     ZoneRecordMatcher,
-    AllServerItemRecordMatcher
+    AllServerItemRecordMatcher,
+    AllRolesTeamcdMatcher
 )
 from .emoji import (
     EmojiMatcher

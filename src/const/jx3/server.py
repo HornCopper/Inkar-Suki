@@ -34,6 +34,12 @@ class Server:
                 final_server = get_group_settings(self.group_id, "server") or None
         else:
             final_server = None
+        
+        if (final_server not in self.server_aliases.keys()) and (final_server is not None):
+            for server, aliases in self.server_aliases.items():
+                if final_server in aliases:
+                    return server
+
         return final_server
 
     @property

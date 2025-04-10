@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <style>
+        .container {
+            max-width: {{ width }}px;
+            width: 100%;
+            margin: 20px auto;
+            padding: 20px;
+        }
+
+
+        .item-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+
+        .item-table th {
+            padding: 12px;
+            text-align: left;
+            background: #f8f9fa;
+            font-weight: 600;
+            color: #444;
+            font-size: 24px;
+        }
+
+        .item-table td {
+            padding: 12px;
+            border-top: 1px solid #eee;
+            font-size: 24px;
+        }
+
+        .server-tag {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 12px;
+            background: #e8f4ff;
+            color: #2c7be5;
+            font-size: 24px;
+        }
+
+        .item-info {
+            margin-bottom: 20px;
+            padding: 16px;
+            background: #f8f9fa;
+            border-radius: 4px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .item-info-left {
+            flex: 1;
+            margin-right: 20px;
+        }
+
+        .item-info-right {
+            width: 20%;
+            padding: 12px;
+            border-radius: 4px;
+        }
+
+        .item-info h2 {
+            margin: 0 0 12px 0;
+            font-size: 24px;
+            color: #2c3e50;
+            display: flex;
+            align-items: center;
+        }
+
+        .item-info p {
+            margin: 0 0 8px 0;
+            font-size: 24px;
+            color: #444;
+        }
+
+        footer {
+            background: #f0f0f0;
+            text-align: center;
+            padding: 15px;
+            font-size: 20px;
+            color: #777;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+
+        @font-face {
+            font-family: Harmony;
+            src: url("{{ font }}");
+        }
+
+        body {
+            font-family: Harmony, sans-serif;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <table class="item-table">
+            <thead>
+                {{ table_head }}
+            </thead>
+            <tbody>
+                {{ table_body }}
+            </tbody>
+        </table>
+        <footer>{{ app_info }} | {{ bot_name }}: {{ footer_msg }}</footer>
+    </div>
+</body>
+
+</html>
