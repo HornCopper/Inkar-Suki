@@ -58,6 +58,8 @@ class Player:
             setattr(self, key, value)
     
     def format_jx3api(self) -> dict[str, Any]:
+        if self.__dict__["serverName"] not in Server.server_aliases.keys():
+            return {"code": 404, "data": None}
         if self.__dict__ == {}:
             return {"code": 404, "data": None}
         return {"code": 200, "data": self.__dict__}
