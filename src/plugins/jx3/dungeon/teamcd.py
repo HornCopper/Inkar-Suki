@@ -163,20 +163,6 @@ async def get_mulit_record_image(server: str, roles: list[str]):
     image = await generate(html, "table", segment=True)
     return image
 
-def get_color(color: str) -> str:
-    hex_color = color.lstrip("#")
-    r, g, b = tuple(int(hex_color[i:i+2], 16) for i in (0, 2, 4)) 
-    brightness = (0.299 * r + 0.587 * g + 0.114 * b) / 255
-    if brightness > 0.5:
-        bg_r = max(0, min(255, int(r * 0.2)))
-        bg_g = max(0, min(255, int(g * 0.2)))
-        bg_b = max(0, min(255, int(b * 0.2)))
-    else:
-        bg_r = max(0, min(255, int(255 - (255 - r) * 0.2)))
-        bg_g = max(0, min(255, int(255 - (255 - g) * 0.2)))
-        bg_b = max(0, min(255, int(255 - (255 - b) * 0.2)))
-    return "#{:02X}{:02X}{:02X}".format(bg_r, bg_g, bg_b)
-
 async def get_personal_roles_teamcd_image(user_id: int, keyword: str = ""):
     personal_settings: PersonalSettings | Any = db.where_one(PersonalSettings(), "user_id = ?", str(user_id), default=None)
     if personal_settings is None:
@@ -212,15 +198,15 @@ async def get_personal_roles_teamcd_image(user_id: int, keyword: str = ""):
             "<td><span class=\"server-tag\">" \
             + roles[num].serverName \
             + "</span></td><td><span style=\"display: inline-block;padding: 2px 8px;border-radius: 12px;background: " \
-            + get_color(School(roles[num].forceName).color or "") \
-            + ";color: " \
             + (School(roles[num].forceName).color or "") \
+            + ";color: " \
+            + "#FFFFFF" \
             + ";font-size: 24px;\">" \
             + roles[num].roleName + "</span></td>" \
             + "<td><span style=\"display: inline-block;padding: 2px 8px;border-radius: 12px;background: " \
-            + get_color(School(roles[num].forceName).color or "") \
-            + ";color: " \
             + (School(roles[num].forceName).color or "") \
+            + ";color: " \
+            + "#FFFFFF" \
             + ";font-size: 24px;\">" \
             + roles[num].forceName \
             + "</span></td>"
