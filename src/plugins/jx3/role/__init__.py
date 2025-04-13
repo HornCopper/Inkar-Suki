@@ -17,7 +17,7 @@ RoleInfoMatcher = on_command("jx3_player", aliases={"玩家信息"}, force_white
 @RoleInfoMatcher.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     additions = get_group_settings(str(event.group_id), "additions")
-    if not Config.jx3.api.enable and not "Preview" in additions:
+    if not Config.jx3.api.enable and "Preview" not in additions:
         return
     if args.extract_plain_text() == "":
         return

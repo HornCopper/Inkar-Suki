@@ -6,7 +6,7 @@ from collections import Counter
 from src.config import Config
 from src.const.jx3.school import School
 from src.const.prompts import PROMPT
-from src.const.path import ASSETS, TEMPLATES, build_path
+from src.const.path import ASSETS, build_path
 from src.utils.database import db
 from src.utils.database.classes import PersonalSettings, RoleData
 from src.utils.database.player import search_player

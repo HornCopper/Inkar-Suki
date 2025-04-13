@@ -53,7 +53,7 @@ aliases_map = {
     "金羁饰影礼盒": "金羁饰影三选一礼盒"
 }
 
-template_v3_name_one = """
+template_v3_name_unique = """
 <span style="color: rgb{{ color }}">{{ name }}</span>"""
 
 template_v3_name_mulit = """

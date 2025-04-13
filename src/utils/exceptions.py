@@ -1,4 +1,4 @@
-from httpx import ConnectTimeout
+from httpx import ConnectTimeout  # noqa: F401
 
 class RequestDataException(Exception):
     """

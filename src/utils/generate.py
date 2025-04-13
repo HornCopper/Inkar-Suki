@@ -6,7 +6,6 @@ from playwright.async_api import (
 )
 from pathlib import Path
 from nonebot.log import logger
-from nonebot import get_driver
 from nonebot.adapters.onebot.v11 import MessageSegment as ms
 from typing import Any, Literal, overload
 

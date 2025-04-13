@@ -1,4 +1,4 @@
-from typing import overload
+from typing import overload # noqa: F401
 
 def override(method):
     """

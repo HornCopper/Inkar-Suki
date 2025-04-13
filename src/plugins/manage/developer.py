@@ -21,7 +21,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
         return
     try:
         image = await generate(url, full_screen=True, viewport={"height": 1080, "width": 1920}, segment=True)
-    except:
+    except:  # noqa: E722
         await ScreenShotMatcher.finish("Screenshot Failed!")
     await ScreenShotMatcher.finish(image)
 
@@ -31,7 +31,7 @@ ResetGlobalPermissionMatcher = on_command("重置权限", priority=5, force_whit
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     if str(event.user_id) not in Config.bot_basic.bot_owner:
         return
-    await ResetGlobalPermissionMatcher.send(f"确定要重置所有人的权限吗？\n警告：请确认自己在做什么！如果确认无误，请发送“确认重置权限”。")
+    await ResetGlobalPermissionMatcher.send("确定要重置所有人的权限吗？\n警告：请确认自己在做什么！如果确认无误，请发送“确认重置权限”。")
 
 @ResetGlobalPermissionMatcher.got("confirm")
 async def _(event: GroupMessageEvent, confirm: Message = Arg()):
@@ -49,7 +49,7 @@ ResetGlobalCoinMatcher = on_command("重置货币", priority=5, force_whitespace
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     if str(event.user_id) not in Config.bot_basic.bot_owner:
         return
-    await ResetGlobalCoinMatcher.send(f"确定要重置所有人的货币吗？\n警告：请确认自己在做什么！如果确认无误，请发送“确认重置货币”。")
+    await ResetGlobalCoinMatcher.send("确定要重置所有人的货币吗？\n警告：请确认自己在做什么！如果确认无误，请发送“确认重置货币”。")
 
 @ResetGlobalCoinMatcher.got("confirm")
 async def _(event: GroupMessageEvent, confirm: Message = Arg()):

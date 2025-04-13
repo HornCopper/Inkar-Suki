@@ -1,4 +1,3 @@
-from pathlib import Path
 from jinja2 import Template
 
 from src.const.jx3.server import Server

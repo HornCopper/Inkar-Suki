@@ -51,6 +51,7 @@ def get_groups() -> bool | list:
     if not isinstance(all_db_obj, list):
         return False
     for group_settings in all_db_obj:
+        group_settings: GroupSettings | Any
         groups.append(group_settings.group_id)
     return groups
 

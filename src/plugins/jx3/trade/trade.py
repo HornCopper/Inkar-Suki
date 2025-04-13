@@ -1,5 +1,4 @@
 from typing_extensions import Self
-from datetime import datetime
 from jinja2 import Template
 
 from src.const.path import ASSETS, TEMPLATES
@@ -24,7 +23,7 @@ from ._template import (
     template_v3_info,
     template_v3_log,
     template_v3_name_mulit,
-    template_v3_name_one
+    template_v3_name_unique
 )
 
 import re
@@ -257,7 +256,7 @@ class JX3Trade:
                     )
                 else:
                     final_log = ""
-                name = Template(template_v3_name_one).render(
+                name = Template(template_v3_name_unique).render(
                     color = unique_item.color,
                     name = unique_item.name
                 )
@@ -340,7 +339,7 @@ class JX3Trade:
                 if log is None:
                     continue
                 logs.append(log)
-                name = Template(template_v3_name_one).render(
+                name = Template(template_v3_name_unique).render(
                     color = unique_item.color,
                     name = unique_item.name
                 )

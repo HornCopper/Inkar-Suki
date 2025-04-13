@@ -1,6 +1,5 @@
 from typing import Any
 from jinja2 import Template
-from pathlib import Path
 from datetime import datetime
 
 from nonebot import on_command
@@ -9,14 +8,12 @@ from nonebot.adapters.onebot.v11 import (
     Bot,
     Message,
     GroupMessageEvent,
-    MessageSegment as ms
 )
 
 from src.utils.message import message_universal
 from src.utils.database import cache_db
 from src.utils.database.classes import GroupMessage, MemberMessage
 from src.utils.time import Time
-from src.utils.network import Request
 from src.utils.generate import generate
 from src.templates import HTMLSourceCode
 

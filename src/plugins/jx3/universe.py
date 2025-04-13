@@ -67,7 +67,6 @@ from .equip import (
     EquipRecommendMatcher
 )
 from .events import (
-    ZhueMatcher,
     ChutianMatcher,
     YuncongMatcher
 )
@@ -78,7 +77,6 @@ from .gold import (
     CoinPriceMatcher
 )
 from .horse import (
-    DiluMatcher,
     HorseChatMatcher,
     HorseSpawnMatcher
 )
