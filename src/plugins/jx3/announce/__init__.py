@@ -8,6 +8,7 @@ from nonebot.adapters.onebot.v11 import (
 )
 from nonebot.params import CommandArg
 
+from src.config import Config
 from src.const.path import ASSETS, build_path
 from src.utils.network import Request
 
@@ -45,3 +46,19 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
         return
     img = await get_image(ver="latest_exp")
     await BetaAnnounceMatcher.finish(img)
+
+SkillChangeMatcher = on_command("jx3_skillrecord", aliases={"技改", "技改记录"}, priority=5, force_whitespace=True)
+
+@SkillChangeMatcher.handle()
+async def _(event: GroupMessageEvent, args: Message = CommandArg()):
+    if args.extract_plain_text() != "":
+        return
+    else:
+        url = f"{Config.jx3.api.url}/data/skills/records"
+        data = (await Request(url).get()).json()
+        msg = ""
+        for d in data["data"][0:4]:
+            title = d["title"]
+            url = d["url"]
+            msg += f"\n标题：{title}\n链接：{url}"
+        await SkillChangeMatcher.finish(msg.strip())

@@ -9,7 +9,8 @@ from .almanac import (
 )
 from .announce import (
     AnnounceMatcher,
-    BetaAnnounceMatcher
+    BetaAnnounceMatcher,
+    SkillChangeMatcher
 )
 from .assistance import (
     BookTeamMatcher,
