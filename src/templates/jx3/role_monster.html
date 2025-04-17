@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <style>
+
+        @charset "UTF-8";
+
+        .m-bmap {
+            padding-top: 40px;
+        }
+
+        .m-bmap.is-map-phone {
+        }
+
+        .summary {
+          display: flex;
+          justify-content: center;
+          gap: 40px;
+          font-size: 24px;
+          padding: 10px 0;
+          font-weight: bold;
+        }
+
+        .tip {
+          margin-bottom: 20px;
+          color: #c4cbd0;
+          text-align: center;
+          font-size: 16px;
+        }
+
+        .container {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); /* 自动适应列数 */
+          justify-content: center; /* 让元素居中 */
+        }
+
+        .item {
+          position: relative;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          margin: 20px 0;
+          padding-bottom: 20px;
+          gap: 10px;
+        }
+
+        .item::after {
+          position: absolute;
+          content: '';
+          width: 100%;
+          height: 1px;
+          background-color: #dee1e5;
+          bottom: 0;
+        }
+
+        .item-icon {
+          width: 60px;
+          height: 60px;
+          border-radius: 50%;
+        }
+
+        .item-level {
+          margin-top: -30px;
+          background-color: #f8f9fb;
+          width: 30px;
+          line-height: 30px;
+          font-size: 16px;
+          border-radius: 50%;
+          text-align: center;
+        }
+
+        .item-name {
+          font-size: 15px;
+        }
+
+        @font-face {
+            font-family: Harmony;
+            src: url("{{ font }}");
+        }
+
+        body {
+            font-family: Harmony, sans-serif;
+        }
+
+        .copyright {
+            text-align: center;
+            font-size: 10px;
+            font-style: italic;
+            padding: 10px;
+            transform-origin: bottom top;
+        }
+    </style>
+</head>
+
+<body>
+    <div style="font-family:Harmony">
+        <div class="m-bmap is-map-phone">
+            <div class="summary">
+                <div>精力: {{ gameEnergy }}</div>
+                <div>耐力: {{ gameStamina }}</div>
+             </div>
+            <div class="tip">
+                提示: 在世界频道发言可更新技能和精耐数值
+            </div>
+            <div class="container">
+                {{ table_content }}
+            </div>
+            <div class="copyright">角色百战 · {{ server }} · {{ name }}</div>
+            <div class="copyright">{{ msg }}</div>
+        </div>
+    </div>
+</body>
+
+</html>
