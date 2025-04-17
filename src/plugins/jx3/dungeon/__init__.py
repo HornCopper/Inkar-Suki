@@ -84,6 +84,9 @@ RoleMonstersMatcher = on_command("jx3_role_monster", aliases={"精耐"}, force_w
 
 @RoleMonstersMatcher.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
+    additions = get_group_settings(str(event.group_id), "additions")
+    if not Config.jx3.api.enable and "Preview" not in additions:
+        return
     if args.extract_plain_text() == "":
         return
     arg = args.extract_plain_text().strip().split(" ")

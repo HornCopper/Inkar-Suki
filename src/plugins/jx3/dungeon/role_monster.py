@@ -48,5 +48,5 @@ async def get_role_monsters_map(server: str, role_name: str):
             msg = get_saohua()
         )
     )
-    image = await generate(html, ".container", segment=True)
+    image = await generate(html, "body", segment=True)
     return image
