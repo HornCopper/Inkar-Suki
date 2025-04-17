@@ -10,9 +10,10 @@ from src.utils.permission import check_permission
 from src.utils.database.operation import get_group_settings
 
 from .zone_drop import get_drop_list_image
-# from .monster import get_monsters_map
 from .record import get_item_record
 from .teamcd import get_zone_record_image, get_mulit_record_image, get_personal_roles_teamcd_image
+from .role_monster import get_role_monsters_map
+from .monster import get_monsters_map
 
 ZoneRecordMatcher = on_command("jx3_zones", aliases={"副本"}, force_whitespace=True, priority=5)
 
@@ -76,16 +77,36 @@ MonstersMatcher = on_command("jx3_monsters_v2", aliases={"百战v2", "百战"}, 
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     if args.extract_plain_text() != "":
         return
-    from .monster import get_monsters_map
     img = await get_monsters_map()
     await MonstersMatcher.finish(img)
+
+RoleMonstersMatcher = on_command("jx3_role_monster", aliases={"精耐"}, force_whitespace=True, priority=5)
+
+@RoleMonstersMatcher.handle()
+async def _(event: GroupMessageEvent, args: Message = CommandArg()):
+    if args.extract_plain_text() == "":
+        return
+    arg = args.extract_plain_text().strip().split(" ")
+    if len(arg) not in [1, 2]:
+        await RoleMonstersMatcher.finish("唔……参数不正确哦，请检查后重试~")
+    if len(arg) == 1:
+        server = None
+        role_name = arg[0]
+    elif len(arg) == 2:
+        server = arg[0]
+        role_name = arg[1]
+    server = Server(server, event.group_id).server
+    if not server:
+        await RoleMonstersMatcher.finish(PROMPT.ServerNotExist)
+    data = await get_role_monsters_map(server, role_name)
+    await RoleMonstersMatcher.finish(data)
 
 AllServerItemRecordMatcher = on_command("jx3_itemrecord_allserver", aliases={"全服掉落"}, force_whitespace=True, priority=5)
 
 @AllServerItemRecordMatcher.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     additions = get_group_settings(str(event.group_id), "additions")
-    if not Config.jx3.api.enable and not "Preview" in additions:
+    if not Config.jx3.api.enable and "Preview" not in additions:
         return
     item_name = args.extract_plain_text()
     data = await get_item_record(item_name)
