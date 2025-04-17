@@ -12,6 +12,8 @@ from src.utils.database.operation import get_group_settings
 from .zone_drop import get_drop_list_image
 from .record import get_item_record
 from .teamcd import get_zone_record_image, get_mulit_record_image, get_personal_roles_teamcd_image
+from .role_monster import get_role_monsters_map
+from .monster import get_monsters_map
 
 ZoneRecordMatcher = on_command("jx3_zones", aliases={"副本"}, force_whitespace=True, priority=5)
 
@@ -75,7 +77,6 @@ MonstersMatcher = on_command("jx3_monsters_v2", aliases={"百战v2", "百战"}, 
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     if args.extract_plain_text() != "":
         return
-    from .monster import get_monsters_map
     img = await get_monsters_map()
     await MonstersMatcher.finish(img)
 
@@ -97,7 +98,6 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     server = Server(server, event.group_id).server
     if not server:
         await RoleMonstersMatcher.finish(PROMPT.ServerNotExist)
-    from .role_monster import get_role_monsters_map
     data = await get_role_monsters_map(server, role_name)
     await RoleMonstersMatcher.finish(data)
 
@@ -106,7 +106,7 @@ AllServerItemRecordMatcher = on_command("jx3_itemrecord_allserver", aliases={"�
 @AllServerItemRecordMatcher.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     additions = get_group_settings(str(event.group_id), "additions")
-    if not Config.jx3.api.enable and not "Preview" in additions:
+    if not Config.jx3.api.enable and "Preview" not in additions:
         return
     item_name = args.extract_plain_text()
     data = await get_item_record(item_name)
