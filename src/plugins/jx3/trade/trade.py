@@ -141,7 +141,7 @@ class JX3Trade:
         parser = ShilianEquipParser(equipment_words)
         attrs, location, quality, kungfu_type = parser.attributes, parser.location, parser.quality, parser.kungfu_type
         url = "https://node.jx3box.com/api/node/item/search"
-        name = f"{cls.shilian_basic}{location}·{kungfu_type}·荒"
+        name = f"{cls.shilian_basic}{location}·{kungfu_type}·{"荒" if quality <= 25500 else "玄"}"
         params = {
             "keyword": name,
             "MinLevel": quality,

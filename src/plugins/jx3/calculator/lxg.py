@@ -282,7 +282,7 @@ class LingxueCalculator(BaseCalculator):
                     "color": self.kungfu.color,
                     "kungfu": self.kungfu.name,
                     "dps": str(int(data["data"][flag]["dps"])),
-                    "desc": f"计算器来源：【丝路风语】凌雪阁DPS计算器 by @猜猜<br>当前循环：{loop_name} / 战斗时长："
+                    "desc": f"计算器来源：【太极秘录】凌雪阁DPS计算器 by @猜猜<br>当前循环：{loop_name} / 战斗时长："
                     + str(data["data"][flag]["totalTime"])
                     + f"s<br>玩家：{name}·{server}\n<br>欢迎加入凌雪PVE交流群：876052779",
                     "attrs": attrs,

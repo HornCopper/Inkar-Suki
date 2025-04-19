@@ -13,7 +13,7 @@ from .constant import (
     school_snacks_data,
 )
 
-season = "丝路风语"
+season = "太极秘录"
 
 class Kungfu:
     kungfu_aliases: dict[str, list[str]] = kungfu_aliases_data
