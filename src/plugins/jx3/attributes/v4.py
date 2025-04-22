@@ -283,6 +283,7 @@ class JX3AttributeParser:
         info["阵营"] = data["campName"]
         info["心法"] = self.kungfu.name or "未知"
         info["标识"] = data["roleId"]
+        info["全服标识"] = data["globalRoleId"]
         return info
     
     @property
