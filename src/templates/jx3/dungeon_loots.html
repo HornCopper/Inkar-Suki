@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <style>
+        table {
+            width: 600px;
+            border-collapse: separate;
+            border-spacing: 0;
+            border: 1px solid #e5e5e5;
+            table-layout: fixed;
+        }
+
+        th,
+        td {
+            padding: 10px;
+            text-align: center;
+            word-wrap: break-word;
+        }
+
+        th {
+            background-color: #FFD700;
+            color: #333333;
+        }
+
+        tbody tr:not(:first-child) {
+            border-top: 1px solid #dddddd;
+        }
+
+        .element-column {
+            width: 768px;
+            vertical-align: middle;
+        }
+
+        .element-container {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+        }
+
+        .element-container img {
+            margin-right: 10px;
+        }
+
+        .element-container div {
+            text-align: left;
+            width: 100%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .no-color {
+            filter: grayscale(100%);
+        }
+
+        .yes-color {
+            content: '';
+        }
+
+        tfoot {
+            text-align: center;
+            font-style: italic;
+            font-size: 12px;
+        }
+
+        .yes-serendipity {
+            color: #2ecc71;
+        }
+
+        .no-serendipity {
+            color: #e74c3c;
+        }
+
+        @font-face {
+            font-family: Harmony;
+            src: url("{{ font }}");
+        }
+
+        body {
+            overflow: hidden;
+            font-family: Harmony, sans-serif;
+            background-color: #fef9f0;
+        }
+
+        thead th[colspan="3"]:first-child {
+            background-color: #fff8dc;
+            color: #8B7500;
+        }
+
+        tr[style*="background-color: lightgrey;"] {
+            background-color: #f6f6f6 !important;
+        }
+
+        tr[style*="background-color: rgb(245, 255, 180);"] {
+            background-color: #fffde7 !important;
+        }
+
+        th[style*="background-color: #4A8E7F;"] {
+            background-color: #5AA893 !important;
+            color: white;
+        }
+
+        th[style*="background-color: #D53232;"] {
+            background-color: #D93B3B !important;
+            color: white;
+        }
+    </style>
+</head>
+
+<body>
+    <table class="total" style="background-color: #FFFFFF">
+        <thead>
+            <tr>
+                <th colspan="3" style="text-align: center;color:#000000">模拟掉落<br>{{ dungeon_name }}</th>
+            </tr>
+            <tr>
+                <th style="color: #000000">图标</th>
+                <th style="color: #000000">名称</th>
+                <th style="color: #000000">属性</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{ loots }}
+        </tbody>
+    </table>
+</body>
+
+
+</html>

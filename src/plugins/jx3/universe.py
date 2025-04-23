@@ -87,7 +87,8 @@ from .item import (
 )
 from .joy import (
     SaohuaMatcher,
-    TiangouMatcher
+    TiangouMatcher,
+    RandomLootMatcher
 )
 from .lookup import (
     LookupPersonMatcher

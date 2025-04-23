@@ -13,7 +13,6 @@ from src.utils.database.player import search_player
 from src.utils.database.attributes import AttributesRequest, AttributeParser
 from src.utils.generate import generate
 from src.plugins.jx3.attributes.v2_remake import Qixue, EquipDataProcesser
-from src.plugins.jx3.trade.shilian import basic_name
 from src.templates import get_saohua
 
 import json
@@ -67,10 +66,9 @@ class Equip:
     
     @property
     def effect(self) -> str:
-        if str(self.equip_data["Name"]).startswith(basic_name):
-            for each_attr in self.equip_data["ModifyType"]:
-                if each_attr["Desc"] == "atSkillEventHandler":
-                    return "，".join(str(each_attr["Attrib"]["Desc"])[:-1].split("。")[:-1]) + "。"
+        for each_attr in self.equip_data["ModifyType"]:
+            if each_attr["Desc"] == "atSkillEventHandler":
+                return "，".join(str(each_attr["Attrib"]["Desc"])[:-1].split("。")[:-1]) + "。"
         return ""
     
     @property
