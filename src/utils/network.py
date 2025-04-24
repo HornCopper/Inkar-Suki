@@ -1,6 +1,7 @@
 from typing import Any
 from urllib.request import urlopen
 
+from src.const.path import CONST
 from src.utils.database import cache_db
 from src.utils.database.classes import RequestData
 from src.utils.exceptions import RequestDataException
@@ -9,6 +10,7 @@ from src.utils.tuilan import generate_x_sk, generate_timestamp, format_request_b
 from src.utils.time import Time
 
 import httpx
+import os
 
 class Request:
     def __init__(self, url: str, *, headers: dict = {}, params: str | dict = {}):
@@ -141,3 +143,15 @@ class Request:
             "headers": basic_headers
         }
         return request_params
+
+async def cache_image(url: str):
+    if not url.startswith("http"):
+        return url
+    else:
+        name = url.split("/")[-1].split("?v=2")[0]
+        if name in os.listdir(CONST + "/cache/icons/"):
+            return CONST + "/cache/icons/" + name
+        with open(CONST + "/cache/icons/" + name, mode="wb") as f:
+            image = (await Request(url).get()).content
+            f.write(image)
+        return CONST + "/cache/icons/" + name

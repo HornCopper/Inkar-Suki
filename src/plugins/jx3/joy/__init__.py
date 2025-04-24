@@ -1,6 +1,6 @@
 from nonebot import on_command
 from nonebot.params import CommandArg
-from nonebot.adapters.onebot.v11 import Message, GroupMessageEvent
+from nonebot.adapters.onebot.v11 import Message, GroupMessageEvent, MessageSegment as ms
 
 from src.config import Config
 from src.const.prompts import PROMPT
@@ -59,4 +59,4 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
         await RandomLootMatcher.finish(PROMPT.DungeonInvalid)
     else:
         image = await instance.generate()
-        await RandomLootMatcher.finish(image)
+        await RandomLootMatcher.finish(ms.at(event.user_id) + image)
