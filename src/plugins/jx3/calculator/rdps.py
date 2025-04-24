@@ -192,11 +192,23 @@ async def RDPSCalculator(file_name: str, url: str):
             dungeon = dungeon,
             boss = boss,
             rdps = total_rdps,
-            rhps = total_rhps,
             rdps_players = "\n".join(final_rdps),
+            saohua = get_saohua(),
+            font = ASSETS + "/font/PingFangSC-Semibold.otf"
+        )
+    )
+    rdps_image = await generate(html, ".container", segment=True)
+    html = str(
+        SimpleHTML(
+            "jx3",
+            "rhps",
+            dungeon = dungeon,
+            boss = boss,
+            rhps = total_rhps,
             rhps_players = "\n".join(final_rhps),
             saohua = get_saohua(),
             font = ASSETS + "/font/PingFangSC-Semibold.otf"
         )
     )
-    return await generate(html, ".container", segment=True)
+    rhps_image = await generate(html, ".container", segment=True)
+    return rdps_image + rhps_image
