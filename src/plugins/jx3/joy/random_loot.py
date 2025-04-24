@@ -5,7 +5,7 @@ from jinja2 import Template
 
 from src.const.jx3.dungeon import Dungeon
 from src.const.path import ASSETS
-from src.utils.network import Request
+from src.utils.network import Request, cache_image
 from src.utils.generate import generate
 from src.templates import SimpleHTML
 
@@ -282,7 +282,7 @@ class RandomLoot:
                 loot_items.append(
                     Template(template_item).render(
                         detail_color = detail_color,
-                        icon = item.icon,
+                        icon = await cache_image(item.icon),
                         item_color = "rgb" + item.color,
                         item_name = item.name,
                         attr = item.attr

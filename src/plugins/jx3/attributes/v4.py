@@ -12,6 +12,7 @@ from src.utils.file import read
 from src.utils.database.player import search_player
 from src.utils.database.attributes import AttributesRequest, AttributeParser
 from src.utils.generate import generate
+from src.utils.network import cache_image
 from src.plugins.jx3.attributes.v2_remake import Qixue, EquipDataProcesser
 from src.templates import get_saohua
 
