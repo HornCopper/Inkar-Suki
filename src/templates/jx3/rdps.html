@@ -19,11 +19,12 @@
         }
 
         .desc {
-            text-align: center;
+            text-align: left;
             font-size: 0.9em;
             color: #555;
             margin-bottom: 20px;
             line-height: 1.6;
+            padding: 20px;
         }
 
         .container {
@@ -72,13 +73,10 @@
             color: #333;
         }
 
-        /* 技能统计 */
         .skill {
             display: flex;
             align-items: center;
-            /* 让图标和文字垂直居中 */
             gap: 10px;
-            /* 图标和文字之间的间距 */
             background: #fff;
             border: 1px solid #ddd;
             border-radius: 8px;
@@ -95,7 +93,6 @@
 
         .skill-content {
             flex-grow: 1;
-            /* 让内容区域占据剩余空间 */
         }
 
         .skill-header {
@@ -118,6 +115,14 @@
             transition: width 0.3s ease;
         }
 
+        .extra-col {
+            width: calc(100% - 700px - 100px);
+            max-width: 400px;
+            text-align: center;
+            font-weight: bold;
+            color: #333;
+        }
+
         footer {
             background: #f0f0f0;
             text-align: center;
@@ -130,9 +135,25 @@
 
 <body>
     <div class="container">
+        <div style="padding: 20px"></div>
         <div class="header">剑三警长 - RDPS复盘工具</div>
-        <div class="dps-display">团队总RDPS：{{ rdps }}</div>
+        <div class="dps-display">团队总RDPS：{{ rdps }}<br>团队总RHPS：{{ rhps }}</div>
+        <div style="font-size: 25px;text-align: center;color: #555">
+            当前首领：{{ dungeon }}·{{ boss }}
+        </div>
         <div class="content">
+            <div class="card">
+                <h3>玩家RDPS统计</h3>
+                <div class="skills-list" style="width: 1100px;">
+                    {{ rdps_players }}
+                </div>
+            </div>
+            <div class="card">
+                <h3>玩家RHPS统计</h3>
+                <div class="skills-list" style="width: 1100px;">
+                    {{ rhps_players }}
+                </div>
+            </div>
             <div class="desc">
                 剑三警长是一款剑网三战斗日志分析工具，在使用本工具之前，我们需要部分授权，需要您的同意：<br>
                 1. 本工具会读取茗伊插件集生成的战斗复盘日志，其中的信息包括但不限于：全部技能与buff的时间与数值、玩家ID与门派、区服、重伤记录。这些读取的内容只会在本地进行运算。<br>
@@ -143,12 +164,6 @@
                 4. 即使没有显式同意本协议，使用本工具依然需要协议的内容经过授权。尝试绕过本协议并不能免除您的义务。<br>
                 5. 本协议仅对jx3bla主仓库的主分支有效，开发者如果需要修改代码，需要同时维护此协议，否则视为本协议无效。<br>
                 6. 本工具使用花姐的“剑三警长”进行分析，上述协议从程序内复制而来，使用本功能也需要遵守上述协议！
-            </div>
-            <div class="card">
-                <h3>玩家RDPS统计</h3>
-                <div class="skills-list">
-                    {{ players }}
-                </div>
             </div>
             <footer>Inkar Suki: {{ saohua }}</footer>
         </div>

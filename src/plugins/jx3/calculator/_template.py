@@ -19,10 +19,16 @@ template_rdps = """
     <div class="skill-content">
         <div class="skill-header">
             <strong>{{ name }}</strong>
-            <span style="color: #555">{{ rdps }}</span>
         </div>
-        <div class="progress-bar-container">
+        <div class="progress-bar-container" style="width: 700px">
             <div class="progress-bar" style="width: {{ display }}%; background-color: {{ color }};"></div>
         </div>
+    </div>
+    <div class="extra-col">
+        <span class="dps-num">{{ rdps }}</span>
+    </div>
+
+    <div class="extra-col">
+        <span class="dps-num">{{ percent }}</span>
     </div>
 </div>"""
