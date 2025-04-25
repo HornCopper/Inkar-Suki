@@ -9,6 +9,7 @@ services:
     volumes:
       - ./config/config.yml:/app/src/config/config.yml
       - ./data:/app/src/data
+      - ./const/cache:/app/src/const/cache
     ports:
       - 2333:2333
 
