@@ -1,4 +1,4 @@
-FROM inkar-base:latest
+FROM registry.cn-hangzhou.aliyuncs.com/hzzz9/inkar-base:latest
 
 WORKDIR /app
 COPY . .

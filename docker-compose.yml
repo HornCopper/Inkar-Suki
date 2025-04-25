@@ -1,7 +1,7 @@
 version: '3'
 services:
   inkar-suki:
-    image: inkar-suki:latest
+    image: registry.cn-hangzhou.aliyuncs.com/hzzz9/inkar-suki:latest
     container_name: inkar-suki
     restart: always
     networks:
