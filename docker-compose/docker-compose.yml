@@ -10,6 +10,7 @@ services:
       - ./config/config.yml:/app/src/config/config.yml
       - ./data:/app/src/data
       - ./const/cache:/app/src/const/cache
+      - ./cache:/app/src/cache
     ports:
       - 2333:2333
 
