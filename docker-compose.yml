@@ -1,0 +1,17 @@
+version: '3'
+services:
+  inkar-suki:
+    image: inkar-suki:latest
+    container_name: inkar-suki
+    restart: always
+    networks:
+      - default
+    volumes:
+      - ./config/config.yml:/app/src/config/config.yml
+      - ./data:/app/src/data
+    ports:
+      - 2333:2333
+
+networks:
+  default:
+    name: inkar
