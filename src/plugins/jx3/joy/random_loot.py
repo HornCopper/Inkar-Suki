@@ -14,6 +14,8 @@ from ._template import (
     template_item
 )
 
+import re
+
 current_level = 130
 
 current_dungeon = ["太极宫"]
@@ -163,6 +165,8 @@ class RandomLoot:
 
             # 想开挂的话把这里取消注释，上面的概率注释掉
 
+            enchants = [i for i in loot_list if re.search(r'(伤|疗|御)·(腕|腰|鞋|帽|衣)$', str(i["Name"])) is not None]
+
             if _other_peerless:
                 other_peerless_item = [i for i in loot_list if i.get("BelongSchool") == "" or i.get("Type") in ["Act_运营及版本道具", "玩具"]]
                 append_item(boss_name, other_peerless_item[0])
@@ -254,11 +258,26 @@ class RandomLoot:
                     color=item_colors[4]
                 ))
 
+
+            # 附魔
+            if enchants:
+                random_enchant = choice(enchants)
+                result[boss_name].append(
+                    JX3LootItem(
+                        icon=random_enchant["Icon"]["FileName"],
+                        name=random_enchant["Name"],
+                        color=item_colors[4]
+                    )
+                )
+
             # 五彩石
             materials = [
                 ("伍级五彩石", "https://icon.jx3box.com/icon/2330.png", 4),
                 ("肆级五彩石", "https://icon.jx3box.com/icon/2359.png", 3),
+                ("肆级五彩石", "https://icon.jx3box.com/icon/2359.png", 3),
+                ("肆级五彩石", "https://icon.jx3box.com/icon/2359.png", 3),
                 ("五行石（六级）", "https://icon.jx3box.com/icon/7528.png", 4),
+                ("五行石（六级）", "https://icon.jx3box.com/icon/7528.png", 4)
             ]
             for _ in range(2):
                 name, icon_url, color_id = choice(materials)

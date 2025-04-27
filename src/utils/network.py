@@ -8,6 +8,7 @@ from src.utils.exceptions import RequestDataException
 from src.utils.decorators import ticket_required
 from src.utils.tuilan import generate_x_sk, generate_timestamp, format_request_body
 from src.utils.time import Time
+from src.utils.file import write
 
 import httpx
 import os
@@ -149,9 +150,11 @@ async def cache_image(url: str):
         return url
     else:
         name = url.split("/")[-1].split("?v=2")[0]
-        if name in os.listdir(CONST + "/cache/icons/"):
+        if os.path.exists(CONST + "/cache/icons/" + name):
             return CONST + "/cache/icons/" + name
-        with open(CONST + "/cache/icons/" + name, mode="wb") as f:
-            image = (await Request(url).get()).content
-            f.write(image)
+        write(
+            CONST + "/cache/icons/" + name,
+            (await Request(url).get()).content,
+            "wb"
+        )
         return CONST + "/cache/icons/" + name
