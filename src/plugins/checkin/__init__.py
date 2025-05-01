@@ -11,6 +11,7 @@ from nonebot.adapters.onebot.v11 import (
 from nonebot.params import CommandArg, ArgPlainText
 
 from src.accounts.manage import AccountManage, CheckinRewards
+from src.const.prompts import PROMPT
 from src.utils.analyze import sort_dict_list
 from src.utils.database.classes import Account
 from src.utils.database import db
@@ -94,7 +95,7 @@ async def _(event: MessageEvent, args: Message = CommandArg()):
         await AddCoinMatcher.finish(denied(10))
     arg = args.extract_plain_text().split(" ")
     if len(arg) != 2:
-        await AddCoinMatcher.finish("唔……参数数量不正确哦~")
+        await AddCoinMatcher.finish(PROMPT.ArgumentCountInvalid + "\n参考格式：增加金币 <QQ号> <金币数>")
     if not check_number(arg[0]) or not check_number(arg[1]):
         await AddCoinMatcher.finish("唔……参数需要是数字哦~")
     if int(arg[1]) <= 0:
@@ -112,7 +113,7 @@ async def _(event: MessageEvent, args: Message = CommandArg()):
         await ReduceCoinMatcher.finish(denied(10))
     arg = args.extract_plain_text().split(" ")
     if len(arg) != 2:
-        await ReduceCoinMatcher.finish("唔……参数数量不正确哦~")
+        await ReduceCoinMatcher.finish(PROMPT.ArgumentCountInvalid + "\n参考格式：减少金币 <QQ号> <金币数>")
     if not check_number(arg[0]) or not check_number(arg[1]):
         await ReduceCoinMatcher.finish("唔……参数需要是数字哦~")
     if int(arg[1]) <= 0:
@@ -128,7 +129,7 @@ async def _(event: MessageEvent, args: Message = CommandArg()):
         return
     arg = args.extract_plain_text().split(" ")
     if len(arg) != 2:
-        await TradeCoinMatcher.finish("唔……参数数量不正确哦~")
+        await TradeCoinMatcher.finish(PROMPT.ArgumentCountInvalid + "\n参考格式：交易金币 <QQ号> <金币数>")
     if not check_number(arg[0]) or not check_number(arg[1]):
         await TradeCoinMatcher.finish("唔……参数需要是数字哦~")
     if AccountManage(event.user_id).coins < int(arg[1]):

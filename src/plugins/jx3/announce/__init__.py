@@ -16,9 +16,9 @@ import os
 
 from .image import get_image
 
-AnnounceMatcher = on_command("jx3_announce", aliases={"维护公告", "更新公告", "公告", "更新"}, force_whitespace=True, priority=5)
+announce_matcher = on_command("jx3_announce", aliases={"维护公告", "更新公告", "公告", "更新"}, force_whitespace=True, priority=5)
 
-@AnnounceMatcher.handle()
+@announce_matcher.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     """
     获取维护公告的图片：
@@ -30,14 +30,14 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     image_path = build_path(ASSETS, ["image", "jx3", "update.png"])
     if os.path.exists(image_path):
         img = Request(Path(image_path).as_uri()).local_content
-        await AnnounceMatcher.finish(ms.image(img))
+        await announce_matcher.finish(ms.image(img))
     else:
         img = await get_image()
-        await AnnounceMatcher.finish(img)
+        await announce_matcher.finish(img)
 
-BetaAnnounceMatcher = on_command("jx3_beta_announce", aliases={"体服公告", "体服更新"}, priority=5, force_whitespace=True)
+beta_announce_matcher = on_command("jx3_beta_announce", aliases={"体服公告", "体服更新"}, priority=5, force_whitespace=True)
 
-@BetaAnnounceMatcher.handle()
+@beta_announce_matcher.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     """
     获取体服维护公告。
@@ -45,11 +45,11 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     if args.extract_plain_text() != "":
         return
     img = await get_image(ver="latest_exp")
-    await BetaAnnounceMatcher.finish(img)
+    await beta_announce_matcher.finish(img)
 
-SkillChangeMatcher = on_command("jx3_skillrecord", aliases={"技改", "技改记录"}, priority=5, force_whitespace=True)
+skill_change_matcher = on_command("jx3_skillrecord", aliases={"技改", "技改记录"}, priority=5, force_whitespace=True)
 
-@SkillChangeMatcher.handle()
+@skill_change_matcher.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     if args.extract_plain_text() != "":
         return
@@ -61,4 +61,4 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
             title = d["title"]
             url = d["url"]
             msg += f"\n标题：{title}\n链接：{url}"
-        await SkillChangeMatcher.finish(msg.strip())
+        await skill_change_matcher.finish(msg.strip())

@@ -6,10 +6,10 @@ from src.utils.network import Request
 
 import random
 
-EmojiMatcher = on_command("jx3_emoji", aliases={"随机表情"}, force_whitespace=True, priority=5)
+emoji_matcher = on_command("jx3_emoji", aliases={"随机表情"}, force_whitespace=True, priority=5)
 
 
-@EmojiMatcher.handle()
+@emoji_matcher.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     if args.extract_plain_text() != "":
         return
@@ -21,9 +21,9 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
         rdnum = random.randint(0, len(data) - 1)
         response = (await Request(data[rdnum]["url"]).get())
         if response.status_code == 200:
-            await EmojiMatcher.finish(ms.image(data[rdnum]["url"]))
+            await emoji_matcher.finish(ms.image(data[rdnum]["url"]))
         else:
             failed_time = failed_time + 1
             if failed_time == 5:
-                await EmojiMatcher.finish("唔……已经失败超过5次，查找失败！")
+                await emoji_matcher.finish("唔……已经失败超过5次，查找失败！")
             continue

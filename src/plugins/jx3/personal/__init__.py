@@ -27,34 +27,34 @@ def parse_role_names(input_str: str) -> list[str]:
     result = [item.strip() for item in result if item.strip()]
     return extracted_items + result
 
-PersonalBindMathcer = on_command("绑定角色", priority=5, force_whitespace=True)
+personal_bind_matcher = on_command("绑定角色", priority=5, force_whitespace=True)
 
-@PersonalBindMathcer.handle()
+@personal_bind_matcher.handle()
 async def _(event: GroupMessageEvent, argument: Message = CommandArg()):
     args = argument.extract_plain_text().strip()
     if args == "":
         return
     args = args.split(" ")
     if len(args) not in [1, 2]:
-        await PersonalBindMathcer.finish("唔……参数不正确哦，请检查后重试~")
+        await personal_bind_matcher.finish(PROMPT.ArgumentCountInvalid + "\n参考格式：绑定角色 <服务器> <角色名>\n参考格式：绑定角色 <服务器> <ID串>\n参考格式：绑定角色 <ID串>")
     if len(args) == 1:
         roles: list[str] = parse_role_names(args[0])
         server = Server(None, event.group_id).server
         if server is None:
-            await PersonalBindMathcer.finish(PROMPT.ServerNotExist)
+            await personal_bind_matcher.finish(PROMPT.ServerNotExist)
     elif len(args) == 2:
         server = args[0]
         roles: list[str] = parse_role_names(args[1])
         server = Server(server, event.group_id).server
         if server is None:
-            await PersonalBindMathcer.finish(PROMPT.ServerNotExist)
+            await personal_bind_matcher.finish(PROMPT.ServerNotExist)
     parsed_roles = [parse_role_name(name, server) for name in roles]
     msg = RoleBind(event.user_id, parsed_roles).bind()
-    await PersonalBindMathcer.finish(msg)
+    await personal_bind_matcher.finish(msg)
 
-PersonalUnbindMathcer = on_command("解绑角色", priority=5, force_whitespace=True)
+personal_unbind_matcher = on_command("解绑角色", priority=5, force_whitespace=True)
 
-@PersonalUnbindMathcer.handle()
+@personal_unbind_matcher.handle()
 async def _(event: GroupMessageEvent, argument: Message = CommandArg()):
     arg = argument.extract_plain_text().strip()
     if arg == "":
@@ -64,27 +64,27 @@ async def _(event: GroupMessageEvent, argument: Message = CommandArg()):
         parsed_roles = []
         all = True
         msg = RoleBind(event.user_id, parsed_roles).unbind(all=all)
-        await PersonalBindMathcer.finish(msg)
+        await personal_bind_matcher.finish(msg)
     else:
         args = arg.split(" ")
         if len(args) == 1:
             roles: list[str] = parse_role_names(args[0])
             server = Server(None, event.group_id).server
             if server is None:
-                await PersonalBindMathcer.finish(PROMPT.ServerNotExist)
+                await personal_bind_matcher.finish(PROMPT.ServerNotExist)
         elif len(args) == 2:
             server = args[0]
             roles: list[str] = parse_role_names(args[1])
             server = Server(server, event.group_id).server
             if server is None:
-                await PersonalBindMathcer.finish(PROMPT.ServerNotExist)
+                await personal_bind_matcher.finish(PROMPT.ServerNotExist)
         parsed_roles = [parse_role_name(name, server) for name in roles]
         msg = RoleBind(event.user_id, parsed_roles).unbind(all=all)
-        await PersonalBindMathcer.finish(msg)
+        await personal_bind_matcher.finish(msg)
 
-AllBoundRolesMatcher = on_command("角色列表", priority=5, force_whitespace=True)
+all_personal_roles_matcher = on_command("角色列表", priority=5, force_whitespace=True)
 
-@AllBoundRolesMatcher.handle()
+@all_personal_roles_matcher.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     if args.extract_plain_text() != "":
         return
@@ -100,4 +100,4 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
                 in roles
             ]
         )
-    await AllBoundRolesMatcher.finish(ms.at(event.user_id) + f" {msg}")
+    await all_personal_roles_matcher.finish(ms.at(event.user_id) + f" {msg}")

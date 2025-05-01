@@ -11,22 +11,22 @@ from .about import generate_group_info
 
 import json
 
-EnableMatcher = on_command("jx3_subscribe", aliases={"订阅", "开启"}, force_whitespace=True, priority=5)
+enable_matcher = on_command("jx3_subscribe", aliases={"订阅", "开启"}, force_whitespace=True, priority=5)
 
-@EnableMatcher.handle()
+@enable_matcher.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     if args.extract_plain_text() == "":
         return
     arg = args.extract_plain_text().split(" ")
     if len(arg) == 0:
-        await EnableMatcher.finish("唔……开启失败，您似乎没有告诉我您要订阅的内容？")
+        await enable_matcher.finish("唔……开启失败，您似乎没有告诉我您要订阅的内容？")
     else:
         if "Preview" in arg and not check_permission(event.user_id, 6):
-            await EnableMatcher.finish("权限不足！无法订阅Preview！")
+            await enable_matcher.finish("权限不足！无法订阅Preview！")
         subscribe_options = json.loads(read(build_path(ASSETS, ["source", "subscribe"], end_with_slash=True) + "options.json"))
         addition_options = json.loads(read(build_path(ASSETS, ["source", "subscribe"], end_with_slash=True) + "additions.json"))
         if not set(arg).issubset(set(list(subscribe_options) + list(addition_options))):
-            await EnableMatcher.finish("唔……开启失败，虽然音卡可以一次开启多个订阅，但是好像您这里包含了不应该存在的订阅内容，请检查后重试！\n可使用“关于”查看可订阅的内容！")
+            await enable_matcher.finish("唔……开启失败，虽然音卡可以一次开启多个订阅，但是好像您这里包含了不应该存在的订阅内容，请检查后重试！\n可使用“关于”查看可订阅的内容！")
         current_subscribes = get_group_settings(str(event.group_id), "subscribe")
         current_additions = get_group_settings(str(event.group_id), "additions")
         if not isinstance(current_additions, list) or not isinstance(current_subscribes, list):
@@ -40,22 +40,22 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
                 current_additions.append(i)
         set_group_settings(str(event.group_id), "subscribe", current_subscribes)
         set_group_settings(str(event.group_id), "additions", current_additions)
-        await EnableMatcher.finish("订阅成功！\n可使用“关于”查看本群详细信息！")
+        await enable_matcher.finish("订阅成功！\n可使用“关于”查看本群详细信息！")
 
-DisableMatcher = on_command("jx3_unsubscribe", aliases={"退订", "关闭"}, force_whitespace=True, priority=5)
+disable_matcher = on_command("jx3_unsubscribe", aliases={"退订", "关闭"}, force_whitespace=True, priority=5)
 
-@DisableMatcher.handle()
+@disable_matcher.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     if args.extract_plain_text() == "":
         return
     arg = args.extract_plain_text().split(" ")
     if len(arg) == 0:
-        await DisableMatcher.finish("唔……关闭失败，您似乎没有告诉我您要退订的内容？")
+        await disable_matcher.finish("唔……关闭失败，您似乎没有告诉我您要退订的内容？")
     else:
         subscribe_options = json.loads(read(build_path(ASSETS, ["source", "subscribe"], end_with_slash=True) + "options.json"))
         addition_options = json.loads(read(build_path(ASSETS, ["source", "subscribe"], end_with_slash=True) + "additions.json"))
         if not set(arg).issubset(set(list(subscribe_options) + list(addition_options))):
-            await EnableMatcher.finish("唔……关闭失败，虽然音卡可以一次关闭多个订阅，但是好像您这里包含了不应该存在的退订内容，请检查后重试！\n可使用“关于”查看可订阅的内容！")
+            await enable_matcher.finish("唔……关闭失败，虽然音卡可以一次关闭多个订阅，但是好像您这里包含了不应该存在的退订内容，请检查后重试！\n可使用“关于”查看可订阅的内容！")
         currentSubscribe = get_group_settings(str(event.group_id), "subscribe")
         currentAddition = get_group_settings(str(event.group_id), "additions")
         if not isinstance(currentAddition, list) or not isinstance(currentSubscribe, list):
@@ -69,13 +69,13 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
                 currentAddition.remove(i)
         set_group_settings(str(event.group_id), "subscribe", currentSubscribe)
         set_group_settings(str(event.group_id), "additions", currentAddition)
-        await DisableMatcher.finish("退订成功！\n可使用“关于”查看本群详细信息！")
+        await disable_matcher.finish("退订成功！\n可使用“关于”查看本群详细信息！")
 
-info = on_command("jx3_about", aliases={"关于", "本群订阅"}, force_whitespace=True, priority=5)
+group_info_matcher = on_command("jx3_about", aliases={"关于", "本群订阅"}, force_whitespace=True, priority=5)
 
-@info.handle()
+@group_info_matcher.handle()
 async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
     if args.extract_plain_text() != "":
         return
     about_img = await generate_group_info(bot, str(event.group_id))
-    await info.finish(about_img)
+    await group_info_matcher.finish(about_img)

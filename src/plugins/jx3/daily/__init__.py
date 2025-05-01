@@ -8,11 +8,11 @@ from .api import get_daily_info
 
 import datetime
 
-DailyMatcher = on_command("jx3_daily", aliases={"日常"}, force_whitespace=True, priority=5)
-@DailyMatcher.handle()
+daily_matcher = on_command("jx3_daily", aliases={"日常"}, force_whitespace=True, priority=5)
+@daily_matcher.handle()
 async def _(event: GroupMessageEvent):
     msg = await get_daily_info()
-    await DailyMatcher.finish(msg)
+    await daily_matcher.finish(msg)
 
 @scheduler.scheduled_job("cron", hour="8", minute="30")
 async def run_at_8_30():

@@ -8,13 +8,13 @@ from src.const.jx3.school import School
 
 from .api import get_zlrank
 
-ZiliRankMatcher = on_command("jx3_zlrank", aliases={"资历排行", "资历榜单"}, priority=5, force_whitespace=True)
+exp_rank_matcher = on_command("jx3_zlrank", aliases={"资历排行", "资历榜单"}, priority=5, force_whitespace=True)
 
-@ZiliRankMatcher.handle()
+@exp_rank_matcher.handle()
 async def _(event: GroupMessageEvent, argument: Message = CommandArg()):
     args = argument.extract_plain_text().split(" ")
     if len(args) not in [0, 1, 2]:
-        await ZiliRankMatcher.finish(PROMPT.ArgumentCountInvalid)
+        await exp_rank_matcher.finish(PROMPT.ArgumentCountInvalid + "\n参考格式：资历排行 [服务器] [门派]")
     if args[0] == "":
         """
         CMD
@@ -22,7 +22,7 @@ async def _(event: GroupMessageEvent, argument: Message = CommandArg()):
         server = ""
         school = ""
         if server is None:
-            await ZiliRankMatcher.finish(PROMPT.ServerNotExist)
+            await exp_rank_matcher.finish(PROMPT.ServerNotExist)
     elif len(args) == 1:
         """
         CMD SCH/SRV
@@ -43,4 +43,4 @@ async def _(event: GroupMessageEvent, argument: Message = CommandArg()):
         server = Server(args[0], event.group_id).server or ""
         school = School(args[1]).name or ""
     image = await get_zlrank(server, school)
-    await ZiliRankMatcher.finish(image)
+    await exp_rank_matcher.finish(image)

@@ -12,16 +12,16 @@ from .rdps import RDPSCalculator
 import re
 import json
 
-YLJCalcMatcher = on_command("jx3_calculator_lyj", aliases={"凌雪计算器"}, priority=5, force_whitespace=True)
+yinlongjue_calc_matcher = on_command("jx3_calculator_lyj", aliases={"凌雪计算器"}, priority=5, force_whitespace=True)
 
-@YLJCalcMatcher.handle()
+@yinlongjue_calc_matcher.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     if args.extract_plain_text() == "":
         return
     raw_arg = args.extract_plain_text().split(" ")
     arg = [a for a in raw_arg if a != "-A"]
     if len(arg) not in [1, 2]:
-        await YLJCalcMatcher.finish("唔……参数不正确哦，请检查后重试~")
+        await yinlongjue_calc_matcher.finish(PROMPT.ArgumentCountInvalid + "\n参考格式：凌雪计算器 <服务器> <角色名>")
     if len(arg) == 1:
         server = None
         name = arg[0]
@@ -30,12 +30,12 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
         name = arg[1]
     server = Server(server, event.group_id).server
     if server is None:
-        await YLJCalcMatcher.finish(PROMPT.ServerNotExist)
+        await yinlongjue_calc_matcher.finish(PROMPT.ServerNotExist)
     instance = await LingxueCalculator.with_name(name, server)
     if isinstance(instance, str):
-        await YLJCalcMatcher.finish(instance)
+        await yinlongjue_calc_matcher.finish(instance)
     data = await instance.image(len(raw_arg) > len(arg))
-    await YLJCalcMatcher.finish(data)
+    await yinlongjue_calc_matcher.finish(data)
 
 def check_jcl_name(filename: str) -> bool:
     if not filename.startswith("IKS-"):

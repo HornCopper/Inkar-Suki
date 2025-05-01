@@ -1,33 +1,32 @@
 from .achievement import (
-    ZoneAchiMatcher,
-    JX3AdventureMatcher,
-    JX3ProgressV2Matcher
+    zone_achievement_matcher,
+    achievement_v2_matcher
 )
 from .almanac import (
-    AlmanacMatcher,
-    AlmanacImageMatcher
+    almanac_matcher,
+    almanac_image_matcher
 )
 from .announce import (
-    AnnounceMatcher,
-    BetaAnnounceMatcher,
-    SkillChangeMatcher
+    announce_matcher,
+    beta_announce_matcher,
+    skill_change_matcher
 )
 from .assistance import (
-    BookTeamMatcher,
-    TeamlistMatcher,
-    CancelTeamMatcher,
-    CreateTeamMatcher,
-    LookupTeamMatcher,
-    DissolveTeamMatcher,
-    ShareTeamMatcher
+    book_team_matcher,
+    teamlist_matcher,
+    cancel_team_matcher,
+    create_team_matcher,
+    lookup_team_matcher,
+    dissolve_team_matcher,
+    share_team_matcher
 )
 from .attributes import (
-    AttributeV2Matcher,
-    AttributeV2RemakeMatcher
+    attribute_v2_matcher,
+    attribute_v2remake_matcher
 )
 from .bind import (
-    BindServerMatcher,
-    RoleCheckMatcher
+    server_bind_matcher,
+    role_check_matcher
 )
 # from .calculator import (
 #     DJCalcMatcher,
@@ -38,114 +37,114 @@ from .bind import (
 # )
 # RIP: not adapted
 from .calculator import (
-    YLJCalcMatcher
+    yinlongjue_calc_matcher
 )
 from .cost import (
-    CostCalculatorMatcher
+    cost_calc_matcher
 )
 from .couple import (
-    BindAffectionMatcher,
-    DeleteAffectionMatcher,
-    AffectionsCrtMatcher
+    bind_affection_matcher,
+    delete_affection_matcher,
+    affection_crt_matcher
 )
 from .daily import (
-    DailyMatcher
+    daily_matcher
 )
 from .detail import (
-    AchievementMatcher
+    achievement_overview_matcher
 )
 from .dungeon import (
-    MonstersMatcher,
-    DropslistMatcher,
-    ZoneRecordMatcher,
-    AllServerItemRecordMatcher,
-    AllRolesTeamcdMatcher,
-    RoleMonstersMatcher
+    monsters_matcher,
+    drops_list_matcher,
+    zone_record_matcher,
+    allserver_item_record_matcher,
+    all_roles_teamcd_matcher,
+    role_monsters_matcher
 )
 from .emoji import (
-    EmojiMatcher
+    emoji_matcher
 )
 from .equip import (
-    EquipRecommendMatcher
+    referenced_equip_matcher
 )
 from .events import (
-    ChutianMatcher,
-    YuncongMatcher
+    chutian_matcher,
+    yuncong_matcher
 )
 from .exam import (
-    ExamMatcher
+    exam_matcher
 )
 from .gold import (
-    CoinPriceMatcher
+    coin_price_matcher
 )
 from .horse import (
-    HorseChatMatcher,
-    HorseSpawnMatcher
+    horse_chat_matcher,
+    horse_spawn_matcher
 )
 from .item import (
-    ItemSearcherMatcher
+    item_detail_matcher
 )
 from .joy import (
-    SaohuaMatcher,
-    TiangouMatcher,
-    RandomLootMatcher
+    saohua_matcher,
+    tiangou_matcher,
+    random_loot_matcher
 )
 from .lookup import (
-    LookupPersonMatcher
+    lookup_matcher
 )
 from .penzai import (
-    DHMatcher,
-    WGMatcher
+    dunhao_matcher,
+    waiguan_matcher
 )
 from .personal import (
-    AllBoundRolesMatcher,
-    PersonalBindMathcer,
-    PersonalUnbindMathcer
+    all_personal_roles_matcher,
+    personal_bind_matcher,
+    personal_unbind_matcher
 )
 from .pvp import (
-    ArenaRecordMatcher
+    arena_record_matcher
 )
 from .rank import (
-    ZiliRankMatcher
+    exp_rank_matcher
 )
 from .recruit import (
-    RecruitMatcher
+    recruit_matcher
 )
 from .role import (
-    RoleInfoMatcher
+    role_info_matcher
 )
 from .sandbox import (
-    SandboxMatcher
+    sandbox_matcher
 )
 from .serendipity import (
-    V2SerendipityMatcher,
-    V3SerendipityMatcher,
-    PrepositionMatcher
+    serendipity_v2_matcher,
+    serendipity_v3_matcher,
+    preposition_matcher
 )
 from .server import (
-    ServerMatcher
+    server_matcher
 )
 from .show import (
-    ShowMatcher
+    show_matcher
 )
 from .skill import (
-    MatrixMatcher,
-    MacroMatcher,
-    SkillMatcher
+    matrix_matcher,
+    macro_matcher,
+    skill_matcher
 )
 from .snacks import (
-    SchoolSnacksMatcher
+    school_snacks_matcher
 )
 from .subscribe import (
-    EnableMatcher,
-    DisableMatcher
+    enable_matcher,
+    disable_matcher
 )
 from .trade import (
-    V2TradeMatcher,
-    V2SLTradeMatcher,
-    V2ItemPriceMatcher,
-    WBLRolePriceMatcher
+    trade_v2_matcher,
+    trade_v2_sl_matcher,
+    item_price_v2_matcher,
+    wanbaolou_role_matcher
 )
 from .version import (
-    VersionMatcher
+    version_matcher
 )

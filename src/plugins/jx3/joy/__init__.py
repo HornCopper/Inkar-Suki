@@ -8,10 +8,9 @@ from src.utils.network import Request
 
 from .random_loot import RandomLoot
 
-SaohuaMatcher = on_command("jx3_random", aliases={"骚话", "烧话"}, force_whitespace=True, priority=5)
+saohua_matcher = on_command("jx3_random", aliases={"骚话", "烧话"}, force_whitespace=True, priority=5)
 
-
-@SaohuaMatcher.handle()
+@saohua_matcher.handle()
 async def jx3_saohua_random(args: Message = CommandArg()):
     """
     召唤一条骚话：
@@ -23,12 +22,11 @@ async def jx3_saohua_random(args: Message = CommandArg()):
     full_link = f"{Config.jx3.api.url}/data/saohua/random"
     info = (await Request(full_link).get()).json()
     msg = info["data"]["text"]
-    await SaohuaMatcher.finish(msg)
+    await saohua_matcher.finish(msg)
 
-TiangouMatcher = on_command("jx3_tiangou", aliases={"舔狗", "舔狗日记"}, force_whitespace=True, priority=5)
+tiangou_matcher = on_command("jx3_tiangou", aliases={"舔狗", "舔狗日记"}, force_whitespace=True, priority=5)
 
-
-@TiangouMatcher.handle()
+@tiangou_matcher.handle()
 async def jx3_saohua_tiangou(args: Message = CommandArg()):
     """
     获取一条舔狗日志：
@@ -40,23 +38,23 @@ async def jx3_saohua_tiangou(args: Message = CommandArg()):
     full_link = f"{Config.jx3.api.url}/data/saohua/content"
     info = (await Request(full_link).get()).json()
     msg = info["data"]["text"]
-    await TiangouMatcher.finish(msg)
+    await tiangou_matcher.finish(msg)
 
-RandomLootMatcher = on_command("jx3_rdloot", aliases={"黑本", "模拟掉落"}, force_whitespace=True, priority=5)
+random_loot_matcher = on_command("jx3_rdloot", aliases={"黑本", "模拟掉落"}, force_whitespace=True, priority=5)
 
-@RandomLootMatcher.handle()
+@random_loot_matcher.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     msg = args.extract_plain_text()
     if msg == "":
         return
     msg = msg.split(" ")
     if len(msg) != 2:
-        return PROMPT.ArgumentCountInvalid
+        await random_loot_matcher.finish(PROMPT.ArgumentCountInvalid + "\n参考格式：黑本 <副本名> <难度>")
     name = msg[0]
     mode = msg[1]
     instance = await RandomLoot.with_map_name(name, mode)
     if instance is None:
-        await RandomLootMatcher.finish(PROMPT.DungeonInvalid + "\n由于上游数据错误，暂时只可模拟25人英雄一之窟。")
+        await random_loot_matcher.finish(PROMPT.DungeonInvalid + "\n由于上游数据错误，暂时只可模拟25人英雄一之窟。")
     else:
         image = await instance.generate()
-        await RandomLootMatcher.finish(ms.at(event.user_id) + image)
+        await random_loot_matcher.finish(ms.at(event.user_id) + image)

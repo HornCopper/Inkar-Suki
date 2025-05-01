@@ -14,15 +14,15 @@ from .v2 import get_attr_v2
 from .v2_remake import get_attr_v2_remake
 from .v4 import get_attr_v4
 
-AttributeMatcher = on_command("jx3_attribute", aliases={"属性", "查装"}, force_whitespace=True, priority=5)
+attribute_matcher = on_command("jx3_attribute", aliases={"属性", "查装"}, force_whitespace=True, priority=5)
 
-@AttributeMatcher.handle()
+@attribute_matcher.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     if args.extract_plain_text() == "":
         return
     arg = args.extract_plain_text().strip().split(" ")
     if len(arg) not in [1, 2, 3]:
-        await AttributeMatcher.finish("唔……参数不正确哦，请检查后重试~")
+        await attribute_matcher.finish(PROMPT.ArgumentCountInvalid + "\n参考格式：属性 <服务器> <角色名>")
     if len(arg) == 1:
         server = None
         role_name = arg[0]
@@ -42,7 +42,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
         tags = arg[-1]
     server = Server(server, event.group_id).server
     if not server:
-        await AttributeMatcher.finish(PROMPT.ServerNotExist)
+        await attribute_matcher.finish(PROMPT.ServerNotExist)
     ver = Preference(event.user_id, "", "").setting("属性")
     if ver == "v2":
         data = await get_attr_v2(server, role_name)
@@ -50,11 +50,11 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
         data = await get_attr_v2_remake(server, role_name, segment=True)
     elif ver == "v4":
         data = await get_attr_v4(server, role_name, tags)
-    await AttributeMatcher.finish(data)
+    await attribute_matcher.finish(data)
 
-AttributeV2Matcher = on_command("jx3_addritube_v2", aliases={"属性v2", "查装v2"}, force_whitespace=True, priority=5)
+attribute_v2_matcher = on_command("jx3_addritube_v2", aliases={"属性v2", "查装v2"}, force_whitespace=True, priority=5)
 
-@AttributeV2Matcher.handle()
+@attribute_v2_matcher.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     """
     查询某玩家的装备：
@@ -66,7 +66,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
         return
     arg = args.extract_plain_text().strip().split(" ")
     if len(arg) not in [1, 2]:
-        await AttributeV2Matcher.finish("唔……参数不正确哦，请检查后重试~")
+        await attribute_v2_matcher.finish(PROMPT.ArgumentCountInvalid + "\n参考格式：属性v2 <服务器> <角色名>")
     if len(arg) == 1:
         server = None
         role = arg[0]
@@ -75,19 +75,19 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
         role = arg[1]
     server = Server(server, event.group_id).server
     if not server:
-        await AttributeV2Matcher.finish(PROMPT.ServerNotExist)
+        await attribute_v2_matcher.finish(PROMPT.ServerNotExist)
     data = await get_attr_v2(server, role)
-    await AttributeV2Matcher.finish(data)
+    await attribute_v2_matcher.finish(data)
 
-AttributeV2RemakeMatcher = on_command("jx3_addritube_v2_remake", aliases={"属性v2r", "查装v2r"}, force_whitespace=True, priority=5)
+attribute_v2remake_matcher = on_command("jx3_addritube_v2_remake", aliases={"属性v2r", "查装v2r"}, force_whitespace=True, priority=5)
 
-@AttributeV2RemakeMatcher.handle()
+@attribute_v2remake_matcher.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     if args.extract_plain_text() == "":
         return
     arg = args.extract_plain_text().strip().split(" ")
     if len(arg) not in [1, 2]:
-        await AttributeV2RemakeMatcher.finish("唔……参数不正确哦，请检查后重试~")
+        await attribute_v2remake_matcher.finish(PROMPT.ArgumentCountInvalid + "\n参考格式：属性v2r <服务器> <角色名>")
     if len(arg) == 1:
         server = None
         role = arg[0]
@@ -96,19 +96,19 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
         role = arg[1]
     server = Server(server, event.group_id).server
     if not server:
-        await AttributeV2RemakeMatcher.finish(PROMPT.ServerNotExist)
+        await attribute_v2remake_matcher.finish(PROMPT.ServerNotExist)
     data = await get_attr_v2_remake(server, role, segment=True)
-    await AttributeV2RemakeMatcher.finish(data)
+    await attribute_v2remake_matcher.finish(data)
 
-AttributeV4Matcher = on_command("jx3_addritube_v4", aliases={"属性v4", "查装v4"}, force_whitespace=True, priority=5)
+attribute_v4_matcher = on_command("jx3_addritube_v4", aliases={"属性v4", "查装v4"}, force_whitespace=True, priority=5)
 
-@AttributeV4Matcher.handle()
+@attribute_v4_matcher.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     if args.extract_plain_text() == "":
         return
     arg = args.extract_plain_text().strip().split(" ")
     if len(arg) not in [1, 2, 3]:
-        await AttributeV4Matcher.finish("唔……参数不正确哦，请检查后重试~")
+        await attribute_v4_matcher.finish(PROMPT.ArgumentCountInvalid + "\n参考格式：属性v4 <服务器> <角色名>")
     if len(arg) == 1:
         server = None
         role_name = arg[0]
@@ -128,6 +128,6 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
         tags = arg[-1]
     server = Server(server, event.group_id).server
     if not server:
-        await AttributeV4Matcher.finish(PROMPT.ServerNotExist)
+        await attribute_v4_matcher.finish(PROMPT.ServerNotExist)
     data = await get_attr_v4(server, role_name, tags)
-    await AttributeV4Matcher.finish(data)
+    await attribute_v4_matcher.finish(data)

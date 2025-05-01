@@ -12,9 +12,9 @@ from src.utils.database.operation import get_group_settings
 
 from .api import get_sandbox_image
 
-SandboxMatcher = on_command("jx3_sandbox_v2", aliases={"沙盘v2", "沙盘"}, force_whitespace=True, priority=5)
+sandbox_matcher = on_command("jx3_sandbox_v2", aliases={"沙盘v2", "沙盘"}, force_whitespace=True, priority=5)
 
-@SandboxMatcher.handle()
+@sandbox_matcher.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     """
     获取服务器沙盘：
@@ -29,7 +29,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
         """
         server = Server(None, event.group_id).server
         if server is None:
-            await SandboxMatcher.finish(PROMPT.ServerNotExist)
+            await sandbox_matcher.finish(PROMPT.ServerNotExist)
         image = await get_sandbox_image(server)
     else:
         """
@@ -37,6 +37,6 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
         """
         server = Server(args.extract_plain_text(), event.group_id).server
         if server is None:
-            await SandboxMatcher.finish(PROMPT.ServerNotExist)
+            await sandbox_matcher.finish(PROMPT.ServerNotExist)
         image = await get_sandbox_image(server)
-    await SandboxMatcher.finish(image)
+    await sandbox_matcher.finish(image)

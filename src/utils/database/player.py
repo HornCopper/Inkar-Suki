@@ -30,7 +30,7 @@ async def get_uid_data(role_id: str = "", server: str = "", role_name: str = "")
         "server": server
     }
     data = (await Request("https://m.pvp.xoyo.com/role/indicator", params=params).post(tuilan=True)).json()
-    data = data["data"]["role_info"]
+    data: dict[str, Any] = data["data"]["role_info"]
     if data is None:
         return PROMPT.UIDInvalid
     data["bodyName"] = data.pop("body_type")
@@ -43,6 +43,7 @@ async def get_uid_data(role_id: str = "", server: str = "", role_name: str = "")
 
     _role_name = data.pop("name")
     data["roleName"] = _role_name if "*" not in _role_name else role_name
+    db.delete(RoleData(), "roleName = ? AND serverName = ?", data["roleName"], server)
 
     data["roleId"] = data.pop("role_id")
     data["serverName"] = data.pop("server")

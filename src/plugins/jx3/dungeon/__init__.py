@@ -15,15 +15,15 @@ from .teamcd import get_zone_record_image, get_mulit_record_image, get_personal_
 from .role_monster import get_role_monsters_map
 from .monster import get_monsters_map
 
-ZoneRecordMatcher = on_command("jx3_zones", aliases={"副本"}, force_whitespace=True, priority=5)
+zone_record_matcher = on_command("jx3_zones", aliases={"副本"}, force_whitespace=True, priority=5)
 
-@ZoneRecordMatcher.handle()
+@zone_record_matcher.handle()
 async def _(event: GroupMessageEvent, message: Message = CommandArg()):
     if message.extract_plain_text() == "":
         return
     args = message.extract_plain_text().strip().split(" ")
     if len(args) not in [1, 2]:
-        await ZoneRecordMatcher.finish("唔……参数不正确哦，请检查后重试~")
+        await zone_record_matcher.finish(PROMPT.ArgumentCountInvalid + "\n参考格式：副本 <服务器> <角色名>\n参考格式：副本 <服务器> <多角色>\n多角色以英文分号(;)分割。")
     if len(args) == 1:
         server = None
         name = args[0]
@@ -32,57 +32,56 @@ async def _(event: GroupMessageEvent, message: Message = CommandArg()):
         name = args[1]
     server = Server(server, event.group_id).server
     if server is None:
-        await ZoneRecordMatcher.finish(PROMPT.ServerNotExist)
+        await zone_record_matcher.finish(PROMPT.ServerNotExist)
     if name == "*":
-        await ZoneRecordMatcher.send("提示：“副本 *”用法将在4月17日新赛季开启后停止使用。\n请移步“副本列表”命令。\n用法：副本列表 [副本名(可留空)]")
         data = await get_personal_roles_teamcd_image(event.user_id)
     elif ";" in name:
         roles = name.split(";")
         if len(roles) > 6 and not check_permission(event.user_id, 6):
-            await ZoneRecordMatcher.finish("最多一次只可以查询6个角色！")
+            await zone_record_matcher.finish("最多一次只可以查询6个角色！")
         data = await get_mulit_record_image(server, roles)
     else:
         data = await get_zone_record_image(server, name)
-    await ZoneRecordMatcher.finish(data)
+    await zone_record_matcher.finish(data)
 
-AllRolesTeamcdMatcher = on_command("jx3_zoneslist", aliases={"副本列表"}, force_whitespace=True, priority=5)
+all_roles_teamcd_matcher = on_command("jx3_zoneslist", aliases={"副本列表"}, force_whitespace=True, priority=5)
 
-@AllRolesTeamcdMatcher.handle()
+@all_roles_teamcd_matcher.handle()
 async def _(event: GroupMessageEvent, message: Message = CommandArg()):
     msg = message.extract_plain_text().strip()
     image = await get_personal_roles_teamcd_image(event.user_id, msg)
-    await AllRolesTeamcdMatcher.finish(image)
+    await all_roles_teamcd_matcher.finish(image)
 
-DropslistMatcher = on_command("jx3_drops", aliases={"掉落列表"}, force_whitespace=True, priority=5)
+drops_list_matcher = on_command("jx3_drops", aliases={"掉落列表"}, force_whitespace=True, priority=5)
 
-@DropslistMatcher.handle()
+@drops_list_matcher.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     if args.extract_plain_text() == "":
         return
     arg = args.extract_plain_text().split(" ")
     if len(arg) != 3:
-        await DropslistMatcher.finish("唔……参数不正确哦~")
+        await drops_list_matcher.finish(PROMPT.ArgumentCountInvalid + "\n参考格式：掉落列表 <副本名> <副本难度> <首领名>")
     map = arg[0]
     mode = arg[1]
     boss = arg[2]
     dungeonInstance = Dungeon(map, mode)
     if dungeonInstance.name is None or dungeonInstance.mode is None:
-        await DropslistMatcher.finish(PROMPT.DungeonInvalid)
+        await drops_list_matcher.finish(PROMPT.DungeonInvalid)
     data = await get_drop_list_image(dungeonInstance.name, dungeonInstance.mode, boss)
-    await DropslistMatcher.finish(data)
+    await drops_list_matcher.finish(data)
 
-MonstersMatcher = on_command("jx3_monsters_v2", aliases={"百战v2", "百战"}, force_whitespace=True, priority=5)
+monsters_matcher = on_command("jx3_monsters_v2", aliases={"百战v2", "百战"}, force_whitespace=True, priority=5)
 
-@MonstersMatcher.handle()
+@monsters_matcher.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     if args.extract_plain_text() != "":
         return
     img = await get_monsters_map()
-    await MonstersMatcher.finish(img)
+    await monsters_matcher.finish(img)
 
-RoleMonstersMatcher = on_command("jx3_role_monster", aliases={"精耐"}, force_whitespace=True, priority=5)
+role_monsters_matcher = on_command("jx3_role_monster", aliases={"精耐"}, force_whitespace=True, priority=5)
 
-@RoleMonstersMatcher.handle()
+@role_monsters_matcher.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     additions = get_group_settings(str(event.group_id), "additions")
     if not Config.jx3.api.enable and "Preview" not in additions:
@@ -91,7 +90,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
         return
     arg = args.extract_plain_text().strip().split(" ")
     if len(arg) not in [1, 2]:
-        await RoleMonstersMatcher.finish("唔……参数不正确哦，请检查后重试~")
+        await role_monsters_matcher.finish(PROMPT.ArgumentCountInvalid + "\n参考格式：精耐 <服务器> <角色名>")
     if len(arg) == 1:
         server = None
         role_name = arg[0]
@@ -100,17 +99,17 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
         role_name = arg[1]
     server = Server(server, event.group_id).server
     if not server:
-        await RoleMonstersMatcher.finish(PROMPT.ServerNotExist)
+        await role_monsters_matcher.finish(PROMPT.ServerNotExist)
     data = await get_role_monsters_map(server, role_name)
-    await RoleMonstersMatcher.finish(data)
+    await role_monsters_matcher.finish(data)
 
-AllServerItemRecordMatcher = on_command("jx3_itemrecord_allserver", aliases={"全服掉落"}, force_whitespace=True, priority=5)
+allserver_item_record_matcher = on_command("jx3_itemrecord_allserver", aliases={"全服掉落"}, force_whitespace=True, priority=5)
 
-@AllServerItemRecordMatcher.handle()
+@allserver_item_record_matcher.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     additions = get_group_settings(str(event.group_id), "additions")
     if not Config.jx3.api.enable and "Preview" not in additions:
         return
     item_name = args.extract_plain_text()
     data = await get_item_record(item_name)
-    await AllServerItemRecordMatcher.finish(data)
+    await allserver_item_record_matcher.finish(data)

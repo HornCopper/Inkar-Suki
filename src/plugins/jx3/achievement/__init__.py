@@ -1,100 +1,27 @@
 from nonebot import on_command
 from nonebot.adapters.onebot.v11 import (
     Message,
-    GroupMessageEvent,
-    MessageSegment as ms
+    GroupMessageEvent
 )
-from nonebot.params import CommandArg, Arg
-from nonebot.typing import T_State
-from nonebot.matcher import Matcher
+from nonebot.params import CommandArg
 
 from src.const.prompts import PROMPT
-from src.utils.analyze import check_number
-from src.utils.network import Request
 from src.const.jx3.server import Server
 from src.const.jx3.dungeon import Dungeon
 
-from .box import (
-    get_adventure,
-    AchievementInformation
-)
 from .v2 import (
     get_progress_v2,
     zone_achievement
 )
 
-JX3AdventureMatcher = on_command(
-    "jx3_adventure",
-    aliases={"成就"},
-    force_whitespace=True,
-    priority=5
-)
+achievement_v2_matcher = on_command("jx3_progress_v2", aliases={"进度", "成就进度", "成就"}, force_whitespace=True, priority=5)
 
-@JX3AdventureMatcher.handle()
-async def _(
-    matcher: Matcher,
-    state: T_State,
-    full_argument: Message = CommandArg()
-):
-    """
-    查询成就信息：
-
-    Example：-成就 好久不见
-    """
-    if full_argument.extract_plain_text() == "":
-        matcher.stop_propagation()
-        return
-    achievement_name = full_argument.extract_plain_text()
-    data = await get_adventure(achievement_name)
-    if not data:
-        return [PROMPT.AchievementNotFound]
-    else:
-        if len(data) == 1:
-            # 最佳匹配
-            image_url = data[0].icon
-            image = (await Request(image_url).get()).content
-            msg = f"查询到「{data[0].name}」：\n{ms.image(image)}\n{data[0].sip_desc}\n{data[0].full_desc}\n地图：{data[0].map}\n资历：{data[0].point}点"
-            await JX3AdventureMatcher.finish(msg)
-        else:
-            if len(data) > 20:
-                data = data[:20]
-            state["v"] = data
-            msg = "音卡找到下面的相关成就，请回复前方序号来搜索！"
-            for num, information in enumerate(data, start=1):
-                msg += f"\n{num}. {information.name}"
-            await JX3AdventureMatcher.send(msg)
-
-@JX3AdventureMatcher.got("num")
-async def _(
-    state: T_State,
-    num: Message = Arg()
-):
-    num_ = num.extract_plain_text()
-    data: list[AchievementInformation] = state["v"]
-    if check_number(num_) and int(num_) <= len(data):
-        image_url = data[int(num_)].icon
-        image = (await Request(image_url).get()).content
-        msg = f"查询到「{data[int(num_) - 1].name}」：\n{ms.image(image)}\n{data[int(num_)].sip_desc}\n{data[int(num_)].full_desc}\n地图：{data[int(num_)].map}\n资历：{data[int(num_)].point}点"
-        await JX3AdventureMatcher.finish(msg)
-    else:
-        await JX3AdventureMatcher.finish(PROMPT.NumberInvalid)
-
-JX3ProgressV2Matcher = on_command(
-    "jx3_progress_v2", 
-    aliases={"进度"}, 
-    force_whitespace=True, 
-    priority=5
-)
-
-@JX3ProgressV2Matcher.handle()
-async def _(
-    event: GroupMessageEvent, 
-    full_argument: Message = CommandArg()
-):
-    args = full_argument.extract_plain_text().split(" ")
+@achievement_v2_matcher.handle()
+async def _(event: GroupMessageEvent, msg: Message = CommandArg()):
+    args = msg.extract_plain_text().split(" ")
 
     if len(args) not in [2, 3]:
-        await JX3ProgressV2Matcher.finish(PROMPT.ArgumentCountInvalid)
+        await achievement_v2_matcher.finish(PROMPT.ArgumentCountInvalid + "\n进度 <服务器> <角色名> <关键词>")
 
     if len(args) == 2:
         server = ""
@@ -109,19 +36,19 @@ async def _(
     group_server = Server(server_name=server, group_id=event.group_id)
 
     if not group_server.server:
-        await JX3ProgressV2Matcher.finish(PROMPT.ServerNotExist)
+        await achievement_v2_matcher.finish(PROMPT.ServerNotExist)
 
     data = await get_progress_v2(group_server.server, role_name, achievement_name)
-    await JX3ProgressV2Matcher.finish(data)
+    await achievement_v2_matcher.finish(data)
 
-ZoneAchiMatcher = on_command("jx3_zoneachi", aliases={"团本成就"}, force_whitespace=True, priority=5)
+zone_achievement_matcher = on_command("jx3_zoneachi", aliases={"团本成就"}, force_whitespace=True, priority=5)
 
-@ZoneAchiMatcher.handle()
+@zone_achievement_matcher.handle()
 async def _(event: GroupMessageEvent, full_argument: Message = CommandArg()):
     args = full_argument.extract_plain_text().split(" ")
 
     if len(args) not in [2, 3, 4]:
-        await ZoneAchiMatcher.finish(PROMPT.ArgumentCountInvalid)
+        await zone_achievement_matcher.finish(PROMPT.ArgumentCountInvalid + "\n团本成就 <服务器> <角色名> <副本名> [难度(默认10人)]")
 
     if len(args) == 2:
         """
@@ -131,12 +58,12 @@ async def _(event: GroupMessageEvent, full_argument: Message = CommandArg()):
         """
         GroupServer = Server(group_id=event.group_id).server
         if not GroupServer:
-            await ZoneAchiMatcher.finish(PROMPT.ServerNotExist)
+            await zone_achievement_matcher.finish(PROMPT.ServerNotExist)
         DungeonName = Dungeon(args[1], "").name
         if not DungeonName:
-            await ZoneAchiMatcher.finish(PROMPT.DungeonNameInvalid)
+            await zone_achievement_matcher.finish(PROMPT.DungeonNameInvalid)
         server = GroupServer
-        id = args[0]
+        role_name = args[0]
         zone = DungeonName
         mode = "10人普通"
 
@@ -156,22 +83,22 @@ async def _(event: GroupMessageEvent, full_argument: Message = CommandArg()):
             """
             server = Server(group_id=event.group_id).server
             if not server:
-                await ZoneAchiMatcher.finish(PROMPT.ServerNotExist)
-            id = args[0]
+                await zone_achievement_matcher.finish(PROMPT.ServerNotExist)
+            role_name = args[0]
             DungeonObj = Dungeon(args[1], args[2])
             zone, mode = DungeonObj.name, DungeonObj.mode
             if not zone or not mode:
-                await ZoneAchiMatcher.finish(PROMPT.DungeonInvalid)
+                await zone_achievement_matcher.finish(PROMPT.DungeonInvalid)
         else:
             """
             三参数：
 
             团本成就 SRV ID DNAME
             """
-            id = args[1]
+            role_name = args[1]
             zone = Dungeon(args[2], "").name
             if not zone:
-                await ZoneAchiMatcher.finish(PROMPT.DungeonNameInvalid)
+                await zone_achievement_matcher.finish(PROMPT.DungeonNameInvalid)
             mode = "10人普通"
             
     
@@ -183,12 +110,12 @@ async def _(event: GroupMessageEvent, full_argument: Message = CommandArg()):
         """
         server = Server(args[0], event.group_id).server
         if not server:
-            await ZoneAchiMatcher.finish(PROMPT.ServerNotExist)
-        id = args[1]
+            await zone_achievement_matcher.finish(PROMPT.ServerNotExist)
+        role_name = args[1]
         DungeonObj = Dungeon(args[2], args[3])
         zone, mode = DungeonObj.name, DungeonObj.mode
         if not zone or not mode:
-            await ZoneAchiMatcher.finish(PROMPT.DungeonInvalid)
+            await zone_achievement_matcher.finish(PROMPT.DungeonInvalid)
 
-    data = await zone_achievement(server, id, zone, mode)
-    await ZoneAchiMatcher.finish(data)
+    data = await zone_achievement(server, role_name, zone, mode)
+    await zone_achievement_matcher.finish(data)

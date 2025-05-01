@@ -7,15 +7,15 @@ from src.const.jx3.server import Server
 
 from .api import get_arena_record
 
-ArenaRecordMatcher = on_command("jx3_arena_record", aliases={"战绩"}, force_whitespace=True, priority=5)
+arena_record_matcher = on_command("jx3_arena_record", aliases={"战绩"}, force_whitespace=True, priority=5)
 
-@ArenaRecordMatcher.handle()
+@arena_record_matcher.handle()
 async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
     if args.extract_plain_text() == "":
         return
     arg = args.extract_plain_text().split(" ")
     if len(arg) not in [1, 2]:
-        await ArenaRecordMatcher.finish(PROMPT.ArgumentCountInvalid)
+        await arena_record_matcher.finish(PROMPT.ArgumentCountInvalid + "\n参考格式：战绩 <服务器> <角色名>")
     if len(arg) == 1:
         server = None
         name = arg[0]
@@ -24,6 +24,6 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
         name = arg[1]
     server = Server(server, event.group_id).server
     if server is None:
-        await ArenaRecordMatcher.finish(PROMPT.ServerNotExist)
+        await arena_record_matcher.finish(PROMPT.ServerNotExist)
     data = await get_arena_record(server, name)
-    await ArenaRecordMatcher.finish(data)
+    await arena_record_matcher.finish(data)

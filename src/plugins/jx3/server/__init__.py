@@ -7,9 +7,9 @@ from src.const.jx3.server import Server
 
 from .api import get_server_status
 
-ServerMatcher = on_command("jx3_server", aliases={"开服"}, priority=5, force_whitespace=True)
+server_matcher = on_command("jx3_server", aliases={"开服"}, priority=5, force_whitespace=True)
 
-@ServerMatcher.handle()
+@server_matcher.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     """
     获取服务器开服状态：
@@ -19,6 +19,6 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     """
     server = Server(args.extract_plain_text(), event.group_id).server
     if server is None:
-        await ServerMatcher.finish(PROMPT.ServerNotExist)
+        await server_matcher.finish(PROMPT.ServerNotExist)
     msg = await get_server_status(server)
-    await ServerMatcher.finish(msg)
+    await server_matcher.finish(msg)

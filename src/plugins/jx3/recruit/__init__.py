@@ -12,10 +12,9 @@ from src.utils.database.operation import get_group_settings
 
 from .api import get_recruit_image
 
-RecruitMatcher = on_command("jx3_recruit", aliases={"招募"}, force_whitespace=True, priority=5)
+recruit_matcher = on_command("jx3_recruit", aliases={"招募"}, force_whitespace=True, priority=5)
 
-
-@RecruitMatcher.handle()
+@recruit_matcher.handle()
 async def _(event: GroupMessageEvent, full_argument: Message = CommandArg()):
     additions = get_group_settings(str(event.group_id), "additions")
     if not Config.jx3.api.enable or "Preview" not in additions:
@@ -33,7 +32,7 @@ async def _(event: GroupMessageEvent, full_argument: Message = CommandArg()):
         """
         server = Server(None, event.group_id).server
         if server is None:
-            await RecruitMatcher.finish(PROMPT.ServerNotExist)
+            await recruit_matcher.finish(PROMPT.ServerNotExist)
         data = await get_recruit_image(server, "", False, filter)
     elif len(args) == 1:
         """
@@ -47,7 +46,7 @@ async def _(event: GroupMessageEvent, full_argument: Message = CommandArg()):
             """
             group_server = Server(None, event.group_id).server
             if group_server is None:
-                await RecruitMatcher.finish(PROMPT.ServerNotExist)
+                await recruit_matcher.finish(PROMPT.ServerNotExist)
             data = await get_recruit_image(group_server, args[0], False, filter)
         else:
             """
@@ -60,8 +59,8 @@ async def _(event: GroupMessageEvent, full_argument: Message = CommandArg()):
         """
         server = Server(args[0], event.group_id).server
         if server is None:
-            await RecruitMatcher.finish(PROMPT.ServerNotExist)
+            await recruit_matcher.finish(PROMPT.ServerNotExist)
         data = await get_recruit_image(server, args[1], False, filter)
     else:
-        await RecruitMatcher.finish(PROMPT.ArgumentCountInvalid)
-    await RecruitMatcher.finish(data)
+        await recruit_matcher.finish(PROMPT.ArgumentCountInvalid)
+    await recruit_matcher.finish(data)

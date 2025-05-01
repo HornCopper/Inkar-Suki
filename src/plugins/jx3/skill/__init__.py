@@ -4,6 +4,7 @@ from nonebot import on_command
 from nonebot.params import CommandArg
 from nonebot.adapters.onebot.v11 import Message, GroupMessageEvent, MessageSegment as ms
 
+from src.const.prompts import PROMPT
 from src.const.jx3.kungfu import Kungfu
 
 from .macro import get_macro
@@ -11,21 +12,21 @@ from .martix import get_matrix
 from .qixue import get_qixue
 from .skill import get_skill
 
-MacroMatcher = on_command("jx3_macro_v2", aliases={"宏"}, force_whitespace=True, priority=5)
+macro_matcher = on_command("jx3_macro_v2", aliases={"宏"}, force_whitespace=True, priority=5)
 
-@MacroMatcher.handle()
+@macro_matcher.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     if args.extract_plain_text() == "":
         return
     kungfu = Kungfu(args.extract_plain_text()).name
     if kungfu is None:
-        await MacroMatcher.finish("唔……心法输入有误，请检查后重试~")
+        await macro_matcher.finish("唔……心法输入有误，请检查后重试~")
     data = await get_macro(kungfu)
-    await MacroMatcher.finish(data)
+    await macro_matcher.finish(data)
 
-MatrixMatcher = on_command("jx3_matrix", aliases={"阵眼"}, force_whitespace=True, priority=5)
+matrix_matcher = on_command("jx3_matrix", aliases={"阵眼"}, force_whitespace=True, priority=5)
 
-@MatrixMatcher.handle()
+@matrix_matcher.handle()
 async def _(args: Message = CommandArg()):
     """
     查询阵眼效果：
@@ -36,20 +37,20 @@ async def _(args: Message = CommandArg()):
         return
     if args.extract_plain_text():
         msg = await get_matrix(Kungfu(args.extract_plain_text()))
-        await MatrixMatcher.finish(msg)
+        await matrix_matcher.finish(msg)
     else:
-        await MatrixMatcher.finish("没有输入任何心法名称哦，没办法帮你找啦。")
+        await matrix_matcher.finish("没有输入任何心法名称哦，没办法帮你找啦。")
 
-QixueMatcher = on_command("jx3_qixue", aliases={"奇穴"}, force_whitespace=True, priority=5)
+talent_matcher = on_command("jx3_qixue", aliases={"奇穴"}, force_whitespace=True, priority=5)
 
-@QixueMatcher.handle()
+@talent_matcher.handle()
 async def _(argument: Message = CommandArg()):
     """
     查询奇穴。
     """
     args = argument.extract_plain_text().split(" ")
     if len(args) not in [1, 2, 3]:
-        await QixueMatcher.finish("唔……格式错误，请参考下面的格式：\n奇穴 心法 奇穴 赛季\n赛季非必须，可以省略。")
+        await talent_matcher.finish(PROMPT.ArgumentCountInvalid + "\n参考格式：奇穴 <心法> [关键词] [赛季]")
     if len(args) == 3:
         kungfu = args[0]
         qixue = args[1]
@@ -64,21 +65,21 @@ async def _(argument: Message = CommandArg()):
         season = ""
     msg = await get_qixue(qixue, kungfu, season)
     if isinstance(msg, Path):
-        await QixueMatcher.finish(ms.image(msg.as_uri()))
+        await talent_matcher.finish(ms.image(msg.as_uri()))
     else:
-        await QixueMatcher.finish(msg)
+        await talent_matcher.finish(msg)
 
-SkillMatcher = on_command("jx3_skill", aliases={"技能"}, force_whitespace=True, priority=5)
+skill_matcher = on_command("jx3_skill", aliases={"技能"}, force_whitespace=True, priority=5)
 
-@SkillMatcher.handle()
+@skill_matcher.handle()
 async def _(argument: Message = CommandArg()):
     """
     查询技能。
     """
     args = argument.extract_plain_text().split(" ")
     if len(args) != 2:
-        await SkillMatcher.finish("唔……格式错误，请参考下面的格式：\n技能 心法 名称")
+        await skill_matcher.finish(PROMPT.ArgumentCountInvalid + "\n参考格式：技能 <心法> <关键词>")
     kungfu = args[0]
     skill = args[1]
     msg = await get_skill(kungfu, skill)
-    await SkillMatcher.finish(msg)
+    await skill_matcher.finish(msg)

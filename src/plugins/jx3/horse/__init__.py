@@ -7,22 +7,22 @@ from src.const.jx3.server import Server
 
 from .api import get_horse_reporter, get_horse_next_spawn
 
-HorseChatMatcher = on_command("jx3_horse_v1", aliases={"抓马v1", "马场v1"}, force_whitespace=True, priority=5)
+horse_chat_matcher = on_command("jx3_horse_v1", aliases={"抓马v1", "马场v1"}, force_whitespace=True, priority=5)
 
-@HorseChatMatcher.handle()
+@horse_chat_matcher.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     server = Server(args.extract_plain_text(), event.group_id).server
     if server is None:
-        await HorseChatMatcher.finish(PROMPT.ServerNotExist)
+        await horse_chat_matcher.finish(PROMPT.ServerNotExist)
     msg = await get_horse_reporter(server)
-    await HorseChatMatcher.finish(msg)
+    await horse_chat_matcher.finish(msg)
 
-HorseSpawnMatcher = on_command("jx3_horse_v2", aliases={"抓马", "马场"}, force_whitespace=True, priority=5)
+horse_spawn_matcher = on_command("jx3_horse_v2", aliases={"抓马", "马场"}, force_whitespace=True, priority=5)
 
-@HorseSpawnMatcher.handle()
+@horse_spawn_matcher.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     server = Server(args.extract_plain_text(), event.group_id).server
     if server is None:
-        await HorseSpawnMatcher.finish(PROMPT.ServerNotExist)
+        await horse_spawn_matcher.finish(PROMPT.ServerNotExist)
     msg = await get_horse_next_spawn(server)
-    await HorseSpawnMatcher.finish(msg)
+    await horse_spawn_matcher.finish(msg)

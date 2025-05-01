@@ -7,10 +7,9 @@ from src.const.prompts import PROMPT
 
 from .api import get_coin_price_image
 
-CoinPriceMatcher = on_command("jx3_demon", aliases={"金价"}, force_whitespace=True, priority=5)
+coin_price_matcher = on_command("jx3_demon", aliases={"金价"}, force_whitespace=True, priority=5)
 
-
-@CoinPriceMatcher.handle()
+@coin_price_matcher.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     """
     获取各服金价：
@@ -19,6 +18,6 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     """
     server = Server(args.extract_plain_text(), event.group_id).server
     if server is None:
-        await CoinPriceMatcher.finish(PROMPT.ServerNotExist)
+        await coin_price_matcher.finish(PROMPT.ServerNotExist)
     data = await get_coin_price_image(server)
-    await CoinPriceMatcher.finish(data)
+    await coin_price_matcher.finish(data)

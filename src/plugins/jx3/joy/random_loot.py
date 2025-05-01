@@ -55,7 +55,7 @@ class RandomLoot:
         name, mode = dungeon.name, dungeon.mode
         if (name is None) or (mode is None):
             return None
-        if name not in ["太极宫", "一之窟"] or (name == "一之窟" and mode == "25人普通"):
+        if (name not in ["太极宫", "一之窟"] or (name == "一之窟" and mode == "25人普通")) and mode != "10人普通":
             return None
         url = "https://m.pvp.xoyo.com/dungeon/list-all"
         data = (await Request(url).post(tuilan=True)).json()
@@ -146,15 +146,16 @@ class RandomLoot:
             total_boss = len(self.loot_list_raw)
             boss_place = f"{idx+1}/{total_boss}"
 
-            is_final = boss_place == "6/6"
-            is_penultimate = boss_place == "5/6"
+            is_final = boss_place in ["6/6", "5/5", "7/7"]
+            is_penultimate = boss_place in ["5/6"]
 
             _general_brand = get_random(40)
             _weapon = get_random(10)
             _jingjian = get_random(10)
             _xuanjing = get_random(1)
             _sand_material = get_random(30)
-            _other_peerless = get_random(5)
+            _other_peerless = get_random(5) # 特殊掉落
+            _extra_peerless = get_random(10) # 额外特殊掉落 例如阅读的书
         
             # _general_brand = get_random(100)
             # _weapon = get_random(100)
@@ -162,130 +163,206 @@ class RandomLoot:
             # _xuanjing = get_random(100)
             # _sand_material = get_random(100)
             # _other_peerless = get_random(100)
+            # _extra_peerless = get_random(100)
 
             # 想开挂的话把这里取消注释，上面的概率注释掉
-
             enchants = [i for i in loot_list if re.search(r'(伤|疗|御)·(腕|腰|鞋|帽|衣)$', str(i["Name"])) is not None]
+            other_peerless_item = [i for i in loot_list if i.get("BelongSchool") == "" or i.get("Type") in ["Act_运营及版本道具", "玩具"]]
+            extra_peerless_item = [i for i in loot_list if i.get("Type") in ["特殊武器任务", "阅读材料"]]
+            iron = [i for i in loot_list if i["Name"].endswith("陨铁")]
 
-            if _other_peerless:
-                other_peerless_item = [i for i in loot_list if i.get("BelongSchool") == "" or i.get("Type") in ["Act_运营及版本道具", "玩具"]]
-                append_item(boss_name, other_peerless_item[0])
+            if not self.name.startswith("10人普通"):
+                if _other_peerless:
+                    if other_peerless_item:
+                        append_item(boss_name, choice(other_peerless_item))
 
-            if not is_final:
-                brands = [i for i in loot_list if i.get("Type") == "副本掉落道具" and str(i["Name"]).count("·") == 1]
-                general_brands = [i for i in loot_list if str(i["Name"]).startswith("神兵玉匣") and str(i["Name"]).count("·") == 1]
-                selected_brands = sample(brands, k=min(3, len(brands))) if brands else []
-                if general_brands and selected_brands and _general_brand:
-                    idx = randrange(len(selected_brands))
-                    selected_brands[idx] = general_brands[0]
-                for item in selected_brands:
-                    append_item(boss_name, item, with_attr=False)
+                if not is_final:
+                    brands = [i for i in loot_list if i.get("Type") == "副本掉落道具" and str(i["Name"]).count("·") == 1]
+                    general_brands = [i for i in loot_list if str(i["Name"]).startswith("神兵玉匣") and str(i["Name"]).count("·") == 1]
+                    selected_brands = sample(brands, k=min(3, len(brands))) if brands else []
+                    if general_brands and selected_brands and _general_brand:
+                        idx = randrange(len(selected_brands))
+                        selected_brands[idx] = general_brands[0]
+                    for item in selected_brands:
+                        append_item(boss_name, item, with_attr=False)
 
-            if not is_penultimate and _weapon and not is_final:
-                weapons = [i for i in loot_list if ("Color" in i and i.get("BelongSchool") not in ["精简", "通用", "藏剑", ""]) or str(i["Name"]).startswith("藏剑武器")]
-                weapon_boxes = [i for i in loot_list if not str(i["Name"]).startswith("于阗玉") and str(i["Name"]).count("·") == 2]
-                selected = choice(weapon_boxes) if get_random(20) and weapon_boxes else choice(weapons)
-                append_item(boss_name, selected)
-                count += 1
+                if not is_penultimate and _weapon and not is_final:
+                    weapons = [i for i in loot_list if ("Color" in i and i.get("BelongSchool") not in ["精简", "通用", "藏剑", ""]) or str(i["Name"]).startswith("藏剑武器")]
+                    weapon_boxes = [i for i in loot_list if not str(i["Name"]).startswith("于阗玉") and str(i["Name"]).count("·") == 2]
+                    selected = choice(weapon_boxes) if get_random(20) and weapon_boxes else choice(weapons)
+                    append_item(boss_name, selected)
+                    count += 1
 
-            if is_penultimate:
-                weapon_pool = [i for i in loot_list if ("Color" in i or str(i["Name"]).count("·") == 2)]
-                for item in random_items(lambda i: i in weapon_pool, 2):
-                    append_item(boss_name, item, with_attr="Color" in item)
-                count += 2
+                if is_penultimate:
+                    weapon_pool = [i for i in loot_list if ("Color" in i or str(i["Name"]).count("·") == 2)]
+                    for item in random_items(lambda i: i in weapon_pool, 2):
+                        append_item(boss_name, item, with_attr="Color" in item)
+                    count += 2
 
-            # 精简
-            if not is_final and _jingjian:
-                jingjian_list = [i for i in loot_list if i.get("BelongSchool") == "精简" or ("Color" in i and str(i.get("Desc")).startswith("使用："))]
-                if jingjian_list:
-                    append_item(boss_name, choice(jingjian_list))
-                count += 1
+                # 精简
+                if not is_final and _jingjian:
+                    jingjian_list = [i for i in loot_list if i.get("BelongSchool") == "精简" or ("Color" in i and str(i.get("Desc")).startswith("使用："))]
+                    if jingjian_list:
+                        append_item(boss_name, choice(jingjian_list))
+                    count += 1
 
-            # 散件（非最终）
-            if not is_final:
-                sanjian_list = [i for i in loot_list if "ModifyType" in i and "Color" in i and i.get("BelongSchool") == "通用" and not str(i.get("Desc")).startswith("使用：")]
-                needed = 4 - count
-                for item in random_items(lambda i: i in sanjian_list, needed):
-                    append_item(boss_name, item)
+                # 散件（非最终）
+                if not is_final:
+                    sanjian_list = [i for i in loot_list if "ModifyType" in i and "Color" in i and i.get("BelongSchool") == "通用" and not str(i.get("Desc")).startswith("使用：")]
+                    needed = 4 - count
+                    for item in random_items(lambda i: i in sanjian_list, needed):
+                        append_item(boss_name, item)
 
-            # 最终 boss 特殊掉落
-            if is_final:
-                # 水特效
-                is_box = get_random(20)
-                if is_box:
-                    box = [i for i in loot_list if str(i["Name"]).endswith("·奇")]
-                    append_item(boss_name, box[0])
-                else:
-                    weapons = [i for i in loot_list if "ModifyType" in i and i.get("BelongSchool") not in ["通用", "精简", ""]]
-                    append_item(boss_name, choice(weapons))
-                
-                # 腰坠
-                suits = [i for i in loot_list if "Color" in i and str(i.get("Desc")).startswith("使用：")]
-                if suits:
-                    append_item(boss_name, choice(suits))
+                # 最终 boss 特殊掉落
+                if is_final:
+                    # 水特效
+                    is_box = get_random(20)
+                    if is_box:
+                        box = [i for i in loot_list if str(i["Name"]).endswith("·奇")]
+                        append_item(boss_name, box[0])
+                    else:
+                        weapons = [i for i in loot_list if "ModifyType" in i and i.get("BelongSchool") not in ["通用", "精简", ""]]
+                        append_item(boss_name, choice(weapons))
+                    
+                    # 腰坠
+                    suits = [i for i in loot_list if "Color" in i and str(i.get("Desc")).startswith("使用：")]
+                    if suits:
+                        append_item(boss_name, choice(suits))
 
-                # 精简 2~3件
-                jingjian_list = [i for i in loot_list if i.get("BelongSchool") == "精简"]
-                jingjian_count = choice([2, 3])
-                for item in random_items(lambda i: i in jingjian_list, jingjian_count):
-                    append_item(boss_name, item)
+                    # 精简 2~3件
+                    jingjian_list = [i for i in loot_list if i.get("BelongSchool") == "精简"]
+                    jingjian_count = choice([2, 3])
+                    for item in random_items(lambda i: i in jingjian_list, jingjian_count):
+                        append_item(boss_name, item)
 
-                # 散件补满到8
-                sanjian_list = [i for i in loot_list if "ModifyType" in i and "Color" in i and i.get("BelongSchool") == "通用" and not str(i.get("Desc")).startswith("使用：")]
-                for item in random_items(lambda i: i in sanjian_list, 8 - 2 - jingjian_count):
-                    append_item(boss_name, item)
+                    # 散件补满到8
+                    sanjian_list = [i for i in loot_list if "ModifyType" in i and "Color" in i and i.get("BelongSchool") == "通用" and not str(i.get("Desc")).startswith("使用：")]
+                    for item in random_items(lambda i: i in sanjian_list, 8 - 2 - jingjian_count):
+                        append_item(boss_name, item)
 
-            # 材料（5/6、6/6 特殊物资）
-            if is_penultimate or is_final:
-                sand = [i for i in loot_list if i.get("Type") == "130级生活技能" and "·" not in i["Name"]]
-                if _sand_material and sand:
-                    append_item(boss_name, sand[0], with_attr=False)
+                # 材料（5/6、6/6 特殊物资）
+                if is_penultimate or is_final:
+                    sand = [i for i in loot_list if i.get("Type") == "130级生活技能" and "·" not in i["Name"]]
+                    if _sand_material and sand:
+                        append_item(boss_name, sand[0], with_attr=False)
 
-                xuanjing = [i for i in loot_list if "玄晶" in i["Name"]]
-                if _xuanjing and xuanjing:
+                    xuanjing = [i for i in loot_list if "玄晶" in i["Name"]]
+                    if _xuanjing and xuanjing:
+                        result[boss_name].append(JX3LootItem(
+                            icon=xuanjing[0]["Icon"]["FileName"],
+                            name=xuanjing[0]["Name"],
+                            color=item_colors[5]
+                        ))
+
+                # 陨铁
+                if iron:
                     result[boss_name].append(JX3LootItem(
-                        icon=xuanjing[0]["Icon"]["FileName"],
-                        name=xuanjing[0]["Name"],
-                        color=item_colors[5]
+                        icon=iron[0]["Icon"]["FileName"],
+                        name=iron[0]["Name"],
+                        color=item_colors[4]
                     ))
 
-            # 陨铁
-            iron = [i for i in loot_list if i["Name"].endswith("陨铁")]
-            if iron:
-                result[boss_name].append(JX3LootItem(
-                    icon=iron[0]["Icon"]["FileName"],
-                    name=iron[0]["Name"],
-                    color=item_colors[4]
-                ))
 
-
-            # 附魔
-            if enchants:
-                random_enchant = choice(enchants)
-                result[boss_name].append(
-                    JX3LootItem(
-                        icon=random_enchant["Icon"]["FileName"],
-                        name=random_enchant["Name"],
-                        color=item_colors[4]
+                # 附魔
+                if enchants:
+                    random_enchant = choice(enchants)
+                    result[boss_name].append(
+                        JX3LootItem(
+                            icon=random_enchant["Icon"]["FileName"],
+                            name=random_enchant["Name"],
+                            color=item_colors[4]
+                        )
                     )
-                )
 
-            # 五彩石
-            materials = [
-                ("伍级五彩石", "https://icon.jx3box.com/icon/2330.png", 4),
-                ("肆级五彩石", "https://icon.jx3box.com/icon/2359.png", 3),
-                ("肆级五彩石", "https://icon.jx3box.com/icon/2359.png", 3),
-                ("肆级五彩石", "https://icon.jx3box.com/icon/2359.png", 3),
-                ("五行石（六级）", "https://icon.jx3box.com/icon/7528.png", 4),
-                ("五行石（六级）", "https://icon.jx3box.com/icon/7528.png", 4)
-            ]
-            for _ in range(2):
-                name, icon_url, color_id = choice(materials)
-                result[boss_name].append(JX3LootItem(
-                    icon=icon_url,
-                    name=name,
-                    color=item_colors[color_id]
-                ))
+                # 五彩石
+                materials = [
+                    ("伍级五彩石", "https://icon.jx3box.com/icon/2330.png", 4),
+                    ("肆级五彩石", "https://icon.jx3box.com/icon/2359.png", 3),
+                    ("肆级五彩石", "https://icon.jx3box.com/icon/2359.png", 3),
+                    ("肆级五彩石", "https://icon.jx3box.com/icon/2359.png", 3),
+                    ("五行石（六级）", "https://icon.jx3box.com/icon/7528.png", 4),
+                    ("五行石（六级）", "https://icon.jx3box.com/icon/7528.png", 4)
+                ]
+                for _ in range(2):
+                    name, icon_url, color_id = choice(materials)
+                    result[boss_name].append(
+                        JX3LootItem(
+                            icon=icon_url,
+                            name=name,
+                            color=item_colors[color_id]
+                        )
+                    )
+            else:
+                if _extra_peerless and extra_peerless_item:
+                    append_item(boss_name, choice(extra_peerless_item))
+                if _other_peerless and other_peerless_item: # 挂件 马 马具 等
+                    append_item(boss_name, choice(other_peerless_item))
+
+                if _weapon:
+                    weapons = [i for i in loot_list if ("Color" in i and i.get("BelongSchool") not in ["精简", "通用", "藏剑", ""]) or str(i["Name"]).startswith("藏剑武器")]
+                    if weapons:
+                        append_item(boss_name, choice(weapons))
+                        count += 1
+                    
+                sanjian_list = [
+                    i for i in loot_list
+                    if "ModifyType" in i
+                    and "Color" in i
+                    and i.get("BelongSchool") == "通用"
+                    and not str(i.get("Desc")).startswith("使用：")
+                    and not str(i.get("Name")).startswith("探幽宝藏")
+                ]
+
+                for _ in range(3 - count):
+                    append_item(boss_name, choice(sanjian_list))
+
+                if iron:
+                    result[boss_name].append(JX3LootItem(
+                        icon=iron[0]["Icon"]["FileName"],
+                        name=iron[0]["Name"],
+                        color=item_colors[4]
+                    ))
+
+                if enchants:
+                    random_enchant = choice(enchants)
+                    result[boss_name].append(
+                        JX3LootItem(
+                            icon=random_enchant["Icon"]["FileName"],
+                            name=random_enchant["Name"],
+                            color=item_colors[4]
+                        )
+                    )
+
+                if _xuanjing:
+                    for item in loot_list:
+                        if str(item.get("Name", "")).endswith("玄晶"):
+                            result[boss_name].append(
+                                JX3LootItem(
+                                    icon=item["Icon"]["FileName"],
+                                    name=item["Name"],
+                                    color=item_colors[5]
+                                )
+                            )
+                
+                materials = [
+                    ("叁级五彩石", "https://icon.jx3box.com/icon/2348.png", 3),
+                    ("叁级五彩石", "https://icon.jx3box.com/icon/2348.png", 3),
+                    ("叁级五彩石", "https://icon.jx3box.com/icon/2348.png", 3),
+                    ("肆级五彩石", "https://icon.jx3box.com/icon/2359.png", 3),
+                    ("肆级五彩石", "https://icon.jx3box.com/icon/2359.png", 3),
+                    ("肆级五彩石", "https://icon.jx3box.com/icon/2359.png", 3),
+                    ("五行石（六级）", "https://icon.jx3box.com/icon/7528.png", 4),
+                    ("五行石（六级）", "https://icon.jx3box.com/icon/7528.png", 4)
+                ]
+                for _ in range(2):
+                    name, icon_url, color_id = choice(materials)
+                    result[boss_name].append(
+                        JX3LootItem(
+                            icon=icon_url,
+                            name=name,
+                            color=item_colors[color_id]
+                        )
+                    )
 
         return result
     

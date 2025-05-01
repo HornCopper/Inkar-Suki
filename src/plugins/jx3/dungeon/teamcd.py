@@ -186,7 +186,7 @@ async def get_personal_roles_teamcd_image(user_id: int, keyword: str = ""):
     zones: list[str] = list(set(chain.from_iterable(d.keys() for sublist in final_data for d in sublist)))
     zones = [z for z in zones if keyword in z]
     if len(zones) == 0:
-        return "未找到相关副本，请检查后重试！"
+        return "未找到相关副本，请检查后重试！\n可能是当前所有绑定账号均未产生相关副本的记录，待至少一个角色通关其中一个首领后将产生记录。"
     width = 730 + len(zones) * 200
     zones = [z.lstrip("10人普通") for z in zones]
     table_head = "<tr><th style=\"width: 160px\">服务器</th><th style=\"width: 240px\">角色</th><th style=\"width: 160px\">门派</th>" + "\n".join([f"<th>{zone}</th>" for zone in zones]) + "</tr>"
