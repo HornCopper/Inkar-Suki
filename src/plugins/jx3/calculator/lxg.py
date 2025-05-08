@@ -204,9 +204,9 @@ class LingxueCalculator(BaseCalculator):
     async def loop(self) -> str:
         url = f"http://www.j3lxg.cn/j3dps/api/public/v1/compute/getLoopBySectCode?sectCode={self.kungfu.sect_code}"
         data = (await Request(url).get()).json()
-        required_loop = "遗恨"
+        required_loop = "蹈青循环（二段）"
         if self.cw:
-            required_loop = "橙武" + required_loop
+            required_loop = "橙武蹈青"
         for each_loop in data["data"]:
             if str(each_loop["name"]).startswith(required_loop):
                 return each_loop["code"]

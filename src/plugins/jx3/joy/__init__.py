@@ -40,7 +40,7 @@ async def jx3_saohua_tiangou(args: Message = CommandArg()):
     msg = info["data"]["text"]
     await tiangou_matcher.finish(msg)
 
-random_loot_matcher = on_command("jx3_rdloot", aliases={"黑本", "模拟掉落"}, force_whitespace=True, priority=5)
+random_loot_matcher = on_command("jx3_rdloot", aliases={"黑本", "模拟掉落", "红本"}, force_whitespace=True, priority=5)
 
 @random_loot_matcher.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
@@ -54,7 +54,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     mode = msg[1]
     instance = await RandomLoot.with_map_name(name, mode)
     if instance is None:
-        await random_loot_matcher.finish(PROMPT.DungeonInvalid + "\n由于上游数据错误，暂时只可模拟25人英雄一之窟。")
+        await random_loot_matcher.finish(PROMPT.DungeonInvalid + "\n仅可模拟当前主流副本、前赛季英雄副本、10人副本！")
     else:
         image = await instance.generate()
         await random_loot_matcher.finish(ms.at(event.user_id) + image)

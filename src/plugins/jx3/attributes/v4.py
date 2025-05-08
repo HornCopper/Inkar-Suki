@@ -47,7 +47,10 @@ class Equip:
             if attr != "" and len(attr) <= 4:
                 msg = msg + f" {attr}"
         msg = msg.replace(" 能 ", " 全能 ").replace(" 能", " 全能")
-        return msg.strip()
+        msg = msg.strip()
+        if msg == "能":
+            return "全能"
+        return msg
 
     @property
     def name(self) -> str:
@@ -69,7 +72,10 @@ class Equip:
     def effect(self) -> str:
         for each_attr in self.equip_data["ModifyType"]:
             if each_attr["Desc"] == "atSkillEventHandler":
-                return "，".join(str(each_attr["Attrib"]["Desc"])[:-1].split("。")[:-1]) + "。"
+                msg = "，".join(str(each_attr["Attrib"]["Desc"])[:-1].split("。")[:-1]) + "。"
+                if msg.strip() == "。":
+                    return ""
+                return msg
         return ""
     
     @property
