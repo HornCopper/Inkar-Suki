@@ -12,7 +12,7 @@ from jinja2 import Template
 
 from src.const.jx3.kungfu import Kungfu
 from src.const.path import ASSETS, build_path
-from src.utils.typing import overload
+from typing import overload
 from src.utils.network import Request
 from src.utils.generate import generate
 from src.plugins.jx3.attributes.v2_remake import (

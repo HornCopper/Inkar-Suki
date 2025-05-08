@@ -6,7 +6,13 @@ from dataclasses import dataclass
 from src.utils.typing import override
 from src.utils.time import Time
 
-handler: dict[int, Callable[[dict], JX3APIPushEvent]] = {}
+handler: dict[
+    int,
+    Callable[
+        [dict],
+        JX3APIPushEvent
+    ]
+] = {}
 
 def handle_event(action: int):
     """

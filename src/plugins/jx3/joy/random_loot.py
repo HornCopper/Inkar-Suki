@@ -1,12 +1,14 @@
 from pydantic import BaseModel
+from typing import cast
 from typing_extensions import Self
 from random import random, choice, sample, randrange
 from jinja2 import Template
 
 from src.const.jx3.dungeon import Dungeon
-from src.const.path import ASSETS
+from src.const.path import ASSETS, CONST
 from src.utils.network import Request, cache_image
 from src.utils.generate import generate
+from src.utils.file import read, write
 from src.templates import SimpleHTML
 
 from ._template import (
@@ -15,6 +17,8 @@ from ._template import (
 )
 
 import re
+import os
+import json
 
 current_level = 130
 
@@ -57,8 +61,13 @@ class RandomLoot:
             return None
         if (name not in ["太极宫", "一之窟"] or (name == "一之窟" and mode == "25人普通")) and mode != "10人普通":
             return None
-        url = "https://m.pvp.xoyo.com/dungeon/list-all"
-        data = (await Request(url).post(tuilan=True)).json()
+        list_all_file = CONST + "/cache/random_loot_list_all.json"
+        if os.path.exists(list_all_file):
+            data = cast(dict, read(list_all_file, True))
+        else:
+            url = "https://m.pvp.xoyo.com/dungeon/list-all"
+            data = (await Request(url).post(tuilan=True)).json()
+            write(list_all_file, json.dumps(data, ensure_ascii=False))
         level_dungeons: list[dict] = data["data"]
         for dungeons in level_dungeons:
             level = int(dungeons["devide_level"])
@@ -102,22 +111,35 @@ class RandomLoot:
         self.loot_list: dict[str, list[JX3LootItem]] = {}
 
     async def get_boss_list(self):
-        url = "https://m.pvp.xoyo.com/dungeon/info"
-        params = {
-            "map_id": str(self.map_id)
-        }
-        data = (await Request(url, params=params).post(tuilan=True)).json()
+        map_id = str(self.map_id)
+        info_cache = CONST + f"/cache/random_loot_info_{map_id}.json"
+        if os.path.exists(info_cache):
+            data = cast(dict, read(info_cache, True))
+        else:
+            url = "https://m.pvp.xoyo.com/dungeon/info"
+            params = {
+                "map_id": map_id
+            }
+            data = (await Request(url, params=params).post(tuilan=True)).json()
+            write(info_cache, json.dumps(data, ensure_ascii=False))
         bosses: list[dict] = data["data"]["info"]["boss_infos"]
         self.boss_list = {b["name"]: int(b["index"]) for b in bosses}
     
     async def get_loot_list(self):
         for boss_name, boss_id in self.boss_list.items():
-            url = "https://m.pvp.xoyo.com/dungeon/boss-drop"
-            params = {
-                "boss_id": boss_id,
-                "kungfu_list": []
-            }
-            data = ((await Request(url, params=params).post(tuilan=True)).json())["data"]
+            info_cache = CONST + f"/cache/random_loot_boss_{boss_id}.json"
+            if os.path.exists(info_cache):
+                raw_data = cast(dict, read(info_cache, True))
+                data = raw_data["data"]
+            else:
+                url = "https://m.pvp.xoyo.com/dungeon/boss-drop"
+                params = {
+                    "boss_id": boss_id,
+                    "kungfu_list": []
+                }
+                raw_data = ((await Request(url, params=params).post(tuilan=True)).json())
+                write(info_cache, json.dumps(raw_data, ensure_ascii=False))
+                data = raw_data["data"]
             all_items_raw: list[dict] = data.get("armors", []) + data.get("weapons", []) + data.get("others", [])
             self.loot_list_raw[boss_name] = all_items_raw
         

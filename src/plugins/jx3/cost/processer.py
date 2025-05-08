@@ -54,6 +54,7 @@ class JX3CostCalc:
     coin_image = staticmethod(coin_to_image)
     calculate_price = staticmethod(calculate_price)
 
+
     def __init__(self, data: dict[str, Any], server: str):
         self.name = data["Name"]
         self.raw_data = data

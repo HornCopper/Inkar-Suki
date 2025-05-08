@@ -1,9 +1,17 @@
 from pathlib import Path
 from typing import Literal
 
-from src.utils.typing import overload
+import json
 
-def read(path: str) -> str:
+from typing import overload
+
+@overload
+def read(path: str, output_json: Literal[False]) -> str: ...
+
+@overload
+def read(path: str, output_json: Literal[True]) -> list | dict: ...
+
+def read(path: str, output_json: bool = False):
     """
     读取文件内容，使用`UTF-8`编码。
 
@@ -16,6 +24,8 @@ def read(path: str) -> str:
     try:
         with open(path, mode="r", encoding="utf-8") as cache:
             msg = cache.read()
+            if output_json:
+                return json.loads(msg)
         return msg
     except FileNotFoundError:
         return ""
