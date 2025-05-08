@@ -54,7 +54,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     mode = msg[1]
     instance = await RandomLoot.with_map_name(name, mode)
     if instance is None:
-        await random_loot_matcher.finish(PROMPT.DungeonInvalid + "\n由于上游数据错误，暂时只可模拟25人英雄一之窟。")
+        await random_loot_matcher.finish(PROMPT.DungeonInvalid)
     else:
         image = await instance.generate()
         await random_loot_matcher.finish(ms.at(event.user_id) + image)

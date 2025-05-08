@@ -8,7 +8,6 @@ def get_path(path: str) -> str:
     t = Path(UTILS)
     return str(t.parent / path).replace("\\", "/")
 
-
 DATA: str = get_path("data")
 CACHE: str = get_path("cache")
 ASSETS: str = get_path("assets")
