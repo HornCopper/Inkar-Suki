@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 import hashlib
 import hmac
 import json
@@ -9,7 +9,7 @@ def format_request_body(data: dict) -> str:
     return json.dumps(data, separators=(",", ":"))
 
 def generate_timestamp() -> str:
-    return datetime.utcnow().strftime("%Y%m%d%H%M%S%f")[:-3]
+    return datetime.now(timezone.utc).strftime("%Y%m%d%H%M%S%f")[:-3]
 
 def generate_x_sk(data: str) -> str:
     data += "@#?.#@"

@@ -88,17 +88,10 @@ class Equip:
     def effect(self) -> str:
         for each_attr in self.equip_data["ModifyType"]:
             if each_attr["Desc"] == "atSkillEventHandler":
-<<<<<<< HEAD
                 msg = "，".join(str(each_attr["Attrib"]["Desc"])[:-1].split("。")[:-1]) + "。"
                 if msg.strip() == "。":
                     return ""
                 return msg
-=======
-                return (
-                    "，".join(str(each_attr["Attrib"]["Desc"])[:-1].split("。")[:-1])
-                    + "。"
-                )
->>>>>>> 6dff1741f6b8dde1fcf4e3071fe2624bef3dd8bf
         return ""
 
     @property
@@ -135,7 +128,6 @@ class Equip:
                 )
             )
         if "WCommonEnchant" in self.equip_data:  # 大附魔
-            "攻击" in (n for n in self.equip_data["ModifyType"])
             attrs_ = json.dumps(self.equip_data["ModifyType"], ensure_ascii=False)
             if attrs_.find("攻击") != -1:
                 type_ = "伤"
@@ -478,7 +470,9 @@ async def get_attr_v4(server: str, name: str, conditions: str = ""):
     for a in display_required[attr_parser.kungfu.abbr]:
         if a in detailed_attr:
             basic_attr[a] = detailed_attr.pop(a)
-    html = Template(read(TEMPLATES + "/jx3/attributes_v4.html")).render(
+    html = Template(
+        read(TEMPLATES + "/jx3/attributes_v4.html")
+    ).render(
         name=name,
         server=server,
         info=attr_parser.basic_info,
