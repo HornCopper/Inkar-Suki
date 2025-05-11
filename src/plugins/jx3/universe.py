@@ -105,7 +105,9 @@ from .pvp import (
     arena_record_matcher
 )
 from .rank import (
-    exp_rank_matcher
+    exp_rank_matcher,
+    rhps_rank_matcher,
+    rdps_rank_matcher
 )
 from .recruit import (
     recruit_matcher

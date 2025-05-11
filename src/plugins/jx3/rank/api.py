@@ -6,7 +6,7 @@ from src.templates import HTMLSourceCode
 from src.utils.network import Request
 from src.utils.generate import generate
 
-from ._template import template_body, table_head
+from ._template import zlrank_template_body, zlrank_table_head
 
 async def get_zlrank(server: str, school: str):
     params = {
@@ -24,7 +24,7 @@ async def get_zlrank(server: str, school: str):
         person: dict
         num += 1
         tables.append(
-            Template(template_body).render(
+            Template(zlrank_template_body).render(
                 rank = str(num),
                 avatar = person["avatarUrl"] or "https://inkar-suki.codethink.cn/Inkar-Suki-Docs/img/Unknown.png",
                 nickname = person["nickName"],
@@ -35,7 +35,7 @@ async def get_zlrank(server: str, school: str):
     html = str(
         HTMLSourceCode(
             application_name = f" 资历排行 · {server or '全服'} · {school or '全门派'}",
-            table_head = table_head,
+            table_head = zlrank_table_head,
             table_body = "\n".join(tables)
         )
     )
