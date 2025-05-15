@@ -4,9 +4,11 @@ from nonebot.adapters.onebot.v11 import Message, GroupMessageEvent, MessageSegme
 
 from src.config import Config
 from src.const.prompts import PROMPT
+from src.utils.analyze import check_number
 from src.utils.network import Request
 
 from .random_loot import RandomLoot
+from .random_shilian import generate_shilian_box
 
 saohua_matcher = on_command("jx3_random", aliases={"骚话", "烧话"}, force_whitespace=True, priority=5)
 
@@ -58,3 +60,18 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     else:
         image = await instance.generate()
         await random_loot_matcher.finish(ms.at(event.user_id) + image)
+    
+random_shilian_matcher = on_command("jx3_rdsl", aliases={"翻牌", "模拟试炼"}, priority=5, force_whitespace=True)
+
+@random_shilian_matcher.handle()
+async def _(event: GroupMessageEvent, args: Message = CommandArg()):
+    msg = args.extract_plain_text().strip()
+    if msg == "":
+        return
+    msg = msg.split(" ")
+    if len(msg) != 2:
+        await random_shilian_matcher.finish(PROMPT.ArgumentCountInvalid + "\n参考格式：翻牌 <层数> <序号>")
+    level = msg[0]
+    order = msg[1]
+    image = await generate_shilian_box(int(level), int(order))
+    await random_loot_matcher.finish(image)

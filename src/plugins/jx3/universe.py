@@ -87,7 +87,8 @@ from .item import (
 from .joy import (
     saohua_matcher,
     tiangou_matcher,
-    random_loot_matcher
+    random_loot_matcher,
+    random_shilian_matcher
 )
 from .lookup import (
     lookup_matcher

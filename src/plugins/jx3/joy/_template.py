@@ -12,3 +12,16 @@ template_item = """
     <td style="color: rgb(0, 210, 75)">{{ attr }}</td>
 </tr>
 """
+
+template_shilian_box = """
+<div class="box {{ highlight }}">
+    {{ items }}
+</div>
+"""
+
+template_shilian_single = """
+<div class="icon-wrapper">
+    <img src="{{ icon }}" class="icon">
+    <span class="label" style="color: rgb{{ color }}; font-size: 16px">{{ name }}</span>
+</div>
+"""

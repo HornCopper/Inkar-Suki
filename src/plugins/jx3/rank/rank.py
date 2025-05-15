@@ -79,3 +79,5 @@ async def get_rank(dungeon_full_name: str, boss_name: str, kungfu_name: str, ord
     )
     image = await generate(html, "table", segment=True)
     return image
+
+    

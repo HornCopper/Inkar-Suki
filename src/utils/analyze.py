@@ -94,3 +94,6 @@ def merge_dicts(dict1: dict[str, float], dict2: dict[str, float]) -> dict[str, f
         else:
             result[key] = value
     return result
+
+def match(obj, **kwargs):
+    return all(getattr(obj, k, None) == v for k, v in kwargs.items())

@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+    <meta charset="UTF-8" />
+    <style>
+        @font-face {
+            font-family: Harmony;
+            src: url("{{ font }}");
+        }
+
+        body {
+            background-color: #2c2f34;
+            padding: 20px;
+            font-family: Harmony;
+            color: #000;
+        }
+
+        .container {
+            display: flex;
+            justify-content: space-between;
+            background-color: #fff;
+            gap: 20px;
+            padding: 18px;
+        }
+
+        .box {
+            flex: 1;
+        }
+
+
+        .box {
+            border: 2px solid #000000;
+            border-radius: 5px;
+            padding: 18px;
+            background-color: #eee;
+            width: max-content;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .highlight {
+            border-color: gold;
+        }
+
+        .icon-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .icon {
+            width: 48px;
+            height: 48px;
+            object-fit: cover;
+        }
+
+        .label {
+            font-size: 14px;
+            white-space: nowrap;
+        }
+
+        footer {
+            background: #f0f0f0;
+            text-align: center;
+            padding: 15px;
+            font-size: 0.9em;
+            color: #777;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        {{ boxes }}
+    </div>
+    <footer>翻牌模拟 | Inkar Suki: {{ saohua }}</footer>
+</body>
+
+</html>

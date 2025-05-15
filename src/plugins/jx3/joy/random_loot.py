@@ -1,7 +1,6 @@
-from pydantic import BaseModel
 from typing import cast
 from typing_extensions import Self
-from random import random, choice, sample, randrange
+from random import choice, sample, randrange
 from jinja2 import Template
 
 from src.const.jx3.dungeon import Dungeon
@@ -14,6 +13,12 @@ from src.templates import SimpleHTML
 from ._template import (
     template_loot,
     template_item
+)
+
+from .random_item import (
+    JX3RandomItem,
+    item_colors,
+    get_random
 )
 
 import re
@@ -33,24 +38,6 @@ detail_colors = [
     "rgb(211, 211, 211)",
     "rgb(239, 255, 133)" # 玄晶
 ]
-
-item_colors = [
-    "(167, 167, 167)", # 灰色
-    "(255, 255, 255)", # 白色
-    "(0, 210, 75)", # 绿色
-    "(0, 126, 255)", # 蓝色
-    "(254, 45, 254)", # 紫色
-    "(255, 165, 0)" # 橙色
-]
-
-def get_random(probability: int) -> bool:
-    return random() < probability / 100
-
-class JX3LootItem(BaseModel):
-    attr: str = ""
-    color: str = "(254, 45, 254)"
-    icon: str
-    name: str
 
 class RandomLoot:
     @classmethod
@@ -108,7 +95,7 @@ class RandomLoot:
         self.is_current_season = is_current_season
         self.boss_list: dict[str, int] = {}
         self.loot_list_raw: dict[str, list[dict]] = {}
-        self.loot_list: dict[str, list[JX3LootItem]] = {}
+        self.loot_list: dict[str, list[JX3RandomItem]] = {}
 
     async def get_boss_list(self):
         map_id = str(self.map_id)
@@ -143,10 +130,10 @@ class RandomLoot:
             all_items_raw: list[dict] = data.get("armors", []) + data.get("weapons", []) + data.get("others", [])
             self.loot_list_raw[boss_name] = all_items_raw
         
-    async def distribute(self) -> dict[str, list[JX3LootItem]]:
+    async def distribute(self) -> dict[str, list[JX3RandomItem]]:
         await self.get_boss_list()
         await self.get_loot_list()
-        result: dict[str, list[JX3LootItem]] = {}
+        result: dict[str, list[JX3RandomItem]] = {}
 
         def append_item(boss: str, item: dict, with_attr: bool = True):
             kwargs = {
@@ -156,7 +143,7 @@ class RandomLoot:
             if with_attr and "Color" in item:
                 kwargs["attr"] = self._parse_attributes(item)
                 kwargs["color"] = item_colors[int(item["Color"])]
-            result[boss].append(JX3LootItem(**kwargs))
+            result[boss].append(JX3RandomItem(**kwargs))
 
         def random_items(filter_func, count=1):
             items = [i for i in loot_list if filter_func(i)]
@@ -178,6 +165,7 @@ class RandomLoot:
             _sand_material = get_random(30)
             _other_peerless = get_random(5) # 特殊掉落
             _extra_peerless = get_random(10) # 额外特殊掉落 例如阅读的书
+            _book = get_random(15) # 侠客秘籍
         
             # _general_brand = get_random(100)
             # _weapon = get_random(100)
@@ -186,6 +174,7 @@ class RandomLoot:
             # _sand_material = get_random(100)
             # _other_peerless = get_random(100)
             # _extra_peerless = get_random(100)
+            # _book = get_random(15)
 
             # 想开挂的话把这里取消注释，上面的概率注释掉
             enchants = [i for i in loot_list if re.search(r'(伤|疗|御)·(腕|腰|鞋|帽|衣)$', str(i["Name"])) is not None]
@@ -253,7 +242,7 @@ class RandomLoot:
 
                     # 精简 2~3件
                     jingjian_list = [i for i in loot_list if i.get("BelongSchool") == "精简"]
-                    jingjian_count = choice([2, 3])
+                    jingjian_count = 2
                     for item in random_items(lambda i: i in jingjian_list, jingjian_count):
                         append_item(boss_name, item)
 
@@ -270,15 +259,25 @@ class RandomLoot:
 
                     xuanjing = [i for i in loot_list if "玄晶" in i["Name"]]
                     if _xuanjing and xuanjing:
-                        result[boss_name].append(JX3LootItem(
+                        result[boss_name].append(JX3RandomItem(
                             icon=xuanjing[0]["Icon"]["FileName"],
                             name=xuanjing[0]["Name"],
                             color=item_colors[5]
                         ))
+                
+                if _book:
+                    book_list = [i for i in loot_list if i.get("Type") == "红尘侠影" and str(i["Name"]).startswith("《")]
+                    if book_list:
+                        book = choice(book_list)
+                        result[boss_name].append(JX3RandomItem(
+                            icon=book[0]["Icon"]["FileName"],
+                            name=book[0]["Name"],
+                            color=item_colors[4]
+                        ))
 
                 # 陨铁
                 if iron:
-                    result[boss_name].append(JX3LootItem(
+                    result[boss_name].append(JX3RandomItem(
                         icon=iron[0]["Icon"]["FileName"],
                         name=iron[0]["Name"],
                         color=item_colors[4]
@@ -292,7 +291,7 @@ class RandomLoot:
                         enchants.append(match)
                     random_enchant = choice(enchants)
                     result[boss_name].append(
-                        JX3LootItem(
+                        JX3RandomItem(
                             icon=random_enchant["Icon"]["FileName"],
                             name=random_enchant["Name"],
                             color=item_colors[4]
@@ -311,7 +310,7 @@ class RandomLoot:
                 for _ in range(2):
                     name, icon_url, color_id = choice(materials)
                     result[boss_name].append(
-                        JX3LootItem(
+                        JX3RandomItem(
                             icon=icon_url,
                             name=name,
                             color=item_colors[color_id]
@@ -342,7 +341,7 @@ class RandomLoot:
                     append_item(boss_name, choice(sanjian_list))
 
                 if iron:
-                    result[boss_name].append(JX3LootItem(
+                    result[boss_name].append(JX3RandomItem(
                         icon=iron[0]["Icon"]["FileName"],
                         name=iron[0]["Name"],
                         color=item_colors[4]
@@ -351,7 +350,7 @@ class RandomLoot:
                 if enchants:
                     random_enchant = choice(enchants)
                     result[boss_name].append(
-                        JX3LootItem(
+                        JX3RandomItem(
                             icon=random_enchant["Icon"]["FileName"],
                             name=random_enchant["Name"],
                             color=item_colors[4]
@@ -362,7 +361,7 @@ class RandomLoot:
                     for item in loot_list:
                         if str(item.get("Name", "")).endswith("玄晶"):
                             result[boss_name].append(
-                                JX3LootItem(
+                                JX3RandomItem(
                                     icon=item["Icon"]["FileName"],
                                     name=item["Name"],
                                     color=item_colors[5]
@@ -382,7 +381,7 @@ class RandomLoot:
                 for _ in range(2):
                     name, icon_url, color_id = choice(materials)
                     result[boss_name].append(
-                        JX3LootItem(
+                        JX3RandomItem(
                             icon=icon_url,
                             name=name,
                             color=item_colors[color_id]
