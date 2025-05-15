@@ -46,7 +46,7 @@ class RandomLoot:
         name, mode = dungeon.name, dungeon.mode
         if (name is None) or (mode is None):
             return None
-        if (name not in ["太极宫", "一之窟"] or (name == "一之窟" and mode == "25人普通")) and mode != "10人普通":
+        if (name not in ["太极宫", "一之窟", "空城殿·上"] or (name == "一之窟" and mode == "25人普通")) and mode != "10人普通":
             return None
         list_all_file = CONST + "/cache/random_loot_list_all.json"
         if os.path.exists(list_all_file):
@@ -178,7 +178,7 @@ class RandomLoot:
             total_boss = len(self.loot_list_raw)
             boss_place = f"{idx+1}/{total_boss}"
 
-            is_final = boss_place in ["6/6", "5/5", "7/7"]
+            is_final = boss_place in ["6/6", "5/5", "7/7", "1/1"]
             is_penultimate = boss_place in ["5/6"]
 
             _general_brand = get_random(40)
@@ -253,13 +253,15 @@ class RandomLoot:
                     is_box = get_random(20)
                     if is_box:
                         box = [i for i in loot_list if str(i["Name"]).endswith("·奇")]
-                        append_item(boss_name, box[0])
+                        if box:
+                            append_item(boss_name, box[0])
                     else:
                         weapons = [i for i in loot_list if ("ModifyType" in i and i.get("BelongSchool") not in ["通用", "精简", "", "藏剑"]) or str(i.get("Name")).startswith("藏剑武器·")]
-                        append_item(boss_name, choice(weapons))
+                        if weapons:
+                            append_item(boss_name, choice(weapons))
                     
                     # 腰坠
-                    suits = [i for i in loot_list if "Color" in i and str(i.get("Desc")).startswith("使用：")]
+                    suits = [i for i in loot_list if "Color" in i and str(i.get("Desc")).startswith("使用：") and str(i.get("BelongSchool")) != ""] 
                     if suits:
                         append_item(boss_name, choice(suits))
 
@@ -320,16 +322,77 @@ class RandomLoot:
                             color=item_colors[4]
                         )
                     )
+                
+                
+                if "昆仑玄石·附魔" in [str(i.get("Name")) for i in loot_list]:
+                    icon = "https://icon.jx3box.com/icon/4432.png"
+                    permanent_enchants = [
+                        ("项链", "体质"),
+                        ("项链", "御劲"),
+                        ("腰坠", "体质"),
+                        ("腰坠", "化劲"),
+                        ("戒指", "根骨"),
+                        ("戒指", "元气"),
+                        ("戒指", "力道"),
+                        ("戒指", "身法"),
+                        ("戒指", "内攻"),
+                        ("戒指", "外伤"),
+                        ("戒指", "破招"),
+                        ("暗器", "根骨"),
+                        ("暗器", "元气"),
+                        ("暗器", "力道"),
+                        ("暗器", "身法"),
+                        ("暗器", "加速"),
+                        ("暗器", "内破"),
+                        ("暗器", "外破")
+                    ]
+                    for _ in range(2):
+                        location, attr = choice(permanent_enchants)
+                        name = f"昆仑玄石·{location}（{attr}）"
+                        result[boss_name].append(
+                            JX3RandomItem(
+                                icon=icon,
+                                name=name
+                            )
+                        )
+
+                if self.name == "25人挑战空城殿·上":
+                    icon = "https://icon.jx3box.com/icon/23952.png"
+                    permanent_enchants = [
+                        ("戒指", "根骨"),
+                        ("戒指", "元气"),
+                        ("戒指", "力道"),
+                        ("戒指", "身法"),
+                        ("戒指", "内攻"),
+                        ("戒指", "外伤")
+                    ]
+                    for _ in range(2):
+                        location, attr = choice(permanent_enchants)
+                        name = f"白虹贯岩·{location}（{attr}）"
+                        result[boss_name].append(
+                            JX3RandomItem(
+                                icon=icon,
+                                name=name
+                            )
+                        )
 
                 # 五彩石
-                materials = [
-                    ("伍级五彩石", "https://icon.jx3box.com/icon/2330.png", 4),
-                    ("肆级五彩石", "https://icon.jx3box.com/icon/2359.png", 3),
-                    ("肆级五彩石", "https://icon.jx3box.com/icon/2359.png", 3),
-                    ("肆级五彩石", "https://icon.jx3box.com/icon/2359.png", 3),
-                    ("五行石（六级）", "https://icon.jx3box.com/icon/7528.png", 4),
-                    ("五行石（六级）", "https://icon.jx3box.com/icon/7528.png", 4)
-                ]
+                if self.name.startswith("25人挑战"):
+                    materials = [
+                        ("伍级五彩石", "https://icon.jx3box.com/icon/2330.png", 4),
+                        ("伍级五彩石", "https://icon.jx3box.com/icon/2330.png", 4),
+                        ("伍级五彩石", "https://icon.jx3box.com/icon/2330.png", 4),
+                        ("陆级五彩石", "https://icon.jx3box.com/icon/2361.png", 4)
+                    ]
+                else:
+                    materials = [
+                        ("伍级五彩石", "https://icon.jx3box.com/icon/2330.png", 4),
+                        ("肆级五彩石", "https://icon.jx3box.com/icon/2359.png", 3),
+                        ("肆级五彩石", "https://icon.jx3box.com/icon/2359.png", 3),
+                        ("肆级五彩石", "https://icon.jx3box.com/icon/2359.png", 3),
+                        ("五行石（六级）", "https://icon.jx3box.com/icon/7528.png", 4),
+                        ("五行石（六级）", "https://icon.jx3box.com/icon/7528.png", 4)
+                    ]
                 for _ in range(2):
                     name, icon_url, color_id = choice(materials)
                     result[boss_name].append(
@@ -417,6 +480,8 @@ class RandomLoot:
         data = await self.distribute()
         loots = []
         for boss_name, items in data.items():
+            if boss_name == "池青川":
+                boss_name = "池请川"
             loot_items = []
             include_xuanjing = any("玄晶" in s for s in [i.name for i in items])
             title_color = title_colors[int(include_xuanjing)]   
