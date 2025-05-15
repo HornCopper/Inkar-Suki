@@ -74,4 +74,4 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     level = msg[0]
     order = msg[1]
     image = await generate_shilian_box(int(level), int(order))
-    await random_loot_matcher.finish(image)
+    await random_loot_matcher.finish(ms.at(event.user_id) + image)

@@ -267,7 +267,7 @@ async def get_third_item(level: int) -> JX3ShilianItem:
     Params:
         level(int): 层数
     """
-    if get_random(5): # 无修
+    if get_random(10): # 无修
         return await get_random_equip(level)
     
     if get_random(15): # 福禄宝箱

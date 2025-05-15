@@ -165,7 +165,7 @@ class RandomLoot:
             _sand_material = get_random(30)
             _other_peerless = get_random(5) # 特殊掉落
             _extra_peerless = get_random(10) # 额外特殊掉落 例如阅读的书
-            _book = get_random(15) # 侠客秘籍
+            _book = get_random(5) # 侠客秘籍
         
             # _general_brand = get_random(100)
             # _weapon = get_random(100)
@@ -270,8 +270,8 @@ class RandomLoot:
                     if book_list:
                         book = choice(book_list)
                         result[boss_name].append(JX3RandomItem(
-                            icon=book[0]["Icon"]["FileName"],
-                            name=book[0]["Name"],
+                            icon=book["Icon"]["FileName"],
+                            name=book["Name"],
                             color=item_colors[4]
                         ))
 
