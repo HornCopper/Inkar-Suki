@@ -145,9 +145,32 @@ class RandomLoot:
                 kwargs["color"] = item_colors[int(item["Color"])]
             result[boss].append(JX3RandomItem(**kwargs))
 
+
         def random_items(filter_func, count=1):
-            items = [i for i in loot_list if filter_func(i)]
-            return [choice(items) for _ in range(count)] if items else []
+            items = []
+            for i in loot_list:
+                if filter_func(i):
+                    items.append(i)
+
+            if not items:
+                return []
+            
+            sum = {}
+
+            result = []
+            for _ in range(count):
+                equip = choice(items)
+                equip_kind = equip["Icon"]["SubKind"]
+                if equip_kind not in sum:
+                    sum[equip_kind] = 0
+                if equip_kind == "投掷囊":
+                    items = [i for i in items if i["Icon"]["SubKind"] != "投掷囊"]
+                sum[equip_kind] += 1
+                if sum[equip_kind] == 2:
+                    items = [i for i in items if i["Icon"]["SubKind"] != equip_kind]
+                result.append(equip)
+
+            return result
 
         for idx, (boss_name, loot_list) in enumerate(self.loot_list_raw.items()):
             count = 0
@@ -232,7 +255,7 @@ class RandomLoot:
                         box = [i for i in loot_list if str(i["Name"]).endswith("·奇")]
                         append_item(boss_name, box[0])
                     else:
-                        weapons = [i for i in loot_list if "ModifyType" in i and i.get("BelongSchool") not in ["通用", "精简", ""]]
+                        weapons = [i for i in loot_list if ("ModifyType" in i and i.get("BelongSchool") not in ["通用", "精简", "", "藏剑"]) or str(i.get("Name")).startswith("藏剑武器·")]
                         append_item(boss_name, choice(weapons))
                     
                     # 腰坠
@@ -240,7 +263,7 @@ class RandomLoot:
                     if suits:
                         append_item(boss_name, choice(suits))
 
-                    # 精简 2~3件
+                    # 精简 2件
                     jingjian_list = [i for i in loot_list if i.get("BelongSchool") == "精简"]
                     jingjian_count = 2
                     for item in random_items(lambda i: i in jingjian_list, jingjian_count):

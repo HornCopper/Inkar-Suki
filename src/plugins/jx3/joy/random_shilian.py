@@ -315,6 +315,10 @@ async def get_single_full_reward(level: int) -> list[JX3ShilianItem]:
     return [silver_leaves, cultivation_drug, final_reward]
 
 async def generate_shilian_box(level: int, user_choice: int):
+    if level > 70:
+        return "当前仅可翻牌70层及以下！"
+    if user_choice not in list(range(1, 6)):
+        return "翻牌序号仅可在1-5之间！"
     result = []
     for num in range(5):
         single_result = []
