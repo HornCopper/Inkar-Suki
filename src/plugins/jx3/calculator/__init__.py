@@ -41,7 +41,7 @@ def check_jcl_name(filename: str) -> bool:
     if not filename.startswith("IKS-"):
         return False
     pattern = re.compile(
-        r"^\d{4}-\d{2}-\d{2}-\d{2}-\d{2}-\d{2}-[\u4e00-\u9fff\d]+(?:\(\d+\))?-[\u4e00-\u9fff\d]+(?:\(\d+\))?\.jcl$"
+        r"^\d{4}-\d{2}-\d{2}-\d{2}-\d{2}-\d{2}-[\u4e00-\u9fff·\d]+(?:\(\d+\))?-[\u4e00-\u9fff·\d]+(?:\(\d+\))?\.jcl$"
     )
     return bool(pattern.match(filename[4:]))
 

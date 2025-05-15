@@ -15,7 +15,7 @@ import re
 
 async def RDPSCalculator(file_name: str, url: str):
     async with AsyncClient(verify=False) as client:
-        resp = await client.post("http://10.0.10.13:30172/jcl", params={"file_name": file_name, "url": url}, timeout=180)
+        resp = await client.post("http://10.0.10.13:30172/jcl", params={"file_name": file_name, "url": url}, timeout=600)
         data = resp.json()
     pattern = r"^\d{4}(?:-\d{2}){5}-(?P<dungeon>.+?)\(\d+\)-(?P<boss>.+?)\(\d+\)\.jcl$"
     regex_match = re.match(pattern, file_name)

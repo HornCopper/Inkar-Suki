@@ -207,7 +207,12 @@ class EquipDataProcesser:
                 if attr != "" and len(attr) <= 4:
                     msg = msg + f" {attr}"
             msg = msg.replace(" 能 ", " 全能 ").replace(" 能", " 全能")
-            return msg.strip()
+            msg = msg.strip()
+            if msg == "能":
+                return "全能"
+            if msg == "额外":
+                return "气血"
+            return msg
         else:
             content = data.split("提高")
             if len(content) == 1:
@@ -221,7 +226,12 @@ class EquipDataProcesser:
             filter_string = filter_word
             for y in filter_string:
                 attr = attr.replace(y, "")
-            return attr.strip()
+            attr = attr.strip()
+            if attr == "能":
+                return "全能"
+            if attr == "额外":
+                return "气血"
+            return attr
 
     def _format_equip(self, equip_data: dict, location: str) -> Equip:
         if not equip_data:
