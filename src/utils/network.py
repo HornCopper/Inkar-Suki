@@ -146,6 +146,9 @@ class Request:
         return request_params
 
 async def cache_image(url: str):
+    if url.startswith("https://q.qlogo.cn"):
+        return url
+
     if not url.startswith("http"):
         return url
     else:

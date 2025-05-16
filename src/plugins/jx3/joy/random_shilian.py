@@ -2,11 +2,14 @@ from random import randint, choice
 from pydantic import BaseModel
 from jinja2 import Template
 
+from nonebot.adapters.onebot.v11 import Bot
+
 from src.const.path import ASSETS, TEMPLATES
 from src.utils.network import Request, cache_image
 from src.utils.analyze import match
 from src.utils.file import read
 from src.utils.generate import generate
+from src.utils.database.operation import get_group_settings
 from src.plugins.jx3.trade.trade import JX3Trade
 from src.templates import get_saohua
 
@@ -260,7 +263,7 @@ async def get_random_stone(simplified: bool = False) -> JX3ShilianItem: # 五彩
             name = stone["Name"]
         )
 
-async def get_third_item(level: int) -> JX3ShilianItem:
+async def get_third_item(level: int, group_id: int, bot: Bot) -> JX3ShilianItem:
     """
     试炼之地第三项奖励生成。
 
@@ -298,6 +301,17 @@ async def get_third_item(level: int) -> JX3ShilianItem:
     if get_random(1): # 泠泉喵
         return final_items["泠泉喵"]
     
+    if get_random(100): # 群友
+        if "群友试炼" in get_group_settings(group_id, "additions"):
+            members = await bot.get_group_member_list(group_id = group_id)
+            members = [m for m in members if m["role"] in ["admin", "owner"]]
+            member = choice(members)
+            return JX3ShilianItem(
+                color = item_colors[5],
+                icon = "https://q.qlogo.cn/headimg_dl?dst_uin=" + str(member["user_id"]) + "&spec=100&img_type=jpg",
+                name = (member["card"] or member["nickname"])[:15]
+            )
+    
     final_item = choice(
         list(
             final_items.values()
@@ -305,19 +319,19 @@ async def get_third_item(level: int) -> JX3ShilianItem:
     )
     return final_item
 
-async def get_single_full_reward(level: int) -> list[JX3ShilianItem]:
+async def get_single_full_reward(level: int, group_id: int, bot: Bot) -> list[JX3ShilianItem]:
     silver_leaves = base_items["银叶子"]
     silver_leaves.count = randint(40, 60)
     cultivation_drug = base_items["九花玉露散"]
     cultivation_drug.count = randint(15, 25)
-    final_reward = await get_third_item(level)
+    final_reward = await get_third_item(level, group_id, bot)
     if final_reward.name == "匡义符·星":
         final_reward.count = randint(15, 25)
     if final_reward.name == "五行石（一级）":
         final_reward.count = choice([200, 300])
     return [silver_leaves, cultivation_drug, final_reward]
 
-async def generate_shilian_box(level: int, user_choice: int):
+async def generate_shilian_box(level: int, user_choice: int, group_id: int, bot: Bot):
     if level > 70:
         return "当前仅可翻牌70层及以下！"
     if user_choice not in list(range(1, 6)):
@@ -325,13 +339,13 @@ async def generate_shilian_box(level: int, user_choice: int):
     result = []
     for num in range(5):
         single_result = []
-        rewards = await get_single_full_reward(level)
+        rewards = await get_single_full_reward(level, group_id, bot)
         for reward in rewards:
             color = reward.color
             if color == "(255, 255, 255)":
                 color = "(0, 0, 0)"
             icon = await cache_image(reward.icon)
-            if reward.name in ["银叶子·试炼之地", "九花玉露散", "匡义符·星", "五行石（一级）"]:
+            if reward.name in ["银叶子·试炼之地", "九花玉露散", "匡义令·星", "五行石（一级）"]:
                 name = f"{reward.name} x{reward.count}"
             elif reward.name.startswith(JX3Trade.shilian_basic):
                 name = f"[{reward.bind}]{reward.name}<br>{reward.quality} {reward.attr}"

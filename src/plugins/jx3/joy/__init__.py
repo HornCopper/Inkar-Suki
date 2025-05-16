@@ -1,6 +1,6 @@
 from nonebot import on_command
 from nonebot.params import CommandArg
-from nonebot.adapters.onebot.v11 import Message, GroupMessageEvent, MessageSegment as ms
+from nonebot.adapters.onebot.v11 import Bot, Message, GroupMessageEvent, MessageSegment as ms
 
 from src.config import Config
 from src.const.prompts import PROMPT
@@ -64,7 +64,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
 random_shilian_matcher = on_command("jx3_rdsl", aliases={"翻牌", "模拟试炼"}, priority=5, force_whitespace=True)
 
 @random_shilian_matcher.handle()
-async def _(event: GroupMessageEvent, args: Message = CommandArg()):
+async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
     msg = args.extract_plain_text().strip()
     if msg == "":
         return
@@ -73,5 +73,5 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
         await random_shilian_matcher.finish(PROMPT.ArgumentCountInvalid + "\n参考格式：翻牌 <层数> <序号>")
     level = msg[0]
     order = msg[1]
-    image = await generate_shilian_box(int(level), int(order))
+    image = await generate_shilian_box(int(level), int(order), event.group_id, bot)
     await random_loot_matcher.finish(ms.at(event.user_id) + image)
