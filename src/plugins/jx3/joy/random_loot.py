@@ -367,7 +367,7 @@ class RandomLoot:
                         ("戒指", "力道"),
                         ("戒指", "身法"),
                         ("戒指", "内攻"),
-                        ("戒指", "外伤")
+                        ("戒指", "外攻")
                     ]
                     for _ in range(2):
                         location, attr = choice(permanent_enchants)
