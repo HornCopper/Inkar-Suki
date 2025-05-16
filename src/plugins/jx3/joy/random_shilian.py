@@ -46,11 +46,11 @@ final_items = {
         name = "匡义令·星",
         icon = "https://icon.jx3box.com/icon/726.png"
     ),
-    # "泠泉喵": JX3ShilianItem(
-    #     color = item_colors[5],
-    #     name = "泠泉喵",
-    #     icon = "https://inkar-suki.codethink.cn/0qm.jpg"
-    # )
+    "泠泉喵": JX3ShilianItem(
+        color = item_colors[5],
+        name = "泠泉喵",
+        icon = "https://inkar-suki.codethink.cn/0qm.jpg"
+    )
 }
 
 friend_materials = {
@@ -294,6 +294,9 @@ async def get_third_item(level: int) -> JX3ShilianItem:
                 daily_materials.values()
             )
         )
+    
+    if get_random(1): # 泠泉喵
+        return final_items["泠泉喵"]
     
     final_item = choice(
         list(

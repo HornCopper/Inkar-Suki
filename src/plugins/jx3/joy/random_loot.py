@@ -161,6 +161,8 @@ class RandomLoot:
             for _ in range(count):
                 equip = choice(items)
                 equip_kind = equip["Icon"]["SubKind"]
+                if equip.get("BelongSchool") == "精简":
+                    items = [i for i in items if i.get("Name") != equip.get("Name")]
                 if equip_kind not in sum:
                     sum[equip_kind] = 0
                 if equip_kind == "投掷囊":
@@ -168,6 +170,7 @@ class RandomLoot:
                 sum[equip_kind] += 1
                 if sum[equip_kind] == 2:
                     items = [i for i in items if i["Icon"]["SubKind"] != equip_kind]
+                
                 result.append(equip)
 
             return result
