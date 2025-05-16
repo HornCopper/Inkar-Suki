@@ -298,8 +298,8 @@ async def get_third_item(level: int, group_id: int, bot: Bot) -> JX3ShilianItem:
             )
         )
     
-    if get_random(1): # 泠泉喵
-        return final_items["泠泉喵"]
+    # if get_random(1): # 泠泉喵
+    #     return final_items["泠泉喵"]
     
     if get_random(100): # 群友
         if "群友试炼" in get_group_settings(group_id, "additions"):

@@ -20,6 +20,8 @@ class School:
             school_name = "万灵"
         if school_name == "衍天宗":
             school_name = "衍天"
+        if school_name == "凌雪阁":
+            school_name = "凌雪"
         self.school_name = school_name
 
     @classmethod
