@@ -48,7 +48,7 @@ random_loot_matcher = on_command("jx3_rdloot", aliases={"黑本", "模拟掉落"
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     msg = args.extract_plain_text()
     if msg == "":
-        return
+        await random_loot_matcher.finish(PROMPT.ArgumentCountInvalid + "\n参考格式：黑本 <副本名> <难度>")
     msg = msg.split(" ")
     if len(msg) != 2:
         await random_loot_matcher.finish(PROMPT.ArgumentCountInvalid + "\n参考格式：黑本 <副本名> <难度>")
