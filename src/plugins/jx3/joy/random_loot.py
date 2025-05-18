@@ -305,12 +305,11 @@ class RandomLoot:
 
                 # 陨铁
                 if iron:
-                    if not (self.name == "10人普通太极宫" and get_random(40)):
-                        result[boss_name].append(JX3RandomItem(
-                            icon=iron[0]["Icon"]["FileName"],
-                            name=iron[0]["Name"],
-                            color=item_colors[4]
-                        ))
+                    result[boss_name].append(JX3RandomItem(
+                        icon=iron[0]["Icon"]["FileName"],
+                        name=iron[0]["Name"],
+                        color=item_colors[4]
+                    ))
 
 
                 # 附魔

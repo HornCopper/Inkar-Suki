@@ -1,0 +1,98 @@
+[
+    {
+        "zone_id": "21000",
+        "zone_code": "z21",
+        "zone_name": "双线区",
+        "servers": [
+            {
+                "server_id": "21006",
+                "server_name": "破阵子",
+                "server_code": "gate2106"
+            },
+            {
+                "server_id": "21007",
+                "server_name": "天鹅坪",
+                "server_code": "gate2107"
+            },
+            {
+                "server_id": "21014",
+                "server_name": "飞龙在天",
+                "server_code": "gate2114"
+            }
+        ]
+    },
+    {
+        "zone_id": "5000",
+        "zone_code": "z05",
+        "zone_name": "电信区",
+        "servers": [
+            {
+                "server_id": "5002",
+                "server_name": "梦江南",
+                "server_code": "gate0502"
+            },
+            {
+                "server_id": "5005",
+                "server_name": "唯我独尊",
+                "server_code": "gate0505"
+            },
+            {
+                "server_id": "5014",
+                "server_name": "乾坤一掷",
+                "server_code": "gate0514"
+            },
+            {
+                "server_id": "5015",
+                "server_name": "斗转星移",
+                "server_code": "gate0515"
+            },
+            {
+                "server_id": "5019",
+                "server_name": "幽月轮",
+                "server_code": "gate0519"
+            },
+            {
+                "server_id": "5024",
+                "server_name": "剑胆琴心",
+                "server_code": "gate0524"
+            },
+            {
+                "server_id": "5034",
+                "server_name": "长安城",
+                "server_code": "gate0534"
+            },
+            {
+                "server_id": "5036",
+                "server_name": "蝶恋花",
+                "server_code": "gate0536"
+            },
+            {
+                "server_id": "5035",
+                "server_name": "龙争虎斗",
+                "server_code": "gate0535"
+            },
+            {
+                "server_id": "5037",
+                "server_name": "绝代天骄",
+                "server_code": "gate0537"
+            }
+        ]
+    },
+    {
+        "zone_id": "51000",
+        "zone_code": "z51",
+        "zone_name": "无界区",
+        "servers": [
+            {
+                "server_id": "51002",
+                "server_name": "山海相逢",
+                "server_code": "gate5102"
+            },
+            {
+                "server_id": "51005",
+                "server_name": "眉间雪",
+                "server_code": "gate5105"
+            }
+        ]
+    }
+]

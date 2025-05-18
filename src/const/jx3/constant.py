@@ -87,6 +87,13 @@ with open(
     server_aliases_data = json.loads(server_aliases.read())
 
 with open(
+    build_path(ASSETS, ["source", "jx3", "server_internel_id.json"]),
+    encoding="utf-8",
+    mode="r",
+) as server_internel_id:
+    server_internel_id_data = json.loads(server_internel_id.read())
+
+with open(
     build_path(ASSETS, ["source", "jx3", "server_zones_mapping.json"]),
     encoding="utf-8",
     mode="r",

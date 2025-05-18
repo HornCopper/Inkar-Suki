@@ -1,11 +1,14 @@
+from typing import Any
+
 from src.utils.database.operation import get_group_settings
 
-from .constant import server_aliases_data, server_zones_mapping_data
+from .constant import server_aliases_data, server_zones_mapping_data, server_internel_id_data
 
 
 class Server:
     server_aliases: dict[str, list[str]] = server_aliases_data
     server_zones_mapping: dict[str, list[str]] = server_zones_mapping_data
+    server_internel_id: list[dict[str, Any]] = server_internel_id_data
 
     def __init__(self, server_name: str | None = None, group_id: int | None = None):
         self._server = server_name
@@ -60,3 +63,20 @@ class Server:
             if zone_legacy_name == "无界区"
             else zone_legacy_name[:2] + "区"
         )
+
+    @property
+    def server_id(self) -> str | None:
+        if self.server is None:
+            return None
+        for zone_data in self.server_internel_id:
+            for server in zone_data["servers"]:
+                if server["server_name"] == self.server:
+                    return server["server_id"]
+    
+    @property
+    def zone_id(self) -> str | None:
+        if self.server is None:
+            return None
+        for zone_data in self.server_internel_id:
+            if zone_data["zone_name"] == self.zone:
+                return zone_data["zone_id"]
