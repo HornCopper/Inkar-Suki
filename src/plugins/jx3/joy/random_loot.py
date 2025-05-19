@@ -314,10 +314,15 @@ class RandomLoot:
 
                 # 附魔
                 if enchants:
-                    match = next((e for e in enchants if "伤" in e), None)
-                    if match:
-                        enchants.append(match)
-                    random_enchant = choice(enchants)
+                    final_enchants = []
+                    for enchant in enchants:
+                        if "伤" in enchant["Name"]:
+                            final_enchants.append(enchant)
+                            final_enchants.append(enchant)
+                            final_enchants.append(enchant)
+                        else:
+                            final_enchants.append(enchant)
+                    random_enchant = choice(final_enchants)
                     result[boss_name].append(
                         JX3RandomItem(
                             icon=random_enchant["Icon"]["FileName"],
