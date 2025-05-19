@@ -14,6 +14,9 @@ create_team_matcher = on_command("创建团队", force_whitespace=True, priority
 
 @create_team_matcher.handle()
 async def _(event: GroupMessageEvent, argument: Message = CommandArg()):
+    additions = get_group_settings(event.group_id, "additions")
+    if "开团" not in additions:
+        return
     if argument.extract_plain_text() == "":
         return
     if check_number(argument.extract_plain_text()):
@@ -32,6 +35,9 @@ book_team_matcher = on_command("预定", aliases={"预订", "报名"}, force_whi
 
 @book_team_matcher.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
+    additions = get_group_settings(event.group_id, "additions")
+    if "开团" not in additions:
+        return
     if args.extract_plain_text() == "":
         return
     arg = args.extract_plain_text().strip().split(" ")
@@ -54,6 +60,9 @@ cancel_team_matcher = on_command("取消预定", aliases={"取消预订", "取�
 
 @cancel_team_matcher.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
+    additions = get_group_settings(event.group_id, "additions")
+    if "开团" not in additions:
+        return
     if args.extract_plain_text() == "":
         return
     arg = args.extract_plain_text().split(" ")
@@ -75,6 +84,9 @@ dissolve_team_matcher = on_command("解散团队", aliases={"取消开团", "结
 
 @dissolve_team_matcher.handle()
 async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
+    additions = get_group_settings(event.group_id, "additions")
+    if "开团" not in additions:
+        return
     keyword = args.extract_plain_text()
     unique = len(get_group_settings(event.group_id, "opening")) == 1
     if keyword == "" and not unique:
@@ -90,6 +102,9 @@ lookup_team_matcher = on_command("查看团队", priority=5, force_whitespace=Tr
 
 @lookup_team_matcher.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
+    additions = get_group_settings(event.group_id, "additions")
+    if "开团" not in additions:
+        return
     keyword = args.extract_plain_text()
     unique = len(get_group_settings(event.group_id, "opening")) == 1
     if keyword == "" and not unique:
@@ -103,6 +118,9 @@ teamlist_matcher = on_command("团队列表", priority=5, force_whitespace=True)
 
 @teamlist_matcher.handle()
 async def _(event: GroupMessageEvent):
+    additions = get_group_settings(event.group_id, "additions")
+    if "开团" not in additions:
+        return
     all_teams = get_group_settings(str(event.group_id), "opening")
     if not isinstance(all_teams, list):
         return
@@ -127,6 +145,9 @@ share_team_matcher = on_command("共享团队", priority=5, force_whitespace=Tru
 
 @share_team_matcher.handle()
 async def _(event: GroupMessageEvent, argument: Message = CommandArg()):
+    additions = get_group_settings(event.group_id, "additions")
+    if "开团" not in additions:
+        return
     args = argument.extract_plain_text().split(" ")
     if len(args) != 2:
         await share_team_matcher.finish(PROMPT.ArgumentCountInvalid)
@@ -143,6 +164,9 @@ modify_limit_matcher = on_command("修改团队限制", priority=5, force_whites
 
 @modify_limit_matcher.handle()
 async def _(event: GroupMessageEvent, argument: Message = CommandArg()):
+    additions = get_group_settings(event.group_id, "additions")
+    if "开团" not in additions:
+        return
     args = argument.extract_plain_text().split(" ")
     if len(args) != 2:
         await modify_limit_matcher.finish(PROMPT.ArgumentCountInvalid)

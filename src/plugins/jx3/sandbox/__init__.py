@@ -8,7 +8,6 @@ from nonebot.adapters.onebot.v11 import (
 from src.config import Config
 from src.const.jx3.server import Server
 from src.const.prompts import PROMPT
-from src.utils.database.operation import get_group_settings
 
 from .api import get_sandbox_image
 
@@ -20,8 +19,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     获取服务器沙盘：
     Example：-沙盘v2 幽月轮
     """
-    additions = get_group_settings(str(event.group_id), "additions")
-    if not Config.jx3.api.enable or "Preview" not in additions:
+    if not Config.jx3.api.enable:
         return
     if args.extract_plain_text() == "":
         """
