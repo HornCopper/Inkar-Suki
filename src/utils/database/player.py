@@ -72,6 +72,10 @@ async def search_player(
     *,
     local_lookup: bool = False
 ) -> Player:
+    if "·" in role_name:
+        role_name, server_name = role_name.split("·")
+        role_name = role_name.lstrip("[")
+        server_name = server_name.rstrip("]")
     if not bool(re.match(r"^[\u4e00-\u9fff0-9@]*$", role_name)):
         return Player()
     player_data = db.where_one(RoleData(), "(roleName = ? OR roleId = ?) AND serverName = ?", role_name, role_id, server_name, default=None)
