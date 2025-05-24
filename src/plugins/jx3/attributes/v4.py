@@ -467,7 +467,8 @@ async def get_attr_v4(server: str, name: str, conditions: str = ""):
         "T": ["内功防御", "外功防御", "气血", "御劲"],
     }
     detailed_attr = attr_parser.attr
-    for a in display_required[attr_parser.kungfu.abbr]:
+    abbr = attr_parser.kungfu.abbr
+    for a in display_required[abbr]:
         if a in detailed_attr:
             basic_attr[a] = detailed_attr.pop(a)
     html = Template(

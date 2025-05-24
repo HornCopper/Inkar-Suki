@@ -1,5 +1,5 @@
 from nonebot import on_command
-from nonebot.adapters.onebot.v11 import MessageEvent, Message
+from nonebot.adapters.onebot.v11 import MessageEvent, Message, MessageSegment as ms
 from nonebot.params import CommandArg, Received
 from nonebot.typing import T_State
 
@@ -31,7 +31,7 @@ async def _(state: T_State, event: MessageEvent, args: Message = CommandArg()):
     state["author"] = author
     state["title"] = title
     state["answer"] = guess
-    question = f"请听题！\n{blank}"
+    question = ms.at(event.user_id) + f" 请听题！\n{blank}"
     await PoemMatcher.send(question)
     return
 
