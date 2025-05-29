@@ -45,3 +45,6 @@ class PROMPT:
 
     # jx3/penzai
     NoCondition = "您没有输入条件哦，请检查后重试~\n条件以空格分割哦~"
+
+    # jx3/rank
+    SchoolInvalid = "唔……门派不正确，请检查门派名称！"

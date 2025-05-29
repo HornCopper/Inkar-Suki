@@ -35,3 +35,24 @@ rank_template_body = """
     <td class="short-column">{{ value }}</td>
 </tr>
 """
+
+slrank_table_head = """
+<tr>
+    <th class="short-column">排名</th>
+    <th class="short-column">服务器</th>
+    <th class="short-column">角色名</th>
+    <th class="short-column">层数</th>
+    <th class="short-column">通关评分</th>
+    <th class="short-column">装备分数</th>
+</tr>"""
+
+slrank_template_body = """
+<tr>
+    <td class="short-column">{{ rank }}</td>
+    <td class="short-column">{{ server }}</td>
+    <td class="short-column">{{ role_name }}</td>
+    <td class="short-column">{{ level }}</td>
+    <td class="short-column">{{ grade }}</td>
+    <td class="short-column">{{ score }}</td>
+</tr>
+"""

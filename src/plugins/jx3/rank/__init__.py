@@ -9,7 +9,7 @@ from src.const.jx3.server import Server
 from src.const.jx3.school import School
 
 from .api import get_zlrank
-from .rank import get_rank
+from .rank import get_rank, get_slrank
 
 exp_rank_matcher = on_command("jx3_zlrank", aliases={"资历排行", "资历榜单"}, priority=5, force_whitespace=True)
 
@@ -99,3 +99,29 @@ async def _(event: GroupMessageEvent, msg: Message = CommandArg()):
         await rhps_rank_matcher.finish(inject_msg)
     reply_msg = await get_rank(str(dungeon_mode) + str(dungeon_name), boss_name, str(kungfu_name), "rhps")
     await rhps_rank_matcher.finish(reply_msg)
+
+slrank_matcher = on_command("jx3_slrank", aliases={"试炼之地", "试炼"}, priority=5, force_whitespace=True)
+
+@slrank_matcher.handle()
+async def _(event: GroupMessageEvent, msg: Message = CommandArg()):
+    if msg.extract_plain_text() == "":
+        return
+    args = msg.extract_plain_text().strip().split(" ")
+    if len(args) not in [1, 2]:
+        await slrank_matcher.finish(PROMPT.ArgumentCountInvalid)
+    if len(args) == 1:
+        server = Server(None, event.group_id).server
+        school = args[0]
+    if len(args) == 2:
+        if args[0] != "全服":
+            server = Server(args[0], event.group_id).server
+        else:
+            server = "全服"
+        school = args[1]
+    school = School(school).name
+    if school is None:
+        await slrank_matcher.finish(PROMPT.SchoolInvalid)
+    if server is None:
+        await slrank_matcher.finish(PROMPT.ServerNotExist)
+    reply_msg = await get_slrank(school, server)
+    await slrank_matcher.finish(reply_msg)

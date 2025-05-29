@@ -16,14 +16,14 @@ template_chutian = """
 
 template_zhue = """
 <tr>
-    <td class="short-column">{{ time }}</td>
+    <td class="short-column">{{ server }}</td>
     <td class="short-column">{{ map }}</td>
     <td class="short-column">{{ relate }}</td>
 </tr>"""
 
 table_zhue_head = """
 <tr>
-    <th class="short-column">时间</th>
+    <th class="short-column">服务器</th>
     <th class="short-column">地图</th>
     <th class="short-column">参考</th>
 </tr>"""

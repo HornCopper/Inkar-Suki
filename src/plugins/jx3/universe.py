@@ -69,7 +69,8 @@ from .equip import (
 )
 from .events import (
     chutian_matcher,
-    yuncong_matcher
+    yuncong_matcher,
+    zhue_matcher
 )
 from .exam import (
     exam_matcher
@@ -108,7 +109,8 @@ from .pvp import (
 from .rank import (
     exp_rank_matcher,
     rhps_rank_matcher,
-    rdps_rank_matcher
+    rdps_rank_matcher,
+    slrank_matcher
 )
 from .recruit import (
     recruit_matcher
