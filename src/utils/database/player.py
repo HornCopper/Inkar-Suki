@@ -8,10 +8,14 @@ from src.utils.database import db
 from src.utils.database.classes import RoleData
 
 import re
+import json
 
 async def get_uid(roleName: str, serverName: str):
     if Config.jx3.api.enable:
-        data = (await Request(f"{Config.jx3.api.url}/data/role/detailed?token={Config.jx3.api.token}&server={serverName}&name={roleName}").get()).json()
+        try:
+            data = (await Request(f"{Config.jx3.api.url}/data/role/detailed?token={Config.jx3.api.token}&server={serverName}&name={roleName}").get()).json()
+        except json.decoder.JSONDecodeError:
+            return None
         if data["code"] != 200:
             return None
         return data["data"]["roleId"]
