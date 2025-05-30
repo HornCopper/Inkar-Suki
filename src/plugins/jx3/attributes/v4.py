@@ -3,8 +3,9 @@ from jinja2 import Template
 
 from src.const.prompts import PROMPT
 from src.const.jx3.kungfu import Kungfu
-from src.const.path import ASSETS, TEMPLATES, build_path
+from src.const.path import ASSETS, TEMPLATES, SHOW, build_path
 from src.utils.file import read
+from src.utils.network import cache_image
 from src.utils.database.player import search_player
 from src.utils.database.attributes import AttributesRequest, AttributeParser
 from src.utils.generate import generate
@@ -12,9 +13,16 @@ from src.plugins.jx3.attributes.v2_remake import Qixue, EquipDataProcesser
 from src.templates import get_saohua
 
 import json
+import os
 
 from .mobile_attr import mobile_attribute_calculator
-from ._template import template_enchant, template_equip, template_talent, template_other
+from ._template import (
+    template_enchant, 
+    template_equip, 
+    template_talent, 
+    template_other, 
+    template_show
+)
 
 
 class Equip:
@@ -318,8 +326,7 @@ class JX3AttributeParser:
                 for item in self.equip["PersonalPanel"]
             }
 
-    @property
-    def equips(self) -> list[str]:
+    async def equips(self) -> list[str]:
         equip_list = [Equip(each_equip) for each_equip in self.equip["Equips"]]
         return [
             Template(
@@ -329,7 +336,7 @@ class JX3AttributeParser:
                     else template_equip + '<div class="divider"></div>'
                 )
             ).render(
-                icon=e.icon,
+                icon=await cache_image(e.icon),
                 name=e.name,
                 attr=e.attr,
                 color=e.color,
@@ -404,6 +411,17 @@ class JX3AttributeParser:
                 )
             )
         return results
+    
+    @property
+    def show(self) -> str:
+        name = self.role["roleName"]
+        server = self.role["serverName"]
+        path = SHOW + f"/{name}·{server}.png"
+        if os.path.exists(path):
+            return Template(template_show).render(
+                show_path = path
+            )
+        return ""
 
     async def talents(self) -> list[str]:
         qixue_list = self.equip["Person"]["qixueList"]
@@ -471,21 +489,25 @@ async def get_attr_v4(server: str, name: str, conditions: str = ""):
     for a in display_required[abbr]:
         if a in detailed_attr:
             basic_attr[a] = detailed_attr.pop(a)
+    show = attr_parser.show
+    info_margin = "12px" if show == "" else "5px"
     html = Template(
         read(TEMPLATES + "/jx3/attributes_v4.html")
     ).render(
-        name=name,
-        server=server,
+        info_margin=info_margin,
+        name=attr_parser.role["roleName"],
+        server=attr_parser.role["serverName"],
         info=attr_parser.basic_info,
         basic_attr=basic_attr,
         detailed_attr=detailed_attr,
         score=attr_parser.score,
         kungfu_icon=attr_parser.kungfu.icon,
-        equips=attr_parser.equips,
+        equips=await attr_parser.equips(),
         talents=await attr_parser.talents(),
         other_equips=attr_parser.other_equips_str,
         font=ASSETS + "/font/PingFangSC-Semibold.otf",
         saohua=get_saohua(),
+        show=show
     )
     return await generate(
         html,

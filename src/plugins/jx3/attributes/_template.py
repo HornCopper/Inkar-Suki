@@ -50,3 +50,10 @@ template_other = """
         <p style="font-size: 13px;">标签：{{ msg }}
     </div>
 </div>"""
+
+template_show = """
+<h2 style="font-size: 25px;color: #000"><strong>名片</strong></h2>
+<div style="display: flex;align-items: flex-end;gap: 5px;">
+    <img src="{{ show_path }}" style="width: 247.5px;">
+</div>
+"""

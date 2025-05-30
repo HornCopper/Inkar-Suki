@@ -34,7 +34,7 @@
         .info-row {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 12px;
+            margin-bottom: {{ info_margin }};
         }
 
         .info-key {
@@ -145,6 +145,8 @@
             height: 72px;
             padding-top: 12px;
             padding-bottom: 12px;
+            /* padding-top: 20px;
+            padding-bottom: 20px; */
             display: flex;
             align-items: center;
             margin-bottom: 15px;
@@ -329,6 +331,7 @@
                 {{ equip }}<div class="divider"></div>
                 {% endfor %}
                 <p>可用“属性 服务器 角色 标签”查询</p>
+                {{ show }}
             </div>
             <div class="right-column">
                 <div class="equipment-header">

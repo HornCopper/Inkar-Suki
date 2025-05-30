@@ -9,10 +9,16 @@ from nonebot.adapters.onebot.v11 import (
 from src.config import Config
 from src.const.jx3.server import Server
 from src.const.prompts import PROMPT
+from src.const.path import SHOW
 from src.utils.network import Request
+from src.utils.file import write
 from src.utils.database.operation import get_group_settings
 from src.utils.database.player import search_player
 from src.plugins.jx3.server.api import get_server_status
+
+def cache_show(image_bytes: bytes, name: str, server: str) -> None:
+    path = SHOW + f"/{name}·{server}.png"
+    write(path, image_bytes, "wb")
 
 show_matcher = on_command("jx3_show", aliases={"名片", "qq秀", "QQ秀", "名片秀"}, force_whitespace=True, priority=5)
 
@@ -45,8 +51,10 @@ async def _(event: GroupMessageEvent, full_argument: Message = CommandArg()):
     if data["code"] != 200:
         await show_matcher.finish("查询名片失败，请检查玩家是否存在？名片是否过审？")
     image_url = data["data"]["showAvatar"]
+    image_bytes = (await Request(image_url).get()).content
+    cache_show(image_bytes, name, server)
     image = ms.image(
-        (await Request(image_url).get()).content
+        image_bytes
     )
     msg = ms.at(event.user_id) + f" 查询成功！来自：{name}·{server}" + image
     await show_matcher.finish(msg)
