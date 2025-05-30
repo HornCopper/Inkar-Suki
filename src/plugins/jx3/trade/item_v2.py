@@ -90,7 +90,7 @@ async def get_item_detail(item_name: str) -> list | Literal[False]:
     # [物品名称, 物品别称, 发行时间, 发行数量, 发行时长, 绑定时长, 发行原价, 图片样例]
 
 async def get_wanbaolou_data(item_standard_name: str) -> str:
-    final_url = f"https://trade-api.seasunwbl.com/api/buyer/goods/list?filter[role_appearance]={item_standard_name}&filter[state]=2&goods_type=3"
+    final_url = f"https://trade-api.seasunwbl.com/api/buyer/goods/list?filter[role_appearance]={item_standard_name}&filter[state]=2&goods_type=3&sort[price]=1"
     data = (await Request(final_url).get()).json()
     if data["code"] == -11:
         return "万宝楼正在维护中……暂时没有数据"
