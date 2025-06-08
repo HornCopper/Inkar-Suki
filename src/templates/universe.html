@@ -1,67 +1,168 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html>
+
 <head>
-    <!--
-        通用`HTML`模板。
-     -->
     {{ css_link }}
     <style>
-        table {
-            width: 900px;
-            border-collapse: separate;
-            border-spacing: 0;
-            border: 1px solid #000;
-        }
-
-        th {
-            background-color: #333;
-            color: #fff;
-            padding: 8px;
-            text-align: center;
-        }
-
-        td {
+        .container {
+            display: inline-block;
             padding: 20px;
+            background: white;
+            min-width: 1000px;
+        }
+
+        .item-table {
+            width: 100%;
+            min-width: 1000px;
+            width: auto;
+            table-layout: auto;
+            border-collapse: collapse;
+            background: white;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+
+        .item-table th {
+            padding: 12px;
             text-align: center;
+            background: #f8f9fa;
+            font-weight: 600;
+            color: #444;
+            font-size: 24px;
             white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            border-bottom: 1px solid #D3D3D3;
-            margin-bottom: 1px;
         }
 
-        tfoot {
+        .item-table td {
+            padding: 12px;
+            border-top: 1px solid #eee;
             text-align: center;
-            font-size: 12px;
+            font-size: 24px;
+            white-space: nowrap;
         }
 
-        {{ css }}
+        .server-tag {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 12px;
+            background: #e8f4ff;
+            color: #2c7be5;
+            font-size: 24px;
+        }
+
+        .price-cell {
+            font-weight: 500;
+        }
+
+        .time-cell {
+            color: #7f8c8d;
+            font-size: 24px;
+        }
+
+        .item-info {
+            margin-bottom: 20px;
+            padding: 16px;
+            background: #f8f9fa;
+            border-radius: 4px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .item-info-left {
+            flex: 1;
+            margin-right: 20px;
+        }
+
+        .item-info-right {
+            width: 20%;
+            padding: 12px;
+            border-radius: 4px;
+        }
+
+        .item-info h2 {
+            margin: 0 0 12px 0;
+            font-size: 24px;
+            color: #2c3e50;
+            display: flex;
+            align-items: center;
+        }
+
+        .item-info p {
+            margin: 0 0 8px 0;
+            font-size: 24px;
+            color: #444;
+        }
+
+        .progress-bar {
+            position: relative;
+            background: #e0e0e0;
+            border-radius: 8px;
+            height: 20px;
+            max-width: 160px;
+            width: 100%;
+        }
+
+        .progress {
+            height: 100%;
+            background: #76c7c0;
+            border-radius: 8px;
+        }
+
+        .progress-text {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 14px;
+            color: #000;
+        }
+
+        footer {
+            background: #f0f0f0;
+            text-align: center;
+            padding: 15px;
+            font-size: 20px;
+            color: #777;
+            margin-top: 10px;
+        }
 
         @font-face {
             font-family: Harmony;
             src: url("{{ font }}");
+
             {{ font_extra }}
         }
 
         body {
             font-family: Harmony, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: #fff;
         }
+
+            {{ css }}
     </style>
 </head>
+
 <body>
-    <table style="background-color: #FFFFFF">
-        <thead>
-            {{ table_head }}
-        </thead>
-        <tbody>     
-            {{ table_body }}
-        </tbody>
-        <tfoot>
-            <tr>
-                <td colspan="{{ table_width_length }}">&copy; {{ bot_name }}{{ app_info }}<br>{{ footer_msg }}</td>
-            </tr>
-        </tfoot>
-    </table>
+
+    <div class="container">
+        <table class="item-table">
+            <thead>
+                <tr>
+                    {{ table_head }}
+                </tr>
+            </thead>
+            <tbody>
+                {{ table_body }}
+            </tbody>
+        </table>
+
+        <footer>{{ app_info }} | {{ bot_name }}: {{ footer_msg }}</footer>
+    </div>
+
     {{ js }}
+
 </body>
+
 </html>

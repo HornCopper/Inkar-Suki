@@ -62,13 +62,13 @@ async def get_wg(name) -> str | None | list[str | list]:
                 return "唔……没有获取到任何信息！"
             html = str(
                 HTMLSourceCode(
-                    application_name = f" · 贴吧物价 · " + Time().format("%H:%M:%S"),
+                    application_name = f"贴吧物价 · " + Time().format("%H:%M:%S"),
                     additional_js = Path(build_path(TEMPLATES, ["jx3", "waiguan.js"])),
                     table_head = table_waiguan_head,
                     table_body = "\n".join(table)
                 )
             )
-            final_path = await generate(html, "table", False)
+            final_path = await generate(html, ".container", False)
             if not isinstance(final_path, str):
                 return
             return [Path(final_path).as_uri(), links, floors]

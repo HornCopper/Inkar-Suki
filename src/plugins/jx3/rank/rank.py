@@ -75,12 +75,12 @@ async def get_rank(dungeon_full_name: str, boss_name: str, kungfu_name: str, ord
         rank += 1
     html = str(
         HTMLSourceCode(
-            application_name = f" · 门派天梯 · {dungeon_full_name} · {boss_name}",
+            application_name = f"门派天梯 · {dungeon_full_name} · {boss_name}",
             table_head = rank_table_head,
             table_body = "\n".join(tables)
         )
     )
-    image = await generate(html, "table", segment=True)
+    image = await generate(html, ".container", segment=True)
     return image
 
 async def get_slrank(school: str, server: str = "全服"):
@@ -110,10 +110,10 @@ async def get_slrank(school: str, server: str = "全服"):
         rank += 1
     html = str(
         HTMLSourceCode(
-            application_name = f" · 试炼之地 · {server} · {school}",
+            application_name = f"试炼之地 · {server} · {school}",
             table_head = slrank_table_head,
             table_body = "\n".join(tables)
         )
     )
-    image = await generate(html, "table", segment=True)
+    image = await generate(html, ".container", segment=True)
     return image

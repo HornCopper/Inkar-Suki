@@ -39,10 +39,10 @@ async def get_item_record(name: str, token: str = ""):
         )
     html = str(
         HTMLSourceCode(
-            application_name=f" · 掉落统计 · 全服 · {name}",
+            application_name=f"掉落统计 · 全服 · {name}",
             table_head = table_item_head,
             table_body = "\n".join(tables)
         )
     )
-    image = await generate(html, "table", segment=True)
+    image = await generate(html, ".container", segment=True)
     return image

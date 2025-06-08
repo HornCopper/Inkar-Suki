@@ -26,10 +26,10 @@ async def get_zhue_image(server: str):
         )
     html = str(
         HTMLSourceCode(
-            application_name = f" · 诛恶事件 · {server}",
+            application_name = f"诛恶事件 · {server}",
             table_head = table_zhue_head,
             table_body = "\n".join(tables)
         )
     )
-    image = await generate(html, "table", segment=True)
+    image = await generate(html, ".container", segment=True)
     return image

@@ -59,7 +59,7 @@ async def get_progress_v2(
             )
         html = str(
             HTMLSourceCode(
-                application_name = f" · 成就百科 · {server} · {name} · {achievement}",
+                application_name = f"成就百科 · [{name}·{server}] · {achievement}",
                 additional_css = Path(
                     build_path(
                         TEMPLATES,
@@ -73,7 +73,7 @@ async def get_progress_v2(
                 table_body = "\n".join(contents)
             )
         )
-        image = await generate(html, "table", segment=True)
+        image = await generate(html, ".container", segment=True)
         return image
     
 async def get_map(
@@ -134,12 +134,14 @@ async def zone_achievement(
                     desc = i["desc"],
                     value = i["reward_point"],
                     status = "correct" if i["isFinished"] else "incorrect",
-                    flag = "✔" if i["isFinished"] else "✖"
+                    flag = "✔" if i["isFinished"] else "✖",
+                    current = i["currentValue"],
+                    target = i["triggerValue"]
                 )
             )
         html = str(
             HTMLSourceCode(
-                application_name = f" · 成就百科 · {server} · {name} · {mode}{zone}",
+                application_name = f"成就百科 · [{name}·{server}] · {mode}{zone}",
                 additional_css = Path(
                     build_path(
                         TEMPLATES,
@@ -153,5 +155,5 @@ async def zone_achievement(
                 table_body = "\n".join(contents)
             )
         )
-        image = await generate(html, "table", segment=True)
+        image = await generate(html, ".container", segment=True)
         return image

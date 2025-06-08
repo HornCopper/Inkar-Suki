@@ -108,11 +108,11 @@ async def get_qixue(name: str, kungfu: str, season: str = "") -> str | Message |
             )
         html = str(
             HTMLSourceCode(
-                application_name = f" 奇穴搜索 · {name} · {kungfu} · {season or '最新'}",
+                application_name = f"奇穴 · {name} · {kungfu} · {season or '最新'}",
                 additional_js = Path(build_path(TEMPLATES, ["jx3", "qixue.js"])),
                 table_head = table_head,
                 table_body = "\n".join(tables)
             )
         )
-        image = await generate(html, "table", True)
+        image = await generate(html, ".container", True)
         return Path(image)

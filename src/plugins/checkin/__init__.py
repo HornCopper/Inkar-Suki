@@ -190,10 +190,10 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
             )
     html = str(
         HTMLSourceCode(
-            application_name = " · 金币统计",
+            application_name = "金币统计",
             table_head = table_head,
             table_body = "\n".join(table)
         )
     )
-    image = await generate(html, "table", segment=True)
+    image = await generate(html, ".container", segment=True)
     await CoinRankMatcher.finish(image)

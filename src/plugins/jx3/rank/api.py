@@ -34,10 +34,10 @@ async def get_zlrank(server: str, school: str):
         )
     html = str(
         HTMLSourceCode(
-            application_name = f" 资历排行 · {server or '全服'} · {school or '全门派'}",
+            application_name = f"资历排行 · {server or '全服'} · {school or '全门派'}",
             table_head = zlrank_table_head,
             table_body = "\n".join(tables)
         )
     )
-    image = await generate(html, "table", segment=True)
+    image = await generate(html, ".container", segment=True)
     return image

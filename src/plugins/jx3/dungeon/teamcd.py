@@ -21,7 +21,7 @@ from ._template import (
     table_zone_record_head
 )
 
-def sort_role_daa(objects: list[RoleData]) -> list[RoleData]:
+def sort_role_data(objects: list[RoleData]) -> list[RoleData]:
     server_counts = Counter(obj.serverName for obj in objects)
     return sorted(objects, key=lambda obj: server_counts[obj.serverName], reverse=True)
 
@@ -75,12 +75,12 @@ async def get_zone_record_image(server: str, role: str):
             )
         html = str(
             HTMLSourceCode(
-                application_name = f" · 副本记录 · {server} · {role}",
+                application_name = f"副本记录 · [{role}·{server}]",
                 table_head = table_zone_record_head,
                 table_body = "\n".join(contents)
             )
         )
-        image = await generate(html, "table", segment=True)
+        image = await generate(html, ".container", segment=True)
         return image
     
 def parse_data(data) -> dict:
@@ -155,19 +155,19 @@ async def get_mulit_record_image(server: str, roles: list[str]):
         num += 1
     html = str(
             HTMLSourceCode(
-                application_name = f" · 副本记录 · {server} · " + "+".join(roles),
+                application_name = f"副本记录 · 多角色",
                 table_head = table_head,
                 table_body = "\n".join(tables)
             )
         )
-    image = await generate(html, "table", segment=True)
+    image = await generate(html, ".container", segment=True)
     return image
 
 async def get_personal_roles_teamcd_image(user_id: int, keyword: str = ""):
     personal_settings: PersonalSettings | Any = db.where_one(PersonalSettings(), "user_id = ?", str(user_id), default=None)
     if personal_settings is None:
         return "您尚未绑定任何角色！请绑定后再尝试查询！"
-    roles = sort_role_daa(personal_settings.roles)
+    roles = sort_role_data(personal_settings.roles)
     responses = [
         (await request.post(tuilan=True)).json()
         for request

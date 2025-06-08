@@ -43,7 +43,7 @@ async def get_exp_info(
         if not_leading:
             data = [a for a in data if ("五甲" not in a["name"] and "十甲" not in a["name"])]
         if object != "五甲总览":
-            data = [a for a in data if ("排名" not in a["sub_class"] and a["sub_class"] not in ["大师赛", "八荒衡鉴", "江湖百态"])]
+            data = [a for a in data if ("排名" not in a["sub_class"] and a["sub_class"] not in ["大师赛", "八荒衡鉴", "江湖百态", "群英赛"])]
         else:
             data = [a for a in data if ("五甲" in a["name"] or "十甲" in a["name"])]
         total_point = sum([a["reward_point"] for a in data])
@@ -62,6 +62,8 @@ async def get_exp_info(
         tables = []
         for k, v in final_result.items():
             done, total = v.split("/")
+            if total == "0":
+                total = "1"
             tables.append(
                 Template(template_global_view).render(
                     subject = k,

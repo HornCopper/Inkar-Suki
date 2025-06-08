@@ -71,12 +71,12 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
             break
     html = str(
         HTMLSourceCode(
-            application_name=f" · 发言统计 · {event.group_id}",
+            application_name=f"发言统计 · {event.group_id}",
             table_head=table_head,
             table_body="\n".join(table)
         )
     )
-    image = await generate(html, "table", segment=True)
+    image = await generate(html, ".container", segment=True)
     await today_message_count.finish(image)
     
     

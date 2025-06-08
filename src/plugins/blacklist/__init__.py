@@ -75,10 +75,10 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
         )
     html = str(
         HTMLSourceCode(
-            application_name = f" · 避雷名单 · {event.group_id}",
+            application_name = f"避雷名单 · {event.group_id}",
             table_head = table_head,
             table_body = "\n".join(table)
         )
     )
-    image = await generate(html, "table", segment=True)
+    image = await generate(html, ".container", segment=True)
     await ListBlockMatcher.finish(image)

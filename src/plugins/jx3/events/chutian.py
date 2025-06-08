@@ -31,10 +31,10 @@ async def get_chutian_image():
         )
     html = str(
         HTMLSourceCode(
-            application_name = " · 楚天社 · " + Time().format("%H:%M:%S"),
+            application_name = "楚天社 · " + Time().format("%H:%M:%S"),
             table_head = table_chutian_head,
             table_body = "\n".join(tables)
         )
     )
-    image = await generate(html, "table", segment=True)
+    image = await generate(html, ".container", segment=True)
     return image

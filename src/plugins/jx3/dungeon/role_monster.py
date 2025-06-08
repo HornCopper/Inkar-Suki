@@ -9,10 +9,12 @@ from src.templates import SimpleHTML, get_saohua
 
 from ._template import template_role_monsters
 
+class BaizhanSkillNotRecognizedException(Exception): ...
+
 class SkillMap:
     skill_data: list[dict] = []
     
-    def __init__():
+    def __init__(self):
         ...
         
     @classmethod
@@ -22,6 +24,7 @@ class SkillMap:
         for skill in cls.skill_data:
             if skill["dwInSkillID"] == in_skill_id and skill["dwOutSkillID"] == out_skill_id:
                 return "https://icon.jx3box.com/icon/" + str(skill["Skill"]["IconID"]) + ".png"
+        raise BaizhanSkillNotRecognizedException(f"Cannot recognize the baizhan skill `{in_skill_id}` and `{out_skill_id}`!")
 
 async def get_role_monsters_map(server: str, role_name: str):
     role_monster_data = (await Request(f"{Config.jx3.api.url}/data/role/monster?server={server}&name={role_name}&token={Config.jx3.api.token}").get()).json()

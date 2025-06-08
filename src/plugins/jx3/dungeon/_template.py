@@ -9,7 +9,7 @@ template_drop = """
     <td class="short-column">
         <img src="{{ icon }}"></img>
     </td>
-    <td class="short-column">{{ name }}</td>
+    <td class="short-column" style="color: rgb{{ color }}">{{ name }}</td>
     <td class="short-column">
         <div class="attrs">{{ attrs }}</div></td>
     <td class="short-column">{{ type }}</td>

@@ -25,12 +25,12 @@ async def generate_snacks_image(season: str = "风语", *, data: dict[str, list[
         )
     html = str(
         HTMLSourceCode(
-            application_name=" · 小药",
+            application_name="小药",
             table_head = table_head,
             table_body = "\n".join(tables)
         )
     )
-    return await generate(html, "table", segment=True)
+    return await generate(html, ".container", segment=True)
     
 
 school_snacks_matcher = on_command("小药", priority=5, force_whitespace=True)

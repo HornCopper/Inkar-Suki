@@ -48,10 +48,10 @@ async def get_dh(type_: str) -> str | list[str | list] | None:
             return "唔……没有获取到任何信息！"
         html = str(
             HTMLSourceCode(
-                application_name = f" · 盆栽蹲号 · " + Time().format("%H:%M:%S"),
+                application_name = f"盆栽蹲号 · " + Time().format("%H:%M:%S"),
                 table_head = table_dunhao_head,
                 table_body = "\n".join(tables)
             )
         )
-        final_path = await generate(html, "table", False)
+        final_path = await generate(html, ".container", False)
         return [Path(final_path).as_uri(), links, floors]

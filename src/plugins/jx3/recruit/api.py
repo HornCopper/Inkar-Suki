@@ -75,10 +75,10 @@ async def get_recruit_image(server: str, keyword: str = "", local: bool = False,
             break
     html = str(
         HTMLSourceCode(
-            application_name = f" · 团队招募 · {keyword} · {time_now}",
+            application_name = f"团队招募 · {keyword} · {time_now}",
             table_head = table_recruit_head,
             table_body = "\n".join(contents)
         )
     )
-    image = await generate(html, "table", segment=True)
+    image = await generate(html, ".container", segment=True)
     return image
