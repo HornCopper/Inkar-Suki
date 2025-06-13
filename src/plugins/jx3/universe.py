@@ -75,6 +75,9 @@ from .events import (
 from .exam import (
     exam_matcher
 )
+from .firework import (
+    firework_matcher
+)
 from .gold import (
     coin_price_matcher
 )

@@ -78,7 +78,7 @@
         "atPhysicsCriticalStrike": 3962
     },
     "惊羽诀": {
-        "atMagicAttackPowerBase": 6187,
+        "atPhysicsAttackPowerBase": 6187,
         "atPhysicsOvercomeBase": 9025
     },
     "问水诀": {

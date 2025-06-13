@@ -115,7 +115,8 @@ def mobile_attribute_calculator(equip_data: list[dict[str, Any]], kungfu_name: s
                 attr["atMagicCriticalStrike"] = attr.get("atMagicCriticalStrike", 0) + attr.get("atSpiritBase", 0) * (Kungfu.kungfu_coefficient[kungfu_name][1] + 0.9)
             else: # 无方 毒经
                 format_attr["面板攻击"] = int(basic_attack + attr.get("atSpiritBase", 0) * Kungfu.kungfu_coefficient[kungfu_name][0])
-                attr["atMagicOvercome"] = attr.get("atMagicOvercome", 0) + attr.get("atSpiritBase", 0) * (Kungfu.kungfu_coefficient[kungfu_name][1] + 0.3)
+                attr["atMagicOvercome"] = attr.get("atMagicOvercome", 0) + attr.get("atSpiritBase", 0) * (Kungfu.kungfu_coefficient[kungfu_name][1])
+                attr["atMagicCriticalStrike"] = attr.get("atMagicCriticalStrike", 0) + attr.get("atSpiritBase", 0) * 0.181
         elif base_type == "元气":
             if kungfu_name in ["易筋经", "焚影圣诀", "周天功"]:
                 format_attr["面板攻击"] = int(basic_attack + attr.get("atSpunkBase", 0) * Kungfu.kungfu_coefficient[kungfu_name][0])
