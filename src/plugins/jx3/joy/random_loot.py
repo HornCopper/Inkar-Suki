@@ -209,6 +209,8 @@ class RandomLoot:
             iron = [i for i in loot_list if i["Name"].endswith("陨铁")]
 
             if not self.name.startswith("10人普通"):
+                if _extra_peerless and extra_peerless_item:
+                    append_item(boss_name, choice(extra_peerless_item))
                 if _other_peerless:
                     if other_peerless_item:
                         append_item(boss_name, choice(other_peerless_item))

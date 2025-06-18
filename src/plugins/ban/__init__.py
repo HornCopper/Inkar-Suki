@@ -19,7 +19,7 @@ async def _(bot: Bot, event: MessageEvent, args: Message = CommandArg()):
     if args.extract_plain_text() == "":
         return
     if not check_permission(str(event.user_id), 9):
-        await BanMatcher.finish(denied(10))
+        await BanMatcher.finish(denied(9))
     user_id = args.extract_plain_text()
     if not check_number(user_id):
         await BanMatcher.finish(PROMPT.ArgumentInvalid + "\n参考格式：ban <QQ号>")
@@ -37,7 +37,7 @@ async def _(bot: Bot, event: MessageEvent, args: Message = CommandArg()):
     if args.extract_plain_text() == "":
         return
     if not check_permission(str(event.user_id), 9):
-        await UnbanMatcher.finish(denied(10))
+        await UnbanMatcher.finish(denied(9))
     user_id = args.extract_plain_text()
     if not check_number(user_id):
         await UnbanMatcher.finish(PROMPT.ArgumentInvalid + "\n参考格式：unban <QQ号>")
