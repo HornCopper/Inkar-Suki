@@ -1,4 +1,5 @@
 from typing import Any
+from random import randint
 
 from nonebot import on_notice, on_command, on_request
 from nonebot.adapters.onebot.v11 import (
@@ -83,7 +84,8 @@ async def _(event: PokeNotifyEvent):
     if event.group_id is None or str(event.target_id) not in list(Config.bot_basic.bot_notice):
         return
     else:
-        await notice.finish("音卡在呢！找音卡有什么事吗！(^ω^)" + ms.image("https://inkar-suki.codethink.cn/Inkar-Suki-Docs/img/emoji.jpg"))
+        index = randint(0, 3)
+        await notice.finish("音卡在呢！找音卡有什么事吗！(^ω^)" + ms.image(f"https://inkar-suki.codethink.cn/Inkar-Suki-Docs/img/emoji_{index}.jpg"))
 
 request = on_request(priority=5)
 
