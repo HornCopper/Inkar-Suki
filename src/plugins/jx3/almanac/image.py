@@ -81,7 +81,7 @@ def x(y: str) -> Any:
     _, ad, ae = d(z[2])
     af = k(z[3:z.index("")])
     ag = []
-    for ah in z[z.index("")+1:-3]:
+    for ah in z[z.index("")+1:-4]:
         ag.append(
             Template(
                 c
@@ -91,13 +91,15 @@ def x(y: str) -> Any:
                 p3 = p(ah)
             )
         )
-    ai = [f"<p>{aj}</p>" for aj in z[-3:-1]]
-    ak = f"<p>{z[-1]}</p>"
+    ai = [f"<p>{aj}</p>" for aj in z[-4:-2]]
+    ak = f"<p>{z[-2]}</p>"
+    al = z[-1]
     html = Template(
         read(TEMPLATES + "/jx3/almanac.html")
     ).render(
         date = (datetime.now() + timedelta(days=1)).strftime("%Y.%m.%d"),
         day_type = aa,
+        week_day = al,
         s_schools = "\n".join([t(ab) for ab in ab.split("，")]),
         d_schools = "\n".join([t(ad) for ad in ad.split("，")]),
         s_color = ac[:2] + "<strong>" + ac[2:4] + "</strong>" + ac[4:],
