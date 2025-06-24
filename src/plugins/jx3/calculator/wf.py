@@ -131,7 +131,9 @@ class WufangCalculator(BaseCalculator):
         params = {
             "kungfu_id": self.kungfu.id,
             "tuilan_data": self.data,
-            "jcl_name": ("橙武" if self.cw else "紫武") + f"·{self.haste}"
+            "weapon": ("橙武" if self.cw else "紫武"),
+            "haste": self.haste,
+            "loop": "常规"
         }
         data = (await Request("http://127.0.0.1:11223/calculator", params=params).post()).json()
         if data["code"] == 404:
@@ -196,7 +198,7 @@ class WufangCalculator(BaseCalculator):
                     "color": self.kungfu.color,
                     "kungfu": self.kungfu.name,
                     "dps": str(int(data["damage_per_second"])),
-                    "desc": f"计算器JCL名称：{data['loop_name']}\n<br>提供者：{data['provider']} / 战斗时长：{data['battle_time']}" \
+                    "desc": f"计算器JCL循环名称：{data['weapon']}·{data['haste']}-{data['loop_name']}\n<br>提供者：{data['provider']} / 战斗时长：{data['battle_time']}" \
                     + f"s<br>玩家：{name}·{server}",
                     "attrs": attrs,
                     "skills": tables,
