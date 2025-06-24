@@ -346,10 +346,13 @@ class JX3Trade:
                 )
                 price = await self.get_prices(unique_item_id, server)
                 if price is None:
+                    latest_price = sort_dict_list(log.data, "timestamp")
+                    if not latest_price:
+                        continue
                     content = Template(template_v3_price).render(
                         server = server,
                         name = name,
-                        time = Time(sort_dict_list(log.data, "timestamp")[-1]["timestamp"]).format(),
+                        time = Time(latest_price[-1]["timestamp"]).format(),
                         count = "0",
                         price = n2i(log.lowest),
                         percent = "0%"

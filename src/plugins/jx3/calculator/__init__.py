@@ -4,9 +4,12 @@ from nonebot.adapters.onebot.v11 import Bot, Message, GroupMessageEvent, GroupUp
 
 from src.const.prompts import PROMPT
 from src.const.jx3.server import Server
+from src.utils.permission import check_permission
 from src.plugins.notice import notice
 
 from .lxg import LingxueCalculator
+from .wf import WufangCalculator
+from .bxj import BingxinjueCalculator
 from .rdps import RDPSCalculator
 
 import re
@@ -36,6 +39,60 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
         await yinlongjue_calc_matcher.finish(instance)
     data = await instance.image(len(raw_arg) > len(arg))
     await yinlongjue_calc_matcher.finish(data)
+
+wufang_calc_matcher = on_command("jx3_calculator_wf", aliases={"无方计算器"}, priority=5, force_whitespace=True)
+
+@wufang_calc_matcher.handle()
+async def _(event: GroupMessageEvent, args: Message = CommandArg()):
+    if args.extract_plain_text() == "":
+        return
+    # if not check_permission(event.user_id, 6):
+    #     return
+    raw_arg = args.extract_plain_text().split(" ")
+    arg = [a for a in raw_arg if a != "-A"]
+    if len(arg) not in [1, 2]:
+        await wufang_calc_matcher.finish(PROMPT.ArgumentCountInvalid + "\n参考格式：无方计算器 <服务器> <角色名>")
+    if len(arg) == 1:
+        server = None
+        name = arg[0]
+    elif len(arg) == 2:
+        server = arg[0]
+        name = arg[1]
+    server = Server(server, event.group_id).server
+    if server is None:
+        await wufang_calc_matcher.finish(PROMPT.ServerNotExist)
+    instance = await WufangCalculator.with_name(name, server)
+    if isinstance(instance, str):
+        await wufang_calc_matcher.finish(instance)
+    data = await instance.image()
+    await wufang_calc_matcher.finish(data)
+
+bingxinjue_calc_matcher = on_command("jx3_calculator_bx", aliases={"冰心计算器"}, priority=5, force_whitespace=True)
+
+@bingxinjue_calc_matcher.handle()
+async def _(event: GroupMessageEvent, args: Message = CommandArg()):
+    if args.extract_plain_text() == "":
+        return
+    # if not check_permission(event.user_id, 6):
+    #     return
+    raw_arg = args.extract_plain_text().split(" ")
+    arg = [a for a in raw_arg if a != "-A"]
+    if len(arg) not in [1, 2]:
+        await bingxinjue_calc_matcher.finish(PROMPT.ArgumentCountInvalid + "\n参考格式：冰心计算器 <服务器> <角色名>")
+    if len(arg) == 1:
+        server = None
+        name = arg[0]
+    elif len(arg) == 2:
+        server = arg[0]
+        name = arg[1]
+    server = Server(server, event.group_id).server
+    if server is None:
+        await bingxinjue_calc_matcher.finish(PROMPT.ServerNotExist)
+    instance = await BingxinjueCalculator.with_name(name, server)
+    if isinstance(instance, str):
+        await bingxinjue_calc_matcher.finish(instance)
+    data = await instance.image()
+    await bingxinjue_calc_matcher.finish(data)
 
 def check_jcl_name(filename: str) -> bool:
     if not filename.startswith("IKS-"):
