@@ -37,7 +37,10 @@ from .bind import (
 # )
 # RIP: not adapted
 from .calculator import (
-    yinlongjue_calc_matcher
+    yinlongjue_calc_matcher,
+    wufang_calc_matcher,
+    bingxinjue_calc_matcher,
+    taixujianyi_calc_matcher
 )
 from .cost import (
     cost_calc_matcher

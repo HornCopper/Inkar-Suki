@@ -10,6 +10,7 @@ from src.plugins.notice import notice
 from .lxg import LingxueCalculator
 from .wf import WufangCalculator
 from .bxj import BingxinjueCalculator
+from .txjy import TaixujianyiCalculator
 from .rdps import RDPSCalculator
 
 import re
@@ -93,6 +94,33 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
         await bingxinjue_calc_matcher.finish(instance)
     data = await instance.image()
     await bingxinjue_calc_matcher.finish(data)
+
+taixujianyi_calc_matcher = on_command("jx3_calculator_jc", aliases={"剑纯计算器"}, priority=5, force_whitespace=True)
+
+@taixujianyi_calc_matcher.handle()
+async def _(event: GroupMessageEvent, args: Message = CommandArg()):
+    if args.extract_plain_text() == "":
+        return
+    # if not check_permission(event.user_id, 6):
+    #     return
+    raw_arg = args.extract_plain_text().split(" ")
+    arg = [a for a in raw_arg if a != "-A"]
+    if len(arg) not in [1, 2]:
+        await taixujianyi_calc_matcher.finish(PROMPT.ArgumentCountInvalid + "\n参考格式：剑纯计算器 <服务器> <角色名>")
+    if len(arg) == 1:
+        server = None
+        name = arg[0]
+    elif len(arg) == 2:
+        server = arg[0]
+        name = arg[1]
+    server = Server(server, event.group_id).server
+    if server is None:
+        await taixujianyi_calc_matcher.finish(PROMPT.ServerNotExist)
+    instance = await TaixujianyiCalculator.with_name(name, server)
+    if isinstance(instance, str):
+        await taixujianyi_calc_matcher.finish(instance)
+    data = await instance.image()
+    await taixujianyi_calc_matcher.finish(data)
 
 def check_jcl_name(filename: str) -> bool:
     if not filename.startswith("IKS-"):
