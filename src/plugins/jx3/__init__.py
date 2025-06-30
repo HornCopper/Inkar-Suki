@@ -29,19 +29,12 @@ import os
 
 driver = get_driver()
 
-async def ws_connect(ws_url: str, headers: dict) -> ClientConnection:
-    try:
-        result = await websockets.connect(ws_url, extra_headers=headers)
-    except TypeError:
-        result = await websockets.connect(ws_url, additional_headers=headers)
-    return result
-
 async def websocket_client(ws_url: str, headers: dict):
     if not Config.jx3.ws.enable:
         return
     while True:
         try:
-            async with await ws_connect(ws_url, headers) as websocket:
+            async with websockets.connect(ws_url, extra_headers=headers) as websocket:
                 logger.info("WebSocket connection established")
                 while True:
                     response_text = await websocket.recv()
