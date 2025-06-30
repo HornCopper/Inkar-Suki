@@ -74,7 +74,7 @@ async def on_startup():
     headers = {
         "token": Config.jx3.ws.token
     }
-    asyncio.create_task(websocket_client(ws_url, headers))
+    # asyncio.create_task(websocket_client(ws_url, headers))
     asyncio.create_task(ScreenshotGenerator.launch())
     if Config.jx3.api.weibo:
         asyncio.create_task(poll_weibo_api("2046281757", interval=600))

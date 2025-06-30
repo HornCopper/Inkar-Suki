@@ -1,5 +1,6 @@
 from typing import Literal
 from datetime import datetime
+from jinja2 import Template
 
 from src.const.jx3.kungfu import Kungfu
 from src.const.path import (
@@ -13,8 +14,13 @@ from src.utils.database.operation import get_group_settings, set_group_settings
 
 from src.templates import SimpleHTML
 
-import random
+from ._template import template_assistance_unit
+
 import re
+
+def to_transparent_hex(rgb_hex: str, alpha: int = 0x22) -> str:
+    rgb_hex = rgb_hex.lstrip("#")
+    return f"#{rgb_hex}{alpha:02X}"
 
 def rearrange_teams(input_teams: list[list[dict]]) -> list[list[dict]]: # actually list[list[dict | None]]
     # 心法类型定义
@@ -357,60 +363,48 @@ class Assistance:
                 }
                 html_table = "<table>"
                 sorted_team = rearrange_teams(i["member"])
+                html_table = []
                 for row in sorted_team:
-                    html_table += "  <tr>\n"
                     for x in range(5):
                         if x < len(row) and row[x]:  # 如果索引在范围内且元素不为空
                             a = row[x]
                             if a["role_type"] is None:
-                                cell_content = "<div class=\"content-cell\"></div>"
-                                html_table += f"<td>{cell_content}</td>\n"
+                                cell_content = "<div class=\"cell\"></div>"
+                                html_table.append(cell_content)
                                 continue
                             count[self.role_type_abbr(a["role_type"])] += 1
-                            img_src = a["img"]
-                            job_color = Kungfu(a["role_type"]).color  # 默认颜色为白色
-                            id_text = a["role"]
-                            qq_text = a["apply"]
-                            if id_text[0] == "#":
-                                id_text = f"<s>{id_text}</s>"
-                                qq_text = "<span style=\"color:gold\"><b>可报名此职业</b></span>"
-                            cell_content = f"""
-                            <div class="content-cell">
-                                <img width="48px" height="48px" src={img_src}>
-                                <p style="
-                                    padding-left: 5px;
-                                    color: {job_color};
-                                    text-shadow:
-                                        -1px -1px 0 #000, 
-                                        1px -1px 0 #000, 
-                                        -1px 1px 0 #000,
-                                        1px 1px 0 #000;">
-                                    {id_text}
-                                    <br>（{qq_text}）
-                                </p>
-                            </div>
-                            """
+                            icon = a["img"]
+                            color = Kungfu(a["role_type"]).color  # 默认颜色为白色
+                            name = a["role"]
+                            qq = a["apply"]
+                            if name[0] == "#":
+                                name = f"<s>{name}</s>"
+                                qq = "<span style=\"color:gold\"><b>可报名此职业</b></span>"
+                            cell_content = Template(template_assistance_unit).render(
+                                color = to_transparent_hex(color),
+                                icon = icon,
+                                name = name,
+                                qq = qq
+                            )
                         else:
-                            cell_content = "<div class=\"content-cell\"></div>"
-                        html_table += f"<td>{cell_content}</td>\n"
-                    html_table += "</tr>\n"
-                bg = build_path(ASSETS, ["image", "jx3", "assistance", str(random.randint(1, 10)) + ".jpg"])
-                html_table += "</table>"
+                            cell_content = "<div class=\"cell\"></div>"
+                        html_table.append(cell_content)
+                # bg = build_path(ASSETS, ["image", "jx3", "assistance", str(random.randint(1, 10)) + ".jpg"])
                 font = build_path(ASSETS, ["font", "PingFangSC-Medium.otf"])
                 html = SimpleHTML(
                     "jx3",
                     "assistance",
-                    table_content = html_table,
+                    table_content = "\n".join(html_table),
                     creator = creator,
                     T_count = str(count["T"]),
                     N_count = str(count["N"]),
                     D_count = str(count["D"]),
                     B_count = str(count["B"]),
                     font = font,
-                    background = bg,
+                    # background = bg,
                     title = keyword if not check_number(keyword) else i["description"]
                 )
-                image = await generate(str(html), ".background-container", segment=True)
+                image = await generate(str(html), ".container", segment=True, viewport={"width": 1366, "height": 768})
                 return image
         return "未找到相关团队！"
     
