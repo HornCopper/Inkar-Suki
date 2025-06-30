@@ -1,5 +1,6 @@
 from nonebot import get_driver
 from nonebot.log import logger
+from websockets import ClientConnection
 
 from src.config import Config
 from src.const.path import ASSETS, build_path
@@ -28,12 +29,19 @@ import os
 
 driver = get_driver()
 
+async def ws_connect(ws_url: str, headers: dict) -> ClientConnection:
+    try:
+        result = await websockets.connect(ws_url, extra_headers=headers)
+    except TypeError:
+        result = await websockets.connect(ws_url, additional_headers=headers)
+    return result
+
 async def websocket_client(ws_url: str, headers: dict):
     if not Config.jx3.ws.enable:
         return
     while True:
         try:
-            async with websockets.connect(ws_url, extra_headers=headers) as websocket:
+            async with await ws_connect(ws_url, headers) as websocket:
                 logger.info("WebSocket connection established")
                 while True:
                     response_text = await websocket.recv()

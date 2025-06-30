@@ -1,12 +1,6 @@
-# DPS计算器 隐龙诀
+# DPS计算器 铁牢律
 
-"""
-！！！！警告！！！！
-
-务必获得凌雪阁计算器作者同意后再使用！！！！！
-"""
-
-from typing import Literal, Any
+from typing import Literal
 from typing_extensions import Self
 from jinja2 import Template
 
@@ -19,7 +13,6 @@ from src.plugins.jx3.attributes.v2_remake import (
     Panel,
     Qixue,
     Talent,
-    EquipDataProcesser,
 )
 from src.templates import SimpleHTML, get_saohua
 
@@ -34,93 +27,27 @@ class Talents(Qixue):
                 if self.qixue_data[self.kungfu][x][y]["name"] == self.name:
                     return x, self.qixue_data[self.kungfu][x][y]["id"], "https://icon.jx3box.com/icon/" + str(self.qixue_data[self.kungfu][x][y]["icon"]) + ".png"
 
-class Lingxue(Kungfu):
+class Tielaolv(Kungfu):
     @classmethod
     def with_internel_id(cls, internel_id) -> "Self | str":
-        if int(internel_id) not in [10585, 101173]:
+        if int(internel_id) not in [10062, 100407]:
             current_kungfu = super().with_internel_id(internel_id).name or "无法识别"
             return "该计算器与心法不符合，请检查后重试！\n当前识别的心法：" + current_kungfu
         return super().with_internel_id(internel_id)
 
-    @property
-    def sect_code(self):
-        if str(self.name).endswith("·悟"):
-            return "lxgW"
-        else:
-            return "lxg"
-
-class LingxueCalculator(BaseCalculator):
+class TielaolvCalculator(BaseCalculator):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.parser = EquipDataProcesser(self.data)
 
     @property
-    def kungfu(self) -> Lingxue:
-        kungfu = Lingxue.with_internel_id(
+    def kungfu(self) -> Tielaolv:
+        kungfu = Tielaolv.with_internel_id(
             self.data["data"]["Kungfu"]["KungfuID"]
         )
         if isinstance(kungfu, str):
             raise ValueError(kungfu)
         return kungfu
     
-    @property
-    def raw_equips(self) -> list[dict]:
-        """
-        原始数据（排序后）
-        """
-        self.parser.equips
-        sorted_equips = self.parser._cached_equips
-        return sorted_equips or []
-        
-    @property
-    def equips(self) -> dict[str, dict[str, Any]]:
-        """
-        按魔盒格式化后的装备
-        """
-        raw_equips = self.raw_equips
-        equip_locations = [
-            "HAT",
-            "JACKET",
-            "BELT",
-            "WRIST",
-            "BOTTOMS",
-            "SHOES",
-            "NECKLACE",
-            "PENDANT",
-            "RING_1",
-            "RING_2",
-            "SECONDARY_WEAPON",
-            "PRIMARY_WEAPON"
-        ]
-        equips = {}
-        for equip in equip_locations:
-            each_equip = raw_equips[equip_locations.index(equip)]
-            if "WPermanentEnchant" in each_equip: # 小附魔
-                enhance = int(each_equip["WPermanentEnchant"]["ID"])
-            else:
-                enhance = ""
-            if "WCommonEnchant" in each_equip:
-                enchant = int(each_equip["WCommonEnchant"]["ID"])
-            else:
-                enchant = ""
-            if "ColorStone" in each_equip:
-                color_stone = int(each_equip["ColorStone"]["ID"])
-            else:
-                color_stone = ""
-            equips[equip] = {
-                "id": each_equip["ID"],
-                "stone": color_stone,
-                "enchant": enchant,
-                "enhance": enhance,
-                "strength": int(each_equip["StrengthLevel"]),
-                "embedding": [
-                    int(fivestone["Level"])
-                    for fivestone
-                    in each_equip["FiveStone"]
-                ] if "RING" not in equip else []
-            }
-        return equips
-
     @property
     def weapon_damage(self) -> tuple[int, int]:
         equips: list = self.data["data"]["Equips"]
@@ -130,7 +57,7 @@ class LingxueCalculator(BaseCalculator):
                 delta_damage = equip["Base2Type"]["Base2Min"]
                 return int(base_damage), int(base_damage) + int(delta_damage)
         raise ValueError("Cannot find weapon!")
-    
+
     @property
     def attr(self) -> list[Panel]:
         result = []
@@ -154,6 +81,22 @@ class LingxueCalculator(BaseCalculator):
         result.append(Panel(name="武器伤害", value=f"{min_wd} - {max_wd}"))
         return result
     
+    @property
+    def raw_equips(self) -> list[dict]:
+        """
+        原始数据（排序后）
+        """
+        self.parser.equips
+        sorted_equips = self.parser._cached_equips
+        return sorted_equips or []
+    
+    @property
+    def cw(self) -> bool:
+        for each_equip in self.raw_equips:
+            if each_equip["Name"] in ["镇恶", "风霆肃"]:
+                return True
+        return False
+
     @overload
     async def talents(self, with_icon: Literal[True]) -> list[Talent]: ...
 
@@ -162,7 +105,7 @@ class LingxueCalculator(BaseCalculator):
 
     async def talents(self, with_icon: bool = False) -> list[dict[str, int | str]] | list[Talent]: # noqa: F811
         kungfu = self.kungfu.name
-        if kungfu == "隐龙诀·悟":
+        if str(kungfu).endswith("·悟"):
             return []
         qixue_list = self.data["data"]["Person"]["qixueList"]
         if not with_icon:
@@ -193,37 +136,37 @@ class LingxueCalculator(BaseCalculator):
                 for each_name, each_icon
                 in zip(name, icon)
             ]
-    
-    async def get_loop(self) -> dict[str, dict]:
-        url = f"http://www.j3lxg.cn/j3dps/api/public/v1/compute/getLoopBySectCode?sectCode={self.kungfu.sect_code}"
+
+    async def get_loop(self):
+        url = f"{self.calculator_url}/loops?kungfu_id={self.kungfu.id}"
         data = (await Request(url).get()).json()
         results = {}
         for each_loop in data["data"]:
-            loop_name, _  = each_loop["name"].split(":")
-            results[loop_name] = {"loopCode": each_loop["code"]}
+            name = each_loop["name"]
+            weapon, haste_loop = name.split("·")
+            haste, loop = haste_loop.split("_")
+            results[name] = {"weapon": weapon, "haste": haste, "loop": loop}
         return results
-    
-    async def calculate(self, loop_arg: dict):
+
+    async def calculate(self, loop_arg: dict[str, str]):
         params = {
-            "playerData": {
-                "sectCode": self.kungfu.sect_code,
-                "EquipList": self.equips,
-                "TalentCode": await self.talents(False)
-            },
+            "kungfu_id": self.kungfu.id,
+            "tuilan_data": self.data,
             **loop_arg
         }
-        data = (await Request("http://www.j3lxg.cn/j3dps/api/public/v1/compute/robot/dps", params=params).post()).json()
+        data = (await Request(f"{self.calculator_url}/calculator", params=params).post()).json()
+        if data["code"] == 404:
+            return "加速不符合任何计算循环，请自行提供JCL或调整装备！"
         return data
     
-    async def image(self, loop_arg: dict[str, str], full_income: bool = False):
+    async def image(self, loop_arg: dict[str, str]):
         data = await self.calculate(loop_arg)
-        flag = "allIncomeData" if full_income else "noIncomeData"
-        loop_name, loop_talents = str(data["data"]["loopName"]).split(":")
+        if isinstance(data, str):
+            return data
         _loop_talents = {}
-        for t in loop_talents.split("/"):
-            if t == "望断":
-                t = "忘断"
-            x, y, icon = (await Qixue.create({"name": t}, "隐龙诀")).location or (
+        loop_talents = ["定军", "龙痕", "大漠", "击水", "劲风", "掠如火", "振甲", "疾雨", "崩决", "昂如岳", "战心", "号令三军"]
+        for t in loop_talents:
+            x, y, icon = (await Qixue.create({"name": t}, "铁牢律")).location or (
                 "",
                 "",
                 "",
@@ -231,22 +174,22 @@ class LingxueCalculator(BaseCalculator):
             _loop_talents[t] = icon
         loop_talents = _loop_talents
         tables = []
-        for skill_data in data["data"][flag]["mergeSkillDpsBoList"]:
+        for skill_data in data["damage_details"]:
             tables.append(
                 Template(template_calculator).render(
                     **{
-                        "skill": str(skill_data["skillType"]).replace("dot", "(DOT)").replace("-", "·"),
+                        "skill": str(skill_data["name"]),
                         "display": str(
                             round(
-                                skill_data["proportion"]
-                                / data["data"][flag]["mergeSkillDpsBoList"][0]["proportion"]
+                                skill_data["damage"]
+                                / data["damage_details"][0]["damage"]
                                 * 100,
                                 2,
                             )
                         )
                         + "%",
-                        "percent": str(round(skill_data["proportion"], 2)) + "%",
-                        "count": str(skill_data["num"]),
+                        "percent": str(round(skill_data["damage"] / data["total_damage"] * 100, 2)) + "%",
+                        "count": str(skill_data["count"]),
                         "value": "{:,}".format(int(skill_data["damage"])),
                     }
                 )
@@ -254,13 +197,14 @@ class LingxueCalculator(BaseCalculator):
         attributes = self.attr
         attrs = []
         for panel in attributes:
-            for income_data in data["data"][flag]["attributeIncomeBoList"]:
-                if income_data["attributeName"] == panel.name:
+            # for income_data in data["data"][flag]["attributeIncomeBoList"]:
+                # if income_data["attributeName"] == panel.name:
                     attrs.append(
                         Template(template_attr).render(
                             name=panel.name,
                             value=panel.value,
-                            income=round(income_data["attributeIncome"], 3),
+                            # income=round(income_data["attributeIncome"], 3),
+                            income="未知"
                         )
                     )
         name, server = self.info
@@ -272,10 +216,9 @@ class LingxueCalculator(BaseCalculator):
                     "font": build_path(ASSETS, ["font", "PingFangSC-Semibold.otf"]),
                     "color": self.kungfu.color,
                     "kungfu": self.kungfu.name,
-                    "dps": str(int(data["data"][flag]["dps"])),
-                    "desc": f"计算器来源：【太极秘录】凌雪阁DPS计算器 by @猜猜<br>当前循环：{loop_name} / 战斗时长："
-                    + str(data["data"][flag]["totalTime"])
-                    + f"s<br>玩家：{name}·{server}\n<br>欢迎加入凌雪PVE交流群：876052779",
+                    "dps": str(int(data["damage_per_second"])),
+                    "desc": f"计算器JCL循环名称：{data['weapon']}·{data['haste']}-{data['loop_name']}\n<br>提供者：{data['provider']} / 战斗时长：{data['battle_time']}" \
+                    + f"s<br>玩家：{name}·{server}",
                     "attrs": attrs,
                     "skills": tables,
                     "talents": {t.name: t.icon for t in (await self.talents(with_icon=True))},

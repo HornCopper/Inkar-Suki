@@ -10,15 +10,17 @@ from src.plugins.jx3.attributes.v2_remake import (
 )
 
 class BaseCalculator:
+    calculator_url = "http://10.0.10.26:11223"
+
     @classmethod
-    async def with_name(cls, name: str, server: str) -> "Self | str":
+    async def with_name(cls, name: str, server: str, tag: str) -> "Self | str":
         player_data = (await search_player(role_name = name, server_name = server)).format_jx3api()
         if player_data["code"] != 200:
             return PROMPT.PlayerNotExist
         instance = await AttributesRequest.with_name(server, name)
         if not instance:
             return PROMPT.PlayerNotExist
-        equip_data = instance.get_equip("DPSPVE")
+        equip_data = instance.get_equip(tag)
         if not equip_data:
             return PROMPT.EquipNotFound
         return cls(equip_data, (name, server))

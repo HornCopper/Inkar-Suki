@@ -127,21 +127,30 @@ class BingxinjueCalculator(BaseCalculator):
                 in zip(name, icon)
             ]
 
-    async def calculate(self):
+    async def get_loop(self):
+        url = f"{self.calculator_url}/loops?kungfu_id={self.kungfu.id}"
+        data = (await Request(url).get()).json()
+        results = {}
+        for each_loop in data["data"]:
+            name = each_loop["name"]
+            weapon, haste_loop = name.split("·")
+            haste, loop = haste_loop.split("_")
+            results[name] = {"weapon": weapon, "haste": haste, "loop": loop}
+        return results
+
+    async def calculate(self, loop_arg: dict[str, str]):
         params = {
             "kungfu_id": self.kungfu.id,
             "tuilan_data": self.data,
-            "weapon": ("橙武" if self.cw else "紫武"),
-            "haste": self.haste,
-            "loop": "拼好玳"
+            **loop_arg
         }
-        data = (await Request("http://127.0.0.1:11223/calculator", params=params).post()).json()
+        data = (await Request(f"{self.calculator_url}/calculator", params=params).post()).json()
         if data["code"] == 404:
             return "加速不符合任何计算循环，请自行提供JCL或调整装备！"
         return data
     
-    async def image(self):
-        data = await self.calculate()
+    async def image(self, loop_arg: dict[str, str]):
+        data = await self.calculate(loop_arg)
         if isinstance(data, str):
             return data
         _loop_talents = {}
