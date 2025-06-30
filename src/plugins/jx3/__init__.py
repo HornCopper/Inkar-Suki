@@ -1,6 +1,5 @@
 from nonebot import get_driver
 from nonebot.log import logger
-from websockets import ClientConnection
 
 from src.config import Config
 from src.const.path import ASSETS, build_path
