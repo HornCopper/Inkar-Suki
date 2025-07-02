@@ -10,7 +10,8 @@ from src.plugins.jx3.attributes.v2_remake import (
 )
 
 class BaseCalculator:
-    calculator_url = "http://10.0.10.26:11223"
+    # calculator_url = "http://10.0.10.26:11223"
+    calculator_url = "http://127.0.0.1:11223"
 
     @classmethod
     async def with_name(cls, name: str, server: str, tag: str) -> "Self | str":

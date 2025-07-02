@@ -1,4 +1,4 @@
-# DPS计算器 铁牢律
+# DPS计算器 明尊琉璃体
 
 from typing import Literal
 from typing_extensions import Self
@@ -27,21 +27,21 @@ class Talents(Qixue):
                 if self.qixue_data[self.kungfu][x][y]["name"] == self.name:
                     return x, self.qixue_data[self.kungfu][x][y]["id"], "https://icon.jx3box.com/icon/" + str(self.qixue_data[self.kungfu][x][y]["icon"]) + ".png"
 
-class Tielaolv(Kungfu):
+class Mingzunliuliti(Kungfu):
     @classmethod
     def with_internel_id(cls, internel_id) -> "Self | str":
-        if int(internel_id) not in [10062, 100407]:
+        if int(internel_id) not in [10243, 100631]:
             current_kungfu = super().with_internel_id(internel_id).name or "无法识别"
             return "该计算器与心法不符合，请检查后重试！\n当前识别的心法：" + current_kungfu
         return super().with_internel_id(internel_id)
 
-class TielaolvCalculator(BaseCalculator):
+class MingzunliulitiCalculator(BaseCalculator):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
     @property
-    def kungfu(self) -> Tielaolv:
-        kungfu = Tielaolv.with_internel_id(
+    def kungfu(self) -> Mingzunliuliti:
+        kungfu = Mingzunliuliti.with_internel_id(
             self.data["data"]["Kungfu"]["KungfuID"]
         )
         if isinstance(kungfu, str):
@@ -93,7 +93,7 @@ class TielaolvCalculator(BaseCalculator):
     @property
     def cw(self) -> bool:
         for each_equip in self.raw_equips:
-            if each_equip["Name"] in ["威风吟", "掠炎"]:
+            if each_equip["Name"] in ["罪棘刺薇", "圣辉月雪"]:
                 return True
         return False
 
@@ -164,9 +164,9 @@ class TielaolvCalculator(BaseCalculator):
         if isinstance(data, str):
             return data
         _loop_talents = {}
-        loop_talents = ["定军", "龙痕", "大漠", "击水", "劲风", "掠如火", "振甲", "疾雨", "崩决", "昂如岳", "战心", "号令三军"]
+        loop_talents = ["血泪成悦", "净身明礼", "昭昭", "无明业火", "纵遇善缘", "驱夷逐法", "极本溯源", "妙镜惊寂", "斩火", "净体不畏", "怜世人", "圣浴明心"]
         for t in loop_talents:
-            x, y, icon = (await Qixue.create({"name": t}, "铁牢律")).location or (
+            x, y, icon = (await Qixue.create({"name": t}, "明尊琉璃体")).location or (
                 "",
                 "",
                 "",
