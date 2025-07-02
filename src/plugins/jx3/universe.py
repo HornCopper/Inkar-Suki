@@ -41,7 +41,8 @@ from .calculator import (
     wufang_calc_matcher,
     bingxinjue_calc_matcher,
     taixujianyi_calc_matcher,
-    tielaolv_calc_matcher
+    tielaolv_calc_matcher,
+    mingzunliuliti_calc_matcher
 )
 from .cost import (
     cost_calc_matcher
