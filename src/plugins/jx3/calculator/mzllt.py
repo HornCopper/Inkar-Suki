@@ -164,7 +164,7 @@ class MingzunliulitiCalculator(BaseCalculator):
         if isinstance(data, str):
             return data
         _loop_talents = {}
-        loop_talents = ["血泪成悦", "净身明礼", "昭昭", "无明业火", "纵遇善缘", "驱夷逐法", "极本溯源", "妙镜惊寂", "斩火", "净体不畏", "怜世人", "圣浴明心"]
+        loop_talents = data["talents"]
         for t in loop_talents:
             x, y, icon = (await Qixue.create({"name": t}, "明尊琉璃体")).location or (
                 "",

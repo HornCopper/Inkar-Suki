@@ -164,7 +164,7 @@ class TaixujianyiCalculator(BaseCalculator):
         if isinstance(data, str):
             return data
         _loop_talents = {}
-        loop_talents = ["心固", "和光", "化三清", "无意", "玄门", "叠刃", "切玉", "负阴", "故长", "期声", "无欲", "风逝"]
+        loop_talents = data["talents"]
         for t in loop_talents:
             x, y, icon = (await Qixue.create({"name": t}, "太虚剑意")).location or (
                 "",

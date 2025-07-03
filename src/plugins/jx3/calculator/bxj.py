@@ -154,7 +154,7 @@ class BingxinjueCalculator(BaseCalculator):
         if isinstance(data, str):
             return data
         _loop_talents = {}
-        loop_talents = ["青梅嗅", "千里冰封", "新妆", "芳姿畅音", "枕上", "生莲", "流玉", "盈袖", "钗燕", "化冰", "明空", "霜降"]
+        loop_talents = data["talents"]
         for t in loop_talents:
             x, y, icon = (await Qixue.create({"name": t}, "冰心诀")).location or (
                 "",

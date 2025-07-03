@@ -164,7 +164,7 @@ class TielaolvCalculator(BaseCalculator):
         if isinstance(data, str):
             return data
         _loop_talents = {}
-        loop_talents = ["定军", "龙痕", "大漠", "击水", "劲风", "掠如火", "振甲", "疾雨", "崩决", "昂如岳", "战心", "号令三军"]
+        loop_talents = data["talents"]
         for t in loop_talents:
             x, y, icon = (await Qixue.create({"name": t}, "铁牢律")).location or (
                 "",

@@ -164,7 +164,7 @@ class TieguyiCalculator(BaseCalculator):
         if isinstance(data, str):
             return data
         _loop_talents = {}
-        loop_talents = ["征北", "炼狱", "铿锵", "严阵", "振奋", "怒炎", "蔑视", "肃驾", "从容", "高城", "肃列", "寒啸千军"]
+        loop_talents = data["talents"]
         for t in loop_talents:
             x, y, icon = (await Qixue.create({"name": t}, "铁骨衣")).location or (
                 "",

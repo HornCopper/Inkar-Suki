@@ -154,7 +154,7 @@ class WufangCalculator(BaseCalculator):
         if isinstance(data, str):
             return data
         _loop_talents = {}
-        loop_talents = ["连茹", "鸩羽", "往馥", "灵荆", "逆势", "六微", "相使", "凄骨", "紫伏", "香繁饮露", "甘遂", "养荣"]
+        loop_talents = data["talents"]
         for t in loop_talents:
             x, y, icon = (await Qixue.create({"name": t}, "无方")).location or (
                 "",
