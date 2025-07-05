@@ -1,4 +1,4 @@
-# DPS计算器 太虚剑意
+# DPS计算器 凌海诀
 
 from typing import Literal
 from typing_extensions import Self
@@ -27,21 +27,21 @@ class Talents(Qixue):
                 if self.qixue_data[self.kungfu][x][y]["name"] == self.name:
                     return x, self.qixue_data[self.kungfu][x][y]["id"], "https://icon.jx3box.com/icon/" + str(self.qixue_data[self.kungfu][x][y]["icon"]) + ".png"
 
-class Taixujianyi(Kungfu):
+class Linghaijue(Kungfu):
     @classmethod
     def with_internel_id(cls, internel_id) -> "Self | str":
-        if int(internel_id) not in [10015, 100389]:
+        if int(internel_id) not in [10533, 101090]:
             current_kungfu = super().with_internel_id(internel_id).name or "无法识别"
             return "该计算器与心法不符合，请检查后重试！\n当前识别的心法：" + current_kungfu
         return super().with_internel_id(internel_id)
 
-class TaixujianyiCalculator(BaseCalculator):
+class LinghaijueCalculator(BaseCalculator):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
     @property
-    def kungfu(self) -> Taixujianyi:
-        kungfu = Taixujianyi.with_internel_id(
+    def kungfu(self) -> Linghaijue:
+        kungfu = Linghaijue.with_internel_id(
             self.data["data"]["Kungfu"]["KungfuID"]
         )
         if isinstance(kungfu, str):
@@ -166,7 +166,7 @@ class TaixujianyiCalculator(BaseCalculator):
         _loop_talents = {}
         loop_talents = data["talents"]
         for t in loop_talents:
-            x, y, icon = (await Qixue.create({"name": t}, "太虚剑意")).location or (
+            x, y, icon = (await Qixue.create({"name": t}, "凌海诀")).location or (
                 "",
                 "",
                 "",
