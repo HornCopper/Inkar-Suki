@@ -92,8 +92,8 @@ class AttributesRequest:
         }
         data = (await Request("https://m.pvp.xoyo.com/mine/equip/get-role-equip", params=params).post(tuilan=True)).json()
         parser = AttributeParser.pre_check(data)
-        if not parser:
-            return False
+        # if not parser:
+        #     return False
         return cls(
             server,
             name,
@@ -110,7 +110,7 @@ class AttributesRequest:
             uid: str,
             school: str,
             guid: str,
-            current_data: "AttributeParser"
+            current_data: "AttributeParser | Literal[False]"
         ):
         self.data = current_data
         self.guid = guid
@@ -121,32 +121,34 @@ class AttributesRequest:
             default=[]
         )
         same_flag = False
-        for equip_cache in all_equip_cache:
-            if equip_cache.tag == current_data.equip_type and equip_cache.kungfu == current_data.kungfu_name:
-                same_flag = True
-                if equip_cache.equips_data["data"]["Person"]["qixueList"] != [] and current_data.data["data"]["Person"]["qixueList"] == []:
-                    current_data.data["data"]["Person"]["qixueList"] = equip_cache.equips_data["data"]["Person"]["qixueList"]
-                db.delete(
-                    PlayerEquipsCache(),
-                    "globalRoleId = ? AND tag = ? AND score = ? AND kungfu = ?",
-                    guid,
-                    equip_cache.tag,
-                    equip_cache.score,
-                    equip_cache.kungfu
-                )
-                db.save(
-                    PlayerEquipsCache(
-                        equips_data=current_data.data,
-                        globalRoleId=guid,
-                        kungfu=current_data.kungfu_name,
-                        roleId=uid,
-                        roleName=name,
-                        score=current_data.score,
-                        serverName=server,
-                        tag=current_data.equip_type
+        
+        if current_data:
+            for equip_cache in all_equip_cache:
+                if equip_cache.tag == current_data.equip_type and equip_cache.kungfu == current_data.kungfu_name:
+                    same_flag = True
+                    if equip_cache.equips_data["data"]["Person"]["qixueList"] != [] and current_data.data["data"]["Person"]["qixueList"] == []:
+                        current_data.data["data"]["Person"]["qixueList"] = equip_cache.equips_data["data"]["Person"]["qixueList"]
+                    db.delete(
+                        PlayerEquipsCache(),
+                        "globalRoleId = ? AND tag = ? AND score = ? AND kungfu = ?",
+                        guid,
+                        equip_cache.tag,
+                        equip_cache.score,
+                        equip_cache.kungfu
                     )
-                )
-        if not same_flag:
+                    db.save(
+                        PlayerEquipsCache(
+                            equips_data=current_data.data,
+                            globalRoleId=guid,
+                            kungfu=current_data.kungfu_name,
+                            roleId=uid,
+                            roleName=name,
+                            score=current_data.score,
+                            serverName=server,
+                            tag=current_data.equip_type
+                        )
+                    )
+        if not same_flag and current_data:
             db.save(
                 PlayerEquipsCache(
                     equips_data=current_data.data,
@@ -161,7 +163,7 @@ class AttributesRequest:
             )
         self.school = school
         self.all_data = all_equip_cache
-        if not self.all_data:
+        if not self.all_data and current_data:
             db.save(
                 PlayerEquipsCache(
                     equips_data=current_data.data,
@@ -200,7 +202,7 @@ class AttributesRequest:
                 kungfu = Kungfu(self.school + kungfu_type_word[0]).name
                 if kungfu is None:
                     kungfu = ""
-        if (not kungfu) and (not final_tag):
+        if (not kungfu) and (not final_tag) and isinstance(self.data, AttributeParser):
             return self.data.data
         if not kungfu:
             for equip in self.all_data:
