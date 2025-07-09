@@ -44,7 +44,9 @@ from .calculator import (
     tielaolv_calc_matcher,
     mingzunliuliti_calc_matcher,
     tieguyi_calc_matcher,
-    xisuijing_calc_matcher
+    xisuijing_calc_matcher,
+    linghaijue_calc_matcher,
+    mowen_calc_matcher
 )
 from .cost import (
     cost_calc_matcher
