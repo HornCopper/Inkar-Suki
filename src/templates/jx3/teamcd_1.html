@@ -4,17 +4,15 @@
 <head>
     <style>
         .container {
-            display: inline-block;
+            max-width: {{ width }}px;
+            width: 100%;
+            margin: 20px auto;
             padding: 20px;
-            background: white;
-            min-width: 1000px;
         }
+
 
         .item-table {
             width: 100%;
-            min-width: 1000px;
-            width: auto;
-            table-layout: auto;
             border-collapse: collapse;
             background: white;
             box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
@@ -22,20 +20,17 @@
 
         .item-table th {
             padding: 12px;
-            text-align: center;
+            text-align: left;
             background: #f8f9fa;
             font-weight: 600;
             color: #444;
             font-size: 24px;
-            white-space: nowrap;
         }
 
         .item-table td {
             padding: 12px;
             border-top: 1px solid #eee;
-            text-align: center;
             font-size: 24px;
-            white-space: nowrap;
         }
 
         .server-tag {
@@ -44,15 +39,6 @@
             border-radius: 12px;
             background: #e8f4ff;
             color: #2c7be5;
-            font-size: 24px;
-        }
-
-        .price-cell {
-            font-weight: 500;
-        }
-
-        .time-cell {
-            color: #7f8c8d;
             font-size: 24px;
         }
 
@@ -92,38 +78,16 @@
             color: #444;
         }
 
-        .progress-bar {
-            position: relative;
-            background: #e0e0e0;
-            border-radius: 8px;
-            height: 20px;
-            max-width: 160px;
-            width: 100%;
-        }
-
-        .progress {
-            height: 100%;
-            background: #76c7c0;
-            border-radius: 8px;
-        }
-
-        .progress-text {
-            position: absolute;
-            left: 50%;
-            top: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 14px;
-            color: #000;
-        }
-
         footer {
             background: #f0f0f0;
             text-align: center;
             padding: 15px;
             font-size: 20px;
             color: #777;
-            margin-top: 10px;
+            width: 100%;
+            box-sizing: border-box;
         }
+
 
         @font-face {
             font-family: Harmony;
@@ -132,9 +96,6 @@
 
         body {
             font-family: Harmony, sans-serif;
-            margin: 0;
-            padding: 0;
-            background: #fff;
         }
     </style>
 </head>
