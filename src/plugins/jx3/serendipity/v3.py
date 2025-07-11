@@ -10,6 +10,7 @@ from src.utils.time import Time
 from src.utils.network import Request
 from src.utils.database.player import search_player, Player
 from src.templates import SimpleHTML
+from src.utils.analyze import sort_dict_list
 
 from .without_jx3api import JX3Serendipity
 
@@ -61,36 +62,76 @@ async def check_role(server: str, name: str) -> Literal[False] | str:
 def generate_table(local_data: list[dict], comparison_data: list[dict], path_map: list[str], template: str):
     table_list = []
     cache_table = []
-    
-    for serendipity in local_data:
-        k = "name" if not Config.jx3.api.enable else "event"
-        status = serendipity["name"] in [item[k] for item in comparison_data]
-        corresponding = {}
-        for item in comparison_data:
-            if item[k] == serendipity["name"]:
-                corresponding = item
+
+    local_dict = {item["name"]: item for item in local_data}
+
+    k = "name" if not Config.jx3.api.enable else "event"
+    comparison_data = sort_dict_list(comparison_data, "time")[::-1]
+
+    handled_names = set()
+
+    for item in comparison_data:
+        name = item[k]
+        handled_names.add(name)
+        serendipity = local_dict.get(name)
+        status = serendipity is not None
+
+        if status:
+            level = int(serendipity["level"])
+            image_path = build_path(
+                ASSETS,
+                ["image", "jx3", "serendipity", "serendipity", path_map[level - 1]],
+                end_with_slash=True
+            ) + name + ".png"
+        else:
+            image_path = ""
+
+        msg = "尚未触发"
+        if item["time"] != 0:
+            msg = Time(item["time"]).format("%Y-%m-%d %H:%M:%S") + "<br>" + Time().relate(item["time"])
+        elif status:
+            msg = "遗忘的时间"
 
         cache_table.append(
             Template(template).render(
-                **{
-                    "image_path": build_path(ASSETS, ["image", "jx3", "serendipity", "serendipity", path_map[int(serendipity["level"]) - 1]], end_with_slash=True) + serendipity["name"] + ".png",
-                    "name": serendipity["name"],
-                    "status": "yes" if status else "no",
-                    "msg": "尚未触发" if not status else "遗忘的时间" if corresponding["time"] == 0 else Time(corresponding["time"]).format("%Y-%m-%d %H:%M:%S") + "<br>" + Time().relate(corresponding["time"])
-                }
+                image_path=image_path,
+                name=name,
+                status="yes" if status else "no",
+                msg=msg
             )
         )
 
         if len(cache_table) == 5:
-            table_list.append(
-                "<tr>\n" + "\n".join(cache_table) + "\n</tr>"
-            )
+            table_list.append("<tr>\n" + "\n".join(cache_table) + "\n</tr>")
             cache_table = []
 
-    if len(cache_table) != 0:
-        table_list.append(
-            "<tr>\n" + "\n".join(cache_table) + "\n</tr>"
+    for name, serendipity in local_dict.items():
+        if name in handled_names:
+            continue
+
+        level = int(serendipity["level"])
+        image_path = build_path(
+            ASSETS,
+            ["image", "jx3", "serendipity", "serendipity", path_map[level - 1]],
+            end_with_slash=True
+        ) + name + ".png"
+
+        cache_table.append(
+            Template(template).render(
+                image_path=image_path,
+                name=name,
+                status="no",
+                msg="尚未触发"
+            )
         )
+
+        if len(cache_table) == 5:
+            table_list.append("<tr>\n" + "\n".join(cache_table) + "\n</tr>")
+            cache_table = []
+
+    if cache_table:
+        table_list.append("<tr>\n" + "\n".join(cache_table) + "\n</tr>")
+
     return table_list
 
 async def get_serendipity_image_v3(server: str, name: str):
