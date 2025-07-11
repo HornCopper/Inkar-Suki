@@ -46,7 +46,7 @@ class RandomLoot:
         name, mode = dungeon.name, dungeon.mode
         if (name is None) or (mode is None):
             return None
-        if (name not in ["太极宫", "一之窟", "空城殿·上"] or (name == "一之窟" and mode == "25人普通")) and mode != "10人普通":
+        if (name not in ["太极宫", "一之窟", "空城殿·上", "空城殿·下"] or (name == "一之窟" and mode == "25人普通")) and mode != "10人普通":
             return None
         list_all_file = CONST + "/cache/random_loot_list_all.json"
         if os.path.exists(list_all_file):
@@ -261,7 +261,7 @@ class RandomLoot:
                         if box:
                             append_item(boss_name, box[0])
                     else:
-                        weapons = [i for i in loot_list if ("ModifyType" in i and i.get("BelongSchool") not in ["通用", "精简", "", "藏剑"]) or str(i.get("Name")).startswith("藏剑武器·")]
+                        weapons = [i for i in loot_list if ("ModifyType" in i and i.get("Icon", {}).get("Kind") == "武器" and i.get("Icon", {}).get("SubKind") != "投掷囊") or str(i.get("Name")).startswith("藏剑武器·")]
                         if weapons:
                             append_item(boss_name, choice(weapons))
                     
@@ -271,10 +271,19 @@ class RandomLoot:
                         append_item(boss_name, choice(suits))
 
                     # 精简 2件
-                    jingjian_list = [i for i in loot_list if i.get("BelongSchool") == "精简"]
-                    jingjian_count = 2
-                    for item in random_items(lambda i: i in jingjian_list, jingjian_count):
-                        append_item(boss_name, item)
+                    if "25人挑战空城殿" not in self.name:
+                        jingjian_list = [i for i in loot_list if i.get("BelongSchool") == "精简"]
+                        jingjian_count = 2
+                        for item in random_items(lambda i: i in jingjian_list, jingjian_count):
+                            append_item(boss_name, item)
+                    else:
+                        special_jingjian_list = [i for i in loot_list if i.get("BelongSchool") == "精简" and "·" not in i.get("Name", "")]
+                        common_jingjian_list = [i for i in loot_list if i.get("BelongSchool") == "精简" and "·" in i.get("Name", "")]
+                        tn_special_list = [i for i in loot_list if i.get("BelongSchool") in ["防御", "治疗"]]
+                        jingjian_count = 2
+                        append_item(boss_name, choice(special_jingjian_list))
+                        append_item(boss_name, choice(common_jingjian_list))
+                        append_item(boss_name, choice(tn_special_list))
 
                     # 散件补满到8
                     sanjian_list = [i for i in loot_list if "ModifyType" in i and "Color" in i and i.get("BelongSchool") == "通用" and not str(i.get("Desc")).startswith("使用：")]
@@ -366,7 +375,7 @@ class RandomLoot:
                             )
                         )
 
-                if self.name == "25人挑战空城殿·上":
+                if "25人挑战空城殿" in self.name:
                     icon = "https://icon.jx3box.com/icon/23952.png"
                     permanent_enchants = [
                         ("戒指", "根骨"),
@@ -376,7 +385,24 @@ class RandomLoot:
                         ("戒指", "内攻"),
                         ("戒指", "外攻")
                     ]
-                    for _ in range(2):
+                    if self.name.endswith("·下"):
+                        permanent_enchants += [
+                            ("项链", "体质"),
+                            ("项链", "根骨"),
+                            ("项链", "元气"),
+                            ("项链", "力道"),
+                            ("项链", "身法"),
+                            ("腰坠", "体质"),
+                            ("腰坠", "会心"),
+                            ("暗器", "根骨"),
+                            ("暗器", "元气"),
+                            ("暗器", "力道"),
+                            ("暗器", "身法"),
+                            ("暗器", "内破"),
+                            ("暗器", "外破"),
+                            ("暗器", "加速")
+                        ]
+                    for _ in range(3 if self.name.endswith("·上") else 5):
                         location, attr = choice(permanent_enchants)
                         name = f"白虹贯岩·{location}（{attr}）"
                         result[boss_name].append(
@@ -403,7 +429,7 @@ class RandomLoot:
                         ("五行石（六级）", "https://icon.jx3box.com/icon/7528.png", 4),
                         ("五行石（六级）", "https://icon.jx3box.com/icon/7528.png", 4)
                     ]
-                for _ in range(2):
+                for _ in range(1):
                     name, icon_url, color_id = choice(materials)
                     result[boss_name].append(
                         JX3RandomItem(
