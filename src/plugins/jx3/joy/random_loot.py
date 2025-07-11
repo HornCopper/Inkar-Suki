@@ -429,7 +429,7 @@ class RandomLoot:
                         ("五行石（六级）", "https://icon.jx3box.com/icon/7528.png", 4),
                         ("五行石（六级）", "https://icon.jx3box.com/icon/7528.png", 4)
                     ]
-                for _ in range(1):
+                for _ in range(1 if self.name.startswith("25人挑战") else 2):
                     name, icon_url, color_id = choice(materials)
                     result[boss_name].append(
                         JX3RandomItem(
