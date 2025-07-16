@@ -22,8 +22,8 @@ class BaseCalculator:
         if not instance:
             return PROMPT.PlayerNotExist
         equip_data = instance.get_equip(tag)
-        if not equip_data:
-            return PROMPT.EquipNotFound
+        if isinstance(equip_data, bool):
+            return PROMPT.PlayerNotExist if equip_data else PROMPT.EquipNotFound
         return cls(equip_data, (name, server))
     
     def __init__(self, tuilan_data: dict, info: tuple[str, str]):

@@ -187,7 +187,7 @@ class AttributesRequest:
                 tag=current_data.equip_type
             )]
 
-    def get_equip(self, tag: str = "") -> dict | Literal[False]:
+    def get_equip(self, tag: str = "") -> dict | bool:
         tags = parse_conditions(tag)
         final_tag = ""
         kungfu = ""
@@ -215,7 +215,10 @@ class AttributesRequest:
         for equip in self.all_data:
             if equip.kungfu == kungfu and equip.tag == final_tag:
                 return equip.equips_data
-        return False
+        if self.data:
+            return True
+        else:
+            return False
     
     def get_last_equip(self) -> list[AttributeParser]:
         return [AttributeParser(e.equips_data) for e in self.all_data]

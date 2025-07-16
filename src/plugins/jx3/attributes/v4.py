@@ -290,8 +290,8 @@ class JX3AttributeParser:
         if not instance:
             return PROMPT.PlayerNotExist
         equip_data = instance.get_equip(conditions)
-        if not equip_data:
-            return PROMPT.EquipNotFound
+        if isinstance(equip_data, bool):
+            return PROMPT.PlayerNotExist if equip_data else PROMPT.EquipNotFound
         other_equips = instance.get_last_equip()
         return cls(player_data["data"], equip_data["data"], name, server, other_equips)
 
