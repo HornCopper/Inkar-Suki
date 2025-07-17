@@ -1,40 +1,57 @@
 msg_box = """
-<div class="message-box">
-    <div class="element">
-        <div class="cell"><span>段位</span></div>
-        <div class="cell">{{ rank }}</div>
+<div class="general-summary">
+    <div class="summary-card">
+        <h3>段位</h3>
+        <div class="summary-value">{{ rank }}</div>
     </div>
-    <div class="element">
-        <div class="cell"><span>总场次</span></div>
-        <div class="cell">{{ count }}</div>
+    <div class="summary-card">
+        <h3>总场次</h3>
+        <div class="summary-value">{{ count }}</div>
     </div>
-    <div class="element">
-        <div class="cell"><span>胜利</span></div>
-        <div class="cell">{{ win }}</div>
+    <div class="summary-card">
+        <h3>胜利场次</h3>
+        <div class="summary-value">{{ win }}</div>
     </div>
-    <div class="element">
-        <div class="cell"><span>胜率</span></div>
-        <div class="cell">{{ percent }}</div>
+    <div class="summary-card">
+        <h3>胜率</h3>
+        <div class="summary-value">{{ percent }}</div>
     </div>
-    <div class="element">
-        <div class="cell"><span>评分</span></div>
-        <div class="cell">{{ score }}</div>
+    <div class="summary-card">
+        <h3>评分</h3>
+        <div class="summary-value">{{ score }}</div>
     </div>
-    <div class="element">
-        <div class="cell"><span>最佳</span></div>
-        <div class="cell">{{ best }}</div>
+    <div class="summary-card">
+        <h3>最佳</h3>
+        <div class="summary-value">{{ best }}</div>
     </div>
-    <div class="element">
-        <div class="cell"><span>排名（周）</span></div>
-        <div class="cell">{{ rank_ }}</div>
+    <div class="summary-card">
+        <h3>周排名</h3>
+        <div class="summary-value">{{ rank_ }}</div>
     </div>
-</div>"""
+</div>
+"""
 
 template_arena_record = """
 <tr>
-    <td class="short-column"><img src="{{ kungfu }}" width="30px" height="30px"></td>
-    <td class="short-column">{{ rank }}段局<br>{{ mode }}</td>
-    <td class="short-column">{{ time }}<br>{{ relate }} {{ length }}</td>
-    <td class="short-column">{{ score }}<span style="color:{{ color }}">（{{ delta }}）</span></td>
-    <td class="short-column"><span style="color: {{ color }}">{{ status }}</span></td>
-</tr>"""
+    <td>
+        <img src="{{ kungfu }}"
+            width="30" height="30">
+    </td>
+    <td>{{ rank }}段局 {{ mode }}</td>
+    <td class="time-cell">{{ time }}<br>{{ relate }} {{ length }}</td>
+    <td>
+        {{ score }}
+        <span
+            style="display: inline-block;padding: 2px 8px;border-radius: 12px;background: {{ color }};color: #FFFFFF;font-size: 24px;">
+            {{ delta }}
+        </span>
+    </td>
+    <td>
+        <span class="result-{{ status }}">LOST</span>
+        <span
+            style="display: inline-block;padding: 2px 8px;border-radius: 12px;background: {{ mvp_color }};color: #000000;font-size: 24px;">
+            MVP
+        </span>
+    </td>
+</tr>
+"""

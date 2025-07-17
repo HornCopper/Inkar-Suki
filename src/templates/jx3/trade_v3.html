@@ -4,9 +4,10 @@
 <head>
     <style>
         .container {
-            max-width: 1300px;
-            margin: 20px auto;
+            display: inline-block;
             padding: 20px;
+            background: white;
+            min-width: 1000px;
         }
 
         .price-summary {
@@ -37,6 +38,9 @@
 
         .item-table {
             width: 100%;
+            min-width: 1000px;
+            width: auto;
+            table-layout: auto;
             border-collapse: collapse;
             background: white;
             box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
@@ -44,17 +48,20 @@
 
         .item-table th {
             padding: 12px;
-            text-align: left;
+            text-align: center;
             background: #f8f9fa;
             font-weight: 600;
             color: #444;
             font-size: 24px;
+            white-space: nowrap;
         }
 
         .item-table td {
             padding: 12px;
             border-top: 1px solid #eee;
+            text-align: center;
             font-size: 24px;
+            white-space: nowrap;
         }
 
         .server-tag {

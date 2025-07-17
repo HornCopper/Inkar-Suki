@@ -10,7 +10,7 @@ from src.utils.database.player import (
     search_player
 )
 from src.utils.generate import generate
-from src.templates import SimpleHTML
+from src.templates import SimpleHTML, get_saohua
 
 from ._template import msg_box, template_arena_record
 
@@ -88,7 +88,7 @@ async def get_arena_record(server: str = "", name: str = ""):
         if data is None:
             continue
         input_params = {
-            "rank": f"{mode[0]}v{mode[-1]} · " + str(data["grade"]) + "段",
+            "rank": f"{mode[0]}v{mode[-1]}<br>" + str(data["grade"]) + "段",
             "count": str(data["total_count"]),
             "win": str(data["win_count"]),
             "percent": str(round(data["win_count"] / data["total_count"] * 100, 2)) + "%",
@@ -103,7 +103,7 @@ async def get_arena_record(server: str = "", name: str = ""):
         input_params = {
             "kungfu": "https://dl.pvp.xoyo.com/static/tuilan-app/images/jx3/forces/kungfu/" + i["kungfu"] + ".png",
             "rank": str(i["avg_grade"]),
-            "mode": str(i["pvp_type"]) + "v" + str(i["pvp_type"]),
+            "mode": str(i["pvp_type"]) + "V" + str(i["pvp_type"]),
             "time": Time(i["start_time"]).format("%m月%d日 %H:%M:%S"),
             "relate": Time().relate(i["end_time"]),
             "length": "共" + str(i["end_time"] - i["start_time"]) + "秒",
@@ -112,17 +112,15 @@ async def get_arena_record(server: str = "", name: str = ""):
             "color": "green" if i["mmr"] > 0 else "red",
             "status": "WIN" if i["won"] else "LOST"
         }
-        if i["mvp"]:
-            input_params["status"] = input_params["status"] + "(MVP)"
+        input_params["mvp_color"] = "gold" if i["mvp"] else "lightgrey"
         tables.append(Template(template_arena_record).render(**input_params))
     final_input = {
         "custom_font": build_path(ASSETS, ["font", "PingFangSC-Medium.otf"]),
         "msgbox": "\n".join(msgbox),
         "table": "\n".join(tables),
-        "app": "名剑战绩",
         "server": server,
         "name": name,
-        "saohua": "严禁将蓉蓉机器人与音卡共存，一经发现永久封禁！蓉蓉是抄袭音卡的劣质机器人！"
+        "saohua": get_saohua()
     }
     html = str(
         SimpleHTML(
@@ -131,5 +129,5 @@ async def get_arena_record(server: str = "", name: str = ""):
             **final_input
         )
     )
-    image = await generate(html, ".total", segment=True)
+    image = await generate(html, ".container", segment=True)
     return image
