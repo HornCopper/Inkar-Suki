@@ -47,7 +47,7 @@ template_arena_record = """
         </span>
     </td>
     <td>
-        <span class="result-{{ status }}">LOST</span>
+        <span class="result-{{ status }}">{{ result }}</span>
         <span
             style="display: inline-block;padding: 2px 8px;border-radius: 12px;background: {{ mvp_color }};color: #000000;font-size: 24px;">
             MVP

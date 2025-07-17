@@ -87,12 +87,17 @@ async def get_arena_record(server: str = "", name: str = ""):
         data = await indicator.get_arena_info(mode)
         if data is None:
             continue
+        score = data["mmr"]
+        if score > 0:
+            score = "+" + str(score)
+        else:
+            score = str(score)
         input_params = {
             "rank": f"{mode[0]}v{mode[-1]}<br>" + str(data["grade"]) + "段",
             "count": str(data["total_count"]),
             "win": str(data["win_count"]),
             "percent": str(round(data["win_count"] / data["total_count"] * 100, 2)) + "%",
-            "score": str(data["mmr"]),
+            "score": score,
             "best": str(data["mvp_count"]),
             "rank_": data["ranking"]
         }
@@ -110,7 +115,8 @@ async def get_arena_record(server: str = "", name: str = ""):
             "score": str(i["total_mmr"]),
             "delta": str(i["mmr"]),
             "color": "green" if i["mmr"] > 0 else "red",
-            "status": "WIN" if i["won"] else "LOST"
+            "status": "win" if i["won"] else "lose",
+            "result": "胜利" if i["won"] else "失败"
         }
         input_params["mvp_color"] = "gold" if i["mvp"] else "lightgrey"
         tables.append(Template(template_arena_record).render(**input_params))
