@@ -87,17 +87,12 @@ async def get_arena_record(server: str = "", name: str = ""):
         data = await indicator.get_arena_info(mode)
         if data is None:
             continue
-        score = data["mmr"]
-        if score > 0:
-            score = "+" + str(score)
-        else:
-            score = str(score)
         input_params = {
             "rank": f"{mode[0]}v{mode[-1]}<br>" + str(data["grade"]) + "段",
             "count": str(data["total_count"]),
             "win": str(data["win_count"]),
             "percent": str(round(data["win_count"] / data["total_count"] * 100, 2)) + "%",
-            "score": score,
+            "score": str(data["mmr"]),
             "best": str(data["mvp_count"]),
             "rank_": data["ranking"]
         }
@@ -105,6 +100,11 @@ async def get_arena_record(server: str = "", name: str = ""):
     record = await indicator.get_person_arena_record()
     tables = []
     for i in record["data"]:
+        delta = i["mmr"]
+        if delta > 0:
+            delta = "+" + str(delta)
+        else:
+            delta = str(delta)
         input_params = {
             "kungfu": "https://dl.pvp.xoyo.com/static/tuilan-app/images/jx3/forces/kungfu/" + i["kungfu"] + ".png",
             "rank": str(i["avg_grade"]),
@@ -113,7 +113,7 @@ async def get_arena_record(server: str = "", name: str = ""):
             "relate": Time().relate(i["end_time"]),
             "length": "共" + str(i["end_time"] - i["start_time"]) + "秒",
             "score": str(i["total_mmr"]),
-            "delta": str(i["mmr"]),
+            "delta": delta,
             "color": "green" if i["mmr"] > 0 else "red",
             "status": "win" if i["won"] else "lose",
             "result": "胜利" if i["won"] else "失败"
