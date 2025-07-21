@@ -93,7 +93,7 @@ class TieguyiCalculator(BaseCalculator):
     @property
     def cw(self) -> bool:
         for each_equip in self.raw_equips:
-            if each_equip["Name"] in ["罪棘刺薇", "圣辉月雪"]:
+            if each_equip["Name"] in ["致远", "驭焰"]:
                 return True
         return False
 

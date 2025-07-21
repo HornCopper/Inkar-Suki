@@ -93,7 +93,7 @@ class FenshanjinCalculator(BaseCalculator):
     @property
     def cw(self) -> bool:
         for each_equip in self.raw_equips:
-            if each_equip["Name"] in ["镇恶", "风霆肃"]:
+            if each_equip["Name"] in ["孤焰", "天下宏愿"]:
                 return True
         return False
 

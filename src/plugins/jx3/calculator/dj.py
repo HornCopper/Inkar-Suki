@@ -1,4 +1,4 @@
-# DPS计算器 凌海诀
+# DPS计算器 毒经
 
 from typing import Literal
 from typing_extensions import Self
@@ -27,36 +27,26 @@ class Talents(Qixue):
                 if self.qixue_data[self.kungfu][x][y]["name"] == self.name:
                     return x, self.qixue_data[self.kungfu][x][y]["id"], "https://icon.jx3box.com/icon/" + str(self.qixue_data[self.kungfu][x][y]["icon"]) + ".png"
 
-class Linghaijue(Kungfu):
+class Dujing(Kungfu):
     @classmethod
     def with_internel_id(cls, internel_id) -> "Self | str":
-        if int(internel_id) not in [10533, 101090]:
+        if int(internel_id) not in [10175, 100654]:
             current_kungfu = super().with_internel_id(internel_id).name or "无法识别"
             return "该计算器与心法不符合，请检查后重试！\n当前识别的心法：" + current_kungfu
         return super().with_internel_id(internel_id)
 
-class LinghaijueCalculator(BaseCalculator):
+class DujingCalculator(BaseCalculator):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
     @property
-    def kungfu(self) -> Linghaijue:
-        kungfu = Linghaijue.with_internel_id(
+    def kungfu(self) -> Dujing:
+        kungfu = Dujing.with_internel_id(
             self.data["data"]["Kungfu"]["KungfuID"]
         )
         if isinstance(kungfu, str):
             raise ValueError(kungfu)
         return kungfu
-    
-    @property
-    def weapon_damage(self) -> tuple[int, int]:
-        equips: list = self.data["data"]["Equips"]
-        for equip in equips:
-            if equip["Icon"]["Kind"] == "武器" and equip["Icon"]["SubKind"] != "投掷囊":
-                base_damage = equip["Base1Type"]["Base1Min"]
-                delta_damage = equip["Base2Type"]["Base2Min"]
-                return int(base_damage), int(base_damage) + int(delta_damage)
-        raise ValueError("Cannot find weapon!")
 
     @property
     def attr(self) -> list[Panel]:
@@ -77,8 +67,8 @@ class LinghaijueCalculator(BaseCalculator):
                     result.append(p)
                 else:
                     result.append(p)
-        min_wd, max_wd = self.weapon_damage
-        result.append(Panel(name="武器伤害", value=f"{min_wd} - {max_wd}"))
+        # min_wd, max_wd = self.weapon_damage
+        # result.append(Panel(name="武器伤害", value=f"{min_wd} - {max_wd}"))
         return result
     
     @property
@@ -93,7 +83,7 @@ class LinghaijueCalculator(BaseCalculator):
     @property
     def cw(self) -> bool:
         for each_equip in self.raw_equips:
-            if each_equip["Name"] in ["七月嘉树", "山海云崖"]:
+            if each_equip["Name"] in ["墨语沉香", "蜕骨"]:
                 return True
         return False
 
@@ -166,7 +156,7 @@ class LinghaijueCalculator(BaseCalculator):
         _loop_talents = {}
         loop_talents = data["talents"]
         for t in loop_talents:
-            x, y, icon = (await Qixue.create({"name": t}, "凌海诀")).location or (
+            x, y, icon = (await Qixue.create({"name": t}, "毒经")).location or (
                 "",
                 "",
                 "",
