@@ -21,6 +21,7 @@ from .mw import MowenCalculator
 from .fsj import FenshanjinCalculator
 from .dj import DujingCalculator
 from .baj import BeiaojueCalculator
+from .fysj import Fenyingshengjue, FenyingshengjueCalculator
 from .rdps import RDPSCalculator
 
 import re
@@ -612,6 +613,51 @@ async def _(event: GroupMessageEvent, state: T_State, loop_order: Message = Arg(
     loop_code: dict[str, str] = loops[list(loops)[int(num)-1]]
     data = await instance.image(loop_code)
     await beiaojue_calc_matcher.finish(data)
+
+fenyingshengjue_calc_matcher = on_command("jx3_calculator_fysj", aliases={"焚影计算器"}, priority=5, force_whitespace=True)
+
+@fenyingshengjue_calc_matcher.handle()
+async def _(event: GroupMessageEvent, state: T_State, args: Message = CommandArg()):
+    if args.extract_plain_text() == "":
+        return
+    raw_arg = args.extract_plain_text().split(" ")
+    arg = [a for a in raw_arg if a != "-A"]
+    if len(arg) not in [1, 2]:
+        await fenyingshengjue_calc_matcher.finish(PROMPT.ArgumentCountInvalid + "\n参考格式：焚影计算器 <服务器> <角色名>")
+    if len(arg) == 1:
+        server = None
+        name = arg[0]
+    elif len(arg) == 2:
+        server = arg[0]
+        name = arg[1]
+    server = Server(server, event.group_id).server
+    if server is None:
+        await fenyingshengjue_calc_matcher.finish(PROMPT.ServerNotExist)
+    instance = await FenyingshengjueCalculator.with_name(name, server, "DPSPVE")
+    if isinstance(instance, str):
+        await fenyingshengjue_calc_matcher.finish(instance)
+    loops = await instance.get_loop()
+    state["loops"] = loops
+    state["instance"] = instance
+    msg = "请选择计算循环！"
+    num = 1
+    for loop_name in loops:
+        msg += f"\n{num}. {loop_name}"
+        num += 1
+    await fenyingshengjue_calc_matcher.send(msg)
+
+@fenyingshengjue_calc_matcher.got("loop_order")
+async def _(event: GroupMessageEvent, state: T_State, loop_order: Message = Arg()):
+    num = loop_order.extract_plain_text()
+    if not check_number(num):
+        await fenyingshengjue_calc_matcher.finish("循环选择有误，请重新发起命令！")
+    loops: dict[str, dict] = state["loops"]
+    instance: FenyingshengjueCalculator = state["instance"]
+    if int(num) > len(list(loops)):
+        await fenyingshengjue_calc_matcher.finish("超出可选范围，请重新发起命令！")
+    loop_code: dict[str, str] = loops[list(loops)[int(num)-1]]
+    data = await instance.image(loop_code)
+    await fenyingshengjue_calc_matcher.finish(data)
 
 def check_jcl_name(filename: str) -> bool:
     if not filename.startswith("IKS-"):
