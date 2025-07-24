@@ -81,10 +81,9 @@ class AttributesRequest:
             role_name = name,
             server_name = server
         )
-        role_info_dict = role_info.format_jx3api()
-        if role_info_dict["code"] != 200:
+        role_id = role_info.roleId
+        if role_id == "":
             return False
-        role_id = role_info_dict["data"]["roleId"]
         params = {
             "zone": Server(server).zone,
             "server": server,
@@ -98,8 +97,8 @@ class AttributesRequest:
             server,
             name,
             role_id,
-            role_info_dict["data"]["forceName"],
-            role_info_dict["data"]["globalRoleId"],
+            role_info.forceName,
+            role_info.globalRoleId,
             parser
         )
 

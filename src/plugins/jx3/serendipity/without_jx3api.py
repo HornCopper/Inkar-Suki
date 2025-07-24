@@ -6,7 +6,7 @@ from src.utils.analyze import sort_dict_list, merge_dict_lists
 from src.utils.network import Request
 from src.utils.database import serendipity_db
 from src.utils.database.classes import SerendipityData
-from src.utils.database.player import search_player, Player
+from src.utils.database.player import search_player
 
 import httpx
 import os
@@ -29,11 +29,10 @@ class JX3Serendipity:
         return serendipity_level
 
     async def get_tuilan_data(self, server: str, name: str):
-        role: Player = await search_player(role_name=name, server_name=server)
-        data = role.format_jx3api()
-        if data["code"] != 200:
+        role = await search_player(role_name=name, server_name=server)
+        global_role_id = role.globalRoleId
+        if global_role_id == "":
             return False
-        global_role_id = data["data"]["globalRoleId"]
         params = {
             "name": "完成奇遇",
             "gameRoleId": global_role_id,

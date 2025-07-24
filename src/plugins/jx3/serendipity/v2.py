@@ -23,13 +23,14 @@ Serendipity = JX3Serendipity()
 
 async def get_serendipity_v2(server: str, name: str, type: bool):
     role_data = await search_player(role_name=name, server_name=server)
-    if role_data.format_jx3api()["code"] != 200:
+    role_id = role_data.roleId
+    if role_id == "":
         return PROMPT.PlayerNotExist
     if Config.jx3.api.enable:
         serendipity_data = (await Request(f"{Config.jx3.api.url}/data/luck/adventure?server={server}&name={name}&ticket={ticket}&token={token}").get()).json()
         serendipity_data = serendipity_data["data"]
     else:
-        serendipity_data = await Serendipity.integration(server, name, role_data.format_jx3api()["data"]["roleId"])
+        serendipity_data = await Serendipity.integration(server, name, role_id)
     data = serendipity_data
     # 笔记：1 → 世界奇遇；2 → 绝世奇遇；3 → 宠物奇遇
     # 注：暂时忽略宠物奇遇，不做统计

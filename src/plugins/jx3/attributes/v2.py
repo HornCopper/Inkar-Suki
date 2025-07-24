@@ -28,12 +28,11 @@ ticket = Config.jx3.api.ticket
 device_id = ticket.split("::")[-1]
 
 async def get_personal_data(server, id) -> Literal[False] | tuple[str, str, str]:
-    data = await search_player(role_name=id, server_name=server)
-    data = data.format_jx3api()
-    if data["code"] != 200:
+    role_info = await search_player(role_name=id, server_name=server)
+    if role_info.roleId == "":
         return False
     else:
-        return data["data"]["roleId"], data["data"]["bodyName"], data["data"]["forceName"]
+        return role_info.roleId, role_info.bodyName, role_info.forceName
         # UID 体型 门派
 
 class Enchant:
@@ -432,8 +431,8 @@ async def get_attr_v2(server: str, role_name: str):
     if not instance:
         return PROMPT.PlayerNotExist
     equip_data = instance.get_equip()
-    if not equip_data:
-        return PROMPT.EquipNotFound
+    if isinstance(equip_data, bool):
+        return PROMPT.PlayerNotExist if equip_data else PROMPT.EquipNotFound
     attrsObject = JX3AttributeV2(equip_data)
     if not attrsObject.equips:
         return "唔……请把装备穿戴完整再来查询！\n有可能是推栏未识别部分装备，等待推栏更新即可！"

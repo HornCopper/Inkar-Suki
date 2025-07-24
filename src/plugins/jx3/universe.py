@@ -94,9 +94,6 @@ from .horse import (
     horse_chat_matcher,
     horse_spawn_matcher
 )
-from .item import (
-    item_detail_matcher
-)
 from .joy import (
     saohua_matcher,
     tiangou_matcher,

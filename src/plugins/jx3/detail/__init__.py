@@ -55,9 +55,9 @@ async def _(event: GroupMessageEvent, state: T_State, choice: Message = Arg()):
         await achievement_overview_matcher.finish("给定的序号不正确，请重新发起命令！")
     role_info: tuple[str, str] = state["r"]
     server, role = role_info
-    player_data = (await search_player(role_name=role, server_name=server)).format_jx3api()
-    if player_data["code"] != 200:
+    player_data = await search_player(role_name=role, server_name=server)
+    if player_data.roleId == "":
         await achievement_overview_matcher.finish(PROMPT.PlayerNotExist)
-    msg = await get_exp_info(server, role, player_data["data"]["globalRoleId"], VIEW_TYPES[int(num)-1])
+    msg = await get_exp_info(server, role, player_data.globalRoleId, VIEW_TYPES[int(num)-1])
     if isinstance(msg, ms):
         await achievement_overview_matcher.finish(msg)

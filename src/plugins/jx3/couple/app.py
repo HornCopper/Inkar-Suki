@@ -25,12 +25,11 @@ def check_status(uin: int):
     return True
     
 async def get_school(name: str, server: str):
-    data = await search_player(role_name=name, server_name=server)
-    data = data.format_jx3api()
-    if data["code"] != 200:
+    role_info = await search_player(role_name=name, server_name=server)
+    if role_info.roleId == "":
         return False
     else:
-        return data["data"]["forceName"]
+        return role_info.forceName
 
 async def bind_affection(uin_1: int, name_1: str, uin_2: int, name_2: str, group_id: int, custom_time: int):
     if check_status(uin_1) or check_status(uin_2):

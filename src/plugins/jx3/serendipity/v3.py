@@ -8,7 +8,7 @@ from src.const.path import ASSETS, build_path
 from src.utils.generate import generate
 from src.utils.time import Time
 from src.utils.network import Request
-from src.utils.database.player import search_player, Player
+from src.utils.database.player import search_player
 from src.templates import SimpleHTML
 from src.utils.analyze import sort_dict_list
 
@@ -54,10 +54,11 @@ class JX3Serendipities:
         return new
 
 async def check_role(server: str, name: str) -> Literal[False] | str:
-    player_data: Player = await search_player(role_name=name, server_name=server)
-    if player_data.format_jx3api()["code"] != 200:
+    player_data = await search_player(role_name=name, server_name=server)
+    role_id = player_data.roleId
+    if role_id == "":
         return False
-    return player_data.format_jx3api()["data"]["roleId"]
+    return role_id
 
 def generate_table(local_data: list[dict], comparison_data: list[dict], path_map: list[str], template: str):
     table_list = []

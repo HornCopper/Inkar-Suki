@@ -7,7 +7,7 @@ from nonebot.params import CommandArg
 
 from src.const.jx3.server import Server
 from src.const.prompts import PROMPT
-from src.utils.database.attributes import parse_conditions
+from utils.database.attributes import parse_conditions
 from src.plugins.preferences.app import Preference
 
 from .v2 import get_attr_v2

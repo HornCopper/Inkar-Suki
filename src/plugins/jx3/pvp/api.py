@@ -5,10 +5,7 @@ from src.const.prompts import PROMPT
 from src.const.path import ASSETS, build_path
 from src.utils.network import Request
 from src.utils.time import Time
-from src.utils.database.player import (
-    Player,
-    search_player
-)
+from src.utils.database.player import search_player
 from src.utils.generate import generate
 from src.templates import SimpleHTML, get_saohua
 
@@ -24,11 +21,11 @@ class Indicator:
 
     async def get_role_id(self) -> bool | str:
         if self._role_id is None:
-            role: Player = await search_player(role_name=self.name, server_name=self.server)
-            role_data = role.format_jx3api()
-            if role_data["code"] != 200:
+            role_info = await search_player(role_name=self.name, server_name=self.server)
+            role_id = role_info.roleId
+            if role_id == "":
                 return False
-            self._role_id = role_data["data"]["roleId"]
+            self._role_id = role_id
         return self._role_id
 
     async def get_person_info(self, roleId: str) -> dict | None:

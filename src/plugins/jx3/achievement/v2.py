@@ -24,13 +24,10 @@ async def get_progress_v2(
     name: str = "", 
     achievement: str = ""
 ):
-    personal_data_request = await search_player(role_name=name, server_name=server)
-    personal_data = personal_data_request.format_jx3api()
-    if personal_data["code"] != 200:
-        guid = ""
+    role_info = await search_player(role_name=name, server_name=server)
+    guid = role_info.globalRoleId
+    if not guid:
         return PROMPT.PlayerNotExist
-    else:
-        guid = personal_data["data"]["globalRoleId"]
     params = {
         "size": 200,
         "gameRoleId": guid,
@@ -97,13 +94,10 @@ async def zone_achievement(
         zone: str = "", 
         mode: str = ""
     ):
-    personal_data_request = await search_player(role_name=name, server_name=server)
-    personal_data = personal_data_request.format_jx3api()
-    if personal_data["code"] != 200:
-        guid = ""
+    role_info = await search_player(role_name=name, server_name=server)
+    guid = role_info.globalRoleId
+    if not guid:
         return PROMPT.PlayerNotExist
-    else:
-        guid = personal_data["data"]["globalRoleId"]
     map_id_data: dict = (await Request("https://m.pvp.xoyo.com/achievement/list/dungeon-maps", params={"detail": True}).post(tuilan=True)).json()
     map_id = get_map_all_id(map_id_data, zone)
     flag = False

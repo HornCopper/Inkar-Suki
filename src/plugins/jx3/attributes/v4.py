@@ -285,7 +285,7 @@ class JX3AttributeParser:
     ) -> "JX3AttributeParser | str":
         player_data = (
             await search_player(role_name=name, server_name=server)
-        ).format_jx3api()
+        )
         instance = await AttributesRequest.with_name(server, name)
         if not instance:
             return PROMPT.PlayerNotExist
@@ -293,7 +293,7 @@ class JX3AttributeParser:
         if isinstance(equip_data, bool):
             return PROMPT.PlayerNotExist if equip_data else PROMPT.EquipNotFound
         other_equips = instance.get_last_equip()
-        return cls(player_data["data"], equip_data["data"], name, server, other_equips)
+        return cls(player_data.__dict__, equip_data["data"], name, server, other_equips)
 
     @property
     def kungfu(self) -> Kungfu:

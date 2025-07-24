@@ -511,15 +511,15 @@ async def get_attr_v2_remake(server: str, role_name: str, segment: Literal[True]
 async def get_attr_v2_remake(server: str, role_name: str, segment: Literal[False]) -> bytes | str: ...
 
 async def get_attr_v2_remake(server: str, role_name: str, segment: bool = True):
-    player = (await search_player(role_name=role_name, server_name=server)).format_jx3api()
-    if player["code"] != 200:
+    role_info = await search_player(role_name=role_name, server_name=server)
+    if not role_info.roleId:
         return PROMPT.PlayerNotExist
     instance = await AttributesRequest.with_name(server, role_name)
     if not instance:
         return PROMPT.PlayerNotExist
     equip_data = instance.get_equip()
-    if not equip_data:
-        return PROMPT.EquipNotFound
+    if isinstance(equip_data, bool):
+        return PROMPT.PlayerNotExist if equip_data else PROMPT.EquipNotFound
     data_object = EquipDataProcesser(equip_data, role_name)
     try:
         data_object.equips
@@ -529,8 +529,8 @@ async def get_attr_v2_remake(server: str, role_name: str, segment: bool = True):
         return "玩家似乎正在浪客行中，无法获取装备！"
     image = await get_attr_v2_remake_img(
         role_name,
-        player["data"]["bodyName"],
-        player["data"]["roleId"],
+        role_info.bodyName,
+        role_info.roleId,
         kungfu=data_object.kungfu,
         school=School(data_object.kungfu.school),
         equips=data_object.equips,

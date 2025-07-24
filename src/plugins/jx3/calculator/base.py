@@ -15,8 +15,8 @@ class BaseCalculator:
 
     @classmethod
     async def with_name(cls, name: str, server: str, tag: str) -> "Self | str":
-        player_data = (await search_player(role_name = name, server_name = server)).format_jx3api()
-        if player_data["code"] != 200:
+        player_data = await search_player(role_name = name, server_name = server)
+        if player_data.roleId == "":
             return PROMPT.PlayerNotExist
         instance = await AttributesRequest.with_name(server, name)
         if not instance:

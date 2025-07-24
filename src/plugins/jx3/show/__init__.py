@@ -44,7 +44,7 @@ async def _(event: GroupMessageEvent, full_argument: Message = CommandArg()):
     status = "开服" in (await get_server_status(server))
     if not status:
         await show_matcher.finish("尚未开服，无法查询名片！")
-    role_exist = (await search_player(role_name=name, server_name=server)).format_jx3api()["code"] == 200
+    role_exist = (await search_player(role_name=name, server_name=server)).roleId != ""
     if not role_exist:
         await show_matcher.finish("未找到该玩家，请检查后重试！")
     data = (await Request(f"{Config.jx3.api.url}/data/show/card?server={server}&name={name}&token={Config.jx3.api.token_v2}").get()).json()

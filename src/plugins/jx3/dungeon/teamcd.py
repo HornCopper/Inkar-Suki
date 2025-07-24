@@ -35,13 +35,10 @@ def build_teamcd_request(guid: str) -> Request:
     return Request("https://m.pvp.xoyo.com/h5/parser/cd-process/get-by-role", params=params)
 
 async def get_zone_record_image(server: str, role: str):
-    data = await search_player(role_name=role, server_name=server)
-    details_data = data.format_jx3api()
-    if details_data["code"] != 200:
-        guid = ""
+    role_info = await search_player(role_name=role, server_name=server)
+    guid = role_info.globalRoleId
+    if guid == "":
         return PROMPT.PlayerNotExist
-    else:
-        guid = details_data["data"]["globalRoleId"]
     request = build_teamcd_request(guid)
     data = (await request.post(tuilan=True)).json()
     unable = Template(image_template).render(
@@ -116,11 +113,11 @@ async def get_mulit_record_image(server: str, roles: list[str]):
             server_name = server,
             local_lookup = True
         )
-        role_data = role_data.format_jx3api()
-        if role_data["code"] == 404:
+        guid = role_data.globalRoleId
+        if guid == "":
             not_found_roles.append(each_role)
         else:
-            found_roles.append(role_data["data"]["globalRoleId"])
+            found_roles.append(guid)
     if len(not_found_roles) > 0:
         return "有以下角色尚未存在于音卡的数据库中，请提交角色！\n" + "\n".join(not_found_roles)
     responses = [
