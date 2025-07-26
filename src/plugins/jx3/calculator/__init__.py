@@ -21,7 +21,7 @@ from .mw import MowenCalculator
 from .fsj import FenshanjinCalculator
 from .dj import DujingCalculator
 from .baj import BeiaojueCalculator
-from .fysj import Fenyingshengjue, FenyingshengjueCalculator
+from .fysj import FenyingshengjueCalculator
 from .rdps import RDPSCalculator
 
 import re

@@ -331,6 +331,8 @@ class JX3Trade:
         else:
             if len(self.item_id) > 1:
                 return "该关键词已匹配到多个物品，如需使用全服交易行功能，请给出准确的物品名称！"
+            if len(self.item_id) == 0:
+                return "该关键词未匹配到任何物品，请检查后重试！可尝试使用更精准的名称！"
             unique_item_id = self.item_id[0]
             unique_item = self.item_info(unique_item_id)
             table = []
