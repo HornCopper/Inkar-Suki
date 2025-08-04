@@ -31,6 +31,7 @@ from .universe import UniversalCalculator
 # from .dj import DujingCalculator
 # from .baj import BeiaojueCalculator
 from .rdps import RDPSCalculator
+from .cqc import CQCAnalyze
 
 import re
 import json
@@ -807,8 +808,16 @@ async def _(event: GroupMessageEvent, state: T_State, loop_order: Message = Arg(
     data = await instance.image(loop_code)
     await fenyingshengjue_calc_matcher.finish(data)
 
-def check_jcl_name(filename: str) -> bool:
+def check_jcl_name_jx3bla(filename: str) -> bool:
     if not filename.startswith("IKS-"):
+        return False
+    pattern = re.compile(
+        r"^\d{4}-\d{2}-\d{2}-\d{2}-\d{2}-\d{2}-[\u4e00-\u9fff·\d]+(?:\(\d+\))?-[\u4e00-\u9fff·\d]+(?:\(\d+\))?\.jcl$"
+    )
+    return bool(pattern.match(filename[4:]))
+
+def check_jcl_name_cqc(filename: str) -> bool:
+    if not filename.startswith("CQC-"):
         return False
     pattern = re.compile(
         r"^\d{4}-\d{2}-\d{2}-\d{2}-\d{2}-\d{2}-[\u4e00-\u9fff·\d]+(?:\(\d+\))?-[\u4e00-\u9fff·\d]+(?:\(\d+\))?\.jcl$"
@@ -817,11 +826,22 @@ def check_jcl_name(filename: str) -> bool:
 
 @notice.handle()
 async def _(bot: Bot, event: GroupUploadNoticeEvent):
-    if not check_jcl_name(event.file.name):
+    if not check_jcl_name_jx3bla(event.file.name):
         return
     else:
         try:
             image = await RDPSCalculator(event.file.name[4:], event.model_dump()["file"]["url"])
         except json.decoder.JSONDecodeError:
             await bot.send_group_msg(group_id=event.group_id, message="啊哦，警长的服务器目前似乎暂时有些小问题，请稍后再使用JCL分析？")
+        await bot.send_group_msg(group_id=event.group_id, message=Message(image))
+
+@notice.handle()
+async def _(bot: Bot, event: GroupUploadNoticeEvent):
+    if not check_jcl_name_cqc(event.file.name):
+        return
+    else:
+        try:
+            image = await CQCAnalyze(event.file.name[4:], event.model_dump()["file"]["url"])
+        except json.decoder.JSONDecodeError:
+            await bot.send_group_msg(group_id=event.group_id, message="啊哦，音卡的服务器目前似乎有些小问题，请稍后再使用JCL分析？")
         await bot.send_group_msg(group_id=event.group_id, message=Message(image))

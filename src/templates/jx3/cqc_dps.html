@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inkar Suki 池清川P2战斗分析</title>
+    <style>
+        @font-face {
+            font-family: Harmony;
+            src: url("{{ font }}");
+        }
+
+        body {
+            font-family: Harmony, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+
+        .desc {
+            text-align: left;
+            font-size: 0.9em;
+            color: #555;
+            margin-bottom: 20px;
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 30px auto;
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+            overflow: hidden;
+        }
+
+        .header {
+            background-color: #37d5ca;
+            color: white;
+            text-align: center;
+            padding: 20px;
+            font-size: 1.5em;
+            font-weight: bold;
+        }
+
+        .dps-display {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            font-size: 2em;
+            font-weight: bold;
+        }
+
+        .content {
+            padding: 20px;
+        }
+
+        .card {
+            background: #f9f9f9;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .card h3 {
+            margin: 0;
+            font-size: 1.2em;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .skill {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 10px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            width: 100%;
+        }
+
+        .skill img {
+            width: 50px;
+            height: 50px;
+            border-radius: 4px;
+        }
+
+        .skill-content {
+            flex-grow: 1;
+        }
+
+        .skill-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .progress-bar-container {
+            background: #f4f4f4;
+            height: 10px;
+            border-radius: 5px;
+            overflow: hidden;
+            width: 100%;
+        }
+
+        .progress-bar {
+            height: 100%;
+            transition: width 0.3s ease;
+        }
+
+        .extra-col {
+            width: calc(100% - 700px - 100px);
+            max-width: 400px;
+            text-align: center;
+            font-weight: bold;
+            color: #333;
+        }
+
+        footer {
+            background: #f0f0f0;
+            text-align: center;
+            padding: 15px;
+            font-size: 0.9em;
+            color: #777;
+        }
+
+        .dps-num {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 12px;
+            background: #2c7be5;
+            color: #FFFFFF;
+            font-size: 24px;
+        }
+
+        .hps-num {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 12px;
+            background: #3ccd48;
+            color: #FFFFFF;
+            font-size: 24px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div style="padding: 40px"></div>
+        <div class="header">Inkar Suki 池清川P2战斗分析</div>
+        <div class="dps-display">P2总战斗时长：{{ battle_time }}s</div>
+        <div class="content">
+            <div class="card">
+                <h3>玩家DPS统计</h3>
+                <div class="skills-list" style="width: 1100px;">
+                    {{ dps_stastic }}
+                </div>
+            </div>
+            <div class="card">
+                <h3>玩家HPS统计</h3>
+                <div class="skills-list" style="width: 1100px;">
+                    {{ hps_stastic }}
+                </div>
+            </div>
+            <footer>Inkar Suki: {{ saohua }}</footer>
+        </div>
+    </div>
+</body>
+
+</html>
