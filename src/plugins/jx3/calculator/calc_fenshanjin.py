@@ -141,6 +141,8 @@ class FenshanjinCalculator(BaseCalculator):
         url = f"{self.calculator_url}/loops?kungfu_id={self.kungfu.id}"
         data = (await Request(url).get()).json()
         results = {}
+        if data["code"] != 200:
+            return "该心法尚未实现计算器！"
         for each_loop in data["data"]:
             name = each_loop["name"]
             weapon, haste_loop = name.split("·")

@@ -32,6 +32,8 @@ class Equip:
     @staticmethod
     def _parse_attributes(data: dict) -> str:
         msg = ""
+        if "ModifyType" not in data:
+            return ""
         for i in data["ModifyType"]:
             content = i["Attrib"]["GeneratedMagic"].split("提高")
             if len(content) == 1:
@@ -71,10 +73,12 @@ class Equip:
 
     @property
     def name(self) -> str:
-        return self.equip_data["Name"]
+        return self.equip_data.get("Name", "未知装备")
 
     @property
     def icon(self) -> str:
+        if "Icon" not in self.equip_data:
+            return ASSETS + "/image/jx3/attributes/unknown.png"
         return self.equip_data["Icon"]["FileName"]
 
     @property
@@ -90,10 +94,12 @@ class Equip:
             "(0, 126, 255)",
             "(254, 45, 254)",
             "(255, 165, 0)",
-        ][int(self.equip_data["Color"])]
+        ][int(self.equip_data.get("Color", 4))]
 
     @property
     def effect(self) -> str:
+        if "ModifyType" not in self.equip_data:
+            return ""
         for each_attr in self.equip_data["ModifyType"]:
             if each_attr["Desc"] == "atSkillEventHandler":
                 msg = "，".join(str(each_attr["Attrib"]["Desc"])[:-1].split("。")[:-1]) + "。"
@@ -104,24 +110,24 @@ class Equip:
 
     @property
     def quality(self) -> str:
-        return self.equip_data["Quality"]
+        return self.equip_data.get("Quality", "未知品质")
 
     @property
     def source(self) -> str:
         try:
             source = self.equip_data["equipBelongs"][0]["source"]
             source = source.split("；")[0]
-        except (TypeError, IndexError, ValueError):
+        except (TypeError, IndexError, ValueError, KeyError):
             source = ""
         return source
 
     @property
     def strength(self) -> str:
-        return "⭐️" * int(self.equip_data["StrengthLevel"])
+        return "⭐️" * int(self.equip_data.get("StrengthLevel", 0))
 
     @property
     def full_strengthen(self) -> bool:
-        return self.equip_data["StrengthLevel"] == self.equip_data["MaxStrengthLevel"]
+        return self.equip_data.get("StrengthLevel", "0") == self.equip_data.get("MaxStrengthLevel", "6")
 
     @property
     def enchants(self) -> list[str]:
@@ -197,13 +203,13 @@ class Equip:
     @property
     def peerless(self) -> bool:
         peerless = (
-            (self.equip_data["BelongForce"] in ["内功门派", "外功门派"])
-            or (self.equip_data["MaxStrengthLevel"] == "8")
-            or (self.equip_data["Name"] in EquipDataProcesser.special_weapons)
+            (self.equip_data.get("BelongForce") in ["内功门派", "外功门派"])
+            or (self.equip_data.get("MaxStrengthLevel", "6") == "8")
+            or (self.equip_data.get("Name", "未知装备") in EquipDataProcesser.special_weapons)
             or (
                 any(
                     d.get("Desc") == "atSkillEventHandler"
-                    for d in self.equip_data["ModifyType"]
+                    for d in self.equip_data.get("ModifyType", [])
                 )
             )
             or (self.equip_data.get("Desc", "").startswith("使用："))
@@ -213,7 +219,7 @@ class Equip:
 
     @property
     def flicker(self) -> bool:
-        return self.equip_data["MaxStrengthLevel"] == "8"
+        return self.equip_data.get("MaxStrengthLevel", "6") == "8"
 
 
 class JX3AttributeParser:
@@ -230,15 +236,14 @@ class JX3AttributeParser:
             "帽子": 0,
             "上衣": 1,
             "腰带": 2,
-            "护臂": 3,
-            "裤子": 4,
-            "鞋": 5,
+            "护腕": 3,
+            "下装": 4,
+            "鞋子": 5,
             "项链": 6,
             "腰坠": 7,
             "戒指": [8, 9],
-            "投掷囊": 10,
-            "武器": 11,
-            "重剑": 12,
+            "暗器": 10,
+            "武器": 11
         }
         equips_list = [{}] * 13
         rings = iter(equip_map["戒指"])
@@ -249,13 +254,12 @@ class JX3AttributeParser:
             != "藏剑"
         ):
             for equip in data:
-                subkind = equip["Icon"]["SubKind"]
-                kind = equip["Icon"]["Kind"]
+                subkind = equip["EquipType"]["SubType"]
                 if subkind == "戒指":
                     equips_list[next(rings)] = equip
                 elif subkind in equip_map:
                     equips_list[equip_map[subkind]] = equip
-                elif kind == "武器" or (kind == "任务特殊" and subkind == "活动相关"):
+                elif subkind == "武器":
                     equips_list[equip_map["武器"]] = equip
             equip_data["Equips"] = equips_list[:12]
         elif (
@@ -263,15 +267,19 @@ class JX3AttributeParser:
             and Kungfu.with_internel_id(equip_data["Kungfu"]["KungfuID"]).school
             == "藏剑"
         ):
+            first_weapon = False
             for equip in data:
-                subkind = equip["Icon"]["SubKind"]
-                kind = equip["Icon"]["Kind"]
+                subkind = equip["EquipType"]["SubType"]
                 if subkind == "戒指":
                     equips_list[next(rings)] = equip
-                elif subkind in equip_map:
+                elif subkind in equip_map and subkind != "武器":
                     equips_list[equip_map[subkind]] = equip
-                elif kind == "武器" or (kind == "任务特殊" and subkind == "活动相关"):
-                    equips_list[equip_map["武器"]] = equip
+                elif subkind == "武器":
+                    index = equip_map["武器"]
+                    if first_weapon:
+                        index += 1
+                    equips_list[index] = equip
+                    first_weapon = True
             equip_data["Equips"] = equips_list
         else:
             pass

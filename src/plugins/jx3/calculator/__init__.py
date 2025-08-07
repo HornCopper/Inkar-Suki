@@ -3,8 +3,10 @@ from typing import cast
 from nonebot import on_command
 from nonebot.params import CommandArg, Arg
 from nonebot.typing import T_State
+from nonebot.matcher import Matcher
 from nonebot.adapters.onebot.v11 import Bot, Message, GroupMessageEvent, GroupUploadNoticeEvent
 
+from src.plugins.jx3.calculator.jx3box import JX3BOXCalculator
 from src.const.jx3.kungfu import Kungfu
 from src.const.prompts import PROMPT
 from src.const.jx3.server import Server
@@ -39,8 +41,9 @@ import json
 yinlongjue_calc_matcher = on_command("jx3_calculator_lyj", aliases={"凌雪计算器"}, priority=5, force_whitespace=True)
 
 @yinlongjue_calc_matcher.handle()
-async def _(event: GroupMessageEvent, state: T_State, args: Message = CommandArg()):
+async def _(event: GroupMessageEvent, matcher: Matcher, state: T_State, args: Message = CommandArg()):
     if args.extract_plain_text() == "":
+        matcher.stop_propagation()
         return
     raw_arg = args.extract_plain_text().split(" ")
     arg = [a for a in raw_arg if a != "-A"]
@@ -86,8 +89,9 @@ async def _(event: GroupMessageEvent, state: T_State, loop_order: Message = Arg(
 calc_matcher = on_command("jx3_calculator", aliases={"计算器"}, priority=5, force_whitespace=True)
 
 @calc_matcher.handle()
-async def _(event: GroupMessageEvent, state: T_State, args: Message = CommandArg()):
+async def _(event: GroupMessageEvent, matcher: Matcher, state: T_State, args: Message = CommandArg()):
     if args.extract_plain_text() == "":
+        matcher.stop_propagation()
         return
     raw_arg = args.extract_plain_text().split(" ")
     arg = [a for a in raw_arg if a != "-A"]
@@ -99,13 +103,20 @@ async def _(event: GroupMessageEvent, state: T_State, args: Message = CommandArg
     elif len(arg) == 2:
         server = arg[0]
         name = arg[1]
-    server = Server(server, event.group_id).server
-    if server is None:
-        await calc_matcher.finish(PROMPT.ServerNotExist)
-    instance = await UniversalCalculator.with_name(name, server, "DPSPVE")
-    if isinstance(instance, str):
-        await calc_matcher.finish(instance)
+    if check_number(name):
+        instance = await JX3BOXCalculator.with_pzid(int(name))
+        if isinstance(instance, str):
+            await calc_matcher.finish(instance)
+    else:
+        server = Server(server, event.group_id).server
+        if server is None:
+            await calc_matcher.finish(PROMPT.ServerNotExist)
+        instance = await UniversalCalculator.with_name(name, server, "DPSPVE")
+        if isinstance(instance, str):
+            await calc_matcher.finish(instance)
     loops = await instance.get_loop()
+    if isinstance(loops, str):
+        await calc_matcher.finish("该玩家下线时的心法当前尚未实现计算器，可尝试使用指定计算器（如有）或等待该心法支持！")
     state["loops"] = loops
     state["instance"] = instance
     msg = "请选择计算循环！"
@@ -121,7 +132,7 @@ async def _(event: GroupMessageEvent, state: T_State, loop_order: Message = Arg(
     if not check_number(num):
         await calc_matcher.finish("循环选择有误，请重新发起命令！")
     loops: dict[str, dict] = state["loops"]
-    instance: UniversalCalculator = state["instance"]
+    instance: UniversalCalculator | JX3BOXCalculator = state["instance"]
     if int(num) > len(list(loops)):
         await calc_matcher.finish("超出可选范围，请重新发起命令！")
     loop_code: dict[str, str] = loops[list(loops)[int(num)-1]]
@@ -131,8 +142,9 @@ async def _(event: GroupMessageEvent, state: T_State, loop_order: Message = Arg(
 equip_compare = on_command("jx3_equip_compare", aliases={"装备对比"}, priority=5)
 
 @equip_compare.handle()
-async def _(event: GroupMessageEvent, state: T_State, args: Message = CommandArg()):
+async def _(event: GroupMessageEvent, matcher: Matcher, state: T_State, args: Message = CommandArg()):
     if args.extract_plain_text() == "":
+        matcher.stop_propagation()
         return
     arg = args.extract_plain_text().split(" ")
     if len(arg) not in [2, 3]:
@@ -316,8 +328,9 @@ async def _(event: GroupMessageEvent, state: T_State, loop_order: Message = Arg(
 taixujianyi_calc_matcher = on_command("jx3_calculator_jc", aliases={"剑纯计算器"}, priority=5, force_whitespace=True)
 
 @taixujianyi_calc_matcher.handle()
-async def _(event: GroupMessageEvent, state: T_State, args: Message = CommandArg()):
+async def _(event: GroupMessageEvent, matcher: Matcher, state: T_State, args: Message = CommandArg()):
     if args.extract_plain_text() == "":
+        matcher.stop_propagation()
         return
     raw_arg = args.extract_plain_text().split(" ")
     arg = [a for a in raw_arg if a != "-A"]
@@ -336,6 +349,8 @@ async def _(event: GroupMessageEvent, state: T_State, args: Message = CommandArg
     if isinstance(instance, str):
         await taixujianyi_calc_matcher.finish(instance)
     loops = await instance.get_loop()
+    if isinstance(loops, str):
+        await taixujianyi_calc_matcher.finish(loops)
     state["loops"] = loops
     state["instance"] = instance
     msg = "请选择计算循环！"
@@ -361,8 +376,9 @@ async def _(event: GroupMessageEvent, state: T_State, loop_order: Message = Arg(
 tielaolv_calc_matcher = on_command("jx3_calculator_ct", aliases={"铁牢计算器"}, priority=5, force_whitespace=True)
 
 @tielaolv_calc_matcher.handle()
-async def _(event: GroupMessageEvent, state: T_State, args: Message = CommandArg()):
+async def _(event: GroupMessageEvent, matcher: Matcher, state: T_State, args: Message = CommandArg()):
     if args.extract_plain_text() == "":
+        matcher.stop_propagation()
         return
     raw_arg = args.extract_plain_text().split(" ")
     arg = [a for a in raw_arg if a != "-A"]
@@ -381,6 +397,8 @@ async def _(event: GroupMessageEvent, state: T_State, args: Message = CommandArg
     if isinstance(instance, str):
         await tielaolv_calc_matcher.finish(instance)
     loops = await instance.get_loop()
+    if isinstance(loops, str):
+        await tielaolv_calc_matcher.finish(loops)
     state["loops"] = loops
     state["instance"] = instance
     msg = "请选择计算循环！"
@@ -406,8 +424,9 @@ async def _(event: GroupMessageEvent, state: T_State, loop_order: Message = Arg(
 mingzunliuliti_calc_matcher = on_command("jx3_calculator_mt", aliases={"明尊计算器"}, priority=5, force_whitespace=True)
 
 @mingzunliuliti_calc_matcher.handle()
-async def _(event: GroupMessageEvent, state: T_State, args: Message = CommandArg()):
+async def _(event: GroupMessageEvent, matcher: Matcher, state: T_State, args: Message = CommandArg()):
     if args.extract_plain_text() == "":
+        matcher.stop_propagation()
         return
     raw_arg = args.extract_plain_text().split(" ")
     arg = [a for a in raw_arg if a != "-A"]
@@ -426,6 +445,8 @@ async def _(event: GroupMessageEvent, state: T_State, args: Message = CommandArg
     if isinstance(instance, str):
         await mingzunliuliti_calc_matcher.finish(instance)
     loops = await instance.get_loop()
+    if isinstance(loops, str):
+        await mingzunliuliti_calc_matcher.finish(loops)
     state["loops"] = loops
     state["instance"] = instance
     msg = "请选择计算循环！"
@@ -451,8 +472,9 @@ async def _(event: GroupMessageEvent, state: T_State, loop_order: Message = Arg(
 tieguyi_calc_matcher = on_command("jx3_calculator_tg", aliases={"铁骨计算器"}, priority=5, force_whitespace=True)
 
 @tieguyi_calc_matcher.handle()
-async def _(event: GroupMessageEvent, state: T_State, args: Message = CommandArg()):
+async def _(event: GroupMessageEvent, matcher: Matcher, state: T_State, args: Message = CommandArg()):
     if args.extract_plain_text() == "":
+        matcher.stop_propagation()
         return
     raw_arg = args.extract_plain_text().split(" ")
     arg = [a for a in raw_arg if a != "-A"]
@@ -471,6 +493,8 @@ async def _(event: GroupMessageEvent, state: T_State, args: Message = CommandArg
     if isinstance(instance, str):
         await tieguyi_calc_matcher.finish(instance)
     loops = await instance.get_loop()
+    if isinstance(loops, str):
+        await tieguyi_calc_matcher.finish(loops)
     state["loops"] = loops
     state["instance"] = instance
     msg = "请选择计算循环！"
@@ -496,8 +520,9 @@ async def _(event: GroupMessageEvent, state: T_State, loop_order: Message = Arg(
 xisuijing_calc_matcher = on_command("jx3_calculator_hst", aliases={"洗髓计算器"}, priority=5, force_whitespace=True)
 
 @xisuijing_calc_matcher.handle()
-async def _(event: GroupMessageEvent, state: T_State, args: Message = CommandArg()):
+async def _(event: GroupMessageEvent, matcher: Matcher, state: T_State, args: Message = CommandArg()):
     if args.extract_plain_text() == "":
+        matcher.stop_propagation()
         return
     raw_arg = args.extract_plain_text().split(" ")
     arg = [a for a in raw_arg if a != "-A"]
@@ -516,6 +541,8 @@ async def _(event: GroupMessageEvent, state: T_State, args: Message = CommandArg
     if isinstance(instance, str):
         await xisuijing_calc_matcher.finish(instance)
     loops = await instance.get_loop()
+    if isinstance(loops, str):
+        await xisuijing_calc_matcher.finish(loops)
     state["loops"] = loops
     state["instance"] = instance
     msg = "请选择计算循环！"
@@ -651,6 +678,8 @@ async def _(event: GroupMessageEvent, state: T_State, args: Message = CommandArg
     if isinstance(instance, str):
         await fenshanjin_calc_matcher.finish(instance)
     loops = await instance.get_loop()
+    if isinstance(loops, str):
+        await fenshanjin_calc_matcher.finish(loops)
     state["loops"] = loops
     state["instance"] = instance
     msg = "请选择计算循环！"
@@ -786,6 +815,8 @@ async def _(event: GroupMessageEvent, state: T_State, args: Message = CommandArg
     if isinstance(instance, str):
         await fenyingshengjue_calc_matcher.finish(instance)
     loops = await instance.get_loop()
+    if isinstance(loops, str):
+        await fenyingshengjue_calc_matcher.finish(loops)
     state["loops"] = loops
     state["instance"] = instance
     msg = "请选择计算循环！"

@@ -365,9 +365,9 @@ class EquipDataProcesser:
             ]
 
         equip_map = {
-            "帽子": 0, "上衣": 1, "腰带": 2, "护臂": 3, "裤子": 4, 
-            "鞋": 5, "项链": 6, "腰坠": 7, "戒指": [8, 9], 
-            "投掷囊": 10, "武器": 11, "重剑": 12
+            "帽子": 0, "上衣": 1, "腰带": 2, "护腕": 3, "下装": 4, 
+            "鞋子": 5, "项链": 6, "腰坠": 7, "戒指": [8, 9], 
+            "暗器": 10, "武器": 11
         }
         equips_list = [{}] * 13
         rings = iter(equip_map["戒指"])
@@ -376,15 +376,19 @@ class EquipDataProcesser:
         except TypeError:
             raise ValueError("玩家似乎在提交角色给音卡后删除了账号！")
         
+        first_weapon_flag = False
         for equip in data:
-            subkind = equip["Icon"]["SubKind"]
-            kind = equip["Icon"]["Kind"]
+            subkind = equip["EquipType"]["SubType"]
             if subkind == "戒指":
                 equips_list[next(rings)] = equip
-            elif subkind in equip_map:
+            elif subkind in equip_map and subkind != "武器":
                 equips_list[equip_map[subkind]] = equip
-            elif kind == "武器" or (kind == "任务特殊" and subkind == "活动相关"):
-                equips_list[equip_map["武器"]] = equip
+            elif subkind == "武器":
+                index = equip_map["武器"]
+                if first_weapon_flag:
+                    index += 1
+                equips_list[index] = equip
+                first_weapon_flag = True
         
         self._cached_equips = equips_list if self.kungfu.school == "藏剑" else equips_list[:12]
         return [
