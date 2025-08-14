@@ -13,6 +13,7 @@ from src.utils.database import rank_db as db
 from src.utils.database.classes import CQCRank
 from src.templates import HTMLSourceCode
 from src.utils.generate import generate
+from src.utils.permission import check_permission
 
 from .api import get_zlrank
 from .rank import get_rank, get_slrank
@@ -182,6 +183,8 @@ cqcrank_uncarry = on_command("jx3_cqc_carry", aliases={"池清川大吸榜"}, pr
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     if args.extract_plain_text() == "":
         return
+    if not check_permission(event.user_id, 10):
+        await cqcrank_uncarry.finish("暂无权限查看大吸榜！")
     value_type = "damage" if args.extract_plain_text().strip().upper() in ["DPS", "D", "伤害", "dps", "Dps"] else "health"
     all_record: list[CQCRank] | Any = db.where_all(CQCRank(), f"total_{value_type} != 0", default=[])
     effective_records: list[CQCRank] = []
