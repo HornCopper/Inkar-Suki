@@ -138,3 +138,13 @@ class GroupMessage(LiteModel):
     group_id: int = 0
     user_id: int = 0
     messages: list[MemberMessage] = []
+
+class CQCRank(LiteModel):
+    TABLE_NAME: str = "cqc_rank"
+    role_name: str = ""
+    server_name: str = ""
+    kungfu_id: int = 0
+    damage_per_second: int = 0
+    total_damage: int = 0
+    health_per_second: int = 0
+    total_health: int = 0

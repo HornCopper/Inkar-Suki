@@ -56,3 +56,24 @@ slrank_template_body = """
     <td class="short-column">{{ score }}</td>
 </tr>
 """
+
+cqcrank_table_head = """
+<tr>
+    <th class="short-column">排名</th>
+    <th class="short-column">心法</th>
+    <th class="short-column">角色名</th>
+    <th class="short-column">服务器</th>
+    <th class="short-column">总伤/总疗</th>
+    <th class="short-column">秒伤/秒疗</th>
+</tr>"""
+
+cqcrank_template_body = """
+<tr>
+    <td class="short-column">{{ rank }}</td>
+    <td class="short-column"><img src="{{ kungfu_icon }}" alt="icon" width="30" height="30"></td>
+    <td class="short-column">{{ name }}</td>
+    <td class="short-column">{{ server }}</td>
+    <td class="short-column">{{ value }}</td>
+    <td class="short-column">{{ value_per_second }}</td>
+</tr>
+"""

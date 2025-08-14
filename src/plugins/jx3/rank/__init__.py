@@ -1,3 +1,5 @@
+from typing import Any
+from jinja2 import Template
 from nonebot import on_command
 from nonebot.params import CommandArg
 from nonebot.adapters.onebot.v11 import Message, GroupMessageEvent
@@ -7,9 +9,15 @@ from src.const.jx3.dungeon import Dungeon
 from src.const.jx3.kungfu import Kungfu
 from src.const.jx3.server import Server
 from src.const.jx3.school import School
+from src.utils.database import rank_db as db
+from src.utils.database.classes import CQCRank
+from src.templates import HTMLSourceCode
+from src.utils.generate import generate
 
 from .api import get_zlrank
 from .rank import get_rank, get_slrank
+
+from ._template import cqcrank_template_body, cqcrank_table_head
 
 exp_rank_matcher = on_command("jx3_zlrank", aliases={"资历排行", "资历榜单"}, priority=5, force_whitespace=True)
 
@@ -125,3 +133,89 @@ async def _(event: GroupMessageEvent, msg: Message = CommandArg()):
         await slrank_matcher.finish(PROMPT.ServerNotExist)
     reply_msg = await get_slrank(school, server)
     await slrank_matcher.finish(reply_msg)
+
+cqcrank_carry = on_command("jx3_cqc_uncarry", aliases={"池清川大C榜"}, priority=5, force_whitespace=True)
+
+@cqcrank_carry.handle()
+async def _(event: GroupMessageEvent, args: Message = CommandArg()):
+    if args.extract_plain_text() == "":
+        return
+    value_type = "damage" if args.extract_plain_text().strip().upper() in ["DPS", "D", "伤害", "dps", "Dps"] else "health"
+    all_record: list[CQCRank] | Any = db.where_all(CQCRank(), f"total_{value_type} != 0", default=[])
+    effective_records: list[CQCRank] = []
+    for each_record in all_record:
+        if Kungfu.with_internel_id(each_record.kungfu_id).abbr in (["N", "T"] if value_type != "health" else ["D", "T"]):
+            continue
+        effective_records.append(each_record)
+    effective_records = sorted(effective_records, key=lambda x: (x.total_damage if value_type == "damage" else x.health_per_second), reverse=True)
+    if len(effective_records) > 20:
+        effective_records = effective_records[:20]
+    results = []
+    num = 0
+    for each_record in effective_records:
+        num += 1
+        results.append(
+            Template(
+                cqcrank_template_body
+            ).render(
+                rank = str(num),
+                kungfu_icon = Kungfu.with_internel_id(each_record.kungfu_id).icon,
+                name = each_record.role_name,
+                server = each_record.server_name,
+                value = "{:,}".format(each_record.total_damage if value_type == "damage" else each_record.total_health),
+                value_per_second = "{:,}".format(each_record.damage_per_second if value_type == "damage" else each_record.health_per_second)
+            )
+        )
+    html = str(
+        HTMLSourceCode(
+            application_name = f"池清川排行榜",
+            table_head = cqcrank_table_head,
+            table_body = "\n".join(results)
+        )
+    )
+    image = await generate(html, ".container", segment=True)
+    await cqcrank_carry.finish(image)
+
+cqcrank_uncarry = on_command("jx3_cqc_carry", aliases={"池清川大吸榜"}, priority=5, force_whitespace=True)
+
+@cqcrank_uncarry.handle()
+async def _(event: GroupMessageEvent, args: Message = CommandArg()):
+    if args.extract_plain_text() == "":
+        return
+    value_type = "damage" if args.extract_plain_text().strip().upper() in ["DPS", "D", "伤害", "dps", "Dps"] else "health"
+    all_record: list[CQCRank] | Any = db.where_all(CQCRank(), f"total_{value_type} != 0", default=[])
+    effective_records: list[CQCRank] = []
+    for each_record in all_record:
+        if Kungfu.with_internel_id(each_record.kungfu_id).abbr in (["N", "T"] if value_type != "health" else ["D", "T"]):
+            continue
+        if each_record.total_damage >= 500000000:
+            continue
+        effective_records.append(each_record)
+    effective_records = sorted(effective_records, key=lambda x: (x.total_damage if value_type == "damage" else x.health_per_second))
+    if len(effective_records) > 20:
+        effective_records = effective_records[:20]
+    results = []
+    num = 0
+    for each_record in effective_records:
+        num += 1
+        results.append(
+            Template(
+                cqcrank_template_body
+            ).render(
+                rank = str(num),
+                kungfu_icon = Kungfu.with_internel_id(each_record.kungfu_id).icon,
+                name = each_record.role_name,
+                server = each_record.server_name,
+                value = "{:,}".format(each_record.total_damage if value_type == "damage" else each_record.total_health),
+                value_per_second = "{:,}".format(each_record.damage_per_second if value_type == "damage" else each_record.health_per_second)
+            )
+        )
+    html = str(
+        HTMLSourceCode(
+            application_name = f"池清川排行榜",
+            table_head = cqcrank_table_head,
+            table_body = "\n".join(results)
+        )
+    )
+    image = await generate(html, ".container", segment=True)
+    await cqcrank_uncarry.finish(image)

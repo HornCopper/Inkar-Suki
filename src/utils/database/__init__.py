@@ -5,6 +5,7 @@ from src.utils.database.classes import (
     Affections,
     BannedUser,
     BanRecord,
+    CQCRank,
     GroupSettings,
     ItemKeywordMap,
     PersonalSettings,
@@ -52,4 +53,10 @@ attribute_db = Database(build_path(DATA, ["attributes.db"]))
 
 attribute_db.auto_migrate(
     PlayerEquipsCache()
+)
+
+rank_db = Database(build_path(DATA, ["rank.db"]))
+
+rank_db.auto_migrate(
+    CQCRank()
 )
