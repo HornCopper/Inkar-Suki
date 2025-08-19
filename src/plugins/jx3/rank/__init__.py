@@ -147,8 +147,10 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     for each_record in all_record:
         if Kungfu.with_internel_id(each_record.kungfu_id).abbr in (["N", "T"] if value_type != "health" else ["D", "T"]):
             continue
+        if each_record.damage_per_second < 0 or each_record.health_per_second < 0:
+            continue
         effective_records.append(each_record)
-    effective_records = sorted(effective_records, key=lambda x: (x.total_damage if value_type == "damage" else x.health_per_second), reverse=True)
+    effective_records = sorted(effective_records, key=lambda x: (x.damage_per_second if value_type == "damage" else x.health_per_second), reverse=True)
     if len(effective_records) > 20:
         effective_records = effective_records[:20]
     results = []
@@ -169,7 +171,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
         )
     html = str(
         HTMLSourceCode(
-            application_name = f"池清川排行榜",
+            application_name = "池清川排行榜",
             table_head = cqcrank_table_head,
             table_body = "\n".join(results)
         )
@@ -193,8 +195,10 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
             continue
         if each_record.total_damage >= 500000000:
             continue
+        if each_record.damage_per_second < 0 or each_record.health_per_second < 0:
+            continue
         effective_records.append(each_record)
-    effective_records = sorted(effective_records, key=lambda x: (x.total_damage if value_type == "damage" else x.health_per_second))
+    effective_records = sorted(effective_records, key=lambda x: (x.damage_per_second if value_type == "damage" else x.health_per_second))
     if len(effective_records) > 20:
         effective_records = effective_records[:20]
     results = []
@@ -215,7 +219,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
         )
     html = str(
         HTMLSourceCode(
-            application_name = f"池清川排行榜",
+            application_name = "池清川排行榜",
             table_head = cqcrank_table_head,
             table_body = "\n".join(results)
         )
