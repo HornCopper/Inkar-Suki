@@ -4,8 +4,9 @@ from nonebot import on_command
 from nonebot.params import CommandArg, Arg
 from nonebot.typing import T_State
 from nonebot.matcher import Matcher
-from nonebot.adapters.onebot.v11 import Bot, Message, GroupMessageEvent, GroupUploadNoticeEvent
+from nonebot.adapters.onebot.v11 import Bot, Message, GroupMessageEvent, GroupUploadNoticeEvent, MessageSegment as ms
 
+from src.plugins.jx3.equip.api import get_equip_image
 from src.plugins.jx3.calculator.jx3box import JX3BOXCalculator
 from src.const.jx3.kungfu import Kungfu
 from src.const.prompts import PROMPT
@@ -103,10 +104,12 @@ async def _(event: GroupMessageEvent, matcher: Matcher, state: T_State, args: Me
     elif len(arg) == 2:
         server = arg[0]
         name = arg[1]
+    state["pzid"] = 0
     if check_number(name):
         instance = await JX3BOXCalculator.with_pzid(int(name))
         if isinstance(instance, str):
             await calc_matcher.finish(instance)
+        state["pzid"] = int(name)
     else:
         server = Server(server, event.group_id).server
         if server is None:
@@ -137,7 +140,10 @@ async def _(event: GroupMessageEvent, state: T_State, loop_order: Message = Arg(
         await calc_matcher.finish("超出可选范围，请重新发起命令！")
     loop_code: dict[str, str] = loops[list(loops)[int(num)-1]]
     data = await instance.image(loop_code)
-    await calc_matcher.finish(data)
+    if state["pzid"] != 0:
+        equip_image = await get_equip_image(str(state["pzid"]))
+    await calc_matcher.send(data)
+    await calc_matcher.finish(ms.image(equip_image))
 
 equip_compare = on_command("jx3_equip_compare", aliases={"装备对比"}, priority=5)
 
