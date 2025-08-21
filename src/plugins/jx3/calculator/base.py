@@ -59,6 +59,7 @@ class BaseCalculator:
         self.data = tuilan_data
         self.info = info
         self.parser = EquipDataProcesser(self.data)
+        self.income_list = []
 
     @property
     def attr(self) -> list[Panel]:

@@ -19,6 +19,12 @@ from src.templates import SimpleHTML, get_saohua
 from ._template import template_calculator, template_attr
 from .base import BaseCalculator
 
+INCOMES = {
+    "无增益": [],
+    "满增益": ["LDCF","CY","JF","HLSJ_1","HLSJ_2","PJ","XR","HXQJ","ZF","JHZ","CSY_SYMX","QS","LZWH","ZXYZ","XWGD","ZZM","PH","XQ","HRL"],
+    "满增益风雷": ["LDCF","CY","JF","HLSJ_1","HLSJ_2","PJ","XR","HXQJ","ZF","JHZ","CSY_SYMX","QS","LZWH","ZXYZ","XWGD","NM","PH","XQ","HRL"]
+}
+
 class Talents(Qixue):
     @property
     def location(self) -> tuple[str, str, str] | None:
@@ -136,6 +142,8 @@ class UniversalCalculator(BaseCalculator):
         url = f"{self.calculator_url}/loops?kungfu_id={self.kungfu_id or self.kungfu.id}"
         data = (await Request(url).get()).json()
         results = {}
+        if data["code"] == 404:
+            return ""
         for each_loop in data["data"]:
             name = each_loop["name"]
             weapon, haste_loop = name.split("·")
@@ -145,6 +153,7 @@ class UniversalCalculator(BaseCalculator):
 
     async def calculate(self, loop_arg: dict[str, str]):
         params = {
+            "full_income": self.income_list,
             "kungfu_id": self.kungfu_id,
             # "tuilan_data": self.data,
             **loop_arg

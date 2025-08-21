@@ -6,6 +6,7 @@ from nonebot.typing import T_State
 from nonebot.matcher import Matcher
 from nonebot.adapters.onebot.v11 import Bot, Message, GroupMessageEvent, GroupUploadNoticeEvent, MessageSegment as ms
 
+from src.plugins.preferences.app import Preference
 from src.plugins.jx3.equip.api import get_equip_image
 from src.plugins.jx3.calculator.jx3box import JX3BOXCalculator
 from src.const.jx3.kungfu import Kungfu
@@ -28,7 +29,7 @@ from .calc_xisuijing import XisuijingCalculator
 from .calc_fenyingshengjue import FenyingshengjueCalculator
 from .calc_fenshanjin import FenshanjinCalculator
 
-from .universe import UniversalCalculator
+from .universe import INCOMES, UniversalCalculator
 # from .lhj import LinghaijueCalculator
 # from .mw import MowenCalculator
 # from .dj import DujingCalculator
@@ -117,6 +118,9 @@ async def _(event: GroupMessageEvent, matcher: Matcher, state: T_State, args: Me
         instance = await UniversalCalculator.with_name(name, server, "DPSPVE")
         if isinstance(instance, str):
             await calc_matcher.finish(instance)
+    income_ver = Preference(event.user_id, "", "").setting("计算器增益")
+    income_code = INCOMES[income_ver]
+    instance.income_list = income_code
     loops = await instance.get_loop()
     if isinstance(loops, str):
         await calc_matcher.finish("该玩家下线时的心法当前尚未实现计算器，可尝试使用指定计算器（如有）或等待该心法支持！")
@@ -179,6 +183,9 @@ async def _(event: GroupMessageEvent, matcher: Matcher, state: T_State, args: Me
     kungfu_id = Kungfu(str(instance_data.kungfu_name)).id
     current_jcl_line = TuilanData(equip_data).output_jcl_line()
     currnet_dps_data = UniversalCalculator(current_jcl_line, int(str(kungfu_id)))
+    income_ver = Preference(event.user_id, "", "").setting("计算器增益")
+    income_code = INCOMES[income_ver]
+    currnet_dps_data.income_list = income_code
     equips = await get_equip_list(equip)
     msg = "请从下面选择装备进行对比！"
     num = 1
@@ -210,6 +217,9 @@ async def _(event: GroupMessageEvent, state: T_State, equip_index: Message = Arg
             break
     kungfu_id = state["kungfu_id"]
     new_dps_data = UniversalCalculator(jcl_line, int(str(kungfu_id)))
+    income_ver = Preference(event.user_id, "", "").setting("计算器增益")
+    income_code = INCOMES[income_ver]
+    new_dps_data.income_list = income_code
     state["updated_data"] = new_dps_data
     loops = await new_dps_data.get_loop()
     state["loops"] = loops
@@ -233,8 +243,8 @@ async def _(event: GroupMessageEvent, state: T_State, loop_order: Message = Arg(
     old_instance: UniversalCalculator = state["current_data"]
     new_instance: UniversalCalculator = state["updated_data"]
     old_data = await old_instance.calculate(loop_code)
-    print(old_instance.jcl_data)
-    print(new_instance.jcl_data)
+    # print(old_instance.jcl_data)
+    # print(new_instance.jcl_data)
     new_data = await new_instance.calculate(loop_code)
     if not isinstance(old_data, dict) or not isinstance(new_data, dict):
         await equip_compare.finish(cast(str, old_data))
@@ -354,6 +364,9 @@ async def _(event: GroupMessageEvent, matcher: Matcher, state: T_State, args: Me
     instance = await TaixujianyiCalculator.with_name(name, server, "JCPVE")
     if isinstance(instance, str):
         await taixujianyi_calc_matcher.finish(instance)
+    income_ver = Preference(event.user_id, "", "").setting("计算器增益")
+    income_code = INCOMES[income_ver]
+    instance.income_list = income_code
     loops = await instance.get_loop()
     if isinstance(loops, str):
         await taixujianyi_calc_matcher.finish(loops)
@@ -402,6 +415,9 @@ async def _(event: GroupMessageEvent, matcher: Matcher, state: T_State, args: Me
     instance = await TielaolvCalculator.with_name(name, server, "TPVE")
     if isinstance(instance, str):
         await tielaolv_calc_matcher.finish(instance)
+    income_ver = Preference(event.user_id, "", "").setting("计算器增益")
+    income_code = INCOMES[income_ver]
+    instance.income_list = income_code
     loops = await instance.get_loop()
     if isinstance(loops, str):
         await tielaolv_calc_matcher.finish(loops)
@@ -453,6 +469,9 @@ async def _(event: GroupMessageEvent, matcher: Matcher, state: T_State, args: Me
     loops = await instance.get_loop()
     if isinstance(loops, str):
         await mingzunliuliti_calc_matcher.finish(loops)
+    income_ver = Preference(event.user_id, "", "").setting("计算器增益")
+    income_code = INCOMES[income_ver]
+    instance.income_list = income_code
     state["loops"] = loops
     state["instance"] = instance
     msg = "请选择计算循环！"
@@ -501,6 +520,9 @@ async def _(event: GroupMessageEvent, matcher: Matcher, state: T_State, args: Me
     loops = await instance.get_loop()
     if isinstance(loops, str):
         await tieguyi_calc_matcher.finish(loops)
+    income_ver = Preference(event.user_id, "", "").setting("计算器增益")
+    income_code = INCOMES[income_ver]
+    instance.income_list = income_code
     state["loops"] = loops
     state["instance"] = instance
     msg = "请选择计算循环！"
@@ -549,6 +571,9 @@ async def _(event: GroupMessageEvent, matcher: Matcher, state: T_State, args: Me
     loops = await instance.get_loop()
     if isinstance(loops, str):
         await xisuijing_calc_matcher.finish(loops)
+    income_ver = Preference(event.user_id, "", "").setting("计算器增益")
+    income_code = INCOMES[income_ver]
+    instance.income_list = income_code
     state["loops"] = loops
     state["instance"] = instance
     msg = "请选择计算循环！"
@@ -686,6 +711,9 @@ async def _(event: GroupMessageEvent, state: T_State, args: Message = CommandArg
     loops = await instance.get_loop()
     if isinstance(loops, str):
         await fenshanjin_calc_matcher.finish(loops)
+    income_ver = Preference(event.user_id, "", "").setting("计算器增益")
+    income_code = INCOMES[income_ver]
+    instance.income_list = income_code
     state["loops"] = loops
     state["instance"] = instance
     msg = "请选择计算循环！"
@@ -823,6 +851,9 @@ async def _(event: GroupMessageEvent, state: T_State, args: Message = CommandArg
     loops = await instance.get_loop()
     if isinstance(loops, str):
         await fenyingshengjue_calc_matcher.finish(loops)
+    income_ver = Preference(event.user_id, "", "").setting("计算器增益")
+    income_code = INCOMES[income_ver]
+    instance.income_list = income_code
     state["loops"] = loops
     state["instance"] = instance
     msg = "请选择计算循环！"

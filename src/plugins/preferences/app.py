@@ -16,7 +16,8 @@ class Preference:
         "属性": "attribute",
         "主题": "theme",
         "交易行": "trade",
-        "奇遇": "serendipity"
+        "奇遇": "serendipity",
+        "计算器增益": "income"
     }
 
     def __init__(self, user_id: int, key: str = "", value: str = ""):

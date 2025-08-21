@@ -65,6 +65,7 @@ class PersonalSetting(BaseModel):
     theme: str = "浅色"
     trade: str = "v3"
     serendipity: str = "v2"
+    income: str = "无增益"
 
 class PersonalSettings(LiteModel):
     TABLE_NAME: str = "personal_settings"
