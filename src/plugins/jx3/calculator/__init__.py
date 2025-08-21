@@ -141,9 +141,9 @@ async def _(event: GroupMessageEvent, state: T_State, loop_order: Message = Arg(
     loop_code: dict[str, str] = loops[list(loops)[int(num)-1]]
     data = await instance.image(loop_code)
     if state["pzid"] != 0:
-        equip_image = await get_equip_image(str(state["pzid"]))
-    await calc_matcher.send(data)
-    await calc_matcher.finish(ms.image(equip_image))
+        equip_image = ms.image(await get_equip_image(str(state["pzid"])))
+        await calc_matcher.send(equip_image)
+    await calc_matcher.finish(data)
 
 equip_compare = on_command("jx3_equip_compare", aliases={"装备对比"}, priority=5)
 
