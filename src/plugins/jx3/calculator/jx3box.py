@@ -95,6 +95,7 @@ class JX3BOXCalculator(BaseCalculator):
 
     async def calculate(self, loop_arg: dict[str, str]):
         params = {
+            "full_income": self.income_list,
             "kungfu_id": self.kungfu_id,
             # "tuilan_data": self.data,
             **loop_arg
