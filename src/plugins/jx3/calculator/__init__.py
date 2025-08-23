@@ -6,10 +6,6 @@ from nonebot.typing import T_State
 from nonebot.matcher import Matcher
 from nonebot.adapters.onebot.v11 import Bot, Message, GroupMessageEvent, GroupUploadNoticeEvent, MessageSegment as ms
 
-from plugins.jx3.calculator.calc_zixiagong import ZixiagongCalculator
-from src.plugins.preferences.app import Preference
-from src.plugins.jx3.equip.api import get_equip_image
-from src.plugins.jx3.calculator.jx3box import JX3BOXCalculator
 from src.const.jx3.kungfu import Kungfu
 from src.const.prompts import PROMPT
 from src.const.jx3.server import Server
@@ -18,6 +14,10 @@ from src.utils.database.player import search_player
 from src.utils.database.attributes import AttributeParser, AttributesRequest
 from src.plugins.notice import notice
 from src.plugins.jx3.calculator.compare import EquipInfo, get_equip_list
+from src.plugins.jx3.calculator.calc_zixiagong import ZixiagongCalculator
+from src.plugins.preferences.app import Preference
+from src.plugins.jx3.equip.api import get_equip_image
+from src.plugins.jx3.calculator.jx3box import JX3BOXCalculator
 
 from .calc_yinlongjue import LingxueCalculator
 # from .wf import WufangCalculator

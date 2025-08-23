@@ -2,13 +2,12 @@
 
 # DPS计算器 铁牢律
 
-from typing import Literal
 from typing_extensions import Self
 from jinja2 import Template
 
 from src.const.jx3.kungfu import Kungfu
 from src.const.path import ASSETS, build_path
-from typing import overload
+
 from src.utils.network import Request
 from src.utils.generate import generate
 from src.plugins.jx3.attributes.v2_remake import (
@@ -16,7 +15,7 @@ from src.plugins.jx3.attributes.v2_remake import (
 )
 from src.templates import SimpleHTML, get_saohua
 
-from ._template import template_calculator, template_attr
+from ._template import template_calculator
 from .base import BaseCalculator
 
 class Talents(Qixue):
