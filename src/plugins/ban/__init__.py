@@ -49,5 +49,5 @@ async def _(bot: Bot, event: MessageEvent, args: Message = CommandArg()):
 
 @message_universal.handle()
 async def _(matcher: Matcher, event: MessageEvent):
-    if Ban(event.user_id).status:
+    if Ban(event.user_id).status and not check_permission(event.user_id, 10):
         matcher.stop_propagation()
