@@ -73,6 +73,7 @@ class UniversalCalculator(BaseCalculator):
         attr_names = {
             "BaseAttack": "基础攻击",
             "FinalAttack": "最终攻击",
+            "Surplus": "破招值",
             "Critical": "会心等级",
             "CriticalDamage": "会心效果等级",
             "Overcome": "破防等级",
@@ -83,7 +84,6 @@ class UniversalCalculator(BaseCalculator):
             "OvercomePercent": "破防（百分比）",
             "StrainPercent": "无双（百分比）",
             "HastePercent": "加速（百分比）",
-           
         }
         results = {}
         for each_attr_name in attr_names.keys():
