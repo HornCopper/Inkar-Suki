@@ -26,6 +26,7 @@ class Jx3API(BaseModel):
     sign_secret: str = ""
     enable: bool = False
     weibo: bool = False
+    calculator_url: str = ""
 
 
 class Jx3WS(BaseModel):

@@ -8,6 +8,18 @@ template_calculator = """
     </div>
 </div>"""
 
+template_calculator_v2 = """
+<div class="skill-row">
+    <div class="skill-header">
+        <span>{{ skill }} - {{ count }}</span>
+        <span>总伤害 {{ value }} ｜ 期望会心 {{ critical }} ｜ 占比 {{ percent }}</span>
+    </div>
+    <div class="bar-container">
+        <div class="bar" style="width: {{ display }};"></div>
+    </div>
+</div>
+"""
+
 template_attr = """
 <div class="attribute">
     <strong>{{ name }}</strong><br><span>{{ value }}<br><span><strong>收益：</strong>{{ income }}</span></span>

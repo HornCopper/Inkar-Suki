@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+    <meta charset="UTF-8">
+    <style>
+        :root {
+            --theme-color: {{ color }};
+            --bg-color: #f5f6fa;
+            --text-color: #333;
+        }
+
+        body {
+            margin: 0;
+            background: var(--bg-color);
+            color: var(--text-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            /* height: 100vh; */
+        }
+
+        @font-face {
+            font-family: Harmony;
+            src: url("{{ font }}");
+        }
+
+        body {
+            font-family: Harmony, sans-serif;
+        }
+
+        .container {
+            width: 1366px;
+            /* height: 768px; */
+            background: #fff;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid #ddd;
+        }
+
+        .main-content {
+            flex: 1;
+            display: flex;
+            overflow: hidden;
+        }
+
+        .left-panel {
+            width: 30%;
+            padding: 24px;
+            box-sizing: border-box;
+            background: #fafafa;
+            border-right: 1px solid #ddd;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .section-title {
+            font-size: 20px;
+            font-weight: bold;
+            color: var(--theme-color);
+            margin-bottom: 6px;
+            border-left: 4px solid var(--theme-color);
+            padding-left: 8px;
+        }
+
+        .card {
+            background: #fff;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .item {
+            display: flex;
+            justify-content: space-between;
+            font-size: 18px;
+            border-bottom: 1px solid #f0f0f0;
+            padding-bottom: 4px;
+        }
+
+        .item:last-child {
+            border-bottom: none;
+        }
+
+        .dps-value {
+            font-size: 42px;
+            font-weight: bold;
+            color: var(--theme-color);
+            text-align: center;
+            margin: 10px 0;
+        }
+
+        .right-panel {
+            flex: 1;
+            padding: 24px;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            background: #fff;
+            overflow-y: visible;
+        }
+
+        .skill-row {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            padding: 8px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .skill-header {
+            display: flex;
+            justify-content: space-between;
+            font-size: 18px;
+            color: #555;
+        }
+
+        .bar-container {
+            background: #eee;
+            border-radius: 12px;
+            overflow: hidden;
+            height: 12px;
+            width: 100%;
+        }
+
+        .bar {
+            height: 100%;
+            background: var(--theme-color);
+            border-radius: 12px 0 0 12px;
+            transition: width 0.3s ease;
+        }
+
+        .bottom-panel {
+            height: 120px;
+            border-top: 1px solid #ddd;
+            background: #fafafa;
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            padding: 10px 20px;
+            box-sizing: border-box;
+        }
+
+        .talent {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 70px;
+            text-align: center;
+        }
+
+        .talent img {
+            width: 48px;
+            height: 48px;
+            border: 1px solid #ccc;
+            margin-bottom: 6px;
+        }
+
+        .talent span {
+            font-size: 16px;
+            color: #444;
+            font-weight: 500;
+        }
+
+        .kungfu {
+            display: inline-block;
+            width: 48px;
+            height: 48px;
+            background: url("{{ icon }}") no-repeat center/contain;
+            margin-right: 8px;
+        }
+
+        footer {
+            background: #f0f0f0;
+            text-align: center;
+            padding: 15px;
+            font-size: 1.2em;
+            color: #777;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="main-content">
+            <div class="left-panel">
+                <div>
+                    <div class="section-title">最终 DPS</div>
+                    <div class="dps-value">
+                        <span class="kungfu"></span>
+                        {{ final_dps }} DPS
+                    </div>
+                </div>
+
+                <div>
+                    <div class="section-title">基础信息</div>
+                    <div class="card">
+                        <div class="item"><span>角色名</span><span>{{ name }}</span></div>
+                        <div class="item"><span>心法</span><span>{{ kungfu }}</span></div>
+                        <div class="item"><span>装备分数</span><span>{{ score }}</span></div>
+                        <div class="item"><span>循环名称</span><span>{{ loop }}</span></div>
+                        <div class="item"><span>JCL提供者</span><span>{{ provider }}</span></div>
+                        <div class="item"><span>战斗时长</span><span>{{ time }}</span></div>
+                        <div class="item"><span>增益设置</span><span>{{ income }}</span></div>
+                    </div>
+                </div>
+
+                <div>
+                    <div class="section-title">属性</div>
+                    <div class="card">
+                        {% for key, value in attrs.items() %}
+                            <div class="item"><span>{{ key }}</span><span>{{ value }}</span></div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="right-panel">
+                <div class="section-title">技能统计</div>
+                {{ skills }}
+            </div>
+
+
+        </div>
+
+        <div class="bottom-panel">
+            {% if loop_talents %}
+            {% for k, v in loop_talents.items() %}
+            <div class="talent"><img src="{{ v }}"><span>{{ k }}</span></div>
+            {% endfor %}
+            {% else %}
+                循环无要求
+            {% endif %}
+        </div>
+        <footer>Inkar Suki: {{ saohua }}</footer>
+    </div>
+    
+</body>
+
+</html>

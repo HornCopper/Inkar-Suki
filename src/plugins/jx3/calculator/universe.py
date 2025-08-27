@@ -16,7 +16,7 @@ from src.plugins.jx3.attributes.v2_remake import (
 )
 from src.templates import SimpleHTML, get_saohua
 
-from ._template import template_calculator, template_attr
+from ._template import template_calculator, template_attr, template_calculator_v2
 from .base import BaseCalculator
 
 INCOMES = {
@@ -65,29 +65,6 @@ class UniversalCalculator(BaseCalculator):
                 delta_damage = equip["Base2Type"]["Base2Min"]
                 return int(base_damage), int(base_damage) + int(delta_damage)
         raise ValueError("Cannot find weapon!")
-
-    @property
-    def attr(self) -> list[Panel]:
-        result = []
-        for p in self.parser.panel:
-            if p.name in [
-                "面板攻击",
-                "会心",
-                "会心效果",
-                "破防",
-                "无双",
-                "破招",
-                "加速",
-                "身法",
-            ]:
-                if p.name == "面板攻击":
-                    p.name = "攻击"
-                    result.append(p)
-                else:
-                    result.append(p)
-        min_wd, max_wd = self.weapon_damage
-        result.append(Panel(name="武器伤害", value=f"{min_wd} - {max_wd}"))
-        return result
     
     @property
     def raw_equips(self) -> list[dict]:
@@ -98,6 +75,32 @@ class UniversalCalculator(BaseCalculator):
         sorted_equips = self.parser._cached_equips
         return sorted_equips or []
 
+    def attrs(self, attributes: dict[str, float]) -> dict[str, str]:
+        attr_names = {
+            "BaseAttack": "基础攻击",
+            "FinalAttack": "最终攻击",
+            "Critical": "会心等级",
+            "CriticalDamage": "会心效果等级",
+            "Overcome": "破防等级",
+            "Strain": "无双等级",
+            "Haste": "加速等级",
+            "CriticalPercent": "会心（百分比）",
+            "CriticalDamagePercent": "会心效果（百分比）",
+            "OvercomePercent": "破防（百分比）",
+            "StrainPercent": "无双（百分比）",
+            "HastePercent": "加速（百分比）",
+           
+        }
+        results = {}
+        for each_attr_name in attr_names.keys():
+            value = attributes[each_attr_name]
+            if each_attr_name.endswith("Percent"):
+                final_value = str(round(value * 100, 2)) + "%"
+            else:
+                final_value = str(int(value))
+            results[attr_names[each_attr_name]] = final_value
+        return results
+                
     @overload
     async def talents(self, with_icon: Literal[True]) -> list[Talent]: ...
 
@@ -187,7 +190,7 @@ class UniversalCalculator(BaseCalculator):
         tables = []
         for skill_data in data["damage_details"]:
             tables.append(
-                Template(template_calculator).render(
+                Template(template_calculator_v2).render(
                     **{
                         "skill": str(skill_data["name"]),
                         "display": str(
@@ -199,44 +202,55 @@ class UniversalCalculator(BaseCalculator):
                             )
                         )
                         + "%",
+                        "critical": str(skill_data["critical"]),
                         "percent": str(round(skill_data["damage"] / data["total_damage"] * 100, 2)) + "%",
                         "count": str(skill_data["count"]),
                         "value": "{:,}".format(int(skill_data["damage"])),
                     }
                 )
             )
-        attributes = self.attr
-        attrs = []
-        for panel in attributes:
-            # for income_data in data["data"][flag]["attributeIncomeBoList"]:
-                # if income_data["attributeName"] == panel.name:
-                    attrs.append(
-                        Template(template_attr).render(
-                            name=panel.name,
-                            value=panel.value,
-                            # income=round(income_data["attributeIncome"], 3),
-                            income="未知"
-                        )
-                    )
+        # attributes = self.attr
+        # attrs = []
+        # for panel in attributes:
+        #     # for income_data in data["data"][flag]["attributeIncomeBoList"]:
+        #         # if income_data["attributeName"] == panel.name:
+        #             attrs.append(
+        #                 Template(template_attr).render(
+        #                     name=panel.name,
+        #                     value=panel.value,
+        #                     # income=round(income_data["attributeIncome"], 3),
+        #                     income="未知"
+        #                 )
+        #             )
         name, server = self.info
         html = str(
             SimpleHTML(
                 html_type="jx3",
-                html_template="calculator",
+                html_template="calculator_new",
                 **{
                     "font": build_path(ASSETS, ["font", "PingFangSC-Semibold.otf"]),
                     "color": self.kungfu.color,
                     "kungfu": self.kungfu.name,
-                    "dps": str(int(data["damage_per_second"])),
-                    "desc": f"计算器JCL循环名称：{data['weapon']}·{data['haste']}-{data['loop_name']}\n<br>提供者：{data['provider']} / 战斗时长：{data['battle_time']}" \
-                    + f"s<br>玩家：{name}·{server}",
-                    "attrs": attrs,
-                    "skills": tables,
-                    "talents": {t.name: t.icon for t in (await self.talents(with_icon=True))},
+                    "icon": self.kungfu.icon,
+                    # "dps": str(int(data["damage_per_second"])),
+                    "final_dps": str(int(data["damage_per_second"])),
+                    # "desc": f"计算器JCL循环名称：{data['weapon']}·{data['haste']}-{data['loop_name']}\n<br>提供者：{data['provider']} / 战斗时长：{data['battle_time']}" \
+                    # + f"s<br>玩家：{name}·{server}",
+                    "name": name,
+                    "server": server,
+                    "score": data["attributes"]["score"],
+                    "loop": f"{data['weapon']}·{data['haste']}-{data['loop_name']}",
+                    "provider": data['provider'],
+                    "time": data['battle_time'],
+                    # "attrs": attrs,
+                    "skills": "\n".join(tables),
+                    "attrs": self.attrs(data["attributes"]),
+                    "income": self.income_ver,
+                    # "talents": {t.name: t.icon for t in (await self.talents(with_icon=True))},
                     "loop_talents": loop_talents,
                     "saohua": get_saohua(),
                 },
             )
         )
-        image = await generate(html, ".container", False, segment=True)
+        image = await generate(html, ".container", False, segment=True, full_screen=True)
         return image
