@@ -193,7 +193,7 @@ async def _(event: GroupMessageEvent, matcher: Matcher, state: T_State, args: Me
     income_ver = Preference(event.user_id, "", "").setting("计算器增益")
     formation_ver = Preference(event.user_id, "", "").setting("计算器阵眼")
     income_code = INCOMES[income_ver]
-    formation_code = FORMATIONS[income_ver]
+    formation_code = FORMATIONS[formation_ver]
 
     currnet_dps_data.income_list = income_code
     currnet_dps_data.income_ver = income_ver
@@ -235,7 +235,7 @@ async def _(event: GroupMessageEvent, state: T_State, equip_index: Message = Arg
     income_ver = Preference(event.user_id, "", "").setting("计算器增益")
     formation_ver = Preference(event.user_id, "", "").setting("计算器阵眼")
     income_code = INCOMES[income_ver]
-    formation_code = FORMATIONS[income_ver]
+    formation_code = FORMATIONS[formation_ver]
 
     new_dps_data.income_list = income_code
     new_dps_data.income_ver = income_ver

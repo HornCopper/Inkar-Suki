@@ -141,13 +141,21 @@ cqcrank_carry = on_command("jx3_cqc_uncarry", aliases={"池清川大C榜"}, prio
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     if args.extract_plain_text() == "":
         return
-    value_type = "damage" if args.extract_plain_text().strip().upper() in ["DPS", "D", "伤害", "dps", "Dps"] else "health"
+    arg = args.extract_plain_text().strip().split(" ")
+    kungfu_id = 0
+    if len(arg) == 1:
+        value_type = "damage" if arg[0].upper() in ["DPS", "D", "伤害", "dps", "Dps"] else "health"
+    elif len(arg) == 2:
+        kungfu_id = Kungfu(arg[0]).id
+        value_type = "damage" if arg[1].upper() in ["DPS", "D", "伤害", "dps", "Dps"] else "health"
     all_record: list[CQCRank] | Any = db.where_all(CQCRank(), f"total_{value_type} != 0", default=[])
     effective_records: list[CQCRank] = []
     for each_record in all_record:
         if Kungfu.with_internel_id(each_record.kungfu_id).abbr in (["N", "T"] if value_type != "health" else ["D", "T"]):
             continue
         if each_record.damage_per_second < 0 or each_record.health_per_second < 0:
+            continue
+        if kungfu_id != 0 and each_record.kungfu_id != kungfu_id:
             continue
         effective_records.append(each_record)
     effective_records = sorted(effective_records, key=lambda x: (x.damage_per_second if value_type == "damage" else x.health_per_second), reverse=True)
