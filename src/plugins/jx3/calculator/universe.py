@@ -48,7 +48,11 @@ class UniversalCalculator(BaseCalculator):
         )
         if isinstance(kungfu, str):
             raise ValueError(kungfu)
-        return kungfu
+        if str(kungfu.name).endswith("·悟"):
+            name = str(kungfu.name)[:-2]
+            if name == "山居问水剑":
+                name = "问水诀"
+        return Universal(name)
     
     @property
     def weapon_damage(self) -> tuple[int, int]:
