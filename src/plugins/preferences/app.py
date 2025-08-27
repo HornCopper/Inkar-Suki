@@ -17,7 +17,8 @@ class Preference:
         "主题": "theme",
         "交易行": "trade",
         "奇遇": "serendipity",
-        "计算器增益": "income"
+        "计算器增益": "income",
+        "计算器阵眼": "formation"
     }
 
     def __init__(self, user_id: int, key: str = "", value: str = ""):

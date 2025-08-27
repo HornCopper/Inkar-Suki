@@ -150,7 +150,7 @@ class ZixiagongCalculator(BaseCalculator):
 
     async def calculate(self, loop_arg: dict[str, str]):
         params = {
-            "full_income": self.income_list,
+            "full_income": self.income_list + self.formation_list,
             "kungfu_id": self.kungfu.id,
             "tuilan_data": self.data,
             **loop_arg

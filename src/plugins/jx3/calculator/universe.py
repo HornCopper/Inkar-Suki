@@ -16,14 +16,8 @@ from src.plugins.jx3.attributes.v2_remake import (
 )
 from src.templates import SimpleHTML, get_saohua
 
-from ._template import template_calculator, template_attr, template_calculator_v2
+from ._template import template_calculator_v2
 from .base import BaseCalculator
-
-INCOMES = {
-    "无增益": [],
-    "满增益": ["LDCF","CY","JF","HLSJ_1","HLSJ_2","PJ","XR","HXQJ","ZF","JHZ","CSY_SYMX","QS","LZWH","ZXYZ","XWGD","ZZM","PH","XQ","HRL"],
-    "满增益风雷": ["LDCF","CY","JF","HLSJ_1","HLSJ_2","PJ","XR","HXQJ","ZF","JHZ","CSY_SYMX","QS","LZWH","ZXYZ","XWGD","NM","PH","XQ","HRL"]
-}
 
 class Talents(Qixue):
     @property
@@ -156,7 +150,7 @@ class UniversalCalculator(BaseCalculator):
 
     async def calculate(self, loop_arg: dict[str, str]):
         params = {
-            "full_income": self.income_list,
+            "full_income": self.income_list + self.formation_list,
             "kungfu_id": self.kungfu_id,
             # "tuilan_data": self.data,
             **loop_arg
@@ -246,6 +240,7 @@ class UniversalCalculator(BaseCalculator):
                     "skills": "\n".join(tables),
                     "attrs": self.attrs(data["attributes"]),
                     "income": self.income_ver,
+                    "formation": self.formation_name,
                     # "talents": {t.name: t.icon for t in (await self.talents(with_icon=True))},
                     "loop_talents": loop_talents,
                     "saohua": get_saohua(),
