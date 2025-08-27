@@ -52,6 +52,8 @@ class UniversalCalculator(BaseCalculator):
             name = str(kungfu.name)[:-2]
             if name == "山居问水剑":
                 name = "问水诀"
+        else:
+            name = str(kungfu.name)
         return Universal(name)
     
     @property
