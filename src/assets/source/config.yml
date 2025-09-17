@@ -24,7 +24,9 @@ jx3: # 剑网3 相关配置
         sign_secret: "" # Sign 密钥
         enable: False # 是否启用 JX3API
         weibo: False # 是否启用 轮询微博
-        calculator_url: ""
+        calculator_url: "" # 计算器 URL 不带斜杠
+        bla_url: "" # 警长 API 不带斜杠
+        cqc_url: "" # 池清川分析器 API 不带斜杠
         # 注意！轮询微博使用浏览器模拟请求，占用可能会很高，请谨慎开启！
     ws:
         url: "" # JX3API WebSocket 地址

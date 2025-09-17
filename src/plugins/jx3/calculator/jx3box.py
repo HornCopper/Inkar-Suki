@@ -15,7 +15,7 @@ from src.plugins.jx3.attributes.v2_remake import (
 )
 from src.templates import SimpleHTML, get_saohua
 
-from ._template import template_calculator
+from ._template import template_calculator_v2
 from .base import BaseCalculator
 
 class Talents(Qixue):
@@ -92,6 +92,32 @@ class JX3BOXCalculator(BaseCalculator):
             results[name] = {"weapon": weapon, "haste": haste, "loop": loop}
         return results
 
+    def attrs(self, attributes: dict[str, float]) -> dict[str, str]:
+        attr_names = {
+            "BaseAttack": "基础攻击",
+            "FinalAttack": "最终攻击",
+            "Surplus": "破招值",
+            "Critical": "会心等级",
+            "CriticalDamage": "会心效果等级",
+            "Overcome": "破防等级",
+            "Strain": "无双等级",
+            "Haste": "加速等级",
+            # "CriticalPercent": "会心（百分比）",
+            # "CriticalDamagePercent": "会心效果（百分比）",
+            # "OvercomePercent": "破防（百分比）",
+            # "StrainPercent": "无双（百分比）",
+            # "HastePercent": "加速（百分比）",
+        }
+        results = {}
+        for each_attr_name in attr_names.keys():
+            value = attributes[each_attr_name]
+            if each_attr_name.endswith("Percent"):
+                final_value = str(round(value * 100, 2)) + "%"
+            else:
+                final_value = str(int(value))
+            results[attr_names[each_attr_name]] = final_value
+        return results
+
     async def calculate(self, loop_arg: dict[str, str]):
         params = {
             "full_income": self.income_list + self.formation_list,
@@ -128,7 +154,7 @@ class JX3BOXCalculator(BaseCalculator):
         tables = []
         for skill_data in data["damage_details"]:
             tables.append(
-                Template(template_calculator).render(
+                Template(template_calculator_v2).render(
                     **{
                         "skill": str(skill_data["name"]),
                         "display": str(
@@ -140,6 +166,7 @@ class JX3BOXCalculator(BaseCalculator):
                             )
                         )
                         + "%",
+                        "critical": str(skill_data["critical"]),
                         "percent": str(round(skill_data["damage"] / data["total_damage"] * 100, 2)) + "%",
                         "count": str(skill_data["count"]),
                         "value": "{:,}".format(int(skill_data["damage"])),
@@ -149,21 +176,32 @@ class JX3BOXCalculator(BaseCalculator):
         html = str(
             SimpleHTML(
                 html_type="jx3",
-                html_template="calculator",
+                html_template="calculator_new",
                 **{
                     "font": build_path(ASSETS, ["font", "PingFangSC-Semibold.otf"]),
                     "color": self.kungfu.color,
                     "kungfu": self.kungfu.name,
-                    "dps": str(int(data["damage_per_second"])),
-                    "desc": f"计算器JCL循环名称：{data['weapon']}·{data['haste']}-{data['loop_name']}\n<br>提供者：{data['provider']} / 战斗时长：{data['battle_time']}" \
-                    + f"s",
-                    "attrs": [],
-                    "skills": tables,
-                    "talents": {},
+                    "icon": self.kungfu.icon,
+                    # "dps": str(int(data["damage_per_second"])),
+                    "final_dps": str(int(data["damage_per_second"])),
+                    # "desc": f"计算器JCL循环名称：{data['weapon']}·{data['haste']}-{data['loop_name']}\n<br>提供者：{data['provider']} / 战斗时长：{data['battle_time']}" \
+                    # + f"s<br>玩家：{name}·{server}",
+                    "name": "-",
+                    "server": "-",
+                    "score": data["attributes"]["score"],
+                    "loop": f"{data['weapon']}·{data['haste']}-{data['loop_name']}",
+                    "provider": data['provider'],
+                    "time": data['battle_time'],
+                    # "attrs": attrs,
+                    "skills": "\n".join(tables),
+                    "attrs": self.attrs(data["attributes"]),
+                    "income": self.income_ver,
+                    "formation": self.formation_name,
+                    # "talents": {t.name: t.icon for t in (await self.talents(with_icon=True))},
                     "loop_talents": loop_talents,
                     "saohua": get_saohua(),
                 },
             )
         )
-        image = await generate(html, ".container", False, segment=True)
+        image = await generate(html, ".container", False, segment=True, full_screen=True)
         return image

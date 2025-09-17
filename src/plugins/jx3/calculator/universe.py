@@ -85,11 +85,11 @@ class UniversalCalculator(BaseCalculator):
             "Overcome": "破防等级",
             "Strain": "无双等级",
             "Haste": "加速等级",
-            "CriticalPercent": "会心（百分比）",
-            "CriticalDamagePercent": "会心效果（百分比）",
-            "OvercomePercent": "破防（百分比）",
-            "StrainPercent": "无双（百分比）",
-            "HastePercent": "加速（百分比）",
+            # "CriticalPercent": "会心（百分比）",
+            # "CriticalDamagePercent": "会心效果（百分比）",
+            # "OvercomePercent": "破防（百分比）",
+            # "StrainPercent": "无双（百分比）",
+            # "HastePercent": "加速（百分比）",
         }
         results = {}
         for each_attr_name in attr_names.keys():
@@ -168,7 +168,7 @@ class UniversalCalculator(BaseCalculator):
             params["tuilan_data"] = self.data
             params["kungfu_id"] = self.kungfu.id
             url_path = "calculator"
-        data = (await Request(f"{self.calculator_url}/{url_path}", params=params).post()).json()
+        data = (await Request(f"{self.calculator_url}/{url_path}", params=params).post(timeout=30)).json()
         if data["code"] == 404:
             return "加速不符合任何计算循环，请自行提供JCL或调整装备！"
         return data

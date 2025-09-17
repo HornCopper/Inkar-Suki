@@ -1,7 +1,6 @@
-import copy
 from typing import cast
 from nonebot import on_command
-from nonebot.params import CommandArg, Arg
+from nonebot.params import CommandArg, Arg, RawCommand
 from nonebot.typing import T_State
 from nonebot.matcher import Matcher
 from nonebot.adapters.onebot.v11 import Bot, Message, GroupMessageEvent, GroupUploadNoticeEvent, MessageSegment as ms
@@ -23,12 +22,12 @@ from .calc_yinlongjue import LingxueCalculator
 # from .wf import WufangCalculator
 # from .bxj import BingxinjueCalculator
 from .calc_taixujianyi import TaixujianyiCalculator
-from .calc_tielaolv import TielaolvCalculator
-from .calc_mingzunliuliti import MingzunliulitiCalculator
-from .calc_tieguyi import TieguyiCalculator
-from .calc_xisuijing import XisuijingCalculator
-from .calc_fenyingshengjue import FenyingshengjueCalculator
-from .calc_fenshanjin import FenshanjinCalculator
+# from .calc_tielaolv import TielaolvCalculator
+# from .calc_mingzunliuliti import MingzunliulitiCalculator
+# from .calc_tieguyi import TieguyiCalculator
+# from .calc_xisuijing import XisuijingCalculator
+# from .calc_fenyingshengjue import FenyingshengjueCalculator
+# from .calc_fenshanjin import FenshanjinCalculator
 
 from .base import FORMATIONS, INCOMES
 from .universe import UniversalCalculator
@@ -41,6 +40,7 @@ from .cqc import CQCAnalyze
 
 import re
 import json
+import copy
 
 yinlongjue_calc_matcher = on_command("jx3_calculator_lyj", aliases={"凌雪计算器"}, priority=5, force_whitespace=True)
 
@@ -90,10 +90,10 @@ async def _(event: GroupMessageEvent, state: T_State, loop_order: Message = Arg(
     data = await instance.image(loop_code, full_income)
     await yinlongjue_calc_matcher.finish(data)
 
-calc_matcher = on_command("jx3_calculator", aliases={"计算器"}, priority=5, force_whitespace=True)
+calc_matcher = on_command("jx3_calculator", aliases={"计算器", "T计算器"}, priority=5, force_whitespace=True)
 
 @calc_matcher.handle()
-async def _(event: GroupMessageEvent, matcher: Matcher, state: T_State, args: Message = CommandArg()):
+async def _(event: GroupMessageEvent, matcher: Matcher, state: T_State, args: Message = CommandArg(), cmd: str = RawCommand()):
     if args.extract_plain_text() == "":
         matcher.stop_propagation()
         return
@@ -117,7 +117,7 @@ async def _(event: GroupMessageEvent, matcher: Matcher, state: T_State, args: Me
         server = Server(server, event.group_id).server
         if server is None:
             await calc_matcher.finish(PROMPT.ServerNotExist)
-        instance = await UniversalCalculator.with_name(name, server, "DPSPVE")
+        instance = await UniversalCalculator.with_name(name, server, "TPVE" if cmd[0] == "T" else "DPSPVE")
         if isinstance(instance, str):
             await calc_matcher.finish(instance)
     income_ver = Preference(event.user_id, "", "").setting("计算器增益")
@@ -155,10 +155,10 @@ async def _(event: GroupMessageEvent, state: T_State, loop_order: Message = Arg(
         await calc_matcher.send(equip_image)
     await calc_matcher.finish(data)
 
-equip_compare = on_command("jx3_equip_compare", aliases={"装备对比"}, priority=5)
+equip_compare = on_command("jx3_equip_compare", aliases={"装备对比", "T装备对比"}, priority=5)
 
 @equip_compare.handle()
-async def _(event: GroupMessageEvent, matcher: Matcher, state: T_State, args: Message = CommandArg()):
+async def _(event: GroupMessageEvent, matcher: Matcher, state: T_State, args: Message = CommandArg(), cmd: str = RawCommand()):
     if args.extract_plain_text() == "":
         matcher.stop_propagation()
         return
@@ -182,7 +182,7 @@ async def _(event: GroupMessageEvent, matcher: Matcher, state: T_State, args: Me
     instance = await AttributesRequest.with_name(server, name)
     if not instance:
         await equip_compare.finish(PROMPT.PlayerNotExist)
-    equip_data = instance.get_equip("DPSPVE")
+    equip_data = instance.get_equip("TPVE" if cmd[0] == "T" else "DPSPVE")
     if isinstance(equip_data, bool):
         await equip_compare.finish(PROMPT.PlayerNotExist if equip_data else PROMPT.EquipNotFound)
     instance_data = cast(AttributeParser, instance.data)
@@ -378,334 +378,6 @@ async def _(event: GroupMessageEvent, state: T_State, loop_order: Message = Arg(
     loop_code: dict[str, str] = loops[list(loops)[int(num)-1]]
     data = await instance.image(loop_code)
     await zixiagong_calc_matcher.finish(data)
-
-tielaolv_calc_matcher = on_command("jx3_calculator_ct", aliases={"铁牢计算器"}, priority=5, force_whitespace=True)
-
-@tielaolv_calc_matcher.handle()
-async def _(event: GroupMessageEvent, matcher: Matcher, state: T_State, args: Message = CommandArg()):
-    if args.extract_plain_text() == "":
-        matcher.stop_propagation()
-        return
-    raw_arg = args.extract_plain_text().split(" ")
-    arg = [a for a in raw_arg if a != "-A"]
-    if len(arg) not in [1, 2]:
-        await tielaolv_calc_matcher.finish(PROMPT.ArgumentCountInvalid + "\n参考格式：铁牢计算器 <服务器> <角色名>")
-    if len(arg) == 1:
-        server = None
-        name = arg[0]
-    elif len(arg) == 2:
-        server = arg[0]
-        name = arg[1]
-    server = Server(server, event.group_id).server
-    if server is None:
-        await tielaolv_calc_matcher.finish(PROMPT.ServerNotExist)
-    instance = await TielaolvCalculator.with_name(name, server, "TPVE")
-    if isinstance(instance, str):
-        await tielaolv_calc_matcher.finish(instance)
-    income_ver = Preference(event.user_id, "", "").setting("计算器增益")
-    formation_ver = Preference(event.user_id, "", "").setting("计算器阵眼")
-    income_code = INCOMES[income_ver]
-    instance.income_list = income_code
-    instance.income_ver = income_ver
-    instance.formation_list = FORMATIONS[formation_ver]
-    instance.formation_name = formation_ver
-    loops = await instance.get_loop()
-    if isinstance(loops, str):
-        await tielaolv_calc_matcher.finish(loops)
-    state["loops"] = loops
-    state["instance"] = instance
-    msg = "请选择计算循环！"
-    num = 1
-    for loop_name in loops:
-        msg += f"\n{num}. {loop_name}"
-        num += 1
-    await tielaolv_calc_matcher.send(msg)
-
-@tielaolv_calc_matcher.got("loop_order")
-async def _(event: GroupMessageEvent, state: T_State, loop_order: Message = Arg()):
-    num = loop_order.extract_plain_text()
-    if not check_number(num):
-        await tielaolv_calc_matcher.finish("循环选择有误，请重新发起命令！")
-    loops: dict[str, dict] = state["loops"]
-    instance: TielaolvCalculator = state["instance"]
-    if int(num) > len(list(loops)):
-        await tielaolv_calc_matcher.finish("超出可选范围，请重新发起命令！")
-    loop_code: dict[str, str] = loops[list(loops)[int(num)-1]]
-    data = await instance.image(loop_code)
-    await tielaolv_calc_matcher.finish(data)
-
-mingzunliuliti_calc_matcher = on_command("jx3_calculator_mt", aliases={"明尊计算器"}, priority=5, force_whitespace=True)
-
-@mingzunliuliti_calc_matcher.handle()
-async def _(event: GroupMessageEvent, matcher: Matcher, state: T_State, args: Message = CommandArg()):
-    if args.extract_plain_text() == "":
-        matcher.stop_propagation()
-        return
-    raw_arg = args.extract_plain_text().split(" ")
-    arg = [a for a in raw_arg if a != "-A"]
-    if len(arg) not in [1, 2]:
-        await mingzunliuliti_calc_matcher.finish(PROMPT.ArgumentCountInvalid + "\n参考格式：明尊计算器 <服务器> <角色名>")
-    if len(arg) == 1:
-        server = None
-        name = arg[0]
-    elif len(arg) == 2:
-        server = arg[0]
-        name = arg[1]
-    server = Server(server, event.group_id).server
-    if server is None:
-        await mingzunliuliti_calc_matcher.finish(PROMPT.ServerNotExist)
-    instance = await MingzunliulitiCalculator.with_name(name, server, "TPVE")
-    if isinstance(instance, str):
-        await mingzunliuliti_calc_matcher.finish(instance)
-    loops = await instance.get_loop()
-    if isinstance(loops, str):
-        await mingzunliuliti_calc_matcher.finish(loops)
-    income_ver = Preference(event.user_id, "", "").setting("计算器增益")
-    formation_ver = Preference(event.user_id, "", "").setting("计算器阵眼")
-    income_code = INCOMES[income_ver]
-    instance.income_list = income_code
-    instance.income_ver = income_ver
-    instance.formation_list = FORMATIONS[formation_ver]
-    instance.formation_name = formation_ver
-    state["loops"] = loops
-    state["instance"] = instance
-    msg = "请选择计算循环！"
-    num = 1
-    for loop_name in loops:
-        msg += f"\n{num}. {loop_name}"
-        num += 1
-    await mingzunliuliti_calc_matcher.send(msg)
-
-@mingzunliuliti_calc_matcher.got("loop_order")
-async def _(event: GroupMessageEvent, state: T_State, loop_order: Message = Arg()):
-    num = loop_order.extract_plain_text()
-    if not check_number(num):
-        await mingzunliuliti_calc_matcher.finish("循环选择有误，请重新发起命令！")
-    loops: dict[str, dict] = state["loops"]
-    instance: MingzunliulitiCalculator = state["instance"]
-    if int(num) > len(list(loops)):
-        await mingzunliuliti_calc_matcher.finish("超出可选范围，请重新发起命令！")
-    loop_code: dict[str, str] = loops[list(loops)[int(num)-1]]
-    data = await instance.image(loop_code)
-    await mingzunliuliti_calc_matcher.finish(data)
-
-tieguyi_calc_matcher = on_command("jx3_calculator_tg", aliases={"铁骨计算器"}, priority=5, force_whitespace=True)
-
-@tieguyi_calc_matcher.handle()
-async def _(event: GroupMessageEvent, matcher: Matcher, state: T_State, args: Message = CommandArg()):
-    if args.extract_plain_text() == "":
-        matcher.stop_propagation()
-        return
-    raw_arg = args.extract_plain_text().split(" ")
-    arg = [a for a in raw_arg if a != "-A"]
-    if len(arg) not in [1, 2]:
-        await tieguyi_calc_matcher.finish(PROMPT.ArgumentCountInvalid + "\n参考格式：铁骨计算器 <服务器> <角色名>")
-    if len(arg) == 1:
-        server = None
-        name = arg[0]
-    elif len(arg) == 2:
-        server = arg[0]
-        name = arg[1]
-    server = Server(server, event.group_id).server
-    if server is None:
-        await tieguyi_calc_matcher.finish(PROMPT.ServerNotExist)
-    instance = await TieguyiCalculator.with_name(name, server, "TPVE")
-    if isinstance(instance, str):
-        await tieguyi_calc_matcher.finish(instance)
-    loops = await instance.get_loop()
-    if isinstance(loops, str):
-        await tieguyi_calc_matcher.finish(loops)
-    income_ver = Preference(event.user_id, "", "").setting("计算器增益")
-    formation_ver = Preference(event.user_id, "", "").setting("计算器阵眼")
-    income_code = INCOMES[income_ver]
-    instance.income_list = income_code
-    instance.income_ver = income_ver
-    instance.formation_list = FORMATIONS[formation_ver]
-    instance.formation_name = formation_ver
-    state["loops"] = loops
-    state["instance"] = instance
-    msg = "请选择计算循环！"
-    num = 1
-    for loop_name in loops:
-        msg += f"\n{num}. {loop_name}"
-        num += 1
-    await tieguyi_calc_matcher.send(msg)
-
-@tieguyi_calc_matcher.got("loop_order")
-async def _(event: GroupMessageEvent, state: T_State, loop_order: Message = Arg()):
-    num = loop_order.extract_plain_text()
-    if not check_number(num):
-        await tieguyi_calc_matcher.finish("循环选择有误，请重新发起命令！")
-    loops: dict[str, dict] = state["loops"]
-    instance: TieguyiCalculator = state["instance"]
-    if int(num) > len(list(loops)):
-        await tieguyi_calc_matcher.finish("超出可选范围，请重新发起命令！")
-    loop_code: dict[str, str] = loops[list(loops)[int(num)-1]]
-    data = await instance.image(loop_code)
-    await tieguyi_calc_matcher.finish(data)
-
-xisuijing_calc_matcher = on_command("jx3_calculator_hst", aliases={"洗髓计算器"}, priority=5, force_whitespace=True)
-
-@xisuijing_calc_matcher.handle()
-async def _(event: GroupMessageEvent, matcher: Matcher, state: T_State, args: Message = CommandArg()):
-    if args.extract_plain_text() == "":
-        matcher.stop_propagation()
-        return
-    raw_arg = args.extract_plain_text().split(" ")
-    arg = [a for a in raw_arg if a != "-A"]
-    if len(arg) not in [1, 2]:
-        await xisuijing_calc_matcher.finish(PROMPT.ArgumentCountInvalid + "\n参考格式：洗髓计算器 <服务器> <角色名>")
-    if len(arg) == 1:
-        server = None
-        name = arg[0]
-    elif len(arg) == 2:
-        server = arg[0]
-        name = arg[1]
-    server = Server(server, event.group_id).server
-    if server is None:
-        await xisuijing_calc_matcher.finish(PROMPT.ServerNotExist)
-    instance = await XisuijingCalculator.with_name(name, server, "TPVE")
-    if isinstance(instance, str):
-        await xisuijing_calc_matcher.finish(instance)
-    loops = await instance.get_loop()
-    if isinstance(loops, str):
-        await xisuijing_calc_matcher.finish(loops)
-    income_ver = Preference(event.user_id, "", "").setting("计算器增益")
-    formation_ver = Preference(event.user_id, "", "").setting("计算器阵眼")
-    income_code = INCOMES[income_ver]
-    instance.income_list = income_code
-    instance.income_ver = income_ver
-    instance.formation_list = FORMATIONS[formation_ver]
-    instance.formation_name = formation_ver
-    state["loops"] = loops
-    state["instance"] = instance
-    msg = "请选择计算循环！"
-    num = 1
-    for loop_name in loops:
-        msg += f"\n{num}. {loop_name}"
-        num += 1
-    await xisuijing_calc_matcher.send(msg)
-
-@xisuijing_calc_matcher.got("loop_order")
-async def _(event: GroupMessageEvent, state: T_State, loop_order: Message = Arg()):
-    num = loop_order.extract_plain_text()
-    if not check_number(num):
-        await xisuijing_calc_matcher.finish("循环选择有误，请重新发起命令！")
-    loops: dict[str, dict] = state["loops"]
-    instance: XisuijingCalculator = state["instance"]
-    if int(num) > len(list(loops)):
-        await xisuijing_calc_matcher.finish("超出可选范围，请重新发起命令！")
-    loop_code: dict[str, str] = loops[list(loops)[int(num)-1]]
-    data = await instance.image(loop_code)
-    await xisuijing_calc_matcher.finish(data)
-
-fenshanjin_calc_matcher = on_command("jx3_calculator_fsj", aliases={"分山计算器"}, priority=5, force_whitespace=True)
-
-@fenshanjin_calc_matcher.handle()
-async def _(event: GroupMessageEvent, state: T_State, args: Message = CommandArg()):
-    if args.extract_plain_text() == "":
-        return
-    raw_arg = args.extract_plain_text().split(" ")
-    arg = [a for a in raw_arg if a != "-A"]
-    if len(arg) not in [1, 2]:
-        await fenshanjin_calc_matcher.finish(PROMPT.ArgumentCountInvalid + "\n参考格式：分山计算器 <服务器> <角色名>")
-    if len(arg) == 1:
-        server = None
-        name = arg[0]
-    elif len(arg) == 2:
-        server = arg[0]
-        name = arg[1]
-    server = Server(server, event.group_id).server
-    if server is None:
-        await fenshanjin_calc_matcher.finish(PROMPT.ServerNotExist)
-    instance = await FenshanjinCalculator.with_name(name, server, "DPSPVE")
-    if isinstance(instance, str):
-        await fenshanjin_calc_matcher.finish(instance)
-    loops = await instance.get_loop()
-    if isinstance(loops, str):
-        await fenshanjin_calc_matcher.finish(loops)
-    income_ver = Preference(event.user_id, "", "").setting("计算器增益")
-    formation_ver = Preference(event.user_id, "", "").setting("计算器阵眼")
-    income_code = INCOMES[income_ver]
-    instance.income_list = income_code
-    instance.income_ver = income_ver
-    instance.formation_list = FORMATIONS[formation_ver]
-    instance.formation_name = formation_ver
-    state["loops"] = loops
-    state["instance"] = instance
-    msg = "请选择计算循环！"
-    num = 1
-    for loop_name in loops:
-        msg += f"\n{num}. {loop_name}"
-        num += 1
-    await fenshanjin_calc_matcher.send(msg)
-
-@fenshanjin_calc_matcher.got("loop_order")
-async def _(event: GroupMessageEvent, state: T_State, loop_order: Message = Arg()):
-    num = loop_order.extract_plain_text()
-    if not check_number(num):
-        await fenshanjin_calc_matcher.finish("循环选择有误，请重新发起命令！")
-    loops: dict[str, dict] = state["loops"]
-    instance: FenshanjinCalculator = state["instance"]
-    if int(num) > len(list(loops)):
-        await fenshanjin_calc_matcher.finish("超出可选范围，请重新发起命令！")
-    loop_code: dict[str, str] = loops[list(loops)[int(num)-1]]
-    data = await instance.image(loop_code)
-    await fenshanjin_calc_matcher.finish(data)
-
-fenyingshengjue_calc_matcher = on_command("jx3_calculator_fysj", aliases={"焚影计算器"}, priority=5, force_whitespace=True)
-
-@fenyingshengjue_calc_matcher.handle()
-async def _(event: GroupMessageEvent, state: T_State, args: Message = CommandArg()):
-    if args.extract_plain_text() == "":
-        return
-    raw_arg = args.extract_plain_text().split(" ")
-    arg = [a for a in raw_arg if a != "-A"]
-    if len(arg) not in [1, 2]:
-        await fenyingshengjue_calc_matcher.finish(PROMPT.ArgumentCountInvalid + "\n参考格式：焚影计算器 <服务器> <角色名>")
-    if len(arg) == 1:
-        server = None
-        name = arg[0]
-    elif len(arg) == 2:
-        server = arg[0]
-        name = arg[1]
-    server = Server(server, event.group_id).server
-    if server is None:
-        await fenyingshengjue_calc_matcher.finish(PROMPT.ServerNotExist)
-    instance = await FenyingshengjueCalculator.with_name(name, server, "DPSPVE")
-    if isinstance(instance, str):
-        await fenyingshengjue_calc_matcher.finish(instance)
-    loops = await instance.get_loop()
-    if isinstance(loops, str):
-        await fenyingshengjue_calc_matcher.finish(loops)
-    income_ver = Preference(event.user_id, "", "").setting("计算器增益")
-    formation_ver = Preference(event.user_id, "", "").setting("计算器阵眼")
-    income_code = INCOMES[income_ver]
-    instance.income_list = income_code
-    instance.income_ver = income_ver
-    instance.formation_list = FORMATIONS[formation_ver]
-    instance.formation_name = formation_ver
-    state["loops"] = loops
-    state["instance"] = instance
-    msg = "请选择计算循环！"
-    num = 1
-    for loop_name in loops:
-        msg += f"\n{num}. {loop_name}"
-        num += 1
-    await fenyingshengjue_calc_matcher.send(msg)
-
-@fenyingshengjue_calc_matcher.got("loop_order")
-async def _(event: GroupMessageEvent, state: T_State, loop_order: Message = Arg()):
-    num = loop_order.extract_plain_text()
-    if not check_number(num):
-        await fenyingshengjue_calc_matcher.finish("循环选择有误，请重新发起命令！")
-    loops: dict[str, dict] = state["loops"]
-    instance: FenyingshengjueCalculator = state["instance"]
-    if int(num) > len(list(loops)):
-        await fenyingshengjue_calc_matcher.finish("超出可选范围，请重新发起命令！")
-    loop_code: dict[str, str] = loops[list(loops)[int(num)-1]]
-    data = await instance.image(loop_code)
-    await fenyingshengjue_calc_matcher.finish(data)
 
 def check_jcl_name_jx3bla(filename: str) -> bool:
     if not filename.startswith("IKS-"):

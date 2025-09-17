@@ -78,7 +78,10 @@ class Database:
         if not results:
             return default
         else:
-            return [model_type(**self._load(dict(zip(fields, result)))) for result in results]
+            return [
+                model_type(**self._load(dict(zip(fields, result))))
+                for result in results if result is not None
+            ]
 
     def save(self, *args: LiteModel) -> None:
         """增/改操作

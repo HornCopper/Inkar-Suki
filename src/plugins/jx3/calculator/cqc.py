@@ -2,6 +2,7 @@ from typing import Any
 from jinja2 import Template
 from httpx import AsyncClient
 
+from src.config import Config
 from src.const.path import ASSETS
 from src.const.jx3.kungfu import Kungfu
 from src.utils.generate import generate
@@ -55,7 +56,7 @@ def save_data(data: dict[str, dict[str, int | str]], value_type: bool) -> None:
 
 async def CQCAnalyze(file_name: str, url: str):
     async with AsyncClient(verify=False) as client:
-        resp = await client.post("http://10.0.10.13:51511/cqc_analyze", json={"jcl_url": url, "jcl_name": file_name}, timeout=600)
+        resp = await client.post(f"{Config.jx3.api.cqc_url}/cqc_analyze", json={"jcl_url": url, "jcl_name": file_name}, timeout=600)
         data = resp.json()
 
     final_dps = []

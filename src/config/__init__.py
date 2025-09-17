@@ -27,6 +27,8 @@ class Jx3API(BaseModel):
     enable: bool = False
     weibo: bool = False
     calculator_url: str = ""
+    bla_url: str = ""
+    cqc_url: str = ""
 
 
 class Jx3WS(BaseModel):
