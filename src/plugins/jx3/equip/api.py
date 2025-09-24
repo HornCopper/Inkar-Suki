@@ -296,7 +296,7 @@ async def get_equip_image(id: str):
                 name  = t["name"]
             )
             for t
-            in data["data"]["talent_pzcode"]
+            in data["data"]["talent_pzcode"] or []
         ],
         panel=[
             Panel(

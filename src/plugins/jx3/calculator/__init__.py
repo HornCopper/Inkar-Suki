@@ -155,7 +155,7 @@ async def _(event: GroupMessageEvent, state: T_State, loop_order: Message = Arg(
         await calc_matcher.send(equip_image)
     await calc_matcher.finish(data)
 
-equip_compare = on_command("jx3_equip_compare", aliases={"装备对比", "T装备对比"}, priority=5)
+equip_compare = on_command("jx3_equip_compare", aliases={"装备对比", "T装备对比"}, priority=5, force_whitespace=True)
 
 @equip_compare.handle()
 async def _(event: GroupMessageEvent, matcher: Matcher, state: T_State, args: Message = CommandArg(), cmd: str = RawCommand()):
@@ -185,8 +185,7 @@ async def _(event: GroupMessageEvent, matcher: Matcher, state: T_State, args: Me
     equip_data = instance.get_equip("TPVE" if cmd[0] == "T" else "DPSPVE")
     if isinstance(equip_data, bool):
         await equip_compare.finish(PROMPT.PlayerNotExist if equip_data else PROMPT.EquipNotFound)
-    instance_data = cast(AttributeParser, instance.data)
-    kungfu_id = Kungfu(str(instance_data.kungfu_name)).id
+    kungfu_id = equip_data["data"]["Kungfu"]["KungfuID"]
     current_jcl_line = TuilanData(equip_data).output_jcl_line()
     currnet_dps_data = UniversalCalculator(current_jcl_line, int(str(kungfu_id)))
 
