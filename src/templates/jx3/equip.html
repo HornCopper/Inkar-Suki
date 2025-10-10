@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <style>
+        @font-face {
+            font-family: Harmony;
+            src: url("{{ font }}");
+        }
+
+        body {
+            background-color: #1a1a1a;
+            font-family: Harmony;
+            color: white;
+            display: flex;
+            justify-content: center;
+            padding: 40px;
+        }
+
+        .card {
+            width: 320px;
+            background: #2B3D3D;
+            border: 1px solid #666;
+            padding: 12px 16px;
+            border-radius: 8px;
+            box-shadow: 0 0 8px #000 inset;
+        }
+
+        .title {
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .icon {
+            float: right;
+            color: #aaffaa;
+            font-size: 14px;
+        }
+
+        .info {
+            margin-top: 8px;
+            line-height: 1.5;
+        }
+
+        .skillevent {
+            color: #ffa500;
+            margin-top: 8px;
+            line-height: 1.5;
+            text-decoration: underline;
+        }
+
+        .attr-green {
+            color: rgb(0, 210, 75);
+        }
+
+        .attr-detail {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 12px;
+            background: #00ff00;
+            color: #000000;
+            margin-top: 8px;
+        }
+
+        .note {
+            color: #aaaaaa;
+            font-size: 13px;
+            margin-top: 6px;
+        }
+
+        .gems {
+            margin-top: 12px;
+            color: #ffcc66;
+        }
+
+        .gem-slot {
+            display: flex;
+        }
+
+        .gem {
+            display: flex;
+            align-items: center;
+            padding: 2px 8px;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .gem img {
+            width: 20px;
+            height: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="card">
+        <div>
+            <span class="title" style="color: {{ color }}">{{ name }} {{ strength }}</span>
+        </div>
+
+        <div class="icon"><img src="{{ icon }}"></div>
+
+        <div class="info">{{ quality }} {{ location }}</div>
+        <div class="attr-green">
+            {{ green_attrs }}
+        </div>
+
+        <div class="gems">
+            <div>镶嵌孔：</div>
+            <div class="gem-slot">
+                {{ diamonds }}
+            </div>
+        </div>
+
+        <div class="skillevent">
+            {{ skillevent }}
+        </div>
+
+        <div class="note">
+            {{ remark }}
+        </div>
+    </div>
+</body>
+
+</html>

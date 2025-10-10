@@ -1,3 +1,4 @@
+import ast
 from typing import Any
 
 Locations = [
@@ -103,6 +104,26 @@ def merge_dicts(dict1: dict[str, float], dict2: dict[str, float]) -> dict[str, f
 
 def match(obj, **kwargs):
     return all(getattr(obj, k, None) == v for k, v in kwargs.items())
+
+def R(x: float, n: int = 0) -> float:
+    """
+    四舍五入。
+    """
+    f = 10 ** n
+    return int(x * f + (0.5 if x >= 0 else -0.5)) / f
+
+def parse_luatable(text: str) -> list[str | list[str]]:
+    text = re.sub(r"\[\d+\]=", "", text)
+    text = text.replace("{", "[").replace("}", "]")
+    return ast.literal_eval(text)
+
+def parse_skillevent(raw_text: str) -> str:
+    match = re.search(r"text=\"(.*?)\"", raw_text)
+    if not match:
+        return ""
+    text = match.group(1)
+    text = text.rstrip("\\\"")
+    return text
 
 class TuilanData:
     def __init__(self, tuilan_data: dict[str, Any]):

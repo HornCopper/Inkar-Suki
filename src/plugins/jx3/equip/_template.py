@@ -183,3 +183,17 @@ location_map = {
     "TERTIARY_WEAPON": "藏剑重剑"
 }
 
+_template_green_attrs = """
+<div>
+    <span class="attr-detail">
+        · {{ attr_name }} {{ attr_value }} (+{{ strength_value }})
+    </span>
+</div>
+"""
+
+_template_diamonds = """
+<span class="gem gem-yellow">
+    <img src="{{ diamond_icon }}"
+        style="width:25px; height:25px;">{{ attr_name }}
+</span>
+"""

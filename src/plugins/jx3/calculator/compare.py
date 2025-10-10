@@ -20,7 +20,7 @@ subtype_locations = {
     10: 12
 }
 
-Attributes = {
+AttributesFull = {
     "atPhysicsAttackPowerBase": "外功攻击",
     "atPhysicsCriticalStrike": "外功会心",
     "atPhysicsOvercomeBase": "外功破防",
@@ -64,7 +64,19 @@ Attributes = {
 
     "atAllTypeOvercomeBase": "全破防",
     "atAllTypeCriticalStrike": "全会心",
-    "atAllTypeCriticalDamagePowerBase": "全会心效果"
+    "atAllTypeCriticalDamagePowerBase": "全会心效果",
+
+    "atToughnessBase": "御劲",
+    "atDecriticalDamagePowerBase": "化劲",
+
+    "atMaxLifeBase": "气血",
+    "atTherapyPowerBase": "治疗成效",
+
+    "atSpiritBase": "根骨",
+    "atStrengthBase": "力道",
+    "atAgilityBase": "身法",
+    "atSpunkBase": "元气",
+    "atVitalityBase": "体质",
 }
 
 def parse_attr(equip_data: dict[str, Any]) -> list[str]:
@@ -73,7 +85,7 @@ def parse_attr(equip_data: dict[str, Any]) -> list[str]:
         key = f"Magic{num}Key"
         if key not in equip_data:
             break
-        attr_name = Attributes.get(equip_data[key], "")
+        attr_name = AttributesFull.get(equip_data[key], "")
         if attr_name != "":
             attr.append(attr_name)
     return attr

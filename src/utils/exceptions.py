@@ -18,6 +18,7 @@ class DatabaseInternelException(Exception):
     """
     `SQLite3`数据库错误。
     """
+    ...
 
 class QixueDataUnavailable(Exception):
     """
@@ -31,3 +32,10 @@ class ConfigurationException(Exception):
 
     例如启用`JX3API`但没有给出`Token`。
     """
+    ...
+
+class TabFileMissException(Exception):
+    """
+    Tab 文件有问题，无法匹配属性数据。
+    """
+    ...

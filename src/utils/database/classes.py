@@ -80,14 +80,12 @@ class Population(LiteModel):
 
 class PlayerEquipsCache(LiteModel):
     TABLE_NAME: str = "player_equip"
-    equips_data: dict = {}
-    globalRoleId: str = ""
-    kungfu: str = ""
-    roleId: str = ""
-    roleName: str = ""
-    score: str = ""
-    serverName: str = ""
+    equips_data: list = []
+    talents_data: list = []
+    global_role_id: int = 0
+    kungfu_id: int = 0
     tag: str = ""
+    timestamp: int = 0
 
 class RequestData(LiteModel):
     TABLE_NAME: str = "request_data"

@@ -12,7 +12,7 @@ class PROMPT:
     NumberNotExist = "唔……输入的数字不在范围内哦，请检查后重试！"
     PlayerNotExist = "唔……未找到该玩家，请提交角色！\n提交角色 服务器 UID"
 
-    EquipNotFound = "唔……未找到该标签的装备，可不传入标签先直接查询！"
+    EquipNotFound = "唔……未找到该玩家的装备，请检查信息是否正确？\n如有标签，请先尝试去除标签查询。"
 
     KungfuNotExist = "未找到该心法，请检查后重试！"
 

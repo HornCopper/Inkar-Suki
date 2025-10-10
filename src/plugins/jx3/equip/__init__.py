@@ -1,15 +1,18 @@
 from nonebot import on_command
 from nonebot.adapters import Message
+from nonebot.matcher import Matcher
 from nonebot.adapters.onebot.v11 import GroupMessageEvent, MessageSegment as ms
 from nonebot.params import CommandArg, Arg
 from nonebot.typing import T_State
 
+from src.const.prompts import PROMPT
 from src.const.jx3.kungfu import Kungfu
 from src.utils.analyze import check_number
 
-from .api import get_equips, get_equip_image
+from .equip_config import get_equips, get_equip_image
+from .equip_find import get_equip_info, get_equip_info_image
 
-referenced_equip_matcher = on_command("配装", force_whitespace=True, priority=5)
+referenced_equip_matcher = on_command("jx3_pz", aliases={"配装"}, force_whitespace=True, priority=5)
 
 @referenced_equip_matcher.handle()
 async def _(event: GroupMessageEvent, state: T_State, full_argument: Message = CommandArg()):
@@ -53,3 +56,39 @@ async def _(event: GroupMessageEvent, state: T_State, num: Message = Arg()):
         equip_id = equip["id"]
         image = ms.image(await get_equip_image(equip_id))
         await referenced_equip_matcher.finish(image)
+
+equip_find_matcher = on_command("jx3_equip_find", aliases={"装备"}, priority=5, force_whitespace=True)
+
+@equip_find_matcher.handle()
+async def _(matcher: Matcher, state: T_State, event: GroupMessageEvent, args: Message = CommandArg()):
+    equip_name = args.extract_plain_text().strip()
+    if equip_name == "":
+        matcher.stop_propagation()
+        return
+    results = await get_equip_info(equip_name)
+    if isinstance(results, str):
+        await equip_find_matcher.finish(results)
+    if len(results) == 1:
+        equip_data = results[0][1]
+        image = await get_equip_info_image(equip_data)
+        await equip_find_matcher.finish(image)
+    else:
+        num = 1
+        msg = "请从下方选择装备："
+        state["equip_data"] = results
+        for each_equip, equip_data in results:
+            msg += f"\n{num}. {each_equip}"
+            num += 1
+        await equip_find_matcher.send(msg)
+        return
+
+@equip_find_matcher.got("num")
+async def _(state: T_State, event: GroupMessageEvent, num: Message = Arg()):
+    equip_num = num.extract_plain_text().strip()
+    if not check_number(equip_num):
+        await equip_find_matcher.finish(PROMPT.NumberInvalid)
+    if int(equip_num) > len(state["equip_data"]):
+        await equip_find_matcher.finish(PROMPT.NumberNotExist)
+    equip_data = state["equip_data"][int(equip_num)-1][1]
+    image = await get_equip_info_image(equip_data)
+    await equip_find_matcher.finish(image)

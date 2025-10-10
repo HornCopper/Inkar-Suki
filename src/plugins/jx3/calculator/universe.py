@@ -9,23 +9,11 @@ from src.const.path import ASSETS, build_path
 from typing import overload
 from src.utils.network import Request
 from src.utils.generate import generate
-from src.plugins.jx3.attributes.v2_remake import (
-    Panel,
-    Qixue,
-    Talent,
-)
 from src.templates import SimpleHTML, get_saohua
+from src.utils.database.attributes import JX3PlayerAttribute, Talent
 
 from ._template import template_calculator_v2
 from .base import BaseCalculator
-
-class Talents(Qixue):
-    @property
-    def location(self) -> tuple[str, str, str] | None:
-        for x in self.qixue_data[self.kungfu]:
-            for y in self.qixue_data[self.kungfu][x]:
-                if self.qixue_data[self.kungfu][x][y]["name"] == self.name:
-                    return x, self.qixue_data[self.kungfu][x][y]["id"], "https://icon.jx3box.com/icon/" + str(self.qixue_data[self.kungfu][x][y]["icon"]) + ".png"
 
 class Universal(Kungfu):
     @classmethod
@@ -36,45 +24,11 @@ class Universal(Kungfu):
         return super().with_internel_id(internel_id)
 
 class UniversalCalculator(BaseCalculator):
-    def __init__(self, jcl_data: list[list] = [], kungfu_id: int = 0, *args, **kwargs):
+    def __init__(self, jcl_data: list[list] = [], kungfu_id: int = 0, **kwargs):
         self.jcl_data = jcl_data
         self.kungfu_id = kungfu_id
-        super().__init__(*args, **kwargs)
-
-    @property
-    def kungfu(self) -> Universal:
-        kungfu = Universal.with_internel_id(
-            self.data["data"]["Kungfu"]["KungfuID"]
-        )
-        if isinstance(kungfu, str):
-            raise ValueError(kungfu)
-        if str(kungfu.name).endswith("·悟"):
-            name = str(kungfu.name)[:-2]
-            if name == "山居问水剑":
-                name = "问水诀"
-        else:
-            name = str(kungfu.name)
-        return Universal(name)
+        super().__init__(**kwargs)
     
-    @property
-    def weapon_damage(self) -> tuple[int, int]:
-        equips: list = self.data["data"]["Equips"]
-        for equip in equips:
-            if equip["Icon"]["Kind"] == "武器" and equip["Icon"]["SubKind"] != "投掷囊":
-                base_damage = equip["Base1Type"]["Base1Min"]
-                delta_damage = equip["Base2Type"]["Base2Min"]
-                return int(base_damage), int(base_damage) + int(delta_damage)
-        raise ValueError("Cannot find weapon!")
-    
-    @property
-    def raw_equips(self) -> list[dict]:
-        """
-        原始数据（排序后）
-        """
-        self.parser.equips
-        sorted_equips = self.parser._cached_equips
-        return sorted_equips or []
-
     def attrs(self, attributes: dict[str, float]) -> dict[str, str]:
         attr_names = {
             "BaseAttack": "基础攻击",
@@ -100,49 +54,9 @@ class UniversalCalculator(BaseCalculator):
                 final_value = str(int(value))
             results[attr_names[each_attr_name]] = final_value
         return results
-                
-    @overload
-    async def talents(self, with_icon: Literal[True]) -> list[Talent]: ...
-
-    @overload
-    async def talents(self, with_icon: Literal[False]) -> list[dict[str, int | str]]: ... # noqa: F811
-
-    async def talents(self, with_icon: bool = False) -> list[dict[str, int | str]] | list[Talent]: # noqa: F811
-        kungfu = self.kungfu.name
-        if str(kungfu).endswith("·悟"):
-            return []
-        qixue_list = self.data["data"]["Person"]["qixueList"]
-        if not with_icon:
-            talents = [{}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}]
-        else:
-            unknown_img = build_path(ASSETS, ["image", "jx3", "attributes", "unknown.png"])
-            name = ["未知", "未知", "未知", "未知", "未知", "未知", "未知", "未知", "未知", "未知", "未知", "未知"]
-            icon = [unknown_img, unknown_img, unknown_img, unknown_img, unknown_img, unknown_img, unknown_img, unknown_img, unknown_img, unknown_img, unknown_img, unknown_img]
-        kungfu = self.kungfu.name
-        if kungfu is None:
-            return []
-        if qixue_list == []:
-            return []
-        for single_qixue in qixue_list:
-            location = (await Qixue.create(single_qixue, kungfu)).location
-            if location is None:
-                continue
-            x, id, _icon = location
-            if not with_icon:
-                talents[int(x)-1] = {"id": int(id), "name": single_qixue["name"]}
-            else:
-                name[int(x)-1] = single_qixue["name"]
-                icon[int(x)-1] = _icon
-        return talents \
-            if not with_icon \
-            else [
-                Talent(icon=each_icon, name=each_name)
-                for each_name, each_icon
-                in zip(name, icon)
-            ]
 
     async def get_loop(self):
-        url = f"{self.calculator_url}/loops?kungfu_id={self.kungfu_id or self.kungfu.id}"
+        url = f"{self.calculator_url}/loops?kungfu_id={self.kungfu_id or self.equip_data.kungfu_id}"
         data = (await Request(url).get()).json()
         results = {}
         if data["code"] == 404:
@@ -165,9 +79,9 @@ class UniversalCalculator(BaseCalculator):
             params["jcl_data"] = self.jcl_data
             url_path = "calculator_raw"
         else:
-            params["tuilan_data"] = self.data
-            params["kungfu_id"] = self.kungfu.id
-            url_path = "calculator"
+            params["jcl_data"] = self.equip_data.equip_lines
+            params["kungfu_id"] = self.equip_data.kungfu_id
+            url_path = "calculator_raw"
         data = (await Request(f"{self.calculator_url}/{url_path}", params=params).post(timeout=30)).json()
         if data["code"] == 404:
             return "加速不符合任何计算循环，请自行提供JCL或调整装备！"
@@ -180,12 +94,8 @@ class UniversalCalculator(BaseCalculator):
         _loop_talents = {}
         loop_talents = data["talents"]
         for t in loop_talents:
-            x, y, icon = (await Qixue.create({"name": t}, str(self.kungfu.name))).location or (
-                "",
-                "",
-                "",
-            )
-            _loop_talents[t] = icon
+            talent = Talent(t)
+            _loop_talents[talent.name] = talent.icon
         loop_talents = _loop_talents
         tables = []
         for skill_data in data["damage_details"]:
@@ -209,19 +119,7 @@ class UniversalCalculator(BaseCalculator):
                     }
                 )
             )
-        # attributes = self.attr
-        # attrs = []
-        # for panel in attributes:
-        #     # for income_data in data["data"][flag]["attributeIncomeBoList"]:
-        #         # if income_data["attributeName"] == panel.name:
-        #             attrs.append(
-        #                 Template(template_attr).render(
-        #                     name=panel.name,
-        #                     value=panel.value,
-        #                     # income=round(income_data["attributeIncome"], 3),
-        #                     income="未知"
-        #                 )
-        #             )
+        kungfu = Kungfu.with_internel_id(self.equip_data.kungfu_id)
         name, server = self.info
         html = str(
             SimpleHTML(
@@ -229,25 +127,20 @@ class UniversalCalculator(BaseCalculator):
                 html_template="calculator_new",
                 **{
                     "font": build_path(ASSETS, ["font", "PingFangSC-Semibold.otf"]),
-                    "color": self.kungfu.color,
-                    "kungfu": self.kungfu.name,
-                    "icon": self.kungfu.icon,
-                    # "dps": str(int(data["damage_per_second"])),
+                    "color": kungfu.color,
+                    "kungfu": kungfu.name,
+                    "icon": kungfu.icon,
                     "final_dps": str(int(data["damage_per_second"])),
-                    # "desc": f"计算器JCL循环名称：{data['weapon']}·{data['haste']}-{data['loop_name']}\n<br>提供者：{data['provider']} / 战斗时长：{data['battle_time']}" \
-                    # + f"s<br>玩家：{name}·{server}",
                     "name": name,
                     "server": server,
                     "score": data["attributes"]["score"],
                     "loop": f"{data['weapon']}·{data['haste']}-{data['loop_name']}",
                     "provider": data['provider'],
                     "time": data['battle_time'],
-                    # "attrs": attrs,
                     "skills": "\n".join(tables),
                     "attrs": self.attrs(data["attributes"]),
                     "income": self.income_ver,
                     "formation": self.formation_name,
-                    # "talents": {t.name: t.icon for t in (await self.talents(with_icon=True))},
                     "loop_talents": loop_talents,
                     "saohua": get_saohua(),
                 },

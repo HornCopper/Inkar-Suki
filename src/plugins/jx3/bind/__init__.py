@@ -53,7 +53,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     serverInstance = Server(server, event.group_id)
     if not serverInstance.server:
         await role_check_matcher.finish(PROMPT.ServerNotExist)
-    msg = await get_uid_data(uid, serverInstance.server)
+    msg = await get_uid_data("", uid, serverInstance.server)
     if not isinstance(msg, str):
         return
     await role_check_matcher.finish(msg)

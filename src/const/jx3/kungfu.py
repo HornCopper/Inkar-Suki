@@ -22,7 +22,7 @@ class Kungfu:
     kungfu_baseattr: dict[str, list[str]] = kungfu_baseattr_data
     kungfu_snacks: dict[str, list[str]] = school_snacks_data
     kungfu_basic: dict[str, dict] = kungfu_basic_data
-    kungfu_coefficient: dict[str, list[float]] = kungfu_coefficient_data
+    kungfu_coefficient: dict[str, dict[str, int]] = kungfu_coefficient_data
 
     school_aliases: dict[str, list[str]] = school_aliases_data
 
@@ -30,10 +30,17 @@ class Kungfu:
         self.kungfu_name = kungfu_name
 
     @classmethod
-    def with_internel_id(cls, internel_id: int | str) -> Self:
+    def with_internel_id(cls, internel_id: int | str, convert_to_pc: bool = False) -> Self:
         if str(internel_id) in invert_dict(cls.kungfu_internel_id):
-            return cls(invert_dict(cls.kungfu_internel_id)[str(internel_id)])
-        return cls()
+            result = cls(invert_dict(cls.kungfu_internel_id)[str(internel_id)])
+        else:
+            result = cls()
+        if convert_to_pc and str(result.name).endswith("·悟"):
+            if result.name == "山居问水剑·悟":
+                return cls("问水剑")
+            else:
+                return cls(str(result.name)[:-2])
+        return result
 
     @property
     def name(self) -> str | None:

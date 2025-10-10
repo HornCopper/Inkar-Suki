@@ -10,21 +10,11 @@ from src.const.path import ASSETS, build_path
 
 from src.utils.network import Request
 from src.utils.generate import generate
-from src.plugins.jx3.attributes.v2_remake import (
-    Qixue
-)
 from src.templates import SimpleHTML, get_saohua
+from src.utils.database.attributes import Talent
 
 from ._template import template_calculator_v2
 from .base import BaseCalculator
-
-class Talents(Qixue):
-    @property
-    def location(self) -> tuple[str, str, str] | None:
-        for x in self.qixue_data[self.kungfu]:
-            for y in self.qixue_data[self.kungfu][x]:
-                if self.qixue_data[self.kungfu][x][y]["name"] == self.name:
-                    return x, self.qixue_data[self.kungfu][x][y]["id"], "https://icon.jx3box.com/icon/" + str(self.qixue_data[self.kungfu][x][y]["icon"]) + ".png"
 
 class JX3BOX(Kungfu):
     @classmethod
@@ -53,8 +43,8 @@ class JX3BOXCalculator(BaseCalculator):
             fivestones = [[5, int(each_fivestone) + 24441] for each_fivestone in equip_data["embedding"]]
             if equip_data["stone"] != "":
                 fivestones.append([0, equip_data["stone"]])
-            p_enchant = equip_data["enhance"] or 0
-            c_enchant = equip_data["enchant"] or 0
+            p_enchant = equip_data.get("enhance", 0) or 0
+            c_enchant = equip_data.get("enchant", 0) or 0
             equips_lines.append(
                 [
                     index,
@@ -125,13 +115,9 @@ class JX3BOXCalculator(BaseCalculator):
             # "tuilan_data": self.data,
             **loop_arg
         }
-        if self.jcl_data:
-            params["jcl_data"] = self.jcl_data
-            url_path = "calculator_raw"
-        else:
-            params["tuilan_data"] = self.data
-            params["kungfu_id"] = self.kungfu.id
-            url_path = "calculator"
+        params["jcl_data"] = self.jcl_data
+        url_path = "calculator_raw"
+        params["kungfu_id"] = self.kungfu.id
         data = (await Request(f"{self.calculator_url}/{url_path}", params=params).post()).json()
         if data["code"] == 404:
             return "加速不符合任何计算循环，请自行提供JCL或调整装备！"
@@ -144,12 +130,8 @@ class JX3BOXCalculator(BaseCalculator):
         _loop_talents = {}
         loop_talents = data["talents"]
         for t in loop_talents:
-            x, y, icon = (await Qixue.create({"name": t}, str(self.kungfu.name))).location or (
-                "",
-                "",
-                "",
-            )
-            _loop_talents[t] = icon
+            talent = Talent(t)
+            _loop_talents[talent.name] = talent.icon
         loop_talents = _loop_talents
         tables = []
         for skill_data in data["damage_details"]:
@@ -182,22 +164,17 @@ class JX3BOXCalculator(BaseCalculator):
                     "color": self.kungfu.color,
                     "kungfu": self.kungfu.name,
                     "icon": self.kungfu.icon,
-                    # "dps": str(int(data["damage_per_second"])),
                     "final_dps": str(int(data["damage_per_second"])),
-                    # "desc": f"计算器JCL循环名称：{data['weapon']}·{data['haste']}-{data['loop_name']}\n<br>提供者：{data['provider']} / 战斗时长：{data['battle_time']}" \
-                    # + f"s<br>玩家：{name}·{server}",
                     "name": "-",
                     "server": "-",
                     "score": data["attributes"]["score"],
                     "loop": f"{data['weapon']}·{data['haste']}-{data['loop_name']}",
                     "provider": data['provider'],
                     "time": data['battle_time'],
-                    # "attrs": attrs,
                     "skills": "\n".join(tables),
                     "attrs": self.attrs(data["attributes"]),
                     "income": self.income_ver,
                     "formation": self.formation_name,
-                    # "talents": {t.name: t.icon for t in (await self.talents(with_icon=True))},
                     "loop_talents": loop_talents,
                     "saohua": get_saohua(),
                 },
