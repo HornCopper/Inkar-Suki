@@ -1,12 +1,15 @@
+from typing import Literal
 from nonebot import on_command
 from nonebot.params import CommandArg
 from nonebot.adapters.onebot.v11 import Bot, Message, GroupMessageEvent, MessageSegment as ms
 
+from src.const.jx3.school import School
 from src.config import Config
 from src.const.prompts import PROMPT
 from src.utils.analyze import check_number
 from src.utils.network import Request
 
+from .random_serendipity import get_serendipity, get_serendipity_image
 from .random_loot import RandomLoot
 from .random_shilian import generate_shilian_box
 
@@ -75,3 +78,22 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
     order = msg[1]
     image = await generate_shilian_box(int(level), int(order), event.group_id, bot)
     await random_loot_matcher.finish(ms.at(event.user_id) + image)
+
+random_serendipity_matcher = on_command("jx3_rdsp", aliases={"抽奇遇", "模拟奇遇"}, priority=5, force_whitespace=True)
+
+@random_serendipity_matcher.handle()
+async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
+    msg = args.extract_plain_text().strip()
+    cw_serendipity: str | Literal[False] = False
+    if msg == "":
+        pass
+    else:
+        school = School(msg).name
+        if school is None:
+            await random_serendipity_matcher.finish("无法识别该门派，请检查名称！")
+        cw_serendipity = school
+    serendipity_path = get_serendipity(cw_serendipity)
+    if serendipity_path is None:
+        await random_serendipity_matcher.finish(ms.at(event.user_id) + " 本次抽取没有中奇遇呢，可以再试一次？")
+    image = get_serendipity_image(serendipity_path)
+    await random_serendipity_matcher.finish(ms.at(event.user_id) + image)

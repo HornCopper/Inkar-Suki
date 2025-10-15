@@ -88,7 +88,7 @@ async def on_startup():
     TabCache.Item = read_tab(ASSETS + "/source/jx3/tabs/Item.txt")
     TabCache.Other = read_tab(ASSETS + "/source/jx3/tabs/Other.tab")
     TabCache.skill = read_tab(ASSETS + "/source/jx3/tabs/Skill.txt")
-    TabCache.skillevent = read_tab(ASSETS + "/source/jx3/tabs/Skillevent.txt")
+    TabCache.skillevent = read_tab(ASSETS + "/source/jx3/tabs/skillevent.txt")
     asyncio.create_task(websocket_client(ws_url, headers))
     asyncio.create_task(ScreenshotGenerator.launch())
     if Config.jx3.api.weibo:

@@ -1,3 +1,5 @@
+import asyncio
+from concurrent.futures import ThreadPoolExecutor
 from nonebot import on_command
 from nonebot.adapters.onebot.v11 import (
     Bot,
@@ -14,6 +16,7 @@ from src.plugins.preferences.app import Preference
 from src.plugins.notice import notice
 from src.utils.network import Request
 from src.utils.analyze import check_number
+from src.utils.database.operation import get_group_settings
 
 from .v2_remake import get_attr_v2_remake, get_attr_v2_remake_build, get_attr_v2_remake_global
 from .v4 import get_attr_v4
@@ -129,6 +132,8 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     image = await get_attr_v2_remake_build(jcl_line)
     await attribute_build.finish(image)
 
+attribute_db_executor = ThreadPoolExecutor(max_workers=1)
+
 @notice.handle()
 async def _(bot: Bot, event: GroupUploadNoticeEvent):
     if event.file.name.endswith(".jcl"):
@@ -136,8 +141,15 @@ async def _(bot: Bot, event: GroupUploadNoticeEvent):
         response = await Request(event.model_dump()["file"]["url"]).get()
         response.encoding = "gbk"
         jcl_text = response.text
+        if len(response.content) > 2 * 1024 * 1024 and "Preview" not in get_group_settings(event.group_id, "additions"):
+            await bot.send_group_msg(group_id=event.group_id, message="JCL 文件分析请控制在 2MB 内！")
+            return
         attributes_data = await JX3PlayerAttribute.from_jcl(jcl_text)
+        loop = asyncio.get_running_loop()
+        await asyncio.gather(*[
+            loop.run_in_executor(attribute_db_executor, each_data.save)
+            for each_data in attributes_data
+        ])
         for each_data in attributes_data:
             msg += f"\n{each_data.name}（{each_data.global_role_id}）"
-            each_data.save()
         await bot.send_group_msg(group_id=event.group_id, message=msg)

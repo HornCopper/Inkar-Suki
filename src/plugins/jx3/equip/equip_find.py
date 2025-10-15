@@ -50,7 +50,7 @@ async def get_equip_info(equip_name: str) -> list[tuple[str, dict]] | str:
                     Template(_template_green_attrs).render(
                         attr_name = attr_name,
                         attr_value = attr_value,
-                        strength_value = int(int(attr_value) * StrengthIncome[strength_income])
+                        strength_value = int(int(attr_value) * StrengthIncome[strength_income] + 0.5)
                     )
                 )
             diamonds = []

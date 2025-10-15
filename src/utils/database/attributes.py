@@ -1,3 +1,4 @@
+import asyncio
 from functools import cached_property, lru_cache
 from typing import Literal, Any, cast, overload
 from typing_extensions import Self
@@ -502,11 +503,11 @@ class Equip:
             attr_name = enchant_data[4]
             attr_value = float(enchant_data[5])
             self.attributes[attr_name] = self.attributes.get(attr_name, 0) + int(attr_value)
-            self.score += int(enchant_data[7])
+            self.score += int(enchant_data[7] or 0)
         if int(self._common_enchant) != 0:
             enchant_data = TabCache.get_enchant(self._common_enchant)
             self._common_enchant_name = enchant_data[1]
-            self.score += int(enchant_data[7])
+            self.score += int(enchant_data[7] or 0)
 
     @property
     def icon(self) -> str:
@@ -913,36 +914,70 @@ class JX3PlayerAttribute:
         )
         return result
 
+    # @classmethod
+    # async def from_jcl(cls, jcl_content: str) -> list[Self]:
+    #     jcl_lines = jcl_content.strip().split("\n")
+    #     player_info_lines: dict[int, list] = {}
+    #     player_name: dict[int, str] = {}
+    #     for each_jcl_line in jcl_lines:
+    #         each_jcl_line_list = each_jcl_line.strip().split("\t")
+    #         if each_jcl_line_list[4] == "4":
+    #             lua_table_raw = each_jcl_line_list[5]
+    #             lua_table = cast(list, parse_luatable(lua_table_raw))
+    #             if len(lua_table) >= 8:
+    #                 global_role_id = int(lua_table[7])
+    #                 player_name[global_role_id] = lua_table[1]
+    #                 if global_role_id not in player_info_lines:
+    #                     player_info_lines[global_role_id] = lua_table
+    #                 if len(player_info_lines[global_role_id]) < len(lua_table):
+    #                     player_info_lines[global_role_id] = lua_table
+    #     results = []
+    #     for global_role_id, lua_table in player_info_lines.items():
+    #         equips_lines = [e for e in lua_table[5] if int(e[0]) in range(0, 12+1)]
+    #         talents_lines = [int(t[1]) for t in lua_table[6]]
+    #         results.append(
+    #             cls(
+    #                 equips_lines, talents_lines,
+    #                 cast(int, Kungfu.with_internel_id(int(lua_table[3]), True).id),
+    #                 global_role_id,
+    #                 name=player_name[global_role_id]
+    #             )
+    #         )
+    #     return results
     @classmethod
     async def from_jcl(cls, jcl_content: str) -> list[Self]:
         jcl_lines = jcl_content.strip().split("\n")
         player_info_lines: dict[int, list] = {}
         player_name: dict[int, str] = {}
+
         for each_jcl_line in jcl_lines:
-            each_jcl_line_list = each_jcl_line.strip().split("\t")
-            if each_jcl_line_list[4] == "4":
-                lua_table_raw = each_jcl_line_list[5]
-                lua_table = cast(list, parse_luatable(lua_table_raw))
-                if len(lua_table) >= 8:
-                    global_role_id = int(lua_table[7])
-                    player_name[global_role_id] = lua_table[1]
-                    if global_role_id not in player_info_lines:
-                        player_info_lines[global_role_id] = lua_table
-                    if len(player_info_lines[global_role_id]) < len(lua_table):
-                        player_info_lines[global_role_id] = lua_table
-        results = []
-        for global_role_id, lua_table in player_info_lines.items():
-            equips_lines = [e for e in lua_table[5] if int(e[0]) in range(0, 12+1)]
+            parts = each_jcl_line.strip().split("\t")
+            if len(parts) < 6 or parts[4] != "4":
+                continue
+            lua_table_raw = parts[5]
+            try:
+                lua_table = cast(list, await asyncio.to_thread(parse_luatable, lua_table_raw))
+            except Exception:
+                continue
+            if len(lua_table) >= 8:
+                global_role_id = int(lua_table[7])
+                player_name[global_role_id] = lua_table[1]
+                if global_role_id not in player_info_lines or len(player_info_lines[global_role_id]) < len(lua_table):
+                    player_info_lines[global_role_id] = lua_table
+
+        async def build_attr(global_role_id: int, lua_table: list):
+            equips_lines = [e for e in lua_table[5] if int(e[0]) in range(0, 13)]
             talents_lines = [int(t[1]) for t in lua_table[6]]
-            results.append(
-                cls(
-                    equips_lines, talents_lines,
-                    cast(int, Kungfu.with_internel_id(int(lua_table[3]), True).id),
-                    global_role_id,
-                    name=player_name[global_role_id]
-                )
+            return cls(
+                equips_lines,
+                talents_lines,
+                cast(int, Kungfu.with_internel_id(int(lua_table[3]), True).id),
+                global_role_id,
+                name=player_name.get(global_role_id, "未知")
             )
-        return results
+
+        tasks = [build_attr(rid, lua) for rid, lua in player_info_lines.items()]
+        return await asyncio.gather(*tasks)
 
     @overload
     @classmethod

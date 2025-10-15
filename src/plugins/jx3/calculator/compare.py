@@ -30,7 +30,7 @@ AttributesFull = {
     "atSolarAndLunarAttackPowerBase": "阴阳内功攻击",
     "atSolarAndLunarCriticalStrike": "阴阳内功会心",
     "atSolarAndLunarOvercomeBase": "阴阳内功破防",
-    "atSolarAndLunarOvercomeBase": "阴阳内功会心效果",
+    "atSolarAndLunarCriticalDamagePowerBase": "阴阳内功会心效果",
 
     "atNeutralAttackPowerBase": "混元内功攻击",
     "atNeutralCriticalStrike": "混元内功会心",
