@@ -48,16 +48,16 @@ def read_tab(tab_path: str) -> list[list]:
         return [a.strip().split("\t") for a in f.read().strip().split("\n")]
 
 def init_tab_cache():
-    TabCache.Attrib = read_tab(ASSETS + "/source/jx3/tabs/Attrib.tab")
-    TabCache.Custom_Armor = read_tab(ASSETS + "/source/jx3/tabs/Custom_Armor.tab")
-    TabCache.Custom_Trinket = read_tab(ASSETS + "/source/jx3/tabs/Custom_Trinket.tab")
-    TabCache.Custom_Weapon = read_tab(ASSETS + "/source/jx3/tabs/Custom_Weapon.tab")
-    TabCache.Enchant = read_tab(ASSETS + "/source/jx3/tabs/Enchant.tab")
-    TabCache.Set = read_tab(ASSETS + "/source/jx3/tabs/Set.tab")
-    TabCache.Item = read_tab(ASSETS + "/source/jx3/tabs/Item.txt")
-    TabCache.Other = read_tab(ASSETS + "/source/jx3/tabs/Other.tab")
-    TabCache.skill = read_tab(ASSETS + "/source/jx3/tabs/Skill.txt")
-    TabCache.skillevent = read_tab(ASSETS + "/source/jx3/tabs/Skillevent.txt")
+    TabCache._Attrib = read_tab(ASSETS + "/source/jx3/tabs/Attrib.tab")
+    TabCache._Custom_Armor = read_tab(ASSETS + "/source/jx3/tabs/Custom_Armor.tab")
+    TabCache._Custom_Trinket = read_tab(ASSETS + "/source/jx3/tabs/Custom_Trinket.tab")
+    TabCache._Custom_Weapon = read_tab(ASSETS + "/source/jx3/tabs/Custom_Weapon.tab")
+    TabCache._Enchant = read_tab(ASSETS + "/source/jx3/tabs/Enchant.tab")
+    TabCache._Set = read_tab(ASSETS + "/source/jx3/tabs/Set.tab")
+    TabCache._Item = read_tab(ASSETS + "/source/jx3/tabs/Item.txt")
+    TabCache._Other = read_tab(ASSETS + "/source/jx3/tabs/Other.tab")
+    TabCache._skill = read_tab(ASSETS + "/source/jx3/tabs/Skill.txt")
+    TabCache._skillevent = read_tab(ASSETS + "/source/jx3/tabs/Skillevent.txt")
 
 class TabDescriptor:
     def __init__(self, name):
@@ -69,22 +69,19 @@ class TabDescriptor:
             owner._initialized = True
         
         return getattr(owner, f"_{self.name}")
-    
-    def __set__(self, instance, value):
-        setattr(instance, f"_{self.name}", value)
 
 
 class TabCache:
-    Custom_Armor = TabDescriptor("Custom_Armor")
-    Custom_Trinket = TabDescriptor("Custom_Trinket")
-    Custom_Weapon = TabDescriptor("Custom_Weapon")
-    Enchant = TabDescriptor("Enchant")
-    Attrib = TabDescriptor("Attrib")
-    Set = TabDescriptor("Set")
-    Item = TabDescriptor("Item")
-    Other = TabDescriptor("Other")
-    skill = TabDescriptor("skill")
-    skillevent = TabDescriptor("skillevent")
+    Custom_Armor: Any = TabDescriptor("Custom_Armor")
+    Custom_Trinket: Any  = TabDescriptor("Custom_Trinket")
+    Custom_Weapon: Any  = TabDescriptor("Custom_Weapon")
+    Enchant: Any  = TabDescriptor("Enchant")
+    Attrib: Any  = TabDescriptor("Attrib")
+    Set: Any  = TabDescriptor("Set")
+    Item: Any  = TabDescriptor("Item")
+    Other: Any  = TabDescriptor("Other")
+    skill: Any  = TabDescriptor("skill")
+    skillevent: Any  = TabDescriptor("skillevent")
     
     _initialized = False
     
