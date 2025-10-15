@@ -75,7 +75,7 @@ async def parse_equip(equip: Equip, last: bool = False) -> str:
                     Path(
                         ASSETS + "/image/jx3/attributes/common_enchant.png"
                     ).as_uri(),
-                    equip.common_enchant
+                    (equip.common_enchant if equip.location_index not in [0, 1] else "")
                 ),
                 (
                     Path(
