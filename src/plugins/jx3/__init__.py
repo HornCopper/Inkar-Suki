@@ -11,7 +11,6 @@ from src.utils.database import cache_db
 from src.utils.database.classes import JX3APIWSData
 from src.utils.database.operation import send_subscribe
 from src.plugins.jx3.announce.image import get_image as get_announce_image
-from src.utils.database.attributes import TabCache
 
 from .parse import (
     get_registered_actions,
@@ -69,26 +68,12 @@ async def websocket_client(ws_url: str, headers: dict):
             logger.error(f"WebSocket connection error: {e}")
         await asyncio.sleep(3)
 
-def read_tab(tab_path: str) -> list[list]:
-    with open(tab_path, encoding="gbk", mode="r") as f:
-        return [a.strip().split("\t") for a in f.read().strip().split("\n")]
-
 @driver.on_startup
 async def on_startup():
     ws_url = Config.jx3.ws.url
     headers = {
         "token": Config.jx3.ws.token
     }
-    TabCache.Attrib = read_tab(ASSETS + "/source/jx3/tabs/Attrib.tab")
-    TabCache.Custom_Armor = read_tab(ASSETS + "/source/jx3/tabs/Custom_Armor.tab")
-    TabCache.Custom_Trinket = read_tab(ASSETS + "/source/jx3/tabs/Custom_Trinket.tab")
-    TabCache.Custom_Weapon = read_tab(ASSETS + "/source/jx3/tabs/Custom_Weapon.tab")
-    TabCache.Enchant = read_tab(ASSETS + "/source/jx3/tabs/Enchant.tab")
-    TabCache.Set = read_tab(ASSETS + "/source/jx3/tabs/Set.tab")
-    TabCache.Item = read_tab(ASSETS + "/source/jx3/tabs/Item.txt")
-    TabCache.Other = read_tab(ASSETS + "/source/jx3/tabs/Other.tab")
-    TabCache.skill = read_tab(ASSETS + "/source/jx3/tabs/Skill.txt")
-    TabCache.skillevent = read_tab(ASSETS + "/source/jx3/tabs/skillevent.txt")
     asyncio.create_task(websocket_client(ws_url, headers))
     asyncio.create_task(ScreenshotGenerator.launch())
     if Config.jx3.api.weibo:

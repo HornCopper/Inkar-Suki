@@ -3,10 +3,10 @@ from functools import cached_property, lru_cache
 from typing import Literal, Any, cast, overload
 from typing_extensions import Self
 
+from src.const.path import ASSETS
 from src.const.jx3.kungfu import Kungfu
 from src.const.jx3.server import Server
 from src.utils.database import attribute_db as db
-from src.utils.database.player import search_player
 from src.utils.database.classes import PlayerEquipsCache
 from src.utils.network import Request
 from src.utils.analyze import R, TuilanData, merge_dicts, parse_luatable, parse_skillevent
@@ -15,7 +15,7 @@ from src.utils.exceptions import TabFileMissException
 import copy
 import re
 
-from src.utils.database.constant import A, B, C, CRITICAL_DAMAGE_DIVISOR, CRITICAL_DIVISOR, DECRITICAL_DAMAGE_DIVISOR, HASTE_DIVISOR, OVERCOME_DIVISOR, SHIELD_130_CONST, STRAIN_DIVISOR, Agility_to_Critical_Cof, AttributesShort, Colors, MaxStrengthLevel, MinStrengthLevel, Spirit_to_Critical_Cof, Spunk_to_Attack_Cof, Spunk_to_BaseOvercome_Cof, Strength_to_Attack_Cof, Strength_to_BaseOvercome_Cof, StrengthIncome
+from src.utils.database.constant import A, B, C, CRITICAL_DAMAGE_DIVISOR, CRITICAL_DIVISOR, DECRITICAL_DAMAGE_DIVISOR, OVERCOME_DIVISOR, SHIELD_130_CONST, STRAIN_DIVISOR, Agility_to_Critical_Cof, AttributesShort, Colors, MaxStrengthLevel, MinStrengthLevel, Spirit_to_Critical_Cof, Spunk_to_Attack_Cof, Spunk_to_BaseOvercome_Cof, Strength_to_Attack_Cof, Strength_to_BaseOvercome_Cof, StrengthIncome
 from src.utils.time import Time
 
 def get_attr_name(attribute_name: str):
@@ -43,17 +43,73 @@ def parse_conditions(input_str: str) -> list[str] | Literal[False]:
         return False
     return matches
 
+def read_tab(tab_path: str) -> list[list]:
+    with open(tab_path, encoding="gbk", mode="r") as f:
+        return [a.strip().split("\t") for a in f.read().strip().split("\n")]
+
+def init_tab_cache():
+    TabCache.Attrib = read_tab(ASSETS + "/source/jx3/tabs/Attrib.tab")
+    TabCache.Custom_Armor = read_tab(ASSETS + "/source/jx3/tabs/Custom_Armor.tab")
+    TabCache.Custom_Trinket = read_tab(ASSETS + "/source/jx3/tabs/Custom_Trinket.tab")
+    TabCache.Custom_Weapon = read_tab(ASSETS + "/source/jx3/tabs/Custom_Weapon.tab")
+    TabCache.Enchant = read_tab(ASSETS + "/source/jx3/tabs/Enchant.tab")
+    TabCache.Set = read_tab(ASSETS + "/source/jx3/tabs/Set.tab")
+    TabCache.Item = read_tab(ASSETS + "/source/jx3/tabs/Item.txt")
+    TabCache.Other = read_tab(ASSETS + "/source/jx3/tabs/Other.tab")
+    TabCache.skill = read_tab(ASSETS + "/source/jx3/tabs/Skill.txt")
+    TabCache.skillevent = read_tab(ASSETS + "/source/jx3/tabs/Skillevent.txt")
+
+class TabDescriptor:
+    def __init__(self, name):
+        self.name = name
+    
+    def __get__(self, instance, owner):
+        if not hasattr(owner, "_initialized") or not owner._initialized:
+            init_tab_cache()
+            owner._initialized = True
+        
+        return getattr(owner, f"_{self.name}")
+    
+    def __set__(self, instance, value):
+        setattr(instance, f"_{self.name}", value)
+
+
 class TabCache:
-    Custom_Armor: list[list]
-    Custom_Trinket: list[list]
-    Custom_Weapon: list[list]
-    Enchant: list[list]
-    Attrib: list[list]
-    Set: list[list]
-    Item: list[list]
-    Other: list[list]
-    skill: list[list]  # skill.txt
-    skillevent: list[list]
+    Custom_Armor = TabDescriptor("Custom_Armor")
+    Custom_Trinket = TabDescriptor("Custom_Trinket")
+    Custom_Weapon = TabDescriptor("Custom_Weapon")
+    Enchant = TabDescriptor("Enchant")
+    Attrib = TabDescriptor("Attrib")
+    Set = TabDescriptor("Set")
+    Item = TabDescriptor("Item")
+    Other = TabDescriptor("Other")
+    skill = TabDescriptor("skill")
+    skillevent = TabDescriptor("skillevent")
+    
+    _initialized = False
+    
+    _Custom_Armor: list[list] = []
+    _Custom_Trinket: list[list] = []
+    _Custom_Weapon: list[list] = []
+    _Enchant: list[list] = []
+    _Attrib: list[list] = []
+    _Set: list[list] = []
+    _Item: list[list] = []
+    _Other: list[list] = []
+    _skill: list[list] = []
+    _skillevent: list[list] = []
+
+    @classmethod
+    def force_init(cls):
+        """强制初始化所有 Tab 数据"""
+        init_tab_cache()
+        cls._initialized = True
+
+    @classmethod
+    def is_initialized(cls) -> bool:
+        """检查是否已经初始化"""
+        return cls._initialized
+
 
     @classmethod
     @lru_cache(maxsize=None)
