@@ -113,7 +113,7 @@ class TabCache:
     def get_icon_for_equip(cls, ui_id: int) -> tuple[int, str]:
         for each_item in cls.Item:
             if each_item[0] == str(ui_id):
-                return int(each_item[1]), each_item[4]
+                return int(each_item[1] or 1434), each_item[4]
         raise TabFileMissException(
             f"在 Item.txt 中无法找到 UIID {ui_id} 对应的物品，请检查该 Tab 是否过期！"
         )
