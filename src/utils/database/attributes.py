@@ -695,7 +695,7 @@ class FinalAttr:
     def get_kungfu_base(self):
         if self.kungfu_id in [10014, 10081, 10447, 10175, 10627, 10821]: # 根骨
             return "atSpiritBase"
-        elif self.kungfu_id in [10003, 10225, 10242, 10615, 10021]: # 元气
+        elif self.kungfu_id in [10003, 10225, 10242, 10615, 10021, 10786]: # 元气
             return "atSpunkBase"
         elif self.kungfu_id in [10015, 10533, 10144, 10585, 10390, 10756]: # 身法
             return "atAgilityBase"
@@ -707,7 +707,6 @@ class FinalAttr:
             return "atSpiritBase"
         else:
             raise
-            return None
     
     @property
     def kungfu_type(self) -> str:

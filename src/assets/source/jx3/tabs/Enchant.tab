@@ -12528,21 +12528,21 @@ ID	Name	UIID	AttriName	Attribute1ID	Attribute1Value1	Attribute1Value2	Score	Diam
 16155	昆仑玄石·暗器（外破）	暗器	外功破防等级提升2801点	atPhysicsOvercomeBase	2801	2801	2877																										1					
 16156	昆仑玄石·暗器（内破）	暗器	内功破防等级提升2801点	atMagicOvercome	2801	2801	2877																										1					
 16157	昆仑玄石·暗器（加速）	暗器	加速提升2801点	atHasteBase	2801	2801	2877																										1					
-16158	于阗玉邦·御·腰	腰带限时大附魔		atSkillEventHandler	2839		4974																									60	6				11	0
-16159	于阗玉邦·御·鞋	鞋子限时大附魔		atSkillEventHandler	2844		4974																									60	9				11	0
-16160	于阗玉邦·御·腕	护手限时大附魔		atSkillEventHandler	2840		4974																									60	10				11	0
-16161	于阗玉邦·御·衣	上装限时大附魔		atSkillEventHandler	2841		7112																									60	2				11	0
-16162	于阗玉邦·御·帽	帽子限时大附魔		atSkillEventHandler	2842		6396																									60	3				11	0
-16163	于阗玉邦·疗·腰	腰带限时大附魔		atSkillEventHandler	2838		4974																									60	6				11	0
-16164	于阗玉邦·疗·鞋	鞋子限时大附魔		atSkillEventHandler	2843		4974																									60	9				11	0
-16165	于阗玉邦·疗·腕	护手限时大附魔		atSkillEventHandler	2836		4974																									60	10				11	0
-16166	于阗玉邦·疗·衣	上装限时大附魔		atSkillEventHandler	2837		7112																									60	2				11	0
+16158	于阗玉邦·御·腰	腰带限时大附魔		atSkillEventHandler	2995		4974																									60	6				11	0
+16159	于阗玉邦·御·鞋	鞋子限时大附魔		atSkillEventHandler	3000		4974																									60	9				11	0
+16160	于阗玉邦·御·腕	护手限时大附魔		atSkillEventHandler	2996		4974																									60	10				11	0
+16161	于阗玉邦·御·衣	上装限时大附魔		atSkillEventHandler	2997		7112																									60	2				11	0
+16162	于阗玉邦·御·帽	帽子限时大附魔		atSkillEventHandler	2998		6396																									60	3				11	0
+16163	于阗玉邦·疗·腰	腰带限时大附魔		atSkillEventHandler	2994		4974																									60	6				11	0
+16164	于阗玉邦·疗·鞋	鞋子限时大附魔		atSkillEventHandler	2999		4974																									60	9				11	0
+16165	于阗玉邦·疗·腕	护手限时大附魔		atSkillEventHandler	2992		4974																									60	10				11	0
+16166	于阗玉邦·疗·衣	上装限时大附魔		atSkillEventHandler	2993		7112																									60	2				11	0
 16167	于阗玉邦·疗·帽	帽子限时大附魔		atExecuteScript	skill/装备/帽子_新附魔_治疗非战斗附魔减读条.lua		6396																									60	3				3	0
-16168	于阗玉邦·伤·腰	腰带限时大附魔		atSkillEventHandler	2833		4974																									60	6				11	0
-16169	于阗玉邦·伤·鞋	鞋子限时大附魔		atSkillEventHandler	2835		4974																									60	9				11	0
-16170	于阗玉邦·伤·腕	护手限时大附魔		atSkillEventHandler	2834		4974																									60	10				11	0
-16171	于阗玉邦·伤·衣	上装限时大附魔		atExecuteScript	skill/装备/太极秘录赛季输出衣服附魔.lua		7112																									60	2				11	0
-16172	于阗玉邦·伤·帽	帽子限时大附魔		atExecuteScript	skill/装备/太极秘录赛季输出帽子附魔.lua		6396																									60	3				11	0
+16168	于阗玉邦·伤·腰	腰带限时大附魔		atSkillEventHandler	2989		4974																									60	6				11	0
+16169	于阗玉邦·伤·鞋	鞋子限时大附魔		atSkillEventHandler	2991		4974																									60	9				11	0
+16170	于阗玉邦·伤·腕	护手限时大附魔		atSkillEventHandler	2990		4974																									60	10				11	0
+16171	于阗玉邦·伤·衣	上装限时大附魔		atExecuteScript	skill/装备/山海源流赛季输出衣服附魔.lua		7112																									60	2				11	0
+16172	于阗玉邦·伤·帽	帽子限时大附魔		atExecuteScript	skill/装备/山海源流赛季输出帽子附魔.lua		6396																									60	3				11	0
 16173	山海·白虹·项链（体质）	项链	体质提升1816点	atVitalityBase	1816	1816	4316																										4					
 16174	山海·白虹·项链（根骨）	项链	根骨提升628点	atSpiritBase	628	628	4316																										4					
 16175	山海·白虹·项链（力道）	项链	力道提升628点	atStrengthBase	628	628	4316																										4					
@@ -12580,23 +12580,23 @@ ID	Name	UIID	AttriName	Attribute1ID	Attribute1Value1	Attribute1Value2	Score	Diam
 16207	山海·荆岫·暗器（外破）	暗器	外功破防等级提升4902点	atPhysicsOvercomeBase	4902	4902	4316																										1					
 16208	山海·荆岫·暗器（内破）	暗器	内功破防等级提升4902点	atMagicOvercome	4902	4902	4316																										1					
 16209	山海·荆岫·暗器（加速）	暗器	加速提升4902点	atHasteBase	4902	4902	4316																										1					
-16210	密玉神阆·纵·腰	腰带限时大附魔		atSkillEventHandler	2861																											60	6				11	0
-16211	密玉神阆·横·腰	腰带限时大附魔		atSkillEventHandler	2862																											60	6				11	0
-16212	密玉神阆·纵·鞋	鞋子限时大附魔		atSkillEventHandler	2867																											60	9				11	0
-16213	密玉神阆·横·鞋	鞋子限时大附魔		atSkillEventHandler	2868																											60	9				11	0
-16214	密玉神阆·纵·腕	护手限时大附魔		atExecuteScript	skill/装备/PVP附魔1护手战阶_太极秘录.lua																											60	10				11	0
-16215	密玉神阆·横·腕	护手限时大附魔		atSkillEventHandler	2860																											60	10				11	0
-16216	密玉神阆·纵·衣	上装限时大附魔		atSkillEventHandler	2865																											60	2				11	0
-16217	密玉神阆·横·衣	上装限时大附魔		atSkillEventHandler	2866																											60	2				11	0
-16218	密玉神阆·纵·帽	帽子限时大附魔		atSkillEventHandler	2863																											60	3				11	0
-16219	密玉神阆·横·帽	帽子限时大附魔		atSkillEventHandler	2864																											60	3				11	0
-16220	密玉神域·纵·腰	腰带限时大附魔		atSkillEventHandler	2852																											60	6				11	0
-16221	密玉神域·横·腰	腰带限时大附魔		atSkillEventHandler	2853																											60	6				11	0
-16222	密玉神域·纵·鞋	鞋子限时大附魔		atSkillEventHandler	2858																											60	9				11	0
-16223	密玉神域·横·鞋	鞋子限时大附魔		atSkillEventHandler	2859																											60	9				11	0
-16224	密玉神域·纵·腕	护手限时大附魔		atExecuteScript	skill/装备/PVP附魔1护手拍卖_太极秘录.lua																											60	10				11	0
-16225	密玉神域·横·腕	护手限时大附魔		atSkillEventHandler	2851																											60	10				11	0
-16226	密玉神域·纵·衣	上装限时大附魔		atSkillEventHandler	2856																											60	2				11	0
-16227	密玉神域·横·衣	上装限时大附魔		atSkillEventHandler	2857																											60	2				11	0
-16228	密玉神域·纵·帽	帽子限时大附魔		atSkillEventHandler	2854																											60	3				11	0
-16229	密玉神域·横·帽	帽子限时大附魔		atSkillEventHandler	2855																											60	3				11	0
+16210	密玉神阆·纵·腰	腰带限时大附魔		atSkillEventHandler	3011																											60	6				11	0
+16211	密玉神阆·横·腰	腰带限时大附魔		atSkillEventHandler	3012																											60	6				11	0
+16212	密玉神阆·纵·鞋	鞋子限时大附魔		atSkillEventHandler	3017																											60	9				11	0
+16213	密玉神阆·横·鞋	鞋子限时大附魔		atSkillEventHandler	3018																											60	9				11	0
+16214	密玉神阆·纵·腕	护手限时大附魔		atExecuteScript	skill/装备/PVP附魔1护手战阶_山海源流.lua																											60	10				11	0
+16215	密玉神阆·横·腕	护手限时大附魔		atSkillEventHandler	3010																											60	10				11	0
+16216	密玉神阆·纵·衣	上装限时大附魔		atSkillEventHandler	3015																											60	2				11	0
+16217	密玉神阆·横·衣	上装限时大附魔		atSkillEventHandler	3016																											60	2				11	0
+16218	密玉神阆·纵·帽	帽子限时大附魔		atSkillEventHandler	3013																											60	3				11	0
+16219	密玉神阆·横·帽	帽子限时大附魔		atSkillEventHandler	3014																											60	3				11	0
+16220	密玉神域·纵·腰	腰带限时大附魔		atSkillEventHandler	3002																											60	6				11	0
+16221	密玉神域·横·腰	腰带限时大附魔		atSkillEventHandler	3003																											60	6				11	0
+16222	密玉神域·纵·鞋	鞋子限时大附魔		atSkillEventHandler	3008																											60	9				11	0
+16223	密玉神域·横·鞋	鞋子限时大附魔		atSkillEventHandler	3009																											60	9				11	0
+16224	密玉神域·纵·腕	护手限时大附魔		atExecuteScript	skill/装备/PVP附魔1护手拍卖_山海源流.lua																											60	10				11	0
+16225	密玉神域·横·腕	护手限时大附魔		atSkillEventHandler	3001																											60	10				11	0
+16226	密玉神域·纵·衣	上装限时大附魔		atSkillEventHandler	3006																											60	2				11	0
+16227	密玉神域·横·衣	上装限时大附魔		atSkillEventHandler	3007																											60	2				11	0
+16228	密玉神域·纵·帽	帽子限时大附魔		atSkillEventHandler	3004																											60	3				11	0
+16229	密玉神域·横·帽	帽子限时大附魔		atSkillEventHandler	3005																											60	3				11	0

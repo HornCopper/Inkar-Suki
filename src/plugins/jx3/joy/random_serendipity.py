@@ -4,7 +4,7 @@ from PIL import Image
 
 from nonebot.adapters.onebot.v11 import MessageSegment as ms
 
-from src.const.path import ASSETS, CACHE, build_path
+from src.const.path import ASSETS, CACHE, CONST, build_path
 from src.plugins.jx3.joy.random_item import get_random
 from src.utils.generate import get_uuid
 from src.utils.network import Request
@@ -12,14 +12,14 @@ from src.utils.network import Request
 import os
 import random
 
-serendipity_percent = 20
+serendipity_percent = 40
 firework_percent = 10
 
 def get_serendipity(school: str | Literal[False]) -> str | None:
     pool = []
     if get_random(serendipity_percent):
         num = random.randint(1, 100)
-        if 1 <= num <= 5:
+        if 1 <= num <= 15:
             # 绝世
             for each_serendipity in os.listdir(ASSETS + "/image/jx3/serendipity/show/peerless"):
                 serendipity_name = each_serendipity[:-4]
@@ -29,7 +29,7 @@ def get_serendipity(school: str | Literal[False]) -> str | None:
                         pool.append(ASSETS + "/image/jx3/serendipity/show/peerless/" + each_serendipity)
                 else:
                     pool.append(ASSETS + "/image/jx3/serendipity/show/peerless/" + each_serendipity)
-        elif 6 <= num <= 30:
+        elif 15 <= num <= 55:
             # 普通
             for each_serendipity in os.listdir(ASSETS + "/image/jx3/serendipity/show/common"):
                 serendipity_name = each_serendipity[:-4]
@@ -49,6 +49,9 @@ def get_serendipity_image(serendipity_path: str) -> ms:
     if serendipity_path.split("/")[-2] == "fireworks":
         return ms.image(Request(Path(serendipity_path).as_uri()).local_content)
     serendipity_file_name = serendipity_path.split("/")[-1][:-4]
+    cache_path = CONST + "/cache/serendipity/" + serendipity_file_name + ".png"
+    if os.path.exists(cache_path):
+        return ms.image(Request(Path(cache_path).as_uri()).local_content)
     if "-" in serendipity_file_name:
         serendipity_name, _ = serendipity_file_name.split("-")
     else:
@@ -59,7 +62,7 @@ def get_serendipity_image(serendipity_path: str) -> ms:
     icon = Image.open(ASSETS + "/image/jx3/serendipity/vector/icon.png")
     name_path = ASSETS + f"/image/jx3/serendipity/name/{serendipity_name}.png"
     if not os.path.exists(name_path):
-        name_path = ASSETS + f"/image/jx3/serendipity/name/宠物奇缘.png"
+        name_path = ASSETS + "/image/jx3/serendipity/name/宠物奇缘.png"
     name = Image.open(name_path)
 
     background.alpha_composite(serendipity_show, (0, 0))
@@ -68,4 +71,10 @@ def get_serendipity_image(serendipity_path: str) -> ms:
 
     final_path = build_path(CACHE, [get_uuid() + ".png"])
     background.save(final_path)
+    with open(final_path, "rb") as a:
+        image = a.read()
+    if not os.path.exists(CONST + "/cache/serendipity/"):
+        os.mkdir(CONST + "/cache/serendipity/")
+    with open(cache_path, "wb") as b:
+        b.write(image)
     return ms.image(Request(Path(final_path).as_uri()).local_content)
