@@ -3,8 +3,6 @@ from jinja2 import Template
 from nonebot.adapters.onebot.v11 import Message, MessageSegment as ms
 
 from src.config import Config
-from src.const.jx3.kungfu import Kungfu
-from src.const.jx3.school import School
 from src.utils.network import Request, cache_image
 from src.utils.analyze import check_number
 from src.utils.generate import generate
@@ -112,7 +110,7 @@ async def get_buff(buff_keyword: str = "") -> str | Message | ms:
             tables.append(
                 Template(template_body_skill).render(
                     icon = Path(await cache_image("https://icon.jx3box.com/icon/" + buff["IconID"] + ".png")).as_uri(),
-                    buff_id = buff["buffID"] + "_" + buff["Level"],
+                    buff_id = buff["BuffID"] + "_" + buff["Level"],
                     name = buff["Name"],
                     remark = buff["Remark"],
                     desc = H.escape(desc).replace("。&lt;", "。<br>&lt;").replace("&gt;&lt;", "&gt;<br>&lt;")

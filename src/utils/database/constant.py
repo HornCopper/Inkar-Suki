@@ -7,10 +7,10 @@ EquipLocations = [
     #  0     1      2       3      4       5       6      7       8      9       10      11     12
 ]
 
-# MaxStrengthLevel = 32000
+MaxStrengthLevel = 32000
 MinStrengthLevel = 27800
 
-MaxStrengthLevel = 37400
+# MaxStrengthLevel = 37400
 
 Colors = [
     "(167, 167, 167)",
