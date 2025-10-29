@@ -425,7 +425,7 @@ class Equip:
                     diamond_extra_score = (1.3 * (0.65 * diamond_level - 3.2) * A * B)
                     final_value = 1.3 * (0.65 * diamond_level - 3.2) * MaxStrengthLevel / MinStrengthLevel * param1min
                 else:
-                    diamond_extra_score = (0.195 * diamond_level - 3.2) * A * B
+                    diamond_extra_score = (0.195 * diamond_level) * A * B
                     final_value = 0.195 * diamond_level * MaxStrengthLevel / MinStrengthLevel * param1min
                 self.extra_score += diamond_extra_score * MaxStrengthLevel / MinStrengthLevel
                 final_value = int(final_value)
@@ -521,7 +521,7 @@ class Equip:
                 diamond_extra_score = (1.3 * (0.65 * diamond_level - 3.2) * A * B)
                 final_value = 1.3 * (0.65 * diamond_level - 3.2) * MaxStrengthLevel / MinStrengthLevel * param1min
             else:
-                diamond_extra_score = (0.195 * diamond_level - 3.2) * A * B
+                diamond_extra_score = (0.195 * diamond_level) * A * B
                 final_value = 0.195 * diamond_level * MaxStrengthLevel / MinStrengthLevel * param1min
             diamonds_total_score = diamond_extra_score * MaxStrengthLevel / MinStrengthLevel
             self.extra_score += diamonds_total_score
@@ -926,7 +926,7 @@ class FinalAttr:
                 "破招": str(surplus),
                 "基础体质": str(base_vitality),
                 "御劲": str(R(toughness / CRITICAL_DIVISOR * 100, 2)) + "%",
-                "化劲": str(round((int((decritical_damage / (decritical_damage + DECRITICAL_DAMAGE_DIVISOR)) * 1024) + 102) * 100 / 1024, 2)) + "%"
+                "化劲": str(round((int((decritical_damage / (decritical_damage + DECRITICAL_DAMAGE_DIVISOR)) * 1024)) * 100 / 1024, 2)) + "%"
             }
 
 class JX3PlayerAttribute:
@@ -1012,7 +1012,10 @@ class JX3PlayerAttribute:
             except Exception:
                 continue
             if len(lua_table) >= 8:
-                global_role_id = int(lua_table[7])
+                try:
+                    global_role_id = int(lua_table[7])
+                except TypeError:
+                    continue
                 player_name[global_role_id] = lua_table[1]
                 if global_role_id not in player_info_lines or len(player_info_lines[global_role_id]) < len(lua_table):
                     player_info_lines[global_role_id] = lua_table

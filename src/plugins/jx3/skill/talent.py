@@ -12,7 +12,7 @@ from src.utils.network import Request
 from src.utils.file import read, write
 from src.utils.generate import generate
 
-from ._template import template_body, table_head
+from ._template import template_body_talent, table_head_talent
 
 import json
 import os
@@ -83,34 +83,34 @@ class Qixue:
                     )
         return results
     
-async def get_qixue(name: str, kungfu: str, season: str = "") -> str | Message | Path:
+async def get_talent_info(name: str, kungfu: str, season: str = "") -> str | Message | Path:
     kungfu_name = Kungfu(kungfu).name
     if kungfu_name is None:
         return "无法识别该心法，请检查后重试！"
-    info = await Qixue.create(name, kungfu_name, season)
-    if not info:
+    talents = await Qixue.create(name, kungfu_name, season)
+    if not talents:
         return "没有找到匹配的赛季名称，请检查赛季名称是否正确？"
-    info = info.info
-    if len(info) == 0: # No match
+    talents = talents.info
+    if len(talents) == 0: # No match
         return "没有找到任何匹配的奇穴，请检查心法或奇穴名后重试？"
-    elif len(info) == 1: # Unique match
-        return ms.image(info[0].icon) + f"第{info[0].location[0]}重·第{info[0].location[1]}层：{info[0].name}\n{info[0].desc}"
+    elif len(talents) == 1: # Unique match
+        return ms.image(talents[0].icon) + f"第{talents[0].location[0]}重·第{talents[0].location[1]}层：{talents[0].name}\n{talents[0].desc}"
     else: # Much match
         tables = []
-        for qx in info:
+        for each_talent in talents:
             tables.append(
-                Template(template_body).render(
-                    icon = qx.icon,
-                    name = qx.name,
-                    location = f"第{qx.location[0]}重·第{qx.location[1]}层",
-                    desc = qx.desc
+                Template(template_body_talent).render(
+                    icon = each_talent.icon,
+                    name = each_talent.name,
+                    location = f"第{each_talent.location[0]}重·第{each_talent.location[1]}层",
+                    desc = each_talent.desc
                 )
             )
         html = str(
             HTMLSourceCode(
                 application_name = f"奇穴 · {name} · {kungfu} · {season or '最新'}",
                 additional_js = Path(build_path(TEMPLATES, ["jx3", "qixue.js"])),
-                table_head = table_head,
+                table_head = table_head_talent,
                 table_body = "\n".join(tables)
             )
         )

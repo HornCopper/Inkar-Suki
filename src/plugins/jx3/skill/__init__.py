@@ -9,8 +9,8 @@ from src.const.jx3.kungfu import Kungfu
 
 from .macro import get_macro
 from .martix import get_matrix
-from .qixue import get_qixue
-from .skill import get_skill
+from .talent import get_talent_info
+from .skill import get_buff, get_skill
 
 macro_matcher = on_command("jx3_macro_v2", aliases={"宏"}, force_whitespace=True, priority=5)
 
@@ -39,8 +39,8 @@ async def _(args: Message = CommandArg()):
         msg = await get_matrix(Kungfu(args.extract_plain_text()))
         await matrix_matcher.finish(msg)
     else:
-        await matrix_matcher.finish("没有输入任何心法名称哦，没办法帮你找啦。")
-
+        await matrix_matcher.finish(PROMPT.KungfuNotExist)
+    
 talent_matcher = on_command("jx3_qixue", aliases={"奇穴"}, force_whitespace=True, priority=5)
 
 @talent_matcher.handle()
@@ -63,7 +63,7 @@ async def _(argument: Message = CommandArg()):
         kungfu = args[0]
         qixue = ""
         season = ""
-    msg = await get_qixue(qixue, kungfu, season)
+    msg = await get_talent_info(qixue, kungfu, season)
     if isinstance(msg, Path):
         await talent_matcher.finish(ms.image(msg.as_uri()))
     else:
@@ -76,10 +76,21 @@ async def _(argument: Message = CommandArg()):
     """
     查询技能。
     """
-    args = argument.extract_plain_text().split(" ")
-    if len(args) != 2:
-        await skill_matcher.finish(PROMPT.ArgumentCountInvalid + "\n参考格式：技能 <心法> <关键词>")
-    kungfu = args[0]
-    skill = args[1]
-    msg = await get_skill(kungfu, skill)
+    args = argument.extract_plain_text().strip()
+    if args == "":
+        return
+    msg = await get_skill(args)
     await skill_matcher.finish(msg)
+
+buff_matcher = on_command("jx3_buff", aliases={"气劲", "BUFF", "buff", "Buff"}, force_whitespace=True, priority=5)
+
+@buff_matcher.handle()
+async def _(argument: Message = CommandArg()):
+    """
+    查询气劲。
+    """
+    args = argument.extract_plain_text().strip()
+    if args == "":
+        return
+    msg = await get_buff(args)
+    await buff_matcher.finish(msg)

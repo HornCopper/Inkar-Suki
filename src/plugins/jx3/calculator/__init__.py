@@ -27,7 +27,7 @@ import re
 import json
 import copy
 
-calc_matcher = on_command("jx3_calculator", aliases={"计算器", "T计算器", "QC计算器", "JC计算器"}, priority=5, force_whitespace=True)
+calc_matcher = on_command("jx3_calculator", aliases={"计算器", "T计算器", "QC计算器", "JC计算器", "TL计算器", "JY计算器"}, priority=5, force_whitespace=True)
 
 @calc_matcher.handle()
 async def _(event: GroupMessageEvent, matcher: Matcher, state: T_State, args: Message = CommandArg(), cmd: str = RawCommand()):
@@ -50,6 +50,10 @@ async def _(event: GroupMessageEvent, matcher: Matcher, state: T_State, args: Me
         tag = "QCPVE"
     if "JC" in cmd:
         tag = "JCPVE"
+    if "TL" in cmd:
+        tag = "TLPVE"
+    if "JY" in cmd:
+        tag = "JYPVE"
     if check_number(name):
         instance = await JX3BOXCalculator.with_pzid(int(name))
         if isinstance(instance, str):
@@ -104,7 +108,7 @@ async def _(event: GroupMessageEvent, state: T_State, loop_order: Message = Arg(
         await calc_matcher.send(equip_image)
     await calc_matcher.finish(data)
 
-equip_compare = on_command("jx3_equip_compare", aliases={"装备对比", "T装备对比", "QC装备对比", "JC装备对比"}, priority=5, force_whitespace=True)
+equip_compare = on_command("jx3_equip_compare", aliases={"装备对比", "T装备对比", "QC装备对比", "JC装备对比", "TL装备对比", "JY装备对比"}, priority=5, force_whitespace=True)
 
 @equip_compare.handle()
 async def _(event: GroupMessageEvent, matcher: Matcher, state: T_State, args: Message = CommandArg(), cmd: str = RawCommand()):
@@ -134,6 +138,10 @@ async def _(event: GroupMessageEvent, matcher: Matcher, state: T_State, args: Me
         tag = "QCPVE"
     if "JC" in cmd:
         tag = "JCPVE"
+    if "TL" in cmd:
+        tag = "TLPVE"
+    if "JY" in cmd:
+        tag = "JYPVE"
     instance = await JX3PlayerAttribute.from_database(int(player_data.globalRoleId), tag, False)
     if instance is None:
         await equip_compare.finish(PROMPT.EquipNotFound)
