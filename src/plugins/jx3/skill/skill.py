@@ -110,7 +110,7 @@ async def get_buff(buff_keyword: str = "") -> str | Message | ms:
             tables.append(
                 Template(template_body_skill).render(
                     icon = Path(await cache_image("https://icon.jx3box.com/icon/" + buff["IconID"] + ".png")).as_uri(),
-                    buff_id = buff["BuffID"] + "_" + buff["Level"],
+                    skill_id = buff["BuffID"] + "_" + buff["Level"],
                     name = buff["Name"],
                     remark = buff["Remark"],
                     desc = H.escape(desc).replace("。&lt;", "。<br>&lt;").replace("&gt;&lt;", "&gt;<br>&lt;")
