@@ -83,7 +83,7 @@ async def get_wufeng_image(raw: str, server: str):
         )
     else:
         msgbox = ""
-    color = ["(167, 167, 167)", "(255, 255, 255)", "(0, 210, 75)", "(0, 126, 255)", "(254, 45, 254)", "(255, 165, 0)"][data["Quality"]]
+    color = ["(167, 167, 167)", "(255, 255, 255)", "(0, 210, 75)", "(0, 126, 255)", "(254, 45, 254)", "(255, 165, 0)"][int(data["Quality"])]
     detailData = (await Request(f"https://next2.jx3box.com/api/item-price/{itemId}/detail?server={server}&limit=20").get()).json()
     if (not currentStatus or yesterdayFlag) and detailData["data"]["prices"] is None:
         if not yesterdayFlag:
