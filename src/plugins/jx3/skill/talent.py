@@ -71,7 +71,7 @@ class Qixue:
         kungfu_qixue = self.qixue_data[self.kungfu]
         for x in kungfu_qixue:
             for y in kungfu_qixue[x]:
-                if self.name in kungfu_qixue[x][y]["name"]:
+                if "name" in kungfu_qixue[x][y] and self.name in kungfu_qixue[x][y]["name"]:
                     data = kungfu_qixue[x][y]
                     results.append(
                         QixueInfo(
@@ -83,7 +83,7 @@ class Qixue:
                     )
         return results
     
-async def get_talent_info(name: str, kungfu: str, season: str = "") -> str | Message | Path:
+async def get_talent_info(name: str, kungfu: str, season: str = "") -> str | Message | ms:
     kungfu_name = Kungfu(kungfu).name
     if kungfu_name is None:
         return "无法识别该心法，请检查后重试！"
@@ -108,11 +108,11 @@ async def get_talent_info(name: str, kungfu: str, season: str = "") -> str | Mes
             )
         html = str(
             HTMLSourceCode(
-                application_name = f"奇穴 · {name} · {kungfu} · {season or '最新'}",
+                application_name = f"奇穴 · {kungfu_name} · {season or '最新'}",
                 additional_js = Path(build_path(TEMPLATES, ["jx3", "qixue.js"])),
                 table_head = table_head_talent,
                 table_body = "\n".join(tables)
             )
         )
-        image = await generate(html, ".container", True)
-        return Path(image)
+        image = await generate(html, ".container", True, segment=True)
+        return image

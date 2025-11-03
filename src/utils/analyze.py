@@ -1,4 +1,3 @@
-import ast
 from typing import Any
 
 Locations = [
@@ -6,6 +5,7 @@ Locations = [
 ]
 
 import re
+import ast
 
 def invert_dict(d: dict[str, str]) -> dict[str, str]:
     """

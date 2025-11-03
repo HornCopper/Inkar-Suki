@@ -1,5 +1,5 @@
-import asyncio
 from concurrent.futures import ThreadPoolExecutor
+from typing import cast
 from nonebot import on_command
 from nonebot.adapters.onebot.v11 import (
     Bot,
@@ -7,8 +7,11 @@ from nonebot.adapters.onebot.v11 import (
     GroupMessageEvent,
     GroupUploadNoticeEvent
 )
-from nonebot.params import CommandArg
+from nonebot.params import CommandArg, Arg
+from nonebot.matcher import Matcher
+from nonebot.typing import T_State
 
+from src.const.jx3.kungfu import Kungfu
 from src.const.jx3.server import Server
 from src.const.prompts import PROMPT
 from src.utils.database.attributes import JX3PlayerAttribute, parse_conditions
@@ -17,6 +20,10 @@ from src.plugins.notice import notice
 from src.utils.network import Request
 from src.utils.analyze import check_number
 from src.utils.database.operation import get_group_settings
+
+import asyncio
+
+from utils.database.player import search_player
 
 from .v2_remake import get_attr_v2_remake, get_attr_v2_remake_build, get_attr_v2_remake_global
 from .v4 import get_attr_v4
@@ -131,6 +138,45 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     jcl_line = args.extract_plain_text().strip()
     image = await get_attr_v2_remake_build(jcl_line)
     await attribute_build.finish(image)
+
+attribute_submit = on_command("jx3_attribute_submit", aliases={"提交属性"}, priority=5, force_whitespace=True)
+
+@attribute_submit.handle()
+async def _(event: GroupMessageEvent, state: T_State, matcher: Matcher, msg: Message = CommandArg()):
+    if msg.extract_plain_text().strip() == "":
+        matcher.stop_propagation()
+        return
+    args = msg.extract_plain_text().strip().split(" ")
+    if len(args) not in [2, 3]:
+        await attribute_submit.finish(PROMPT.ArgumentCountInvalid)
+    if len(args) == 2:
+        server = Server(None, event.group_id).server
+        name = args[0]
+        kungfu_name = args[1]
+    else:
+        server = Server(args[0], event.group_id).server
+        name = args[1]
+        kungfu_name = args[2]
+    if server is None:
+        await attribute_submit.finish(PROMPT.ServerInvalid)
+    player_info = await search_player(role_name=name, server_name=server)
+    global_role_id = player_info.globalRoleId
+    if global_role_id == "":
+        await attribute_submit.finish(PROMPT.PlayerNotExist)
+    kungfu_id = Kungfu(kungfu_name).id
+    if kungfu_id is None:
+        await attribute_submit.finish(PROMPT.KungfuNotExist)
+    kungfu_id_pc = cast(int, Kungfu.with_internel_id(kungfu_id, True).id)
+    state["kungfu_id"] = kungfu_id_pc
+    state["global_role_id"] = int(global_role_id)
+    await attribute_submit.send("请发送从茗伊插件-角色统计-装备统计中导出的装备数据，请从文本编辑器中复制后直接发送，不要修改任何内容：")
+
+@attribute_submit.got("equip_data")
+async def _(event: GroupMessageEvent, state: T_State, equip_data: Message = Arg()):
+    data = equip_data.extract_plain_text()
+    instance = await JX3PlayerAttribute.from_plugin(data, state["kungfu_id"], state["global_role_id"])
+    instance.save()
+    await attribute_submit.finish("已导入装备数据，请尝试使用 属性 命令查询！")
 
 attribute_db_executor = ThreadPoolExecutor(max_workers=1)
 

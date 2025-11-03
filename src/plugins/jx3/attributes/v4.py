@@ -1,5 +1,4 @@
 from pathlib import Path
-from re import I
 from jinja2 import Template
 
 from src.const.prompts import PROMPT
@@ -12,7 +11,6 @@ from src.utils.generate import generate
 from src.templates import get_saohua
 from src.utils.database.attributes import Equip, JX3PlayerAttribute
 
-import json
 import os
 
 from ._template import (

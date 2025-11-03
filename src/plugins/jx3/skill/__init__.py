@@ -1,8 +1,6 @@
-from pathlib import Path
-
 from nonebot import on_command
 from nonebot.params import CommandArg
-from nonebot.adapters.onebot.v11 import Message, GroupMessageEvent, MessageSegment as ms
+from nonebot.adapters.onebot.v11 import Message, GroupMessageEvent
 
 from src.const.prompts import PROMPT
 from src.const.jx3.kungfu import Kungfu
@@ -64,10 +62,7 @@ async def _(argument: Message = CommandArg()):
         qixue = ""
         season = ""
     msg = await get_talent_info(qixue, kungfu, season)
-    if isinstance(msg, Path):
-        await talent_matcher.finish(ms.image(msg.as_uri()))
-    else:
-        await talent_matcher.finish(msg)
+    await talent_matcher.finish(msg)
 
 skill_matcher = on_command("jx3_skill", aliases={"技能"}, force_whitespace=True, priority=5)
 

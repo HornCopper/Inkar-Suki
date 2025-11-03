@@ -1,6 +1,9 @@
 import asyncio
+import base64
 from functools import cached_property, lru_cache
+import json
 from typing import Literal, Any, cast, overload
+import zlib
 from typing_extensions import Self
 
 from src.const.path import ASSETS
@@ -17,6 +20,24 @@ import re
 
 from src.utils.database.constant import A, B, C, CRITICAL_DAMAGE_DIVISOR, CRITICAL_DIVISOR, DECRITICAL_DAMAGE_DIVISOR, OVERCOME_DIVISOR, SHIELD_130_CONST, STRAIN_DIVISOR, Agility_to_Critical_Cof, AttributesShort, Colors, MaxStrengthLevel, MinStrengthLevel, Spirit_to_Critical_Cof, Spunk_to_Attack_Cof, Spunk_to_BaseOvercome_Cof, Strength_to_Attack_Cof, Strength_to_BaseOvercome_Cof, StrengthIncome
 from src.utils.time import Time
+
+def parse_plugin_data(data: str) -> list[dict]:
+    def replace_array(m):
+        inner = m.group(1)
+        return "[" + inner + "]"
+    data = data.replace("-", "+").replace("_", "/")
+    padding = 4 - len(data) % 4
+    if padding != 4:
+        data += "=" * padding
+    decoded = base64.b64decode(data)
+    decompressed = zlib.decompress(decoded)
+    text = decompressed.decode("utf-8")
+    text = re.sub(r"^\{\{", "[{", text)
+    text = re.sub(r"\}\}$", "}]", text)
+    text = re.sub(r"(\w+)=", r'"\1":', text)
+    text = re.sub(r"\{([\d,]*)\}", replace_array, text)
+    formatted_data = json.loads(text)
+    return formatted_data
 
 def get_attr_name(attribute_name: str):
     return AttributesShort.get(attribute_name, "")
@@ -196,7 +217,7 @@ class TabCache:
             if each_enchant[0] == str(colorstone_item_index):
                 return each_enchant, cls.get_icon_for_equip(int(each_enchant[2]))[0]
         raise TabFileMissException(
-            f"在 附魔库Tab 和 其他物品Tab 中 无法找到 ID {colorstone_item_index} 对应的五彩石，请检查上述 Tab 是否过期！"
+            f"在 附魔库Tab 中 无法找到 ID {colorstone_item_index} 对应的五彩石，请检查上述 Tab 是否过期！"
         )
     
     @classmethod
@@ -295,7 +316,7 @@ class Equip:
             if base_type in ["atInvalid", ""]:
                 break
             base_min = float(armor_data[i+1])
-            base_max = float(armor_data[i+2])
+            # base_max = float(armor_data[i+2])
             self.attributes[base_type] = self.attributes.get(base_type, 0) + int(base_min)
         
         # Magic
@@ -387,7 +408,7 @@ class Equip:
             if base_type in ["atInvalid", ""]:
                 break
             base_min = float(trinket_data[i+1])
-            base_max = float(trinket_data[i+2])
+            # base_max = float(trinket_data[i+2])
             self.attributes[base_type] = self.attributes.get(base_type, 0) + int(base_min)
         
         # Magic
@@ -484,7 +505,7 @@ class Equip:
             if base_type in ["atInvalid", ""]:
                 break
             base_min = float(weapon_data[i+1])
-            base_max = float(weapon_data[i+2])
+            # base_max = float(weapon_data[i+2])
             self.attributes[base_type] = self.attributes.get(base_type, 0) + int(base_min)
         
         # Magic
@@ -965,43 +986,63 @@ class JX3PlayerAttribute:
             name=lua_table[1]
         )
         return result
+    
+    @classmethod
+    async def from_plugin(cls, data: str, kungfu_id: int, global_role_id: int) -> Self:
+        equips_data = parse_plugin_data(data)
+        equips_lines = []
+        for each_equip in equips_data:
+            if each_equip["nPos"] not in range(0, 12 + 1):
+                continue
+            if each_equip["nPos"] == 1 and kungfu_id not in [10144, 10145]:
+                continue
+            diamonds = []
+            for each_diamond in each_equip["aDiamondEnchant"]:
+                if each_diamond in range(6210, 6217 + 1):
+                    diamonds.append(
+                        [
+                            5,
+                            each_diamond - 6210 + 24441 + 1
+                        ]
+                    )
+                else:
+                    diamonds.append(
+                        [
+                            5,
+                            each_diamond - 6218 + 24441 + 1
+                        ]
+                    )
+            if each_equip["dwItemFEAEnchantID"] != 0:
+                diamonds.append(
+                    [
+                        0,
+                        each_equip["dwItemFEAEnchantID"]
+                    ]
+                )
+            equips_lines.append(
+                [
+                    int(each_equip["nPos"]),
+                    int(each_equip["dwTabType"]),
+                    int(each_equip["dwTabIndex"]),
+                    int(each_equip["nStrengthLevel"]),
+                    diamonds,
+                    int(each_equip["dwPermanentEnchantID"]),
+                    int(each_equip["dwTemporaryEnchantID"]),
+                    0
+                ]
+            )
+        return cls(
+            equips_lines,
+            [],
+            kungfu_id,
+            global_role_id
+        )
 
-    # @classmethod
-    # async def from_jcl(cls, jcl_content: str) -> list[Self]:
-    #     jcl_lines = jcl_content.strip().split("\n")
-    #     player_info_lines: dict[int, list] = {}
-    #     player_name: dict[int, str] = {}
-    #     for each_jcl_line in jcl_lines:
-    #         each_jcl_line_list = each_jcl_line.strip().split("\t")
-    #         if each_jcl_line_list[4] == "4":
-    #             lua_table_raw = each_jcl_line_list[5]
-    #             lua_table = cast(list, parse_luatable(lua_table_raw))
-    #             if len(lua_table) >= 8:
-    #                 global_role_id = int(lua_table[7])
-    #                 player_name[global_role_id] = lua_table[1]
-    #                 if global_role_id not in player_info_lines:
-    #                     player_info_lines[global_role_id] = lua_table
-    #                 if len(player_info_lines[global_role_id]) < len(lua_table):
-    #                     player_info_lines[global_role_id] = lua_table
-    #     results = []
-    #     for global_role_id, lua_table in player_info_lines.items():
-    #         equips_lines = [e for e in lua_table[5] if int(e[0]) in range(0, 12+1)]
-    #         talents_lines = [int(t[1]) for t in lua_table[6]]
-    #         results.append(
-    #             cls(
-    #                 equips_lines, talents_lines,
-    #                 cast(int, Kungfu.with_internel_id(int(lua_table[3]), True).id),
-    #                 global_role_id,
-    #                 name=player_name[global_role_id]
-    #             )
-    #         )
-    #     return results
     @classmethod
     async def from_jcl(cls, jcl_content: str) -> list[Self]:
         jcl_lines = jcl_content.strip().split("\n")
         player_info_lines: dict[int, list] = {}
         player_name: dict[int, str] = {}
-
         for each_jcl_line in jcl_lines:
             parts = each_jcl_line.strip().split("\t")
             if len(parts) < 6 or parts[4] != "4":
@@ -1062,7 +1103,8 @@ class JX3PlayerAttribute:
                         ("QC" in tags and each_equip.kungfu_id == 10014) or \
                         ("JC" in tags and each_equip.kungfu_id == 10015) or \
                         ("JY" in tags and each_equip.kungfu_id == 10224) or \
-                        ("TL" in tags and each_equip.kungfu_id == 10225)
+                        ("TL" in tags and each_equip.kungfu_id == 10225) or \
+                        ("WX" in tags and each_equip.kungfu_id == 10821)
                     ):
                         final_equip = each_equip
                         break
