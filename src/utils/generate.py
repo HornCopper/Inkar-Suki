@@ -94,7 +94,8 @@ class ScreenshotGenerator:
         根据配置生成截图。
         """
         if self._browser is None or self._context is None:
-            raise ValueError("Browser has not been initialized!")
+            asyncio.create_task(ScreenshotGenerator.launch())
+            # raise ValueError("Browser has not been initialized!")
 
         page = await self._browser.new_page(viewport=config.viewport) # type: ignore
         if config.wait_for_network:

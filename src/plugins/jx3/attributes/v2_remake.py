@@ -1,29 +1,25 @@
 from pathlib import Path
-from typing import Literal, overload, Any
+from typing import Literal, overload
 from PIL import Image, ImageDraw, ImageFont
-from pydantic import BaseModel
 
 from nonebot.adapters.onebot.v11 import MessageSegment as ms
 
 from src.const.prompts import PROMPT
-from src.const.jx3.kungfu import Kungfu, season
+from src.const.jx3.kungfu import Kungfu
 from src.const.jx3.school import School
 from src.const.path import (
     ASSETS,
     CACHE,
     build_path
 )
-from src.utils.file import read, write
+from src.utils.file import write
 from src.utils.generate import get_uuid
-from src.utils.exceptions import QixueDataUnavailable
 from src.utils.database.player import search_player
-from src.utils.network import Request
+from src.utils.network import Request, cache_image
 from src.utils.database.attributes import Equip, JX3PlayerAttribute, Talent
 from src.utils.database.constant import EquipLocations
 
 import os
-import random
-import json
 
 async def get_school_background(school: str) -> str:
     image_path = build_path(ASSETS, ["image", "jx3", "attributes", "school_bg", school + ".png"])
@@ -33,21 +29,6 @@ async def get_school_background(school: str) -> str:
         image = (await Request(f"https://cdn.jx3box.com/static/pz/img/overview/horizontal/{school}.png").get()).content
         write(image_path, image, "wb")
         return image_path
-
-async def download_image(image_url: str) -> str:
-    file_name = image_url.split("/")[-1].split("?")[0]
-    if image_url.endswith("unknown.png"):
-        return build_path(ASSETS, ["image", "jx3", "attributes", "unknown.png"])
-    final_path = build_path(ASSETS, ["image", "jx3", "attributes", "equips"], end_with_slash=True) + file_name
-    if os.path.exists(final_path):
-        return final_path
-    else:
-        try:
-            main = (await Request(image_url).get()).content
-        except:  # noqa: E722
-            return image_url
-        write(final_path, main, "wb")
-        return final_path
 
 @overload
 async def get_attr_v2_remake(server: str, role_name: str, segment: Literal[True]) -> ms | str: ...
@@ -168,7 +149,7 @@ async def get_attr_v2_remake_img(
         limit = 0
         done_time = 0
         for talent in talents:
-            image = Image.open(await download_image(talent.icon)).resize((39, 39))
+            image = Image.open(await cache_image(talent.icon)).resize((39, 39))
             background.alpha_composite(image, (init_icon, y_icon))
 
             # 绘制文字
@@ -203,7 +184,7 @@ async def get_attr_v2_remake_img(
         done_time = 0
 
         for talent in talents:
-            image = Image.open(await download_image(talent.icon)).resize((39, 39))
+            image = Image.open(await cache_image(talent.icon)).resize((39, 39))
             background.alpha_composite(image, (init_icon, y_icon))
 
             # 绘制文字
@@ -238,7 +219,7 @@ async def get_attr_v2_remake_img(
         limit = 0
         done_time = 0
         for talent in talents:
-            image = Image.open(await download_image(talent.icon)).resize((39, 39))
+            image = Image.open(await cache_image(talent.icon)).resize((39, 39))
             background.alpha_composite(image, (init_icon, y_icon))
 
             # 绘制文字
@@ -276,7 +257,7 @@ async def get_attr_v2_remake_img(
     x, y = (703, 47)
     for equip in equips:
         if equip.icon:
-            background.alpha_composite(Image.open(await download_image(equip.icon)).resize((38, 38)), (x, y))
+            background.alpha_composite(Image.open(await cache_image(equip.icon)).resize((38, 38)), (x, y))
         if equip.peerless:
             background.alpha_composite(precious, (x - 20, y))
         if equip.max_strength == equip.strength:
@@ -333,7 +314,7 @@ async def get_attr_v2_remake_img(
                 font=ImageFont.truetype(semibold, size=12), anchor="lm")
             enchant_count += 1
         if equip.color_stone:
-            background.alpha_composite(Image.open(await download_image(equip.color_stone_icon)).resize((20, 20)), (x + 358, y - 3 + enchant_count * 24))
+            background.alpha_composite(Image.open(await cache_image(equip.color_stone_icon)).resize((20, 20)), (x + 358, y - 3 + enchant_count * 24))
             draw.text((x + 383, y + 6 + enchant_count*24), equip.color_stone, fill=(255, 255, 255),
                 font=ImageFont.truetype(semibold, size=12), anchor="lm")
             enchant_count += 1

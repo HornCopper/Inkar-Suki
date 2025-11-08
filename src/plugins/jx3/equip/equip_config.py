@@ -6,11 +6,10 @@ from pydantic import BaseModel
 from src.const.path import ASSETS, CACHE, build_path
 from src.const.jx3.kungfu import Kungfu
 from src.const.jx3.school import School
-from src.utils.network import Request
+from src.utils.network import Request, cache_image
 from src.utils.generate import get_uuid
 from src.plugins.jx3.attributes.v2_remake import (
-    get_school_background,
-    download_image
+    get_school_background
 )
 
 class BasicItem(BaseModel):
@@ -127,7 +126,7 @@ async def get_attr_recommend_image(
         limit = 0
         done_time = 0
         for talent in talents:
-            image = Image.open(await download_image(talent.icon)).resize((39, 39))
+            image = Image.open(await cache_image(talent.icon)).resize((39, 39))
             background.alpha_composite(image, (init_icon, y_icon))
 
             # 绘制文字
@@ -161,7 +160,7 @@ async def get_attr_recommend_image(
         limit = 0
         done_time = 0
         for talent in talents:
-            image = Image.open(await download_image(talent.icon)).resize((39, 39))
+            image = Image.open(await cache_image(talent.icon)).resize((39, 39))
             background.alpha_composite(image, (init_icon, y_icon))
 
             # 绘制文字
@@ -198,7 +197,7 @@ async def get_attr_recommend_image(
                 font=ImageFont.truetype(medium, size=14), anchor="mm")
     x, y = (703, 47)
     for equip in equips:
-        background.alpha_composite(Image.open(await download_image(equip.icon)).resize((38, 38)), (x, y))
+        background.alpha_composite(Image.open(await cache_image(equip.icon)).resize((38, 38)), (x, y))
         if equip.peerless:
             background.alpha_composite(precious, (x - 20, y))
         if equip.strength[0] == equip.strength[1]:
@@ -227,7 +226,7 @@ async def get_attr_recommend_image(
                     if equip.enchant[dy].name == "pe"
                     else common_enchant_icon
                     if equip.enchant[dy].name == "ce"
-                    else Image.open(await download_image(equip.enchant[dy].icon)).resize((20, 20))
+                    else Image.open(await cache_image(equip.enchant[dy].icon)).resize((20, 20))
                 ),
                 (x + 351, y - 3 + dy * 24)
             )
