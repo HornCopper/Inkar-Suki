@@ -1002,7 +1002,7 @@ class JX3PlayerAttribute:
                     diamonds.append(
                         [
                             5,
-                            each_diamond - 6210 + 24441 + 1
+                            each_diamond - 6210 + 24441
                         ]
                     )
                 elif each_diamond == 6218:
