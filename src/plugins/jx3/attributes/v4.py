@@ -141,12 +141,13 @@ async def get_attr_v4(server: str, name: str, conditions: str = ""):
     for each_other_equip in other_equips:
         other_kungfu = Kungfu.with_internel_id(each_other_equip.kungfu_id, True)
         prefix = {"D": "DPS", "T": "T", "N": "HPS"}[other_kungfu.abbr]
-        if other_kungfu.kungfu_name in ["惊羽诀", "天罗诡道", "太虚剑意", "紫霞功"]:
+        if other_kungfu.kungfu_name in ["惊羽诀", "天罗诡道", "太虚剑意", "紫霞功", "幽罗引"]:
             prefix = {
                 "惊羽诀": "JY",
                 "天罗诡道": "TL",
                 "太虚剑意": "JC",
                 "紫霞功": "QC",
+                "幽罗引": "WX"
             }[other_kungfu.kungfu_name]
         all_equip_records.append(
             Template(template_other).render(

@@ -8,7 +8,6 @@ from src.utils.database import db
 from src.utils.database.classes import RoleData
 
 import re
-import json
 
 async def get_role_id(roleName: str, serverName: str) -> dict | None:
     if Config.jx3.api.enable:
@@ -21,6 +20,28 @@ async def get_role_id(roleName: str, serverName: str) -> dict | None:
         return data["data"]
     else:
         return None
+    
+async def submit_role_force(roleName: str, serverName: str) -> str | None:
+    response = await Request(f"{Config.jx3.api.url}/data/role/detailed?token={Config.jx3.api.token}&server={serverName}&name={roleName}").get()
+    if response.status_code != 200:
+        return None
+    data = response.json()
+    if data["code"] != 200:
+        return None
+    globalRoleId = data["data"]["globalRoleId"]
+    db.delete(RoleData(), "roleName = ? AND serverName = ?", roleName, serverName)
+    db.delete(RoleData(), "globalRoleId = ?", globalRoleId)
+    new_data = RoleData(
+        bodyName=data["data"]["bodyName"],
+        campName=data["data"]["campName"],
+        forceName=data["data"]["forceName"],
+        globalRoleId=globalRoleId,
+        roleName=roleName,
+        roleId=data["data"]["roleId"],
+        serverName=serverName
+    )
+    db.save(new_data)
+    return f"强制绑定成功！\n记录数据：\n[{roleName}·{serverName}]"
     
 @overload
 async def get_uid_data(global_role_id: str = "", role_id: str = "", server: str = "", role_name: str = "", msg: Literal[True] = True) -> str: ...

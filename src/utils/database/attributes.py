@@ -1147,9 +1147,11 @@ class JX3PlayerAttribute:
 
     def __init__(
             self,
-            equips_lines: list, talents_lines: list[int],
+            equips_lines: list,
+            talents_lines: list[int],
             kungfu_id: int,
-            global_role_id: int, timestamp: int = Time().raw_time,
+            global_role_id: int,
+            timestamp: int = Time().raw_time,
             equip_tag: str = "",
             name: str = ""
         ):

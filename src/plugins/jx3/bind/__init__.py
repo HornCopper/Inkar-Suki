@@ -5,8 +5,9 @@ from nonebot.params import CommandArg
 from src.const.prompts import PROMPT
 from src.const.jx3.server import Server
 from src.utils.database.operation import set_group_settings
-from src.utils.database.player import get_uid_data
+from src.utils.database.player import get_uid_data, submit_role_force
 from src.utils.permission import check_permission
+from utils.analyze import check_number
 
 def group_server_bind(group_id: str, server: str | None) -> None:
     if server is not None:
@@ -42,18 +43,27 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     if args.extract_plain_text() == "":
         return
     arg = args.extract_plain_text().split(" ")
-    if len(arg) not in [1, 2]:
+    if len(arg) not in [1, 2, 3]:
         await role_check_matcher.finish("唔……命令错误，请检查后重试！\n命令格式：提交角色 服务器 UID")
+    is_force = "-F" in arg
+    arg = [a for a in arg if a != "-F"]
     if len(arg) == 1:
         server = None
         uid = arg[0]
     elif len(arg) == 2:
         server = arg[0]
         uid = arg[1]
-    serverInstance = Server(server, event.group_id)
-    if not serverInstance.server:
+    server = Server(server, event.group_id).server
+    if not server:
         await role_check_matcher.finish(PROMPT.ServerNotExist)
-    msg = await get_uid_data("", uid, serverInstance.server)
+    if not is_force:
+        if not check_number(uid):
+            await role_check_matcher.finish("UID无效，请检查后重试！\nUID为数字，且少于9位（不含）。")
+        msg = await get_uid_data("", uid, server)
+    else:
+        if check_number(uid):
+            await role_check_matcher.finish("角色名无效，强制提交角色需要使用角色名！")
+        msg = await submit_role_force(uid, server)
     if not isinstance(msg, str):
         return
     await role_check_matcher.finish(msg)

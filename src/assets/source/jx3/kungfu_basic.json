@@ -118,5 +118,9 @@
     "周天功": {
         "atMagicAttackPowerBase": 6518,
         "atMagicCriticalStrike": 5527
+    },
+    "幽罗引": {
+        "atMagicAttackPowerBase": 7459,
+        "atMagicCriticalStrike": 2412
     }
 }
