@@ -6,7 +6,7 @@ from src.const.prompts import PROMPT
 from src.utils.analyze import check_number
 from src.utils.database.operation import get_group_settings, set_group_settings
 
-from .app import Assistance, parse_limit, get_answer
+from .app import Assistance, parse_limit, get_yzk_answer, get_gyc_answer
 
 AssistanceInstance = Assistance()
 
@@ -188,5 +188,21 @@ yzk_unsecret_matcher = on_command("解密", aliases={"解谜", "揭秘"}, priori
 
 @yzk_unsecret_matcher.handle()
 async def _(event: GroupMessageEvent):
-    msg = get_answer()
+    msg = get_yzk_answer()
     await yzk_unsecret_matcher.finish(msg)
+
+gyc_unsecret_matcher = on_command("报点", priority=5)
+
+@gyc_unsecret_matcher.handle()
+async def _(event: GroupMessageEvent, args: Message = CommandArg()):
+    points = args.extract_plain_text()
+    if not check_number(points) or not points.strip():
+        await gyc_unsecret_matcher.finish("参数类型有误，请给出纯数字点位！")
+    if len([int(i) for i in list(points.strip())]) != 4:
+        await gyc_unsecret_matcher.finish("报点请按“1357”类似格式发送！")
+    data = get_gyc_answer(points.strip())
+    if data is None:
+        await gyc_unsecret_matcher.finish("计算失败，请检查报点是否有问题！")
+    pairs, safety_point = data
+    pairs_string = "、".join(pairs)
+    await gyc_unsecret_matcher.finish(f"输入报点：{points.strip()}\n连线：{pairs_string}\n安全点：{safety_point}")

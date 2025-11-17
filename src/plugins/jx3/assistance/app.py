@@ -409,7 +409,7 @@ class Assistance:
         return "未找到相关团队！"
     
 
-def get_answer() -> str:
+def get_yzk_answer() -> str:
     time_table = {
         "00:00:00": "东-9,南-0,西-1,北-9",
         "00:15:00": "东-9,南-0,西-1,北-0",
@@ -525,3 +525,71 @@ def get_answer() -> str:
     result = ",".join([f"{direction}-{data[direction]}" for direction in fixed_order])
     next_result = ",".join([f"{direction}-{next_data[direction]}" for direction in fixed_order])
     return f"当前时间: {time_key}\n结果: {result}\n下一结果：{next_result}"
+
+def get_gyc_answer(points: str) -> tuple[list[str], int] | None:
+    if len(points) != 4 or not points.isdigit():
+        return None
+
+    circle = [1, 2, 3, 4, 5, 6, 7, 8]
+    nums = [int(c) for c in points]
+
+    if len(set(nums)) != 4 or any(n not in circle for n in nums):
+        return None
+
+    remaining = [n for n in circle if n not in nums]
+
+    options = {}
+    for n in nums:
+        idx = circle.index(n)
+        entries = []
+        for step, cw in [(1, False), (-1, True), (2, False), (-2, True)]:
+            x = circle[(idx + step) % 8]
+            if x in remaining:
+                dist = abs(step) // 2
+                entries.append((dist, cw, x))
+        entries.sort(key=lambda x: (x[0], x[1]))
+        options[n] = [e[2] for e in entries]
+
+    assign = {}
+    used = set()
+    stack = []
+
+    i = 0
+
+    while True:
+        if i == 4:
+            break
+
+        cur = nums[i]
+        if not options[cur]:
+            return None
+
+        if len(stack) <= i:
+            stack.append([0])
+
+        cand_index = stack[i][0]
+
+        if cand_index >= len(options[cur]):
+            stack.pop()
+            if i == 0:
+                return None
+
+            i -= 1
+            prev_num = nums[i]
+            used.remove(assign[prev_num])
+            del assign[prev_num]
+            stack[i][0] += 1
+            continue
+
+        cand = options[cur][cand_index]
+        if cand not in used:
+            assign[cur] = cand
+            used.add(cand)
+            i += 1
+            continue
+        else:
+            stack[i][0] += 1
+
+    pairs = [f"{n}{assign[n]}" for n in nums]
+    safety = ((nums[0] + 3) % 8) + 1
+    return pairs, safety

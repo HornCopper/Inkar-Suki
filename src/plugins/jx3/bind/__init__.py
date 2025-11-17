@@ -7,7 +7,7 @@ from src.const.jx3.server import Server
 from src.utils.database.operation import set_group_settings
 from src.utils.database.player import get_uid_data, submit_role_force
 from src.utils.permission import check_permission
-from utils.analyze import check_number
+from src.utils.analyze import check_number
 
 def group_server_bind(group_id: str, server: str | None) -> None:
     if server is not None:
