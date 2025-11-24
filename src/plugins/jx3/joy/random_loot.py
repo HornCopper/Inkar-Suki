@@ -27,7 +27,7 @@ import json
 
 current_level = 130
 
-current_dungeon = ["太极宫"]
+current_dungeon = ["会战弓月城"]
 
 title_colors = [
     "#4A8E7F",
@@ -46,7 +46,7 @@ class RandomLoot:
         name, mode = dungeon.name, dungeon.mode
         if (name is None) or (mode is None):
             return None
-        if (name not in ["太极宫", "一之窟", "空城殿·上", "空城殿·下"] or (name == "一之窟" and mode == "25人普通")) and mode != "10人普通":
+        if (name not in ["太极宫", "会战弓月城", "空城殿·上", "空城殿·下"] or (name == "太极宫" and mode == "25人普通")) and mode != "10人普通":
             return None
         list_all_file = CONST + "/cache/random_loot_list_all.json"
         if os.path.exists(list_all_file):
@@ -159,6 +159,8 @@ class RandomLoot:
 
             result = []
             for _ in range(count):
+                if not items:
+                    return []
                 equip = choice(items)
                 equip_kind = equip["Icon"]["SubKind"]
                 if equip.get("BelongSchool") == "精简":
@@ -182,7 +184,8 @@ class RandomLoot:
             boss_place = f"{idx+1}/{total_boss}"
 
             is_final = boss_place in ["6/6", "5/5", "7/7", "1/1"]
-            is_penultimate = boss_place in ["5/6"]
+            is_penultimate_6 = boss_place in ["5/6"]
+            is_penultimate_5 = boss_place in ["4/5"]
 
             _general_brand = get_random(40)
             _weapon = get_random(10)
@@ -225,18 +228,23 @@ class RandomLoot:
                     for item in selected_brands:
                         append_item(boss_name, item, with_attr=False)
 
-                if not is_penultimate and _weapon and not is_final:
+                if not is_penultimate_6 and _weapon and not is_final:
                     weapons = [i for i in loot_list if ("Color" in i and i.get("BelongSchool") not in ["精简", "通用", "藏剑", ""]) or str(i["Name"]).startswith("藏剑武器")]
                     weapon_boxes = [i for i in loot_list if not str(i["Name"]).startswith("于阗玉") and str(i["Name"]).count("·") == 2]
                     selected = choice(weapon_boxes) if get_random(20) and weapon_boxes else choice(weapons)
                     append_item(boss_name, selected)
                     count += 1
 
-                if is_penultimate:
+                if is_penultimate_6:
                     weapon_pool = [i for i in loot_list if ("Color" in i or str(i["Name"]).count("·") == 2)]
                     for item in random_items(lambda i: i in weapon_pool, 2):
                         append_item(boss_name, item, with_attr="Color" in item)
                     count += 2
+                
+                if is_penultimate_5:
+                    suits = [i for i in loot_list if "Color" in i and str(i.get("Desc")).startswith("使用：") and str(i.get("BelongSchool")) != ""] 
+                    if suits:
+                        append_item(boss_name, choice(suits))
 
                 # 精简
                 if not is_final and _jingjian:
@@ -247,8 +255,12 @@ class RandomLoot:
 
                 # 散件（非最终）
                 if not is_final:
+                    if total_boss == 6:
+                        total = 4
+                    else:
+                        total = 4 - 1
                     sanjian_list = [i for i in loot_list if "ModifyType" in i and "Color" in i and i.get("BelongSchool") == "通用" and not str(i.get("Desc")).startswith("使用：")]
-                    needed = 4 - count
+                    needed = total - count
                     for item in random_items(lambda i: i in sanjian_list, needed):
                         append_item(boss_name, item)
 
@@ -286,12 +298,17 @@ class RandomLoot:
                         append_item(boss_name, choice(tn_special_list))
 
                     # 散件补满到8
-                    sanjian_list = [i for i in loot_list if "ModifyType" in i and "Color" in i and i.get("BelongSchool") == "通用" and not str(i.get("Desc")).startswith("使用：")]
-                    for item in random_items(lambda i: i in sanjian_list, 8 - 2 - jingjian_count):
-                        append_item(boss_name, item)
+                    if total_boss == 6:
+                        sanjian_list = [i for i in loot_list if "ModifyType" in i and "Color" in i and i.get("BelongSchool") == "通用" and not str(i.get("Desc")).startswith("使用：")]
+                        for item in random_items(lambda i: i in sanjian_list, 8 - 2 - jingjian_count):
+                            append_item(boss_name, item)
+                    else:
+                        sanjian_list = [i for i in loot_list if "ModifyType" in i and "Color" in i and i.get("BelongSchool") == "通用" and not str(i.get("Desc")).startswith("使用：")]
+                        for item in random_items(lambda i: i in sanjian_list, 4 - 1 - jingjian_count):
+                            append_item(boss_name, item)
 
                 # 材料（5/6、6/6 特殊物资）
-                if is_penultimate or is_final:
+                if is_penultimate_6 or is_final:
                     sand = [i for i in loot_list if i.get("Type") == "130级生活技能" and "·" not in i["Name"]]
                     if _sand_material and sand:
                         append_item(boss_name, sand[0], with_attr=False)
