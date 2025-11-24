@@ -115,10 +115,14 @@ boxes = {
     )
 }
 
-level_to_quality = [
-    [24500, 25500, 28000],
-    [25500, 28000, 30200]
-]
+level_to_quality: dict[int, list[int]] = {
+    1: [23500, 25500, 28000],
+    21: [24500, 25500, 28000],
+    41: [25500, 28000, 30200, 32500],
+    61: [28000, 30200, 32500, 35300],
+    81: [30200, 32500, 35300],
+    101: [32500, 35300]
+}
 
 class Equipment(BaseModel):
     attr: str
@@ -195,15 +199,27 @@ class DataCache:
         )
 
 async def get_random_equip(level: int) -> JX3ShilianItem: # 无修
+    final_pool = []
+    for _level, pool in level_to_quality.items():
+        if level >= _level:
+            final_pool = pool
     quality = choice(
-        level_to_quality[int(level > 61)]
+        final_pool
     )
     location = choice(
         ["冠", "鞋", "链", "坠", "囊"]
     )
     bind_type = 3 if get_random(70) else 2
-    end_word = "玄" if quality > 25500 else "荒"
+
+    if quality <= 25500:
+        end_word = "荒"
+    elif quality in [28000, 30200]:
+        end_word = "玄"
+    else:
+        end_word = "地"
+
     equip_type = "内" if get_random(50) else "外"
+
     final_name = f"{JX3Trade.shilian_basic}{location}·{equip_type}·{end_word}"
     final_equip = await DataCache.get_wuxiu(final_name, quality, bind_type)
     return JX3ShilianItem(
@@ -332,8 +348,8 @@ async def get_single_full_reward(level: int, group_id: int, bot: Bot) -> list[JX
     return [silver_leaves, cultivation_drug, final_reward]
 
 async def generate_shilian_box(level: int, user_choice: int, group_id: int, bot: Bot):
-    if level > 70:
-        return " 当前仅可翻牌70层及以下！"
+    if level > 120 or level < 0:
+        return " 层数不正确，请检查后重试！"
     if user_choice not in list(range(1, 6)):
         return " 翻牌序号仅可在1-5之间！"
     result = []

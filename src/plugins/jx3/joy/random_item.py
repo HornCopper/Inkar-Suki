@@ -25,16 +25,17 @@ class JX3ShilianItem(JX3RandomItem):
     quality: int = 0
 
 books = {
-    "《寸险律·残卷》": "https://dl.pvp.xoyo.com/prod/icons/skill/SkillBook/tiance_book_3.png?v=2",
-    "《纵横之剑·阖》": "https://dl.pvp.xoyo.com/prod/icons/skill/SkillBook/chunyang_shuliandu_1.png?v=2",
-    "《纵横之剑·捭》": "https://dl.pvp.xoyo.com/prod/icons/skill/SkillBook/shaolin_shuliandu_1.png?v=2",
-    "《蜀山剑诀·秘卷》": "https://dl.pvp.xoyo.com/prod/icons/skill/SkillBook/chunyang_book_3.png?v=2",
-    "《圣灵心法·秘卷》": "https://dl.pvp.xoyo.com/prod/icons/skill/SkillBook/wanhua_shuliandu_3.png?v=2",
-    "《月朔实录·残卷》": "https://dl.pvp.xoyo.com/prod/icons/skill/SkillBook/chunyang_shuliandu_2.png?v=2",
-    "《易筋经·秘卷》": "https://dl.pvp.xoyo.com/prod/icons/skill/SkillBook/shaolin_book_2.png?v=2",
-    "《惊羽诀·秘卷》": "https://dl.pvp.xoyo.com/prod/icons/skill/SkillBook/wanhua_book_3.png?v=2",
-    "《离经易道·秘卷》": "https://dl.pvp.xoyo.com/prod/icons/skill/SkillBook/wanhua_book_2.png?v=2",
-    "《纯阳别册·残卷》": "https://dl.pvp.xoyo.com/prod/icons/skill/SkillBook/chunyang_book_2.png?v=2",
-    "《气经·残卷》": "https://dl.pvp.xoyo.com/prod/icons/skill/SkillBook/tiance_book_2.png?v=2",
-    "《相知剑意·残卷》": "https://dl.pvp.xoyo.com/prod/icons/skill/SkillBook/wudu_book_2.png?v=2"
+    "《寸险律·残卷》": "https://icon.jx3box.com/icon/2265.png",
+    "《纵横之剑·阖》": "https://icon.jx3box.com/icon/2244.png",
+    "《纵横之剑·捭》": "https://icon.jx3box.com/icon/2260.png",
+    "《蜀山剑诀·秘卷》": "https://icon.jx3box.com/icon/2241.png",
+    "《圣灵心法·秘卷》": "https://icon.jx3box.com/icon/2238.png",
+    "《月朔实录·残卷》": "https://icon.jx3box.com/icon/2245.png",
+    "《易筋经·秘卷》": "https://icon.jx3box.com/icon/2256.png",
+    "《惊羽诀·秘卷》": "https://icon.jx3box.com/icon/2273.png",
+    "《离经易道·秘卷》": "https://icon.jx3box.com/icon/2272.png",
+    "《纯阳别册·残卷》": "https://icon.jx3box.com/icon/2240.png",
+    "《气经·残卷》": "https://icon.jx3box.com/icon/2264.png",
+    "《相知剑意·残卷》": "https://icon.jx3box.com/icon/2739.png",
+    "《冰心诀·残卷》": "https://icon.jx3box.com/icon/2250.png"
 }
