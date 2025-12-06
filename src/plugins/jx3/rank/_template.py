@@ -77,3 +77,32 @@ cqcrank_template_body = """
     <td class="short-column">{{ value_per_second }}</td>
 </tr>
 """
+
+teamrank_anyone_template = """
+<div class="player">
+    <div class="class-icon">
+        <img src="{{ kungfu_icon }}"
+            style="width: 25px;height: 25px;">
+    </div>
+    <span class="player-name">{{ name }}</span>
+</div>
+"""
+
+teamrank_team_template = """
+<div class="content">
+    <div class="logo-section">
+        <div class="logo">
+            <img src="{{ team_icon }}">
+            <div style="font-size: 24px; color: #ffcc00; font-weight: bold;">{{ team_name }}</div>
+        </div>
+        <div class="logo-text">{{ team_name }}</div>
+        <div>{{ server }}</div>
+        <div style="text-align: center;">通关时间：<br>{{ finish_time }}</div>
+        <div>用时：{{ time_cost }}</div>
+    </div>
+
+    <div class="rankings">
+        {{ players }}
+    </div>
+</div>
+"""

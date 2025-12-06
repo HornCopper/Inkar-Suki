@@ -45,7 +45,8 @@ name_to_pinyin = {
     "隐龙诀": "yinlongjue",
     "孤锋诀": "gufengjue",
     "山海心诀": "shanhaixinjue",
-    "周天功": "zhoutiangong"
+    "周天功": "zhoutiangong",
+    "幽罗引": "youluoyin"
 }
 
 async def get_rank(dungeon_full_name: str, boss_name: str, kungfu_name: str, order_by: Literal["rdps", "rhps"] = "rdps"):

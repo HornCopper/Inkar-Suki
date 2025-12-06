@@ -17,6 +17,7 @@ from src.utils.permission import check_permission
 
 from .api import get_zlrank
 from .rank import get_rank, get_slrank
+from .team_rank import parse_team_rank_data
 
 from ._template import cqcrank_template_body, cqcrank_table_head
 
@@ -234,3 +235,22 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     )
     image = await generate(html, ".container", segment=True)
     await cqcrank_uncarry.finish(image)
+
+team_rank_matcher = on_command("jx3_teamrank", aliases={"团队排名", "团队排行", "名人堂"}, priority=5, force_whitespace=True)
+
+@team_rank_matcher.handle()
+async def _(event: GroupMessageEvent, raw_arg: Message = CommandArg()):
+    arg_content = raw_arg.extract_plain_text().strip()
+    if not arg_content:
+        return
+    else:
+        args = arg_content.split(" ")
+        if len(args) != 3:
+            await team_rank_matcher.finish(PROMPT.ArgumentCountInvalid + "\n参考格式：名人堂 副本名 难度 首领名")
+        _dungeon_name, _dungeon_mode, boss_name = args
+        dungeon = Dungeon(_dungeon_name, _dungeon_mode)
+        dungeon_name, dungeon_mode = (dungeon.name, dungeon.mode)
+        if dungeon_name is None or dungeon_mode is None:
+            await team_rank_matcher.finish(PROMPT.DungeonInvalid)
+        msg = await parse_team_rank_data(dungeon_name, dungeon_mode, boss_name)
+        await team_rank_matcher.finish(msg)
