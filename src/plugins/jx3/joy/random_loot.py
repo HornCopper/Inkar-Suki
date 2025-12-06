@@ -308,7 +308,7 @@ class RandomLoot:
                             append_item(boss_name, item)
 
                 # 材料（5/6、6/6 特殊物资）
-                if is_penultimate_6 or is_final:
+                if is_penultimate_6 or is_final or is_penultimate_5:
                     sand = [i for i in loot_list if i.get("Type") == "130级生活技能" and "·" not in i["Name"]]
                     if _sand_material and sand:
                         append_item(boss_name, sand[0], with_attr=False)

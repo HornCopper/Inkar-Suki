@@ -16,6 +16,7 @@ from nonebot.adapters.onebot.v11 import (
 from nonebot.params import CommandArg
 
 from src.config import Config
+from src.utils.network import Request
 from src.utils.permission import check_permission, denied
 from src.utils.database import db
 from src.utils.database.classes import BannedUser, Applicationslist, GroupSettings
@@ -85,7 +86,8 @@ async def _(event: PokeNotifyEvent):
         return
     else:
         index = randint(0, 3)
-        await notice.finish("音卡在呢！找音卡有什么事吗！(^ω^)" + ms.image(f"https://inkar-suki.codethink.cn/Inkar-Suki-Docs/img/emoji_{index}.jpg"))
+        image = (await Request(f"https://inkar-suki.codethink.cn/Inkar-Suki-Docs/img/emoji_{index}.jpg").get()).content
+        await notice.finish("音卡在呢！找音卡有什么事吗！(^ω^)" + ms.image(image))
 
 request = on_request(priority=5)
 

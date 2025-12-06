@@ -26,7 +26,7 @@ async def get_tieba_records(user_id: int) -> str:
         return msg.strip()
     
 
-async def get_daren_count(self_id: int, user_id: int, pskey: str) -> int:
+async def get_daren_count(self_id: int, user_id: int, pskey: str) -> str:
     headers = {
         "Referer": "https://cgi.vip.qq.com/",
         "Cookie": f"p_uin=o{self_id}; p_skey={pskey}"
@@ -37,5 +37,8 @@ async def get_daren_count(self_id: int, user_id: int, pskey: str) -> int:
         "fuin": str(user_id)
     }
 
-    result = (await Request("https://cgi.vip.qq.com/card/getExpertInfo", headers=headers, params=params).get()).json()
-    return result["data"]["g"][1]
+    try:
+        result = (await Request("https://cgi.vip.qq.com/card/getExpertInfo", headers=headers, params=params).get()).json()
+    except Exception:
+        return "未知"
+    return str(result["data"]["g"][1])
