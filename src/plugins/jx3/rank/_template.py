@@ -92,8 +92,7 @@ teamrank_team_template = """
 <div class="content">
     <div class="logo-section">
         <div class="logo">
-            <img src="{{ team_icon }}">
-            <div style="font-size: 24px; color: #ffcc00; font-weight: bold;">{{ team_name }}</div>
+            <img src="{{ team_icon }}" alt={{ team_name }}>
         </div>
         <div class="logo-text">{{ team_name }}</div>
         <div>{{ server }}</div>

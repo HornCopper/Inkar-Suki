@@ -55,6 +55,9 @@ async def parse_team_rank_data(dungeon_name: str, dungeon_mode: str, boss_name: 
                 t = ""
                 keyword = kungfu_id[-1]
                 force_id = kungfu_id[:-1]
+                if keyword == "w":
+                    keyword = kungfu_id[-2]
+                    force_id = kungfu_id[:-2]
                 if keyword == "h":
                     t = "HPS"
                 if keyword == "t":

@@ -83,6 +83,8 @@ async def _(event: GroupMessageEvent, msg: Message = CommandArg()):
         inject_msg = PROMPT.KungfuNotExist
     if inject_msg:
         await rdps_rank_matcher.finish(inject_msg)
+    if dungeon_name == "缚罪之渊":
+        dungeon_mode = ""
     reply_msg = await get_rank(str(dungeon_mode) + str(dungeon_name), boss_name, str(kungfu_name), "rdps")
     await rdps_rank_matcher.finish(reply_msg)
 
@@ -107,6 +109,8 @@ async def _(event: GroupMessageEvent, msg: Message = CommandArg()):
         inject_msg = PROMPT.KungfuNotExist
     if inject_msg:
         await rhps_rank_matcher.finish(inject_msg)
+    if dungeon_name == "缚罪之渊":
+        dungeon_mode = ""
     reply_msg = await get_rank(str(dungeon_mode) + str(dungeon_name), boss_name, str(kungfu_name), "rhps")
     await rhps_rank_matcher.finish(reply_msg)
 

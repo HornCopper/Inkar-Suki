@@ -2,9 +2,11 @@ from functools import cached_property, lru_cache
 from typing import Literal, Any, cast, overload
 from typing_extensions import Self
 
-from src.const.path import ASSETS
+from src.const.prompts import PROMPT
+from src.const.path import ASSETS, CONST
 from src.const.jx3.kungfu import Kungfu
 from src.const.jx3.server import Server
+from src.utils.file import read
 from src.utils.database import attribute_db as db
 from src.utils.database.classes import PlayerEquipsCache
 from src.utils.network import Request
@@ -951,6 +953,69 @@ class FinalAttr:
             }
 
 class JX3PlayerAttribute:
+    @classmethod
+    async def from_jx3api(cls, server: str, name: str, url_require: bool = False) -> Self | str:
+        if not url_require:
+            raw_data = {}
+            raw_data["code"] = 404
+        else:
+            url = read(CONST + "/cache/attribute.txt")
+            params = {
+                "server": server,
+                "name": name,
+                "format": "client"
+            }
+            raw_data = (await Request(url, params=params).get()).json()
+        if raw_data["code"] != 200:
+            return PROMPT.PlayerNotExist
+        results = []
+        
+        for each_equip in raw_data["data"]["equip_list"]:
+            position_id = each_equip["nItemIndex"]
+            
+            if position_id not in range(0, 12+1):
+                continue
+
+            tab_type = each_equip["dwTabType"]
+            tab_index = each_equip["dwTabIndex"]
+            strength_level = each_equip["nStrengthLevel"]
+            
+            diamonds = []
+
+            for each_diamond in each_equip.get("aSlotItem", []):
+                diamonds.append(
+                    each_diamond
+                )
+            
+            if position_id == 0:
+                diamonds.append(
+                    each_equip["ColorInfo"][0]
+                )
+
+            permanent_enchant_id = each_equip["dwPermanentEnchantID"]
+            common_enchant_id = each_equip["dwTemporaryEnchantID"]
+            
+            results.append(
+                [
+                    position_id,
+                    tab_type,
+                    tab_index,
+                    strength_level,
+                    diamonds,
+                    permanent_enchant_id,
+                    common_enchant_id,
+                    0
+                ]
+            )
+
+        instance = cls(
+            results,
+            [],
+            int(raw_data["data"]["kungfu_id"]),
+            int(raw_data["data"]["global_id"])
+        )
+        instance.save()
+
     @classmethod
     async def from_tuilan(cls, role_id: str, server_name: str, global_role_id: str) -> None:
         params = {
