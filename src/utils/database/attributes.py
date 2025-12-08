@@ -1170,7 +1170,7 @@ class JX3PlayerAttribute:
                 if each_tag in tags:
                     final_equips = [e for e in final_equips if e.tag == each_tag]
             for each_equip in final_equips:
-                if each_equip.kungfu_id in [10014, 10015, 10224, 10225]:
+                if each_equip.kungfu_id in [10014, 10015, 10224, 10225, 10821]:
                     if (
                         ("QC" in tags and each_equip.kungfu_id == 10014) or \
                         ("JC" in tags and each_equip.kungfu_id == 10015) or \
@@ -1292,7 +1292,7 @@ class JX3PlayerAttribute:
             for e in self.equips:
                 if "atDecriticalDamagePowerBase" in e.attributes:
                     pretags["PVP"] += 1
-                if "atPVXAllRound" in e.attributes:
+                elif "atPVXAllRound" in e.attributes:
                     pretags["PVX"] += 1
                 else:
                     pretags["PVE"] += 1
