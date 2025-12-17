@@ -192,8 +192,14 @@ _template_green_attrs = """
 """
 
 _template_diamonds = """
-<span class="gem gem-yellow">
+<span class="gem">
     <img src="{{ diamond_icon }}"
         style="width:25px; height:25px;">{{ attr_name }}
 </span>
 """
+
+_template_set_attrs = """
+<div>
+    <span class="set-detail">
+        [{{ count }}]{{ attr }}
+</span>"""

@@ -77,6 +77,7 @@ AttributesFull = {
     "atAgilityBase": "身法",
     "atSpunkBase": "元气",
     "atVitalityBase": "体质",
+    "atBasePotentialAdd": "全属性"
 }
 
 def parse_attr(equip_data: dict[str, Any]) -> list[str]:

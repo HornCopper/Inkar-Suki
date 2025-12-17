@@ -9,7 +9,7 @@ from src.utils.generate import generate
 from src.utils.file import read
 from src.plugins.jx3.calculator.compare import AttributesFull, subtype_locations
 
-from ._template import _template_green_attrs, _template_diamonds
+from ._template import _template_green_attrs, _template_diamonds, _template_set_attrs
 
 async def get_equip_info(equip_name: str) -> list[tuple[str, dict]] | str:
     url = f"{Config.jx3.api.calculator_url}/equip?equip_name={equip_name}"
@@ -66,6 +66,22 @@ async def get_equip_info(equip_name: str) -> list[tuple[str, dict]] | str:
                         attr_name = attr_name
                     )
                 )
+            final_set_attrs = []
+            for set_count, set_attrs in each_equip["SetAttributes"].items():
+                for set_attr in set_attrs:
+                    each_attr_key, each_attr_value = next(iter(set_attr.items()))
+                    if each_attr_key in AttributesFull:
+                        msg = f"{AttributesFull[each_attr_key]}提高{each_attr_value}点"
+                    elif each_attr_key == "atSkillEventHandler":
+                        msg = TabCache.get_effect_by_skill_handler_id(int(each_attr_value))
+                    else:
+                        msg = "未知效果(未解析)"
+                    final_set_attrs.append(
+                        Template(_template_set_attrs).render(
+                            count = str(set_count),
+                            attr = msg
+                        )
+                    )
             remark = "备注：" + each_equip["MagicType"] + "（" + each_equip["Index"] + "_" + each_equip["ID"] + "）"
             result = {
                 "color": color,
@@ -77,6 +93,7 @@ async def get_equip_info(equip_name: str) -> list[tuple[str, dict]] | str:
                 "green_attrs": "\n".join(green_attrs),
                 "diamonds": "\n".join(diamonds),
                 "skillevent": "<br>".join(skillevent),
+                "set": "\n".join(final_set_attrs),
                 "remark": remark
             }
             results.append(
