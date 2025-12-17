@@ -1,11 +1,11 @@
 from typing import Any
 
+import re
+import ast
+
 Locations = [
     "武器", None, "暗器", "上衣", "帽子", "项链", "戒指", "戒指", "腰带", "腰坠", "下装", "鞋子", "护腕"
 ]
-
-import re
-import ast
 
 def invert_dict(d: dict[str, str]) -> dict[str, str]:
     """

@@ -970,7 +970,7 @@ class JX3PlayerAttribute:
             return PROMPT.PlayerNotExist
         results = []
         
-        for each_equip in raw_data["data"]["equip_list"]:
+        for each_equip in raw_data["data"]["equipList"]:
             position_id = each_equip["nItemIndex"]
             
             if position_id not in range(0, 12+1):
@@ -1011,8 +1011,8 @@ class JX3PlayerAttribute:
         instance = cls(
             results,
             [],
-            int(raw_data["data"]["kungfu_id"]),
-            int(raw_data["data"]["global_id"])
+            int(raw_data["data"]["kungfuId"]),
+            int(raw_data["data"]["globalId"])
         )
         instance.save()
 
