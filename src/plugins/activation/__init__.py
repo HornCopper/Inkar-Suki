@@ -39,7 +39,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     await update_activation.finish(msg)
 
 
-@scheduler.scheduled_job("cron", hour="19", minute="0")
+# @scheduler.scheduled_job("cron", hour="19", minute="0")
 async def check_activation():
     bots = get_bots()
     database: list[GroupSettings] | Any = db.where_all(GroupSettings(), default=[])
