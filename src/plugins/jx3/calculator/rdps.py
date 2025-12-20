@@ -105,8 +105,12 @@ async def RDPSCalculator(file_name: str, url: str):
                     School.with_internel_id(int(kungfu_id)).name
                 )
             else:
+                t = ""
                 keyword = kungfu_id[-1]
                 force_id = kungfu_id[:-1]
+                if keyword == "w":
+                    keyword = kungfu_id[-2]
+                    force_id = kungfu_id[:-2]
                 if keyword == "h":
                     t = "HPS"
                 if keyword == "t":
