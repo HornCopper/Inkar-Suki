@@ -1,6 +1,6 @@
 from typing import Literal
 from nonebot import on_command
-from nonebot.params import CommandArg
+from nonebot.params import CommandArg, RawCommand
 from nonebot.adapters.onebot.v11 import Bot, Message, GroupMessageEvent, MessageSegment as ms
 
 from src.const.jx3.school import School
@@ -12,6 +12,7 @@ from src.utils.network import Request
 from .random_serendipity import get_serendipity, get_serendipity_image
 from .random_loot import RandomLoot
 from .random_shilian import generate_shilian_box
+from .random_equip import get_equip_info_image, get_equip_info
 
 saohua_matcher = on_command("jx3_random", aliases={"骚话", "烧话"}, force_whitespace=True, priority=5)
 
@@ -97,3 +98,35 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
         await random_serendipity_matcher.finish(ms.at(event.user_id) + " 本次抽取没有中奇遇呢，可以再试一次？")
     image = get_serendipity_image(serendipity_path)
     await random_serendipity_matcher.finish(ms.at(event.user_id) + image)
+
+random_equip_matcher = on_command("jx3_randomequip", aliases={"抽防具", "抽首饰", "抽武器", "抽装备"}, priority=5)
+
+@random_equip_matcher.handle()
+async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg(), cmd: str = RawCommand()):
+    raw_arg = args.extract_plain_text().strip()
+    params = {
+        "random": 1
+    }
+    if raw_arg:
+        arg = raw_arg.split(" ")
+        if len(arg) == 1:
+            params["min_level"] = int(arg[0])
+        elif len(arg) == 2:
+            params["min_level"] = int(arg[0])
+            params["max_level"] = int(arg[1])
+        else:
+            await random_equip_matcher.finish(PROMPT.ArgumentCountInvalid + "\n参考格式：抽防具 最低品级 最高品级\n无参数时按当前主流装备品级；单参数时为最低品级，双参数时前者为最低品级；后者为最高品级。")
+    if cmd == "抽防具":
+        params["category"] = 7
+    elif cmd == "抽首饰":
+        params["category"] = 8
+    elif cmd == "抽武器":
+        params["category"] = 6
+    else:
+        await random_equip_matcher.finish("请选择【抽武器】【抽防具】【抽首饰】其中一个命令进行！")
+    equip_data = await get_equip_info_image(
+        await get_equip_info(params)
+    )
+    await random_equip_matcher.finish(
+        ms.at(event.user_id) + equip_data
+    )
