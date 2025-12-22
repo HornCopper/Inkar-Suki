@@ -47,13 +47,13 @@ class AccountManage:
             is_in_cycle (bool): 是否在本周期内。
         """
         current_time = datetime.now()
-        today_7_am = current_time.replace(hour=7, minute=0, second=0, microsecond=0)
-        if current_time < today_7_am:
-            period_start = today_7_am - timedelta(days=1)
-            period_end = today_7_am
+        today_0_am = current_time.replace(hour=0, minute=0, second=0, microsecond=0)
+        if current_time < today_0_am:
+            period_start = today_0_am - timedelta(days=1)
+            period_end = today_0_am
         else:
-            period_start = today_7_am
-            period_end = today_7_am + timedelta(days=1)
+            period_start = today_0_am
+            period_end = today_0_am + timedelta(days=1)
         last_checkin_time = datetime.fromtimestamp(self.data.last_checkin)
         return period_start <= last_checkin_time < period_end
 

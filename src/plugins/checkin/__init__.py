@@ -68,7 +68,7 @@ async def _(event: MessageEvent, args: Message = CommandArg()):
         return
     status: CheckinRewards | Literal[False] = AccountManage(event.user_id).checkin()
     if not status:
-        await CheckinMatcher.finish("您已经签到过了哦，请等待次日7点后重试！")
+        await CheckinMatcher.finish("您已经签到过了哦，请等待次日0点后重试！")
     msg = ms.at(event.user_id) + f" 签到成功！\n本日幸运值：{status.lucky_value}\n金币：+{status.coin}\n累计签到：{status.total_days}天"
     if status.is_lucky:
         msg += "\n触发额外奖励！获得 10000 金币！"

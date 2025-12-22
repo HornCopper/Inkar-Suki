@@ -102,7 +102,7 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
 random_equip_matcher = on_command("jx3_randomequip", aliases={"抽防具", "抽首饰", "抽武器", "抽装备"}, priority=5)
 
 @random_equip_matcher.handle()
-async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg(), cmd: str = RawCommand()):
+async def _(event: GroupMessageEvent, args: Message = CommandArg(), cmd: str = RawCommand()):
     raw_arg = args.extract_plain_text().strip()
     params = {
         "random": 1

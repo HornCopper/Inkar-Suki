@@ -37,7 +37,7 @@ from .calculator import (
 from .cost import (
     cost_calc_matcher
 )
-from .couple import (
+from .affections import (
     bind_affection_matcher,
     delete_affection_matcher,
     affection_crt_matcher

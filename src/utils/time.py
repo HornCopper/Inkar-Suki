@@ -75,3 +75,7 @@ class Time:
             flag = "后"
         relateTime = f"{days}天{hours}时{minutes}分{flag}"
         return relateTime
+
+    @property
+    def is_today(self) -> bool:
+        return datetime.fromtimestamp(self.raw_time).date() == datetime.now().date()

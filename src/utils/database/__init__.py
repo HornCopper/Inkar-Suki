@@ -15,7 +15,8 @@ from src.utils.database.classes import (
     JX3APIWSData,
     RequestData,
     SerendipityData,
-    GroupMessage
+    GroupMessage,
+    RandomAffectionRecord
 )
 
 from src.const.path import DATA, build_path
@@ -31,7 +32,8 @@ db.auto_migrate(
     ItemKeywordMap(),
     PersonalSettings(),
     Population(),
-    RoleData()
+    RoleData(),
+    RandomAffectionRecord()
 )
 
 cache_db = Database(build_path(DATA, ["cache.db"]))
