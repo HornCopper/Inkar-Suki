@@ -78,12 +78,15 @@ random_affection_matcher = on_command("jx3_rdaff", aliases={"随机情缘", "抽
 
 @random_affection_matcher.handle()
 async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
-    if args.extract_plain_text().strip() != "":
-        return
+    # if args.extract_plain_text().strip() != "":
+    #     return
     if "抽情缘" not in get_group_settings(event.group_id, "additions"):
         return
+    force = False
+    if args.extract_plain_text().strip() == "-F":
+        force = True
     basic_msg = ms.at(event.user_id)
-    if get_affection(event.user_id):
+    if get_affection(event.user_id) and not force:
         await random_affection_matcher.finish(basic_msg + " 您今日已经抽过情缘了，请明日再试！")
     else:
         random_affection_id = await get_random_affection(bot, event.group_id, event.user_id)
@@ -91,7 +94,7 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
         display_name = random_affection_info["card"] or str(random_affection_info["nickname"])
         avatar = (await Request(f"https://q.qlogo.cn/headimg_dl?dst_uin={random_affection_id}&spec=100&img_type=jpg").get()).content
         status = set_affection(event.user_id, event.group_id, random_affection_id)
-        if status:
+        if status or force:
             await random_affection_matcher.finish(basic_msg + " 您今天抽到的情缘是：\n" + ms.image(avatar) + f"{display_name}（{random_affection_id}）")
         else:
             await random_affection_matcher.finish(basic_msg + " 您今日已经抽过情缘了，请明日再试！")
