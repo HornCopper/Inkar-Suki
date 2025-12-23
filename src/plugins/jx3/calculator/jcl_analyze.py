@@ -5,13 +5,14 @@ from httpx import AsyncClient
 from src.config import Config
 from src.const.path import ASSETS
 from src.const.jx3.kungfu import Kungfu
+from src.utils.time import Time
 from src.utils.generate import generate
-from src.templates import SimpleHTML, get_saohua
+from src.templates import SimpleHTML, HTMLSourceCode, get_saohua
 
 from src.utils.database import rank_db as db
 from src.utils.database.classes import CQCRank
 
-from ._template import template_rdps
+from ._template import template_rdps, fal_table_head, fal_template_body
 
 def save_data(data: dict[str, dict[str, int | str]], value_type: bool) -> None:
     """
@@ -106,3 +107,27 @@ async def CQCAnalyze(file_name: str, url: str):
     )
     dps_image = await generate(html, ".container", segment=True)
     return dps_image
+
+async def FALAnalyze(file_name: str, url: str):
+    async with AsyncClient(verify=False) as client:
+        resp = await client.post(f"{Config.jx3.api.cqc_url}/fal_analyze", json={"jcl_url": url, "jcl_name": file_name}, timeout=600)
+        data = resp.json()
+    tables = []
+    for each_record in data["data"]:
+        tables.append(
+            Template(fal_template_body).render(
+                time = Time(each_record["time"]).format("%H:%M:%S"),
+                releaser = each_record["releaser_name"] + "<br>（" + str(each_record["releaser_id"]) + "）",
+                target = each_record["target_name"] + "<br>（" + str(each_record["target_id"]) + "/" + str(each_record["target_template_id"]) + "）",
+                skill = str(each_record["skill_id"])
+            )
+        )
+    html = str(
+        HTMLSourceCode(
+            application_name = "开怪统计",
+            table_head = fal_table_head,
+            table_body = "\n".join(tables)
+        )
+    )
+    image = await generate(html, ".container", segment=True)
+    return image  

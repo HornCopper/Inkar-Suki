@@ -21,7 +21,7 @@ from .jx3box import JX3BOXCalculator
 from .base import FORMATIONS, INCOMES
 from .universe import UniversalCalculator
 from .rdps import RDPSCalculator
-from .cqc import CQCAnalyze
+from .jcl_analyze import CQCAnalyze, FALAnalyze
 
 import re
 import json
@@ -245,6 +245,14 @@ def check_jcl_name_cqc(filename: str) -> bool:
     )
     return bool(pattern.match(filename[4:]))
 
+def check_jcl_name_fal(filename: str) -> bool:
+    if not filename.startswith("FAL-"):
+        return False
+    pattern = re.compile(
+        r"^\d{4}-\d{2}-\d{2}-\d{2}-\d{2}-\d{2}-[\u4e00-\u9fff·\d]+(?:\(\d+\))?-[\u4e00-\u9fff·\d]+(?:\(\d+\))?\.jcl$"
+    )
+    return bool(pattern.match(filename[4:]))
+
 @notice.handle()
 async def _(bot: Bot, event: GroupUploadNoticeEvent):
     if not check_jcl_name_jx3bla(event.file.name):
@@ -263,6 +271,17 @@ async def _(bot: Bot, event: GroupUploadNoticeEvent):
     else:
         try:
             image = await CQCAnalyze(event.file.name[4:], event.model_dump()["file"]["url"])
+        except json.decoder.JSONDecodeError:
+            await bot.send_group_msg(group_id=event.group_id, message="啊哦，音卡的服务器目前似乎有些小问题，请稍后再使用JCL分析？")
+        await bot.send_group_msg(group_id=event.group_id, message=Message(image))
+
+@notice.handle()
+async def _(bot: Bot, event: GroupUploadNoticeEvent):
+    if not check_jcl_name_fal(event.file.name):
+        return
+    else:
+        try:
+            image = await FALAnalyze(event.file.name[4:], event.model_dump()["file"]["url"])
         except json.decoder.JSONDecodeError:
             await bot.send_group_msg(group_id=event.group_id, message="啊哦，音卡的服务器目前似乎有些小问题，请稍后再使用JCL分析？")
         await bot.send_group_msg(group_id=event.group_id, message=Message(image))

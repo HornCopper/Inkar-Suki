@@ -44,3 +44,20 @@ template_rdps = """
         <span class="dps-num">{{ percent }}</span>
     </div>
 </div>"""
+
+fal_table_head = """
+<tr>
+    <th class="short-column">时间</th>
+    <th class="short-column">攻击者</th>
+    <th class="short-column">被攻击者</th>
+    <th class="short-column">技能ID</th>
+</tr>"""
+
+fal_template_body = """
+<tr>
+    <td class="short-column">{{ time }}</td>
+    <td class="short-column">{{ releaser }}</td>
+    <td class="short-column">{{ target }}</td>
+    <td class="short-column">{{ skill }}</td>
+</tr>
+"""
