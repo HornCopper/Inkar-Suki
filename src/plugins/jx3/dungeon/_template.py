@@ -44,6 +44,15 @@ template_zone_record = """
 </tr>
 """
 
+template_zone_v2_record = """
+<tr>
+    <td class="short-column">{{ zone_name }}</td>
+    <td>
+    {{ images }}
+    </td>
+</tr>
+"""
+
 template_item = """
 <tr>
     <td class="short-column">{{ time }}</td>
@@ -63,6 +72,12 @@ table_zone_record_head = """
 <tr>
     <th class="short-column">副本</th>
     <th class="short-column">难度</th>
+    <th>进度</th>
+</tr>"""
+
+table_zone_record_v2_head = """
+<tr>
+    <th class="short-column">副本</th>
     <th>进度</th>
 </tr>"""
 
