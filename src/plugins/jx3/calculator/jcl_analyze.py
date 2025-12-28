@@ -3,8 +3,10 @@ from jinja2 import Template
 from httpx import AsyncClient
 
 from src.config import Config
-from src.const.path import ASSETS
+from src.const.path import ASSETS, TEMPLATES
 from src.const.jx3.kungfu import Kungfu
+from src.utils.file import read
+from src.utils.analyze import sort_dict_list
 from src.utils.time import Time
 from src.utils.generate import generate
 from src.templates import SimpleHTML, HTMLSourceCode, get_saohua
@@ -12,7 +14,7 @@ from src.templates import SimpleHTML, HTMLSourceCode, get_saohua
 from src.utils.database import rank_db as db
 from src.utils.database.classes import CQCRank
 
-from ._template import template_rdps, fal_table_head, fal_template_body
+from ._template import bla_template_body, fal_table_head, fal_template_body, yxc_table_head, yxc_template_body_main, yxc_template_body_sub
 
 def save_data(data: dict[str, dict[str, int | str]], value_type: bool) -> None:
     """
@@ -66,7 +68,7 @@ async def CQCAnalyze(file_name: str, url: str):
     for player_name, player_data in data["data"][0].items():
         kungfu: Kungfu = Kungfu.with_internel_id(int(player_data["kungfu_id"]))
         final_dps.append(
-            Template(template_rdps).render(
+            Template(bla_template_body).render(
                 icon = kungfu.icon,
                 name = player_name,
                 rdps = "{:,}".format(int(player_data["total_damage"])),
@@ -79,7 +81,7 @@ async def CQCAnalyze(file_name: str, url: str):
     for player_name, player_data in data["data"][1].items():
         kungfu: Kungfu = Kungfu.with_internel_id(int(player_data["kungfu_id"]))
         final_hps.append(
-            Template(template_rdps.replace("dps-num", "hps-num")).render(
+            Template(bla_template_body.replace("dps-num", "hps-num")).render(
                 icon = kungfu.icon,
                 name = player_name,
                 rdps = "{:,}".format(int(player_data["total_health"])),
@@ -128,6 +130,39 @@ async def FALAnalyze(file_name: str, url: str):
             table_head = fal_table_head,
             table_body = "\n".join(tables)
         )
+    )
+    image = await generate(html, ".container", segment=True)
+    return image  
+
+async def YXCAnalyze(file_name: str, url: str):
+    async with AsyncClient(verify=False) as client:
+        resp = await client.post(f"{Config.jx3.api.cqc_url}/yxc_analyze", json={"jcl_url": url, "jcl_name": file_name}, timeout=600)
+        data = resp.json()
+    tables = []
+    for each_record in sort_dict_list(data["data"], "value")[::-1]:
+        tables.append(
+            Template(yxc_template_body_main).render(
+                icon=Kungfu.with_internel_id(int(each_record["kungfu_id"]), True).icon,
+                name=each_record["name"],
+                value=each_record["value"]
+            )
+        )
+        skills = dict(sorted(each_record["skills"].items(), key=lambda item: sum(item[1]), reverse=True))
+        for skill_name, skill_values in skills.items():
+            tables.append(
+                Template(yxc_template_body_sub).render(
+                    name = skill_name,
+                    count = len(skill_values),
+                    value = sum(skill_values),
+                    percent = str(round(sum(skill_values) / each_record["value"] * 100, 2)) + "%"
+                )
+            )
+    html = Template(
+        read(TEMPLATES + "/jx3/yxc_chps.html")
+    ).render(
+        font = ASSETS + "/font/PingFangSC-Semibold.otf",
+        tables = "\n".join(tables),
+        saohua = get_saohua()
     )
     image = await generate(html, ".container", segment=True)
     return image  

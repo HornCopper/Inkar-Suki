@@ -10,7 +10,7 @@ from src.utils.analyze import check_number, sort_dict_list
 from src.utils.generate import generate
 from src.templates import SimpleHTML, get_saohua
 
-from ._template import template_rdps
+from ._template import bla_template_body
 
 import re
 
@@ -150,7 +150,7 @@ async def RDPSCalculator(file_name: str, url: str):
     for each_rdps in rdps_final_results:
         if each_rdps["kungfu"] is None:
             final_rdps.append(
-                Template(template_rdps).render(
+                Template(bla_template_body).render(
                     icon = Kungfu(None).icon,
                     name = each_rdps["name"],
                     rdps = "{:,}".format(int(each_rdps["rdps"])),
@@ -162,7 +162,7 @@ async def RDPSCalculator(file_name: str, url: str):
         else:
             kungfu: Kungfu = each_rdps["kungfu"]
             final_rdps.append(
-                Template(template_rdps).render(
+                Template(bla_template_body).render(
                     icon = kungfu.icon,
                     name = f"#{rd_rank} " + each_rdps["name"],
                     rdps = "{:,}".format(int(each_rdps["rdps"])),
@@ -176,7 +176,7 @@ async def RDPSCalculator(file_name: str, url: str):
     for each_rhps in rhps_final_results:
         if each_rhps["kungfu"] is None:
             final_rhps.append(
-                Template(template_rdps).render(
+                Template(bla_template_body).render(
                     icon = Kungfu(None).icon,
                     name = each_rhps["name"],
                     rdps = "{:,}".format(int(each_rhps["rhps"])),
@@ -188,7 +188,7 @@ async def RDPSCalculator(file_name: str, url: str):
         else:
             kungfu: Kungfu = each_rhps["kungfu"]
             final_rhps.append(
-                Template(template_rdps).render(
+                Template(bla_template_body).render(
                     icon = kungfu.icon,
                     name = f"#{rh_rank} " + each_rhps["name"],
                     rdps = "{:,}".format(int(each_rhps["rhps"])),

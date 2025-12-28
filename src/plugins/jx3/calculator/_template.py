@@ -25,7 +25,7 @@ template_attr = """
     <strong>{{ name }}</strong><br><span>{{ value }}<br><span><strong>收益：</strong>{{ income }}</span></span>
 </div>"""
 
-template_rdps = """
+bla_template_body = """
 <div class="skill">
     <img src="{{ icon }}" width="50px" height="50px">
     <div class="skill-content">
@@ -59,5 +59,36 @@ fal_template_body = """
     <td class="short-column">{{ releaser }}</td>
     <td class="short-column">{{ target }}</td>
     <td class="short-column">{{ skill }}</td>
+</tr>
+"""
+
+yxc_table_head = """
+<tr>
+    <th class="short-column">心法</th>
+    <th class="short-column">角色名</th>
+    <th class="short-column">有效治疗</th>
+</tr>"""
+
+yxc_template_body_main = """
+<tr class="main-row">
+    <td>
+        <img src="{{ icon }}" width="50" height="50">
+    </td>
+    <td>{{ name }}</td>
+    <td>{{ value }}</td>
+</tr>
+"""
+
+yxc_template_body_sub = """
+<tr class="sub-row">
+    <td class="sub-skill">
+        {{ name }}
+    </td>
+    <td class="sub-value">
+        {{ count }}
+    </td>
+    <td class="sub-value">
+        {{ value }}({{ percent }})
+    </td>
 </tr>
 """

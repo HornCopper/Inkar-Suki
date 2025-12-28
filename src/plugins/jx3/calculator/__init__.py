@@ -21,7 +21,7 @@ from .jx3box import JX3BOXCalculator
 from .base import FORMATIONS, INCOMES
 from .universe import UniversalCalculator
 from .rdps import RDPSCalculator
-from .jcl_analyze import CQCAnalyze, FALAnalyze
+from .jcl_analyze import CQCAnalyze, FALAnalyze, YXCAnalyze
 
 import re
 import json
@@ -229,24 +229,9 @@ async def _(event: GroupMessageEvent, state: T_State, loop_order: Message = Arg(
     msg = f"当前DPS：{old_data['damage_per_second']}\n更新DPS：{new_data['damage_per_second']}"
     await equip_compare.finish(msg)
 
-def check_jcl_name_jx3bla(filename: str) -> bool:
-    if not filename.startswith("IKS-"):
-        return False
-    pattern = re.compile(
-        r"^\d{4}-\d{2}-\d{2}-\d{2}-\d{2}-\d{2}-[\u4e00-\u9fff·\d]+(?:\(\d+\))?-[\u4e00-\u9fff·\d]+(?:\(\d+\))?\.jcl$"
-    )
-    return bool(pattern.match(filename[4:]))
 
-def check_jcl_name_cqc(filename: str) -> bool:
-    if not filename.startswith("CQC-"):
-        return False
-    pattern = re.compile(
-        r"^\d{4}-\d{2}-\d{2}-\d{2}-\d{2}-\d{2}-[\u4e00-\u9fff·\d]+(?:\(\d+\))?-[\u4e00-\u9fff·\d]+(?:\(\d+\))?\.jcl$"
-    )
-    return bool(pattern.match(filename[4:]))
-
-def check_jcl_name_fal(filename: str) -> bool:
-    if not filename.startswith("FAL-"):
+def check_jcl_name(filename: str, prefix: str) -> bool:
+    if not filename.startswith(prefix):
         return False
     pattern = re.compile(
         r"^\d{4}-\d{2}-\d{2}-\d{2}-\d{2}-\d{2}-[\u4e00-\u9fff·\d]+(?:\(\d+\))?-[\u4e00-\u9fff·\d]+(?:\(\d+\))?\.jcl$"
@@ -255,7 +240,7 @@ def check_jcl_name_fal(filename: str) -> bool:
 
 @notice.handle()
 async def _(bot: Bot, event: GroupUploadNoticeEvent):
-    if not check_jcl_name_jx3bla(event.file.name):
+    if not check_jcl_name(event.file.name, "IKS-"):
         return
     else:
         try:
@@ -266,7 +251,7 @@ async def _(bot: Bot, event: GroupUploadNoticeEvent):
 
 @notice.handle()
 async def _(bot: Bot, event: GroupUploadNoticeEvent):
-    if not check_jcl_name_cqc(event.file.name):
+    if not check_jcl_name(event.file.name, "CQC-"):
         return
     else:
         try:
@@ -277,11 +262,22 @@ async def _(bot: Bot, event: GroupUploadNoticeEvent):
 
 @notice.handle()
 async def _(bot: Bot, event: GroupUploadNoticeEvent):
-    if not check_jcl_name_fal(event.file.name):
+    if not check_jcl_name(event.file.name, "FAL-"):
         return
     else:
         try:
             image = await FALAnalyze(event.file.name[4:], event.model_dump()["file"]["url"])
+        except json.decoder.JSONDecodeError:
+            await bot.send_group_msg(group_id=event.group_id, message="啊哦，音卡的服务器目前似乎有些小问题，请稍后再使用JCL分析？")
+        await bot.send_group_msg(group_id=event.group_id, message=Message(image))
+
+@notice.handle()
+async def _(bot: Bot, event: GroupUploadNoticeEvent):
+    if not check_jcl_name(event.file.name, "YXC-"):
+        return
+    else:
+        try:
+            image = await YXCAnalyze(event.file.name[4:], event.model_dump()["file"]["url"])
         except json.decoder.JSONDecodeError:
             await bot.send_group_msg(group_id=event.group_id, message="啊哦，音卡的服务器目前似乎有些小问题，请稍后再使用JCL分析？")
         await bot.send_group_msg(group_id=event.group_id, message=Message(image))

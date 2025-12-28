@@ -182,7 +182,7 @@ attribute_db_executor = ThreadPoolExecutor(max_workers=1)
 @notice.handle()
 async def _(bot: Bot, event: GroupUploadNoticeEvent):
     if event.file.name.endswith(".jcl"):
-        if event.file.name[:3] in ["CQC", "IKS", "FAL"]:
+        if event.file.name[:3] in ["CQC", "IKS", "FAL", "YXC"]:
             return
         msg = "以下全局玩家ID完成入库："
         response = await Request(event.model_dump()["file"]["url"]).get()

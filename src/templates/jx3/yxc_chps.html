@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+
+    <style>
+        body {
+            font-family: Harmony, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: #fff;
+        }
+
+        .container {
+            display: inline-block;
+            padding: 20px;
+            background: white;
+            min-width: 1000px;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            min-width: 1000px;
+            background: white;
+        }
+
+        th {
+            padding: 12px;
+            text-align: center;
+            background: #f8f9fa;
+            font-weight: 600;
+            color: #444;
+            font-size: 24px;
+            white-space: nowrap;
+        }
+
+        td {
+            padding: 12px;
+            border-top: 1px solid #eee;
+            text-align: center;
+            font-size: 24px;
+            white-space: nowrap;
+        }
+
+        .main-row td {
+            background: #fff;
+        }
+
+        .sub-row td {
+            padding: 4px 12px;
+            font-size: 18px;
+            color: #666;
+            background: #fafafa;
+            border-top: none;
+            vertical-align: middle;
+        }
+        
+        .sub-skill {
+            width: 70px;
+            text-align: center;
+        }
+
+        .sub-value {
+            width: 30%;
+            text-align: center;
+        }
+
+        .sub-rate {
+            color: #2c7be5;
+            font-weight: 500;
+            margin-right: 6px;
+        }
+
+        footer {
+            background: #f0f0f0;
+            text-align: center;
+            padding: 15px;
+            font-size: 20px;
+            color: #777;
+            margin-top: 10px;
+        }
+
+        @font-face {
+            font-family: Harmony;
+            src: url("{{ font }}");
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+
+        <table>
+            <thead>
+                <tr>
+                    <th>心法</th>
+                    <th>角色名</th>
+                    <th>有效治疗</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {{ tables }}
+            </tbody>
+        </table>
+
+        <footer>
+            尹雪尘承伤统计 | Inkar-Suki：{{ saohua }}
+        </footer>
+
+    </div>
+
+</body>
+</html>
