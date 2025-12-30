@@ -1,4 +1,4 @@
-from typing import cast
+from typing import cast, Callable
 from nonebot import on_command
 from nonebot.params import CommandArg, Arg, RawCommand
 from nonebot.typing import T_State
@@ -240,44 +240,28 @@ def check_jcl_name(filename: str, prefix: str) -> bool:
 
 @notice.handle()
 async def _(bot: Bot, event: GroupUploadNoticeEvent):
-    if not check_jcl_name(event.file.name, "IKS-"):
-        return
+    analyzer: Callable | None = None
+    if check_jcl_name(event.file.name, "IKS-"):
+        analyzer = RDPSCalculator
+    elif check_jcl_name(event.file.name, "CQC-"):
+        analyzer = CQCAnalyze
+    elif check_jcl_name(event.file.name, "FAL-"):
+        analyzer = FALAnalyze
+    elif check_jcl_name(event.file.name, "YXC-"):
+        analyzer = YXCAnalyze
     else:
-        try:
-            image = await RDPSCalculator(event.file.name[4:], event.model_dump()["file"]["url"])
-        except json.decoder.JSONDecodeError:
-            await bot.send_group_msg(group_id=event.group_id, message="啊哦，警长的服务器目前似乎暂时有些小问题，请稍后再使用JCL分析？")
-        await bot.send_group_msg(group_id=event.group_id, message=Message(image))
-
-@notice.handle()
-async def _(bot: Bot, event: GroupUploadNoticeEvent):
-    if not check_jcl_name(event.file.name, "CQC-"):
         return
-    else:
+    
+    if analyzer is not None:
         try:
-            image = await CQCAnalyze(event.file.name[4:], event.model_dump()["file"]["url"])
-        except json.decoder.JSONDecodeError:
-            await bot.send_group_msg(group_id=event.group_id, message="啊哦，音卡的服务器目前似乎有些小问题，请稍后再使用JCL分析？")
-        await bot.send_group_msg(group_id=event.group_id, message=Message(image))
-
-@notice.handle()
-async def _(bot: Bot, event: GroupUploadNoticeEvent):
-    if not check_jcl_name(event.file.name, "FAL-"):
-        return
-    else:
+            url = event.model_dump()["file"]["url"]
+        except KeyError:
+            file_id = event.model_dump()["file"]["id"]
+            bus_id = event.model_dump()["file"]["busid"]
+            file_data = await bot.call_api("get_group_file_url", group_id=event.group_id, file_id=file_id, bus_id=bus_id)
+            url = file_data["url"]
         try:
-            image = await FALAnalyze(event.file.name[4:], event.model_dump()["file"]["url"])
+            image = await analyzer(event.file.name[4:], url)
+            await bot.send_group_msg(group_id=event.group_id, message=Message(image))
         except json.decoder.JSONDecodeError:
-            await bot.send_group_msg(group_id=event.group_id, message="啊哦，音卡的服务器目前似乎有些小问题，请稍后再使用JCL分析？")
-        await bot.send_group_msg(group_id=event.group_id, message=Message(image))
-
-@notice.handle()
-async def _(bot: Bot, event: GroupUploadNoticeEvent):
-    if not check_jcl_name(event.file.name, "YXC-"):
-        return
-    else:
-        try:
-            image = await YXCAnalyze(event.file.name[4:], event.model_dump()["file"]["url"])
-        except json.decoder.JSONDecodeError:
-            await bot.send_group_msg(group_id=event.group_id, message="啊哦，音卡的服务器目前似乎有些小问题，请稍后再使用JCL分析？")
-        await bot.send_group_msg(group_id=event.group_id, message=Message(image))
+            await bot.send_group_msg(group_id=event.group_id, message="啊哦，音卡的服务器目前似乎暂时有些小问题，请稍后再使用JCL分析？")
