@@ -16,9 +16,6 @@ from .teamcd import (
     get_mulit_record_image,
     get_personal_roles_teamcd_image
 )
-from .teamcd_new import (
-    get_zone_record_image as teamcd_v2
-)
 from .role_monster import get_role_monsters_map
 from .monster import get_monsters_map
 
@@ -49,27 +46,6 @@ async def _(event: GroupMessageEvent, message: Message = CommandArg()):
         data = await get_mulit_record_image(server, roles)
     else:
         data = await teamcd_v1(server, name)
-    await zone_record_matcher.finish(data)
-
-zone_record_v2_matcher = on_command("jx3_zones_v2", aliases={"副本v2"}, force_whitespace=True, priority=5)
-
-@zone_record_v2_matcher.handle()
-async def _(event: GroupMessageEvent, message: Message = CommandArg()):
-    if message.extract_plain_text() == "":
-        return
-    args = message.extract_plain_text().strip().split(" ")
-    if len(args) not in [1, 2]:
-        await zone_record_v2_matcher.finish(PROMPT.ArgumentCountInvalid + "\n参考格式：副本v2 <服务器> <角色名>")
-    if len(args) == 1:
-        server = None
-        name = args[0]
-    elif len(args) == 2:
-        server = args[0]
-        name = args[1]
-    server = Server(server, event.group_id).server
-    if server is None:
-        await zone_record_v2_matcher.finish(PROMPT.ServerNotExist)
-    data = await teamcd_v2(server, name)
     await zone_record_matcher.finish(data)
 
 all_roles_teamcd_matcher = on_command("jx3_zoneslist", aliases={"副本列表"}, force_whitespace=True, priority=5)
