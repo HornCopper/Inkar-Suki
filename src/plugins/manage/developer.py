@@ -2,13 +2,15 @@ from typing import Any
 
 from nonebot import on_command
 from nonebot.params import CommandArg, Arg
-from nonebot.adapters.onebot.v11 import Message, GroupMessageEvent
+from nonebot.adapters.onebot.v11 import Bot, Message, GroupMessageEvent
 
 from src.config import Config
 from src.utils.permission import check_permission
 from src.utils.generate import generate
 from src.utils.database import db
 from src.utils.database.classes import Account, GroupSettings
+
+import json
 
 ScreenShotMatcher = on_command("screenshot", priority=5, force_whitespace=True)
 
@@ -78,3 +80,16 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     current_setting.invitor = int(user_id)
     db.save(current_setting)
     await SetInvitorMatcher.finish(f"成功设置群[{group_id}]的邀请人为[{user_id}]！")
+
+onebot_api_call = on_command("调用API", priority=5, force_whitespace=True)
+
+@onebot_api_call.handle()
+async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
+    if not check_permission(event.user_id, 10):
+        return
+    arg = args.extract_plain_text().strip().split(" ")
+    if len(arg) < 2:
+        return
+    api = arg[0]
+    params = json.loads(" ".join(arg[1:]))
+    await bot.call_api(api, **params)
