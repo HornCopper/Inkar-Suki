@@ -954,7 +954,7 @@ class FinalAttr:
 
 class JX3PlayerAttribute:
     @classmethod
-    async def from_jx3api(cls, server: str, name: str, url_require: bool = False) -> Self | str:
+    async def from_jx3api(cls, server: str, name: str, url_require: bool = False) -> str | None:
         if not url_require:
             raw_data = {}
             raw_data["code"] = 404
@@ -1111,7 +1111,7 @@ class JX3PlayerAttribute:
         )
 
     @classmethod
-    async def from_jcl(cls, jcl_content: str) -> list[Self]:
+    async def from_jcl(cls, jcl_content: str, only_threapy: bool = False) -> list[Self]:
         jcl_lines = jcl_content.strip().split("\n")
         player_info_lines: dict[int, list] = {}
         player_name: dict[int, str] = {}
@@ -1136,15 +1136,21 @@ class JX3PlayerAttribute:
         async def build_attr(global_role_id: int, lua_table: list):
             equips_lines = [e for e in lua_table[5] if int(e[0]) in range(0, 13)]
             talents_lines = [int(t[1]) for t in lua_table[6]]
+            kungfu_id = Kungfu.with_internel_id(int(lua_table[3]), True).id
+            if only_threapy and kungfu_id not in [10080, 10028, 10176, 10448, 10626]:
+                return None
             return cls(
                 equips_lines,
                 talents_lines,
-                cast(int, Kungfu.with_internel_id(int(lua_table[3]), True).id),
+                cast(int, kungfu_id),
                 global_role_id,
                 name=player_name.get(global_role_id, "未知")
             )
-
-        tasks = [build_attr(rid, lua) for rid, lua in player_info_lines.items()]
+        tasks = []
+        for rid, lua in player_info_lines.items():
+            instance = build_attr(rid, lua)
+            if instance is not None:
+                tasks.append(instance)
         return await asyncio.gather(*tasks)
 
     @overload

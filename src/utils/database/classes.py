@@ -155,3 +155,11 @@ class RandomAffectionRecord(LiteModel):
     group_id: int = 0
     target_id: int = 0
     timestamp: int = 0
+
+class HPSRankRecord(LiteModel):
+    TABLE_NAME: str = "hps_rank_record"
+    name: str = ""
+    server: str = ""
+    value: int = 0
+    weapon: int = 0
+    talents: list[int] = []

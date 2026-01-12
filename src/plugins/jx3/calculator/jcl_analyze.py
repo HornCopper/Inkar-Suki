@@ -139,7 +139,7 @@ async def YXCAnalyze(file_name: str, url: str):
         resp = await client.post(f"{Config.jx3.api.cqc_url}/yxc_analyze", json={"jcl_url": url, "jcl_name": file_name}, timeout=600)
         data = resp.json()
     tables = []
-    for each_record in sort_dict_list(data["data"], "value")[::-1]:
+    for each_record in data["data"]:
         tables.append(
             Template(yxc_template_body_main).render(
                 icon=Kungfu.with_internel_id(int(each_record["kungfu_id"]), True).icon,
@@ -166,3 +166,6 @@ async def YXCAnalyze(file_name: str, url: str):
     )
     image = await generate(html, ".container", segment=True)
     return image  
+
+async def HPSAnalyze(file_name: str, url: str):
+    ...
