@@ -65,6 +65,7 @@ class PersonalSetting(BaseModel):
     theme: str = "浅色"
     trade: str = "v3"
     serendipity: str = "v2"
+    anonymous: str = "否"
     income: str = "无增益"
     formation: str = "无阵眼"
 

@@ -57,7 +57,7 @@ def save_data(data: dict[str, dict[str, int | str]], value_type: bool) -> None:
         db.save(new_data)
             
 
-async def CQCAnalyze(file_name: str, url: str):
+async def CQCAnalyze(file_name: str, url: str, anonymous: bool = False):
     async with AsyncClient(verify=False) as client:
         resp = await client.post(f"{Config.jx3.api.cqc_url}/cqc_analyze", json={"jcl_url": url, "jcl_name": file_name}, timeout=600)
         data = resp.json()
@@ -66,6 +66,8 @@ async def CQCAnalyze(file_name: str, url: str):
     final_hps = []
 
     for player_name, player_data in data["data"][0].items():
+        if anonymous:
+            player_name = "匿名玩家"
         kungfu: Kungfu = Kungfu.with_internel_id(int(player_data["kungfu_id"]))
         final_dps.append(
             Template(bla_template_body).render(
@@ -79,6 +81,8 @@ async def CQCAnalyze(file_name: str, url: str):
         )
 
     for player_name, player_data in data["data"][1].items():
+        if anonymous:
+            player_name = "匿名玩家"
         kungfu: Kungfu = Kungfu.with_internel_id(int(player_data["kungfu_id"]))
         final_hps.append(
             Template(bla_template_body.replace("dps-num", "hps-num")).render(
@@ -110,16 +114,19 @@ async def CQCAnalyze(file_name: str, url: str):
     dps_image = await generate(html, ".container", segment=True)
     return dps_image
 
-async def FALAnalyze(file_name: str, url: str):
+async def FALAnalyze(file_name: str, url: str, anonymous: bool = False):
     async with AsyncClient(verify=False) as client:
         resp = await client.post(f"{Config.jx3.api.cqc_url}/fal_analyze", json={"jcl_url": url, "jcl_name": file_name}, timeout=600)
         data = resp.json()
     tables = []
     for each_record in data["data"]:
+        releaser_name = each_record["releaser_name"]
+        if anonymous:
+            releaser_name = "匿名玩家"
         tables.append(
             Template(fal_template_body).render(
                 time = Time(each_record["time"]).format("%H:%M:%S"),
-                releaser = each_record["releaser_name"] + "<br>（" + str(each_record["releaser_id"]) + "）",
+                releaser = releaser_name + "<br>（" + str(each_record["releaser_id"]) + "）",
                 target = each_record["target_name"] + "<br>（" + str(each_record["target_id"]) + "/" + str(each_record["target_template_id"]) + "）",
                 skill = str(each_record["skill_id"])
             )
@@ -134,16 +141,19 @@ async def FALAnalyze(file_name: str, url: str):
     image = await generate(html, ".container", segment=True)
     return image  
 
-async def YXCAnalyze(file_name: str, url: str):
+async def YXCAnalyze(file_name: str, url: str, anonymous: bool = False):
     async with AsyncClient(verify=False) as client:
         resp = await client.post(f"{Config.jx3.api.cqc_url}/yxc_analyze", json={"jcl_url": url, "jcl_name": file_name}, timeout=600)
         data = resp.json()
     tables = []
     for each_record in data["data"]:
+        player_name = each_record["name"]
+        if anonymous:
+            player_name = "匿名玩家"
         tables.append(
             Template(yxc_template_body_main).render(
                 icon=Kungfu.with_internel_id(int(each_record["kungfu_id"]), True).icon,
-                name=each_record["name"],
+                name=player_name,
                 value=each_record["value"]
             )
         )
@@ -167,5 +177,5 @@ async def YXCAnalyze(file_name: str, url: str):
     image = await generate(html, ".container", segment=True)
     return image  
 
-async def HPSAnalyze(file_name: str, url: str):
+async def HPSAnalyze(file_name: str, url: str, anonymous: bool = False):
     ...

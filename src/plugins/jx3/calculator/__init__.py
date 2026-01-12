@@ -253,6 +253,8 @@ async def _(bot: Bot, event: GroupUploadNoticeEvent):
         return
     
     if analyzer is not None:
+        anonymous_preference = Preference(event.user_id, "", "").setting("匿名分析")
+        is_anonymous = anonymous_preference == "开启"
         try:
             url = event.model_dump()["file"]["url"]
         except KeyError:
@@ -261,7 +263,7 @@ async def _(bot: Bot, event: GroupUploadNoticeEvent):
             file_data = await bot.call_api("get_group_file_url", group_id=event.group_id, file_id=file_id, bus_id=bus_id)
             url = file_data["url"]
         try:
-            image = await analyzer(event.file.name[4:], url)
+            image = await analyzer(event.file.name[4:], url, is_anonymous)
             await bot.send_group_msg(group_id=event.group_id, message=Message(image))
         except json.decoder.JSONDecodeError:
             await bot.send_group_msg(group_id=event.group_id, message="啊哦，音卡的服务器目前似乎暂时有些小问题，请稍后再使用JCL分析？")

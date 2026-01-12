@@ -17,6 +17,7 @@ class Preference:
         "主题": "theme",
         "交易行": "trade",
         "奇遇": "serendipity",
+        "匿名分析": "anonymous",
         "计算器增益": "income",
         "计算器阵眼": "formation"
     }
