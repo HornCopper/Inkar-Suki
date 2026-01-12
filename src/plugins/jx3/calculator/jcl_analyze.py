@@ -14,7 +14,7 @@ from src.templates import SimpleHTML, HTMLSourceCode, get_saohua
 from src.utils.database import rank_db as db
 from src.utils.database.classes import CQCRank
 
-from ._template import bla_template_body, fal_table_head, fal_template_body, yxc_table_head, yxc_template_body_main, yxc_template_body_sub
+from ._template import bla_template_body, fal_table_head, fal_template_body, yxc_table, yxc_table_head, yxc_template_body_main, yxc_template_body_sub
 
 def save_data(data: dict[str, dict[str, int | str]], value_type: bool) -> None:
     """
@@ -146,7 +146,16 @@ async def YXCAnalyze(file_name: str, url: str, anonymous: bool = False):
         resp = await client.post(f"{Config.jx3.api.cqc_url}/yxc_analyze", json={"jcl_url": url, "jcl_name": file_name}, timeout=600)
         data = resp.json()
     tables = []
+    final_tables = []
     for each_record in data["data"]:
+        if each_record == {}:
+            final_tables.append(
+                Template(yxc_table).render(
+                    tables = "\n".join(tables)
+                )
+            )
+            tables = []
+            continue
         player_name = each_record["name"]
         if anonymous:
             player_name = "匿名玩家"
@@ -171,7 +180,7 @@ async def YXCAnalyze(file_name: str, url: str, anonymous: bool = False):
         read(TEMPLATES + "/jx3/yxc_chps.html")
     ).render(
         font = ASSETS + "/font/PingFangSC-Semibold.otf",
-        tables = "\n".join(tables),
+        tables = "\n".join(final_tables),
         saohua = get_saohua()
     )
     image = await generate(html, ".container", segment=True)

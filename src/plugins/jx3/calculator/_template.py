@@ -62,6 +62,21 @@ fal_template_body = """
 </tr>
 """
 
+yxc_table = """
+<table class="rank-table">
+    <thead>
+        <tr>
+            <th>心法</th>
+            <th>角色名</th>
+            <th>有效治疗</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        {{ tables }}
+    </tbody>
+</table>"""
+
 yxc_table_head = """
 <tr>
     <th class="short-column">心法</th>

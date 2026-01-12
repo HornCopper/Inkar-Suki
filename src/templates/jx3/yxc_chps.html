@@ -16,7 +16,7 @@
             display: inline-block;
             padding: 20px;
             background: white;
-            min-width: 1000px;
+            min-width: 1500px;
         }
 
         table {
@@ -56,7 +56,7 @@
             border-top: none;
             vertical-align: middle;
         }
-        
+
         .sub-skill {
             width: 70px;
             text-align: center;
@@ -73,6 +73,18 @@
             margin-right: 6px;
         }
 
+        .two-columns {
+            display: flex;
+            gap: 40px;
+            align-items: flex-start;
+        }
+
+        .rank-table {
+            width: 100%;
+            min-width: 480px;
+            flex: 1;
+        }
+
         footer {
             background: #f0f0f0;
             text-align: center;
@@ -80,6 +92,15 @@
             font-size: 20px;
             color: #777;
             margin-top: 10px;
+        }
+
+        .page-footer {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f0f0f0;
+            text-align: center;
+            font-size: 20px;
+            color: #777;
         }
 
         @font-face {
@@ -90,28 +111,18 @@
 </head>
 
 <body>
-
     <div class="container">
+        <div class="two-columns">
+            {{ tables }}
+        </div>
 
-        <table>
-            <thead>
-                <tr>
-                    <th>心法</th>
-                    <th>角色名</th>
-                    <th>有效治疗</th>
-                </tr>
-            </thead>
-
-            <tbody>
-                {{ tables }}
-            </tbody>
-        </table>
-
-        <footer>
+        <footer class="page-footer">
             尹雪尘承伤统计 | Inkar-Suki：{{ saohua }}
         </footer>
 
     </div>
 
+
 </body>
+
 </html>
