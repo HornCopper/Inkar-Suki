@@ -1,0 +1,38 @@
+# Git
+.git
+.github
+.gitignore
+
+# Python
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.venv
+venv
+.pdm.toml
+.pdm-python
+.pdm-build/
+
+# IDE
+.vscode
+.idea
+
+# 配置文件（运行时挂载）
+.env
+.env.dev
+src/config/config.yml
+
+# 运行时数据（运行时挂载）
+src/data
+src/cache
+src/const/cache
+src/show
+
+# 文档
+*.md
+LICENSE
+
+# 其他
+*.log
+*.egg-info
