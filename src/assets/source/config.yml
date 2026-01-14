@@ -39,3 +39,16 @@ weather: # 天气(和风天气)相关数据
 
 hidden:
     offcial_token: "" # Inkar Suki 官方API Token 非官方Bot请留空
+
+llm: # LLM 自然语言理解配置
+    enable: False # 是否启用 LLM 功能
+    max_timeout: 300 # 最高超时时间（秒），所有模型请求累计不超过此值
+    providers: # 提供商列表，定义 API 连接信息
+        - name: "openai" # 提供商名称（自定义，用于 models 引用）
+          protocol: "openai" # 协议类型: openai / anthropic / google
+          api_key: "" # API 密钥
+          base_url: "" # 自定义端点，留空使用官方默认地址
+    models: # 模型列表，请求随机分配，失败自动降级到下一个
+        - name: "gpt-4o-mini" # 模型名称
+          provider: "openai" # 引用上方定义的提供商
+          timeout: 30 # 单次请求超时（秒）
