@@ -14,7 +14,7 @@ from ._template import bla_template_body
 
 import re
 
-async def RDPSCalculator(file_name: str, url: str):
+async def RDPSCalculator(file_name: str, url: str, anonymous: bool = False):
     async with AsyncClient(verify=False) as client:
         resp = await client.post(f"{Config.jx3.api.bla_url}/jcl", params={"file_name": file_name, "url": url}, timeout=600)
         data = resp.json()
@@ -78,9 +78,12 @@ async def RDPSCalculator(file_name: str, url: str):
                 kungfu = Kungfu(
                     str(School.with_internel_id(int(force_id)).name) + t
                 )
+            player_name = p_data["name"]
+            if anonymous:
+                player_name = "匿名玩家"
             rdps_results.append(
                 {
-                    "name": p_data["name"],
+                    "name": player_name,
                     "rdps": int(p_data["dps"]),
                     "kungfu": kungfu
                 }
@@ -130,9 +133,12 @@ async def RDPSCalculator(file_name: str, url: str):
                 kungfu = Kungfu(
                     str(School.with_internel_id(int(force_id)).name) + t
                 )
+            player_name = p_data["name"]
+            if anonymous:
+                player_name = "匿名玩家"
             rhps_results.append(
                 {
-                    "name": p_data["name"],
+                    "name": player_name,
                     "rhps": int(p_data["hps"]),
                     "kungfu": kungfu
                 }

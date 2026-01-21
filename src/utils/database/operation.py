@@ -65,7 +65,10 @@ async def send_subscribe(subscribe: str = "", msg: str = "", server: str | None 
     group: dict[str, list[str]] = {}
 
     for i in list(bots):
-        single_groups = await bots[i].call_api("get_group_list")
+        try:
+            single_groups = await bots[i].call_api("get_group_list")
+        except Exception:
+            continue
         group_id_s = []
         for x in single_groups:
             group_id_s.append(x["group_id"])
