@@ -107,3 +107,42 @@ yxc_template_body_sub = """
     </td>
 </tr>
 """
+
+rod_table_head = """
+<tr>
+    <th class="short-column">重伤时间</th>
+    <th class="short-column">玩家名</th>
+    <th class="short-column">最后5次有效伤害</th>
+    <th class="short-column">备注</th>
+</tr>"""
+
+rod_template_body = """
+<tr>
+    <td class="short-column">{{ time }}</td>
+    <td class="short-column"><img src="{{ icon }}" width="50px" height="50px">{{ name }}</td>
+    <td class="short-column">{{ skills }}</td>
+    <td class="short-column">{{ remark }}</td>
+</tr>
+"""
+
+rod_css = """
+.item-table td:nth-child(3)
+{
+    text-align: left;
+    white-space: normal;
+    line-height: 1.5;
+}
+
+.item-table td:nth-child(2)
+{
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.item-table td:nth-child(1),
+.item-table td:nth-child(2)
+{
+    vertical-align: top;
+}
+"""

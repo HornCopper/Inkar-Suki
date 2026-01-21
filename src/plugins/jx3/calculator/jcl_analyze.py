@@ -14,7 +14,20 @@ from src.templates import SimpleHTML, HTMLSourceCode, get_saohua
 from src.utils.database import rank_db as db
 from src.utils.database.classes import CQCRank
 
-from ._template import bla_template_body, fal_table_head, fal_template_body, yxc_table, yxc_table_head, yxc_template_body_main, yxc_template_body_sub
+from ._template import (
+    bla_template_body,
+    fal_table_head,
+    fal_template_body,
+    
+    yxc_table,
+    yxc_table_head,
+    yxc_template_body_main,
+    yxc_template_body_sub,
+
+    rod_table_head,
+    rod_template_body,
+    rod_css
+)
 
 def save_data(data: dict[str, dict[str, int | str]], value_type: bool) -> None:
     """
@@ -56,7 +69,7 @@ def save_data(data: dict[str, dict[str, int | str]], value_type: bool) -> None:
             setattr(new_data, f"{key}_per_second", health_per_second)
         db.save(new_data)
             
-
+# Chi Qing Chuan
 async def CQCAnalyze(file_name: str, url: str, anonymous: bool = False):
     async with AsyncClient(verify=False) as client:
         resp = await client.post(f"{Config.jx3.api.cqc_url}/cqc_analyze", json={"jcl_url": url, "jcl_name": file_name}, timeout=600)
@@ -114,6 +127,7 @@ async def CQCAnalyze(file_name: str, url: str, anonymous: bool = False):
     dps_image = await generate(html, ".container", segment=True)
     return dps_image
 
+# First Attacking List
 async def FALAnalyze(file_name: str, url: str, anonymous: bool = False):
     async with AsyncClient(verify=False) as client:
         resp = await client.post(f"{Config.jx3.api.cqc_url}/fal_analyze", json={"jcl_url": url, "jcl_name": file_name}, timeout=600)
@@ -121,8 +135,8 @@ async def FALAnalyze(file_name: str, url: str, anonymous: bool = False):
     tables = []
     for each_record in data["data"]:
         releaser_name = each_record["releaser_name"]
-        if anonymous:
-            releaser_name = "匿名玩家"
+        # if anonymous:
+        #     releaser_name = "匿名玩家"
         tables.append(
             Template(fal_template_body).render(
                 time = Time(each_record["time"]).format("%H:%M:%S"),
@@ -141,6 +155,7 @@ async def FALAnalyze(file_name: str, url: str, anonymous: bool = False):
     image = await generate(html, ".container", segment=True)
     return image  
 
+# Yin Xue Chen
 async def YXCAnalyze(file_name: str, url: str, anonymous: bool = False):
     async with AsyncClient(verify=False) as client:
         resp = await client.post(f"{Config.jx3.api.cqc_url}/yxc_analyze", json={"jcl_url": url, "jcl_name": file_name}, timeout=600)
@@ -184,7 +199,46 @@ async def YXCAnalyze(file_name: str, url: str, anonymous: bool = False):
         saohua = get_saohua()
     )
     image = await generate(html, ".container", segment=True)
-    return image  
+    return image
 
+# Reason of Death
+async def RODAnalyze(file_name: str, url: str, anonymous: bool = False):
+    async with AsyncClient(verify=False) as client:
+        resp = await client.post(f"{Config.jx3.api.cqc_url}/rod_analyze", json={"jcl_url": url, "jcl_name": file_name}, timeout=600)
+        data = resp.json()
+    tables = []
+    for each_record in data["data"]:
+        # if anonymous:
+        #     releaser_name = "匿名玩家"
+        remark = ""
+        skills = []
+        for each_skill in each_record["final_damages"]:
+            time = Time(each_skill["time"]).format("%H:%M:%S")
+            name = each_skill["name"]
+            damage = each_skill["effective_damage"]
+            skills.append(
+                f"[{time}]<span style=\"text-decoration: underline;\">{name}</span>：{damage}"
+            )
+        tables.append(
+            Template(rod_template_body).render(
+                time = Time(each_record["time"]).format("%H:%M:%S"),
+                icon = Kungfu.with_internel_id(each_record["kungfu_id"], True).icon,
+                name = each_record["name"],
+                skills = ("<br>".join(skills) or "好像没有吃技能呢？<br>可能是战斗开始前死亡或者杯水到期等。"),
+                remark = remark
+            )
+        )
+    html = str(
+        HTMLSourceCode(
+            application_name = "重伤统计",
+            table_head = rod_table_head,
+            table_body = "\n".join(tables),
+            additional_css=rod_css
+        )
+    )
+    image = await generate(html, ".container", segment=True)
+    return image
+
+# Healing per Second
 async def HPSAnalyze(file_name: str, url: str, anonymous: bool = False):
     ...

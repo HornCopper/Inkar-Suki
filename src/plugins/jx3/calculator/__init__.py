@@ -21,7 +21,7 @@ from .jx3box import JX3BOXCalculator
 from .base import FORMATIONS, INCOMES
 from .universe import UniversalCalculator
 from .rdps import RDPSCalculator
-from .jcl_analyze import CQCAnalyze, FALAnalyze, YXCAnalyze
+from .jcl_analyze import CQCAnalyze, FALAnalyze, YXCAnalyze, RODAnalyze
 
 import re
 import json
@@ -249,6 +249,8 @@ async def _(bot: Bot, event: GroupUploadNoticeEvent):
         analyzer = FALAnalyze
     elif check_jcl_name(event.file.name, "YXC-"):
         analyzer = YXCAnalyze
+    elif check_jcl_name(event.file.name, "ROD-"):
+        analyzer = RODAnalyze
     else:
         return
     
