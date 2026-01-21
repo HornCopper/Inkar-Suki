@@ -1,0 +1,23 @@
+version: "3.8"
+
+services:
+  inkar-suki:
+    image: your-username/inkar-suki:latest  # 替换为您的 Docker Hub 用户名
+    container_name: inkar-suki
+    restart: unless-stopped
+    ports:
+      - "2333:2333"
+    volumes:
+      # 配置文件 (必须)
+      - ./src/config:/app/src/config
+      # 数据持久化 (推荐)
+      - ./src/data:/app/src/data
+      - ./src/cache:/app/src/cache
+    environment:
+      - ENVIRONMENT=prod
+      - HOST=0.0.0.0
+      - PORT=2333
+      - COMMAND_START=["+","","-"]
+      - APSCHEDULER_AUTOSTART=true
+      - LOG_LEVEL=SUCCESS
+      - DRIVER=~fastapi+~httpx+~websockets
