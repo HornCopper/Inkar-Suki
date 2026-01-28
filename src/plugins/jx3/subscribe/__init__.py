@@ -23,6 +23,8 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     else:
         if "Preview" in arg and not check_permission(event.user_id, 6):
             await enable_matcher.finish("权限不足！无法订阅Preview！")
+        if "VLMPreview" in arg and not check_permission(event.user_id, 6):
+            await enable_matcher.finish("权限不足！无法订阅VLMPreview！")
         subscribe_options = json.loads(read(build_path(ASSETS, ["source", "subscribe"], end_with_slash=True) + "options.json"))
         addition_options = json.loads(read(build_path(ASSETS, ["source", "subscribe"], end_with_slash=True) + "additions.json"))
         if not set(arg).issubset(set(list(subscribe_options) + list(addition_options))):

@@ -1,9 +1,34 @@
 {
-    "禁言": ["让机器人不再响应被动命令", "Bubble_Column_JE1_BE1.png"],
-    "招募过滤": ["查询招募时自动过滤广告", "Barrier_JE2_BE2.png"],
-    "抽奖": ["让群友可以抽奖禁言", "Diamond_JE2_BE2.png"],
-    "群友试炼": ["试炼翻牌可以翻到群管理员", "Chat_button_BE2.png"],
-    "开团": ["启用开团辅助功能", "Mace_JE1_BE1.png"],
-    "抽情缘": ["启用“抽情缘”功能", "Regeneration_JE3_BE2.png"],
-    "Preview": ["请不要订阅此项！", "Nether_Star.gif"]
+    "禁言": [
+        "让机器人不再响应被动命令",
+        "Bubble_Column_JE1_BE1.png"
+    ],
+    "招募过滤": [
+        "查询招募时自动过滤广告",
+        "Barrier_JE2_BE2.png"
+    ],
+    "抽奖": [
+        "让群友可以抽奖禁言",
+        "Diamond_JE2_BE2.png"
+    ],
+    "群友试炼": [
+        "试炼翻牌可以翻到群管理员",
+        "Chat_button_BE2.png"
+    ],
+    "开团": [
+        "启用开团辅助功能",
+        "Mace_JE1_BE1.png"
+    ],
+    "抽情缘": [
+        "启用“抽情缘”功能",
+        "Regeneration_JE3_BE2.png"
+    ],
+    "Preview": [
+        "请不要订阅此项！",
+        "Nether_Star.gif"
+    ],
+    "VLMPreview": [
+        "启用 AI 多模态理解（图片识别等）",
+        "Ender_Eye_JE2_BE2.png"
+    ]
 }
