@@ -54,11 +54,11 @@ def get_fivestone_level(item_index: int) -> int:
 
 def parse_conditions(input_str: str) -> list[str] | Literal[False]:
     input_str = input_str.strip().upper()
-    regex = r"(TL|DPS|HPS|PVE|PVP|PVX|QC|JC|JY|T)"
+    regex = r"(TL|DPS|HPS|PVE|PVP|PVX|QC|JC|JY|WX|T)"
     matches = re.findall(regex, input_str)
     if not matches:
         return False
-    t_dps_hps_count = sum(1 for kw in matches if kw in ["T", "DPS", "HPS", "QC", "JC", "TL", "JY"])
+    t_dps_hps_count = sum(1 for kw in matches if kw in ["T", "DPS", "HPS", "QC", "JC", "TL", "JY", "WX"])
     pvp_pve_pvx_count = sum(1 for kw in matches if kw in ["PVP", "PVE", "PVX"])
     if t_dps_hps_count > 1 or pvp_pve_pvx_count > 1:
         return False

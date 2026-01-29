@@ -7,7 +7,7 @@ from nonebot.adapters.onebot.v11 import Message, GroupMessageEvent
 from src.utils.analyze import check_number
 from src.utils.database import db
 from src.utils.database.classes import PersonalSettings
-from utils.permission import check_permission, denied
+from src.utils.permission import check_permission, denied
 
 from .app import Preference
 
