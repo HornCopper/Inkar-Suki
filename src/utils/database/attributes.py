@@ -966,10 +966,14 @@ class JX3PlayerAttribute:
                 "format": "client"
             }
             raw_data = (await Request(url, params=params).get()).json()
+            
         if raw_data["code"] != 200:
             return PROMPT.PlayerNotExist
         results = []
         
+        if "equipList" not in raw_data["data"]:
+            return None
+
         for each_equip in raw_data["data"]["equipList"]:
             position_id = each_equip["nItemIndex"]
             
