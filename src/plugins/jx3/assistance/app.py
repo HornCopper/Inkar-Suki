@@ -1,7 +1,10 @@
-from typing import Literal
+from typing import Literal, overload
 from datetime import datetime
 from jinja2 import Template
 
+from nonebot.adapters.onebot.v11 import MessageSegment as ms
+
+from src.config import Config
 from src.const.jx3.kungfu import Kungfu
 from src.const.path import (
     ASSETS,
@@ -15,145 +18,14 @@ from src.utils.database.operation import get_group_settings, set_group_settings
 from src.templates import SimpleHTML
 
 from ._template import template_assistance_unit
+from .sort_v1 import rearrange_teams as sort_teams_v1
+from .sort_v2 import rearrange_teams_new as sort_teams_v2
 
 import re
 
 def to_transparent_hex(rgb_hex: str, alpha: int = 0x22) -> str:
     rgb_hex = rgb_hex.lstrip("#")
     return f"#{rgb_hex}{alpha:02X}"
-
-def rearrange_teams(input_teams: list[list[dict]]) -> list[list[dict]]: # actually list[list[dict | None]]
-    # 心法类型定义
-    phisical_core = ["凌海诀", "隐龙诀", "太虚剑意", "孤锋诀", "惊羽诀"]
-    general_core = ["山海心诀"]
-    magical_core = ["天罗诡道", "莫问", "紫霞功", "周天功", "花间游"]
-    phisical = ["傲血战意", "分山劲", "太虚剑意", "惊羽诀", "问水诀", "笑尘诀", "北傲诀", "凌海诀", "隐龙诀", "孤锋诀", "山海心诀"]
-    magical = ["冰心诀", "花间游", "毒经", "莫问", "无方", "易筋经", "焚影圣诀", "紫霞功", "天罗诡道", "太玄经", "周天功"]
-    all_cores = phisical_core + general_core + magical_core
-    
-    # 将input转换成一维列表，过滤掉空值
-    all_members = [item for sublist in input_teams for item in sublist if item]
-    original_count = len(all_members)
-    columns = [[] for _ in range(5)]
-    used_members = set()
-
-    # 分类成员并统计数量
-    core_members = []
-    phisical_members = []
-    magical_members = []
-    other_members = []
-    
-    total_phisical = 0
-    total_magical = 0
-
-    # 第一次遍历：统计内外功总数
-    for member in all_members:
-        if member["role_type"] in phisical:
-            total_phisical += 1
-        elif member["role_type"] in magical:
-            total_magical += 1
-
-    # 第二次遍历：分类成员
-    for member in all_members:
-        if member["role_type"] in all_cores:
-            core_members.append(member)
-        elif member["role_type"] in phisical:
-            phisical_members.append(member)
-        elif member["role_type"] in magical:
-            magical_members.append(member)
-        else:
-            other_members.append(member)
-
-    # 按优先级排序阵眼成员
-    core_members.sort(key=lambda x: all_cores.index(x["role_type"]) if x["role_type"] in all_cores else float("inf"))
-
-    # 根据内外功比例分配阵眼数量
-    max_columns = 5
-    try:
-        phisical_core_count = min(round(total_phisical / (total_phisical + total_magical) * max_columns), len([m for m in core_members if m["role_type"] in phisical_core]))
-    except ZeroDivisionError:
-        phisical_core_count = 0
-    try:
-        magical_core_count = min(max_columns - phisical_core_count, len([m for m in core_members if m["role_type"] in magical_core]))
-    except ZeroDivisionError:
-        magical_core_count = 0
-
-    # 选择阵眼
-    selected_cores = []
-    phisical_core_selected = 0
-    magical_core_selected = 0
-
-    for core in core_members[:]:
-        if core["role_type"] in phisical_core and phisical_core_selected < phisical_core_count:
-            selected_cores.append(core)
-            phisical_core_selected += 1
-            core_members.remove(core)
-        elif core["role_type"] in magical_core and magical_core_selected < magical_core_count:
-            selected_cores.append(core)
-            magical_core_selected += 1
-            core_members.remove(core)
-
-    total_used_members = 0
-
-    # 分配选中的阵眼
-    for col_idx, core in enumerate(selected_cores):
-        columns[col_idx].append(core)
-        used_members.add(core["role"])
-        total_used_members += 1
-
-    # 将未使用的阵眼成员加入到相应的普通成员池中
-    for remaining_core in core_members:
-        if remaining_core["role_type"] in phisical:
-            phisical_members.append(remaining_core)
-        elif remaining_core["role_type"] in magical:
-            magical_members.append(remaining_core)
-
-    # 填充剩余成员
-    for col_idx in range(5):
-        if len(columns[col_idx]) == 0:  # 没有阵眼的列
-            # 根据当前内外功剩余数量决定该列类型
-            if len(phisical_members) >= len(magical_members):
-                preferred_list = phisical_members
-            else:
-                preferred_list = magical_members
-        else:  # 有阵眼的列
-            preferred_list = phisical_members if columns[col_idx][0]["role_type"] not in magical_core else magical_members
-
-        # 填充当前列
-        while len(columns[col_idx]) < 5:
-            member_added = False
-            if preferred_list:
-                for member in preferred_list[:]:
-                    if member["role"] not in used_members:
-                        columns[col_idx].append(member)
-                        used_members.add(member["role"])
-                        total_used_members += 1
-                        preferred_list.remove(member)
-                        member_added = True
-                        break
-            
-            if not member_added and other_members:
-                for member in other_members[:]:
-                    if member["role"] not in used_members:
-                        columns[col_idx].append(member)
-                        used_members.add(member["role"])
-                        total_used_members += 1
-                        other_members.remove(member)
-                        member_added = True
-                        break
-            
-            if not member_added:
-                columns[col_idx].append({"role": None, "role_type": None})
-
-    # 转置列为行
-    output_teams = [[columns[j][i] for j in range(5)] for i in range(5)]
-
-    # 兜底逻辑
-    if total_used_members < original_count:
-        output_teams = [row + [{"role": None, "role_type": None}] * (5 - len(row)) for row in input_teams]
-        output_teams += [[{"role": None, "role_type": None}] * 5] * (5 - len(output_teams))
-
-    return output_teams
 
 def parse_limit(s: str) -> dict[str, int] | Literal[False]:
     pattern = r"([0-1]?[0-9]|2[0-5])([TNBD])"
@@ -187,6 +59,11 @@ class Assistance:
             if i["description"] == keyword or str(opening.index(i) + 1) == keyword:
                 return False
         return True
+    
+    def get_kungfu_icon(self, kungfu_name: str) -> str:
+        if kungfu_name != "老板":
+            return Kungfu(kungfu_name).icon
+        return build_path(ASSETS, ["image", "jx3", "kungfu"], end_with_slash=True) + "老板.png"
 
     def create_group(self, group_id: str, keyword: str, creator_id: str, /, limit: str = "") -> str | None:
         status = self.check_description(group_id, keyword)
@@ -236,11 +113,9 @@ class Assistance:
                     applyable = True
         if not applyable:
             return "您所申请或预留的职业类型已达到团长限制的最大数量，您可以更换其他职业参与本次团队活动！\n可使用“团队列表”查看该团队的职业人数限制！\n可使用“查看团队”查看该团队目前报名情况！"
-        job_icon = Kungfu(role_actual_type).icon if role_actual_type != "老板" else build_path(ASSETS, ["image", "jx3", "kungfu"], end_with_slash=True) + "老板.png"
         new = {
             "role": role_name,
             "role_type": role_actual_type,
-            "img": job_icon,
             "apply": user_id,
             "time": Time().raw_time
         }
@@ -272,17 +147,31 @@ class Assistance:
         if not cancelled:
             raise ValueError("Please check the `assistance` app.py class `Assistance` method `cancel apply`!")
 
-    def dissolve(self, group_id: str, keyword: str, user_id: str, is_admin: bool) -> str | None:
+    def dissolve(self, group_id: str, keyword: str, user_id: str, is_admin: bool, dissolve_all: bool = False) -> str | None:
         now = get_group_settings(group_id, "opening")
         if not isinstance(now, list):
-            return
-        for i in now:
-            if i["description"] == keyword or str(now.index(i) + 1) == keyword:
-                if i["creator"] != user_id and not is_admin:
-                    return "非创建者无法解散团队！"
-                now.remove(i)
-                set_group_settings(group_id, "opening", now)
-                return "解散团队成功！"
+            return None
+
+        targets = []
+        for idx, item in enumerate(now):
+            if dissolve_all:
+                targets.append(item)
+            elif item["description"] == keyword:
+                targets.append(item)
+            elif str(idx + 1) == keyword:
+                targets.append(item)
+
+        if not targets:
+            return None
+
+        for item in targets:
+            if item["creator"] != user_id and not is_admin:
+                return "非创建者无法解散团队！"
+
+        new_now = [item for item in now if item not in targets]
+        set_group_settings(group_id, "opening", new_now)
+
+        return "解散团队成功！"
 
     def storge(self, group_id: str, keyword: str, content: dict) -> bool | None:
         now = get_group_settings(group_id, "opening")
@@ -342,18 +231,29 @@ class Assistance:
         raw_teams: list[dict] = get_group_settings(str(from_group), "opening")
         goal_teams: list[dict] = get_group_settings(str(to_group), "opening")
         for each_team in raw_teams:
-            if str(each_team["creator"]) == str(creator) and (each_team["description"] == keyword or str(raw_teams.index(each_team) + 1) == keyword):
+            if (str(each_team["creator"]) == str(creator) or str(creator) in Config.bot_basic.bot_owner) and (each_team["description"] == keyword or str(raw_teams.index(each_team) + 1) == keyword):
                 goal_teams.append(each_team)
                 set_group_settings(str(to_group), "opening", goal_teams)
                 return True
         return False
+    
+    @overload
+    async def generate_html(self, group_id: str, keyword: str, new_sort_method: bool = False, all: Literal[False] = False) -> str | ms: ...
 
-    async def generate_html(self, group_id: str, keyword: str):
+    @overload
+    async def generate_html(self, group_id: str, keyword: str, new_sort_method: bool = False, all: Literal[True] = True) -> list[ms]: ...
+
+    async def generate_html(self, group_id: str, keyword: str, new_sort_method: bool = False, all: bool = False) -> str | ms | list[ms]:
+        if new_sort_method:
+            method = sort_teams_v2
+        else:
+            method = sort_teams_v1
         now = get_group_settings(group_id, "opening")
         if not isinstance(now, list):
             return "数据异常，请先重置音卡！"
+        images = []
         for i in now:
-            if i["description"] == keyword or str(now.index(i) + 1) == keyword:
+            if (i["description"] == keyword or str(now.index(i) + 1) == keyword) or all:
                 creator = i["creator"]
                 count = {
                     "T": 0,
@@ -362,7 +262,7 @@ class Assistance:
                     "B": 0
                 }
                 html_table = "<table>"
-                sorted_team = rearrange_teams(i["member"])
+                sorted_team = method(i["member"])
                 html_table = []
                 for row in sorted_team:
                     for x in range(5):
@@ -373,7 +273,8 @@ class Assistance:
                                 html_table.append(cell_content)
                                 continue
                             count[self.role_type_abbr(a["role_type"])] += 1
-                            icon = a["img"]
+                            # icon = a["img"]
+                            icon = self.get_kungfu_icon(a["role_type"])
                             color = Kungfu(a["role_type"]).color  # 默认颜色为白色
                             name = a["role"]
                             qq = a["apply"]
@@ -402,11 +303,14 @@ class Assistance:
                     B_count = str(count["B"]),
                     font = font,
                     # background = bg,
-                    title = keyword if not check_number(keyword) else i["description"]
+                    title = i["description"]
                 )
                 image = await generate(str(html), ".container", segment=True, viewport={"width": 1366, "height": 768})
-                return image
-        return "未找到相关团队！"
+                images.append(image)
+        if images == []:
+            return "未找到相关团队！"
+        else:
+            return images
     
 
 def get_yzk_answer() -> str:

@@ -1,3 +1,5 @@
+from functools import reduce
+
 from nonebot import on_command
 from nonebot.adapters.onebot.v11 import Bot, Message, GroupMessageEvent
 from nonebot.params import CommandArg
@@ -98,6 +100,18 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
     resp = AssistanceInstance.dissolve(str(event.group_id), keyword, str(event.user_id), admin)
     await dissolve_team_matcher.finish(resp)
 
+dissolve_all_team_matcher = on_command("解散所有团队", aliases={"结束所有团队", "解散全部团队", "结束全部团队"}, force_whitespace=True, priority=5)
+
+@dissolve_all_team_matcher.handle()
+async def _(bot: Bot, event: GroupMessageEvent):
+    additions = get_group_settings(event.group_id, "additions")
+    if "开团" not in additions:
+        return
+    user_data = await bot.get_group_member_info(group_id=event.group_id, user_id=event.user_id)
+    admin = user_data["role"] in ["admin", "owner"]
+    resp = AssistanceInstance.dissolve(str(event.group_id), "", str(event.user_id), admin, True)
+    await dissolve_all_team_matcher.finish(resp)
+
 lookup_team_matcher = on_command("查看团队", priority=5, force_whitespace=True)
 
 @lookup_team_matcher.handle()
@@ -111,8 +125,20 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
         await lookup_team_matcher.finish("唔……没有输入关键词哦，请检查后重试~")
     if keyword == "" and unique:
         keyword = "1"
-    image = await AssistanceInstance.generate_html(str(event.group_id), keyword)
+    image = await AssistanceInstance.generate_html(str(event.group_id), keyword, "新版团队排序" in additions)
     await lookup_team_matcher.finish(image)
+
+lookup_all_team_matcher = on_command("查看全部团队", aliases={"查看所有团队"}, priority=5, force_whitespace=True)
+
+@lookup_all_team_matcher.handle()
+async def _(event: GroupMessageEvent):
+    additions = get_group_settings(event.group_id, "additions")
+    if "开团" not in additions:
+        return
+    images = await AssistanceInstance.generate_html(str(event.group_id), "", "新版团队排序" in additions, True)
+    await lookup_all_team_matcher.finish(
+        reduce(lambda a, b: a + b, images)
+    )
 
 teamlist_matcher = on_command("团队列表", priority=5, force_whitespace=True)
 

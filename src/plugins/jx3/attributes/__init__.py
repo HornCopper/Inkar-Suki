@@ -185,7 +185,14 @@ async def _(bot: Bot, event: GroupUploadNoticeEvent):
         if event.file.name[:4] not in ["ATTR"]:
             return
         msg = "以下全局玩家ID完成入库："
-        response = await Request(event.model_dump()["file"]["url"]).get()
+        try:
+            url = event.model_dump()["file"]["url"]
+        except KeyError:
+            file_id = event.model_dump()["file"]["id"]
+            bus_id = event.model_dump()["file"]["busid"]
+            file_data = await bot.call_api("get_group_file_url", group_id=event.group_id, file_id=file_id, bus_id=bus_id)
+            url = file_data["url"]
+        response = await Request(url).get()
         response.encoding = "gbk"
         jcl_text = response.text
         if len(response.content) > 2 * 1024 * 1024 and "Preview" not in get_group_settings(event.group_id, "additions"):
