@@ -21,8 +21,8 @@ from ._template import (
     
     yxc_table,
     yxc_table_head,
-    yxc_template_body_main,
-    yxc_template_body_sub,
+    hps_detail_template_body_main,
+    hps_detail_template_body_sub,
 
     rod_table_head,
     rod_template_body,
@@ -175,7 +175,7 @@ async def YXCAnalyze(file_name: str, url: str, anonymous: bool = False):
         if anonymous:
             player_name = "匿名玩家"
         tables.append(
-            Template(yxc_template_body_main).render(
+            Template(hps_detail_template_body_main).render(
                 icon=Kungfu.with_internel_id(int(each_record["kungfu_id"]), True).icon,
                 name=player_name,
                 value=each_record["value"]
@@ -184,7 +184,7 @@ async def YXCAnalyze(file_name: str, url: str, anonymous: bool = False):
         skills = dict(sorted(each_record["skills"].items(), key=lambda item: sum(item[1]), reverse=True))
         for skill_name, skill_values in skills.items():
             tables.append(
-                Template(yxc_template_body_sub).render(
+                Template(hps_detail_template_body_sub).render(
                     name = skill_name,
                     count = len(skill_values),
                     value = sum(skill_values),
@@ -192,11 +192,12 @@ async def YXCAnalyze(file_name: str, url: str, anonymous: bool = False):
                 )
             )
     html = Template(
-        read(TEMPLATES + "/jx3/yxc_chps.html")
+        read(TEMPLATES + "/jx3/health_detail.html")
     ).render(
         font = ASSETS + "/font/PingFangSC-Semibold.otf",
         tables = "\n".join(final_tables),
-        saohua = get_saohua()
+        saohua = get_saohua(),
+        function_name = "尹雪尘承伤统计"
     )
     image = await generate(html, ".container", segment=True)
     return image
@@ -241,4 +242,48 @@ async def RODAnalyze(file_name: str, url: str, anonymous: bool = False):
 
 # Healing per Second
 async def HPSAnalyze(file_name: str, url: str, anonymous: bool = False):
-    ...
+    async with AsyncClient(verify=False) as client:
+        resp = await client.post(f"{Config.jx3.api.cqc_url}/hps_analyze", json={"jcl_url": url, "jcl_name": file_name}, timeout=600)
+        data = resp.json()
+    if data["data"] is None:
+        return "分析失败，请检查 JCL 是否完整？如有必要请联系作者！"
+    tables = []
+    final_tables = []
+    boss_name = data["data"]["boss"]
+    for value_type in ["absorb", "health"]:
+        for each_record in sort_dict_list(data["data"]["values"], f"total_{value_type}")[::-1]:
+            if each_record[f"total_{value_type}"] == 0:
+                continue
+            tables.append(
+                Template(hps_detail_template_body_main).render(
+                    icon=Kungfu.with_internel_id(int(each_record["kungfu_id"]), True).icon,
+                    name=each_record["name"],
+                    value=str(each_record[f"total_{value_type}"]) + "<br>" + str(int(each_record[f"total_{value_type}"] / data["data"]["battle_time"])) + (" HPS" if value_type == "health" else " APS")
+                )
+            )
+            skills = each_record["skills"][value_type]
+            for skill in skills:
+                tables.append(
+                    Template(hps_detail_template_body_sub).render(
+                        name = skill["name"],
+                        count = str(skill["count"]) + "（" + str(skill["critical"]) + "会心）",
+                        value = skill["value"],
+                        percent = str(round(skill["value"] / each_record[f"total_{value_type}"] * 100, 2)) + "%"
+                    )
+                )
+        final_tables.append(
+            Template(yxc_table).render(
+                tables = "\n".join(tables)
+            )
+        )
+        tables = []
+    html = Template(
+        read(TEMPLATES + "/jx3/health_detail.html")
+    ).render(
+        font = ASSETS + "/font/PingFangSC-Semibold.otf",
+        tables = "\n".join(final_tables),
+        saohua = get_saohua(),
+        function_name = f"{boss_name} HPS APS 统计"
+    )
+    image = await generate(html, ".container", segment=True)
+    return image

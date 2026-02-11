@@ -12,6 +12,27 @@ from src.utils.database.classes import PlayerEquipsCache
 from src.utils.network import Request
 from src.utils.analyze import R, TuilanData, merge_dicts, parse_luatable, parse_skillevent
 from src.utils.exceptions import TabFileMissException
+from src.utils.database.constant import (
+    A, B, C,
+    CRITICAL_DAMAGE_DIVISOR,
+    CRITICAL_DIVISOR,
+    DECRITICAL_DAMAGE_DIVISOR,
+    OVERCOME_DIVISOR, 
+    SHIELD_130_CONST,
+    STRAIN_DIVISOR,
+    Agility_to_Critical_Cof,
+    AttributesShort,
+    Colors,
+    MaxStrengthLevel,
+    MinStrengthLevel,
+    Spirit_to_Critical_Cof,
+    Spunk_to_Attack_Cof,
+    Spunk_to_BaseOvercome_Cof,
+    Strength_to_Attack_Cof,
+    Strength_to_BaseOvercome_Cof,
+    StrengthIncome
+)
+from src.utils.time import Time
 
 import copy
 import re
@@ -20,8 +41,7 @@ import zlib
 import asyncio
 import base64
 
-from src.utils.database.constant import A, B, C, CRITICAL_DAMAGE_DIVISOR, CRITICAL_DIVISOR, DECRITICAL_DAMAGE_DIVISOR, OVERCOME_DIVISOR, SHIELD_130_CONST, STRAIN_DIVISOR, Agility_to_Critical_Cof, AttributesShort, Colors, MaxStrengthLevel, MinStrengthLevel, Spirit_to_Critical_Cof, Spunk_to_Attack_Cof, Spunk_to_BaseOvercome_Cof, Strength_to_Attack_Cof, Strength_to_BaseOvercome_Cof, StrengthIncome
-from src.utils.time import Time
+
 
 def parse_plugin_data(data: str) -> list[dict]:
     def replace_array(m):
@@ -484,14 +504,7 @@ class Equip:
 
         diamond_index = 0
 
-        self._color = [
-            "(167, 167, 167)",
-            "(255, 255, 255)",
-            "(0, 210, 75)",
-            "(0, 126, 255)",
-            "(254, 45, 254)",
-            "(255, 165, 0)",
-        ][int(weapon_data[22])]
+        self._color =  Colors[int(weapon_data[22])]
 
         if weapon_data[71] == "精简" or \
             weapon_data[69] != "":

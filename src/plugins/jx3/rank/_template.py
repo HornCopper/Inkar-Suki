@@ -105,3 +105,36 @@ teamrank_team_template = """
     </div>
 </div>
 """
+
+hps_template_img_talent = """
+<div style="display: flex; align-items: center; gap: 5px;">
+    <img src="{{ icon }}" alt="icon" width="30" height="30">
+    <span>{{ name }}</span>
+</div>"""
+
+hps_template_img_weapon = """
+<div style="display: flex; align-items: center; gap: 5px;color: {{ color }};text-decoration: underline;">
+    <img src="{{ icon }}" alt="icon" width="30" height="30">
+    <span>{{ name }}({{ quality }})</span>
+</div>"""
+
+hps_template_body = """
+<tr>
+    <td class="short-column">
+        <img src="{{ kungfu_icon }}" alt="icon" width="30" height="30">
+    </td>
+    <td class="short-column">{{ rank_num }}</td>
+    <td class="short-column">{{ role_name }}</td>
+    <td class="short-column">{{ role_server }}</td>
+    <td class="short-column">{{ hps }}</td>
+    <td class="short-column">{{ aps }}</td>
+    <td class="short-column">{{ time_cost }}</td>
+    <td class="short-column">
+        <div style="display: flex; align-items: center; gap: 10px;">
+            {{ talents }}
+        </div>
+    </td>
+    <td class="short-column">
+        {{ weapon }}
+    </td>
+</tr>"""

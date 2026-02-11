@@ -84,7 +84,7 @@ yxc_table_head = """
     <th class="short-column">有效治疗</th>
 </tr>"""
 
-yxc_template_body_main = """
+hps_detail_template_body_main = """
 <tr class="main-row">
     <td>
         <img src="{{ icon }}" width="50" height="50">
@@ -94,7 +94,7 @@ yxc_template_body_main = """
 </tr>
 """
 
-yxc_template_body_sub = """
+hps_detail_template_body_sub = """
 <tr class="sub-row">
     <td class="sub-skill">
         {{ name }}
