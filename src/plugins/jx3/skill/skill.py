@@ -39,7 +39,11 @@ async def get_skill(skill_keyword: str = "") -> str | Message | ms:
         image = await cache_image("https://icon.jx3box.com/icon/" + skill["IconID"] + ".png")
         remark = skill["Remark"]
         desc = skill["Desc"]
-        desc = json.loads(f'"{desc}"').replace("。<", "。\n<").replace("><", ">\n<")
+        try:
+            desc = json.loads(f'"{desc}"').replace("。<", "。\n<").replace("><", ">\n<")
+        except json.JSONDecodeError:
+            desc = desc.replace('"', '\\"')
+            desc = json.loads(f'"{desc}"').replace("。<", "。\n<").replace("><", ">\n<")
         name = skill["Name"]
         return ms.image(
             Request(Path(image).as_uri()).local_content

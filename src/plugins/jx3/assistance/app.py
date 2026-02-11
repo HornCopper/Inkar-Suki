@@ -10,7 +10,6 @@ from src.const.path import (
     ASSETS,
     build_path
 )
-from src.utils.analyze import check_number
 from src.utils.time import Time
 from src.utils.generate import generate
 from src.utils.database.operation import get_group_settings, set_group_settings
@@ -101,6 +100,8 @@ class Assistance:
                 return "报名失败！请参考格式：\n报名 关键词/序号 职业 ID\n目前您可能是将最后两个参数写反导致无法识别职业，可参考命令格式后重试！"
         if role_name[0] == "#" and user_id != status["creator"]:
             return "只有团长才可创建预留职业位，请联系团长！"
+        if role_actual_type == "老板":
+            return "请直接使用对应职业的报名，在角色名中标注老板！"
         if "limit" not in status:
             applyable = True
         else:
@@ -279,8 +280,10 @@ class Assistance:
                             name = a["role"]
                             qq = a["apply"]
                             if name[0] == "#":
-                                name = f"<s>{name}</s>"
+                                name = f"<span style=\"text-decoration: line-through;\">{name}</span>"
                                 qq = "<span style=\"color:gold\"><b>可报名此职业</b></span>"
+                            elif "老板" in name:
+                                name = f"<span style=\"text-decoration: underline;\">{name}</span>"
                             cell_content = Template(template_assistance_unit).render(
                                 color = to_transparent_hex(color),
                                 icon = icon,

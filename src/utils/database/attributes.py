@@ -965,7 +965,10 @@ class JX3PlayerAttribute:
                 "name": name,
                 "format": "client"
             }
-            raw_data = (await Request(url, params=params).get()).json()
+            try:
+                raw_data = (await Request(url, params=params).get()).json()
+            except Exception:
+                return None
             
         if raw_data["code"] != 200:
             return PROMPT.PlayerNotExist

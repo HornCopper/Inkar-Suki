@@ -1,7 +1,7 @@
 from functools import reduce
 
 from nonebot import on_command
-from nonebot.adapters.onebot.v11 import Bot, Message, GroupMessageEvent
+from nonebot.adapters.onebot.v11 import Bot, Message, GroupMessageEvent, MessageSegment as ms
 from nonebot.params import CommandArg
 
 from src.const.prompts import PROMPT
@@ -56,7 +56,8 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     if not keyword:
         await book_team_matcher.finish("当前进行中的团队超过1个，请携带团队关键词/序号！")
     resp = AssistanceInstance.apply_for_place(str(event.group_id), keyword, id, job, str(event.user_id))
-    await book_team_matcher.finish(resp)
+    final_resp = ms.at(event.user_id) + " " + str(resp)
+    await book_team_matcher.finish(final_resp)
 
 cancel_team_matcher = on_command("取消预定", aliases={"取消预订", "取消报名"}, force_whitespace=True, priority=5)
 
@@ -80,7 +81,8 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
         keyword = "1"
         id = arg[0]
     resp = AssistanceInstance.cancel_apply(str(event.group_id), keyword, id, str(event.user_id))
-    await cancel_team_matcher.finish(resp)
+    final_resp = ms.at(event.user_id) + " " + str(resp)
+    await cancel_team_matcher.finish(final_resp)
 
 dissolve_team_matcher = on_command("解散团队", aliases={"取消开团", "结束团队"}, force_whitespace=True, priority=5)
 
@@ -98,7 +100,8 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
     user_data = await bot.get_group_member_info(group_id=event.group_id, user_id=event.user_id)
     admin = user_data["role"] in ["admin", "owner"]
     resp = AssistanceInstance.dissolve(str(event.group_id), keyword, str(event.user_id), admin)
-    await dissolve_team_matcher.finish(resp)
+    final_resp = ms.at(event.user_id) + " " + str(resp)
+    await dissolve_team_matcher.finish(final_resp)
 
 dissolve_all_team_matcher = on_command("解散所有团队", aliases={"结束所有团队", "解散全部团队", "结束全部团队"}, force_whitespace=True, priority=5)
 
@@ -110,7 +113,8 @@ async def _(bot: Bot, event: GroupMessageEvent):
     user_data = await bot.get_group_member_info(group_id=event.group_id, user_id=event.user_id)
     admin = user_data["role"] in ["admin", "owner"]
     resp = AssistanceInstance.dissolve(str(event.group_id), "", str(event.user_id), admin, True)
-    await dissolve_all_team_matcher.finish(resp)
+    final_resp = ms.at(event.user_id) + " " + str(resp)
+    await dissolve_all_team_matcher.finish(final_resp)
 
 lookup_team_matcher = on_command("查看团队", priority=5, force_whitespace=True)
 
@@ -164,7 +168,7 @@ async def _(event: GroupMessageEvent):
                 limit = "无"
             else:
                 limit = all_teams[i]["limit"]
-        msg += str(i + 1) + ". " + name + "\n创建者：" + leader + "\n职业限制：" + limit + "\n"
+        msg += "【" + str(i + 1) + "】" + name + "\n创建者：" + leader + "\n职业限制：" + limit + "\n"
     await teamlist_matcher.finish(msg[:-1])
 
 share_team_matcher = on_command("共享团队", priority=5, force_whitespace=True)

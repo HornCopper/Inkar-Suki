@@ -30,6 +30,8 @@ def rearrange_teams_new(input_teams: list[list[dict]]) -> list[list[dict]]:
         else:
             normal_members.append(m)
 
+    normal_members.sort(key=lambda x: x["role_type"] not in (fixed_D + fixed_E))
+
     # 第一轮：非老板
     for m in normal_members:
         rt = m["role_type"]
@@ -42,13 +44,16 @@ def rearrange_teams_new(input_teams: list[list[dict]]) -> list[list[dict]]:
             if try_put(COL_D, m):
                 continue
 
-        # 普通分配
         if rt in magical:
             if try_put(COL_A, m):
                 continue
             if try_put(COL_B, m):
                 continue
-            try_put(COL_D, m)
+            if try_put(COL_C, m):
+                continue
+            if try_put(COL_D, m):
+                continue
+            try_put(COL_E, m)
             continue
 
         if rt in physical:
@@ -56,8 +61,13 @@ def rearrange_teams_new(input_teams: list[list[dict]]) -> list[list[dict]]:
                 continue
             if try_put(COL_B, m):
                 continue
-            try_put(COL_D, m)
+            if try_put(COL_A, m):
+                continue
+            if try_put(COL_D, m):
+                continue
+            try_put(COL_E, m)
             continue
+
 
         # 兜底：直接塞 D
         try_put(COL_D, m)

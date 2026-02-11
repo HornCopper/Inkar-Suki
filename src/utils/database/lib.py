@@ -169,7 +169,11 @@ class Database:
 
                 elif field.startswith(self.FOREIGN_KEY_PREFIX):
 
-                    new_obj[field.replace(self.FOREIGN_KEY_PREFIX, "")] = self._load(self._get_foreign_data(value))
+                    # new_obj[field.replace(self.FOREIGN_KEY_PREFIX, "")] = self._load(self._get_foreign_data(value))
+                    foreign = self._get_foreign_data(value)
+                    if foreign is None:
+                        continue
+                    new_obj[field.replace(self.FOREIGN_KEY_PREFIX, "")] = self._load(foreign)
 
                 else:
                     new_obj[field] = value
@@ -188,7 +192,10 @@ class Database:
                         new_obj.append(self._load(item))
 
                 elif isinstance(item, str) and item.startswith(self.FOREIGN_KEY_PREFIX):
-                    new_obj.append(self._load(self._get_foreign_data(item)))
+                    foreign = self._get_foreign_data(item)
+                    if foreign is None:
+                        continue
+                    new_obj.append(self._load(foreign))
                 else:
                     new_obj.append(self._load(item))
             return new_obj
@@ -291,7 +298,7 @@ class Database:
             return "INTEGER"
         return self.TYPE_MAPPING.get(type(value), "TEXT")
 
-    def _get_foreign_data(self, foreign_value: str) -> dict:
+    def _get_foreign_data(self, foreign_value: str) -> dict | None:
         """
         获取外键数据
         Args:
@@ -305,6 +312,8 @@ class Database:
         foreign_id = foreign_value.split("@")[0]
         fields = [description[1] for description in self.cursor.execute(f"PRAGMA table_info({table_name})").fetchall()]
         result = self.cursor.execute(f"SELECT * FROM {table_name} WHERE id = ?", (foreign_id,)).fetchone()
+        if result is None:
+            return None
         return dict(zip(fields, result))
 
     def on_save(self, func: Callable[[LiteModel, Any], None]):
