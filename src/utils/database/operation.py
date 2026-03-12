@@ -1,6 +1,8 @@
 from typing import Any, Literal, overload
+
 from nonebot import get_bots
 from nonebot.exception import ActionFailed
+from nonebot.adapters.onebot.v11 import Message
 
 from src.utils.database.classes import GroupSettings
 from src.utils.database import db
@@ -55,7 +57,7 @@ def get_groups() -> bool | list:
         groups.append(group_settings.group_id)
     return groups
 
-async def send_subscribe(subscribe: str = "", msg: str = "", server: str | None = "") -> None:
+async def send_subscribe(subscribe: str = "", msg: str | Message = "", server: str | None = "") -> None:
     bots: dict = get_bots()
     if bots == {}:
         return

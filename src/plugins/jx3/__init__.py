@@ -1,5 +1,6 @@
 from nonebot import get_driver
 from nonebot.log import logger
+from nonebot.adapters.onebot.v11 import MessageSegment
 
 from src.config import Config
 from src.const.path import ASSETS, build_path
@@ -10,6 +11,7 @@ from src.utils.time import Time
 from src.utils.database import cache_db
 from src.utils.database.classes import JX3APIWSData
 from src.utils.database.operation import send_subscribe
+from src.utils.network import Request
 from src.plugins.jx3.announce.image import get_image as get_announce_image
 
 from .parse import (
@@ -54,14 +56,18 @@ async def websocket_client(ws_url: str, headers: dict):
                         )
                     )
                     name = msg.name
+                    message = msg.msg
                     if name == "公告":
                         url, title = parsed.provide_data()
                         if re.match(r"(\d+)月(\d+)日(.*?)版本更新公告", title):
                             if os.path.exists(build_path(ASSETS, ["image", "jx3", "update.png"])):
                                 os.remove(build_path(ASSETS, ["image", "jx3", "update.png"]))
                             await get_announce_image()
-                    await send_subscribe(name, msg.msg, msg.server)
-                    logger.info(msg.msg)
+                    if name == "生日祝福":
+                        image = (await Request(msg.server).get()).content
+                        message = msg.msg + MessageSegment.image(image)
+                    await send_subscribe(name, message, msg.server)
+                    logger.info(message)
         except websockets.exceptions.ConnectionClosed:
             logger.warning("WebSocket connection closed, retrying...")
         except Exception as e:

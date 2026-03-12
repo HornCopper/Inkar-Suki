@@ -3,6 +3,8 @@ from pydantic import BaseModel
 from typing import Literal, Callable, Type
 from dataclasses import dataclass
 
+from nonebot.adapters.onebot.v11 import Message
+
 from src.utils.typing import override
 from src.utils.time import Time
 
@@ -26,7 +28,7 @@ def handle_event(action: int):
 @dataclass
 class JX3APIOutputMsg:
     name: str = ""
-    msg: str = ""
+    msg: str | Message = ""
     server: str = ""
 
 class JX3APIPushEvent(BaseModel):
@@ -105,6 +107,15 @@ class JX3APIYuncongEvent(JX3APIPushEvent):
     @override
     def msg(self) -> JX3APIOutputMsg:
         return JX3APIOutputMsg(msg=f"云从社的 {self.name}（{self.desc}）活动即将在10分钟后开始，敬请留意！", name="云从")
+
+@handle_event(50001)
+class InkarSukiBirthdayEvent(JX3APIPushEvent):
+    message: str
+    image_url: str
+
+    @override
+    def msg(self) -> JX3APIOutputMsg:
+        return JX3APIOutputMsg(msg=self.message, server=self.image_url, name="生日祝福")
 
 def parse_data(raw_data: dict):
     """
