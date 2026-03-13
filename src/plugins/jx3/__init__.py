@@ -57,6 +57,7 @@ async def websocket_client(ws_url: str, headers: dict):
                     )
                     name = msg.name
                     message = msg.msg
+                    server = msg.server
                     if name == "公告":
                         url, title = parsed.provide_data()
                         if re.match(r"(\d+)月(\d+)日(.*?)版本更新公告", title):
@@ -64,9 +65,10 @@ async def websocket_client(ws_url: str, headers: dict):
                                 os.remove(build_path(ASSETS, ["image", "jx3", "update.png"]))
                             await get_announce_image()
                     if name == "生日祝福":
-                        image = (await Request(msg.server).get()).content
+                        image = (await Request(server).get()).content
                         message = msg.msg + MessageSegment.image(image)
-                    await send_subscribe(name, message, msg.server)
+                        server = ""
+                    await send_subscribe(name, message, server)
                     logger.info(message)
         except websockets.exceptions.ConnectionClosed:
             logger.warning("WebSocket connection closed, retrying...")
