@@ -5,13 +5,20 @@ window.onload = function () {
         childNodes.forEach(function (node) {
             if (node.nodeType === Node.TEXT_NODE) {
                 var text = node.textContent;
-                var newText = "";
+                var lines = [];
                 for (var i = 0; i < text.length; i += 25) {
-                    newText += text.slice(i, i + 25) + "<br>";
+                    lines.push(text.slice(i, i + 25));
                 }
-                var newNode = document.createElement('span');
-                newNode.innerHTML = newText;
-                node.replaceWith(newNode);
+                
+                var fragment = document.createDocumentFragment();
+                lines.forEach(function(line, index) {
+                    fragment.appendChild(document.createTextNode(line));
+                    if (index < lines.length - 1) {
+                        fragment.appendChild(document.createElement('br'));
+                    }
+                });
+                
+                node.replaceWith(fragment);
             }
         });
     });

@@ -57,6 +57,9 @@ async def _(argument: Message = CommandArg()):
         kungfu = args[0]
         qixue = args[1]
         season = ""
+        if qixue.startswith("v"):
+            season = qixue + ""
+            qixue = ""
     elif len(args) == 1:
         kungfu = args[0]
         qixue = ""

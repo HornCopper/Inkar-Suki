@@ -16,6 +16,7 @@ from ._template import template_body_talent, table_head_talent
 
 import json
 import os
+import html as HTML
 
 class QixueInfo(BaseModel):
     icon: str = ""
@@ -54,16 +55,24 @@ class Qixue:
     
     @staticmethod
     async def get_qixue_data(season: str = "") -> dict | Literal[False]:
-        data = (await Request("https://data.jx3box.com/talent/std/index.json").get()).json()
-        for each_ver in data:
-            if (s in each_ver["name"] and season == "") or (season in each_ver["name"] and season != ""):
-                path = build_path(CONST, ["cache", each_ver["version"] + ".json"])
-                if os.path.exists(path):
-                    return json.loads(read(path))
-                qxdata = (await Request("https://data.jx3box.com/talent/std/" + each_ver["version"] + ".json").get()).json()
-                write(path, json.dumps(qxdata, ensure_ascii=False))
-                return qxdata
-        return False
+        if not season.startswith("v"):
+            data = (await Request("https://data.jx3box.com/talent/std/index.json").get()).json()
+            for each_ver in data:
+                if (s in each_ver["name"] and season == "") or (season in each_ver["name"] and season != ""):
+                    path = build_path(CONST, ["cache", each_ver["version"] + ".json"])
+                    if os.path.exists(path):
+                        return json.loads(read(path))
+                    qxdata = (await Request("https://data.jx3box.com/talent/std/" + each_ver["version"] + ".json").get()).json()
+                    write(path, json.dumps(qxdata, ensure_ascii=False))
+                    return qxdata
+            return False
+        else:
+            path = build_path(CONST, ["cache", season + ".json"])
+            if os.path.exists(path):
+                return json.loads(read(path))
+            qxdata = (await Request("https://data.jx3box.com/talent/std/" + season + ".json").get()).json()
+            write(path, json.dumps(qxdata, ensure_ascii=False))
+            return qxdata
     
     @property
     def info(self) -> list[QixueInfo]:
@@ -82,6 +91,11 @@ class Qixue:
                         )
                     )
         return results
+
+def safe_format_desc(desc: str) -> str:
+    desc = desc.replace("&lt;", "<").replace("&gt;", ">")
+    desc = desc.replace("<", "&lt;").replace(">", "&gt;")
+    return desc
     
 async def get_talent_info(name: str, kungfu: str, season: str = "") -> str | Message | ms:
     kungfu_name = Kungfu(kungfu).name
@@ -103,7 +117,7 @@ async def get_talent_info(name: str, kungfu: str, season: str = "") -> str | Mes
                     icon = each_talent.icon,
                     name = each_talent.name,
                     location = f"第{each_talent.location[0]}重·第{each_talent.location[1]}层",
-                    desc = each_talent.desc
+                    desc = safe_format_desc(HTML.escape(each_talent.desc))
                 )
             )
         html = str(
