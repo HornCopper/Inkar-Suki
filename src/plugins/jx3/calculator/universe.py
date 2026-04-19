@@ -55,8 +55,9 @@ class UniversalCalculator(BaseCalculator):
             results[attr_names[each_attr_name]] = final_value
         return results
 
-    async def get_loop(self):
-        url = f"{self.calculator_url}/loops?kungfu_id={self.kungfu_id or self.equip_data.kungfu_id}"
+    async def get_loop(self, user_id: int = 0):
+        path = "custom_loops" if user_id else "loops"
+        url = f"{self.calculator_url}/{path}?kungfu_id={self.kungfu_id or self.equip_data.kungfu_id}&user_id={user_id}"
         data = (await Request(url).get()).json()
         results = {}
         if data["code"] == 404:
@@ -68,7 +69,7 @@ class UniversalCalculator(BaseCalculator):
             results[name] = {"weapon": weapon, "haste": haste, "loop": loop}
         return results
 
-    async def calculate(self, loop_arg: dict[str, str]):
+    async def calculate(self, loop_arg: dict[str, str], user_id: int = 0):
         params = {
             "full_income": self.income_list + self.formation_list,
             "kungfu_id": self.kungfu_id,
@@ -77,18 +78,20 @@ class UniversalCalculator(BaseCalculator):
         }
         if self.jcl_data:
             params["jcl_data"] = self.jcl_data
-            url_path = "calculator_raw"
         else:
             params["jcl_data"] = self.equip_data.equip_lines
             params["kungfu_id"] = self.equip_data.kungfu_id
-            url_path = "calculator_raw"
+        url_path = "calculator_raw"
+        if user_id:
+            url_path = "calculator_custom"
+            params["user_id"] = user_id
         data = (await Request(f"{self.calculator_url}/{url_path}", params=params).post(timeout=30)).json()
         if data["code"] == 404:
             return "加速不符合任何计算循环，请自行提供JCL或调整装备！"
         return data
     
-    async def image(self, loop_arg: dict[str, str]):
-        data = await self.calculate(loop_arg)
+    async def image(self, loop_arg: dict[str, str], user_id: int = 0):
+        data = await self.calculate(loop_arg, user_id)
         if isinstance(data, str):
             return data
         _loop_talents = {}

@@ -21,7 +21,7 @@ from .jx3box import JX3BOXCalculator
 from .base import FORMATIONS, INCOMES
 from .universe import UniversalCalculator
 from .rdps import RDPSCalculator
-from .jcl_analyze import CQCAnalyze, FALAnalyze, YXCAnalyze, RODAnalyze, HPSAnalyze
+from .jcl_analyze import CQCAnalyze, FALAnalyze, YXCAnalyze, RODAnalyze, HPSAnalyze, CALAnalyze
 
 import re
 import json
@@ -75,14 +75,19 @@ async def _(event: GroupMessageEvent, matcher: Matcher, state: T_State, args: Me
             await calc_matcher.finish(instance)
     income_ver = Preference(event.user_id, "", "").setting("计算器增益")
     formation_ver = Preference(event.user_id, "", "").setting("计算器阵眼")
+    is_custom = Preference(event.user_id, "", "").setting("计算器来源") == "自定义"
     income_code = INCOMES[income_ver]
     instance.income_list = income_code
     instance.income_ver = income_ver
     instance.formation_list = FORMATIONS[formation_ver]
     instance.formation_name = formation_ver
-    loops = await instance.get_loop()
+
+    loops = await instance.get_loop(event.user_id if is_custom else 0)
     if isinstance(loops, str):
-        await calc_matcher.finish("该玩家下线时的心法当前尚未实现计算器，可尝试使用指定计算器（如有）或等待该心法支持！")
+        unsupported_msg = "该玩家下线时的心法当前尚未实现计算器，可尝试使用指定计算器（如有）或等待该心法支持！"
+        if is_custom:
+            unsupported_msg = "未找到已上传的该心法 JCL，请切换至公用循环库或自行上传该心法循环！\n切换方式：发送「偏好 计算器来源 公用」"
+        await calc_matcher.finish(unsupported_msg)
     state["loops"] = loops
     state["instance"] = instance
     msg = "请选择计算循环！"
@@ -102,7 +107,10 @@ async def _(event: GroupMessageEvent, state: T_State, loop_order: Message = Arg(
     if int(num) > len(list(loops)):
         await calc_matcher.finish("超出可选范围，请重新发起命令！")
     loop_code: dict[str, str] = loops[list(loops)[int(num)-1]]
-    data = await instance.image(loop_code)
+
+    is_custom = Preference(event.user_id, "", "").setting("计算器来源") == "自定义"
+    data = await instance.image(loop_code, event.user_id if is_custom else 0)
+
     if state["pzid"] != 0:
         equip_image = ms.image(await get_equip_image(str(state["pzid"])))
         await calc_matcher.send(equip_image)
@@ -201,7 +209,9 @@ async def _(event: GroupMessageEvent, state: T_State, equip_index: Message = Arg
     new_dps_data.formation_list = formation_code
     new_dps_data.formation_name = formation_ver
     state["updated_data"] = new_dps_data
-    loops = await new_dps_data.get_loop()
+
+    is_custom = Preference(event.user_id, "", "").setting("计算器来源") == "自定义"
+    loops = await new_dps_data.get_loop(event.user_id if is_custom else 0)
     state["loops"] = loops
     msg = "请选择计算循环！"
     num = 1
@@ -222,11 +232,19 @@ async def _(event: GroupMessageEvent, state: T_State, loop_order: Message = Arg(
     loop_code: dict[str, str] = loops[list(loops)[int(num)-1]]
     old_instance: UniversalCalculator = state["current_data"]
     new_instance: UniversalCalculator = state["updated_data"]
-    old_data = await old_instance.calculate(loop_code)
-    new_data = await new_instance.calculate(loop_code)
+
+    is_custom = Preference(event.user_id, "", "").setting("计算器来源") == "自定义"
+
+    old_data = await old_instance.calculate(loop_code, event.user_id if is_custom else 0)
+    new_data = await new_instance.calculate(loop_code, event.user_id if is_custom else 0)
     if not isinstance(old_data, dict) or not isinstance(new_data, dict):
         await equip_compare.finish(cast(str, old_data))
-    msg = f"当前DPS：{old_data['damage_per_second']}\n更新DPS：{new_data['damage_per_second']}"
+    old_dps = old_data['damage_per_second']
+    new_dps = new_data['damage_per_second']
+    margin = str(round((new_dps / old_dps - 1) * 100, 3)) + "%"
+    msg = f"当前DPS：{old_dps}\n更新DPS：{new_dps}\n提升幅度：{margin}"
+    if is_custom:
+        msg += "\n提示：当前正在使用自定义循环！"
     await equip_compare.finish(msg)
 
 
@@ -253,6 +271,8 @@ async def _(bot: Bot, event: GroupUploadNoticeEvent):
         analyzer = RODAnalyze
     elif check_jcl_name(event.file.name, "HPS-"):
         analyzer = HPSAnalyze
+    elif event.file.name.startswith("CAL-"):
+        analyzer = CALAnalyze
     else:
         return
     
@@ -267,7 +287,7 @@ async def _(bot: Bot, event: GroupUploadNoticeEvent):
             file_data = await bot.call_api("get_group_file_url", group_id=event.group_id, file_id=file_id, bus_id=bus_id)
             url = file_data["url"]
         try:
-            image = await analyzer(event.file.name[4:], url, is_anonymous)
+            image = await analyzer(event.file.name[4:], url, is_anonymous, event.user_id)
             await bot.send_group_msg(group_id=event.group_id, message=Message(image))
         except json.decoder.JSONDecodeError:
             await bot.send_group_msg(group_id=event.group_id, message="啊哦，音卡的服务器目前似乎暂时有些小问题，请稍后再使用JCL分析？")

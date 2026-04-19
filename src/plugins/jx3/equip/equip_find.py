@@ -11,10 +11,16 @@ from src.plugins.jx3.calculator.compare import AttributesFull, subtype_locations
 
 from ._template import _template_green_attrs, _template_diamonds, _template_set_attrs
 
-async def get_equip_info(equip_name: str) -> list[tuple[str, dict]] | str:
-    url = f"{Config.jx3.api.calculator_url}/equip?equip_name={equip_name}"
+async def get_equip_info(equip_name: str, quality: int = -1) -> list[tuple[str, dict]] | str:
+    params: dict = {
+        "equip_name": equip_name
+    }
+    if quality != -1:
+        params["min_level"] = quality
+        params["max_level"] = quality
+    url = f"{Config.jx3.api.calculator_url}/equip"
     results = []
-    data = (await Request(url).get()).json()
+    data = (await Request(url, params=params).get()).json()
     if len(data) == 0:
         return "未找到符合条件的装备，请检查装备名称！"
     else:

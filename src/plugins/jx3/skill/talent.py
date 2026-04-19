@@ -100,7 +100,7 @@ def safe_format_desc(desc: str) -> str:
 async def get_talent_info(name: str, kungfu: str, season: str = "") -> str | Message | ms:
     kungfu_name = Kungfu(kungfu).name
     if kungfu_name is None:
-        return "无法识别该心法，请检查后重试！"
+        return "无法识别该心法，请检查后重试！\n参考格式：奇穴 心法 关键词\n奇穴 心法 关键词 赛季名\n奇穴 心法 赛季名\n奇穴 心法\n赛季名可使用【v+日期】，例如 v20260413，若报错说明当天无数据，请往前调整一天。"
     talents = await Qixue.create(name, kungfu_name, season)
     if not talents:
         return "没有找到匹配的赛季名称，请检查赛季名称是否正确？"

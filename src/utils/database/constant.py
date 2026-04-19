@@ -8,9 +8,12 @@ EquipLocations = [
 ]
 
 # MaxStrengthLevel = 32000
+# MaxStrengthLevel = 37400
+
 MinStrengthLevel = 27800
 
-MaxStrengthLevel = 37400
+MaxStrengthLevel = 43900
+# 能不能别抄自己写
 
 Colors = [
     "(167, 167, 167)",

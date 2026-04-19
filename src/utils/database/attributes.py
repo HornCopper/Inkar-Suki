@@ -398,7 +398,8 @@ class Equip:
         if color == 4:
             equip_score = int(0.9 * self._quality + 0.5)
         elif color == 5:
-            equip_score = int(1.25 * self._quality + 0.5)
+            equip_score = int(1 * self._quality + 0.5)
+            # 能不能别抄自己写
         
         self._source = f"{trinket_data[73]}：{trinket_data[72]}"
 
@@ -493,7 +494,8 @@ class Equip:
             if color == 4:
                 equip_score = int(2.16 * self._quality + 0.5)
             elif color == 5:
-                equip_score = int(3 * self._quality + 0.5)
+                equip_score = int(2.4 * self._quality + 0.5)
+                # 能不能别抄自己写
         else:
             equip_score = int(1.08 * self._quality + 0.5)
         

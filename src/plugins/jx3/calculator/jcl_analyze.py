@@ -70,7 +70,7 @@ def save_data(data: dict[str, dict[str, int | str]], value_type: bool) -> None:
         db.save(new_data)
             
 # Chi Qing Chuan
-async def CQCAnalyze(file_name: str, url: str, anonymous: bool = False):
+async def CQCAnalyze(file_name: str, url: str, anonymous: bool = False, user_id: int = 0):
     async with AsyncClient(verify=False) as client:
         resp = await client.post(f"{Config.jx3.api.cqc_url}/cqc_analyze", json={"jcl_url": url, "jcl_name": file_name}, timeout=600)
         data = resp.json()
@@ -128,7 +128,7 @@ async def CQCAnalyze(file_name: str, url: str, anonymous: bool = False):
     return dps_image
 
 # First Attacking List
-async def FALAnalyze(file_name: str, url: str, anonymous: bool = False):
+async def FALAnalyze(file_name: str, url: str, anonymous: bool = False, user_id: int = 0):
     async with AsyncClient(verify=False) as client:
         resp = await client.post(f"{Config.jx3.api.cqc_url}/fal_analyze", json={"jcl_url": url, "jcl_name": file_name}, timeout=600)
         data = resp.json()
@@ -156,7 +156,7 @@ async def FALAnalyze(file_name: str, url: str, anonymous: bool = False):
     return image  
 
 # Yin Xue Chen
-async def YXCAnalyze(file_name: str, url: str, anonymous: bool = False):
+async def YXCAnalyze(file_name: str, url: str, anonymous: bool = False, user_id: int = 0):
     async with AsyncClient(verify=False) as client:
         resp = await client.post(f"{Config.jx3.api.cqc_url}/yxc_analyze", json={"jcl_url": url, "jcl_name": file_name}, timeout=600)
         data = resp.json()
@@ -203,7 +203,7 @@ async def YXCAnalyze(file_name: str, url: str, anonymous: bool = False):
     return image
 
 # Reason of Death
-async def RODAnalyze(file_name: str, url: str, anonymous: bool = False):
+async def RODAnalyze(file_name: str, url: str, anonymous: bool = False, user_id: int = 0):
     async with AsyncClient(verify=False) as client:
         resp = await client.post(f"{Config.jx3.api.cqc_url}/rod_analyze", json={"jcl_url": url, "jcl_name": file_name}, timeout=600)
         data = resp.json()
@@ -241,7 +241,7 @@ async def RODAnalyze(file_name: str, url: str, anonymous: bool = False):
     return image
 
 # Healing per Second
-async def HPSAnalyze(file_name: str, url: str, anonymous: bool = False):
+async def HPSAnalyze(file_name: str, url: str, anonymous: bool = False, user_id: int = 0):
     async with AsyncClient(verify=False) as client:
         resp = await client.post(f"{Config.jx3.api.cqc_url}/hps_analyze", json={"jcl_url": url, "jcl_name": file_name}, timeout=600)
         data = resp.json()
@@ -287,3 +287,15 @@ async def HPSAnalyze(file_name: str, url: str, anonymous: bool = False):
     )
     image = await generate(html, ".container", segment=True)
     return image
+
+async def CALAnalyze(file_name: str, url: str, anonymous: bool = False, user_id: int = 0):
+    async with AsyncClient(verify=False) as client:
+        resp = await client.post(f"{Config.jx3.api.calculator_url}/submit_jcl", json={"url": url, "name": file_name, "user_id": user_id}, timeout=600)
+        data = resp.json()
+    if data["code"] != 200:
+        if data["status"] == -1:
+            return "请检查 JCL 名称，无法解析！\n参考格式：CAL-莫问-19285-紫武-常规循环.jcl\nCAL-心法名-加速等级-紫武/橙武-循环名.jcl"
+        elif data["status"] == -2:
+            return "请检查心法名称，无法识别该心法名称！"
+    else:
+        return "导入成功！\n发送「偏好 计算器来源 自定义」可使用导入的循环；\n发送「偏好 计算器来源 公用」可恢复使用公开循环！"

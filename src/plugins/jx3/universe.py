@@ -61,7 +61,8 @@ from .emoji import (
 )
 from .equip import (
     referenced_equip_matcher,
-    equip_find_matcher
+    equip_find_matcher,
+    enchant_find_matcher
 )
 from .events import (
     chutian_matcher,
