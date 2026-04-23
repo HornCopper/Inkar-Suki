@@ -215,8 +215,10 @@ async def get_random_equip(level: int) -> JX3ShilianItem: # 无修
         end_word = "荒"
     elif quality in [28000, 30200]:
         end_word = "玄"
-    else:
+    elif quality in [32500, 35300]:
         end_word = "地"
+    else:
+        end_word = "天"
 
     equip_type = "内" if get_random(50) else "外"
 

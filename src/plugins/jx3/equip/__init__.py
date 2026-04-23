@@ -74,6 +74,8 @@ async def _(matcher: Matcher, state: T_State, event: GroupMessageEvent, args: Me
         if not check_number(arg[1]):
             await equip_find_matcher.finish(PROMPT.ArgumentInvalid + "\n参考格式：\n装备 关键词 品级\n装备 关键词\n如需精准搜索请使用方括号包裹关键词，纯关键词搜索仅支持主流品级！")
         quality = int(arg[1])
+    else:
+        await equip_find_matcher.finish(PROMPT.ArgumentCountInvalid)
     results = await get_equip_info(equip_name, quality)
     if isinstance(results, str):
         await equip_find_matcher.finish(results)
