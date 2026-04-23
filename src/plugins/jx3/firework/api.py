@@ -12,15 +12,14 @@ from ._template import (
     template_firework_head
 )
 
-@token_required
-async def get_firework_record(server: str, name: str, token: str = ""):
-    final_url = f"{Config.jx3.api.url}/data/fireworks/records"
+async def get_firework_record(server: str, name: str):
+    url = f"{Config.jx3.api.url}/data/show/records"
     params = {
         "token": Config.jx3.api.token_v2,
         "server": server,
         "name": name
     }
-    data = (await Request(final_url, params=params).get()).json()
+    data = (await Request(url, params=params).get()).json()
     if data["code"] == 404:
         return "没有找到相关烟花记录，请检查后重试！"
     table = []
@@ -29,9 +28,9 @@ async def get_firework_record(server: str, name: str, token: str = ""):
             Template(template_firework).render(
                 server=record["server"],
                 sender=record["sender"],
-                receiver=record["receive"],
+                receiver=record["receiver"],
                 map_name=record["map_name"],
-                firework=record["name"],
+                firework=record["firework"],
                 time=Time(record["time"]).format()
             )
         )

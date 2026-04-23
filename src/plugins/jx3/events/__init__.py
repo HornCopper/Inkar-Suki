@@ -7,6 +7,7 @@ from src.const.jx3.server import Server
 
 from .chutian import get_chutian_image
 from .yuncong import get_yuncong_image
+from .pifeng import get_pifeng_image
 from .zhue import get_zhue_image
 
 chutian_matcher = on_command("jx3_chutian", aliases={"楚天社"}, force_whitespace=True, priority=5)
@@ -26,6 +27,15 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
         return
     image = await get_yuncong_image()
     await yuncong_matcher.finish(image)
+
+pifeng_matcher = on_command("jx3_pifeng", aliases={"披风会"}, force_whitespace=True, priority=5)
+
+@pifeng_matcher.handle()
+async def _(event: GroupMessageEvent, args: Message = CommandArg()):
+    if args.extract_plain_text() != "":
+        return
+    image = await get_pifeng_image()
+    await pifeng_matcher.finish(image)
 
 zhue_matcher = on_command("jx3_zhue", aliases={"诛恶"}, force_whitespace=True, priority=5)
 

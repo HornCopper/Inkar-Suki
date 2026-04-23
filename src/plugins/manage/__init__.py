@@ -214,7 +214,7 @@ async def _(bot: Bot, matcher: Matcher, event: GroupMessageEvent):
     if "骚话" in group_subscribes and random.random() < 0.04: # 4%
         t = random.randint(0, 1)
         if t:
-            data = (await Request(f"{Config.jx3.api.url}/data/saohua/random").get()).json()
+            data = (await Request(f"https://api.jx3api.com/data/saohua/random").get()).json() # BUG
             msg = data["data"]["text"]
             await bot.send_group_msg(group_id=event.group_id, message=msg)
         else:

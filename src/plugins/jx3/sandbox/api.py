@@ -9,8 +9,12 @@ from src.utils.decorators import token_required
 
 @token_required
 async def get_sandbox_image(server: str, token: str = ""):
-    final_url = f"{Config.jx3.api.url}/data/server/sand?token={token}&server={server}"
-    data = (await Request(final_url).get()).json()
+    url = f"{Config.jx3.api.url}/data/sand/records"
+    params = {
+        "token": token,
+        "server": server
+    }
+    data = (await Request(url, params=params).get()).json()
     if data["code"] != 200:
         return PROMPT.ServerInvalid
     html = read(build_path(TEMPLATES, ["jx3", "sandbox.html"]))

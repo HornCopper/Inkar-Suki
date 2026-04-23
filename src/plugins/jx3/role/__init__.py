@@ -5,20 +5,14 @@ from nonebot.adapters.onebot.v11 import (
     GroupMessageEvent
 )
 
-from src.config import Config
 from src.const.jx3.server import Server
 from src.const.prompts import PROMPT
-from src.utils.database.operation import get_group_settings
-
 from .api import get_role_info
 
-role_info_matcher = on_command("jx3_player", aliases={"玩家信息"}, force_whitespace=True, priority=5)
+role_info_matcher = on_command("jx3_player", aliases={"玩家信息", "玩家"}, force_whitespace=True, priority=5)
 
 @role_info_matcher.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
-    additions = get_group_settings(str(event.group_id), "additions")
-    if not Config.jx3.api.enable or "Preview" not in additions:
-        return
     if args.extract_plain_text() == "":
         return
     arg = args.extract_plain_text().split(" ")

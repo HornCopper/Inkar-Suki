@@ -47,7 +47,13 @@ async def _(event: GroupMessageEvent, full_argument: Message = CommandArg()):
     role_exist = (await search_player(role_name=name, server_name=server)).roleId != ""
     if not role_exist:
         await show_matcher.finish("未找到该玩家，请检查后重试！")
-    data = (await Request(f"{Config.jx3.api.url}/data/show/card?server={server}&name={name}&token={Config.jx3.api.token_v2}").get()).json()
+    url = f"{Config.jx3.api.url}/data/show/card"
+    params = {
+        "server": server,
+        "name": name,
+        "token": Config.jx3.api.token_v2
+    }
+    data = (await Request(url, params=params).get()).json()
     if data["code"] != 200:
         await show_matcher.finish("查询名片失败，请检查玩家是否存在？名片是否过审？")
     image_url = data["data"]["showAvatar"]

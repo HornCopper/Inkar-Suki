@@ -27,15 +27,21 @@ class SkillMap:
         raise BaizhanSkillNotRecognizedException(f"Cannot recognize the baizhan skill `{in_skill_id}` and `{out_skill_id}`!")
 
 async def get_role_monsters_map(server: str, role_name: str):
-    role_monster_data = (await Request(f"{Config.jx3.api.url}/data/role/monster?server={server}&name={role_name}&token={Config.jx3.api.token}").get()).json()
-    data = role_monster_data["data"]
+    params = {
+        "server": server,
+        "name": role_name,
+        "token": Config.jx3.api.token_v2
+    }
+    url = f"{Config.jx3.api.url}/data/role/monster"
+    data = (await Request(url, params=params).get()).json()
+    data = data["data"]
     content = []
-    skill_list = sort_dict_list(data["skillList"], "nLevel")[::-1]
+    skill_list = sort_dict_list(data["skill_list"], "skill_level")[::-1]
     for skill in skill_list:
         new = Template(template_role_monsters).render(
-            icon = await SkillMap.get_icon(skill["dwInSkillID"], skill["dwOutSkillID"]),
-            level = str(skill["nLevel"]),
-            name = skill["szSkillName"]
+            icon = 1434, # JX3API 未返回图标
+            level = str(skill["skill_level"]),
+            name = skill["skill_name"]
         )
         content.append(new)
     html = str(
@@ -44,10 +50,10 @@ async def get_role_monsters_map(server: str, role_name: str):
             "role_monster.html",
             font = build_path(ASSETS, ["font", "PingFangSC-Medium.otf"]),
             table_content = "\n".join(content),
-            energy = data["gameEnergy"],
-            stamina = data["gameStamina"],
-            server = data["serverName"],
-            name = data["roleName"],
+            energy = data["skill_energy"],
+            stamina = data["skill_stamina"],
+            server = data["server"],
+            name = data["role_name"],
             msg = get_saohua()
         )
     )

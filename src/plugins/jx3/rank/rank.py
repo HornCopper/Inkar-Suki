@@ -84,28 +84,25 @@ async def get_rank(dungeon_full_name: str, boss_name: str, kungfu_name: str, ord
     image = await generate(html, ".container", segment=True)
     return image
 
-async def get_slrank(school: str, server: str = "全服"):
-    all_server_key = "server/" if server == "全服" else ""
-    url = f"{Config.jx3.api.url}/data/rank/{all_server_key}statistical"
+async def get_slrank(school: str, server: str):
+    url = f"{Config.jx3.api.url}/data/rank/trials"
     params = {
-        "table": "试炼",
         "name": school,
+        "server": server,
         "token": Config.jx3.api.token
     }
-    if server != "全服":
-        params["server"] = server
     data = (await Request(url, params=params).get()).json()
     rank = 1
     tables = []
-    for info in data["data"]:
+    for info in data["data"]["data"]:
         tables.append(
             Template(slrank_template_body).render(
                 rank = str(rank),
-                server = info["server"],
-                role_name = info["name"],
-                level = info["level"],
-                grade = "{:,}".format(int(info["total"])),
-                score = info["score"]
+                server = data["data"]["server"],
+                role_name = info["role_name"],
+                level = info["max_level"],
+                grade = "{:,}".format(int(info["total_score"])),
+                score = info["equip_score"]
             )
         )
         rank += 1

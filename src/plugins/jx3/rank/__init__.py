@@ -126,19 +126,16 @@ async def _(event: GroupMessageEvent, msg: Message = CommandArg()):
         await slrank_matcher.finish(PROMPT.ArgumentCountInvalid)
     if len(args) == 1:
         server = Server(None, event.group_id).server
-        school = args[0]
+        kungfu_name = args[0]
     if len(args) == 2:
-        if args[0] != "全服":
-            server = Server(args[0], event.group_id).server
-        else:
-            server = "全服"
-        school = args[1]
-    school = School(school).name
-    if school is None:
+        server = Server(args[0], event.group_id).server
+        kungfu_name = args[1]
+    kungfu_name = Kungfu(kungfu_name).name
+    if kungfu_name is None:
         await slrank_matcher.finish(PROMPT.SchoolInvalid)
     if server is None:
         await slrank_matcher.finish(PROMPT.ServerNotExist)
-    reply_msg = await get_slrank(school, server)
+    reply_msg = await get_slrank(kungfu_name, server)
     await slrank_matcher.finish(reply_msg)
 
 cqcrank_carry = on_command("jx3_cqc_uncarry", aliases={"池清川大C榜"}, priority=5, force_whitespace=True)

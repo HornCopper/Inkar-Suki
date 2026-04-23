@@ -10,8 +10,11 @@ from ._template import table_chutian_head
 from .chutian import template_chutian
 
 async def get_yuncong_image():
-    url = f"{Config.jx3.api.url}/data/active/celebs?name=云从社"
-    data = (await Request(url).get()).json()
+    url = f"{Config.jx3.api.url}/data/active/celebs"
+    params = {
+        "name": "云从社"
+    }
+    data = (await Request(url, params=params).get()).json()
     tables = []
     for i in data["data"]:
         time = i["time"]
@@ -32,7 +35,7 @@ async def get_yuncong_image():
         )
     html = str(
         HTMLSourceCode(
-            application_name = "楚天社 · " + Time().format("%H:%M:%S"),
+            application_name = "云从社 · " + Time().format("%H:%M:%S"),
             table_head = table_chutian_head,
             table_body = "\n".join(tables)
         )

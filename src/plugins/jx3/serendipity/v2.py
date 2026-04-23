@@ -27,8 +27,14 @@ async def get_serendipity_v2(server: str, name: str, type: bool):
     if role_id == "":
         return PROMPT.PlayerNotExist
     if Config.jx3.api.enable:
-        serendipity_data = (await Request(f"{Config.jx3.api.url}/data/luck/adventure?server={server}&name={name}&ticket={ticket}&token={token}").get()).json()
-        serendipity_data = serendipity_data["data"]
+        url = f"{Config.jx3.api.url}/data/event/records"
+        params = {
+            "server": server,
+            "name": name,
+            "token": token
+        }
+        serendipity_data = (await Request(url, params=params).get()).json()
+        data: list[dict] = serendipity_data["data"].values()
     else:
         serendipity_data = await Serendipity.integration(server, name, role_id)
     data = serendipity_data

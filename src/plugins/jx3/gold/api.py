@@ -16,7 +16,12 @@ token = Config.jx3.api.token
 bot_name = Config.bot_basic.bot_name_argument
 
 async def get_coin_price_image(server: str = ""):
-    data = (await Request(f"{Config.jx3.api.url}/data/trade/demon?token={Config.jx3.api.token}&server={server}").get()).json()
+    params = {
+        "server": server,
+        "token": Config.jx3.api.token
+    }
+    url = f"{Config.jx3.api.url}/data/trade/demon"
+    data = (await Request(url, params=params).get()).json()
     tables = []
     for each_price in data["data"]:
         tables.append(Template(template_jinjia).render(

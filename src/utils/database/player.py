@@ -11,7 +11,13 @@ import re
 
 async def get_role_id(roleName: str, serverName: str) -> dict | None:
     if Config.jx3.api.enable:
-        response = await Request(f"{Config.jx3.api.url}/data/role/detailed?token={Config.jx3.api.token}&server={serverName}&name={roleName}").get()
+        url = f"{Config.jx3.api.url}/data/role/detail"
+        params = {
+            "token": Config.jx3.api.token,
+            "server": serverName,
+            "name": roleName
+        }
+        response = await Request(url, params=params).get()
         if response.status_code != 200:
             return None
         data = response.json()
@@ -22,26 +28,35 @@ async def get_role_id(roleName: str, serverName: str) -> dict | None:
         return None
     
 async def submit_role_force(roleName: str, serverName: str) -> str | None:
-    response = await Request(f"{Config.jx3.api.url}/data/role/detailed?token={Config.jx3.api.token}&server={serverName}&name={roleName}").get()
-    if response.status_code != 200:
-        return None
-    data = response.json()
-    if data["code"] != 200:
-        return None
-    globalRoleId = data["data"]["globalRoleId"]
-    db.delete(RoleData(), "roleName = ? AND serverName = ?", roleName, serverName)
-    db.delete(RoleData(), "globalRoleId = ?", globalRoleId)
-    new_data = RoleData(
-        bodyName=data["data"]["bodyName"],
-        campName=data["data"]["campName"],
-        forceName=data["data"]["forceName"],
-        globalRoleId=globalRoleId,
-        roleName=roleName,
-        roleId=data["data"]["roleId"],
-        serverName=serverName
-    )
-    db.save(new_data)
-    return f"强制绑定成功！\n记录数据：\n[{roleName}·{serverName}]"
+    if Config.jx3.api.enable:
+        url = f"{Config.jx3.api.url}/data/role/detail"
+        params = {
+            "token": Config.jx3.api.token,
+            "server": serverName,
+            "name": roleName
+        }
+        response = await Request(url, params=params).get()
+        if response.status_code != 200:
+            return None
+        data = response.json()
+        if data["code"] != 200:
+            return None
+        globalRoleId = data["data"]["globalRoleId"]
+        db.delete(RoleData(), "roleName = ? AND serverName = ?", roleName, serverName)
+        db.delete(RoleData(), "globalRoleId = ?", globalRoleId)
+        new_data = RoleData(
+            bodyName=data["data"]["bodyName"],
+            campName=data["data"]["campName"],
+            forceName=data["data"]["forceName"],
+            globalRoleId=globalRoleId,
+            roleName=roleName,
+            roleId=data["data"]["roleId"],
+            serverName=serverName
+        )
+        db.save(new_data)
+        return f"强制绑定成功！\n记录数据：\n[{roleName}·{serverName}]"
+    else:
+        return "该音卡实例未启用 JX3API，请联系 Bot 管理员！"
     
 @overload
 async def get_uid_data(global_role_id: str = "", role_id: str = "", server: str = "", role_name: str = "", msg: Literal[True] = True) -> str: ...
@@ -76,8 +91,14 @@ async def get_uid_data(global_role_id: str = "", role_id: str = "", server: str 
     roleName = _role_name if "*" not in _role_name else role_name
 
     if not global_role_id and role_id:
-        resp = await Request(f"{Config.jx3.api.url}/data/role/detailed?token={Config.jx3.api.token}&server={server}&name={roleName}").get()
-        api_data = resp.json()
+        url = f"{Config.jx3.api.url}/data/role/detail"
+        params = {
+            "token": Config.jx3.api.token,
+            "server": server,
+            "name": roleName
+        }
+        response = await Request(url, params=params).get()
+        api_data = response.json()
         if api_data["code"] == 200:
             globalRoleId = api_data["data"]["globalRoleId"]
 

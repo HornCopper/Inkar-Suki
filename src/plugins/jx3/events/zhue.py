@@ -9,7 +9,7 @@ from src.templates import HTMLSourceCode
 from ._template import table_zhue_head, template_zhue
 
 async def get_zhue_image(server: str):
-    url = f"{Config.jx3.api.url}/data/server/antivice"
+    url = f"{Config.jx3.api.url}/data/smite/records"
     params = {
         "server": server,
         "token": Config.jx3.api.token

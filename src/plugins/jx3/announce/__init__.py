@@ -54,7 +54,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     if args.extract_plain_text() != "":
         return
     else:
-        url = f"{Config.jx3.api.url}/data/skills/records"
+        url = f"{Config.jx3.api.url}/data/skill/rework"
         data = (await Request(url).get()).json()
         msg = ""
         for d in data["data"][0:4]:

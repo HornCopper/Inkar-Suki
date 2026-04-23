@@ -11,8 +11,12 @@ def get_ptk(p_skey: str) -> int:
     return 0
 
 async def get_tieba_records(user_id: int) -> str:
-    url = f"{Config.jx3.api.url}/data/fraud/detailed?uid={user_id}&token={Config.jx3.api.token}"
-    data = (await Request(url).get()).json()
+    params = {
+        "uid": user_id,
+        "token": Config.jx3.api.token
+    }
+    url = f"{Config.jx3.api.url}/data/fraud/detail"
+    data = (await Request(url, params=params).get()).json()
     records = data["data"]["records"]
     if not records:
         return "未找到相关记录！"

@@ -15,14 +15,18 @@ from ._template import (
 
 @token_required
 async def get_item_record(name: str, token: str = ""):
-    final_url = f"{Config.jx3.api.url}/data/reward/server/statistical?name={name}&token={token}"
-    data = (await Request(final_url).get()).json()
+    url = f"{Config.jx3.api.url}/data/reward/statistics"
+    params = {
+        "name": name,
+        "token": token
+    }
+    data = (await Request(url, params=params).get()).json()
     if data["code"] == 404:
         return "未找到相关物品，请检查物品名称是否正确！"
     tables = []
     for i in data["data"]:
         role_name = i["role_name"]
-        item_name = i["name"]
+        item_name = i["item_name"]
         map_name = i["map_name"]
         pick_time = Time(i["time"]).format()
         relate_time = Time().relate(i["time"])
