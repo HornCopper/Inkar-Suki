@@ -41,7 +41,7 @@ async def submit_role_force(roleName: str, serverName: str) -> str | None:
         data = response.json()
         if data["code"] != 200:
             return None
-        globalRoleId = data["data"]["globalRoleId"]
+        globalRoleId = data["data"]["globalId"]
         db.delete(RoleData(), "roleName = ? AND serverName = ?", roleName, serverName)
         db.delete(RoleData(), "globalRoleId = ?", globalRoleId)
         new_data = RoleData(
@@ -100,7 +100,7 @@ async def get_uid_data(global_role_id: str = "", role_id: str = "", server: str 
         response = await Request(url, params=params).get()
         api_data = response.json()
         if api_data["code"] == 200:
-            globalRoleId = api_data["data"]["globalRoleId"]
+            globalRoleId = api_data["data"]["globalId"]
 
     db.delete(RoleData(), "roleName = ? AND serverName = ?", roleName, server)
 
@@ -142,7 +142,7 @@ async def search_player(
         uid_data = await get_role_id(roleName=role_name, serverName=server_name)
         if uid_data is None:
             return RoleData()
-        player_data = await get_uid_data(uid_data["globalRoleId"], uid_data["roleId"], server_name, role_name, False)
+        player_data = await get_uid_data(uid_data["globalId"], uid_data["roleId"], server_name, role_name, False)
         return player_data
     else:
         return player_data

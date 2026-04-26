@@ -34,7 +34,7 @@ async def get_serendipity_v2(server: str, name: str, type: bool):
             "token": token
         }
         serendipity_data = (await Request(url, params=params).get()).json()
-        data: list[dict] = serendipity_data["data"].values()
+        data: list[dict] = serendipity_data["data"]
     else:
         serendipity_data = await Serendipity.integration(server, name, role_id)
     data = serendipity_data

@@ -152,7 +152,7 @@ async def get_mulit_record_image(server: str, roles: list[str]):
         num += 1
     html = str(
             HTMLSourceCode(
-                application_name = f"副本记录 · 多角色",
+                application_name = "副本记录 · 多角色",
                 table_head = table_head,
                 table_body = "\n".join(tables)
             )

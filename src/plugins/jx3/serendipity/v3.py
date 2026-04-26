@@ -148,7 +148,7 @@ async def get_serendipity_image_v3(server: str, name: str):
             "token": Config.jx3.api.token
         }
         serendipity_data = (await Request(url, params=params).get()).json()
-        data: list[dict] = serendipity_data["data"].values()
+        data: list[dict] = serendipity_data["data"]
     else:
         data: list[dict] = await JX3Serendipity().integration(server, name, uid)
     data_obj = JX3Serendipities(data)
