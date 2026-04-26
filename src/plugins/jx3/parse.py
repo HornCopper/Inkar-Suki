@@ -33,7 +33,7 @@ class JX3APIOutputMsg:
 
 class JX3APIPushEvent(BaseModel):
     action: int = 0
-    data: dict = {}
+    detail: dict = {}
     
     def msg(self) -> JX3APIOutputMsg:
         ...
@@ -123,7 +123,7 @@ def parse_data(raw_data: dict):
     """
     data = JX3APIPushEvent(**raw_data)
     action: int = data.action
-    body: dict = data.data
+    body: dict = data.detail
     handler_class = handler.get(action)
     
     if handler_class:
