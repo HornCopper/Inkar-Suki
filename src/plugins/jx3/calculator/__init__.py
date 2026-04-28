@@ -84,7 +84,7 @@ async def _(event: GroupMessageEvent, matcher: Matcher, state: T_State, args: Me
 
     loops = await instance.get_loop(event.user_id if is_custom else 0)
     if isinstance(loops, str):
-        unsupported_msg = "该玩家下线时的心法当前尚未实现计算器，可尝试使用指定计算器（如有）或等待该心法支持！"
+        unsupported_msg = "该玩家下线时的心法当前尚未实现计算器，可尝试使用指定计算器（如有）或等待该心法支持！\n也可能是当前使用的计算器循环库中并无该心法，请切换公用循环库或自定义循环库，详情见「偏好」。"
         if is_custom:
             unsupported_msg = "未找到已上传的该心法 JCL，请切换至公用循环库或自行上传该心法循环！\n切换方式：发送「偏好 计算器来源 公用」"
         await calc_matcher.finish(unsupported_msg)

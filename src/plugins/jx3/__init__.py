@@ -51,7 +51,7 @@ async def websocket_client(ws_url: str, headers: dict):
                         JX3APIWSData(
                             action = response["action"],
                             event = msg.name,
-                            data = response["data"],
+                            data = response["detail"],
                             timestamp = Time().raw_time
                         )
                     )
