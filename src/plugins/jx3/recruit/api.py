@@ -34,7 +34,7 @@ async def get_recruit_image(server: str, keyword: str = "", local: bool = False,
     url = f"{Config.jx3.api.url}/data/recruit/search"
     if keyword != "":
         params["keyword"] = keyword
-    data = (await Request(url).get()).json()
+    data = (await Request(url, params=params).get()).json()
     if data["code"] != 200:
         return "唔……未找到相关团队，请检查后重试！"
     adFlags = (await Request("https://inkar-suki.codethink.cn/filters").get()).json()

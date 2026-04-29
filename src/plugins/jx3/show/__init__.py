@@ -47,7 +47,7 @@ async def _(event: GroupMessageEvent, full_argument: Message = CommandArg()):
     role_exist = (await search_player(role_name=name, server_name=server)).roleId != ""
     if not role_exist:
         await show_matcher.finish("未找到该玩家，请检查后重试！")
-    url = f"{Config.jx3.api.url}/data/show/card"
+    url = f"{Config.jx3.api.url}/data/card/record"
     params = {
         "server": server,
         "name": name,

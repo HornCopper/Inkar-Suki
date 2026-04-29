@@ -37,7 +37,7 @@ async def get_serendipity_v2(server: str, name: str, type: bool):
         data: list[dict] = serendipity_data["data"]
     else:
         serendipity_data = await Serendipity.integration(server, name, role_id)
-    data = serendipity_data
+        data = serendipity_data
     # 笔记：1 → 世界奇遇；2 → 绝世奇遇；3 → 宠物奇遇
     # 注：暂时忽略宠物奇遇，不做统计
     tables = []
