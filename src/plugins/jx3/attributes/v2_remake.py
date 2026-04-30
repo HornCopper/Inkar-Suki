@@ -83,6 +83,11 @@ async def get_attr_v2_remake_build(jcl_line: str):
     instance = await JX3PlayerAttribute.frmo_jcl_line(jcl_line)
     instance.save()
     kungfu = Kungfu.with_internel_id(instance.kungfu_id)
+    talents = instance.talents
+    if len(talents) == 9:
+        talents.append(
+            Talent(instance.kungfu_id)
+        )
     image = await get_attr_v2_remake_img(
         instance.name,
         "未知体型",
@@ -90,7 +95,7 @@ async def get_attr_v2_remake_build(jcl_line: str):
         kungfu=kungfu,
         school=School(kungfu.school),
         equips=instance.equips,
-        talents=instance.talents,
+        talents=talents,
         panel=instance.attributes,
         score=instance.score
     )
