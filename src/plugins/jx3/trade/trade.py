@@ -149,7 +149,7 @@ class JX3Trade:
         elif quality <= 32500 <= 35300:
             end_word = "地"
         else:
-            end_word = "地"
+            end_word = "天"
         name = f"{cls.shilian_basic}{location}·{kungfu_type}·{end_word}"
         params = {
             "keyword": name,
