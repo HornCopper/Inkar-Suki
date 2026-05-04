@@ -9,11 +9,12 @@ from src.const.jx3.dungeon import Dungeon
 from src.const.jx3.kungfu import Kungfu
 from src.const.jx3.server import Server
 from src.const.jx3.school import School
+from src.utils.analyze import check_number
 from src.utils.database import rank_db as db
-from src.utils.database.classes import CQCRank
-from src.templates import HTMLSourceCode
+from src.utils.database.classes import CQCRank, THRRank
 from src.utils.generate import generate
 from src.utils.permission import check_permission
+from src.templates import HTMLSourceCode
 
 from .api import get_zlrank
 from .rank import get_rank, get_slrank
@@ -138,19 +139,29 @@ async def _(event: GroupMessageEvent, msg: Message = CommandArg()):
     reply_msg = await get_slrank(kungfu_name, server)
     await slrank_matcher.finish(reply_msg)
 
-cqcrank_carry = on_command("jx3_cqc_uncarry", aliases={"池清川大C榜"}, priority=5, force_whitespace=True)
+cqcrank_carry = on_command("jx3_cqc_carry", aliases={"池清川大C榜"}, priority=5, force_whitespace=True)
 
 @cqcrank_carry.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
-    if args.extract_plain_text() == "":
-        return
     arg = args.extract_plain_text().strip().split(" ")
     kungfu_id = 0
     if len(arg) == 1:
-        value_type = "damage" if arg[0].upper() in ["DPS", "D", "伤害", "dps", "Dps"] else "health"
-    elif len(arg) == 2:
-        kungfu_id = Kungfu(arg[0]).id
-        value_type = "damage" if arg[1].upper() in ["DPS", "D", "伤害", "dps", "Dps"] else "health"
+        if check_number(arg[0]):
+            kungfu = Kungfu(arg[0])
+            kungfu_id = kungfu.id
+            if kungfu_id is None:
+                kungfu_id = 0
+                value_type = "damage"
+            else:
+                abbr = kungfu.abbr
+                if abbr == "N":
+                    value_type = "health"
+                else:
+                    value_type = "damage"
+        else:
+            value_type = "damage"
+    else:
+        value_type = "damage"
     all_record: list[CQCRank] | Any = db.where_all(CQCRank(), f"total_{value_type} != 0", default=[])
     effective_records: list[CQCRank] = []
     for each_record in all_record:
@@ -190,15 +201,31 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     image = await generate(html, ".container", segment=True)
     await cqcrank_carry.finish(image)
 
-cqcrank_uncarry = on_command("jx3_cqc_carry", aliases={"池清川大吸榜"}, priority=5, force_whitespace=True)
+cqcrank_uncarry = on_command("jx3_cqc_uncarry", aliases={"池清川大吸榜"}, priority=5, force_whitespace=True)
 
 @cqcrank_uncarry.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
-    if args.extract_plain_text() == "":
-        return
     if not check_permission(event.user_id, 10):
         await cqcrank_uncarry.finish("暂无权限查看大吸榜！")
-    value_type = "damage" if args.extract_plain_text().strip().upper() in ["DPS", "D", "伤害", "dps", "Dps"] else "health"
+    kungfu_id = 0
+    arg = args.extract_plain_text().split(" ")
+    if len(arg) == 1:
+        if check_number(arg[0]):
+            kungfu = Kungfu(arg[0])
+            kungfu_id = kungfu.id
+            if kungfu_id is None:
+                kungfu_id = 0
+                value_type = "damage"
+            else:
+                abbr = kungfu.abbr
+                if abbr == "N":
+                    value_type = "health"
+                else:
+                    value_type = "damage"
+        else:
+            value_type = "damage"
+    else:
+        value_type = "damage"
     all_record: list[CQCRank] | Any = db.where_all(CQCRank(), f"total_{value_type} != 0", default=[])
     effective_records: list[CQCRank] = []
     for each_record in all_record:
@@ -207,6 +234,8 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
         if each_record.total_damage >= 500000000:
             continue
         if each_record.damage_per_second < 0 or each_record.health_per_second < 0:
+            continue
+        if kungfu_id != 0 and each_record.kungfu_id != kungfu_id:
             continue
         effective_records.append(each_record)
     effective_records = sorted(effective_records, key=lambda x: (x.damage_per_second if value_type == "damage" else x.health_per_second))
@@ -270,3 +299,128 @@ async def _(event: GroupMessageEvent, msg: Message = CommandArg()):
     kungfu_name = args[1]
     result = await get_hps_rank(kungfu_name, boss_name)
     await hps_rank_matcher.finish(result)
+
+thrrank_carry = on_command("jx3_thr_carry", aliases={"唐怀仁大C榜"}, priority=5, force_whitespace=True)
+
+@thrrank_carry.handle()
+async def _(event: GroupMessageEvent, args: Message = CommandArg()):
+    arg = args.extract_plain_text().strip().split(" ")
+    kungfu_id = 0
+    if len(arg) == 1:
+        if check_number(arg[0]):
+            kungfu = Kungfu(arg[0])
+            kungfu_id = kungfu.id
+            if kungfu_id is None:
+                kungfu_id = 0
+                value_type = "damage"
+            else:
+                abbr = kungfu.abbr
+                if abbr == "N":
+                    value_type = "health"
+                else:
+                    value_type = "damage"
+        else:
+            value_type = "damage"
+    else:
+        value_type = "damage"
+    all_record: list[THRRank] | Any = db.where_all(THRRank(), f"total_{value_type} != 0", default=[])
+    effective_records: list[THRRank] = []
+    for each_record in all_record:
+        if Kungfu.with_internel_id(each_record.kungfu_id).abbr in (["N", "T"] if value_type != "health" else ["D", "T"]):
+            continue
+        if each_record.damage_per_second < 0 or each_record.health_per_second < 0:
+            continue
+        if kungfu_id != 0 and each_record.kungfu_id != kungfu_id:
+            continue
+        effective_records.append(each_record)
+    effective_records = sorted(effective_records, key=lambda x: (x.damage_per_second if value_type == "damage" else x.health_per_second), reverse=True)
+    if len(effective_records) > 20:
+        effective_records = effective_records[:20]
+    results = []
+    num = 0
+    for each_record in effective_records:
+        num += 1
+        results.append(
+            Template(
+                cqcrank_template_body
+            ).render(
+                rank = str(num),
+                kungfu_icon = Kungfu.with_internel_id(each_record.kungfu_id).icon,
+                name = each_record.role_name,
+                server = each_record.server_name,
+                value = "{:,}".format(each_record.total_damage if value_type == "damage" else each_record.total_health),
+                value_per_second = "{:,}".format(each_record.damage_per_second if value_type == "damage" else each_record.health_per_second)
+            )
+        )
+    html = str(
+        HTMLSourceCode(
+            application_name = "唐怀仁排行榜",
+            table_head = cqcrank_table_head,
+            table_body = "\n".join(results)
+        )
+    )
+    image = await generate(html, ".container", segment=True)
+    await thrrank_carry.finish(image)
+
+THRRank_uncarry = on_command("jx3_thr_uncarry", aliases={"唐怀仁大吸榜"}, priority=5, force_whitespace=True)
+
+@THRRank_uncarry.handle()
+async def _(event: GroupMessageEvent, args: Message = CommandArg()):
+    if not check_permission(event.user_id, 10):
+        await THRRank_uncarry.finish("暂无权限查看大吸榜！")
+    arg = args.extract_plain_text().split(" ")
+    if len(arg) == 1:
+        if check_number(arg[0]):
+            kungfu = Kungfu(arg[0])
+            kungfu_id = kungfu.id
+            if kungfu_id is None:
+                kungfu_id = 0
+                value_type = "damage"
+            else:
+                abbr = kungfu.abbr
+                if abbr == "N":
+                    value_type = "health"
+                else:
+                    value_type = "damage"
+        else:
+            value_type = "damage"
+    else:
+        value_type = "damage"
+    all_record: list[THRRank] | Any = db.where_all(THRRank(), f"total_{value_type} != 0", default=[])
+    effective_records: list[THRRank] = []
+    for each_record in all_record:
+        if Kungfu.with_internel_id(each_record.kungfu_id).abbr in (["N", "T"] if value_type != "health" else ["D", "T"]):
+            continue
+        if each_record.damage_per_second < 0 or each_record.health_per_second < 0:
+            continue
+        if kungfu_id != 0 and each_record.kungfu_id != kungfu_id:
+            continue
+        effective_records.append(each_record)
+    effective_records = sorted(effective_records, key=lambda x: (x.damage_per_second if value_type == "damage" else x.health_per_second))
+    if len(effective_records) > 20:
+        effective_records = effective_records[:20]
+    results = []
+    num = 0
+    for each_record in effective_records:
+        num += 1
+        results.append(
+            Template(
+                cqcrank_template_body
+            ).render(
+                rank = str(num),
+                kungfu_icon = Kungfu.with_internel_id(each_record.kungfu_id).icon,
+                name = each_record.role_name,
+                server = each_record.server_name,
+                value = "{:,}".format(each_record.total_damage if value_type == "damage" else each_record.total_health),
+                value_per_second = "{:,}".format(each_record.damage_per_second if value_type == "damage" else each_record.health_per_second)
+            )
+        )
+    html = str(
+        HTMLSourceCode(
+            application_name = "唐怀仁排行榜",
+            table_head = cqcrank_table_head,
+            table_body = "\n".join(results)
+        )
+    )
+    image = await generate(html, ".container", segment=True)
+    await THRRank_uncarry.finish(image)

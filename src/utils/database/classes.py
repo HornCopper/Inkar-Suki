@@ -151,6 +151,16 @@ class CQCRank(LiteModel):
     health_per_second: int = 0
     total_health: int = 0
 
+class THRRank(LiteModel):
+    TABLE_NAME: str = "thr_rank"
+    role_name: str = ""
+    server_name: str = ""
+    kungfu_id: int = 0
+    damage_per_second: int = 0
+    total_damage: int = 0
+    health_per_second: int = 0
+    total_health: int = 0
+
 class RandomAffectionRecord(LiteModel):
     TABLE_NAME: str = "random_affection_record"
     user_id: int = 0

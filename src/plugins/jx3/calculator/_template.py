@@ -62,27 +62,24 @@ fal_template_body = """
 </tr>
 """
 
-yxc_table = """
-<table class="rank-table">
-    <thead>
-        <tr>
-            <th>心法</th>
-            <th>角色名</th>
-            <th>有效治疗</th>
-        </tr>
-    </thead>
-
-    <tbody>
-        {{ tables }}
-    </tbody>
-</table>"""
-
 yxc_table_head = """
 <tr>
     <th class="short-column">心法</th>
     <th class="short-column">角色名</th>
     <th class="short-column">有效治疗</th>
 </tr>"""
+
+yxc_table = f"""
+<table class="rank-table">
+    <thead>
+        {yxc_table_head}
+    </thead>
+
+    <tbody>
+        {{{{ tables }}}}
+    </tbody>
+</table>
+"""
 
 hps_detail_template_body_main = """
 <tr class="main-row">
@@ -145,4 +142,33 @@ rod_css = """
 {
     vertical-align: top;
 }
+"""
+
+asn_qte_table_head = """
+<tr>
+    <th class="short-column">角色名</th>
+    <th class="short-column">完美击破</th>
+    <th class="short-column">单层击破</th>
+</tr>"""
+
+asn_qte_table = f"""
+<table class="rank-table">
+    <thead>
+        {asn_qte_table_head}
+    </thead>
+
+    <tbody>
+        {{{{ tables }}}}
+    </tbody>
+</table>
+"""
+
+asn_qte_template_body_main = """
+<tr class="main-row">
+    <td>
+        {{ name }}
+    </td>
+    <td>{{ good }}</td>
+    <td>{{ bad }}</td>
+</tr>
 """

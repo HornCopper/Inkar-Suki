@@ -5,10 +5,9 @@ from nonebot.typing import T_State
 from nonebot.matcher import Matcher
 from nonebot.adapters.onebot.v11 import Bot, Message, GroupMessageEvent, GroupUploadNoticeEvent, MessageSegment as ms
 
-from src.const.jx3.kungfu import Kungfu
 from src.const.prompts import PROMPT
 from src.const.jx3.server import Server
-from src.utils.analyze import Locations, TuilanData, check_number
+from src.utils.analyze import Locations, check_number
 from src.utils.database.player import search_player
 from src.utils.database.attributes import JX3PlayerAttribute
 
@@ -21,7 +20,7 @@ from .jx3box import JX3BOXCalculator
 from .base import FORMATIONS, INCOMES
 from .universe import UniversalCalculator
 from .rdps import RDPSCalculator
-from .jcl_analyze import CQCAnalyze, FALAnalyze, YXCAnalyze, RODAnalyze, HPSAnalyze, CALAnalyze
+from .jcl_analyze import CQCAnalyze, FALAnalyze, YXCAnalyze, RODAnalyze, HPSAnalyze, CALAnalyze, ASNAnalyze, THRAnalyze
 
 import re
 import json
@@ -277,6 +276,10 @@ async def _(bot: Bot, event: GroupUploadNoticeEvent):
         analyzer = HPSAnalyze
     elif event.file.name.startswith("CAL-"):
         analyzer = CALAnalyze
+    elif check_jcl_name(event.file.name, "ASN-"):
+        analyzer = ASNAnalyze
+    elif check_jcl_name(event.file.name, "THR-"):
+        analyzer = THRAnalyze
     else:
         return
     

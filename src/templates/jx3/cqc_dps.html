@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Inkar Suki 池清川P2战斗分析</title>
+    <title>{{ title }}</title>
     <style>
         @font-face {
             font-family: Harmony;
@@ -154,17 +154,17 @@
 <body>
     <div class="container">
         <div style="padding: 40px"></div>
-        <div class="header">Inkar Suki 池清川P2战斗分析</div>
-        <div class="dps-display">P2总战斗时长：{{ battle_time }}s</div>
+        <div class="header">{{ title }}</div>
+        <div class="dps-display">阶段战斗时长：{{ battle_time }}s</div>
         <div class="content">
             <div class="card">
-                <h3>玩家DPS统计</h3>
+                <h3>玩家DPS统计（第一位为总伤害，第二位为每秒伤害）</h3>
                 <div class="skills-list" style="width: 1100px;">
                     {{ dps_stastic }}
                 </div>
             </div>
             <div class="card">
-                <h3>玩家HPS统计</h3>
+                <h3>玩家HPS统计（第一位为总治疗，第二位为每秒治疗）</h3>
                 <div class="skills-list" style="width: 1100px;">
                     {{ hps_stastic }}
                 </div>

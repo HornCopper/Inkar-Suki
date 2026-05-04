@@ -6,6 +6,7 @@ from src.utils.database.classes import (
     BannedUser,
     BanRecord,
     CQCRank,
+    THRRank,
     GroupSettings,
     ItemKeywordMap,
     PersonalSettings,
@@ -60,5 +61,6 @@ attribute_db.auto_migrate(
 rank_db = Database(build_path(DATA, ["rank.db"]))
 
 rank_db.auto_migrate(
-    CQCRank()
+    CQCRank(),
+    THRRank()
 )
