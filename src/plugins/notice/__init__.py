@@ -43,13 +43,16 @@ async def _(bot: Bot, event: GroupIncreaseNoticeEvent):
         msg = ms.at(obj) + " " + welcome_msg
         await bot.call_api("send_group_msg", group_id=group, message=msg)
         return
-    await bot.call_api("send_group_msg", group_id=event.group_id, message=self_enter_msg.replace("$GROUP_ID", str(event.group_id)))
     group_id = str(event.group_id)
     exist_db = db.where_one(GroupSettings(), "group_id = ?", group_id, default=None)
     if exist_db is not None:
         return
     new_settings = GroupSettings(group_id=group_id)
     db.save(new_settings)
+    if "禁用欢迎语" in get_group_settings(event.group_id, "additions"):
+        return
+    else:
+        await bot.call_api("send_group_msg", group_id=event.group_id, message=self_enter_msg.replace("$GROUP_ID", str(event.group_id)))
 
 async def notice_and_ban(bot: Bot, event: GroupDecreaseNoticeEvent | GroupBanNoticeEvent, action: str):
     message = f"唔……{Config.bot_basic.bot_name}在群聊（{event.group_id}）被{action}啦！\n操作者：{event.operator_id}，已自动封禁！"

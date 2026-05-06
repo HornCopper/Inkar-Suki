@@ -146,7 +146,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     arg = args.extract_plain_text().strip().split(" ")
     kungfu_id = 0
     if len(arg) == 1:
-        if check_number(arg[0]):
+        if not check_number(arg[0]):
             kungfu = Kungfu(arg[0])
             kungfu_id = kungfu.id
             if kungfu_id is None:
@@ -210,7 +210,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     kungfu_id = 0
     arg = args.extract_plain_text().split(" ")
     if len(arg) == 1:
-        if check_number(arg[0]):
+        if not check_number(arg[0]):
             kungfu = Kungfu(arg[0])
             kungfu_id = kungfu.id
             if kungfu_id is None:
@@ -307,7 +307,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     arg = args.extract_plain_text().strip().split(" ")
     kungfu_id = 0
     if len(arg) == 1:
-        if check_number(arg[0]):
+        if not check_number(arg[0]):
             kungfu = Kungfu(arg[0])
             kungfu_id = kungfu.id
             if kungfu_id is None:
@@ -370,7 +370,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
         await THRRank_uncarry.finish("暂无权限查看大吸榜！")
     arg = args.extract_plain_text().split(" ")
     if len(arg) == 1:
-        if check_number(arg[0]):
+        if not check_number(arg[0]):
             kungfu = Kungfu(arg[0])
             kungfu_id = kungfu.id
             if kungfu_id is None:
