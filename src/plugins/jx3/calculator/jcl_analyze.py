@@ -125,7 +125,7 @@ async def CQCAnalyze(file_name: str, url: str, anonymous: bool = False, user_id:
             "jx3",
             "cqc_dps",
             title = "Inkar Suki 池清川P2战斗分析",
-            battle_time = data["battle_time"],
+            battle_time = str(data["battle_time"]) + "s",
             dps_stastic = "\n".join(final_dps),
             hps_stastic = "\n".join(final_hps),
             saohua = get_saohua(),
@@ -395,6 +395,7 @@ async def THRAnalyze(file_name: str, url: str, anonymous: bool = False, user_id:
     final_hps = []
 
     team_total_damage = sum(r["total_damage"] for r in data["data"][0].values())
+    team_total_damage_per_second = "{:,}".format(int(team_total_damage / data["battle_time"]))
 
     for player_name, player_data in data["data"][0].items():
         if anonymous:
@@ -436,8 +437,8 @@ async def THRAnalyze(file_name: str, url: str, anonymous: bool = False, user_id:
         SimpleHTML(
             "jx3",
             "cqc_dps",
-            title = "Inkar Suki 唐怀仁 P3 战斗统计",
-            battle_time = data["battle_time"],
+            title = "Inkar Suki 唐怀仁 P1 战斗统计",
+            battle_time = str(data["battle_time"]) + f"s | 总 DPS：{team_total_damage_per_second}",
             dps_stastic = "\n".join(final_dps),
             hps_stastic = "\n".join(final_hps),
             saohua = get_saohua(),
