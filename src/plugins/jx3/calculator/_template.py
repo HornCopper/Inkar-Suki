@@ -172,3 +172,59 @@ asn_qte_template_body_main = """
     <td>{{ bad }}</td>
 </tr>
 """
+
+lgz_table_head = """
+<tr>
+    <th class="short-column">状态</th>
+    <th class="short-column">心法</th>
+    <th class="short-column">角色名</th>
+    <th class="short-column">时间</th>
+</tr>"""
+
+lgz_table = f"""
+<table class="rank-table">
+    <thead>
+        {lgz_table_head}
+    </thead>
+
+    <tbody>
+        {{{{ tables }}}}
+    </tbody>
+</table>
+"""
+
+lgz_detail_template_body_main = """
+<tr class="main-row">
+    <td>
+        <div style="display: flex; align-items: center; justify-content: center; gap: 6px;">
+            <img src="{{ status_icon }}" width="25" height="25">
+            <span>{{ status }}</span>
+        </div>
+    </td>
+    <td>
+        <img src="{{ icon }}" width="50" height="50">
+    </td>
+    <td>{{ name }}</td>
+    <td>{{ time }}</td>
+</tr>
+"""
+
+lgz_detail_template_body_sub = """
+<tr class="sub-row">
+    <td class="sub-value">
+        <div style="display: flex; align-items: center; justify-content: center; gap: 6px;">
+            <img src="{{ status_icon }}" width="25" height="25">
+            <span>{{ status }}</span>
+        </div>
+    </td>
+    <td>
+        <img src="{{ icon }}" width="25" height="25">
+    </td>
+    <td class="sub-value">
+        {{ name }}
+    </td>
+    <td class="sub-value">
+        {{ time }}
+    </td>
+</tr>
+"""

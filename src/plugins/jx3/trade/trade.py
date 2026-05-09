@@ -146,7 +146,7 @@ class JX3Trade:
             end_word = "荒"
         elif 28000 <= quality <= 30200:
             end_word = "玄"
-        elif quality <= 32500 <= 35300:
+        elif 32500 <= quality <= 35300:
             end_word = "地"
         else:
             end_word = "天"

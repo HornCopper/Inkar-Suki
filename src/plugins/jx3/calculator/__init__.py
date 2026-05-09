@@ -20,7 +20,7 @@ from .jx3box import JX3BOXCalculator
 from .base import FORMATIONS, INCOMES
 from .universe import UniversalCalculator
 from .rdps import RDPSCalculator
-from .jcl_analyze import CQCAnalyze, FALAnalyze, YXCAnalyze, RODAnalyze, HPSAnalyze, CALAnalyze, ASNAnalyze, THRAnalyze
+from .jcl_analyze import CQCAnalyze, FALAnalyze, YXCAnalyze, RODAnalyze, HPSAnalyze, CALAnalyze, ASNAnalyze, THRAnalyze, THFAnalyze, LGZAnalyze
 
 import re
 import json
@@ -272,14 +272,18 @@ async def _(bot: Bot, event: GroupUploadNoticeEvent):
         analyzer = YXCAnalyze
     elif check_jcl_name(event.file.name, "ROD-"):
         analyzer = RODAnalyze
-    elif check_jcl_name(event.file.name, "HPS-"):
-        analyzer = HPSAnalyze
+    # elif check_jcl_name(event.file.name, "HPS-"):
+    #     analyzer = HPSAnalyze
     elif event.file.name.startswith("CAL-"):
         analyzer = CALAnalyze
     elif check_jcl_name(event.file.name, "ASN-"):
         analyzer = ASNAnalyze
     elif check_jcl_name(event.file.name, "THR-"):
         analyzer = THRAnalyze
+    elif check_jcl_name(event.file.name, "THF-"):
+        analyzer = THFAnalyze
+    elif check_jcl_name(event.file.name, "LGZ-"):
+        analyzer = LGZAnalyze 
     else:
         return
     

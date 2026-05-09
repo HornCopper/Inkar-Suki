@@ -29,7 +29,11 @@ from ._template import (
     rod_css,
 
     asn_qte_table,
-    asn_qte_template_body_main
+    asn_qte_template_body_main,
+
+    lgz_table,
+    lgz_detail_template_body_main,
+    lgz_detail_template_body_sub
 )
 
 def save_data(data: dict[str, dict[str, int | str]], value_type: bool, rank_key: Literal["THR", "CQC"]) -> None:
@@ -315,8 +319,8 @@ async def ASNAnalyze(file_name: str, url: str, anonymous: bool = False, user_id:
         data = resp.json()
     tables = []
     final_tables = []
-    for each_round in data["data"]["hps"]:
-        if each_round == {}:
+    for each_record in data["data"]["hps"]:
+        if each_record == {}:
             final_tables.append(
                 Template(yxc_table).render(
                     tables = "\n".join(tables)
@@ -324,24 +328,24 @@ async def ASNAnalyze(file_name: str, url: str, anonymous: bool = False, user_id:
             )
             tables = []
             continue
-        player_name = each_round["name"]
+        player_name = each_record["name"]
         if anonymous:
             player_name = "匿名玩家"
         tables.append(
             Template(hps_detail_template_body_main).render(
-                icon=Kungfu.with_internel_id(int(each_round["kungfu_id"]), True).icon,
+                icon=Kungfu.with_internel_id(int(each_record["kungfu_id"]), True).icon,
                 name=player_name,
-                value=each_round["value"]
+                value=each_record["value"]
             )
         )
-        skills = dict(sorted(each_round["skills"].items(), key=lambda item: sum(item[1]), reverse=True))
+        skills = dict(sorted(each_record["skills"].items(), key=lambda item: sum(item[1]), reverse=True))
         for skill_name, skill_values in skills.items():
             tables.append(
                 Template(hps_detail_template_body_sub).render(
                     name = skill_name,
                     count = len(skill_values),
                     value = sum(skill_values),
-                    percent = str(round(sum(skill_values) / each_round["value"] * 100, 2)) + "%"
+                    percent = str(round(sum(skill_values) / each_record["value"] * 100, 2)) + "%"
                 )
             )
     html = Template(
@@ -354,9 +358,9 @@ async def ASNAnalyze(file_name: str, url: str, anonymous: bool = False, user_id:
     )
     hps_image = await generate(html, ".container", segment=True)
     round_tables = []
-    for each_round in data["data"]["hit"]:
+    for each_record in data["data"]["hit"]:
         round_rows = []
-        for player_name, values in dict(sorted(each_round.items(), key=lambda item: sum(item[1].values()), reverse=True)).items():
+        for player_name, values in dict(sorted(each_record.items(), key=lambda item: sum(item[1].values()), reverse=True)).items():
             if anonymous:
                 player_name = "匿名玩家"
             round_rows.append(
@@ -447,3 +451,154 @@ async def THRAnalyze(file_name: str, url: str, anonymous: bool = False, user_id:
     )
     dps_image = await generate(html, ".container", segment=True)
     return dps_image
+
+# Tang Huai ren Final
+async def THFAnalyze(file_name: str, url: str, anonymous: bool = False, user_id: int = 0):
+    async with AsyncClient(verify=False) as client:
+        resp = await client.post(f"{Config.jx3.api.cqc_url}/thf_analyze", json={"jcl_url": url, "jcl_name": file_name}, timeout=600)
+        data = resp.json()
+
+    if data["code"] == 400:
+        return "未识别到首领通关，请更换 JCL！"
+
+    final_dps = []
+    final_hps = []
+
+    team_total_damage = sum(r["total_damage"] for r in data["data"][0].values())
+    team_total_damage_per_second = "{:,}".format(int(team_total_damage / data["battle_time"]))
+
+    for player_name, player_data in data["data"][0].items():
+        if anonymous:
+            player_name = "匿名玩家"
+        kungfu: Kungfu = Kungfu.with_internel_id(int(player_data["kungfu_id"]))
+        single_record = Template(bla_template_body).render(
+            icon = kungfu.icon,
+            name = player_name + " - " + str(round(player_data["total_damage"] / team_total_damage * 100, 2)) + "%",
+            rdps = "{:,}".format(int(player_data["total_damage"])),
+            display = str(round(player_data["total_damage"] / list(data["data"][0].values())[0]["total_damage"], 4) * 100),
+            color = kungfu.color,
+            percent = "{:,}".format(int(player_data['damage_per_second']))
+        )
+        final_dps.append(
+            single_record
+        )
+
+    for player_name, player_data in data["data"][1].items():
+        if anonymous:
+            player_name = "匿名玩家"
+        kungfu: Kungfu = Kungfu.with_internel_id(int(player_data["kungfu_id"]))
+        final_hps.append(
+            Template(bla_template_body.replace("dps-num", "hps-num")).render(
+                icon = kungfu.icon,
+                name = player_name,
+                rdps = "{:,}".format(int(player_data["total_health"])),
+                display = str(round(player_data["total_health"] / list(data["data"][1].values())[0]["total_health"] * 100, 2)),
+                color = kungfu.color,
+                percent = "{:,}".format(int(player_data['health_per_second']))
+            )
+        )
+
+    html = str(
+        SimpleHTML(
+            "jx3",
+            "cqc_dps",
+            title = "Inkar Suki 唐怀仁 P3 战斗统计",
+            battle_time = str(data["battle_time"]) + f"s | 总 DPS：{team_total_damage_per_second}",
+            dps_stastic = "\n".join(final_dps),
+            hps_stastic = "\n".join(final_hps),
+            saohua = get_saohua(),
+            font = ASSETS + "/font/PingFangSC-Semibold.otf"
+        )
+    )
+    dps_image = await generate(html, ".container", segment=True)
+    return dps_image
+
+# Liu Gong Zi
+async def LGZAnalyze(file_name: str, url: str, anonymous: bool = False, user_id: int = 0):
+    async with AsyncClient(verify=False) as client:
+        resp = await client.post(
+            f"{Config.jx3.api.cqc_url}/lgz_analyze",
+            json={
+                "jcl_url": url,
+                "jcl_name": file_name
+            },
+            timeout=600
+        )
+        data = resp.json()
+
+    tables = []
+    final_tables = []
+
+    data = data["data"]
+
+    if len(data) == 0:
+        return "未识别到有效传功次数，请检查该 JCL 是否为 25人英雄阆风悬城 - 柳公子 的 JCL！"
+
+    def flush_tables():
+        nonlocal tables, final_tables
+        if not tables:
+            return
+        final_tables.append(
+            Template(lgz_table).render(
+                tables="\n".join(tables)
+            )
+        )
+        tables = []
+    for each_record in data:
+        if not each_record:
+            flush_tables()
+            continue
+        if each_record.get("disarm_kungfu") is not None:
+            tables.append(
+                Template(lgz_detail_template_body_main).render(
+                    icon=Kungfu.with_internel_id(
+                        int(each_record["disarm_kungfu"]),
+                        True
+                    ).icon,
+                    name=each_record["disarm_name"],
+                    status="点名缴械",
+                    status_icon=ASSETS + "/image/jx3/attributes/2399.png",
+                    time=Time(each_record["disarm_time"]).format("%H:%M:%S")
+                )
+            )
+        if each_record.get("placer_kungfu") is not None:
+            tables.append(
+                Template(lgz_detail_template_body_main).render(
+                    icon=Kungfu.with_internel_id(
+                        int(each_record["placer_kungfu"]),
+                        True
+                    ).icon,
+                    name=each_record["placer_name"],
+                    status="放置武器",
+                    status_icon=ASSETS + "/image/jx3/attributes/4558.png",
+                    time=Time(each_record["placer_time"]).format("%H:%M:%S")
+                )
+            )
+        transferers = sort_dict_list(
+            each_record.get("transferers", []),
+            "transferer_time"
+        )
+        for each_transferer in transferers:
+            tables.append(
+                Template(lgz_detail_template_body_sub).render(
+                    icon=Kungfu.with_internel_id(
+                        int(each_transferer["transferer_kungfu"]),
+                        True
+                    ).icon,
+                    name=each_transferer["transferer_name"],
+                    status="传功完成",
+                    status_icon=ASSETS + "/image/jx3/attributes/2401.png",
+                    time=Time(each_transferer["transferer_time"]).format("%H:%M:%S")
+                )
+            )
+    flush_tables()
+    html = Template(
+        read(TEMPLATES + "/jx3/health_detail.html")
+    ).render(
+        font=ASSETS + "/font/PingFangSC-Semibold.otf",
+        tables="\n".join(final_tables),
+        saohua=get_saohua(),
+        function_name="柳公子 · 神秘装置记录"
+    )
+    image = await generate(html, ".container", segment=True)
+    return image

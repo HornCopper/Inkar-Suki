@@ -66,6 +66,11 @@ async def get_attr_v2_remake_global(global_role_id: int):
     if instance is None:
         return PROMPT.EquipNotFound
     kungfu = Kungfu.with_internel_id(instance.kungfu_id)
+    talents = instance.talents
+    if len(talents) == 9:
+        talents.append(
+            Talent(instance.kungfu_id)
+        )
     image = await get_attr_v2_remake_img(
         "未知角色",
         "未知体型",
@@ -73,7 +78,7 @@ async def get_attr_v2_remake_global(global_role_id: int):
         kungfu=kungfu,
         school=School(kungfu.school),
         equips=instance.equips,
-        talents=instance.talents,
+        talents=talents,
         panel=instance.attributes,
         score=instance.score
     )
