@@ -69,8 +69,9 @@ async def get_horse_next_spawn(server):
         return ans if ans != "" else "时间尚久，无法预知。"
     ct_data = (await Request(f"https://next2.jx3box.com/api/game/reporter/horse?pageIndex=1&pageSize=50&server={server}&type=chitu-horse&subtype=share_msg").get()).json()
     chitu_flushed = False
-    if is_in_current_cycle(ct_data["data"]["list"][0]["time"]):
-        chitu_flushed = True
+    if ct_data["data"].get("list") is not None:
+        if is_in_current_cycle(ct_data["data"]["list"][0]["time"]):
+            chitu_flushed = True
     dl_data = (await Request(f"https://next2.jx3box.com/api/game/reporter/horse?pageIndex=1&pageSize=50&server={server}&type=dilu-horse&subtype=share_msg").get()).json()
     dilu_flushed = False
     if is_in_current_week(dl_data["data"]["list"][0]["time"]):
