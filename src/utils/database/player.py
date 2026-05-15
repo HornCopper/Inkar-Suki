@@ -131,6 +131,8 @@ async def search_player(
     *,
     local_lookup: bool = False
 ) -> RoleData:
+    if role_name.startswith("朝三暮四"):
+        return RoleData()
     if "·" in role_name:
         role_name, server_name = role_name.split("·")
         role_name = role_name.lstrip("[")

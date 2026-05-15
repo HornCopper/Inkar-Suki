@@ -46,7 +46,7 @@ class RandomLoot:
         name, mode = dungeon.name, dungeon.mode
         if (name is None) or (mode is None):
             return None
-        if (name not in ["太极宫", "会战弓月城", "空城殿·上", "空城殿·下"] or (name == "太极宫" and mode == "25人普通")) and mode != "10人普通":
+        if (name not in ["会战弓月城", "空城殿·上", "空城殿·下", "阆风悬城"] or (name == "会战弓月城" and mode == "25人普通")) and mode != "10人普通":
             return None
         list_all_file = CONST + "/cache/random_loot_list_all.json"
         if os.path.exists(list_all_file):
@@ -218,7 +218,7 @@ class RandomLoot:
                     if other_peerless_item:
                         append_item(boss_name, choice(other_peerless_item))
 
-                if not is_final:
+                if not is_final or boss_place == "5/5":
                     brands = [i for i in loot_list if i.get("Type") == "副本掉落道具" and str(i["Name"]).count("·") == 1]
                     general_brands = [i for i in loot_list if str(i["Name"]).startswith("神兵玉匣") and str(i["Name"]).count("·") == 1]
                     selected_brands = sample(brands, k=min(3, len(brands))) if brands else []
@@ -251,7 +251,7 @@ class RandomLoot:
                     jingjian_list = [i for i in loot_list if i.get("BelongSchool") == "精简" or ("Color" in i and str(i.get("Desc")).startswith("使用："))]
                     if jingjian_list:
                         append_item(boss_name, choice(jingjian_list))
-                    count += 1
+                        count += 1
 
                 # 散件（非最终）
                 if not is_final:

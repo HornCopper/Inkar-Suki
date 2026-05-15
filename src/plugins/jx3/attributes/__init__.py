@@ -173,8 +173,11 @@ async def _(event: GroupMessageEvent, state: T_State, matcher: Matcher, msg: Mes
 @attribute_submit.got("equip_data")
 async def _(event: GroupMessageEvent, state: T_State, equip_data: Message = Arg()):
     data = equip_data.extract_plain_text()
-    instance = await JX3PlayerAttribute.from_plugin(data, state["kungfu_id"], state["global_role_id"])
-    instance.save()
+    try:
+        instance = await JX3PlayerAttribute.from_plugin(data, state["kungfu_id"], state["global_role_id"])
+        instance.save()
+    except Exception as e:
+        await attribute_submit.finish(f"导入装备数据时发生错误，请检查数据中是否有错误：\n{e}")
     await attribute_submit.finish("已导入装备数据，请尝试使用 属性 命令查询！")
 
 attribute_db_executor = ThreadPoolExecutor(max_workers=1)
