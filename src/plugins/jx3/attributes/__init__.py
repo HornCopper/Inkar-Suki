@@ -15,17 +15,20 @@ from src.const.jx3.kungfu import Kungfu
 from src.const.jx3.server import Server
 from src.const.prompts import PROMPT
 from src.utils.database.attributes import JX3PlayerAttribute, parse_conditions
-from src.plugins.preferences.app import Preference
-from src.plugins.notice import notice
 from src.utils.network import Request
 from src.utils.analyze import check_number
 from src.utils.database.operation import get_group_settings
 from src.utils.database.player import search_player
 
+from src.plugins.preferences.app import Preference
+from src.plugins.notice import notice
+from src.plugins.jx3.calculator.compare import get_equip_list, get_enchant_list, EquipInfo, EnchantInfo
+
 import asyncio
 
 from .v2_remake import get_attr_v2_remake, get_attr_v2_remake_build, get_attr_v2_remake_global
 from .v4 import get_attr_v4
+from .equip_replace import EQUIP_LOCATION
 
 attribute_matcher = on_command("jx3_attribute", aliases={"属性", "查装"}, force_whitespace=True, priority=5)
 
@@ -179,6 +182,140 @@ async def _(event: GroupMessageEvent, state: T_State, equip_data: Message = Arg(
     except Exception as e:
         await attribute_submit.finish(f"导入装备数据时发生错误，请检查数据中是否有错误：\n{e}")
     await attribute_submit.finish("已导入装备数据，请尝试使用 属性 命令查询！")
+
+replace_equip_matcher = on_command("jx3_attribute_replace_equip", aliases={"替换装备"}, priority=5, force_whitespace=True)
+
+@replace_equip_matcher.handle()
+async def _(event: GroupMessageEvent, state: T_State, matcher: Matcher, msg: Message = CommandArg()):
+    if msg.extract_plain_text().strip() == "":
+        matcher.stop_propagation()
+        return
+    args = msg.extract_plain_text().strip().split(" ")
+    if len(args) != 5:
+        await replace_equip_matcher.finish(PROMPT.ArgumentCountInvalid + "\n参考格式：替换装备 <服务器> <角色名> <标签> <装备部位> <装备关键词>")
+    server = Server(args[0], event.group_id).server
+    role_name = args[1]
+    tag = args[2]
+    equip_location = args[3]
+    equip_keyword = args[4]
+    if server is None:
+        await replace_equip_matcher.finish(PROMPT.ServerInvalid)
+    role_info = await search_player(role_name=role_name, server_name=server)
+    if role_info.globalRoleId == "":
+        await replace_equip_matcher.finish(PROMPT.PlayerNotExist)
+    if equip_location not in EQUIP_LOCATION:
+        await replace_equip_matcher.finish("装备部位输入错误，当前接受的装备部位如下：\n" + "、".join(EQUIP_LOCATION.keys()))
+    to_replace_location_code = EQUIP_LOCATION[equip_location]
+    equips = await get_equip_list(equip_keyword)
+    match_equips = []
+    for each_equip in equips:
+        if each_equip.location_code == to_replace_location_code or (each_equip.location_code == 6 and to_replace_location_code == 7):
+            match_equips.append(each_equip)
+    if not match_equips:
+        await replace_equip_matcher.finish("未找到符合条件的装备，请尝试更换关键词！")
+    state["equips"] = match_equips
+    state["location"] = to_replace_location_code
+    state["global_role_id"] = int(role_info.globalRoleId)
+    state["tag"] = tag
+    reply_msg = "请从下面选择装备进行替换！"
+    num = 1
+    for equip in equips:
+        reply_msg += f"\n{num}. ({equip.subkind}) {equip.name}\n{equip.quality} {' '.join(equip.attr)}"
+        num += 1
+    await replace_equip_matcher.send(reply_msg)
+
+@replace_equip_matcher.got("num")
+async def _(event: GroupMessageEvent, state: T_State, num: Message = Arg()):
+    num_text = num.extract_plain_text().strip()
+    if not check_number(num_text):
+        await replace_equip_matcher.finish("序号输入有误，请重新发起命令！")
+    num_int = int(num_text)
+    equips: list[EquipInfo] = state["equips"]
+    replace_location_code: int = state["location"]
+    tag: str = state["tag"]
+    global_role_id: int = state["global_role_id"]
+    if num_int < 1 or num_int > len(equips):
+        await replace_equip_matcher.finish("选择的序号有误，请重新发起命令！")
+    equip = equips[num_int - 1]
+    current_data = await JX3PlayerAttribute.from_database(global_role_id, tag)
+    if current_data is None:
+        await replace_equip_matcher.finish(PROMPT.EquipNotFound)
+    for each_equip_line in current_data.equip_lines:
+        if each_equip_line[0] == replace_location_code:
+            each_equip_line[2] = equip.item_id
+    current_data.save()
+    await replace_equip_matcher.finish(f"已替换为 {equip.name}，请尝试使用 属性 命令查询效果！")
+
+replace_enchant_matcher = on_command("jx3_attribute_replace_enchant", aliases={"替换附魔"}, priority=5, force_whitespace=True)
+
+@replace_enchant_matcher.handle()
+async def _(event: GroupMessageEvent, state: T_State, matcher: Matcher, msg: Message = CommandArg()):
+    if msg.extract_plain_text().strip() == "":
+        matcher.stop_propagation()
+        return
+    args = msg.extract_plain_text().strip().split(" ")
+    if len(args) != 5:
+        await replace_enchant_matcher.finish(PROMPT.ArgumentCountInvalid + "\n参考格式：替换附魔 <服务器> <角色名> <标签> <装备部位> <附魔关键词>")
+    server = Server(args[0], event.group_id).server
+    role_name = args[1]
+    tag = args[2]
+    equip_location = args[3]
+    enchant_keyword = args[4]
+    if server is None:
+        await replace_enchant_matcher.finish(PROMPT.ServerInvalid)
+    role_info = await search_player(role_name=role_name, server_name=server)
+    if role_info.globalRoleId == "":
+        await replace_enchant_matcher.finish(PROMPT.PlayerNotExist)
+    if equip_location not in EQUIP_LOCATION:
+        await replace_enchant_matcher.finish("装备部位输入错误，当前接受的装备部位如下：\n" + "、".join(EQUIP_LOCATION.keys()))
+    to_replace_location_code = EQUIP_LOCATION[equip_location]
+    enchants = await get_enchant_list(enchant_keyword)
+    match_enchants = []
+    for each_enchant in enchants:
+        if each_enchant.location_code == to_replace_location_code or (each_enchant.location_code == 6 and to_replace_location_code == 7):
+            match_enchants.append(each_enchant)
+    if not match_enchants:
+        await replace_enchant_matcher.finish("未找到符合条件的附魔，请尝试更换关键词！")
+    state["enchants"] = match_enchants
+    state["location"] = to_replace_location_code
+    state["global_role_id"] = int(role_info.globalRoleId)
+    state["tag"] = tag
+    reply_msg = "请从下面选择附魔进行替换！"
+    num = 1
+    for enchant in enchants:
+        reply_msg += f"\n{num}. {enchant.name} \n描述：{enchant.desc or '无'}"
+        num += 1
+    await replace_enchant_matcher.send(reply_msg)
+
+@replace_enchant_matcher.got("num")
+async def _(event: GroupMessageEvent, state: T_State, num: Message = Arg()):
+    num_text = num.extract_plain_text().strip()
+    if not check_number(num_text):
+        await replace_enchant_matcher.finish("序号输入有误，请重新发起命令！")
+    num_int = int(num_text)
+    enchants: list[EnchantInfo] = state["enchants"]
+    replace_location_code: int = state["location"]
+    tag: str = state["tag"]
+    global_role_id: int = state["global_role_id"]
+    if num_int < 1 or num_int > len(enchants):
+        await replace_enchant_matcher.finish("选择的序号有误，请重新发起命令！")
+    enchant = enchants[num_int - 1]
+    current_data = await JX3PlayerAttribute.from_database(global_role_id, tag)
+    if current_data is None:
+        await replace_enchant_matcher.finish(PROMPT.EquipNotFound)
+    for each_enchant_line in current_data.equip_lines:
+        if each_enchant_line[0] == replace_location_code:
+            if enchant.name.startswith("彩·"):
+                # 五彩石
+                each_enchant_line[4][3][1] = enchant.enchant_id
+            elif enchant.is_common:
+                # 大附魔
+                each_enchant_line[6] = enchant.enchant_id
+            else:
+                # 小附魔
+                each_enchant_line[5] = enchant.enchant_id
+    current_data.save()
+    await replace_enchant_matcher.finish(f"已替换为 {enchant.name}，请尝试使用 属性 命令查询效果！")
 
 attribute_db_executor = ThreadPoolExecutor(max_workers=1)
 

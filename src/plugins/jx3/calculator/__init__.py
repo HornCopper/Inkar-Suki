@@ -5,9 +5,12 @@ from nonebot.typing import T_State
 from nonebot.matcher import Matcher
 from nonebot.adapters.onebot.v11 import Bot, Message, GroupMessageEvent, GroupUploadNoticeEvent, MessageSegment as ms
 
+from src.config import Config
 from src.const.prompts import PROMPT
 from src.const.jx3.server import Server
+from src.const.jx3.kungfu import Kungfu
 from src.utils.analyze import Locations, check_number
+from src.utils.network import Request
 from src.utils.database.player import search_player
 from src.utils.database.attributes import JX3PlayerAttribute
 
@@ -250,6 +253,26 @@ async def _(event: GroupMessageEvent, state: T_State, loop_order: Message = Arg(
         msg += "\n提示：当前正在使用自定义循环！"
     await equip_compare.finish(msg)
 
+remove_calculator_loop_matcher = on_command("jx3_rm_calc_loop", aliases={"删除循环"}, priority=5, force_whitespace=True)
+
+@remove_calculator_loop_matcher.handle()
+async def _(event: GroupMessageEvent, args: Message = CommandArg()):
+    if args.extract_plain_text() == "":
+        return
+    kungfu = args.extract_plain_text()
+    params = {"user_id": event.user_id}
+    if kungfu == "all":
+        params["all_delete"] = True
+    else:
+        kungfu_id = Kungfu(kungfu).id
+        if kungfu_id is None:
+            await remove_calculator_loop_matcher.finish("心法输入有误，请检查后重试！")
+        params["kungfu_id"] = kungfu_id
+    result = (await Request(f"{Config.jx3.api.calculator_url}/delete_loop", params=params).get()).json()
+    if result["code"] == 200:
+        await remove_calculator_loop_matcher.finish("循环删除成功！")
+    else:
+        await remove_calculator_loop_matcher.finish("循环删除失败！" + result["msg"])
 
 def check_jcl_name(filename: str, prefix: str) -> bool:
     if not filename.startswith(prefix):
