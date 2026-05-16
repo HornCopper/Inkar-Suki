@@ -167,3 +167,9 @@ class RandomAffectionRecord(LiteModel):
     group_id: int = 0
     target_id: int = 0
     timestamp: int = 0
+
+class EquipReplacementLog(LiteModel):
+    TABLE_NAME: str = "equip_replacement_log"
+    user_id: int = 0
+    message: str = ""
+    global_role_id: int = 0

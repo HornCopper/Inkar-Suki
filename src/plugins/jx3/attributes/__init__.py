@@ -14,9 +14,11 @@ from nonebot.typing import T_State
 from src.const.jx3.kungfu import Kungfu
 from src.const.jx3.server import Server
 from src.const.prompts import PROMPT
-from src.utils.database.attributes import JX3PlayerAttribute, parse_conditions
 from src.utils.network import Request
 from src.utils.analyze import check_number
+from src.utils.database import logs_db
+from src.utils.database.classes import EquipReplacementLog
+from src.utils.database.attributes import JX3PlayerAttribute, parse_conditions
 from src.utils.database.operation import get_group_settings
 from src.utils.database.player import search_player
 
@@ -237,6 +239,12 @@ async def _(event: GroupMessageEvent, state: T_State, num: Message = Arg()):
     if num_int < 1 or num_int > len(equips):
         await replace_equip_matcher.finish("选择的序号有误，请重新发起命令！")
     equip = equips[num_int - 1]
+    new_log = EquipReplacementLog(
+        user_id = event.user_id,
+        message = f"替换了 {equip.name}（{equip.item_id}） 作为 {tag} 的装备",
+        global_role_id = global_role_id
+    )
+    logs_db.save(new_log)
     current_data = await JX3PlayerAttribute.from_database(global_role_id, tag)
     if current_data is None:
         await replace_equip_matcher.finish(PROMPT.EquipNotFound)
@@ -303,6 +311,12 @@ async def _(event: GroupMessageEvent, state: T_State, num: Message = Arg()):
     current_data = await JX3PlayerAttribute.from_database(global_role_id, tag)
     if current_data is None:
         await replace_enchant_matcher.finish(PROMPT.EquipNotFound)
+    new_log = EquipReplacementLog(
+        user_id = event.user_id,
+        message = f"替换了 {enchant.name}（{enchant.enchant_id}） 作为 {tag} 的附魔",
+        global_role_id = global_role_id
+    )
+    logs_db.save(new_log)
     for each_enchant_line in current_data.equip_lines:
         if each_enchant_line[0] == replace_location_code:
             if enchant.name.startswith("彩·"):

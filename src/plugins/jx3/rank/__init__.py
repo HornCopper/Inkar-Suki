@@ -326,7 +326,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     all_record: list[THRRank] | Any = db.where_all(THRRank(), f"total_{value_type} != 0", default=[])
     effective_records: list[THRRank] = []
     for each_record in all_record:
-        if Kungfu.with_internel_id(each_record.kungfu_id).abbr in (["N", "T"] if value_type != "health" else ["D", "T"]):
+        if Kungfu.with_internel_id(each_record.kungfu_id).abbr in (["N"] if value_type != "health" else ["D", "T"]):
             continue
         if each_record.damage_per_second < 0 or each_record.health_per_second < 0:
             continue
@@ -389,7 +389,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     all_record: list[THRRank] | Any = db.where_all(THRRank(), f"total_{value_type} != 0", default=[])
     effective_records: list[THRRank] = []
     for each_record in all_record:
-        if Kungfu.with_internel_id(each_record.kungfu_id).abbr in (["N", "T"] if value_type != "health" else ["D", "T"]):
+        if Kungfu.with_internel_id(each_record.kungfu_id).abbr in (["N"] if value_type != "health" else ["D", "T"]):
             continue
         if each_record.damage_per_second < 0 or each_record.health_per_second < 0:
             continue
