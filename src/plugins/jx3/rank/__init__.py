@@ -205,7 +205,7 @@ cqcrank_uncarry = on_command("jx3_cqc_uncarry", aliases={"池清川大吸榜"}, 
 
 @cqcrank_uncarry.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
-    if not check_permission(event.user_id, 10):
+    if not check_permission(event.user_id, "jx3.rank.uncarry.view"):
         await cqcrank_uncarry.finish("暂无权限查看大吸榜！")
     kungfu_id = 0
     arg = args.extract_plain_text().split(" ")
@@ -366,7 +366,7 @@ THRRank_uncarry = on_command("jx3_thr_uncarry", aliases={"唐怀仁大吸榜"}, 
 
 @THRRank_uncarry.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
-    if not check_permission(event.user_id, 10):
+    if not check_permission(event.user_id, "jx3.rank.uncarry.view"):
         await THRRank_uncarry.finish("暂无权限查看大吸榜！")
     arg = args.extract_plain_text().split(" ")
     if len(arg) == 1:

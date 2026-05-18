@@ -5,7 +5,7 @@ class Account(LiteModel):
     user_id: int = 0
     checkin_counts: int = 0
     coins: int = 0
-    permission: int = 0
+    permission_nodes: list[str] = []
     last_checkin: int = 0
 
 class Affections(LiteModel):
@@ -40,6 +40,7 @@ class GroupSettings(LiteModel):
     group_id: str = ""
     subscribe: list[str] = []
     additions: list[str] = []
+    permission_nodes: list[str] = []
     welcome: str = "欢迎入群！"
     blacklist: list[dict[str, str]] = [] 
     wiki: dict = {"startwiki": "", "interwiki": []}

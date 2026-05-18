@@ -262,8 +262,8 @@ item_aliases_matcher = on_command("jx3_itemaliases", aliases={"物品别名", "�
 
 @item_aliases_matcher.handle()
 async def _(event: GroupMessageEvent, argument: Message = CommandArg()):
-    if not check_permission(event.user_id, 6):
-        await item_aliases_matcher.finish(denied(6))
+    if not check_permission(event.user_id, "jx3.trade.item_alias.manage"):
+        await item_aliases_matcher.finish(denied("jx3.trade.item_alias.manage"))
     args = argument.extract_plain_text().split(" ")
     if len(args) != 2:
         await item_aliases_matcher.finish("唔……参数数量不正确，请参考命令格式：\n物品别名 别名 实际名")

@@ -31,10 +31,6 @@ class AccountManage:
         return self.data.checkin_counts
 
     @property
-    def permission(self) -> int:
-        return self.data.permission
-
-    @property
     def coins(self) -> int:
         return self.data.coins
 

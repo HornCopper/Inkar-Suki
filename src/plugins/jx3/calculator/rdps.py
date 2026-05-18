@@ -14,7 +14,7 @@ from ._template import bla_template_body
 
 import re
 
-async def RDPSCalculator(file_name: str, url: str, anonymous: bool = False):
+async def BLACalculator(file_name: str, url: str, anonymous: bool = False, user_id: int = 0):
     async with AsyncClient(verify=False) as client:
         resp = await client.post(f"{Config.jx3.api.bla_url}/jcl", params={"file_name": file_name, "url": url}, timeout=600)
         data = resp.json()

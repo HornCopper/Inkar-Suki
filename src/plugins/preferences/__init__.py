@@ -51,7 +51,7 @@ async def _(event: GroupMessageEvent, state: T_State, reply: Message = Arg()):
     if reply.extract_plain_text() == "是":
         target_user_id = state["user_id"]
         if event.user_id != target_user_id:
-            if not check_permission(event.user_id, 10):
-                await reset_preferences.finish(denied(10))
+            if not check_permission(event.user_id, "preferences.reset_other"):
+                await reset_preferences.finish(denied("preferences.reset_other"))
         db.delete(PersonalSettings(), "user_id = ?", str(target_user_id))
         await reset_preferences.finish("清除成功！您可以重新开始设置偏好以及绑定角色了！")

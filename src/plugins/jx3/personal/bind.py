@@ -19,7 +19,7 @@ class RoleBind:
             if role_data is not None:
                 exist_roles.append(copy.deepcopy(role_data))
         final_bound_roles = list(set(bound_roles) | set(exist_roles))
-        if len(final_bound_roles) > 15 and not check_permission(self.user_id, 6):
+        if len(final_bound_roles) > 15 and not check_permission(self.user_id, "jx3.personal.roles.unlimited"):
             return f"绑定失败！\n绑定后的总角色数量超过15个，请酌情绑定！\n目前已绑定 {len(bound_roles)}/15 个角色"
         personal_settings.roles = final_bound_roles
         db.save(personal_settings)

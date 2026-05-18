@@ -22,7 +22,7 @@ from src.plugins.jx3.equip.equip_config import get_equip_image
 from .jx3box import JX3BOXCalculator
 from .base import FORMATIONS, INCOMES
 from .universe import UniversalCalculator
-from .rdps import RDPSCalculator
+from .rdps import BLACalculator
 from .jcl_analyze import CQCAnalyze, FALAnalyze, YXCAnalyze, RODAnalyze, HPSAnalyze, CALAnalyze, ASNAnalyze, THRAnalyze, THFAnalyze, LGZAnalyze
 
 import re
@@ -274,6 +274,12 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     else:
         await remove_calculator_loop_matcher.finish("循环删除失败！" + result["msg"])
 
+traverse_equipment_matcher = on_command("jx3_traverse_equipment", aliases={"遍历装备"}, priority=5, force_whitespace=True)
+
+@traverse_equipment_matcher.handle()
+async def _(event: GroupMessageEvent, args: Message = CommandArg()):
+    ...
+
 def check_jcl_name(filename: str, prefix: str) -> bool:
     if not filename.startswith(prefix):
         return False
@@ -285,8 +291,8 @@ def check_jcl_name(filename: str, prefix: str) -> bool:
 @notice.handle()
 async def _(bot: Bot, event: GroupUploadNoticeEvent):
     analyzer: Callable | None = None
-    if check_jcl_name(event.file.name, "IKS-"):
-        analyzer = RDPSCalculator
+    if check_jcl_name(event.file.name, "BLA-"):
+        analyzer = BLACalculator
     elif check_jcl_name(event.file.name, "CQC-"):
         analyzer = CQCAnalyze
     elif check_jcl_name(event.file.name, "FAL-"):

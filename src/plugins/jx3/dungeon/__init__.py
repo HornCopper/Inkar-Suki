@@ -6,7 +6,7 @@ from src.config import Config
 from src.const.jx3.dungeon import Dungeon
 from src.const.prompts import PROMPT
 from src.const.jx3.server import Server
-from src.utils.permission import check_permission
+from src.utils.permission import check_group_permission, check_permission
 from src.utils.database.operation import get_group_settings
 
 from .zone_drop import get_drop_list_image
@@ -41,7 +41,7 @@ async def _(event: GroupMessageEvent, message: Message = CommandArg()):
         data = await get_personal_roles_teamcd_image(event.user_id)
     elif ";" in name:
         roles = name.split(";")
-        if len(roles) > 6 and not check_permission(event.user_id, 6):
+        if len(roles) > 6 and not check_permission(event.user_id, "jx3.dungeon.zones.multi"):
             await zone_record_matcher.finish("最多一次只可以查询6个角色！")
         data = await get_mulit_record_image(server, roles)
     else:
@@ -87,8 +87,7 @@ role_monsters_matcher = on_command("jx3_role_monster", aliases={"精耐"}, force
 
 @role_monsters_matcher.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
-    additions = get_group_settings(str(event.group_id), "additions")
-    if not Config.jx3.api.enable or "Preview" not in additions:
+    if not Config.jx3.api.enable or not check_group_permission(event.group_id, "group.application.role_monster"):
         return
     if args.extract_plain_text() == "":
         return

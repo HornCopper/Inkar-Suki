@@ -127,10 +127,10 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
     if args.extract_plain_text() == "":
         return
     arg_msg = args.extract_plain_text()
-    permission = check_permission(str(event.user_id), 8)
+    permission = check_permission(str(event.user_id), "group.welcome.edit")
     personal_data = await bot.call_api("get_group_member_info", group_id=event.group_id, user_id=event.user_id, no_cache=True)
     group_admin = personal_data["role"] in ["owner", "admin"]
     if not permission and not group_admin:
-        await WelcomeEditMatcher.finish(denied(5))
+        await WelcomeEditMatcher.finish(denied("group.welcome.edit"))
     set_group_settings(str(event.group_id), "welcome", arg_msg)
     await WelcomeEditMatcher.finish("好啦，已经设置完成啦！")

@@ -21,7 +21,7 @@ server_bind_matcher = on_command("jx3_bind", aliases={"绑定", "绑定区服"},
 async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
     personal_data = await bot.call_api("get_group_member_info", group_id = event.group_id, user_id = event.user_id, no_cache = True)
     group_admin = personal_data["role"] in ["owner", "admin"]
-    robot_admin = check_permission(str(event.user_id), 5)
+    robot_admin = check_permission(str(event.user_id), "jx3.server.bind")
     if not group_admin and not robot_admin:
         await server_bind_matcher.finish("唔……只有群主或管理员才可以修改哦！")
     server = args.extract_plain_text()

@@ -11,6 +11,11 @@
             src: url("{{ font }}");
         }
 
+        @font-face {
+            font-family: FZJZ;
+            src: url("G:/fzjz.ttf");
+        }
+
         body {
             margin: 0;
             padding: 0;
@@ -117,6 +122,12 @@
 
         .equipment-header .score {
             font-size: 36px;
+            font-weight: bold;
+        }
+
+        .score-num {
+            font-family: FZJZ;
+            color: orangered;
             font-weight: bold;
         }
 
@@ -336,7 +347,7 @@
             <div class="right-column">
                 <div class="equipment-header">
                     <span class="score" style="font-size:36px;color:orangered"><span
-                            style="font-size:30px;color:rgb(27, 27, 27)">装备分数</span><br>{{ score }}</span>
+                            style="font-size:30px;color:rgb(27, 27, 27)">装备分数</span><br><span class="score-num">{{ score }}</span></span>
                     <img src="{{ kungfu_icon }}" width="25px" height="25px" alt="心法图标">
                 </div>
                 <div class="top-divider"></div>

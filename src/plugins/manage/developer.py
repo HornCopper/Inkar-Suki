@@ -19,7 +19,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     url = args.extract_plain_text()
     if not url.startswith("http"):
         return
-    if not check_permission(event.user_id, 8):
+    if not check_permission(event.user_id, "manage.screenshot"):
         return
     try:
         image = await generate(url, full_screen=True, viewport={"height": 1080, "width": 1920}, segment=True)
@@ -41,7 +41,7 @@ async def _(event: GroupMessageEvent, confirm: Message = Arg()):
     if u_input == "确认重置权限":
         all_accounts: list[Account] | Any = db.where_all(Account())
         for account in all_accounts:
-            account.permission = 0
+            account.permission_nodes = []
             db.save(account)
     await ResetGlobalPermissionMatcher.finish("已重置所有人的权限！")
 
@@ -67,7 +67,7 @@ SetInvitorMatcher = on_command("设置邀请人", priority=5, force_whitespace=T
 
 @SetInvitorMatcher.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
-    if not check_permission(event.user_id, 8):
+    if not check_permission(event.user_id, "manage.group.invitor.set"):
         return
     if args.extract_plain_text() == "":
         return
@@ -85,7 +85,7 @@ onebot_api_call = on_command("调用API", priority=5, force_whitespace=True)
 
 @onebot_api_call.handle()
 async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
-    if not check_permission(event.user_id, 10):
+    if not check_permission(event.user_id, "manage.api.call"):
         return
     arg = args.extract_plain_text().strip().split(" ")
     if len(arg) < 2:

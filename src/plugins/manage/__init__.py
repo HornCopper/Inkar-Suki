@@ -18,7 +18,13 @@ from src.const.path import (
 )
 from src.utils.network import Request
 from src.utils.time import Time
-from src.utils.permission import check_permission, denied
+from src.utils.permission import (
+    check_permission,
+    denied,
+    get_deepest_group_permission_nodes,
+    get_deepest_permission_nodes,
+    normalize_permission_nodes,
+)
 from src.utils.database import db
 from src.utils.database.classes import GroupSettings, Account
 from src.utils.database.operation import get_groups, get_group_settings
@@ -47,7 +53,7 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
         return
     personal_data = await bot.call_api("get_group_member_info", group_id=event.group_id, user_id=event.user_id, no_cache=True)
     user_permission = personal_data["role"] in ["owner", "admin"]
-    if not (check_permission(str(event.user_id), 9) or user_permission):
+    if not (check_permission(str(event.user_id), "group.bot.dismiss") or user_permission):
         await DismissMatcher.finish(f"唔……只有群主或管理员才能移除{Config.bot_basic.bot_name}哦~")
     else:
         await DismissMatcher.send(f"确定要让{Config.bot_basic.bot_name}离开吗？如果是，请再发送一次“移除音卡”。")
@@ -70,7 +76,7 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
         return
     personal_data = await bot.call_api("get_group_member_info", group_id=event.group_id, user_id=event.user_id, no_cache=True)
     user_permission = personal_data["role"] in ["owner", "admin"]
-    if not (check_permission(str(event.user_id), 9) or user_permission):
+    if not (check_permission(str(event.user_id), "group.bot.reset") or user_permission):
         await ResetMatcher.finish(f"唔……只有群主或管理员才能重置{Config.bot_basic.bot_name}哦~")
     else:
         await ResetMatcher.send(f"确定要重置{Config.bot_basic.bot_name}数据吗？如果是，请再发送一次“重置音卡”。\n注意：所有本群数据将会清空，包括绑定、订阅和邀请人等，该操作不可逆！")
@@ -121,8 +127,8 @@ EchoMatcher = on_command("echo", force_whitespace=True, priority=5)  # 复读机
 async def _(bot: Bot, event: MessageEvent, args: Message = CommandArg()):
     if args.extract_plain_text() == "":
         return
-    if not check_permission(str(event.user_id), 8):
-        await EchoMatcher.finish(denied(8))
+    if not check_permission(str(event.user_id), "manage.echo"):
+        await EchoMatcher.finish(denied("manage.echo"))
     await EchoMatcher.finish(args)
 
 PingMatcher = on_command("ping", force_whitespace=True, priority=5)  # 测试机器人是否在线
@@ -131,7 +137,7 @@ PingMatcher = on_command("ping", force_whitespace=True, priority=5)  # 测试机
 async def _(bot: Bot, event: MessageEvent, args: Message = CommandArg()):
     if args.extract_plain_text() != "":
         return
-    permission = check_permission(str(event.user_id), 1)
+    permission = check_permission(str(event.user_id), "bot.ping.detail")
     if not permission:
         await PingMatcher.finish(f"咕咕咕，音卡来啦！\n当前时间为：{Time().format()}\n欢迎使用Inkar-Suki！")
     else:
@@ -152,8 +158,8 @@ PurgeMatcher = on_command("purge", force_whitespace=True, priority=5)
 async def _(event: MessageEvent, args: Message = CommandArg()):
     if args.extract_plain_text() != "":
         return
-    if not check_permission(str(event.user_id), 10):
-        await PurgeMatcher.finish(denied(10))
+    if not check_permission(str(event.user_id), "manage.cache.purge"):
+        await PurgeMatcher.finish(denied("manage.cache.purge"))
     try:
         for i in os.listdir(CACHE):
             os.remove(build_path(CACHE, [i]))
@@ -169,20 +175,70 @@ async def _(bot: Bot, event: MessageEvent, full_argument: Message = CommandArg()
     if full_argument.extract_plain_text() == "":
         return
     not_owner = str(event.user_id) not in Config.bot_basic.bot_owner
-    if not check_permission(str(event.user_id), 8) and not_owner:
-        await AdminMatcher.finish(denied(10))
+    if not_owner:
+        await AdminMatcher.finish("只有Bot主人可以分发权限！")
     args = full_argument.extract_plain_text().split(" ")
-    user_id = args[0]
-    if user_id in Config.bot_basic.bot_owner and not_owner:
-        await AdminMatcher.finish("无法修改Bot主人的权限！")
-    level = args[1]
-    if not check_permission(event.user_id, int(level)-1) and not_owner:
-        await AdminMatcher.finish("无法将权限提升至比自身更高的权限！")
-    data: Account | Any = db.where_one(Account(), "user_id = ?", int(user_id), default=Account(user_id=int(user_id)))
-    raw_permission = data.permission
-    data.permission = int(level)
+    if len(args) != 2:
+        await AdminMatcher.finish("格式错误：setop <uQQ号|g群号> <权限节点>")
+    target = args[0]
+    node = args[1]
+    if len(target) < 2 or target[0] not in ["u", "g"]:
+        await AdminMatcher.finish("目标格式错误：用户权限请使用 u+QQ号，群权限请使用 g+QQ群号。")
+    target_type = target[0]
+    target_id = target[1:]
+    if target_id == "":
+        await AdminMatcher.finish("目标格式错误：用户权限请使用 u+QQ号，群权限请使用 g+QQ群号。")
+    if not target_id.isdigit():
+        await AdminMatcher.finish("目标格式错误：QQ号或群号需要是数字。")
+    if target_type == "u":
+        data: Account | GroupSettings | Any = db.where_one(Account(), "user_id = ?", int(target_id), default=Account(user_id=int(target_id)))
+        target_name = f"用户（{target_id}）"
+    else:
+        data = db.where_one(GroupSettings(), "group_id = ?", str(target_id), default=GroupSettings(group_id=str(target_id)))
+        target_name = f"群（{target_id}）"
+    is_remove = node.startswith("-")
+    node = node[1:] if is_remove else node
+    if node.isdigit():
+        await AdminMatcher.finish("旧权限等级已废除，请使用权限节点。")
+    raw_nodes = normalize_permission_nodes(data.permission_nodes)
+    if is_remove:
+        denied_node = f"-{node}"
+        data.permission_nodes = [item for item in raw_nodes if item != node]
+        if denied_node not in data.permission_nodes:
+            data.permission_nodes.append(denied_node)
+        action = "剥夺"
+    elif node not in raw_nodes:
+        data.permission_nodes = [item for item in raw_nodes if item != f"-{node}"] + [node]
+        action = "授予"
+    else:
+        data.permission_nodes = raw_nodes
+        action = "保留"
     db.save(data)
-    await AdminMatcher.finish(f"用户（{user_id}）的权限等级已变更！\n{raw_permission} -> {level}")
+    await AdminMatcher.finish(f"{target_name}的权限节点已{action}：{node}")
+
+
+PermissionNodesMatcher = on_command("permissions", aliases={"perms", "权限节点", "我的权限"}, force_whitespace=True, priority=5)
+
+@PermissionNodesMatcher.handle()
+async def _(event: MessageEvent, args: Message = CommandArg()):
+    if args.extract_plain_text() != "":
+        return
+    nodes = get_deepest_permission_nodes(event.user_id)
+    if not nodes:
+        await PermissionNodesMatcher.finish("你当前没有权限节点。")
+    await PermissionNodesMatcher.finish("你当前拥有的权限节点：\n" + "\n".join(f"- {node}" for node in nodes))
+
+
+GroupPermissionNodesMatcher = on_command("grouppermissions", aliases={"groupperms", "群权限"}, force_whitespace=True, priority=5)
+
+@GroupPermissionNodesMatcher.handle()
+async def _(event: GroupMessageEvent, args: Message = CommandArg()):
+    if args.extract_plain_text() != "":
+        return
+    nodes = get_deepest_group_permission_nodes(event.group_id)
+    if not nodes:
+        await GroupPermissionNodesMatcher.finish("本群当前没有权限节点。")
+    await GroupPermissionNodesMatcher.finish("本群当前拥有的权限节点：\n" + "\n".join(f"- {node}" for node in nodes))
 
 @post_process
 async def _(bot: Bot, event: MessageEvent, exception: None | Exception, cmd = RawCommand()):

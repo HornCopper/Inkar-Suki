@@ -91,8 +91,8 @@ AddCoinMatcher = on_command("增加金币", force_whitespace=True, priority=5)
 async def _(event: MessageEvent, args: Message = CommandArg()):
     if args.extract_plain_text() == "":
         return
-    if not check_permission(str(event.user_id), 10):
-        await AddCoinMatcher.finish(denied(10))
+    if not check_permission(str(event.user_id), "economy.coin.manage"):
+        await AddCoinMatcher.finish(denied("economy.coin.manage"))
     arg = args.extract_plain_text().split(" ")
     if len(arg) != 2:
         await AddCoinMatcher.finish(PROMPT.ArgumentCountInvalid + "\n参考格式：增加金币 <QQ号> <金币数>")
@@ -109,8 +109,8 @@ ReduceCoinMatcher = on_command("减少金币", force_whitespace=True, priority=5
 async def _(event: MessageEvent, args: Message = CommandArg()):
     if args.extract_plain_text() == "":
         return
-    if not check_permission(str(event.user_id), 10):
-        await ReduceCoinMatcher.finish(denied(10))
+    if not check_permission(str(event.user_id), "economy.coin.manage"):
+        await ReduceCoinMatcher.finish(denied("economy.coin.manage"))
     arg = args.extract_plain_text().split(" ")
     if len(arg) != 2:
         await ReduceCoinMatcher.finish(PROMPT.ArgumentCountInvalid + "\n参考格式：减少金币 <QQ号> <金币数>")

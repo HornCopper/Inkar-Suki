@@ -1,0 +1,196 @@
+{
+    "user": [
+        {
+            "name": "bot",
+            "desc": "机器人基础状态与管理能力",
+            "sub_node": [
+                {
+                    "name": "ping.detail",
+                    "desc": "查看 ping 的机器人统计信息"
+                }
+            ]
+        },
+        {
+            "name": "manage",
+            "desc": "机器人全局管理",
+            "sub_node": [
+                {
+                    "name": "echo",
+                    "desc": "使用 echo 复读调试命令"
+                },
+                {
+                    "name": "screenshot",
+                    "desc": "使用 screenshot 生成网页截图"
+                },
+                {
+                    "name": "group.invitor.set",
+                    "desc": "设置群邀请人"
+                },
+                {
+                    "name": "cache.purge",
+                    "desc": "清理图片缓存"
+                },
+                {
+                    "name": "api.call",
+                    "desc": "直接调用 OneBot API"
+                }
+            ]
+        },
+        {
+            "name": "owner",
+            "desc": "Bot 所有者专属操作",
+            "sub_node": [
+                {
+                    "name": "permission.reset_all",
+                    "desc": "重置所有用户权限",
+                    "owner_only": true
+                },
+                {
+                    "name": "coin.reset_all",
+                    "desc": "重置所有用户货币",
+                    "owner_only": true
+                }
+            ]
+        },
+        {
+            "name": "ban",
+            "desc": "全局封禁系统",
+            "sub_node": [
+                {
+                    "name": "manage",
+                    "desc": "封禁或解封用户"
+                },
+                {
+                    "name": "bypass",
+                    "desc": "封禁状态下仍允许继续使用机器人"
+                }
+            ]
+        },
+        {
+            "name": "economy",
+            "desc": "签到与货币系统",
+            "sub_node": [
+                {
+                    "name": "coin.manage",
+                    "desc": "增加或减少用户金币"
+                }
+            ]
+        },
+        {
+            "name": "activation",
+            "desc": "群授权管理",
+            "sub_node": [
+                {
+                    "name": "permanent",
+                    "desc": "设置永久群授权"
+                }
+            ]
+        },
+        {
+            "name": "preferences",
+            "desc": "个人偏好管理",
+            "sub_node": [
+                {
+                    "name": "reset_other",
+                    "desc": "重置其他用户的个人偏好"
+                }
+            ]
+        },
+        {
+            "name": "group",
+            "desc": "群级机器人管理",
+            "sub_node": [
+                {
+                    "name": "bot.dismiss",
+                    "desc": "移除机器人出群"
+                },
+                {
+                    "name": "bot.reset",
+                    "desc": "重置本群机器人数据"
+                },
+                {
+                    "name": "welcome.edit",
+                    "desc": "修改本群欢迎语"
+                }
+            ]
+        },
+        {
+            "name": "wiki",
+            "desc": "Wiki 群配置",
+            "sub_node": [
+                {
+                    "name": "startwiki.set",
+                    "desc": "设置本群默认 Wiki"
+                },
+                {
+                    "name": "interwiki.manage",
+                    "desc": "新增、删除或更新本群 InterWiki"
+                }
+            ]
+        },
+        {
+            "name": "jx3",
+            "desc": "剑网三相关功能",
+            "sub_node": [
+                {
+                    "name": "server.bind",
+                    "desc": "绑定或清除本群默认区服"
+                },
+                {
+                    "name": "personal.roles.unlimited",
+                    "desc": "个人绑定角色数量超过 15 个"
+                },
+                {
+                    "name": "dungeon.zones.multi",
+                    "desc": "一次查询超过 6 个角色的副本记录"
+                },
+                {
+                    "name": "dungeon.zones.list",
+                    "desc": "查询个人绑定角色的副本记录列表"
+                },
+                {
+                    "name": "attribute.sync",
+                    "desc": "同步角色属性数据（等待 JX3API 提供相关接口后启用）"
+                },
+                {
+                    "name": "trade.item_alias.manage",
+                    "desc": "新增物品别名映射"
+                },
+                {
+                    "name": "rank.uncarry.view",
+                    "desc": "查看大吸榜等受限排行"
+                },
+                {
+                    "name": "calculator.advanced",
+                    "desc": "使用高级计算器功能"
+                }
+            ]
+        }
+    ],
+    "group": [
+        {
+            "name": "group",
+            "desc": "群级权限",
+            "sub_node": [
+                {
+                    "name": "application",
+                    "desc": "群应用功能",
+                    "sub_node": [
+                        {
+                            "name": "role_monster",
+                            "desc": "允许本群使用角色百战精耐查询"
+                        },
+                        {
+                            "name": "role_card",
+                            "desc": "允许本群使用角色名片查询"
+                        },
+                        {
+                            "name": "preview",
+                            "desc": "测试用权限，请勿授权"
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

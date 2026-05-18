@@ -18,8 +18,8 @@ BanMatcher = on_command("ban", force_whitespace=True, priority=5)
 async def _(bot: Bot, event: MessageEvent, args: Message = CommandArg()):
     if args.extract_plain_text() == "":
         return
-    if not check_permission(str(event.user_id), 9):
-        await BanMatcher.finish(denied(9))
+    if not check_permission(str(event.user_id), "ban.manage"):
+        await BanMatcher.finish(denied("ban.manage"))
     user_id = args.extract_plain_text()
     if not check_number(user_id):
         await BanMatcher.finish(PROMPT.ArgumentInvalid + "\n参考格式：ban <QQ号>")
@@ -36,8 +36,8 @@ UnbanMatcher = on_command("unban", force_whitespace=True, priority=5)
 async def _(bot: Bot, event: MessageEvent, args: Message = CommandArg()):
     if args.extract_plain_text() == "":
         return
-    if not check_permission(str(event.user_id), 9):
-        await UnbanMatcher.finish(denied(9))
+    if not check_permission(str(event.user_id), "ban.manage"):
+        await UnbanMatcher.finish(denied("ban.manage"))
     user_id = args.extract_plain_text()
     if not check_number(user_id):
         await UnbanMatcher.finish(PROMPT.ArgumentInvalid + "\n参考格式：unban <QQ号>")
@@ -49,5 +49,5 @@ async def _(bot: Bot, event: MessageEvent, args: Message = CommandArg()):
 
 @message_universal.handle()
 async def _(matcher: Matcher, event: MessageEvent):
-    if Ban(event.user_id).status and not check_permission(event.user_id, 10):
+    if Ban(event.user_id).status and not check_permission(event.user_id, "ban.bypass"):
         matcher.stop_propagation()

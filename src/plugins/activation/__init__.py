@@ -33,7 +33,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
         await update_activation.finish(
             "请使用“授权 天数”，确保天数为数字！\n天数为纯数字，例如“30”而不是“30天”！"
         )
-    if days == "-1" and not check_permission(event.user_id, 8):
+    if days == "-1" and not check_permission(event.user_id, "activation.permanent"):
         await update_activation.finish("权限不足，仅机器人管理员可设置永久授权！")
     msg = update_expire_time(event.group_id, int(days))
     await update_activation.finish(msg)

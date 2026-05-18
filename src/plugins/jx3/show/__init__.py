@@ -12,7 +12,7 @@ from src.const.prompts import PROMPT
 from src.const.path import SHOW
 from src.utils.network import Request
 from src.utils.file import write
-from src.utils.database.operation import get_group_settings
+from src.utils.permission import check_group_permission
 from src.utils.database.player import search_player
 from src.plugins.jx3.server.api import get_server_status
 
@@ -24,8 +24,7 @@ show_matcher = on_command("jx3_show", aliases={"名片", "qq秀", "QQ秀", "名�
 
 @show_matcher.handle()
 async def _(event: GroupMessageEvent, full_argument: Message = CommandArg()):
-    additions = get_group_settings(str(event.group_id), "additions")
-    if not Config.jx3.api.enable or "Preview" not in additions:
+    if not Config.jx3.api.enable or not check_group_permission(event.group_id, "group.application.role_card"):
         return
     if full_argument.extract_plain_text() == "":
         return
