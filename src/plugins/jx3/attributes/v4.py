@@ -10,6 +10,7 @@ from src.utils.database.player import search_player
 from src.utils.generate import generate
 from src.templates import get_saohua
 from src.utils.database.attributes import Equip, JX3PlayerAttribute
+from src.plugins.jx3.calculator.traverse import get_latest_rating_cache
 
 import os
 
@@ -21,7 +22,19 @@ from ._template import (
     template_show
 )
 
-async def parse_equip(equip: Equip, last: bool = False) -> str:
+def _rating_icon_html(grade: str | None) -> str:
+    if not grade:
+        return ""
+    icon = Path(
+        build_path(ASSETS, ["image", "jx3", "rank", f"rank_{grade.lower()}.png"])
+    ).as_uri()
+    return (
+        f'<img src="{icon}" '
+        'style="position: absolute; top: 32px; left: -20px; '
+        'width: 42px; height: 42px; object-fit: contain; z-index: 3;">'
+    )
+
+async def parse_equip(equip: Equip, last: bool = False, rating_grade: str | None = None) -> str:
     result = Template(
         (
             template_equip
@@ -97,7 +110,8 @@ async def parse_equip(equip: Equip, last: bool = False) -> str:
         ).as_uri()
         + "\" style=\"position: absolute;top: 0; left: -20px;\">"
         if equip.peerless
-        else ""
+        else "",
+        rating=_rating_icon_html(rating_grade)
     )
     return result
 
@@ -159,8 +173,25 @@ async def get_attr_v4(server: str, name: str, conditions: str = ""):
                 msg=prefix + each_other_equip.tag,
             )
         )
+    rating_cache = get_latest_rating_cache(current_equip.equip_lines, current_equip.kungfu_id)
+    rating_by_location = {}
+    if rating_cache is not None:
+        rating_by_location = {
+            rating["location_code"]: rating["grade"]
+            for rating in rating_cache.ratings
+            if "location_code" in rating and "grade" in rating
+        }
     all_equips = current_equip.equips
-    equips = [await parse_equip(e) for e in all_equips[:-1]] + [await parse_equip(all_equips[-1], True)]
+    equips = [
+        await parse_equip(e, rating_grade=rating_by_location.get(e.location_index))
+        for e in all_equips[:-1]
+    ] + [
+        await parse_equip(
+            all_equips[-1],
+            True,
+            rating_grade=rating_by_location.get(all_equips[-1].location_index),
+        )
+    ]
     talents = [
         Template(template_talent).render(
             icon=await cache_image(talent.icon),

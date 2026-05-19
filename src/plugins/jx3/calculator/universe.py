@@ -7,6 +7,7 @@ from jinja2 import Template
 from src.const.jx3.kungfu import Kungfu
 from src.const.path import ASSETS, build_path
 from typing import overload
+import re
 from src.utils.network import Request
 from src.utils.generate import generate
 from src.templates import SimpleHTML, get_saohua
@@ -64,8 +65,14 @@ class UniversalCalculator(BaseCalculator):
             return ""
         for each_loop in data["data"]:
             name = each_loop["name"]
-            weapon, haste_loop = name.split("·")
-            haste, loop = haste_loop.split("_")
+            try:
+                weapon, haste_loop = name.split("·", 1)
+                haste, loop = haste_loop.split("_", 1)
+            except ValueError:
+                match = re.match(r"^(.+?)(\d+)_([^_].*)$", name)
+                if match is None:
+                    continue
+                weapon, haste, loop = match.groups()
             results[name] = {"weapon": weapon, "haste": haste, "loop": loop}
         return results
 

@@ -90,6 +90,20 @@ class PlayerEquipsCache(LiteModel):
     tag: str = ""
     timestamp: int = 0
 
+class EquipmentRatingCache(LiteModel):
+    TABLE_NAME: str = "equipment_rating"
+    equip_hash: str = ""
+    global_role_id: int = 0
+    role_name: str = ""
+    server_name: str = ""
+    kungfu_id: int = 0
+    loop_name: str = ""
+    income_name: str = ""
+    formation_name: str = ""
+    raw_equips_data: list = []
+    ratings: list = []
+    timestamp: int = 0
+
 class RequestData(LiteModel):
     TABLE_NAME: str = "request_data"
     url: str = ""

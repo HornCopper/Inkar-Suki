@@ -12,6 +12,7 @@ from src.utils.database.classes import (
     PersonalSettings,
     Population,
     PlayerEquipsCache,
+    EquipmentRatingCache,
     RoleData,
     JX3APIWSData,
     RequestData,
@@ -56,7 +57,8 @@ serendipity_db.auto_migrate(
 attribute_db = Database(build_path(DATA, ["attributes.db"]))
 
 attribute_db.auto_migrate(
-    PlayerEquipsCache()
+    PlayerEquipsCache(),
+    EquipmentRatingCache()
 )
 
 rank_db = Database(build_path(DATA, ["rank.db"]))

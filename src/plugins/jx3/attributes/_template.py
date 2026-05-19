@@ -2,6 +2,7 @@ template_equip = """
 <div class="equipment-item">
     <div class="image-container" style="position: relative;">
         {{ peerless }}
+        {{ rating }}
         <img src="{{ icon }}" class="bottom-image">
         <img src="{{ box }}" class="top-image">
     </div>
