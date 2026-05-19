@@ -37,7 +37,7 @@ class Kungfu:
             result = cls()
         if convert_to_pc and str(result.name).endswith("·悟"):
             if result.name == "山居问水剑·悟":
-                return cls("问水剑")
+                return cls("问水诀")
             else:
                 return cls(str(result.name)[:-2])
         return result

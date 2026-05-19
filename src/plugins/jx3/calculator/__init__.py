@@ -35,6 +35,7 @@ from .traverse import (
 )
 from .rdps import BLACalculator
 from .jcl_analyze import CQCAnalyze, FALAnalyze, YXCAnalyze, RODAnalyze, HPSAnalyze, CALAnalyze, ASNAnalyze, THRAnalyze, THFAnalyze, LGZAnalyze
+from . import equipment_rating as equipment_rating
 
 import re
 import json
@@ -184,11 +185,14 @@ async def _(event: GroupMessageEvent, matcher: Matcher, state: T_State, args: Me
     currnet_dps_data.formation_list = formation_code
     currnet_dps_data.formation_name = formation_ver
 
-    equips = await get_equip_list(equip)
+    equip_name = equip
+    equips = await get_equip_list(equip_name)
+    if not equips:
+        await equip_compare.finish(f"未找到装备「{equip_name}」，请检查装备名，或尝试输入更完整的装备名称。")
     msg = "请从下面选择装备进行对比！"
     num = 1
-    for equip in equips:
-        msg += f"\n{num}. ({equip.subkind}) {equip.name}\n{equip.quality} {' '.join(equip.attr)}"
+    for equip_info in equips:
+        msg += f"\n{num}. ({equip_info.subkind}) {equip_info.name}\n{equip_info.quality} {' '.join(equip_info.attr)}"
         num += 1
     state["equips"] = equips
     state["kungfu_id"] = kungfu_id
@@ -203,9 +207,10 @@ async def _(event: GroupMessageEvent, state: T_State, equip_index: Message = Arg
     if not check_number(num):
         await equip_compare.finish("装备选择有误，请重新发起命令！")
     equips: list[EquipInfo] = state["equips"]
-    equip = equips[int(num)-1]
-    if int(num) > len(list(equips)):
+    index = int(num)
+    if index < 1 or index > len(equips):
         await equip_compare.finish("超出可选范围，请重新发起命令！")
+    equip = equips[index - 1]
     jcl_line: list[list] = copy.deepcopy(state["current_jcl"])
     for each_equip_line in jcl_line:
         # print(each_equip_line)

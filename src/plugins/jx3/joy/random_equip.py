@@ -62,7 +62,7 @@ async def get_equip_info(params: dict) -> dict:
             )
         )
     final_set_attrs = []
-    for set_count, set_attrs in equip["SetAttributes"].items():
+    for set_count, set_attrs in equip.get("SetAttributes", {}).items():
         for set_attr in set_attrs:
             each_attr_key, each_attr_value = next(iter(set_attr.items()))
             if each_attr_key in AttributesFull:

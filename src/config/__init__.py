@@ -11,6 +11,8 @@ class BotBasic(BaseModel):
     bot_repo: str
     bot_notice: dict[str, str]
     proxy: str = ""
+    allow_private_commands: bool = False
+    private_command_group_id: int = 0
 
 class GitHubConfig(BaseModel):
     web_path: str

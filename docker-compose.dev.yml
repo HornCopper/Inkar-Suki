@@ -1,0 +1,13 @@
+services:
+  inkar-suki:
+    build: .
+    command: python dev_reload.py
+    volumes:
+      - .:/app
+      - ./src/config:/app/src/config
+      - ./src/data:/app/src/data
+      - ./src/cache:/app/src/cache
+    environment:
+      ENVIRONMENT: dev
+      WATCHFILES_FORCE_POLLING: "true"
+      LOG_LEVEL: DEBUG

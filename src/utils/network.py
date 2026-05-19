@@ -1,4 +1,5 @@
 from typing import Any
+from urllib.parse import urlparse
 from urllib.request import urlopen
 
 from src.const.path import CONST
@@ -27,6 +28,11 @@ class Request:
         self.headers = headers 
         self.params = params
 
+    @property
+    def trust_env(self) -> bool:
+        host = urlparse(self.url).hostname
+        return host not in {"127.0.0.1", "localhost", "0.0.0.0", "::1"}
+
     async def get(self, expire_at: int = 0, timeout = 20, **kwargs) -> httpx.Response:
         """
         发送`GET`请求。
@@ -46,7 +52,7 @@ class Request:
             if cached is not None:
                 return httpx.Response(status_code=200, content=cached.response_data.encode("utf-8"))
 
-        async with httpx.AsyncClient(follow_redirects=True, verify=False) as client:
+        async with httpx.AsyncClient(follow_redirects=True, verify=False, trust_env=self.trust_env) as client:
             if "?" in self.url:
                 self.params = {}
             response = await client.get(self.url, params=(self.params or None), headers=self.headers, timeout=timeout, **kwargs)
@@ -73,7 +79,7 @@ class Request:
             tuilan (bool): 是否为推栏请求，如果是则构造推栏请求。
             timeout (int): 超时时间，单位秒（s）。
         """
-        async with httpx.AsyncClient(follow_redirects=True, verify=False) as client:
+        async with httpx.AsyncClient(follow_redirects=True, verify=False, trust_env=self.trust_env) as client:
             if isinstance(self.params, str):
                 request_params = {
                     "url": self.url,
