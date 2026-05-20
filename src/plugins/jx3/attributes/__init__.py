@@ -16,18 +16,17 @@ from src.const.jx3.server import Server
 from src.const.prompts import PROMPT
 from src.utils.network import Request
 from src.utils.analyze import check_number
-from src.utils.database import db, logs_db
-from src.utils.database.classes import EquipReplacementLog, RoleData
+from src.utils.database import logs_db
+from src.utils.database.classes import EquipReplacementLog
 from src.utils.database.attributes import JX3PlayerAttribute, parse_conditions
 from src.utils.database.operation import get_group_settings
-from src.utils.database.player import search_player, get_uid_data
+from src.utils.database.player import search_player
 
 from src.plugins.preferences.app import Preference
 from src.plugins.notice import notice
 from src.plugins.jx3.calculator.compare import get_equip_list, get_enchant_list, EquipInfo, EnchantInfo
 
 import asyncio
-import hashlib
 
 from .v2_remake import get_attr_v2_remake, get_attr_v2_remake_build, get_attr_v2_remake_global
 from .v4 import get_attr_v4
@@ -144,98 +143,16 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     image = await get_attr_v2_remake_build(jcl_line)
     await attribute_build.finish(image)
 
-ATTRIBUTE_SUBMIT_USAGE = (
-    "提交属性 可接受以下格式：\n"
-    "1. 提交属性 <服务器> <角色名/ID> <心法> <茗伊装备导出码>\n"
-    "2. 提交属性 <角色名/ID> <心法> <茗伊装备导出码>（使用本群绑定服务器）\n"
-    "3. 提交属性 <服务器> <角色名/ID> <心法>\n"
-    "4. 提交属性 <角色名/ID> <心法>（使用本群绑定服务器）"
-)
-
-async def get_attribute_submit_player(role: str, server: str):
-    if check_number(role):
-        player_info = await search_player(role_name=role, role_id=role, server_name=server, local_lookup=True)
-        if player_info.roleId == "":
-            player_info = await get_uid_data(role_id=role, server=server, msg=False)
-    else:
-        player_info = await search_player(role_name=role, server_name=server)
-    return player_info
-
-LOCAL_GLOBAL_ROLE_ID_BASE = 8_000_000_000_000_000_000
-
-def build_local_global_role_id(role: str, server: str) -> str:
-    digest = hashlib.sha1(f"{server}:{role}".encode("utf-8")).hexdigest()
-    return str(LOCAL_GLOBAL_ROLE_ID_BASE + int(digest[:15], 16))
-
-def build_attribute_submit_role(role: str, server: str, player_info: RoleData) -> RoleData:
-    role_name = player_info.roleName or role
-    global_role_id = player_info.globalRoleId or build_local_global_role_id(role_name, server)
-    role_id = player_info.roleId or (role if check_number(role) else global_role_id)
-    return RoleData(
-        bodyName=player_info.bodyName,
-        campName=player_info.campName,
-        forceName=player_info.forceName,
-        globalRoleId=global_role_id,
-        roleName=role_name,
-        roleId=role_id,
-        serverName=server,
-    )
-
-def save_attribute_submit_role(role_info: RoleData) -> None:
-    db.delete(RoleData(), "roleName = ? AND serverName = ?", role_info.roleName, role_info.serverName)
-    db.delete(RoleData(), "roleId = ? AND serverName = ?", role_info.roleId, role_info.serverName)
-    db.delete(RoleData(), "globalRoleId = ?", role_info.globalRoleId)
-    db.save(role_info)
-
-async def save_plugin_attribute(role: str, server: str, kungfu_name: str, equip_data: str) -> None:
-    kungfu_id = Kungfu(kungfu_name).id
-    if kungfu_id is None:
-        await attribute_submit.finish(PROMPT.KungfuNotExist)
-    kungfu_id_pc = cast(int, Kungfu.with_internel_id(kungfu_id, True).id)
-    player_info = await get_attribute_submit_player(role, server)
-    role_info = build_attribute_submit_role(role, server, player_info)
-    try:
-        instance = await JX3PlayerAttribute.from_plugin(equip_data, kungfu_id_pc, int(role_info.globalRoleId))
-        instance.save()
-        save_attribute_submit_role(role_info)
-    except Exception as e:
-        await attribute_submit.finish(f"导入装备数据时发生错误，请检查数据中是否有错误：\n{e}")
-
 attribute_submit = on_command("jx3_attribute_submit", aliases={"提交属性"}, priority=5, force_whitespace=True)
 
 @attribute_submit.handle()
 async def _(event: GroupMessageEvent, state: T_State, matcher: Matcher, msg: Message = CommandArg()):
-    plain_text = msg.extract_plain_text().strip()
-    if plain_text == "":
+    if msg.extract_plain_text().strip() == "":
         matcher.stop_propagation()
         return
-    if plain_text.lower() == "help":
-        await attribute_submit.finish(ATTRIBUTE_SUBMIT_USAGE)
-    args = plain_text.split(maxsplit=3)
-    if len(args) == 4:
-        server = Server(args[0], event.group_id).server
-        role = args[1]
-        kungfu_name = args[2]
-        equip_data = args[3]
-        if server is None:
-            await attribute_submit.finish(PROMPT.ServerInvalid)
-        await save_plugin_attribute(role, server, kungfu_name, equip_data)
-        await attribute_submit.finish("已导入装备数据，请尝试使用 属性 命令查询！")
-
-    args = plain_text.split(maxsplit=2)
-    if len(args) == 3 and Kungfu(args[1]).id is not None and Kungfu(args[2]).id is None:
-        server = Server(None, event.group_id).server
-        role = args[0]
-        kungfu_name = args[1]
-        equip_data = args[2]
-        if server is None:
-            await attribute_submit.finish(PROMPT.ServerInvalid)
-        await save_plugin_attribute(role, server, kungfu_name, equip_data)
-        await attribute_submit.finish("已导入装备数据，请尝试使用 属性 命令查询！")
-
-    args = plain_text.split()
+    args = msg.extract_plain_text().strip().split(" ")
     if len(args) not in [2, 3]:
-        await attribute_submit.finish(PROMPT.ArgumentCountInvalid + "\n" + ATTRIBUTE_SUBMIT_USAGE)
+        await attribute_submit.finish(PROMPT.ArgumentCountInvalid)
     if len(args) == 2:
         server = Server(None, event.group_id).server
         name = args[0]
@@ -246,15 +163,16 @@ async def _(event: GroupMessageEvent, state: T_State, matcher: Matcher, msg: Mes
         kungfu_name = args[2]
     if server is None:
         await attribute_submit.finish(PROMPT.ServerInvalid)
-    player_info = await get_attribute_submit_player(name, server)
-    role_info = build_attribute_submit_role(name, server, player_info)
+    player_info = await search_player(role_name=name, server_name=server)
+    global_role_id = player_info.globalRoleId
+    if global_role_id == "":
+        await attribute_submit.finish(PROMPT.PlayerNotExist)
     kungfu_id = Kungfu(kungfu_name).id
     if kungfu_id is None:
         await attribute_submit.finish(PROMPT.KungfuNotExist)
     kungfu_id_pc = cast(int, Kungfu.with_internel_id(kungfu_id, True).id)
     state["kungfu_id"] = kungfu_id_pc
-    state["global_role_id"] = int(role_info.globalRoleId)
-    state["role_info"] = role_info
+    state["global_role_id"] = int(global_role_id)
     await attribute_submit.send("请发送从茗伊插件-角色统计-装备统计中导出的装备数据，请从文本编辑器中复制后直接发送，不要修改任何内容：")
 
 @attribute_submit.got("equip_data")
@@ -263,7 +181,6 @@ async def _(event: GroupMessageEvent, state: T_State, equip_data: Message = Arg(
     try:
         instance = await JX3PlayerAttribute.from_plugin(data, state["kungfu_id"], state["global_role_id"])
         instance.save()
-        save_attribute_submit_role(state["role_info"])
     except Exception as e:
         await attribute_submit.finish(f"导入装备数据时发生错误，请检查数据中是否有错误：\n{e}")
     await attribute_submit.finish("已导入装备数据，请尝试使用 属性 命令查询！")

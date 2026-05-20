@@ -17,17 +17,21 @@ from src.utils.generate import generate
 from src.utils.network import Request
 from src.utils.time import Time
 
+from .compare import AttributesFull
 from .universe import UniversalCalculator
 
 
-GRADE_THRESHOLDS = (
-    ("S", 1.0),
-    ("A", 0.985),
-    ("B", 0.970),
-    ("C", 0.950),
-)
+RANK_ICON_FILES = {
+    "ACE": "rank_ace.png",
+    "S+": "rank_s_plus.png",
+    "S": "rank_s.png",
+    "A": "rank_a.png",
+    "B": "rank_b.png",
+    "C": "rank_c.png",
+    "D": "rank_d.png",
+}
 
-CACHE_SCHEMA_VERSION = 6
+CACHE_SCHEMA_VERSION = 7
 
 
 def parse_loop_name(name: str) -> dict[str, str]:
@@ -243,16 +247,70 @@ def _find_name(data: dict[str, Any]) -> str:
 
 
 def _find_attr(data: dict[str, Any]) -> str:
+    magic_attrs = _parse_magic_attrs(data)
+    if magic_attrs:
+        return magic_attrs
     for key in ("attr", "attrs", "attribute", "equip_attr", "equipAttr"):
         value = data.get(key)
         if isinstance(value, str):
-            return value
+            return _format_attr_text(value)
         if isinstance(value, list):
-            return " ".join([str(item) for item in value])
+            return _format_attr_text(value)
     equip = data.get("equip")
     if isinstance(equip, dict):
         return _find_attr(equip)
     return ""
+
+
+def _full_attr_name(attr_key: Any) -> str:
+    return AttributesFull.get(str(attr_key), "")
+
+
+def _parse_magic_attrs(data: dict[str, Any]) -> str:
+    attrs = []
+    for index in range(1, 21):
+        key = f"Magic{index}Key"
+        if key not in data:
+            break
+        attr_name = _full_attr_name(data[key])
+        if attr_name:
+            attrs.append(attr_name)
+    return " ".join(attrs)
+
+
+def _lookup_equip_attr(item_id: int | None, location: int | None) -> str:
+    if item_id is None or location is None:
+        return ""
+    try:
+        equip_data = TabCache.get_equip(int(item_id), _equip_tab_key(int(location)))
+        magic_start = 53 if _equip_tab_key(int(location)) == 3 else 52
+        attrs = []
+        for index in range(magic_start, 68):
+            attrib_key = equip_data[index]
+            if attrib_key == "":
+                break
+            modify_type, _, _ = TabCache.get_attrib(attrib_key)
+            attr_name = _full_attr_name(modify_type)
+            if attr_name:
+                attrs.append(attr_name)
+        return " ".join(attrs)
+    except Exception:
+        return ""
+
+
+def _format_attr_text(value: Any) -> str:
+    if isinstance(value, list):
+        return " ".join([_full_attr_name(item) or str(item) for item in value if item and str(item) != "体质"])
+    if isinstance(value, str):
+        return " ".join([_full_attr_name(item) or item for item in value.split() if item != "体质"])
+    return ""
+
+
+def _rating_attr(data: dict[str, Any], fallback: Any = "") -> str:
+    attr = _find_attr(data)
+    if attr:
+        return attr
+    return _format_attr_text(fallback)
 
 
 def _find_quality(data: dict[str, Any]) -> int:
@@ -312,7 +370,7 @@ def _current_equip_details(current_jcl_data: list[list]) -> dict[int, dict[str, 
                 "item_id": int(line[2]),
                 "name": equip.name,
                 "quality": equip.quality,
-                "attr": equip.attribute,
+                "attr": _lookup_equip_attr(int(line[2]), int(line[0])),
                 "peerless": equip.peerless,
             }
         except Exception:
@@ -320,7 +378,7 @@ def _current_equip_details(current_jcl_data: list[list]) -> dict[int, dict[str, 
                 "item_id": int(line[2]),
                 "name": "当前装备",
                 "quality": _lookup_equip_quality(int(line[2]), int(line[0])),
-                "attr": "",
+                "attr": _lookup_equip_attr(int(line[2]), int(line[0])),
                 "peerless": _lookup_equip_peerless(int(line[2]), int(line[0])),
             }
     return details
@@ -372,120 +430,108 @@ def _extract_candidates(group: Any) -> tuple[int | None, list[dict[str, Any]]]:
     return location, []
 
 
-def build_equipment_ratings(
-    calculator_data: dict[str, Any],
-    current_jcl_data: list[list],
-) -> list[dict[str, Any]]:
-    current_dps = _find_dps(calculator_data)
-    current_details = _current_equip_details(current_jcl_data)
-    current_equips = {
-        int(line[0]): int(line[2])
-        for line in current_jcl_data
-        if len(line) > 2 and isinstance(line[0], int)
+def _rating_summary(data: dict[str, Any]) -> dict[str, Any]:
+    summary = data.get("summary")
+    if not isinstance(summary, dict):
+        return {}
+    return {
+        "total_score_text": str(
+            summary.get(
+                "display_total_score_text",
+                f"{summary.get('display_total_score', 0):.1f}",
+            )
+        ),
+        "grade": str(summary.get("grade", "D")),
+        "current_dps_text": _format_dps(_as_number(summary.get("current_dps")) or 0),
+        "rated_slots": summary.get("rated_slots", 0),
+        "total_slots": summary.get("total_slots", 0),
     }
-    results: list[dict[str, Any]] = []
-    for group in _iter_candidate_groups(calculator_data):
-        location, candidates = _extract_candidates(group)
-        if not candidates:
+
+
+def build_equipment_ratings_from_api(data: dict[str, Any], current_jcl_data: list[list]) -> list[dict[str, Any]]:
+    summary = _rating_summary(data)
+    current_details = _current_equip_details(current_jcl_data)
+    results = []
+    for slot in data.get("slots", []):
+        if not isinstance(slot, dict):
             continue
-        if location is None:
-            location = _find_location(candidates[0])
-        if location is None or location not in current_equips:
+        rating = slot.get("rating")
+        current = slot.get("current") or {}
+        best = slot.get("best") or {}
+        if not isinstance(rating, dict) or not isinstance(current, dict) or not isinstance(best, dict):
             continue
-        parsed_candidates = []
-        for candidate in candidates:
-            dps = _find_dps(candidate)
-            if dps is None:
-                continue
-            item_id = _find_item_id(candidate)
-            quality = _find_quality(candidate) or _lookup_equip_quality(item_id, location)
-            parsed_candidates.append(
-                {
-                    "item_id": item_id,
-                    "name": _find_name(candidate),
-                    "quality": quality,
-                    "attr": _find_attr(candidate),
-                    "dps": dps,
-                }
-            )
-        if not parsed_candidates:
-            continue
-        parsed_candidates.sort(key=lambda item: item["dps"], reverse=True)
-        current_item_id = current_equips[location]
-        inferred_current = False
-        current = next(
-            (
-                item
-                for item in parsed_candidates
-                if item["item_id"] == current_item_id
-            ),
-            None,
-        )
-        current_detail = current_details.get(
-            location,
-            {
-                "item_id": current_item_id,
-                "name": "当前装备",
-                "quality": _lookup_equip_quality(current_item_id, location),
-                "attr": "",
-            },
-        )
-        if current is not None:
-            current.update(
-                {
-                    "name": current_detail["name"],
-                    "quality": current_detail["quality"],
-                    "attr": current_detail["attr"],
-                    "peerless": current_detail.get("peerless", False),
-                }
-            )
-        if current is None and current_dps is not None:
-            current = {
-                "item_id": current_item_id,
-                "name": current_detail["name"],
-                "quality": current_detail["quality"],
-                "attr": current_detail["attr"],
-                "peerless": current_detail.get("peerless", False),
-                "dps": current_dps,
-            }
-            parsed_candidates.append(current)
-            parsed_candidates.sort(key=lambda item: item["dps"], reverse=True)
-            inferred_current = True
-        if current is None:
-            continue
-        best = parsed_candidates[0]
-        best_dps = best["dps"]
-        ratio = current["dps"] / best_dps if best_dps else 0
-        grade = "D"
-        for level, threshold in GRADE_THRESHOLDS:
-            if ratio >= threshold:
-                grade = level
-                break
-        rank = parsed_candidates.index(current) + 1
-        results.append(
-            {
-                "location": Locations[location] if location < len(Locations) else str(location),
-                "location_code": location,
-                "item_id": current_item_id,
-                "name": current["name"],
-                "quality": current.get("quality", 0),
-                "attr": current.get("attr", ""),
-                "peerless": current.get("peerless", False),
-                "grade": grade,
-                "rank": rank,
-                "total": len(parsed_candidates),
-                "dps": int(current["dps"]),
-                "best_name": best["name"],
-                "best_quality": best.get("quality", 0),
-                "best_attr": best.get("attr", ""),
-                "best_dps": int(best["dps"]),
-                "diff_to_best": int(current["dps"] - best["dps"]),
-                "percent_to_best": round(ratio * 100, 2),
-                "inferred_current": inferred_current,
-                "candidates": parsed_candidates,
-            }
-        )
+        try:
+            location_code = int(slot.get("location_code", 99))
+        except (TypeError, ValueError):
+            location_code = 99
+        current_dps = _as_number(rating.get("current_dps")) or _as_number(current.get("dps")) or 0
+        best_dps = _as_number(best.get("dps")) or current_dps
+        percent_to_best = rating.get("percent_to_best")
+        if not isinstance(percent_to_best, (int, float)):
+            percent_to_best = round(current_dps / best_dps * 100, 2) if best_dps else 0
+        result = {
+            "location": slot.get("location_name") or (Locations[location_code] if location_code < len(Locations) else str(location_code)),
+            "location_code": location_code,
+            "item_id": current_details.get(location_code, {}).get("item_id", current.get("item_id") or current.get("ui_id")),
+            "name": current_details.get(location_code, {}).get("name", _find_name(current)),
+            "quality": current_details.get(location_code, {}).get("quality", _find_quality(current)),
+            "attr": _rating_attr(current, current_details.get(location_code, {}).get("attr", "")),
+            "grade": str(rating.get("grade", "D")),
+            "score": rating.get("display_score", rating.get("score", 0)),
+            "rank": rating.get("rank", "-"),
+            "total": rating.get("total", "-"),
+            "dps": int(current_dps),
+            "best_name": _find_name(best),
+            "best_quality": _find_quality(best),
+            "best_attr": _rating_attr(best),
+            "best_dps": int(best_dps),
+            "diff_to_best": int(current_dps - best_dps),
+            "percent_to_best": percent_to_best,
+            "inferred_current": False,
+            "rating_summary": summary,
+        }
+        results.append(result)
     return sorted(results, key=lambda item: item["location_code"])
+
+
+async def request_equipment_ratings(
+    *,
+    instance: UniversalCalculator,
+    loop_code: dict[str, str],
+    role_name: str,
+    server_name: str,
+    global_role_id: int,
+    user_id: int = 0,
+) -> list[dict[str, Any]] | str:
+    payload = {
+        "kungfu_id": instance.kungfu_id,
+        "jcl_data": instance.jcl_data or instance.equip_data.equip_lines,
+        "role": {
+            "name": role_name,
+            "server": server_name,
+            "global_role_id": global_role_id,
+        },
+        "full_income": instance.income_list + instance.formation_list,
+        "candidate_level": {
+            "min": 32500,
+            "max": 43000,
+        },
+        **loop_code,
+    }
+    if user_id:
+        payload["user_id"] = user_id
+    try:
+        result = (
+            await Request(f"{Config.jx3.api.calculator_url}/equipment_rating", params=payload).post(timeout=300)
+        ).json()
+    except Exception as e:
+        return f"装备评级计算失败：{e}"
+    if result.get("code") != 200:
+        return result.get("msg", "装备评级计算失败。")
+    ratings = build_equipment_ratings_from_api(result["data"], instance.jcl_data or instance.equip_data.equip_lines)
+    if not ratings:
+        return format_rating_summary(ratings, detailed=True)
+    return ratings
 
 
 def format_rating_summary(ratings: list[dict[str, Any]], *, detailed: bool = False) -> str:
@@ -535,7 +581,7 @@ def _asset_uri(*parts: str) -> str:
 
 
 def _format_grade_mark(grade: str) -> str:
-    grade_icon = _asset_uri("image", "jx3", "rank", f"rank_{grade.lower()}.png")
+    grade_icon = _asset_uri("image", "jx3", "equipment_rating", RANK_ICON_FILES.get(grade, "rank_d.png"))
     return (
         "<div class=\"grade-stack\">"
         f"<img class=\"grade-icon\" src=\"{grade_icon}\" alt=\"{html.escape(grade)}\">"
@@ -573,7 +619,7 @@ async def render_rating_table_image(
             f"<td class=\"slot\">{html.escape(str(rating['location']))}</td>"
             f"<td>{_format_grade_mark(grade)}</td>"
             f"<td class=\"rank\">#{rating['rank']} / {rating['total']}</td>"
-            f"<td class=\"percent\">{rating['percent_to_best']}%</td>"
+            f"<td class=\"percent\">{rating.get('score', rating['percent_to_best'])}</td>"
             f"<td class=\"percent best-percent\">100%</td>"
             f"<td class=\"dps\">{_format_dps(rating['dps'])}</td>"
             f"<td class=\"equip\">{current_equip}</td>"
@@ -584,7 +630,13 @@ async def render_rating_table_image(
             "</tr>"
         )
     subtitle_html = f"<div class=\"subtitle\">{html.escape(subtitle)}</div>" if subtitle else ""
-    source_note = "百分比表示当前装备相对同部位最优解的强度；最优解从候选装备与当前装备中共同取最高 DPS。"
+    summary = ratings[0].get("rating_summary", {}) if ratings else {}
+    total_score_text = html.escape(str(summary.get("total_score_text", "--")))
+    total_grade = html.escape(str(summary.get("grade", "D")))
+    current_dps_text = html.escape(str(summary.get("current_dps_text", "--")))
+    rated_slots = html.escape(str(summary.get("rated_slots", 0)))
+    total_slots = html.escape(str(summary.get("total_slots", 0)))
+    source_note = "评分由装备评级接口计算；最优解从候选装备与当前装备中共同取最高 DPS。"
     html_source = f"""
 <!DOCTYPE html>
 <html lang="zh-CN">
@@ -639,6 +691,29 @@ body {{
     text-align: right;
     font-size: 17px;
     line-height: 1.55;
+    color: #777;
+}}
+.rating-total {{
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 16px;
+    margin-bottom: 8px;
+}}
+.rating-total img {{
+    width: 58px;
+    height: 58px;
+    object-fit: contain;
+}}
+.total-score {{
+    font-size: 28px;
+    line-height: 1.1;
+    font-weight: 800;
+    color: var(--theme-color);
+}}
+.total-meta {{
+    margin-top: 4px;
+    font-size: 15px;
     color: #777;
 }}
 table {{
@@ -769,7 +844,16 @@ tbody tr:last-child td {{
             <div class="title">{html.escape(title)}</div>
             {subtitle_html}
         </div>
-        <div class="legend">{source_note}</div>
+        <div class="legend">
+            <div class="rating-total">
+                <img src="{_asset_uri("image", "jx3", "equipment_rating", RANK_ICON_FILES.get(str(summary.get("grade", "D")), "rank_d.png"))}" alt="{total_grade}">
+                <div>
+                    <div class="total-score">{total_score_text} 分</div>
+                    <div class="total-meta">DPS {current_dps_text} · 有效部位 {rated_slots}/{total_slots}</div>
+                </div>
+            </div>
+            <div>{source_note}</div>
+        </div>
     </div>
     <table>
         <thead>
@@ -777,7 +861,7 @@ tbody tr:last-child td {{
                 <th style="width: 72px;">部位</th>
                 <th style="width: 86px;">评级</th>
                 <th style="width: 92px;">排名</th>
-                <th style="width: 90px;">当前强度</th>
+                <th style="width: 90px;">评分</th>
                 <th style="width: 90px;">最优强度</th>
                 <th style="width: 122px;">当前 DPS</th>
                 <th>当前装备</th>
@@ -791,7 +875,7 @@ tbody tr:last-child td {{
             {''.join(rows)}
         </tbody>
     </table>
-    <div class="footer">S = 100%，A >= 98.5%，B >= 97%，C >= 95%，其余为 D。</div>
+    <div class="footer">单件评分、总评分和评级均来自装备评级接口。</div>
 </div>
 </body>
 </html>

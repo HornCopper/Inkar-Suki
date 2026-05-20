@@ -24,19 +24,15 @@ from .jx3box import JX3BOXCalculator
 from .base import FORMATIONS, INCOMES
 from .universe import UniversalCalculator
 from .traverse import (
-    build_equipment_ratings,
-    calculate_with_optimized_equips,
     delete_rating_cache,
     equipment_hash,
-    format_rating_summary,
     get_rating_cache,
     render_rating_table_image,
+    request_equipment_ratings,
     save_rating_cache,
 )
 from .rdps import BLACalculator
 from .jcl_analyze import CQCAnalyze, FALAnalyze, YXCAnalyze, RODAnalyze, HPSAnalyze, CALAnalyze, ASNAnalyze, THRAnalyze, THFAnalyze, LGZAnalyze
-from . import equipment_rating as equipment_rating
-
 import re
 import json
 import copy
@@ -299,28 +295,35 @@ async def _(event: GroupMessageEvent, matcher: Matcher, state: T_State, args: Me
         return
     if not check_permission(event.user_id, "jx3.calculator.advanced"):
         await traverse_equipment_matcher.finish(denied("jx3.calculator.advanced"))
+        return
     arg = args.extract_plain_text().strip().split(" ")
     if len(arg) != 3:
         await traverse_equipment_matcher.finish(PROMPT.ArgumentCountInvalid + "\n参考格式：遍历装备 <服务器> <ID> <心法>")
+        return
     server = Server(arg[0], event.group_id).server
     role_id = arg[1]
     kungfu_id = Kungfu(arg[2]).id
     if server is None:
         await traverse_equipment_matcher.finish(PROMPT.ServerNotExist)
+        return
     if kungfu_id is None:
         await traverse_equipment_matcher.finish(PROMPT.KungfuNotExist)
+        return
     player_data = await search_player(role_name=role_id, role_id=role_id, server_name=server, local_lookup=True)
     if player_data.roleId == "":
         player_data = await get_uid_data(role_id=role_id, server=server, msg=False)
     if player_data.roleId == "":
         await traverse_equipment_matcher.finish(PROMPT.PlayerNotExist)
+        return
     await JX3PlayerAttribute.from_tuilan(player_data.roleId, player_data.serverName, player_data.globalRoleId)
     current_equip = await JX3PlayerAttribute.from_database(int(player_data.globalRoleId), all=True)
     if current_equip is None:
         await traverse_equipment_matcher.finish(PROMPT.EquipNotFound)
+        return
     target_equip = next((equip for equip in current_equip if equip.kungfu_id == kungfu_id), None)
     if target_equip is None:
         await traverse_equipment_matcher.finish("未找到该心法对应的装备，请先提交或查询该心法装备后重试。")
+        return
 
     instance = UniversalCalculator(target_equip.equip_lines, int(kungfu_id))
     income_ver = Preference(event.user_id, "", "").setting("计算器增益")
@@ -334,6 +337,7 @@ async def _(event: GroupMessageEvent, matcher: Matcher, state: T_State, args: Me
     loops = await instance.get_loop(event.user_id if is_custom else 0)
     if isinstance(loops, str) or not loops:
         await traverse_equipment_matcher.finish("该心法当前没有可用计算循环，请检查循环库或切换计算器来源。")
+        return
     state["loops"] = loops
     state["instance"] = instance
     state["is_custom"] = is_custom
@@ -376,17 +380,17 @@ async def _(event: GroupMessageEvent, state: T_State, loop_order: Message = Arg(
                 subtitle=f"{state['role_name']} · {state['server_name']} · {loop_name}",
             )
         )
-    data = await calculate_with_optimized_equips(
-        instance,
-        loop_code,
-        event.user_id if is_custom else 0,
-        timeout=180,
+    ratings = await request_equipment_ratings(
+        instance=instance,
+        loop_code=loop_code,
+        role_name=state["role_name"],
+        server_name=state["server_name"],
+        global_role_id=state["global_role_id"],
+        user_id=event.user_id if is_custom else 0,
     )
-    if not isinstance(data, dict):
-        await traverse_equipment_matcher.finish(data)
-    ratings = build_equipment_ratings(data, instance.jcl_data)
-    if not ratings:
-        await traverse_equipment_matcher.finish(format_rating_summary(ratings, detailed=True))
+    if isinstance(ratings, str):
+        await traverse_equipment_matcher.finish(ratings)
+        return
     save_rating_cache(
         equip_hash=cache_hash,
         global_role_id=state["global_role_id"],
@@ -414,21 +418,26 @@ async def _(event: GroupMessageEvent, matcher: Matcher, args: Message = CommandA
         return
     if not check_permission(event.user_id, "jx3.calculator.advanced"):
         await remove_equipment_rating_matcher.finish(denied("jx3.calculator.advanced"))
+        return
     arg = args.extract_plain_text().strip().split(" ")
     if len(arg) != 3:
         await remove_equipment_rating_matcher.finish(PROMPT.ArgumentCountInvalid + "\n参考格式：删除评级 <服务器> <ID> <心法>")
+        return
     server = Server(arg[0], event.group_id).server
     role_id = arg[1]
     kungfu_id = Kungfu(arg[2]).id
     if server is None:
         await remove_equipment_rating_matcher.finish(PROMPT.ServerNotExist)
+        return
     if kungfu_id is None:
         await remove_equipment_rating_matcher.finish(PROMPT.KungfuNotExist)
+        return
     player_data = await search_player(role_name=role_id, role_id=role_id, server_name=server, local_lookup=True)
     if player_data.roleId == "":
         player_data = await get_uid_data(role_id=role_id, server=server, msg=False)
     if player_data.roleId == "":
         await remove_equipment_rating_matcher.finish(PROMPT.PlayerNotExist)
+        return
     deleted = delete_rating_cache(int(player_data.globalRoleId), int(kungfu_id))
     if deleted:
         await remove_equipment_rating_matcher.finish("已删除该角色该心法的装备评级缓存。")
