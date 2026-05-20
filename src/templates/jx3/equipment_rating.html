@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        @font-face {
+            font-family: RatingFont;
+            src: url("{{ font }}");
+        }
+
+        body {
+            margin: 0;
+            width: 1220px;
+            background: #ffffff;
+            color: #242832;
+            font-family: RatingFont, "Microsoft YaHei", "PingFang SC", sans-serif;
+        }
+
+        .rating-canvas {
+            width: 1220px;
+            margin: 0 auto;
+            padding: 46px 46px 30px;
+            background: #ffffff;
+        }
+
+        .rating-report {
+            width: 1128px;
+            background: #ffffff;
+        }
+
+        .report-body {
+            display: grid;
+            grid-template-columns: 256px 1fr;
+            column-gap: 20px;
+        }
+
+        .sidebar {
+            min-width: 0;
+            padding-right: 28px;
+            border-right: 1px solid #e6e6e6;
+        }
+
+        .sidebar-top {
+            padding-bottom: 30px;
+        }
+
+        .kungfu-icon {
+            display: block;
+            width: 58px;
+            height: 58px;
+            margin-bottom: 18px;
+            object-fit: cover;
+        }
+
+        .build-title {
+            font-size: 34px;
+            line-height: 1.14;
+            font-weight: 900;
+            color: #242832;
+            word-break: break-word;
+        }
+
+        .build-subtitle {
+            margin-top: 12px;
+            font-size: 20px;
+            line-height: 1.2;
+            font-weight: 800;
+            color: #454b55;
+        }
+
+        .side-section {
+            margin-top: 30px;
+        }
+
+        .side-heading {
+            margin-bottom: 16px;
+            font-size: 25px;
+            line-height: 1.2;
+            font-weight: 900;
+            color: #111318;
+        }
+
+        .side-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 14px;
+            margin-top: 8px;
+            font-size: 16px;
+            line-height: 1.32;
+            color: #4c515b;
+        }
+
+        .side-row strong {
+            flex: 1;
+            text-align: right;
+            color: #343943;
+            font-weight: 900;
+            word-break: break-word;
+        }
+
+        .total-panel {
+            margin-top: 22px;
+            text-align: center;
+        }
+
+        .rank-large {
+            display: block;
+            width: 214px;
+            height: 214px;
+            margin: 0 auto 10px;
+            object-fit: contain;
+        }
+
+        .total-score {
+            font-size: 23px;
+            line-height: 1.2;
+            font-weight: 900;
+            color: #15171d;
+        }
+
+        .total-meta {
+            margin-top: 18px;
+        }
+
+        .content {
+            min-width: 0;
+            padding-left: 0;
+        }
+
+        .dps-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 24px;
+            padding: 28px 0 20px;
+        }
+
+        .dps-label {
+            font-size: 27px;
+            line-height: 1.2;
+            font-weight: 900;
+            color: #1c2028;
+        }
+
+        .dps-value {
+            margin-top: 12px;
+            font-size: 43px;
+            line-height: 1;
+            font-weight: 900;
+            color: #f04918;
+            letter-spacing: 0;
+        }
+
+        .top-rank {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            min-width: 210px;
+            gap: 14px;
+            color: #f04918;
+            font-size: 36px;
+            line-height: 1;
+            font-weight: 900;
+        }
+
+        .top-rank img {
+            width: 84px;
+            height: 84px;
+            object-fit: contain;
+        }
+
+        .accent-line {
+            width: 100%;
+            height: 2px;
+            background: #f39800;
+        }
+
+        .chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 14px 0 20px;
+        }
+
+        .chip {
+            min-height: 26px;
+            padding: 4px 10px;
+            border: 1px solid #e2e2e2;
+            border-radius: 4px;
+            background: #fafafa;
+            color: #6b7078;
+            font-size: 13px;
+            line-height: 1.25;
+        }
+
+        .slot-list {
+            width: 100%;
+        }
+
+        .slot-row {
+            display: grid;
+            grid-template-columns: 56px 90px 62px 1fr;
+            align-items: center;
+            gap: 14px;
+            min-height: 122px;
+            padding: 14px 0;
+            border-bottom: 1px solid #e6e6e6;
+        }
+
+        .slot-name {
+            font-size: 16px;
+            line-height: 1.2;
+            font-weight: 900;
+            color: #666a72;
+        }
+
+        .slot-grade {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 3px;
+        }
+
+        .slot-grade img {
+            width: 68px;
+            height: 68px;
+            object-fit: contain;
+        }
+
+        .slot-score {
+            font-size: 14px;
+            line-height: 1.1;
+            font-weight: 900;
+            color: #242832;
+        }
+
+        .equip-icon {
+            width: 52px;
+            height: 52px;
+            border: 2px solid #8d23c6;
+            border-radius: 5px;
+            object-fit: cover;
+            background: #111318;
+        }
+
+        .equip-info {
+            min-width: 0;
+        }
+
+        .item-title {
+            font-size: 17px;
+            line-height: 1.28;
+            font-weight: 900;
+            word-break: break-word;
+        }
+
+        .item-title span {
+            font-size: 13px;
+            margin-left: 4px;
+        }
+
+        .quality4 {
+            color: #ff00ff;
+        }
+
+        .quality5 {
+            color: #ff9800;
+        }
+
+        .item-attrs {
+            margin-top: 4px;
+            font-size: 15px;
+            line-height: 1.32;
+            font-weight: 900;
+            color: #4c515b;
+            word-break: break-word;
+        }
+
+        .best-note {
+            margin-top: 6px;
+            font-size: 13px;
+            line-height: 1.35;
+            color: #8a8f98;
+            word-break: break-word;
+        }
+
+        .unrated-note {
+            font-size: 14px;
+            line-height: 1.5;
+            color: #8a8f98;
+        }
+
+        .warning {
+            margin-top: 18px;
+            padding: 12px 16px;
+            background: #fff8ed;
+            color: #8c5b1e;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        .bottom-line {
+            margin-top: 30px;
+            border-top: 1px solid #e6e6e6;
+        }
+
+        .talent-strip {
+            display: grid;
+            grid-template-columns: repeat(10, 1fr);
+            gap: 16px;
+            padding: 28px 26px 22px;
+        }
+
+        .talent {
+            min-width: 0;
+            text-align: center;
+        }
+
+        .talent img {
+            width: 52px;
+            height: 52px;
+            border-radius: 4px;
+            object-fit: cover;
+        }
+
+        .talent-name {
+            margin-top: 8px;
+            font-size: 14px;
+            line-height: 1.2;
+            font-weight: 900;
+            color: #454b55;
+            word-break: keep-all;
+        }
+
+        .footer-note {
+            padding: 13px 20px;
+            background: #eeeeee;
+            text-align: center;
+            font-size: 13px;
+            line-height: 1.4;
+            color: #8a8f98;
+        }
+    </style>
+</head>
+<body>
+<div class="rating-canvas">
+    <div class="rating-report">
+        <div class="report-body">
+            <aside class="sidebar">
+                <div class="sidebar-top">
+                    <img class="kungfu-icon" src="{{ kungfu_icon }}" alt="">
+                    <div class="build-title">{{ role_name }}</div>
+                    <div class="build-subtitle">{{ kungfu_name }}</div>
+                </div>
+
+                <section class="side-section">
+                    <div class="side-heading">角色信息</div>
+                    {% for item in role_info %}
+                    <div class="side-row"><span>{{ item.label }}</span><strong>{{ item.value }}</strong></div>
+                    {% endfor %}
+                </section>
+
+                <section class="side-section">
+                    <div class="side-heading">基础属性</div>
+                    {% for item in basic_attrs %}
+                    <div class="side-row"><span>{{ item.label }}</span><strong>{{ item.value }}</strong></div>
+                    {% endfor %}
+                </section>
+
+                <section class="side-section">
+                    <div class="side-heading">详细属性</div>
+                    {% for item in detail_attrs %}
+                    <div class="side-row"><span>{{ item.label }}</span><strong>{{ item.value }}</strong></div>
+                    {% endfor %}
+                </section>
+
+                <section class="side-section">
+                    <div class="side-heading">配装总评级</div>
+                    <div class="total-panel">
+                        <img class="rank-large" src="{{ summary.grade_icon }}" alt="">
+                        <div class="total-score">{{ summary.total_score_text }}分</div>
+                        <div class="total-meta">
+                            <div class="side-row"><span>有效部位</span><strong>{{ summary.rated_slots }}/{{ summary.total_slots }}</strong></div>
+                            <div class="side-row"><span>评级增益</span><strong>{{ meta.income_name }}</strong></div>
+                            <div class="side-row"><span>评级循环</span><strong>{{ meta.loop_name }}</strong></div>
+                        </div>
+                    </div>
+                </section>
+            </aside>
+
+            <main class="content">
+                <header class="dps-header">
+                    <div>
+                        <div class="dps-label">评级DPS</div>
+                        <div class="dps-value">{{ summary.current_dps_text }}</div>
+                    </div>
+                    <div class="top-rank">
+                        <img src="{{ summary.grade_icon }}" alt="">
+                        <span>{{ summary.total_score_text }}</span>
+                    </div>
+                </header>
+
+                <div class="accent-line"></div>
+
+                <div class="chips">
+                    {% for chip in chips %}
+                    <span class="chip">{{ chip }}</span>
+                    {% endfor %}
+                </div>
+
+                <div class="slot-list">
+                    {% for slot in slots %}
+                    <div class="slot-row">
+                        <div class="slot-name">{{ slot.location_name }}</div>
+                        <div class="slot-grade">
+                            {% if slot.is_rated %}
+                            <img src="{{ slot.grade_icon }}" alt="">
+                            <div class="slot-score">{{ slot.score_text }}分</div>
+                            {% else %}
+                            <div class="slot-score">--</div>
+                            {% endif %}
+                        </div>
+                        <img class="equip-icon" src="{{ slot.current.icon }}" alt="">
+                        <div class="equip-info">
+                            {% if slot.is_rated %}
+                            <div class="item-title {{ slot.current.quality_class }}">
+                                {{ slot.current.name }} <span>({{ slot.current.level_text }})</span>
+                            </div>
+                            <div class="item-attrs">{{ slot.current.attribute_text }}</div>
+                            <div class="best-note">
+                                {{ slot.best_note }}{% if slot.has_haste_adjustment %} · 已按加速折算{% endif %}
+                            </div>
+                            {% else %}
+                            <div class="item-title {{ slot.current.quality_class }}">
+                                {{ slot.current.name }} <span>({{ slot.current.level_text }})</span>
+                            </div>
+                            <div class="unrated-note">{{ slot.reason or "该部位未参与评级。" }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                {% if warnings %}
+                <div class="warning">
+                    {% for warning in warnings %}
+                    <div>{{ warning }}</div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </main>
+        </div>
+
+        {% if talents %}
+        <div class="bottom-line"></div>
+        <div class="talent-strip">
+            {% for talent in talents %}
+            <div class="talent">
+                <img src="{{ talent.icon }}" alt="">
+                <div class="talent-name">{{ talent.name }}</div>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <div class="footer-note">
+            评级为相对配装评级，以当前整体配装为基础，对单件装备的评级，结果供娱乐参考
+        </div>
+    </div>
+</div>
+</body>
+</html>

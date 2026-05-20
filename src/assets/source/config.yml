@@ -9,6 +9,8 @@ bot_basic: # Bot 基础类信息
         "": 
             "" # Bot QQ号: Bot 通知群号 (string: string)
     proxy: ""
+    allow_private_commands: False # 是否允许私聊调试所有命令
+    private_command_group_id: 0 # 私聊调试时使用的群上下文
 
 github: # GitHub 相关配置
     web_path: "" # Webhook 接收路径

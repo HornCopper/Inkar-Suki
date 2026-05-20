@@ -73,7 +73,7 @@ async def get_equip_info(equip_name: str, quality: int = -1) -> list[tuple[str, 
                     )
                 )
             final_set_attrs = []
-            for set_count, set_attrs in each_equip["SetAttributes"].items():
+            for set_count, set_attrs in each_equip.get("SetAttributes", {}).items():
                 for set_attr in set_attrs:
                     each_attr_key, each_attr_value = next(iter(set_attr.items()))
                     if each_attr_key in AttributesFull:
