@@ -110,6 +110,13 @@ def _format_plain_int(value: Any) -> str:
         return "0"
 
 
+def _format_signed(value: Any) -> str:
+    try:
+        return f"{int(float(value)):+,}"
+    except (TypeError, ValueError):
+        return "+0"
+
+
 def _format_percent(value: Any) -> str:
     try:
         return f"{float(value):.1f}%"
@@ -325,12 +332,13 @@ def _prepare_slots(slots: list[dict[str, Any]]) -> list[dict[str, Any]]:
         }
         if rating is not None:
             grade = str(rating.get("grade", "D"))
+            best_diff = _to_float(best.get("dps")) - _to_float(rating.get("current_dps"))
             adjustment = slot.get("haste_adjustment") or {}
             row.update(
                 {
                     "grade_icon": _grade_icon(grade),
                     "score_text": str(rating.get("display_score", 0)),
-                    "best_note": f"最优 {best.get('name', '候选装备')}",
+                    "best_note": f"最优 {best.get('name', '候选装备')}: {_format_signed(best_diff)}",
                     "has_haste_adjustment": bool(adjustment.get("applied")),
                 }
             )
