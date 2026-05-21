@@ -4,12 +4,11 @@ from pathlib import Path
 from typing import Any
 
 from jinja2 import Template
-from nonebot import on_command
 from nonebot.adapters.onebot.v11 import GroupMessageEvent, Message
 from nonebot.exception import ActionFailed
 from nonebot.log import logger
 from nonebot.matcher import Matcher
-from nonebot.params import CommandArg
+from nonebot.typing import T_State
 
 from src.config import Config
 from src.const.jx3.kungfu import Kungfu
@@ -29,19 +28,6 @@ from src.utils.generate import generate
 from src.utils.network import Request
 
 
-equipment_rating_matcher = on_command(
-    "jx3_equipment_rating",
-    aliases={"装备评级"},
-    priority=5,
-    force_whitespace=True,
-)
-equipment_rating_support_matcher = on_command(
-    "jx3_equipment_rating_support",
-    aliases={"装备评级支持", "装备评级心法", "装备评级支持心法"},
-    priority=5,
-    force_whitespace=True,
-)
-
 RANK_ICON_FILES = {
     "ACE": "rank_ace.png",
     "S+": "rank_s_plus.png",
@@ -54,6 +40,12 @@ RANK_ICON_FILES = {
 EQUIPMENT_RATING_IMAGE_SEND_FAILED = (
     "装备评级图片已生成，但 QQ/NapCat 拒绝了图片上传。\n"
     "这通常是协议端富媒体上传失败，不是装备数据读取失败。请稍后重试，或联系维护者查看 NapCat 日志。"
+)
+EQUIPMENT_RATING_STARTED = "装备评级中，请稍后。"
+RATING_LOOP_LIST_KEYWORDS = {"评级列表", "循环列表", "JCL列表", "jcl列表"}
+EQUIPMENT_RATING_USAGE = (
+    "参考格式：装备评级 <服务器> <角色> <心法>\n"
+    "公共循环：装备评级 <服务器> <角色> <心法> 评级列表"
 )
 
 
@@ -192,9 +184,45 @@ def _format_supported_kungfu_detail(item: dict[str, Any]) -> str:
         f"默认评级循环：{_selected_rating_loop_text(item)}",
         f"循环提供者：{selected.get('provider') or '-'}",
         f"可用评级JCL：{item.get('jcl_count', 0)} 个",
+        "公共JCL选择：装备评级 <服务器> <角色> <心法> 评级列表",
     ]
     if item.get("warning"):
         lines.append(f"提示：{item['warning']}")
+    return "\n".join(lines)
+
+
+async def _fetch_public_rating_loops(kungfu_id: int) -> list[str] | str:
+    try:
+        response = await Request(
+            f"{Config.jx3.api.calculator_url}/loops",
+            params={"kungfu_id": kungfu_id},
+        ).get(timeout=8)
+        if response.status_code >= 400:
+            return f"装备评级循环列表查询失败：calculator 返回 HTTP {response.status_code}。"
+        result = response.json()
+    except Exception as exc:
+        return f"装备评级循环列表查询失败：{exc}"
+    if result.get("code") == 404:
+        return "该心法当前没有可用公共 JCL，默认装备评级仍可使用评级专用 JCL。"
+    if result.get("code") != 200:
+        return result.get("msg", "装备评级循环列表查询失败。")
+
+    loops = []
+    for item in result.get("data") or []:
+        if not isinstance(item, dict):
+            continue
+        name = str(item.get("name") or "").strip()
+        if name:
+            loops.append(name)
+    if not loops:
+        return "该心法当前没有可用公共 JCL，默认装备评级仍可使用评级专用 JCL。"
+    return loops
+
+
+def _format_public_rating_loop_list(loops: list[str]) -> str:
+    lines = ["请选择装备评级循环，选择后会开始计算（顺序与计算器循环列表一致）："]
+    for index, loop_name in enumerate(loops, start=1):
+        lines.append(f"{index}. {loop_name}")
     return "\n".join(lines)
 
 
@@ -261,7 +289,7 @@ def _decoration_chips(detail: dict[str, Any]) -> list[dict[str, str]]:
         if not isinstance(embedding, dict):
             continue
         text = str(embedding.get("text") or "").strip()
-        if not text:
+        if not text or (text.startswith("五行石") and text.endswith("级")):
             continue
         level = _format_plain_int(embedding.get("level"))
         chips.append(
@@ -446,61 +474,50 @@ async def finish_equipment_rating_response(matcher: Matcher, image: Any):
             logger.error(f"装备评级文本降级发送仍失败：{fallback_exc}")
 
 
-@equipment_rating_support_matcher.handle()
-async def _(matcher: Matcher, args: Message = CommandArg()):
-    query = args.extract_plain_text().strip()
-    if len(query.split()) > 1:
-        await equipment_rating_support_matcher.finish("参考格式：装备评级支持\n参考格式：装备评级支持 <心法名或心法ID>")
-    data = await _fetch_supported_equipment_rating_data()
-    if isinstance(data, str):
-        await equipment_rating_support_matcher.finish(data)
-    kungfus = data.get("kungfus") or []
-    if query == "":
-        await equipment_rating_support_matcher.finish(_format_supported_kungfu_list(data))
-    if query.isdigit():
-        kungfu_id = int(query)
-    else:
-        kungfu_id = Kungfu(query).id or 0
-    if kungfu_id == 0:
-        await equipment_rating_support_matcher.finish(PROMPT.KungfuNotExist)
-    item = _find_supported_kungfu(kungfus, kungfu_id)
-    if item is None:
-        kungfu = Kungfu.with_internel_id(kungfu_id, convert_to_pc=True)
-        kungfu_name = kungfu.name or query
-        await equipment_rating_support_matcher.finish(f"当前装备评级暂不支持 {kungfu_name}({kungfu_id})。")
-    await equipment_rating_support_matcher.finish(_format_supported_kungfu_detail(item))
+async def _send_equipment_rating_started(matcher: Matcher):
+    try:
+        await matcher.send(EQUIPMENT_RATING_STARTED)
+    except ActionFailed as exc:
+        logger.warning(f"装备评级开始提示发送失败，继续计算：{exc}")
 
 
-@equipment_rating_matcher.handle()
-async def _(event: GroupMessageEvent, matcher: Matcher, args: Message = CommandArg()):
-    if args.extract_plain_text() == "":
-        matcher.stop_propagation()
-        return
-    arg = args.extract_plain_text().strip().split()
-    if len(arg) != 3:
-        await equipment_rating_matcher.finish(PROMPT.ArgumentCountInvalid + "\n参考格式：装备评级 <服务器> <角色> <心法>")
-
-    server = Server(arg[0], event.group_id).server
-    role_id = arg[1]
-    kungfu_id = Kungfu(arg[2]).id
+async def _resolve_equipment_rating_target(
+    event: GroupMessageEvent,
+    matcher: Matcher,
+    server_arg: str,
+    kungfu_arg: str,
+) -> tuple[str, int]:
+    server = Server(server_arg, event.group_id).server
+    kungfu_id = Kungfu(kungfu_arg).id
     if server is None:
-        await equipment_rating_matcher.finish(PROMPT.ServerNotExist)
+        await matcher.finish(PROMPT.ServerNotExist)
     if kungfu_id is None:
-        await equipment_rating_matcher.finish(PROMPT.KungfuNotExist)
+        await matcher.finish(PROMPT.KungfuNotExist)
+    return server, int(kungfu_id)
+
+
+async def _build_equipment_rating_payload(
+    event: GroupMessageEvent,
+    matcher: Matcher,
+    server_arg: str,
+    role_id: str,
+    kungfu_arg: str,
+):
+    server, kungfu_id = await _resolve_equipment_rating_target(event, matcher, server_arg, kungfu_arg)
 
     player_data = await search_player(role_name=role_id, role_id=role_id, server_name=server, local_lookup=True)
     if player_data.roleId == "":
         player_data = await get_uid_data(role_id=role_id, server=server, msg=False)
     if player_data.roleId == "":
-        await equipment_rating_matcher.finish(PROMPT.PlayerNotExist)
+        await matcher.finish(PROMPT.PlayerNotExist)
 
     await JX3PlayerAttribute.from_tuilan(player_data.roleId, player_data.serverName, player_data.globalRoleId)
     current_equip = await JX3PlayerAttribute.from_database(int(player_data.globalRoleId), all=True)
     if current_equip is None:
-        await equipment_rating_matcher.finish(PROMPT.EquipNotFound)
+        await matcher.finish(PROMPT.EquipNotFound)
     target_equip = next((equip for equip in current_equip if equip.kungfu_id == kungfu_id), None)
     if target_equip is None:
-        await equipment_rating_matcher.finish("未找到该心法对应的装备，请先提交或查询该心法装备后重试。")
+        await matcher.finish("未找到该心法对应的装备，请先提交或查询该心法装备后重试。")
 
     payload = {
         "kungfu_id": int(kungfu_id),
@@ -515,16 +532,125 @@ async def _(event: GroupMessageEvent, matcher: Matcher, args: Message = CommandA
             "max": 43000,
         },
     }
+    return payload, player_data, int(kungfu_id)
+
+
+async def _request_equipment_rating_data(payload: dict[str, Any]) -> dict[str, Any] | str:
     try:
         response = await Request(f"{Config.jx3.api.calculator_url}/equipment_rating", params=payload).post(timeout=300)
         result = response.json()
     except Exception as exc:
-        await equipment_rating_matcher.finish(f"装备评级计算失败：{exc}")
+        return f"装备评级计算失败：{exc}"
 
     if result.get("code") != 200:
-        await equipment_rating_matcher.finish(result.get("msg", "装备评级计算失败。"))
+        return result.get("msg", "装备评级计算失败。")
+    data = result.get("data")
+    if not isinstance(data, dict):
+        return "装备评级计算失败：calculator 返回数据为空。"
+    return data
 
+
+async def _finish_equipment_rating_calculation(
+    matcher: Matcher,
+    payload: dict[str, Any],
+    role_name: str,
+    server_name: str,
+):
+    data = await _request_equipment_rating_data(payload)
+    if isinstance(data, str):
+        await matcher.finish(data)
     await finish_equipment_rating_response(
-        equipment_rating_matcher,
-        await render_equipment_rating_image(result["data"], player_data.roleName, player_data.serverName)
+        matcher,
+        await render_equipment_rating_image(data, role_name, server_name)
+    )
+
+
+async def handle_equipment_rating_support(matcher: Matcher, args: Message):
+    query = args.extract_plain_text().strip()
+    if len(query.split()) > 1:
+        await matcher.finish("参考格式：装备评级支持\n参考格式：装备评级支持 <心法名或心法ID>")
+    data = await _fetch_supported_equipment_rating_data()
+    if isinstance(data, str):
+        await matcher.finish(data)
+    kungfus = data.get("kungfus") or []
+    if query == "":
+        await matcher.finish(_format_supported_kungfu_list(data))
+    if query.isdigit():
+        kungfu_id = int(query)
+    else:
+        kungfu_id = Kungfu(query).id or 0
+    if kungfu_id == 0:
+        await matcher.finish(PROMPT.KungfuNotExist)
+    item = _find_supported_kungfu(kungfus, kungfu_id)
+    if item is None:
+        kungfu = Kungfu.with_internel_id(kungfu_id, convert_to_pc=True)
+        kungfu_name = kungfu.name or query
+        await matcher.finish(f"当前装备评级暂不支持 {kungfu_name}({kungfu_id})。")
+    await matcher.finish(_format_supported_kungfu_detail(item))
+
+
+async def handle_equipment_rating(event: GroupMessageEvent, matcher: Matcher, state: T_State, args: Message):
+    if args.extract_plain_text() == "":
+        matcher.stop_propagation()
+        await matcher.finish()
+    arg = args.extract_plain_text().strip().split()
+    if len(arg) not in [3, 4]:
+        await matcher.finish(PROMPT.ArgumentCountInvalid + "\n" + EQUIPMENT_RATING_USAGE)
+    use_public_loop_list = False
+    if len(arg) == 4:
+        if arg[3] not in RATING_LOOP_LIST_KEYWORDS:
+            await matcher.finish("第四个参数仅支持「评级列表」，用于选择公共 JCL。\n" + EQUIPMENT_RATING_USAGE)
+        use_public_loop_list = True
+
+    if use_public_loop_list:
+        _, kungfu_id = await _resolve_equipment_rating_target(event, matcher, arg[0], arg[2])
+        loops = await _fetch_public_rating_loops(kungfu_id)
+        if isinstance(loops, str):
+            await matcher.finish(loops)
+        state["equipment_rating_server_arg"] = arg[0]
+        state["equipment_rating_role_arg"] = arg[1]
+        state["equipment_rating_kungfu_arg"] = arg[2]
+        state["equipment_rating_loops"] = loops
+        await matcher.send(_format_public_rating_loop_list(loops))
+        return
+
+    await _resolve_equipment_rating_target(event, matcher, arg[0], arg[2])
+    await _send_equipment_rating_started(matcher)
+    payload, player_data, _ = await _build_equipment_rating_payload(event, matcher, arg[0], arg[1], arg[2])
+    await _finish_equipment_rating_calculation(matcher, payload, player_data.roleName, player_data.serverName)
+
+
+async def handle_equipment_rating_loop_order(
+    event: GroupMessageEvent,
+    matcher: Matcher,
+    state: T_State,
+    loop_order: Message,
+):
+    _ = event
+    num = loop_order.extract_plain_text().strip()
+    if not num.isdigit():
+        await matcher.finish("循环选择有误，请重新发起命令！")
+    loops = state.get("equipment_rating_loops")
+    server_arg = state.get("equipment_rating_server_arg")
+    role_arg = state.get("equipment_rating_role_arg")
+    kungfu_arg = state.get("equipment_rating_kungfu_arg")
+    if (
+        not isinstance(loops, list)
+        or not isinstance(server_arg, str)
+        or not isinstance(role_arg, str)
+        or not isinstance(kungfu_arg, str)
+    ):
+        await matcher.finish("装备评级会话已失效，请重新发起命令。")
+    index = int(num)
+    if index < 1 or index > len(loops):
+        await matcher.finish("超出可选范围，请重新发起命令！")
+    await _resolve_equipment_rating_target(event, matcher, server_arg, kungfu_arg)
+    await _send_equipment_rating_started(matcher)
+    payload, player_data, _ = await _build_equipment_rating_payload(event, matcher, server_arg, role_arg, kungfu_arg)
+    payload = {**payload, "jcl_index": index}
+    await _finish_equipment_rating_calculation(
+        matcher,
+        payload,
+        player_data.roleName,
+        player_data.serverName,
     )
