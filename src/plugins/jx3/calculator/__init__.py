@@ -33,6 +33,7 @@ from .traverse import (
 )
 from .rdps import BLACalculator
 from .jcl_analyze import CQCAnalyze, FALAnalyze, YXCAnalyze, RODAnalyze, HPSAnalyze, CALAnalyze, ASNAnalyze, THRAnalyze, THFAnalyze, LGZAnalyze
+from . import equipment_rating as equipment_rating
 import re
 import json
 import copy

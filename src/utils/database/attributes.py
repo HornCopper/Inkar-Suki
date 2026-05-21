@@ -1036,7 +1036,10 @@ class JX3PlayerAttribute:
             int(raw_data["data"]["kungfuId"]),
             int(raw_data["data"]["globalId"])
         )
-        instance.save()
+        try:
+            instance.save()
+        except Exception:
+            return None
 
     @classmethod
     async def from_tuilan(cls, role_id: str, server_name: str, global_role_id: str) -> None:
@@ -1055,7 +1058,10 @@ class JX3PlayerAttribute:
             cast(int, Kungfu.with_internel_id(int(data["data"]["Kungfu"]["KungfuID"]), True).id),
             int(global_role_id)
         )
-        instance.save()
+        try:
+            instance.save()
+        except Exception:
+            return None
 
     @classmethod
     async def frmo_jcl_line(cls, jcl_line: str) -> Self:
@@ -1156,9 +1162,25 @@ class JX3PlayerAttribute:
                     player_info_lines[global_role_id] = lua_table
 
         async def build_attr(global_role_id: int, lua_table: list):
-            equips_lines = [e for e in lua_table[5] if int(e[0]) in range(0, 13)]
-            talents_lines = [int(t[1]) for t in lua_table[6]]
-            kungfu_id = Kungfu.with_internel_id(int(lua_table[3]), True).id
+            try:
+                equips_lines = []
+                for each_equip in lua_table[5]:
+                    try:
+                        if int(each_equip[0]) in range(0, 13):
+                            equips_lines.append(each_equip)
+                    except (TypeError, ValueError, IndexError):
+                        continue
+                talents_lines = []
+                for each_talent in lua_table[6]:
+                    try:
+                        talents_lines.append(int(each_talent[1]))
+                    except (TypeError, ValueError, IndexError):
+                        continue
+                kungfu_id = Kungfu.with_internel_id(int(lua_table[3]), True).id
+            except (TypeError, ValueError, IndexError):
+                return None
+            if not equips_lines or kungfu_id is None:
+                return None
             if only_threapy and kungfu_id not in [10080, 10028, 10176, 10448, 10626]:
                 return None
             return cls(
@@ -1173,7 +1195,11 @@ class JX3PlayerAttribute:
             instance = build_attr(rid, lua)
             if instance is not None:
                 tasks.append(instance)
-        return await asyncio.gather(*tasks)
+        return [
+            instance
+            for instance in await asyncio.gather(*tasks)
+            if instance is not None
+        ]
 
     @overload
     @classmethod
@@ -1189,15 +1215,33 @@ class JX3PlayerAttribute:
         all_equips: list[PlayerEquipsCache] | Any = db.where_all(PlayerEquipsCache(), "global_role_id = ?", str(global_role_id), default=[])
         if not all_equips:
             return None
-        final_equips = copy.deepcopy(all_equips)
-        final_equip: PlayerEquipsCache | None = None
+        usable_equips: list[tuple[PlayerEquipsCache, Self]] = []
+        for each_equip in copy.deepcopy(all_equips):
+            instance = cls(
+                each_equip.equips_data,
+                each_equip.talents_data,
+                each_equip.kungfu_id,
+                each_equip.global_role_id,
+                each_equip.timestamp,
+                each_equip.tag
+            )
+            try:
+                instance.validate()
+            except Exception:
+                continue
+            usable_equips.append((each_equip, instance))
+        if not usable_equips:
+            return None
+        final_equips = usable_equips
+        final_equip: tuple[PlayerEquipsCache, Self] | None = None
         if not tags:
-            final_equip = max(final_equips, key=lambda x: x.timestamp)
+            final_equip = max(final_equips, key=lambda x: x[0].timestamp)
         else:
             for each_tag in ["PVE", "PVP", "PVX"]:
                 if each_tag in tags:
-                    final_equips = [e for e in final_equips if e.tag == each_tag]
-            for each_equip in final_equips:
+                    final_equips = [e for e in final_equips if e[0].tag == each_tag]
+            final_equips = sorted(final_equips, key=lambda x: x[0].timestamp, reverse=True)
+            for each_equip, instance in final_equips:
                 if each_equip.kungfu_id in [10014, 10015, 10224, 10225, 10821]:
                     if (
                         ("QC" in tags and each_equip.kungfu_id == 10014) or \
@@ -1206,36 +1250,18 @@ class JX3PlayerAttribute:
                         ("TL" in tags and each_equip.kungfu_id == 10225) or \
                         ("WX" in tags and each_equip.kungfu_id == 10821)
                     ):
-                        final_equip = each_equip
+                        final_equip = (each_equip, instance)
                         break
                 else:
                     kungfu_tag = {"D": "DPS", "T": "T", "N": "HPS"}[Kungfu.with_internel_id(each_equip.kungfu_id).abbr]
                     if kungfu_tag in tags:
-                        final_equip = each_equip
+                        final_equip = (each_equip, instance)
                         break
         if final_equip is None:
             return None
         if all:
-            results: list[PlayerEquipsCache] = [final_equip] + all_equips
-            return [
-                cls(
-                    e.equips_data,
-                    e.talents_data,
-                    e.kungfu_id,
-                    e.global_role_id,
-                    e.timestamp,
-                    e.tag
-                )
-                for e in results
-            ]
-        return cls(
-            final_equip.equips_data,
-            final_equip.talents_data,
-            final_equip.kungfu_id,
-            final_equip.global_role_id,
-            final_equip.timestamp,
-            final_equip.tag
-        )
+            return [final_equip[1]] + [instance for _, instance in usable_equips]
+        return final_equip[1]
                     
 
     def __init__(
@@ -1256,6 +1282,13 @@ class JX3PlayerAttribute:
         self.timestamp = timestamp
         self.tag = equip_tag
         self.name = name
+
+    def validate(self) -> None:
+        if not self.equips:
+            raise ValueError("未解析到可用装备。")
+        self.attributes
+        self.score
+        self.talents
 
     @cached_property
     def equips(self) -> list[Equip]:
