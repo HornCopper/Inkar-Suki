@@ -33,12 +33,29 @@ from .traverse import (
 )
 from .rdps import BLACalculator
 from .jcl_analyze import CQCAnalyze, FALAnalyze, YXCAnalyze, RODAnalyze, HPSAnalyze, CALAnalyze, ASNAnalyze, THRAnalyze, THFAnalyze, LGZAnalyze
-from . import equipment_rating as equipment_rating
+from . import equipment_rating as equipment_rating_module
 import re
 import json
 import copy
 
 calc_matcher = on_command("jx3_calculator", aliases={"计算器", "T计算器", "QC计算器", "JC计算器", "TL计算器", "JY计算器", "WX计算器"}, priority=5, force_whitespace=True)
+equipment_rating_matcher = on_command("jx3_equipment_rating", aliases={"装备评级"}, priority=5, force_whitespace=True)
+equipment_rating_support_matcher = on_command("jx3_equipment_rating_support", aliases={"装备评级支持", "装备评级心法", "装备评级支持心法"}, priority=5, force_whitespace=True)
+
+
+@equipment_rating_support_matcher.handle()
+async def _(matcher: Matcher, args: Message = CommandArg()):
+    await equipment_rating_module.handle_equipment_rating_support(matcher, args)
+
+
+@equipment_rating_matcher.handle()
+async def _(event: GroupMessageEvent, matcher: Matcher, state: T_State, args: Message = CommandArg()):
+    await equipment_rating_module.handle_equipment_rating(event, matcher, state, args)
+
+
+@equipment_rating_matcher.got("rating_jcl_order")
+async def _(event: GroupMessageEvent, matcher: Matcher, state: T_State, rating_jcl_order: Message = Arg()):
+    await equipment_rating_module.handle_equipment_rating_loop_order(event, matcher, state, rating_jcl_order)
 
 @calc_matcher.handle()
 async def _(event: GroupMessageEvent, matcher: Matcher, state: T_State, args: Message = CommandArg(), cmd: str = RawCommand()):
