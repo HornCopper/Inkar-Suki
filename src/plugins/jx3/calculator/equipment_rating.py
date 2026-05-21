@@ -89,7 +89,7 @@ HIDDEN_ATTRIBUTE_TEXTS = {
     "内防",
     "体质",
 }
-ATTRIBUTE_INCOME_ENCHANT_SCALE = {
+LEGACY_ATTRIBUTE_INCOME_ENCHANT_SCALE = {
     "atPhysicsAttackPowerBase": 891 / 100,
     "atMagicAttackPowerBase": 891 / 100,
     "atPhysicsOvercomeBase": 3279 / 100,
@@ -100,6 +100,24 @@ ATTRIBUTE_INCOME_ENCHANT_SCALE = {
     "atMagicCriticalDamagePowerBase": 3279 / 100,
     "atStrainBase": 3279 / 100,
     "atSurplusValueBase": 3279 / 100,
+}
+ATTRIBUTE_INCOME_DISPLAY_KEYS = {
+    "Physics": (
+        "atPhysicsAttackPowerBase",
+        "atPhysicsCriticalStrike",
+        "atPhysicsCriticalDamagePowerBase",
+        "atPhysicsOvercomeBase",
+        "atSurplusValueBase",
+        "atStrainBase",
+    ),
+    "Magic": (
+        "atMagicAttackPowerBase",
+        "atMagicCriticalStrike",
+        "atMagicCriticalDamagePowerBase",
+        "atMagicOvercome",
+        "atSurplusValueBase",
+        "atStrainBase",
+    ),
 }
 
 
@@ -145,6 +163,8 @@ def _format_signed(value: Any) -> str:
 
 def _format_signed_float(value: Any) -> str:
     number = _to_float(value)
+    if abs(number) < 0.05:
+        return "+0"
     if abs(number) >= 10000:
         return f"{number / 10000:+.1f}万"
     if abs(number) >= 10:
@@ -581,17 +601,44 @@ def _prepare_display_attribute_row(name: Any, value: Any) -> dict[str, str]:
     return {"label": label, "value": str(value)}
 
 
+def _attribute_income_value(item: dict[str, Any], attribute_key: str) -> float | None:
+    if "dps_per_enchant" in item:
+        return _to_float(item.get("dps_per_enchant"))
+    legacy_scale = LEGACY_ATTRIBUTE_INCOME_ENCHANT_SCALE.get(attribute_key)
+    if legacy_scale is None:
+        return None
+    return _to_float(item.get("dps_per_100")) * legacy_scale
+
+
 def _prepare_attribute_incomes(summary: dict[str, Any]) -> list[dict[str, Any]]:
+    raw_items = [item for item in summary.get("attribute_incomes") or [] if isinstance(item, dict)]
+    attributes = summary.get("attributes") or {}
+    kungfu_type = str(attributes.get("kungfu_type") or "")
+    expected_keys = ATTRIBUTE_INCOME_DISPLAY_KEYS.get(kungfu_type, ())
+    expected_key_set = set(expected_keys)
+    if raw_items and expected_keys:
+        # Older calculator responses may omit a row when +100 sampling lands in the same rating step.
+        # Keep the six standard enchant rows visible without changing calculation results.
+        raw_items_by_key = {
+            str(item.get("attribute_key") or ""): item
+            for item in raw_items
+        }
+        raw_items = [
+            raw_items_by_key.get(attribute_key, {"attribute_key": attribute_key, "dps_per_100": 0})
+            for attribute_key in expected_keys
+        ] + [
+            item
+            for item in raw_items
+            if str(item.get("attribute_key") or "") not in expected_keys
+        ]
+
     incomes = []
-    for item in summary.get("attribute_incomes") or []:
-        if not isinstance(item, dict):
-            continue
+    for item in raw_items:
         attribute_key = str(item.get("attribute_key") or "")
-        scale = ATTRIBUTE_INCOME_ENCHANT_SCALE.get(attribute_key)
-        if scale is None:
+        if expected_key_set and attribute_key not in expected_key_set:
             continue
-        value = _to_float(item.get("dps_per_100")) * scale
-        if abs(value) < 0.01:
+        value = _attribute_income_value(item, attribute_key)
+        if value is None:
             continue
         label = get_attr_name(attribute_key) or str(item.get("name") or item.get("key") or "").strip()
         if not label:
