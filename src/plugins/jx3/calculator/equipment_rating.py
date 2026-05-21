@@ -134,7 +134,7 @@ async def _fetch_supported_equipment_rating_data() -> dict[str, Any] | str:
 def _supported_kungfu_name(item: dict[str, Any]) -> str:
     kungfu_id = item.get("kungfu_id")
     kungfu = Kungfu.with_internel_id(kungfu_id, convert_to_pc=True)
-    return str(item.get("name") or kungfu.name or kungfu_id)
+    return str(item.get("name") or kungfu.name or "未知心法")
 
 
 def _supported_kungfu_school(item: dict[str, Any]) -> str:
@@ -152,6 +152,32 @@ def _selected_rating_loop_text(item: dict[str, Any]) -> str:
     return " · ".join(part for part in parts if part) or "未指定循环"
 
 
+def _selected_jcl_record(item: dict[str, Any]) -> dict[str, Any]:
+    selected = item.get("selected") or {}
+    record = selected.get("jcl_record") or item.get("jcl_record") or {}
+    return record if isinstance(record, dict) else {}
+
+
+def _format_jcl_record_brief(item: dict[str, Any]) -> str:
+    record = _selected_jcl_record(item)
+    season = str(record.get("season") or "").strip()
+    return season or "未标注"
+
+
+def _format_jcl_record_detail_lines(item: dict[str, Any]) -> list[str]:
+    record = _selected_jcl_record(item)
+    season = str(record.get("season") or "").strip()
+    recorded_at = str(record.get("recorded_at") or "").strip()
+    note = str(record.get("note") or "").strip()
+
+    lines = [f"JCL记录：【{season or '未标注'}】"]
+    if recorded_at:
+        lines.append(f"记录时间：{recorded_at}")
+    if note:
+        lines.append(f"JCL备注：{note}")
+    return lines
+
+
 def _find_supported_kungfu(kungfus: list[dict[str, Any]], kungfu_id: int) -> dict[str, Any] | None:
     for item in kungfus:
         if int(item.get("kungfu_id", 0)) == kungfu_id:
@@ -161,27 +187,59 @@ def _find_supported_kungfu(kungfus: list[dict[str, Any]], kungfu_id: int) -> dic
     return None
 
 
+def _supported_kungfu_sort_key(item: dict[str, Any]) -> int:
+    try:
+        return int(item.get("kungfu_id") or 0)
+    except (TypeError, ValueError):
+        return 0
+
+
+def _season_group_sort_key(group: tuple[str, list[dict[str, Any]]]) -> tuple[int, int]:
+    season, items = group
+    current_season = ""
+    for item in items:
+        record = _selected_jcl_record(item)
+        current_season = str(record.get("current_season") or "").strip()
+        if current_season:
+            break
+    min_kungfu_id = min(_supported_kungfu_sort_key(item) for item in items)
+    return (0 if season == current_season else 1, min_kungfu_id)
+
+
 def _format_supported_kungfu_list(data: dict[str, Any]) -> str:
     kungfus = data.get("kungfus") or []
     if not kungfus:
         return "当前 calculator 没有可用的装备评级心法。"
-    groups: dict[str, list[str]] = {}
-    for item in kungfus:
-        groups.setdefault(_supported_kungfu_school(item), []).append(
-            f"{_supported_kungfu_name(item)}({item.get('kungfu_id')})"
-        )
+    season_groups: dict[str, list[dict[str, Any]]] = {}
+    for item in sorted(kungfus, key=_supported_kungfu_sort_key):
+        season = _format_jcl_record_brief(item)
+        season_groups.setdefault(season, []).append(item)
+
     lines = [f"当前装备评级支持 {len(kungfus)} 个心法："]
-    for school in sorted(groups):
-        lines.append(f"{school}：{'、'.join(groups[school])}")
-    lines.append("查询单个心法：装备评级支持 <心法名或心法ID>")
+    for season, items in sorted(season_groups.items(), key=_season_group_sort_key):
+        lines.append(f"【{season}】")
+        school_groups: dict[str, list[dict[str, Any]]] = {}
+        for item in items:
+            school_groups.setdefault(_supported_kungfu_school(item), []).append(item)
+        for school, school_items in sorted(
+            school_groups.items(),
+            key=lambda group: min(_supported_kungfu_sort_key(item) for item in group[1]),
+        ):
+            names = "、".join(
+                _supported_kungfu_name(item)
+                for item in sorted(school_items, key=_supported_kungfu_sort_key)
+            )
+            lines.append(f"{school}：{names}")
+    lines.append("查询单个心法：装备评级支持 <心法名>")
     return "\n".join(lines)
 
 
 def _format_supported_kungfu_detail(item: dict[str, Any]) -> str:
     selected = item.get("selected") or {}
     lines = [
-        f"装备评级支持：{_supported_kungfu_school(item)}·{_supported_kungfu_name(item)}({item.get('kungfu_id')})",
+        f"装备评级支持：{_supported_kungfu_school(item)}·{_supported_kungfu_name(item)}",
         f"默认评级循环：{_selected_rating_loop_text(item)}",
+        *_format_jcl_record_detail_lines(item),
         f"循环提供者：{selected.get('provider') or '-'}",
         f"可用评级JCL：{item.get('jcl_count', 0)} 个",
         "公共JCL选择：装备评级 <服务器> <角色> <心法> 评级列表",
@@ -442,7 +500,7 @@ async def render_equipment_rating_image(data: dict[str, Any], role_name: str, se
         theme_color=theme_color,
         role_name=role_name or "未命名配装",
         server_name=server_name,
-        kungfu_name=kungfu.name or str(meta["kungfu_id"]),
+        kungfu_name=kungfu.name or "未知心法",
         kungfu_icon=Path(kungfu.icon).as_uri(),
         meta=meta,
         summary=summary_view,
@@ -568,7 +626,7 @@ async def _finish_equipment_rating_calculation(
 async def handle_equipment_rating_support(matcher: Matcher, args: Message):
     query = args.extract_plain_text().strip()
     if len(query.split()) > 1:
-        await matcher.finish("参考格式：装备评级支持\n参考格式：装备评级支持 <心法名或心法ID>")
+        await matcher.finish("参考格式：装备评级支持\n参考格式：装备评级支持 <心法名>")
     data = await _fetch_supported_equipment_rating_data()
     if isinstance(data, str):
         await matcher.finish(data)
@@ -584,8 +642,8 @@ async def handle_equipment_rating_support(matcher: Matcher, args: Message):
     item = _find_supported_kungfu(kungfus, kungfu_id)
     if item is None:
         kungfu = Kungfu.with_internel_id(kungfu_id, convert_to_pc=True)
-        kungfu_name = kungfu.name or query
-        await matcher.finish(f"当前装备评级暂不支持 {kungfu_name}({kungfu_id})。")
+        kungfu_name = kungfu.name or "该心法"
+        await matcher.finish(f"当前装备评级暂不支持 {kungfu_name}。")
     await matcher.finish(_format_supported_kungfu_detail(item))
 
 
