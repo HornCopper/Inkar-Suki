@@ -740,6 +740,24 @@ async def _resolve_equipment_rating_target(
     return server, int(kungfu_id)
 
 
+def _equipment_rating_pve_tag(kungfu_id: int) -> str:
+    special_tags = {
+        10014: "QCPVE",
+        10015: "JCPVE",
+        10224: "JYPVE",
+        10225: "TLPVE",
+        10821: "WXPVE",
+    }
+    if kungfu_id in special_tags:
+        return special_tags[kungfu_id]
+    abbr = Kungfu.with_internel_id(kungfu_id).abbr
+    if abbr == "T":
+        return "TPVE"
+    if abbr == "N":
+        return "HPSPVE"
+    return "DPSPVE"
+
+
 async def _build_equipment_rating_payload(
     event: GroupMessageEvent,
     matcher: Matcher,
@@ -756,12 +774,20 @@ async def _build_equipment_rating_payload(
         await matcher.finish(PROMPT.PlayerNotExist)
 
     await JX3PlayerAttribute.from_tuilan(player_data.roleId, player_data.serverName, player_data.globalRoleId)
-    current_equip = await JX3PlayerAttribute.from_database(int(player_data.globalRoleId), all=True)
-    if current_equip is None:
+    pve_tag = _equipment_rating_pve_tag(kungfu_id)
+    pve_equips = await JX3PlayerAttribute.from_database(int(player_data.globalRoleId), pve_tag, all=True)
+    if pve_equips is None:
         await matcher.finish(PROMPT.EquipNotFound)
-    target_equip = next((equip for equip in current_equip if equip.kungfu_id == kungfu_id), None)
+    target_equip = next(
+        (
+            equip
+            for equip in pve_equips
+            if equip.kungfu_id == kungfu_id and equip.tag == "PVE"
+        ),
+        None,
+    )
     if target_equip is None:
-        await matcher.finish("未找到该心法对应的装备，请先提交或查询该心法装备后重试。")
+        await matcher.finish("未找到该心法对应的 PVE 装备，请先提交或查询该心法 PVE 装备后重试。")
 
     payload = {
         "kungfu_id": int(kungfu_id),
