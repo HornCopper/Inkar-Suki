@@ -183,13 +183,13 @@ async def _fetch_supported_equipment_rating_data() -> dict[str, Any] | str:
 
 
 def _supported_kungfu_name(item: dict[str, Any]) -> str:
-    kungfu_id = item.get("kungfu_id")
+    kungfu_id = item.get("kungfu_id", 0)
     kungfu = Kungfu.with_internel_id(kungfu_id, convert_to_pc=True)
     return str(item.get("name") or kungfu.name or "未知心法")
 
 
 def _supported_kungfu_school(item: dict[str, Any]) -> str:
-    kungfu = Kungfu.with_internel_id(item.get("kungfu_id"), convert_to_pc=True)
+    kungfu = Kungfu.with_internel_id(item.get("kungfu_id", 0), convert_to_pc=True)
     return kungfu.school or "其他"
 
 
@@ -388,7 +388,7 @@ def _attr_text(attributes: Any) -> str:
 
 def _equip_icon(detail: dict[str, Any]) -> str:
     try:
-        icon_id, _ = TabCache.get_icon_for_equip(int(detail.get("ui_id")))
+        icon_id, _ = TabCache.get_icon_for_equip(int(detail.get("ui_id", 0)))
     except Exception:
         icon_id = 1434
     return f"https://icon.jx3box.com/icon/{icon_id}.png"
@@ -468,7 +468,8 @@ def _prepare_slots(slots: list[dict[str, Any]]) -> list[dict[str, Any]]:
         rating = slot.get("rating")
         current = slot.get("current") or {}
         best = slot.get("best") or {}
-        location_name = SLOT_NAME_OVERRIDES.get(slot.get("location_name"), slot.get("location_name", ""))
+        raw_location_name = slot.get("location_name")
+        location_name = SLOT_NAME_OVERRIDES.get(str(raw_location_name or ""), raw_location_name or "")
         row = {
             **slot,
             "location_name": location_name,
@@ -549,7 +550,7 @@ def _prepare_attributes(
     rating_equip: JX3PlayerAttribute | None = None,
 ) -> tuple[list[dict[str, str]], list[dict[str, str]], list[dict[str, str]]]:
     attributes = summary.get("attributes") or {}
-    main_attr_key = attributes.get("MainAttrKey")
+    main_attr_key = attributes.get("MainAttrKey", "")
     main_attr_label = MAIN_ATTR_LABELS.get(main_attr_key, "主属性")
     role_info = [
         {"label": "门派", "value": kungfu.school or "-"},
@@ -585,7 +586,7 @@ def _prepare_attributes(
         {"label": "破防", "value": _percent_from_rating(attributes.get("Overcome"), OVERCOME_DIVISOR)},
         {"label": "无双", "value": _percent_from_rating(attributes.get("Strain"), STRAIN_DIVISOR)},
         {"label": "破招", "value": _format_number(attributes.get("Surplus"))},
-        {"label": "加速", "value": f"{_format_number(attributes.get('Haste'))} / {_haste_level(attributes.get('Haste'))}"},
+        {"label": "加速", "value": f"{_format_number(attributes.get('Haste'))}.get('Haste'))"},
     ]
     return role_info, basic_attrs, detail_attrs
 
@@ -593,7 +594,7 @@ def _prepare_attributes(
 def _prepare_display_attribute_row(name: Any, value: Any) -> dict[str, str]:
     label = str(name)
     if label == "加速":
-        return {"label": label, "value": f"{_format_number(value)} / {_haste_level(value)}"}
+        return {"label": label, "value": f"{_format_number(value)}"}
     return {"label": label, "value": str(value)}
 
 
