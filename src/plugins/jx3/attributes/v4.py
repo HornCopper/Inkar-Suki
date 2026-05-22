@@ -218,6 +218,7 @@ async def get_attr_v4_image(
     talents: list[str]
 ):
     font = ASSETS + "/font/PingFangSC-Semibold.otf"
+    fzjz_font = ASSETS + "/font/fzjz.ttf"
     info_margin = "12px"
     if show is not None:
         info_margin = "8px"
@@ -236,6 +237,7 @@ async def get_attr_v4_image(
         talents=talents,
         other_equips=all_equips,
         font=font,
+        fzjz_font=fzjz_font,
         saohua=get_saohua(),
         show=show
     )
