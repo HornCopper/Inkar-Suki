@@ -56,7 +56,7 @@ EQUIPMENT_RATING_IMAGE_SEND_FAILED = (
     "装备评级图片已生成，但 QQ/NapCat 拒绝了图片上传。\n"
     "这通常是协议端富媒体上传失败，不是装备数据读取失败。请稍后重试，或联系维护者查看 NapCat 日志。"
 )
-EQUIPMENT_RATING_STARTED = "装备评级中，请稍后。"
+EQUIPMENT_RATING_STARTED = "装备评级中，请稍等片刻！"
 RATING_LOOP_LIST_KEYWORDS = {"评级列表", "循环列表", "JCL列表", "jcl列表"}
 EQUIPMENT_RATING_USAGE = (
     "参考格式：装备评级 <服务器> <角色> <心法>\n"
@@ -88,18 +88,6 @@ HIDDEN_ATTRIBUTE_TEXTS = {
     "外防",
     "内防",
     "体质",
-}
-LEGACY_ATTRIBUTE_INCOME_ENCHANT_SCALE = {
-    "atPhysicsAttackPowerBase": 891 / 100,
-    "atMagicAttackPowerBase": 891 / 100,
-    "atPhysicsOvercomeBase": 3279 / 100,
-    "atMagicOvercome": 3279 / 100,
-    "atPhysicsCriticalStrike": 3279 / 100,
-    "atMagicCriticalStrike": 3279 / 100,
-    "atPhysicsCriticalDamagePowerBase": 3279 / 100,
-    "atMagicCriticalDamagePowerBase": 3279 / 100,
-    "atStrainBase": 3279 / 100,
-    "atSurplusValueBase": 3279 / 100,
 }
 ATTRIBUTE_INCOME_DISPLAY_KEYS = {
     "Physics": (
@@ -412,13 +400,21 @@ def _quality_class(detail: dict[str, Any]) -> str:
     return "quality4"
 
 
+def _decoration_attribute_text(item: dict[str, Any]) -> str:
+    attribute_key = str(item.get("attribute_key") or "").strip()
+    label = get_attr_name(attribute_key)
+    if not label:
+        return ""
+    return f"{label}+{_format_plain_int(item.get('value'))}"
+
+
 def _decoration_chips(detail: dict[str, Any]) -> list[dict[str, str]]:
     chips = []
     for embedding in detail.get("embedding") or []:
         if not isinstance(embedding, dict):
             continue
-        text = str(embedding.get("text") or "").strip()
-        if not text or (text.startswith("五行石") and text.endswith("级")):
+        text = _decoration_attribute_text(embedding)
+        if not text:
             continue
         level = _format_plain_int(embedding.get("level"))
         chips.append(
@@ -601,45 +597,21 @@ def _prepare_display_attribute_row(name: Any, value: Any) -> dict[str, str]:
     return {"label": label, "value": str(value)}
 
 
-def _attribute_income_value(item: dict[str, Any], attribute_key: str) -> float | None:
-    if "dps_per_enchant" in item:
-        return _to_float(item.get("dps_per_enchant"))
-    legacy_scale = LEGACY_ATTRIBUTE_INCOME_ENCHANT_SCALE.get(attribute_key)
-    if legacy_scale is None:
-        return None
-    return _to_float(item.get("dps_per_100")) * legacy_scale
-
-
 def _prepare_attribute_incomes(summary: dict[str, Any]) -> list[dict[str, Any]]:
     raw_items = [item for item in summary.get("attribute_incomes") or [] if isinstance(item, dict)]
     attributes = summary.get("attributes") or {}
     kungfu_type = str(attributes.get("kungfu_type") or "")
     expected_keys = ATTRIBUTE_INCOME_DISPLAY_KEYS.get(kungfu_type, ())
     expected_key_set = set(expected_keys)
-    if raw_items and expected_keys:
-        # Older calculator responses may omit a row when +100 sampling lands in the same rating step.
-        # Keep the six standard enchant rows visible without changing calculation results.
-        raw_items_by_key = {
-            str(item.get("attribute_key") or ""): item
-            for item in raw_items
-        }
-        raw_items = [
-            raw_items_by_key.get(attribute_key, {"attribute_key": attribute_key, "dps_per_100": 0})
-            for attribute_key in expected_keys
-        ] + [
-            item
-            for item in raw_items
-            if str(item.get("attribute_key") or "") not in expected_keys
-        ]
 
     incomes = []
     for item in raw_items:
         attribute_key = str(item.get("attribute_key") or "")
         if expected_key_set and attribute_key not in expected_key_set:
             continue
-        value = _attribute_income_value(item, attribute_key)
-        if value is None:
+        if "dps_per_enchant" not in item:
             continue
+        value = _to_float(item.get("dps_per_enchant"))
         label = get_attr_name(attribute_key) or str(item.get("name") or item.get("key") or "").strip()
         if not label:
             continue
