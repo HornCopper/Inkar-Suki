@@ -15,7 +15,13 @@ from src.const.jx3.kungfu import Kungfu
 from src.const.jx3.server import Server
 from src.const.path import ASSETS, TEMPLATES, build_path
 from src.const.prompts import PROMPT
-from src.utils.database.attributes import JX3PlayerAttribute, TabCache, Talent
+from src.utils.database.attributes import (
+    JX3PlayerAttribute,
+    TabCache,
+    Talent,
+    get_attr_name,
+    split_display_attributes,
+)
 from src.utils.database.constant import (
     CRITICAL_DAMAGE_DIVISOR,
     CRITICAL_DIVISOR,
@@ -36,6 +42,15 @@ RANK_ICON_FILES = {
     "B": "rank_b.png",
     "C": "rank_c.png",
     "D": "rank_d.png",
+}
+RANK_THEMES = {
+    "ACE": {"accent": "#ff304f", "light": "#ffd2da", "deep": "#8f0017", "rgb": "255 48 79"},
+    "S+": {"accent": "#ff7a00", "light": "#ffd4a3", "deep": "#a83a00", "rgb": "255 122 0"},
+    "S": {"accent": "#ffd24d", "light": "#fff1b6", "deep": "#9c6500", "rgb": "255 210 77"},
+    "A": {"accent": "#a85cff", "light": "#efe0ff", "deep": "#5620b8", "rgb": "168 92 255"},
+    "B": {"accent": "#3f8cff", "light": "#dceaff", "deep": "#0647ad", "rgb": "63 140 255"},
+    "C": {"accent": "#22c76f", "light": "#d6f7e4", "deep": "#066437", "rgb": "34 199 111"},
+    "D": {"accent": "#ffffff", "light": "#ffffff", "deep": "#9ca3af", "rgb": "190 196 206"},
 }
 EQUIPMENT_RATING_IMAGE_SEND_FAILED = (
     "装备评级图片已生成，但 QQ/NapCat 拒绝了图片上传。\n"
@@ -74,11 +89,48 @@ HIDDEN_ATTRIBUTE_TEXTS = {
     "内防",
     "体质",
 }
+LEGACY_ATTRIBUTE_INCOME_ENCHANT_SCALE = {
+    "atPhysicsAttackPowerBase": 891 / 100,
+    "atMagicAttackPowerBase": 891 / 100,
+    "atPhysicsOvercomeBase": 3279 / 100,
+    "atMagicOvercome": 3279 / 100,
+    "atPhysicsCriticalStrike": 3279 / 100,
+    "atMagicCriticalStrike": 3279 / 100,
+    "atPhysicsCriticalDamagePowerBase": 3279 / 100,
+    "atMagicCriticalDamagePowerBase": 3279 / 100,
+    "atStrainBase": 3279 / 100,
+    "atSurplusValueBase": 3279 / 100,
+}
+ATTRIBUTE_INCOME_DISPLAY_KEYS = {
+    "Physics": (
+        "atPhysicsAttackPowerBase",
+        "atPhysicsCriticalStrike",
+        "atPhysicsCriticalDamagePowerBase",
+        "atPhysicsOvercomeBase",
+        "atSurplusValueBase",
+        "atStrainBase",
+    ),
+    "Magic": (
+        "atMagicAttackPowerBase",
+        "atMagicCriticalStrike",
+        "atMagicCriticalDamagePowerBase",
+        "atMagicOvercome",
+        "atSurplusValueBase",
+        "atStrainBase",
+    ),
+}
 
 
 def _is_hidden_attribute_text(value: Any) -> bool:
     text = str(value or "").strip()
-    return not text or text in HIDDEN_ATTRIBUTE_TEXTS or text.startswith("at")
+    if not text or text in HIDDEN_ATTRIBUTE_TEXTS:
+        return True
+    return text.startswith("at") and not get_attr_name(text)
+
+
+def _short_attribute_text(value: Any) -> str:
+    text = str(value or "").strip()
+    return get_attr_name(text) or text
 
 
 def _to_float(value: Any, default: float = 0) -> float:
@@ -107,6 +159,17 @@ def _format_signed(value: Any) -> str:
         return f"{int(float(value)):+,}"
     except (TypeError, ValueError):
         return "+0"
+
+
+def _format_signed_float(value: Any) -> str:
+    number = _to_float(value)
+    if abs(number) < 0.05:
+        return "+0"
+    if abs(number) >= 10000:
+        return f"{number / 10000:+.1f}万"
+    if abs(number) >= 10:
+        return f"{number:+,.0f}"
+    return f"{number:+.1f}"
 
 
 def _format_percent(value: Any) -> str:
@@ -307,11 +370,19 @@ def _grade_icon(grade: Any) -> str:
     return _asset_uri("image", "jx3", "equipment_rating", RANK_ICON_FILES.get(str(grade), "rank_d.png"))
 
 
+def _grade_theme(grade: Any) -> dict[str, str]:
+    return RANK_THEMES.get(str(grade), RANK_THEMES["D"]).copy()
+
+
+def _rating_avatar() -> str:
+    return _asset_uri("image", "jx3", "equipment_rating", "Inkar.jpg")
+
+
 def _attr_text(attributes: Any) -> str:
     if isinstance(attributes, list):
         return " ".join(
             [
-                str(item).strip()
+                _short_attribute_text(item)
                 for item in attributes
                 if not _is_hidden_attribute_text(item)
             ]
@@ -319,7 +390,7 @@ def _attr_text(attributes: Any) -> str:
     if isinstance(attributes, str):
         return " ".join(
             [
-                part
+                _short_attribute_text(part)
                 for part in attributes.split()
                 if not _is_hidden_attribute_text(part)
             ]
@@ -383,6 +454,17 @@ def _decoration_chips(detail: dict[str, Any]) -> list[dict[str, str]]:
     return chips
 
 
+def _best_equipment_text(best: dict[str, Any]) -> str:
+    name = str(best.get("name") or "候选装备")
+    details = []
+    if _to_float(best.get("level")) > 0:
+        details.append(_format_plain_int(best.get("level")))
+    attribute_text = _attr_text(best.get("attribute"))
+    if attribute_text:
+        details.append(attribute_text)
+    return f"{name}（{' '.join(details)}）" if details else name
+
+
 def _prepare_slots(slots: list[dict[str, Any]]) -> list[dict[str, Any]]:
     prepared = []
     order = {location: index for index, location in enumerate(SLOT_DISPLAY_ORDER)}
@@ -413,8 +495,10 @@ def _prepare_slots(slots: list[dict[str, Any]]) -> list[dict[str, Any]]:
             "is_rated": rating is not None,
             "grade_icon": "",
             "score_text": "--",
+            "score_value": 0,
             "best_note": "",
             "has_haste_adjustment": False,
+            "upgrade_value": 0,
         }
         if rating is not None:
             grade = str(rating.get("grade", "D"))
@@ -424,15 +508,50 @@ def _prepare_slots(slots: list[dict[str, Any]]) -> list[dict[str, Any]]:
                 {
                     "grade_icon": _grade_icon(grade),
                     "score_text": str(rating.get("display_score", 0)),
-                    "best_note": f"最优 {best.get('name', '候选装备')}: {_format_signed(best_diff)}",
+                    "score_value": _to_float(rating.get("display_score")),
+                    "best_note": f"最优 {_best_equipment_text(best)}: {_format_signed(best_diff)}",
                     "has_haste_adjustment": bool(adjustment.get("applied")),
+                    "upgrade_value": best_diff,
                 }
             )
         prepared.append(row)
     return prepared
 
 
-def _prepare_attributes(summary: dict[str, Any], kungfu: Kungfu) -> tuple[list[dict[str, str]], list[dict[str, str]], list[dict[str, str]]]:
+def _prepare_header_summary(summary: dict[str, Any], slots: list[dict[str, Any]]) -> dict[str, Any]:
+    priority_slots = []
+    for slot in slots:
+        if not slot.get("is_rated"):
+            continue
+        priority_slots.append(
+            {
+                "name": str(slot.get("location_name") or "").strip(),
+                "score": _to_float(slot.get("score_value"), 100),
+                "upgrade": _to_float(slot.get("upgrade_value")),
+            }
+        )
+    if any(item["upgrade"] > 0.01 for item in priority_slots):
+        priority_slots = [item for item in priority_slots if item["upgrade"] > 0.01]
+        priority_slots.sort(key=lambda item: (-item["upgrade"], item["score"]))
+    else:
+        priority_slots.sort(key=lambda item: item["score"])
+    names = []
+    for item in priority_slots:
+        if item["name"] and item["name"] not in names:
+            names.append(item["name"])
+        if len(names) >= 3:
+            break
+    return {
+        "priority_tags": names or ["暂无明显短板"],
+        "priority_text": " / ".join(names) if names else "暂无明显短板",
+    }
+
+
+def _prepare_attributes(
+    summary: dict[str, Any],
+    kungfu: Kungfu,
+    rating_equip: JX3PlayerAttribute | None = None,
+) -> tuple[list[dict[str, str]], list[dict[str, str]], list[dict[str, str]]]:
     attributes = summary.get("attributes") or {}
     main_attr_key = attributes.get("MainAttrKey")
     main_attr_label = MAIN_ATTR_LABELS.get(main_attr_key, "主属性")
@@ -442,6 +561,22 @@ def _prepare_attributes(summary: dict[str, Any], kungfu: Kungfu) -> tuple[list[d
         {"label": "主属性", "value": main_attr_label},
         {"label": "目标", "value": "134级木桩"},
     ]
+    if rating_equip is not None:
+        try:
+            display_attrs = rating_equip.attributes
+        except Exception:
+            display_attrs = {}
+        if display_attrs:
+            basic_display_attrs, detail_display_attrs = split_display_attributes(display_attrs, kungfu.abbr)
+            basic_attrs = [
+                _prepare_display_attribute_row(name, value)
+                for name, value in basic_display_attrs.items()
+            ]
+            detail_attrs = [
+                _prepare_display_attribute_row(name, value)
+                for name, value in detail_display_attrs.items()
+            ]
+            return role_info, basic_attrs, detail_attrs
     basic_attrs = [
         {"label": "装分", "value": _format_number(summary.get("current_score"))},
         {"label": "基础攻击", "value": _format_number(attributes.get("BaseAttack"))},
@@ -459,6 +594,72 @@ def _prepare_attributes(summary: dict[str, Any], kungfu: Kungfu) -> tuple[list[d
     return role_info, basic_attrs, detail_attrs
 
 
+def _prepare_display_attribute_row(name: Any, value: Any) -> dict[str, str]:
+    label = str(name)
+    if label == "加速":
+        return {"label": label, "value": f"{_format_number(value)} / {_haste_level(value)}"}
+    return {"label": label, "value": str(value)}
+
+
+def _attribute_income_value(item: dict[str, Any], attribute_key: str) -> float | None:
+    if "dps_per_enchant" in item:
+        return _to_float(item.get("dps_per_enchant"))
+    legacy_scale = LEGACY_ATTRIBUTE_INCOME_ENCHANT_SCALE.get(attribute_key)
+    if legacy_scale is None:
+        return None
+    return _to_float(item.get("dps_per_100")) * legacy_scale
+
+
+def _prepare_attribute_incomes(summary: dict[str, Any]) -> list[dict[str, Any]]:
+    raw_items = [item for item in summary.get("attribute_incomes") or [] if isinstance(item, dict)]
+    attributes = summary.get("attributes") or {}
+    kungfu_type = str(attributes.get("kungfu_type") or "")
+    expected_keys = ATTRIBUTE_INCOME_DISPLAY_KEYS.get(kungfu_type, ())
+    expected_key_set = set(expected_keys)
+    if raw_items and expected_keys:
+        # Older calculator responses may omit a row when +100 sampling lands in the same rating step.
+        # Keep the six standard enchant rows visible without changing calculation results.
+        raw_items_by_key = {
+            str(item.get("attribute_key") or ""): item
+            for item in raw_items
+        }
+        raw_items = [
+            raw_items_by_key.get(attribute_key, {"attribute_key": attribute_key, "dps_per_100": 0})
+            for attribute_key in expected_keys
+        ] + [
+            item
+            for item in raw_items
+            if str(item.get("attribute_key") or "") not in expected_keys
+        ]
+
+    incomes = []
+    for item in raw_items:
+        attribute_key = str(item.get("attribute_key") or "")
+        if expected_key_set and attribute_key not in expected_key_set:
+            continue
+        value = _attribute_income_value(item, attribute_key)
+        if value is None:
+            continue
+        label = get_attr_name(attribute_key) or str(item.get("name") or item.get("key") or "").strip()
+        if not label:
+            continue
+        incomes.append(
+            {
+                "label": label,
+                "value": value,
+                "value_text": _format_signed_float(value),
+            }
+        )
+    if not incomes:
+        return []
+    incomes.sort(key=lambda item: item["value"], reverse=True)
+    max_value = max(abs(item["value"]) for item in incomes) or 1
+    for item in incomes:
+        item["percent"] = f"{max(4, abs(item['value']) / max_value * 100):.1f}"
+    incomes[0]["is_top"] = True
+    return incomes
+
+
 def _prepare_talents(talents: Any) -> list[dict[str, str]]:
     prepared = []
     for talent_id in talents or []:
@@ -470,12 +671,17 @@ def _prepare_talents(talents: Any) -> list[dict[str, str]]:
     return prepared
 
 
-async def render_equipment_rating_image(data: dict[str, Any], role_name: str, server_name: str):
+async def render_equipment_rating_image(
+    data: dict[str, Any],
+    role_name: str,
+    server_name: str,
+    rating_equip: JX3PlayerAttribute | None = None,
+):
     meta = data["meta"]
     summary = data["summary"]
     kungfu = Kungfu.with_internel_id(meta["kungfu_id"])
     theme_color = kungfu.color if kungfu.name else "#4f6f87"
-    role_info, basic_attrs, detail_attrs = _prepare_attributes(summary, kungfu)
+    role_info, basic_attrs, detail_attrs = _prepare_attributes(summary, kungfu, rating_equip)
     battle_time = _to_float(summary.get("battle_time"))
     haste_level = _haste_level(summary.get("current_haste"))
     summary_view = {
@@ -483,9 +689,11 @@ async def render_equipment_rating_image(data: dict[str, Any], role_name: str, se
         "current_score_text": _format_number(summary.get("current_score")),
         "total_score_text": summary.get("display_total_score_text", f"{summary.get('display_total_score', 0):.1f}"),
         "grade_icon": _grade_icon(summary.get("grade", "D")),
+        "grade_theme": _grade_theme(summary.get("grade", "D")),
         "battle_time_text": f"{battle_time:.1f}秒",
         "haste_level_text": f"{haste_level}段",
     }
+    slots = _prepare_slots(data["slots"])
     chips = [
         meta.get("loop_name", "评级专用循环"),
         f"{meta.get('jcl', {}).get('weapon', '')}{meta.get('jcl', {}).get('haste', '')}",
@@ -504,10 +712,16 @@ async def render_equipment_rating_image(data: dict[str, Any], role_name: str, se
         kungfu_icon=Path(kungfu.icon).as_uri(),
         meta=meta,
         summary=summary_view,
+        header_avatar=_rating_avatar(),
+        header_summary={
+            **_prepare_header_summary(summary_view, slots),
+            "title": f"{kungfu.name}体检报告" if kungfu.name else "体检报告",
+        },
         role_info=role_info,
         basic_attrs=basic_attrs,
         detail_attrs=detail_attrs,
-        slots=_prepare_slots(data["slots"]),
+        attribute_incomes=_prepare_attribute_incomes(summary),
+        slots=slots,
         talents=_prepare_talents(summary.get("talents")),
         warnings=data.get("warnings", []),
         chips=[chip for chip in chips if chip],
@@ -590,7 +804,7 @@ async def _build_equipment_rating_payload(
             "max": 43000,
         },
     }
-    return payload, player_data, int(kungfu_id)
+    return payload, player_data, target_equip
 
 
 async def _request_equipment_rating_data(payload: dict[str, Any]) -> dict[str, Any] | str:
@@ -613,13 +827,14 @@ async def _finish_equipment_rating_calculation(
     payload: dict[str, Any],
     role_name: str,
     server_name: str,
+    rating_equip: JX3PlayerAttribute,
 ):
     data = await _request_equipment_rating_data(payload)
     if isinstance(data, str):
         await matcher.finish(data)
     await finish_equipment_rating_response(
         matcher,
-        await render_equipment_rating_image(data, role_name, server_name)
+        await render_equipment_rating_image(data, role_name, server_name, rating_equip)
     )
 
 
@@ -674,8 +889,14 @@ async def handle_equipment_rating(event: GroupMessageEvent, matcher: Matcher, st
 
     await _resolve_equipment_rating_target(event, matcher, arg[0], arg[2])
     await _send_equipment_rating_started(matcher)
-    payload, player_data, _ = await _build_equipment_rating_payload(event, matcher, arg[0], arg[1], arg[2])
-    await _finish_equipment_rating_calculation(matcher, payload, player_data.roleName, player_data.serverName)
+    payload, player_data, rating_equip = await _build_equipment_rating_payload(event, matcher, arg[0], arg[1], arg[2])
+    await _finish_equipment_rating_calculation(
+        matcher,
+        payload,
+        player_data.roleName,
+        player_data.serverName,
+        rating_equip,
+    )
 
 
 async def handle_equipment_rating_loop_order(
@@ -704,11 +925,12 @@ async def handle_equipment_rating_loop_order(
         await matcher.finish("超出可选范围，请重新发起命令！")
     await _resolve_equipment_rating_target(event, matcher, server_arg, kungfu_arg)
     await _send_equipment_rating_started(matcher)
-    payload, player_data, _ = await _build_equipment_rating_payload(event, matcher, server_arg, role_arg, kungfu_arg)
+    payload, player_data, rating_equip = await _build_equipment_rating_payload(event, matcher, server_arg, role_arg, kungfu_arg)
     payload = {**payload, "jcl_index": index}
     await _finish_equipment_rating_calculation(
         matcher,
         payload,
         player_data.roleName,
         player_data.serverName,
+        rating_equip,
     )

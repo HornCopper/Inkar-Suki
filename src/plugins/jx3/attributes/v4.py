@@ -9,7 +9,7 @@ from src.utils.network import cache_image
 from src.utils.database.player import search_player
 from src.utils.generate import generate
 from src.templates import get_saohua
-from src.utils.database.attributes import Equip, JX3PlayerAttribute
+from src.utils.database.attributes import Equip, JX3PlayerAttribute, split_display_attributes
 from src.plugins.jx3.calculator.traverse import get_latest_rating_cache
 
 import os
@@ -140,18 +140,7 @@ async def get_attr_v4(server: str, name: str, conditions: str = ""):
     basic_info["心法"] = kungfu.name or "未知"
     basic_info["标识"] = role_info.roleId
     basic_info["全服"] = role_info.globalRoleId
-    main_display_attr = {
-        "D": ["攻击力", "会心", "会心效果", "破防", "无双", "破招", "加速"],
-        "N": ["治疗量", "会心", "会心效果", "加速", "基础根骨"],
-        "T": ["内功防御", "外功防御", "基础体质", "御劲"],
-    }[kungfu.abbr]
-    main_attr = {}
-    detailed_attr = {}
-    for attr_name, attr_value in current_equip.attributes.items():
-        if attr_name in main_display_attr:
-            main_attr[attr_name] = attr_value
-        else:
-            detailed_attr[attr_name] = attr_value
+    main_attr, detailed_attr = split_display_attributes(current_equip.attributes, kungfu.abbr)
     all_equip_records = []
     for each_other_equip in other_equips:
         other_kungfu = Kungfu.with_internel_id(each_other_equip.kungfu_id, True)

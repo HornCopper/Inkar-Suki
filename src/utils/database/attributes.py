@@ -64,6 +64,30 @@ def parse_plugin_data(data: str) -> list[dict]:
 def get_attr_name(attribute_name: str):
     return AttributesShort.get(attribute_name, "")
 
+MAIN_DISPLAY_ATTRIBUTES_BY_KUNGFU_ABBR = {
+    "D": {"攻击力", "会心", "会心效果", "破防", "无双", "破招", "加速"},
+    "N": {"治疗量", "会心", "会心效果", "加速", "基础根骨"},
+    "T": {"内功防御", "外功防御", "基础体质", "御劲"},
+}
+
+
+def split_display_attributes(
+    attributes: dict[str, Any],
+    kungfu_abbr: str,
+) -> tuple[dict[str, Any], dict[str, Any]]:
+    main_names = MAIN_DISPLAY_ATTRIBUTES_BY_KUNGFU_ABBR.get(
+        kungfu_abbr,
+        MAIN_DISPLAY_ATTRIBUTES_BY_KUNGFU_ABBR["D"],
+    )
+    main_attr = {}
+    detailed_attr = {}
+    for attr_name, attr_value in attributes.items():
+        if attr_name in main_names:
+            main_attr[attr_name] = attr_value
+        else:
+            detailed_attr[attr_name] = attr_value
+    return main_attr, detailed_attr
+
 def get_fivestone_level(item_index: int) -> int:
     if item_index in range(24442, 24449+1):
         return item_index - 24441
