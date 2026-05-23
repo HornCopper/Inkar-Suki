@@ -45,14 +45,14 @@
         }
 
         .sidebar-top {
-            padding-bottom: 30px;
+            padding-bottom: 18px;
         }
 
         .kungfu-icon {
             display: block;
             width: 58px;
             height: 58px;
-            margin-bottom: 18px;
+            margin-bottom: 10px;
             object-fit: cover;
         }
 
@@ -65,7 +65,7 @@
         }
 
         .build-subtitle {
-            margin-top: 12px;
+            margin-top: 8px;
             font-size: 20px;
             line-height: 1.2;
             font-weight: 800;
@@ -364,6 +364,20 @@
             text-overflow: ellipsis;
         }
 
+        .distribution-chart {
+            display: block;
+            width: 228px;
+            height: auto;
+        }
+
+        .distribution-caption {
+            margin-top: 6px;
+            color: #7a8590;
+            font-size: 11px;
+            line-height: 1.35;
+            font-weight: 800;
+        }
+
         .slot-list {
             width: 100%;
         }
@@ -585,7 +599,6 @@
                         <img class="rank-large" src="{{ summary.grade_icon }}" alt="">
                         <div class="total-score">{{ summary.total_score_text }}分</div>
                         <div class="total-meta">
-                            <div class="side-row"><span>有效部位</span><strong>{{ summary.rated_slots }}/{{ summary.total_slots }}</strong></div>
                             <div class="side-row"><span>评级增益</span><strong>{{ meta.income_name }}</strong></div>
                             <div class="side-row"><span>评级循环</span><strong>{{ meta.loop_name }}</strong></div>
                         </div>
@@ -606,6 +619,14 @@
                         </div>
                         {% endfor %}
                     </div>
+                </section>
+                {% endif %}
+
+                {% if distribution %}
+                <section class="side-section">
+                    <div class="side-heading">手部乘区分布</div>
+                    <img class="distribution-chart" src="{{ distribution.image }}" alt="">
+                    <div class="distribution-caption">{{ distribution.caption }}</div>
                 </section>
                 {% endif %}
             </aside>
