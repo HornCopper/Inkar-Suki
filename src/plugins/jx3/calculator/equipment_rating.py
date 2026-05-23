@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 from pathlib import Path
 from typing import Any
 
@@ -62,10 +63,22 @@ EQUIPMENT_RATING_USAGE = (
     "参考格式：装备评级 <服务器> <角色> <心法>\n"
     "公共循环：装备评级 <服务器> <角色> <心法> 评级列表"
 )
+EQUIPMENT_RATING_DISTRIBUTION_PATH = build_path(
+    ASSETS, ["source", "jx3", "equipment_rating_distribution.json"]
+)
 
 
 def _asset_uri(*parts: str) -> str:
     return Path(build_path(ASSETS, list(parts))).as_uri()
+
+
+def _load_equipment_rating_distribution() -> dict[str, Any]:
+    """读取预计算分布图索引；运行时只做静态资源查找，不做拟合计算。"""
+    try:
+        payload = json.loads(read(EQUIPMENT_RATING_DISTRIBUTION_PATH))
+    except Exception:
+        payload = {}
+    return payload if isinstance(payload, dict) else {}
 
 
 SLOT_DISPLAY_ORDER = [4, 3, 8, 12, 10, 11, 5, 9, 6, 7, 2, 0]
@@ -77,6 +90,7 @@ MAIN_ATTR_LABELS = {
     "atSpunkBase": "元气",
     "atVitalityBase": "体质",
 }
+HIDDEN_DETAIL_ATTRIBUTE_LABELS = {"化劲"}
 HIDDEN_ATTRIBUTE_TEXTS = {
     "atPhysicsShieldBase",
     "atPhysicsshieldBase",
@@ -572,6 +586,7 @@ def _prepare_attributes(
             detail_attrs = [
                 _prepare_display_attribute_row(name, value)
                 for name, value in detail_display_attrs.items()
+                if str(name) not in HIDDEN_DETAIL_ATTRIBUTE_LABELS
             ]
             return role_info, basic_attrs, detail_attrs
     basic_attrs = [
@@ -631,6 +646,24 @@ def _prepare_attribute_incomes(summary: dict[str, Any]) -> list[dict[str, Any]]:
         item["percent"] = f"{max(4, abs(item['value']) / max_value * 100):.1f}"
     incomes[0]["is_top"] = True
     return incomes
+
+
+def _prepare_distribution_view(kungfu_id: Any) -> dict[str, str] | None:
+    payload = _load_equipment_rating_distribution()
+    items = payload.get("items") or {}
+    if not isinstance(items, dict):
+        return None
+    item = items.get(str(kungfu_id))
+    if not isinstance(item, dict):
+        return None
+    image = str(item.get("image") or "").strip()
+    if not image:
+        return None
+    return {
+        "name": str(item.get("name") or "当前心法"),
+        "image": _asset_uri("image", "jx3", "equipment_rating", *image.split("/")),
+        "caption": "2026年5月21日统计数据",
+    }
 
 
 def _prepare_talents(talents: Any) -> list[dict[str, str]]:
@@ -694,6 +727,7 @@ async def render_equipment_rating_image(
         basic_attrs=basic_attrs,
         detail_attrs=detail_attrs,
         attribute_incomes=_prepare_attribute_incomes(summary),
+        distribution=_prepare_distribution_view(meta.get("kungfu_id")),
         slots=slots,
         talents=_prepare_talents(summary.get("talents")),
         warnings=data.get("warnings", []),
