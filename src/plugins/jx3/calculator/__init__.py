@@ -31,7 +31,7 @@ from .traverse import (
     request_equipment_ratings,
     save_rating_cache,
 )
-from .rdps import BLACalculator
+from .rdps import BLACalculator, TRDCalculator
 from .jcl_analyze import CQCAnalyze, FALAnalyze, YXCAnalyze, RODAnalyze, HPSAnalyze, CALAnalyze, ASNAnalyze, THRAnalyze, THFAnalyze, LGZAnalyze
 from . import equipment_rating as equipment_rating_module
 import re
@@ -474,6 +474,8 @@ async def _(bot: Bot, event: GroupUploadNoticeEvent):
     analyzer: Callable | None = None
     if check_jcl_name(event.file.name, "BLA-"):
         analyzer = BLACalculator
+    elif check_jcl_name(event.file.name, "TRD-"):
+        analyzer = TRDCalculator
     elif check_jcl_name(event.file.name, "CQC-"):
         analyzer = CQCAnalyze
     elif check_jcl_name(event.file.name, "FAL-"):

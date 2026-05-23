@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Literal
 from jinja2 import Template
 from httpx import AsyncClient
 
@@ -14,13 +14,73 @@ from ._template import bla_template_body
 
 import re
 
+def _normalize_merged_jcl_analysis(data: dict[str, Any]) -> dict[str, Any]:
+    rdps_players: dict[str, dict[str, Any]] = {}
+    for index, player in enumerate(data.get("stat", [])):
+        rdps = int(player.get("rdps") or 0)
+        if rdps <= 0:
+            continue
+        player_key = str(index)
+        rdps_players[player_key] = {
+            "name": player.get("name", player_key),
+            "occ": str(player.get("occ", "")),
+            "dps": rdps,
+        }
+
+    rhps_players: dict[str, dict[str, Any]] = {}
+    for index, (name, player) in enumerate(data.get("occResult", {}).items()):
+        result = player.get("result", {})
+        healer = result.get("skill", {}).get("healer", {})
+        rhps = int(healer.get("rhps") or result.get("dps", {}).get("stat", {}).get("rhps") or 0)
+        if rhps <= 0:
+            continue
+        player_name = result.get("overall", {}).get("name") or name
+        rhps_players[str(index)] = {
+            "name": player_name,
+            "occ": str(player.get("occ", "")),
+            "hps": rhps,
+        }
+
+    return {
+        "rdps": {
+            "sum": sum(player["dps"] for player in rdps_players.values()),
+            "player": rdps_players,
+        },
+        "rhps": {
+            "sum": sum(player["hps"] for player in rhps_players.values()),
+            "player": rhps_players,
+        },
+    }
+
+
+def _normalize_bla_analysis(data: dict[str, Any]) -> dict[str, Any]:
+    if "rdps" in data and "rhps" in data:
+        return data
+    if "stat" in data and "occResult" in data:
+        return _normalize_merged_jcl_analysis(data)
+    raise KeyError("Unsupported BLA analysis response")
+
 async def BLACalculator(file_name: str, url: str, anonymous: bool = False, user_id: int = 0):
+    return await BLACalculate(file_name, url, anonymous, "default")
+
+async def TRDCalculator(file_name: str, url: str, anonymous: bool = False, user_id: int = 0):
+    return await BLACalculate(file_name, url, anonymous, "thr_p1")
+
+async def BLACalculate(file_name: str, url: str, anonymous: bool = False, analyze_type: Literal["default", "thr_p1"] = "default"):
+    if analyze_type == "thr_p1":
+        url_path = "jcl_thr_p1"
+    else:
+        url_path = "jcl"
     async with AsyncClient(verify=False) as client:
-        resp = await client.post(f"{Config.jx3.api.bla_url}/jcl", params={"file_name": file_name, "url": url}, timeout=600)
-        data = resp.json()
+        resp = await client.post(f"{Config.jx3.api.bla_url}/{url_path}", params={"file_name": file_name, "url": url}, timeout=600)
+        raw_data = resp.json()
+        data = _normalize_bla_analysis(raw_data)
     pattern = r"^\d{4}(?:-\d{2}){5}-(?P<dungeon>.+?)\(\d+\)-(?P<boss>.+?)\(\d+\)\.jcl$"
     regex_match = re.match(pattern, file_name)
     dungeon, boss = regex_match.group("dungeon"), regex_match.group("boss") #type: ignore
+    boss = raw_data.get("overall", {}).get("boss") or boss
+    if analyze_type == "thr_p1":
+        boss = boss + "【仅第一阶段】"
 
     rdps_data = data["rdps"]
     total_rdps = "{:,}".format(int(rdps_data["sum"]))
