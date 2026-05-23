@@ -311,6 +311,7 @@ def _format_supported_kungfu_list(data: dict[str, Any]) -> str:
             )
             lines.append(f"{school}：{names}")
     lines.append("查询单个心法：装备评级支持 <心法名>")
+    lines.append("装备评级使用示例：装备评级 剑胆琴心 倦收天 剑纯")
     return "\n".join(lines)
 
 
@@ -320,7 +321,6 @@ def _format_supported_kungfu_detail(item: dict[str, Any]) -> str:
         f"装备评级支持：{_supported_kungfu_school(item)}·{_supported_kungfu_name(item)}",
         f"默认评级循环：{_selected_rating_loop_text(item)}",
         *_format_jcl_record_detail_lines(item),
-        f"循环提供者：{selected.get('provider') or '-'}",
         f"可用评级JCL：{item.get('jcl_count', 0)} 个",
         "公共JCL选择：装备评级 <服务器> <角色> <心法> 评级列表",
     ]
