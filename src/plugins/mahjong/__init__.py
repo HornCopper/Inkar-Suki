@@ -96,7 +96,7 @@ async def _(state: T_State, event: MessageEvent, args: Message = CommandArg()):
     state["tenpai_difficulty"] = difficulty
     image_path = render_hand_image(question.hand)
     message = Message(ms.image(Request(Path(image_path).as_uri()).local_content))
-    message += f"{question.hand_code}\n请回答听牌编码，例如：58p、5p8p、19m19s1234567z。"
+    message += f"{question.hand_code}\n请回答听牌编码，例如：58p、5p8p、19m19s1234567z；如果判断未听牌，请回答：未听牌。"
     await GuessTenpaiMatcher.send(ms.at(event.user_id) + message)
 
 
@@ -104,7 +104,7 @@ async def _(state: T_State, event: MessageEvent, args: Message = CommandArg()):
 async def _(state: T_State, event: MessageEvent = Received("answer")):
     answer = event.message.extract_plain_text().strip()
     waits = state["tenpai_waits"]
-    wait_code = tiles_to_code(waits)
+    wait_code = tiles_to_code(waits) if waits else "未听牌"
     if is_correct_answer(answer, waits):
         await GuessTenpaiMatcher.finish(ms.at(event.user_id) + f" 回答正确！听牌：{wait_code}")
     await GuessTenpaiMatcher.finish(ms.at(event.user_id) + f"回答错误，正确答案：{wait_code}")

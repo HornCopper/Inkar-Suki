@@ -15,6 +15,7 @@ from src.const.path import ASSETS, CACHE
 SUITS = "mps"
 TERMINAL_HONORS = {0, 8, 9, 17, 18, 26, *range(27, 34)}
 TILE_IMAGE_DIR = Path(ASSETS) / "image" / "mahjong"
+FAKE_TENPAI_RATE = 0.2
 
 
 @dataclass(frozen=True)
@@ -221,7 +222,7 @@ def _matches_difficulty(waits: tuple[int, ...], difficulty: str) -> bool:
     return bool(waits)
 
 
-def generate_question(difficulty: str = "simple") -> TenpaiQuestion:
+def _generate_real_question(difficulty: str = "simple") -> TenpaiQuestion:
     generators = [_random_standard_win] * 8 + [_random_chiitoi_win, _random_kokushi_win]
     if difficulty == "chinitsu":
         generators = [_random_chinitsu_win]
@@ -239,6 +240,52 @@ def generate_question(difficulty: str = "simple") -> TenpaiQuestion:
             return TenpaiQuestion(tuple(hand), waits, tiles_to_code(hand))
 
     raise RuntimeError("failed to generate tenpai question")
+
+
+def _nearby_tile_candidates(tile: int, difficulty: str) -> list[int]:
+    if difficulty == "chinitsu":
+        base = tile // 9 * 9
+        candidates = [base + offset for offset in range(9)]
+    elif tile < 27:
+        base = tile // 9 * 9
+        candidates = [base + offset for offset in range(9)]
+    else:
+        candidates = list(range(27, 34))
+
+    candidates.sort(key=lambda candidate: abs(candidate - tile))
+    return candidates
+
+
+def _generate_fake_question(difficulty: str = "simple") -> TenpaiQuestion:
+    for _ in range(1000):
+        question = _generate_real_question(difficulty)
+        hand = list(question.hand)
+        indices = list(range(len(hand)))
+        random.shuffle(indices)
+        for index in indices:
+            original = hand[index]
+            candidates = _nearby_tile_candidates(original, difficulty)
+            candidates.extend(random.sample(range(34), 34))
+            for replacement in candidates:
+                if replacement == original:
+                    continue
+                candidate_hand = hand.copy()
+                candidate_hand[index] = replacement
+                if Counter(candidate_hand)[replacement] > 4:
+                    continue
+                candidate_hand.sort()
+                if difficulty == "chinitsu" and not _is_chinitsu(candidate_hand):
+                    continue
+                if not get_waits(candidate_hand):
+                    return TenpaiQuestion(tuple(candidate_hand), tuple(), tiles_to_code(candidate_hand))
+
+    raise RuntimeError("failed to generate fake tenpai question")
+
+
+def generate_question(difficulty: str = "simple") -> TenpaiQuestion:
+    if random.random() < FAKE_TENPAI_RATE:
+        return _generate_fake_question(difficulty)
+    return _generate_real_question(difficulty)
 
 
 def _tile_image_path(tile: int) -> Path:
@@ -267,6 +314,10 @@ def render_hand_image(tiles: list[int] | tuple[int, ...]) -> str:
 
 
 def is_correct_answer(answer: str, waits: tuple[int, ...]) -> bool:
+    normalized_answer = answer.strip().lower().replace(" ", "")
+    if normalized_answer in {"未听牌", "没听牌", "沒有听牌", "沒有聽牌", "未聽牌", "没聽牌", "noten"}:
+        return not waits
+
     tiles = parse_tiles(answer)
     if tiles is None:
         return False
