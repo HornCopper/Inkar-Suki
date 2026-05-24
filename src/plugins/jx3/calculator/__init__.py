@@ -1,4 +1,4 @@
-from typing import cast, Callable
+from typing import Any, cast, Callable
 from nonebot import on_command
 from nonebot.params import CommandArg, Arg, RawCommand
 from nonebot.typing import T_State
@@ -37,10 +37,171 @@ from . import equipment_rating as equipment_rating_module
 import re
 import json
 import copy
+import asyncio
 
 calc_matcher = on_command("jx3_calculator", aliases={"计算器", "T计算器", "QC计算器", "JC计算器", "TL计算器", "JY计算器", "WX计算器"}, priority=5, force_whitespace=True)
+calculator_support_matcher = on_command("jx3_calculator_support", aliases={"计算器支持", "计算器心法", "计算器支持心法"}, priority=5, force_whitespace=True)
 equipment_rating_matcher = on_command("jx3_equipment_rating", aliases={"装备评级"}, priority=5, force_whitespace=True)
 equipment_rating_support_matcher = on_command("jx3_equipment_rating_support", aliases={"装备评级支持", "装备评级心法", "装备评级支持心法"}, priority=5, force_whitespace=True)
+rd_analysis_support_matcher = on_command("jx3_rd_analysis_support", aliases={"RD分析支持", "rd分析支持", "Rd分析支持"}, priority=5, force_whitespace=True)
+
+RD_ANALYSIS_SUPPORT_TEXT = (
+    "当前 RD 分析支持通过上传群文件触发：\n"
+    "【BLA-】单 BOSS 全程 RHPS+RDPS 分析（powered by 剑三警长）\n"
+    "【TRD-】唐怀仁 P1 阶段 RDPS 分析（powered by 剑三警长）\n"
+    "文件名格式：<前缀>YYYY-MM-DD-HH-MM-SS-<副本名>(副本ID)-<首领名>(首领ID).jcl\n"
+    "示例：TRD-2026-05-18-20-52-10-25人英雄阆风悬城(795)-须罗巨傀(137175).jcl\n"
+    "使用方式：把符合格式的 .jcl 文件上传到群文件，机器人会自动分析。"
+)
+
+
+def _calculator_support_kungfu_ids() -> list[int]:
+    ids: set[int] = set()
+    for kungfu_id in Kungfu.kungfu_internel_id.values():
+        try:
+            ids.add(int(kungfu_id))
+        except (TypeError, ValueError):
+            continue
+    return sorted(ids)
+
+
+async def _fetch_calculator_loops(kungfu_id: int) -> list[dict[str, Any]]:
+    try:
+        response = await Request(
+            f"{Config.jx3.api.calculator_url}/loops",
+            params={"kungfu_id": kungfu_id},
+        ).get(timeout=8)
+        if response.status_code >= 400:
+            return []
+        result = response.json()
+    except Exception:
+        return []
+    if result.get("code") != 200:
+        return []
+    loops = result.get("data") or []
+    return loops if isinstance(loops, list) else []
+
+
+async def _fetch_calculator_supported_kungfus() -> list[dict[str, Any]]:
+    kungfu_ids = _calculator_support_kungfu_ids()
+    loop_results = await asyncio.gather(
+        *(_fetch_calculator_loops(kungfu_id) for kungfu_id in kungfu_ids),
+    )
+    supported_by_name: dict[str, dict[str, Any]] = {}
+    for kungfu_id, loops in zip(kungfu_ids, loop_results):
+        if not loops:
+            continue
+        kungfu = Kungfu.with_internel_id(kungfu_id, convert_to_pc=True)
+        if kungfu.name is None:
+            continue
+        # /loops 会把部分移动端心法映射到旗舰端，这里按最终展示心法去重。
+        existing = supported_by_name.get(kungfu.name)
+        if existing is None:
+            supported_by_name[kungfu.name] = {
+                "kungfu_id": kungfu_id,
+                "name": kungfu.name,
+                "school": kungfu.school or "其他",
+                "loops": loops,
+                "alias_kungfu_ids": [kungfu_id],
+            }
+            continue
+        existing.setdefault("alias_kungfu_ids", []).append(kungfu_id)
+        existing.setdefault("loops", []).extend(loops)
+    return sorted(supported_by_name.values(), key=_calculator_support_sort_key)
+
+
+def _format_calculator_loop(loop: dict[str, Any]) -> str:
+    name = str(loop.get("name") or "").strip()
+    if not name:
+        return "未命名循环"
+    weapon, separator, loop_name = name.partition("_")
+    if not separator:
+        return name
+    parts = [part.strip() for part in [weapon, loop_name] if part.strip()]
+    return " · ".join(parts) or name
+
+
+def _calculator_support_sort_key(item: dict[str, Any]) -> int:
+    try:
+        return int(item.get("kungfu_id") or 0)
+    except (TypeError, ValueError):
+        return 0
+
+
+def _find_calculator_supported_kungfu(items: list[dict[str, Any]], kungfu_id: int) -> dict[str, Any] | None:
+    for item in items:
+        if _calculator_support_sort_key(item) == kungfu_id:
+            return item
+        if kungfu_id in [int(alias_id) for alias_id in item.get("alias_kungfu_ids") or []]:
+            return item
+    return None
+
+
+def _format_calculator_support_list(items: list[dict[str, Any]]) -> str:
+    if not items:
+        return "当前 calculator 没有可用的计算器心法，或 calculator 服务未连接。"
+
+    school_groups: dict[str, list[dict[str, Any]]] = {}
+    for item in sorted(items, key=_calculator_support_sort_key):
+        school_groups.setdefault(str(item.get("school") or "其他"), []).append(item)
+
+    lines = [f"当前计算器支持 {len(items)} 个心法："]
+    for school, school_items in sorted(
+        school_groups.items(),
+        key=lambda group: min(_calculator_support_sort_key(item) for item in group[1]),
+    ):
+        names = "、".join(
+            str(item.get("name") or "未知心法")
+            for item in sorted(school_items, key=_calculator_support_sort_key)
+        )
+        lines.append(f"{school}：{names}")
+    lines.append("查询单个心法：计算器支持 <心法名>")
+    lines.append("计算器使用示例：计算器 剑胆琴心 倦收天")
+    return "\n".join(lines)
+
+
+def _format_calculator_support_detail(item: dict[str, Any]) -> str:
+    loop_names: list[str] = []
+    for loop in item.get("loops") or []:
+        loop_name = _format_calculator_loop(loop)
+        if loop_name not in loop_names:
+            loop_names.append(loop_name)
+    lines = [
+        f"计算器支持：{item.get('school') or '其他'}·{item.get('name') or '未知心法'}",
+        f"可用循环：{len(loop_names)} 个",
+    ]
+    for index, loop_name in enumerate(loop_names, start=1):
+        lines.append(f"{index}. {loop_name}")
+    lines.append("计算器使用示例：计算器 剑胆琴心 倦收天")
+    return "\n".join(lines)
+
+
+@rd_analysis_support_matcher.handle()
+async def _():
+    await rd_analysis_support_matcher.finish(RD_ANALYSIS_SUPPORT_TEXT)
+
+
+@calculator_support_matcher.handle()
+async def _(matcher: Matcher, args: Message = CommandArg()):
+    query = args.extract_plain_text().strip()
+    if len(query.split()) > 1:
+        await matcher.finish("参考格式：计算器支持\n参考格式：计算器支持 <心法名>")
+    items = await _fetch_calculator_supported_kungfus()
+    if query == "":
+        await matcher.finish(_format_calculator_support_list(items))
+    if not items:
+        await matcher.finish("当前 calculator 没有可用的计算器心法，或 calculator 服务未连接。")
+    if query.isdigit():
+        kungfu_id = int(query)
+    else:
+        kungfu_id = Kungfu(query).id or 0
+    if kungfu_id == 0:
+        await matcher.finish(PROMPT.KungfuNotExist)
+    item = _find_calculator_supported_kungfu(items, kungfu_id)
+    if item is None:
+        kungfu = Kungfu.with_internel_id(kungfu_id, convert_to_pc=True)
+        await matcher.finish(f"当前计算器暂不支持 {kungfu.name or '该心法'}。")
+    await matcher.finish(_format_calculator_support_detail(item))
 
 
 @equipment_rating_support_matcher.handle()

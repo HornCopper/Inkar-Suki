@@ -60,9 +60,16 @@ EQUIPMENT_RATING_IMAGE_SEND_FAILED = (
 EQUIPMENT_RATING_STARTED = "装备评级中，请稍等片刻！"
 RATING_LOOP_LIST_KEYWORDS = {"评级列表", "循环列表", "JCL列表", "jcl列表"}
 EQUIPMENT_RATING_USAGE = (
-    "参考格式：装备评级 <服务器> <角色> <心法>\n"
-    "公共循环：装备评级 <服务器> <角色> <心法> 评级列表"
+    "装备评级使用步骤：\n"
+    "1. 先提交属性：提交属性 <服务器> <角色名> <心法> <茗伊装备导出码>\n"
+    "   例如：提交属性 剑胆琴心 倦收天 太虚剑意 <从茗伊复制的整段装备导出码>\n"
+    "   注意：导出码与心法之间要有个空格\n"
+    "2. 再执行评级：装备评级 <服务器> <角色名> <心法>\n"
+    "   例如：装备评级 剑胆琴心 倦收天 太虚剑意\n"
+    "3. 查看目前支持心法：装备评级支持 或 装备评级支持 <心法名>\n"
+    "帮助：装备评级 help"
 )
+EQUIPMENT_RATING_HELP_KEYWORDS = {"help", "帮助", "？", "?"}
 EQUIPMENT_RATING_DISTRIBUTION_PATH = build_path(
     ASSETS, ["source", "jx3", "equipment_rating_distribution.json"]
 )
@@ -147,6 +154,14 @@ def _format_number(value: Any) -> str:
         return f"{int(float(value)):,}"
     except (TypeError, ValueError):
         return "0"
+
+
+def _format_haste(value: Any) -> str:
+    try:
+        haste = float(str(value).replace(",", ""))
+    except (TypeError, ValueError):
+        haste = 0
+    return f"{int(haste)} / {_haste_level(haste)}"
 
 
 def _format_plain_int(value: Any) -> str:
@@ -296,6 +311,7 @@ def _format_supported_kungfu_list(data: dict[str, Any]) -> str:
             )
             lines.append(f"{school}：{names}")
     lines.append("查询单个心法：装备评级支持 <心法名>")
+    lines.append("装备评级使用示例：装备评级 剑胆琴心 倦收天 剑纯")
     return "\n".join(lines)
 
 
@@ -305,7 +321,6 @@ def _format_supported_kungfu_detail(item: dict[str, Any]) -> str:
         f"装备评级支持：{_supported_kungfu_school(item)}·{_supported_kungfu_name(item)}",
         f"默认评级循环：{_selected_rating_loop_text(item)}",
         *_format_jcl_record_detail_lines(item),
-        f"循环提供者：{selected.get('provider') or '-'}",
         f"可用评级JCL：{item.get('jcl_count', 0)} 个",
         "公共JCL选择：装备评级 <服务器> <角色> <心法> 评级列表",
     ]
@@ -601,7 +616,7 @@ def _prepare_attributes(
         {"label": "破防", "value": _percent_from_rating(attributes.get("Overcome"), OVERCOME_DIVISOR)},
         {"label": "无双", "value": _percent_from_rating(attributes.get("Strain"), STRAIN_DIVISOR)},
         {"label": "破招", "value": _format_number(attributes.get("Surplus"))},
-        {"label": "加速", "value": f"{_format_number(attributes.get('Haste'))}.get('Haste'))"},
+        {"label": "加速", "value": _format_haste(attributes.get("Haste"))},
     ]
     return role_info, basic_attrs, detail_attrs
 
@@ -609,7 +624,7 @@ def _prepare_attributes(
 def _prepare_display_attribute_row(name: Any, value: Any) -> dict[str, str]:
     label = str(name)
     if label == "加速":
-        return {"label": label, "value": f"{_format_number(value)}"}
+        return {"label": label, "value": _format_haste(value)}
     return {"label": label, "value": str(value)}
 
 
@@ -896,10 +911,13 @@ async def handle_equipment_rating_support(matcher: Matcher, args: Message):
 
 
 async def handle_equipment_rating(event: GroupMessageEvent, matcher: Matcher, state: T_State, args: Message):
-    if args.extract_plain_text() == "":
+    plain_text = args.extract_plain_text().strip()
+    if plain_text == "":
         matcher.stop_propagation()
-        await matcher.finish()
-    arg = args.extract_plain_text().strip().split()
+        await matcher.finish(EQUIPMENT_RATING_USAGE)
+    if plain_text.lower() in EQUIPMENT_RATING_HELP_KEYWORDS:
+        await matcher.finish(EQUIPMENT_RATING_USAGE)
+    arg = plain_text.split()
     if len(arg) not in [3, 4]:
         await matcher.finish(PROMPT.ArgumentCountInvalid + "\n" + EQUIPMENT_RATING_USAGE)
     use_public_loop_list = False
