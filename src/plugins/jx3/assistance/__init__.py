@@ -18,7 +18,7 @@ create_team_matcher = on_command("创建团队", force_whitespace=True, priority
 async def _(event: GroupMessageEvent, argument: Message = CommandArg()):
     additions = get_group_settings(event.group_id, "additions")
     if "开团" not in additions:
-        return
+        await create_team_matcher.finish("当前未启用团队功能，请发送「订阅 开团」启用。")
     if argument.extract_plain_text() == "":
         return
     if check_number(argument.extract_plain_text()):

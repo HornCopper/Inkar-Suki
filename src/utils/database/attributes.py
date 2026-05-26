@@ -42,6 +42,15 @@ import asyncio
 import base64
 
 
+def normalize_kungfu_id(kungfu_id: int | str) -> int:
+    kungfu_id = int(kungfu_id)
+    pc_kungfu_id = Kungfu.with_internel_id(kungfu_id, True).id
+    if pc_kungfu_id is not None:
+        kungfu_id = pc_kungfu_id
+    if kungfu_id == 10145:
+        return 10144
+    return kungfu_id
+
 
 def parse_plugin_data(data: str) -> list[dict]:
     def replace_array(m):
@@ -354,6 +363,7 @@ class Equip:
 
         if armor_data[19]:
             set_id = int(armor_data[19])
+            self._set_id = set_id
             Equip.equip_sets[set_id] = Equip.equip_sets.get(set_id, 0) + 1
 
         # Base
@@ -447,6 +457,7 @@ class Equip:
 
         if trinket_data[19]:
             set_id = int(trinket_data[19])
+            self._set_id = set_id
             Equip.equip_sets[set_id] = Equip.equip_sets.get(set_id, 0) + 1
 
         # Base
@@ -538,6 +549,7 @@ class Equip:
 
         if weapon_data[20]:
             set_id = int(weapon_data[20])
+            self._set_id = set_id
             Equip.equip_sets[set_id] = Equip.equip_sets.get(set_id, 0) + 1
 
         # Base
@@ -716,6 +728,7 @@ class Equip:
         self._max_strength: int = 0
         self._diamonds_with_attr: list[tuple[str, int]] = []
         self._source: str = ""
+        self._set_id: int | None = None
 
     def parse(self):
         equip_index = self.jcl_line[0]
@@ -1106,6 +1119,7 @@ class JX3PlayerAttribute:
     
     @classmethod
     async def from_plugin(cls, data: str, kungfu_id: int, global_role_id: int) -> Self:
+        kungfu_id = normalize_kungfu_id(kungfu_id)
         equips_data = parse_plugin_data(data)
         equips_lines = []
         for each_equip in equips_data:
@@ -1301,7 +1315,7 @@ class JX3PlayerAttribute:
         Equip.purge()
         self.equip_lines = equips_lines
         self.talents_lines = talents_lines
-        self.kungfu_id = kungfu_id
+        self.kungfu_id = normalize_kungfu_id(kungfu_id)
         self.global_role_id = global_role_id
         self.timestamp = timestamp
         self.tag = equip_tag
@@ -1360,9 +1374,18 @@ class JX3PlayerAttribute:
     @cached_property
     def attributes(self) -> dict[str, str]:
         basic_attr = {}
-        for each_equip in self.equips:
+        attr_equips = [
+            each_equip
+            for each_equip in self.equips
+            if not (self.kungfu_id == 10144 and each_equip.location_index == 1)
+        ]
+        for each_equip in attr_equips:
             basic_attr = merge_dicts(cast(dict[str, float], each_equip.attributes), basic_attr)
-        for set_id, set_count in Equip.equip_sets.items():
+        equip_sets: dict[int, int] = {}
+        for each_equip in attr_equips:
+            if each_equip._set_id is not None:
+                equip_sets[each_equip._set_id] = equip_sets.get(each_equip._set_id, 0) + 1
+        for set_id, set_count in equip_sets.items():
             set_attr = TabCache.get_set(set_id, set_count)
             basic_attr = merge_dicts(basic_attr, set_attr)
         return FinalAttr(cast(dict[str, int], basic_attr), self.kungfu_id).output_attr()

@@ -248,7 +248,7 @@ async def _(event: GroupMessageEvent, state: T_State, matcher: Matcher, msg: Mes
         kungfu_name = args[2]
         equip_data = args[3]
         if server is None:
-            await attribute_submit.finish(PROMPT.ServerInvalid)
+            await attribute_submit.finish(PROMPT.ServerInvalid  + "\n参考格式：提交属性 <服务器> <ID> <心法>")
         await save_plugin_attribute(role, server, kungfu_name, equip_data)
         await attribute_submit.finish("已导入装备数据，请尝试使用 属性 命令查询！")
 
@@ -259,7 +259,7 @@ async def _(event: GroupMessageEvent, state: T_State, matcher: Matcher, msg: Mes
         kungfu_name = args[1]
         equip_data = args[2]
         if server is None:
-            await attribute_submit.finish(PROMPT.ServerInvalid)
+            await attribute_submit.finish(PROMPT.ServerInvalid + "\n参考格式：提交属性 <服务器> <ID> <心法>")
         await save_plugin_attribute(role, server, kungfu_name, equip_data)
         await attribute_submit.finish("已导入装备数据，请尝试使用 属性 命令查询！")
 
@@ -275,12 +275,12 @@ async def _(event: GroupMessageEvent, state: T_State, matcher: Matcher, msg: Mes
         name = args[1]
         kungfu_name = args[2]
     if server is None:
-        await attribute_submit.finish(PROMPT.ServerInvalid)
+        await attribute_submit.finish(PROMPT.ServerInvalid + "\n参考格式：提交属性 <服务器> <ID> <心法>")
     player_info = await get_attribute_submit_player(name, server)
     role_info = build_attribute_submit_role(name, server, player_info)
     kungfu_id = Kungfu(kungfu_name).id
     if kungfu_id is None:
-        await attribute_submit.finish(PROMPT.KungfuNotExist)
+        await attribute_submit.finish(PROMPT.KungfuNotExist + "\n参考格式：提交属性 <服务器> <ID> <心法>")
     kungfu_id_pc = cast(int, Kungfu.with_internel_id(kungfu_id, True).id)
     state["kungfu_id"] = kungfu_id_pc
     state["global_role_id"] = int(role_info.globalRoleId)
@@ -298,7 +298,7 @@ async def _(event: GroupMessageEvent, state: T_State, equip_data: Message = Arg(
         await attribute_submit.finish(f"导入的装备数据不可用，已拒绝入库：\n{e}")
     await attribute_submit.finish("已导入装备数据，请尝试使用 属性 命令查询！")
 
-replace_equip_matcher = on_command("jx3_attribute_replace_equip", aliases={"替换装备"}, priority=5, force_whitespace=True)
+replace_equip_matcher = on_command("jx3_attribute_replace_equip", aliases={"替换装备", "装备替换"}, priority=5, force_whitespace=True)
 
 @replace_equip_matcher.handle()
 async def _(event: GroupMessageEvent, state: T_State, matcher: Matcher, msg: Message = CommandArg()):

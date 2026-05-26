@@ -44,7 +44,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
         return
     arg = args.extract_plain_text().split(" ")
     if len(arg) not in [1, 2, 3]:
-        await role_check_matcher.finish("唔……命令错误，请检查后重试！\n命令格式：提交角色 服务器 UID")
+        await role_check_matcher.finish(PROMPT.ArgumentCountInvalid + "\n参考格式：提交角色 服务器 UID")
     is_force = "-F" in arg
     arg = [a for a in arg if a != "-F"]
     if len(arg) == 1:
