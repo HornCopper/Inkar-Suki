@@ -196,9 +196,9 @@ def _format_percent(value: Any) -> str:
         return "0.0%"
 
 
-async def _fetch_supported_equipment_rating_data() -> dict[str, Any] | str:
+async def _fetch_supported_equipment_rating_data(timeout: float = 8) -> dict[str, Any] | str:
     try:
-        response = await Request(f"{Config.jx3.api.calculator_url}/equipment_rating/kungfus").get(timeout=8)
+        response = await Request(f"{Config.jx3.api.calculator_url}/equipment_rating/kungfus").get(timeout=timeout)
         if response.status_code == 404:
             return "装备评级支持心法查询失败：calculator 尚未加载支持心法接口，请重启 calculator 后重试。"
         if response.status_code >= 400:
@@ -265,6 +265,18 @@ def _find_supported_kungfu(kungfus: list[dict[str, Any]], kungfu_id: int) -> dic
         if kungfu_id in [int(mobile_id) for mobile_id in item.get("mobile_ids") or []]:
             return item
     return None
+
+
+async def get_equipment_rating_support_status(kungfu_id: int) -> bool | None:
+    data = await _fetch_supported_equipment_rating_data(timeout=2)
+    if isinstance(data, str):
+        return None
+    kungfus = data.get("kungfus") or []
+    return _find_supported_kungfu(kungfus, kungfu_id) is not None
+
+
+async def is_equipment_rating_supported_kungfu(kungfu_id: int) -> bool:
+    return await get_equipment_rating_support_status(kungfu_id) is True
 
 
 def _supported_kungfu_sort_key(item: dict[str, Any]) -> int:
