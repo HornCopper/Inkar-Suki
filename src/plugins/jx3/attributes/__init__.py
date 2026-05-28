@@ -267,8 +267,8 @@ async def _(event: GroupMessageEvent, state: T_State, matcher: Matcher, msg: Mes
         equip_data = args[3]
         if server is None:
             await attribute_submit.finish(PROMPT.ServerInvalid  + "\n参考格式：提交属性 <服务器> <ID> <心法>")
-        await save_plugin_attribute(role, server, kungfu_name, equip_data)
-        await attribute_submit.finish("已导入装备数据，请尝试使用 属性 命令查询！")
+        role_info, kungfu_id_pc = await save_plugin_attribute(role, server, kungfu_name, equip_data)
+        await attribute_submit.finish(await format_attribute_submit_success(role_info, kungfu_id_pc))
 
     args = plain_text.split(maxsplit=2)
     if len(args) == 3 and Kungfu(args[1]).id is not None and Kungfu(args[2]).id is None:
@@ -278,8 +278,8 @@ async def _(event: GroupMessageEvent, state: T_State, matcher: Matcher, msg: Mes
         equip_data = args[2]
         if server is None:
             await attribute_submit.finish(PROMPT.ServerInvalid + "\n参考格式：提交属性 <服务器> <ID> <心法>")
-        await save_plugin_attribute(role, server, kungfu_name, equip_data)
-        await attribute_submit.finish("已导入装备数据，请尝试使用 属性 命令查询！")
+        role_info, kungfu_id_pc = await save_plugin_attribute(role, server, kungfu_name, equip_data)
+        await attribute_submit.finish(await format_attribute_submit_success(role_info, kungfu_id_pc))
 
     args = plain_text.split()
     if len(args) not in [2, 3]:
