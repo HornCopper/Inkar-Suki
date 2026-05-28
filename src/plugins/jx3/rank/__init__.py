@@ -169,7 +169,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
             continue
         if each_record.damage_per_second < 0 or each_record.health_per_second < 0:
             continue
-        if kungfu_id != 0 and each_record.kungfu_id != kungfu_id:
+        if not (kungfu_id in [10144, 10145] and each_record.kungfu_id in [10144, 10145]):
             continue
         effective_records.append(each_record)
     effective_records = sorted(effective_records, key=lambda x: (x.damage_per_second if value_type == "damage" else x.health_per_second), reverse=True)
@@ -235,7 +235,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
             continue
         if each_record.damage_per_second < 0 or each_record.health_per_second < 0:
             continue
-        if kungfu_id != 0 and each_record.kungfu_id != kungfu_id:
+        if not (kungfu_id in [10144, 10145] and each_record.kungfu_id in [10144, 10145]):
             continue
         effective_records.append(each_record)
     effective_records = sorted(effective_records, key=lambda x: (x.damage_per_second if value_type == "damage" else x.health_per_second))
@@ -331,7 +331,8 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
         if each_record.damage_per_second < 0 or each_record.health_per_second < 0:
             continue
         if kungfu_id != 0 and each_record.kungfu_id != kungfu_id:
-            continue
+            if not (kungfu_id in [10144, 10145] and each_record.kungfu_id in [10144, 10145]):
+                continue
         effective_records.append(each_record)
     effective_records = sorted(effective_records, key=lambda x: (x.damage_per_second if value_type == "damage" else x.health_per_second), reverse=True)
     if len(effective_records) > 20:
@@ -393,7 +394,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
             continue
         if each_record.damage_per_second < 0 or each_record.health_per_second < 0:
             continue
-        if kungfu_id != 0 and each_record.kungfu_id != kungfu_id:
+        if not (kungfu_id in [10144, 10145] and each_record.kungfu_id in [10144, 10145]):
             continue
         effective_records.append(each_record)
     effective_records = sorted(effective_records, key=lambda x: (x.damage_per_second if value_type == "damage" else x.health_per_second))
