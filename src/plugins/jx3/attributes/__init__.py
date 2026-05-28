@@ -27,6 +27,7 @@ from src.utils.database.player import search_player, get_uid_data
 from src.plugins.preferences.app import Preference
 from src.plugins.notice import notice
 from src.plugins.jx3.calculator.compare import get_equip_list, get_enchant_list, EquipInfo, EnchantInfo
+from src.plugins.jx3.calculator.equipment_rating import get_equipment_rating_support_status
 
 import asyncio
 import hashlib
@@ -217,7 +218,7 @@ def format_attribute_save_error(instance: JX3PlayerAttribute, exc: BaseException
     error = str(exc).strip() or type(exc).__name__
     return f"{role}（{instance.global_role_id}，{kungfu}）：{error}"
 
-async def save_plugin_attribute(role: str, server: str, kungfu_name: str, equip_data: str) -> None:
+async def save_plugin_attribute(role: str, server: str, kungfu_name: str, equip_data: str) -> tuple[RoleData, int]:
     kungfu_id = Kungfu(kungfu_name).id
     if kungfu_id is None:
         await attribute_submit.finish(PROMPT.KungfuNotExist)
@@ -230,6 +231,23 @@ async def save_plugin_attribute(role: str, server: str, kungfu_name: str, equip_
         save_attribute_submit_role(role_info)
     except Exception as e:
         await attribute_submit.finish(f"导入的装备数据不可用，已拒绝入库：\n{e}")
+    return role_info, kungfu_id_pc
+
+def _attribute_submit_role_name(role_info: RoleData) -> str:
+    return role_info.roleName or role_info.roleId or str(role_info.globalRoleId)
+
+async def format_attribute_submit_success(role_info: RoleData, kungfu_id: int) -> str:
+    role_name = _attribute_submit_role_name(role_info)
+    message = f"已导入装备数据，请尝试使用指令：属性 {role_info.serverName} {role_name}"
+    kungfu_name = Kungfu.with_internel_id(kungfu_id, convert_to_pc=True).name or str(kungfu_id)
+    support_status = await get_equipment_rating_support_status(kungfu_id)
+    if support_status is True:
+        message += f"\n该心法支持装备评级，使用指令：装备评级 {role_info.serverName} {role_name} {kungfu_name}"
+    elif support_status is False:
+        message += f"\n该心法暂不支持装备评级：{kungfu_name}"
+    else:
+        message += "\n暂时无法确认该心法是否支持装备评级，请稍后使用 装备评级支持 查询。"
+    return message
 
 attribute_submit = on_command("jx3_attribute_submit", aliases={"提交属性"}, priority=5, force_whitespace=True)
 
@@ -249,8 +267,8 @@ async def _(event: GroupMessageEvent, state: T_State, matcher: Matcher, msg: Mes
         equip_data = args[3]
         if server is None:
             await attribute_submit.finish(PROMPT.ServerInvalid  + "\n参考格式：提交属性 <服务器> <ID> <心法>")
-        await save_plugin_attribute(role, server, kungfu_name, equip_data)
-        await attribute_submit.finish("已导入装备数据，请尝试使用 属性 命令查询！")
+        role_info, kungfu_id_pc = await save_plugin_attribute(role, server, kungfu_name, equip_data)
+        await attribute_submit.finish(await format_attribute_submit_success(role_info, kungfu_id_pc))
 
     args = plain_text.split(maxsplit=2)
     if len(args) == 3 and Kungfu(args[1]).id is not None and Kungfu(args[2]).id is None:
@@ -260,8 +278,8 @@ async def _(event: GroupMessageEvent, state: T_State, matcher: Matcher, msg: Mes
         equip_data = args[2]
         if server is None:
             await attribute_submit.finish(PROMPT.ServerInvalid + "\n参考格式：提交属性 <服务器> <ID> <心法>")
-        await save_plugin_attribute(role, server, kungfu_name, equip_data)
-        await attribute_submit.finish("已导入装备数据，请尝试使用 属性 命令查询！")
+        role_info, kungfu_id_pc = await save_plugin_attribute(role, server, kungfu_name, equip_data)
+        await attribute_submit.finish(await format_attribute_submit_success(role_info, kungfu_id_pc))
 
     args = plain_text.split()
     if len(args) not in [2, 3]:
@@ -296,7 +314,7 @@ async def _(event: GroupMessageEvent, state: T_State, equip_data: Message = Arg(
         save_attribute_submit_role(state["role_info"])
     except Exception as e:
         await attribute_submit.finish(f"导入的装备数据不可用，已拒绝入库：\n{e}")
-    await attribute_submit.finish("已导入装备数据，请尝试使用 属性 命令查询！")
+    await attribute_submit.finish(await format_attribute_submit_success(state["role_info"], state["kungfu_id"]))
 
 replace_equip_matcher = on_command("jx3_attribute_replace_equip", aliases={"替换装备", "装备替换"}, priority=5, force_whitespace=True)
 

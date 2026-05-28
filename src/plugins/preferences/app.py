@@ -38,7 +38,28 @@ class Preference:
         if not self.available:
             return "未找到相关偏好项！"
         result: str = getattr(self.current, self.mapping[self.key])
-        return f"当前{self.key}的偏好为：{result}"       
+        return "\n".join(
+            [
+                f"当前{self.key}的偏好为：{result}",
+                self._format_available_values(),
+                self._format_setting_examples(),
+            ]
+        )
+
+    def _format_available_values(self) -> str:
+        lines = ["可选偏好："]
+        for value, description in self.data[self.key].items():
+            lines.append(f"- {value}：{description}")
+        return "\n".join(lines)
+
+    def _format_setting_examples(self) -> str:
+        lines = ["设置示例："]
+        values = list(self.data[self.key])
+        if self.key == "计算器阵眼":
+            values = values[:2]
+        for value in values:
+            lines.append(f"偏好 {self.key} {value}")
+        return "\n".join(lines)
         
     def set(self) -> str:
         if not self.available:

@@ -2,6 +2,7 @@ from typing import cast
 from typing_extensions import Self
 
 from src.config import Config
+from src.const.jx3.kungfu import Kungfu
 from src.const.prompts import PROMPT
 from src.utils.database.player import search_player
 from src.utils.database.attributes import JX3PlayerAttribute
@@ -12,6 +13,30 @@ INCOMES = {
     "满增益": ["LDCF","CY","JF","HLSJ_1","HLSJ_2","PJ","XR","HXQJ","ZF","JHZ","CSY_SYMX","QS","LZWH","ZXYZ","XWGD","ZZM","PH","XQ","HRL"],
     "满增益风雷": ["LDCF","CY","JF","HLSJ_1","HLSJ_2","PJ","XR","HXQJ","ZF","JHZ","CSY_SYMX","QS","LZWH","ZXYZ","XWGD","NM","PH","XQ","HRL"]
 }
+
+FULL_INCOME_WITH_CONSUMABLES = {"满增益", "满增益风雷"}
+
+MAIN_ATTR_CONSUMABLES = {
+    "体质": ["FY_FOOD_VITALITY", "FY_MEDICINE_VITALITY"],
+    "身法": ["FY_FOOD_AGILITY", "FY_MEDICINE_AGILITY"],
+    "元气": ["FY_FOOD_SPUNK", "FY_MEDICINE_SPUNK"],
+    "力道": ["FY_FOOD_STRENGTH", "FY_MEDICINE_STRENGTH"],
+    "根骨": ["FY_FOOD_SPIRIT", "FY_MEDICINE_SPIRIT"],
+}
+
+ATTACK_INGOTS = {
+    "Physics": ["FY_ATTACK_INGOT_PHYSICS"],
+    "Magic": ["FY_ATTACK_INGOT_MAGIC"],
+}
+
+FEASTS = {
+    "Physics": ["FYYD_PHYSICS"],
+    "Magic": ["FYYD_MAGIC"],
+}
+
+SHARED_FEASTS = ["TZY", "BLSZY"]
+VITALITY_KUNGFU_IDS = {10062, 10002, 10243, 10389}
+MAGIC_TANK_KUNGFU_IDS = {10002, 10243}
 
 FORMATIONS = {
     "无阵眼": [],
@@ -27,6 +52,35 @@ FORMATIONS = {
     "万蛊噬心阵": ["WGSXZ", "WGSXZ_SELF"],
     "横云破锋阵": ["HYPFZ", "HYPFZ_SELF"]
 }
+
+
+def _calculator_kungfu_type(kungfu_id: int, base_attr: str | None) -> str:
+    """按 calculator 的心法分类选择内外功熔锭和宴席。"""
+    if base_attr in {"根骨", "元气"} or kungfu_id in MAGIC_TANK_KUNGFU_IDS:
+        return "Magic"
+    return "Physics"
+
+
+def get_calculator_income_codes(income_name: str, kungfu_id: int) -> list[str]:
+    income_codes = list(INCOMES[income_name])
+    if income_name not in FULL_INCOME_WITH_CONSUMABLES:
+        return income_codes
+
+    kungfu = Kungfu.with_internel_id(kungfu_id, convert_to_pc=True)
+    base_attr = kungfu.base
+    if kungfu_id in VITALITY_KUNGFU_IDS:
+        base_attr = "体质"
+    if kungfu_id == 0 or base_attr is None:
+        return income_codes
+    kungfu_type = _calculator_kungfu_type(kungfu_id, base_attr)
+    return (
+        income_codes
+        + MAIN_ATTR_CONSUMABLES.get(base_attr, [])
+        + ATTACK_INGOTS[kungfu_type]
+        + FEASTS[kungfu_type]
+        + SHARED_FEASTS
+    )
+
 
 class BaseCalculator:
     calculator_url = Config.jx3.api.calculator_url
@@ -56,3 +110,8 @@ class BaseCalculator:
         self.income_ver = ""
         self.formation_list = []
         self.formation_name = ""
+
+    @property
+    def calculator_kungfu_id(self) -> int:
+        kungfu_id = getattr(self, "kungfu_id", 0) or getattr(self.equip_data, "kungfu_id", 0)
+        return int(kungfu_id or 0)

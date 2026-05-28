@@ -21,7 +21,7 @@ from src.plugins.preferences.app import Preference
 from src.plugins.jx3.equip.equip_config import get_equip_image
 
 from .jx3box import JX3BOXCalculator
-from .base import FORMATIONS, INCOMES
+from .base import FORMATIONS, get_calculator_income_codes
 from .universe import UniversalCalculator
 from .traverse import (
     delete_rating_cache,
@@ -267,7 +267,7 @@ async def _(event: GroupMessageEvent, matcher: Matcher, state: T_State, args: Me
     income_ver = Preference(event.user_id, "", "").setting("计算器增益")
     formation_ver = Preference(event.user_id, "", "").setting("计算器阵眼")
     is_custom = Preference(event.user_id, "", "").setting("计算器来源") == "自定义"
-    income_code = INCOMES[income_ver]
+    income_code = get_calculator_income_codes(income_ver, instance.calculator_kungfu_id)
     instance.income_list = income_code
     instance.income_ver = income_ver
     instance.formation_list = FORMATIONS[formation_ver]
@@ -352,7 +352,7 @@ async def _(event: GroupMessageEvent, matcher: Matcher, state: T_State, args: Me
 
     income_ver = Preference(event.user_id, "", "").setting("计算器增益")
     formation_ver = Preference(event.user_id, "", "").setting("计算器阵眼")
-    income_code = INCOMES[income_ver]
+    income_code = get_calculator_income_codes(income_ver, int(str(kungfu_id)))
     formation_code = FORMATIONS[formation_ver]
 
     currnet_dps_data.income_list = income_code
@@ -398,7 +398,7 @@ async def _(event: GroupMessageEvent, state: T_State, equip_index: Message = Arg
 
     income_ver = Preference(event.user_id, "", "").setting("计算器增益")
     formation_ver = Preference(event.user_id, "", "").setting("计算器阵眼")
-    income_code = INCOMES[income_ver]
+    income_code = get_calculator_income_codes(income_ver, int(str(kungfu_id)))
     formation_code = FORMATIONS[formation_ver]
 
     new_dps_data.income_list = income_code
