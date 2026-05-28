@@ -21,7 +21,7 @@ async def _(event: GroupMessageEvent, msg: Message = CommandArg()):
     args = msg.extract_plain_text().split(" ")
 
     if len(args) not in [2, 3]:
-        await achievement_v2_matcher.finish(PROMPT.ArgumentCountInvalid + "\n进度 <服务器> <角色名> <关键词>")
+        await achievement_v2_matcher.finish(PROMPT.ArgumentCountInvalid + "\n参考格式：进度 <服务器> <角色名> <关键词>")
 
     if len(args) == 2:
         server = ""
@@ -48,7 +48,7 @@ async def _(event: GroupMessageEvent, full_argument: Message = CommandArg()):
     args = full_argument.extract_plain_text().split(" ")
 
     if len(args) not in [2, 3, 4]:
-        await zone_achievement_matcher.finish(PROMPT.ArgumentCountInvalid + "\n团本成就 <服务器> <角色名> <副本名> [难度(默认10人)]")
+        await zone_achievement_matcher.finish(PROMPT.ArgumentCountInvalid + "\n参考格式：团本成就 <服务器> <角色名> <副本名> [难度(默认10人)]")
 
     if len(args) == 2:
         """

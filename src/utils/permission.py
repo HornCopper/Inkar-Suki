@@ -16,8 +16,8 @@ def _is_bot_owner(user_id: str | int) -> bool:
     return str(user_id) in Config.bot_basic.bot_owner
 
 
-def _normalize_node(node: str) -> str:
-    return node.strip().strip(".")
+def _normalize_node(node: str | int) -> str:
+    return str(node).strip().strip(".")
 
 
 def _child_node(parent: str, child: str) -> str:
@@ -53,7 +53,7 @@ def _defined_leaf_nodes(scope: str = "user") -> tuple[str, ...]:
     return tuple(sorted(set(leaves)))
 
 
-def _node_match(granted: str, required: str) -> bool:
+def _node_match(granted: str | int, required: str | int) -> bool:
     granted = _normalize_node(granted)
     required = _normalize_node(required)
     if not granted or not required:
@@ -68,7 +68,7 @@ def _node_match(granted: str, required: str) -> bool:
     return required == granted or required.startswith(granted + ".")
 
 
-def _split_permission_nodes(nodes: list[str]) -> tuple[list[str], list[str]]:
+def _split_permission_nodes(nodes: list[str | int]) -> tuple[list[str], list[str]]:
     grants: list[str] = []
     denies: list[str] = []
     for raw_node in nodes:
@@ -84,7 +84,7 @@ def _split_permission_nodes(nodes: list[str]) -> tuple[list[str], list[str]]:
     return grants, denies
 
 
-def _check_node_permission(account: Account, required: str) -> bool:
+def _check_node_permission(account: Account, required: str | int) -> bool:
     required = _normalize_node(required)
     if not required:
         return False
@@ -96,7 +96,7 @@ def _check_node_permission(account: Account, required: str) -> bool:
     return any(_node_match(node, required) for node in grants)
 
 
-def normalize_permission_nodes(nodes: list[str]) -> list[str]:
+def normalize_permission_nodes(nodes: list[str | int]) -> list[str]:
     normalized: list[str] = []
     for raw_node in nodes:
         node = _normalize_node(raw_node)
@@ -110,7 +110,7 @@ def normalize_permission_nodes(nodes: list[str]) -> list[str]:
     return normalized
 
 
-def _resolve_deepest_nodes(raw_nodes: list[str], leaves: tuple[str, ...]) -> list[str]:
+def _resolve_deepest_nodes(raw_nodes: list[str | int], leaves: tuple[str, ...]) -> list[str]:
     result: set[str] = set()
     grants, denies = _split_permission_nodes(raw_nodes)
     for node in grants:
@@ -159,7 +159,7 @@ def get_deepest_group_permission_nodes(group_id: str | int) -> list[str]:
     return _resolve_deepest_nodes(data.permission_nodes, _defined_leaf_nodes("group"))
 
 
-def check_permission(user_id: str | int, node: str) -> bool:
+def check_permission(user_id: str | int, node: str | int) -> bool:
     """
     检查用户是否满足某个权限节点。
 
@@ -179,7 +179,7 @@ def check_permission(user_id: str | int, node: str) -> bool:
     return _check_node_permission(data, node)
 
 
-def check_group_permission(group_id: str | int, node: str) -> bool:
+def check_group_permission(group_id: str | int, node: str | int) -> bool:
     from src.utils.database.classes import GroupSettings
 
     data: GroupSettings | Any = db.where_one(
@@ -194,7 +194,7 @@ def check_group_permission(group_id: str | int, node: str) -> bool:
     return any(_node_match(granted_node, node) for granted_node in grants)
 
 
-def denied(node: str) -> str:
+def denied(node: str | int) -> str:
     """
     构造权限不足提示。
 
