@@ -40,6 +40,7 @@ import json
 import zlib
 import asyncio
 import base64
+import math
 
 
 def normalize_kungfu_id(kungfu_id: int | str) -> int:
@@ -815,6 +816,91 @@ class FinalAttr:
             "atMagicCriticalStrike": self.attr.get("atSpiritBase", 44) * Spirit_to_Critical_Cof
         }
         
+    def _wxl_main_attr_value(self) -> int:
+        return int(
+            self.attr.get("atSpiritBase", 44) + max(
+                self.attr.get("atSpunkBase", 44),
+                self.attr.get("atAgilityBase", 44),
+                self.attr.get("atStrengthBase", 44),
+            ) - self.attr.get("atBasePotentialAdd", 0) - 44
+        )
+
+    def _wxl_base_attack(self) -> float:
+        magic_attack = (
+            self.attr.get("atMagicAttackPowerBase", 0) -
+            self.attr.get("atSpunkBase", 44) * Spunk_to_Attack_Cof
+        )
+        weapon_damage = (
+            self.attr.get("atMeleeWeaponDamageBase", 0) +
+            self.attr.get("atMeleeWeaponDamageRand", 0) / 2
+        )
+        return (
+            int(self.attr.get("atLunarAttackPowerBase", 0)) +
+            int(magic_attack) +
+            int(self.attr.get("atSolarAndLunarAttackPowerBase", 0)) +
+            max(
+                int(self.attr.get("atSolarAttackPowerBase", 0)),
+                int(self.attr.get("atNeutralAttackPowerBase", 0)),
+                int(self.attr.get("atPoisonAttackPowerBase", 0)),
+                int(self.attr.get("atPhysicsAttackPowerBase", 0) * 1138 / 1024),
+            ) +
+            weapon_damage * 758 / 1024
+        )
+
+    def _wxl_critical(self, main_attr_value: int) -> int:
+        magic_critical = (
+            self.attr.get("atMagicCriticalStrike", 0) -
+            self.attr.get("atSpiritBase", 44) * Spirit_to_Critical_Cof +
+            main_attr_value * Spirit_to_Critical_Cof
+        )
+        physics_critical = (
+            self.attr.get("atPhysicsCriticalStrike", 0) -
+            self.attr.get("atAgilityBase", 44) * Agility_to_Critical_Cof
+        )
+        return int(
+            int(self.attr.get("atLunarCriticalStrike", 0)) +
+            int(magic_critical) +
+            int(self.attr.get("atSolarAndLunarCriticalStrike", 0)) +
+            int(self.attr.get("atAllTypeCriticalStrike", 0)) +
+            max(
+                self.attr.get("atSolarCriticalStrike", 0),
+                self.attr.get("atNeutralCriticalStrike", 0),
+                self.attr.get("atPoisonCriticalStrike", 0),
+                physics_critical,
+            )
+        )
+
+    def _wxl_critical_damage(self) -> int:
+        return int(
+            int(self.attr.get("atLunarCriticalDamagePowerBase", 0)) +
+            int(self.attr.get("atMagicCriticalDamagePowerBase", 0)) +
+            int(self.attr.get("atSolarAndLunarCriticalDamagePowerBase", 0)) +
+            int(self.attr.get("atAllTypeCriticalDamagePowerBase", 0)) +
+            max(
+                self.attr.get("atSolarCriticalDamagePowerBase", 0),
+                self.attr.get("atNeutralCriticalDamagePowerBase", 0),
+                self.attr.get("atPoisonCriticalDamagePowerBase", 0),
+                self.attr.get("atPhysicsCriticalDamagePowerBase", 0),
+            )
+        )
+
+    def _wxl_base_overcome(self) -> float:
+        magic_overcome = (
+            self.attr.get("atMagicOvercome", 0) -
+            self.attr.get("atSpunkBase", 44) * Spunk_to_BaseOvercome_Cof
+        )
+        return (
+            int(self.attr.get("atLunarOvercomeBase", 0)) +
+            int(magic_overcome) +
+            int(self.attr.get("atSolarAndLunarOvercomeBase", 0)) +
+            max(
+                self.attr.get("atSolarOvercomeBase", 0),
+                self.attr.get("atNeutralOvercomeBase", 0),
+                self.attr.get("atPoisonOvercomeBase", 0),
+                self.attr.get("atPhysicsOvercomeBase", 0),
+            )
+        )
+
     def output_attr(self) -> dict[str, str]:
         self.equip_attr.pop("atSkillEventHandler", None) # 套装效果（施展招式）
         self.equip_attr.pop("atSetEquipmentRecipe", None) # 套装效果（伤害提高）
@@ -844,6 +930,19 @@ class FinalAttr:
         )
 
         kungfu_main_attr = self.get_kungfu_base()
+        main_attr_value = int(self.attr.get(kungfu_main_attr, 0))
+        if self.kungfu_id == 10821:
+            main_attr_value = self._wxl_main_attr_value()
+        coefficient_main_attr = (
+            main_attr_value
+            if self.kungfu_id == 10821
+            else self.attr.get(kungfu_main_attr, 0)
+        )
+        attack_coefficient_main_attr = (
+            coefficient_main_attr - 14
+            if self.kungfu_id == 10821
+            else coefficient_main_attr
+        )
         weapon_damage = int(self.attr.get("atMeleeWeaponDamageBase", 0) + self.attr.get("atMeleeWeaponDamageRand", 0) / 2)
         attack = max(
             int(self.attr.get("atPhysicsAttackPowerBase", 0)), # 外功基础攻击
@@ -862,6 +961,8 @@ class FinalAttr:
             int(self.attr.get("atPoisonAttackPowerBase", 0)) + \
             int(self.attr.get("atMagicAttackPowerBase", 0)) # 毒性基础攻击 内功基础攻击
         )
+        if self.kungfu_id == 10821:
+            attack = self._wxl_base_attack()
         base_therapy = self.attr.get("atTherapyPowerBase", 0)
         final_therapy = copy.deepcopy(base_therapy)
         final_attack = copy.deepcopy(attack)
@@ -887,6 +988,8 @@ class FinalAttr:
             int(self.attr.get("atMagicCriticalStrike", 0)) + \
             int(self.attr.get("atAllTypeCriticalStrike", 0)), # 毒性会心 内功会心 全会心
         )
+        if self.kungfu_id == 10821:
+            critical = self._wxl_critical(main_attr_value)
         critical_damage = max(
             int(self.attr.get("atPhysicsCriticalDamagePowerBase", 0)) + \
             int(self.attr.get("atAllTypeCriticalDamagePowerBase", 0)), # 外功会效 全会效
@@ -909,6 +1012,8 @@ class FinalAttr:
             int(self.attr.get("atMagicCriticalDamagePowerBase", 0)) + \
             int(self.attr.get("atAllTypeCriticalDamagePowerBase", 0)), # 毒性会效 内功会效 全会效
         )
+        if self.kungfu_id == 10821:
+            critical_damage = self._wxl_critical_damage()
         base_overcome = max(
             int(self.attr.get("atPhysicsOvercomeBase", 0)), # 外功破防
 
@@ -926,6 +1031,8 @@ class FinalAttr:
             int(self.attr.get("atPoisonOvercomeBase", 0)) + \
             int(self.attr.get("atMagicOvercome", 0)) # 毒性基础破防 内功基础破防
         )
+        if self.kungfu_id == 10821:
+            base_overcome = self._wxl_base_overcome()
         final_overcome = copy.deepcopy(base_overcome)
         strain = int(self.attr.get("atStrainBase", 0))
         haste = int(self.attr.get("atHasteBase", 0))
@@ -946,26 +1053,30 @@ class FinalAttr:
         decritical_damage = self.attr.get("atDecriticalDamagePowerBase", 0)
         for attr_name, attr_value in Kungfu.kungfu_coefficient[kungfu_name].items():
             if attr_name == "Attack":
-                final_attack += int(self.attr.get(kungfu_main_attr, 0) * attr_value / 1024)
+                if self.kungfu_id == 10821:
+                    final_attack += math.ceil(attack_coefficient_main_attr * attr_value / 1024)
+                else:
+                    final_attack += int(coefficient_main_attr * attr_value / 1024)
             elif attr_name == "Critical":
-                critical += int(self.attr.get(kungfu_main_attr, 0) * attr_value / 1024)
+                critical += int(coefficient_main_attr * attr_value / 1024)
             elif attr_name == "Overcome":
-                final_overcome += int(self.attr.get(kungfu_main_attr, 0) * attr_value / 1024)
+                final_overcome += int(coefficient_main_attr * attr_value / 1024)
             elif attr_name == "PhysicsShield":
-                physics_shield += int(self.attr.get(kungfu_main_attr, 0) * attr_value / 1024)
+                physics_shield += int(coefficient_main_attr * attr_value / 1024)
             elif attr_name == "MagicShield":
-                magic_shield += int(self.attr.get(kungfu_main_attr, 0) * attr_value / 1024)
+                magic_shield += int(coefficient_main_attr * attr_value / 1024)
             elif attr_name == "Therapy":
-                final_therapy += int(self.attr.get(kungfu_main_attr, 0) * attr_value / 1024)
+                final_therapy += int(coefficient_main_attr * attr_value / 1024)
         abbr = Kungfu(kungfu_name).abbr
         if abbr == "D":
+            display_final_attack = round(final_attack) if self.kungfu_id == 10821 else int(final_attack)
             return {
-                "攻击力": str(final_attack),
-                "基础攻击力": str(attack),
+                "攻击力": str(display_final_attack),
+                "基础攻击力": str(int(attack)),
                 "会心": str(R(critical / CRITICAL_DIVISOR * 100, 2)) + "%",
                 "会心效果": str(R((critical_damage / CRITICAL_DAMAGE_DIVISOR + 1.75) * 100, 2)) + "%",
                 "加速": str(haste),
-                get_attr_name(kungfu_main_attr): str(self.attr.get(kungfu_main_attr, 0)),
+                get_attr_name(kungfu_main_attr): str(main_attr_value),
                 "破防": str(R(final_overcome / OVERCOME_DIVISOR * 100, 2)) + "%",
                 "无双": str(R(strain / STRAIN_DIVISOR * 100, 2)) + "%",
                 "破招": str(surplus),
