@@ -115,3 +115,61 @@ class BaseCalculator:
     def calculator_kungfu_id(self) -> int:
         kungfu_id = getattr(self, "kungfu_id", 0) or getattr(self.equip_data, "kungfu_id", 0)
         return int(kungfu_id or 0)
+
+
+FIVESTONE_ITEM_ID_RANGES = (
+    range(24442, 24449 + 1),
+    range(24423, 24430 + 1),
+)
+
+
+def _is_calculator_fivestone_item_id(item_id: int) -> bool:
+    return any(item_id in item_range for item_range in FIVESTONE_ITEM_ID_RANGES)
+
+
+def _calculator_fivestone_item_id_from_slot_level(slot_level: int) -> int | None:
+    level = slot_level + 1
+    if level not in range(1, 8 + 1):
+        return None
+    return level + 24441
+
+
+def normalize_calculator_jcl_data(jcl_data: list[list]) -> list[list]:
+    normalized_data = []
+    for equip_line in jcl_data:
+        normalized_line = list(equip_line)
+        normalized_slots = []
+        equip_position = int(equip_line[0])
+        for slot_index, slot_data in enumerate(equip_line[4]):
+            if not isinstance(slot_data, (list, tuple)) or len(slot_data) < 2:
+                normalized_slots.append(slot_data)
+                continue
+
+            slot_type = int(slot_data[0])
+            slot_value = int(slot_data[1])
+            if equip_position in {0, 1} and slot_index >= 3:
+                normalized_slots.append(list(slot_data))
+                continue
+
+            if slot_type == 0 or _is_calculator_fivestone_item_id(slot_value):
+                normalized_slots.append(list(slot_data))
+                continue
+
+            item_id = _calculator_fivestone_item_id_from_slot_level(slot_type)
+            if item_id is None:
+                normalized_slots.append(list(slot_data))
+            else:
+                normalized_slots.append([5, item_id])
+        normalized_line[4] = normalized_slots
+        normalized_data.append(normalized_line)
+
+    primary_weapon_line = next(
+        (line for line in normalized_data if int(line[0]) == 0),
+        None,
+    )
+    if primary_weapon_line is not None:
+        for equip_line in normalized_data:
+            if int(equip_line[0]) == 1:
+                equip_line[3] = primary_weapon_line[3]
+                equip_line[4] = [list(slot) if isinstance(slot, list) else slot for slot in primary_weapon_line[4]]
+    return normalized_data

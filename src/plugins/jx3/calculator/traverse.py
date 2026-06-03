@@ -18,6 +18,7 @@ from src.utils.network import Request
 from src.utils.time import Time
 
 from .compare import AttributesFull
+from .base import normalize_calculator_jcl_data
 from .universe import UniversalCalculator
 
 
@@ -174,7 +175,7 @@ async def calculate_with_optimized_equips(
     params: dict[str, Any] = {
         "full_income": instance.income_list + instance.formation_list,
         "kungfu_id": instance.kungfu_id,
-        "jcl_data": instance.jcl_data or instance.equip_data.equip_lines,
+        "jcl_data": normalize_calculator_jcl_data(instance.jcl_data or instance.equip_data.equip_lines),
         "optimize_equips": True,
         **loop_arg,
     }
@@ -505,7 +506,7 @@ async def request_equipment_ratings(
 ) -> list[dict[str, Any]] | str:
     payload = {
         "kungfu_id": instance.kungfu_id,
-        "jcl_data": instance.jcl_data or instance.equip_data.equip_lines,
+        "jcl_data": normalize_calculator_jcl_data(instance.jcl_data or instance.equip_data.equip_lines),
         "role": {
             "name": role_name,
             "server": server_name,

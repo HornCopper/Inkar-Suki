@@ -14,7 +14,7 @@ from src.templates import SimpleHTML, get_saohua
 from src.utils.database.attributes import JX3PlayerAttribute, Talent
 
 from ._template import template_calculator_v2
-from .base import BaseCalculator
+from .base import BaseCalculator, normalize_calculator_jcl_data
 
 class Universal(Kungfu):
     @classmethod
@@ -84,9 +84,9 @@ class UniversalCalculator(BaseCalculator):
             **loop_arg
         }
         if self.jcl_data:
-            params["jcl_data"] = self.jcl_data
+            params["jcl_data"] = normalize_calculator_jcl_data(self.jcl_data)
         else:
-            params["jcl_data"] = self.equip_data.equip_lines
+            params["jcl_data"] = normalize_calculator_jcl_data(self.equip_data.equip_lines)
             params["kungfu_id"] = self.equip_data.kungfu_id
         url_path = "calculator_raw"
         if user_id:

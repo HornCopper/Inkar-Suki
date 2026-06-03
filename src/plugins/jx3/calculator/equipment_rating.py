@@ -34,6 +34,8 @@ from src.utils.file import read
 from src.utils.generate import generate
 from src.utils.network import Request
 
+from .base import normalize_calculator_jcl_data
+
 
 RANK_ICON_FILES = {
     "ACE": "rank_ace.png",
@@ -853,7 +855,7 @@ async def _build_equipment_rating_payload(
 
     payload = {
         "kungfu_id": int(kungfu_id),
-        "jcl_data": target_equip.equip_lines,
+        "jcl_data": normalize_calculator_jcl_data(target_equip.equip_lines),
         "role": {
             "name": player_data.roleName,
             "server": player_data.serverName,

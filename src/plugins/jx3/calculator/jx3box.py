@@ -14,7 +14,7 @@ from src.templates import SimpleHTML, get_saohua
 from src.utils.database.attributes import Talent
 
 from ._template import template_calculator_v2
-from .base import BaseCalculator
+from .base import BaseCalculator, normalize_calculator_jcl_data
 
 class JX3BOX(Kungfu):
     @classmethod
@@ -116,7 +116,7 @@ class JX3BOXCalculator(BaseCalculator):
             # "tuilan_data": self.data,
             **loop_arg
         }
-        params["jcl_data"] = self.jcl_data
+        params["jcl_data"] = normalize_calculator_jcl_data(self.jcl_data)
         params["kungfu_id"] = self.kungfu.id
 
         url_path = "calculator_raw"
