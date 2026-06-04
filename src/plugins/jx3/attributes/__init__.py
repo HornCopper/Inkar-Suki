@@ -352,7 +352,7 @@ async def _(event: GroupMessageEvent, state: T_State, matcher: Matcher, msg: Mes
     state["tag"] = tag
     reply_msg = "请从下面选择装备进行替换！"
     num = 1
-    for equip in equips:
+    for equip in match_equips:
         reply_msg += f"\n{num}. ({equip.subkind}) {equip.name}\n{equip.quality} {' '.join(equip.attr)}"
         num += 1
     await replace_equip_matcher.send(reply_msg)
@@ -421,7 +421,7 @@ async def _(event: GroupMessageEvent, state: T_State, matcher: Matcher, msg: Mes
     state["tag"] = tag
     reply_msg = "请从下面选择附魔进行替换！"
     num = 1
-    for enchant in enchants:
+    for enchant in match_enchants:
         reply_msg += f"\n{num}. {enchant.name} \n描述：{enchant.desc or '无'}"
         num += 1
     await replace_enchant_matcher.send(reply_msg)
