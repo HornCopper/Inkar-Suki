@@ -234,15 +234,27 @@ TIMELINE_ARGUMENT_PROMPT = (
     + "\n参考格式：循环对比 <魔盒配装ID> bin=2.5"
 )
 
+TIMELINE_HELP_TEXT = (
+    "循环曲线参数：\n"
+    "1. 角色：<服务器> <角色名>，例如 剑胆琴心 倦收天\n"
+    "2. 魔盒配装：<配装ID>\n"
+    "3. 可选参数：bin=<秒数>，只影响上图每 N 秒伤害量；默认 bin=2.5，范围 1 到 60\n"
+    "4. 累计实时 DPS 固定逐秒计算，不受 bin 参数影响\n"
+    "5. 机器人返回循环列表后，选择 1 个循环\n"
+    "示例：\n"
+    "循环曲线 剑胆琴心 倦收天 bin=2.5\n"
+    "循环列表返回后发送：1"
+)
+
 TIMELINE_COMPARE_HELP_TEXT = (
     "循环对比参数：\n"
-    "1. 角色：<服务器> <角色名>，例如 梦江南 叶凝城\n"
+    "1. 角色：<服务器> <角色名>，例如 剑胆琴心 倦收天\n"
     "2. 魔盒配装：<配装ID>\n"
     "3. 可选参数：bin=<秒数>，只影响上图每 N 秒伤害量；默认 bin=2.5，范围 1 到 60\n"
     "4. 累计实时 DPS 固定逐秒计算，不受 bin 参数影响\n"
     "5. 机器人返回循环列表后，选择 2 个及以上循环，支持空格、半角逗号、全角逗号\n"
     "示例：\n"
-    "循环对比 煎蛋 倦收天 bin=2.5\n"
+    "循环对比 剑胆琴心 倦收天 bin=2.5\n"
     "循环列表返回后发送：1,2 或 1，2，3"
 )
 
@@ -314,8 +326,9 @@ async def _prepare_timeline_selection(
     if raw_text == "":
         if compare:
             await matcher.finish(TIMELINE_COMPARE_HELP_TEXT)
-        matcher.stop_propagation()
-        return
+        await matcher.finish(TIMELINE_HELP_TEXT)
+    if not compare and raw_text.lower() in {"help", "帮助", "参数", "示例"}:
+        await matcher.finish(TIMELINE_HELP_TEXT)
     if compare and raw_text.lower() in {"help", "帮助", "参数", "示例"}:
         await matcher.finish(TIMELINE_COMPARE_HELP_TEXT)
     arg, bin_size = _parse_timeline_command_args(raw_text)
@@ -737,6 +750,8 @@ async def _finish_damage_timeline(
     state: T_State,
     selection: Message,
 ) -> None:
+    if "timeline_loops" not in state or "timeline_instance" not in state:
+        await matcher.finish("循环曲线/循环对比状态已失效，请重新发起命令！")
     loops: dict[str, dict[str, str]] = state["timeline_loops"]
     instance: UniversalCalculator | JX3BOXCalculator = state["timeline_instance"]
     compare = bool(state.get("timeline_compare"))
