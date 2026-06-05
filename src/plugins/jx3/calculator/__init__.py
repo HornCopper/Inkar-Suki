@@ -239,6 +239,14 @@ body { margin: 0; background: #edf1f7; font-family: "Microsoft YaHei", "PingFang
     </div>
   </div>
   <div class="section">
+    <div class="section-title">变更循环名字</div>
+    <div class="usage">
+      <div class="usage-item">1. 发送 <span class="command">循环改名 心法名</span>，机器人会列出你提供的公有循环和对应私有循环。</div>
+      <div class="usage-item">2. 发送要改名的编号后，再发送新的循环名；只会变更文件名里的循环名部分。</div>
+      <div class="usage-item">3. bot owner 可发送 <span class="command">循环改名 QQ号 心法名</span> 变更指定用户提供的循环。</div>
+    </div>
+  </div>
+  <div class="section">
     <div class="section-title">删除自定义循环</div>
     <div class="usage">
       <div class="usage-item">1. 发送 <span class="command">删除循环 心法名</span>，机器人会返回该心法循环列表；再发送编号删除单个或多个循环。</div>
@@ -256,7 +264,7 @@ body { margin: 0; background: #edf1f7; font-family: "Microsoft YaHei", "PingFang
         ".guide",
         False,
         segment=True,
-        viewport={"width": 980, "height": 2150},
+        viewport={"width": 980, "height": 2400},
     )
 
 
@@ -1339,7 +1347,9 @@ PUBLIC_LOOP_APPROVAL_HELP_TEXT = (
     "【用户提交】\n"
     "1. 提交公有循环：列出你上传过的全部自定义循环\n"
     "2. 提交公有循环 <心法名>：只列出指定心法的自定义循环\n"
-    "3. 返回列表后发送编号，提交到审批群等待处理\n\n"
+    "3. 返回列表后发送编号，提交到审批群等待处理\n"
+    "4. 循环改名 <心法名>：变更你提供的公有循环和对应私有循环名字\n"
+    "5. 循环改名 <QQ号> <心法名>：bot owner 变更指定用户提供的循环名字\n\n"
     "【审批处理】\n"
     "1. 公有循环审批：列出全部待审批循环，仅配置的审批群内可用\n"
     "2. 返回列表后发送编号，机器人会生成循环曲线预览\n"
@@ -1984,6 +1994,95 @@ async def _(bot: Bot, event: GroupMessageEvent, matcher: Matcher, state: T_State
 
 remove_calculator_loop_matcher = on_command("jx3_rm_calc_loop", aliases={"删除循环"}, priority=5, force_whitespace=True)
 remove_all_calculator_loop_matcher = on_command("jx3_rm_all_calc_loop", aliases={"删除循环all"}, priority=5, force_whitespace=True)
+rename_calculator_loop_matcher = on_command(
+    "jx3_rename_calc_loop",
+    aliases={"循环改名", "改循环名", "修改循环名", "变更循环名字"},
+    priority=5,
+    force_whitespace=True,
+)
+
+
+RENAME_LOOP_HELP_TEXT = (
+    "循环改名参数：\n"
+    "1. 变更自己的循环：循环改名 <心法名>\n"
+    "2. bot owner 变更指定用户循环：循环改名 <QQ号> <心法名>\n"
+    "3. 机器人返回列表后，发送要变更的编号，再发送新的循环名\n"
+    "4. 只会变更该用户提供的公有循环，以及对应的用户私有循环\n"
+    "示例：\n"
+    "循环改名 莫问\n"
+    "循环列表返回后发送：1\n"
+    "然后发送：新循环名"
+)
+
+
+def _rename_loop_location_text(locations: list[str]) -> str:
+    labels = {
+        "public": "公有库",
+        "private": "私有库",
+    }
+    return "、".join(labels.get(location, location) for location in locations) or "未知位置"
+
+
+def _format_rename_loop_selection(target_user_id: int, kungfu_name: str, loops: list[dict[str, Any]]) -> str:
+    msg = (
+        f"请选择要变更名字的循环：{kungfu_name}\n"
+        f"目标用户：{target_user_id}\n"
+        "发送「取消」可取消。"
+    )
+    for index, loop in enumerate(loops, start=1):
+        locations = _rename_loop_location_text(loop.get("locations") or [])
+        file_parts = []
+        if loop.get("public_file"):
+            file_parts.append(f"公有：{loop['public_file']}")
+        if loop.get("private_file"):
+            file_parts.append(f"私有：{loop['private_file']}")
+        file_text = "；".join(file_parts) if file_parts else str(loop.get("file") or "未知文件")
+        msg += (
+            f"\n{index}. {loop.get('name') or '未命名循环'}"
+            f"\n   位置：{locations}"
+            f"\n   文件：{file_text}"
+        )
+    return msg
+
+
+def _safe_rename_loop_name(loop_name: str) -> str:
+    safe_name = str(loop_name or "").strip()
+    if (
+        not safe_name
+        or safe_name in {".", ".."}
+        or safe_name.endswith(".jcl")
+        or any(char in safe_name for char in '<>:"/\\|?*[]\r\n\t')
+    ):
+        return ""
+    return safe_name
+
+
+async def _fetch_renameable_loops(
+    operator_id: int,
+    target_user_id: int,
+    kungfu_id: int,
+    operator_is_owner: bool,
+) -> list[dict[str, Any]] | str:
+    try:
+        result = (
+            await Request(
+                f"{Config.jx3.api.calculator_url}/renameable_loops",
+                params={
+                    "operator_id": operator_id,
+                    "target_user_id": target_user_id,
+                    "kungfu_id": kungfu_id,
+                    "operator_is_owner": operator_is_owner,
+                },
+            ).get()
+        ).json()
+    except Exception:
+        return "循环列表获取失败，请确认 calculator 服务可用后重试！"
+    loops = result.get("data") or []
+    if result.get("code") != 200:
+        return str(result.get("msg") or "循环列表获取失败。")
+    if not isinstance(loops, list):
+        return []
+    return loops
 
 
 DELETE_LOOP_HELP_TEXT = (
@@ -2023,6 +2122,116 @@ def _parse_delete_loop_selection(text: str, loop_count: int) -> list[int] | str:
         if index not in results:
             results.append(index)
     return results
+
+
+@rename_calculator_loop_matcher.handle()
+async def _(event: GroupMessageEvent, state: T_State, args: Message = CommandArg()):
+    query = args.extract_plain_text().strip()
+    if query == "" or query.lower() in {"help", "帮助", "参数", "示例"}:
+        await rename_calculator_loop_matcher.finish(RENAME_LOOP_HELP_TEXT)
+    parts = [part for part in query.split() if part]
+    operator_is_owner = _is_bot_owner(event.user_id)
+    target_user_id = int(event.user_id)
+    if len(parts) == 1:
+        kungfu_arg = parts[0]
+    elif len(parts) == 2 and _is_positive_integer_text(parts[0]):
+        target_user_id = int(parts[0])
+        if target_user_id != int(event.user_id) and not operator_is_owner:
+            await rename_calculator_loop_matcher.finish("只有循环提交用户和 bot owner 可以变更循环名字。")
+        kungfu_arg = parts[1]
+    else:
+        await rename_calculator_loop_matcher.finish(RENAME_LOOP_HELP_TEXT)
+
+    kungfu_id = _parse_public_loop_config_kungfu_id(kungfu_arg)
+    if kungfu_id is None:
+        await rename_calculator_loop_matcher.finish("心法输入有误，请检查后重试！")
+    loops = await _fetch_renameable_loops(
+        int(event.user_id),
+        target_user_id,
+        kungfu_id,
+        operator_is_owner,
+    )
+    if isinstance(loops, str):
+        await rename_calculator_loop_matcher.finish(loops)
+    if not loops:
+        await rename_calculator_loop_matcher.finish("未找到该用户提供的可变更名字循环。")
+    state["rename_loop_items"] = loops
+    state["rename_loop_target_user_id"] = target_user_id
+    state["rename_loop_kungfu_id"] = kungfu_id
+    state["rename_loop_operator_is_owner"] = operator_is_owner
+    await rename_calculator_loop_matcher.send(
+        _format_rename_loop_selection(target_user_id, _public_loop_kungfu_name(kungfu_id), loops)
+    )
+
+
+@rename_calculator_loop_matcher.got("rename_loop_order")
+async def _(state: T_State, rename_loop_order: Message = Arg()):
+    text = rename_loop_order.extract_plain_text().strip()
+    if text in {"取消", "cancel", "Cancel", "CANCEL"}:
+        await rename_calculator_loop_matcher.finish("已取消循环改名。")
+    if not _is_positive_integer_text(text):
+        await rename_calculator_loop_matcher.finish("循环选择有误，请重新发起命令！")
+    loops: list[dict[str, Any]] = state.get("rename_loop_items") or []
+    index = int(text)
+    if not loops or index < 1 or index > len(loops):
+        await rename_calculator_loop_matcher.finish("超出可选范围，请重新发起命令！")
+    selected = loops[index - 1]
+    state["rename_loop_selected"] = selected
+    await rename_calculator_loop_matcher.send(
+        "请发送新的循环名。\n"
+        "只需要发送循环名本身，不要带 .jcl，不要带心法、武器、加速前缀。\n"
+        f"当前循环：{selected.get('name') or '未命名循环'}"
+    )
+
+
+@rename_calculator_loop_matcher.got("rename_loop_new_name")
+async def _(event: GroupMessageEvent, state: T_State, rename_loop_new_name: Message = Arg()):
+    raw_name = rename_loop_new_name.extract_plain_text()
+    if raw_name.strip() in {"取消", "cancel", "Cancel", "CANCEL"}:
+        await rename_calculator_loop_matcher.finish("已取消循环改名。")
+    new_loop_name = _safe_rename_loop_name(raw_name)
+    if not new_loop_name:
+        await rename_calculator_loop_matcher.finish("新循环名无效，请不要使用路径符号、方括号、.jcl 后缀或空白名称。")
+    selected: dict[str, Any] = state.get("rename_loop_selected") or {}
+    target_user_id = int(state.get("rename_loop_target_user_id") or 0)
+    kungfu_id = int(state.get("rename_loop_kungfu_id") or 0)
+    if not selected or not target_user_id or not kungfu_id:
+        await rename_calculator_loop_matcher.finish("循环改名状态已失效，请重新发起命令。")
+    payload = {
+        "operator_id": int(event.user_id),
+        "target_user_id": target_user_id,
+        "kungfu_id": kungfu_id,
+        "file_name": str(selected.get("file") or selected.get("public_file") or selected.get("private_file") or ""),
+        "new_loop_name": new_loop_name,
+        "operator_is_owner": bool(state.get("rename_loop_operator_is_owner")),
+    }
+    try:
+        result = (
+            await Request(
+                f"{Config.jx3.api.calculator_url}/rename_loop",
+                params=payload,
+            ).post()
+        ).json()
+    except Exception:
+        await rename_calculator_loop_matcher.finish("循环改名失败，请确认 calculator 服务可用后重试！")
+    if result.get("code") != 200:
+        await rename_calculator_loop_matcher.finish("循环改名失败：" + str(result.get("msg", "")))
+    data = result.get("data") or {}
+    changes = data.get("changes") or []
+    msg = (
+        "循环名字变更成功：\n"
+        f"目标用户：{target_user_id}\n"
+        f"心法：{_public_loop_kungfu_name(kungfu_id)}\n"
+        f"新循环名：{new_loop_name}"
+    )
+    for change in changes:
+        msg += (
+            f"\n{_rename_loop_location_text([str(change.get('location') or '')])}："
+            f"{change.get('old_file') or '未知文件'} -> {change.get('new_file') or '未知文件'}"
+        )
+    if data.get("records_updated"):
+        msg += "\n已同步更新公有循环审批记录。"
+    await rename_calculator_loop_matcher.finish(msg)
 
 
 @remove_calculator_loop_matcher.handle()
