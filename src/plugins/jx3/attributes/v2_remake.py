@@ -39,7 +39,7 @@ async def get_attr_v2_remake(server: str, role_name: str, segment: Literal[False
 async def get_attr_v2_remake(server: str, role_name: str, segment: bool = True):
     role_info = await search_player(role_name=role_name, server_name=server)
     if not role_info.roleId:
-        return PROMPT.PlayerNotExist
+        return PROMPT.EquipNotFound
     # await JX3PlayerAttribute.from_tuilan(role_info.roleId, role_info.serverName, role_info.globalRoleId)
     await JX3PlayerAttribute.from_jx3api(role_info.serverName, role_info.roleName, True)
     instance = await JX3PlayerAttribute.from_database(int(role_info.globalRoleId), all=False)

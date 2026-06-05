@@ -257,7 +257,7 @@ async def _(event: GroupMessageEvent, state: T_State, matcher: Matcher, msg: Mes
     if plain_text == "":
         matcher.stop_propagation()
         return
-    if plain_text.lower() == "help":
+    if plain_text.lower() in {"help", "帮助", "参数", "示例"}:
         await attribute_submit.finish(ATTRIBUTE_SUBMIT_USAGE)
     args = plain_text.split(maxsplit=3)
     if len(args) == 4:

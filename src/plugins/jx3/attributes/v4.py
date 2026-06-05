@@ -118,7 +118,7 @@ async def parse_equip(equip: Equip, last: bool = False, rating_grade: str | None
 async def get_attr_v4(server: str, name: str, conditions: str = ""):
     role_info = await search_player(role_name=name, server_name=server)
     if not role_info.roleId:
-        return PROMPT.PlayerNotExist
+        return PROMPT.EquipNotFound
     # await JX3PlayerAttribute.from_tuilan(role_info.roleId, role_info.serverName, role_info.globalRoleId)
     await JX3PlayerAttribute.from_jx3api(role_info.serverName, role_info.roleName, True)
     instance = await JX3PlayerAttribute.from_database(int(role_info.globalRoleId), conditions, True)
