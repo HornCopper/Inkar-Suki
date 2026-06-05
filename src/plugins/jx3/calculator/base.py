@@ -41,7 +41,7 @@ MAGIC_TANK_KUNGFU_IDS = {10002, 10243}
 FORMATIONS = {
     "无阵眼": [],
     "龙皇雪风阵": ["LHXFZ", "LHXFZ_5", "LHXFZ_SELF"],
-    "千机百变阵": ["QJBBZ", "QJBBZ_PHYSICS"],
+    "千机百变阵": ["QJBBZ", "QJBBZ_SELF"],
     "苍梧引灵阵": ["CWYLZ"],
     "九宫八卦阵": ["JGBGZ"],
     "万籁金弦阵": ["WLJXZ", "WLJXZ_SELF"],
@@ -147,7 +147,7 @@ def normalize_calculator_jcl_data(jcl_data: list[list]) -> list[list]:
 
             slot_type = int(slot_data[0])
             slot_value = int(slot_data[1])
-            if equip_position in {0, 1} and slot_index >= 3:
+            if equip_position in {0, 1, 2} and slot_index >= 3:
                 normalized_slots.append(list(slot_data))
                 continue
 

@@ -47,6 +47,25 @@ class Talent(BasicItem):
 
 from ._template import attr_map, location_map, panel_attr_d, panel_attr_n, panel_attr_t
 
+CHANGJIAN_KUNGFU_IDS = {10144, 10145}
+
+DEFAULT_EQUIP_PLACES = [
+    "HAT",
+    "JACKET",
+    "BELT",
+    "WRIST",
+    "BOTTOMS",
+    "SHOES",
+    "NECKLACE",
+    "PENDANT",
+    "RING_1",
+    "RING_2",
+    "SECONDARY_WEAPON",
+    "PRIMARY_WEAPON",
+]
+
+CHANGJIAN_EQUIP_PLACES = DEFAULT_EQUIP_PLACES + ["TERTIARY_WEAPON"]
+
 class Equip(BasicItem):
     attribute: list[str] = []
     belong: Literal["pve", "pvp", "pvx"] = "pvx"
@@ -242,37 +261,12 @@ async def get_attr_recommend_image(
 async def get_equip_image(id: str):
     data = (await Request(f"https://cms.jx3box.com/api/cms/app/pz/{id}").get()).json()
     kungfu = Kungfu.with_internel_id(data["data"]["mount"])
-    equip_place = [
-        "HAT", 
-        "JACKET",
-        "BELT", 
-        "WRIST",
-        "BOTTOMS",
-        "SHOES",
-        "NECKLACE",
-        "PENDANT", 
-        "RING_1", 
-        "RING_2", 
-        "SECONDARY_WEAPON",
-        "PRIMARY_WEAPON"
-    ] if kungfu not in ["问水诀", "山居剑意"] else [
-        "HAT", 
-        "JACKET",
-        "BELT", 
-        "WRIST",
-        "BOTTOMS",
-        "SHOES",
-        "NECKLACE",
-        "PENDANT", 
-        "RING_1", 
-        "RING_2", 
-        "SECONDARY_WEAPON",
-        "PRIMARY_WEAPON",
-        "TERTIARY_WEAPON"
-    ]
+    equip_place = CHANGJIAN_EQUIP_PLACES if int(kungfu.id) in CHANGJIAN_KUNGFU_IDS else DEFAULT_EQUIP_PLACES
     equips = data["data"]["overview"]["equips"]
     parsed_equips: list[Equip] = []
     for p in equip_place:
+        if p not in equips:
+            continue
         equip_data = equips[p]
         enchants: list[Enchant] = []
         if "enhance" in equip_data:

@@ -31,12 +31,26 @@ class JX3BOXCalculator(BaseCalculator):
         kungfu_id = data["mount"]
         equips: dict[str, dict] = data["content"]
         equips_lines = []
-        locations = ["PRIMARY_WEAPON", None, "SECONDARY_WEAPON", "JACKET", "HAT", "NECKLACE", "RING_1", "RING_2", "BELT", "PENDANT", "BOTTOMS", "SHOES", "WRIST"]
+        locations = [
+            "PRIMARY_WEAPON",
+            "TERTIARY_WEAPON",
+            "SECONDARY_WEAPON",
+            "JACKET",
+            "HAT",
+            "NECKLACE",
+            "RING_1",
+            "RING_2",
+            "BELT",
+            "PENDANT",
+            "BOTTOMS",
+            "SHOES",
+            "WRIST",
+        ]
         for location in locations:
-            if location is None:
+            if location not in equips:
                 continue
             index = locations.index(location)
-            item_index = 6 if index in [0, 2] else (8 if index in [5, 6, 7, 9] else 7)
+            item_index = 6 if index in [0, 1, 2] else (8 if index in [5, 6, 7, 9] else 7)
             equip_data = equips[location]
             item_id = equip_data["equip"]
             strength = equip_data["strength"]
