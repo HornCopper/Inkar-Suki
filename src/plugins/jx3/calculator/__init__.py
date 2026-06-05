@@ -41,6 +41,19 @@ import copy
 import asyncio
 import html
 
+
+def _prefixed_command_aliases(base_command: str, prefixes: tuple[str, ...]) -> set[str]:
+    aliases = {base_command}
+    for prefix in prefixes:
+        variants = {""}
+        for char in prefix:
+            variants = {variant + letter for variant in variants for letter in {char.lower(), char.upper()}}
+        aliases.update(f"{variant}{base_command}" for variant in variants)
+    return aliases
+
+
+CALCULATOR_PREFIXES = ("T", "QC", "JC", "TL", "JY", "WX")
+
 calc_matcher = on_command("jx3_calculator", aliases={"计算器", "T计算器", "QC计算器", "JC计算器", "TL计算器", "JY计算器", "WX计算器"}, priority=5, force_whitespace=True)
 calculator_support_matcher = on_command("jx3_calculator_support", aliases={"计算器支持", "计算器心法", "计算器支持心法"}, priority=5, force_whitespace=True)
 equipment_rating_matcher = on_command("jx3_equipment_rating", aliases={"装备评级"}, priority=5, force_whitespace=True)
@@ -48,13 +61,13 @@ equipment_rating_support_matcher = on_command("jx3_equipment_rating_support", al
 rd_analysis_support_matcher = on_command("jx3_rd_analysis_support", aliases={"RD分析支持", "rd分析支持", "Rd分析支持"}, priority=5, force_whitespace=True)
 timeline_matcher = on_command(
     "jx3_damage_timeline",
-    aliases={"循环曲线", "T循环曲线", "QC循环曲线", "JC循环曲线", "TL循环曲线", "JY循环曲线", "WX循环曲线"},
+    aliases=_prefixed_command_aliases("循环曲线", CALCULATOR_PREFIXES),
     priority=5,
     force_whitespace=True,
 )
 timeline_compare_matcher = on_command(
     "jx3_damage_timeline_compare",
-    aliases={"循环对比", "T循环对比", "QC循环对比", "JC循环对比", "TL循环对比", "JY循环对比", "WX循环对比"},
+    aliases=_prefixed_command_aliases("循环对比", CALCULATOR_PREFIXES),
     priority=5,
     force_whitespace=True,
 )
@@ -193,16 +206,17 @@ def _format_calculator_support_detail(item: dict[str, Any]) -> str:
 
 
 def _calculator_tag_from_command(cmd: str) -> str:
-    tag = "TPVE" if cmd and cmd[0] == "T" else "DPSPVE"
-    if "QC" in cmd:
+    normalized_cmd = cmd.upper()
+    tag = "TPVE" if normalized_cmd and normalized_cmd[0] == "T" else "DPSPVE"
+    if "QC" in normalized_cmd:
         tag = "QCPVE"
-    if "JC" in cmd:
+    if "JC" in normalized_cmd:
         tag = "JCPVE"
-    if "TL" in cmd:
+    if "TL" in normalized_cmd:
         tag = "TLPVE"
-    if "JY" in cmd:
+    if "JY" in normalized_cmd:
         tag = "JYPVE"
-    if "WX" in cmd:
+    if "WX" in normalized_cmd:
         tag = "WXPVE"
     return tag
 
@@ -644,12 +658,10 @@ async def _render_damage_timeline_image(
         dps = _format_compact_number(adjusted.get("dps"))
         label = html.escape(str(series.get("label") or index + 1))
         loop_name = html.escape(str(series.get("loop_name") or "未命名循环"))
-        provider = html.escape(str(series.get("provider") or "未知提供者"))
         legend_items.append(f'<span class="legend-item"><i style="background:{color}"></i>{label}. {loop_name}</span>')
         stat_cards.append(
             f'<div class="stat-card" style="border-left-color:{color}">'
             f'<div class="stat-title">{label}. {loop_name}</div>'
-            f'<div class="stat-provider">{provider}</div>'
             f'<div class="stat-grid">'
             f'<span>DPS <b>{dps}</b></span>'
             f'<span>总伤 <b>{html.escape(_format_compact_number(adjusted.get("total_damage")))}</b></span>'
@@ -704,7 +716,6 @@ body {{ margin: 0; background: #edf1f7; font-family: "Microsoft YaHei", "PingFan
 .stats {{ display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }}
 .stat-card {{ border-left: 5px solid #2F6BFF; background: #fafbfe; border-radius: 6px; padding: 14px; }}
 .stat-title {{ font-size: 18px; font-weight: 800; }}
-.stat-provider {{ color: #697386; font-size: 14px; margin-top: 4px; }}
 .stat-grid {{ display: grid; grid-template-columns: 1fr 1fr; gap: 6px 12px; margin-top: 10px; color: #566074; font-size: 14px; }}
 .stat-grid b {{ color: #1f2430; }}
 .chart-title {{ font-size: 21px; font-weight: 800; margin-bottom: 8px; }}
