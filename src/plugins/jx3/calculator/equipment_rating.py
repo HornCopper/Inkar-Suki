@@ -90,6 +90,277 @@ def _load_equipment_rating_distribution() -> dict[str, Any]:
     return payload if isinstance(payload, dict) else {}
 
 
+async def _render_equipment_rating_help_image():
+    html_source = """
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<script>
+window.MathJax = {
+  tex: {
+    inlineMath: [["\\\\(", "\\\\)"]],
+    displayMath: [["\\\\[", "\\\\]"]]
+  },
+  svg: { fontCache: "global" }
+};
+</script>
+<script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+<style>
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  width: 980px;
+  background: #f3f6f9;
+  color: #202630;
+  font-family: "Microsoft YaHei", "PingFang SC", Arial, sans-serif;
+}
+.guide {
+  width: 980px;
+  padding: 36px;
+  background: #f3f6f9;
+}
+.hero {
+  padding: 30px 34px;
+  border-radius: 8px;
+  background: #243149;
+  color: #fff;
+}
+.eyebrow {
+  font-size: 18px;
+  line-height: 1.25;
+  color: #b9c7dc;
+  font-weight: 800;
+}
+.title {
+  margin-top: 8px;
+  font-size: 34px;
+  line-height: 1.2;
+  font-weight: 900;
+}
+.subtitle {
+  margin-top: 12px;
+  max-width: 820px;
+  font-size: 18px;
+  line-height: 1.65;
+  color: #d9e2ee;
+}
+.section {
+  margin-top: 18px;
+  padding: 24px 26px;
+  border: 1px solid #e0e5ed;
+  border-radius: 8px;
+  background: #fff;
+}
+.section-title {
+  margin-bottom: 14px;
+  font-size: 24px;
+  line-height: 1.25;
+  font-weight: 900;
+  color: #18202c;
+}
+.steps {
+  display: grid;
+  gap: 11px;
+}
+.step {
+  display: grid;
+  grid-template-columns: 34px 1fr;
+  gap: 12px;
+  align-items: start;
+  font-size: 18px;
+  line-height: 1.62;
+  color: #333b4d;
+}
+.num {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #2f6bff;
+  color: #fff;
+  font-size: 16px;
+  font-weight: 900;
+}
+.command {
+  display: inline-block;
+  padding: 2px 7px;
+  border-radius: 5px;
+  background: #edf2ff;
+  color: #2354d6;
+  font-weight: 900;
+}
+.formula-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+.formula-block {
+  min-width: 0;
+  padding: 18px;
+  border: 1px solid #dde5ef;
+  border-radius: 8px;
+  background: #f8fafc;
+}
+.formula-title {
+  font-size: 18px;
+  font-weight: 900;
+  color: #253044;
+}
+.formula {
+  margin: 12px 0;
+  min-height: 68px;
+  overflow: hidden;
+  color: #141a24;
+}
+.formula-note {
+  font-size: 15px;
+  line-height: 1.55;
+  color: #5b6574;
+}
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px;
+}
+.chip {
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: #f5f7fb;
+  border: 1px solid #dfe5ee;
+  color: #303848;
+  font-size: 16px;
+  font-weight: 900;
+}
+.notice {
+  padding: 18px 20px;
+  border-left: 5px solid #ff8a00;
+  background: #fff7e8;
+  color: #563813;
+  font-size: 18px;
+  line-height: 1.65;
+  font-weight: 800;
+}
+.footer {
+  margin-top: 18px;
+  color: #7a8392;
+  font-size: 14px;
+  text-align: right;
+}
+</style>
+</head>
+<body>
+<div class="guide">
+  <div class="hero">
+    <div class="eyebrow">装备评级 help</div>
+    <div class="title">评级给出的评分只能够衡量当前配装距离毕业的程度</div>
+    <div class="subtitle">装备评级会在同一条评级 JCL、同一套默认评级增益下比较当前部位、空槽样本和候选装备，给出当前配装相对候选毕业解的接近程度。</div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">使用步骤</div>
+    <div class="steps">
+      <div class="step"><div class="num">1</div><div>先提交属性：<span class="command">提交属性 &lt;服务器&gt; &lt;角色名&gt; &lt;心法&gt; &lt;茗伊装备导出码&gt;</span></div></div>
+      <div class="step"><div class="num">2</div><div>再执行评级：<span class="command">装备评级 &lt;服务器&gt; &lt;角色名&gt; &lt;心法&gt;</span></div></div>
+      <div class="step"><div class="num">3</div><div>查看支持心法：<span class="command">装备评级支持</span> 或 <span class="command">装备评级支持 &lt;心法名&gt;</span></div></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">评级依据</div>
+    <div class="steps">
+      <div class="step"><div class="num">A</div><div>每个部位会计算三类样本：当前装备、去掉该部位后的空槽样本、同部位候选装备。</div></div>
+      <div class="step"><div class="num">B</div><div>所有样本使用同一条评级 JCL 和默认评级增益，避免把循环和增益差异混进装备评分。</div></div>
+      <div class="step"><div class="num">C</div><div>“最优候选”来自当前候选池中计算 DPS 最高的该部位装备；它是当前评级口径下的部位毕业参照。</div></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">计算公式</div>
+    <div class="formula-grid">
+      <div class="formula-block">
+        <div class="formula-title">单件评分</div>
+        <div class="formula">\\[
+S_i = \\operatorname{clip}_{0}^{100}\\left(
+\\frac{D_{\\mathrm{current}} - D_{\\mathrm{empty}, i}}
+{D_{\\mathrm{best}, i} - D_{\\mathrm{empty}, i}} \\times 100
+\\right)
+\\]</div>
+        <div class="formula-note">空槽 DPS 是该部位被移除后的基线；分数越高，代表该部位越接近当前候选池中的最优替换。</div>
+      </div>
+      <div class="formula-block">
+        <div class="formula-title">配装总评</div>
+        <div class="formula">\\[
+S_{\\mathrm{total}} =
+\\frac{\\sum_i S_i W_i}{\\sum_i W_i}
+\\]</div>
+        <div class="formula-note">\\(W_i\\) 是当前部位装分。总评按当前各部位装分加权平均，显示时保留 1 位小数。</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">加速惩罚与补偿</div>
+    <div class="formula-grid">
+      <div class="formula-block">
+        <div class="formula-title">修正系数</div>
+        <div class="formula">\\[
+\\Delta H = H_{\\mathrm{required}} - H_{\\mathrm{actual}}
+\\]
+\\[
+C =
+\\begin{cases}
+\\max\\left(0, 1 - \\Delta H \\times \\frac{0.01}{3279}\\right), & \\Delta H > 0 \\\\
+1 + (-\\Delta H) \\times \\frac{0.006}{3279}, & \\Delta H < 0 \\\\
+1, & \\Delta H = 0
+\\end{cases}
+\\]</div>
+        <div class="formula-note">缺加速按 1% / 3279 点折损；溢出加速按 0.6% / 3279 点补偿。</div>
+      </div>
+      <div class="formula-block">
+        <div class="formula-title">修正后 DPS</div>
+        <div class="formula">\\[
+D_{\\mathrm{adjusted}} = \\left\\lfloor D_{\\mathrm{raw}} \\times C \\right\\rfloor
+\\]</div>
+        <div class="formula-note">单件评分中的 DPS 使用修正后 DPS。当前装备、空槽样本、候选装备都会先应用同一套加速修正规则。</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">等级阈值</div>
+    <div class="chips">
+      <div class="chip">ACE ≥ 95</div>
+      <div class="chip">S+ ≥ 90</div>
+      <div class="chip">S ≥ 85</div>
+      <div class="chip">A ≥ 80</div>
+      <div class="chip">B ≥ 70</div>
+      <div class="chip">C ≥ 60</div>
+      <div class="chip">D ＜ 60</div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="notice">该评级与实际 DPS 无单调性相关：高分不等于实际 DPS 必然更高，低分也不等于实际 DPS 必然更低。它只表示当前配装距离该心法、该评级循环、该候选池下毕业配装的接近程度。</div>
+  </div>
+
+  <div class="footer">命令：装备评级 help</div>
+</div>
+</body>
+</html>
+"""
+    return await generate(
+        html_source,
+        ".guide",
+        delay=800,
+        segment=True,
+        wait_for_network=True,
+        viewport={"width": 980, "height": 2100},
+    )
+
+
 SLOT_DISPLAY_ORDER = [4, 3, 8, 12, 10, 11, 5, 9, 6, 7, 2, 0]
 SLOT_NAME_OVERRIDES = {"上衣": "衣服"}
 MAIN_ATTR_LABELS = {
@@ -928,9 +1199,9 @@ async def handle_equipment_rating(event: GroupMessageEvent, matcher: Matcher, st
     plain_text = args.extract_plain_text().strip()
     if plain_text == "":
         matcher.stop_propagation()
-        await matcher.finish(EQUIPMENT_RATING_USAGE)
+        await matcher.finish(await _render_equipment_rating_help_image())
     if plain_text.lower() in EQUIPMENT_RATING_HELP_KEYWORDS:
-        await matcher.finish(EQUIPMENT_RATING_USAGE)
+        await matcher.finish(await _render_equipment_rating_help_image())
     arg = plain_text.split()
     if len(arg) not in [3, 4]:
         await matcher.finish(PROMPT.ArgumentCountInvalid + "\n" + EQUIPMENT_RATING_USAGE)
