@@ -163,6 +163,18 @@
                 {
                     "name": "calculator.advanced",
                     "desc": "使用高级计算器功能"
+                },
+                {
+                    "name": "calculator.public_loop.approve",
+                    "desc": "审批公有计算器循环提交"
+                },
+                {
+                    "name": "calculator.public_loop.config",
+                    "desc": "管理公有计算器循环审批配置"
+                },
+                {
+                    "name": "calculator.loop.rename_other",
+                    "desc": "变更其他用户提交的计算器循环名字"
                 }
             ]
         }
