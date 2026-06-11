@@ -986,7 +986,7 @@ async def _finish_damage_timeline(
     parsed = _parse_timeline_selection(selection.extract_plain_text(), len(loops), compare=compare)
     if isinstance(parsed, str):
         await matcher.finish(parsed)
-    await matcher.send("音卡正在努力演算中！")
+    await matcher.send("正在演算中，请稍候……")
     user_id = event.user_id if state.get("timeline_is_custom") else 0
     bin_size = float(state.get("timeline_bin_size", DEFAULT_DAMAGE_TIMELINE_BIN_SIZE))
     data = await _request_damage_timeline(instance, loops, parsed, user_id, bin_size)
