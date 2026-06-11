@@ -64,7 +64,7 @@ async def websocket_client(ws_url: str, headers: dict):
                             if os.path.exists(build_path(ASSETS, ["image", "jx3", "update.png"])):
                                 os.remove(build_path(ASSETS, ["image", "jx3", "update.png"]))
                             await get_announce_image()
-                    if name == "生日祝福":
+                    if name in ["生日祝福", "创作者"]:
                         image = (await Request(server).get()).content
                         message = msg.msg + MessageSegment.image(image)
                         server = ""
