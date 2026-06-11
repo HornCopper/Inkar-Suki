@@ -14,7 +14,7 @@ from ._template import teamrank_anyone_template, teamrank_team_template
 # 名人堂 by 花姐
 
 async def fetch_team_rank_data(dungeon_name: str, dungeon_mode: str, boss_name: str) -> dict:
-    url = "http://116.211.150.188:8009/getHoFRank"
+    url = "http://jx3bla.moeheart.cn/getHoFRank"
     dungeon_full_name = dungeon_mode + dungeon_name
     if dungeon_name == "缚罪之渊":
         dungeon_full_name = dungeon_name
