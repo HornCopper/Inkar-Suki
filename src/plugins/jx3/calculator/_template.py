@@ -258,8 +258,9 @@ lnx_template_body = """
 
         .report-title {
             display: flex;
-            align-items: flex-end;
+            align-items: center;
             justify-content: space-between;
+            gap: 22px;
             margin-bottom: 22px;
         }
 
@@ -284,13 +285,59 @@ lnx_template_body = """
             color: #41506a;
         }
 
+        .report-mark {
+            flex: 0 0 auto;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 8px 14px 8px 8px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.64);
+            border: 1px solid rgba(120, 174, 190, 0.36);
+            box-shadow: 0 12px 24px rgba(65, 92, 122, 0.12);
+            color: #41506a;
+            font-size: 16px;
+            font-weight: 800;
+        }
+
+        .report-mark img {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid rgba(205, 245, 235, 0.92);
+            box-shadow: 0 5px 14px rgba(85, 131, 156, 0.18);
+        }
+
         .phase-card {
+            position: relative;
             margin-top: 22px;
             padding: 20px;
             border-radius: 22px;
             background: rgba(255, 255, 255, 0.86);
             border: 1px solid rgba(120, 134, 156, 0.22);
             box-shadow: 0 18px 40px rgba(31, 42, 61, 0.08);
+            overflow: hidden;
+        }
+
+        .phase-card > :not(.phase-watermark) {
+            position: relative;
+            z-index: 1;
+        }
+
+        .phase-watermark {
+            position: absolute;
+            top: 18px;
+            right: 22px;
+            width: 156px;
+            height: 156px;
+            object-fit: cover;
+            border-radius: 42px;
+            opacity: 0.10;
+            filter: saturate(0.9) blur(0.2px);
+            transform: rotate(7deg);
+            pointer-events: none;
+            z-index: 0;
         }
 
         .phase-header {
@@ -356,7 +403,7 @@ lnx_template_body = """
             padding: 7px 5px;
             background: #e9eef5;
             color: #43516a;
-            font-size: 13px;
+            font-size: 14px;
             text-align: center;
             white-space: nowrap;
         }
@@ -364,7 +411,7 @@ lnx_template_body = """
         td {
             padding: 7px 5px;
             border-top: 1px solid #edf0f5;
-            font-size: 13px;
+            font-size: 14px;
             vertical-align: middle;
             text-align: center;
             line-height: 1.25;
@@ -374,6 +421,32 @@ lnx_template_body = """
             text-align: center;
             white-space: nowrap;
             font-variant-numeric: tabular-nums;
+        }
+
+        .contribution-bar {
+            position: relative;
+            overflow: hidden;
+            background: transparent;
+        }
+
+        .contribution-bar::before {
+            content: "";
+            position: absolute;
+            left: 6px;
+            top: 50%;
+            width: var(--bar, 0%);
+            max-width: calc(100% - 12px);
+            height: 62%;
+            border-radius: 10px;
+            transform: translateY(-50%);
+            background: linear-gradient(90deg, rgba(86, 124, 170, 0.32), rgba(151, 174, 203, 0.22));
+            box-shadow: 0 4px 12px rgba(86, 124, 170, 0.12);
+        }
+
+        .contribution-bar span {
+            position: relative;
+            z-index: 1;
+            font-weight: 800;
         }
 
         .rank {
@@ -415,12 +488,119 @@ lnx_template_body = """
 
         .triple-col {
             display: grid;
-            grid-template-columns: minmax(0, 1.12fr) minmax(0, 0.88fr) minmax(0, 0.88fr);
+            grid-template-columns: minmax(0, 1.16fr) minmax(0, 0.92fr) minmax(0, 0.92fr);
             gap: 12px;
             align-items: start;
         }
 
-        .wave-matrix {
+        .triple-col table {
+            table-layout: fixed;
+        }
+
+        .triple-col th,
+        .triple-col td {
+            padding-left: 4px;
+            padding-right: 4px;
+            font-size: 13px;
+        }
+
+        .triple-col .rank {
+            width: 28px;
+        }
+
+        .triple-col .role-cell {
+            gap: 5px;
+        }
+
+        .triple-col .role-cell img {
+            width: 20px;
+            height: 20px;
+        }
+
+        .triple-col .role-cell > div {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .contribution-summary-table th:first-child,
+        .contribution-summary-table td:first-child,
+        .contribution-side-table th:first-child,
+        .contribution-side-table td:first-child {
+            width: 28px;
+        }
+
+        .contribution-summary-table th:nth-child(2),
+        .contribution-summary-table td:nth-child(2) {
+            width: 170px;
+            text-align: left;
+        }
+
+        .contribution-summary-table th:nth-child(n + 3),
+        .contribution-summary-table td:nth-child(n + 3) {
+            width: 82px;
+        }
+
+        .contribution-side-table th:nth-child(2),
+        .contribution-side-table td:nth-child(2) {
+            width: 190px;
+            text-align: left;
+        }
+
+        .contribution-side-table th:nth-child(3),
+        .contribution-side-table td:nth-child(3) {
+            width: 86px;
+        }
+
+        .detail-row {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) 430px;
+            gap: 14px;
+            align-items: start;
+        }
+
+        .buff-detail-table {
+            table-layout: fixed;
+        }
+
+        .buff-detail-table th:first-child,
+        .buff-detail-table td:first-child {
+            width: 30px;
+        }
+
+        .buff-detail-table th:nth-child(2),
+        .buff-detail-table td:nth-child(2) {
+            width: 145px;
+            text-align: left;
+        }
+
+        .buff-detail-table th:nth-child(3),
+        .buff-detail-table td:nth-child(3) {
+            width: 120px;
+        }
+
+        .buff-detail-table th:nth-child(4),
+        .buff-detail-table td:nth-child(4) {
+            width: 62px;
+        }
+
+        .buff-detail-table th:nth-child(5),
+        .buff-detail-table td:nth-child(5) {
+            width: 84px;
+        }
+
+        .buff-detail-table th:nth-child(6),
+        .buff-detail-table td:nth-child(6) {
+            width: 88px;
+        }
+
+        .buff-detail-table .role-cell > div {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .wave-stack {
             display: grid;
             grid-template-columns: 86px 1fr;
             gap: 8px;
@@ -446,7 +626,7 @@ lnx_template_body = """
             text-align: center;
         }
 
-        .wave-pill {
+        .wave-card {
             padding: 10px 8px;
             border-radius: 14px;
             background: #f4f7fb;
@@ -456,13 +636,15 @@ lnx_template_body = """
         .wave-index {
             font-size: 14px;
             color: #6b7280;
+            font-weight: 800;
         }
 
         .wave-value {
-            margin-top: 4px;
+            margin-top: 5px;
             font-size: 15px;
             font-weight: 800;
             color: #2d3a53;
+            white-space: nowrap;
         }
 
         .wave-subvalue {
@@ -470,6 +652,143 @@ lnx_template_body = """
             font-size: 13px;
             font-weight: 700;
             color: #6b7280;
+            white-space: nowrap;
+        }
+
+        .pie-panel {
+            display: grid;
+            gap: 10px;
+        }
+
+        .pie-card {
+            padding: 12px;
+            border-radius: 18px;
+            background: linear-gradient(135deg, #f6f9fd, #f1f5fa);
+            border: 1px solid #e8edf4;
+        }
+
+        .pie-title {
+            margin-bottom: 8px;
+            font-size: 16px;
+            font-weight: 800;
+            color: #2f3a50;
+        }
+
+        .pie-body {
+            display: grid;
+        }
+
+        .pie-chart {
+            position: relative;
+            width: 406px;
+            max-width: 100%;
+            height: 265px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: visible;
+        }
+
+        .rose-chart {
+            width: 406px;
+            height: 265px;
+            max-width: 100%;
+            overflow: visible;
+            filter: drop-shadow(0 10px 16px rgba(45, 58, 83, 0.14));
+        }
+
+        .rose-backdrop {
+            fill: #eef3f8;
+            stroke: rgba(45, 58, 83, 0.08);
+            stroke-width: 1;
+        }
+
+        .rose-slice {
+            stroke: rgba(247, 250, 253, 0.96);
+            stroke-width: 2.5;
+        }
+
+        .rose-core {
+            fill: #f8fbfe;
+            stroke: rgba(45, 58, 83, 0.08);
+            stroke-width: 1;
+        }
+
+        .rose-guide-shadow {
+            fill: none;
+            stroke: rgba(255, 255, 255, 0.78);
+            stroke-width: 4;
+            stroke-linecap: round;
+        }
+
+        .rose-guide-line {
+            fill: none;
+            stroke: #5d6d82;
+            stroke-width: 1.35;
+            stroke-linecap: round;
+            stroke-opacity: 0.62;
+        }
+
+        .rose-chart marker path {
+            fill: #5d6d82;
+            opacity: 0.68;
+        }
+
+        .rose-entity-label {
+            position: absolute;
+            z-index: 2;
+            max-width: 128px;
+            height: 26px;
+            padding: 0 6px;
+            border-radius: 999px;
+            display: flex;
+            align-items: center;
+            gap: 3px;
+            transform: translate(-50%, -50%);
+            background: var(--label-color, rgba(33, 43, 61, 0.72));
+            background: linear-gradient(135deg, color-mix(in srgb, var(--label-color, #334158) 76%, #1f2a3d), var(--label-color, #334158));
+            border: 1px solid rgba(255, 255, 255, 0.52);
+            box-shadow: 0 4px 10px rgba(45, 58, 83, 0.18);
+            color: #ffffff;
+            line-height: 1;
+            backdrop-filter: blur(2px);
+        }
+
+        .rose-entity-label img {
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            flex: 0 0 auto;
+        }
+
+        .rose-label-dot {
+            width: 9px;
+            height: 9px;
+            border-radius: 50%;
+            flex: 0 0 auto;
+        }
+
+        .rose-entity-name {
+            min-width: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            font-size: 11px;
+            font-weight: 900;
+        }
+
+        .rose-entity-label b {
+            margin-left: auto;
+            font-size: 11px;
+            font-weight: 900;
+        }
+
+        .pie-name {
+            min-width: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
         }
 
         footer {
@@ -487,10 +806,13 @@ lnx_template_body = """
     <div class="lnx-report">
         <div class="report-title">
             <div>
-                <div class="title-main">鲁念雪 JCL 贡献统计</div>
+                <div class="title-main">鲁念雪-雷元归枢-JCL贡献统计</div>
                 <div class="title-sub">减伤、治疗、化解按阶段加权统计；r = {{ decay_rate }}</div>
             </div>
-            <div class="badge">LNX 分析</div>
+            <div class="report-mark">
+                <img src="{{ lnx_mark }}" alt="LNX">
+                <span>LNX 分析</span>
+            </div>
         </div>
 
         {{ sections }}
