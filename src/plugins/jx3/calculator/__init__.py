@@ -58,49 +58,13 @@ def _prefixed_command_aliases(base_command: str, prefixes: tuple[str, ...]) -> s
 
 
 CALCULATOR_PREFIXES = ("T", "QC", "JC", "TL", "JY", "WX")
-
-calc_matcher = on_command("jx3_calculator", aliases={"计算器", "T计算器", "QC计算器", "JC计算器", "TL计算器", "JY计算器", "WX计算器"}, priority=5, force_whitespace=True)
-calculator_support_matcher = on_command("jx3_calculator_support", aliases={"计算器支持", "计算器心法", "计算器支持心法"}, priority=5, force_whitespace=True)
-equipment_rating_matcher = on_command("jx3_equipment_rating", aliases={"装备评级"}, priority=5, force_whitespace=True)
-equipment_rating_support_matcher = on_command("jx3_equipment_rating_support", aliases={"装备评级支持", "装备评级心法", "装备评级支持心法"}, priority=5, force_whitespace=True)
-rd_analysis_support_matcher = on_command("jx3_rd_analysis_support", aliases={"RD分析支持", "rd分析支持", "Rd分析支持"}, priority=5, force_whitespace=True)
-jcl_analysis_help_matcher = on_command("jx3_jcl_analysis", aliases={"JCL分析", "jcl分析", "Jcl分析"}, priority=5, force_whitespace=True)
-custom_loop_help_matcher = on_command("jx3_custom_loop_help", aliases={"自定义循环"}, priority=5, force_whitespace=True)
-submit_public_loop_matcher = on_command("jx3_submit_public_loop", aliases={"提交公有循环"}, priority=5, force_whitespace=True)
-approve_public_loop_matcher = on_command("jx3_approve_public_loop", aliases={"公有循环审批", "审批公有循环"}, priority=5, force_whitespace=True)
-public_loop_approval_config_matcher = on_command(
-    "jx3_public_loop_approval_config",
-    aliases={"公有循环审批设置", "公有循环审批配置"},
-    priority=5,
-    force_whitespace=True,
-)
-timeline_matcher = on_command(
-    "jx3_damage_timeline",
-    aliases=_prefixed_command_aliases("循环曲线", CALCULATOR_PREFIXES),
-    priority=5,
-    force_whitespace=True,
-)
-timeline_compare_matcher = on_command(
-    "jx3_damage_timeline_compare",
-    aliases=_prefixed_command_aliases("循环对比", CALCULATOR_PREFIXES),
-    priority=5,
-    force_whitespace=True,
-)
-timeline_kline_matcher = on_command(
-    "jx3_damage_timeline_kline",
-    aliases=(
-        _prefixed_command_aliases("循环k线", CALCULATOR_PREFIXES)
-        | _prefixed_command_aliases("循环K线", CALCULATOR_PREFIXES)
-    ),
-    priority=5,
-    force_whitespace=True,
-)
-kline_game_matcher = on_command(
-    "jx3_damage_timeline_kline_game",
-    aliases={"循环k线游戏", "循环K线游戏"},
-    priority=5,
-    force_whitespace=True,
-)
+SPECIAL_PVE_KUNGFU_TAGS = {
+    10014: "QCPVE",
+    10015: "JCPVE",
+    10224: "JYPVE",
+    10225: "TLPVE",
+    10821: "WXPVE",
+}
 
 DEFAULT_DAMAGE_TIMELINE_BIN_SIZE = 2.5
 DEFAULT_DAMAGE_TIMELINE_ROLLING_WINDOW = 10
@@ -114,6 +78,9 @@ KLINE_GAME_MIN_HISTORY = 30
 KLINE_GAME_HISTORY_WINDOW = 120
 PUBLIC_LOOP_DEFAULT_APPROVAL_GROUP_ID = 1018743771
 PUBLIC_LOOP_APPROVAL_CONFIG_PATH = build_path(DATA, ["jx3", "public_loop_approval.json"])
+PUBLIC_LOOP_APPROVE_PERMISSION_NODE = "jx3.calculator.public_loop.approve"
+PUBLIC_LOOP_CONFIG_PERMISSION_NODE = "jx3.calculator.public_loop.config"
+CALCULATOR_LOOP_RENAME_OTHER_PERMISSION_NODE = "jx3.calculator.loop.rename_other"
 
 RD_ANALYSIS_SUPPORT_TEXT = (
     "当前 RD 分析支持通过上传群文件触发：\n"
@@ -270,7 +237,7 @@ body { margin: 0; background: #edf1f7; font-family: "Microsoft YaHei", "PingFang
     <div class="usage">
       <div class="usage-item">1. 发送 <span class="command">循环改名 心法名</span>，机器人会列出你提供的公有循环和对应私有循环。</div>
       <div class="usage-item">2. 发送要改名的编号后，再发送新的循环名；只会变更文件名里的循环名部分。</div>
-      <div class="usage-item">3. bot owner 可发送 <span class="command">循环改名 QQ号 心法名</span> 变更指定用户提供的循环。</div>
+      <div class="usage-item">3. 拥有改名权限的用户可发送 <span class="command">循环改名 QQ号 心法名</span> 变更指定用户提供的循环。</div>
     </div>
   </div>
   <div class="section">
@@ -432,6 +399,60 @@ def _calculator_tag_from_command(cmd: str) -> str:
     return tag
 
 
+def _calculator_command_has_specific_prefix(cmd: str) -> bool:
+    normalized_cmd = cmd.upper()
+    return any(normalized_cmd.startswith(prefix) for prefix in CALCULATOR_PREFIXES)
+
+
+async def _special_pve_tag_options(global_role_id: int) -> list[dict[str, Any]]:
+    all_equips = await JX3PlayerAttribute.from_database(global_role_id, "", True)
+    if not all_equips:
+        return []
+
+    latest_by_kungfu: dict[int, JX3PlayerAttribute] = {}
+    for equip in all_equips:
+        kungfu_id = int(equip.kungfu_id)
+        if equip.tag != "PVE" or kungfu_id not in SPECIAL_PVE_KUNGFU_TAGS:
+            continue
+        current = latest_by_kungfu.get(kungfu_id)
+        if current is None or equip.timestamp > current.timestamp:
+            latest_by_kungfu[kungfu_id] = equip
+
+    options: list[dict[str, Any]] = []
+    for kungfu_id, equip in sorted(latest_by_kungfu.items(), key=lambda item: item[1].timestamp, reverse=True):
+        kungfu = Kungfu.with_internel_id(kungfu_id, convert_to_pc=True)
+        options.append(
+            {
+                "tag": SPECIAL_PVE_KUNGFU_TAGS[kungfu_id],
+                "kungfu_id": kungfu_id,
+                "name": kungfu.name or str(kungfu_id),
+            }
+        )
+    return options
+
+
+def _format_special_pve_kungfu_selection(options: list[dict[str, Any]]) -> str:
+    msg = "检测到该玩家有多个可用于计算的 PVE 心法装备，请先选择心法："
+    for index, option in enumerate(options, start=1):
+        msg += f"\n{index}. {option['name']}"
+    return msg
+
+
+async def _resolve_bare_calculator_tag_for_global_role_id(
+    global_role_id: int,
+    state: T_State,
+    *,
+    selection_key: str,
+) -> str:
+    options = await _special_pve_tag_options(global_role_id)
+    if len(options) == 1:
+        return str(options[0]["tag"])
+    if len(options) > 1:
+        state[selection_key] = options
+        return ""
+    return "DPSPVE"
+
+
 def _parse_timeline_command_args(raw_text: str) -> tuple[list[str], float | str]:
     pattern = re.compile(r"(?i)(?:^|\s)bin\s*[=＝]\s*(\S+)(?=\s|$)")
     matches = list(pattern.finditer(raw_text))
@@ -549,6 +570,55 @@ def _apply_calculator_preferences(event: GroupMessageEvent, instance: UniversalC
     instance.formation_list = FORMATIONS[formation_ver]
     instance.formation_name = formation_ver
     return is_custom
+
+
+async def _prepare_calculator_loop_selection(
+    event: GroupMessageEvent,
+    matcher: Matcher,
+    state: T_State,
+    instance: UniversalCalculator | JX3BOXCalculator,
+) -> None:
+    is_custom = _apply_calculator_preferences(event, instance)
+    loop_entries = await _calculator_loop_entries(instance, event.user_id, is_custom)
+    if isinstance(loop_entries, str):
+        await matcher.finish(loop_entries)
+    state["loops"] = loop_entries
+    state["instance"] = instance
+    await matcher.send(_format_calculator_loop_selection(loop_entries))
+
+
+async def _prepare_equip_compare_equipment_selection(
+    event: GroupMessageEvent,
+    matcher: Matcher,
+    state: T_State,
+    instance: JX3PlayerAttribute,
+    equip_name: str,
+) -> None:
+    kungfu_id = instance.kungfu_id
+    current_jcl_line = instance.equip_lines
+    currnet_dps_data = UniversalCalculator(current_jcl_line, int(str(kungfu_id)))
+
+    income_ver = Preference(event.user_id, "", "").setting("计算器增益")
+    formation_ver = Preference(event.user_id, "", "").setting("计算器阵眼")
+    income_code = get_calculator_income_codes(income_ver, int(str(kungfu_id)))
+    formation_code = FORMATIONS[formation_ver]
+
+    currnet_dps_data.income_list = income_code
+    currnet_dps_data.income_ver = income_ver
+    currnet_dps_data.formation_list = formation_code
+    currnet_dps_data.formation_name = formation_ver
+
+    equips = await get_equip_list(equip_name)
+    if not equips:
+        await matcher.finish(f"未找到装备「{equip_name}」，请检查装备名，或尝试输入更完整的装备名称。")
+    msg = "请从下面选择装备进行对比！"
+    for index, equip_info in enumerate(equips, start=1):
+        msg += f"\n{index}. ({equip_info.subkind}) {equip_info.name}\n{equip_info.quality} {' '.join(equip_info.attr)}"
+    state["equips"] = equips
+    state["kungfu_id"] = kungfu_id
+    state["current_data"] = currnet_dps_data
+    state["current_jcl"] = current_jcl_line
+    await matcher.send(msg)
 
 
 def _timeline_loop_entries(
@@ -1763,7 +1833,7 @@ async def _finish_damage_timeline(
     parsed = _parse_timeline_selection(selection.extract_plain_text(), len(loops), compare=compare)
     if isinstance(parsed, str):
         await matcher.finish(parsed)
-    await matcher.send("音卡正在努力演算中！")
+    await matcher.send("正在演算中，请稍候……")
     user_id = event.user_id if state.get("timeline_is_custom") else 0
     bin_size = float(state.get("timeline_bin_size", DEFAULT_DAMAGE_TIMELINE_BIN_SIZE))
     rolling_window = DEFAULT_DAMAGE_TIMELINE_ROLLING_WINDOW
@@ -1775,9 +1845,25 @@ async def _finish_damage_timeline(
     await matcher.finish(await _render_damage_timeline_image(data, instance, compare=compare, kline_only=kline))
 
 
+rd_analysis_support_matcher = on_command(
+    "jx3_rd_analysis_support",
+    aliases={"RD分析支持", "rd分析支持", "Rd分析支持"},
+    priority=5,
+    force_whitespace=True,
+)
+
+
 @rd_analysis_support_matcher.handle()
 async def _():
     await rd_analysis_support_matcher.finish(RD_ANALYSIS_SUPPORT_TEXT)
+
+
+jcl_analysis_help_matcher = on_command(
+    "jx3_jcl_analysis",
+    aliases={"JCL分析", "jcl分析", "Jcl分析"},
+    priority=5,
+    force_whitespace=True,
+)
 
 
 @jcl_analysis_help_matcher.handle()
@@ -1788,12 +1874,28 @@ async def _(matcher: Matcher, args: Message = CommandArg()):
     await matcher.finish(_jcl_analysis_help_message())
 
 
+custom_loop_help_matcher = on_command(
+    "jx3_custom_loop_help",
+    aliases={"自定义循环"},
+    priority=5,
+    force_whitespace=True,
+)
+
+
 @custom_loop_help_matcher.handle()
 async def _(matcher: Matcher, args: Message = CommandArg()):
     query = args.extract_plain_text().strip().lower()
     if query not in {"", "help", "帮助", "参数", "示例"}:
         await matcher.finish("参考格式：自定义循环 help")
     await matcher.finish(await _render_custom_loop_help_image())
+
+
+calculator_support_matcher = on_command(
+    "jx3_calculator_support",
+    aliases={"计算器支持", "计算器心法", "计算器支持心法"},
+    priority=5,
+    force_whitespace=True,
+)
 
 
 @calculator_support_matcher.handle()
@@ -1819,9 +1921,25 @@ async def _(matcher: Matcher, args: Message = CommandArg()):
     await matcher.finish(_format_calculator_support_detail(item))
 
 
+equipment_rating_support_matcher = on_command(
+    "jx3_equipment_rating_support",
+    aliases={"装备评级支持", "装备评级心法", "装备评级支持心法"},
+    priority=5,
+    force_whitespace=True,
+)
+
+
 @equipment_rating_support_matcher.handle()
 async def _(matcher: Matcher, args: Message = CommandArg()):
     await equipment_rating_module.handle_equipment_rating_support(matcher, args)
+
+
+equipment_rating_matcher = on_command(
+    "jx3_equipment_rating",
+    aliases={"装备评级"},
+    priority=5,
+    force_whitespace=True,
+)
 
 
 @equipment_rating_matcher.handle()
@@ -1837,24 +1955,73 @@ async def _(event: GroupMessageEvent, matcher: Matcher, state: T_State, rating_j
     await equipment_rating_module.handle_equipment_rating_loop_order(event, matcher, state, rating_jcl_order)
 
 
+timeline_matcher = on_command(
+    "jx3_damage_timeline",
+    aliases=_prefixed_command_aliases("循环曲线", CALCULATOR_PREFIXES),
+    priority=5,
+    force_whitespace=True,
+)
+
+
 @timeline_matcher.handle()
-async def _(event: GroupMessageEvent, matcher: Matcher, state: T_State, args: Message = CommandArg(), cmd: str = RawCommand()):
+async def _(
+    event: GroupMessageEvent,
+    matcher: Matcher,
+    state: T_State,
+    args: Message = CommandArg(),
+    cmd: str = RawCommand(),
+):
     await _prepare_timeline_selection(event, matcher, state, args, cmd, compare=False)
 
 
 @timeline_matcher.got("timeline_loop_order")
-async def _(event: GroupMessageEvent, matcher: Matcher, state: T_State, timeline_loop_order: Message = Arg()):
+async def _(
+    event: GroupMessageEvent,
+    matcher: Matcher,
+    state: T_State,
+    timeline_loop_order: Message = Arg(),
+):
     await _finish_damage_timeline(event, matcher, state, timeline_loop_order)
 
 
+timeline_compare_matcher = on_command(
+    "jx3_damage_timeline_compare",
+    aliases=_prefixed_command_aliases("循环对比", CALCULATOR_PREFIXES),
+    priority=5,
+    force_whitespace=True,
+)
+
+
 @timeline_compare_matcher.handle()
-async def _(event: GroupMessageEvent, matcher: Matcher, state: T_State, args: Message = CommandArg(), cmd: str = RawCommand()):
+async def _(
+    event: GroupMessageEvent,
+    matcher: Matcher,
+    state: T_State,
+    args: Message = CommandArg(),
+    cmd: str = RawCommand(),
+):
     await _prepare_timeline_selection(event, matcher, state, args, cmd, compare=True)
 
 
 @timeline_compare_matcher.got("timeline_loop_order")
-async def _(event: GroupMessageEvent, matcher: Matcher, state: T_State, timeline_loop_order: Message = Arg()):
+async def _(
+    event: GroupMessageEvent,
+    matcher: Matcher,
+    state: T_State,
+    timeline_loop_order: Message = Arg(),
+):
     await _finish_damage_timeline(event, matcher, state, timeline_loop_order)
+
+
+timeline_kline_matcher = on_command(
+    "jx3_damage_timeline_kline",
+    aliases=(
+        _prefixed_command_aliases("循环k线", CALCULATOR_PREFIXES)
+        | _prefixed_command_aliases("循环K线", CALCULATOR_PREFIXES)
+    ),
+    priority=5,
+    force_whitespace=True,
+)
 
 
 @timeline_kline_matcher.handle()
@@ -1865,6 +2032,14 @@ async def _(event: GroupMessageEvent, matcher: Matcher, state: T_State, args: Me
 @timeline_kline_matcher.got("timeline_loop_order")
 async def _(event: GroupMessageEvent, matcher: Matcher, state: T_State, timeline_loop_order: Message = Arg()):
     await _finish_damage_timeline(event, matcher, state, timeline_loop_order)
+
+
+kline_game_matcher = on_command(
+    "jx3_damage_timeline_kline_game",
+    aliases={"循环k线游戏", "循环K线游戏"},
+    priority=5,
+    force_whitespace=True,
+)
 
 
 @kline_game_matcher.handle()
@@ -1921,8 +2096,22 @@ async def _(matcher: Matcher, state: T_State, kline_game_action: Message = Arg()
     await matcher.reject("继续操作，或发送「结束」退出。")
 
 
+calc_matcher = on_command(
+    "jx3_calculator",
+    aliases={"计算器", "T计算器", "QC计算器", "JC计算器", "TL计算器", "JY计算器", "WX计算器"},
+    priority=5,
+    force_whitespace=True,
+)
+
+
 @calc_matcher.handle()
-async def _(event: GroupMessageEvent, matcher: Matcher, state: T_State, args: Message = CommandArg(), cmd: str = RawCommand()):
+async def _(
+    event: GroupMessageEvent,
+    matcher: Matcher,
+    state: T_State,
+    args: Message = CommandArg(),
+    cmd: str = RawCommand(),
+):
     raw_text = args.extract_plain_text().strip()
     if raw_text.lower() in {"help"} or raw_text in {"帮助", "参数", "示例"}:
         await calc_matcher.finish(_calculator_help_message())
@@ -1940,17 +2129,8 @@ async def _(event: GroupMessageEvent, matcher: Matcher, state: T_State, args: Me
         server = arg[0]
         name = arg[1]
     state["pzid"] = 0
-    tag = "TPVE" if cmd[0] == "T" else "DPSPVE"
-    if "QC" in cmd:
-        tag = "QCPVE"
-    if "JC" in cmd:
-        tag = "JCPVE"
-    if "TL" in cmd:
-        tag = "TLPVE"
-    if "JY" in cmd:
-        tag = "JYPVE"
-    if "WX" in cmd:
-        tag = "WXPVE"
+    tag = _calculator_tag_from_command(cmd)
+    is_specific_calculator = _calculator_command_has_specific_prefix(cmd)
     if check_number(name):
         instance = await JX3BOXCalculator.with_pzid(int(name))
         if isinstance(instance, str):
@@ -1960,6 +2140,20 @@ async def _(event: GroupMessageEvent, matcher: Matcher, state: T_State, args: Me
         global_role_id = name[1:]
         if not check_number(global_role_id):
             await calc_matcher.finish("全局玩家ID输入有误，请检查后重试！")
+        if not is_specific_calculator:
+            resolved_tag = await _resolve_bare_calculator_tag_for_global_role_id(
+                int(global_role_id),
+                state,
+                selection_key="calculator_kungfu_options",
+            )
+            if resolved_tag == "":
+                state["calculator_kungfu_context"] = {
+                    "mode": "global",
+                    "global_role_id": int(global_role_id),
+                }
+                await calc_matcher.send(_format_special_pve_kungfu_selection(state["calculator_kungfu_options"]))
+                return
+            tag = resolved_tag
         instance = await UniversalCalculator.with_global_role_id(int(global_role_id), tag)
         if isinstance(instance, str):
             await calc_matcher.finish(instance)
@@ -1967,30 +2161,53 @@ async def _(event: GroupMessageEvent, matcher: Matcher, state: T_State, args: Me
         server = Server(server, event.group_id).server
         if server is None:
             await calc_matcher.finish(PROMPT.ServerNotExist)
+        if not is_specific_calculator:
+            player_data = await search_player(role_name=name, server_name=server)
+            if player_data.roleId == "":
+                await calc_matcher.finish(PROMPT.PlayerNotExist)
+            await JX3PlayerAttribute.from_tuilan(player_data.roleId, player_data.serverName, player_data.globalRoleId)
+            resolved_tag = await _resolve_bare_calculator_tag_for_global_role_id(
+                int(player_data.globalRoleId),
+                state,
+                selection_key="calculator_kungfu_options",
+            )
+            if resolved_tag == "":
+                state["calculator_kungfu_context"] = {
+                    "mode": "name",
+                    "server": server,
+                    "name": name,
+                }
+                await calc_matcher.send(_format_special_pve_kungfu_selection(state["calculator_kungfu_options"]))
+                return
+            tag = resolved_tag
         instance = await UniversalCalculator.with_name(name, server, tag)
         if isinstance(instance, str):
             await calc_matcher.finish(instance)
-    income_ver = Preference(event.user_id, "", "").setting("计算器增益")
-    formation_ver = Preference(event.user_id, "", "").setting("计算器阵眼")
-    is_custom = Preference(event.user_id, "", "").setting("计算器来源") == "自定义"
-    income_code = get_calculator_income_codes(income_ver, instance.calculator_kungfu_id)
-    instance.income_list = income_code
-    instance.income_ver = income_ver
-    instance.formation_list = FORMATIONS[formation_ver]
-    instance.formation_name = formation_ver
-
-    loop_entries = await _calculator_loop_entries(instance, event.user_id, is_custom)
-    if isinstance(loop_entries, str):
-        await calc_matcher.finish(loop_entries)
-    state["loops"] = loop_entries
-    state["instance"] = instance
-    await calc_matcher.send(_format_calculator_loop_selection(loop_entries))
+    await _prepare_calculator_loop_selection(event, matcher, state, instance)
 
 @calc_matcher.got("loop_order")
-async def _(event: GroupMessageEvent, state: T_State, loop_order: Message = Arg()):
+async def _(event: GroupMessageEvent, matcher: Matcher, state: T_State, loop_order: Message = Arg()):
     num = loop_order.extract_plain_text()
     if not check_number(num):
         await calc_matcher.finish("循环选择有误，请重新发起命令！")
+    if "calculator_kungfu_options" in state:
+        options: list[dict[str, Any]] = state["calculator_kungfu_options"]
+        index = int(num)
+        if index < 1 or index > len(options):
+            await calc_matcher.finish("超出可选范围，请重新发起命令！")
+        selected_tag = str(options[index - 1]["tag"])
+        context: dict[str, Any] = state["calculator_kungfu_context"]
+        if context["mode"] == "global":
+            instance = await UniversalCalculator.with_global_role_id(int(context["global_role_id"]), selected_tag)
+        else:
+            instance = await UniversalCalculator.with_name(str(context["name"]), str(context["server"]), selected_tag)
+        if isinstance(instance, str):
+            await calc_matcher.finish(instance)
+        state.pop("calculator_kungfu_options", None)
+        state.pop("calculator_kungfu_context", None)
+        state.pop("loop_order", None)
+        await _prepare_calculator_loop_selection(event, matcher, state, instance)
+        await calc_matcher.reject()
     loops: list[dict[str, Any]] = state["loops"]
     instance: UniversalCalculator | JX3BOXCalculator = state["instance"]
     index = int(num)
@@ -2009,10 +2226,21 @@ async def _(event: GroupMessageEvent, state: T_State, loop_order: Message = Arg(
         await calc_matcher.send(equip_image)
     await calc_matcher.finish(data)
 
-equip_compare = on_command("jx3_equip_compare", aliases={"装备对比", "T装备对比", "QC装备对比", "JC装备对比", "TL装备对比", "JY装备对比", "WX装备对比"}, priority=5, force_whitespace=True)
+equip_compare = on_command(
+    "jx3_equip_compare",
+    aliases={"装备对比", "T装备对比", "QC装备对比", "JC装备对比", "TL装备对比", "JY装备对比", "WX装备对比"},
+    priority=5,
+    force_whitespace=True,
+)
 
 @equip_compare.handle()
-async def _(event: GroupMessageEvent, matcher: Matcher, state: T_State, args: Message = CommandArg(), cmd: str = RawCommand()):
+async def _(
+    event: GroupMessageEvent,
+    matcher: Matcher,
+    state: T_State,
+    args: Message = CommandArg(),
+    cmd: str = RawCommand(),
+):
     if args.extract_plain_text() == "":
         matcher.stop_propagation()
         return
@@ -2034,55 +2262,47 @@ async def _(event: GroupMessageEvent, matcher: Matcher, state: T_State, args: Me
     if player_data.roleId == "":
         await equip_compare.finish(PROMPT.PlayerNotExist)
     await JX3PlayerAttribute.from_tuilan(player_data.roleId, player_data.serverName, player_data.globalRoleId)
-    tag = "TPVE" if cmd[0] == "T" else "DPSPVE"
-    if "QC" in cmd:
-        tag = "QCPVE"
-    if "JC" in cmd:
-        tag = "JCPVE"
-    if "TL" in cmd:
-        tag = "TLPVE"
-    if "JY" in cmd:
-        tag = "JYPVE"
-    if "WX" in cmd:
-        tag = "WXPVE"
+    tag = _calculator_tag_from_command(cmd)
+    if not _calculator_command_has_specific_prefix(cmd):
+        resolved_tag = await _resolve_bare_calculator_tag_for_global_role_id(
+            int(player_data.globalRoleId),
+            state,
+            selection_key="equip_compare_kungfu_options",
+        )
+        if resolved_tag == "":
+            state["equip_compare_kungfu_context"] = {
+                "global_role_id": int(player_data.globalRoleId),
+                "equip_name": equip,
+            }
+            await equip_compare.send(_format_special_pve_kungfu_selection(state["equip_compare_kungfu_options"]))
+            return
+        tag = resolved_tag
     instance = await JX3PlayerAttribute.from_database(int(player_data.globalRoleId), tag, False)
     if instance is None:
         await equip_compare.finish(PROMPT.EquipNotFound)
-    kungfu_id = instance.kungfu_id # type: ignore
-    current_jcl_line = instance.equip_lines # type: ignore
-    currnet_dps_data = UniversalCalculator(current_jcl_line, int(str(kungfu_id)))
-
-    income_ver = Preference(event.user_id, "", "").setting("计算器增益")
-    formation_ver = Preference(event.user_id, "", "").setting("计算器阵眼")
-    income_code = get_calculator_income_codes(income_ver, int(str(kungfu_id)))
-    formation_code = FORMATIONS[formation_ver]
-
-    currnet_dps_data.income_list = income_code
-    currnet_dps_data.income_ver = income_ver
-    currnet_dps_data.formation_list = formation_code
-    currnet_dps_data.formation_name = formation_ver
-
-    equip_name = equip
-    equips = await get_equip_list(equip_name)
-    if not equips:
-        await equip_compare.finish(f"未找到装备「{equip_name}」，请检查装备名，或尝试输入更完整的装备名称。")
-    msg = "请从下面选择装备进行对比！"
-    num = 1
-    for equip_info in equips:
-        msg += f"\n{num}. ({equip_info.subkind}) {equip_info.name}\n{equip_info.quality} {' '.join(equip_info.attr)}"
-        num += 1
-    state["equips"] = equips
-    state["kungfu_id"] = kungfu_id
-    state["current_data"] = currnet_dps_data
-    state["current_jcl"] = current_jcl_line
-    await equip_compare.send(msg)
+    await _prepare_equip_compare_equipment_selection(event, matcher, state, instance, equip)
     return
 
 @equip_compare.got("equip_index")
-async def _(event: GroupMessageEvent, state: T_State, equip_index: Message = Arg()):
+async def _(event: GroupMessageEvent, matcher: Matcher, state: T_State, equip_index: Message = Arg()):
     num = equip_index.extract_plain_text()
     if not check_number(num):
         await equip_compare.finish("装备选择有误，请重新发起命令！")
+    if "equip_compare_kungfu_options" in state:
+        options: list[dict[str, Any]] = state["equip_compare_kungfu_options"]
+        index = int(num)
+        if index < 1 or index > len(options):
+            await equip_compare.finish("超出可选范围，请重新发起命令！")
+        selected_tag = str(options[index - 1]["tag"])
+        context: dict[str, Any] = state["equip_compare_kungfu_context"]
+        instance = await JX3PlayerAttribute.from_database(int(context["global_role_id"]), selected_tag, False)
+        if instance is None:
+            await equip_compare.finish(PROMPT.EquipNotFound)
+        state.pop("equip_compare_kungfu_options", None)
+        state.pop("equip_compare_kungfu_context", None)
+        state.pop("equip_index", None)
+        await _prepare_equip_compare_equipment_selection(event, matcher, state, instance, str(context["equip_name"]))
+        await equip_compare.reject()
     equips: list[EquipInfo] = state["equips"]
     index = int(num)
     if index < 1 or index > len(equips):
@@ -2166,40 +2386,37 @@ PUBLIC_LOOP_APPROVAL_HELP_TEXT = (
     "2. 提交公有循环 <心法名>：只列出指定心法的自定义循环\n"
     "3. 返回列表后发送编号，提交到审批群等待处理\n"
     "4. 循环改名 <心法名>：变更你提供的公有循环和对应私有循环名字\n"
-    "5. 循环改名 <QQ号> <心法名>：bot owner 变更指定用户提供的循环名字\n\n"
+    f"5. 循环改名 <QQ号> <心法名>：拥有 {CALCULATOR_LOOP_RENAME_OTHER_PERMISSION_NODE} 权限时可变更指定用户提供的循环名字\n\n"
     "【审批处理】\n"
     "1. 公有循环审批：列出全部待审批循环，仅配置的审批群内可用\n"
     "2. 返回列表后发送编号，机器人会生成循环曲线预览\n"
     "3. 预览装备优先使用该心法专用配置，未配置则使用 JCL 内置装备\n"
     "4. 预览后发送 Y/是：通过审批并移动到公用循环库\n"
     "5. 预览后发送 N/否：驳回并移除待审标记，不删除用户私有 JCL\n"
-    "6. 审批群群主、已授权审批用户和 bot owner 可审批\n\n"
-    "【审批配置，仅 bot owner】\n"
+    f"6. 拥有 {PUBLIC_LOOP_APPROVE_PERMISSION_NODE} 权限的用户可审批\n\n"
+    f"【审批配置，需要 {PUBLIC_LOOP_CONFIG_PERMISSION_NODE} 权限】\n"
     "1. 公有循环审批设置：查看当前配置\n"
     "2. 公有循环审批设置 群 <群号>\n"
     "3. 公有循环审批设置 群 当前群\n"
-    "4. 公有循环审批设置 添加 <QQ号>\n"
-    "5. 公有循环审批设置 删除 <QQ号>\n"
-    "6. 公有循环审批设置 装备 <心法名> JCL\n"
-    "7. 公有循环审批设置 装备 <心法名> 玩家 <服务器> <角色名>\n"
-    "8. 公有循环审批设置 装备 <心法名> 魔盒 <配装ID>\n"
-    "9. 公有循环审批设置 装备 列表\n"
-    "10. 公有循环审批设置 列表"
+    "4. 公有循环审批设置 装备 <心法名> JCL\n"
+    "5. 公有循环审批设置 装备 <心法名> 玩家 <服务器> <角色名>\n"
+    "6. 公有循环审批设置 装备 <心法名> 魔盒 <配装ID>\n"
+    "7. 公有循环审批设置 装备 列表\n"
+    "8. 公有循环审批设置 列表"
 )
 
 PUBLIC_LOOP_APPROVAL_CONFIG_HELP_TEXT = (
     "公有循环审批设置参数：\n"
-    "1. 仅 bot owner 可用\n"
+    f"1. 需要 {PUBLIC_LOOP_CONFIG_PERMISSION_NODE} 权限\n"
     "2. 查看配置：公有循环审批设置\n"
     "3. 设置审批群：公有循环审批设置 群 <群号>\n"
     "4. 设置当前群为审批群：公有循环审批设置 群 当前群\n"
-    "5. 添加审批用户：公有循环审批设置 添加 <QQ号>\n"
-    "6. 删除审批用户：公有循环审批设置 删除 <QQ号>\n"
-    "7. 恢复指定心法默认装备：公有循环审批设置 装备 <心法名> JCL\n"
-    "8. 设置指定心法预览装备：公有循环审批设置 装备 <心法名> 玩家 <服务器> <角色名>\n"
-    "9. 设置指定心法预览装备：公有循环审批设置 装备 <心法名> 魔盒 <配装ID>\n"
-    "10. 查看心法装备配置：公有循环审批设置 装备 列表\n"
-    "11. 查看审批用户：公有循环审批设置 列表"
+    f"5. 审批用户请授予 {PUBLIC_LOOP_APPROVE_PERMISSION_NODE} 权限\n"
+    "6. 恢复指定心法默认装备：公有循环审批设置 装备 <心法名> JCL\n"
+    "7. 设置指定心法预览装备：公有循环审批设置 装备 <心法名> 玩家 <服务器> <角色名>\n"
+    "8. 设置指定心法预览装备：公有循环审批设置 装备 <心法名> 魔盒 <配装ID>\n"
+    "9. 查看心法装备配置：公有循环审批设置 装备 列表\n"
+    "10. 查看配置：公有循环审批设置 列表"
 )
 
 
@@ -2288,15 +2505,6 @@ def _public_loop_approval_group_id() -> int:
     return int(_load_public_loop_approval_config()["approval_group_id"])
 
 
-def _public_loop_approval_user_ids() -> set[int]:
-    config = _load_public_loop_approval_config()
-    return {int(user_id) for user_id in config["approver_user_ids"]}
-
-
-def _is_bot_owner(user_id: int | str) -> bool:
-    return str(user_id) in Config.bot_basic.bot_owner
-
-
 def _format_public_loop_preview_equipment(preview: dict[str, Any]) -> str:
     source = preview.get("source")
     if source == "player":
@@ -2315,7 +2523,10 @@ def _format_public_loop_preview_equipment_config(config: dict[str, Any]) -> str:
         preview = preview_by_kungfu.get(kungfu_id)
         if not isinstance(preview, dict):
             continue
-        lines.append(f"{_public_loop_kungfu_name(kungfu_id)}（{kungfu_id}）：{_format_public_loop_preview_equipment(preview)}")
+        lines.append(
+            f"{_public_loop_kungfu_name(kungfu_id)}（{kungfu_id}）："
+            f"{_format_public_loop_preview_equipment(preview)}"
+        )
     lines.append("未配置的心法默认使用 JCL 内置装备。")
     return "\n".join(lines)
 
@@ -2340,31 +2551,14 @@ def _parse_public_loop_config_kungfu_id(value: str) -> int | None:
 
 def _format_public_loop_approval_config() -> str:
     config = _load_public_loop_approval_config()
-    approvers = config["approver_user_ids"]
-    approver_text = "、".join(str(user_id) for user_id in approvers) if approvers else "未配置"
     return (
         "当前公有循环审批配置：\n"
         f"审批群：{config['approval_group_id']}\n"
-        f"审批用户：{approver_text}\n"
+        f"审批权限节点：{PUBLIC_LOOP_APPROVE_PERMISSION_NODE}\n"
+        f"配置权限节点：{PUBLIC_LOOP_CONFIG_PERMISSION_NODE}\n"
         f"{_format_public_loop_preview_equipment_config(config)}\n"
-        "审批群群主和 bot owner 默认具备审批权限。"
+        "审批用户请通过权限节点授予，不再使用单独的审批用户列表。"
     )
-
-
-async def _is_public_loop_approval_user(bot: Bot, event: GroupMessageEvent) -> bool:
-    if _is_bot_owner(event.user_id):
-        return True
-    if int(event.user_id) in _public_loop_approval_user_ids():
-        return True
-    try:
-        member = await bot.get_group_member_info(
-            group_id=event.group_id,
-            user_id=event.user_id,
-            no_cache=True,
-        )
-    except Exception:
-        return False
-    return member.get("role") == "owner"
 
 
 def _public_loop_preview_tag(kungfu_id: int) -> str:
@@ -2529,12 +2723,20 @@ def _format_public_loop_submissions(submissions: list[dict[str, Any]]) -> str:
     return msg
 
 
-async def _ensure_public_loop_approval_permission(bot: Bot, event: GroupMessageEvent, matcher: Matcher) -> None:
+async def _ensure_public_loop_approval_permission(event: GroupMessageEvent, matcher: Matcher) -> None:
     approval_group_id = _public_loop_approval_group_id()
     if event.group_id != approval_group_id:
         await matcher.finish(f"公有循环审批只能在配置的审批群 {approval_group_id} 使用。")
-    if not await _is_public_loop_approval_user(bot, event):
-        await matcher.finish("你没有公有循环审批权限，请联系 bot owner 添加审批用户。")
+    if not check_permission(event.user_id, PUBLIC_LOOP_APPROVE_PERMISSION_NODE):
+        await matcher.finish(denied(PUBLIC_LOOP_APPROVE_PERMISSION_NODE))
+
+
+submit_public_loop_matcher = on_command(
+    "jx3_submit_public_loop",
+    aliases={"提交公有循环"},
+    priority=5,
+    force_whitespace=True,
+)
 
 
 @submit_public_loop_matcher.handle()
@@ -2600,10 +2802,18 @@ async def _(bot: Bot, event: GroupMessageEvent, state: T_State, public_loop_orde
     await submit_public_loop_matcher.finish(msg)
 
 
+public_loop_approval_config_matcher = on_command(
+    "jx3_public_loop_approval_config",
+    aliases={"公有循环审批设置", "公有循环审批配置"},
+    priority=5,
+    force_whitespace=True,
+)
+
+
 @public_loop_approval_config_matcher.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
-    if not _is_bot_owner(event.user_id):
-        return
+    if not check_permission(event.user_id, PUBLIC_LOOP_CONFIG_PERMISSION_NODE):
+        await public_loop_approval_config_matcher.finish(denied(PUBLIC_LOOP_CONFIG_PERMISSION_NODE))
     raw_text = args.extract_plain_text().strip()
     if raw_text == "":
         await public_loop_approval_config_matcher.finish(_format_public_loop_approval_config())
@@ -2632,27 +2842,16 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
         await public_loop_approval_config_matcher.finish(f"已设置公有循环审批群：{group_id}")
 
     if command in {"添加", "新增", "授权"}:
-        if len(parts) != 2 or not _is_positive_integer_text(parts[1]):
-            await public_loop_approval_config_matcher.finish("参考格式：公有循环审批设置 添加 <QQ号>")
-        user_id = int(parts[1])
-        approvers = [int(item) for item in config["approver_user_ids"]]
-        if user_id not in approvers:
-            approvers.append(user_id)
-        config["approver_user_ids"] = approvers
-        _save_public_loop_approval_config(config)
-        await public_loop_approval_config_matcher.finish(f"已添加公有循环审批用户：{user_id}")
+        await public_loop_approval_config_matcher.finish(
+            "公有循环审批用户已改用权限节点管理。\n"
+            f"请授予用户 {PUBLIC_LOOP_APPROVE_PERMISSION_NODE} 权限。"
+        )
 
     if command in {"删除", "移除", "取消授权"}:
-        if len(parts) != 2 or not _is_positive_integer_text(parts[1]):
-            await public_loop_approval_config_matcher.finish("参考格式：公有循环审批设置 删除 <QQ号>")
-        user_id = int(parts[1])
-        config["approver_user_ids"] = [
-            int(item)
-            for item in config["approver_user_ids"]
-            if int(item) != user_id
-        ]
-        _save_public_loop_approval_config(config)
-        await public_loop_approval_config_matcher.finish(f"已删除公有循环审批用户：{user_id}")
+        await public_loop_approval_config_matcher.finish(
+            "公有循环审批用户已改用权限节点管理。\n"
+            f"请移除用户 {PUBLIC_LOOP_APPROVE_PERMISSION_NODE} 权限。"
+        )
 
     if command in {"装备", "预览装备"}:
         equipment_help_text = (
@@ -2716,9 +2915,17 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     await public_loop_approval_config_matcher.finish(PUBLIC_LOOP_APPROVAL_CONFIG_HELP_TEXT)
 
 
+approve_public_loop_matcher = on_command(
+    "jx3_approve_public_loop",
+    aliases={"公有循环审批", "审批公有循环"},
+    priority=5,
+    force_whitespace=True,
+)
+
+
 @approve_public_loop_matcher.handle()
-async def _(bot: Bot, event: GroupMessageEvent, matcher: Matcher, state: T_State, args: Message = CommandArg()):
-    await _ensure_public_loop_approval_permission(bot, event, matcher)
+async def _(event: GroupMessageEvent, matcher: Matcher, state: T_State, args: Message = CommandArg()):
+    await _ensure_public_loop_approval_permission(event, matcher)
     query = args.extract_plain_text().strip()
     if query.lower() in {"help", "帮助", "参数", "示例"}:
         await approve_public_loop_matcher.finish(PUBLIC_LOOP_APPROVAL_HELP_TEXT)
@@ -2736,8 +2943,8 @@ async def _(bot: Bot, event: GroupMessageEvent, matcher: Matcher, state: T_State
 
 
 @approve_public_loop_matcher.got("public_loop_approval_order")
-async def _(bot: Bot, event: GroupMessageEvent, matcher: Matcher, state: T_State, public_loop_approval_order: Message = Arg()):
-    await _ensure_public_loop_approval_permission(bot, event, matcher)
+async def _(event: GroupMessageEvent, matcher: Matcher, state: T_State, public_loop_approval_order: Message = Arg()):
+    await _ensure_public_loop_approval_permission(event, matcher)
     text = public_loop_approval_order.extract_plain_text().strip()
     if text in {"取消", "cancel", "Cancel", "CANCEL"}:
         await approve_public_loop_matcher.finish("已取消公有循环审批。")
@@ -2768,8 +2975,8 @@ async def _(bot: Bot, event: GroupMessageEvent, matcher: Matcher, state: T_State
 
 
 @approve_public_loop_matcher.got("public_loop_approval_confirm")
-async def _(bot: Bot, event: GroupMessageEvent, matcher: Matcher, state: T_State, public_loop_approval_confirm: Message = Arg()):
-    await _ensure_public_loop_approval_permission(bot, event, matcher)
+async def _(event: GroupMessageEvent, matcher: Matcher, state: T_State, public_loop_approval_confirm: Message = Arg()):
+    await _ensure_public_loop_approval_permission(event, matcher)
     selected: dict[str, Any] = state.get("public_loop_selected_submission") or {}
     if not selected:
         await approve_public_loop_matcher.finish("公有循环审批状态已失效，请重新发起命令。")
@@ -2810,20 +3017,10 @@ async def _(bot: Bot, event: GroupMessageEvent, matcher: Matcher, state: T_State
     )
 
 
-remove_calculator_loop_matcher = on_command("jx3_rm_calc_loop", aliases={"删除循环"}, priority=5, force_whitespace=True)
-remove_all_calculator_loop_matcher = on_command("jx3_rm_all_calc_loop", aliases={"删除循环all"}, priority=5, force_whitespace=True)
-rename_calculator_loop_matcher = on_command(
-    "jx3_rename_calc_loop",
-    aliases={"循环改名", "改循环名", "修改循环名", "变更循环名字"},
-    priority=5,
-    force_whitespace=True,
-)
-
-
 RENAME_LOOP_HELP_TEXT = (
     "循环改名参数：\n"
     "1. 变更自己的循环：循环改名 <心法名>\n"
-    "2. bot owner 变更指定用户循环：循环改名 <QQ号> <心法名>\n"
+    f"2. 拥有 {CALCULATOR_LOOP_RENAME_OTHER_PERMISSION_NODE} 权限时可变更指定用户循环：循环改名 <QQ号> <心法名>\n"
     "3. 机器人返回列表后，发送要变更的编号，再发送新的循环名\n"
     "4. 只会变更该用户提供的公有循环，以及对应的用户私有循环\n"
     "示例：\n"
@@ -2879,7 +3076,7 @@ async def _fetch_renameable_loops(
     operator_id: int,
     target_user_id: int,
     kungfu_id: int,
-    operator_is_owner: bool,
+    operator_can_rename_other: bool,
 ) -> list[dict[str, Any]] | str:
     try:
         result = (
@@ -2889,7 +3086,7 @@ async def _fetch_renameable_loops(
                     "operator_id": operator_id,
                     "target_user_id": target_user_id,
                     "kungfu_id": kungfu_id,
-                    "operator_is_owner": operator_is_owner,
+                    "operator_is_owner": operator_can_rename_other,
                 },
             ).get()
         ).json()
@@ -2942,20 +3139,28 @@ def _parse_delete_loop_selection(text: str, loop_count: int) -> list[int] | str:
     return results
 
 
+rename_calculator_loop_matcher = on_command(
+    "jx3_rename_calc_loop",
+    aliases={"循环改名", "改循环名", "修改循环名", "变更循环名字"},
+    priority=5,
+    force_whitespace=True,
+)
+
+
 @rename_calculator_loop_matcher.handle()
 async def _(event: GroupMessageEvent, state: T_State, args: Message = CommandArg()):
     query = args.extract_plain_text().strip()
     if query == "" or query.lower() in {"help", "帮助", "参数", "示例"}:
         await rename_calculator_loop_matcher.finish(RENAME_LOOP_HELP_TEXT)
     parts = [part for part in query.split() if part]
-    operator_is_owner = _is_bot_owner(event.user_id)
+    operator_can_rename_other = check_permission(event.user_id, CALCULATOR_LOOP_RENAME_OTHER_PERMISSION_NODE)
     target_user_id = int(event.user_id)
     if len(parts) == 1:
         kungfu_arg = parts[0]
     elif len(parts) == 2 and _is_positive_integer_text(parts[0]):
         target_user_id = int(parts[0])
-        if target_user_id != int(event.user_id) and not operator_is_owner:
-            await rename_calculator_loop_matcher.finish("只有循环提交用户和 bot owner 可以变更循环名字。")
+        if target_user_id != int(event.user_id) and not operator_can_rename_other:
+            await rename_calculator_loop_matcher.finish(denied(CALCULATOR_LOOP_RENAME_OTHER_PERMISSION_NODE))
         kungfu_arg = parts[1]
     else:
         await rename_calculator_loop_matcher.finish(RENAME_LOOP_HELP_TEXT)
@@ -2967,7 +3172,7 @@ async def _(event: GroupMessageEvent, state: T_State, args: Message = CommandArg
         int(event.user_id),
         target_user_id,
         kungfu_id,
-        operator_is_owner,
+        operator_can_rename_other,
     )
     if isinstance(loops, str):
         await rename_calculator_loop_matcher.finish(loops)
@@ -2976,7 +3181,7 @@ async def _(event: GroupMessageEvent, state: T_State, args: Message = CommandArg
     state["rename_loop_items"] = loops
     state["rename_loop_target_user_id"] = target_user_id
     state["rename_loop_kungfu_id"] = kungfu_id
-    state["rename_loop_operator_is_owner"] = operator_is_owner
+    state["rename_loop_operator_can_rename_other"] = operator_can_rename_other
     await rename_calculator_loop_matcher.send(
         _format_rename_loop_selection(target_user_id, _public_loop_kungfu_name(kungfu_id), loops)
     )
@@ -3021,7 +3226,7 @@ async def _(event: GroupMessageEvent, state: T_State, rename_loop_new_name: Mess
         "kungfu_id": kungfu_id,
         "file_name": str(selected.get("file") or selected.get("public_file") or selected.get("private_file") or ""),
         "new_loop_name": new_loop_name,
-        "operator_is_owner": bool(state.get("rename_loop_operator_is_owner")),
+        "operator_is_owner": bool(state.get("rename_loop_operator_can_rename_other")),
     }
     try:
         result = (
@@ -3052,6 +3257,14 @@ async def _(event: GroupMessageEvent, state: T_State, rename_loop_new_name: Mess
     await rename_calculator_loop_matcher.finish(msg)
 
 
+remove_calculator_loop_matcher = on_command(
+    "jx3_rm_calc_loop",
+    aliases={"删除循环"},
+    priority=5,
+    force_whitespace=True,
+)
+
+
 @remove_calculator_loop_matcher.handle()
 async def _(event: GroupMessageEvent, state: T_State, args: Message = CommandArg()):
     query = args.extract_plain_text().strip()
@@ -3080,30 +3293,6 @@ async def _(event: GroupMessageEvent, state: T_State, args: Message = CommandArg
     state["delete_loop_kungfu_name"] = kungfu.name or query
     state["delete_loop_items"] = loops
     await remove_calculator_loop_matcher.send(_format_delete_loop_selection(kungfu.name or query, loops))
-
-
-@remove_all_calculator_loop_matcher.handle()
-async def _(event: GroupMessageEvent, args: Message = CommandArg()):
-    query = args.extract_plain_text().strip()
-    if query == "" or query.lower() in {"help", "帮助", "参数", "示例"}:
-        await remove_all_calculator_loop_matcher.finish("参考格式：删除循环all <心法名>\n示例：删除循环all 莫问")
-    kungfu = Kungfu(query)
-    kungfu_id = kungfu.id
-    if kungfu_id is None:
-        await remove_all_calculator_loop_matcher.finish("心法输入有误，请检查后重试！")
-    try:
-        result = (
-            await Request(
-                f"{Config.jx3.api.calculator_url}/delete_loop",
-                params={"user_id": event.user_id, "kungfu_id": kungfu_id, "all_delete": True},
-            ).get()
-        ).json()
-    except Exception:
-        await remove_all_calculator_loop_matcher.finish("循环删除失败，请确认 calculator 服务可用后重试！")
-    if result.get("code") == 200:
-        await remove_all_calculator_loop_matcher.finish(f"已删除 {kungfu.name or query} 的全部自定义循环！")
-    await remove_all_calculator_loop_matcher.finish("循环删除失败！" + str(result.get("msg", "")))
-
 
 @remove_calculator_loop_matcher.got("delete_loop_order")
 async def _(event: GroupMessageEvent, state: T_State, delete_loop_order: Message = Arg()):
@@ -3146,6 +3335,37 @@ async def _(event: GroupMessageEvent, state: T_State, delete_loop_order: Message
             msg += "\n"
         msg += "删除失败：\n" + "\n".join(failed)
     await remove_calculator_loop_matcher.finish(msg or "未删除任何循环。")
+
+
+remove_all_calculator_loop_matcher = on_command(
+    "jx3_rm_all_calc_loop",
+    aliases={"删除循环all"},
+    priority=5,
+    force_whitespace=True,
+)
+
+
+@remove_all_calculator_loop_matcher.handle()
+async def _(event: GroupMessageEvent, args: Message = CommandArg()):
+    query = args.extract_plain_text().strip()
+    if query == "" or query.lower() in {"help", "帮助", "参数", "示例"}:
+        await remove_all_calculator_loop_matcher.finish("参考格式：删除循环all <心法名>\n示例：删除循环all 莫问")
+    kungfu = Kungfu(query)
+    kungfu_id = kungfu.id
+    if kungfu_id is None:
+        await remove_all_calculator_loop_matcher.finish("心法输入有误，请检查后重试！")
+    try:
+        result = (
+            await Request(
+                f"{Config.jx3.api.calculator_url}/delete_loop",
+                params={"user_id": event.user_id, "kungfu_id": kungfu_id, "all_delete": True},
+            ).get()
+        ).json()
+    except Exception:
+        await remove_all_calculator_loop_matcher.finish("循环删除失败，请确认 calculator 服务可用后重试！")
+    if result.get("code") == 200:
+        await remove_all_calculator_loop_matcher.finish(f"已删除 {kungfu.name or query} 的全部自定义循环！")
+    await remove_all_calculator_loop_matcher.finish("循环删除失败！" + str(result.get("msg", "")))
 
 def check_jcl_name(filename: str, prefix: str) -> bool:
     if not filename.startswith(prefix):

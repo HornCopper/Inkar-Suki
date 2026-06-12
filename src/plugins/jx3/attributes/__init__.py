@@ -38,6 +38,14 @@ from .equip_replace import EQUIP_LOCATION
 
 attribute_matcher = on_command("jx3_attribute", aliases={"属性", "查装"}, force_whitespace=True, priority=5)
 
+SPECIAL_PVE_KUNGFU_TAGS = {
+    10014: "QCPVE",
+    10015: "JCPVE",
+    10224: "JYPVE",
+    10225: "TLPVE",
+    10821: "WXPVE",
+}
+
 ATTRIBUTE_IMAGE_SEND_FAILED = (
     "属性图已生成，但 QQ 富媒体上传失败。"
     "这不是属性数据解析错误，请稍后重试；如果持续失败，需要检查 QQ/NapCat 的图片上传状态。"
@@ -316,6 +324,57 @@ async def _(event: GroupMessageEvent, state: T_State, equip_data: Message = Arg(
         await attribute_submit.finish(f"导入的装备数据不可用，已拒绝入库：\n{e}")
     await attribute_submit.finish(await format_attribute_submit_success(state["role_info"], state["kungfu_id"]))
 
+
+def _pve_tag_for_kungfu(kungfu_id: int) -> str:
+    if kungfu_id in SPECIAL_PVE_KUNGFU_TAGS:
+        return SPECIAL_PVE_KUNGFU_TAGS[kungfu_id]
+    abbr = Kungfu.with_internel_id(kungfu_id).abbr
+    if abbr == "T":
+        return "TPVE"
+    if abbr == "N":
+        return "HPSPVE"
+    return "DPSPVE"
+
+
+async def _pve_kungfu_options(global_role_id: int) -> list[dict[str, Any]]:
+    all_equips = await JX3PlayerAttribute.from_database(global_role_id, "", True)
+    if not all_equips:
+        return []
+    latest_by_kungfu: dict[int, JX3PlayerAttribute] = {}
+    for equip in all_equips:
+        kungfu_id = int(equip.kungfu_id)
+        if equip.tag != "PVE":
+            continue
+        current = latest_by_kungfu.get(kungfu_id)
+        if current is None or equip.timestamp > current.timestamp:
+            latest_by_kungfu[kungfu_id] = equip
+    options: list[dict[str, Any]] = []
+    for kungfu_id, equip in sorted(latest_by_kungfu.items(), key=lambda item: item[1].timestamp, reverse=True):
+        kungfu = Kungfu.with_internel_id(kungfu_id, convert_to_pc=True)
+        options.append(
+            {
+                "kungfu_id": kungfu_id,
+                "tag": _pve_tag_for_kungfu(kungfu_id),
+                "name": kungfu.name or str(kungfu_id),
+            }
+        )
+    return options
+
+
+def _format_replace_equip_kungfu_selection(options: list[dict[str, Any]]) -> str:
+    msg = "检测到该玩家有多套 PVE 心法装备，请先选择要替换的心法："
+    for index, option in enumerate(options, start=1):
+        msg += f"\n{index}. {option['name']}"
+    return msg
+
+
+def _format_replace_equip_selection(equips: list[EquipInfo]) -> str:
+    reply_msg = "请从下面选择装备进行替换！"
+    for index, equip in enumerate(equips, start=1):
+        reply_msg += f"\n{index}. ({equip.subkind}) {equip.name}\n{equip.quality} {' '.join(equip.attr)}"
+    return reply_msg
+
+
 replace_equip_matcher = on_command("jx3_attribute_replace_equip", aliases={"替换装备", "装备替换"}, priority=5, force_whitespace=True)
 
 @replace_equip_matcher.handle()
@@ -324,18 +383,18 @@ async def _(event: GroupMessageEvent, state: T_State, matcher: Matcher, msg: Mes
         matcher.stop_propagation()
         return
     args = msg.extract_plain_text().strip().split(" ")
-    if len(args) != 5:
-        await replace_equip_matcher.finish(PROMPT.ArgumentCountInvalid + "\n参考格式：替换装备 <服务器> <角色名> <标签> <装备部位> <装备关键词>")
+    if len(args) != 4:
+        await replace_equip_matcher.finish(PROMPT.ArgumentCountInvalid + "\n参考格式：替换装备 <服务器> <角色名> <装备部位> <装备关键词>")
     server = Server(args[0], event.group_id).server
     role_name = args[1]
-    tag = args[2]
-    equip_location = args[3]
-    equip_keyword = args[4]
+    equip_location = args[2]
+    equip_keyword = args[3]
     if server is None:
         await replace_equip_matcher.finish(PROMPT.ServerInvalid)
     role_info = await search_player(role_name=role_name, server_name=server)
     if role_info.globalRoleId == "":
         await replace_equip_matcher.finish(PROMPT.PlayerNotExist)
+    await JX3PlayerAttribute.from_tuilan(role_info.roleId, role_info.serverName, role_info.globalRoleId)
     if equip_location not in EQUIP_LOCATION:
         await replace_equip_matcher.finish("装备部位输入错误，当前接受的装备部位如下：\n" + "、".join(EQUIP_LOCATION.keys()))
     to_replace_location_code = EQUIP_LOCATION[equip_location]
@@ -349,34 +408,62 @@ async def _(event: GroupMessageEvent, state: T_State, matcher: Matcher, msg: Mes
     state["equips"] = match_equips
     state["location"] = to_replace_location_code
     state["global_role_id"] = int(role_info.globalRoleId)
-    state["tag"] = tag
-    reply_msg = "请从下面选择装备进行替换！"
-    num = 1
-    for equip in match_equips:
-        reply_msg += f"\n{num}. ({equip.subkind}) {equip.name}\n{equip.quality} {' '.join(equip.attr)}"
-        num += 1
-    await replace_equip_matcher.send(reply_msg)
+    options = await _pve_kungfu_options(int(role_info.globalRoleId))
+    if not options:
+        await replace_equip_matcher.finish("未找到该玩家可用于替换的 PVE 装备，请先提交或查询 PVE 装备后重试。")
+    if len(options) > 1:
+        state["replace_equip_kungfu_options"] = options
+        await replace_equip_matcher.send(_format_replace_equip_kungfu_selection(options))
+        return
+    state["tag"] = options[0]["tag"]
+    state["kungfu_id"] = options[0]["kungfu_id"]
+    state["kungfu_name"] = options[0]["name"]
+    await replace_equip_matcher.send(_format_replace_equip_selection(match_equips))
 
 @replace_equip_matcher.got("num")
-async def _(event: GroupMessageEvent, state: T_State, num: Message = Arg()):
+async def _(event: GroupMessageEvent, matcher: Matcher, state: T_State, num: Message = Arg()):
     num_text = num.extract_plain_text().strip()
     if not check_number(num_text):
         await replace_equip_matcher.finish("序号输入有误，请重新发起命令！")
     num_int = int(num_text)
+    if "replace_equip_kungfu_options" in state:
+        options: list[dict[str, Any]] = state["replace_equip_kungfu_options"]
+        if num_int < 1 or num_int > len(options):
+            await replace_equip_matcher.finish("选择的序号有误，请重新发起命令！")
+        selected = options[num_int - 1]
+        state["tag"] = selected["tag"]
+        state["kungfu_id"] = selected["kungfu_id"]
+        state["kungfu_name"] = selected["name"]
+        state.pop("replace_equip_kungfu_options", None)
+        state.pop("num", None)
+        await replace_equip_matcher.send(_format_replace_equip_selection(state["equips"]))
+        await matcher.reject()
     equips: list[EquipInfo] = state["equips"]
     replace_location_code: int = state["location"]
     tag: str = state["tag"]
+    kungfu_id: int = state["kungfu_id"]
+    kungfu_name: str = state["kungfu_name"]
     global_role_id: int = state["global_role_id"]
     if num_int < 1 or num_int > len(equips):
         await replace_equip_matcher.finish("选择的序号有误，请重新发起命令！")
     equip = equips[num_int - 1]
     new_log = EquipReplacementLog(
         user_id = event.user_id,
-        message = f"替换了 {equip.name}（{equip.item_id}） 作为 {tag} 的装备",
+        message = f"替换了 {equip.name}（{equip.item_id}） 作为 {kungfu_name} PVE 的装备",
         global_role_id = global_role_id
     )
     logs_db.save(new_log)
-    current_data = await JX3PlayerAttribute.from_database(global_role_id, tag)
+    pve_equips = await JX3PlayerAttribute.from_database(global_role_id, tag, True)
+    if pve_equips is None:
+        await replace_equip_matcher.finish(PROMPT.EquipNotFound)
+    current_data = next(
+        (
+            item
+            for item in pve_equips
+            if int(item.kungfu_id) == int(kungfu_id) and item.tag == "PVE"
+        ),
+        None,
+    )
     if current_data is None:
         await replace_equip_matcher.finish(PROMPT.EquipNotFound)
     for each_equip_line in current_data.equip_lines:

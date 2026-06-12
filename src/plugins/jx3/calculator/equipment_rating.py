@@ -61,12 +61,19 @@ EQUIPMENT_RATING_IMAGE_SEND_FAILED = (
 )
 EQUIPMENT_RATING_STARTED = "装备评级中，请稍等片刻！"
 RATING_LOOP_LIST_KEYWORDS = {"评级列表", "循环列表", "JCL列表", "jcl列表"}
+SPECIAL_PVE_KUNGFU_TAGS = {
+    10014: "QCPVE",
+    10015: "JCPVE",
+    10224: "JYPVE",
+    10225: "TLPVE",
+    10821: "WXPVE",
+}
 EQUIPMENT_RATING_USAGE = (
     "装备评级使用步骤：\n"
     "1. 先提交属性：提交属性 <服务器> <角色名> <心法> <茗伊装备导出码>\n"
     "   例如：提交属性 剑胆琴心 倦收天 太虚剑意 <从茗伊复制的整段装备导出码>\n"
     "   注意：导出码与心法之间要有个空格\n"
-    "2. 再执行评级：装备评级 <服务器> <角色名> <心法>\n"
+    "2. 再执行评级：装备评级 <服务器> <角色名> [心法]\n"
     "   例如：装备评级 剑胆琴心 倦收天 太虚剑意\n"
     "3. 查看目前支持心法：装备评级支持 或 装备评级支持 <心法名>\n"
     "帮助：装备评级 help"
@@ -1112,16 +1119,56 @@ async def _resolve_equipment_rating_target(
     return server, int(kungfu_id)
 
 
+async def _resolve_equipment_rating_player(
+    matcher: Matcher,
+    server: str,
+    role_id: str,
+):
+    player_data = await search_player(role_name=role_id, role_id=role_id, server_name=server, local_lookup=True)
+    if player_data.roleId == "":
+        player_data = await get_uid_data(role_id=role_id, server=server, msg=False)
+    if player_data.roleId == "":
+        await matcher.finish(PROMPT.PlayerNotExist)
+    await JX3PlayerAttribute.from_tuilan(player_data.roleId, player_data.serverName, player_data.globalRoleId)
+    return player_data
+
+
+async def _special_pve_kungfu_options(global_role_id: int) -> list[dict[str, Any]]:
+    all_equips = await JX3PlayerAttribute.from_database(global_role_id, "", True)
+    if not all_equips:
+        return []
+
+    latest_by_kungfu: dict[int, JX3PlayerAttribute] = {}
+    for equip in all_equips:
+        kungfu_id = int(equip.kungfu_id)
+        if equip.tag != "PVE" or kungfu_id not in SPECIAL_PVE_KUNGFU_TAGS:
+            continue
+        current = latest_by_kungfu.get(kungfu_id)
+        if current is None or equip.timestamp > current.timestamp:
+            latest_by_kungfu[kungfu_id] = equip
+
+    options: list[dict[str, Any]] = []
+    for kungfu_id, equip in sorted(latest_by_kungfu.items(), key=lambda item: item[1].timestamp, reverse=True):
+        kungfu = Kungfu.with_internel_id(kungfu_id, convert_to_pc=True)
+        options.append(
+            {
+                "kungfu_id": kungfu_id,
+                "name": kungfu.name or str(kungfu_id),
+            }
+        )
+    return options
+
+
+def _format_special_pve_kungfu_selection(options: list[dict[str, Any]]) -> str:
+    msg = "检测到该玩家有多个可用于装备评级的 PVE 心法装备，请先选择心法："
+    for index, option in enumerate(options, start=1):
+        msg += f"\n{index}. {option['name']}"
+    return msg
+
+
 def _equipment_rating_pve_tag(kungfu_id: int) -> str:
-    special_tags = {
-        10014: "QCPVE",
-        10015: "JCPVE",
-        10224: "JYPVE",
-        10225: "TLPVE",
-        10821: "WXPVE",
-    }
-    if kungfu_id in special_tags:
-        return special_tags[kungfu_id]
+    if kungfu_id in SPECIAL_PVE_KUNGFU_TAGS:
+        return SPECIAL_PVE_KUNGFU_TAGS[kungfu_id]
     abbr = Kungfu.with_internel_id(kungfu_id).abbr
     if abbr == "T":
         return "TPVE"
@@ -1138,14 +1185,16 @@ async def _build_equipment_rating_payload(
     kungfu_arg: str,
 ):
     server, kungfu_id = await _resolve_equipment_rating_target(event, matcher, server_arg, kungfu_arg)
+    return await _build_equipment_rating_payload_by_kungfu(matcher, server, role_id, kungfu_id)
 
-    player_data = await search_player(role_name=role_id, role_id=role_id, server_name=server, local_lookup=True)
-    if player_data.roleId == "":
-        player_data = await get_uid_data(role_id=role_id, server=server, msg=False)
-    if player_data.roleId == "":
-        await matcher.finish(PROMPT.PlayerNotExist)
 
-    await JX3PlayerAttribute.from_tuilan(player_data.roleId, player_data.serverName, player_data.globalRoleId)
+async def _build_equipment_rating_payload_by_kungfu(
+    matcher: Matcher,
+    server: str,
+    role_id: str,
+    kungfu_id: int,
+):
+    player_data = await _resolve_equipment_rating_player(matcher, server, role_id)
     pve_tag = _equipment_rating_pve_tag(kungfu_id)
     pve_equips = await JX3PlayerAttribute.from_database(int(player_data.globalRoleId), pve_tag, all=True)
     if pve_equips is None:
@@ -1240,29 +1289,50 @@ async def handle_equipment_rating(event: GroupMessageEvent, matcher: Matcher, st
     if plain_text.lower() in EQUIPMENT_RATING_HELP_KEYWORDS:
         await matcher.finish(await _render_equipment_rating_help_image())
     arg = plain_text.split()
-    if len(arg) not in [3, 4]:
+    if len(arg) not in [2, 3, 4]:
         await matcher.finish(PROMPT.ArgumentCountInvalid + "\n" + EQUIPMENT_RATING_USAGE)
     use_public_loop_list = False
-    if len(arg) == 4:
-        if arg[3] not in RATING_LOOP_LIST_KEYWORDS:
-            await matcher.finish("第四个参数仅支持「评级列表」，用于选择公共 JCL。\n" + EQUIPMENT_RATING_USAGE)
+    if arg[-1] in RATING_LOOP_LIST_KEYWORDS:
         use_public_loop_list = True
+        arg = arg[:-1]
+    if len(arg) not in [2, 3]:
+        await matcher.finish("评级列表参数仅支持放在命令末尾，用于选择公共 JCL。\n" + EQUIPMENT_RATING_USAGE)
+
+    server = Server(arg[0], event.group_id).server
+    if server is None:
+        await matcher.finish(PROMPT.ServerNotExist)
+
+    if len(arg) == 2:
+        player_data = await _resolve_equipment_rating_player(matcher, server, arg[1])
+        options = await _special_pve_kungfu_options(int(player_data.globalRoleId))
+        if len(options) == 0:
+            await matcher.finish("未指定心法，且未找到该玩家可用于自动选择的 PVE 心法装备，请使用：装备评级 <服务器> <角色名> <心法>")
+        if len(options) > 1:
+            state["equipment_rating_kungfu_options"] = options
+            state["equipment_rating_server"] = server
+            state["equipment_rating_role_arg"] = arg[1]
+            state["equipment_rating_use_public_loop_list"] = use_public_loop_list
+            await matcher.send(_format_special_pve_kungfu_selection(options))
+            return
+        kungfu_id = int(options[0]["kungfu_id"])
+    else:
+        kungfu_id = Kungfu(arg[2]).id
+        if kungfu_id is None:
+            await matcher.finish(PROMPT.KungfuNotExist)
 
     if use_public_loop_list:
-        _, kungfu_id = await _resolve_equipment_rating_target(event, matcher, arg[0], arg[2])
         loops = await _fetch_public_rating_loops(kungfu_id)
         if isinstance(loops, str):
             await matcher.finish(loops)
-        state["equipment_rating_server_arg"] = arg[0]
+        state["equipment_rating_server"] = server
         state["equipment_rating_role_arg"] = arg[1]
-        state["equipment_rating_kungfu_arg"] = arg[2]
+        state["equipment_rating_kungfu_id"] = kungfu_id
         state["equipment_rating_loops"] = loops
         await matcher.send(_format_public_rating_loop_list(loops))
         return
 
-    await _resolve_equipment_rating_target(event, matcher, arg[0], arg[2])
     await _send_equipment_rating_started(matcher)
-    payload, player_data, rating_equip = await _build_equipment_rating_payload(event, matcher, arg[0], arg[1], arg[2])
+    payload, player_data, rating_equip = await _build_equipment_rating_payload_by_kungfu(matcher, server, arg[1], kungfu_id)
     await _finish_equipment_rating_calculation(
         matcher,
         payload,
@@ -1282,23 +1352,61 @@ async def handle_equipment_rating_loop_order(
     num = loop_order.extract_plain_text().strip()
     if not num.isdigit():
         await matcher.finish("循环选择有误，请重新发起命令！")
+    if "equipment_rating_kungfu_options" in state:
+        options = state.get("equipment_rating_kungfu_options")
+        server = state.get("equipment_rating_server")
+        role_arg = state.get("equipment_rating_role_arg")
+        use_public_loop_list = bool(state.get("equipment_rating_use_public_loop_list"))
+        if not isinstance(options, list) or not isinstance(server, str) or not isinstance(role_arg, str):
+            await matcher.finish("装备评级会话已失效，请重新发起命令。")
+        index = int(num)
+        if index < 1 or index > len(options):
+            await matcher.finish("超出可选范围，请重新发起命令！")
+        kungfu_id = int(options[index - 1]["kungfu_id"])
+        state.pop("equipment_rating_kungfu_options", None)
+        state.pop("equipment_rating_use_public_loop_list", None)
+        state.pop("rating_jcl_order", None)
+
+        if use_public_loop_list:
+            loops = await _fetch_public_rating_loops(kungfu_id)
+            if isinstance(loops, str):
+                await matcher.finish(loops)
+            state["equipment_rating_kungfu_id"] = kungfu_id
+            state["equipment_rating_loops"] = loops
+            await matcher.send(_format_public_rating_loop_list(loops))
+            await matcher.reject()
+
+        await _send_equipment_rating_started(matcher)
+        payload, player_data, rating_equip = await _build_equipment_rating_payload_by_kungfu(
+            matcher,
+            server,
+            role_arg,
+            kungfu_id,
+        )
+        await _finish_equipment_rating_calculation(
+            matcher,
+            payload,
+            player_data.roleName,
+            player_data.serverName,
+            rating_equip,
+        )
+
     loops = state.get("equipment_rating_loops")
-    server_arg = state.get("equipment_rating_server_arg")
+    server = state.get("equipment_rating_server")
     role_arg = state.get("equipment_rating_role_arg")
-    kungfu_arg = state.get("equipment_rating_kungfu_arg")
+    kungfu_id = state.get("equipment_rating_kungfu_id")
     if (
         not isinstance(loops, list)
-        or not isinstance(server_arg, str)
+        or not isinstance(server, str)
         or not isinstance(role_arg, str)
-        or not isinstance(kungfu_arg, str)
+        or not isinstance(kungfu_id, int)
     ):
         await matcher.finish("装备评级会话已失效，请重新发起命令。")
     index = int(num)
     if index < 1 or index > len(loops):
         await matcher.finish("超出可选范围，请重新发起命令！")
-    await _resolve_equipment_rating_target(event, matcher, server_arg, kungfu_arg)
     await _send_equipment_rating_started(matcher)
-    payload, player_data, rating_equip = await _build_equipment_rating_payload(event, matcher, server_arg, role_arg, kungfu_arg)
+    payload, player_data, rating_equip = await _build_equipment_rating_payload_by_kungfu(matcher, server, role_arg, kungfu_id)
     payload = {**payload, "jcl_index": index}
     await _finish_equipment_rating_calculation(
         matcher,

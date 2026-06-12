@@ -50,7 +50,7 @@ name_to_pinyin = {
 }
 
 async def get_rank(dungeon_full_name: str, boss_name: str, kungfu_name: str, order_by: Literal["rdps", "rhps"] = "rdps"):
-    url = "http://116.211.150.188:8009/getRank"
+    url = "http://jx3bla.moeheart.cn/getRank"
     params = {
         "map": dungeon_full_name,
         "boss": boss_name,
