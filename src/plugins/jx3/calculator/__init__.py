@@ -36,7 +36,7 @@ from .traverse import (
     save_rating_cache,
 )
 from .rdps import BLACalculator, TRDCalculator
-from .jcl_analyze import CQCAnalyze, FALAnalyze, YXCAnalyze, RODAnalyze, HPSAnalyze, CALAnalyze, ASNAnalyze, THRAnalyze, THFAnalyze, LGZAnalyze
+from .jcl_analyze import CQCAnalyze, FALAnalyze, YXCAnalyze, RODAnalyze, HPSAnalyze, CALAnalyze, ASNAnalyze, THRAnalyze, THFAnalyze, LGZAnalyze, LNXAnalyze
 from . import equipment_rating as equipment_rating_module
 import re
 import json
@@ -135,6 +135,7 @@ JCL_ANALYSIS_HELP_TEXT = (
     "【THF-】唐怀仁P3 DPS统计\n"
     "裁剪区间：毁灭读条-叶鸦出现\n"
     "【LGZ-】柳公子传功记录\n"
+    "【LNX-】鲁念雪 每阶段减伤/治疗/化解贡献统计\n"
     "【FAL-】前三次攻击记录，用于查开怪，尤其是阿里曼幻身的圣柱\n"
     "【YXC-】尹雪尘承伤统计，注意只会记录每个玩家的有效而非全部治疗\n"
     "【ROD-】重伤记录统计\n"
@@ -3180,7 +3181,9 @@ async def _(bot: Bot, event: GroupUploadNoticeEvent):
     elif check_jcl_name(event.file.name, "THF-"):
         analyzer = THFAnalyze
     elif check_jcl_name(event.file.name, "LGZ-"):
-        analyzer = LGZAnalyze 
+        analyzer = LGZAnalyze
+    elif check_jcl_name(event.file.name, "LNX-"):
+        analyzer = LNXAnalyze
     else:
         return
     
