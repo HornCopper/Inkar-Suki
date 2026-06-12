@@ -56,6 +56,13 @@ def _prefixed_command_aliases(base_command: str, prefixes: tuple[str, ...]) -> s
 
 
 CALCULATOR_PREFIXES = ("T", "QC", "JC", "TL", "JY", "WX")
+SPECIAL_PVE_KUNGFU_TAGS = {
+    10014: "QCPVE",
+    10015: "JCPVE",
+    10224: "JYPVE",
+    10225: "TLPVE",
+    10821: "WXPVE",
+}
 
 DEFAULT_DAMAGE_TIMELINE_BIN_SIZE = 2.5
 PUBLIC_LOOP_DEFAULT_APPROVAL_GROUP_ID = 1018743771
@@ -380,6 +387,60 @@ def _calculator_tag_from_command(cmd: str) -> str:
     return tag
 
 
+def _calculator_command_has_specific_prefix(cmd: str) -> bool:
+    normalized_cmd = cmd.upper()
+    return any(normalized_cmd.startswith(prefix) for prefix in CALCULATOR_PREFIXES)
+
+
+async def _special_pve_tag_options(global_role_id: int) -> list[dict[str, Any]]:
+    all_equips = await JX3PlayerAttribute.from_database(global_role_id, "", True)
+    if not all_equips:
+        return []
+
+    latest_by_kungfu: dict[int, JX3PlayerAttribute] = {}
+    for equip in all_equips:
+        kungfu_id = int(equip.kungfu_id)
+        if equip.tag != "PVE" or kungfu_id not in SPECIAL_PVE_KUNGFU_TAGS:
+            continue
+        current = latest_by_kungfu.get(kungfu_id)
+        if current is None or equip.timestamp > current.timestamp:
+            latest_by_kungfu[kungfu_id] = equip
+
+    options: list[dict[str, Any]] = []
+    for kungfu_id, equip in sorted(latest_by_kungfu.items(), key=lambda item: item[1].timestamp, reverse=True):
+        kungfu = Kungfu.with_internel_id(kungfu_id, convert_to_pc=True)
+        options.append(
+            {
+                "tag": SPECIAL_PVE_KUNGFU_TAGS[kungfu_id],
+                "kungfu_id": kungfu_id,
+                "name": kungfu.name or str(kungfu_id),
+            }
+        )
+    return options
+
+
+def _format_special_pve_kungfu_selection(options: list[dict[str, Any]]) -> str:
+    msg = "检测到该玩家有多个可用于计算的 PVE 心法装备，请先选择心法："
+    for index, option in enumerate(options, start=1):
+        msg += f"\n{index}. {option['name']}"
+    return msg
+
+
+async def _resolve_bare_calculator_tag_for_global_role_id(
+    global_role_id: int,
+    state: T_State,
+    *,
+    selection_key: str,
+) -> str:
+    options = await _special_pve_tag_options(global_role_id)
+    if len(options) == 1:
+        return str(options[0]["tag"])
+    if len(options) > 1:
+        state[selection_key] = options
+        return ""
+    return "DPSPVE"
+
+
 def _parse_timeline_command_args(raw_text: str) -> tuple[list[str], float | str]:
     pattern = re.compile(r"(?i)(?:^|\s)bin\s*[=＝]\s*(\S+)(?=\s|$)")
     matches = list(pattern.finditer(raw_text))
@@ -484,6 +545,55 @@ def _apply_calculator_preferences(event: GroupMessageEvent, instance: UniversalC
     instance.formation_list = FORMATIONS[formation_ver]
     instance.formation_name = formation_ver
     return is_custom
+
+
+async def _prepare_calculator_loop_selection(
+    event: GroupMessageEvent,
+    matcher: Matcher,
+    state: T_State,
+    instance: UniversalCalculator | JX3BOXCalculator,
+) -> None:
+    is_custom = _apply_calculator_preferences(event, instance)
+    loop_entries = await _calculator_loop_entries(instance, event.user_id, is_custom)
+    if isinstance(loop_entries, str):
+        await matcher.finish(loop_entries)
+    state["loops"] = loop_entries
+    state["instance"] = instance
+    await matcher.send(_format_calculator_loop_selection(loop_entries))
+
+
+async def _prepare_equip_compare_equipment_selection(
+    event: GroupMessageEvent,
+    matcher: Matcher,
+    state: T_State,
+    instance: JX3PlayerAttribute,
+    equip_name: str,
+) -> None:
+    kungfu_id = instance.kungfu_id
+    current_jcl_line = instance.equip_lines
+    currnet_dps_data = UniversalCalculator(current_jcl_line, int(str(kungfu_id)))
+
+    income_ver = Preference(event.user_id, "", "").setting("计算器增益")
+    formation_ver = Preference(event.user_id, "", "").setting("计算器阵眼")
+    income_code = get_calculator_income_codes(income_ver, int(str(kungfu_id)))
+    formation_code = FORMATIONS[formation_ver]
+
+    currnet_dps_data.income_list = income_code
+    currnet_dps_data.income_ver = income_ver
+    currnet_dps_data.formation_list = formation_code
+    currnet_dps_data.formation_name = formation_ver
+
+    equips = await get_equip_list(equip_name)
+    if not equips:
+        await matcher.finish(f"未找到装备「{equip_name}」，请检查装备名，或尝试输入更完整的装备名称。")
+    msg = "请从下面选择装备进行对比！"
+    for index, equip_info in enumerate(equips, start=1):
+        msg += f"\n{index}. ({equip_info.subkind}) {equip_info.name}\n{equip_info.quality} {' '.join(equip_info.attr)}"
+    state["equips"] = equips
+    state["kungfu_id"] = kungfu_id
+    state["current_data"] = currnet_dps_data
+    state["current_jcl"] = current_jcl_line
+    await matcher.send(msg)
 
 
 def _timeline_loop_entries(
@@ -1198,17 +1308,8 @@ async def _(
         server = arg[0]
         name = arg[1]
     state["pzid"] = 0
-    tag = "TPVE" if cmd[0] == "T" else "DPSPVE"
-    if "QC" in cmd:
-        tag = "QCPVE"
-    if "JC" in cmd:
-        tag = "JCPVE"
-    if "TL" in cmd:
-        tag = "TLPVE"
-    if "JY" in cmd:
-        tag = "JYPVE"
-    if "WX" in cmd:
-        tag = "WXPVE"
+    tag = _calculator_tag_from_command(cmd)
+    is_specific_calculator = _calculator_command_has_specific_prefix(cmd)
     if check_number(name):
         instance = await JX3BOXCalculator.with_pzid(int(name))
         if isinstance(instance, str):
@@ -1218,6 +1319,20 @@ async def _(
         global_role_id = name[1:]
         if not check_number(global_role_id):
             await calc_matcher.finish("全局玩家ID输入有误，请检查后重试！")
+        if not is_specific_calculator:
+            resolved_tag = await _resolve_bare_calculator_tag_for_global_role_id(
+                int(global_role_id),
+                state,
+                selection_key="calculator_kungfu_options",
+            )
+            if resolved_tag == "":
+                state["calculator_kungfu_context"] = {
+                    "mode": "global",
+                    "global_role_id": int(global_role_id),
+                }
+                await calc_matcher.send(_format_special_pve_kungfu_selection(state["calculator_kungfu_options"]))
+                return
+            tag = resolved_tag
         instance = await UniversalCalculator.with_global_role_id(int(global_role_id), tag)
         if isinstance(instance, str):
             await calc_matcher.finish(instance)
@@ -1225,30 +1340,53 @@ async def _(
         server = Server(server, event.group_id).server
         if server is None:
             await calc_matcher.finish(PROMPT.ServerNotExist)
+        if not is_specific_calculator:
+            player_data = await search_player(role_name=name, server_name=server)
+            if player_data.roleId == "":
+                await calc_matcher.finish(PROMPT.PlayerNotExist)
+            await JX3PlayerAttribute.from_tuilan(player_data.roleId, player_data.serverName, player_data.globalRoleId)
+            resolved_tag = await _resolve_bare_calculator_tag_for_global_role_id(
+                int(player_data.globalRoleId),
+                state,
+                selection_key="calculator_kungfu_options",
+            )
+            if resolved_tag == "":
+                state["calculator_kungfu_context"] = {
+                    "mode": "name",
+                    "server": server,
+                    "name": name,
+                }
+                await calc_matcher.send(_format_special_pve_kungfu_selection(state["calculator_kungfu_options"]))
+                return
+            tag = resolved_tag
         instance = await UniversalCalculator.with_name(name, server, tag)
         if isinstance(instance, str):
             await calc_matcher.finish(instance)
-    income_ver = Preference(event.user_id, "", "").setting("计算器增益")
-    formation_ver = Preference(event.user_id, "", "").setting("计算器阵眼")
-    is_custom = Preference(event.user_id, "", "").setting("计算器来源") == "自定义"
-    income_code = get_calculator_income_codes(income_ver, instance.calculator_kungfu_id)
-    instance.income_list = income_code
-    instance.income_ver = income_ver
-    instance.formation_list = FORMATIONS[formation_ver]
-    instance.formation_name = formation_ver
-
-    loop_entries = await _calculator_loop_entries(instance, event.user_id, is_custom)
-    if isinstance(loop_entries, str):
-        await calc_matcher.finish(loop_entries)
-    state["loops"] = loop_entries
-    state["instance"] = instance
-    await calc_matcher.send(_format_calculator_loop_selection(loop_entries))
+    await _prepare_calculator_loop_selection(event, matcher, state, instance)
 
 @calc_matcher.got("loop_order")
-async def _(event: GroupMessageEvent, state: T_State, loop_order: Message = Arg()):
+async def _(event: GroupMessageEvent, matcher: Matcher, state: T_State, loop_order: Message = Arg()):
     num = loop_order.extract_plain_text()
     if not check_number(num):
         await calc_matcher.finish("循环选择有误，请重新发起命令！")
+    if "calculator_kungfu_options" in state:
+        options: list[dict[str, Any]] = state["calculator_kungfu_options"]
+        index = int(num)
+        if index < 1 or index > len(options):
+            await calc_matcher.finish("超出可选范围，请重新发起命令！")
+        selected_tag = str(options[index - 1]["tag"])
+        context: dict[str, Any] = state["calculator_kungfu_context"]
+        if context["mode"] == "global":
+            instance = await UniversalCalculator.with_global_role_id(int(context["global_role_id"]), selected_tag)
+        else:
+            instance = await UniversalCalculator.with_name(str(context["name"]), str(context["server"]), selected_tag)
+        if isinstance(instance, str):
+            await calc_matcher.finish(instance)
+        state.pop("calculator_kungfu_options", None)
+        state.pop("calculator_kungfu_context", None)
+        state.pop("loop_order", None)
+        await _prepare_calculator_loop_selection(event, matcher, state, instance)
+        await calc_matcher.reject()
     loops: list[dict[str, Any]] = state["loops"]
     instance: UniversalCalculator | JX3BOXCalculator = state["instance"]
     index = int(num)
@@ -1303,55 +1441,47 @@ async def _(
     if player_data.roleId == "":
         await equip_compare.finish(PROMPT.PlayerNotExist)
     await JX3PlayerAttribute.from_tuilan(player_data.roleId, player_data.serverName, player_data.globalRoleId)
-    tag = "TPVE" if cmd[0] == "T" else "DPSPVE"
-    if "QC" in cmd:
-        tag = "QCPVE"
-    if "JC" in cmd:
-        tag = "JCPVE"
-    if "TL" in cmd:
-        tag = "TLPVE"
-    if "JY" in cmd:
-        tag = "JYPVE"
-    if "WX" in cmd:
-        tag = "WXPVE"
+    tag = _calculator_tag_from_command(cmd)
+    if not _calculator_command_has_specific_prefix(cmd):
+        resolved_tag = await _resolve_bare_calculator_tag_for_global_role_id(
+            int(player_data.globalRoleId),
+            state,
+            selection_key="equip_compare_kungfu_options",
+        )
+        if resolved_tag == "":
+            state["equip_compare_kungfu_context"] = {
+                "global_role_id": int(player_data.globalRoleId),
+                "equip_name": equip,
+            }
+            await equip_compare.send(_format_special_pve_kungfu_selection(state["equip_compare_kungfu_options"]))
+            return
+        tag = resolved_tag
     instance = await JX3PlayerAttribute.from_database(int(player_data.globalRoleId), tag, False)
     if instance is None:
         await equip_compare.finish(PROMPT.EquipNotFound)
-    kungfu_id = instance.kungfu_id # type: ignore
-    current_jcl_line = instance.equip_lines # type: ignore
-    currnet_dps_data = UniversalCalculator(current_jcl_line, int(str(kungfu_id)))
-
-    income_ver = Preference(event.user_id, "", "").setting("计算器增益")
-    formation_ver = Preference(event.user_id, "", "").setting("计算器阵眼")
-    income_code = get_calculator_income_codes(income_ver, int(str(kungfu_id)))
-    formation_code = FORMATIONS[formation_ver]
-
-    currnet_dps_data.income_list = income_code
-    currnet_dps_data.income_ver = income_ver
-    currnet_dps_data.formation_list = formation_code
-    currnet_dps_data.formation_name = formation_ver
-
-    equip_name = equip
-    equips = await get_equip_list(equip_name)
-    if not equips:
-        await equip_compare.finish(f"未找到装备「{equip_name}」，请检查装备名，或尝试输入更完整的装备名称。")
-    msg = "请从下面选择装备进行对比！"
-    num = 1
-    for equip_info in equips:
-        msg += f"\n{num}. ({equip_info.subkind}) {equip_info.name}\n{equip_info.quality} {' '.join(equip_info.attr)}"
-        num += 1
-    state["equips"] = equips
-    state["kungfu_id"] = kungfu_id
-    state["current_data"] = currnet_dps_data
-    state["current_jcl"] = current_jcl_line
-    await equip_compare.send(msg)
+    await _prepare_equip_compare_equipment_selection(event, matcher, state, instance, equip)
     return
 
 @equip_compare.got("equip_index")
-async def _(event: GroupMessageEvent, state: T_State, equip_index: Message = Arg()):
+async def _(event: GroupMessageEvent, matcher: Matcher, state: T_State, equip_index: Message = Arg()):
     num = equip_index.extract_plain_text()
     if not check_number(num):
         await equip_compare.finish("装备选择有误，请重新发起命令！")
+    if "equip_compare_kungfu_options" in state:
+        options: list[dict[str, Any]] = state["equip_compare_kungfu_options"]
+        index = int(num)
+        if index < 1 or index > len(options):
+            await equip_compare.finish("超出可选范围，请重新发起命令！")
+        selected_tag = str(options[index - 1]["tag"])
+        context: dict[str, Any] = state["equip_compare_kungfu_context"]
+        instance = await JX3PlayerAttribute.from_database(int(context["global_role_id"]), selected_tag, False)
+        if instance is None:
+            await equip_compare.finish(PROMPT.EquipNotFound)
+        state.pop("equip_compare_kungfu_options", None)
+        state.pop("equip_compare_kungfu_context", None)
+        state.pop("equip_index", None)
+        await _prepare_equip_compare_equipment_selection(event, matcher, state, instance, str(context["equip_name"]))
+        await equip_compare.reject()
     equips: list[EquipInfo] = state["equips"]
     index = int(num)
     if index < 1 or index > len(equips):
