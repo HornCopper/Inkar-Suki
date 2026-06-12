@@ -3,7 +3,7 @@ from pydantic import BaseModel
 from typing import Literal, Callable, Type
 from dataclasses import dataclass
 
-from nonebot.adapters.onebot.v11 import Mes%ge
+from nonebot.adapters.onebot.v11 import Message
 
 from src.utils.typing import override
 from src.utils.time import Time
