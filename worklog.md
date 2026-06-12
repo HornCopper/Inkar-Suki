@@ -4,6 +4,72 @@ This file records repository changes made in this fork. Keep entries newest firs
 
 Every code, documentation, configuration, dependency, asset, or workflow change should update this file before handoff.
 
+## 2026-06-13 - LNX Report Avatar Branding
+
+- Branch: rating
+- Type: change
+- Files changed:
+  - src/assets/image/jx3/calculator/lnx_mark.png
+  - src/plugins/jx3/calculator/_template.py
+  - src/plugins/jx3/calculator/jcl_analyze.py
+  - worklog.md
+- Summary:
+  - Added a local LNX avatar asset for report branding.
+  - Replaced the top-right plain `LNX 分析` badge with a rounded avatar mark and label.
+  - Added a low-opacity LNX watermark to each Phase card.
+- Validation:
+  - Ran `python -m py_compile src\plugins\jx3\calculator\jcl_analyze.py src\plugins\jx3\calculator\_template.py`.
+  - Ran `python -m compileall bot.py config.py src`.
+  - Ran `git diff --check`; Git reported LF-to-CRLF warnings for touched local files, with no whitespace errors.
+  - Rendered `src/cache/lnx_result_test.png` from the fixed `result.json` sample and visually verified the top avatar mark and low-opacity Phase watermark.
+- Follow-ups / Risks:
+  - The watermark is intentionally low opacity to avoid competing with table values.
+
+## 2026-06-12 - LNX Buff Detail Pie Panels
+
+- Branch: rating
+- Type: change
+- Files changed:
+  - src/plugins/jx3/calculator/_template.py
+  - src/plugins/jx3/calculator/jcl_analyze.py
+  - worklog.md
+- Summary:
+  - Increased LNX report table text size for better readability.
+  - Narrowed the 减伤 Buff 明细 source column and applied ellipsis to long source names.
+  - Added three right-side Rose Chart panels beside the 减伤 Buff 明细 table: 减伤贡献 Top 5, 治疗贡献 Top 5, and 化解占总贡献.
+  - Rendered equal-angle Rose Chart slices with radius scaled by contribution value, placed kungfu icon, short role ID, and percentage around the chart, colored each label capsule with its matching slice color, and connected each label from its chart-facing edge to the matching slice with softer curved arrows.
+  - Removed the bottom pie legend so the chart itself carries the identity mapping.
+  - Renamed the report title to 鲁念雪-雷元归枢-JCL贡献统计.
+  - Added rounded in-cell contribution bars for 加权贡献、加权总贡献、加权减伤、加权治疗 values, normalized per displayed table column.
+  - Kept Wave 加权总贡献与化解总量 at the bottom as the two-row card matrix.
+- Validation:
+  - Ran `python -m py_compile src\plugins\jx3\calculator\jcl_analyze.py src\plugins\jx3\calculator\_template.py`.
+  - Ran `python -m compileall bot.py config.py src`.
+  - Ran `git diff --check`; Git reported LF-to-CRLF warnings for touched local files, with no whitespace errors.
+  - Rendered `src/cache/lnx_result_test.png` from the fixed `result.json` sample and visually verified the larger font, narrower source column, right-side Rose Charts with more dispersed matching-color outer kungfu/role labels and curved arrows, rounded contribution bars, and bottom Wave matrix.
+- Follow-ups / Risks:
+  - Rose Chart labels intentionally use shortened role names to keep the right-side panel stable.
+
+## 2026-06-12 - LNX Three Contribution Tables Compact
+
+- Branch: rating
+- Type: change
+- Files changed:
+  - src/plugins/jx3/calculator/_template.py
+  - src/plugins/jx3/calculator/jcl_analyze.py
+  - worklog.md
+- Summary:
+  - Changed the LNX contribution layout so 综合贡献、减伤贡献、治疗贡献 tables display on the same row.
+  - Added contribution-table-only compact styling with narrower role columns, smaller icons, and ellipsis for long role names.
+  - Kept Buff details and Wave summary layout unchanged.
+- Validation:
+  - Ran `python -m py_compile src\plugins\jx3\calculator\jcl_analyze.py src\plugins\jx3\calculator\_template.py`.
+  - Ran `python -m compileall bot.py config.py src`.
+  - Rendered a local LNX sample image from `result.json` to `src/cache/lnx_result_test.png` and visually verified the three contribution tables share one row with narrower role columns.
+  - Ran `git diff --check`; Git reported LF-to-CRLF warnings for touched local files, with no whitespace errors.
+- Follow-ups / Risks:
+  - Long role names are truncated in the three contribution tables to preserve the same-row layout.
+
 ## 2026-06-12 - Merge Upstream Main Into Rating
 
 - Branch: rating
