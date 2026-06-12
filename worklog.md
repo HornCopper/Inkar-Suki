@@ -28,9 +28,12 @@ Every code, documentation, configuration, dependency, asset, or workflow change 
   - Merged upstream `main` updates into the `rating` branch.
   - Resolved the calculator command registration conflict by keeping the local LNX and K-line commands while preserving upstream's matcher layout and calculator command updates.
   - Brought in upstream JX3 command, permission, equipment rating, attribute, subscription asset, rank, manage, and twenty-four plugin updates.
+  - Removed an upstream trailing whitespace in `src/plugins/jx3/parse.py` so `git diff --check` passes.
 - Validation:
-  - Ran `pdm run python -m compileall bot.py config.py src`.
+  - `pdm run python -m compileall bot.py config.py src` could not run because `pdm` was not available in the local PATH.
+  - Ran `python -m compileall bot.py config.py src`.
   - Ran `git diff --check`.
+  - Ran `git diff --cached --check`.
 - Follow-ups / Risks:
   - OneBot/runtime behavior was not exercised locally because no live adapter session was configured for this merge.
 
