@@ -1096,7 +1096,18 @@ async def _resolve_equipment_rating_player(
     return player_data
 
 
-async def _special_pve_kungfu_options(global_role_id: int) -> list[dict[str, Any]]:
+def _auto_select_rating_pve_tag(kungfu_id: int) -> str | None:
+    if kungfu_id in SPECIAL_PVE_KUNGFU_TAGS:
+        return SPECIAL_PVE_KUNGFU_TAGS[kungfu_id]
+    abbr = Kungfu.with_internel_id(kungfu_id).abbr
+    if abbr == "T":
+        return "TPVE"
+    if abbr == "D":
+        return "DPSPVE"
+    return None
+
+
+async def _rating_pve_kungfu_options(global_role_id: int) -> list[dict[str, Any]]:
     all_equips = await JX3PlayerAttribute.from_database(global_role_id, "", True)
     if not all_equips:
         return []
@@ -1104,7 +1115,10 @@ async def _special_pve_kungfu_options(global_role_id: int) -> list[dict[str, Any
     latest_by_kungfu: dict[int, JX3PlayerAttribute] = {}
     for equip in all_equips:
         kungfu_id = int(equip.kungfu_id)
-        if equip.tag != "PVE" or kungfu_id not in SPECIAL_PVE_KUNGFU_TAGS:
+        if equip.tag != "PVE":
+            continue
+        tag = _auto_select_rating_pve_tag(kungfu_id)
+        if tag is None:
             continue
         current = latest_by_kungfu.get(kungfu_id)
         if current is None or equip.timestamp > current.timestamp:
@@ -1267,7 +1281,7 @@ async def handle_equipment_rating(event: GroupMessageEvent, matcher: Matcher, st
 
     if len(arg) == 2:
         player_data = await _resolve_equipment_rating_player(matcher, server, arg[1])
-        options = await _special_pve_kungfu_options(int(player_data.globalRoleId))
+        options = await _rating_pve_kungfu_options(int(player_data.globalRoleId))
         if len(options) == 0:
             await matcher.finish("未指定心法，且未找到该玩家可用于自动选择的 PVE 心法装备，请使用：装备评级 <服务器> <角色名> <心法>")
         if len(options) > 1:

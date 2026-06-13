@@ -392,7 +392,18 @@ def _calculator_command_has_specific_prefix(cmd: str) -> bool:
     return any(normalized_cmd.startswith(prefix) for prefix in CALCULATOR_PREFIXES)
 
 
-async def _special_pve_tag_options(global_role_id: int) -> list[dict[str, Any]]:
+def _calculator_auto_select_pve_tag(kungfu_id: int) -> str | None:
+    if kungfu_id in SPECIAL_PVE_KUNGFU_TAGS:
+        return SPECIAL_PVE_KUNGFU_TAGS[kungfu_id]
+    abbr = Kungfu.with_internel_id(kungfu_id).abbr
+    if abbr == "T":
+        return "TPVE"
+    if abbr == "D":
+        return "DPSPVE"
+    return None
+
+
+async def _calculator_pve_tag_options(global_role_id: int) -> list[dict[str, Any]]:
     all_equips = await JX3PlayerAttribute.from_database(global_role_id, "", True)
     if not all_equips:
         return []
@@ -400,7 +411,10 @@ async def _special_pve_tag_options(global_role_id: int) -> list[dict[str, Any]]:
     latest_by_kungfu: dict[int, JX3PlayerAttribute] = {}
     for equip in all_equips:
         kungfu_id = int(equip.kungfu_id)
-        if equip.tag != "PVE" or kungfu_id not in SPECIAL_PVE_KUNGFU_TAGS:
+        if equip.tag != "PVE":
+            continue
+        tag = _calculator_auto_select_pve_tag(kungfu_id)
+        if tag is None:
             continue
         current = latest_by_kungfu.get(kungfu_id)
         if current is None or equip.timestamp > current.timestamp:
@@ -409,9 +423,12 @@ async def _special_pve_tag_options(global_role_id: int) -> list[dict[str, Any]]:
     options: list[dict[str, Any]] = []
     for kungfu_id, equip in sorted(latest_by_kungfu.items(), key=lambda item: item[1].timestamp, reverse=True):
         kungfu = Kungfu.with_internel_id(kungfu_id, convert_to_pc=True)
+        tag = _calculator_auto_select_pve_tag(kungfu_id)
+        if tag is None:
+            continue
         options.append(
             {
-                "tag": SPECIAL_PVE_KUNGFU_TAGS[kungfu_id],
+                "tag": tag,
                 "kungfu_id": kungfu_id,
                 "name": kungfu.name or str(kungfu_id),
             }
@@ -432,7 +449,7 @@ async def _resolve_bare_calculator_tag_for_global_role_id(
     *,
     selection_key: str,
 ) -> str:
-    options = await _special_pve_tag_options(global_role_id)
+    options = await _calculator_pve_tag_options(global_role_id)
     if len(options) == 1:
         return str(options[0]["tag"])
     if len(options) > 1:
