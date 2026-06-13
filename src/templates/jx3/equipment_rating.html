@@ -502,6 +502,11 @@
             word-break: break-word;
         }
 
+        .ring-combo-note {
+            margin-top: 4px;
+            color: #65748a;
+        }
+
         .unrated-note {
             font-size: 14px;
             line-height: 1.5;
@@ -694,6 +699,9 @@
                             {% endif %}
                             <div class="best-note">
                                 {{ slot.best_note }}{% if slot.has_haste_adjustment %} · 已按加速折算{% endif %}
+                                {% if slot.ring_combination_note %}
+                                <div class="ring-combo-note">{{ slot.ring_combination_note }}</div>
+                                {% endif %}
                             </div>
                             {% else %}
                             <div class="item-title {{ slot.current.quality_class }}">

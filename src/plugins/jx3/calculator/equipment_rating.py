@@ -782,10 +782,43 @@ def _best_equipment_text(best: dict[str, Any]) -> str:
     return f"{name}（{' '.join(details)}）" if details else name
 
 
-def _prepare_slots(slots: list[dict[str, Any]]) -> list[dict[str, Any]]:
+def _prepare_ring_combination_notes(raw_items: Any) -> dict[int, str]:
+    combinations = [
+        item
+        for item in raw_items or []
+        if isinstance(item, dict) and _to_float(item.get("diff_dps")) > 0
+    ]
+    if not combinations:
+        return {}
+    best_combo = max(combinations, key=lambda item: _to_float(item.get("diff_dps")))
+    names = [
+        str(item.get("name") or "").strip()
+        for item in best_combo.get("items") or []
+        if isinstance(item, dict) and str(item.get("name") or "").strip()
+    ]
+    if len(names) < 2:
+        return {}
+    text = f"戒指最优组合[{' + '.join(names)}]：{_format_signed(best_combo.get('diff_dps'))}"
+    notes = {}
+    for location in best_combo.get("locations") or []:
+        try:
+            location_code = int(location)
+        except (TypeError, ValueError):
+            continue
+        if location_code in {6, 7}:
+            notes[location_code] = text
+    return notes
+
+
+def _prepare_slots(
+    slots: list[dict[str, Any]],
+    ring_combination_notes: dict[int, str] | None = None,
+) -> list[dict[str, Any]]:
     prepared = []
+    ring_combination_notes = ring_combination_notes or {}
     order = {location: index for index, location in enumerate(SLOT_DISPLAY_ORDER)}
     for slot in sorted(slots, key=lambda item: order.get(int(item.get("location_code", 99)), 99)):
+        location_code = int(slot.get("location_code", 99))
         rating = slot.get("rating")
         current = slot.get("current") or {}
         best = slot.get("best") or {}
@@ -815,6 +848,7 @@ def _prepare_slots(slots: list[dict[str, Any]]) -> list[dict[str, Any]]:
             "score_text": "--",
             "score_value": 0,
             "best_note": "",
+            "ring_combination_note": ring_combination_notes.get(location_code, ""),
             "has_haste_adjustment": False,
             "upgrade_value": 0,
         }
@@ -1006,7 +1040,10 @@ async def render_equipment_rating_image(
         "battle_time_text": f"{battle_time:.1f}秒",
         "haste_level_text": f"{haste_level}段",
     }
-    slots = _prepare_slots(data["slots"])
+    slots = _prepare_slots(
+        data["slots"],
+        _prepare_ring_combination_notes(data.get("combination_recommendations")),
+    )
     chips = [
         meta.get("loop_name", "评级专用循环"),
         f"{meta.get('jcl', {}).get('weapon', '')}{meta.get('jcl', {}).get('haste', '')}",

@@ -36,13 +36,15 @@ from .traverse import (
     save_rating_cache,
 )
 from .rdps import BLACalculator, TRDCalculator
-from .jcl_analyze import CQCAnalyze, FALAnalyze, YXCAnalyze, RODAnalyze, HPSAnalyze, CALAnalyze, ASNAnalyze, THRAnalyze, THFAnalyze, LGZAnalyze
+from .jcl_analyze import CQCAnalyze, FALAnalyze, YXCAnalyze, RODAnalyze, HPSAnalyze, CALAnalyze, ASNAnalyze, THRAnalyze, THFAnalyze, LGZAnalyze, LNXAnalyze
 from . import equipment_rating as equipment_rating_module
 import re
 import json
 import copy
 import asyncio
 import html
+import math
+import random
 
 
 def _prefixed_command_aliases(base_command: str, prefixes: tuple[str, ...]) -> set[str]:
@@ -65,6 +67,15 @@ SPECIAL_PVE_KUNGFU_TAGS = {
 }
 
 DEFAULT_DAMAGE_TIMELINE_BIN_SIZE = 2.5
+DEFAULT_DAMAGE_TIMELINE_ROLLING_WINDOW = 10
+DEFAULT_DAMAGE_TIMELINE_KLINE_TARGET_CANDLES = 110
+DEFAULT_DAMAGE_TIMELINE_KLINE_MA_PERIODS = (5, 10, 20)
+KLINE_GAME_INITIAL_CASH = 1000000
+KLINE_GAME_PREMIUM_RATE = 0.03
+KLINE_GAME_OPTION_TERMS = (15, 30, 45, 60)
+KLINE_GAME_MIN_REMAINING = 30
+KLINE_GAME_MIN_HISTORY = 30
+KLINE_GAME_HISTORY_WINDOW = 120
 PUBLIC_LOOP_DEFAULT_APPROVAL_GROUP_ID = 1018743771
 PUBLIC_LOOP_APPROVAL_CONFIG_PATH = build_path(DATA, ["jx3", "public_loop_approval.json"])
 PUBLIC_LOOP_APPROVE_PERMISSION_NODE = "jx3.calculator.public_loop.approve"
@@ -91,6 +102,7 @@ JCL_ANALYSIS_HELP_TEXT = (
     "【THF-】唐怀仁P3 DPS统计\n"
     "裁剪区间：毁灭读条-叶鸦出现\n"
     "【LGZ-】柳公子传功记录\n"
+    "【LNX-】鲁念雪 每阶段减伤/治疗/化解贡献统计\n"
     "【FAL-】前三次攻击记录，用于查开怪，尤其是阿里曼幻身的圣柱\n"
     "【YXC-】尹雪尘承伤统计，注意只会记录每个玩家的有效而非全部治疗\n"
     "【ROD-】重伤记录统计\n"
@@ -483,6 +495,8 @@ TIMELINE_ARGUMENT_PROMPT = (
     + "\n参考格式：循环曲线 <魔盒配装ID> bin=2.5"
     + "\n参考格式：循环对比 <服务器> <角色名> bin=2.5"
     + "\n参考格式：循环对比 <魔盒配装ID> bin=2.5"
+    + "\n参考格式：循环k线 <服务器> <角色名> bin=2.5"
+    + "\n参考格式：循环k线 <魔盒配装ID> bin=2.5"
 )
 
 TIMELINE_HELP_TEXT = (
@@ -494,6 +508,17 @@ TIMELINE_HELP_TEXT = (
     "5. 机器人返回循环列表后，选择 1 个循环\n"
     "示例：\n"
     "循环曲线 剑胆琴心 倦收天 bin=2.5\n"
+    "循环列表返回后发送：1"
+)
+
+TIMELINE_KLINE_HELP_TEXT = (
+    "循环K线参数：\n"
+    "1. 角色：<服务器> <角色名>，例如 剑胆琴心 倦收天\n"
+    "2. 魔盒配装：<配装ID>\n"
+    "3. 可选参数：bin=<秒数>，为保持与循环曲线一致可填写；K线按默认 10 秒滚动 DPS 逐秒计算，不受 bin 参数影响\n"
+    "4. 机器人返回循环列表后，选择 1 个循环\n"
+    "示例：\n"
+    "循环k线 剑胆琴心 倦收天 bin=2.5\n"
     "循环列表返回后发送：1"
 )
 
@@ -664,8 +689,13 @@ def _format_calculator_loop_selection(entries: list[dict[str, Any]], prompt: str
     return msg
 
 
-def _format_timeline_loop_selection(entries: list[dict[str, Any]], *, compare: bool) -> str:
-    msg = "请选择要对比的计算循环，支持空格或逗号分隔！" if compare else "请选择计算循环！"
+def _format_timeline_loop_selection(entries: list[dict[str, Any]], *, compare: bool, kline: bool = False) -> str:
+    if compare:
+        msg = "请选择要对比的计算循环，支持空格或逗号分隔！"
+    elif kline:
+        msg = "请选择要生成K线的计算循环！"
+    else:
+        msg = "请选择计算循环！"
     return _format_calculator_loop_selection(entries, msg)
 
 
@@ -677,13 +707,18 @@ async def _prepare_timeline_selection(
     cmd: str,
     *,
     compare: bool,
+    kline: bool = False,
 ) -> None:
     raw_text = args.extract_plain_text().strip()
     if raw_text == "":
+        if kline:
+            await matcher.finish(TIMELINE_KLINE_HELP_TEXT)
         if compare:
             await matcher.finish(TIMELINE_COMPARE_HELP_TEXT)
         await matcher.finish(TIMELINE_HELP_TEXT)
-    if not compare and raw_text.lower() in {"help", "帮助", "参数", "示例"}:
+    if kline and raw_text.lower() in {"help", "帮助", "参数", "示例"}:
+        await matcher.finish(TIMELINE_KLINE_HELP_TEXT)
+    if not compare and not kline and raw_text.lower() in {"help", "帮助", "参数", "示例"}:
         await matcher.finish(TIMELINE_HELP_TEXT)
     if compare and raw_text.lower() in {"help", "帮助", "参数", "示例"}:
         await matcher.finish(TIMELINE_COMPARE_HELP_TEXT)
@@ -701,8 +736,9 @@ async def _prepare_timeline_selection(
     state["timeline_instance"] = instance
     state["timeline_is_custom"] = is_custom
     state["timeline_compare"] = compare
+    state["timeline_kline"] = kline
     state["timeline_bin_size"] = bin_size
-    await matcher.send(_format_timeline_loop_selection(loop_entries, compare=compare))
+    await matcher.send(_format_timeline_loop_selection(loop_entries, compare=compare, kline=kline))
 
 
 def _parse_timeline_selection(text: str, loop_count: int, *, compare: bool) -> list[int] | str:
@@ -732,6 +768,7 @@ async def _request_damage_timeline(
     selected_indices: list[int],
     user_id: int,
     bin_size: float,
+    rolling_window: float,
 ) -> dict[str, Any] | str:
     selected_loops = []
     for index in selected_indices:
@@ -755,6 +792,7 @@ async def _request_damage_timeline(
         "full_income": instance.income_list + instance.formation_list,
         "user_id": user_id,
         "bin_size": bin_size,
+        "rolling_window": rolling_window,
     }
     try:
         response = await Request(f"{Config.jx3.api.calculator_url}/damage_timeline", params=payload).post(timeout=120)
@@ -983,17 +1021,265 @@ def _chart_svg(
     )
 
 
+def _rolling_kline_svg(
+    series: dict[str, Any],
+    width: int,
+    main_height: int,
+    volume_height: int,
+    buff_overlays: list[dict[str, Any]] | None = None,
+) -> str:
+    adjusted = series.get("adjusted") or {}
+    candles = adjusted.get("rolling_dps_candles") or []
+    if not candles:
+        return ""
+
+    def number(value: Any) -> float:
+        try:
+            return float(value)
+        except (TypeError, ValueError):
+            return 0.0
+
+    def merge_group(group: list[dict[str, Any]]) -> dict[str, Any]:
+        first = group[0]
+        last = group[-1]
+        start_second = max(0.0, number(first.get("second")) - 1)
+        end_second = number(last.get("second"))
+        open_value = number(first.get("open"))
+        close_value = number(last.get("close"))
+        return {
+            "second": end_second,
+            "display_second": (start_second + end_second) / 2,
+            "open": open_value,
+            "close": close_value,
+            "high": max(number(item.get("high")) for item in group),
+            "low": min(number(item.get("low")) for item in group),
+            "delta": close_value - open_value,
+            "volume": sum(number(item.get("volume")) for item in group),
+        }
+
+    def display_candles(source_candles: list[dict[str, Any]], interval: int) -> list[dict[str, Any]]:
+        ordered = sorted(source_candles, key=lambda item: number(item.get("second")))
+        if interval <= 1:
+            for item in ordered:
+                item.setdefault("display_second", max(0.0, number(item.get("second")) - 0.5))
+            return ordered
+        grouped: list[dict[str, Any]] = []
+        current_group: list[dict[str, Any]] = []
+        current_index: int | None = None
+        for item in ordered:
+            second = max(1, int(number(item.get("second")) or 1))
+            group_index = (second - 1) // interval
+            if current_index is not None and group_index != current_index and current_group:
+                grouped.append(merge_group(current_group))
+                current_group = []
+            current_index = group_index
+            current_group.append(item)
+        if current_group:
+            grouped.append(merge_group(current_group))
+        return grouped
+
+    def display_interval(source_candles: list[dict[str, Any]]) -> int:
+        if len(source_candles) <= DEFAULT_DAMAGE_TIMELINE_KLINE_TARGET_CANDLES:
+            return 1
+        raw_interval = math.ceil(len(source_candles) / DEFAULT_DAMAGE_TIMELINE_KLINE_TARGET_CANDLES)
+        for interval in [2, 3, 5, 10, 15, 20, 30, 60]:
+            if raw_interval <= interval:
+                return interval
+        return raw_interval
+
+    rolling_window = max(0.1, number(adjusted.get("rolling_window") or DEFAULT_DAMAGE_TIMELINE_ROLLING_WINDOW))
+    ordered_source_candles = sorted(candles, key=lambda item: number(item.get("second")))
+    kline_interval = display_interval(ordered_source_candles)
+    candles = display_candles(ordered_source_candles, kline_interval)
+    terminal_second = max(
+        max((number(item.get("second")) for item in candles), default=0),
+        number(adjusted.get("battle_time")),
+        1,
+    )
+    price_values = []
+    for item in candles:
+        price_values.extend(
+            [
+                number(item.get("open")),
+                number(item.get("close")),
+                number(item.get("high")),
+                number(item.get("low")),
+            ]
+        )
+    price_min = max(0, min(price_values, default=0) * 0.96)
+    price_max = max(price_values, default=1) * 1.04
+    if price_max <= price_min:
+        price_max = price_min + 1
+    price_span = price_max - price_min
+    gap = 26
+    total_height = main_height + gap + volume_height
+    momentum_top = main_height + gap
+    momentum_base = momentum_top + volume_height / 2
+    momentum_bottom = momentum_top + volume_height
+    max_momentum = max(
+        (
+            abs(number(item.get("delta", number(item.get("close")) - number(item.get("open")))))
+            for item in candles
+        ),
+        default=1,
+    )
+    max_momentum = max(max_momentum, 1)
+
+    def x_for_second(second: float) -> float:
+        return second / terminal_second * width
+
+    def price_y(value: float) -> float:
+        return main_height - (value - price_min) / price_span * main_height
+
+    def momentum_y(value: float) -> float:
+        return momentum_base - value / max_momentum * (volume_height / 2)
+
+    grid_lines = []
+    for ratio in [0, 0.25, 0.5, 0.75, 1]:
+        y = main_height - ratio * main_height
+        value = price_min + price_span * ratio
+        grid_lines.append(
+            f'<line x1="0" y1="{y:.2f}" x2="{width}" y2="{y:.2f}" class="kline-grid"/>'
+            f'<text x="-12" y="{y + 4:.2f}" text-anchor="end" class="kline-axis-label">{html.escape(_format_compact_number(value))}</text>'
+        )
+    grid_lines.append(
+        f'<line x1="0" y1="{main_height + gap:.2f}" x2="{width}" y2="{main_height + gap:.2f}" class="kline-grid"/>'
+        f'<line x1="0" y1="{momentum_base:.2f}" x2="{width}" y2="{momentum_base:.2f}" class="kline-zero-axis"/>'
+        f'<line x1="0" y1="{momentum_bottom:.2f}" x2="{width}" y2="{momentum_bottom:.2f}" class="kline-axis"/>'
+        f'<text x="-12" y="{momentum_base + 4:.2f}" text-anchor="end" class="kline-axis-label">涨跌</text>'
+    )
+
+    tick_seconds = []
+    tick = 0
+    while tick < terminal_second:
+        tick_seconds.append(float(tick))
+        tick += 15
+    terminal_tick_x = x_for_second(terminal_second)
+    tick_seconds = [
+        tick_second
+        for tick_second in tick_seconds
+        if abs(x_for_second(tick_second) - terminal_tick_x) >= 54
+    ]
+    if not any(abs(tick_second - terminal_second) < 0.05 for tick_second in tick_seconds):
+        tick_seconds.append(terminal_second)
+    axis_ticks = []
+    for tick_second in tick_seconds:
+        x = x_for_second(tick_second)
+        anchor = "middle"
+        if x < 12:
+            anchor = "start"
+        elif x > width - 12:
+            anchor = "end"
+        axis_ticks.append(
+            f'<line x1="{x:.2f}" y1="{momentum_bottom:.2f}" x2="{x:.2f}" y2="{momentum_bottom + 7:.2f}" class="kline-axis"/>'
+            f'<text x="{x:.2f}" y="{momentum_bottom + 24:.2f}" text-anchor="{anchor}" class="kline-axis-label">{html.escape(_format_seconds(tick_second))}</text>'
+        )
+
+    overlay_bands = _buff_overlays_svg(buff_overlays or [], width, main_height, terminal_second)
+    candle_slot_width = width / max(1, terminal_second / kline_interval)
+    candle_width = max(4.8, min(14, candle_slot_width * 0.58))
+    candles_svg = []
+    volume_svg = []
+    ma_points_by_period: dict[int, list[tuple[float, float]]] = {
+        period: [] for period in DEFAULT_DAMAGE_TIMELINE_KLINE_MA_PERIODS
+    }
+    ordered_candles = sorted(candles, key=lambda item: number(item.get("second")))
+    close_values: list[float] = []
+    for item in ordered_candles:
+        second = number(item.get("second"))
+        open_value = number(item.get("open"))
+        close_value = number(item.get("close"))
+        high_value = number(item.get("high"))
+        low_value = number(item.get("low"))
+        delta_value = number(item.get("delta", close_value - open_value))
+        close_values.append(close_value)
+        color = "#EF4444" if close_value >= open_value else "#22C55E"
+        x = x_for_second(number(item.get("display_second", max(0.0, second - 0.5))))
+        for period in DEFAULT_DAMAGE_TIMELINE_KLINE_MA_PERIODS:
+            ma_start = max(0, len(close_values) - period)
+            ma_value = sum(close_values[ma_start:]) / (len(close_values) - ma_start)
+            ma_points_by_period[period].append((x, price_y(ma_value)))
+        y_open = price_y(open_value)
+        y_close = price_y(close_value)
+        y_high = price_y(high_value)
+        y_low = price_y(low_value)
+        body_height = abs(y_close - y_open)
+        if body_height < 1.4:
+            body_y = y_open - 0.7
+            body_height = 1.4
+        else:
+            body_y = min(y_open, y_close)
+        candles_svg.append(
+            f'<line x1="{x:.2f}" y1="{y_high:.2f}" x2="{x:.2f}" y2="{y_low:.2f}" stroke="{color}" stroke-width="1.8"/>'
+            f'<rect x="{x - candle_width / 2:.2f}" y="{body_y:.2f}" width="{candle_width:.2f}" height="{body_height:.2f}" '
+            f'rx="1" fill="{color}" fill-opacity="0.28" stroke="{color}" stroke-width="1.8"/>'
+        )
+        y_delta = momentum_y(delta_value)
+        bar_y = min(momentum_base, y_delta)
+        bar_height = max(1.0, abs(momentum_base - y_delta))
+        volume_svg.append(
+            f'<rect x="{x - candle_width / 2:.2f}" y="{bar_y:.2f}" width="{candle_width:.2f}" '
+            f'height="{bar_height:.2f}" fill="{color}" fill-opacity="0.58"/>'
+        )
+
+    ma_classes = {5: "ma5", 10: "ma10", 20: "ma20"}
+    ma_svg_parts = []
+    for period in DEFAULT_DAMAGE_TIMELINE_KLINE_MA_PERIODS:
+        ma_points = ma_points_by_period.get(period, [])
+        if len(ma_points) < 2:
+            continue
+        ma_path = " ".join(f"{x:.2f},{y:.2f}" for x, y in ma_points)
+        label_x, label_y = ma_points[-1]
+        ma_class = ma_classes.get(period, "ma")
+        ma_svg_parts.append(
+            f'<polyline points="{ma_path}" fill="none" class="kline-ma-line {ma_class}"/>'
+            f'<text x="{min(width + 8, label_x + 8):.2f}" y="{label_y + 4 + (period // 5 - 1) * 14:.2f}" '
+            f'class="kline-ma-label {ma_class}">MA{period}</text>'
+        )
+    ma_svg = "".join(ma_svg_parts)
+
+    if series.get("game_mode"):
+        title = f"价格K线 · {rolling_window:g}秒滚动DPS"
+        subtitle = f"最近{_format_seconds(terminal_second)} · {kline_interval}秒K · 红涨绿跌 · MA5/MA10/MA20均价线 · 底部为Close-Open"
+    else:
+        label = html.escape(str(series.get("label") or "A"))
+        loop_name = html.escape(str(series.get("loop_name") or "未命名循环"))
+        title = f"循环K线 · {rolling_window:g}秒滚动DPS"
+        subtitle = (
+            f"{label}. {loop_name} · {kline_interval}秒K · "
+            "红涨绿跌 · MA5/MA10/MA20均价线 · 底部为Close-Open"
+        )
+    return (
+        f'<div class="chart-title kline-heading">{html.escape(title)}</div>'
+        f'<div class="kline-subtitle">{subtitle}</div>'
+        f'<svg viewBox="-78 -28 {width + 160} {total_height + 64}" class="kline-chart">'
+        + "".join(grid_lines)
+        + overlay_bands
+        + "".join(candles_svg)
+        + ma_svg
+        + "".join(volume_svg)
+        + f'<line x1="0" y1="{main_height}" x2="{width}" y2="{main_height}" class="kline-axis"/>'
+        + "".join(axis_ticks)
+        + '</svg>'
+    )
+
+
 async def _render_damage_timeline_image(
     data: dict[str, Any],
     instance: UniversalCalculator | JX3BOXCalculator,
     *,
     compare: bool,
+    kline_only: bool = False,
 ) -> Any:
     series_list = data.get("series") or []
     colors = ["#2F6BFF", "#E05252", "#18A058", "#8B5CF6", "#F59E0B", "#0EA5A4"]
     name, server = getattr(instance, "info", ("", ""))
     kungfu = Kungfu.with_internel_id(instance.calculator_kungfu_id, convert_to_pc=True)
-    title = "循环对比" if compare else "循环曲线"
+    title = "循环K线" if kline_only else ("循环对比" if compare else "循环曲线")
+    if data.get("title"):
+        title = str(data["title"])
+    game_stats = data.get("game_stats") or {}
+    game_mode = kline_only and bool(game_stats)
     legend_items = []
     stat_cards = []
     for index, series in enumerate(series_list):
@@ -1002,6 +1288,21 @@ async def _render_damage_timeline_image(
         dps = _format_compact_number(adjusted.get("dps"))
         label = html.escape(str(series.get("label") or index + 1))
         loop_name = html.escape(str(series.get("loop_name") or "未命名循环"))
+        if game_mode:
+            legend_items.append(f'<span class="legend-item"><i style="background:{color}"></i>标的价格</span>')
+            stat_cards.append(
+                f'<div class="stat-card" style="border-left-color:{color}">'
+                f'<div class="stat-title">期权账户</div>'
+                f'<div class="stat-grid">'
+                f'<span>现金 <b>{html.escape(str(game_stats.get("cash", "-")))}</b></span>'
+                f'<span>价格 <b>{html.escape(str(game_stats.get("price", "-")))}</b></span>'
+                f'<span>时间 <b>{html.escape(str(game_stats.get("time", "-")))}</b></span>'
+                f'<span>本轮T <b>{html.escape(str(game_stats.get("term", "-")))}</b></span>'
+                f'<span>到期 <b>{html.escape(str(game_stats.get("expiry", "-")))}</b></span>'
+                f'<span>持仓 <b>{html.escape(str(game_stats.get("positions", "-")))}</b></span>'
+                f'</div></div>'
+            )
+            continue
         legend_items.append(f'<span class="legend-item"><i style="background:{color}"></i>{label}. {loop_name}</span>')
         stat_cards.append(
             f'<div class="stat-card" style="border-left-color:{color}">'
@@ -1019,6 +1320,9 @@ async def _render_damage_timeline_image(
     buff_overlays = data.get("buff_overlays") or []
     if getattr(instance, "income_ver", "") not in FULL_INCOME_WITH_CONSUMABLES:
         buff_overlays = []
+    kline_chart = ""
+    if kline_only and len(series_list) == 1:
+        kline_chart = _rolling_kline_svg(series_list[0], chart_width, 300, 86, buff_overlays)
     damage_title = f"每{bin_size:g}秒伤害量" if bin_size != 1 else "每秒伤害量"
     damage_chart = _chart_svg(
         series_list,
@@ -1041,6 +1345,15 @@ async def _render_damage_timeline_image(
         source_key="cumulative_dps_bins",
         buff_overlays=buff_overlays,
     )
+    body_class = "kline-page" if kline_only else ""
+    canvas_class = "canvas kline-mode" if kline_only else "canvas"
+    subtitle_text = (
+        f"{html.escape(server or '-')} · {html.escape(name or '-')} · {html.escape(kungfu.name or '未知心法')}"
+    )
+    badge_text = f"{html.escape(instance.income_ver or '无增益')} / {html.escape(instance.formation_name or '无阵眼')}"
+    if game_mode:
+        subtitle_text = "期权模拟 · 标的：滚动DPS收盘价 · T随机15/30/45/60s · 权利金3%"
+        badge_text = "看涨 / 看跌 / 自动行权"
     html_source = f"""
 <!doctype html>
 <html>
@@ -1048,7 +1361,9 @@ async def _render_damage_timeline_image(
 <meta charset="utf-8">
 <style>
 body {{ margin: 0; background: #edf1f7; font-family: "Microsoft YaHei", "PingFang SC", Arial, sans-serif; color: #1f2430; }}
+body.kline-page {{ background: #05070b; color: #e5e7eb; }}
 .canvas {{ width: 1040px; padding: 34px; background: #f7f9fc; }}
+.canvas.kline-mode {{ background: #05070b; padding: 28px; }}
 .header {{ display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 22px; }}
 .title {{ font-size: 34px; font-weight: 800; }}
 .subtitle {{ margin-top: 8px; color: #697386; font-size: 18px; }}
@@ -1062,29 +1377,60 @@ body {{ margin: 0; background: #edf1f7; font-family: "Microsoft YaHei", "PingFan
 .stat-title {{ font-size: 18px; font-weight: 800; }}
 .stat-grid {{ display: grid; grid-template-columns: 1fr 1fr; gap: 6px 12px; margin-top: 10px; color: #566074; font-size: 14px; }}
 .stat-grid b {{ color: #1f2430; }}
+.kline-mode .header {{ margin-bottom: 18px; padding-bottom: 18px; border-bottom: 1px solid #172033; }}
+.kline-mode .title {{ color: #f8fafc; font-size: 30px; letter-spacing: 0; }}
+.kline-mode .subtitle {{ color: #94a3b8; font-size: 15px; }}
+.kline-mode .badge {{ background: #0b111b; border: 1px solid #243244; color: #cbd5e1; border-radius: 4px; }}
+.kline-mode .panel {{ background: #080d14; border-color: #1b2533; border-radius: 4px; }}
+.kline-mode .legend {{ margin-bottom: 14px; }}
+.kline-mode .legend-item {{ color: #cbd5e1; }}
+.kline-mode .stat-card {{ background: #0b111b; border: 1px solid #1e293b; border-left: 4px solid #2F6BFF; border-radius: 4px; }}
+.kline-mode .stat-title {{ color: #e5e7eb; }}
+.kline-mode .stat-grid {{ color: #8492a6; }}
+.kline-mode .stat-grid b {{ color: #f8fafc; }}
 .chart-title {{ font-size: 21px; font-weight: 800; margin-bottom: 8px; }}
 .chart {{ width: 100%; height: 350px; overflow: visible; }}
 .axis-label {{ fill: #858da0; font-size: 13px; }}
 .peak-label {{ font-size: 14px; font-weight: 700; }}
 .buff-frame {{ fill-opacity: 0.1; stroke-opacity: 0.42; stroke-width: 1.4; }}
 .buff-frame-label {{ font-size: 12px; font-weight: 800; opacity: 0.86; }}
+.kline-panel {{ background: #070A0F; border-color: #172033; }}
+.kline-mode .kline-panel {{ background: #05080d; padding: 20px 22px 18px; }}
+.kline-heading {{ color: #E5E7EB; margin-bottom: 4px; }}
+.kline-subtitle {{ color: #8B95A7; font-size: 14px; margin-bottom: 8px; }}
+.kline-chart {{ width: 100%; height: 456px; overflow: visible; }}
+.kline-grid {{ stroke: #1C2430; stroke-width: 1; }}
+.kline-axis {{ stroke: #334155; stroke-width: 1.2; }}
+.kline-zero-axis {{ stroke: #64748B; stroke-width: 1.2; stroke-dasharray: 6 5; }}
+.kline-axis-label {{ fill: #8B95A7; font-size: 13px; }}
+.kline-ma-line {{ stroke-width: 2.2; stroke-linejoin: round; stroke-linecap: round; }}
+.kline-ma-line.ma5 {{ stroke: #FACC15; }}
+.kline-ma-line.ma10 {{ stroke: #38BDF8; }}
+.kline-ma-line.ma20 {{ stroke: #C084FC; }}
+.kline-ma-label {{ font-size: 13px; font-weight: 900; }}
+.kline-ma-label.ma5 {{ fill: #FACC15; }}
+.kline-ma-label.ma10 {{ fill: #38BDF8; }}
+.kline-ma-label.ma20 {{ fill: #C084FC; }}
+.kline-panel .buff-frame {{ fill-opacity: 0.08; stroke-opacity: 0.28; }}
+.kline-panel .buff-frame-label {{ font-size: 12px; font-weight: 800; opacity: 0.82; }}
 </style>
 </head>
-<body>
-<div class="canvas">
+<body class="{body_class}">
+<div class="{canvas_class}">
   <div class="header">
     <div>
       <div class="title">{html.escape(title)}</div>
-      <div class="subtitle">{html.escape(server or "-")} · {html.escape(name or "-")} · {html.escape(kungfu.name or "未知心法")}</div>
+      <div class="subtitle">{subtitle_text}</div>
     </div>
-    <div class="badge">{html.escape(instance.income_ver or "无增益")} / {html.escape(instance.formation_name or "无阵眼")}</div>
+    <div class="badge">{badge_text}</div>
   </div>
   <div class="panel">
     <div class="legend">{"".join(legend_items)}</div>
     <div class="stats">{"".join(stat_cards)}</div>
   </div>
-  <div class="panel">{damage_chart}</div>
-  <div class="panel">{dps_chart}</div>
+  {f'<div class="panel kline-panel">{kline_chart}</div>' if kline_chart else ''}
+  {'' if kline_only else f'<div class="panel">{damage_chart}</div>'}
+  {'' if kline_only else f'<div class="panel">{dps_chart}</div>'}
 </div>
 </body>
 </html>
@@ -1095,8 +1441,398 @@ body {{ margin: 0; background: #edf1f7; font-family: "Microsoft YaHei", "PingFan
         False,
         segment=True,
         full_screen=True,
-        viewport={"width": 1100, "height": 1500},
+        viewport={"width": 1100, "height": 1120 if kline_only else 1500},
     )
+
+
+async def _request_kline_game_random_jcl() -> dict[str, Any] | str:
+    payload = {
+        "bin_size": DEFAULT_DAMAGE_TIMELINE_BIN_SIZE,
+        "rolling_window": DEFAULT_DAMAGE_TIMELINE_ROLLING_WINDOW,
+    }
+    try:
+        result = (
+            await Request(
+                f"{Config.jx3.api.calculator_url}/kline_game_random_jcl",
+                params=payload,
+            ).post(timeout=120)
+        ).json()
+    except Exception as exc:
+        return f"K线游戏随机 JCL 获取失败：{exc}"
+    if result.get("code") != 200:
+        return str(result.get("msg") or "K线游戏随机 JCL 获取失败。")
+    return result["data"]
+
+
+def _kline_game_price_at(game: dict[str, Any], second: int) -> float:
+    candles = game.get("candles") or []
+    if not candles:
+        return 0
+    selected = candles[0]
+    for candle in candles:
+        if int(candle.get("second", 0) or 0) > second:
+            break
+        selected = candle
+    return float(selected.get("close", 0) or 0)
+
+
+def _kline_game_end_second(game: dict[str, Any]) -> int:
+    candles = game.get("candles") or []
+    if not candles:
+        return 0
+    return int(candles[-1].get("second", 0) or 0)
+
+
+def _kline_game_roll_option_t() -> int:
+    return random.choice(KLINE_GAME_OPTION_TERMS)
+
+
+def _kline_game_current_option_t(game: dict[str, Any]) -> int:
+    try:
+        option_t = int(game.get("option_t", 0) or 0)
+    except (TypeError, ValueError):
+        option_t = 0
+    if option_t not in KLINE_GAME_OPTION_TERMS:
+        option_t = _kline_game_roll_option_t()
+        game["option_t"] = option_t
+    return option_t
+
+
+async def _kline_game_append_segment(game: dict[str, Any]) -> str | None:
+    data = await _request_kline_game_random_jcl()
+    if isinstance(data, str):
+        return data
+    series_list = data.get("series") or []
+    if not series_list:
+        return "K线游戏随机 JCL 没有返回可用曲线。"
+    series = series_list[0]
+    adjusted = series.get("adjusted") or {}
+    source_candles = adjusted.get("rolling_dps_candles") or []
+    if not source_candles:
+        return "K线游戏随机 JCL 没有可用 K 线数据。"
+    offset = _kline_game_end_second(game)
+    appended = []
+    for candle in source_candles:
+        item = dict(candle)
+        item["second"] = offset + int(float(item.get("second", 0) or 0))
+        appended.append(item)
+    game.setdefault("candles", []).extend(appended)
+    source = data.get("source") or {}
+    source["start_second"] = offset
+    source["end_second"] = _kline_game_end_second(game)
+    game.setdefault("sources", []).append(source)
+    game["kungfu_id"] = int(source.get("kungfu_id") or game.get("kungfu_id") or 0)
+    game["last_source"] = source
+    return None
+
+
+async def _kline_game_ensure_future(game: dict[str, Any], target_second: int) -> str | None:
+    attempts = 0
+    while _kline_game_end_second(game) < target_second and attempts < 8:
+        error = await _kline_game_append_segment(game)
+        if error:
+            return error
+        attempts += 1
+    if _kline_game_end_second(game) < target_second:
+        return "K线游戏拼接随机 JCL 失败：可用数据长度不足。"
+    return None
+
+
+async def _new_kline_game() -> dict[str, Any] | str:
+    game: dict[str, Any] = {
+        "cash": float(KLINE_GAME_INITIAL_CASH),
+        "positions": [],
+        "candles": [],
+        "sources": [],
+        "round": 1,
+        "option_t": _kline_game_roll_option_t(),
+    }
+    error = await _kline_game_ensure_future(
+        game,
+        KLINE_GAME_MIN_HISTORY + KLINE_GAME_MIN_REMAINING + max(KLINE_GAME_OPTION_TERMS),
+    )
+    if error:
+        return error
+    end_second = _kline_game_end_second(game)
+    latest_start = max(KLINE_GAME_MIN_HISTORY, end_second - KLINE_GAME_MIN_REMAINING)
+    game["current_time"] = random.randint(KLINE_GAME_MIN_HISTORY, latest_start)
+    return game
+
+
+def _kline_game_position_summary(game: dict[str, Any]) -> str:
+    positions = [pos for pos in game.get("positions", []) if int(pos.get("quantity", 0) or 0) > 0]
+    if not positions:
+        return "无"
+    call_count = sum(int(pos.get("quantity", 0) or 0) for pos in positions if pos.get("type") == "call")
+    put_count = sum(int(pos.get("quantity", 0) or 0) for pos in positions if pos.get("type") == "put")
+    parts = []
+    if call_count:
+        parts.append(f"看涨{call_count}")
+    if put_count:
+        parts.append(f"看跌{put_count}")
+    return " ".join(parts) or "无"
+
+
+async def _render_kline_game_image(game: dict[str, Any]) -> Any:
+    current_time = int(game.get("current_time", 0) or 0)
+    option_t = _kline_game_current_option_t(game)
+    history_start = max(0, current_time - KLINE_GAME_HISTORY_WINDOW)
+    history = [
+        {
+            **dict(candle),
+            "second": int(candle.get("second", 0) or 0) - history_start,
+        }
+        for candle in (game.get("candles") or [])
+        if history_start < int(candle.get("second", 0) or 0) <= current_time
+    ]
+    display_duration = min(current_time, KLINE_GAME_HISTORY_WINDOW)
+    current_price = _kline_game_price_at(game, current_time)
+    data = {
+        "title": "循环K线游戏",
+        "game_stats": {
+            "cash": _format_compact_number(game.get("cash", 0)),
+            "price": _format_compact_number(current_price),
+            "time": f"{current_time}s",
+            "term": f"{option_t}s",
+            "expiry": f"{current_time + option_t}s",
+            "positions": _kline_game_position_summary(game),
+        },
+        "series": [
+            {
+                "label": "PRICE",
+                "loop_name": "滚动DPS收盘价",
+                "haste": "-",
+                "game_mode": True,
+                "adjusted": {
+                    "rolling_window": DEFAULT_DAMAGE_TIMELINE_ROLLING_WINDOW,
+                    "battle_time": display_duration,
+                    "dps": current_price,
+                    "total_damage": game.get("cash", 0),
+                    "rolling_dps_candles": history,
+                },
+            }
+        ],
+    }
+    instance = UniversalCalculator(
+        jcl_data=[],
+        kungfu_id=0,
+        info=("K线游戏", "期权模拟"),
+    )
+    instance.income_ver = "期权模拟"
+    instance.formation_name = "自动行权"
+    return await _render_damage_timeline_image(data, instance, compare=False, kline_only=True)
+
+
+def _kline_game_prompt(game: dict[str, Any], note: str = "") -> str:
+    current_time = int(game.get("current_time", 0) or 0)
+    option_t = _kline_game_current_option_t(game)
+    current_price = _kline_game_price_at(game, current_time)
+    premium = current_price * KLINE_GAME_PREMIUM_RATE
+    expiry = current_time + option_t
+    lines = []
+    if note:
+        lines.append(note)
+    lines.extend(
+        [
+            f"当前时间：{current_time}s，标的价格：{_format_compact_number(current_price)}",
+            f"现金：{_format_compact_number(game.get('cash', 0))}，持仓：{_kline_game_position_summary(game)}",
+            f"本轮平值期权：K={_format_compact_number(current_price)}，T={option_t}s，权利金={_format_compact_number(premium)}/张，到期={expiry}s",
+            "操作：买入看涨 <数量> / 买入看跌 <数量> / 卖出看涨 <数量> / 卖出看跌 <数量> / 不动 / 结束",
+        ]
+    )
+    return "\n".join(lines)
+
+
+async def _send_kline_game_state(matcher: Matcher, game: dict[str, Any], note: str = "") -> None:
+    await matcher.send(await _render_kline_game_image(game))
+    await matcher.send(_kline_game_prompt(game, note))
+
+
+def _parse_kline_game_action(text: str) -> dict[str, Any] | str:
+    cleaned = text.strip()
+    lowered = cleaned.lower()
+    if lowered in {"结束", "退出", "quit", "exit", "stop"}:
+        return {"action": "quit"}
+    if lowered in {"不动", "pass", "hold", "跳过"}:
+        return {"action": "hold"}
+    parts = cleaned.split()
+    if not parts:
+        return "请输入操作：买入看涨 <数量> / 买入看跌 <数量> / 不动 / 结束"
+    quantity = 1
+    if len(parts) >= 2:
+        quantity_text = parts[-1]
+        if quantity_text.isdecimal():
+            quantity = int(quantity_text)
+            option_text = "".join(parts[:-1])
+        elif check_number(quantity_text):
+            return "数量必须为正整数。"
+        else:
+            option_text = "".join(parts)
+    else:
+        option_text = "".join(parts)
+    if quantity <= 0:
+        return "数量必须为正整数。"
+    action = ""
+    if option_text.startswith(("买入", "买")):
+        action = "buy"
+    elif option_text.startswith(("卖出", "卖")):
+        action = "sell"
+    else:
+        return "操作格式有误：请使用 买入看涨 <数量> / 买入看跌 <数量> / 卖出看涨 <数量> / 卖出看跌 <数量> / 不动。"
+    if "看涨" in option_text or "买涨" in option_text or "卖涨" in option_text or "call" in lowered:
+        option_type = "call"
+    elif "看跌" in option_text or "买跌" in option_text or "卖跌" in option_text or "put" in lowered:
+        option_type = "put"
+    else:
+        return "请指定看涨或看跌。"
+    return {"action": action, "type": option_type, "quantity": quantity}
+
+
+def _is_kline_game_format_error(result: str | None) -> bool:
+    if not isinstance(result, str):
+        return False
+    return result.startswith(("请输入", "操作格式", "请指定", "数量"))
+
+
+def _kline_game_option_mark_price(position: dict[str, Any], current_price: float, current_time: int) -> float:
+    strike = float(position.get("strike", 0) or 0)
+    expires_at = int(position.get("expires_at", current_time) or current_time)
+    opened_at = int(position.get("opened_at", current_time) or current_time)
+    term = int(position.get("term", expires_at - opened_at) or (expires_at - opened_at) or min(KLINE_GAME_OPTION_TERMS))
+    term = max(1, term)
+    remaining = max(0, expires_at - current_time)
+    if position.get("type") == "call":
+        intrinsic = max(current_price - strike, 0)
+    else:
+        intrinsic = max(strike - current_price, 0)
+    time_value = current_price * KLINE_GAME_PREMIUM_RATE * min(1, remaining / term)
+    return intrinsic + time_value
+
+
+def _kline_game_buy(game: dict[str, Any], option_type: str, quantity: int) -> str | None:
+    current_time = int(game.get("current_time", 0) or 0)
+    option_t = _kline_game_current_option_t(game)
+    current_price = _kline_game_price_at(game, current_time)
+    premium = current_price * KLINE_GAME_PREMIUM_RATE
+    cost = premium * quantity
+    cash = float(game.get("cash", 0) or 0)
+    if cash < cost:
+        return f"现金不足：需要 {_format_compact_number(cost)}，当前只有 {_format_compact_number(cash)}。"
+    game["cash"] = cash - cost
+    game.setdefault("positions", []).append(
+        {
+            "type": option_type,
+            "quantity": quantity,
+            "strike": current_price,
+            "premium": premium,
+            "term": option_t,
+            "opened_at": current_time,
+            "expires_at": current_time + option_t,
+        }
+    )
+    return None
+
+
+def _kline_game_sell(game: dict[str, Any], option_type: str, quantity: int) -> str | None:
+    current_time = int(game.get("current_time", 0) or 0)
+    current_price = _kline_game_price_at(game, current_time)
+    available_total = sum(
+        int(position.get("quantity", 0) or 0)
+        for position in game.get("positions", [])
+        if position.get("type") == option_type and int(position.get("expires_at", 0) or 0) > current_time
+    )
+    if available_total < quantity:
+        return "当前没有足够的未到期持仓可卖出，不能裸卖空。"
+    remaining_quantity = quantity
+    cash_gain = 0.0
+    for position in list(game.get("positions", [])):
+        if remaining_quantity <= 0:
+            break
+        if position.get("type") != option_type or int(position.get("expires_at", 0) or 0) <= current_time:
+            continue
+        available = int(position.get("quantity", 0) or 0)
+        if available <= 0:
+            continue
+        sell_quantity = min(available, remaining_quantity)
+        cash_gain += _kline_game_option_mark_price(position, current_price, current_time) * sell_quantity
+        position["quantity"] = available - sell_quantity
+        remaining_quantity -= sell_quantity
+    game["positions"] = [pos for pos in game.get("positions", []) if int(pos.get("quantity", 0) or 0) > 0]
+    game["cash"] = float(game.get("cash", 0) or 0) + cash_gain
+    return None
+
+
+def _kline_game_settle(game: dict[str, Any]) -> str:
+    current_time = int(game.get("current_time", 0) or 0)
+    current_price = _kline_game_price_at(game, current_time)
+    remaining_positions = []
+    messages = []
+    for position in game.get("positions", []):
+        quantity = int(position.get("quantity", 0) or 0)
+        if quantity <= 0:
+            continue
+        expires_at = int(position.get("expires_at", 0) or 0)
+        if expires_at > current_time:
+            remaining_positions.append(position)
+            continue
+        strike = float(position.get("strike", 0) or 0)
+        premium = float(position.get("premium", 0) or 0)
+        if position.get("type") == "call":
+            payoff_per = max(current_price - strike, 0)
+            name = "看涨"
+        else:
+            payoff_per = max(strike - current_price, 0)
+            name = "看跌"
+        payoff = payoff_per * quantity
+        net = payoff - premium * quantity
+        game["cash"] = float(game.get("cash", 0) or 0) + payoff
+        term = int(position.get("term", expires_at - int(position.get("opened_at", 0) or 0)) or 0)
+        term_text = f"，T={term}s" if term > 0 else ""
+        if payoff > 0:
+            exercise_text = f"行权收入={_format_compact_number(payoff)}"
+        else:
+            exercise_text = "放弃行权，行权收入=0"
+        messages.append(
+            f"{name}{quantity}张到期{term_text}：K={_format_compact_number(strike)}，"
+            f"到期价={_format_compact_number(current_price)}，{exercise_text}，"
+            f"净收益={_format_compact_number(net)}"
+        )
+    game["positions"] = remaining_positions
+    return "\n".join(messages) if messages else "本轮无到期期权。"
+
+
+async def _kline_game_apply_action(game: dict[str, Any], action_text: str) -> str | None:
+    parsed = _parse_kline_game_action(action_text)
+    if isinstance(parsed, str):
+        return parsed
+    if parsed["action"] == "quit":
+        return "quit"
+    current_time = int(game.get("current_time", 0) or 0)
+    option_t = _kline_game_current_option_t(game)
+    target_second = current_time + option_t + KLINE_GAME_MIN_REMAINING
+    error = await _kline_game_ensure_future(game, target_second)
+    if error:
+        return error
+    note = ""
+    if parsed["action"] == "buy":
+        error = _kline_game_buy(game, parsed["type"], int(parsed["quantity"]))
+        if error:
+            return error
+        option_name = "看涨" if parsed["type"] == "call" else "看跌"
+        note = f"已买入{option_name}{parsed['quantity']}张。"
+    elif parsed["action"] == "sell":
+        error = _kline_game_sell(game, parsed["type"], int(parsed["quantity"]))
+        if error:
+            return error
+        option_name = "看涨" if parsed["type"] == "call" else "看跌"
+        note = f"已卖出{option_name}{parsed['quantity']}张。"
+    elif parsed["action"] == "hold":
+        note = "本轮选择不动。"
+    game["current_time"] = current_time + option_t
+    settlement = _kline_game_settle(game)
+    game["round"] = int(game.get("round", 1) or 1) + 1
+    game["option_t"] = _kline_game_roll_option_t()
+    return note + "\n" + settlement
 
 
 async def _finish_damage_timeline(
@@ -1106,22 +1842,24 @@ async def _finish_damage_timeline(
     selection: Message,
 ) -> None:
     if "timeline_loops" not in state or "timeline_instance" not in state:
-        await matcher.finish("循环曲线/循环对比状态已失效，请重新发起命令！")
+        await matcher.finish("循环曲线/循环对比/循环K线状态已失效，请重新发起命令！")
     loops: list[dict[str, Any]] = state["timeline_loops"]
     instance: UniversalCalculator | JX3BOXCalculator = state["timeline_instance"]
     compare = bool(state.get("timeline_compare"))
+    kline = bool(state.get("timeline_kline"))
     parsed = _parse_timeline_selection(selection.extract_plain_text(), len(loops), compare=compare)
     if isinstance(parsed, str):
         await matcher.finish(parsed)
     await matcher.send("正在演算中，请稍候……")
     user_id = event.user_id if state.get("timeline_is_custom") else 0
     bin_size = float(state.get("timeline_bin_size", DEFAULT_DAMAGE_TIMELINE_BIN_SIZE))
-    data = await _request_damage_timeline(instance, loops, parsed, user_id, bin_size)
+    rolling_window = DEFAULT_DAMAGE_TIMELINE_ROLLING_WINDOW
+    data = await _request_damage_timeline(instance, loops, parsed, user_id, bin_size, rolling_window)
     if isinstance(data, str):
         await matcher.finish(data)
     if state.get("timeline_pzid", 0) != 0:
         await matcher.send(ms.image(await get_equip_image(str(state["timeline_pzid"]))))
-    await matcher.finish(await _render_damage_timeline_image(data, instance, compare=compare))
+    await matcher.finish(await _render_damage_timeline_image(data, instance, compare=compare, kline_only=kline))
 
 
 rd_analysis_support_matcher = on_command(
@@ -1290,6 +2028,89 @@ async def _(
     timeline_loop_order: Message = Arg(),
 ):
     await _finish_damage_timeline(event, matcher, state, timeline_loop_order)
+
+
+timeline_kline_matcher = on_command(
+    "jx3_damage_timeline_kline",
+    aliases=(
+        _prefixed_command_aliases("循环k线", CALCULATOR_PREFIXES)
+        | _prefixed_command_aliases("循环K线", CALCULATOR_PREFIXES)
+    ),
+    priority=5,
+    force_whitespace=True,
+)
+
+
+@timeline_kline_matcher.handle()
+async def _(event: GroupMessageEvent, matcher: Matcher, state: T_State, args: Message = CommandArg(), cmd: str = RawCommand()):
+    await _prepare_timeline_selection(event, matcher, state, args, cmd, compare=False, kline=True)
+
+
+@timeline_kline_matcher.got("timeline_loop_order")
+async def _(event: GroupMessageEvent, matcher: Matcher, state: T_State, timeline_loop_order: Message = Arg()):
+    await _finish_damage_timeline(event, matcher, state, timeline_loop_order)
+
+
+kline_game_matcher = on_command(
+    "jx3_damage_timeline_kline_game",
+    aliases={"循环k线游戏", "循环K线游戏"},
+    priority=5,
+    force_whitespace=True,
+)
+
+
+@kline_game_matcher.handle()
+async def _(matcher: Matcher, state: T_State, args: Message = CommandArg()):
+    query = args.extract_plain_text().strip().lower()
+    if query in {"help", "帮助", "参数", "示例"}:
+        await kline_game_matcher.finish(
+            "循环K线游戏参数：\n"
+            "发送「循环k线游戏」开始一局。\n"
+            "初始资金 1,000,000；标的为 rolling DPS close；平值期权 K=当前价格；"
+            "权利金=当前价格*3%；T 在 15/30/45/60 秒中随机生成，到期自动行权。\n"
+            "操作：买入看涨 <数量> / 买入看跌 <数量> / 卖出看涨 <数量> / 卖出看跌 <数量> / 不动 / 结束"
+        )
+    if query:
+        await kline_game_matcher.finish("参考格式：循环k线游戏")
+    await matcher.send("正在随机抽取 JCL 并初始化 K线游戏。")
+    game = await _new_kline_game()
+    if isinstance(game, str):
+        await kline_game_matcher.finish(game)
+    state["kline_game"] = game
+    await _send_kline_game_state(matcher, game, "游戏开始。")
+
+
+@kline_game_matcher.got("kline_game_action")
+async def _(matcher: Matcher, state: T_State, kline_game_action: Message = Arg()):
+    game = state.get("kline_game")
+    if not isinstance(game, dict):
+        await kline_game_matcher.finish("K线游戏状态已失效，请重新发起命令。")
+    action_text = kline_game_action.extract_plain_text().strip()
+    result = await _kline_game_apply_action(game, action_text)
+    if result == "quit":
+        await kline_game_matcher.finish(
+            f"已结束 K线游戏。\n最终现金：{_format_compact_number(game.get('cash', 0))}"
+        )
+    if _is_kline_game_format_error(result):
+        game["format_error_streak"] = int(game.get("format_error_streak", 0) or 0) + 1
+        state["kline_game"] = game
+        if game["format_error_streak"] >= 3:
+            await kline_game_matcher.finish(
+                f"连续 3 次操作格式有误，K线游戏已自动退出。\n"
+                f"最终现金：{_format_compact_number(game.get('cash', 0))}"
+            )
+        await matcher.reject(f"{result}\n连续格式错误：{game['format_error_streak']}/3")
+    game["format_error_streak"] = 0
+    if isinstance(result, str) and (
+        result.startswith("现金不足")
+        or result.startswith("当前没有足够")
+        or result.startswith("K线游戏")
+    ):
+        state["kline_game"] = game
+        await matcher.reject(result)
+    state["kline_game"] = game
+    await _send_kline_game_state(matcher, game, result or "")
+    await matcher.reject("继续操作，或发送「结束」退出。")
 
 
 calc_matcher = on_command(
@@ -1820,6 +2641,7 @@ async def _request_public_loop_preview(
         "submission_id": int(submission.get("id") or 0),
         "full_income": [],
         "bin_size": DEFAULT_DAMAGE_TIMELINE_BIN_SIZE,
+        "rolling_window": DEFAULT_DAMAGE_TIMELINE_ROLLING_WINDOW,
     }
     if jcl_data is not None:
         payload["jcl_data"] = jcl_data
@@ -2596,7 +3418,9 @@ async def _(bot: Bot, event: GroupUploadNoticeEvent):
     elif check_jcl_name(event.file.name, "THF-"):
         analyzer = THFAnalyze
     elif check_jcl_name(event.file.name, "LGZ-"):
-        analyzer = LGZAnalyze 
+        analyzer = LGZAnalyze
+    elif check_jcl_name(event.file.name, "LNX-"):
+        analyzer = LNXAnalyze
     else:
         return
     

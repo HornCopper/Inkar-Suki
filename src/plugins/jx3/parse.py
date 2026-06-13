@@ -116,7 +116,7 @@ class InkarSukiBirthdayEvent(JX3APIPushEvent):
     @override
     def msg(self) -> JX3APIOutputMsg:
         return JX3APIOutputMsg(msg=self.message, server=self.image_url, name="生日祝福")
-    
+
 @handle_event(50002)
 class InkarSukiVideoPushEvent(JX3APIPushEvent):
     message: str
