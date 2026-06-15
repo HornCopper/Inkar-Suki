@@ -23,6 +23,7 @@ from src.utils.permission import (
     denied,
     get_deepest_group_permission_nodes,
     get_deepest_permission_nodes,
+    is_defined_permission_node,
     normalize_permission_nodes,
 )
 from src.utils.database import db
@@ -200,6 +201,9 @@ async def _(bot: Bot, event: MessageEvent, full_argument: Message = CommandArg()
     node = node[1:] if is_remove else node
     if node.isdigit():
         await AdminMatcher.finish("旧权限等级已废除，请使用权限节点。")
+    node_scope = "user" if target_type == "u" else "group"
+    if not is_defined_permission_node(node, node_scope):
+        await AdminMatcher.finish(f"非法{'用户' if node_scope == 'user' else '群'}权限节点：{node}")
     raw_nodes = normalize_permission_nodes(data.permission_nodes)
     if is_remove:
         denied_node = f"-{node}"
@@ -221,24 +225,47 @@ PermissionNodesMatcher = on_command("permissions", aliases={"perms", "权限节�
 
 @PermissionNodesMatcher.handle()
 async def _(event: MessageEvent, args: Message = CommandArg()):
-    if args.extract_plain_text() != "":
-        return
-    nodes = get_deepest_permission_nodes(event.user_id)
+    target = args.extract_plain_text().strip()
+    target_id = str(event.user_id)
+    target_desc = "你当前"
+    if target:
+        if str(event.user_id) not in Config.bot_basic.bot_owner:
+            await PermissionNodesMatcher.finish("只有 Bot 主人可以查看他人的权限节点。")
+        if target.startswith("u"):
+            target = target[1:]
+        if not target.isdigit():
+            await PermissionNodesMatcher.finish("格式：permissions [QQ号]")
+        target_id = target
+        target_desc = f"用户 {target_id} 当前"
+    nodes = get_deepest_permission_nodes(target_id)
     if not nodes:
-        await PermissionNodesMatcher.finish("你当前没有权限节点。")
-    await PermissionNodesMatcher.finish("你当前拥有的权限节点：\n" + "\n".join(f"- {node}" for node in nodes))
+        await PermissionNodesMatcher.finish(f"{target_desc}没有权限节点。")
+    await PermissionNodesMatcher.finish(f"{target_desc}拥有的权限节点：\n" + "\n".join(f"- {node}" for node in nodes))
 
 
 GroupPermissionNodesMatcher = on_command("grouppermissions", aliases={"groupperms", "群权限"}, force_whitespace=True, priority=5)
 
 @GroupPermissionNodesMatcher.handle()
-async def _(event: GroupMessageEvent, args: Message = CommandArg()):
-    if args.extract_plain_text() != "":
-        return
-    nodes = get_deepest_group_permission_nodes(event.group_id)
+async def _(event: MessageEvent, args: Message = CommandArg()):
+    target = args.extract_plain_text().strip()
+    if target:
+        if str(event.user_id) not in Config.bot_basic.bot_owner:
+            await GroupPermissionNodesMatcher.finish("只有 Bot 主人可以查看其他群的权限节点。")
+        if target.startswith("g"):
+            target = target[1:]
+        if not target.isdigit():
+            await GroupPermissionNodesMatcher.finish("格式：grouppermissions [群号]")
+        group_id = target
+        target_desc = f"群 {group_id} 当前"
+    elif isinstance(event, GroupMessageEvent):
+        group_id = str(event.group_id)
+        target_desc = "本群当前"
+    else:
+        await GroupPermissionNodesMatcher.finish("格式：grouppermissions <群号>")
+    nodes = get_deepest_group_permission_nodes(group_id)
     if not nodes:
-        await GroupPermissionNodesMatcher.finish("本群当前没有权限节点。")
-    await GroupPermissionNodesMatcher.finish("本群当前拥有的权限节点：\n" + "\n".join(f"- {node}" for node in nodes))
+        await GroupPermissionNodesMatcher.finish(f"{target_desc}没有权限节点。")
+    await GroupPermissionNodesMatcher.finish(f"{target_desc}拥有的权限节点：\n" + "\n".join(f"- {node}" for node in nodes))
 
 @post_process
 async def _(bot: Bot, event: MessageEvent, exception: None | Exception, cmd = RawCommand()):

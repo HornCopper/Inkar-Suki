@@ -110,6 +110,15 @@ def normalize_permission_nodes(nodes: list[str | int]) -> list[str]:
     return normalized
 
 
+def is_defined_permission_node(node: str | int, scope: str = "user") -> bool:
+    node = _normalize_node(node)
+    if not node:
+        return False
+    if node == "*":
+        return True
+    return any(_node_match(node, leaf) for leaf in _defined_leaf_nodes(scope))
+
+
 def _resolve_deepest_nodes(raw_nodes: list[str | int], leaves: tuple[str, ...]) -> list[str]:
     result: set[str] = set()
     grants, denies = _split_permission_nodes(raw_nodes)
