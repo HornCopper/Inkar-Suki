@@ -34,6 +34,15 @@ FEASTS = {
     "Magic": ["FYYD_MAGIC"],
 }
 
+# 水晶芙蓉宴是全属性宴席，T 心法需要同时吃五个属性档。
+CRYSTAL_BANQUET_FEASTS = [
+    "FY_CRYSTAL_BANQUET_VITALITY",
+    "FY_CRYSTAL_BANQUET_AGILITY",
+    "FY_CRYSTAL_BANQUET_SPUNK",
+    "FY_CRYSTAL_BANQUET_STRENGTH",
+    "FY_CRYSTAL_BANQUET_SPIRIT",
+]
+
 SHARED_FEASTS = ["TZY", "BLSZY"]
 VITALITY_KUNGFU_IDS = {10062, 10002, 10243, 10389}
 MAGIC_TANK_KUNGFU_IDS = {10002, 10243}
@@ -61,6 +70,12 @@ def _calculator_kungfu_type(kungfu_id: int, base_attr: str | None) -> str:
     return "Physics"
 
 
+def _calculator_feast_codes(kungfu: Kungfu, base_attr: str, kungfu_type: str) -> list[str]:
+    if kungfu.abbr == "T":
+        return list(CRYSTAL_BANQUET_FEASTS)
+    return FEASTS[kungfu_type]
+
+
 def get_calculator_income_codes(income_name: str, kungfu_id: int) -> list[str]:
     income_codes = list(INCOMES[income_name])
     if income_name not in FULL_INCOME_WITH_CONSUMABLES:
@@ -77,7 +92,7 @@ def get_calculator_income_codes(income_name: str, kungfu_id: int) -> list[str]:
         income_codes
         + MAIN_ATTR_CONSUMABLES.get(base_attr, [])
         + ATTACK_INGOTS[kungfu_type]
-        + FEASTS[kungfu_type]
+        + _calculator_feast_codes(kungfu, base_attr, kungfu_type)
         + SHARED_FEASTS
     )
 

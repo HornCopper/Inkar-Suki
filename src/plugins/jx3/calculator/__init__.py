@@ -27,6 +27,10 @@ from src.plugins.jx3.equip.equip_config import get_equip_image
 from .jx3box import JX3BOXCalculator
 from .base import FORMATIONS, FULL_INCOME_WITH_CONSUMABLES, get_calculator_income_codes, normalize_calculator_jcl_data
 from .universe import UniversalCalculator
+from .loop_selection import (
+    calculator_loop_entries as _calculator_loop_entries,
+    format_calculator_loop_selection as _format_calculator_loop_selection,
+)
 from .traverse import (
     delete_rating_cache,
     equipment_hash,
@@ -95,6 +99,7 @@ JCL_ANALYSIS_HELP_TEXT = (
     "【Inkar Suki JCL分析简短说明】\n"
     "音卡可以通过JCL分析副本战斗时各种情况，需在打之前勾选茗伊战斗事件记录（见图片），不同的前缀有不同的效果，前缀直接在文件名前方加上后直接上传至有音卡的群（如果群主不嫌消息多的话）\n\n"
     "【BLA-】 单BOSS 全程 RHPS+RDPS分析（powered by 剑三警长）\n"
+    "【LNX-】鲁念雪 每阶段减伤/治疗/化解贡献统计\n"
     "【ASN-】阿史那承庆 QTE计数+死侍HPS统计\n"
     "【THR-】唐怀仁P1 DPS统计+榜单\n"
     "【TRD-】唐怀仁 P1 阶段 RDPS 分析（powered by 剑三警长）\n"
@@ -102,7 +107,6 @@ JCL_ANALYSIS_HELP_TEXT = (
     "【THF-】唐怀仁P3 DPS统计\n"
     "裁剪区间：毁灭读条-叶鸦出现\n"
     "【LGZ-】柳公子传功记录\n"
-    "【LNX-】鲁念雪 每阶段减伤/治疗/化解贡献统计\n"
     "【FAL-】前三次攻击记录，用于查开怪，尤其是阿里曼幻身的圣柱\n"
     "【YXC-】尹雪尘承伤统计，注意只会记录每个玩家的有效而非全部治疗\n"
     "【ROD-】重伤记录统计\n"
@@ -135,7 +139,8 @@ CALCULATOR_HELP_TEXT = (
     "其余心法无需加前缀和心法名称，直接使用：\n"
     "<计算器 区服 角色ID>\n\n"
     "装备评级\n"
-    "格式：<装备评级 区服 角色ID 心法名称>\n\n"
+    "格式：<装备评级 区服 角色ID [心法名称] [评级列表]>\n"
+    "或：<装备评级 魔盒配装ID [评级列表]>\n\n"
     "计算器的 JCL 由玩家提供，不能代表职业整体水平，且使用他人循环所产生的不认可，可以自行提供 JCL 进行计算，如何打造自身专属循环详情请看文档。\n"
     "计算器详细说明书请看：https://inkar-suki.codethink.cn/Inkar-Suki-Docs/#/calculator"
 )
@@ -636,57 +641,6 @@ async def _prepare_equip_compare_equipment_selection(
     state["current_data"] = currnet_dps_data
     state["current_jcl"] = current_jcl_line
     await matcher.send(msg)
-
-
-def _timeline_loop_entries(
-    loops: dict[str, dict[str, str]],
-    section: str,
-    user_id: int,
-) -> list[dict[str, Any]]:
-    return [
-        {
-            "display_name": loop_name,
-            "section": section,
-            "user_id": user_id,
-            **loop_data,
-        }
-        for loop_name, loop_data in loops.items()
-    ]
-
-
-async def _calculator_loop_entries(
-    instance: UniversalCalculator | JX3BOXCalculator,
-    user_id: int,
-    is_custom: bool,
-) -> list[dict[str, Any]] | str:
-    if is_custom:
-        public_loops = await instance.get_loop(0)
-        custom_loops = await instance.get_loop(user_id)
-        loop_entries: list[dict[str, Any]] = []
-        if not isinstance(public_loops, str):
-            loop_entries.extend(_timeline_loop_entries(public_loops, "公有循环", 0))
-        if not isinstance(custom_loops, str):
-            loop_entries.extend(_timeline_loop_entries(custom_loops, "自定义循环", user_id))
-        if loop_entries:
-            return loop_entries
-        return "未找到可用的公有循环或自定义循环，请检查计算器循环库或上传自定义 JCL！\n切换方式：发送「偏好 计算器来源 公用」"
-
-    loops = await instance.get_loop(0)
-    if isinstance(loops, str):
-        return "该玩家下线时的心法当前尚未实现计算器，可尝试使用指定计算器（如有）或等待该心法支持！\n也可能是当前使用的计算器循环库中并无该心法，请切换公用循环库或自定义循环库，详情见「偏好」。"
-    return _timeline_loop_entries(loops, "", 0)
-
-
-def _format_calculator_loop_selection(entries: list[dict[str, Any]], prompt: str = "请选择计算循环！") -> str:
-    msg = prompt
-    current_section = ""
-    for index, entry in enumerate(entries, start=1):
-        section = str(entry.get("section") or "")
-        if section and section != current_section:
-            msg += f"\n【{section}】"
-            current_section = section
-        msg += f"\n{index}. {entry.get('display_name') or '未命名循环'}"
-    return msg
 
 
 def _format_timeline_loop_selection(entries: list[dict[str, Any]], *, compare: bool, kline: bool = False) -> str:

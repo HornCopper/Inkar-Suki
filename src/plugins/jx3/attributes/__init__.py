@@ -250,7 +250,11 @@ async def format_attribute_submit_success(role_info: RoleData, kungfu_id: int) -
     kungfu_name = Kungfu.with_internel_id(kungfu_id, convert_to_pc=True).name or str(kungfu_id)
     support_status = await get_equipment_rating_support_status(kungfu_id)
     if support_status is True:
-        message += f"\n该心法支持装备评级，使用指令：装备评级 {role_info.serverName} {role_name} {kungfu_name}"
+        message += (
+            f"\n该心法支持装备评级，使用指令：装备评级 {role_info.serverName} {role_name}"
+            f"\n指定当前心法：装备评级 {role_info.serverName} {role_name} {kungfu_name}"
+            f"\n选择公共JCL：装备评级 {role_info.serverName} {role_name} 评级列表"
+        )
     elif support_status is False:
         message += f"\n该心法暂不支持装备评级：{kungfu_name}"
     else:
