@@ -378,6 +378,47 @@
             font-weight: 800;
         }
 
+        .tank-conversion {
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+
+        .tank-conversion-summary {
+            width: 100%;
+            padding: 2px 0 3px;
+            text-align: center;
+        }
+
+        .tank-conversion-count {
+            color: #111923;
+            font-size: 42px;
+            line-height: 0.95;
+            font-weight: 900;
+            letter-spacing: 0;
+        }
+
+        .tank-conversion-count span {
+            margin-left: 3px;
+            color: #72808d;
+            font-size: 15px;
+            line-height: 1;
+        }
+
+        .tank-conversion-formula {
+            margin-top: 8px;
+            color: #84909c;
+            font-size: 11px;
+            line-height: 1.25;
+            font-weight: 900;
+        }
+
+        .tank-conversion-rows {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
         .slot-list {
             width: 100%;
         }
@@ -627,7 +668,22 @@
                 </section>
                 {% endif %}
 
-                {% if distribution %}
+                {% if tank_vitality_conversion %}
+                <section class="side-section">
+                    <div class="side-heading">增益层数</div>
+                    <div class="tank-conversion">
+                        <div class="tank-conversion-summary">
+                            <div class="tank-conversion-count">{{ tank_vitality_conversion.stacks }}<span>层</span></div>
+                            <div class="tank-conversion-formula">满增益基础体质 / {{ tank_vitality_conversion.step }} 向下取整</div>
+                        </div>
+                        <div class="tank-conversion-rows">
+                            <div class="side-row"><span>满增益基础体质</span><strong>{{ tank_vitality_conversion.vitality }}</strong></div>
+                            <div class="side-row"><span>生效基础体质</span><strong>{{ tank_vitality_conversion.effective_vitality }}</strong></div>
+                            <div class="side-row"><span>距下层</span><strong>{{ tank_vitality_conversion.next_delta }}</strong></div>
+                        </div>
+                    </div>
+                </section>
+                {% elif distribution %}
                 <section class="side-section">
                     <div class="side-heading">心法实战数据分布</div>
                     <img class="distribution-chart" src="{{ distribution.image }}" alt="">

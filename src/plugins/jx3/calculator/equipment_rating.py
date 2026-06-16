@@ -33,8 +33,15 @@ from src.utils.database.player import get_uid_data, search_player
 from src.utils.file import read
 from src.utils.generate import generate
 from src.utils.network import Request
+from src.plugins.preferences.app import Preference
 
 from .base import normalize_calculator_jcl_data
+from .jx3box import JX3BOXCalculator
+from .loop_selection import (
+    calculator_loop_entries as _calculator_loop_entries,
+    format_calculator_loop_selection,
+)
+from .universe import UniversalCalculator
 
 
 RANK_ICON_FILES = {
@@ -73,7 +80,8 @@ EQUIPMENT_RATING_USAGE = (
     "1. 先提交属性：提交属性 <服务器> <角色名> <心法> <茗伊装备导出码>\n"
     "   例如：提交属性 剑胆琴心 倦收天 太虚剑意 <从茗伊复制的整段装备导出码>\n"
     "   注意：导出码与心法之间要有个空格\n"
-    "2. 再执行评级：装备评级 <服务器> <角色名> [心法]\n"
+    "2. 再执行评级：装备评级 <服务器> <角色名/ID> [心法] [评级列表]\n"
+    "   或：装备评级 <魔盒配装ID> [评级列表]\n"
     "   例如：装备评级 剑胆琴心 倦收天 太虚剑意\n"
     "3. 查看目前支持心法：装备评级支持 或 装备评级支持 <心法名>\n"
     "帮助：装备评级 help"
@@ -199,6 +207,14 @@ body {
   color: #2354d6;
   font-weight: 900;
 }
+.examples {
+  margin-top: 9px;
+  display: grid;
+  gap: 7px;
+  font-size: 16px;
+  line-height: 1.45;
+  color: #5a6473;
+}
 .formula-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -270,7 +286,13 @@ body {
     <div class="section-title">使用步骤</div>
     <div class="steps">
       <div class="step"><div class="num">1</div><div>先提交属性：<span class="command">提交属性 &lt;服务器&gt; &lt;角色名&gt; &lt;心法&gt; &lt;茗伊装备导出码&gt;</span></div></div>
-      <div class="step"><div class="num">2</div><div>再执行评级：<span class="command">装备评级 &lt;服务器&gt; &lt;角色名&gt; &lt;心法&gt;</span></div></div>
+      <div class="step"><div class="num">2</div><div>再执行评级：<span class="command">装备评级 &lt;服务器&gt; &lt;角色名/ID&gt; [&lt;心法&gt;] [评级列表]</span> 或 <span class="command">装备评级 &lt;魔盒配装ID&gt; [评级列表]</span>
+        <div class="examples">
+          <div>角色名：<span class="command">装备评级 剑胆琴心 倦收天</span></div>
+          <div>评级列表：<span class="command">装备评级 剑胆琴心 倦收天 评级列表</span></div>
+          <div>魔盒配装：<span class="command">装备评级 123456 评级列表</span></div>
+        </div>
+      </div></div>
       <div class="step"><div class="num">3</div><div>查看支持心法：<span class="command">装备评级支持</span> 或 <span class="command">装备评级支持 &lt;心法名&gt;</span></div></div>
     </div>
   </div>
@@ -408,6 +430,8 @@ ATTRIBUTE_INCOME_DISPLAY_KEYS = {
         "atStrainBase",
     ),
 }
+TANK_VITALITY_CONVERSION_STEP = 3310
+TANK_VITALITY_CONVERSION_MAX_STACKS = 100
 
 
 def _is_hidden_attribute_text(value: Any) -> bool:
@@ -614,46 +638,38 @@ def _format_supported_kungfu_detail(item: dict[str, Any]) -> str:
         f"默认评级循环：{_selected_rating_loop_text(item)}",
         *_format_jcl_record_detail_lines(item),
         f"可用评级JCL：{item.get('jcl_count', 0)} 个",
-        "公共JCL选择：装备评级 <服务器> <角色> <心法> 评级列表",
+        "评级循环选择：装备评级 <服务器> <角色> <心法> 评级列表",
     ]
     if item.get("warning"):
         lines.append(f"提示：{item['warning']}")
     return "\n".join(lines)
 
 
-async def _fetch_public_rating_loops(kungfu_id: int) -> list[str] | str:
-    try:
-        response = await Request(
-            f"{Config.jx3.api.calculator_url}/loops",
-            params={"kungfu_id": kungfu_id},
-        ).get(timeout=8)
-        if response.status_code >= 400:
-            return f"装备评级循环列表查询失败：calculator 返回 HTTP {response.status_code}。"
-        result = response.json()
-    except Exception as exc:
-        return f"装备评级循环列表查询失败：{exc}"
-    if result.get("code") == 404:
-        return "该心法当前没有可用公共 JCL，默认装备评级仍可使用评级专用 JCL。"
-    if result.get("code") != 200:
-        return result.get("msg", "装备评级循环列表查询失败。")
-
-    loops = []
-    for item in result.get("data") or []:
-        if not isinstance(item, dict):
-            continue
-        name = str(item.get("name") or "").strip()
-        if name:
-            loops.append(name)
-    if not loops:
-        return "该心法当前没有可用公共 JCL，默认装备评级仍可使用评级专用 JCL。"
-    return loops
+async def _fetch_equipment_rating_loop_entries(
+    event: GroupMessageEvent,
+    instance: UniversalCalculator | JX3BOXCalculator,
+) -> list[dict[str, Any]] | str:
+    use_custom_loops = Preference(event.user_id, "", "").setting("计算器来源") == "自定义"
+    return await _calculator_loop_entries(
+        instance,
+        event.user_id,
+        use_custom_loops,
+        public_error="该心法当前没有可用公共 JCL，默认装备评级仍可使用评级专用 JCL。",
+    )
 
 
-def _format_public_rating_loop_list(loops: list[str]) -> str:
-    lines = ["请选择装备评级循环，选择后会开始计算（顺序与计算器循环列表一致）："]
-    for index, loop_name in enumerate(loops, start=1):
-        lines.append(f"{index}. {loop_name}")
-    return "\n".join(lines)
+def _format_equipment_rating_loop_list(loops: list[dict[str, Any]]) -> str:
+    return format_calculator_loop_selection(loops, "请选择装备评级循环，选择后会开始计算（列表与计算器循环列表一致）：")
+
+
+def _equipment_rating_loop_payload(loop_entry: dict[str, Any]) -> dict[str, Any]:
+    return {
+        "name": str(loop_entry.get("display_name") or ""),
+        "weapon": str(loop_entry.get("weapon") or ""),
+        "haste": str(loop_entry.get("haste") or ""),
+        "loop": str(loop_entry.get("loop") or ""),
+        "user_id": int(loop_entry.get("user_id") or 0),
+    }
 
 
 def _percent_from_rating(value: Any, divisor: float, base: float = 0) -> str:
@@ -1007,6 +1023,30 @@ def _prepare_distribution_view(kungfu_id: Any) -> dict[str, str] | None:
     }
 
 
+def _prepare_tank_vitality_conversion(summary: dict[str, Any], kungfu: Kungfu) -> dict[str, str] | None:
+    if kungfu.abbr != "T":
+        return None
+    attributes = summary.get("attributes") or {}
+    base_vitality = int(_to_float(attributes.get("BaseVitality")))
+    if base_vitality <= 0:
+        return None
+    stacks = min(base_vitality // TANK_VITALITY_CONVERSION_STEP, TANK_VITALITY_CONVERSION_MAX_STACKS)
+    effective_vitality = stacks * TANK_VITALITY_CONVERSION_STEP
+    next_delta = (
+        0
+        if stacks >= TANK_VITALITY_CONVERSION_MAX_STACKS or base_vitality == effective_vitality
+        else (stacks + 1) * TANK_VITALITY_CONVERSION_STEP - base_vitality
+    )
+    return {
+        "stacks": str(stacks),
+        "vitality": _format_number(base_vitality),
+        "effective_vitality": _format_number(effective_vitality),
+        "next_delta": _format_number(next_delta),
+        "step": _format_number(TANK_VITALITY_CONVERSION_STEP),
+        "max_stacks": str(TANK_VITALITY_CONVERSION_MAX_STACKS),
+    }
+
+
 def _prepare_talents(talents: Any) -> list[dict[str, str]]:
     prepared = []
     for talent_id in talents or []:
@@ -1071,6 +1111,7 @@ async def render_equipment_rating_image(
         basic_attrs=basic_attrs,
         detail_attrs=detail_attrs,
         attribute_incomes=_prepare_attribute_incomes(summary),
+        tank_vitality_conversion=_prepare_tank_vitality_conversion(summary, kungfu),
         distribution=_prepare_distribution_view(meta.get("kungfu_id")),
         slots=slots,
         talents=_prepare_talents(summary.get("talents")),
@@ -1123,14 +1164,35 @@ async def _resolve_equipment_rating_player(
     matcher: Matcher,
     server: str,
     role_id: str,
+    *,
+    refresh_tuilan: bool = True,
 ):
-    player_data = await search_player(role_name=role_id, role_id=role_id, server_name=server, local_lookup=True)
-    if player_data.roleId == "":
-        player_data = await get_uid_data(role_id=role_id, server=server, msg=False)
-    if player_data.roleId == "":
+    player_data = await _try_resolve_equipment_rating_player(server, role_id, refresh_tuilan=refresh_tuilan)
+    if player_data is None:
         await matcher.finish(PROMPT.PlayerNotExist)
-    await JX3PlayerAttribute.from_tuilan(player_data.roleId, player_data.serverName, player_data.globalRoleId)
     return player_data
+
+
+async def _try_resolve_equipment_rating_player(
+    server: str,
+    role_id: str,
+    *,
+    refresh_tuilan: bool = True,
+):
+    try:
+        if role_id.isdigit():
+            player_data = await search_player(role_name=role_id, role_id=role_id, server_name=server, local_lookup=True)
+            if player_data.roleId == "":
+                player_data = await get_uid_data(role_id=role_id, server=server, msg=False)
+        else:
+            player_data = await search_player(role_name=role_id, server_name=server)
+        if player_data.roleId == "":
+            return None
+        if refresh_tuilan:
+            await JX3PlayerAttribute.from_tuilan(player_data.roleId, player_data.serverName, player_data.globalRoleId)
+        return player_data
+    except Exception:
+        return None
 
 
 def _auto_select_rating_pve_tag(kungfu_id: int) -> str | None:
@@ -1164,13 +1226,24 @@ async def _rating_pve_kungfu_options(global_role_id: int) -> list[dict[str, Any]
     options: list[dict[str, Any]] = []
     for kungfu_id, equip in sorted(latest_by_kungfu.items(), key=lambda item: item[1].timestamp, reverse=True):
         kungfu = Kungfu.with_internel_id(kungfu_id, convert_to_pc=True)
+        tag = _auto_select_rating_pve_tag(kungfu_id)
+        if tag is None:
+            continue
         options.append(
             {
+                "tag": tag,
                 "kungfu_id": kungfu_id,
                 "name": kungfu.name or str(kungfu_id),
             }
         )
     return options
+
+
+async def _default_rating_pve_kungfu_id(global_role_id: int) -> int | None:
+    equip = await JX3PlayerAttribute.from_database(global_role_id, "DPSPVE", False)
+    if equip is None:
+        return None
+    return int(equip.kungfu_id)
 
 
 def _format_special_pve_kungfu_selection(options: list[dict[str, Any]]) -> str:
@@ -1240,6 +1313,29 @@ async def _build_equipment_rating_payload_by_kungfu(
     return payload, player_data, target_equip
 
 
+async def _build_equipment_rating_payload_by_pzid(
+    matcher: Matcher,
+    pzid: int,
+) -> tuple[dict[str, Any], str, str, None]:
+    instance = await JX3BOXCalculator.with_pzid(pzid)
+    if isinstance(instance, str):
+        await matcher.finish(instance)
+    payload = {
+        "kungfu_id": int(instance.kungfu_id),
+        "jcl_data": normalize_calculator_jcl_data(instance.jcl_data),
+        "role": {
+            "name": f"魔盒配装 {pzid}",
+            "server": "JX3BOX",
+            "global_role_id": 0,
+        },
+        "candidate_level": {
+            "min": 32500,
+            "max": 43000,
+        },
+    }
+    return payload, f"魔盒配装 {pzid}", "JX3BOX", None
+
+
 async def _request_equipment_rating_data(payload: dict[str, Any]) -> dict[str, Any] | str:
     try:
         response = await Request(f"{Config.jx3.api.calculator_url}/equipment_rating", params=payload).post(timeout=300)
@@ -1260,7 +1356,7 @@ async def _finish_equipment_rating_calculation(
     payload: dict[str, Any],
     role_name: str,
     server_name: str,
-    rating_equip: JX3PlayerAttribute,
+    rating_equip: JX3PlayerAttribute | None,
 ):
     data = await _request_equipment_rating_data(payload)
     if isinstance(data, str):
@@ -1268,6 +1364,61 @@ async def _finish_equipment_rating_calculation(
     await finish_equipment_rating_response(
         matcher,
         await render_equipment_rating_image(data, role_name, server_name, rating_equip)
+    )
+
+
+async def _resolve_bare_equipment_rating_kungfu_id(
+    matcher: Matcher,
+    state: T_State,
+    global_role_id: int,
+    server: str,
+    role_arg: str,
+    use_public_loop_list: bool,
+) -> int | None:
+    options = await _rating_pve_kungfu_options(global_role_id)
+    if len(options) == 1:
+        return int(options[0]["kungfu_id"])
+    if len(options) > 1:
+        state["equipment_rating_kungfu_options"] = options
+        state["equipment_rating_server"] = server
+        state["equipment_rating_role_arg"] = role_arg
+        state["equipment_rating_use_public_loop_list"] = use_public_loop_list
+        await matcher.send(_format_special_pve_kungfu_selection(options))
+        return None
+
+    kungfu_id = await _default_rating_pve_kungfu_id(global_role_id)
+    if kungfu_id is None:
+        await matcher.finish("未指定心法，且未找到该玩家可用于自动选择的 PVE 心法装备，请使用：装备评级 <服务器> <角色名> <心法>")
+    return kungfu_id
+
+
+async def _handle_equipment_rating_pzid(
+    event: GroupMessageEvent,
+    matcher: Matcher,
+    state: T_State,
+    pzid: int,
+    use_public_loop_list: bool,
+):
+    payload, role_name, server_name, rating_equip = await _build_equipment_rating_payload_by_pzid(matcher, pzid)
+    kungfu_id = int(payload["kungfu_id"])
+    if use_public_loop_list:
+        loop_instance = JX3BOXCalculator(kungfu_id=kungfu_id)
+        loops = await _fetch_equipment_rating_loop_entries(event, loop_instance)
+        if isinstance(loops, str):
+            await matcher.finish(loops)
+        state["equipment_rating_pzid"] = pzid
+        state["equipment_rating_kungfu_id"] = kungfu_id
+        state["equipment_rating_loops"] = loops
+        await matcher.send(_format_equipment_rating_loop_list(loops))
+        return
+
+    await _send_equipment_rating_started(matcher)
+    await _finish_equipment_rating_calculation(
+        matcher,
+        payload,
+        role_name,
+        server_name,
+        rating_equip,
     )
 
 
@@ -1303,46 +1454,59 @@ async def handle_equipment_rating(event: GroupMessageEvent, matcher: Matcher, st
     if plain_text.lower() in EQUIPMENT_RATING_HELP_KEYWORDS:
         await matcher.finish(await _render_equipment_rating_help_image())
     arg = plain_text.split()
-    if len(arg) not in [2, 3, 4]:
+    if len(arg) not in [1, 2, 3, 4]:
         await matcher.finish(PROMPT.ArgumentCountInvalid + "\n" + EQUIPMENT_RATING_USAGE)
     use_public_loop_list = False
     if arg[-1] in RATING_LOOP_LIST_KEYWORDS:
         use_public_loop_list = True
         arg = arg[:-1]
-    if len(arg) not in [2, 3]:
-        await matcher.finish("评级列表参数仅支持放在命令末尾，用于选择公共 JCL。\n" + EQUIPMENT_RATING_USAGE)
+    if len(arg) not in [1, 2, 3]:
+        await matcher.finish("评级列表参数仅支持放在命令末尾，用于选择评级循环。\n" + EQUIPMENT_RATING_USAGE)
+
+    if len(arg) == 1:
+        if not arg[0].isdigit():
+            await matcher.finish(PROMPT.ArgumentCountInvalid + "\n" + EQUIPMENT_RATING_USAGE)
+        await _handle_equipment_rating_pzid(event, matcher, state, int(arg[0]), use_public_loop_list)
+        return
 
     server = Server(arg[0], event.group_id).server
     if server is None:
         await matcher.finish(PROMPT.ServerNotExist)
 
-    if len(arg) == 2:
-        player_data = await _resolve_equipment_rating_player(matcher, server, arg[1])
-        options = await _rating_pve_kungfu_options(int(player_data.globalRoleId))
-        if len(options) == 0:
-            await matcher.finish("未指定心法，且未找到该玩家可用于自动选择的 PVE 心法装备，请使用：装备评级 <服务器> <角色名> <心法>")
-        if len(options) > 1:
-            state["equipment_rating_kungfu_options"] = options
-            state["equipment_rating_server"] = server
-            state["equipment_rating_role_arg"] = arg[1]
-            state["equipment_rating_use_public_loop_list"] = use_public_loop_list
-            await matcher.send(_format_special_pve_kungfu_selection(options))
+    resolved_player_data = None
+    if len(arg) == 2 and arg[1].isdigit():
+        resolved_player_data = await _try_resolve_equipment_rating_player(server, arg[1])
+        if resolved_player_data is None:
+            await _handle_equipment_rating_pzid(event, matcher, state, int(arg[1]), use_public_loop_list)
             return
-        kungfu_id = int(options[0]["kungfu_id"])
+
+    if len(arg) == 2:
+        player_data = resolved_player_data or await _resolve_equipment_rating_player(matcher, server, arg[1])
+        kungfu_id = await _resolve_bare_equipment_rating_kungfu_id(
+            matcher,
+            state,
+            int(player_data.globalRoleId),
+            server,
+            arg[1],
+            use_public_loop_list,
+        )
+        if kungfu_id is None:
+            return
     else:
         kungfu_id = Kungfu(arg[2]).id
         if kungfu_id is None:
             await matcher.finish(PROMPT.KungfuNotExist)
 
     if use_public_loop_list:
-        loops = await _fetch_public_rating_loops(kungfu_id)
+        loop_instance = UniversalCalculator(kungfu_id=kungfu_id)
+        loops = await _fetch_equipment_rating_loop_entries(event, loop_instance)
         if isinstance(loops, str):
             await matcher.finish(loops)
         state["equipment_rating_server"] = server
         state["equipment_rating_role_arg"] = arg[1]
         state["equipment_rating_kungfu_id"] = kungfu_id
         state["equipment_rating_loops"] = loops
-        await matcher.send(_format_public_rating_loop_list(loops))
+        await matcher.send(_format_equipment_rating_loop_list(loops))
         return
 
     await _send_equipment_rating_started(matcher)
@@ -1382,12 +1546,13 @@ async def handle_equipment_rating_loop_order(
         state.pop("rating_jcl_order", None)
 
         if use_public_loop_list:
-            loops = await _fetch_public_rating_loops(kungfu_id)
+            loop_instance = UniversalCalculator(kungfu_id=kungfu_id)
+            loops = await _fetch_equipment_rating_loop_entries(event, loop_instance)
             if isinstance(loops, str):
                 await matcher.finish(loops)
             state["equipment_rating_kungfu_id"] = kungfu_id
             state["equipment_rating_loops"] = loops
-            await matcher.send(_format_public_rating_loop_list(loops))
+            await matcher.send(_format_equipment_rating_loop_list(loops))
             await matcher.reject()
 
         await _send_equipment_rating_started(matcher)
@@ -1406,6 +1571,23 @@ async def handle_equipment_rating_loop_order(
         )
 
     loops = state.get("equipment_rating_loops")
+    pzid = state.get("equipment_rating_pzid")
+    if isinstance(loops, list) and isinstance(pzid, int):
+        index = int(num)
+        if index < 1 or index > len(loops):
+            await matcher.finish("超出可选范围，请重新发起命令！")
+        await _send_equipment_rating_started(matcher)
+        payload, role_name, server_name, rating_equip = await _build_equipment_rating_payload_by_pzid(matcher, pzid)
+        payload = {**payload, "jcl_loop": _equipment_rating_loop_payload(loops[index - 1])}
+        await _finish_equipment_rating_calculation(
+            matcher,
+            payload,
+            role_name,
+            server_name,
+            rating_equip,
+        )
+        return
+
     server = state.get("equipment_rating_server")
     role_arg = state.get("equipment_rating_role_arg")
     kungfu_id = state.get("equipment_rating_kungfu_id")
@@ -1421,7 +1603,7 @@ async def handle_equipment_rating_loop_order(
         await matcher.finish("超出可选范围，请重新发起命令！")
     await _send_equipment_rating_started(matcher)
     payload, player_data, rating_equip = await _build_equipment_rating_payload_by_kungfu(matcher, server, role_arg, kungfu_id)
-    payload = {**payload, "jcl_index": index}
+    payload = {**payload, "jcl_loop": _equipment_rating_loop_payload(loops[index - 1])}
     await _finish_equipment_rating_calculation(
         matcher,
         payload,
