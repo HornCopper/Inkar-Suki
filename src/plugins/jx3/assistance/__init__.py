@@ -44,7 +44,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
         return
     arg = args.extract_plain_text().strip().split(" ")
     if len(arg) not in [2, 3]:
-        await book_team_matcher.finish("请检查命令后，重试哦~\n格式为：预定 <团队关键词/序号> <职业> <ID>\n若当前只有一个团队进行，可以省略关键词或序号！")
+        await book_team_matcher.finish("请检查命令后，重试哦~\n格式为：预定 <团队关键词/序号> <职业> <角色名>\n若当前只有一个团队进行，可以省略关键词或序号！")
     if len(arg) == 3:
         keyword = arg[0]
         job = arg[1]
@@ -71,7 +71,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     arg = args.extract_plain_text().split(" ")
     unique = len(get_group_settings(event.group_id, "opening")) == 1
     if len(arg) not in [1, 2]:
-        await cancel_team_matcher.finish("请检查命令后，重试哦~\n格式为：取消预定 <团队关键词> <ID>")
+        await cancel_team_matcher.finish("请检查命令后，重试哦~\n格式为：取消预定 <团队关键词> <角色名>")
     if len(arg) == 2:
         keyword = arg[0]
         id = arg[1]

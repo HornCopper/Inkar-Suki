@@ -278,7 +278,7 @@ async def _(event: GroupMessageEvent, state: T_State, matcher: Matcher, msg: Mes
         kungfu_name = args[2]
         equip_data = args[3]
         if server is None:
-            await attribute_submit.finish(PROMPT.ServerInvalid  + "\n参考格式：提交属性 <服务器> <ID> <心法>")
+            await attribute_submit.finish(PROMPT.ServerInvalid  + "\n参考格式：提交属性 <服务器> <角色名> <心法>")
         role_info, kungfu_id_pc = await save_plugin_attribute(role, server, kungfu_name, equip_data)
         await attribute_submit.finish(await format_attribute_submit_success(role_info, kungfu_id_pc))
 
@@ -289,7 +289,7 @@ async def _(event: GroupMessageEvent, state: T_State, matcher: Matcher, msg: Mes
         kungfu_name = args[1]
         equip_data = args[2]
         if server is None:
-            await attribute_submit.finish(PROMPT.ServerInvalid + "\n参考格式：提交属性 <服务器> <ID> <心法>")
+            await attribute_submit.finish(PROMPT.ServerInvalid + "\n参考格式：提交属性 <服务器> <角色名> <心法>")
         role_info, kungfu_id_pc = await save_plugin_attribute(role, server, kungfu_name, equip_data)
         await attribute_submit.finish(await format_attribute_submit_success(role_info, kungfu_id_pc))
 
@@ -305,12 +305,12 @@ async def _(event: GroupMessageEvent, state: T_State, matcher: Matcher, msg: Mes
         name = args[1]
         kungfu_name = args[2]
     if server is None:
-        await attribute_submit.finish(PROMPT.ServerInvalid + "\n参考格式：提交属性 <服务器> <ID> <心法>")
+        await attribute_submit.finish(PROMPT.ServerInvalid + "\n参考格式：提交属性 <服务器> <角色名> <心法>")
     player_info = await get_attribute_submit_player(name, server)
     role_info = build_attribute_submit_role(name, server, player_info)
     kungfu_id = Kungfu(kungfu_name).id
     if kungfu_id is None:
-        await attribute_submit.finish(PROMPT.KungfuNotExist + "\n参考格式：提交属性 <服务器> <ID> <心法>")
+        await attribute_submit.finish(PROMPT.KungfuNotExist + "\n参考格式：提交属性 <服务器> <角色名> <心法>")
     kungfu_id_pc = cast(int, Kungfu.with_internel_id(kungfu_id, True).id)
     state["kungfu_id"] = kungfu_id_pc
     state["global_role_id"] = int(role_info.globalRoleId)

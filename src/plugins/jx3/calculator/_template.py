@@ -20,6 +20,71 @@ template_calculator_v2 = """
 </div>
 """
 
+
+therapy_panel_template = """
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+@font-face { font-family: PanelFont; src: url("{{ font }}"); }
+body { margin: 0; background: #f5f6fa; font-family: PanelFont, "Microsoft YaHei", sans-serif; color: #333; }
+.therapy-panel { width: max-content; min-width: 1366px; background: #fff; display: flex; flex-direction: column; border: 1px solid #ddd; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,.1); overflow: hidden; }
+.main-content { display: flex; width: max-content; min-width: 100%; }
+.left-panel { width: 410px; flex: 0 0 410px; padding: 24px; box-sizing: border-box; background: #fafafa; border-right: 1px solid #ddd; display: flex; flex-direction: column; gap: 20px; }
+.right-panel { flex: 0 0 auto; padding: 24px; box-sizing: border-box; background: #fff; }
+.section-title { font-size: 20px; font-weight: bold; color: {{ theme_color }}; margin-bottom: 6px; border-left: 4px solid {{ theme_color }}; padding-left: 8px; }
+.card { background: #fff; border: 1px solid #eee; border-radius: 8px; padding: 12px; display: flex; flex-direction: column; gap: 8px; }
+.item { display: flex; justify-content: space-between; gap: 16px; font-size: 18px; border-bottom: 1px solid #f0f0f0; padding-bottom: 4px; }
+.item:last-child { border-bottom: none; }
+.item span:last-child { text-align: right; color: #2f3a4e; }
+.kungfu { display: inline-block; width: 48px; height: 48px; background: url("{{ kungfu_icon }}") no-repeat center/contain; margin-right: 8px; vertical-align: -10px; }
+.skills-grid { display: grid; grid-template-columns: repeat(5, {{ skill_card_width }}px); grid-auto-rows: 1fr; gap: 12px; }
+.skill-card { width: 100%; min-width: 0; min-height: 138px; height: 100%; padding: 12px; border: 1px solid #eee; border-radius: 8px; background: #fff; box-sizing: border-box; display: flex; flex-direction: column; gap: 8px; }
+.skill-head { display: flex; align-items: flex-start; gap: 8px; min-width: 0; }
+.skill-icon { width: 38px; height: 38px; border-radius: 6px; background: #eef2f6; overflow: hidden; flex: 0 0 auto; }
+.skill-icon img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.skill-name { min-width: 0; color: #2b3548; font-size: 16px; line-height: 1.28; font-weight: 800; white-space: nowrap; }
+.skill-stats { display: grid; gap: 4px; font-size: 14px; color: #667085; }
+.skill-stats div { display: flex; justify-content: space-between; gap: 8px; }
+.skill-stats b { color: #2f3a4e; font-weight: 800; }
+.bar { height: 8px; margin-top: auto; background: #edf1f5; border-radius: 99px; overflow: hidden; }
+.bar div { height: 100%; border-radius: 99px; }
+.empty { grid-column: 1 / -1; padding: 36px; text-align: center; color: #667085; font-size: 20px; }
+footer { background: #f0f0f0; text-align: center; padding: 15px; font-size: 1.2em; color: #777; }
+</style>
+</head>
+<body>
+<div class="therapy-panel">
+  <div class="main-content">
+    <div class="left-panel">
+      <div>
+        <div class="section-title">&#22522;&#30784;&#20449;&#24687;</div>
+        <div class="card">
+          <div class="item"><span>&#35282;&#33394;&#21517;</span><span>{{ role_name }}</span></div>
+          <div class="item"><span>&#26381;&#21153;&#22120;</span><span>{{ server_name }}</span></div>
+          <div class="item"><span>&#24515;&#27861;</span><span>{{ kungfu_name }}</span></div>
+          <div class="item"><span>&#35013;&#20998;</span><span>{{ score }}</span></div>
+        </div>
+      </div>
+      <div>
+        <div class="section-title">&#23646;&#24615;</div>
+        <div class="card">
+          {{ attr_html }}
+        </div>
+      </div>
+    </div>
+    <div class="right-panel">
+      <div class="section-title">&#25216;&#33021;&#27835;&#30103;</div>
+      <div class="skills-grid">{{ skill_rows }}</div>
+    </div>
+  </div>
+  <footer>Inkar Suki: {{ saohua }}</footer>
+</div>
+</body>
+</html>
+"""
+
 template_attr = """
 <div class="attribute">
     <strong>{{ name }}</strong><br><span>{{ value }}<br><span><strong>收益：</strong>{{ income }}</span></span>

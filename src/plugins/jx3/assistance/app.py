@@ -81,14 +81,14 @@ class Assistance:
             return
         opening.append(new)
         set_group_settings(group_id, "opening", opening)
-        return "开团成功，团员可通过以下命令进行报名：\n报名 <团队关键词/序号> <职业> <ID>\n可使用“团队列表”查看该团队的序号！"
+        return "开团成功，团员可通过以下命令进行报名：\n报名 <团队关键词/序号> <职业> <角色名>\n可使用“团队列表”查看该团队的序号！"
 
     def apply_for_place(self, group_id: str, keyword: str, role_name: str, role_type: str, user_id: str) -> str:
         if role_name == "#":
             return "请不要以单个井号创建预留位，可在井号后追加任意文字！"
         status = self.check_apply(group_id, keyword, role_name)
         if status is True:
-            return "唔……您似乎已经申请过了，请不要重复申请哦~\n如需修改请先发送“取消申请 <团队关键词> <ID>”，随后重新申请！"
+            return "唔……您似乎已经申请过了，请不要重复申请哦~\n如需修改请先发送“取消申请 <团队关键词> <角色名>”，随后重新申请！"
         if status is False:
             return "未找到对应团队！请检查后重试！"
         applyable = False
@@ -97,7 +97,7 @@ class Assistance:
         else:
             role_actual_type: str | None = Kungfu(role_type).name
             if role_actual_type is None:
-                return "报名失败！请参考格式：\n报名 关键词/序号 职业 ID\n目前您可能是将最后两个参数写反导致无法识别职业，可参考命令格式后重试！"
+                return "报名失败！请参考格式：\n报名 关键词/序号 职业 角色名\n目前可能是将最后两个参数写反导致无法识别职业，可参考命令格式后重试！"
         if role_name[0] == "#" and user_id != status["creator"]:
             return "只有团长才可创建预留职业位，请联系团长！"
         if role_actual_type == "老板":

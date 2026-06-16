@@ -29,11 +29,11 @@ class PROMPT:
 
     # jx3/couple
     AffectionFormatInvalid = (
-        "绑定失败！请参考下面的命令格式：\n绑定情缘 自己ID 对方ID 对方QQ 时间(可不填)"
+        "绑定失败！请参考下面的命令格式：\n绑定情缘 自己角色名 对方角色名 对方QQ 时间(可不填)"
     )
     AffectionUINInvalid = "绑定失败！对方QQ需要为纯数字！"
     AffectionExist = "唔……您已经绑定情缘了，无法再绑定新的情缘！"
-    AffectionRoleNotExist = "绑定失败，对方或者自己的ID无法对应到角色！\n请检查对面或自身角色是否在本群聊绑定的服务器中！"
+    AffectionRoleNotExist = "绑定失败，对方或者自己的角色名无法对应到角色！\n请检查对面或自身角色是否在本群聊绑定的服务器中！"
     AffectionBindComplete = "成功绑定情缘！\n可通过“查看情缘证书”生成一张情缘证书图！"
     AffectionUnbindWithNo = "咱就是说，还没绑定情缘，在解除什么呢？"
     AffectionGenerateWithNo = "咱就是说，还没绑定情缘，在生成什么呢？"

@@ -15,7 +15,7 @@ from src.utils.analyze import Locations, check_number
 from src.utils.network import Request
 from src.utils.generate import generate
 from src.utils.file import read, write
-from src.utils.database.player import search_player, get_uid_data
+from src.utils.database.player import search_player
 from src.utils.database.attributes import JX3PlayerAttribute
 from src.utils.permission import check_permission, denied
 
@@ -41,6 +41,7 @@ from .traverse import (
 )
 from .rdps import BLACalculator, TRDCalculator
 from .jcl_analyze import CQCAnalyze, FALAnalyze, YXCAnalyze, RODAnalyze, HPSAnalyze, CALAnalyze, ASNAnalyze, THRAnalyze, THFAnalyze, LGZAnalyze, LNXAnalyze
+from .therapy_panel import therapy_panel
 from . import equipment_rating as equipment_rating_module
 import re
 import json
@@ -129,17 +130,17 @@ CALCULATOR_HELP_TEXT = (
     "音卡无法通过世界发言自动更新装备，需手动提交属性。\n"
     "操作路径：茗伊插件 → 角色统计 → 装备统计 → 右上角导出装备码。\n\n"
     "提交装备\n"
-    "格式：<提交属性 区服 角色ID 心法名称>\n"
+    "格式：<提交属性 区服 角色名 心法名称>\n"
     "然后粘贴导出的装备码即可完成提交。\n\n"
     "计算器唤醒指令\n"
     "T心法及双心法（如气纯、剑纯等）需要添加对应前缀，所有后缀均不写心法名称。\n"
     "指令格式：\n"
-    "<T计算器 区服 角色ID>\n"
-    "<QC/JY/TL计算器 区服 角色ID>\n\n"
+    "<T计算器 区服 角色名>\n"
+    "<QC/JY/TL计算器 区服 角色名>\n\n"
     "其余心法无需加前缀和心法名称，直接使用：\n"
-    "<计算器 区服 角色ID>\n\n"
+    "<计算器 区服 角色名>\n\n"
     "装备评级\n"
-    "格式：<装备评级 区服 角色ID [心法名称] [评级列表]>\n"
+    "格式：<装备评级 区服 角色名 [心法名称] [评级列表]>\n"
     "或：<装备评级 魔盒配装ID [评级列表]>\n\n"
     "计算器的 JCL 由玩家提供，不能代表职业整体水平，且使用他人循环所产生的不认可，可以自行提供 JCL 进行计算，如何打造自身专属循环详情请看文档。\n"
     "计算器详细说明书请看：https://inkar-suki.codethink.cn/Inkar-Suki-Docs/#/calculator"
@@ -2155,6 +2156,29 @@ async def _(matcher: Matcher, state: T_State, kline_game_action: Message = Arg()
     state["kline_game"] = game
     await _send_kline_game_state(matcher, game, result or "")
     await matcher.reject("继续操作，或发送「结束」退出。")
+
+
+therapy_panel_matcher = on_command(
+    "jx3_calculator_therapy_panel",
+    aliases={"治疗面板"},
+    priority=5,
+    force_whitespace=True,
+)
+
+
+@therapy_panel_matcher.handle()
+async def _(event: GroupMessageEvent, args: Message = CommandArg()):
+    usage = "参考格式：治疗面板 <服务器> <角色名>\n示例：治疗面板 梦江南 咩咩"
+    query = args.extract_plain_text().strip()
+    if query == "" or query.lower() in {"help"} or query in {"帮助", "参数", "示例"}:
+        await therapy_panel_matcher.finish(usage)
+    parts = [part for part in query.split() if part]
+    if len(parts) != 2:
+        await therapy_panel_matcher.finish(PROMPT.ArgumentCountInvalid + "\n" + usage)
+    server = Server(parts[0], event.group_id).server
+    if server is None:
+        await therapy_panel_matcher.finish(PROMPT.ServerNotExist)
+    await therapy_panel_matcher.finish(await therapy_panel(server, parts[1]))
 
 
 calc_matcher = on_command(
