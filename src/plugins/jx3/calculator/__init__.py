@@ -546,7 +546,7 @@ async def _resolve_timeline_instance(
     state: T_State,
     arg: list[str],
     cmd: str,
-) -> UniversalCalculator | JX3BOXCalculator:
+) -> UniversalCalculator | JX3BOXCalculator | None:
     if len(arg) not in [1, 2]:
         await matcher.finish(TIMELINE_ARGUMENT_PROMPT)
     if len(arg) == 1:
@@ -558,6 +558,7 @@ async def _resolve_timeline_instance(
 
     state["timeline_pzid"] = 0
     tag = _calculator_tag_from_command(cmd)
+    is_specific_calculator = _calculator_command_has_specific_prefix(cmd)
     if check_number(name):
         instance = await JX3BOXCalculator.with_pzid(int(name))
         if isinstance(instance, str):
@@ -568,6 +569,20 @@ async def _resolve_timeline_instance(
         global_role_id = name[1:]
         if not check_number(global_role_id):
             await matcher.finish("全局玩家ID输入有误，请检查后重试！")
+        if not is_specific_calculator:
+            resolved_tag = await _resolve_bare_calculator_tag_for_global_role_id(
+                int(global_role_id),
+                state,
+                selection_key="timeline_kungfu_options",
+            )
+            if resolved_tag == "":
+                state["timeline_kungfu_context"] = {
+                    "mode": "global",
+                    "global_role_id": int(global_role_id),
+                }
+                await matcher.send(_format_special_pve_kungfu_selection(state["timeline_kungfu_options"]))
+                return None
+            tag = resolved_tag
         instance = await UniversalCalculator.with_global_role_id(int(global_role_id), tag)
         if isinstance(instance, str):
             await matcher.finish(instance)
@@ -576,10 +591,52 @@ async def _resolve_timeline_instance(
     server = Server(server, event.group_id).server
     if server is None:
         await matcher.finish(PROMPT.ServerNotExist)
+    if not is_specific_calculator:
+        player_data = await search_player(role_name=name, server_name=server)
+        if player_data.roleId == "":
+            await matcher.finish(PROMPT.PlayerNotExist)
+        await JX3PlayerAttribute.from_tuilan(player_data.roleId, player_data.serverName, player_data.globalRoleId)
+        resolved_tag = await _resolve_bare_calculator_tag_for_global_role_id(
+            int(player_data.globalRoleId),
+            state,
+            selection_key="timeline_kungfu_options",
+        )
+        if resolved_tag == "":
+            state["timeline_kungfu_context"] = {
+                "mode": "name",
+                "server": server,
+                "name": name,
+            }
+            await matcher.send(_format_special_pve_kungfu_selection(state["timeline_kungfu_options"]))
+            return None
+        tag = resolved_tag
     instance = await UniversalCalculator.with_name(name, server, tag)
     if isinstance(instance, str):
         await matcher.finish(instance)
     return instance
+
+
+async def _prepare_timeline_loop_selection(
+    event: GroupMessageEvent,
+    matcher: Matcher,
+    state: T_State,
+    instance: UniversalCalculator | JX3BOXCalculator,
+    *,
+    compare: bool,
+    kline: bool,
+    bin_size: float,
+) -> None:
+    is_custom = _apply_calculator_preferences(event, instance)
+    loop_entries = await _calculator_loop_entries(instance, event.user_id, is_custom)
+    if isinstance(loop_entries, str):
+        await matcher.finish(loop_entries)
+    state["timeline_loops"] = loop_entries
+    state["timeline_instance"] = instance
+    state["timeline_is_custom"] = is_custom
+    state["timeline_compare"] = compare
+    state["timeline_kline"] = kline
+    state["timeline_bin_size"] = bin_size
+    await matcher.send(_format_timeline_loop_selection(loop_entries, compare=compare, kline=kline))
 
 
 def _apply_calculator_preferences(event: GroupMessageEvent, instance: UniversalCalculator | JX3BOXCalculator) -> bool:
@@ -681,18 +738,21 @@ async def _prepare_timeline_selection(
         await matcher.finish(bin_size)
     if compare and len(arg) not in [1, 2]:
         await matcher.finish(TIMELINE_COMPARE_HELP_TEXT)
-    instance = await _resolve_timeline_instance(event, matcher, state, arg, cmd)
-    is_custom = _apply_calculator_preferences(event, instance)
-    loop_entries = await _calculator_loop_entries(instance, event.user_id, is_custom)
-    if isinstance(loop_entries, str):
-        await matcher.finish(loop_entries)
-    state["timeline_loops"] = loop_entries
-    state["timeline_instance"] = instance
-    state["timeline_is_custom"] = is_custom
     state["timeline_compare"] = compare
     state["timeline_kline"] = kline
     state["timeline_bin_size"] = bin_size
-    await matcher.send(_format_timeline_loop_selection(loop_entries, compare=compare, kline=kline))
+    instance = await _resolve_timeline_instance(event, matcher, state, arg, cmd)
+    if instance is None:
+        return
+    await _prepare_timeline_loop_selection(
+        event,
+        matcher,
+        state,
+        instance,
+        compare=compare,
+        kline=kline,
+        bin_size=bin_size,
+    )
 
 
 def _parse_timeline_selection(text: str, loop_count: int, *, compare: bool) -> list[int] | str:
@@ -1795,6 +1855,36 @@ async def _finish_damage_timeline(
     state: T_State,
     selection: Message,
 ) -> None:
+    if "timeline_kungfu_options" in state:
+        num = selection.extract_plain_text()
+        if not check_number(num):
+            await matcher.finish("心法选择有误，请重新发起命令！")
+        options: list[dict[str, Any]] = state["timeline_kungfu_options"]
+        index = int(num)
+        if index < 1 or index > len(options):
+            await matcher.finish("超出可选范围，请重新发起命令！")
+        selected_tag = str(options[index - 1]["tag"])
+        context: dict[str, Any] = state["timeline_kungfu_context"]
+        if context["mode"] == "global":
+            instance = await UniversalCalculator.with_global_role_id(int(context["global_role_id"]), selected_tag)
+        else:
+            instance = await UniversalCalculator.with_name(str(context["name"]), str(context["server"]), selected_tag)
+        if isinstance(instance, str):
+            await matcher.finish(instance)
+        state.pop("timeline_kungfu_options", None)
+        state.pop("timeline_kungfu_context", None)
+        state.pop("timeline_loop_order", None)
+        await _prepare_timeline_loop_selection(
+            event,
+            matcher,
+            state,
+            instance,
+            compare=bool(state.get("timeline_compare")),
+            kline=bool(state.get("timeline_kline")),
+            bin_size=float(state.get("timeline_bin_size", DEFAULT_DAMAGE_TIMELINE_BIN_SIZE)),
+        )
+        await matcher.reject()
+
     if "timeline_loops" not in state or "timeline_instance" not in state:
         await matcher.finish("循环曲线/循环对比/循环K线状态已失效，请重新发起命令！")
     loops: list[dict[str, Any]] = state["timeline_loops"]
