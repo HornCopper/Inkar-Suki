@@ -40,11 +40,12 @@ body { margin: 0; background: #f5f6fa; font-family: PanelFont, "Microsoft YaHei"
 .item span:last-child { text-align: right; color: #2f3a4e; }
 .kungfu { display: inline-block; width: 48px; height: 48px; background: url("{{ kungfu_icon }}") no-repeat center/contain; margin-right: 8px; vertical-align: -10px; }
 .skills-grid { display: grid; grid-template-columns: repeat(5, {{ skill_card_width }}px); grid-auto-rows: 1fr; gap: 12px; }
-.skill-card { width: 100%; min-width: 0; min-height: 138px; height: 100%; padding: 12px; border: 1px solid #eee; border-radius: 8px; background: #fff; box-sizing: border-box; display: flex; flex-direction: column; gap: 8px; }
+.skill-card { width: 100%; min-width: 0; min-height: 158px; height: 100%; padding: 12px; border: 1px solid #eee; border-radius: 8px; background: #fff; box-sizing: border-box; display: flex; flex-direction: column; gap: 8px; }
 .skill-head { display: flex; align-items: flex-start; gap: 8px; min-width: 0; }
 .skill-icon { width: 38px; height: 38px; border-radius: 6px; background: #eef2f6; overflow: hidden; flex: 0 0 auto; }
 .skill-icon img { display: block; width: 100%; height: 100%; object-fit: cover; }
 .skill-name { min-width: 0; color: #2b3548; font-size: 16px; line-height: 1.28; font-weight: 800; white-space: nowrap; }
+.skill-coefficient { text-align: center; color: #667085; font-size: 14px; line-height: 1.2; font-weight: 700; }
 .skill-stats { display: grid; gap: 4px; font-size: 14px; color: #667085; }
 .skill-stats div { display: flex; justify-content: space-between; gap: 8px; }
 .skill-stats b { color: #2f3a4e; font-weight: 800; }

@@ -35,6 +35,13 @@ async def therapy_panel(server: str, role_name: str) -> Any:
             return f"{number:,.{decimals}f}"
         return f"{int(round(number)):,}"
 
+    def format_coefficient(value: Any) -> str:
+        try:
+            number = float(value)
+        except (TypeError, ValueError):
+            return html.escape(str(value)) if value not in (None, "") else "-"
+        return f"{number:.4f}".rstrip("0").rstrip(".")
+
     def skill_rows(skills: list[dict[str, Any]], theme_color: str) -> str:
         rows: list[str] = []
         max_expected = max(
@@ -50,6 +57,7 @@ async def therapy_panel(server: str, role_name: str) -> Any:
             except (TypeError, ValueError, ZeroDivisionError):
                 width = 0
             skill_name = format_skill_name(skill.get("name"))
+            coefficient = format_coefficient(skill.get("coefficient"))
             rows.append(
                 f"""
                 <div class="skill-card">
@@ -57,6 +65,7 @@ async def therapy_panel(server: str, role_name: str) -> Any:
                         <div class="skill-icon">{icon_html}</div>
                         <div class="skill-name">{skill_name}</div>
                     </div>
+                    <div class="skill-coefficient">系数 {coefficient}</div>
                     <div class="skill-stats">
                         <div><span>普通</span><b>{format_number(skill.get("heal"))}</b></div>
                         <div><span>期望</span><b>{format_number(skill.get("expected_heal"))}</b></div>
@@ -134,7 +143,7 @@ async def therapy_panel(server: str, role_name: str) -> Any:
         role_name=html.escape(str(player_info.roleName or player_info.roleId or "-")),
         server_name=html.escape(str(Server(player_info.serverName).server or player_info.serverName or "-")),
         kungfu_name=html.escape(str(kungfu.name or kungfu_id)),
-        score=format_number(attributes.get("score")),
+        score=format_number(data.get("score")),
         attr_html=attr_html,
         skill_rows=skill_rows(skills, theme_color),
         skill_card_width=skill_card_width(skills),
