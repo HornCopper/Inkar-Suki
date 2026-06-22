@@ -17,6 +17,27 @@ from src.templates import get_saohua
 from ._template import therapy_panel_template
 
 
+THERAPY_KUNGFU_IDS = {10080, 10028, 10176, 10448, 10626}
+
+
+async def _resolve_therapy_equip(global_role_id: int) -> JX3PlayerAttribute | None:
+    equip = await JX3PlayerAttribute.from_database(global_role_id, "HPSPVE", False)
+    if equip is not None:
+        return equip
+
+    all_equips = await JX3PlayerAttribute.from_database(global_role_id, "", True)
+    if not all_equips:
+        return None
+    therapy_equips = [
+        item
+        for item in all_equips
+        if item.tag == "PVE" and int(item.kungfu_id) in THERAPY_KUNGFU_IDS
+    ]
+    if not therapy_equips:
+        return None
+    return max(therapy_equips, key=lambda item: item.timestamp)
+
+
 async def therapy_panel(server: str, role_name: str) -> Any:
     def format_skill_name(name: Any) -> str:
         skill_name = html.escape(str(name or "-")).replace("[", "<br>[", 1)
@@ -84,16 +105,15 @@ async def therapy_panel(server: str, role_name: str) -> Any:
                 max_chars = max(max_chars, len(line))
         return max(176, min(320, max_chars * 16 + 74))
 
-    therapy_kungfu_ids = {10080, 10028, 10176, 10448, 10626}
     player_info = await search_player(role_name=role_name, server_name=server)
     if player_info.roleId == "" or player_info.globalRoleId == "":
         return PROMPT.PlayerNotExist
 
     await JX3PlayerAttribute.from_tuilan(player_info.roleId, player_info.serverName, player_info.globalRoleId)
-    equip = await JX3PlayerAttribute.from_database(int(player_info.globalRoleId), "", False)
+    equip = await _resolve_therapy_equip(int(player_info.globalRoleId))
     if equip is None:
         return PROMPT.EquipNotFound
-    if equip.kungfu_id not in therapy_kungfu_ids:
+    if equip.kungfu_id not in THERAPY_KUNGFU_IDS:
         kungfu_name = Kungfu.with_internel_id(equip.kungfu_id, convert_to_pc=True).name or str(equip.kungfu_id)
         return f"治疗面板仅支持治疗心法，当前识别为：{kungfu_name}"
 

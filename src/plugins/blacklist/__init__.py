@@ -10,7 +10,7 @@ from src.utils.time import Time
 from src.templates import HTMLSourceCode
 
 from .process import Blacklist
-from ._template import table_head, template_body
+from ._template import additional_css, table_head, template_body
 
 BlockMatcher = on_command(
     "block", 
@@ -77,7 +77,8 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
         HTMLSourceCode(
             application_name = f"避雷名单 · {event.group_id}",
             table_head = table_head,
-            table_body = "\n".join(table)
+            table_body = "\n".join(table),
+            additional_css = additional_css
         )
     )
     image = await generate(html, ".container", segment=True)
