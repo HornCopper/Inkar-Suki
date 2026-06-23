@@ -14,11 +14,11 @@ table_head = """
 
 additional_css = """
 .container {
-    min-width: 1120px;
+    min-width: 1280px;
 }
 
 .item-table {
-    width: 1120px;
+    width: 1280px;
     table-layout: fixed;
 }
 
@@ -28,16 +28,21 @@ additional_css = """
 }
 
 .blacklist-source-column {
-    width: 180px;
+    width: 190px;
 }
 
 .blacklist-name-column {
-    width: 140px;
+    width: 250px;
+    max-width: 250px;
+    white-space: normal !important;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+    line-height: 1.4;
 }
 
 .blacklist-reason-column {
-    width: 430px;
-    max-width: 430px;
+    width: 450px;
+    max-width: 450px;
     white-space: normal !important;
     overflow-wrap: anywhere;
     word-break: break-word;
@@ -45,10 +50,11 @@ additional_css = """
 }
 
 .blacklist-time-column {
-    width: 370px;
+    width: 390px;
     white-space: nowrap !important;
 }
 
+td.blacklist-name-column,
 td.blacklist-reason-column {
     text-align: left;
 }
