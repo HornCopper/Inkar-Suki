@@ -65,7 +65,7 @@ RANK_THEMES = {
 ADAPTIVE_FORMATION_RANK_GRADES = {1: "ACE", 2: "S+", 3: "S"}
 EQUIPMENT_RATING_IMAGE_SEND_FAILED = (
     "装备评级图片已生成，但 QQ/NapCat 拒绝了图片上传。\n"
-    "这通常是协议端富媒体上传失败，不是装备数据读取失败。请稍后重试，或联系维护者查看 NapCat 日志。"
+    "建议重启 NapCat。"
 )
 EQUIPMENT_RATING_STARTED = "装备评级中，请稍等片刻！"
 RATING_LOOP_LIST_KEYWORDS = {"评级列表", "循环列表", "JCL列表", "jcl列表"}
