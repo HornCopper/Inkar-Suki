@@ -390,6 +390,14 @@
             text-align: center;
         }
 
+        .tank-conversion-title {
+            margin-bottom: 6px;
+            color: #3d4652;
+            font-size: 15px;
+            line-height: 1.25;
+            font-weight: 900;
+        }
+
         .tank-conversion-count {
             color: #111923;
             font-size: 42px;
@@ -673,13 +681,16 @@
                     <div class="side-heading">增益层数</div>
                     <div class="tank-conversion">
                         <div class="tank-conversion-summary">
+                            <div class="tank-conversion-title">{{ tank_vitality_conversion.title }}</div>
                             <div class="tank-conversion-count">{{ tank_vitality_conversion.stacks }}<span>层</span></div>
-                            <div class="tank-conversion-formula">满增益基础体质 / {{ tank_vitality_conversion.step }} 向下取整</div>
+                            <div class="tank-conversion-formula">{{ tank_vitality_conversion.formula_label }} / {{ tank_vitality_conversion.step }} 向下取整</div>
                         </div>
                         <div class="tank-conversion-rows">
-                            <div class="side-row"><span>满增益基础体质</span><strong>{{ tank_vitality_conversion.vitality }}</strong></div>
-                            <div class="side-row"><span>生效基础体质</span><strong>{{ tank_vitality_conversion.effective_vitality }}</strong></div>
-                            <div class="side-row"><span>距下层</span><strong>{{ tank_vitality_conversion.next_delta }}</strong></div>
+                            {% if tank_vitality_conversion.full_stacks %}
+                            <div class="side-row"><span>满增益层数</span><strong>{{ tank_vitality_conversion.full_stacks }}</strong></div>
+                            {% endif %}
+                            <div class="side-row"><span>{{ tank_vitality_conversion.formula_label }}</span><strong>{{ tank_vitality_conversion.vitality }}</strong></div>
+                            <div class="side-row"><span>裸增益距下层</span><strong>{{ tank_vitality_conversion.next_delta }}</strong></div>
                         </div>
                     </div>
                 </section>

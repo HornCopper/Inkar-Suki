@@ -1023,10 +1023,12 @@ def _prepare_distribution_view(kungfu_id: Any) -> dict[str, str] | None:
     }
 
 
-def _prepare_tank_vitality_conversion(summary: dict[str, Any], kungfu: Kungfu) -> dict[str, str] | None:
-    if kungfu.abbr != "T":
-        return None
-    attributes = summary.get("attributes") or {}
+def _tank_vitality_conversion_item(
+    attributes: dict[str, Any],
+    *,
+    title: str,
+    formula_label: str,
+) -> dict[str, str] | None:
     base_vitality = int(_to_float(attributes.get("BaseVitality")))
     if base_vitality <= 0:
         return None
@@ -1038,6 +1040,8 @@ def _prepare_tank_vitality_conversion(summary: dict[str, Any], kungfu: Kungfu) -
         else (stacks + 1) * TANK_VITALITY_CONVERSION_STEP - base_vitality
     )
     return {
+        "title": title,
+        "formula_label": formula_label,
         "stacks": str(stacks),
         "vitality": _format_number(base_vitality),
         "effective_vitality": _format_number(effective_vitality),
@@ -1045,6 +1049,27 @@ def _prepare_tank_vitality_conversion(summary: dict[str, Any], kungfu: Kungfu) -
         "step": _format_number(TANK_VITALITY_CONVERSION_STEP),
         "max_stacks": str(TANK_VITALITY_CONVERSION_MAX_STACKS),
     }
+
+
+def _prepare_tank_vitality_conversion(summary: dict[str, Any], kungfu: Kungfu) -> dict[str, Any] | None:
+    if kungfu.abbr != "T":
+        return None
+    unbuffed_item = _tank_vitality_conversion_item(
+        summary.get("unbuffed_attributes") or {},
+        title="裸增益",
+        formula_label="无增益基础体质",
+    )
+    full_item = _tank_vitality_conversion_item(
+        summary.get("attributes") or {},
+        title="满增益",
+        formula_label="满增益基础体质",
+    )
+    item = unbuffed_item or full_item
+    if item is None:
+        return None
+    if unbuffed_item is not None and full_item is not None:
+        item["full_stacks"] = f"{full_item['stacks']}层"
+    return item
 
 
 def _prepare_talents(talents: Any) -> list[dict[str, str]]:
