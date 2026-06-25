@@ -309,22 +309,78 @@
         .adaptive-formation-card {
             min-height: 66px;
             display: grid;
-            grid-template-columns: auto 42px minmax(0, 240px) auto;
+            grid-template-columns: auto minmax(0, 760px);
             align-items: center;
             justify-content: center;
-            gap: 12px;
+            gap: 14px;
             padding: 12px 16px;
             overflow: hidden;
-            border: 1px solid #c690ff;
+            border: 1px solid #ff304f;
             border-radius: 8px;
             background: #ffffff;
         }
 
         .adaptive-formation-label {
-            color: #8038bf;
+            color: #ff304f;
             font-size: 13px;
             line-height: 1.2;
             font-weight: 900;
+        }
+
+        .adaptive-formation-list {
+            min-width: 0;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 10px;
+        }
+
+        .adaptive-formation-item {
+            min-width: 0;
+            display: grid;
+            grid-template-columns: auto 42px minmax(0, 1fr) auto;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .adaptive-formation-item + .adaptive-formation-item {
+            padding-left: 10px;
+            border-left: 1px solid #eadcf5;
+        }
+
+        .adaptive-rank {
+            color: #8038bf;
+            font-size: 11px;
+            line-height: 1.15;
+            font-weight: 900;
+            white-space: nowrap;
+        }
+
+        .adaptive-rank-icon {
+            width: 42px;
+            height: 42px;
+            display: block;
+            object-fit: contain;
+        }
+
+        .adaptive-formation-rank-1 .adaptive-rank,
+        .adaptive-formation-rank-1 .adaptive-name,
+        .adaptive-formation-rank-1 .adaptive-note,
+        .adaptive-formation-rank-1 .adaptive-delta {
+            color: #ff304f;
+        }
+
+        .adaptive-formation-rank-2 .adaptive-rank,
+        .adaptive-formation-rank-2 .adaptive-name,
+        .adaptive-formation-rank-2 .adaptive-note,
+        .adaptive-formation-rank-2 .adaptive-delta {
+            color: #ff7a00;
+        }
+
+        .adaptive-formation-rank-3 .adaptive-rank,
+        .adaptive-formation-rank-3 .adaptive-name,
+        .adaptive-formation-rank-3 .adaptive-note,
+        .adaptive-formation-rank-3 .adaptive-delta {
+            color: #a85cff;
         }
 
         .adaptive-icon {
@@ -748,7 +804,7 @@
         }
 
         .bottom-line {
-            margin-top: 30px;
+            margin: 30px 26px 0;
             border-top: 1px solid #e6e6e6;
         }
 
@@ -817,13 +873,69 @@
             word-break: keep-all;
         }
 
+        .rating-footer {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr);
+            gap: 16px;
+            margin: 0 26px 0;
+            padding-bottom: 2px;
+        }
+
+        .rating-footer-with-qrcode {
+            grid-template-columns: minmax(0, 1fr) 430px;
+        }
+
+        .footer-note,
+        .footer-qrcode-card {
+            min-height: 114px;
+            border: 1px solid #dce5ee;
+            border-radius: 8px;
+            background: #ffffff;
+        }
+
         .footer-note {
-            padding: 13px 20px;
-            background: #eeeeee;
-            text-align: center;
+            padding: 22px 24px;
+            font-size: 13px;
+            line-height: 1.75;
+            color: #7b8794;
+        }
+
+        .footer-qrcode-card {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) 156px;
+            gap: 12px;
+            align-items: center;
+            padding: 14px 16px 14px 22px;
+        }
+
+        .footer-qrcode-title {
+            color: #2f5d9a;
+            font-size: 22px;
+            line-height: 1.2;
+            font-weight: 900;
+        }
+
+        .footer-qrcode-subtitle {
+            margin-top: 8px;
+            color: #7b8794;
             font-size: 13px;
             line-height: 1.4;
-            color: #8a8f98;
+            font-weight: 900;
+        }
+
+        .footer-qrcode-group {
+            margin-top: 8px;
+            color: #8a96a2;
+            font-size: 13px;
+            line-height: 1.3;
+            font-weight: 900;
+        }
+
+        .footer-qrcode-card img {
+            width: 156px;
+            height: 96px;
+            display: block;
+            object-fit: contain;
         }
     </style>
 </head>
@@ -1023,20 +1135,53 @@
             {% if adaptive_consumables %}
             <div class="combat-block">
                 {% if adaptive_consumables.status == "ok" %}
-                {% if adaptive_consumables.formation %}
+                {% if adaptive_consumables.formations %}
                 <div class="adaptive-formation-card">
                     <div class="adaptive-formation-label">阵眼推荐</div>
-                    <img class="adaptive-icon" src="{{ adaptive_consumables.formation.icon }}" alt="">
-                    <div class="adaptive-entry-body">
-                        <div class="adaptive-kind">{{ adaptive_consumables.formation.label }}</div>
-                        <div class="adaptive-name">{{ adaptive_consumables.formation.name }}</div>
-                        {% if adaptive_consumables.formation.note %}
-                        <div class="adaptive-note">{{ adaptive_consumables.formation.note }}</div>
-                        {% endif %}
+                    <div class="adaptive-formation-list">
+                        {% for formation in adaptive_consumables.formations %}
+                        <div class="adaptive-formation-item adaptive-formation-rank-{{ formation.rank or loop.index }}">
+                            {% if formation.rank_icon %}
+                            <img class="adaptive-rank-icon" src="{{ formation.rank_icon }}" alt="{{ formation.label }}">
+                            {% else %}
+                            <div class="adaptive-rank">{{ formation.label }}</div>
+                            {% endif %}
+                            <img class="adaptive-icon" src="{{ formation.icon }}" alt="">
+                            <div class="adaptive-entry-body">
+                                <div class="adaptive-name">{{ formation.name }}</div>
+                                {% if formation.note %}
+                                <div class="adaptive-note">{{ formation.note }}</div>
+                                {% endif %}
+                            </div>
+                            {% if formation.delta_text %}
+                            <div class="adaptive-delta">{{ formation.delta_text }}</div>
+                            {% endif %}
+                        </div>
+                        {% endfor %}
                     </div>
-                    {% if adaptive_consumables.formation.delta_text %}
-                    <div class="adaptive-delta">{{ adaptive_consumables.formation.delta_text }}</div>
-                    {% endif %}
+                </div>
+                {% elif adaptive_consumables.formation %}
+                <div class="adaptive-formation-card">
+                    <div class="adaptive-formation-label">阵眼推荐</div>
+                    <div class="adaptive-formation-list">
+                        <div class="adaptive-formation-item adaptive-formation-rank-{{ adaptive_consumables.formation.rank or 1 }}">
+                            {% if adaptive_consumables.formation.rank_icon %}
+                            <img class="adaptive-rank-icon" src="{{ adaptive_consumables.formation.rank_icon }}" alt="{{ adaptive_consumables.formation.label }}">
+                            {% else %}
+                            <div class="adaptive-rank">{{ adaptive_consumables.formation.label }}</div>
+                            {% endif %}
+                            <img class="adaptive-icon" src="{{ adaptive_consumables.formation.icon }}" alt="">
+                            <div class="adaptive-entry-body">
+                                <div class="adaptive-name">{{ adaptive_consumables.formation.name }}</div>
+                                {% if adaptive_consumables.formation.note %}
+                                <div class="adaptive-note">{{ adaptive_consumables.formation.note }}</div>
+                                {% endif %}
+                            </div>
+                            {% if adaptive_consumables.formation.delta_text %}
+                            <div class="adaptive-delta">{{ adaptive_consumables.formation.delta_text }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
                 </div>
                 {% endif %}
                 {% if adaptive_consumables.haste %}
@@ -1090,10 +1235,21 @@
         </section>
         {% endif %}
 
-        <div class="footer-note">
-            评级为相对配装评级，以当前整体配装为基础，对单件装备的评级，结果供娱乐参考。
-            <p>目前只有【太虚剑意】心法为精确评级，其余心法娱乐性质为主。如果你希望让自己的心法也能够支持评级，加群 650495414 详聊。</p>
-            <p>评级公式由【倦收天】提供，计算支持由【Inkar Suki】提供。</p>
+        <div class="rating-footer {% if equipment_rating_qrcode %}rating-footer-with-qrcode{% endif %}">
+            <div class="footer-note">
+                <div>评级为相对配装评级，以当前整体配装为基础，对单件装备的评级，结果供娱乐参考。</div>
+                <div>评级公式由【倦收天】提供，计算支持由【Inkar Suki】提供。</div>
+            </div>
+            {% if equipment_rating_qrcode %}
+            <div class="footer-qrcode-card">
+                <div>
+                    <div class="footer-qrcode-title">扫码进群</div>
+                    <div class="footer-qrcode-subtitle">心法支持 / 配装交流</div>
+                    <div class="footer-qrcode-group">群号：650495414</div>
+                </div>
+                <img src="{{ equipment_rating_qrcode }}" alt="扫码进群">
+            </div>
+            {% endif %}
         </div>
     </div>
 </div>

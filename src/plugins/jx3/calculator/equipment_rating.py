@@ -62,6 +62,7 @@ RANK_THEMES = {
     "C": {"accent": "#22c76f", "light": "#d6f7e4", "deep": "#066437", "rgb": "34 199 111"},
     "D": {"accent": "#ffffff", "light": "#ffffff", "deep": "#9ca3af", "rgb": "190 196 206"},
 }
+ADAPTIVE_FORMATION_RANK_GRADES = {1: "ACE", 2: "S+", 3: "S"}
 EQUIPMENT_RATING_IMAGE_SEND_FAILED = (
     "装备评级图片已生成，但 QQ/NapCat 拒绝了图片上传。\n"
     "这通常是协议端富媒体上传失败，不是装备数据读取失败。请稍后重试，或联系维护者查看 NapCat 日志。"
@@ -725,6 +726,11 @@ def _rating_avatar() -> str:
     return _asset_uri("image", "jx3", "equipment_rating", "Inkar.jpg")
 
 
+def _rating_group_qrcode() -> str:
+    path = Path(build_path(ASSETS, ["image", "jx3", "equipment_rating", "group_qrcode.png"]))
+    return path.as_uri() if path.exists() else ""
+
+
 def _attr_text(attributes: Any) -> str:
     if isinstance(attributes, list):
         return " ".join(
@@ -1109,6 +1115,30 @@ def _prepare_adaptive_haste(raw: Any) -> dict[str, str] | None:
     }
 
 
+def _prepare_adaptive_formation(item: Any, rank: int | None = None) -> dict[str, Any] | None:
+    if not isinstance(item, dict):
+        return None
+    category = str(item.get("category") or "阵眼").strip()
+    name = str(item.get("name") or "").strip()
+    if category != "阵眼" or not name:
+        return None
+    note_parts = []
+    side_effect = str(item.get("side_effect") or "").strip()
+    if side_effect:
+        note_parts.append(side_effect)
+    return {
+        "category": category,
+        "name": name,
+        "icon": _adaptive_icon({**item, "category": category}),
+        "note": " · ".join(note_parts),
+        "label": f"第{rank}名" if rank else "推荐阵法",
+        "rank_icon": _grade_icon(ADAPTIVE_FORMATION_RANK_GRADES.get(rank, "")) if rank else "",
+        "rank": rank,
+        "delta_text": _format_signed_percent(item.get("delta_percent")),
+        "is_adaptive": item.get("source") == "adaptive",
+    }
+
+
 def _prepare_adaptive_consumables(raw: Any) -> dict[str, Any] | None:
     if not isinstance(raw, dict):
         return None
@@ -1134,6 +1164,7 @@ def _prepare_adaptive_consumables(raw: Any) -> dict[str, Any] | None:
         for key, label, _ in ADAPTIVE_DISPLAY_GROUPS
     ]
     formation = None
+    formation_entries = []
     flat_items = []
     for item in raw.get("items") or []:
         if not isinstance(item, dict):
@@ -1154,16 +1185,22 @@ def _prepare_adaptive_consumables(raw: Any) -> dict[str, Any] | None:
             "is_adaptive": item.get("source") == "adaptive",
         }
         if category == "阵眼":
-            prepared_item["label"] = "推荐阵法"
-            prepared_item["delta_text"] = _format_signed_percent(item.get("delta_percent"))
-            formation = prepared_item
-            flat_items.insert(0, prepared_item)
+            formation = _prepare_adaptive_formation(item, 1) or prepared_item
+            flat_items.insert(0, formation)
             continue
         index = group_index.get(category)
         if index is None:
             continue
         grouped_items[index]["entries"].append(prepared_item)
         flat_items.append(prepared_item)
+    for index, item in enumerate(raw.get("formation_top") or [], start=1):
+        prepared_formation = _prepare_adaptive_formation(item, index)
+        if prepared_formation:
+            formation_entries.append(prepared_formation)
+    if not formation_entries and formation:
+        formation_entries = [formation]
+    if formation_entries:
+        formation = formation_entries[0]
     groups = [group for group in grouped_items if group["entries"]]
     if not formation and not groups:
         return None
@@ -1178,6 +1215,7 @@ def _prepare_adaptive_consumables(raw: Any) -> dict[str, Any] | None:
         "summary": " / ".join(summary_parts),
         "haste": _prepare_adaptive_haste(raw.get("haste")),
         "formation": formation,
+        "formations": formation_entries,
         "groups": groups,
         "entries": flat_items,
     }
@@ -1315,6 +1353,7 @@ async def render_equipment_rating_image(
         detail_attrs=detail_attrs,
         attribute_incomes=_prepare_attribute_incomes(summary),
         adaptive_consumables=_prepare_adaptive_consumables(data.get("adaptive_consumables")),
+        equipment_rating_qrcode=_rating_group_qrcode(),
         tank_vitality_conversion=_prepare_tank_vitality_conversion(summary, kungfu),
         distribution=_prepare_distribution_view(meta.get("kungfu_id")),
         slots=slots,
