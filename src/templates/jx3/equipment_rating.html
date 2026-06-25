@@ -306,6 +306,182 @@
             gap: 8px;
         }
 
+        .adaptive-formation-card {
+            min-height: 66px;
+            display: grid;
+            grid-template-columns: auto 42px minmax(0, 240px) auto;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            padding: 12px 16px;
+            overflow: hidden;
+            border: 1px solid #c690ff;
+            border-radius: 8px;
+            background: #ffffff;
+        }
+
+        .adaptive-formation-label {
+            color: #8038bf;
+            font-size: 13px;
+            line-height: 1.2;
+            font-weight: 900;
+        }
+
+        .adaptive-icon {
+            width: 34px;
+            height: 34px;
+            flex: 0 0 auto;
+            border-radius: 5px;
+            background: #edf3f7;
+            object-fit: cover;
+            box-shadow: inset 0 0 0 1px rgb(0 0 0 / 9%);
+        }
+
+        .adaptive-formation-card .adaptive-icon {
+            width: 42px;
+            height: 42px;
+        }
+
+        .adaptive-entry-body {
+            min-width: 0;
+        }
+
+        .adaptive-kind {
+            color: #7c8792;
+            font-size: 10px;
+            line-height: 1.15;
+            font-weight: 900;
+        }
+
+        .adaptive-name {
+            margin-top: 2px;
+            color: #2f3741;
+            font-size: 12px;
+            line-height: 1.25;
+            font-weight: 900;
+            word-break: break-word;
+        }
+
+        .adaptive-note {
+            margin-top: 3px;
+            color: #5e7d8c;
+            font-size: 10px;
+            line-height: 1.25;
+            font-weight: 900;
+            word-break: break-word;
+        }
+
+        .adaptive-formation-card .adaptive-name {
+            font-size: 15px;
+        }
+
+        .adaptive-formation-card .adaptive-note {
+            color: #6e45a0;
+            font-size: 11px;
+        }
+
+        .adaptive-delta {
+            color: #7d38c6;
+            font-size: 15px;
+            line-height: 1.2;
+            font-weight: 900;
+            white-space: nowrap;
+        }
+
+        .adaptive-haste-status {
+            margin-top: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            min-height: 34px;
+            padding: 8px 12px;
+            border: 1px solid #e2ebef;
+            border-radius: 8px;
+            background: #ffffff;
+            color: #677482;
+            font-size: 11px;
+            line-height: 1.25;
+            font-weight: 900;
+        }
+
+        .adaptive-haste-status strong {
+            color: #3d454f;
+            font-size: 12px;
+            white-space: nowrap;
+        }
+
+        .adaptive-haste-ok strong {
+            color: #2c7a4b;
+        }
+
+        .adaptive-haste-missing strong {
+            color: #a4631b;
+        }
+
+        .adaptive-grid {
+            margin-top: 10px;
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 10px;
+        }
+
+        .adaptive-group-card {
+            min-width: 0;
+            padding: 12px;
+            border: 1px solid #e2ebef;
+            border-radius: 8px;
+            background: #ffffff;
+        }
+
+        .adaptive-group-food {
+            border-color: #d9eadc;
+        }
+
+        .adaptive-group-medicine {
+            border-color: #d8eaf5;
+        }
+
+        .adaptive-group-home {
+            border-color: #f0dfc7;
+        }
+
+        .adaptive-group-ingot {
+            border-color: #dde5ef;
+        }
+
+        .adaptive-group-heading {
+            margin-bottom: 10px;
+            color: #3e4a55;
+            font-size: 13px;
+            line-height: 1.2;
+            font-weight: 900;
+        }
+
+        .adaptive-group-items {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr);
+            gap: 9px;
+        }
+
+        .adaptive-entry {
+            min-width: 0;
+            display: grid;
+            grid-template-columns: 34px minmax(0, 1fr);
+            align-items: center;
+            gap: 8px;
+        }
+
+        .adaptive-failed {
+            padding: 10px 12px;
+            border-radius: 8px;
+            background: #fff8ed;
+            color: #8c5b1e;
+            font-size: 12px;
+            line-height: 1.45;
+            font-weight: 900;
+        }
+
         .income-item {
             min-width: 0;
             display: grid;
@@ -576,11 +752,47 @@
             border-top: 1px solid #e6e6e6;
         }
 
+        .combat-advice {
+            padding: 26px 26px 24px;
+        }
+
+        .combat-heading {
+            display: flex;
+            align-items: baseline;
+            gap: 12px;
+        }
+
+        .combat-title {
+            color: #2f3741;
+            font-size: 20px;
+            line-height: 1.2;
+            font-weight: 900;
+        }
+
+        .combat-subtitle {
+            color: #8a96a2;
+            font-size: 12px;
+            line-height: 1.2;
+            font-weight: 900;
+        }
+
+        .combat-block {
+            margin-top: 18px;
+        }
+
+        .combat-subheading {
+            margin-bottom: 12px;
+            color: #626d78;
+            font-size: 13px;
+            line-height: 1.2;
+            font-weight: 900;
+        }
+
         .talent-strip {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(72px, 1fr));
             gap: 16px;
-            padding: 28px 26px 22px;
+            padding: 0;
         }
 
         .talent {
@@ -801,16 +1013,81 @@
             </main>
         </div>
 
-        {% if talents %}
+        {% if adaptive_consumables or talents %}
         <div class="bottom-line"></div>
-        <div class="talent-strip">
-            {% for talent in talents %}
-            <div class="talent">
-                <img src="{{ talent.icon }}" alt="">
-                <div class="talent-name">{{ talent.name }}</div>
+        <section class="combat-advice">
+            <div class="combat-heading">
+                <div class="combat-title">实战配置建议</div>
+                <div class="combat-subtitle">基于当前配装与目标加速档自动推荐</div>
             </div>
-            {% endfor %}
-        </div>
+            {% if adaptive_consumables %}
+            <div class="combat-block">
+                {% if adaptive_consumables.status == "ok" %}
+                {% if adaptive_consumables.formation %}
+                <div class="adaptive-formation-card">
+                    <div class="adaptive-formation-label">阵眼推荐</div>
+                    <img class="adaptive-icon" src="{{ adaptive_consumables.formation.icon }}" alt="">
+                    <div class="adaptive-entry-body">
+                        <div class="adaptive-kind">{{ adaptive_consumables.formation.label }}</div>
+                        <div class="adaptive-name">{{ adaptive_consumables.formation.name }}</div>
+                        {% if adaptive_consumables.formation.note %}
+                        <div class="adaptive-note">{{ adaptive_consumables.formation.note }}</div>
+                        {% endif %}
+                    </div>
+                    {% if adaptive_consumables.formation.delta_text %}
+                    <div class="adaptive-delta">{{ adaptive_consumables.formation.delta_text }}</div>
+                    {% endif %}
+                </div>
+                {% endif %}
+                {% if adaptive_consumables.haste %}
+                <div class="adaptive-haste-status adaptive-haste-{{ adaptive_consumables.haste.state }}">
+                    <span>加速档位</span>
+                    <strong>{{ adaptive_consumables.haste.status }}</strong>
+                    <span>{{ adaptive_consumables.haste.detail }}</span>
+                </div>
+                {% endif %}
+                {% if adaptive_consumables.groups %}
+                <div class="adaptive-grid">
+                    {% for group in adaptive_consumables.groups %}
+                    <section class="adaptive-group-card adaptive-group-{{ group.key }}">
+                        <div class="adaptive-group-heading">{{ group.category }}</div>
+                        <div class="adaptive-group-items">
+                            {% for item in group.entries %}
+                            <div class="adaptive-entry">
+                                <img class="adaptive-icon" src="{{ item.icon }}" alt="">
+                                <div class="adaptive-entry-body">
+                                    <div class="adaptive-kind">{{ item.category }}</div>
+                                    <div class="adaptive-name">{{ item.name }}</div>
+                                    {% if item.note %}
+                                    <div class="adaptive-note">{{ item.note }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </section>
+                    {% endfor %}
+                </div>
+                {% endif %}
+                {% else %}
+                <div class="adaptive-failed">{{ adaptive_consumables.message }}</div>
+                {% endif %}
+            </div>
+            {% endif %}
+            {% if talents %}
+            <div class="combat-block">
+                <div class="combat-subheading">奇穴</div>
+                <div class="talent-strip">
+                    {% for talent in talents %}
+                    <div class="talent">
+                        <img src="{{ talent.icon }}" alt="">
+                        <div class="talent-name">{{ talent.name }}</div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+        </section>
         {% endif %}
 
         <div class="footer-note">

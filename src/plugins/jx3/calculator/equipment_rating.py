@@ -90,6 +90,21 @@ EQUIPMENT_RATING_HELP_KEYWORDS = {"help", "帮助", "？", "?"}
 EQUIPMENT_RATING_DISTRIBUTION_PATH = build_path(
     ASSETS, ["source", "jx3", "equipment_rating_distribution.json"]
 )
+ADAPTIVE_ICON_ITEM_NAME_BY_CODE = {
+    "FY_ATTACK_INGOT_PHYSICS": "风语·瀑沙熔锭（外攻）",
+    "FY_ATTACK_INGOT_MAGIC": "风语·坠宵熔锭（内攻）",
+    "CREATIVE_FOOD_SHENG_LIFE_DOWN_STRAIN": "创意食品·盛",
+    "CREATIVE_FOOD_SHENG_LIFE_DOWN_MAGIC_ATTACK": "创意食品·盛",
+    "CREATIVE_FOOD_SHENG_LIFE_DOWN_PHYSICS_ATTACK": "创意食品·盛",
+    "CREATIVE_FOOD_SHENG_LIFE_DOWN_OVERCOME": "创意食品·盛",
+    "CREATIVE_FOOD_SHENG_LIFE_DOWN_CRITICAL": "创意食品·盛",
+}
+ADAPTIVE_DISPLAY_GROUPS = [
+    ("food", "食品类", {"辅助食品", "增强食品"}),
+    ("medicine", "药品类", {"辅助药品", "增强药品"}),
+    ("home", "家园类（酒 / 创意料理）", {"家园酒", "创意料理·盛"}),
+    ("ingot", "熔锭", {"熔锭"}),
+]
 
 
 def _asset_uri(*parts: str) -> str:
@@ -500,6 +515,13 @@ def _format_percent(value: Any) -> str:
         return "0.0%"
 
 
+def _format_signed_percent(value: Any) -> str:
+    number = _to_float(value)
+    if abs(number) < 0.05:
+        return "+0.0%"
+    return f"{number:+.1f}%"
+
+
 async def _fetch_supported_equipment_rating_data(timeout: float = 8) -> dict[str, Any] | str:
     try:
         response = await Request(f"{Config.jx3.api.calculator_url}/equipment_rating/kungfus").get(timeout=timeout)
@@ -729,6 +751,53 @@ def _equip_icon(detail: dict[str, Any]) -> str:
     except Exception:
         icon_id = 1434
     return f"https://icon.jx3box.com/icon/{icon_id}.png"
+
+
+def _jx3_icon(icon_id: Any) -> str:
+    icon_id_int = int(_to_float(icon_id))
+    if icon_id_int <= 0:
+        icon_id_int = 1434
+    return f"https://icon.jx3box.com/icon/{icon_id_int}.png"
+
+
+def _item_icon_by_name(name: str) -> str:
+    if not name:
+        return ""
+    try:
+        for item in TabCache.Item:
+            if len(item) >= 5 and item[4] == name:
+                return _jx3_icon(item[1])
+    except Exception:
+        return ""
+    return ""
+
+
+def _skill_icon_by_name(name: str) -> str:
+    if not name:
+        return ""
+    try:
+        for skill in TabCache.skill:
+            if len(skill) >= 12 and skill[11] == name:
+                return _jx3_icon(skill[2])
+    except Exception:
+        return ""
+    return ""
+
+
+def _adaptive_icon(item: dict[str, Any]) -> str:
+    category = str(item.get("category") or "")
+    name = str(item.get("name") or "")
+    if category == "阵眼":
+        return _skill_icon_by_name(name) or _asset_uri("image", "jx3", "attributes", "unknown.png")
+    for code in item.get("codes") or []:
+        icon_name = ADAPTIVE_ICON_ITEM_NAME_BY_CODE.get(str(code))
+        icon = _item_icon_by_name(icon_name or "")
+        if icon:
+            return icon
+    icon = _item_icon_by_name(name)
+    if icon:
+        return icon
+    return _asset_uri("image", "jx3", "attributes", "unknown.png")
 
 
 def _quality_class(detail: dict[str, Any]) -> str:
@@ -1005,6 +1074,115 @@ def _prepare_attribute_incomes(summary: dict[str, Any]) -> list[dict[str, Any]]:
     return incomes
 
 
+def _prepare_adaptive_haste(raw: Any) -> dict[str, str] | None:
+    if not isinstance(raw, dict):
+        return None
+    required = int(_to_float(raw.get("required")))
+    actual = int(_to_float(raw.get("actual")))
+    if required <= 0:
+        return None
+    satisfied = bool(raw.get("satisfied"))
+    delta = actual - required
+    if satisfied:
+        status_text = "已满足"
+        detail_parts = [
+            f"当前 {_format_number(actual)}（{_haste_level(actual)}段）",
+            f"目标 {_format_number(required)}（{_haste_level(required)}段）",
+        ]
+        if delta > 0:
+            detail_parts.append(f"溢出 {_format_number(delta)}")
+        return {
+            "state": "ok",
+            "status": status_text,
+            "detail": " · ".join(detail_parts),
+        }
+    return {
+        "state": "missing",
+        "status": "未满足",
+        "detail": " · ".join(
+            [
+                f"当前 {_format_number(actual)}（{_haste_level(actual)}段）",
+                f"目标 {_format_number(required)}（{_haste_level(required)}段）",
+                f"还差 {_format_number(abs(delta))}",
+            ]
+        ),
+    }
+
+
+def _prepare_adaptive_consumables(raw: Any) -> dict[str, Any] | None:
+    if not isinstance(raw, dict):
+        return None
+    status = str(raw.get("status") or "")
+    if status != "ok":
+        message = str(raw.get("message") or "自适应小药计算失败，已跳过展示。")
+        return {
+            "status": "failed",
+            "message": message,
+            "entries": [],
+        }
+    group_index = {
+        category: index
+        for index, (_, _, categories) in enumerate(ADAPTIVE_DISPLAY_GROUPS)
+        for category in categories
+    }
+    grouped_items = [
+        {
+            "key": key,
+            "category": label,
+            "entries": [],
+        }
+        for key, label, _ in ADAPTIVE_DISPLAY_GROUPS
+    ]
+    formation = None
+    flat_items = []
+    for item in raw.get("items") or []:
+        if not isinstance(item, dict):
+            continue
+        category = str(item.get("category") or "").strip()
+        name = str(item.get("name") or "").strip()
+        if not category or not name:
+            continue
+        note_parts = []
+        side_effect = str(item.get("side_effect") or "").strip()
+        if side_effect:
+            note_parts.append(side_effect)
+        prepared_item = {
+            "category": category,
+            "name": name,
+            "icon": _adaptive_icon(item),
+            "note": " · ".join(note_parts),
+            "is_adaptive": item.get("source") == "adaptive",
+        }
+        if category == "阵眼":
+            prepared_item["label"] = "推荐阵法"
+            prepared_item["delta_text"] = _format_signed_percent(item.get("delta_percent"))
+            formation = prepared_item
+            flat_items.insert(0, prepared_item)
+            continue
+        index = group_index.get(category)
+        if index is None:
+            continue
+        grouped_items[index]["entries"].append(prepared_item)
+        flat_items.append(prepared_item)
+    groups = [group for group in grouped_items if group["entries"]]
+    if not formation and not groups:
+        return None
+    baseline = raw.get("baseline") if isinstance(raw.get("baseline"), dict) else {}
+    summary_parts = []
+    if baseline.get("formation_delta_percent") is not None:
+        summary_parts.append(f"阵眼 {_format_signed_percent(baseline.get('formation_delta_percent'))}")
+    return {
+        "status": "ok",
+        "title": str(raw.get("name") or "当前装备自适应小药"),
+        "subtitle": "基于当前配装与目标加速档自动推荐",
+        "summary": " / ".join(summary_parts),
+        "haste": _prepare_adaptive_haste(raw.get("haste")),
+        "formation": formation,
+        "groups": groups,
+        "entries": flat_items,
+    }
+
+
 def _prepare_distribution_view(kungfu_id: Any) -> dict[str, str] | None:
     payload = _load_equipment_rating_distribution()
     items = payload.get("items") or {}
@@ -1136,6 +1314,7 @@ async def render_equipment_rating_image(
         basic_attrs=basic_attrs,
         detail_attrs=detail_attrs,
         attribute_incomes=_prepare_attribute_incomes(summary),
+        adaptive_consumables=_prepare_adaptive_consumables(data.get("adaptive_consumables")),
         tank_vitality_conversion=_prepare_tank_vitality_conversion(summary, kungfu),
         distribution=_prepare_distribution_view(meta.get("kungfu_id")),
         slots=slots,
