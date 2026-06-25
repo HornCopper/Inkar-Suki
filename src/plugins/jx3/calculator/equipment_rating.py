@@ -1056,13 +1056,13 @@ def _prepare_tank_vitality_conversion(summary: dict[str, Any], kungfu: Kungfu) -
         return None
     unbuffed_item = _tank_vitality_conversion_item(
         summary.get("unbuffed_attributes") or {},
-        title="裸增益",
-        formula_label="无增益基础体质",
+        title="裸小药",
+        formula_label="裸小药基础体质",
     )
     full_item = _tank_vitality_conversion_item(
         summary.get("attributes") or {},
-        title="满增益",
-        formula_label="满增益基础体质",
+        title="满小药",
+        formula_label="满小药基础体质",
     )
     item = unbuffed_item or full_item
     if item is None:
