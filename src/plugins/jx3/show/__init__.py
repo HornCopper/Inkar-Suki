@@ -14,7 +14,8 @@ from src.utils.network import Request
 from src.utils.file import write
 from src.utils.permission import check_group_permission
 from src.utils.database.player import search_player
-from src.plugins.jx3.server.api import get_server_status
+
+from .api import get_role_card_url
 
 def cache_show(image_bytes: bytes, name: str, server: str) -> None:
     path = SHOW + f"/{name}·{server}.png"
@@ -24,8 +25,6 @@ show_matcher = on_command("jx3_show", aliases={"名片", "qq秀", "QQ秀", "名�
 
 @show_matcher.handle()
 async def _(event: GroupMessageEvent, full_argument: Message = CommandArg()):
-    if not Config.jx3.api.enable or not check_group_permission(event.group_id, "group.application.role_card"):
-        return
     if full_argument.extract_plain_text() == "":
         return
     args = full_argument.extract_plain_text().split(" ")
@@ -40,22 +39,12 @@ async def _(event: GroupMessageEvent, full_argument: Message = CommandArg()):
     server = Server(server, event.group_id).server
     if server is None:
         await show_matcher.finish(PROMPT.ServerNotExist)
-    status = "开服" in (await get_server_status(server))
-    if not status:
-        await show_matcher.finish("尚未开服，无法查询名片！")
-    role_exist = (await search_player(role_name=name, server_name=server)).roleId != ""
-    if not role_exist:
-        await show_matcher.finish("未找到该玩家，请检查后重试！")
-    url = f"{Config.jx3.api.url}/data/card/record"
-    params = {
-        "server": server,
-        "name": name,
-        "token": Config.jx3.api.token_v2
-    }
-    data = (await Request(url, params=params).get()).json()
-    if data["code"] != 200:
-        await show_matcher.finish("查询名片失败，请检查玩家是否存在？名片是否过审？")
-    image_url = data["data"]["showAvatar"]
+    role_data = await search_player(role_name=name, server_name=server)
+    if not role_data.roleId:
+        await show_matcher.finish(PROMPT.PlayerNotExist)
+    image_url = await get_role_card_url(role_data)
+    if not image_url:
+        await show_matcher.finish(PROMPT.PlayerNotExist)
     image_bytes = (await Request(image_url).get()).content
     cache_show(image_bytes, name, server)
     image = ms.image(
