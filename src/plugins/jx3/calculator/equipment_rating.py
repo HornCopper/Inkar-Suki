@@ -100,6 +100,24 @@ ADAPTIVE_ICON_ITEM_NAME_BY_CODE = {
     "CREATIVE_FOOD_SHENG_LIFE_DOWN_OVERCOME": "创意食品·盛",
     "CREATIVE_FOOD_SHENG_LIFE_DOWN_CRITICAL": "创意食品·盛",
 }
+ADAPTIVE_FORMATION_ALIASES = {
+    "龙皇雪风阵": "凌雪阵",
+    "千机百变阵": "天罗阵",
+    "苍梧引灵阵": "万灵阵",
+    "九宫八卦阵": "气纯阵",
+    "万籁金弦阵": "莫问阵",
+    "墟海引归阵": "蓬莱阵",
+    "北斗七星阵": "剑纯阵",
+    "七绝逍遥阵": "花间阵",
+    "天鼓雷音阵": "易筋阵",
+    "万蛊噬心阵": "毒经阵",
+    "横云破锋阵": "刀宗阵",
+    "九音惊弦阵": "冰心阵",
+    "江湖行侠阵": "通用阵",
+}
+ADAPTIVE_FORMATION_FALLBACK_ICON_IDS = {
+    "江湖行侠阵": 22210,
+}
 ADAPTIVE_DISPLAY_GROUPS = [
     ("food", "食品类", {"辅助食品", "增强食品"}),
     ("medicine", "药品类", {"辅助药品", "增强药品"}),
@@ -790,11 +808,28 @@ def _skill_icon_by_name(name: str) -> str:
     return ""
 
 
+def _formation_alias(name: str, item: dict[str, Any] | None = None) -> str:
+    item = item if isinstance(item, dict) else {}
+    alias = item.get("alias") or item.get("nickname") or ADAPTIVE_FORMATION_ALIASES.get(name, "")
+    return str(alias).strip()
+
+
+def _formation_fallback_icon(name: str) -> str:
+    icon_id = ADAPTIVE_FORMATION_FALLBACK_ICON_IDS.get(name)
+    if not icon_id:
+        return ""
+    return _jx3_icon(icon_id)
+
+
 def _adaptive_icon(item: dict[str, Any]) -> str:
     category = str(item.get("category") or "")
     name = str(item.get("name") or "")
     if category == "阵眼":
-        return _skill_icon_by_name(name) or _asset_uri("image", "jx3", "attributes", "unknown.png")
+        return (
+            _skill_icon_by_name(name)
+            or _formation_fallback_icon(name)
+            or _asset_uri("image", "jx3", "attributes", "unknown.png")
+        )
     for code in item.get("codes") or []:
         icon_name = ADAPTIVE_ICON_ITEM_NAME_BY_CODE.get(str(code))
         icon = _item_icon_by_name(icon_name or "")
@@ -1123,6 +1158,9 @@ def _prepare_adaptive_formation(item: Any, rank: int | None = None) -> dict[str,
     if category != "阵眼" or not name:
         return None
     note_parts = []
+    alias = _formation_alias(name, item)
+    if alias:
+        note_parts.append(alias)
     side_effect = str(item.get("side_effect") or "").strip()
     if side_effect:
         note_parts.append(side_effect)
