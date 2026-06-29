@@ -48,7 +48,7 @@ SPECIAL_PVE_KUNGFU_TAGS = {
 
 ATTRIBUTE_IMAGE_SEND_FAILED = (
     "属性图已生成，但 QQ 富媒体上传失败。"
-    "这不是属性数据解析错误，请稍后重试；如果持续失败，需要检查 QQ/NapCat 的图片上传状态。"
+    "建议重启 napcat。"
 )
 
 async def finish_attribute_response(matcher: type[Matcher], data: Any) -> None:
