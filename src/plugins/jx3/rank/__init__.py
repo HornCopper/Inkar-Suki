@@ -22,6 +22,18 @@ from .hps_rank import get_hps_rank
 
 from ._template import cqcrank_template_body, cqcrank_table_head
 
+def _limit_rank_records_per_role(records: list[Any], limit: int) -> list[Any]:
+    role_counts: dict[tuple[str, str], int] = {}
+    result = []
+    for record in records:
+        role_key = (record.server_name, record.role_name)
+        current_count = role_counts.get(role_key, 0)
+        if current_count >= limit:
+            continue
+        role_counts[role_key] = current_count + 1
+        result.append(record)
+    return result
+
 exp_rank_matcher = on_command("jx3_zlrank", aliases={"资历排行", "资历榜单"}, priority=5, force_whitespace=True)
 
 @exp_rank_matcher.handle()
@@ -330,6 +342,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
                 continue
         effective_records.append(each_record)
     effective_records = sorted(effective_records, key=lambda x: (x.damage_per_second if value_type == "damage" else x.health_per_second), reverse=True)
+    effective_records = _limit_rank_records_per_role(effective_records, 3)
     if len(effective_records) > 20:
         effective_records = effective_records[:20]
     results = []
