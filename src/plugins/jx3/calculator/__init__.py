@@ -802,7 +802,7 @@ async def _request_damage_timeline(
     kungfu_id = instance.calculator_kungfu_id
     payload = {
         "kungfu_id": kungfu_id,
-        "jcl_data": jcl_data,
+        "jcl_data": normalize_calculator_jcl_data(jcl_data),
         "loops": selected_loops,
         "full_income": instance.income_list + instance.formation_list,
         "user_id": user_id,
