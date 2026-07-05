@@ -248,9 +248,8 @@ async def generate_random_5gimage(server: str, index_name: str, user_id: int, gr
 async def get_random_5gimage_record_image(user_id: int, group_id: int):
     records: list[RandomImageRecord] | Any = logs_db.where_all(
         RandomImageRecord(),
-        "user_id = ? AND group_id = ?",
+        "user_id = ?",
         user_id,
-        group_id,
         default=[],
     )
     if not records:
@@ -307,11 +306,21 @@ async def get_random_5gimage_record_image(user_id: int, group_id: int):
     return await generate(html, ".container", segment=True, wait_for_network=True)
 
 
+async def get_rank_nickname(bot: Any, user_id: int, member_map: dict[int, dict[str, Any]]) -> str:
+    member = member_map.get(user_id, {})
+    nickname = member.get("card") or member.get("nickname")
+    if nickname:
+        return str(nickname)[:15]
+    try:
+        stranger = await bot.get_stranger_info(user_id=user_id, no_cache=False)
+    except Exception:
+        return str(user_id)
+    return str(stranger.get("nickname") or user_id)[:15]
+
+
 async def get_random_5gimage_rank_image(bot: Any, group_id: int):
     records: list[RandomImageRecord] | Any = logs_db.where_all(
         RandomImageRecord(),
-        "group_id = ?",
-        group_id,
         default=[],
     )
     if not records:
@@ -333,8 +342,7 @@ async def get_random_5gimage_rank_image(bot: Any, group_id: int):
 
     table_body = []
     for rank, (user_id, data) in enumerate(ranked[:30], start=1):
-        member = member_map.get(user_id, {})
-        nickname = (member.get("card") or member.get("nickname") or str(user_id))[:15]
+        nickname = await get_rank_nickname(bot, user_id, member_map)
         total_profit = data["profit"]
         avg_profit = int(total_profit / data["count"])
         table_body.append(
