@@ -125,9 +125,10 @@ random_5gimage_rank_matcher = on_command("jx3_5gimage_rank", aliases={"开图排
 
 @random_5gimage_rank_matcher.handle()
 async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
-    if args.extract_plain_text().strip():
-        return
-    image = await get_random_5gimage_rank_image(bot, int(event.group_id))
+    rank_type = args.extract_plain_text().strip() or "赢取"
+    if rank_type not in {"赢取", "亏损"}:
+        await random_5gimage_rank_matcher.finish("请输入 赢取 或 亏损。")
+    image = await get_random_5gimage_rank_image(bot, int(event.group_id), rank_type)
     await random_5gimage_rank_matcher.finish(ms.at(event.user_id) + image)
 
 random_shilian_matcher = on_command("jx3_rdsl", aliases={"翻牌", "模拟试炼"}, priority=5, force_whitespace=True)

@@ -318,7 +318,7 @@ async def get_rank_nickname(bot: Any, user_id: int, member_map: dict[int, dict[s
     return str(stranger.get("nickname") or user_id)[:15]
 
 
-async def get_random_5gimage_rank_image(bot: Any, group_id: int):
+async def get_random_5gimage_rank_image(bot: Any, group_id: int, rank_type: str = "赢取"):
     records: list[RandomImageRecord] | Any = logs_db.where_all(
         RandomImageRecord(),
         default=[],
@@ -334,11 +334,17 @@ async def get_random_5gimage_rank_image(bot: Any, group_id: int):
 
     members = await bot.get_group_member_list(group_id=group_id)
     member_map = {int(member["user_id"]): member for member in members}
-    ranked = sorted(
-        grouped.items(),
-        key=lambda item: (item[1]["profit"], item[1]["count"]),
-        reverse=True,
-    )
+    if rank_type == "亏损":
+        ranked = sorted(
+            grouped.items(),
+            key=lambda item: (item[1]["profit"], -item[1]["count"]),
+        )
+    else:
+        ranked = sorted(
+            grouped.items(),
+            key=lambda item: (item[1]["profit"], item[1]["count"]),
+            reverse=True,
+        )
 
     table_body = []
     for rank, (user_id, data) in enumerate(ranked[:30], start=1):
@@ -378,7 +384,7 @@ async def get_random_5gimage_rank_image(bot: Any, group_id: int):
 """
     html = str(
         HTMLSourceCode(
-            application_name=f"开图排行 · {len(ranked)}人",
+            application_name=f"开图排行 · {rank_type} · {len(ranked)}人",
             table_head=table_random_5gimage_rank_head,
             table_body="\n".join(table_body),
             additional_css=css,
