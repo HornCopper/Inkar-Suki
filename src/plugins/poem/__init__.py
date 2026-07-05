@@ -40,13 +40,13 @@ async def _(state: T_State, event: MessageEvent, args: Message = CommandArg()):
 async def __(state: T_State, event: MessageEvent = Received("answer")):
     ans = str(event.message)
     if ans == state["answer"]:
-        AccountManage(event.user_id).add_coin(5000)
+        AccountManage(event.user_id).add_coin(250)
         author = state["author"]
         title = state["title"]
-        await PoemMatcher.finish(f"答对啦！\n这句诗来自 {author} 的《{title}》。\n您获得了 5000 枚金币。")
+        await PoemMatcher.finish(f"答对啦！\n这句诗来自 {author} 的《{title}》。\n您获得了 250 枚金币。")
     else:
-        AccountManage(event.user_id).reduce_coin(6200)
+        AccountManage(event.user_id).reduce_coin(150)
         right = state["raw"]
         author = state["author"]
         title = state["title"]
-        await PoemMatcher.finish(f"唔……答错了！\n这句诗来自 {author} 的《{title}》。\n很可惜，您失去了 6200 枚金币。\n正确答案为：{right}")
+        await PoemMatcher.finish(f"唔……答错了！\n这句诗来自 {author} 的《{title}》。\n很可惜，您失去了 150 枚金币。\n正确答案为：{right}")

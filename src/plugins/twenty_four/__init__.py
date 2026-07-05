@@ -37,24 +37,24 @@ async def __(state: T_State, event: MessageEvent = Received("answer")):
     solution = await find_solution(numbers)
     if expr == "无解":
         if solution:
-            AccountManage(event.user_id).reduce_coin(3100)
+            AccountManage(event.user_id).reduce_coin(180)
             await TwentyFourMatcher.finish(
-                f"唔……回答错误，并非无解哦。\n其中一组解为：{solution}\n您失去了 3100 枚金币。"
+                f"唔……回答错误，并非无解哦。\n其中一组解为：{solution}\n您失去了 180 枚金币。"
             )
         else:
-            AccountManage(event.user_id).add_coin(5000)
-            await TwentyFourMatcher.finish("回答正确！\n您获得了 5000 枚金币。")
+            AccountManage(event.user_id).add_coin(300)
+            await TwentyFourMatcher.finish("回答正确！\n您获得了 300 枚金币。")
     elif check_valid(expr):
         result = calc(expr)
         if result is None:
-            AccountManage(event.user_id).reduce_coin(3700)
-            await TwentyFourMatcher.finish("唔……回答错误，您的表达式真的能算吗？\n您失去了 3700 枚金币。")
+            AccountManage(event.user_id).reduce_coin(150)
+            await TwentyFourMatcher.finish("唔……回答错误，您的表达式真的能算吗？\n您失去了 150 枚金币。")
         elif result == 24 and contains_all_numbers(expr, numbers):
-            AccountManage(event.user_id).add_coin(5000)
-            await TwentyFourMatcher.finish("回答正确！\n您获得了 5000 枚金币。")
+            AccountManage(event.user_id).add_coin(300)
+            await TwentyFourMatcher.finish("回答正确！\n您获得了 300 枚金币。")
         else:
-            AccountManage(event.user_id).reduce_coin(3100)
-            await TwentyFourMatcher.finish("唔……回答错误。\n您失去了 3100 枚金币。")
+            AccountManage(event.user_id).reduce_coin(120)
+            await TwentyFourMatcher.finish("唔……回答错误。\n您失去了 120 枚金币。")
     else:
-        AccountManage(event.user_id).reduce_coin(3700)
-        await TwentyFourMatcher.finish("唔……回答错误，您的表达式真的能算吗？\n您失去了 3700 枚金币。")
+        AccountManage(event.user_id).reduce_coin(150)
+        await TwentyFourMatcher.finish("唔……回答错误，您的表达式真的能算吗？\n您失去了 150 枚金币。")

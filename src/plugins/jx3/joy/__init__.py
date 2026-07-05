@@ -3,7 +3,9 @@ from nonebot import on_command
 from nonebot.params import CommandArg, RawCommand
 from nonebot.adapters.onebot.v11 import Bot, Message, GroupMessageEvent, MessageSegment as ms
 
+from src.accounts.manage import AccountManage
 from src.const.jx3.school import School
+from src.const.jx3.server import Server
 from src.config import Config
 from src.const.prompts import PROMPT
 from src.utils.analyze import check_number
@@ -13,6 +15,14 @@ from .random_serendipity import get_serendipity, get_serendipity_image
 from .random_loot import RandomLoot
 from .random_shilian import generate_shilian_box
 from .random_equip import get_equip_info_image, get_equip_info
+from .random_5gimage import (
+    generate_random_5gimage,
+    get_random_5gimage_rank_image,
+    get_random_5gimage_record_image,
+    normalize_image_index,
+)
+
+RANDOM_5GIMAGE_COST = 10
 
 saohua_matcher = on_command("jx3_random", aliases={"骚话", "烧话"}, force_whitespace=True, priority=5)
 
@@ -64,7 +74,62 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     else:
         image = await instance.generate()
         await random_loot_matcher.finish(ms.at(event.user_id) + image)
-    
+
+random_5gimage_matcher = on_command("jx3_random_5gimage", aliases={"随机5G图", "随机5g图", "随机武技图"}, priority=5, force_whitespace=True)
+
+@random_5gimage_matcher.handle()
+async def _(event: GroupMessageEvent, args: Message = CommandArg()):
+    raw_args = args.extract_plain_text().strip().split()
+    if len(raw_args) == 1:
+        server = Server(None, event.group_id).server
+        image_index = normalize_image_index(raw_args[0])
+    elif len(raw_args) == 2:
+        server = Server(raw_args[0], event.group_id).server
+        image_index = normalize_image_index(raw_args[1])
+    else:
+        await random_5gimage_matcher.finish(PROMPT.ArgumentCountInvalid + "\n参考格式：随机武技图 <服务器> <1-8/2N>")
+    if server is None:
+        await random_5gimage_matcher.finish(PROMPT.ServerNotExist)
+    if image_index is None:
+        await random_5gimage_matcher.finish("请输入 1-8，或 2N（贰·新编）。")
+    account = AccountManage(event.user_id)
+    if account.coins < RANDOM_5GIMAGE_COST:
+        await random_5gimage_matcher.finish(f"金币不足，本次开图需要 {RANDOM_5GIMAGE_COST} 枚金币。\n金币可通过签到、对诗、玩 24 点、或直接与别人交易等途径获得。")
+    image_result = await generate_random_5gimage(
+        server,
+        image_index,
+        int(event.user_id),
+        int(event.group_id),
+    )
+    if image_result is None:
+        await random_5gimage_matcher.finish("无法确定输入的武技殊影图代码！\n请给出数字 1-8、2N 其中的一个。")
+    image, is_profit_calculable = image_result
+    account.reduce_coin(RANDOM_5GIMAGE_COST)
+    if not is_profit_calculable:
+        account.add_coin(RANDOM_5GIMAGE_COST)
+    await random_5gimage_matcher.finish(ms.at(event.user_id) + image)
+
+random_5gimage_record_matcher = on_command("jx3_5gimage_record", aliases={"开图记录", "开图战绩"}, priority=5, force_whitespace=True)
+
+@random_5gimage_record_matcher.handle()
+async def _(event: GroupMessageEvent, args: Message = CommandArg()):
+    if args.extract_plain_text().strip():
+        return
+    image = await get_random_5gimage_record_image(
+        int(event.user_id),
+        int(event.group_id),
+    )
+    await random_5gimage_record_matcher.finish(ms.at(event.user_id) + image)
+
+random_5gimage_rank_matcher = on_command("jx3_5gimage_rank", aliases={"开图排行"}, priority=5, force_whitespace=True)
+
+@random_5gimage_rank_matcher.handle()
+async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
+    if args.extract_plain_text().strip():
+        return
+    image = await get_random_5gimage_rank_image(bot, int(event.group_id))
+    await random_5gimage_rank_matcher.finish(ms.at(event.user_id) + image)
+
 random_shilian_matcher = on_command("jx3_rdsl", aliases={"翻牌", "模拟试炼"}, priority=5, force_whitespace=True)
 
 @random_shilian_matcher.handle()

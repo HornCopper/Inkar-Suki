@@ -57,10 +57,10 @@ class AccountManage:
         if self.checkin_status:
             return False
 
-        coin = random.randint(0, 4000)
+        coin = random.randint(100, 300)
         lucky = True if random.randint(0, 100) % 25 == 0 else False
         if lucky:
-            coin += 10000
+            coin += 500
 
         self.data.coins += coin
         self.data.checkin_counts += 1
