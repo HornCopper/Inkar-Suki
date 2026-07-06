@@ -1117,7 +1117,7 @@ class FinalAttr:
 
 class JX3PlayerAttribute:
     @classmethod
-    async def from_jx3api(cls, server: str, name: str, url_require: bool = False) -> str | None:
+    async def from_jx3api(cls, server: str, name: str, url_require: bool = False) -> dict[str, Any] | str | None:
         if not url_require:
             raw_data = {}
             raw_data["code"] = 404
@@ -1136,10 +1136,11 @@ class JX3PlayerAttribute:
             return PROMPT.PlayerNotExist
         results = []
         
-        if "equipList" not in raw_data["detail"]:
+        detail = raw_data["detail"]
+        if "equipList" not in detail:
             return None
 
-        for each_equip in raw_data["detail"]["equipList"]:
+        for each_equip in detail["equipList"]:
             position_id = each_equip["nItemIndex"]
             
             if position_id not in range(0, 12+1):
@@ -1177,16 +1178,34 @@ class JX3PlayerAttribute:
                 ]
             )
 
+        try:
+            timestamp = int(detail.get("cacheTime") or Time().raw_time)
+        except (TypeError, ValueError):
+            timestamp = Time().raw_time
+
         instance = cls(
             results,
             [],
-            int(raw_data["detail"]["kungfuId"]),
-            int(raw_data["detail"]["globalId"])
+            int(detail["kungfuId"]),
+            int(detail["globalId"]),
+            timestamp
         )
         try:
+            instance.resolve_tag()
+            exist_same_tag_equip = cast(PlayerEquipsCache | None, db.where_one(
+                PlayerEquipsCache(),
+                "global_role_id = ? AND tag = ? AND kungfu_id = ?",
+                instance.global_role_id,
+                instance.tag,
+                instance.kungfu_id,
+                default=None
+            ))
+            if exist_same_tag_equip is not None and exist_same_tag_equip.timestamp > instance.timestamp:
+                return detail
             instance.save()
         except Exception:
             return None
+        return detail
 
     @classmethod
     async def from_tuilan(cls, role_id: str, server_name: str, global_role_id: str) -> None:
@@ -1500,7 +1519,7 @@ class JX3PlayerAttribute:
             basic_attr = merge_dicts(basic_attr, set_attr)
         return FinalAttr(cast(dict[str, int], basic_attr), self.kungfu_id).output_attr()
 
-    def save(self):
+    def resolve_tag(self) -> str:
         pretags = {
             "PVE": 0,
             "PVP": 0,
@@ -1515,6 +1534,10 @@ class JX3PlayerAttribute:
                 else:
                     pretags["PVE"] += 1
             self.tag = max(pretags, key=lambda k: pretags[k])
+        return self.tag
+
+    def save(self):
+        self.resolve_tag()
         exist_same_tag_equip = cast(PlayerEquipsCache | None, db.where_one(PlayerEquipsCache(), "global_role_id = ? AND tag = ? AND kungfu_id = ?", self.global_role_id, self.tag, self.kungfu_id, default=None))
         if exist_same_tag_equip is not None:
             exist_same_tag_equip.equips_data = self.equip_lines

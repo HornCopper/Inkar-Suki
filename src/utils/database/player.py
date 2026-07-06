@@ -124,6 +124,67 @@ async def get_uid_data(global_role_id: str = "", role_id: str = "", server: str 
     else:
         return updated_data
 
+def sync_player_global_role_id(player_data: RoleData, global_role_id: int | str | None) -> RoleData:
+    if global_role_id is None:
+        return player_data
+    fixed_global_role_id = str(global_role_id)
+    if not fixed_global_role_id.isdigit() or player_data.globalRoleId == fixed_global_role_id:
+        return player_data
+
+    if player_data.id is not None:
+        if player_data.roleName and player_data.serverName:
+            db.delete(RoleData(), "roleName = ? AND serverName = ? AND id != ?", player_data.roleName, player_data.serverName, player_data.id)
+        if player_data.roleId and player_data.serverName:
+            db.delete(RoleData(), "roleId = ? AND serverName = ? AND id != ?", player_data.roleId, player_data.serverName, player_data.id)
+        db.delete(RoleData(), "globalRoleId = ? AND id != ?", fixed_global_role_id, player_data.id)
+    else:
+        if player_data.roleName and player_data.serverName:
+            db.delete(RoleData(), "roleName = ? AND serverName = ?", player_data.roleName, player_data.serverName)
+        if player_data.roleId and player_data.serverName:
+            db.delete(RoleData(), "roleId = ? AND serverName = ?", player_data.roleId, player_data.serverName)
+        db.delete(RoleData(), "globalRoleId = ?", fixed_global_role_id)
+
+    player_data.globalRoleId = fixed_global_role_id
+    db.save(player_data)
+    return player_data
+
+def sync_player_from_attribute_detail(
+    player_data: RoleData,
+    server: str,
+    role_name: str,
+    api_detail: dict[str, Any] | str | None,
+) -> RoleData:
+    if not isinstance(api_detail, dict):
+        return player_data
+    global_role_id = str(api_detail.get("globalId") or "")
+    if not global_role_id.isdigit():
+        return player_data
+
+    fixed_role = player_data if player_data.id is not None else RoleData()
+    fixed_role.bodyName = str(api_detail.get("bodyName") or player_data.bodyName)
+    fixed_role.campName = str(api_detail.get("campName") or player_data.campName)
+    fixed_role.forceName = str(api_detail.get("forceName") or player_data.forceName)
+    fixed_role.globalRoleId = global_role_id
+    fixed_role.roleName = str(api_detail.get("roleName") or player_data.roleName or role_name)
+    fixed_role.roleId = str(api_detail.get("roleId") or player_data.roleId)
+    fixed_role.serverName = str(api_detail.get("serverName") or player_data.serverName or server)
+
+    if fixed_role.id is not None:
+        if fixed_role.roleName and fixed_role.serverName:
+            db.delete(RoleData(), "roleName = ? AND serverName = ? AND id != ?", fixed_role.roleName, fixed_role.serverName, fixed_role.id)
+        if fixed_role.roleId and fixed_role.serverName:
+            db.delete(RoleData(), "roleId = ? AND serverName = ? AND id != ?", fixed_role.roleId, fixed_role.serverName, fixed_role.id)
+        db.delete(RoleData(), "globalRoleId = ? AND id != ?", fixed_role.globalRoleId, fixed_role.id)
+    else:
+        if fixed_role.roleName and fixed_role.serverName:
+            db.delete(RoleData(), "roleName = ? AND serverName = ?", fixed_role.roleName, fixed_role.serverName)
+        if fixed_role.roleId and fixed_role.serverName:
+            db.delete(RoleData(), "roleId = ? AND serverName = ?", fixed_role.roleId, fixed_role.serverName)
+        db.delete(RoleData(), "globalRoleId = ?", fixed_role.globalRoleId)
+
+    db.save(fixed_role)
+    return fixed_role
+
 async def search_player(
     role_name: str = "",
     role_id: str = "",

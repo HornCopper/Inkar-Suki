@@ -1,4 +1,5 @@
 from typing import Any
+from ipaddress import ip_address
 from urllib.parse import urlparse
 from urllib.request import urlopen
 
@@ -31,7 +32,19 @@ class Request:
     @property
     def trust_env(self) -> bool:
         host = urlparse(self.url).hostname
-        return host not in {"127.0.0.1", "localhost", "0.0.0.0", "::1"}
+        if host is None or host.lower() == "localhost":
+            return False
+        try:
+            parsed_host = ip_address(host)
+        except ValueError:
+            return True
+        # 本地 calculator 与局域网属性服务不应经过系统代理。
+        return not (
+            parsed_host.is_private
+            or parsed_host.is_loopback
+            or parsed_host.is_link_local
+            or parsed_host.is_unspecified
+        )
 
     async def get(self, expire_at: int = 0, timeout = 20, **kwargs) -> httpx.Response:
         """

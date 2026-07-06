@@ -6,7 +6,7 @@ from src.const.jx3.kungfu import Kungfu
 from src.const.path import ASSETS, TEMPLATES, SHOW, build_path
 from src.utils.file import read
 from src.utils.network import cache_image
-from src.utils.database.player import search_player
+from src.utils.database.player import search_player, sync_player_from_attribute_detail
 from src.utils.generate import generate
 from src.templates import get_saohua
 from src.utils.database.attributes import Equip, JX3PlayerAttribute, split_display_attributes
@@ -117,10 +117,11 @@ async def parse_equip(equip: Equip, last: bool = False, rating_grade: str | None
 
 async def get_attr_v4(server: str, name: str, conditions: str = ""):
     role_info = await search_player(role_name=name, server_name=server)
-    if not role_info.roleId:
-        return PROMPT.EquipNotFound
     # await JX3PlayerAttribute.from_tuilan(role_info.roleId, role_info.serverName, role_info.globalRoleId)
-    await JX3PlayerAttribute.from_jx3api(role_info.serverName, role_info.roleName, True)
+    api_detail = await JX3PlayerAttribute.from_jx3api(role_info.serverName or server, role_info.roleName or name, True)
+    role_info = sync_player_from_attribute_detail(role_info, server, name, api_detail)
+    if not role_info.globalRoleId:
+        return PROMPT.EquipNotFound
     instance = await JX3PlayerAttribute.from_database(int(role_info.globalRoleId), conditions, True)
     if instance is None:
         return PROMPT.EquipNotFound

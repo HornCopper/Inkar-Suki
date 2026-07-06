@@ -14,7 +14,7 @@ from src.const.path import (
 )
 from src.utils.file import write
 from src.utils.generate import get_uuid
-from src.utils.database.player import search_player
+from src.utils.database.player import search_player, sync_player_from_attribute_detail
 from src.utils.network import Request, cache_image
 from src.utils.database.attributes import Equip, JX3PlayerAttribute, Talent
 from src.utils.database.constant import EquipLocations
@@ -38,9 +38,10 @@ async def get_attr_v2_remake(server: str, role_name: str, segment: Literal[False
 
 async def get_attr_v2_remake(server: str, role_name: str, segment: bool = True):
     role_info = await search_player(role_name=role_name, server_name=server)
-    if not role_info.roleId:
+    api_detail = await JX3PlayerAttribute.from_jx3api(role_info.serverName or server, role_info.roleName or role_name, True)
+    role_info = sync_player_from_attribute_detail(role_info, server, role_name, api_detail)
+    if not role_info.globalRoleId:
         return PROMPT.EquipNotFound
-    await JX3PlayerAttribute.from_jx3api(role_info.serverName, role_info.roleName, True)
     instance = await JX3PlayerAttribute.from_database(int(role_info.globalRoleId), all=False)
     if instance is None:
         return PROMPT.EquipNotFound
