@@ -14,20 +14,20 @@
 
         body {
             margin: 0;
-            width: 1680px;
+            width: 2520px;
             background: #f3f5f8;
             color: #1f2933;
             font-family: TeamHealthFont, "Microsoft YaHei", "PingFang SC", sans-serif;
         }
 
         .team-health-canvas {
-            width: 1680px;
+            width: 2520px;
             padding: 34px 40px;
             background: #f3f5f8;
         }
 
         .report {
-            width: 1600px;
+            width: 2440px;
             border: 1px solid #d6dee8;
             border-radius: 8px;
             overflow: hidden;
@@ -105,27 +105,27 @@
         }
 
         col.identity-col {
-            width: 230px;
+            width: 335px;
         }
 
         col.tank-col {
-            width: 92px;
+            width: 120px;
         }
 
         col.grade-col {
-            width: 104px;
+            width: 165px;
         }
 
         col.formation-col {
-            width: 150px;
+            width: 235px;
         }
 
         col.consumable-col {
-            width: 150px;
+            width: 265px;
         }
 
         col.ingot-col {
-            width: 128px;
+            width: 255px;
         }
 
         thead th {
@@ -213,12 +213,12 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            min-width: 76px;
+            min-width: 96px;
         }
 
         .grade-icon {
-            width: 52px;
-            height: 52px;
+            width: 70px;
+            height: 70px;
             object-fit: contain;
         }
 
@@ -230,7 +230,7 @@
         }
 
         .failed .grade-block {
-            min-width: 84px;
+            min-width: 96px;
         }
 
         .failed .grade-text {
@@ -460,6 +460,7 @@
                 </div>
                 <footer class="footer">
                     <div>排序依据为装备评级总分，图中仅展示评级，不展示具体评分。</div>
+                    <div>本次缓存命中 {{ cache_hit_count }}，重新计算 {{ refreshed_count }}。</div>
                     <div>T增益层数仅 T 心法有值；装备更新日期来自本地已提交/缓存的角色装备记录。</div>
                 </footer>
             </main>

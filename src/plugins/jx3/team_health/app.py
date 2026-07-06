@@ -1,7 +1,9 @@
 from __future__ import annotations
 
 import asyncio
+import hashlib
 import html
+import json
 import secrets
 from pathlib import Path
 from typing import Any
@@ -36,6 +38,11 @@ from src.plugins.jx3.calculator.equipment_rating import (
 
 TEAM_HEALTH_CAPACITY = 25
 TEAM_HEALTH_TEMPLATE = build_path(TEMPLATES, ["jx3", "team_health_check.html"])
+TEAM_HEALTH_CACHE_VERSION = 1
+TEAM_HEALTH_CANDIDATE_LEVEL = {
+    "min": 32500,
+    "max": 43000,
+}
 DELETE_TEAM_CONFIRM_TTL = 300
 BIND_KUNGFU_SELECT_TTL = 300
 _PENDING_DELETE_TEAMS: dict[tuple[int, str], int] = {}
@@ -94,6 +101,19 @@ def _owned_team(creator_id: int, team_name: str) -> RaidTeamHealth | None:
         int(creator_id),
         team_name,
         default=None,
+    )
+
+
+def _owned_teams(creator_id: int) -> list[RaidTeamHealth]:
+    teams = db.where_all(
+        RaidTeamHealth(),
+        "creator_id = ?",
+        int(creator_id),
+        default=[],
+    )
+    return sorted(
+        list(teams or []),
+        key=lambda team: (int(team.create_time or 0), str(team.team_name or "")),
     )
 
 
@@ -436,6 +456,44 @@ def query_team_status(creator_id: int, team_name: str) -> str:
     return "\n".join(lines)
 
 
+def team_management_help() -> str:
+    return (
+        "团队管理指令：\n"
+        "注册团队 <团队名>\n"
+        "绑定团队 <区服> <角色> <团队唯一特征码>\n"
+        "绑定团队 <区服> <角色> <心法> <团队唯一特征码>\n"
+        "团队管理 我的团队\n"
+        "团队管理 <团队名> 状态\n"
+        "团队管理 <团队名> 体检\n"
+        "团队管理 <团队名> 删除成员 <角色名>\n"
+        "团队管理 <团队名> 删除成员 <区服> <角色名>\n"
+        "团队管理 <团队名> 重置特征码\n"
+        "团队管理 <团队名> 删除团队\n"
+        "团队管理 <团队名> 删除团队 确认\n"
+        "确认删除 <团队名>\n"
+        "说明：团队按发起命令 QQ 名下团队名查找；绑定成员最多 25 个，同团队内同区服同角色重复绑定会覆盖原记录。"
+    )
+
+
+def list_owned_teams(creator_id: int) -> str:
+    teams = _owned_teams(creator_id)
+    if not teams:
+        return "当前账号名下暂无团队。\n可在群内发送：注册团队 <团队名>"
+
+    lines = [f"我的团队：共 {len(teams)} 个"]
+    for index, team in enumerate(teams, start=1):
+        members = list(team.members or [])
+        lines.append(
+            f"{index}. {team.team_name} "
+            f"成员 {len(members)}/{TEAM_HEALTH_CAPACITY} "
+            f"注册群 {team.group_id} "
+            f"特征码 {team.feature_code} "
+            f"更新 {_format_time(team.update_time)}"
+        )
+    lines.append("查看详情：团队管理 <团队名> 状态")
+    return "\n".join(lines)
+
+
 def remember_delete_team_confirmation(user_id: int, team_name: str) -> None:
     _cleanup_delete_team_confirmations()
     _PENDING_DELETE_TEAMS[_delete_team_confirm_key(user_id, team_name)] = Time().raw_time
@@ -538,6 +596,49 @@ def _empty_recommendation() -> dict[str, str]:
     }
 
 
+def _json_hash(value: Any) -> str:
+    raw = json.dumps(value, ensure_ascii=False, sort_keys=True, default=str)
+    return hashlib.sha256(raw.encode("utf-8")).hexdigest()
+
+
+def _team_health_cache_key(
+    member: dict[str, Any],
+    equip: JX3PlayerAttribute,
+    jcl_data: list[Any],
+) -> dict[str, Any]:
+    return {
+        "version": TEAM_HEALTH_CACHE_VERSION,
+        "global_role_id": int(member.get("global_role_id") or 0),
+        "kungfu_id": int(member.get("kungfu_id") or 0),
+        "equip_time": int(equip.timestamp),
+        "equip_hash": _json_hash(jcl_data),
+        "candidate_level": dict(TEAM_HEALTH_CANDIDATE_LEVEL),
+    }
+
+
+def _cached_team_health_row(member: dict[str, Any], cache_key: dict[str, Any]) -> dict[str, Any] | None:
+    cache = member.get("health_cache")
+    if not isinstance(cache, dict):
+        return None
+    if cache.get("version") != TEAM_HEALTH_CACHE_VERSION:
+        return None
+    if cache.get("key") != cache_key:
+        return None
+    row = cache.get("row")
+    if not isinstance(row, dict):
+        return None
+    return dict(row)
+
+
+def _team_health_cache(cache_key: dict[str, Any], row: dict[str, Any]) -> dict[str, Any]:
+    return {
+        "version": TEAM_HEALTH_CACHE_VERSION,
+        "key": cache_key,
+        "row": row,
+        "cache_time": Time().raw_time,
+    }
+
+
 def _recommendation_item(item: dict[str, Any], *, with_delta: bool = False) -> dict[str, str]:
     name = str(item.get("name") or "").strip()
     if with_delta:
@@ -630,52 +731,97 @@ async def _rate_member(member: dict[str, Any]) -> dict[str, Any]:
         equip = await _rating_equip(global_role_id, kungfu_id)
         if equip is None:
             raise ValueError("未找到已绑定心法的可评级 PVE 装备数据")
+        jcl_data = normalize_calculator_jcl_data(equip.equip_lines)
+        cache_key = _team_health_cache_key(member, equip, jcl_data)
+        cached_row = _cached_team_health_row(member, cache_key)
+        if cached_row is not None:
+            return {
+                "row": cached_row,
+                "cache": member.get("health_cache"),
+                "cache_hit": True,
+                "equip_time": int(equip.timestamp),
+            }
         payload = {
             "kungfu_id": kungfu_id,
-            "jcl_data": normalize_calculator_jcl_data(equip.equip_lines),
+            "jcl_data": jcl_data,
             "role": {
                 "name": str(member.get("role_name") or ""),
                 "server": str(member.get("server") or ""),
                 "global_role_id": global_role_id,
             },
-            "candidate_level": {
-                "min": 32500,
-                "max": 43000,
-            },
+            "candidate_level": dict(TEAM_HEALTH_CANDIDATE_LEVEL),
         }
         data = await _request_equipment_rating_data(payload)
         if isinstance(data, str):
             raise ValueError(data)
-        return _result_payload(member, data, equip)
+        row = _result_payload(member, data, equip)
+        return {
+            "row": row,
+            "cache": _team_health_cache(cache_key, row),
+            "cache_hit": False,
+            "equip_time": int(equip.timestamp),
+        }
     except Exception as exc:
         kungfu_id = int(member.get("kungfu_id") or 0)
         kungfu = Kungfu.with_internel_id(kungfu_id, convert_to_pc=True)
         return {
-            "ok": False,
-            "sort_score": -1,
-            "role_name": _escape(member.get("role_name")),
-            "server": _escape(member.get("server")),
-            "role_id": _escape(member.get("role_id")),
-            "global_role_id": _escape(member.get("global_role_id")),
-            "kungfu_name": _escape(kungfu.name or member.get("kungfu_name") or kungfu_id),
-            "kungfu_icon": Path(kungfu.icon).as_uri(),
-            "grade": "未完成",
-            "grade_icon": "",
-            "grade_class": "grade-failed",
-            "theme": RANK_THEMES["D"],
-            "error": _escape(str(exc) or type(exc).__name__),
-            "equip_time": _format_time(member.get("equip_time")),
-            "formation_top": [
-                _empty_recommendation(),
-                _empty_recommendation(),
-                _empty_recommendation(),
-            ],
-            "food_recommendations": [_empty_recommendation()],
-            "medicine_recommendations": [_empty_recommendation()],
-            "home_recommendations": [_empty_recommendation()],
-            "ingot_recommendations": [_empty_recommendation()],
-            "tank_stacks": "-",
+            "row": {
+                "ok": False,
+                "sort_score": -1,
+                "role_name": _escape(member.get("role_name")),
+                "server": _escape(member.get("server")),
+                "role_id": _escape(member.get("role_id")),
+                "global_role_id": _escape(member.get("global_role_id")),
+                "kungfu_name": _escape(kungfu.name or member.get("kungfu_name") or kungfu_id),
+                "kungfu_icon": Path(kungfu.icon).as_uri(),
+                "grade": "未完成",
+                "grade_icon": "",
+                "grade_class": "grade-failed",
+                "theme": RANK_THEMES["D"],
+                "error": _escape(str(exc) or type(exc).__name__),
+                "equip_time": _format_time(member.get("equip_time")),
+                "formation_top": [
+                    _empty_recommendation(),
+                    _empty_recommendation(),
+                    _empty_recommendation(),
+                ],
+                "food_recommendations": [_empty_recommendation()],
+                "medicine_recommendations": [_empty_recommendation()],
+                "home_recommendations": [_empty_recommendation()],
+                "ingot_recommendations": [_empty_recommendation()],
+                "tank_stacks": "-",
+            },
+            "cache": None,
+            "cache_hit": False,
+            "equip_time": int(member.get("equip_time") or 0),
         }
+
+
+def _save_team_health_cache_results(team: RaidTeamHealth, members: list[dict[str, Any]], results: list[dict[str, Any]]) -> None:
+    changed = False
+    updated_members = []
+    for member, result in zip(members, results):
+        updated_member = dict(member)
+        equip_time = int(result.get("equip_time") or 0)
+        if equip_time and int(updated_member.get("equip_time") or 0) != equip_time:
+            updated_member["equip_time"] = equip_time
+            changed = True
+
+        cache = result.get("cache")
+        if isinstance(cache, dict):
+            if updated_member.get("health_cache") != cache:
+                updated_member["health_cache"] = cache
+                changed = True
+        elif "health_cache" in updated_member:
+            updated_member.pop("health_cache", None)
+            changed = True
+        updated_members.append(updated_member)
+
+    if not changed:
+        return
+    team.members = updated_members
+    team.update_time = Time().raw_time
+    db.save(team)
 
 
 async def render_team_health_check(creator_id: int, team_name: str) -> str | ms:
@@ -693,17 +839,22 @@ async def render_team_health_check(creator_id: int, team_name: str) -> str | ms:
             return await _rate_member(member)
 
     results = await asyncio.gather(*(rate_with_limit(member) for member in members))
+    _save_team_health_cache_results(team, members, results)
     sorted_results = sorted(
         enumerate(results),
-        key=lambda item: (-float(item[1].get("sort_score", -1)), item[0]),
+        key=lambda item: (-float(item[1]["row"].get("sort_score", -1)), item[0]),
     )
-    rows = [item for _, item in sorted_results]
+    rows = [item["row"] for _, item in sorted_results]
     ok_count = sum(1 for row in rows if row.get("ok"))
+    cache_hit_count = sum(1 for item in results if item.get("cache_hit"))
+    refreshed_count = sum(1 for item in results if item.get("cache") and not item.get("cache_hit"))
     html_source = Template(read(TEAM_HEALTH_TEMPLATE)).render(
         font=Path(build_path(ASSETS, ["font", "PingFangSC-Medium.otf"])).as_uri(),
         team_name=_escape(team.team_name),
         member_count=len(members),
         ok_count=ok_count,
+        cache_hit_count=cache_hit_count,
+        refreshed_count=refreshed_count,
         capacity=TEAM_HEALTH_CAPACITY,
         generated_at=Time().format("%m-%d %H:%M"),
         rows=rows,
@@ -712,5 +863,5 @@ async def render_team_health_check(creator_id: int, team_name: str) -> str | ms:
         html_source,
         ".team-health-canvas",
         segment=True,
-        viewport={"width": 1680, "height": 2400},
+        viewport={"width": 2520, "height": 2400},
     )

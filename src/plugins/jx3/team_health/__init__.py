@@ -12,12 +12,14 @@ from .app import (
     delete_member,
     delete_team,
     format_bind_kungfu_selection,
+    list_owned_teams,
     prepare_bind_team_member_selection,
     prepare_delete_team_confirmation,
     query_team_status,
     render_team_health_check,
     remember_bind_kungfu_selection,
     reset_feature_code,
+    team_management_help,
 )
 
 
@@ -115,17 +117,20 @@ confirm_delete_team_matcher = on_command("确认删除", priority=5, force_white
 @raid_team_manage_matcher.handle()
 async def _(event: TeamHealthMessageEvent, args: Message = CommandArg()):
     parts = args.extract_plain_text().strip().split()
-    if len(parts) < 2:
-        await raid_team_manage_matcher.finish(
-            "参考格式：团队管理 <团队名> 状态\n"
-            "参考格式：团队管理 <团队名> 体检\n"
-            "参考格式：团队管理 <团队名> 删除成员 <角色名>\n"
-            "参考格式：团队管理 <团队名> 删除团队\n"
-            "参考格式：团队管理 <团队名> 重置特征码"
-        )
+    if not parts:
+        await raid_team_manage_matcher.finish(team_management_help())
+    if len(parts) == 1:
+        if parts[0] in {"help", "帮助", "指令", "菜单"}:
+            await raid_team_manage_matcher.finish(team_management_help())
+        if parts[0] == "我的团队":
+            await raid_team_manage_matcher.finish(list_owned_teams(event.user_id))
+        await raid_team_manage_matcher.finish(team_management_help())
 
     team_name = parts[0]
     action = parts[1]
+
+    if action in {"help", "帮助", "指令", "菜单"}:
+        await raid_team_manage_matcher.finish(team_management_help())
 
     if action == "重置特征码":
         if len(parts) != 2:
@@ -176,7 +181,7 @@ async def _(event: TeamHealthMessageEvent, args: Message = CommandArg()):
             )
 
     await raid_team_manage_matcher.finish(
-        "未知团队管理动作。可用动作：状态、体检、删除成员、删除团队、重置特征码。"
+        "未知团队管理动作。\n" + team_management_help()
     )
 
 
