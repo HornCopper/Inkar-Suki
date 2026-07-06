@@ -20,6 +20,11 @@ from .assistance import (
     dissolve_team_matcher,
     share_team_matcher
 )
+from .team_health import (
+    bind_raid_team_matcher,
+    raid_team_manage_matcher,
+    register_raid_team_matcher
+)
 from .attributes import (
     attribute_v2remake_matcher,
     attribute_v4_matcher,

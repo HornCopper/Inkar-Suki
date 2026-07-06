@@ -49,6 +49,16 @@ class GroupSettings(LiteModel):
     expire: int = 0
     invitor: int = 0
 
+class RaidTeamHealth(LiteModel):
+    TABLE_NAME: str = "raid_team_health"
+    creator_id: int = 0
+    group_id: int = 0
+    team_name: str = ""
+    feature_code: str = ""
+    members: list = []
+    create_time: int = 0
+    update_time: int = 0
+
 class ItemKeywordMap(LiteModel):
     TABLE_NAME: str = "item_keyword"
     map_name: str = ""
