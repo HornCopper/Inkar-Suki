@@ -10,6 +10,7 @@ from typing import Any
 
 from jinja2 import Template
 from nonebot.adapters.onebot.v11 import MessageSegment as ms
+from nonebot.log import logger
 
 from src.const.jx3.kungfu import Kungfu
 from src.const.jx3.server import Server
@@ -33,12 +34,13 @@ from src.plugins.jx3.calculator.equipment_rating import (
     _prepare_tank_vitality_conversion,
     _rating_pve_kungfu_options,
     _request_equipment_rating_data,
+    record_equipment_rating_rank,
 )
 
 
 TEAM_HEALTH_CAPACITY = 25
 TEAM_HEALTH_TEMPLATE = build_path(TEMPLATES, ["jx3", "team_health_check.html"])
-TEAM_HEALTH_CACHE_VERSION = 1
+TEAM_HEALTH_CACHE_VERSION = 2
 TEAM_HEALTH_CANDIDATE_LEVEL = {
     "min": 32500,
     "max": 43000,
@@ -630,11 +632,42 @@ def _cached_team_health_row(member: dict[str, Any], cache_key: dict[str, Any]) -
     return dict(row)
 
 
-def _team_health_cache(cache_key: dict[str, Any], row: dict[str, Any]) -> dict[str, Any]:
+def _team_health_rank_data(data: dict[str, Any]) -> dict[str, Any]:
+    adaptive = data.get("adaptive_consumables") if isinstance(data.get("adaptive_consumables"), dict) else {}
+    return {
+        "meta": data.get("meta") if isinstance(data.get("meta"), dict) else {},
+        "adaptive_consumables": {
+            "status": adaptive.get("status"),
+            "dps": adaptive.get("dps"),
+        },
+    }
+
+
+def _record_team_health_rank(member: dict[str, Any], rank_data: dict[str, Any]) -> None:
+    if not isinstance(rank_data, dict):
+        return
+    try:
+        record_equipment_rating_rank(
+            rank_data,
+            str(member.get("role_name") or ""),
+            str(member.get("server") or ""),
+            str(member.get("role_id") or ""),
+            int(member.get("global_role_id") or 0),
+        )
+    except Exception as exc:
+        logger.warning(f"团队评级伤害排名记录失败：{exc}")
+
+
+def _team_health_cache(
+    cache_key: dict[str, Any],
+    row: dict[str, Any],
+    rank_data: dict[str, Any] | None = None,
+) -> dict[str, Any]:
     return {
         "version": TEAM_HEALTH_CACHE_VERSION,
         "key": cache_key,
         "row": row,
+        "rank_data": rank_data or {},
         "cache_time": Time().raw_time,
     }
 
@@ -735,6 +768,9 @@ async def _rate_member(member: dict[str, Any]) -> dict[str, Any]:
         cache_key = _team_health_cache_key(member, equip, jcl_data)
         cached_row = _cached_team_health_row(member, cache_key)
         if cached_row is not None:
+            cache = member.get("health_cache") if isinstance(member.get("health_cache"), dict) else {}
+            rank_data = cache.get("rank_data") if isinstance(cache.get("rank_data"), dict) else {}
+            _record_team_health_rank(member, rank_data)
             return {
                 "row": cached_row,
                 "cache": member.get("health_cache"),
@@ -754,10 +790,12 @@ async def _rate_member(member: dict[str, Any]) -> dict[str, Any]:
         data = await _request_equipment_rating_data(payload)
         if isinstance(data, str):
             raise ValueError(data)
+        rank_data = _team_health_rank_data(data)
+        _record_team_health_rank(member, rank_data)
         row = _result_payload(member, data, equip)
         return {
             "row": row,
-            "cache": _team_health_cache(cache_key, row),
+            "cache": _team_health_cache(cache_key, row, rank_data),
             "cache_hit": False,
             "equip_time": int(equip.timestamp),
         }

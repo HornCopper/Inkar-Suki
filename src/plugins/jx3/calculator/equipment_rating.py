@@ -743,6 +743,16 @@ def _record_equipment_rating_rank(
     }
 
 
+def record_equipment_rating_rank(
+    data: dict[str, Any],
+    role_name: str,
+    server_name: str,
+    role_id: str,
+    global_role_id: int,
+) -> dict[str, Any] | None:
+    return _record_equipment_rating_rank(data, role_name, server_name, role_id, global_role_id)
+
+
 async def _fetch_supported_equipment_rating_data(timeout: float = 8) -> dict[str, Any] | str:
     try:
         response = await Request(f"{Config.jx3.api.calculator_url}/equipment_rating/kungfus").get(timeout=timeout)
@@ -1860,7 +1870,7 @@ async def _finish_equipment_rating_calculation(
     rank_data = None
     if rating_equip is not None:
         try:
-            rank_data = _record_equipment_rating_rank(data, role_name, server_name, role_id, global_role_id)
+            rank_data = record_equipment_rating_rank(data, role_name, server_name, role_id, global_role_id)
         except Exception as exc:
             logger.warning(f"装备评级伤害排名记录失败：{exc}")
     timeline_data = await _request_equipment_rating_timeline(data, payload)
