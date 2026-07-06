@@ -198,3 +198,17 @@ class EquipReplacementLog(LiteModel):
     user_id: int = 0
     message: str = ""
     global_role_id: int = 0
+
+class RandomImageRecord(LiteModel):
+    TABLE_NAME: str = "random_image_record"
+    user_id: int = 0
+    group_id: int = 0
+    server: str = ""
+    box_name: str = ""
+    box_item_id: str = ""
+    box_price: int = 0
+    result_name: str = ""
+    result_item_id: str = ""
+    result_price: int = 0
+    profit: int = 0
+    timestamp: int = 0

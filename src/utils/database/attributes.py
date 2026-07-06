@@ -1125,22 +1125,21 @@ class JX3PlayerAttribute:
             url = read(CONST + "/cache/attribute.txt")
             params = {
                 "server": server,
-                "name": name,
-                "format": "client"
+                "name": name
             }
             try:
                 raw_data = (await Request(url, params=params).get()).json()
             except Exception:
                 return None
             
-        if raw_data["code"] != 200:
+        if raw_data["status"] != 200:
             return PROMPT.PlayerNotExist
         results = []
         
-        if "equipList" not in raw_data["data"]:
+        if "equipList" not in raw_data["detail"]:
             return None
 
-        for each_equip in raw_data["data"]["equipList"]:
+        for each_equip in raw_data["detail"]["equipList"]:
             position_id = each_equip["nItemIndex"]
             
             if position_id not in range(0, 12+1):
@@ -1152,14 +1151,14 @@ class JX3PlayerAttribute:
             
             diamonds = []
 
-            for each_diamond in each_equip.get("aSlotItem", []):
+            for each_diamond in each_equip.get("aMountDiamond", []):
                 diamonds.append(
                     each_diamond
                 )
             
             if position_id == 0:
                 diamonds.append(
-                    each_equip["ColorInfo"][0]
+                    each_equip["aColorDiamond"]
                 )
 
             permanent_enchant_id = each_equip["dwPermanentEnchantID"]
@@ -1181,8 +1180,8 @@ class JX3PlayerAttribute:
         instance = cls(
             results,
             [],
-            int(raw_data["data"]["kungfuId"]),
-            int(raw_data["data"]["globalId"])
+            int(raw_data["detail"]["kungfuId"]),
+            int(raw_data["detail"]["globalId"])
         )
         try:
             instance.save()

@@ -20,7 +20,8 @@ from src.utils.database.classes import (
     SerendipityData,
     GroupMessage,
     RandomAffectionRecord,
-    EquipReplacementLog
+    EquipReplacementLog,
+    RandomImageRecord
 )
 
 from src.const.path import DATA, build_path
@@ -73,5 +74,6 @@ rank_db.auto_migrate(
 logs_db = Database(build_path(DATA, ["logs.db"]))
 
 logs_db.auto_migrate(
-    EquipReplacementLog()
+    EquipReplacementLog(),
+    RandomImageRecord()
 )

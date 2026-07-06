@@ -53,9 +53,12 @@ class Request:
                 return httpx.Response(status_code=200, content=cached.response_data.encode("utf-8"))
 
         async with httpx.AsyncClient(follow_redirects=True, verify=False, trust_env=self.trust_env) as client:
-            if "?" in self.url:
-                self.params = {}
-            response = await client.get(self.url, params=(self.params or None), headers=self.headers, timeout=timeout, **kwargs)
+            request_url = self.url
+            request_params = self.params or None
+            if request_params and "?" in self.url:
+                request_url = str(httpx.URL(self.url).copy_merge_params(request_params))
+                request_params = None
+            response = await client.get(request_url, params=request_params, headers=self.headers, timeout=timeout, **kwargs)
 
         if expire_at != 0:
             cache_db.delete(RequestData(), "url = ? AND timestamp < ?", self.url, Time().raw_time)
