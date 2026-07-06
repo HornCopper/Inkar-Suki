@@ -41,6 +41,7 @@ from .loop_selection import (
     calculator_loop_entries as _calculator_loop_entries,
     format_calculator_loop_selection,
 )
+from .timeline_render import _chart_svg, _format_compact_number
 from .universe import UniversalCalculator
 
 
@@ -68,6 +69,8 @@ EQUIPMENT_RATING_IMAGE_SEND_FAILED = (
     "建议重启 NapCat。"
 )
 EQUIPMENT_RATING_STARTED = "装备评级中，请稍等片刻！"
+EQUIPMENT_RATING_TIMELINE_BIN_SIZE = 1.5
+EQUIPMENT_RATING_TIMELINE_ROLLING_WINDOW = 10
 RATING_LOOP_LIST_KEYWORDS = {"评级列表", "循环列表", "JCL列表", "jcl列表"}
 SPECIAL_PVE_KUNGFU_TAGS = {
     10014: "QCPVE",
@@ -539,6 +542,95 @@ def _format_signed_percent(value: Any) -> str:
     if abs(number) < 0.05:
         return "+0.0%"
     return f"{number:+.1f}%"
+
+
+def _equipment_rating_timeline_loop_payload(meta: dict[str, Any]) -> dict[str, Any] | None:
+    jcl = meta.get("jcl") if isinstance(meta.get("jcl"), dict) else {}
+    weapon = str(jcl.get("weapon") or "").strip()
+    haste = str(jcl.get("haste") or "").strip()
+    loop_name = str(jcl.get("raw_loop") or "").strip()
+    if not weapon or not haste or not loop_name:
+        return None
+    selected_loop = meta.get("jcl_loop") if isinstance(meta.get("jcl_loop"), dict) else {}
+    user_id = int(_to_float(selected_loop.get("user_id")))
+    payload = {
+        "name": str(meta.get("loop_name") or loop_name),
+        "index": 1,
+        "weapon": weapon,
+        "haste": haste,
+        "loop": loop_name,
+        "user_id": user_id,
+    }
+    if str(meta.get("jcl_source") or "") == "rating_jcl":
+        payload["source"] = "rating_jcl"
+    return payload
+
+
+async def _request_equipment_rating_timeline(
+    rating_data: dict[str, Any],
+    rating_payload: dict[str, Any],
+) -> dict[str, Any] | None:
+    meta = rating_data.get("meta") if isinstance(rating_data.get("meta"), dict) else {}
+    adaptive = rating_data.get("adaptive_consumables") if isinstance(rating_data.get("adaptive_consumables"), dict) else {}
+    if adaptive.get("status") != "ok":
+        return None
+    full_income = [str(code) for code in adaptive.get("full_income_codes") or [] if str(code)]
+    if not full_income:
+        return None
+    loop_payload = _equipment_rating_timeline_loop_payload(meta)
+    if loop_payload is None:
+        return None
+    payload = {
+        "kungfu_id": int(_to_float(meta.get("kungfu_id"))),
+        "jcl_data": normalize_calculator_jcl_data(rating_payload.get("jcl_data") or []),
+        "loops": [loop_payload],
+        "full_income": full_income,
+        "user_id": int(loop_payload.get("user_id") or 0),
+        "bin_size": EQUIPMENT_RATING_TIMELINE_BIN_SIZE,
+        "rolling_window": EQUIPMENT_RATING_TIMELINE_ROLLING_WINDOW,
+        "rating_replay": True,
+    }
+    try:
+        response = await Request(f"{Config.jx3.api.calculator_url}/damage_timeline", params=payload).post(timeout=120)
+        result = response.json()
+    except Exception as exc:
+        logger.warning(f"装备评级循环曲线生成失败：{exc}")
+        return None
+    if result.get("code") != 200:
+        logger.warning(f"装备评级循环曲线生成失败：{result.get('msg') or 'calculator 返回失败'}")
+        return None
+    data = result.get("data")
+    return data if isinstance(data, dict) else None
+
+
+def _prepare_rating_timeline(timeline_data: dict[str, Any] | None) -> dict[str, str] | None:
+    if not isinstance(timeline_data, dict):
+        return None
+    series_list = [series for series in timeline_data.get("series") or [] if isinstance(series, dict)]
+    if not series_list:
+        return None
+    bin_size = _to_float(timeline_data.get("bin_size"), EQUIPMENT_RATING_TIMELINE_BIN_SIZE)
+    chart = _chart_svg(
+        series_list,
+        "damage_per_second_bin",
+        ["#2F6BFF"],
+        f"每{bin_size:g}秒伤害量" if bin_size != 1 else "每秒伤害量",
+        460,
+        142,
+        True,
+        buff_overlays=timeline_data.get("buff_overlays") or [],
+        stroke_width=3,
+    )
+    if not chart:
+        return None
+    series = series_list[0]
+    adjusted = series.get("adjusted") if isinstance(series.get("adjusted"), dict) else {}
+    return {
+        "chart": chart,
+        "loop_name": str(series.get("loop_name") or "评级循环"),
+        "dps": _format_compact_number(adjusted.get("dps")),
+        "total_damage": _format_compact_number(adjusted.get("total_damage")),
+    }
 
 
 async def _fetch_supported_equipment_rating_data(timeout: float = 8) -> dict[str, Any] | str:
@@ -1251,6 +1343,11 @@ def _prepare_adaptive_consumables(raw: Any) -> dict[str, Any] | None:
         "title": str(raw.get("name") or "当前装备自适应小药"),
         "subtitle": "基于当前配装与目标加速档自动推荐",
         "summary": " / ".join(summary_parts),
+        "dps_text": _format_compact_number(raw.get("dps")),
+        "raw_dps_text": _format_compact_number(raw.get("raw_dps")),
+        "delta_text": _format_signed(raw.get("delta")),
+        "delta_percent_text": _format_signed_percent(raw.get("delta_percent")),
+        "full_income_codes": [str(code) for code in raw.get("full_income_codes") or [] if str(code)],
         "haste": _prepare_adaptive_haste(raw.get("haste")),
         "formation": formation,
         "formations": formation_entries,
@@ -1342,6 +1439,7 @@ async def render_equipment_rating_image(
     role_name: str,
     server_name: str,
     rating_equip: JX3PlayerAttribute | None = None,
+    timeline_data: dict[str, Any] | None = None,
 ):
     meta = data["meta"]
     summary = data["summary"]
@@ -1391,6 +1489,7 @@ async def render_equipment_rating_image(
         detail_attrs=detail_attrs,
         attribute_incomes=_prepare_attribute_incomes(summary),
         adaptive_consumables=_prepare_adaptive_consumables(data.get("adaptive_consumables")),
+        rating_timeline=_prepare_rating_timeline(timeline_data),
         equipment_rating_qrcode=_rating_group_qrcode(),
         tank_vitality_conversion=_prepare_tank_vitality_conversion(summary, kungfu),
         distribution=_prepare_distribution_view(meta.get("kungfu_id")),
@@ -1642,9 +1741,10 @@ async def _finish_equipment_rating_calculation(
     data = await _request_equipment_rating_data(payload)
     if isinstance(data, str):
         await matcher.finish(data)
+    timeline_data = await _request_equipment_rating_timeline(data, payload)
     await finish_equipment_rating_response(
         matcher,
-        await render_equipment_rating_image(data, role_name, server_name, rating_equip)
+        await render_equipment_rating_image(data, role_name, server_name, rating_equip, timeline_data)
     )
 
 
