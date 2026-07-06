@@ -23,6 +23,8 @@ from src.utils.database.attributes import (
     get_attr_name,
     split_display_attributes,
 )
+from src.utils.database import rank_db
+from src.utils.database.classes import EquipmentRatingDpsRank
 from src.utils.database.constant import (
     CRITICAL_DAMAGE_DIVISOR,
     CRITICAL_DIVISOR,
@@ -33,6 +35,7 @@ from src.utils.database.player import get_uid_data, search_player
 from src.utils.file import read
 from src.utils.generate import generate
 from src.utils.network import Request
+from src.utils.time import Time
 from src.plugins.preferences.app import Preference
 
 from .base import normalize_calculator_jcl_data
@@ -630,6 +633,113 @@ def _prepare_rating_timeline(timeline_data: dict[str, Any] | None) -> dict[str, 
         "loop_name": str(series.get("loop_name") or "评级循环"),
         "dps": _format_compact_number(adjusted.get("dps")),
         "total_damage": _format_compact_number(adjusted.get("total_damage")),
+    }
+
+
+def _equipment_rating_adaptive_dps(data: dict[str, Any]) -> int:
+    adaptive = data.get("adaptive_consumables") if isinstance(data.get("adaptive_consumables"), dict) else {}
+    if adaptive.get("status") != "ok":
+        return 0
+    return int(_to_float(adaptive.get("dps")))
+
+
+def _equipment_rating_rank_jcl_key(meta: dict[str, Any]) -> str:
+    jcl = meta.get("jcl") if isinstance(meta.get("jcl"), dict) else {}
+    selected_loop = meta.get("jcl_loop") if isinstance(meta.get("jcl_loop"), dict) else {}
+    weapon = str(jcl.get("weapon") or "").strip()
+    haste = str(jcl.get("haste") or "").strip()
+    loop_name = str(jcl.get("raw_loop") or jcl.get("loop") or meta.get("loop_name") or "").strip()
+    if not loop_name:
+        return ""
+    payload = {
+        "weapon": weapon,
+        "haste": haste,
+        "loop": loop_name,
+        "source": str(meta.get("jcl_source") or selected_loop.get("source") or "").strip(),
+        "user_id": int(_to_float(selected_loop.get("user_id"))),
+    }
+    return json.dumps(payload, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
+
+
+def _equipment_rating_rank_jcl_name(meta: dict[str, Any]) -> str:
+    jcl = meta.get("jcl") if isinstance(meta.get("jcl"), dict) else {}
+    weapon = str(jcl.get("weapon") or "").strip()
+    haste = str(jcl.get("haste") or "").strip()
+    loop_name = str(jcl.get("raw_loop") or jcl.get("loop") or meta.get("loop_name") or "").strip()
+    prefix = f"{weapon}{haste}".strip()
+    if prefix and loop_name:
+        return f"{prefix}_{loop_name}"
+    return loop_name or str(meta.get("loop_name") or "评级专用循环")
+
+
+def _same_equipment_rating_role(record: EquipmentRatingDpsRank, server_name: str, role_id: str, global_role_id: int) -> bool:
+    if global_role_id > 0 and int(record.global_role_id or 0) == global_role_id:
+        return True
+    return bool(role_id) and record.server_name == server_name and record.role_id == role_id
+
+
+def _record_equipment_rating_rank(
+    data: dict[str, Any],
+    role_name: str,
+    server_name: str,
+    role_id: str,
+    global_role_id: int,
+) -> dict[str, Any] | None:
+    meta = data.get("meta") if isinstance(data.get("meta"), dict) else {}
+    kungfu_id = int(_to_float(meta.get("kungfu_id")))
+    dps = _equipment_rating_adaptive_dps(data)
+    jcl_key = _equipment_rating_rank_jcl_key(meta)
+    if kungfu_id <= 0 or dps <= 0 or not jcl_key:
+        return None
+
+    records = rank_db.where_all(
+        EquipmentRatingDpsRank(),
+        "kungfu_id = ? AND jcl_key = ?",
+        kungfu_id,
+        jcl_key,
+        default=[],
+    ) or []
+    same_role_records = [
+        record
+        for record in records
+        if isinstance(record, EquipmentRatingDpsRank)
+        and _same_equipment_rating_role(record, server_name, role_id, global_role_id)
+    ]
+    current = same_role_records[0] if same_role_records else EquipmentRatingDpsRank()
+    for duplicate in same_role_records[1:]:
+        if duplicate.id is not None:
+            rank_db.delete(EquipmentRatingDpsRank(), "id = ?", duplicate.id)
+
+    current.role_name = role_name
+    current.server_name = server_name
+    current.role_id = role_id
+    current.global_role_id = global_role_id
+    current.kungfu_id = kungfu_id
+    current.jcl_key = jcl_key
+    current.jcl_name = _equipment_rating_rank_jcl_name(meta)
+    current.dps = dps
+    current.timestamp = Time().raw_time
+    rank_db.save(current)
+
+    ranking_records = rank_db.where_all(
+        EquipmentRatingDpsRank(),
+        "kungfu_id = ? AND jcl_key = ?",
+        kungfu_id,
+        jcl_key,
+        default=[],
+    ) or []
+    valid_records = [
+        record
+        for record in ranking_records
+        if isinstance(record, EquipmentRatingDpsRank) and int(record.dps or 0) > 0
+    ]
+    if not valid_records:
+        return None
+    rank = 1 + sum(1 for record in valid_records if int(record.dps or 0) > dps)
+    return {
+        "rank": rank,
+        "total": len(valid_records),
+        "text": f"伤害排名 第 {rank} / {len(valid_records)}",
     }
 
 
@@ -1440,6 +1550,7 @@ async def render_equipment_rating_image(
     server_name: str,
     rating_equip: JX3PlayerAttribute | None = None,
     timeline_data: dict[str, Any] | None = None,
+    rank_data: dict[str, Any] | None = None,
 ):
     meta = data["meta"]
     summary = data["summary"]
@@ -1489,6 +1600,7 @@ async def render_equipment_rating_image(
         detail_attrs=detail_attrs,
         attribute_incomes=_prepare_attribute_incomes(summary),
         adaptive_consumables=_prepare_adaptive_consumables(data.get("adaptive_consumables")),
+        equipment_rating_rank=rank_data,
         rating_timeline=_prepare_rating_timeline(timeline_data),
         equipment_rating_qrcode=_rating_group_qrcode(),
         tank_vitality_conversion=_prepare_tank_vitality_conversion(summary, kungfu),
@@ -1737,14 +1849,24 @@ async def _finish_equipment_rating_calculation(
     role_name: str,
     server_name: str,
     rating_equip: JX3PlayerAttribute | None,
+    role_id: str = "",
+    global_role_id: int = 0,
 ):
     data = await _request_equipment_rating_data(payload)
     if isinstance(data, str):
         await matcher.finish(data)
+    if global_role_id <= 0 and rating_equip is not None:
+        global_role_id = int(rating_equip.global_role_id)
+    rank_data = None
+    if rating_equip is not None:
+        try:
+            rank_data = _record_equipment_rating_rank(data, role_name, server_name, role_id, global_role_id)
+        except Exception as exc:
+            logger.warning(f"装备评级伤害排名记录失败：{exc}")
     timeline_data = await _request_equipment_rating_timeline(data, payload)
     await finish_equipment_rating_response(
         matcher,
-        await render_equipment_rating_image(data, role_name, server_name, rating_equip, timeline_data)
+        await render_equipment_rating_image(data, role_name, server_name, rating_equip, timeline_data, rank_data)
     )
 
 
@@ -1898,6 +2020,8 @@ async def handle_equipment_rating(event: GroupMessageEvent, matcher: Matcher, st
         player_data.roleName,
         player_data.serverName,
         rating_equip,
+        player_data.roleId,
+        int(player_data.globalRoleId),
     )
 
 
@@ -1949,6 +2073,8 @@ async def handle_equipment_rating_loop_order(
             player_data.roleName,
             player_data.serverName,
             rating_equip,
+            player_data.roleId,
+            int(player_data.globalRoleId),
         )
 
     loops = state.get("equipment_rating_loops")
@@ -1991,4 +2117,6 @@ async def handle_equipment_rating_loop_order(
         player_data.roleName,
         player_data.serverName,
         rating_equip,
+        player_data.roleId,
+        int(player_data.globalRoleId),
     )

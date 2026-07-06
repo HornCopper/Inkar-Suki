@@ -996,6 +996,15 @@
             white-space: nowrap;
         }
 
+        .combat-final-rank {
+            margin-top: 4px;
+            color: #8a96a2;
+            font-size: 9px;
+            line-height: 1.2;
+            font-weight: 900;
+            white-space: nowrap;
+        }
+
         .combat-block {
             margin-top: 18px;
         }
@@ -1301,6 +1310,9 @@
                 <div class="combat-final-dps">
                     <span>最终DPS</span>
                     <strong>{{ adaptive_consumables.dps_text }}</strong>
+                    {% if equipment_rating_rank %}
+                    <div class="combat-final-rank">{{ equipment_rating_rank.text }}</div>
+                    {% endif %}
                 </div>
                 {% endif %}
             </div>
