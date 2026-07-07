@@ -432,8 +432,10 @@
         }
 
         .adaptive-formation-card .adaptive-note {
-            color: #6e45a0;
-            font-size: 11px;
+            color: #5e7d8c;
+            font-size: 10px;
+            line-height: 1.25;
+            font-weight: 900;
         }
 
         .adaptive-delta {
@@ -482,6 +484,60 @@
             gap: 10px;
         }
 
+        .combat-recommendation-row {
+            margin-top: 10px;
+            display: grid;
+            grid-template-columns: 500px minmax(0, 1fr);
+            gap: 10px;
+            align-items: stretch;
+        }
+
+        .combat-recommendation-row .adaptive-grid {
+            margin-top: 0;
+        }
+
+        .adaptive-grid-compact {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 8px;
+        }
+
+        .adaptive-grid-compact .adaptive-group-card {
+            min-height: 76px;
+            padding: 10px 8px;
+        }
+
+        .adaptive-grid-compact .adaptive-group-heading {
+            margin-bottom: 8px;
+            font-size: 12px;
+        }
+
+        .adaptive-grid-compact .adaptive-group-items {
+            gap: 8px;
+        }
+
+        .adaptive-grid-compact .adaptive-entry {
+            grid-template-columns: 28px minmax(0, 1fr);
+            gap: 6px;
+        }
+
+        .adaptive-grid-compact .adaptive-icon {
+            width: 28px;
+            height: 28px;
+        }
+
+        .adaptive-grid-compact .adaptive-kind {
+            font-size: 9px;
+        }
+
+        .adaptive-grid-compact .adaptive-name {
+            font-size: 11px;
+            line-height: 1.22;
+        }
+
+        .adaptive-grid-compact .adaptive-note {
+            font-size: 9px;
+        }
+
         .adaptive-group-card {
             min-width: 0;
             padding: 12px;
@@ -526,6 +582,76 @@
             grid-template-columns: 34px minmax(0, 1fr);
             align-items: center;
             gap: 8px;
+        }
+
+        .rating-timeline-card {
+            min-width: 0;
+            min-height: 176px;
+            padding: 12px 14px 10px;
+            border: 1px solid #dfe8ef;
+            border-radius: 8px;
+            background: #ffffff;
+            overflow: hidden;
+        }
+
+        .rating-timeline-card-full {
+            margin-top: 10px;
+        }
+
+        .rating-timeline-meta {
+            margin-top: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            color: #6e7a86;
+            font-size: 10px;
+            line-height: 1.25;
+            font-weight: 900;
+        }
+
+        .rating-timeline-meta strong {
+            color: {{ theme_color }};
+            font-size: 12px;
+            white-space: nowrap;
+        }
+
+        .rating-timeline-card .chart-title {
+            margin-bottom: 5px;
+            color: #2f3741;
+            font-size: 13px;
+            line-height: 1.2;
+            font-weight: 900;
+        }
+
+        .rating-timeline-card .chart {
+            display: block;
+            width: 100%;
+            height: 170px;
+            overflow: visible;
+        }
+
+        .rating-timeline-card .axis-label {
+            fill: #8a96a2;
+            font-size: 10px;
+            font-weight: 900;
+        }
+
+        .rating-timeline-card .peak-label {
+            font-size: 10px;
+            font-weight: 900;
+        }
+
+        .rating-timeline-card .buff-frame {
+            fill-opacity: 0.08;
+            stroke-opacity: 0.28;
+            stroke-width: 1.2;
+        }
+
+        .rating-timeline-card .buff-frame-label {
+            font-size: 9px;
+            font-weight: 900;
+            opacity: 0.82;
         }
 
         .adaptive-failed {
@@ -814,8 +940,13 @@
 
         .combat-heading {
             display: flex;
-            align-items: baseline;
+            align-items: flex-start;
+            justify-content: space-between;
             gap: 12px;
+        }
+
+        .combat-heading-text {
+            min-width: 0;
         }
 
         .combat-title {
@@ -830,6 +961,48 @@
             font-size: 12px;
             line-height: 1.2;
             font-weight: 900;
+        }
+
+        .combat-final-dps {
+            min-width: 152px;
+            padding: 7px 12px;
+            border: 1px solid color-mix(in srgb, {{ theme_color }} 26%, #e1eaf0);
+            border-radius: 8px;
+            background:
+                linear-gradient(180deg, #ffffff 0%, color-mix(in srgb, {{ theme_color }} 10%, #ffffff) 100%);
+            box-shadow:
+                0 14px 26px color-mix(in srgb, {{ theme_color }} 18%, transparent),
+                0 4px 0 color-mix(in srgb, {{ theme_color }} 24%, #d9e4ec),
+                inset 0 1px 0 rgb(255 255 255 / 82%),
+                inset 0 -1px 0 rgb(80 90 105 / 8%);
+            text-align: right;
+        }
+
+        .combat-final-dps span {
+            display: block;
+            color: #7f8a95;
+            font-size: 9px;
+            line-height: 1.2;
+            font-weight: 900;
+        }
+
+        .combat-final-dps strong {
+            display: block;
+            margin-top: 2px;
+            color: {{ theme_color }};
+            font-size: 18px;
+            line-height: 1.1;
+            font-weight: 900;
+            white-space: nowrap;
+        }
+
+        .combat-final-rank {
+            margin-top: 4px;
+            color: #8a96a2;
+            font-size: 9px;
+            line-height: 1.2;
+            font-weight: 900;
+            white-space: nowrap;
         }
 
         .combat-block {
@@ -1125,12 +1298,23 @@
             </main>
         </div>
 
-        {% if adaptive_consumables or talents %}
+        {% if adaptive_consumables or talents or rating_timeline %}
         <div class="bottom-line"></div>
         <section class="combat-advice">
             <div class="combat-heading">
-                <div class="combat-title">实战配置建议</div>
-                <div class="combat-subtitle">基于当前配装与目标加速档自动推荐</div>
+                <div class="combat-heading-text">
+                    <div class="combat-title">实战配置建议</div>
+                    <div class="combat-subtitle">基于当前配装与目标加速档自动推荐</div>
+                </div>
+                {% if adaptive_consumables and adaptive_consumables.status == "ok" %}
+                <div class="combat-final-dps">
+                    <span>最终DPS</span>
+                    <strong>{{ adaptive_consumables.dps_text }}</strong>
+                    {% if equipment_rating_rank %}
+                    <div class="combat-final-rank">{{ equipment_rating_rank.text }}</div>
+                    {% endif %}
+                </div>
+                {% endif %}
             </div>
             {% if adaptive_consumables %}
             <div class="combat-block">
@@ -1192,6 +1376,38 @@
                 </div>
                 {% endif %}
                 {% if adaptive_consumables.groups %}
+                {% if rating_timeline %}
+                <div class="combat-recommendation-row">
+                    <div class="adaptive-grid adaptive-grid-compact">
+                        {% for group in adaptive_consumables.groups %}
+                        <section class="adaptive-group-card adaptive-group-{{ group.key }}">
+                            <div class="adaptive-group-heading">{{ group.category }}</div>
+                            <div class="adaptive-group-items">
+                                {% for item in group.entries %}
+                                <div class="adaptive-entry">
+                                    <img class="adaptive-icon" src="{{ item.icon }}" alt="">
+                                    <div class="adaptive-entry-body">
+                                        <div class="adaptive-kind">{{ item.category }}</div>
+                                        <div class="adaptive-name">{{ item.name }}</div>
+                                        {% if item.note %}
+                                        <div class="adaptive-note">{{ item.note }}</div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </section>
+                        {% endfor %}
+                    </div>
+                    <section class="rating-timeline-card">
+                        {{ rating_timeline.chart }}
+                        <div class="rating-timeline-meta">
+                            <span>{{ rating_timeline.loop_name }}</span>
+                            <strong>秒伤 {{ rating_timeline.dps }}</strong>
+                        </div>
+                    </section>
+                </div>
+                {% else %}
                 <div class="adaptive-grid">
                     {% for group in adaptive_consumables.groups %}
                     <section class="adaptive-group-card adaptive-group-{{ group.key }}">
@@ -1214,9 +1430,21 @@
                     {% endfor %}
                 </div>
                 {% endif %}
+                {% endif %}
                 {% else %}
                 <div class="adaptive-failed">{{ adaptive_consumables.message }}</div>
                 {% endif %}
+            </div>
+            {% endif %}
+            {% if rating_timeline and (not adaptive_consumables or adaptive_consumables.status != "ok" or not adaptive_consumables.groups) %}
+            <div class="combat-block">
+                <section class="rating-timeline-card rating-timeline-card-full">
+                    {{ rating_timeline.chart }}
+                    <div class="rating-timeline-meta">
+                        <span>{{ rating_timeline.loop_name }}</span>
+                        <strong>秒伤 {{ rating_timeline.dps }}</strong>
+                    </div>
+                </section>
             </div>
             {% endif %}
             {% if talents %}
