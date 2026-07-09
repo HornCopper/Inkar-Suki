@@ -100,6 +100,7 @@ EQUIPMENT_RATING_DISTRIBUTION_PATH = build_path(
 ADAPTIVE_ICON_ITEM_NAME_BY_CODE = {
     "FY_ATTACK_INGOT_PHYSICS": "风语·瀑沙熔锭（外攻）",
     "FY_ATTACK_INGOT_MAGIC": "风语·坠宵熔锭（内攻）",
+    "FY_THERAPY_INGOT": "风语·絮泊熔锭（疗伤）",
     "CREATIVE_FOOD_SHENG_LIFE_DOWN_STRAIN": "创意食品·盛",
     "CREATIVE_FOOD_SHENG_LIFE_DOWN_MAGIC_ATTACK": "创意食品·盛",
     "CREATIVE_FOOD_SHENG_LIFE_DOWN_PHYSICS_ATTACK": "创意食品·盛",
@@ -319,7 +320,7 @@ body {
   <div class="hero">
     <div class="eyebrow">装备评级 help</div>
     <div class="title">评级给出的评分只能够衡量当前配装距离毕业的程度</div>
-    <div class="subtitle">装备评级会在同一条评级 JCL、同一套默认评级增益下比较当前部位、空槽样本和候选装备，给出当前配装相对候选毕业解的接近程度。</div>
+    <div class="subtitle">输出与防御心法会在同一条评级 JCL、同一套默认评级增益下比较当前部位、空槽样本和候选装备；奶妈心法使用承压模型，以目标破产概率下的最大每秒承伤作为评分指标。</div>
   </div>
 
   <div class="section">
@@ -342,7 +343,38 @@ body {
     <div class="steps">
       <div class="step"><div class="num">A</div><div>每个部位会计算三类样本：当前装备、去掉该部位后的空槽样本、同部位候选装备。</div></div>
       <div class="step"><div class="num">B</div><div>所有样本使用同一条评级 JCL 和默认评级增益，避免把循环和增益差异混进装备评分。</div></div>
-      <div class="step"><div class="num">C</div><div>“最优候选”来自当前候选池中计算 DPS 最高的该部位装备；它是当前评级口径下的部位毕业参照。</div></div>
+      <div class="step"><div class="num">C</div><div>“最优候选”来自当前候选池中评级指标最高的该部位装备；输出与防御心法看修正 DPS，奶妈心法看承压能力。</div></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">奶妈承压评级依据</div>
+    <div class="steps">
+      <div class="step"><div class="num">H</div><div>直接使用装备面板的治疗量、会心、会效和加速。不考虑装备特效，心法特性，纯静态面板计算。</div></div>
+      <div class="step"><div class="num">T</div><div>高压窗口 \\(T=10\\) 秒，血量上限 \\(U=3200000\\)，目标破产概率 \\(q=5\\%\\)。伤害从 \\(t=0\\) 开始，到 \\(t=10\\) 结束，共结算 11 次。</div></div>
+      <div class="step"><div class="num">G</div><div>治疗间隔 \\(\\Delta=1.5/(1+a_{\\mathrm{eff}}/210078)\\)，其中 \\(a_{\\mathrm{eff}}=\\min(a,42057)\\)。每个治疗时间点按 3 次独立治疗计算，会心按面板概率分布。</div></div>
+    </div>
+    <div class="formula-grid" style="margin-top: 16px;">
+      <div class="formula-block">
+        <div class="formula-title">血量递推</div>
+        <div class="formula">\\[
+R_0 = U - d
+\\]
+\\[
+R_{i+1} = \\min(U, R_i + H_i) - d
+\\]</div>
+        <div class="formula-note">若任意结算后 \\(R_i < 0\\)，则视为破产。治疗 \\(H_i\\) 统计区间 \\([i,i+1)\\) 内发生的所有治疗，并先受血量上限截断。</div>
+      </div>
+      <div class="formula-block">
+        <div class="formula-title">承压能力</div>
+        <div class="formula">\\[
+\\tau = \\inf\\{i : R_i < 0\\}
+\\]
+\\[
+d^* = \\max\\{d: \\Pr(\\tau \\le T) \\le q\\}
+\\]</div>
+        <div class="formula-note">\\(\\tau\\) 是首次破产的整数伤害结算点。承压能力 \\(d^*\\)为每秒承伤。单件评分固定当前推荐的小药、熔锭和阵眼配置后，比较当前、空槽和候选装备的 \\(d^*\\)。</div>
+      </div>
     </div>
   </div>
 
@@ -426,7 +458,7 @@ D_{\\mathrm{adjusted}} = \\left\\lfloor D_{\\mathrm{raw}} \\times C \\right\\rfl
         delay=800,
         segment=True,
         wait_for_network=True,
-        viewport={"width": 980, "height": 2100},
+        viewport={"width": 980, "height": 2550},
     )
 
 
@@ -468,6 +500,11 @@ ATTRIBUTE_INCOME_DISPLAY_KEYS = {
         "atMagicOvercome",
         "atSurplusValueBase",
         "atStrainBase",
+    ),
+    "Therapy": (
+        "atTherapyPowerBase",
+        "atAllTypeCriticalStrike",
+        "atAllTypeCriticalDamagePowerBase",
     ),
 }
 TANK_VITALITY_CONVERSION_STEP = 3310
@@ -643,6 +680,15 @@ def _equipment_rating_adaptive_dps(data: dict[str, Any]) -> int:
     return int(_to_float(adaptive.get("dps")))
 
 
+def _equipment_rating_rank_label(data: dict[str, Any]) -> str:
+    summary = data.get("summary") if isinstance(data.get("summary"), dict) else {}
+    meta = data.get("meta") if isinstance(data.get("meta"), dict) else {}
+    metric = str(summary.get("metric") or meta.get("metric") or "").strip()
+    if metric == "therapy_ruin_capacity":
+        return "承压排名"
+    return "伤害排名"
+
+
 def _equipment_rating_rank_jcl_key(meta: dict[str, Any]) -> str:
     jcl = meta.get("jcl") if isinstance(meta.get("jcl"), dict) else {}
     selected_loop = meta.get("jcl_loop") if isinstance(meta.get("jcl_loop"), dict) else {}
@@ -739,7 +785,7 @@ def _record_equipment_rating_rank(
     return {
         "rank": rank,
         "total": len(valid_records),
-        "text": f"伤害排名 第 {rank} / {len(valid_records)}",
+        "text": f"{_equipment_rating_rank_label(data)} 第 {rank} / {len(valid_records)}",
     }
 
 
@@ -780,6 +826,8 @@ def _supported_kungfu_school(item: dict[str, Any]) -> str:
 
 
 def _selected_rating_loop_text(item: dict[str, Any]) -> str:
+    if item.get("rating_model") == "therapy_ruin":
+        return "不需要 JCL"
     selected = item.get("selected") or {}
     parts = [
         str(selected.get("weapon") or "").strip(),
@@ -802,6 +850,13 @@ def _format_jcl_record_brief(item: dict[str, Any]) -> str:
 
 
 def _format_jcl_record_detail_lines(item: dict[str, Any]) -> list[str]:
+    if item.get("rating_model") == "therapy_ruin":
+        record = _selected_jcl_record(item)
+        note = str(record.get("note") or "").strip()
+        lines = ["评级模型：奶妈承压模型"]
+        if note:
+            lines.append(f"模型备注：{note}")
+        return lines
     record = _selected_jcl_record(item)
     season = str(record.get("season") or "").strip()
     recorded_at = str(record.get("recorded_at") or "").strip()
@@ -886,6 +941,16 @@ def _format_supported_kungfu_list(data: dict[str, Any]) -> str:
 
 def _format_supported_kungfu_detail(item: dict[str, Any]) -> str:
     selected = item.get("selected") or {}
+    if item.get("rating_model") == "therapy_ruin":
+        lines = [
+            f"装备评级支持：{_supported_kungfu_school(item)}·{_supported_kungfu_name(item)}",
+            "默认评级模型：奶妈承压模型",
+            *_format_jcl_record_detail_lines(item),
+            "该模型不需要评级 JCL，直接使用装备面板治疗、会心、会效和加速计算承压能力。",
+        ]
+        if item.get("warning"):
+            lines.append(f"提示：{item['warning']}")
+        return "\n".join(lines)
     lines = [
         f"装备评级支持：{_supported_kungfu_school(item)}·{_supported_kungfu_name(item)}",
         f"默认评级循环：{_selected_rating_loop_text(item)}",
@@ -1245,11 +1310,12 @@ def _prepare_attributes(
     attributes = summary.get("attributes") or {}
     main_attr_key = attributes.get("MainAttrKey", "")
     main_attr_label = MAIN_ATTR_LABELS.get(main_attr_key, "主属性")
+    is_therapy_rating = summary.get("metric") == "therapy_ruin_capacity" or attributes.get("kungfu_type") == "Therapy"
     role_info = [
         {"label": "门派", "value": kungfu.school or "-"},
         {"label": "心法", "value": kungfu.name or "-"},
         {"label": "主属性", "value": main_attr_label},
-        {"label": "目标", "value": "134级木桩"},
+        {"label": "目标", "value": "10秒承压窗口" if is_therapy_rating else "134级木桩"},
     ]
     if rating_equip is not None:
         try:
@@ -1268,6 +1334,19 @@ def _prepare_attributes(
                 if str(name) not in HIDDEN_DETAIL_ATTRIBUTE_LABELS
             ]
             return role_info, basic_attrs, detail_attrs
+    if is_therapy_rating:
+        basic_attrs = [
+            {"label": "装分", "value": _format_number(summary.get("current_score"))},
+            {"label": "基础治疗", "value": _format_number(attributes.get("BaseTherapy"))},
+            {"label": "最终治疗", "value": _format_number(attributes.get("FinalTherapy"))},
+            {"label": main_attr_label, "value": _format_number(attributes.get("MainAttrValue"))},
+        ]
+        detail_attrs = [
+            {"label": "会心", "value": _format_percent(_to_float(attributes.get("Critical")) * 100)},
+            {"label": "会效", "value": _format_percent(_to_float(attributes.get("CriticalDamage")) * 100)},
+            {"label": "加速", "value": _format_haste(attributes.get("Haste"))},
+        ]
+        return role_info, basic_attrs, detail_attrs
     basic_attrs = [
         {"label": "装分", "value": _format_number(summary.get("current_score"))},
         {"label": "基础攻击", "value": _format_number(attributes.get("BaseAttack"))},
@@ -1307,7 +1386,9 @@ def _prepare_attribute_incomes(summary: dict[str, Any]) -> list[dict[str, Any]]:
         if "dps_per_enchant" not in item:
             continue
         value = _to_float(item.get("dps_per_enchant"))
-        label = get_attr_name(attribute_key) or str(item.get("name") or item.get("key") or "").strip()
+        label = str(item.get("name") or "").strip() or get_attr_name(attribute_key) or str(item.get("key") or "").strip()
+        if label == "会心效果":
+            label = "会效"
         if not label:
             continue
         incomes.append(
@@ -1461,8 +1542,10 @@ def _prepare_adaptive_consumables(raw: Any) -> dict[str, Any] | None:
     return {
         "status": "ok",
         "title": str(raw.get("name") or "当前装备自适应小药"),
-        "subtitle": "基于当前配装与目标加速档自动推荐",
+        "subtitle": str(raw.get("subtitle") or "基于当前配装与目标加速档自动推荐"),
         "summary": " / ".join(summary_parts),
+        "metric_name": str(raw.get("metric_name") or "最终DPS"),
+        "metric_unit": str(raw.get("metric_unit") or "DPS"),
         "dps_text": _format_compact_number(raw.get("dps")),
         "raw_dps_text": _format_compact_number(raw.get("raw_dps")),
         "delta_text": _format_signed(raw.get("delta")),
@@ -1566,6 +1649,7 @@ async def render_equipment_rating_image(
     summary = data["summary"]
     kungfu = Kungfu.with_internel_id(meta["kungfu_id"])
     theme_color = kungfu.color if kungfu.name else "#4f6f87"
+    is_therapy_rating = summary.get("metric") == "therapy_ruin_capacity"
     role_info, basic_attrs, detail_attrs = _prepare_attributes(summary, kungfu, rating_equip)
     battle_time = _to_float(summary.get("battle_time"))
     haste_level = _haste_level(summary.get("current_haste"))
@@ -1586,6 +1670,7 @@ async def render_equipment_rating_image(
         meta.get("loop_name", "评级专用循环"),
         f"{meta.get('jcl', {}).get('weapon', '')}{meta.get('jcl', {}).get('haste', '')}",
         meta.get("income_name", "默认增益"),
+        f"{summary.get('metric_name') or '承压能力'} {_format_number(summary.get('current_dps'))}" if is_therapy_rating else "",
         summary_view["haste_level_text"],
         summary_view["battle_time_text"],
     ]
@@ -1603,7 +1688,11 @@ async def render_equipment_rating_image(
         header_avatar=_rating_avatar(),
         header_summary={
             **_prepare_header_summary(summary_view, slots),
-            "title": f"{kungfu.name}体检报告" if kungfu.name else "体检报告",
+            "title": (
+                f"{kungfu.name}承压报告"
+                if is_therapy_rating and kungfu.name
+                else (f"{kungfu.name}体检报告" if kungfu.name else "体检报告")
+            ),
         },
         role_info=role_info,
         basic_attrs=basic_attrs,
@@ -1703,6 +1792,8 @@ def _auto_select_rating_pve_tag(kungfu_id: int) -> str | None:
     abbr = Kungfu.with_internel_id(kungfu_id).abbr
     if abbr == "T":
         return "TPVE"
+    if abbr == "N":
+        return "HPSPVE"
     if abbr == "D":
         return "DPSPVE"
     return None
@@ -1872,7 +1963,7 @@ async def _finish_equipment_rating_calculation(
         try:
             rank_data = record_equipment_rating_rank(data, role_name, server_name, role_id, global_role_id)
         except Exception as exc:
-            logger.warning(f"装备评级伤害排名记录失败：{exc}")
+            logger.warning(f"装备评级排名记录失败：{exc}")
     timeline_data = await _request_equipment_rating_timeline(data, payload)
     await finish_equipment_rating_response(
         matcher,

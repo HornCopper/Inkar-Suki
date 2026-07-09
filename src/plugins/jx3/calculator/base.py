@@ -28,6 +28,7 @@ ATTACK_INGOTS = {
     "Physics": ["FY_ATTACK_INGOT_PHYSICS"],
     "Magic": ["FY_ATTACK_INGOT_MAGIC"],
 }
+THERAPY_INGOTS = ["FY_THERAPY_INGOT"]
 
 FEASTS = {
     "Physics": ["FYYD_PHYSICS"],
@@ -88,10 +89,11 @@ def get_calculator_income_codes(income_name: str, kungfu_id: int) -> list[str]:
     if kungfu_id == 0 or base_attr is None:
         return income_codes
     kungfu_type = _calculator_kungfu_type(kungfu_id, base_attr)
+    ingot_codes = THERAPY_INGOTS if kungfu.abbr == "N" else ATTACK_INGOTS[kungfu_type]
     return (
         income_codes
         + MAIN_ATTR_CONSUMABLES.get(base_attr, [])
-        + ATTACK_INGOTS[kungfu_type]
+        + ingot_codes
         + _calculator_feast_codes(kungfu, base_attr, kungfu_type)
         + SHARED_FEASTS
     )
