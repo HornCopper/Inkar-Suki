@@ -10,6 +10,7 @@ from src.templates import SimpleHTML
 
 from ._parse import coin_to_image, calculate_price
 from ._template import template_msgbox, template_table
+from .local_items import is_trade_bind_type, search_local_items
 
 import datetime
 
@@ -28,22 +29,19 @@ async def get_trade_image_v2(server: str, name: str, items: list = []):
             return "唔……请勿查找试炼装备！"
     final_list = []
     if items == []:
-        itemData = (await Request(f"https://node.jx3box.com/api/node/item/search?ids=&keyword={name}&client=std&per=35").get()).json()
-        if itemData["data"]["total"] == 0:
+        final_list = search_local_items(name, limit=35)
+        if len(final_list) == 0:
             return "唔……您搜索的物品尚未收录！"
-        final_list = itemData["data"]["data"]
     else:
         for i in items:
-            itemData = (await Request(f"https://node.jx3box.com/api/node/item/search?ids=&keyword={i}&client=std&per=5").get()).json()
-            if itemData["data"]["total"] == 0:
+            itemData = search_local_items(i, limit=5)
+            if len(itemData) == 0:
                 continue
-            else:
-                for x in itemData["data"]["data"]:
-                    final_list.append(x)
+            final_list.extend(itemData)
     itemlist_searchable = []
     for i in final_list:
         new = {}
-        if i["BindType"] not in [0, 1, 2, None]:
+        if not is_trade_bind_type(i["BindType"]):
             continue
         id = i["id"]
         itemAPIData = (await Request(f"https://next2.jx3box.com/api/item-price/{id}/logs?server={server}&limit=20").get()).json()
@@ -179,15 +177,14 @@ async def get_trade_image_allserver(name: str):
         if name == i:
             return "唔……请勿查找无修装备！"
     final_list = []
-    itemData = (await Request(f"https://node.jx3box.com/api/node/item/search?ids=&keyword={name}&client=std&per=35").get()).json()
-    if itemData["data"]["total"] == 0:
+    final_list = search_local_items(name, limit=35)
+    if len(final_list) == 0:
         return "唔……您搜索的物品尚未收录！"
-    final_list = itemData["data"]["data"]
     for server in servers:
         itemlist_searchable = []
         for i in final_list:
             new = {}
-            if i["BindType"] not in [0, 1, 2, None]:
+            if not is_trade_bind_type(i["BindType"]):
                 continue
             id = i["id"]
             itemAPIData = (await Request(f"https://next2.jx3box.com/api/item-price/{id}/logs?server={server}&limit=20").get()).json()

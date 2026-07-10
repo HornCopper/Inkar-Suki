@@ -11,9 +11,11 @@ from src.utils.generate import generate
 from src.templates import get_saohua
 
 from ._parse import (
+    SHILIAN_ATTR_LABELS,
     ShilianEquipParser,
     coin_to_image,
-    calculate_price
+    calculate_price,
+    shilian_attrs_to_keys,
 )
 from ._template import (
     template_v3_element,
@@ -25,8 +27,10 @@ from ._template import (
     template_v3_name_mulit,
     template_v3_name_unique
 )
+from .local_items import is_trade_bind_type, search_local_items, search_local_shilian_equips
 
 import re
+import datetime
 
 server_list = list(Server.server_aliases.keys())
 
@@ -34,6 +38,31 @@ def n2i(price: int):
     return coin_to_image(
         calculate_price(price)
     )
+
+
+def _decode_item_text(data: str) -> str:
+    try:
+        return data.encode("utf-8").decode("unicode_escape").encode("latin1").decode("utf-8")
+    except (UnicodeDecodeError, UnicodeEncodeError):
+        return data
+
+
+def _extract_text_node(data: str, font: int) -> str:
+    decoded_data = _decode_item_text(data).replace("\n", "")
+    pattern = rf"<Text>\s*text=\"(.*?)\"\s+font={font}\s*</text>"
+    match = re.search(pattern, decoded_data, re.IGNORECASE)
+    result = match.group(1).strip() if match else ""
+    return re.sub(r"\\+", "", result).strip()
+
+
+def _format_peerless_text(data: str) -> str:
+    text = _extract_text_node(data, 101) or _extract_text_node(data, 105)
+    if not text:
+        text = re.sub(r"\\+", "", _decode_item_text(data)).strip()
+    parts = [part.strip() for part in text.strip("。").split("。") if part.strip()]
+    if not parts:
+        return ""
+    return "，".join(parts) + "。"
 
 class JX3Item:
     def __init__(self, single_node_data: dict):
@@ -53,11 +82,7 @@ class JX3Item:
             return ""
         else:
             data = self.data["Desc"]
-        decoded_data = data.encode("utf-8").decode("unicode_escape").encode("latin1").decode("utf-8").replace("\n", "")
-        pattern = rf"<Text>\s*text=\"(.*?)\"\s+font={105}\s*</text>"
-        match = re.search(pattern, decoded_data, re.IGNORECASE)
-        result = match.group(1).strip() if match else ""
-        return re.sub(r"\\+", "", result).strip()
+        return _extract_text_node(data, 105)
     
     @property
     def quality(self) -> str:
@@ -68,14 +93,16 @@ class JX3Item:
         attribute = self.data["attributes"]
         if attribute == []:
             return ""
-        else:
-            return " ".join(
-                [
-                    (attr["label"].split("提高" if "提高" in attr["label"] else "增加")[0]).replace("等级", "").replace("值", "") + "(" + str(list(map(int, re.findall(r"\d+", attr["label"])))[0]) + ")"
-                    for attr in self.data["attributes"]
-                    if attr.get("color") == "green"
-                ]
-            )
+        results = []
+        for attr in self.data["attributes"]:
+            if attr.get("color") != "green":
+                continue
+            if attr.get("key"):
+                results.append(SHILIAN_ATTR_LABELS.get(attr["key"], attr["key"]))
+            else:
+                label = (attr["label"].split("提高" if "提高" in attr["label"] else "增加")[0]).replace("等级", "").replace("值", "")
+                results.append(label + "(" + str(list(map(int, re.findall(r"\d+", attr["label"])))[0]) + ")")
+        return " ".join(results)
         
     @property
     def peerless_effect(self) -> str:
@@ -84,11 +111,7 @@ class JX3Item:
             return ""
         for attr in attribute:
             if attr.get("color") == "orange":
-                decoded_data = str(attr.get("label")).encode("utf-8").decode("unicode_escape").encode("latin1").decode("utf-8").replace("\n", "")
-                pattern = rf"<Text>\s*text=\"(.*?)\"\s+font={101}\s*</text>"
-                match = re.search(pattern, decoded_data, re.IGNORECASE)
-                result = match.group(1).strip() if match else ""
-                return "，".join(re.sub(r"\\+", "", result).strip()[:-1].split("。")[:-1]) + "。"
+                return _format_peerless_text(str(attr.get("label")))
         return ""
 
     @property
@@ -140,7 +163,7 @@ class JX3Trade:
     async def shilian(cls, equipment_words: str, server: str) -> Self | str:
         parser = ShilianEquipParser(equipment_words)
         attrs, location, quality, kungfu_type = parser.attributes, parser.location, parser.quality, parser.kungfu_type
-        url = "https://node.jx3box.com/api/node/item/search"
+        attr_keys = shilian_attrs_to_keys(attrs)
         # end_word = "荒" if quality <= 25500 else "玄"
         if quality <= 25500:
             end_word = "荒"
@@ -151,48 +174,31 @@ class JX3Trade:
         else:
             end_word = "天"
         name = f"{cls.shilian_basic}{location}·{kungfu_type}·{end_word}"
-        params = {
-            "keyword": name,
-            "MinLevel": quality,
-            "MaxLevel": quality,
-            "BindType": 2,
-            "client": "std"
-        }
-        data = (await Request(url, params=params).get()).json()
-        for item in data["data"]["data"]:
-            equipment_attr = set(
-                    [
-                        (attr["label"].split("提高" if "提高" in attr["label"] else "增加")[0]).replace("等级", "").replace("值", "")
-                        for attr in item["attributes"]
-                        if attr.get("color") == "green"
-                    ]
-                )
-            if set(attrs) == equipment_attr:
-                cls._node_data = data["data"]["data"]
+        data = search_local_shilian_equips(name, quality, attr_keys)
+        for item in data:
+            equipment_attr = {
+                attr["key"]
+                for attr in item["attributes"]
+                if attr.get("color") == "green" and attr.get("key")
+            }
+            if set(attr_keys) == equipment_attr:
+                cls._node_data = data
                 item_id: str = item["id"]
                 return cls([item_id], server)
         return "未找到满足条件的装备，请检查该词条后重试！"
     
     @classmethod
     async def common(cls, keyword: str, server: str) -> Self | str:
-        url = "https://node.jx3box.com/api/node/item/search"
-        params = {
-            "keyword": keyword,
-            "page": 1,
-            "per": 50,
-            "client": "std"
-        }
-        data = (await Request(url, params=params).get()).json()
-        if len(data["data"]["data"]) == 0:
+        cls._node_data = search_local_items(keyword)
+        if len(cls._node_data) == 0:
             return "未找到相关物品，请检查后重试！"
-        cls._node_data = data["data"]["data"]
         unique = False
         for each_item in cls._node_data:
-            if each_item["Name"] == keyword and each_item["BindType"] in [0, 1, 2, None]:
+            if each_item["Name"] == keyword and is_trade_bind_type(each_item["BindType"]):
                 unique = True
                 items = [each_item["id"]]
         if not unique:
-            items = [i["id"] for i in data["data"]["data"] if i["BindType"] in [0, 1, 2, None]]
+            items = [i["id"] for i in cls._node_data if is_trade_bind_type(i["BindType"])]
         items = [i for i in items if (await cls.check_trade(i, server))]
         return cls(items, server)
 
@@ -201,10 +207,62 @@ class JX3Trade:
         self.item_id: list[str] = item_id
         self.server = server
 
-        self._node_data = [i for i in self._node_data if i["BindType"] in [0, 1, 2, None]]
+        self._node_data = [i for i in self._node_data if is_trade_bind_type(i["BindType"])]
         self._no_data_items: list[str] = []
         self._no_data_items_muilt_server: dict[str, list] = {s: [] for s in server_list}
         self._next_log = []
+
+    @staticmethod
+    def legacy_log_to_daily(record: dict) -> dict:
+        raw_time = record.get("UpdatedAt") or record.get("CreatedAt") or record.get("Date")
+        timestamp = 0
+        if raw_time:
+            try:
+                timestamp = int(datetime.datetime.fromisoformat(str(raw_time)).timestamp())
+            except ValueError:
+                try:
+                    timestamp = int(datetime.datetime.fromisoformat(str(raw_time) + "T00:00:00").timestamp())
+                except ValueError:
+                    timestamp = 0
+        return {
+            "timestamp": timestamp,
+            "price": record.get("AvgPrice") or record.get("LowestPrice") or 0,
+            "sample": record.get("SampleSize") or 0,
+        }
+
+    @staticmethod
+    def legacy_price_to_detail(record: dict) -> dict:
+        return {
+            "timestamp": record.get("created") or 0,
+            "price": record.get("unit_price") or 0,
+            "sample": record.get("n_count") or 0,
+        }
+
+    @classmethod
+    async def get_legacy_logs(cls, item_id: str, server: str) -> list[dict]:
+        data = (
+            await Request(
+                f"https://next2.jx3box.com/api/item-price/{item_id}/logs",
+                params={"server": server or None, "limit": 20},
+            ).get()
+        ).json()
+        records = data.get("data", {}).get("logs")
+        if not records:
+            return []
+        return [cls.legacy_log_to_daily(record) for record in records]
+
+    @classmethod
+    async def get_legacy_prices(cls, item_id: str, server: str) -> list[dict]:
+        data = (
+            await Request(
+                f"https://next2.jx3box.com/api/item-price/{item_id}/detail",
+                params={"server": server, "limit": 20},
+            ).get()
+        ).json()
+        records = data.get("data", {}).get("prices")
+        if not records:
+            return []
+        return [cls.legacy_price_to_detail(record) for record in records]
 
     @classmethod
     async def check_trade(cls, item_id: str, server: str = "") -> bool:
@@ -212,6 +270,8 @@ class JX3Trade:
         if server == "全服":
             server = ""
         data: list[dict] = (await Request(url, params={"server": server or None, "item_id": item_id, "aggregate_type": "daily"}).post()).json()
+        if not data:
+            data = await cls.get_legacy_logs(item_id, server)
         cls._daily_data[(item_id, server)] = data
         if data:
             return True
@@ -229,6 +289,8 @@ class JX3Trade:
         url = "https://next2.jx3box.com/api/auction/"
         data: list[dict] = (await Request(url, params={"server": server, "item_id": item_id, "aggregate_type": "daily"}).post()).json()
         if not data:
+            data = await self.get_legacy_logs(item_id, server)
+        if not data:
             if not self.all_server:
                 self._no_data_items.append(item_id)
             else:
@@ -243,6 +305,8 @@ class JX3Trade:
     async def get_prices(self, item_id: str, server: str) -> list[ItemPriceDetail] | None:
         url = "https://next2.jx3box.com/api/auction/"
         data = (await Request(url, params={"server": server, "item_id": item_id, "aggregate_type": "hourly"}).post()).json()
+        if not data:
+            data = await self.get_legacy_prices(item_id, server)
         if len(data) > 20:
             data = sort_dict_list(data, "timestamp")[::-1][:20]
         return [ItemPriceDetail(i) for i in sort_dict_list(data, "price")] if data else None

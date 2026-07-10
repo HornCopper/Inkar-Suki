@@ -11,40 +11,47 @@ from src.templates import SimpleHTML
 
 from .api import template_msgbox, template_table
 
-from ._parse import ShilianEquipParser, coin_to_image, calculate_price
+from ._parse import SHILIAN_ATTR_LABELS, ShilianEquipParser, coin_to_image, calculate_price, shilian_attrs_to_keys
+from .local_items import search_local_shilian_equips
 
 basic_name = "无修"
 
 def get_exist_attrs(data: list[dict]) -> list[str]:
     attrs = []
     for item in data:
-        if item.get("color") == "green":
+        if item.get("color") != "green":
+            continue
+        if item.get("key"):
+            attrs.append(item["key"])
+        else:
             label: str = item["label"].split("提高" if "提高" in item["label"] else "增加")[0]
             label = label.replace("等级", "").replace("值", "")
             attrs.append(label)
     return attrs
 
+
+def format_attrs(data: list[dict]) -> str:
+    return " ".join(
+        SHILIAN_ATTR_LABELS.get(attr, attr)
+        for attr in get_exist_attrs(data)
+    )
+
 async def get_equips_data(name: str, quality: int):
-    url = f"https://node.jx3box.com/api/node/item/search?ids=&keyword={name}&client=std&MinLevel={quality}&MaxLevel={quality}&BindType=2"
-    satisfied = []
-    data = (await Request(url).get()).json()
-    for x in data["data"]["data"]:
-        if str(x["Level"]) == str(quality):
-            satisfied.append(x)
-    return satisfied
+    return search_local_shilian_equips(name, quality, None)
 
 async def get_equip_data(raw: str):
     attrsInstance = ShilianEquipParser(raw)
     attrs, location, quality, type_ = attrsInstance.attributes, attrsInstance.location, attrsInstance.quality, attrsInstance.kungfu_type
+    attr_keys = shilian_attrs_to_keys(attrs)
     if not attrs:
         return "您输入的装备词条有误，请确保包含以下四个要素：\n品级、属性、部位、内外功\n示例：13550内功双会头"
     final_name = basic_name + location + "·" + type_
-    data = await get_equips_data(final_name, quality)
+    data = search_local_shilian_equips(final_name, quality, attr_keys)
     if len(data) == 0:
         return f"未查找到该{basic_name}装备！"
     else:
         for i in data:
-            if set(get_exist_attrs(i["attributes"])) == set(attrs):
+            if set(get_exist_attrs(i["attributes"])) == set(attr_keys):
                 return i
         raise ValueError("不存在这样的试炼之地装备，请不要徒手造装备！")
             
@@ -101,7 +108,7 @@ async def get_wufeng_image(raw: str, server: str):
             Template(template_table).render(
                 icon = icon,
                 color = color,
-                name = name + "<br><span style=\"color:rgb(0, 210, 75)\">" + " ".join(get_exist_attrs(data["attributes"])) + "</span>",
+                name = name + "<br><span style=\"color:rgb(0, 210, 75)\">" + format_attrs(data["attributes"]) + "</span>",
                 time = Time(each_price["created"]).format("%m月%d日 %H:%M:%S"),
                 limit = str(each_price["n_count"]),
                 price = coin_to_image(calculate_price(each_price["unit_price"]))
@@ -181,7 +188,7 @@ async def get_wufeng_image_allserver(raw: str):
                     Template(template_table).render(
                         icon = icon,
                         color = color,
-                        name = name + f"（{server}）<br><span style=\"color:rgb(0, 210, 75)\">" + " ".join(get_exist_attrs(data["attributes"])) + "</span>",
+                        name = name + f"（{server}）<br><span style=\"color:rgb(0, 210, 75)\">" + format_attrs(data["attributes"]) + "</span>",
                         time = Time().format("%m月%d日 %H:%M:%S"),
                         limit = "N/A",
                         price = coin_to_image(calculate_price(current["AvgPrice"]))
@@ -193,7 +200,7 @@ async def get_wufeng_image_allserver(raw: str):
             Template(template_table).render(
                 icon = icon,
                 color = color,
-                name = name + f"（{server}）<br><span style=\"color:rgb(0, 210, 75)\">" + " ".join(get_exist_attrs(data["attributes"])) + "</span>",
+                name = name + f"（{server}）<br><span style=\"color:rgb(0, 210, 75)\">" + format_attrs(data["attributes"]) + "</span>",
                 time = Time(each_price["created"]).format("%m月%d日 %H:%M:%S"),
                 limit = str(each_price["n_count"]),
                 price = coin_to_image(calculate_price(each_price["unit_price"]))

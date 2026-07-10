@@ -9,6 +9,7 @@ from src.const.jx3.server import Server
 from src.utils.file import read
 from src.utils.database import attribute_db as db
 from src.utils.database.classes import PlayerEquipsCache
+from src.utils.database.tabs import read_tab
 from src.utils.network import Request
 from src.utils.analyze import R, TuilanData, merge_dicts, parse_luatable, parse_skillevent
 from src.utils.exceptions import TabFileMissException
@@ -119,10 +120,6 @@ def parse_conditions(input_str: str) -> list[str] | Literal[False]:
     if "T" in matches and ("PVP" in matches or "PVX" in matches):
         return False
     return matches
-
-def read_tab(tab_path: str) -> list[list]:
-    with open(tab_path, encoding="gbk", mode="r") as f:
-        return [a.strip().split("\t") for a in f.read().strip().split("\n")]
 
 def init_tab_cache():
     TabCache._Attrib = read_tab(ASSETS + "/source/jx3/tabs/Attrib.tab")

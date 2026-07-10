@@ -4,6 +4,24 @@ from src.const.path import ASSETS, build_path
 
 import re
 
+SHILIAN_ATTR_LABELS = {
+    "atPhysicsAttackPowerBase": "外功攻击",
+    "atMagicAttackPowerBase": "内功攻击",
+    "atPhysicsCriticalStrike": "外功会心",
+    "atAllTypeCriticalStrike": "全会心",
+    "atPhysicsCriticalDamagePowerBase": "外功会心效果",
+    "atAllTypeCriticalDamagePowerBase": "全会心效果",
+    "atPhysicsOvercomeBase": "外功破防",
+    "atMagicOvercome": "内功破防",
+    "atSurplusValueBase": "破招",
+    "atStrainBase": "无双",
+}
+SHILIAN_ATTR_KEYS = {value: key for key, value in SHILIAN_ATTR_LABELS.items()}
+
+
+def shilian_attrs_to_keys(attrs: list[str]) -> list[str]:
+    return [SHILIAN_ATTR_KEYS.get(attr, attr) for attr in attrs]
+
 class ShilianEquipParser:
     def __init__(self, raw: str):
         self.raw = self._preprocess(raw)

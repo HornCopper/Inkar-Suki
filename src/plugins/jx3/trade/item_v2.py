@@ -1,189 +1,187 @@
-from typing import Literal, Any
+from collections import defaultdict
 from pathlib import Path
+from typing import Any
+
 from jinja2 import Template
 
-from src.const.jx3.server import Server
+from src.config import Config
 from src.const.path import ASSETS, TEMPLATES, build_path
-from src.utils.network import Request
-from src.utils.time import Time
-from src.utils.file import read
-from src.utils.generate import generate
 from src.utils.database import db
 from src.utils.database.classes import ItemKeywordMap
+from src.utils.file import read
+from src.utils.generate import generate
+from src.utils.network import Request
+from src.utils.time import Time
 
-from ._template import headers, template_wujia
+from ._template import template_wujia
 
-import datetime
 import json
 
-async def query_aijx3_data(url: str, params: dict = {}):
-    data = (await Request(url, headers=headers, params=params).post()).json()
-    return data
 
-async def get_standard_name(alias_name: str) -> str | list:
-    local_data: ItemKeywordMap | None | Any = db.where_one(ItemKeywordMap(), "map_name = ?", alias_name, default=None)
-    if local_data is not None:
-        alias_name = local_data.raw_name
-    item_data = await query_aijx3_data("https://www.aijx3.cn/api/wj/basedata/getBaseGoodsList")
-    item_data = item_data["data"]
-    
-    # 精准匹配 如果成功匹配不再模糊搜索
-    for each_item in item_data:
-        if alias_name in each_item["goodsAliasAll"] or alias_name == each_item["goodsName"]:
-            return each_item["goodsName"]
-    
-    # 模糊搜索 给出列表
-    matched = []
-    for each_item in item_data:
-        aliases = each_item["goodsAliasAll"]
-        if alias_name in each_item["goodsName"]:
-            matched.append(each_item["goodsName"])
+def _format_price(value: Any) -> str:
+    try:
+        price = float(value)
+    except (TypeError, ValueError):
+        return "--"
+    return f"{price:g}元"
+
+
+def get_item_price(item_data: dict) -> dict[str, str]:
+    tables = {"电信一区": "", "双线一区": "", "无界区": ""}
+    grouped_records = {"电信一区": [], "双线一区": [], "无界区": []}
+    records = []
+    for group in item_data.get("list") or []:
+        if not isinstance(group, list):
             continue
-        for alias in aliases:
-            if alias_name in alias:
-                matched.append(each_item["goodsName"])
-    return matched
+        records.extend(
+            record
+            for record in group
+            if isinstance(record, dict) and record.get("source") != 4
+        )
+    records = sorted(records, key=lambda record: record.get("date") or "", reverse=True)
 
-async def get_item_history(standard_name: str) -> tuple[list[int], list[str]]:
-    current_timestamp = Time().raw_time
-    start_timestamp = current_timestamp - 3*30*24*60*60 # 3个月前
-    params = {
-        "goodsName":standard_name,
-        "belongQf3":"", 
-        "endTime": Time(current_timestamp).format("%Y-%m-%d"), 
-        "startTime": Time(start_timestamp).format("%Y-%m-%d")
-    }
-    data = await query_aijx3_data("https://www.aijx3.cn/api/wj/goods/getAvgGoodsPriceRecord", params=params)
-    data = data["data"]
-    dates = []
-    prices = []
-    for each_data in data:
-        dates.append(
-            Time(
-                int(
-                    datetime.datetime.strptime(
-                        each_data["tradeTime"], "%Y-%m-%dT%H:%M:%S.000+0000"
-                    ).timestamp()
-                )
-            ).format(
-                "%Y-%m-%d"
+    for record in records:
+        zone = str(record.get("zone") or "")
+        if zone.startswith("电信"):
+            grouped_records["电信一区"].append(record)
+        elif zone.startswith("双线"):
+            grouped_records["双线一区"].append(record)
+        elif zone.startswith("无界"):
+            grouped_records["无界区"].append(record)
+
+    for zone, zone_records in grouped_records.items():
+        rows = []
+        for record in zone_records[:10]:
+            rows.append(
+                Template(template_wujia).render(
+                    date=record.get("date") or "--",
+                    server=record.get("server") or "--",
+                    price=_format_price(record.get("value")),
                 )
             )
-        prices.append(each_data["price"])
-    return prices[::-1], dates[::-1]
+        tables[zone] = "\n".join(rows)
+    return tables
 
-async def get_item_detail(item_name: str) -> list | Literal[False]:
-    item_data = await query_aijx3_data("https://www.aijx3.cn/api/wj/goods/getGoodsDetail", params={"goodsName": item_name})
-    item_data = item_data["data"]
-    if item_data is None:
-        return False
-    item_name = item_data["goodsName"]
-    item_alias = item_data["goodsAlias"]
-    publish_timestamp = item_data["publishTime"] if item_data["publishTime"] is not None else 0
-    publish_time = Time(int(datetime.datetime.strptime(item_data["publishTime"], "%Y-%m-%dT%H:%M:%S.000+0000").timestamp())).format("%Y-%m-%d") if publish_timestamp != 0 else "未知" # 发行时间
-    publish_count_limit = item_data["publishNum"] if item_data["publishNum"] is not None else "--" # 发行数量
-    publish_time_limit = item_data["publishLimitTime"] if item_data["publishLimitTime"] is not None else "--" # 发行时长
-    binding_time_limit = item_data["limitTime"] if item_data["limitTime"] is not None else "--" # 绑定时长
-    raw_price = str(item_data["priceNum"]) + "元" # 发行原价
-    img = item_data["imgs"][0] if item_data["imgs"] is not None else "https://inkar-suki.codethink.cn/Inkar-Suki-Docs/img/Unknown.png"
-    return [item_name, item_alias, publish_time, publish_count_limit, publish_time_limit, binding_time_limit, raw_price, img]
-    # [物品名称, 物品别称, 发行时间, 发行数量, 发行时长, 绑定时长, 发行原价, 图片样例]
 
-async def get_wanbaolou_data(item_standard_name: str) -> str:
-    final_url = f"https://trade-api.seasunwbl.com/api/buyer/goods/list?filter[role_appearance]={item_standard_name}&filter[state]=2&goods_type=3&sort[price]=1"
-    data = (await Request(final_url).get()).json()
-    if data["code"] == -11:
+async def get_wanbaolou_data(item_name: str) -> str:
+    url = "https://trade-api.seasunwbl.com/api/buyer/goods/list"
+    data = (
+        await Request(
+            url,
+            params={
+                "filter[role_appearance]": item_name,
+                "filter[state]": 2,
+                "goods_type": 3,
+                "sort[price]": 1,
+            },
+        ).get()
+    ).json()
+    if data.get("code") == -11:
         return "万宝楼正在维护中……暂时没有数据"
-    wbl_data = []
-    for each_data in data["data"]["list"][0:6]:
-        server = each_data["server_name"]
-        end_time = Time(Time().raw_time + each_data["remaining_time"]).format("%Y-%m-%d")
-        price = str(each_data["single_unit_price"] / 100) + "元"
-        wbl_data.append(
+
+    records = data.get("data", {}).get("list") or []
+    rows = []
+    for record in records[:6]:
+        rows.append(
             Template(template_wujia).render(
-                date = end_time,
-                server = server,
-                price = price
+                date=Time(Time().raw_time + record.get("remaining_time", 0)).format("%Y-%m-%d"),
+                server=record.get("server_name") or "--",
+                price=_format_price(float(record.get("single_unit_price") or 0) / 100),
             )
         )
-    return "\n".join(wbl_data)
+    return "\n".join(rows)
 
-async def get_item_price(item_standard_name: str) -> dict:
-    data = await query_aijx3_data("https://www.aijx3.cn/api/wj/goods/getGoodsPriceRecord", params={"goodsName":item_standard_name,"belongQf3":"","current":1,"size":100})
-    full_table = {}
-    zone_record_count = {
-        "电信一区": 0,
-        "双线一区": 0,
-        "无界区": 0
-    }
-    for zone in [["电信一区", "电信五区", "电信八区"], ["双线一区", "双线二区", "双线四区"], ["无界区"]]:
-        table = []
-        for each_data in data["data"]["records"]:
-            server = each_data["belongQf3"]
-            if Server(server).zone_legacy in zone:
-                if zone_record_count[zone[0]] == 10:
-                    continue
-                end_time = Time(int(datetime.datetime.strptime(each_data["tradeTime"], "%Y-%m-%dT%H:%M:%S.000+0000").timestamp())).format("%Y-%m-%d")
-                price = str(each_data["price"]) + "元"
-                table.append(
-                    Template(template_wujia).render(
-                        date = end_time,
-                        server = server,
-                        price = price
-                    )
-                )
-                zone_record_count[zone[0]] += 1
-        full_table[zone[0]] = "\n".join(table)
-    return full_table
 
-def select_min_max(data: list, margin: float = 0.1, round_to: int = 10) -> tuple[int, int]:
+def get_item_history(item_data: dict) -> tuple[list[float], list[str]]:
+    all_records = []
+    for group in item_data.get("list") or []:
+        if isinstance(group, list):
+            all_records.extend(record for record in group if isinstance(record, dict))
+    records = [
+        record for record in all_records
+        if record.get("source") != 4 and record.get("date") and record.get("value") is not None
+    ]
+    if not records:
+        records = [
+            record for record in all_records
+            if record.get("date") and record.get("value") is not None
+        ]
+
+    prices_by_date: dict[str, list[float]] = defaultdict(list)
+    for record in records:
+        prices_by_date[str(record["date"])].append(float(record["value"]))
+
+    dates = sorted(prices_by_date)
+    prices = [
+        round(sum(prices_by_date[date]) / len(prices_by_date[date]), 2)
+        for date in dates
+    ]
+    return prices, dates
+
+
+def select_min_max(data: list[float], margin: float = 0.1, round_to: int = 10) -> tuple[int, int]:
     if not data:
-        return 0, 100000
-    data = [float(item) for item in data]
+        return 0, 100
     data_min = min(data)
     data_max = max(data)
     data_range = data_max - data_min
+    if data_range == 0:
+        data_range = max(data_max * margin, round_to)
     extend = data_range * margin
-    optimal_min = data_min - extend
+    optimal_min = max(0, data_min - extend)
     optimal_max = data_max + extend
-    def round_down(value: float, round_to: int) -> float:
+
+    def round_down(value: float) -> float:
         return (value // round_to) * round_to
-    def round_up(value: float, round_to: int) -> float:
+
+    def round_up(value: float) -> float:
         return ((value + round_to - 1) // round_to) * round_to
-    adjusted_min = round_down(optimal_min, round_to)
-    adjusted_max = round_up(optimal_max, round_to)
-    return int(adjusted_min), int(adjusted_max)
+
+    return int(round_down(optimal_min)), int(round_up(optimal_max))
+
 
 async def get_single_item_price(item_name: str, exact: bool = False) -> str | dict | list | None:
-    standard_name = await get_standard_name(item_name)
-    if isinstance(standard_name, list):
-        return {"v": standard_name}
-    if exact:
-        standard_name = item_name
-    basic_item_info = await get_item_detail(standard_name)
-    if not basic_item_info:
-        return ["唔……未收录该物品！\n请到音卡用户群内进行反馈，我们会及时添加别名！"]
-    aijx3_data = await get_item_price(standard_name)
-    wbl_data = await get_wanbaolou_data(standard_name)
-    prices, dates = await get_item_history(standard_name)
-    max, min = select_min_max(prices)
+    query_name = item_name
+    if not exact:
+        local_data: ItemKeywordMap | None | Any = db.where_one(
+            ItemKeywordMap(),
+            "map_name = ?",
+            item_name,
+            default=None,
+        )
+        if local_data is not None:
+            query_name = local_data.raw_name
+
+    data = (
+        await Request(
+            f"{Config.jx3.api.url.rstrip('/')}/data/trade/records",
+            params={"name": query_name, "token": Config.jx3.api.token},
+        ).get()
+    ).json()
+    item_data = data.get("data")
+    if data.get("code") != 200 or not isinstance(item_data, dict) or not item_data:
+        return ["唔……未找到该物品！\n请确认是否应该使用“交易行”命令？"]
+
+    final_item_name = str(item_data.get("name") or "未知")
+    trade_data = get_item_price(item_data)
+    wbl_data = await get_wanbaolou_data(final_item_name)
+    prices, dates = get_item_history(item_data)
+    y_min, y_max = select_min_max(prices)
     html = Template(read(build_path(TEMPLATES, ["jx3", "item_price.html"]))).render(
-        font = build_path(ASSETS, ["font", "PingFangSC-Medium.otf"]),
-        item_image = str(basic_item_info[7]),
-        item_name = str(basic_item_info[0]),
-        item_alias = str(str(basic_item_info[1])),
-        custom_msg = (await Request("https://inkar-suki.codethink.cn/ajs_lu").get()).json()["msg"],
-        publish_time = str(basic_item_info[2]),
-        publish_count = str(basic_item_info[3]),
-        publish_remain = str(basic_item_info[4]),
-        binding_time = str(basic_item_info[5]),
-        publish_price = str(basic_item_info[6]),
-        aijx3_data = aijx3_data,
-        wanbaolou = wbl_data,
-        dates = json.dumps(dates, ensure_ascii=False),
-        max = max,
-        min = min,
-        values = json.dumps(prices, ensure_ascii=False)
+        font=build_path(ASSETS, ["font", "PingFangSC-Medium.otf"]),
+        item_image=str(item_data.get("view") or "https://inkar-suki.codethink.cn/Inkar-Suki-Docs/img/Unknown.png"),
+        default_item_image="https://inkar-suki.codethink.cn/Inkar-Suki-Docs/img/Unknown.png",
+        item_name=final_item_name,
+        item_alias=str(item_data.get("alias") or "--"),
+        custom_msg=str(item_data.get("desc") or "--"),
+        publish_time=str(item_data.get("date") or "未知"),
+        publish_price=_format_price(item_data.get("value")),
+        trade_data=trade_data,
+        wanbaolou=wbl_data,
+        dates=json.dumps(dates, ensure_ascii=False),
+        max=y_max,
+        min=y_min,
+        values=json.dumps(prices, ensure_ascii=False),
     )
     final_path = await generate(html, "body", False)
     if not isinstance(final_path, str):
