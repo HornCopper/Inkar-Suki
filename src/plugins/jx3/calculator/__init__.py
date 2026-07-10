@@ -1656,11 +1656,12 @@ async def _finish_damage_timeline(
         selected_tag = str(options[index - 1]["tag"])
         context: dict[str, Any] = state["timeline_kungfu_context"]
         if context["mode"] == "global":
-            instance = await UniversalCalculator.with_global_role_id(int(context["global_role_id"]), selected_tag)
+            candidate = await UniversalCalculator.with_global_role_id(int(context["global_role_id"]), selected_tag)
         else:
-            instance = await UniversalCalculator.with_name(str(context["name"]), str(context["server"]), selected_tag)
-        if isinstance(instance, str):
-            await matcher.finish(instance)
+            candidate = await UniversalCalculator.with_name(str(context["name"]), str(context["server"]), selected_tag)
+        if isinstance(candidate, str):
+            await matcher.finish(candidate)
+        instance = cast(UniversalCalculator, candidate)
         state.pop("timeline_kungfu_options", None)
         state.pop("timeline_kungfu_context", None)
         state.pop("timeline_loop_order", None)
@@ -1808,7 +1809,7 @@ async def _(event: GroupMessageEvent, matcher: Matcher, state: T_State, rating_j
 
 timeline_matcher = on_command(
     "jx3_damage_timeline",
-    aliases=_prefixed_command_aliases("循环曲线", CALCULATOR_PREFIXES),
+    aliases=cast(Any, _prefixed_command_aliases("循环曲线", CALCULATOR_PREFIXES)),
     priority=5,
     force_whitespace=True,
 )
@@ -1837,7 +1838,7 @@ async def _(
 
 timeline_compare_matcher = on_command(
     "jx3_damage_timeline_compare",
-    aliases=_prefixed_command_aliases("循环对比", CALCULATOR_PREFIXES),
+    aliases=cast(Any, _prefixed_command_aliases("循环对比", CALCULATOR_PREFIXES)),
     priority=5,
     force_whitespace=True,
 )
@@ -1866,10 +1867,10 @@ async def _(
 
 timeline_kline_matcher = on_command(
     "jx3_damage_timeline_kline",
-    aliases=(
+    aliases=cast(Any, (
         _prefixed_command_aliases("循环k线", CALCULATOR_PREFIXES)
         | _prefixed_command_aliases("循环K线", CALCULATOR_PREFIXES)
-    ),
+    )),
     priority=5,
     force_whitespace=True,
 )
@@ -1999,7 +2000,7 @@ async def _(
     if len(arg) == 1:
         server = None
         name = arg[0]
-    elif len(arg) == 2:
+    else:
         server = arg[0]
         name = arg[1]
     state["pzid"] = 0
@@ -2031,6 +2032,7 @@ async def _(
         instance = await UniversalCalculator.with_global_role_id(int(global_role_id), tag)
         if isinstance(instance, str):
             await calc_matcher.finish(instance)
+        instance = cast(UniversalCalculator, instance)
     else:
         server = Server(server, event.group_id).server
         if server is None:
@@ -2057,6 +2059,7 @@ async def _(
         instance = await UniversalCalculator.with_name(name, server, tag)
         if isinstance(instance, str):
             await calc_matcher.finish(instance)
+        instance = cast(UniversalCalculator, instance)
     await _prepare_calculator_loop_selection(event, matcher, state, instance)
 
 @calc_matcher.got("loop_order")
@@ -2072,11 +2075,12 @@ async def _(event: GroupMessageEvent, matcher: Matcher, state: T_State, loop_ord
         selected_tag = str(options[index - 1]["tag"])
         context: dict[str, Any] = state["calculator_kungfu_context"]
         if context["mode"] == "global":
-            instance = await UniversalCalculator.with_global_role_id(int(context["global_role_id"]), selected_tag)
+            candidate = await UniversalCalculator.with_global_role_id(int(context["global_role_id"]), selected_tag)
         else:
-            instance = await UniversalCalculator.with_name(str(context["name"]), str(context["server"]), selected_tag)
-        if isinstance(instance, str):
-            await calc_matcher.finish(instance)
+            candidate = await UniversalCalculator.with_name(str(context["name"]), str(context["server"]), selected_tag)
+        if isinstance(candidate, str):
+            await calc_matcher.finish(candidate)
+        instance = cast(UniversalCalculator, candidate)
         state.pop("calculator_kungfu_options", None)
         state.pop("calculator_kungfu_context", None)
         state.pop("loop_order", None)
@@ -2125,7 +2129,7 @@ async def _(
         server = None
         name = arg[0]
         equip = arg[1]
-    elif len(arg) == 3:
+    else:
         server = arg[0]
         name = arg[1]
         equip = arg[2]

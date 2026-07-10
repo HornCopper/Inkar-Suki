@@ -36,6 +36,7 @@ async def lq_(args: Message = CommandArg()):
 @LotMatcher.got("pb")
 async def pq_(reply: str = ArgPlainText("pb")):
     if reply == "确定" or "yes" or "抽取" or "嗯":
+        pd = False
         for i in range(3):
             a = random.randint(0,100)
             if a >= 5 :

@@ -100,6 +100,7 @@ async def zone_achievement(
         return PROMPT.PlayerNotExist
     map_id_data: dict = (await Request("https://m.pvp.xoyo.com/achievement/list/dungeon-maps", params={"detail": True}).post(tuilan=True)).json()
     map_id = get_map_all_id(map_id_data, zone)
+    _map_id = 0
     flag = False
     for each_map_id in map_id:
         if each_map_id["name"] == mode:

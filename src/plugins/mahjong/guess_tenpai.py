@@ -3,6 +3,7 @@ from __future__ import annotations
 from collections import Counter
 from dataclasses import dataclass
 from pathlib import Path
+from typing import Any, cast
 import random
 import re
 import uuid
@@ -297,7 +298,7 @@ def render_hand_image(tiles: list[int] | tuple[int, ...]) -> str:
     try:
         width = sum(image.width for image in images)
         height = max(image.height for image in images)
-        canvas = Image.new("RGBA", (width, height), (255, 255, 255, 0))
+        canvas = Image.new("RGBA", (width, height), cast(Any, (255, 255, 255, 0)))
         x = 0
         for image in images:
             canvas.alpha_composite(image, (x, height - image.height))

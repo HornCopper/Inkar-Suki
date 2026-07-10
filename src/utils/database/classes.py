@@ -1,7 +1,8 @@
-from src.utils.database.lib import LiteModel, BaseModel
+﻿from typing import ClassVar
 
+from src.utils.database.lib import LiteModel, BaseModel
 class Account(LiteModel):
-    TABLE_NAME: str = "accounts"
+    TABLE_NAME: ClassVar[str] = "accounts"
     user_id: int = 0
     checkin_counts: int = 0
     coins: int = 0
@@ -9,7 +10,7 @@ class Account(LiteModel):
     last_checkin: int = 0
 
 class Affections(LiteModel):
-    TABLE_NAME: str = "affections"
+    TABLE_NAME: ClassVar[str] = "affections"
     server: str = ""
     uin_1: int = 0
     uin_2: int = 0
@@ -20,22 +21,22 @@ class Affections(LiteModel):
     school_2: str = ""
 
 class Applicationslist(LiteModel):
-    TABLE_NAME: str = "applications"
+    TABLE_NAME: ClassVar[str] = "applications"
     applications_list: list = []
 
 class BannedUser(LiteModel):
-    TABLE_NAME: str = "ban"
+    TABLE_NAME: ClassVar[str] = "ban"
     user_id: int = 0
     reason: str = ""    
 
 class BanRecord(LiteModel):
-    TABLE_NAME: str = "ban_record"
+    TABLE_NAME: ClassVar[str] = "ban_record"
     user_id: int = 0
     group_id: int = 0
     expire: int = 0
 
 class GroupSettings(LiteModel):
-    TABLE_NAME: str = "settings"
+    TABLE_NAME: ClassVar[str] = "settings"
     server: str = ""
     group_id: str = ""
     subscribe: list[str] = []
@@ -50,7 +51,7 @@ class GroupSettings(LiteModel):
     invitor: int = 0
 
 class RaidTeamHealth(LiteModel):
-    TABLE_NAME: str = "raid_team_health"
+    TABLE_NAME: ClassVar[str] = "raid_team_health"
     creator_id: int = 0
     group_id: int = 0
     team_name: str = ""
@@ -60,12 +61,12 @@ class RaidTeamHealth(LiteModel):
     update_time: int = 0
 
 class ItemKeywordMap(LiteModel):
-    TABLE_NAME: str = "item_keyword"
+    TABLE_NAME: ClassVar[str] = "item_keyword"
     map_name: str = ""
     raw_name: str = ""
 
 class JX3APIWSData(LiteModel):
-    TABLE_NAME: str = "jx3api_wsdata"
+    TABLE_NAME: ClassVar[str] = "jx3api_wsdata"
     action: int = 0
     event: str = ""
     data: dict = {}
@@ -82,17 +83,17 @@ class PersonalSetting(BaseModel):
     formation: str = "无阵眼"
 
 class PersonalSettings(LiteModel):
-    TABLE_NAME: str = "personal_settings"
+    TABLE_NAME: ClassVar[str] = "personal_settings"
     user_id: int = 0
     roles: list["RoleData"] = []
     setting: PersonalSetting = PersonalSetting()
 
 class Population(LiteModel):
-    TABLE_NAME: str = "population"
+    TABLE_NAME: ClassVar[str] = "population"
     populations: dict = {}
 
 class PlayerEquipsCache(LiteModel):
-    TABLE_NAME: str = "player_equip"
+    TABLE_NAME: ClassVar[str] = "player_equip"
     equips_data: list = []
     talents_data: list = []
     global_role_id: int = 0
@@ -101,7 +102,7 @@ class PlayerEquipsCache(LiteModel):
     timestamp: int = 0
 
 class EquipmentRatingCache(LiteModel):
-    TABLE_NAME: str = "equipment_rating"
+    TABLE_NAME: ClassVar[str] = "equipment_rating"
     equip_hash: str = ""
     global_role_id: int = 0
     role_name: str = ""
@@ -115,7 +116,7 @@ class EquipmentRatingCache(LiteModel):
     timestamp: int = 0
 
 class RequestData(LiteModel):
-    TABLE_NAME: str = "request_data"
+    TABLE_NAME: ClassVar[str] = "request_data"
     url: str = ""
     headers: dict = {}
     params: dict = {}
@@ -123,7 +124,7 @@ class RequestData(LiteModel):
     timestamp: int = 0
 
 class RoleData(LiteModel):
-    TABLE_NAME: str = "role_data"
+    TABLE_NAME: ClassVar[str] = "role_data"
     bodyName: str = ""
     campName: str = ""
     forceName: str = ""
@@ -149,7 +150,7 @@ class RoleData(LiteModel):
                 f"globalRoleId={self.globalRoleId})")
 
 class SerendipityData(LiteModel):
-    TABLE_NAME: str = "serendipities"
+    TABLE_NAME: ClassVar[str] = "serendipities"
     roleName: str = ""
     roleId: str = ""
     level: int = 0
@@ -161,13 +162,13 @@ class MemberMessage(LiteModel):
     timestamp: int = 0
 
 class GroupMessage(LiteModel):
-    TABLE_NAME: str = "group_message"
+    TABLE_NAME: ClassVar[str] = "group_message"
     group_id: int = 0
     user_id: int = 0
     messages: list[MemberMessage] = []
 
 class CQCRank(LiteModel):
-    TABLE_NAME: str = "cqc_rank"
+    TABLE_NAME: ClassVar[str] = "cqc_rank"
     role_name: str = ""
     server_name: str = ""
     kungfu_id: int = 0
@@ -177,7 +178,7 @@ class CQCRank(LiteModel):
     total_health: int = 0
 
 class THRRank(LiteModel):
-    TABLE_NAME: str = "thr_rank"
+    TABLE_NAME: ClassVar[str] = "thr_rank"
     role_name: str = ""
     server_name: str = ""
     kungfu_id: int = 0
@@ -187,7 +188,7 @@ class THRRank(LiteModel):
     total_health: int = 0
 
 class EquipmentRatingDpsRank(LiteModel):
-    TABLE_NAME: str = "equipment_rating_dps_rank"
+    TABLE_NAME: ClassVar[str] = "equipment_rating_dps_rank"
     role_name: str = ""
     server_name: str = ""
     role_id: str = ""
@@ -199,20 +200,20 @@ class EquipmentRatingDpsRank(LiteModel):
     timestamp: int = 0
 
 class RandomAffectionRecord(LiteModel):
-    TABLE_NAME: str = "random_affection_record"
+    TABLE_NAME: ClassVar[str] = "random_affection_record"
     user_id: int = 0
     group_id: int = 0
     target_id: int = 0
     timestamp: int = 0
 
 class EquipReplacementLog(LiteModel):
-    TABLE_NAME: str = "equip_replacement_log"
+    TABLE_NAME: ClassVar[str] = "equip_replacement_log"
     user_id: int = 0
     message: str = ""
     global_role_id: int = 0
 
 class RandomImageRecord(LiteModel):
-    TABLE_NAME: str = "random_image_record"
+    TABLE_NAME: ClassVar[str] = "random_image_record"
     user_id: int = 0
     group_id: int = 0
     server: str = ""
@@ -224,3 +225,4 @@ class RandomImageRecord(LiteModel):
     result_price: int = 0
     profit: int = 0
     timestamp: int = 0
+

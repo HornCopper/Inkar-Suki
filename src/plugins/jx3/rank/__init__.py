@@ -65,7 +65,7 @@ async def _(event: GroupMessageEvent, argument: Message = CommandArg()):
             """
             school = ""
             server = Server(args[0], None).server or ""
-    elif len(args) == 2:
+    else:
         server = Server(args[0], event.group_id).server or ""
         school = School(args[1]).name or ""
     image = await get_zlrank(server, school)
@@ -139,7 +139,7 @@ async def _(event: GroupMessageEvent, msg: Message = CommandArg()):
     if len(args) == 1:
         server = Server(None, event.group_id).server
         kungfu_name = args[0]
-    if len(args) == 2:
+    else:
         server = Server(args[0], event.group_id).server
         kungfu_name = args[1]
     kungfu_name = Kungfu(kungfu_name).name

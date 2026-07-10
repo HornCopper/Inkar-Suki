@@ -18,7 +18,7 @@ from .base import BaseCalculator, normalize_calculator_jcl_data
 
 class JX3BOX(Kungfu):
     @classmethod
-    def with_internel_id(cls, internel_id) -> "Self | str":
+    def with_internel_id(cls, internel_id: int | str, convert_to_pc: bool = False) -> Self:
         return super().with_internel_id(internel_id)
 
 class JX3BOXCalculator(BaseCalculator):

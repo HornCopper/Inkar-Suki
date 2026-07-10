@@ -261,7 +261,8 @@ async def get_attr_recommend_image(
 async def get_equip_image(id: str):
     data = (await Request(f"https://cms.jx3box.com/api/cms/app/pz/{id}").get()).json()
     kungfu = Kungfu.with_internel_id(data["data"]["mount"])
-    equip_place = CHANGJIAN_EQUIP_PLACES if int(kungfu.id) in CHANGJIAN_KUNGFU_IDS else DEFAULT_EQUIP_PLACES
+    kungfu_id = int(kungfu.id or 0)
+    equip_place = CHANGJIAN_EQUIP_PLACES if kungfu_id in CHANGJIAN_KUNGFU_IDS else DEFAULT_EQUIP_PLACES
     equips = data["data"]["overview"]["equips"]
     parsed_equips: list[Equip] = []
     for p in equip_place:

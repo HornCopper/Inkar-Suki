@@ -18,7 +18,7 @@ from .base import BaseCalculator, normalize_calculator_jcl_data
 
 class Universal(Kungfu):
     @classmethod
-    def with_internel_id(cls, internel_id) -> "Self | str":
+    def with_internel_id(cls, internel_id: int | str, convert_to_pc: bool = False) -> Self:
         # if int(internel_id) not in [10062, 100407]:
         #     current_kungfu = super().with_internel_id(internel_id).name or "无法识别"
         #     return "该计算器与心法不符合，请检查后重试！\n当前识别的心法：" + current_kungfu

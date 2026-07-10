@@ -3,6 +3,7 @@ from src.utils.network import Request
 async def get_preposition(name: str = ""):
     url = "https://inkar-suki.codethink.cn/serendipity"
     data = (await Request(url).get()).json()
+    id = 0
     flag = False
     for i in data:
         if i["name"] == name:

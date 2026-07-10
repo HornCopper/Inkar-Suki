@@ -33,6 +33,8 @@ async def get_bulletin_img(msg: str, type_: str):
     elif 10 < len(msg) <= 20:
         fsize = 64
         msg = msg[:9] + "\n" + msg[9:]
+    else:
+        fsize = 48
     font = ImageFont.truetype(
         build_path(
             ASSETS,

@@ -1,6 +1,5 @@
 from jinja2 import Template
-
-from nonebot.adapters.onebot.v11 import MessageSegment as ms
+from typing import Any
 
 from src.const.path import ASSETS, build_path
 from src.const.jx3.constant import server_aliases_data as servers
@@ -39,8 +38,12 @@ def format_attrs(data: list[dict]) -> str:
 async def get_equips_data(name: str, quality: int):
     return search_local_shilian_equips(name, quality, None)
 
-async def get_equip_data(raw: str):
-    attrsInstance = ShilianEquipParser(raw)
+async def get_equip_data(raw: str) -> Any:
+    try:
+        attrsInstance = ShilianEquipParser(raw)
+    except ValueError as exc:
+        reason = str(exc) or "词条格式有误"
+        return f"无法解析试炼词条：{reason}\n请确保包含品级、内/外功、属性和部位，例如：41400外功双会招头"
     attrs, location, quality, type_ = attrsInstance.attributes, attrsInstance.location, attrsInstance.quality, attrsInstance.kungfu_type
     attr_keys = shilian_attrs_to_keys(attrs)
     if not attrs:
@@ -53,25 +56,22 @@ async def get_equip_data(raw: str):
         for i in data:
             if set(get_exist_attrs(i["attributes"])) == set(attr_keys):
                 return i
-        raise ValueError("不存在这样的试炼之地装备，请不要徒手造装备！")
+        return "不存在这样的试炼之地装备，请不要徒手造装备！"
             
 async def get_wufeng_image(raw: str, server: str):
     if server == "全服":
         result = await get_wufeng_image_allserver(raw)
         return result
-    try:
-        data = await get_equip_data(raw)
-    except ValueError:
-        emg = (await Request("https://inkar-suki.codethink.cn/Inkar-Suki-Docs/img/emoji.jpg").get()).content
-        return "音卡建议您不要造装备了，因为没有。\n" + ms.image(emg)
+    data: Any = await get_equip_data(raw)
+    if isinstance(data, str):
+        return data
     if isinstance(data, list):
         return data[0]
     currentStatus = 0 # 当日是否具有该物品在交易行
     try:
         itemId = data["id"]
-    except:
-        emg = (await Request("https://inkar-suki.codethink.cn/Inkar-Suki-Docs/img/emoji.jpg").get()).content
-        return "音卡建议您不要造装备了，因为没有。\n" + ms.image(emg)
+    except (KeyError, TypeError):
+        return "音卡建议您不要造装备了，因为没有。"
     logs = (await Request(f"https://next2.jx3box.com/api/item-price/{itemId}/logs?server={server}").get()).json()
     current = logs["data"]["today"]
     yesterdayFlag = False
@@ -82,7 +82,7 @@ async def get_wufeng_image(raw: str, server: str):
             yesterdayFlag = True
             currentStatus = 1
             current = logs["data"]["yesterday"]
-    if currentStatus:
+    if current is not None:
         msgbox = Template(template_msgbox).render(
             low = coin_to_image(str(calculate_price(current["LowestPrice"]))),
             avg = coin_to_image(str(calculate_price(current["AvgPrice"]))),
@@ -92,18 +92,23 @@ async def get_wufeng_image(raw: str, server: str):
         msgbox = ""
     color = ["(167, 167, 167)", "(255, 255, 255)", "(0, 210, 75)", "(0, 126, 255)", "(254, 45, 254)", "(255, 165, 0)"][int(data["Quality"])]
     detailData = (await Request(f"https://next2.jx3box.com/api/item-price/{itemId}/detail?server={server}&limit=20").get()).json()
-    if (not currentStatus or yesterdayFlag) and detailData["data"]["prices"] is None:
+    prices = detailData["data"]["prices"]
+    if (not currentStatus or yesterdayFlag) and prices is None:
         if not yesterdayFlag:
             return "唔……该物品目前交易行没有数据。"
         else:
+            if current is None:
+                return "唔……该物品目前交易行没有数据。"
             low = calculate_price(current["LowestPrice"])
             avg = calculate_price(current["AvgPrice"])
             high = calculate_price(current["HighestPrice"])
             return f"唔……该物品目前交易行没有数据，但是音卡找到了昨日的数据：\n昨日低价：{low}\n昨日均价：{avg}\n昨日高价：{high}"
+    if prices is None:
+        return "唔……该物品目前交易行没有数据。"
     table = []
     icon = "https://icon.jx3box.com/icon/" + str(data["IconID"]) + ".png"
     name = data["Name"]
-    for each_price in detailData["data"]["prices"]:
+    for each_price in prices:
         table.append(
             Template(template_table).render(
                 icon = icon,
@@ -135,15 +140,16 @@ async def get_wufeng_image_allserver(raw: str):
     lows = []
     avgs = []
     table = []
-    data: list[str] = await get_equip_data(raw)
+    data: Any = await get_equip_data(raw)
+    if isinstance(data, str):
+        return data
     if isinstance(data, list):
         return data[0]
     currentStatus = 0 # 当日是否具有该物品在交易行
     try:
         itemId = data["id"]
-    except KeyError:
-        emg = (await Request("https://inkar-suki.codethink.cn/Inkar-Suki-Docs/img/emoji.jpg").get()).content
-        return "音卡建议您不要造无修装备了，因为没有。\n" + ms.image(emg)
+    except (KeyError, TypeError):
+        return "音卡建议您不要造无修装备了，因为没有。"
     for server in servers:
         logs = (await Request(f"https://next2.jx3box.com/api/item-price/{itemId}/logs?server={server}").get()).json()
         current = logs["data"]["today"]
@@ -158,7 +164,7 @@ async def get_wufeng_image_allserver(raw: str):
             else:
                 yesterdayFlag = 0
                 currentStatus = 0
-        if currentStatus:
+        if current is not None:
             highs.append(current["HighestPrice"])
             avgs.append(current["AvgPrice"])
             lows.append(current["LowestPrice"])
@@ -170,7 +176,8 @@ async def get_wufeng_image_allserver(raw: str):
         detailData = (await Request(f"https://next2.jx3box.com/api/item-price/{itemId}/detail?server={server}&limit=20").get()).json()
         icon = "https://icon.jx3box.com/icon/" + str(data["IconID"]) + ".png"
         name = data["Name"]
-        if (not currentStatus or yesterdayFlag) and detailData["data"]["prices"] is None:
+        prices = detailData["data"]["prices"]
+        if (not currentStatus or yesterdayFlag) and prices is None:
             if not yesterdayFlag:
                 # table.append(
                 #     Template(template_table).render(
@@ -184,6 +191,8 @@ async def get_wufeng_image_allserver(raw: str):
                 # )
                 continue
             else:
+                if current is None:
+                    continue
                 table.append(
                     Template(template_table).render(
                         icon = icon,
@@ -195,7 +204,9 @@ async def get_wufeng_image_allserver(raw: str):
                     )
                 )
                 continue
-        each_price = detailData["data"]["prices"][0]
+        if prices is None:
+            continue
+        each_price = prices[0]
         table.append(
             Template(template_table).render(
                 icon = icon,
@@ -211,6 +222,9 @@ async def get_wufeng_image_allserver(raw: str):
     favgs = [x for x in avgs if x != 0]
     flows = [x for x in lows if x != 0]
     exist_info_flag = False
+    final_highest = 0
+    final_avg = 0
+    final_lowest = 0
     try:
         final_highest = int(sum(fhighs) / len(fhighs))
         final_avg = int(sum(favgs) / len(favgs))
@@ -226,6 +240,7 @@ async def get_wufeng_image_allserver(raw: str):
     )
     if len(table) == 0:
         return "已找到该试炼之地装备，但目前全服均无报价！"
+    name = data["Name"]
     html = str(
         SimpleHTML(
             "jx3",

@@ -547,14 +547,18 @@ def _format_signed_percent(value: Any) -> str:
     return f"{number:+.1f}%"
 
 
+def _as_dict(value: Any) -> dict[str, Any]:
+    return value if isinstance(value, dict) else {}
+
+
 def _equipment_rating_timeline_loop_payload(meta: dict[str, Any]) -> dict[str, Any] | None:
-    jcl = meta.get("jcl") if isinstance(meta.get("jcl"), dict) else {}
+    jcl = _as_dict(meta.get("jcl"))
     weapon = str(jcl.get("weapon") or "").strip()
     haste = str(jcl.get("haste") or "").strip()
     loop_name = str(jcl.get("raw_loop") or "").strip()
     if not weapon or not haste or not loop_name:
         return None
-    selected_loop = meta.get("jcl_loop") if isinstance(meta.get("jcl_loop"), dict) else {}
+    selected_loop = _as_dict(meta.get("jcl_loop"))
     user_id = int(_to_float(selected_loop.get("user_id")))
     payload = {
         "name": str(meta.get("loop_name") or loop_name),
@@ -573,8 +577,8 @@ async def _request_equipment_rating_timeline(
     rating_data: dict[str, Any],
     rating_payload: dict[str, Any],
 ) -> dict[str, Any] | None:
-    meta = rating_data.get("meta") if isinstance(rating_data.get("meta"), dict) else {}
-    adaptive = rating_data.get("adaptive_consumables") if isinstance(rating_data.get("adaptive_consumables"), dict) else {}
+    meta = _as_dict(rating_data.get("meta"))
+    adaptive = _as_dict(rating_data.get("adaptive_consumables"))
     if adaptive.get("status") != "ok":
         return None
     full_income = [str(code) for code in adaptive.get("full_income_codes") or [] if str(code)]
@@ -627,7 +631,7 @@ def _prepare_rating_timeline(timeline_data: dict[str, Any] | None) -> dict[str, 
     if not chart:
         return None
     series = series_list[0]
-    adjusted = series.get("adjusted") if isinstance(series.get("adjusted"), dict) else {}
+    adjusted = _as_dict(series.get("adjusted"))
     return {
         "chart": chart,
         "loop_name": str(series.get("loop_name") or "评级循环"),
@@ -637,15 +641,15 @@ def _prepare_rating_timeline(timeline_data: dict[str, Any] | None) -> dict[str, 
 
 
 def _equipment_rating_adaptive_dps(data: dict[str, Any]) -> int:
-    adaptive = data.get("adaptive_consumables") if isinstance(data.get("adaptive_consumables"), dict) else {}
+    adaptive = _as_dict(data.get("adaptive_consumables"))
     if adaptive.get("status") != "ok":
         return 0
     return int(_to_float(adaptive.get("dps")))
 
 
 def _equipment_rating_rank_jcl_key(meta: dict[str, Any]) -> str:
-    jcl = meta.get("jcl") if isinstance(meta.get("jcl"), dict) else {}
-    selected_loop = meta.get("jcl_loop") if isinstance(meta.get("jcl_loop"), dict) else {}
+    jcl = _as_dict(meta.get("jcl"))
+    selected_loop = _as_dict(meta.get("jcl_loop"))
     weapon = str(jcl.get("weapon") or "").strip()
     haste = str(jcl.get("haste") or "").strip()
     loop_name = str(jcl.get("raw_loop") or jcl.get("loop") or meta.get("loop_name") or "").strip()
@@ -662,7 +666,7 @@ def _equipment_rating_rank_jcl_key(meta: dict[str, Any]) -> str:
 
 
 def _equipment_rating_rank_jcl_name(meta: dict[str, Any]) -> str:
-    jcl = meta.get("jcl") if isinstance(meta.get("jcl"), dict) else {}
+    jcl = _as_dict(meta.get("jcl"))
     weapon = str(jcl.get("weapon") or "").strip()
     haste = str(jcl.get("haste") or "").strip()
     loop_name = str(jcl.get("raw_loop") or jcl.get("loop") or meta.get("loop_name") or "").strip()
@@ -685,7 +689,7 @@ def _record_equipment_rating_rank(
     role_id: str,
     global_role_id: int,
 ) -> dict[str, Any] | None:
-    meta = data.get("meta") if isinstance(data.get("meta"), dict) else {}
+    meta = _as_dict(data.get("meta"))
     kungfu_id = int(_to_float(meta.get("kungfu_id")))
     dps = _equipment_rating_adaptive_dps(data)
     jcl_key = _equipment_rating_rank_jcl_key(meta)
@@ -753,7 +757,7 @@ def record_equipment_rating_rank(
     return _record_equipment_rating_rank(data, role_name, server_name, role_id, global_role_id)
 
 
-async def _fetch_supported_equipment_rating_data(timeout: float = 8) -> dict[str, Any] | str:
+async def _fetch_supported_equipment_rating_data(timeout: int = 8) -> dict[str, Any] | str:
     try:
         response = await Request(f"{Config.jx3.api.calculator_url}/equipment_rating/kungfus").get(timeout=timeout)
         if response.status_code == 404:
@@ -1454,7 +1458,7 @@ def _prepare_adaptive_consumables(raw: Any) -> dict[str, Any] | None:
     groups = [group for group in grouped_items if group["entries"]]
     if not formation and not groups:
         return None
-    baseline = raw.get("baseline") if isinstance(raw.get("baseline"), dict) else {}
+    baseline = _as_dict(raw.get("baseline"))
     summary_parts = []
     if baseline.get("formation_delta_percent") is not None:
         summary_parts.append(f"阵眼 {_format_signed_percent(baseline.get('formation_delta_percent'))}")

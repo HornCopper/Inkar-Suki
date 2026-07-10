@@ -119,6 +119,8 @@ def _row_skill_event_nodes(row: list[str], header: list[str]) -> list[dict[str, 
         if attrib.get("ModifyType") != "atSkillEventHandler":
             continue
         skill_event_id = attrib.get("Param1Min") or attrib.get("Param1Max")
+        if not skill_event_id:
+            continue
         desc = skill_events.get(skill_event_id, "")
         if not desc:
             continue

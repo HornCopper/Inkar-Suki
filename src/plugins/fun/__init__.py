@@ -115,11 +115,14 @@ def _extract_command_matchers(tree: ast.AST) -> dict[str, dict[str, Any]]:
         matcher_names = [target.id for target in node.targets if isinstance(target, ast.Name)]
         if not matcher_names:
             continue
-        command = _literal_string(node.value.args[0]) if node.value.args else None
+        call = node.value
+        if not isinstance(call, ast.Call):
+            continue
+        command = _literal_string(call.args[0]) if call.args else None
         if command is None:
             continue
         aliases: list[str] = []
-        for keyword in node.value.keywords:
+        for keyword in call.keywords:
             if keyword.arg == "aliases":
                 aliases = _literal_strings(keyword.value)
                 break
@@ -368,7 +371,7 @@ async def _(event: MessageEvent, args: Message = CommandArg()):
         msg = f"您的BMI计算结果是：{final_result}，属于正常（18.5~23.9）哦~"
     elif 24.0 <= final_result <= 27.9:
         msg = f"您的BMI计算结果是：{final_result}，属于偏胖（24.0~27.9）哦~"
-    elif final_result >= 28.0:
+    else:
         msg = f"您的BMI计算结果是：{final_result}，属于肥胖（28.0+）哦~\n音卡建议您少吃高热量食物，多多运动保持健康身体哦！"
     await BMIMatcher.finish(msg)
 

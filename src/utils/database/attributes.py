@@ -335,6 +335,7 @@ class Equip:
         self._ui_id = int(armor_data[2])
 
         color = int(armor_data[21])
+        equip_score = 0
 
         if str(self.jcl_line[0]) in ["3", "10"]:
             if color == 4:
@@ -426,6 +427,7 @@ class Equip:
         self._ui_id = int(trinket_data[2])
 
         color = int(trinket_data[21])
+        equip_score = 0
 
         if color == 4:
             equip_score = int(0.9 * self._quality + 0.5)
@@ -522,6 +524,7 @@ class Equip:
         self._ui_id = int(weapon_data[2])
 
         color = int(weapon_data[22])
+        equip_score = 0
 
         if str(self.jcl_line[0]) in ["0", "1"]:
             if color == 4:

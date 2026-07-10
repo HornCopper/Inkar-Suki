@@ -147,8 +147,8 @@ from .subscribe import (
     disable_matcher
 )
 from .trade import (
-    trade_v2_matcher,
-    trade_v2_sl_matcher,
+    trade_matcher,
+    trade_sl_matcher,
     item_price_v2_matcher,
     wanbaolou_role_matcher
 )

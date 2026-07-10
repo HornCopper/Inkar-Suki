@@ -1,7 +1,7 @@
 from functools import cache
 from fnmatch import fnmatchcase
 import json
-from typing import Any
+from typing import Any, Sequence
 
 from src.const.path import ASSETS, build_path
 from src.utils.database.classes import Account
@@ -68,7 +68,7 @@ def _node_match(granted: str | int, required: str | int) -> bool:
     return required == granted or required.startswith(granted + ".")
 
 
-def _split_permission_nodes(nodes: list[str | int]) -> tuple[list[str], list[str]]:
+def _split_permission_nodes(nodes: Sequence[str | int]) -> tuple[list[str], list[str]]:
     grants: list[str] = []
     denies: list[str] = []
     for raw_node in nodes:
@@ -96,7 +96,7 @@ def _check_node_permission(account: Account, required: str | int) -> bool:
     return any(_node_match(node, required) for node in grants)
 
 
-def normalize_permission_nodes(nodes: list[str | int]) -> list[str]:
+def normalize_permission_nodes(nodes: Sequence[str | int]) -> list[str]:
     normalized: list[str] = []
     for raw_node in nodes:
         node = _normalize_node(raw_node)
@@ -119,7 +119,7 @@ def is_defined_permission_node(node: str | int, scope: str = "user") -> bool:
     return any(_node_match(node, leaf) for leaf in _defined_leaf_nodes(scope))
 
 
-def _resolve_deepest_nodes(raw_nodes: list[str | int], leaves: tuple[str, ...]) -> list[str]:
+def _resolve_deepest_nodes(raw_nodes: Sequence[str | int], leaves: tuple[str, ...]) -> list[str]:
     result: set[str] = set()
     grants, denies = _split_permission_nodes(raw_nodes)
     for node in grants:

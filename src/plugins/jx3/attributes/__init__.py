@@ -81,7 +81,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
             server = arg[0]
             role_name = arg[1]
             tags = ""
-    elif len(arg) == 3:
+    else:
         server = arg[0]
         role_name = arg[1]
         tags = arg[-1]
@@ -89,10 +89,10 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     if not server:
         await attribute_matcher.finish(PROMPT.ServerNotExist)
     ver = Preference(event.user_id, "", "").setting("属性")
-    if ver == "v2r":
-        data = await get_attr_v2_remake(server, role_name, segment=True)
-    elif ver == "v4":
+    if ver == "v4":
         data = await get_attr_v4(server, role_name, tags)
+    else:
+        data = await get_attr_v2_remake(server, role_name, segment=True)
     await finish_attribute_response(attribute_matcher, data)
 
 attribute_v2remake_matcher = on_command("jx3_addritube_v2_remake", aliases={"属性v2r", "查装v2r"}, force_whitespace=True, priority=5)
@@ -107,7 +107,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     if len(arg) == 1:
         server = None
         role = arg[0]
-    elif len(arg) == 2:
+    else:
         server = arg[0]
         role = arg[1]
     server = Server(server, event.group_id).server
@@ -138,7 +138,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
             server = arg[0]
             role_name = arg[1]
             tags = ""
-    elif len(arg) == 3:
+    else:
         server = arg[0]
         role_name = arg[1]
         tags = arg[-1]

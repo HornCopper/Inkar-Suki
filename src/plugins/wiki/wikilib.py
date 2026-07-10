@@ -99,6 +99,7 @@ class wiki:
         except Exception as _:
             return {"status": 502, "reason": "该百科的API阻止了我们的连接请求，请过一会儿再试哦~"}
 
+        curid_dict = {}
         try:
             iw_flag = page["query"]["interwiki"]
             iw = iw_flag[0]["iw"]
@@ -106,6 +107,8 @@ class wiki:
         except Exception as _:
             curid_dict = page["query"]["pages"]
         for i in curid_dict:
+            missing = False
+            special = False
             try:
                 if page["query"]["pages"][i]["special"] == "":
                     special = True

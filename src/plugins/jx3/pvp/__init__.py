@@ -19,7 +19,7 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
     if len(arg) == 1:
         server = None
         name = arg[0]
-    elif len(arg) == 2:
+    else:
         server = arg[0]
         name = arg[1]
     server = Server(server, event.group_id).server

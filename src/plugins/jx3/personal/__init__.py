@@ -42,7 +42,7 @@ async def _(event: GroupMessageEvent, argument: Message = CommandArg()):
         server = Server(None, event.group_id).server
         if server is None:
             await personal_bind_matcher.finish(PROMPT.ServerNotExist)
-    elif len(args) == 2:
+    else:
         server = args[0]
         roles: list[str] = parse_role_names(args[1])
         server = Server(server, event.group_id).server
@@ -67,12 +67,14 @@ async def _(event: GroupMessageEvent, argument: Message = CommandArg()):
         await personal_bind_matcher.finish(msg)
     else:
         args = arg.split(" ")
+        if len(args) not in [1, 2]:
+            await personal_bind_matcher.finish(PROMPT.ArgumentCountInvalid + "\n参考格式：解绑角色 <服务器> <角色名>\n参考格式：解绑角色 <ID串>")
         if len(args) == 1:
             roles: list[str] = parse_role_names(args[0])
             server = Server(None, event.group_id).server
             if server is None:
                 await personal_bind_matcher.finish(PROMPT.ServerNotExist)
-        elif len(args) == 2:
+        else:
             server = args[0]
             roles: list[str] = parse_role_names(args[1])
             server = Server(server, event.group_id).server

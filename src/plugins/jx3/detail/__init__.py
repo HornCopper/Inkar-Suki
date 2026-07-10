@@ -34,7 +34,7 @@ async def _(event: GroupMessageEvent, state: T_State, argument: Message = Comman
         role_name = args[0]
         if server is None:
             await achievement_overview_matcher.finish(PROMPT.ServerNotExist)
-    elif len(args) == 2:
+    else:
         server = Server(args[0], event.group_id).server
         role_name = args[1]
         if server is None:

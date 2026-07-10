@@ -31,7 +31,7 @@ async def _(event: GroupMessageEvent, state: T_State, full_argument: Message = C
         else:
             kungfu = Kungfu(args[0])
             condition.append(args[1].upper())
-    elif len(args) == 1:
+    else:
         kungfu = Kungfu(args[0])
     if kungfu.name is None or kungfu.name.endswith("·悟"):
         await referenced_equip_matcher.finish("未找到该心法，请检查后重试！")

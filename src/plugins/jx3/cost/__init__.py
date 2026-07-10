@@ -22,7 +22,7 @@ async def _(event: GroupMessageEvent, state: T_State, argument: Message = Comman
     if len(args) == 1:
         server = None
         name = args[0]
-    elif len(args) == 2:
+    else:
         server = args[0]
         name = args[1]
     server = Server(server, event.group_id).server

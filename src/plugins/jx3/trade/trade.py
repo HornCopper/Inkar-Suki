@@ -161,7 +161,11 @@ class JX3Trade:
 
     @classmethod
     async def shilian(cls, equipment_words: str, server: str) -> Self | str:
-        parser = ShilianEquipParser(equipment_words)
+        try:
+            parser = ShilianEquipParser(equipment_words)
+        except ValueError as exc:
+            reason = str(exc) or "词条格式有误"
+            return f"无法解析试炼词条：{reason}\n请确保包含品级、内/外功、属性和部位，例如：41400外功双会招头"
         attrs, location, quality, kungfu_type = parser.attributes, parser.location, parser.quality, parser.kungfu_type
         attr_keys = shilian_attrs_to_keys(attrs)
         # end_word = "荒" if quality <= 25500 else "玄"
@@ -193,6 +197,7 @@ class JX3Trade:
         if len(cls._node_data) == 0:
             return "未找到相关物品，请检查后重试！"
         unique = False
+        items: list[str] = []
         for each_item in cls._node_data:
             if each_item["Name"] == keyword and is_trade_bind_type(each_item["BindType"]):
                 unique = True

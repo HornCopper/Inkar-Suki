@@ -49,7 +49,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
         keyword = arg[0]
         job = arg[1]
         id = arg[2]
-    elif len(arg) == 2:
+    else:
         keyword = "1" if len(get_group_settings(event.group_id, "opening")) == 1 else False
         job = arg[0]
         id = arg[1]
@@ -75,7 +75,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     if len(arg) == 2:
         keyword = arg[0]
         id = arg[1]
-    elif len(arg) == 1:
+    else:
         if not unique:
             await cancel_team_matcher.finish("当前进行中的团队超过1个，请携带团队关键词/序号！")
         keyword = "1"

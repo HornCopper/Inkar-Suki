@@ -28,7 +28,7 @@ async def _(event: GroupMessageEvent, msg: Message = CommandArg()):
         role_name = args[0]
         achievement_name = args[1]
 
-    elif len(args) == 3:
+    else:
         server = args[0]
         role_name = args[1]
         achievement_name = args[2]
@@ -102,7 +102,7 @@ async def _(event: GroupMessageEvent, full_argument: Message = CommandArg()):
             mode = "10人普通"
             
     
-    elif len(args) == 4:
+    else:
         """
         四参数：
 

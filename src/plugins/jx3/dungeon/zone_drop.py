@@ -101,6 +101,7 @@ async def get_drop_list_image(map: str, mode: str, boss: str):
             name = i["Name"]
             icon = i["Icon"]["FileName"]
             color = COLOR[int(i["Color"]) if "Color" in i else 4]
+            stars = "不适用"
             if i["Icon"]["SubKind"] in equip_types:
                 if "Type" in i:
                     if i["Type"] == "Act_运营及版本道具":
@@ -143,6 +144,7 @@ async def get_drop_list_image(map: str, mode: str, boss: str):
                         stars = "<p>不适用</p>"
                     quailty = i["Quality"]
                     equip_type = i["Icon"]["SubKind"]
+                    score = "不适用"
                     if equip_type == "帽子":
                         score = str(int(int(quailty)*1.62))
                     elif equip_type in ["上衣", "裤子"]:

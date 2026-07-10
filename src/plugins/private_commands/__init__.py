@@ -41,8 +41,9 @@ def _build_private_group_event(event: MessageEvent, group_id: int) -> GroupMessa
     data["anonymous"] = None
 
     proxy_event = GroupMessageEvent(**data)
-    proxy_event.message_type = "private"
-    proxy_event.private_command_proxy = True
+    proxy_event_any: Any = proxy_event
+    proxy_event_any.message_type = "private"
+    proxy_event_any.private_command_proxy = True
     return proxy_event
 
 

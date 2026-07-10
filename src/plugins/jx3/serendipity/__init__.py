@@ -30,7 +30,7 @@ async def _(event: GroupMessageEvent, argument: Message = CommandArg()):
         """
         server = None
         name = args[0]
-    elif len(args) == 2:
+    else:
         """
         查询 SRV ID
         """
@@ -42,7 +42,7 @@ async def _(event: GroupMessageEvent, argument: Message = CommandArg()):
     ver = Preference(event.user_id, "", "").setting("奇遇")
     if ver == "v2":
         data = await v2_serendipity(server, name, True)
-    elif ver == "v3":
+    else:
         data = await v3_serendipity(server, name)
     await serendipity_matcher.finish(data)
 
@@ -61,7 +61,7 @@ async def _(event: GroupMessageEvent, argument: Message = CommandArg()):
         """
         server = None
         name = args[0]
-    elif len(args) == 2:
+    else:
         """
         查询 SRV ID
         """
@@ -88,7 +88,7 @@ async def _(event: GroupMessageEvent, argument: Message = CommandArg()):
         """
         server = None
         id = args[0]
-    elif len(args) == 2:
+    else:
         """
         查询 SRV ID
         """
@@ -120,7 +120,7 @@ async def _(event: GroupMessageEvent, argument: Message = CommandArg()):
         """
         server = None
         name = args[0]
-    elif len(args) == 2:
+    else:
         """
         查询 SRV ID
         """
@@ -166,7 +166,7 @@ async def _(event: GroupMessageEvent, argument: Message = CommandArg()):
         name = args[1]
         time = args[2]
         server = Server(None, event.group_id).server
-    if len(args) == 4:
+    else:
         """
         奇遇时间 SRV ID SNAME STIME
         """

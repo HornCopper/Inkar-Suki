@@ -21,6 +21,7 @@ async def get_monsters_map():
     boss = (await Request("https://node.jx3box.com/monster/boss").get()).json()
     content = ["<div class=\"u-row\">"]
     for i in range(len(map_data["data"]["data"])):
+        name = ""
         bid = map_data["data"]["data"][i]["dwBossID"]
         for x in boss["data"]:
             if x["dwNpcID"] == bid:

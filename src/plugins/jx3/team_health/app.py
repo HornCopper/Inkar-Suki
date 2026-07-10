@@ -6,7 +6,7 @@ import html
 import json
 import secrets
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 
 from jinja2 import Template
 from nonebot.adapters.onebot.v11 import MessageSegment as ms
@@ -55,6 +55,10 @@ def _escape(value: Any) -> str:
     return html.escape(str(value if value is not None else ""), quote=True)
 
 
+def _as_dict(value: Any) -> dict[str, Any]:
+    return value if isinstance(value, dict) else {}
+
+
 def _normalize_team_name(team_name: str) -> str:
     return team_name.strip()
 
@@ -97,22 +101,22 @@ def _format_time(timestamp: Any) -> str:
 
 
 def _owned_team(creator_id: int, team_name: str) -> RaidTeamHealth | None:
-    return db.where_one(
+    return cast(RaidTeamHealth | None, db.where_one(
         RaidTeamHealth(),
         "creator_id = ? AND team_name = ?",
         int(creator_id),
         team_name,
         default=None,
-    )
+    ))
 
 
 def _owned_teams(creator_id: int) -> list[RaidTeamHealth]:
-    teams = db.where_all(
+    teams = cast(list[RaidTeamHealth], db.where_all(
         RaidTeamHealth(),
         "creator_id = ?",
         int(creator_id),
         default=[],
-    )
+    ))
     return sorted(
         list(teams or []),
         key=lambda team: (int(team.create_time or 0), str(team.team_name or "")),
@@ -120,12 +124,12 @@ def _owned_teams(creator_id: int) -> list[RaidTeamHealth]:
 
 
 def _team_by_feature_code(feature_code: str) -> RaidTeamHealth | None:
-    return db.where_one(
+    return cast(RaidTeamHealth | None, db.where_one(
         RaidTeamHealth(),
         "feature_code = ?",
         feature_code.strip().upper(),
         default=None,
-    )
+    ))
 
 
 def _generate_feature_code() -> str:
@@ -633,9 +637,9 @@ def _cached_team_health_row(member: dict[str, Any], cache_key: dict[str, Any]) -
 
 
 def _team_health_rank_data(data: dict[str, Any]) -> dict[str, Any]:
-    adaptive = data.get("adaptive_consumables") if isinstance(data.get("adaptive_consumables"), dict) else {}
+    adaptive = _as_dict(data.get("adaptive_consumables"))
     return {
-        "meta": data.get("meta") if isinstance(data.get("meta"), dict) else {},
+        "meta": _as_dict(data.get("meta")),
         "adaptive_consumables": {
             "status": adaptive.get("status"),
             "dps": adaptive.get("dps"),
@@ -725,8 +729,8 @@ def _consumable_recommendations(prepared_consumables: dict[str, Any] | None) -> 
 
 
 def _result_payload(member: dict[str, Any], data: dict[str, Any], equip: JX3PlayerAttribute) -> dict[str, Any]:
-    summary = data.get("summary") if isinstance(data.get("summary"), dict) else {}
-    meta = data.get("meta") if isinstance(data.get("meta"), dict) else {}
+    summary = _as_dict(data.get("summary"))
+    meta = _as_dict(data.get("meta"))
     kungfu_id = int(member.get("kungfu_id") or meta.get("kungfu_id") or 0)
     kungfu = Kungfu.with_internel_id(kungfu_id, convert_to_pc=True)
     grade = str(summary.get("grade") or "D")
@@ -768,8 +772,8 @@ async def _rate_member(member: dict[str, Any]) -> dict[str, Any]:
         cache_key = _team_health_cache_key(member, equip, jcl_data)
         cached_row = _cached_team_health_row(member, cache_key)
         if cached_row is not None:
-            cache = member.get("health_cache") if isinstance(member.get("health_cache"), dict) else {}
-            rank_data = cache.get("rank_data") if isinstance(cache.get("rank_data"), dict) else {}
+            cache = _as_dict(member.get("health_cache"))
+            rank_data = _as_dict(cache.get("rank_data"))
             _record_team_health_rank(member, rank_data)
             return {
                 "row": cached_row,

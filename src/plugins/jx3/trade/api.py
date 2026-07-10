@@ -65,7 +65,7 @@ async def get_trade_image_v2(server: str, name: str, items: list = []):
                 yesterdayFlag = True
                 currentStatus = 1
                 current = itemlist_searchable[0]["data"]["yesterday"]
-        if currentStatus:
+        if current is not None:
             msgbox = Template(template_msgbox).render(
                 low=coin_to_image(str(calculate_price(current["LowestPrice"]))),
                 avg=coin_to_image(str(calculate_price(current["AvgPrice"]))),
@@ -76,16 +76,21 @@ async def get_trade_image_v2(server: str, name: str, items: list = []):
         color = ["(167, 167, 167)", "(255, 255, 255)", "(0, 210, 75)", "(0, 126, 255)", "(254, 45, 254)", "(255, 165, 0)"][itemlist_searchable[0]["quality"]]
         itemId = itemlist_searchable[0]["id"]
         detail_data = (await Request(f"https://next2.jx3box.com/api/item-price/{itemId}/detail?server={server}&limit=20").get()).json()
-        if (not currentStatus or yesterdayFlag) and detail_data["data"]["prices"] is None:
+        prices = detail_data["data"]["prices"]
+        if (not currentStatus or yesterdayFlag) and prices is None:
             if not yesterdayFlag:
                 return "唔……该物品目前交易行没有数据。"
             else:
+                if current is None:
+                    return "唔……该物品目前交易行没有数据。"
                 low = calculate_price(current["LowestPrice"])
                 avg = calculate_price(current["AvgPrice"])
                 high = calculate_price(current["HighestPrice"])
                 return f"唔……该物品目前交易行没有数据，但是音卡找到了昨日的数据：\n昨日低价：{low}\n昨日均价：{avg}\n昨日高价：{high}"
+        if prices is None:
+            return "唔……该物品目前交易行没有数据。"
         table = []
-        for each_price in sort_dict_list(detail_data["data"]["prices"], "unit_price"):
+        for each_price in sort_dict_list(prices, "unit_price"):
             table_content = Template(template_table).render(
                 icon=itemlist_searchable[0]["icon"],
                 color=color,
@@ -208,7 +213,7 @@ async def get_trade_image_allserver(name: str):
                 else:
                     yesterdayFlag = 0
                     currentStatus = 0
-            if currentStatus:
+            if current is not None:
                 highs.append(current["HighestPrice"])
                 avgs.append(current["AvgPrice"])
                 lows.append(current["LowestPrice"])
@@ -220,7 +225,8 @@ async def get_trade_image_allserver(name: str):
             itemId = itemlist_searchable[0]["id"]
             icon = itemlist_searchable[0]["icon"]
             detailData = (await Request(f"https://next2.jx3box.com/api/item-price/{itemId}/detail?server={server}&limit=20").get()).json()
-            if (not currentStatus or yesterdayFlag) and detailData["data"]["prices"] is None:
+            prices = detailData["data"]["prices"]
+            if (not currentStatus or yesterdayFlag) and prices is None:
                 if not yesterdayFlag:
                     # table.append(Template(template_table).render(
                     #         icon=icon,
@@ -233,6 +239,8 @@ async def get_trade_image_allserver(name: str):
                     # )
                     continue
                 else:
+                    if current is None:
+                        continue
                     table.append(Template(template_table).render(
                             icon=icon,
                             color=color,
@@ -243,13 +251,15 @@ async def get_trade_image_allserver(name: str):
                         )
                     )
                     continue
+            if prices is None:
+                continue
             table.append(Template(template_table).render(
                     icon=itemlist_searchable[0]["icon"],
                     color=color,
                     name=itemlist_searchable[0]["name"] + f"（{server}）",
                     time=Time().format("%m月%d日 %H:%M:%S"),
-                    limit=str(detailData["data"]["prices"][-1]["n_count"]),
-                    price=coin_to_image(str(calculate_price(detailData["data"]["prices"][-1]["unit_price"])))
+                    limit=str(prices[-1]["n_count"]),
+                    price=coin_to_image(str(calculate_price(prices[-1]["unit_price"])))
                 )
             )
         else:

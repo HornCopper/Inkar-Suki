@@ -3,6 +3,7 @@ from src.utils.network import Request
 import socket
 
 def tcping(host, port, timeout=3):
+    sock = None
     try:
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         sock.settimeout(timeout)
@@ -11,7 +12,8 @@ def tcping(host, port, timeout=3):
     except (socket.timeout, socket.error) as e:
         return False
     finally:
-        sock.close()
+        if sock is not None:
+            sock.close()
 
 
 async def get_server_status(_server: str = "") -> str:

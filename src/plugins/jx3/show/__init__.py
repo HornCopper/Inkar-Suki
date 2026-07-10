@@ -33,7 +33,7 @@ async def _(event: GroupMessageEvent, full_argument: Message = CommandArg()):
     if len(args) == 1:
         server = None
         name = args[0]
-    elif len(args) == 2:
+    else:
         server = args[0]
         name = args[1]
     server = Server(server, event.group_id).server
