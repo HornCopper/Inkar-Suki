@@ -49,6 +49,16 @@ class GroupSettings(LiteModel):
     expire: int = 0
     invitor: int = 0
 
+class RaidTeamHealth(LiteModel):
+    TABLE_NAME: str = "raid_team_health"
+    creator_id: int = 0
+    group_id: int = 0
+    team_name: str = ""
+    feature_code: str = ""
+    members: list = []
+    create_time: int = 0
+    update_time: int = 0
+
 class ItemKeywordMap(LiteModel):
     TABLE_NAME: str = "item_keyword"
     map_name: str = ""
@@ -175,6 +185,18 @@ class THRRank(LiteModel):
     total_damage: int = 0
     health_per_second: int = 0
     total_health: int = 0
+
+class EquipmentRatingDpsRank(LiteModel):
+    TABLE_NAME: str = "equipment_rating_dps_rank"
+    role_name: str = ""
+    server_name: str = ""
+    role_id: str = ""
+    global_role_id: int = 0
+    kungfu_id: int = 0
+    jcl_key: str = ""
+    jcl_name: str = ""
+    dps: int = 0
+    timestamp: int = 0
 
 class RandomAffectionRecord(LiteModel):
     TABLE_NAME: str = "random_affection_record"

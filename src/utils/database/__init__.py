@@ -6,8 +6,10 @@ from src.utils.database.classes import (
     BannedUser,
     BanRecord,
     CQCRank,
+    EquipmentRatingDpsRank,
     THRRank,
     GroupSettings,
+    RaidTeamHealth,
     ItemKeywordMap,
     PersonalSettings,
     Population,
@@ -33,6 +35,7 @@ db.auto_migrate(
     Affections(),
     BannedUser(),
     GroupSettings(),
+    RaidTeamHealth(),
     ItemKeywordMap(),
     PersonalSettings(),
     Population(),
@@ -66,7 +69,8 @@ rank_db = Database(build_path(DATA, ["rank.db"]))
 
 rank_db.auto_migrate(
     CQCRank(),
-    THRRank()
+    THRRank(),
+    EquipmentRatingDpsRank()
 )
 
 logs_db = Database(build_path(DATA, ["logs.db"]))

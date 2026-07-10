@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        @font-face {
+            font-family: TeamHealthFont;
+            src: url("{{ font }}");
+        }
+
+        body {
+            margin: 0;
+            width: 2520px;
+            background: #f3f5f8;
+            color: #1f2933;
+            font-family: TeamHealthFont, "Microsoft YaHei", "PingFang SC", sans-serif;
+        }
+
+        .team-health-canvas {
+            width: 2520px;
+            padding: 34px 40px;
+            background: #f3f5f8;
+        }
+
+        .report {
+            width: 2440px;
+            border: 1px solid #d6dee8;
+            border-radius: 8px;
+            overflow: hidden;
+            background: #ffffff;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            gap: 24px;
+            padding: 30px 34px 26px;
+            color: #ffffff;
+            background: linear-gradient(120deg, #203449 0%, #36586a 50%, #7a5b36 100%);
+        }
+
+        .eyebrow {
+            font-size: 18px;
+            line-height: 1.2;
+            opacity: 0.78;
+        }
+
+        .title {
+            margin-top: 8px;
+            font-size: 40px;
+            line-height: 1.15;
+            font-weight: 900;
+            letter-spacing: 0;
+            word-break: break-word;
+        }
+
+        .meta {
+            display: flex;
+            align-items: flex-end;
+            gap: 12px;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+            min-width: 460px;
+        }
+
+        .metric {
+            min-width: 116px;
+            padding: 12px 16px;
+            border: 1px solid rgba(255, 255, 255, 0.22);
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.12);
+        }
+
+        .metric-label {
+            font-size: 15px;
+            line-height: 1.2;
+            opacity: 0.76;
+        }
+
+        .metric-value {
+            margin-top: 6px;
+            font-size: 24px;
+            line-height: 1;
+            font-weight: 900;
+        }
+
+        .content {
+            padding: 24px 24px 28px;
+        }
+
+        .table-wrap {
+            border: 1px solid #dfe6ee;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            table-layout: fixed;
+        }
+
+        col.identity-col {
+            width: 335px;
+        }
+
+        col.tank-col {
+            width: 120px;
+        }
+
+        col.grade-col {
+            width: 165px;
+        }
+
+        col.formation-col {
+            width: 235px;
+        }
+
+        col.consumable-col {
+            width: 265px;
+        }
+
+        col.ingot-col {
+            width: 255px;
+        }
+
+        thead th {
+            padding: 12px 10px;
+            border-right: 1px solid #dbe3ec;
+            border-bottom: 1px solid #cfd9e4;
+            background: #eef3f7;
+            color: #405162;
+            font-size: 15px;
+            line-height: 1.25;
+            font-weight: 900;
+            text-align: left;
+        }
+
+        thead th:last-child,
+        tbody td:last-child {
+            border-right: none;
+        }
+
+        tbody tr {
+            border-left: 5px solid var(--accent, #9ca3af);
+        }
+
+        tbody tr:nth-child(even) {
+            background: #fbfcfd;
+        }
+
+        tbody tr.failed {
+            background: #fffafa;
+        }
+
+        tbody td {
+            min-height: 76px;
+            padding: 11px 10px;
+            border-right: 1px solid #e2e8f0;
+            border-bottom: 1px solid #e6ebf1;
+            color: #253342;
+            font-size: 15px;
+            line-height: 1.35;
+            vertical-align: middle;
+            word-break: break-word;
+        }
+
+        tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .identity {
+            display: grid;
+            grid-template-columns: 44px minmax(0, 1fr);
+            gap: 10px;
+            align-items: center;
+        }
+
+        .kungfu-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 8px;
+            object-fit: cover;
+            background: #edf1f5;
+        }
+
+        .role-name {
+            font-size: 19px;
+            line-height: 1.15;
+            font-weight: 900;
+            color: #17212b;
+            word-break: break-word;
+        }
+
+        .identity-sub {
+            margin-top: 4px;
+            color: #667584;
+            font-size: 13px;
+            line-height: 1.25;
+            word-break: break-word;
+        }
+
+        .tank-cell,
+        .grade-cell {
+            text-align: center;
+        }
+
+        .grade-block {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 96px;
+        }
+
+        .grade-icon {
+            width: 70px;
+            height: 70px;
+            object-fit: contain;
+        }
+
+        .grade-text {
+            color: var(--accent, #64717f);
+            font-size: 19px;
+            line-height: 1;
+            font-weight: 900;
+        }
+
+        .failed .grade-block {
+            min-width: 96px;
+        }
+
+        .failed .grade-text {
+            color: #8f2f2f;
+            font-size: 17px;
+        }
+
+        .recommendation {
+            font-weight: 800;
+        }
+
+        .recommendation-list {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .recommendation-item {
+            display: grid;
+            grid-template-columns: 24px minmax(0, 1fr);
+            gap: 6px;
+            align-items: center;
+            min-height: 24px;
+            font-weight: 800;
+        }
+
+        .recommendation-item.placeholder {
+            grid-template-columns: minmax(0, 1fr);
+            color: #7a8694;
+        }
+
+        .recommendation-icon {
+            width: 24px;
+            height: 24px;
+            border-radius: 5px;
+            object-fit: cover;
+            background: #edf1f5;
+        }
+
+        .recommendation-text {
+            min-width: 0;
+            word-break: break-word;
+        }
+
+        .muted {
+            color: #7a8694;
+            font-weight: 700;
+        }
+
+        .error-box {
+            margin-top: 8px;
+            padding: 7px 8px;
+            border-radius: 6px;
+            background: #fff0f0;
+            color: #8f2f2f;
+            font-size: 13px;
+            line-height: 1.3;
+        }
+
+        .footer {
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+            margin-top: 18px;
+            padding-top: 16px;
+            border-top: 1px solid #e4e9ef;
+            color: #657282;
+            font-size: 15px;
+            line-height: 1.35;
+        }
+    </style>
+</head>
+<body>
+    <div class="team-health-canvas">
+        <div class="report">
+            <header class="header">
+                <div>
+                    <div class="eyebrow">25人团队体检</div>
+                    <div class="title">{{ team_name }}</div>
+                </div>
+                <div class="meta">
+                    <div class="metric">
+                        <div class="metric-label">已绑定</div>
+                        <div class="metric-value">{{ member_count }}/{{ capacity }}</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-label">完成评级</div>
+                        <div class="metric-value">{{ ok_count }}</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-label">生成时间</div>
+                        <div class="metric-value">{{ generated_at }}</div>
+                    </div>
+                </div>
+            </header>
+            <main class="content">
+                <div class="table-wrap">
+                    <table>
+                        <colgroup>
+                            <col class="identity-col">
+                            <col class="tank-col">
+                            <col class="grade-col">
+                            <col class="formation-col">
+                            <col class="formation-col">
+                            <col class="formation-col">
+                            <col class="consumable-col">
+                            <col class="consumable-col">
+                            <col class="consumable-col">
+                            <col class="ingot-col">
+                        </colgroup>
+                        <thead>
+                            <tr>
+                                <th>心法 / ID</th>
+                                <th>T增益层数</th>
+                                <th>装备总评级</th>
+                                <th>阵眼TOP1</th>
+                                <th>阵眼TOP2</th>
+                                <th>阵眼TOP3</th>
+                                <th>食品推荐</th>
+                                <th>药品推荐</th>
+                                <th>家园推荐</th>
+                                <th>熔锭推荐</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for row in rows %}
+                            <tr class="{{ row.grade_class }}{% if not row.ok %} failed{% endif %}" {% if row.theme %}style="--accent: {{ row.theme.accent }};"{% endif %}>
+                                <td>
+                                    <div class="identity">
+                                        <img class="kungfu-icon" src="{{ row.kungfu_icon }}" alt="{{ row.kungfu_name }}">
+                                        <div>
+                                            <div class="role-name">{{ row.role_name }}</div>
+                                            <div class="identity-sub">{{ row.server }} · ID {{ row.role_id }}</div>
+                                            <div class="identity-sub">{{ row.kungfu_name }} · 更新 {{ row.equip_time }}</div>
+                                        </div>
+                                    </div>
+                                    {% if not row.ok %}
+                                    <div class="error-box">{{ row.error }}</div>
+                                    {% endif %}
+                                </td>
+                                <td class="tank-cell"><span class="recommendation">{{ row.tank_stacks }}</span></td>
+                                <td class="grade-cell">
+                                    <div class="grade-block">
+                                        {% if row.grade_icon %}
+                                        <img class="grade-icon" src="{{ row.grade_icon }}" alt="{{ row.grade }}">
+                                        {% else %}
+                                        <span class="grade-text">{{ row.grade }}</span>
+                                        {% endif %}
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="recommendation-item{% if not row.formation_top[0].icon %} placeholder{% endif %}">
+                                        {% if row.formation_top[0].icon %}
+                                        <img class="recommendation-icon" src="{{ row.formation_top[0].icon }}" alt="">
+                                        {% endif %}
+                                        <span class="recommendation-text">{{ row.formation_top[0].text }}</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="recommendation-item{% if not row.formation_top[1].icon %} placeholder{% endif %}">
+                                        {% if row.formation_top[1].icon %}
+                                        <img class="recommendation-icon" src="{{ row.formation_top[1].icon }}" alt="">
+                                        {% endif %}
+                                        <span class="recommendation-text">{{ row.formation_top[1].text }}</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="recommendation-item{% if not row.formation_top[2].icon %} placeholder{% endif %}">
+                                        {% if row.formation_top[2].icon %}
+                                        <img class="recommendation-icon" src="{{ row.formation_top[2].icon }}" alt="">
+                                        {% endif %}
+                                        <span class="recommendation-text">{{ row.formation_top[2].text }}</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="recommendation-list">
+                                        {% for item in row.food_recommendations %}
+                                        <div class="recommendation-item{% if not item.icon %} placeholder{% endif %}">
+                                            {% if item.icon %}
+                                            <img class="recommendation-icon" src="{{ item.icon }}" alt="">
+                                            {% endif %}
+                                            <span class="recommendation-text">{{ item.text }}</span>
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="recommendation-list">
+                                        {% for item in row.medicine_recommendations %}
+                                        <div class="recommendation-item{% if not item.icon %} placeholder{% endif %}">
+                                            {% if item.icon %}
+                                            <img class="recommendation-icon" src="{{ item.icon }}" alt="">
+                                            {% endif %}
+                                            <span class="recommendation-text">{{ item.text }}</span>
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="recommendation-list">
+                                        {% for item in row.home_recommendations %}
+                                        <div class="recommendation-item{% if not item.icon %} placeholder{% endif %}">
+                                            {% if item.icon %}
+                                            <img class="recommendation-icon" src="{{ item.icon }}" alt="">
+                                            {% endif %}
+                                            <span class="recommendation-text">{{ item.text }}</span>
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="recommendation-list">
+                                        {% for item in row.ingot_recommendations %}
+                                        <div class="recommendation-item{% if not item.icon %} placeholder{% endif %}">
+                                            {% if item.icon %}
+                                            <img class="recommendation-icon" src="{{ item.icon }}" alt="">
+                                            {% endif %}
+                                            <span class="recommendation-text">{{ item.text }}</span>
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <footer class="footer">
+                    <div>排序依据为装备评级总分，图中仅展示评级，不展示具体评分。</div>
+                    <div>本次缓存命中 {{ cache_hit_count }}，重新计算 {{ refreshed_count }}。</div>
+                    <div>T增益层数仅 T 心法有值；装备更新日期来自本地已提交/缓存的角色装备记录。</div>
+                </footer>
+            </main>
+        </div>
+    </div>
+</body>
+</html>
