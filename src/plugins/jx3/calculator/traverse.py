@@ -444,6 +444,8 @@ def _rating_summary(data: dict[str, Any]) -> dict[str, Any]:
         ),
         "grade": str(summary.get("grade", "D")),
         "current_dps_text": _format_dps(_as_number(summary.get("current_dps")) or 0),
+        "metric_name": str(summary.get("metric_name") or "DPS"),
+        "metric_unit": str(summary.get("metric_unit") or "DPS"),
         "rated_slots": summary.get("rated_slots", 0),
         "total_slots": summary.get("total_slots", 0),
     }
@@ -489,6 +491,8 @@ def build_equipment_ratings_from_api(data: dict[str, Any], current_jcl_data: lis
             "diff_to_best": int(current_dps - best_dps),
             "percent_to_best": percent_to_best,
             "inferred_current": False,
+            "metric_name": summary.get("metric_name", "DPS"),
+            "metric_unit": summary.get("metric_unit", "DPS"),
             "rating_summary": summary,
         }
         results.append(result)
@@ -540,15 +544,16 @@ def format_rating_summary(ratings: list[dict[str, Any]], *, detailed: bool = Fal
         return "本次计算未返回可解析的同部位装备对比数据。"
     lines = ["装备评级："]
     for rating in ratings:
+        metric_unit = rating.get("metric_unit") or "DPS"
         line = (
             f"{rating['location']}：{rating['grade']} "
             f"#{rating['rank']}/{rating['total']} "
             f"{rating['percent_to_best']}% | "
-            f"距最优 {rating['diff_to_best']:+,} DPS"
+            f"距最优 {rating['diff_to_best']:+,} {metric_unit}"
         )
         if detailed:
-            line += f"\n  当前：{rating['name']}（{rating['dps']:,}）"
-            line += f"\n  最优：{rating['best_name']}（{rating['best_dps']:,}）"
+            line += f"\n  当前：{rating['name']}（{rating['dps']:,} {metric_unit}）"
+            line += f"\n  最优：{rating['best_name']}（{rating['best_dps']:,} {metric_unit}）"
         lines.append(line)
     return "\n".join(lines)
 
@@ -635,9 +640,11 @@ async def render_rating_table_image(
     total_score_text = html.escape(str(summary.get("total_score_text", "--")))
     total_grade = html.escape(str(summary.get("grade", "D")))
     current_dps_text = html.escape(str(summary.get("current_dps_text", "--")))
+    metric_name = html.escape(str(summary.get("metric_name", "DPS")))
+    metric_unit = html.escape(str(summary.get("metric_unit", "DPS")))
     rated_slots = html.escape(str(summary.get("rated_slots", 0)))
     total_slots = html.escape(str(summary.get("total_slots", 0)))
-    source_note = "评分由装备评级接口计算；最优解从候选装备与当前装备中共同取最高 DPS。"
+    source_note = f"评分由装备评级接口计算；最优解从候选装备与当前装备中共同取最高{metric_name}。"
     html_source = f"""
 <!DOCTYPE html>
 <html lang="zh-CN">
@@ -850,7 +857,7 @@ tbody tr:last-child td {{
                 <img src="{_asset_uri("image", "jx3", "equipment_rating", RANK_ICON_FILES.get(str(summary.get("grade", "D")), "rank_d.png"))}" alt="{total_grade}">
                 <div>
                     <div class="total-score">{total_score_text} 分</div>
-                    <div class="total-meta">DPS {current_dps_text} · 有效部位 {rated_slots}/{total_slots}</div>
+                    <div class="total-meta">{metric_name} {current_dps_text} · 有效部位 {rated_slots}/{total_slots}</div>
                 </div>
             </div>
             <div>{source_note}</div>
@@ -864,9 +871,9 @@ tbody tr:last-child td {{
                 <th style="width: 92px;">排名</th>
                 <th style="width: 90px;">评分</th>
                 <th style="width: 90px;">最优强度</th>
-                <th style="width: 122px;">当前 DPS</th>
+                <th style="width: 122px;">当前{metric_unit}</th>
                 <th>当前装备</th>
-                <th style="width: 122px;">候选最优</th>
+                <th style="width: 122px;">最优{metric_unit}</th>
                 <th>最优装备</th>
                 <th style="width: 116px;">差值</th>
                 <th style="width: 172px;">备注</th>

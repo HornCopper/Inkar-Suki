@@ -1151,7 +1151,7 @@
                         <div class="total-score">{{ summary.total_score_text }}分</div>
                         <div class="total-meta">
                             <div class="side-row"><span>评级增益</span><strong>{{ meta.income_name }}</strong></div>
-                            <div class="side-row"><span>评级循环</span><strong>{{ meta.loop_name }}</strong></div>
+                            <div class="side-row"><span>{{ "破产概率" if meta.rating_model == "therapy_ruin" else "评级循环" }}</span><strong>{{ meta.loop_name }}</strong></div>
                         </div>
                     </div>
                 </section>
@@ -1304,11 +1304,11 @@
             <div class="combat-heading">
                 <div class="combat-heading-text">
                     <div class="combat-title">实战配置建议</div>
-                    <div class="combat-subtitle">基于当前配装与目标加速档自动推荐</div>
+                    <div class="combat-subtitle">{{ adaptive_consumables.subtitle if adaptive_consumables else "基于当前配装与目标加速档自动推荐" }}</div>
                 </div>
                 {% if adaptive_consumables and adaptive_consumables.status == "ok" %}
                 <div class="combat-final-dps">
-                    <span>最终DPS</span>
+                    <span>{{ adaptive_consumables.metric_name or "最终DPS" }}</span>
                     <strong>{{ adaptive_consumables.dps_text }}</strong>
                     {% if equipment_rating_rank %}
                     <div class="combat-final-rank">{{ equipment_rating_rank.text }}</div>
