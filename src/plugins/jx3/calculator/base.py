@@ -180,6 +180,13 @@ def normalize_calculator_jcl_data(jcl_data: list[list]) -> list[list]:
         normalized_line[4] = normalized_slots
         normalized_data.append(normalized_line)
 
+    ring_lines = [line for line in normalized_data if int(line[0]) in {6, 7}]
+    if len(ring_lines) == 2 and {int(line[0]) for line in ring_lines} != {6, 7}:
+        # Some equipment exports use the same position for both rings.  The
+        # calculator needs the two physical slots to remain distinguishable.
+        ring_lines[0][0] = 6
+        ring_lines[1][0] = 7
+
     primary_weapon_line = next(
         (line for line in normalized_data if int(line[0]) == 0),
         None,

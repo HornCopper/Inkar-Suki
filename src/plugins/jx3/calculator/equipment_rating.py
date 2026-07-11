@@ -696,6 +696,13 @@ def _equipment_rating_rank_label(data: dict[str, Any]) -> str:
 def _equipment_rating_rank_jcl_key(meta: dict[str, Any]) -> str:
     jcl = _as_dict(meta.get("jcl"))
     selected_loop = _as_dict(meta.get("jcl_loop"))
+    rating_model = str(meta.get("rating_model") or "").strip()
+    if rating_model == "therapy_ruin":
+        payload = {
+            "rating_model": rating_model,
+            "model_name": str(meta.get("loop_name") or "").strip(),
+        }
+        return json.dumps(payload, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
     weapon = str(jcl.get("weapon") or "").strip()
     haste = str(jcl.get("haste") or "").strip()
     loop_name = str(jcl.get("raw_loop") or jcl.get("loop") or meta.get("loop_name") or "").strip()

@@ -96,7 +96,11 @@ class Database:
             elif model.TABLE_NAME not in table_list:
                 raise ValueError(f"数据模型 {model.__class__.__name__} 表 {model.TABLE_NAME} 不存在，请先迁移")
             else:
-                self._save(model.dump(by_alias=True))
+                model_data = model.dump(by_alias=True)
+                # Pydantic excludes ClassVar fields such as TABLE_NAME from
+                # model dumps.  _save needs it to select the destination table.
+                model_data["TABLE_NAME"] = model.TABLE_NAME
+                self._save(model_data)
 
             for callback in self._on_save_callbacks:
                 callback(model)
