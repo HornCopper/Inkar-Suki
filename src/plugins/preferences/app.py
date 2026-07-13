@@ -20,7 +20,8 @@ class Preference:
         "匿名分析": "anonymous",
         "计算器来源": "calculate_source",
         "计算器增益": "income",
-        "计算器阵眼": "formation"
+        "计算器阵眼": "formation",
+        "黑本显示": "random_loot_display",
     }
 
     def __init__(self, user_id: int, key: str = "", value: str = ""):
@@ -32,7 +33,11 @@ class Preference:
         self.current = current_settings.setting
         self.key = key
         self.value = value
-        self.available = hasattr(self.current, self.mapping[self.key]) if key != "" else False
+        self.available = (
+            key in self.mapping
+            and key in self.data
+            and hasattr(self.current, self.mapping[key])
+        )
 
     def get(self) -> str:
         if not self.available:

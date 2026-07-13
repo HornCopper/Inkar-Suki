@@ -10,6 +10,7 @@ from src.config import Config
 from src.const.prompts import PROMPT
 from src.utils.analyze import check_number
 from src.utils.network import Request
+from src.plugins.preferences.app import Preference
 
 from .random_serendipity import get_serendipity, get_serendipity_image
 from .random_loot import RandomLoot
@@ -72,7 +73,8 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     if instance is None:
         await random_loot_matcher.finish(PROMPT.DungeonInvalid)
     else:
-        image = await instance.generate()
+        display_mode = Preference(event.user_id, "", "").setting("黑本显示")
+        image = await instance.generate(display_mode=display_mode)
         await random_loot_matcher.finish(ms.at(event.user_id) + image)
 
 random_5gimage_matcher = on_command("jx3_random_5gimage", aliases={"随机5G图", "随机5g图", "随机武技图"}, priority=5, force_whitespace=True)

@@ -1,16 +1,31 @@
 template_loot = """
-<tr>
-    <th colspan="3" style="text-align: center; color:#000000; background-color: {{ title_color }};">{{ boss_name }}宝箱</th>
-    {{ items }}
+<tr class="boss-row{% if highlight %} boss-row--rare{% endif %}">
+    <th colspan="3"><span class="boss-mark">◆</span>{{ boss_name }}宝箱</th>
 </tr>
+{{ items }}
 """
 
 template_item = """
-<tr style="background-color: {{ detail_color }};">
-    <td><img src="{{ icon }}"></td>
-    <td style="color: {{ item_color }}">{{ item_name }}</td>
-    <td style="color: rgb(0, 210, 75)">{{ attr }}</td>
+<tr class="loot-row{% if highlight %} loot-row--rare{% endif %}">
+    <td class="icon-cell"><span class="icon-frame"><img src="{{ icon }}">{% if count > 1 %}<span class="item-count">{{ count }}</span>{% endif %}</span></td>
+    <td class="item-name" style="color: {{ item_color }}">{{ item_name }}</td>
+    <td class="item-attr">{% if attr %}{{ attr }}{% endif %}</td>
 </tr>
+"""
+
+template_loot_horizontal = """
+<section class="boss-block{% if highlight %} boss-block--rare{% endif %}">
+    <header class="boss-header"><span class="boss-mark">◆</span>{{ boss_name }}宝箱</header>
+    <div class="loot-strip">{{ items }}</div>
+</section>
+"""
+
+template_item_horizontal = """
+<article class="loot-card{% if highlight %} loot-card--rare{% endif %}">
+    <span class="icon-frame"><img src="{{ icon }}">{% if count > 1 %}<span class="item-count">{{ count }}</span>{% endif %}</span>
+    <div class="item-name" style="color: {{ item_color }}">{{ item_name }}</div>
+    {% if attr %}<div class="item-attr">{{ attr }}</div>{% endif %}
+</article>
 """
 
 template_shilian_box = """

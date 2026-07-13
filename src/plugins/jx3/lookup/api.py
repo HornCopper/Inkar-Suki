@@ -17,6 +17,8 @@ async def get_tieba_records(user_id: int) -> str:
     }
     url = f"{Config.jx3.api.url}/data/fraud/detail"
     data = (await Request(url, params=params).get()).json()
+    if not data["data"]:
+        return "未找到相关记录！"
     records = data["data"]["records"]
     if not records:
         return "未找到相关记录！"

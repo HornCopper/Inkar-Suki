@@ -16,6 +16,8 @@ def get_random(probability: int) -> bool:
 class JX3RandomItem(BaseModel):
     attr: str = ""
     color: str = "(254, 45, 254)"
+    count: int = 1
+    sort_priority: int = 2
     icon: str
     name: str
 

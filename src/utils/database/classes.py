@@ -81,6 +81,7 @@ class PersonalSetting(BaseModel):
     calculate_source: str = "公用"
     income: str = "无增益"
     formation: str = "无阵眼"
+    random_loot_display: str = "纵向"
 
 class PersonalSettings(LiteModel):
     TABLE_NAME: ClassVar[str] = "personal_settings"

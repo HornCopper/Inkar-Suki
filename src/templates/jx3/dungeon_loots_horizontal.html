@@ -1,31 +1,26 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
-
 <head>
     <style>
         * { box-sizing: border-box; }
-
         html, body { margin: 0; padding: 0; }
-
         body {
             overflow: hidden;
             padding: 7px;
             font-family: Harmony, sans-serif;
             background: transparent;
         }
-
         .panel {
-            width: 660px;
+            width: max-content;
+            min-width: 660px;
+            max-width: none;
             overflow: hidden;
             color: #d9e8e4;
             border: 1px solid rgba(118, 178, 171, .7);
             border-radius: 2px;
-            background:
-                linear-gradient(135deg, rgba(36, 73, 76, .96), rgba(12, 38, 48, .97)),
-                repeating-linear-gradient(0deg, transparent 0 39px, rgba(151, 207, 192, .07) 40px);
+            background: linear-gradient(135deg, rgba(36, 73, 76, .96), rgba(12, 38, 48, .97));
             box-shadow: inset 0 0 24px rgba(104, 195, 178, .12), 0 4px 14px rgba(0, 0, 0, .42);
         }
-
         .panel-title {
             height: 42px;
             display: flex;
@@ -38,7 +33,6 @@
             border-bottom: 1px solid rgba(151, 207, 192, .32);
             text-shadow: 0 1px 2px #071b20;
         }
-
         .bag-icon {
             width: 22px;
             height: 22px;
@@ -47,57 +41,58 @@
             border: 2px solid #9ac8b9;
             color: #9ac8b9;
             font-size: 14px;
-            line-height: 1;
         }
-
         .panel-title .count { color: #9fc9bd; }
         .panel-title .generated {
             color: rgba(201, 230, 221, .62);
             font-size: 13px;
             font-weight: 400;
         }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            table-layout: fixed;
+        .bosses {
+            display: flex;
+            align-items: flex-start;
         }
-
-        col.icon-column { width: 72px; }
-        col.attr-column { width: 290px; }
-
-        .boss-row th {
+        .boss-block {
+            width: 560px;
+            flex: 0 0 560px;
+            border-right: 1px solid rgba(145, 195, 184, .26);
+        }
+        .boss-header {
             height: 30px;
+            display: flex;
+            align-items: center;
             padding: 4px 12px;
-            text-align: left;
             color: #a7d5cb;
             font-size: 14px;
-            font-weight: 500;
             background: rgba(56, 104, 104, .48);
             border-top: 1px solid rgba(140, 199, 187, .16);
             border-bottom: 1px solid rgba(140, 199, 187, .16);
         }
-
-        .boss-row--rare th {
+        .boss-block--rare .boss-header {
             color: #ffe0a0;
             background: linear-gradient(90deg, rgba(158, 46, 35, .9), rgba(103, 54, 36, .72));
             border-color: rgba(242, 189, 93, .5);
         }
         .boss-mark { margin-right: 7px; font-size: 10px; opacity: .85; }
-
-        .loot-row { height: 70px; border-bottom: 1px solid rgba(145, 195, 184, .2); }
-        .loot-row td { padding: 6px; vertical-align: middle; }
-        .loot-row--rare {
-            background: linear-gradient(90deg, rgba(112, 83, 45, .42), rgba(74, 61, 43, .34));
-            border-bottom-color: rgba(238, 198, 118, .24);
+        .loot-strip { display: block; }
+        .loot-card {
+            width: 100%;
+            height: 70px;
+            display: grid;
+            grid-template-columns: 62px minmax(0, 1fr) 250px;
+            grid-template-rows: 1fr;
+            align-items: center;
+            column-gap: 8px;
+            padding: 6px 10px;
+            border-bottom: 1px solid rgba(145, 195, 184, .2);
         }
-
-        .icon-cell { padding-left: 9px !important; }
+        .loot-card--rare { background: rgba(112, 83, 45, .34); }
         .icon-frame {
+            grid-column: 1;
             width: 58px;
             height: 58px;
-            display: block;
             position: relative;
+            display: block;
             padding: 2px;
             border: 2px solid #f12beb;
             background: rgba(3, 13, 20, .85);
@@ -108,43 +103,34 @@
             position: absolute;
             right: 2px;
             bottom: 0;
-            color: #ffffff;
+            color: #fff;
             font-size: 17px;
             font-weight: 700;
             line-height: 1;
-            text-shadow:
-                -1px -1px 0 #000,
-                1px -1px 0 #000,
-                -1px 1px 0 #000,
-                1px 1px 0 #000,
-                0 2px 3px rgba(0, 0, 0, .9);
+            text-shadow: -1px -1px #000, 1px -1px #000, -1px 1px #000, 1px 1px #000;
         }
-
         .item-name {
-            padding-left: 10px !important;
-            text-align: left;
-            font-size: 18px;
-            line-height: 1.35;
-            word-break: break-all;
+            grid-column: 2;
+            align-self: center;
+            padding: 0 8px 0 0 !important;
+            font-size: 17px;
+            line-height: 1.25;
+            white-space: nowrap;
             text-shadow: 0 1px 2px rgba(0, 0, 0, .9);
         }
-
         .item-attr {
-            padding-right: 12px !important;
+            grid-column: 3;
+            align-self: center;
+            padding: 0 8px 0 0 !important;
             text-align: right;
             color: #18d875;
-            font-size: 14px;
-            line-height: 1.35;
+            font-size: 13px;
+            line-height: 1.3;
             white-space: nowrap;
         }
-        @font-face {
-            font-family: Harmony;
-            src: url("{{ font }}");
-        }
-
+        @font-face { font-family: Harmony; src: url("{{ font }}"); }
     </style>
 </head>
-
 <body>
     <section class="panel">
         <header class="panel-title">
@@ -153,12 +139,7 @@
             <span class="count">({{ item_count }})</span>
             <span class="generated">Generated by Inkar-Suki</span>
         </header>
-        <table class="total">
-            <colgroup><col class="icon-column"><col><col class="attr-column"></colgroup>
-            <tbody>{{ loots }}</tbody>
-        </table>
+        <div class="bosses">{{ loots }}</div>
     </section>
 </body>
-
-
 </html>
