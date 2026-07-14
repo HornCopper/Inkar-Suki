@@ -14,6 +14,91 @@ from src.plugins.preferences.app import Preference
 from .v1 import get_preposition # v1 deleted
 from .v2 import get_serendipity_v2 as v2_serendipity
 from .v3 import get_serendipity_image_v3 as v3_serendipity
+from .recent import get_recent_serendipity
+from .statistics import get_serendipity_statistics
+from .collect import get_serendipity_collect
+
+
+collect_serendipity_matcher = on_command(
+    "jx3_collect_serendipity",
+    aliases={"奇遇汇总", "汇总"},
+    force_whitespace=True,
+    priority=5,
+)
+
+
+@collect_serendipity_matcher.handle()
+async def _(event: GroupMessageEvent, argument: Message = CommandArg()):
+    args = argument.extract_plain_text().strip().split()
+    if args and args[0] == "全服":
+        await collect_serendipity_matcher.finish("奇遇汇总不支持全服查询，请指定服务器！")
+    server = Server(None, event.group_id).server
+    days = 7
+    if len(args) == 1:
+        if args[0].isdigit():
+            days = int(args[0])
+        else:
+            server = Server(args[0]).server
+    elif len(args) == 2:
+        server = Server(args[0]).server
+        if not args[1].isdigit():
+            await collect_serendipity_matcher.finish(PROMPT.ArgumentInvalid)
+        days = int(args[1])
+    elif len(args) > 2:
+        await collect_serendipity_matcher.finish(
+            PROMPT.ArgumentCountInvalid + "\n参考格式：奇遇汇总 <服务器> [天数]"
+        )
+    if server is None:
+        await collect_serendipity_matcher.finish(PROMPT.ServerNotExist)
+    if not 1 <= days <= 30:
+        await collect_serendipity_matcher.finish("汇总天数需要在 1 至 30 天之间！")
+    image = await get_serendipity_collect(server, days)
+    await collect_serendipity_matcher.finish(image)
+
+
+statistics_serendipity_matcher = on_command(
+    "jx3_statistics_serendipity",
+    aliases={"奇遇统计", "统计"},
+    force_whitespace=True,
+    priority=5,
+)
+
+
+@statistics_serendipity_matcher.handle()
+async def _(event: GroupMessageEvent, argument: Message = CommandArg()):
+    args = argument.extract_plain_text().strip().split(maxsplit=1)
+    if len(args) == 1:
+        server = Server(None, event.group_id).server
+        event_name = args[0]
+    elif len(args) == 2:
+        server = "" if args[0] == "全服" else Server(args[0]).server
+        event_name = args[1]
+    else:
+        await statistics_serendipity_matcher.finish(
+            PROMPT.ArgumentCountInvalid + "\n参考格式：统计 <服务器> <奇遇名称>"
+        )
+    if server is None:
+        await statistics_serendipity_matcher.finish(PROMPT.ServerNotExist)
+    image = await get_serendipity_statistics(server, event_name)
+    await statistics_serendipity_matcher.finish(image)
+
+
+recent_serendipity_matcher = on_command(
+    "jx3_recent_serendipity",
+    aliases={"近期奇遇"},
+    force_whitespace=True,
+    priority=5,
+)
+
+
+@recent_serendipity_matcher.handle()
+async def _(event: GroupMessageEvent, argument: Message = CommandArg()):
+    server_name = argument.extract_plain_text().strip() or None
+    server = Server(server_name).server if server_name else Server(None, event.group_id).server
+    if server is None:
+        await recent_serendipity_matcher.finish(PROMPT.ServerNotExist)
+    image = await get_recent_serendipity(server)
+    await recent_serendipity_matcher.finish(image)
 
 serendipity_matcher = on_command("jx3_serendipity", aliases={"查询", "奇遇"}, force_whitespace=True, priority=5)
 

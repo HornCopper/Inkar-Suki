@@ -7,7 +7,7 @@ from src.utils.analyze import sort_dict_list
 from src.utils.file import read
 from src.utils.network import Request
 from src.utils.generate import generate
-from src.plugins.jx3.trade._parse import calculate_price, coin_to_image
+from src.plugins.jx3.trade.parsers import calculate_price, coin_to_image
 
 from ._template import template_cost
 

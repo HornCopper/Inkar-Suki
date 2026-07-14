@@ -7,6 +7,7 @@ from nonebot.adapters.onebot.v11 import Message, GroupMessageEvent, MessageSegme
 
 from src.const.prompts import PROMPT
 from src.const.jx3.server import Server
+from src.config import Config
 from src.utils.permission import check_permission, denied
 from src.utils.analyze import check_number
 from src.utils.typing import override
@@ -15,12 +16,13 @@ from src.utils.database import db
 from src.utils.database.classes import ItemKeywordMap
 from src.utils.database.operation import get_group_settings
 
-from .item_v2 import get_single_item_price
+from .price import get_single_item_price
 from .wanbaolou import get_wbl_role
+from .auction import get_auction_image
 
-from .trade import JX3Trade
+from .market import JX3Trade
 
-class S(Server):
+class TradeServer(Server):
     @property
     @override
     def server(self) -> str | None:
@@ -35,9 +37,57 @@ class S(Server):
         else:
             final_server = None
         return final_server
+
+
+auction_matcher = on_command(
+    "jx3_auction",
+    aliases={"阵营拍卖", "拍卖"},
+    force_whitespace=True,
+    priority=5,
+)
+
+
+@auction_matcher.handle()
+async def _(event: GroupMessageEvent, args: Message = CommandArg()):
+    if not Config.jx3.api.enable:
+        return
+
+    argument = args.extract_plain_text().strip()
+    parts = argument.split(maxsplit=1) if argument else []
+    bound_server = TradeServer(None, event.group_id).server
+    server: str | None = None
+    name = ""
+
+    if not parts:
+        server = bound_server
+    elif len(parts) == 1:
+        explicit_server = Server(parts[0]).server
+        if explicit_server:
+            server = explicit_server
+        elif bound_server:
+            server = bound_server
+            name = parts[0]
+    else:
+        server = Server(parts[0]).server
+        name = parts[1].strip()
+
+    if server is None:
+        await auction_matcher.finish(
+            PROMPT.ServerNotExist
+            + "\n参考格式：阵营拍卖 <服务器> [物品名]"
+            + "\n群聊已绑定服务器时，可以省略服务器。"
+        )
+
+    image = await get_auction_image(server, name)
+    await auction_matcher.finish(image)
         
 
-trade_matcher = on_command("jx3_trade", aliases={"交易行"}, force_whitespace=True, priority=5)
+trade_matcher = on_command(
+    "jx3_trade_v3",
+    aliases={"jx3_trade", "交易行", "交易行v2", "交易行v3"},
+    force_whitespace=True,
+    priority=5,
+)
 
 @trade_matcher.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
@@ -52,7 +102,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     else:
         server = arg[0]
         name = arg[1]
-    server = S(server, event.group_id).server
+    server = TradeServer(server, event.group_id).server
     if server is None:
         await trade_matcher.finish(PROMPT.ServerNotExist)
     instance = await JX3Trade.common(name, server)
@@ -61,7 +111,12 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     msg = await instance.generate_image()
     await trade_matcher.finish(msg)
 
-trade_sl_matcher = on_command("jx3_shilian", aliases={"交易行试炼"}, force_whitespace=True, priority=5)
+trade_sl_matcher = on_command(
+    "jx3_trade_shilian_v3",
+    aliases={"jx3_shilian", "交易行试炼", "交易行试炼v2", "交易行试炼v3"},
+    force_whitespace=True,
+    priority=5,
+)
 
 @trade_sl_matcher.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
@@ -76,7 +131,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     else:
         server = arg[0]
         msg = arg[1]
-    server = S(server, event.group_id).server
+    server = TradeServer(server, event.group_id).server
     if server is None:
         await trade_sl_matcher.finish(PROMPT.ServerNotExist)
     instance = await JX3Trade.shilian(msg, server)
@@ -84,55 +139,6 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
         await trade_sl_matcher.finish(instance)
     image = await instance.generate_image()
     await trade_sl_matcher.finish(image)
-
-trade_v3_matcher = on_command("jx3_trade_v3", aliases={"交易行v3"}, force_whitespace=True, priority=5)
-
-@trade_v3_matcher.handle()
-async def _(event: GroupMessageEvent, args: Message = CommandArg()):
-    if args.extract_plain_text() == "":
-        return
-    arg = args.extract_plain_text().split(" ")
-    if len(arg) not in [1, 2]:
-        await trade_v3_matcher.finish(PROMPT.ArgumentCountInvalid + "\n参考格式：交易行v3 <服务器> <关键词>")
-    if len(arg) == 1:
-        server = None
-        name = arg[0]
-    else:
-        server = arg[0]
-        name = arg[1]
-    server = S(server, event.group_id).server
-    if server is None:
-        await trade_v3_matcher.finish(PROMPT.ServerNotExist)
-    instance = await JX3Trade.common(name, server)
-    if isinstance(instance, str):
-        await trade_v3_matcher.finish(instance)
-    msg = await instance.generate_image()
-    await trade_v3_matcher.finish(msg)
-
-trade_v3_sl_matcher = on_command("jx3_trade_shilian_v3", aliases={"交易行试炼v3"}, force_whitespace=True, priority=5)
-
-@trade_v3_sl_matcher.handle()
-async def _(event: GroupMessageEvent, args: Message = CommandArg()):
-    if args.extract_plain_text() == "":
-        return
-    arg = args.extract_plain_text().split(" ")
-    if len(arg) not in [1, 2]:
-        await trade_v3_sl_matcher.finish(PROMPT.ArgumentCountInvalid + "\n参考格式：交易行试炼v3 <服务器> <词条(不带空格)>")
-    if len(arg) == 1:
-        server = None
-        name = arg[0]
-    else:
-        server = arg[0]
-        name = arg[1]
-    server = S(server, event.group_id).server
-    if server is None:
-        await trade_v3_sl_matcher.finish(PROMPT.ServerNotExist)
-    from .trade import JX3Trade
-    instance = await JX3Trade.shilian(name, server)
-    if isinstance(instance, str):
-        await trade_v3_sl_matcher.finish(instance)
-    msg = await instance.generate_image()
-    await trade_v3_sl_matcher.finish(msg)
 
 item_price_v2_matcher = on_command("jx3_item_v2", aliases={"物价v2", "物价"}, force_whitespace=True, priority=5)
 

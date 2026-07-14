@@ -1,196 +1,279 @@
 from urllib import parse
+from urllib.parse import urljoin, urlparse
+
 from bs4 import BeautifulSoup
 
 from src.utils.network import Request
 
-import json
-import re
 
-"""
-状态码：
-200 - 正常，含 status(int) 、 link(str) 、 decription(str) 三个参数
-201 - 特殊正常，含 status(int) 、 link(str) 两个参数
-202 - 搜索正常，含 status(int) 、 api(str) 、 data(list) 两个参数
-301 - 重定向正常，含 status(int) 、 redirect(list) 、 link(str) 、 description(str) 四个参数
-404 - 未找到，含 status(int) 一个参数
-500 - 网站问题，含 status(int) 一个参数
-502 - 网站问题，含 status(int) 、 reason(str) 两个参数
-"""
+class MediaWikiClient:
+    headers = {
+        "User-Agent": "Inkar-Suki WikiBot/1.0",
+        "Accept": "application/json,text/html,application/xhtml+xml,*/*",
+        "Accept-Language": "zh-CN,zh;q=0.9",
+    }
+    form_headers = {
+        **headers,
+        "Content-Type": "application/x-www-form-urlencoded",
+    }
 
-headers = {
-    "Connection": "keep-alive",
-    "Cache-Control": "max-age=0",
-    "sec-ch-ua": "\"Google Chrome\";v=\"89\", \"Chromium\";v=\"89\", \";Not A Brand\";v=\"99\"",
-    "sec-ch-ua-mobile": "?0",
-    "Upgrade-Insecure-Requests": "1",
-    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.114 Safari/537.36",
-    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
-    "Sec-Fetch-Site": "same-origin",
-    "Sec-Fetch-Mode": "navigate",
-    "Sec-Fetch-User": "?1",
-    "Sec-Fetch-Dest": "document",
-    "Referer": "https://bj.ke.com/",
-    "Accept-Language": "zh-CN,zh;q=0.9",
-}
+    @classmethod
+    async def _post(cls, api: str, params: dict, attempts: int = 3) -> dict | None:
+        body = parse.urlencode(params)
+        for _ in range(attempts):
+            try:
+                return (
+                    await Request(api, headers=cls.form_headers, params=body).post()
+                ).json()
+            except Exception:
+                continue
+        return None
 
+    @classmethod
+    async def discover_api(cls, page_url: str) -> dict:
+        response = await Request(page_url, headers=cls.headers).get()
+        soup = BeautifulSoup(response.text, "html.parser")
+        edit_uri = soup.find("link", rel="EditURI")
+        if edit_uri is not None and edit_uri.get("href"):
+            api = urljoin(page_url, str(edit_uri["href"]).split("?", 1)[0])
+            return {"status": 200, "data": api}
 
-def convert(source_string: str):
-    return parse.quote(source_string)
+        parsed = urlparse(str(response.url))
+        base_path = parsed.path.rsplit("/", 1)[0]
+        api = f"{parsed.scheme}://{parsed.netloc}{base_path}/api.php"
+        if parsed.hostname == "wiki.biligame.com":
+            return {"status": 200, "data": api}
+
+        validation = await cls._post(
+            api,
+            {"action": "query", "titles": "Main Page", "format": "json"},
+        )
+        if validation is None or "query" not in validation:
+            return {"status": 500}
+        return {"status": 200, "data": api}
+
+    @classmethod
+    async def get_site_name(cls, api: str) -> str:
+        hostname = urlparse(api).hostname
+        if hostname == "wiki.biligame.com":
+            return "Minecraft Wiki"
+        if hostname == "wiki.arcaea.cn":
+            return "Arcaea Wiki"
+        data = await cls._post(
+            api,
+            {"action": "query", "meta": "siteinfo", "format": "json"},
+        )
+        if data is None:
+            return urlparse(api).hostname or "未知 Wiki"
+        return data["query"]["general"]["sitename"]
+
+    @classmethod
+    async def get_home_page(cls, api: str) -> str:
+        data = await cls._post(
+            api,
+            {"action": "query", "meta": "siteinfo", "format": "json"},
+        )
+        if data is None:
+            parsed = urlparse(api)
+            return f"{parsed.scheme}://{parsed.netloc}"
+        return cls.article_url(api, data["query"]["general"]["mainpage"])
+
+    @staticmethod
+    def article_url(api: str, title: str) -> str:
+        parsed = urlparse(api)
+        encoded_title = parse.quote(title.replace(" ", "_"))
+        if parsed.hostname == "wiki.biligame.com":
+            return api.rsplit("/", 1)[0] + "/" + encoded_title
+        if parsed.hostname == "wiki.arcaea.cn":
+            return f"{parsed.scheme}://{parsed.netloc}/{encoded_title}"
+        return api.replace("/api.php", "/index.php") + "?title=" + encoded_title
+
+    @staticmethod
+    def curid_url(api: str, page_id: int | str) -> str:
+        return api.replace("/api.php", "/index.php") + f"?curid={page_id}"
+
+    @classmethod
+    async def lookup(cls, api: str, title: str) -> dict:
+        if ":" in title:
+            interwiki = await cls._post(
+                api,
+                {
+                    "action": "query",
+                    "titles": title,
+                    "redirects": "1",
+                    "format": "json",
+                },
+            )
+            if (
+                interwiki is not None
+                and "query" in interwiki
+                and "interwiki" in interwiki["query"]
+            ):
+                target_url = interwiki["query"]["interwiki"][0]["url"]
+                target = await cls.discover_api(target_url)
+                if target["status"] == 200:
+                    return await cls.lookup(target["data"], title.split(":", maxsplit=1)[1])
+                return {"status": 201, "link": target_url}
+
+        data = await cls._post(
+            api,
+            {
+                "action": "parse",
+                "page": title,
+                "prop": "text",
+                "format": "json",
+                "formatversion": "2",
+                "redirects": "1",
+            },
+        )
+        if data is None:
+            return await cls._lookup_html(api, title)
+        if "error" in data:
+            return await cls.search(api, title)
+        if "parse" not in data:
+            return {"status": 502, "reason": "该百科返回了无法识别的数据，请稍后再试。"}
+
+        page = data["parse"]
+        description = cls._first_paragraph(page["text"])
+        actual_title = page["title"]
+        link = cls.curid_url(api, page["pageid"])
+        if actual_title != title:
+            return {
+                "status": 301,
+                "redirect": [title, actual_title],
+                "link": link,
+                "desc": description,
+            }
+        return {"status": 200, "link": link, "desc": description}
+
+    @classmethod
+    async def search(cls, api: str, title: str) -> dict:
+        data = await cls._post(
+            api,
+            {
+                "action": "query",
+                "list": "search",
+                "format": "json",
+                "srsearch": title,
+            },
+        )
+        if data is None or "query" not in data:
+            return {"status": 502, "reason": "该百科阻止了搜索请求，请稍后再试。"}
+        results = [item["title"] for item in data["query"]["search"]]
+        page_ids = [item["pageid"] for item in data["query"]["search"]]
+        if len(results) == 1:
+            return await cls.lookup(api, results[0])
+        if results:
+            return {"status": 202, "api": api, "data": [results, page_ids]}
+        return {"status": 404}
+
+    @classmethod
+    async def has_extension(cls, api: str, extension: str) -> bool:
+        data = await cls._post(
+            api,
+            {
+                "action": "query",
+                "meta": "siteinfo",
+                "siprop": "extensions",
+                "format": "json",
+            },
+        )
+        if data is None:
+            return False
+        return any(item["name"] == extension for item in data["query"]["extensions"])
+
+    @classmethod
+    async def get_interwiki_url(cls, api: str, prefix: str) -> str | None:
+        data = await cls._post(
+            api,
+            {
+                "action": "query",
+                "meta": "siteinfo",
+                "siprop": "interwikimap",
+                "sifilteriw": "local",
+                "format": "json",
+            },
+        )
+        if data is None:
+            return None
+        for item in data["query"]["interwikimap"]:
+            if item["prefix"] == prefix:
+                return item["url"]
+        return None
+
+    @classmethod
+    async def lookup_interwiki(cls, api: str, prefix: str, title: str) -> dict:
+        if not await cls.has_extension(api, "Interwiki"):
+            return {"status": 201, "link": f"{api}{prefix}:{title}"}
+        target_url = await cls.get_interwiki_url(api, prefix)
+        if target_url is None:
+            return {"status": 404}
+        target = await cls.discover_api(target_url)
+        if target["status"] != 200:
+            return {"status": 502, "reason": "无法连接到目标百科。"}
+        return await cls.lookup(target["data"], title)
+
+    @classmethod
+    async def _lookup_html(cls, api: str, title: str) -> dict:
+        link = cls.article_url(api, title)
+        response = await Request(link, headers=cls.headers).get()
+        if response.status_code == 404:
+            return {"status": 404}
+        soup = BeautifulSoup(response.text, "html.parser")
+        content = soup.select_one("#mw-content-text .mw-parser-output")
+        if content is None:
+            return {"status": 502, "reason": "该百科阻止了连接请求，请稍后再试。"}
+        description = cls._first_paragraph(str(content))
+        heading = soup.select_one("#firstHeading")
+        actual_title = heading.get_text(strip=True) if heading else title
+        result = {
+            "status": 200,
+            "link": str(response.url),
+            "desc": description,
+        }
+        if actual_title != title:
+            result.update(status=301, redirect=[title, actual_title])
+        return result
+
+    @staticmethod
+    def _first_paragraph(html: str) -> str:
+        content = BeautifulSoup(html, "html.parser")
+        for element in content.select("style, script, table, .mw-empty-elt, .navbox"):
+            element.decompose()
+        paragraph = next(
+            (
+                item
+                for item in content.select(".mw-parser-output > p")
+                if item.get_text(strip=True)
+            ),
+            content.find("p"),
+        )
+        return f"\n{paragraph.get_text(' ', strip=True)}" if paragraph else ""
 
 
 class wiki:
-    """
-    `wiki`插件的核心部分。
-    包含了获取API、简单搜索、跨维搜索等。
-    """
+    """兼容既有 Wiki 命令入口的 MediaWiki 操作接口。"""
 
-    @staticmethod
-    async def get_site_info(api: str):
-        final_link = api + "?action=query&meta=siteinfo&siprop=general&format=json"
-        info = (await Request(final_link, headers=headers).get()).json()
-        sitename = info["query"]["general"]["sitename"]
-        return sitename
-
-    @staticmethod
-    async def get_iw_url(api: str, iwprefix: str) -> dict:
-        """
-        工具型函数：不参与对话
-        """
-        final_link = api + "?action=query&meta=siteinfo&siprop=interwikimap&sifilteriw=local&format=json"
-        data = (await Request(final_link, headers=headers).get()).json()
-        for i in data["query"]["interwikimap"]:
-            if i["prefix"] == iwprefix:
-                return {"status": 200, "data": i["url"]}
-        return {"status": 404}
+    get_api = MediaWikiClient.discover_api
+    get_site_info = MediaWikiClient.get_site_name
+    get_home_page = MediaWikiClient.get_home_page
+    simple = MediaWikiClient.lookup
+    search = MediaWikiClient.search
+    interwiki_search = MediaWikiClient.lookup_interwiki
 
     @staticmethod
     async def extension_checker(api: str, extension: str) -> dict:
-        """
-        工具型函数：不参与对话
-        """
-        final_link = api + "?action=query&meta=siteinfo&siprop=extensions&format=json"
-        data = (await Request(final_link, headers=headers).get()).json()
-        for i in data["query"]["extensions"]:
-            if i["name"] == extension:
-                return {"status": 200}
-        return {"status": 404}
+        available = await MediaWikiClient.has_extension(api, extension)
+        return {"status": 200 if available else 404}
 
     @staticmethod
-    async def get_api(init_link: str) -> dict:
-        page_info = (await Request(init_link, headers=headers).get()).text
-        api_links = re.findall(
-            r"(?im)<\s*link\s*rel=\"EditURI\"\s*type=\"application/rsd\+xml\"\s*href=\"([^>]+?)\?action=rsd\"\s*/?\s*>", page_info)
-        api_link = api_links[0]
-        try:
-            await Request(api_link).get()
-        except Exception as _:
-            api_link = "http:" + api_link
-        if len(api_links) != 1:
-            return {"status": 500}
-        else:
-            return {"status": 200, "data": api_link}
-
-    @staticmethod
-    async def simple(api: str, title: str) -> dict | None:
-        final_link = api + f"?action=query&titles={title}&prop=extracts&format=json&redirects=True&explaintext=True"
-        info = (await Request(final_link, headers=headers).get()).json()
-        try:
-            page = json.loads(info)
-        except Exception as _:
-            return {"status": 502, "reason": "该百科的API阻止了我们的连接请求，请过一会儿再试哦~"}
-
-        curid_dict = {}
-        try:
-            iw_flag = page["query"]["interwiki"]
-            iw = iw_flag[0]["iw"]
-            await wiki.interwiki_search(api, iw, title[len(iw)+1:])
-        except Exception as _:
-            curid_dict = page["query"]["pages"]
-        for i in curid_dict:
-            missing = False
-            special = False
-            try:
-                if page["query"]["pages"][i]["special"] == "":
-                    special = True
-            except Exception as _:
-                special = False
-            try:
-                if page["query"]["pages"][i]["missing"] == "":
-                    missing = True
-            except Exception as _:
-                missing = False
-
-            if missing and special:
-                return {"status": 404}
-            elif missing and special is False:
-                await wiki.search(api, title)
-            elif missing is False and special:
-                actually_title = page["query"]["pages"][i]["title"]
-                link = api.replace("/api.php", "/index.php") + "?title=" + convert(actually_title)
-                desc = ""
-                if actually_title != title:
-                    return {"status": 301, "redirect": [title, actually_title], "link": link, "desc": desc}
-                else:
-                    return {"status": 200, "link": link, "desc": desc}
-            else:
-                actually_title = page["query"]["pages"][i]["title"]
-                link = api.replace("/api.php", "/index.php") + "?curid=" + i
-                try:
-                    desc = page["query"]["pages"][i]["extract"].split("\n")
-                    desc = "\n" + desc[0]
-                except Exception as _:
-                    desc = await wiki.get_wiki_content(api, actually_title)
-                    if desc != "":
-                        desc = "\n" + desc
-                if actually_title != title:
-                    return {"status": 301, "redirect": [title, actually_title], "link": link, "desc": desc}
-                else:
-                    return {"status": 200, "link": link, "desc": desc}
-
-    @staticmethod
-    async def interwiki_search(source_wiki: str, interwiki: str, title: str):
-        if not await wiki.extension_checker(source_wiki, "Interwiki"):
-            return {"status": 201, "link": source_wiki + interwiki + f":{title}"}
-        iwdata = await wiki.get_iw_url(source_wiki, interwiki)
-        iwlink = iwdata["data"]
-        data = await wiki.get_api(iwlink)
-        new_api = data["data"]
-        await wiki.simple(new_api, title)
-
-    @staticmethod
-    async def search(api, title):
-        final_link = api + f"?action=query&list=search&format=json&srsearch={title}"
-        info = (await Request(final_link, headers=headers).get()).json()
-        results = []
-        curids = []
-        for i in info["query"]["search"]:
-            results.append(i["title"])
-            curids.append(i["pageid"])
-        if len(results) >= 1:
-            return {"status": 202, "api": api, "data": [results, curids]}
-        else:
+    async def get_iw_url(api: str, prefix: str) -> dict:
+        url = await MediaWikiClient.get_interwiki_url(api, prefix)
+        if url is None:
             return {"status": 404}
+        return {"status": 200, "data": url}
 
     @staticmethod
-    async def get_wiki_content(api, title):
-        final_url = api.replace("api.php", "index.php") + "?title=" + title
-        data = (await Request(final_url).get()).text
-        bs_obj_data = BeautifulSoup(data, "html.parser")
-        main_content = bs_obj_data.body.find(id="mw-content-text").find(class_="mw-parser-output") # type: ignore
-        div_s = main_content.find_all("div") # type: ignore
-        for i in div_s:
-            i.decompose()
-        text = main_content.get_text() # type: ignore
-        ans = re.sub("\n\n+", "\n\n", text).split("\n\n")
-        try:
-            for i in range(128):
-                if len(ans[i]) >= 3:
-                    fans = ans[i]
-                    if fans[0] == "\n":
-                        fans = fans[1:]
-                    if fans[-1] == "\n":
-                        fans = fans[:-1]
-                    return fans
-            return ""
-        except Exception as _:
-            return ""
+    async def get_wiki_content(api: str, title: str) -> str:
+        result = await MediaWikiClient._lookup_html(api, title)
+        return result["desc"].removeprefix("\n") if "desc" in result else ""

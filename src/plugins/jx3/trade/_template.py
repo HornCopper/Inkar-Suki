@@ -1,28 +1,3 @@
-template_msgbox = """
-<div class="message-box">
-    <div class="element">
-        <div class="cell"><span style="color:green">当日最低价↓</span></div>
-        <div class="cell">{{ low }}</div>
-    </div>
-    <div class="element">
-        <div class="cell">当日均价</div>
-        <div class="cell">{{ avg }}</div>
-    </div>
-    <div class="element">
-        <div class="cell"><span style="color:red">当日最高价↑</span></div>
-        <div class="cell">{{ high }}</div>
-    </div>
-</div>"""
-
-template_table = """
-<tr>
-    <td class="short-column"><img src="{{ icon }}"></td>
-    <td class="short-column"><span style="color:rgb{{ color }}">{{ name }}</span></td>
-    <td class="short-column">{{ time }}</td>
-    <td class="short-column">{{ limit }}</td>
-    <td class="short-column">{{ price }}</td>
-</tr>"""
-
 template_wujia = """
 <tr>
     <td>{{ date }}</td>
@@ -121,3 +96,24 @@ template_v3_info = """
         <p><strong>页眉价参考日期</strong>：<br>{{ date }}</p>
     </div>
 </div>"""
+
+template_auction_head = """
+<tr>
+    <th class="short-column">阵营</th>
+    <th class="short-column">拍得角色</th>
+    <th class="short-column">物品</th>
+    <th class="short-column">成交金额</th>
+    <th class="short-column">时间</th>
+</tr>"""
+
+template_auction = """
+<tr>
+    <td class="short-column">
+        <img src="{{ camp_icon }}" style="width: 24px; height: 24px; vertical-align: middle; margin-right: 6px;">
+        {{ camp_name }}
+    </td>
+    <td class="short-column">{{ role_name }}</td>
+    <td class="short-column">{{ item_name }}</td>
+    <td class="short-column">{{ item_amount }}</td>
+    <td class="short-column">{{ time }}</td>
+</tr>"""

@@ -18,7 +18,7 @@ achievement_v2_matcher = on_command("jx3_progress_v2", aliases={"进度", "成�
 
 @achievement_v2_matcher.handle()
 async def _(event: GroupMessageEvent, msg: Message = CommandArg()):
-    args = msg.extract_plain_text().split(" ")
+    args = msg.extract_plain_text().strip().split()
 
     if len(args) not in [2, 3]:
         await achievement_v2_matcher.finish(PROMPT.ArgumentCountInvalid + "\n参考格式：进度 <服务器> <角色名> <关键词>")
@@ -45,7 +45,7 @@ zone_achievement_matcher = on_command("jx3_zoneachi", aliases={"团本成就"}, 
 
 @zone_achievement_matcher.handle()
 async def _(event: GroupMessageEvent, full_argument: Message = CommandArg()):
-    args = full_argument.extract_plain_text().split(" ")
+    args = full_argument.extract_plain_text().strip().split()
 
     if len(args) not in [2, 3, 4]:
         await zone_achievement_matcher.finish(PROMPT.ArgumentCountInvalid + "\n参考格式：团本成就 <服务器> <角色名> <副本名> [难度(默认10人)]")

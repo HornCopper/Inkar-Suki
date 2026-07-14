@@ -1,16 +1,29 @@
+from src.const.path import ASSETS, build_path
+
+
 template_dilu = """
 <tr>
     <td class="short-column">{{ server }}</td>
     <td class="short-column">刷新：{{ flush }}<br>捕获：{{ captured }}<br>竞拍：{{ sell }}</td>
     <td class="short-column">{{ map }}</td>
-    <td class="short-column">{{ capturer }}<br>{{ ci }}<span style="color: grey;font-size:small">{{ cc }}</span></td>
-    <td class="short-column">{{ auctioner }}<br>{{ bi }}<span style="color: grey;font-size:small">{{ bc }}</span></td>
+    <td class="short-column">
+        <div style="margin-bottom: 5px;">{{ capturer }}</div>
+        <div style="display: inline-flex; align-items: center; gap: 5px; color: #7f8c8d; font-size: 14px; line-height: 18px;">
+            {{ ci }}<span>{{ cc }}</span>
+        </div>
+    </td>
+    <td class="short-column">
+        <div style="margin-bottom: 5px;">{{ auctioner }}</div>
+        <div style="display: inline-flex; align-items: center; gap: 5px; color: #7f8c8d; font-size: 14px; line-height: 18px;">
+            {{ bi }}<span>{{ bc }}</span>
+        </div>
+    </td>
     <td class="short-column">{{ price }}</td>
 </tr>
 """
 
-bad = "<img src=\"https://jx3wbl.xoyocdn.com/img/icon-camp-bad.07567e9f.png\">"
-good = "<img src=\"https://jx3wbl.xoyocdn.com/img/icon-camp-good.0db444fe.png\">"
+bad = f"<img src=\"{build_path(ASSETS, ['image', 'jx3', 'camp', 'eren.png'])}\" style=\"width: 18px; height: 18px; object-fit: contain;\">"
+good = f"<img src=\"{build_path(ASSETS, ['image', 'jx3', 'camp', 'haoqi.png'])}\" style=\"width: 18px; height: 18px; object-fit: contain;\">"
 
 table_dilu_head = """
 <tr>

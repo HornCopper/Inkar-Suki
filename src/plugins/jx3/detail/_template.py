@@ -1,21 +1,19 @@
 template_global_view = """
 <tr>
-    <td class="short-column">{{ subject }}</td>
-    <td class="short-column">
+    <td>{{ subject }}</td>
+    <td>
         <div class="progress-bar" style="margin: 0 auto;">
-            <div class="progress-{{ progress }}" style="width: {{ width }}%;"></div>
+            <div class="progress" style="width: {{ width }}%;"></div>
             <span class="progress-text">{{ width }}%</span>
         </div>
     </td>
-    <td class="short-column">{{ value }}</td>
+    <td>{{ value }}</td>
 </tr>"""
 
 global_view_head = """
-<tr>
-    <th class="short-column" style="height:20px">名称</th>
-    <th class="short-column" style="height:20px">进度</th>
-    <th class="short-column" style="height:20px">资历</th>
-</tr>"""
+<th>名称</th>
+<th>进度</th>
+<th>资历点数</th>"""
 
 dungeon_view_head = """
 <tr>

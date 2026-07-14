@@ -42,13 +42,14 @@ async def _(event: GroupMessageEvent, full_argument: Message = CommandArg()):
     role_data = await search_player(role_name=name, server_name=server)
     if not role_data.roleId:
         await show_matcher.finish(PROMPT.PlayerNotExist)
-    image_url = await get_role_card_url(role_data)
-    if not image_url:
+    role_card = await get_role_card_url(role_data)
+    if not role_card:
         await show_matcher.finish(PROMPT.PlayerNotExist)
+    image_url, praise_count = role_card
     image_bytes = (await Request(image_url).get()).content
     cache_show(image_bytes, name, server)
     image = ms.image(
         image_bytes
     )
-    msg = ms.at(event.user_id) + f" 查询成功！来自：{name}·{server}" + image
+    msg = ms.at(event.user_id) + f" 查询成功！来自：{name}·{server}｜点赞数量：{praise_count}" + image
     await show_matcher.finish(msg)

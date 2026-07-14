@@ -8,6 +8,11 @@ from src.utils.network import Request
 from src.utils.database import serendipity_db
 from src.utils.database.classes import SerendipityData
 from src.utils.database.player import search_player
+from src.plugins.jx3.detail.detail import (
+    ACHIEVEMENT_API,
+    load_achievement_table,
+    parse_completed_ids,
+)
 
 import httpx
 import os
@@ -67,11 +72,65 @@ class JX3Serendipity:
             serendipities.append(new)
         self.my = serendipities
 
+    async def get_achievement_data(self, global_role_id: str) -> None:
+        """Supplement completed serendipities from achievement IDs.
+
+        Achievement records do not contain trigger timestamps, so supplemented
+        entries deliberately use ``time=0`` (rendered as "遗忘的时间").
+        """
+        if not global_role_id:
+            self.tl = []
+            return
+        try:
+            response = await Request(
+                ACHIEVEMENT_API,
+                params={"jx3id": global_role_id},
+            ).get(timeout=20)
+            response.raise_for_status()
+            payload = response.json()
+        except (httpx.HTTPError, ValueError):
+            self.tl = []
+            return
+        if payload.get("code") != 0 or not isinstance(payload.get("data"), dict):
+            self.tl = []
+            return
+
+        completed_ids = parse_completed_ids(payload["data"].get("achievements"))
+        supplemented: list[dict] = []
+        handled_names: set[str] = set()
+        for achievement in load_achievement_table():
+            if achievement["id"] not in completed_ids:
+                continue
+            if "完成奇遇《" not in achievement["short_desc"]:
+                continue
+            serendipity_name = achievement["name"]
+            if serendipity_name.startswith("宠物奇缘·"):
+                serendipity_name = serendipity_name.removeprefix("宠物奇缘·")
+            if (
+                serendipity_name in handled_names
+                or not self.is_serendipity(serendipity_name)
+            ):
+                continue
+            handled_names.add(serendipity_name)
+            supplemented.append(
+                {
+                    "name": serendipity_name,
+                    "level": self.get_serendipity_level(serendipity_name),
+                    "time": 0,
+                }
+            )
+        self.tl = supplemented
+
     async def merge_api_with_my_data(
-        self, api_data: list[dict], server: str, name: str
+        self,
+        api_data: list[dict],
+        server: str,
+        name: str,
+        global_role_id: str = "",
     ) -> list[dict]:
-        """Supplement JX3API records with my_data while retaining JX3API fields."""
+        """Supplement JX3API records with community and achievement data."""
         await self.get_my_data(server, name)
+        await self.get_achievement_data(global_role_id)
         merged = {
             item["event"]: item.copy()
             for item in api_data
@@ -83,6 +142,13 @@ class JX3Serendipity:
                     "event": item["name"],
                     "level": item["level"],
                     "time": item["time"],
+                }
+        for item in self.tl:
+            if item["name"] not in merged:
+                merged[item["name"]] = {
+                    "event": item["name"],
+                    "level": item["level"],
+                    "time": 0,
                 }
         return sort_dict_list(list(merged.values()), "time")[::-1]
 
@@ -98,8 +164,15 @@ class JX3Serendipity:
             )
         return result
 
-    async def integration(self, server: str, name: str, uid: str) -> list[dict]:
+    async def integration(
+        self,
+        server: str,
+        name: str,
+        uid: str,
+        global_role_id: str = "",
+    ) -> list[dict]:
         await self.get_my_data(server, name)
+        await self.get_achievement_data(global_role_id)
         final_data = sort_dict_list(
             merge_dict_lists(
                 merge_dict_lists(

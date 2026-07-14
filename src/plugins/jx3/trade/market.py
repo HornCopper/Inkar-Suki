@@ -1,5 +1,9 @@
-from typing_extensions import Self
+import asyncio
+import datetime
+import re
+
 from jinja2 import Template
+from typing_extensions import Self
 
 from src.const.path import ASSETS, TEMPLATES
 from src.const.jx3.server import Server
@@ -10,7 +14,7 @@ from src.utils.time import Time
 from src.utils.generate import generate
 from src.templates import get_saohua
 
-from ._parse import (
+from .parsers import (
     SHILIAN_ATTR_LABELS,
     ShilianEquipParser,
     coin_to_image,
@@ -27,10 +31,7 @@ from ._template import (
     template_v3_name_mulit,
     template_v3_name_unique
 )
-from .local_items import is_trade_bind_type, search_local_items, search_local_shilian_equips
-
-import re
-import datetime
+from .items import is_trade_bind_type, search_local_items, search_local_shilian_equips
 
 server_list = list(Server.server_aliases.keys())
 
@@ -95,10 +96,11 @@ class JX3Item:
             return ""
         results = []
         for attr in self.data["attributes"]:
-            if attr.get("color") != "green":
+            if attr["color"] != "green":
                 continue
-            if attr.get("key"):
-                results.append(SHILIAN_ATTR_LABELS.get(attr["key"], attr["key"]))
+            if attr["key"]:
+                key = attr["key"]
+                results.append(SHILIAN_ATTR_LABELS[key] if key in SHILIAN_ATTR_LABELS else key)
             else:
                 label = (attr["label"].split("提高" if "提高" in attr["label"] else "增加")[0]).replace("等级", "").replace("值", "")
                 results.append(label + "(" + str(list(map(int, re.findall(r"\d+", attr["label"])))[0]) + ")")
@@ -110,8 +112,8 @@ class JX3Item:
         if attribute == []:
             return ""
         for attr in attribute:
-            if attr.get("color") == "orange":
-                return _format_peerless_text(str(attr.get("label")))
+            if attr["color"] == "orange":
+                return _format_peerless_text(str(attr["label"]))
         return ""
 
     @property
@@ -168,7 +170,6 @@ class JX3Trade:
             return f"无法解析试炼词条：{reason}\n请确保包含品级、内/外功、属性和部位，例如：41400外功双会招头"
         attrs, location, quality, kungfu_type = parser.attributes, parser.location, parser.quality, parser.kungfu_type
         attr_keys = shilian_attrs_to_keys(attrs)
-        # end_word = "荒" if quality <= 25500 else "玄"
         if quality <= 25500:
             end_word = "荒"
         elif 28000 <= quality <= 30200:
@@ -183,7 +184,7 @@ class JX3Trade:
             equipment_attr = {
                 attr["key"]
                 for attr in item["attributes"]
-                if attr.get("color") == "green" and attr.get("key")
+                if attr["color"] == "green" and attr["key"]
             }
             if set(attr_keys) == equipment_attr:
                 cls._node_data = data
@@ -204,7 +205,8 @@ class JX3Trade:
                 items = [each_item["id"]]
         if not unique:
             items = [i["id"] for i in cls._node_data if is_trade_bind_type(i["BindType"])]
-        items = [i for i in items if (await cls.check_trade(i, server))]
+        checks = await asyncio.gather(*(cls.check_trade(item, server) for item in items))
+        items = [item for item, available in zip(items, checks) if available]
         return cls(items, server)
 
     def __init__(self, item_id: list[str], server: str):
@@ -219,7 +221,11 @@ class JX3Trade:
 
     @staticmethod
     def legacy_log_to_daily(record: dict) -> dict:
-        raw_time = record.get("UpdatedAt") or record.get("CreatedAt") or record.get("Date")
+        raw_time = (
+            (record["UpdatedAt"] if "UpdatedAt" in record else None)
+            or (record["CreatedAt"] if "CreatedAt" in record else None)
+            or (record["Date"] if "Date" in record else None)
+        )
         timestamp = 0
         if raw_time:
             try:
@@ -231,16 +237,20 @@ class JX3Trade:
                     timestamp = 0
         return {
             "timestamp": timestamp,
-            "price": record.get("AvgPrice") or record.get("LowestPrice") or 0,
-            "sample": record.get("SampleSize") or 0,
+            "price": (
+                (record["AvgPrice"] if "AvgPrice" in record else None)
+                or (record["LowestPrice"] if "LowestPrice" in record else None)
+                or 0
+            ),
+            "sample": record["SampleSize"] if "SampleSize" in record else 0,
         }
 
     @staticmethod
     def legacy_price_to_detail(record: dict) -> dict:
         return {
-            "timestamp": record.get("created") or 0,
-            "price": record.get("unit_price") or 0,
-            "sample": record.get("n_count") or 0,
+            "timestamp": record["created"] if "created" in record else 0,
+            "price": record["unit_price"] if "unit_price" in record else 0,
+            "sample": record["n_count"] if "n_count" in record else 0,
         }
 
     @classmethod
@@ -251,7 +261,7 @@ class JX3Trade:
                 params={"server": server or None, "limit": 20},
             ).get()
         ).json()
-        records = data.get("data", {}).get("logs")
+        records = data["data"]["logs"]
         if not records:
             return []
         return [cls.legacy_log_to_daily(record) for record in records]
@@ -264,7 +274,7 @@ class JX3Trade:
                 params={"server": server, "limit": 20},
             ).get()
         ).json()
-        records = data.get("data", {}).get("prices")
+        records = data["data"]["prices"]
         if not records:
             return []
         return [cls.legacy_price_to_detail(record) for record in records]
@@ -414,16 +424,23 @@ class JX3Trade:
             unique_item = self.item_info(unique_item_id)
             table = []
             logs: list[ItemPriceLog] = []
-            for server in server_list:
-                log = await self.get_logs(unique_item_id, server)
-                if log is None:
-                    continue
+            server_logs = await asyncio.gather(
+                *(self.get_logs(unique_item_id, server) for server in server_list)
+            )
+            available_logs = [
+                (server, log)
+                for server, log in zip(server_list, server_logs)
+                if log is not None
+            ]
+            server_prices = await asyncio.gather(
+                *(self.get_prices(unique_item_id, server) for server, _ in available_logs)
+            )
+            for (server, log), price in zip(available_logs, server_prices):
                 logs.append(log)
                 name = Template(template_v3_name_unique).render(
                     color = unique_item.color,
                     name = unique_item.name
                 )
-                price = await self.get_prices(unique_item_id, server)
                 if price is None:
                     latest_price = sort_dict_list(log.data, "timestamp")
                     if not latest_price:

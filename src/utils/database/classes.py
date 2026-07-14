@@ -76,7 +76,7 @@ class PersonalSetting(BaseModel):
     attribute: str = "v4"
     theme: str = "浅色"
     trade: str = "v3"
-    serendipity: str = "v2"
+    serendipity: str = "v3"
     anonymous: str = "否"
     calculate_source: str = "公用"
     income: str = "无增益"

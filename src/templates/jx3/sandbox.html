@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 
 <head>
-    <link rel="stylesheet" type="text/css" href="$css">
+    {{ css }}
     <style>
         .map-title {
             position: absolute;
@@ -43,7 +43,7 @@
 
         @font-face {
             font-family: Harmony;
-            src: url($customfont);
+            src: url("{{ font }}");
         }
 
         body {
@@ -55,8 +55,8 @@
 <body>
     <div class="m-sandbox-map">
         <div class="m-sandboxMap">
-            <div class="map-title">$server</div>
-            <div class="map-time">$time</div>
+            <div class="map-title">{{ server }}</div>
+            <div class="map-time">{{ update_time }}</div>
             <!--阵营防线-->
             <div class="u-mapLine"></div>
 
@@ -266,21 +266,12 @@
         </div>
     </div>
     <script>
-        document.querySelectorAll(".u-pic").forEach(function (img) {
-            let src = img.getAttribute("src");
-            if (img.classList.contains("eren")) {
-                img.src = src.replace("?", "e");
-            } else if (img.classList.contains("haoqi")) {
-                img.src = src.replace("?", "h");
-            }
-        });
-        document.querySelectorAll(".i-icon").forEach(function (img) {
-            let src = img.getAttribute("src");
-            if (img.classList.contains("eren")) {
-                img.src = src.replace("?", "e");
-            } else if (img.classList.contains("haoqi")) {
-                img.src = src.replace("?", "h");
-            }
+        const camps = {{ camps | tojson }};
+        Object.entries(camps).forEach(function ([castle, camp]) {
+            document.querySelectorAll("." + CSS.escape("$" + castle)).forEach(function (img) {
+                img.classList.add(camp);
+                img.src = img.getAttribute("src").replace("?", camp === "haoqi" ? "h" : "e");
+            });
         });
     </script>
 </body>

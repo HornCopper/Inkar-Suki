@@ -33,10 +33,12 @@ async def get_serendipity_v2(server: str, name: str, type: bool):
         }
         serendipity_data = (await Request(url, params=params).get()).json()
         data: list[dict] = await JX3Serendipity().merge_api_with_my_data(
-            serendipity_data["data"], server, name
+            serendipity_data["data"], server, name, role_data.globalRoleId
         )
     else:
-        serendipity_data = await JX3Serendipity().integration(server, name, role_id)
+        serendipity_data = await JX3Serendipity().integration(
+            server, name, role_id, role_data.globalRoleId
+        )
         data = serendipity_data
     # 笔记：1 → 世界奇遇；2 → 绝世奇遇；3 → 宠物奇遇
     # 注：暂时忽略宠物奇遇，不做统计

@@ -3,10 +3,7 @@ from jinja2 import Template
 from src.config import Config
 from src.const.path import ASSETS
 from src.const.jx3.kungfu import Kungfu
-from src.const.jx3.school import School
 from src.utils.network import Request
-from src.utils.time import Time
-from src.utils.analyze import check_number
 from src.utils.generate import generate
 from src.utils.database.attributes import TabCache
 from src.utils.database.constant import Colors

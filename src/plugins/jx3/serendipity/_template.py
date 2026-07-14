@@ -45,3 +45,52 @@ template_v3_cell = """
 template_v3_row = """<tr>
 {{ cells }}
 </tr>"""
+
+recent_serendipity_head = """
+<tr>
+    <th class="short-column">角色</th>
+    <th class="short-column">奇遇</th>
+    <th class="short-column">时间</th>
+</tr>"""
+
+recent_serendipity_row = """
+<tr>
+    <td class="short-column">{{ role_name }}</td>
+    <td class="short-column">
+        {% if event_icon %}
+        <img src="{{ event_icon }}" alt="{{ event_name }}" style="width: 224px; height: 49px; object-fit: contain;">
+        {% else %}
+        {{ event_name }}
+        {% endif %}
+    </td>
+    <td class="short-column">{{ time }}<br><span style="color: #7f8c8d; font-size: 14px;">{{ relative_time }}</span></td>
+</tr>"""
+
+statistics_serendipity_head = """
+<tr>
+    <th class="short-column">服务器</th>
+    <th class="short-column">角色</th>
+    <th class="short-column">时间</th>
+</tr>"""
+
+statistics_serendipity_row = """
+<tr>
+    <td class="short-column"><span class="server-tag">{{ server }}</span></td>
+    <td class="short-column">{{ role_name }}</td>
+    <td class="short-column">{{ time }}<br><span style="color: #7f8c8d; font-size: 14px;">{{ relative_time }}</span></td>
+</tr>"""
+
+collect_serendipity_card = """
+<article class="event-card{% if peerless_icon %} has-peerless{% endif %}">
+    <div class="ink-circle">
+        {% if show_path %}<img class="event-art" src="{{ show_path }}" alt="{{ event_name }}">{% endif %}
+        {% if name_path %}<img class="event-name" src="{{ name_path }}" alt="{{ event_name }}">{% else %}<span class="event-name-text">{{ event_name }}</span>{% endif %}
+        {% if peerless_icon %}<img class="peerless-badge" src="{{ peerless_icon }}" alt="绝世">{% endif %}
+        <span class="event-count">{{ count }} 次</span>
+    </div>
+    <div class="latest-role">{{ role_name }}</div>
+    <div class="latest-time">{{ time }}</div>
+    <div class="relative-time">{{ relative_time }}</div>
+</article>"""
+
+collect_serendipity_row = """<div class="card-row">{{ cards }}</div>"""

@@ -48,12 +48,18 @@ class JX3Serendipities:
                 new.append(serendipity)
         return new
 
-async def check_role(server: str, name: str) -> Literal[False] | tuple[str, str]:
+async def check_role(
+    server: str, name: str
+) -> Literal[False] | tuple[str, str, str]:
     player_data = await search_player(role_name=name, server_name=server)
     role_id = player_data.roleId
     if role_id == "":
         return False
-    return role_id, School(player_data.forceName).name or player_data.forceName
+    return (
+        role_id,
+        player_data.globalRoleId,
+        School(player_data.forceName).name or player_data.forceName,
+    )
 
 def _featured_image_path(name: str, category: str, school: str) -> str:
     directory = build_path(
@@ -196,7 +202,7 @@ async def get_serendipity_image_v3(server: str, name: str):
     role = await check_role(server, name)
     if not role:
         return PROMPT.PlayerNotExist
-    uid, school = role
+    uid, global_role_id, school = role
 
     if Config.jx3.api.enable:
         url = f"{Config.jx3.api.url}/data/event/records"
@@ -207,10 +213,12 @@ async def get_serendipity_image_v3(server: str, name: str):
         }
         serendipity_data = (await Request(url, params=params).get()).json()
         data: list[dict] = await JX3Serendipity().merge_api_with_my_data(
-            serendipity_data["data"], server, name
+            serendipity_data["data"], server, name, global_role_id
         )
     else:
-        data: list[dict] = await JX3Serendipity().integration(server, name, uid)
+        data: list[dict] = await JX3Serendipity().integration(
+            server, name, uid, global_role_id
+        )
     data_obj = JX3Serendipities(data)
 
     common: list[dict] = data_obj.common

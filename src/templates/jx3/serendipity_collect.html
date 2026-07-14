@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        @font-face { font-family: Harmony; src: url("{{ font }}"); }
+        * { box-sizing: border-box; }
+        body { margin: 0; padding: 20px; background: #fbe3ea; color: #34343b; font-family: Harmony, sans-serif; }
+        .collect-card { width: 1302px; overflow: hidden; border: 1px solid #e5e7eb; border-radius: 9px; background: #fff; box-shadow: 0 2px 10px rgba(0, 0, 0, .08); }
+        header { padding: 18px 28px 16px; border-top: 3px solid #f3a9bd; border-bottom: 1px solid #f5c6d3; background: #fbe3ea; }
+        h1 { margin: 0; color: #49363c; font-size: 27px; }
+        .summary { margin-top: 6px; color: #80666e; font-size: 15px; }
+        .cards { padding: 18px 20px; }
+        .card-row { display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px; margin-bottom: 14px; }
+        .card-row:last-child { margin-bottom: 0; }
+        .event-card { min-height: 235px; padding: 8px 6px 11px; border: 1px solid #e7edf3; border-radius: 9px; background: linear-gradient(135deg, #fff, #fafcff); text-align: center; box-shadow: 0 3px 10px rgba(52, 72, 90, .05); }
+        .ink-circle { position: relative; width: 150px; height: 159px; margin: 0 auto; background: url("{{ ink_background }}") center/150px 159px no-repeat; }
+        .event-art { position: absolute; inset: 0; width: 150px; height: 159px; object-fit: contain; }
+        .event-name { position: absolute; left: 50%; top: 135px; max-width: 105px; height: 12px; object-fit: contain; transform: translateX(-50%); }
+        .event-name-text { position: absolute; left: 50%; top: 132px; width: 120px; color: #554a45; font-size: 13px; font-weight: 600; transform: translateX(-50%); }
+        .peerless-badge { position: absolute; z-index: 2; top: 8px; right: -18px; width: 42px; height: 20px; object-fit: contain; }
+        .event-count { position: absolute; top: 8px; right: -20px; min-width: 42px; padding: 3px 7px; border-radius: 10px; color: #9a6120; background: #fff3d5; font-size: 12px; }
+        .has-peerless .event-count { top: 34px; }
+        .latest-role { margin-top: 2px; font-size: 15px; font-weight: 600; }
+        .latest-time { margin-top: 4px; color: #626a73; font-size: 12px; }
+        .relative-time { margin-top: 2px; color: #969da6; font-size: 12px; }
+        footer { padding: 11px; border-top: 1px solid #e5e7eb; color: #8a9099; background: #f7f8fa; font-size: 12px; text-align: center; }
+    </style>
+</head>
+<body>
+    <main class="collect-card">
+        <header><h1>奇遇汇总 · {{ server }}</h1><div class="summary">最近 {{ days }} 天共触发 {{ total }} 次奇遇</div></header>
+        <section class="cards">{{ rows }}</section>
+        <footer>Inkar Suki · 奇遇汇总</footer>
+    </main>
+</body>
+</html>

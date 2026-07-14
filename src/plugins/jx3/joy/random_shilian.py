@@ -10,7 +10,7 @@ from src.utils.analyze import match
 from src.utils.file import read
 from src.utils.generate import generate
 from src.utils.database.operation import get_group_settings
-from src.plugins.jx3.trade.trade import JX3Trade
+from src.plugins.jx3.trade.market import JX3Trade
 from src.templates import get_saohua
 
 from .random_item import (

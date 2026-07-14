@@ -19,7 +19,7 @@ from src.utils.generate import generate
 from src.utils.network import Request, cache_image
 from src.utils.time import Time
 from src.templates import HTMLSourceCode, get_saohua
-from src.plugins.jx3.trade._parse import calculate_price, coin_to_image
+from src.plugins.jx3.trade.parsers import calculate_price, coin_to_image
 
 from ._template import (
     table_random_5gimage_rank_head,

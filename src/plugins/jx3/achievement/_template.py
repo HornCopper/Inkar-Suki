@@ -1,13 +1,11 @@
 table_head = """
-<tr>
-    <th>图标</th>
-    <th>名称</th>
-    <th>类型</th>
-    <th>描述</th>
-    <th>资历</th>
-    <th>进度</th>
-    <th>状态</th>
-</tr>"""
+<th>图标</th>
+<th>名称</th>
+<th>类型</th>
+<th>描述</th>
+<th>资历</th>
+<th>进度</th>
+<th>状态</th>"""
 
 template_body = """
 <tr>

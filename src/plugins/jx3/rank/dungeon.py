@@ -1,18 +1,12 @@
 from typing import Literal, Any
 from jinja2 import Template
 
-from src.config import Config
 from src.const.jx3.kungfu import Kungfu
 from src.utils.network import Request
 from src.utils.generate import generate
 from src.templates import HTMLSourceCode
 
-from ._template import (
-    rank_table_head,
-    rank_template_body,
-    slrank_table_head,
-    slrank_template_body
-)
+from ._template import rank_table_head, rank_template_body
 
 name_to_pinyin = {
     "莫问": "mowen",
@@ -84,34 +78,3 @@ async def get_rank(dungeon_full_name: str, boss_name: str, kungfu_name: str, ord
     image = await generate(html, ".container", segment=True)
     return image
 
-async def get_slrank(school: str, server: str):
-    url = f"{Config.jx3.api.url}/data/rank/trials"
-    params = {
-        "name": school,
-        "server": server,
-        "token": Config.jx3.api.token
-    }
-    data = (await Request(url, params=params).get()).json()
-    rank = 1
-    tables = []
-    for info in data["data"]["data"]:
-        tables.append(
-            Template(slrank_template_body).render(
-                rank = str(rank),
-                server = data["data"]["server"],
-                role_name = info["role_name"],
-                level = info["max_level"],
-                grade = "{:,}".format(int(info["total_score"])),
-                score = info["equip_score"]
-            )
-        )
-        rank += 1
-    html = str(
-        HTMLSourceCode(
-            application_name = f"试炼之地 · {server} · {school}",
-            table_head = slrank_table_head,
-            table_body = "\n".join(tables)
-        )
-    )
-    image = await generate(html, ".container", segment=True)
-    return image

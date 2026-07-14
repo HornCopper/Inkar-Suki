@@ -1,0 +1,30 @@
+ID	Name	Top	Last	ImagePath 	Frame 	ItemType	ItemID	SFXPath	MobileImagePath 
+0	初入江湖	0	1000	ui/Image/UICommon/Achievement8.UITex	0	0	0		UIAtlas2_Achievement_AchievementAward_icon_0
+1	略知一二	1000	3000	ui/Image/UICommon/Achievement8.UITex	1	8	13862		UIAtlas2_Achievement_AchievementAward_icon_1
+2	薄有侠名	3000	5000	ui/Image/UICommon/Achievement8.UITex	2	8	13863		UIAtlas2_Achievement_AchievementAward_icon_2
+3	浮名绊身	5000	8000	ui/Image/UICommon/Achievement8.UITex	3	8	2827		UIAtlas2_Achievement_AchievementAward_icon_3
+4	驰声走誉	8000	12000	ui/Image/UICommon/Achievement8.UITex	4	8	121		UIAtlas2_Achievement_AchievementAward_icon_4
+5	赫赫有名	12000	16000	ui/Image/UICommon/Achievement8.UITex	5	8	3902		UIAtlas2_Achievement_AchievementAward_icon_5
+6	功成名就	16000	20000	ui/Image/UICommon/Achievement8.UITex	6	8	13864	data/source/other/新特效/其他/Pss/G_光线02.pss	UIAtlas2_Achievement_AchievementAward_icon_6
+7	威名远播	20000	25000	ui/Image/UICommon/Achievement8.UITex	7	8	13912	data/source/other/新特效/其他/Pss/G_光线02.pss	UIAtlas2_Achievement_AchievementAward_icon_7
+8	久负盛名	25000	30000	ui/Image/UICommon/Achievement8.UITex	8	8	369	data/source/other/新特效/其他/Pss/G_光线02.pss	UIAtlas2_Achievement_AchievementAward_icon_8
+9	如雷贯耳	30000	35000	ui/Image/UICommon/Achievement8.UITex	9	5	23861	data/source/other/新特效/其他/Pss/G_光线02.pss	UIAtlas2_Achievement_AchievementAward_icon_9
+10	名扬四海	35000	40000	ui/Image/UICommon/Achievement8.UITex	10	8	13865	data/source/other/新特效/其他/Pss/G_光线02.pss	UIAtlas2_Achievement_AchievementAward_icon_10
+11	威震寰宇	40000	45000	ui/Image/UICommon/Achievement8.UITex	11	8	3903	data/source/other/新特效/其他/Pss/G_光线01.pss	UIAtlas2_Achievement_AchievementAward_icon_11
+12	举世闻名	45000	50000	ui/Image/UICommon/Achievement8.UITex	12	8	13913	data/source/other/新特效/其他/Pss/G_光线01.pss	UIAtlas2_Achievement_AchievementAward_icon_12
+13	芳满天下	50000	60000	ui/Image/UICommon/Achievement8.UITex	13	8	13869	data/source/other/新特效/其他/Pss/G_光线01.pss	UIAtlas2_Achievement_AchievementAward_icon_13
+14	惊世骇俗	60000	70000	ui/Image/UICommon/Achievement8.UITex	14	8	13867	data/source/other/新特效/其他/Pss/G_光线01.pss	UIAtlas2_Achievement_AchievementAward_icon_14
+15	名垂青史	70000	80000	ui/Image/UICommon/Achievement8.UITex	15	8	13861	data/source/other/新特效/其他/Pss/G_光线01.pss	UIAtlas2_Achievement_AchievementAward_icon_15
+16	泰山北斗	80000	90000	ui/Image/UICommon/Achievement8.UITex	16	8	2840	data/source/other/新特效/其他/Pss/G_光线01.pss	UIAtlas2_Achievement_AchievementAward_icon_16
+17	武林至尊	90000	100000	ui/Image/UICommon/Achievement8.UITex	17	5	28446	data/source/other/新特效/其他/Pss/G_光线01.pss	UIAtlas2_Achievement_AchievementAward_icon_17
+18	江湖神话	100000	110000	ui/Image/UICommon/Achievement8.UITex	18	5	32056	data/source/other/新特效/其他/Pss/G_光线01.pss	UIAtlas2_Achievement_AchievementAward_icon_18
+19	誉满苍穹	110000	120000	ui/Image/UICommon/Achievement8.UITex	19	5	34693	data/source/other/新特效/其他/Pss/G_光线01.pss	UIAtlas2_Achievement_AchievementAward_icon_19
+20	九霄唯我	120000	130000	ui/Image/UICommon/Achievement8.UITex	20	5	34586	data/source/other/新特效/其他/Pss/G_光线01.pss	UIAtlas2_Achievement_AchievementAward_icon_20
+21	登峰造极	130000	140000	ui/Image/UICommon/Achievement8.UITex	21	5	35844	data/source/other/新特效/其他/Pss/G_光线01.pss	UIAtlas2_Achievement_AchievementAward_icon_21
+22	六道称雄	140000	150000	ui/Image/UICommon/Achievement8.UITex	22	5	38126	data/source/other/新特效/其他/Pss/G_光线01.pss	UIAtlas2_Achievement_AchievementAward_icon_22
+23	青云独步	150000	160000	ui/Image/UICommon/Achievement8.UITex	23	5	40408	data/source/other/新特效/其他/Pss/G_光线01.pss	UIAtlas2_Achievement_AchievementAward_icon_23
+24	龙腾霄宇	160000	170000	ui/Image/UICommon/Achievement8.UITex	24	5	43953	data/source/other/新特效/其他/Pss/G_光线01.pss	UIAtlas2_Achievement_AchievementAward_icon_24
+25	卓绝千古	170000	180000	ui/Image/UICommon/Achievement8.UITex	25	5	49229	data/source/other/新特效/其他/Pss/G_光线01.pss	UIAtlas2_Achievement_AchievementAward_icon_25
+26	逸世绝群	180000	190000	ui/Image/UICommon/Achievement8.UITex	26	5	67765	data/source/other/新特效/其他/Pss/G_光线01.pss	UIAtlas2_Achievement_AchievementAward_icon_26
+27	旷古无两	190000	200000	ui/Image/UICommon/Achievement8.UITex	27	5	76630	data/source/other/新特效/其他/Pss/G_光线01.pss	UIAtlas2_Achievement_AchievementAward_icon_27
+28	天纵奇才	200000	999999	ui/Image/UICommon/Achievement8.UITex	28	5	84085	data/source/other/新特效/其他/Pss/G_光线01.pss	UIAtlas2_Achievement_AchievementAward_icon_28

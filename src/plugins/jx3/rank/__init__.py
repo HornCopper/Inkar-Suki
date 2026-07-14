@@ -15,12 +15,41 @@ from src.utils.generate import generate
 from src.utils.permission import check_permission
 from src.templates import HTMLSourceCode
 
-from .api import get_zlrank
-from .rank import get_rank, get_slrank
-from .team_rank import parse_team_rank_data
-from .hps_rank import get_hps_rank
+from .dungeon import get_rank
+from .experience import get_zlrank
+from .game import GAME_RANK_NAMES, get_game_rank
+from .hps import get_hps_rank
+from .team import parse_team_rank_data
+from .trials import get_slrank
 
 from ._template import cqcrank_template_body, cqcrank_table_head
+
+game_rank_matcher = on_command(
+    "jx3_game_rank",
+    aliases={"江湖榜单", "榜单"},
+    priority=5,
+    force_whitespace=True,
+)
+
+
+@game_rank_matcher.handle()
+async def _(event: GroupMessageEvent, argument: Message = CommandArg()):
+    content = argument.extract_plain_text().strip()
+    if not content:
+        await game_rank_matcher.finish("可查询的榜单：\n" + "、".join(GAME_RANK_NAMES))
+    args = content.split(maxsplit=1)
+    if len(args) == 1:
+        server = Server(None, event.group_id).server
+        rank_name = args[0]
+    else:
+        server = "" if args[0] == "全服" else Server(args[0], event.group_id).server
+        rank_name = args[1]
+    if server is None:
+        await game_rank_matcher.finish(PROMPT.ServerNotExist)
+    if rank_name not in GAME_RANK_NAMES:
+        await game_rank_matcher.finish("榜单名称无效，可查询：\n" + "、".join(GAME_RANK_NAMES))
+    await game_rank_matcher.finish(await get_game_rank(server, rank_name))
+
 
 def _limit_rank_records_per_role(records: list[Any], limit: int) -> list[Any]:
     role_counts: dict[tuple[str, str], int] = {}
@@ -139,6 +168,9 @@ async def _(event: GroupMessageEvent, msg: Message = CommandArg()):
     if len(args) == 1:
         server = Server(None, event.group_id).server
         kungfu_name = args[0]
+    elif args[0] == "全服":
+        server = ""
+        kungfu_name = args[1]
     else:
         server = Server(args[0], event.group_id).server
         kungfu_name = args[1]
