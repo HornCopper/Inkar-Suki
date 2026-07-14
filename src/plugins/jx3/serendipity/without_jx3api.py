@@ -28,35 +28,8 @@ class JX3Serendipity:
             serendipity_level = 1
         return serendipity_level
 
-    async def get_tuilan_data(self, server: str, name: str):
-        role = await search_player(role_name=name, server_name=server)
-        global_role_id = role.globalRoleId
-        if global_role_id == "":
-            return False
-        params = {
-            "name": "完成奇遇",
-            "gameRoleId": global_role_id,
-            "size": 200
-        }
-        tl_data = (await Request("https://m.pvp.xoyo.com/achievement/list/achievements", params=params).post(tuilan=True)).json()
-        serendipities = []
-        for serendipity in tl_data["data"]["data"]:
-            if serendipity["isFinished"]:
-                serendipity_name = serendipity["name"]
-                serendipity_level = self.get_serendipity_level(serendipity_name)
-                if serendipity_level == 3:
-                    serendipity_name = serendipity_name.replace("宠物奇缘·", "")
-                serendipities.append(
-                    {
-                        "name": serendipity_name,
-                        "level": serendipity_level,
-                        "time": 0
-                    }
-                )
-        self.tl = serendipities
-
     async def get_my_data(self, server: str, name: str):
-        final_url = f"https://pull.j3cx.com/api/serendipity?server={server}&role={name}&pageSize=50"
+        final_url = f"https://pull-gplugin.jx3box.com/api/serendipity?server={server}&role={name}&pageSize=50"
         try:
             data = (await Request(final_url).get(timeout=3)).json()
         except httpx.ConnectTimeout:
@@ -78,19 +51,24 @@ class JX3Serendipity:
             serendipities.append(new)
         self.my = serendipities
 
-    async def get_jx3mm_data(self, server: str, name: str):
-        final_url = f"https://www.jx3mm.com/home/qyinfo?m=1&R={Server(server).zone}&S={server}&t=&u=&n={name}"
-        data = (await Request(final_url).get()).json()
-        serendipities = []
-        for serendipity in data["result"]:
-            serendipities.append(
-                {
-                    "name": serendipity["serendipity"],
-                    "level": self.get_serendipity_level(serendipity["serendipity"]),
-                    "time": serendipity["time"]
+    async def merge_api_with_my_data(
+        self, api_data: list[dict], server: str, name: str
+    ) -> list[dict]:
+        """Supplement JX3API records with my_data while retaining JX3API fields."""
+        await self.get_my_data(server, name)
+        merged = {
+            item["event"]: item.copy()
+            for item in api_data
+            if item.get("event")
+        }
+        for item in self.my:
+            if item["name"] not in merged:
+                merged[item["name"]] = {
+                    "event": item["name"],
+                    "level": item["level"],
+                    "time": item["time"],
                 }
-            )
-        self.jx3mm = serendipities
+        return sort_dict_list(list(merged.values()), "time")[::-1]
 
     def get_local_data(self, local_data: list[SerendipityData]) -> list[dict[str, int | str]]:
         result = []
@@ -105,9 +83,7 @@ class JX3Serendipity:
         return result
 
     async def integration(self, server: str, name: str, uid: str) -> list[dict]:
-        await self.get_tuilan_data(server, name)
         await self.get_my_data(server, name)
-        await self.get_jx3mm_data(server, name)
         final_data = sort_dict_list(
             merge_dict_lists(
                 merge_dict_lists(

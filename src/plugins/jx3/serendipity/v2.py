@@ -19,8 +19,6 @@ token = Config.jx3.api.token
 ticket = Config.jx3.api.ticket
 bot_name = Config.bot_basic.bot_name_argument
 
-Serendipity = JX3Serendipity()
-
 async def get_serendipity_v2(server: str, name: str, type: bool):
     role_data = await search_player(role_name=name, server_name=server)
     role_id = role_data.roleId
@@ -34,9 +32,11 @@ async def get_serendipity_v2(server: str, name: str, type: bool):
             "token": token
         }
         serendipity_data = (await Request(url, params=params).get()).json()
-        data: list[dict] = serendipity_data["data"]
+        data: list[dict] = await JX3Serendipity().merge_api_with_my_data(
+            serendipity_data["data"], server, name
+        )
     else:
-        serendipity_data = await Serendipity.integration(server, name, role_id)
+        serendipity_data = await JX3Serendipity().integration(server, name, role_id)
         data = serendipity_data
     # 笔记：1 → 世界奇遇；2 → 绝世奇遇；3 → 宠物奇遇
     # 注：暂时忽略宠物奇遇，不做统计
@@ -47,7 +47,7 @@ async def get_serendipity_v2(server: str, name: str, type: bool):
             continue
         if not type and i["level"] != 3: # 宠物
             continue
-        serendipity_name = i["name"] if not Config.jx3.api.enable else i["event"]
+        serendipity_name = i["event"] if Config.jx3.api.enable else i["name"]
         flag = build_path(ASSETS, ["image", "jx3", "serendipity", "vector", "peerless.png"]) if i["level"] == 2 else ""
         icon = build_path(ASSETS, ["image", "jx3", "serendipity", "serendipity", type_map[i["level"]-1]], end_with_slash=True) + serendipity_name + ".png"
         if not os.path.exists(icon):

@@ -5,6 +5,7 @@ from jinja2 import Template
 from src.config import Config
 from src.const.prompts import PROMPT
 from src.const.path import ASSETS, build_path
+from src.const.jx3.school import School
 from src.utils.generate import generate
 from src.utils.time import Time
 from src.utils.network import Request
@@ -46,22 +47,40 @@ class JX3Serendipities:
                 new.append(serendipity)
         return new
 
-async def check_role(server: str, name: str) -> Literal[False] | str:
+async def check_role(server: str, name: str) -> Literal[False] | tuple[str, str]:
     player_data = await search_player(role_name=name, server_name=server)
     role_id = player_data.roleId
     if role_id == "":
         return False
-    return role_id
+    return role_id, School(player_data.forceName).name or player_data.forceName
 
-def generate_table(local_data: list[dict], comparison_data: list[dict], path_map: list[str], template: str):
+def _featured_image_path(name: str, category: str, school: str) -> str:
+    directory = build_path(
+        ASSETS,
+        ["image", "jx3", "serendipity", "show", category],
+        end_with_slash=True,
+    )
+    for asset_name in (name, f"{name}-{school}"):
+        path = directory + asset_name + ".png"
+        if Path(path).exists():
+            return path
+    return ""
+
+
+def generate_table(
+    local_data: list[dict],
+    comparison_data: list[dict],
+    path_map: list[str],
+    template: str,
+    school: str = "",
+):
     local_dict = {item["name"]: item for item in local_data}
-    k = "name" if not Config.jx3.api.enable else "event"
     comparison_data = sort_dict_list(comparison_data, "time")[::-1]
     handled_names = set()
     cell_data = []
 
     for item in comparison_data:
-        name = item[k]
+        name = item["event"] if Config.jx3.api.enable else item["name"]
         handled_names.add(name)
         serendipity = local_dict.get(name)
         status = serendipity is not None
@@ -100,17 +119,15 @@ def generate_table(local_data: list[dict], comparison_data: list[dict], path_map
     # The featured card needs both the scene and the rendered name. Keep the
     # newest usable entry at the head so every section can retain its fixed
     # two-row ink-circle slot even when the newest record lacks an asset.
-    for index, (name, serendipity, _, _, _) in enumerate(cell_data):
+    for index, (name, serendipity, _, status, _) in enumerate(cell_data):
+        if status != "yes":
+            continue
         level = int(serendipity["level"]) if serendipity else 1
-        show_path = build_path(
-            ASSETS,
-            ["image", "jx3", "serendipity", "show", path_map[level - 1]],
-            end_with_slash=True
-        ) + name + ".png"
+        show_path = _featured_image_path(name, path_map[level - 1], school)
         name_path = build_path(
             ASSETS, ["image", "jx3", "serendipity", "name"], end_with_slash=True
         ) + name + ".png"
-        if Path(show_path).exists() and Path(name_path).exists():
+        if show_path and Path(name_path).exists():
             if index:
                 cell_data.insert(0, cell_data.pop(index))
             break
@@ -119,16 +136,12 @@ def generate_table(local_data: list[dict], comparison_data: list[dict], path_map
     has_featured = False
     for index, (name, serendipity, image_path, status, msg) in enumerate(cell_data):
         level = int(serendipity["level"]) if serendipity else 1
-        show_path = build_path(
-            ASSETS,
-            ["image", "jx3", "serendipity", "show", path_map[level - 1]],
-            end_with_slash=True
-        ) + name + ".png"
+        show_path = _featured_image_path(name, path_map[level - 1], school)
         name_path = build_path(
             ASSETS, ["image", "jx3", "serendipity", "name"], end_with_slash=True
         ) + name + ".png"
         featured_image_path = ""
-        if index == 0 and Path(show_path).exists() and Path(name_path).exists():
+        if index == 0 and status == "yes" and show_path and Path(name_path).exists():
             featured_image_path = show_path
             has_featured = True
 
@@ -162,9 +175,10 @@ def generate_table(local_data: list[dict], comparison_data: list[dict], path_map
     return table_list
 
 async def get_serendipity_image_v3(server: str, name: str):
-    uid = await check_role(server, name)
-    if not uid:
+    role = await check_role(server, name)
+    if not role:
         return PROMPT.PlayerNotExist
+    uid, school = role
 
     if Config.jx3.api.enable:
         url = f"{Config.jx3.api.url}/data/event/records"
@@ -174,7 +188,9 @@ async def get_serendipity_image_v3(server: str, name: str):
             "token": Config.jx3.api.token
         }
         serendipity_data = (await Request(url, params=params).get()).json()
-        data: list[dict] = serendipity_data["data"]
+        data: list[dict] = await JX3Serendipity().merge_api_with_my_data(
+            serendipity_data["data"], server, name
+        )
     else:
         data: list[dict] = await JX3Serendipity().integration(server, name, uid)
     data_obj = JX3Serendipities(data)
@@ -189,9 +205,9 @@ async def get_serendipity_image_v3(server: str, name: str):
     
     path_map: list[str] = ["common", "peerless", "pet"]
  
-    common_table = generate_table(local_common, common, path_map, template_v3_cell)
-    peerless_table = generate_table(local_peerless, peerless, path_map, template_v3_cell)
-    pet_table = generate_table(local_pet, pet, path_map, template_v3_cell)
+    common_table = generate_table(local_common, common, path_map, template_v3_cell, school)
+    peerless_table = generate_table(local_peerless, peerless, path_map, template_v3_cell, school)
+    pet_table = generate_table(local_pet, pet, path_map, template_v3_cell, school)
 
     html = str(
         SimpleHTML(
