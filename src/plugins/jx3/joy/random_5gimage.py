@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import asyncio
 from dataclasses import dataclass
 from functools import cache
 from html import escape
@@ -318,45 +319,72 @@ async def get_rank_nickname(bot: Any, user_id: int, member_map: dict[int, dict[s
     return str(stranger.get("nickname") or user_id)[:15]
 
 
-async def get_random_5gimage_rank_image(bot: Any, group_id: int, rank_type: str = "赢取"):
-    records: list[RandomImageRecord] | Any = logs_db.where_all(
-        RandomImageRecord(),
-        default=[],
+def _query_random_5gimage_rank_data(
+    rank_type: str,
+) -> tuple[list[tuple[int, int, int]], int]:
+    """由数据库完成开图记录聚合，仅取排行榜需要的前 30 名。"""
+    order_by = (
+        "total_profit ASC, open_count DESC, first_record_id ASC"
+        if rank_type == "亏损"
+        else "total_profit DESC, open_count DESC, first_record_id ASC"
     )
-    if not records:
-        return "还没有开图记录。"
+    rows = logs_db.fetch_all(
+        f"""
+        SELECT user_id, open_count, total_profit, COUNT(*) OVER () AS user_count
+        FROM (
+            SELECT
+                user_id,
+                COUNT(*) AS open_count,
+                SUM(profit) AS total_profit,
+                MIN(id) AS first_record_id
+            FROM {RandomImageRecord.TABLE_NAME}
+            GROUP BY user_id
+        )
+        ORDER BY {order_by}
+        LIMIT 30
+        """
+    )
+    if not rows:
+        return [], 0
+    return [
+        (int(user_id), int(open_count), int(total_profit))
+        for user_id, open_count, total_profit, _ in rows
+    ], int(rows[0][3])
 
-    grouped: dict[int, dict[str, int]] = {}
-    for record in records:
-        user_data = grouped.setdefault(record.user_id, {"count": 0, "profit": 0})
-        user_data["count"] += 1
-        user_data["profit"] += record.profit
+
+async def get_random_5gimage_rank_data(
+    rank_type: str,
+) -> tuple[list[tuple[int, int, int]], int]:
+    """在线程中查询排行榜，避免数据库忙等待阻塞事件循环。"""
+    return await asyncio.to_thread(_query_random_5gimage_rank_data, rank_type)
+
+
+async def get_random_5gimage_rank_image(bot: Any, group_id: int, rank_type: str = "赢取"):
+    ranked, user_count = await get_random_5gimage_rank_data(rank_type)
+    if not ranked:
+        return "还没有开图记录。"
 
     members = await bot.get_group_member_list(group_id=group_id)
     member_map = {int(member["user_id"]): member for member in members}
-    if rank_type == "亏损":
-        ranked = sorted(
-            grouped.items(),
-            key=lambda item: (item[1]["profit"], -item[1]["count"]),
+    nicknames = await asyncio.gather(
+        *(
+            get_rank_nickname(bot, user_id, member_map)
+            for user_id, _, _ in ranked
         )
-    else:
-        ranked = sorted(
-            grouped.items(),
-            key=lambda item: (item[1]["profit"], item[1]["count"]),
-            reverse=True,
-        )
+    )
 
     table_body = []
-    for rank, (user_id, data) in enumerate(ranked[:30], start=1):
-        nickname = await get_rank_nickname(bot, user_id, member_map)
-        total_profit = data["profit"]
-        avg_profit = int(total_profit / data["count"])
+    for rank, ((user_id, open_count, total_profit), nickname) in enumerate(
+        zip(ranked, nicknames),
+        start=1,
+    ):
+        avg_profit = int(total_profit / open_count)
         table_body.append(
             Template(template_random_5gimage_rank).render(
                 rank=rank,
                 avatar=f"https://q.qlogo.cn/headimg_dl?dst_uin={user_id}&spec=100&img_type=jpg",
                 nickname=nickname,
-                count=data["count"],
+                count=open_count,
                 total_profit=format_signed_price(total_profit),
                 avg_profit=format_signed_price(avg_profit),
                 total_class=profit_class(total_profit),
@@ -384,7 +412,7 @@ async def get_random_5gimage_rank_image(bot: Any, group_id: int, rank_type: str 
 """
     html = str(
         HTMLSourceCode(
-            application_name=f"开图排行 · {rank_type} · {len(ranked)}人",
+            application_name=f"开图排行 · {rank_type} · {user_count}人",
             table_head=table_random_5gimage_rank_head,
             table_body="\n".join(table_body),
             additional_css=css,

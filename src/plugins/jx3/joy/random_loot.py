@@ -269,6 +269,10 @@ class RandomLoot:
                 i for i in loot_list
                 if i.get("Type") == "Act_运营及版本道具"
             ]
+            effect_pendants = [
+                i for i in loot_list
+                if i.get("IsEffectPendant")
+            ]
             extra_peerless_item = [i for i in loot_list if i.get("Type") in ["特殊武器任务", "阅读材料"]]
             iron = [i for i in loot_list if i["Name"].endswith("陨铁")]
 
@@ -361,15 +365,22 @@ class RandomLoot:
                         count += 1
 
                 if not is_challenge and is_penultimate_6:
-                    weapon_pool = [i for i in loot_list if ("Color" in i or str(i["Name"]).count("·") == 2)]
+                    weapon_pool = [i for i in loot_list if ("Color" in i or str(i["Name"]).count("·") == 2) and not i.get("IsEffectPendant")]
                     for item in random_items(lambda i: i in weapon_pool, 2):
                         append_item(boss_name, item, with_attr="Color" in item)
                     count += 2
                 
-                if not is_challenge and is_penultimate_5:
-                    suits = [i for i in loot_list if "Color" in i and str(i.get("Desc")).startswith("使用：") and str(i.get("BelongSchool")) != ""] 
-                    if suits:
-                        append_item(boss_name, choice(suits))
+                should_drop_effect_pendant = (
+                    boss_place in ("4/5", "6/6")
+                    or (boss_place == "4/6" and _jingjian)
+                )
+                if (
+                    not is_challenge
+                    and should_drop_effect_pendant
+                    and effect_pendants
+                ):
+                    append_item(boss_name, choice(effect_pendants))
+                    if not is_final:
                         count += 1
 
                 # 精简
@@ -382,7 +393,7 @@ class RandomLoot:
                 # 散件（非最终）
                 if not is_challenge and not is_final:
                     total = 4
-                    sanjian_list = [i for i in loot_list if "ModifyType" in i and "Color" in i and i.get("BelongSchool") == "通用" and not str(i.get("Desc")).startswith("使用：")]
+                    sanjian_list = [i for i in loot_list if "ModifyType" in i and "Color" in i and i.get("BelongSchool") == "通用" and not i.get("IsEffectPendant") and not str(i.get("Desc")).startswith("使用：")]
                     needed = total - count
                     for item in random_items(lambda i: i in sanjian_list, needed):
                         append_item(boss_name, item)
@@ -400,11 +411,6 @@ class RandomLoot:
                         if weapons:
                             append_item(boss_name, choice(weapons))
                     
-                    # 腰坠
-                    suits = [i for i in loot_list if "Color" in i and str(i.get("Desc")).startswith("使用：") and str(i.get("BelongSchool")) != ""] 
-                    if suits:
-                        append_item(boss_name, choice(suits))
-
                     # 精简 2件
                     if not self.name.startswith("25人挑战"):
                         jingjian_list = [i for i in loot_list if i.get("BelongSchool") == "精简"]
@@ -432,11 +438,11 @@ class RandomLoot:
 
                     # 散件补满到8
                     if total_boss == 6:
-                        sanjian_list = [i for i in loot_list if "ModifyType" in i and "Color" in i and i.get("BelongSchool") == "通用" and not str(i.get("Desc")).startswith("使用：")]
+                        sanjian_list = [i for i in loot_list if "ModifyType" in i and "Color" in i and i.get("BelongSchool") == "通用" and not i.get("IsEffectPendant") and not str(i.get("Desc")).startswith("使用：")]
                         for item in random_items(lambda i: i in sanjian_list, 8 - 2 - jingjian_count):
                             append_item(boss_name, item)
                     else:
-                        sanjian_list = [i for i in loot_list if "ModifyType" in i and "Color" in i and i.get("BelongSchool") == "通用" and not str(i.get("Desc")).startswith("使用：")]
+                        sanjian_list = [i for i in loot_list if "ModifyType" in i and "Color" in i and i.get("BelongSchool") == "通用" and not i.get("IsEffectPendant") and not str(i.get("Desc")).startswith("使用：")]
                         for item in random_items(lambda i: i in sanjian_list, max(0, 4 - 1 - jingjian_count)):
                             append_item(boss_name, item)
 
@@ -598,6 +604,7 @@ class RandomLoot:
                     if "ModifyType" in i
                     and "Color" in i
                     and i.get("BelongSchool") == "通用"
+                    and not i.get("IsEffectPendant")
                     and not str(i.get("Desc")).startswith("使用：")
                     and not str(i.get("Name")).startswith("探幽宝藏")
                 ]

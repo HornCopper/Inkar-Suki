@@ -12,17 +12,10 @@ from src.utils.database.player import search_player
 from src.templates import SimpleHTML
 from src.utils.analyze import sort_dict_list
 
+from ._template import template_v3_cell, template_v3_row
 from .without_jx3api import JX3Serendipity
 
 import os
-
-template: str = """
-<td class="element-column">
-    <div class="element-container">
-        <img class="{{ status }}-color" src="{{ image_path }}" alt="{{ name }}.png">
-        <div class="{{ status }}-serendipity">{{ msg }}</div>
-    </div>
-</td>"""
 
 class JX3Serendipities:
     def __init__(self, data: list):
@@ -61,15 +54,11 @@ async def check_role(server: str, name: str) -> Literal[False] | str:
     return role_id
 
 def generate_table(local_data: list[dict], comparison_data: list[dict], path_map: list[str], template: str):
-    table_list = []
-    cache_table = []
-
     local_dict = {item["name"]: item for item in local_data}
-
     k = "name" if not Config.jx3.api.enable else "event"
     comparison_data = sort_dict_list(comparison_data, "time")[::-1]
-
     handled_names = set()
+    cell_data = []
 
     for item in comparison_data:
         name = item[k]
@@ -93,18 +82,7 @@ def generate_table(local_data: list[dict], comparison_data: list[dict], path_map
         elif status:
             msg = "遗忘的时间"
 
-        cache_table.append(
-            Template(template).render(
-                image_path=image_path,
-                name=name,
-                status="yes" if status else "no",
-                msg=msg
-            )
-        )
-
-        if len(cache_table) == 5:
-            table_list.append("<tr>\n" + "\n".join(cache_table) + "\n</tr>")
-            cache_table = []
+        cell_data.append((name, serendipity, image_path, "yes" if status else "no", msg))
 
     for name, serendipity in local_dict.items():
         if name in handled_names:
@@ -117,21 +95,69 @@ def generate_table(local_data: list[dict], comparison_data: list[dict], path_map
             end_with_slash=True
         ) + name + ".png"
 
-        cache_table.append(
+        cell_data.append((name, serendipity, image_path, "no", "尚未触发"))
+
+    # The featured card needs both the scene and the rendered name. Keep the
+    # newest usable entry at the head so every section can retain its fixed
+    # two-row ink-circle slot even when the newest record lacks an asset.
+    for index, (name, serendipity, _, _, _) in enumerate(cell_data):
+        level = int(serendipity["level"]) if serendipity else 1
+        show_path = build_path(
+            ASSETS,
+            ["image", "jx3", "serendipity", "show", path_map[level - 1]],
+            end_with_slash=True
+        ) + name + ".png"
+        name_path = build_path(
+            ASSETS, ["image", "jx3", "serendipity", "name"], end_with_slash=True
+        ) + name + ".png"
+        if Path(show_path).exists() and Path(name_path).exists():
+            if index:
+                cell_data.insert(0, cell_data.pop(index))
+            break
+
+    rendered_cells = []
+    has_featured = False
+    for index, (name, serendipity, image_path, status, msg) in enumerate(cell_data):
+        level = int(serendipity["level"]) if serendipity else 1
+        show_path = build_path(
+            ASSETS,
+            ["image", "jx3", "serendipity", "show", path_map[level - 1]],
+            end_with_slash=True
+        ) + name + ".png"
+        name_path = build_path(
+            ASSETS, ["image", "jx3", "serendipity", "name"], end_with_slash=True
+        ) + name + ".png"
+        featured_image_path = ""
+        if index == 0 and Path(show_path).exists() and Path(name_path).exists():
+            featured_image_path = show_path
+            has_featured = True
+
+        rendered_cells.append(
             Template(template).render(
                 image_path=image_path,
+                featured_image_path=featured_image_path,
+                featured_name_path=name_path,
+                serendipity_icon=build_path(
+                    ASSETS, ["image", "jx3", "serendipity", "vector", "icon.png"]
+                ),
                 name=name,
-                status="no",
-                msg="尚未触发"
+                category=path_map[level - 1],
+                status=status,
+                msg=msg
             )
         )
 
-        if len(cache_table) == 5:
-            table_list.append("<tr>\n" + "\n".join(cache_table) + "\n</tr>")
-            cache_table = []
+    table_list = []
+    offset = 0
+    if has_featured:
+        table_list.append(Template(template_v3_row).render(cells="\n".join(rendered_cells[:5])))
+        table_list.append(Template(template_v3_row).render(cells="\n".join(rendered_cells[5:9])))
+        offset = 9
 
-    if cache_table:
-        table_list.append("<tr>\n" + "\n".join(cache_table) + "\n</tr>")
+    for index in range(offset, len(rendered_cells), 5):
+        table_list.append(
+            Template(template_v3_row).render(cells="\n".join(rendered_cells[index:index + 5]))
+        )
 
     return table_list
 
@@ -163,9 +189,9 @@ async def get_serendipity_image_v3(server: str, name: str):
     
     path_map: list[str] = ["common", "peerless", "pet"]
  
-    common_table = generate_table(local_common, common, path_map, template)
-    peerless_table = generate_table(local_peerless, peerless, path_map, template)
-    pet_table = generate_table(local_pet, pet, path_map, template)
+    common_table = generate_table(local_common, common, path_map, template_v3_cell)
+    peerless_table = generate_table(local_peerless, peerless, path_map, template_v3_cell)
+    pet_table = generate_table(local_pet, pet, path_map, template_v3_cell)
 
     html = str(
         SimpleHTML(
@@ -173,11 +199,13 @@ async def get_serendipity_image_v3(server: str, name: str):
             "serendipity_v3",
             **{
             "font": build_path(ASSETS, ["font", "PingFangSC-Medium.otf"]),
+            "ink_background": build_path(ASSETS, ["image", "jx3", "serendipity", "vector", "background.png"]),
             "name": name,
             "server": server,
             "total": f"{len(data)}/{len(local_common + local_peerless + local_pet)}",
             "peerless": len(peerless),
             "pet": len(pet),
+            "app_info": f"个人奇遇记录 · {server} · {name} · " + Time().format("%H:%M:%S"),
             "table_content_peerless": "\n".join(peerless_table),
             "table_content_common": "\n".join(common_table),
             "table_content_pet": "\n".join(pet_table)

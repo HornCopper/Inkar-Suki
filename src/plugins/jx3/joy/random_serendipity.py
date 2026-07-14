@@ -49,7 +49,7 @@ def get_serendipity_image(serendipity_path: str) -> ms:
     if serendipity_path.split("/")[-2] == "fireworks":
         return ms.image(Request(Path(serendipity_path).as_uri()).local_content)
     serendipity_file_name = serendipity_path.split("/")[-1][:-4]
-    cache_path = CONST + "/cache/serendipity/" + serendipity_file_name + ".png"
+    cache_path = CONST + "/cache/serendipity/" + serendipity_file_name + "_centered.png"
     if os.path.exists(cache_path):
         return ms.image(Request(Path(cache_path).as_uri()).local_content)
     if "-" in serendipity_file_name:
@@ -67,7 +67,10 @@ def get_serendipity_image(serendipity_path: str) -> ms:
 
     background.alpha_composite(serendipity_show, (0, 0))
     background.alpha_composite(icon, (40, 48))
-    background.alpha_composite(name, (145, 420))
+    # Name textures have different widths. Anchor their visual canvas to the
+    # centre of the ink background instead of relying on the old fixed x=145.
+    name_x = (background.width - name.width) // 2
+    background.alpha_composite(name, (name_x, 420))
 
     final_path = build_path(CACHE, [get_uuid() + ".png"])
     background.save(final_path)

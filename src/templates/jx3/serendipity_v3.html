@@ -2,111 +2,315 @@
 <html lang="zh-CN">
 
 <head>
+    <meta charset="UTF-8">
     <style>
-        table {
-            width: 2000px;
-            border-collapse: separate;
-            border-spacing: 0;
-            border: 1px solid #ffbebe;
-            table-layout: fixed;
-        }
-
-        th,
-        td {
-            padding: 10px;
-            text-align: center;
-            word-wrap: break-word;
-        }
-
-        th {
-            background-color: #ffdede;
-            color: #fff;
-        }
-
-        tbody tr:not(:first-child) {
-            border-top: 1px solid #000000;
-        }
-
-        .element-column {
-            width: 768px;
-            vertical-align: middle;
-        }
-
-        .element-container {
-            display: flex;
-            align-items: center;
-            justify-content: flex-start;
-        }
-
-        .element-container img {
-            margin-right: 10px;
-        }
-
-        .element-container div {
-            text-align: left;
-            width: 100%;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .no-color {
-            filter: grayscale(100%);
-        }
-
-        .yes-color {
-            content: '';
-        }
-
-        tfoot {
-            text-align: center;
-            font-style: italic;
-            font-size: 12px;
-        }
-
-        .yes-serendipity {
-            color: green;
-        }
-
-
-        .no-serendipity {
-            color: red;
-        }
-
         @font-face {
             font-family: Harmony;
             src: url("{{ font }}");
         }
 
+        * {
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+        }
+
         body {
             overflow: hidden;
+            padding: 20px;
             font-family: Harmony, sans-serif;
+            color: #242832;
+            background: #FBE3EA;
+        }
+
+        table {
+            width: 1302px;
+            border-collapse: separate;
+            border-spacing: 0;
+            overflow: hidden;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            table-layout: fixed;
+            background: #fff;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+        }
+
+        th,
+        td {
+            padding: 8px;
+            text-align: center;
+            word-break: break-word;
+        }
+
+        th {
+            color: #242832;
+            background: #fff;
+        }
+
+        .hero {
+            height: 96px;
+            padding: 17px 28px;
+            border-top: 3px solid #F3A9BD;
+            border-bottom: 1px solid #F5C6D3;
+            color: #49363c;
+            background: #FBE3EA;
+            text-align: left;
+        }
+
+        .hero-name {
+            font-size: 27px;
+            font-weight: 700;
+        }
+
+        .hero-server {
+            margin-left: 10px;
+            color: #80666e;
+            font-size: 18px;
+            font-weight: 400;
+        }
+
+        .hero-summary {
+            margin-top: 6px;
+            color: #80666e;
+            font-size: 15px;
+            font-weight: 400;
+        }
+
+        .section-title {
+            height: 43px;
+            padding: 9px 22px;
+            border-top: 1px solid #F5C6D3;
+            border-bottom: 1px solid #F5C6D3;
+            color: #49363c;
+            background: #FBE3EA;
+            font-size: 18px;
+            letter-spacing: 3px;
+            text-align: left;
+        }
+
+        .element-column {
+            width: 20%;
+            height: 84px;
+            vertical-align: middle;
+            border-bottom: 1px solid #eceef1;
+        }
+
+        tbody tr:not(.section-row) .element-column + .element-column {
+            border-left: 1px solid #eceef1;
+        }
+
+        .featured-peerless .featured-card {
+            background: #FFF7DF;
+        }
+
+        .featured-common .featured-card {
+            background: #EAF5FF;
+        }
+
+        .featured-pet .featured-card {
+            background: #ECF8EE;
+        }
+
+        .element-container {
+            position: relative;
+            width: 100%;
+            min-height: 52px;
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            padding: 7px 9px;
+            border: 1px solid transparent;
+            border-radius: 8px;
+        }
+
+        .featured-card {
+            min-height: 184px;
+            flex-direction: column;
+            justify-content: center;
+            padding: 4px;
+        }
+
+        .element-container:not(.featured-card) {
+            flex-direction: column;
+            justify-content: center;
+            padding-top: 4px;
+            padding-bottom: 4px;
+        }
+
+        .ink-circle {
+            position: relative;
+            width: 150px;
+            height: 159px;
+            flex: 0 0 159px;
+            background-image: url("{{ ink_background }}");
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: 150px 159px;
+        }
+
+        .feature-art {
+            position: absolute;
+            inset: 0;
+            width: 150px;
+            height: 159px;
+            object-fit: contain;
+        }
+
+        .feature-icon {
+            position: absolute;
+            left: 13px;
+            top: 15px;
+            width: 13px;
+            height: 24px;
+            object-fit: contain;
+        }
+
+        .feature-name {
+            position: absolute;
+            left: 50%;
+            top: 135px;
+            width: auto;
+            height: 12px;
+            max-width: 100px;
+            object-fit: contain;
+            transform: translateX(-50%);
+        }
+
+        .featured-status {
+            flex: 0 0 auto;
+            justify-content: center;
+            margin: 2px 0 0;
+        }
+
+        .yes-card {
+            border-color: #e7edf3;
+            background: linear-gradient(135deg, #fff 0%, #fafcff 100%);
+            box-shadow: 0 3px 10px rgba(52, 72, 90, 0.05);
+        }
+
+        .no-card {
+            background: #fafafa;
+        }
+
+        .name-banner {
+            width: 224px;
+            height: 36px;
+            flex: 0 0 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .name-banner img {
+            display: block;
+            max-width: 224px;
+            max-height: 36px;
+            object-fit: contain;
+        }
+
+        .fallback-name {
+            color: #555;
+            font-size: 18px;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .no-color {
+            opacity: 0.4;
+            filter: grayscale(100%);
+        }
+
+        .status-row {
+            min-width: 0;
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            gap: 7px;
+            margin-left: 12px;
+            text-align: left;
+        }
+
+        .element-container:not(.featured-card) .status-row {
+            min-height: 36px;
+            flex: 0 0 36px;
+            margin-left: 0;
+            justify-content: center;
+        }
+
+        .status-dot {
+            width: 6px;
+            height: 6px;
+            flex: 0 0 6px;
+            border-radius: 50%;
+            background: #c4c8ce;
+        }
+
+        .yes-card .status-dot {
+            background: #f59e0b;
+        }
+
+        .yes-serendipity,
+        .no-serendipity {
+            overflow: hidden;
+            font-size: 13px;
+            line-height: 18px;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .yes-serendipity {
+            color: #4c515b;
+        }
+
+        .no-serendipity {
+            color: #969da6;
+        }
+
+        .footer {
+            padding: 10px;
+            color: #8a9099;
+            background: #f7f8fa;
+            border-top: 1px solid #e5e7eb;
+            font-size: 12px;
+            text-align: center;
         }
     </style>
 </head>
 
 <body>
-    <table class="total" style="background-color: #FFFFFF">
+    <table class="total">
         <thead>
             <tr>
-                <th colspan="5" style="text-align: center;color:#000000">{{ name }}·{{ server }}<br>共计：{{ total }} 番奇遇（绝世 {{ peerless }}/宠物 {{ pet }}）</th>
+                <th colspan="5" class="hero">
+                    <div><span class="hero-name">{{ name }}</span><span class="hero-server">· {{ server }}</span></div>
+                    <div class="hero-summary">共计 {{ total }} 番奇遇（绝世 {{ peerless }} / 宠物 {{ pet }}）</div>
+                </th>
             </tr>
         </thead>
         <tbody>
-            <tr>
-                <th colspan="5" style="text-align: center;color:#000000">绝世奇遇</th>
+            <tr class="section-row">
+                <th colspan="5" class="section-title">绝世奇遇</th>
             </tr>
             {{ table_content_peerless }}
-            <tr>
-                <th colspan="5" style="text-align: center;color:#000000">珍奇奇遇</th>
+            <tr class="section-row">
+                <th colspan="5" class="section-title">珍奇奇遇</th>
             </tr>
             {{ table_content_common }}
-            <tr>
-                <th colspan="5" style="text-align: center;color:#000000">宠物奇遇</th>
+            <tr class="section-row">
+                <th colspan="5" class="section-title">宠物奇遇</th>
             </tr>
             {{ table_content_pet }}
         </tbody>
+        <tfoot>
+            <tr><td colspan="5" class="footer">&copy; Inkar Suki · {{ app_info }}</td></tr>
+        </tfoot>
     </table>
 </body>
-
 
 </html>

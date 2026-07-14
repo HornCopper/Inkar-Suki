@@ -106,6 +106,11 @@ def _local_item(item_type: int, row: dict[str, str]) -> dict:
         "Color": row.get("Quality", "4") or "4",
         "BelongSchool": row.get("BelongSchool", ""),
         "SubType": row.get("SubType", ""),
+        "IsEffectPendant": (
+            item_type == 8
+            and row.get("SubType") == "7"
+            and row.get("SkillID", "") not in ("", "0")
+        ),
         "Type": row.get("_CATEGORY", ""),
         "Desc": "",
         "Icon": _icon(ui_id, kind, sub_kind),

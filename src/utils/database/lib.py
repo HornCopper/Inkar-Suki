@@ -4,6 +4,7 @@
 本文件按原始仓库：LiteyukiStudio/LiteyukiBot
 """
 from typing import Any, Callable, ClassVar, TypeVar
+from functools import wraps
 from packaging.version import parse
 from pydantic import BaseModel
 
@@ -12,10 +13,32 @@ import pickle
 import sqlite3
 import inspect
 import pydantic
+import threading
+import time
 
 T = TypeVar("T")
 
 NoneType = type(None)
+
+
+def database_operation(func):
+    """串行执行同一数据库连接上的操作，并重试短暂的锁冲突。"""
+    @wraps(func)
+    def wrapper(self, *args, **kwargs):
+        with self._lock:
+            for attempt, retry_delay in enumerate((0, 0.2, 0.5, 1)):
+                if retry_delay:
+                    time.sleep(retry_delay)
+                try:
+                    return func(self, *args, **kwargs)
+                except sqlite3.OperationalError as error:
+                    if "locked" not in str(error).lower() or attempt == 3:
+                        raise
+                    self.conn.rollback()
+        raise RuntimeError("数据库操作未完成")
+
+    return wrapper
+
 
 class LiteModel(BaseModel):
     TABLE_NAME: ClassVar[str] = ""
@@ -36,11 +59,16 @@ class Database:
             os.makedirs(os.path.dirname(db_name))
 
         self.db_name = db_name
-        self.conn = sqlite3.connect(db_name, check_same_thread=False)
+        self._lock = threading.RLock()
+        self.conn = sqlite3.connect(db_name, timeout=5, check_same_thread=False)
+        self.conn.execute("PRAGMA busy_timeout = 5000")
+        self.conn.execute("PRAGMA journal_mode = WAL")
+        self.conn.execute("PRAGMA synchronous = NORMAL")
         self.cursor = self.conn.cursor()
 
         self._on_save_callbacks = []
 
+    @database_operation
     def where_one(self, model: LiteModel, condition: str = "", *args: Any, default: T = None) -> LiteModel | T | None:
         """查询第一个
         Args:
@@ -55,6 +83,7 @@ class Database:
         all_results = self.where_all(model, condition, *args)
         return all_results[0] if all_results else default
 
+    @database_operation
     def where_all(self, model: LiteModel, condition: str = "", *args: Any, default: T = None) -> list[LiteModel | T] | T | None:
         """查询所有
         Args:
@@ -83,6 +112,7 @@ class Database:
                 for result in results if result is not None
             ]
 
+    @database_operation
     def save(self, *args: LiteModel) -> None:
         """增/改操作
         Args:
@@ -206,6 +236,7 @@ class Database:
         else:
             return obj
 
+    @database_operation
     def delete(self, model: LiteModel, condition: str, *args: Any, allow_empty: bool = False) -> None:
         """
         删除满足条件的数据
@@ -228,6 +259,7 @@ class Database:
         self.cursor.execute(f"DELETE FROM {table_name} WHERE {condition}", args)
         self.conn.commit()
 
+    @database_operation
     def auto_migrate(self, *args: LiteModel) -> None:
 
         """
@@ -270,6 +302,11 @@ class Database:
                         f'ALTER TABLE "{model.TABLE_NAME}" DROP COLUMN "{e_field}"'
                     )
         self.conn.commit()
+
+    @database_operation
+    def fetch_all(self, query: str, *args: Any) -> list[tuple[Any, ...]]:
+        """执行只读查询并一次性返回全部结果。"""
+        return self.cursor.execute(query, args).fetchall()
         
 
     def _get_stored_field_prefix(self, value) -> str:
