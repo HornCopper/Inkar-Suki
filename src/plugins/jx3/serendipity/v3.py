@@ -1,5 +1,6 @@
 from pathlib import Path
 from typing import Literal
+from time import time
 from jinja2 import Template
 
 from src.config import Config
@@ -77,11 +78,13 @@ def generate_table(
     local_dict = {item["name"]: item for item in local_data}
     comparison_data = sort_dict_list(comparison_data, "time")[::-1]
     handled_names = set()
+    record_times = {}
     cell_data = []
 
     for item in comparison_data:
         name = item["event"] if Config.jx3.api.enable else item["name"]
         handled_names.add(name)
+        record_times[name] = int(item["time"] or 0)
         serendipity = local_dict.get(name)
         status = serendipity is not None
 
@@ -119,9 +122,16 @@ def generate_table(
     # The featured card needs both the scene and the rendered name. Keep the
     # newest usable entry at the head so every section can retain its fixed
     # two-row ink-circle slot even when the newest record lacks an asset.
-    for index, (name, serendipity, _, status, _) in enumerate(cell_data):
-        if status != "yes":
-            continue
+    now = int(time())
+    featured_candidates = sorted(
+        (
+            (index, cell)
+            for index, cell in enumerate(cell_data)
+            if cell[3] == "yes" and record_times.get(cell[0], 0) > 0
+        ),
+        key=lambda candidate: abs(record_times[candidate[1][0]] - now),
+    )
+    for index, (name, serendipity, _, _, _) in featured_candidates:
         level = int(serendipity["level"]) if serendipity else 1
         show_path = _featured_image_path(name, path_map[level - 1], school)
         name_path = build_path(
