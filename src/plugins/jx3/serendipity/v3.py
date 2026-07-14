@@ -68,6 +68,18 @@ def _featured_image_path(name: str, category: str, school: str) -> str:
     return ""
 
 
+def _featured_name_path(name: str, level: int) -> str:
+    directory = build_path(
+        ASSETS, ["image", "jx3", "serendipity", "name"], end_with_slash=True
+    )
+    name_path = directory + name + ".png"
+    if Path(name_path).exists():
+        return name_path
+    if level == 3:
+        return directory + "宠物奇缘.png"
+    return ""
+
+
 def generate_table(
     local_data: list[dict],
     comparison_data: list[dict],
@@ -134,10 +146,8 @@ def generate_table(
     for index, (name, serendipity, _, _, _) in featured_candidates:
         level = int(serendipity["level"]) if serendipity else 1
         show_path = _featured_image_path(name, path_map[level - 1], school)
-        name_path = build_path(
-            ASSETS, ["image", "jx3", "serendipity", "name"], end_with_slash=True
-        ) + name + ".png"
-        if show_path and Path(name_path).exists():
+        name_path = _featured_name_path(name, level)
+        if show_path and name_path:
             if index:
                 cell_data.insert(0, cell_data.pop(index))
             break
@@ -147,11 +157,9 @@ def generate_table(
     for index, (name, serendipity, image_path, status, msg) in enumerate(cell_data):
         level = int(serendipity["level"]) if serendipity else 1
         show_path = _featured_image_path(name, path_map[level - 1], school)
-        name_path = build_path(
-            ASSETS, ["image", "jx3", "serendipity", "name"], end_with_slash=True
-        ) + name + ".png"
+        name_path = _featured_name_path(name, level)
         featured_image_path = ""
-        if index == 0 and status == "yes" and show_path and Path(name_path).exists():
+        if index == 0 and status == "yes" and show_path and name_path:
             featured_image_path = show_path
             has_featured = True
 

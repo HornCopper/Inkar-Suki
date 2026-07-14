@@ -12,6 +12,8 @@ import httpx
 import os
 
 class JX3Serendipity:
+    SERENDIPITY_TYPES = ("common", "peerless", "pet")
+
     def __init__(self):
         self.tl = []
         self.my = []
@@ -28,6 +30,15 @@ class JX3Serendipity:
             serendipity_level = 1
         return serendipity_level
 
+    def is_serendipity(self, name: str) -> bool:
+        """Return whether *name* exists in the local serendipity catalogue."""
+        base = Path(build_path(
+            ASSETS,
+            ["image", "jx3", "serendipity", "serendipity"],
+            end_with_slash=True,
+        ))
+        return any((base / category / f"{name}.png").is_file() for category in self.SERENDIPITY_TYPES)
+
     async def get_my_data(self, server: str, name: str):
         final_url = f"https://pull-gplugin.jx3box.com/api/serendipity?server={server}&role={name}&pageSize=50"
         try:
@@ -42,6 +53,10 @@ class JX3Serendipity:
             return
         for serendipity in data:
             serendipity_name = serendipity["serendipity"]
+            # JX3Box's endpoint also returns other character events/items.  Only
+            # merge entries present in our serendipity catalogue.
+            if not self.is_serendipity(serendipity_name):
+                continue
             serendipity_level = self.get_serendipity_level(serendipity_name)
             new = {
                 "name": serendipity_name,
