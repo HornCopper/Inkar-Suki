@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        @font-face { font-family: Harmony; src: url("{{ font }}"); }
+        * { box-sizing: border-box; }
+        body { margin: 0; padding: 20px; background: #fbe3ea; color: #34343b; font-family: Harmony, sans-serif; }
+        .serendipity-panel { width: 1302px; overflow: hidden; border: 1px solid #e5e7eb; border-radius: 9px; background: #fff; box-shadow: 0 2px 10px rgba(0,0,0,.08); }
+        header { padding: 18px 28px 16px; border-top: 3px solid #f3a9bd; border-bottom: 1px solid #f5c6d3; background: #fbe3ea; }
+        h1 { margin: 0; color: #49363c; font-size: 27px; }
+        h1 span { margin-left: 10px; color: #80666e; font-size: 18px; font-weight: 400; }
+        .summary { margin-top: 6px; color: #80666e; font-size: 15px; }
+        .cards { display: grid; grid-template-columns: repeat(7, 1fr); gap: 12px 10px; padding: 18px 20px; }
+        .event-card { position: relative; min-height: 230px; padding: 8px 6px 11px; border: 1px solid #e7edf3; border-radius: 9px; text-align: center; box-shadow: 0 3px 10px rgba(52,72,90,.05); }
+        .event-card.common { background: linear-gradient(135deg, #edf7ff, #ddecfa); }
+        .event-card.peerless { background: linear-gradient(135deg, #fff9e9, #f9e9bc); }
+        .event-card.untriggered { color: #858b92; background: #ededed; box-shadow: none; }
+        .event-card.untriggered .ink-circle { filter: grayscale(100%); }
+        .month-label { position: absolute; z-index: 4; left: -5px; top: -7px; padding: 4px 9px 4px 8px; border-radius: 4px 10px 10px 4px; color: #fff; background: #c47b90; box-shadow: 0 2px 5px rgba(105,57,70,.18); font-size: 12px; font-weight: 600; letter-spacing: .3px; }
+        .ink-circle { position: relative; width: 150px; height: 159px; margin: 0 auto; background: url("{{ ink_background }}") center/150px 159px no-repeat; }
+        .event-art { position: absolute; inset: 0; width: 150px; height: 159px; object-fit: contain; }
+        .event-name { position: absolute; left: 50%; top: 135px; max-width: 105px; height: 12px; object-fit: contain; transform: translateX(-50%); }
+        .event-name-text { position: absolute; left: 50%; top: 132px; width: 120px; color: #554a45; font-size: 13px; font-weight: 600; transform: translateX(-50%); }
+        .attempted-icon { position: absolute; z-index: 3; left: 50%; top: 62px; width: 92px; height: 52px; object-fit: contain; transform: translateX(-50%); }
+        .peerless-badge { position: absolute; z-index: 2; top: 8px; right: -12px; width: 42px; height: 20px; object-fit: contain; }
+        .event-time { margin-top: 3px; font-size: 13px; font-weight: 600; }
+        .relative-time { margin-top: 4px; color: #777f88; font-size: 12px; }
+        footer { padding: 11px; border-top: 1px solid #e5e7eb; color: #8a9099; background: #f7f8fa; font-size: 12px; text-align: center; }
+    </style>
+</head>
+<body>
+    <main class="serendipity-panel">
+        <header><h1>{{ name }}<span>· {{ server }}</span></h1><div class="summary">已触发 {{ triggered }} / {{ total }}</div></header>
+        <section class="cards">{{ cards }}</section>
+        <footer>&copy; Inkar Suki · {{ app_info }}</footer>
+    </main>
+</body>
+</html>

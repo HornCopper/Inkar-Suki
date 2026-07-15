@@ -14,6 +14,7 @@ from src.plugins.preferences.app import Preference
 from .v1 import get_preposition # v1 deleted
 from .v2 import get_serendipity_v2 as v2_serendipity
 from .v3 import get_serendipity_image_v3 as v3_serendipity
+from .v4 import get_serendipity_image_v4 as v4_serendipity
 from .recent import get_recent_serendipity
 from .statistics import get_serendipity_statistics
 from .collect import get_serendipity_collect
@@ -127,6 +128,8 @@ async def _(event: GroupMessageEvent, argument: Message = CommandArg()):
     ver = Preference(event.user_id, "", "").setting("奇遇")
     if ver == "v2":
         data = await v2_serendipity(server, name, True)
+    elif ver == "v4":
+        data = await v4_serendipity(server, name)
     else:
         data = await v3_serendipity(server, name)
     await serendipity_matcher.finish(data)
@@ -184,6 +187,22 @@ async def _(event: GroupMessageEvent, argument: Message = CommandArg()):
         await serendipity_v3_matcher.finish(PROMPT.ServerNotExist)
     data = await v3_serendipity(server, id)
     await serendipity_v3_matcher.finish(data)
+
+serendipity_v4_matcher = on_command("jx3_serendipity_v4", aliases={"奇遇v4", "查询v4"}, force_whitespace=True, priority=5)
+
+@serendipity_v4_matcher.handle()
+async def _(event: GroupMessageEvent, argument: Message = CommandArg()):
+    if argument.extract_plain_text() == "":
+        return
+    args = argument.extract_plain_text().split(" ")
+    if len(args) not in [1, 2]:
+        await serendipity_v4_matcher.finish(PROMPT.ArgumentCountInvalid + "\n参考格式：查询v4 <服务器> <角色名>")
+    server, name = (None, args[0]) if len(args) == 1 else (args[0], args[1])
+    server = Server(server, event.group_id).server
+    if server is None:
+        await serendipity_v4_matcher.finish(PROMPT.ServerNotExist)
+    data = await v4_serendipity(server, name)
+    await serendipity_v4_matcher.finish(data)
 
 pet_serendipity_matcher = on_command("jx3_pet_serendipity", aliases={"宠物奇遇"}, force_whitespace=True, priority=5)
 
