@@ -9,12 +9,7 @@ from .api import get_horse_reporter, get_horse_next_spawn
 from .dilu import get_dilu_records
 
 
-dilu_matcher = on_command(
-    "jx3_dilu",
-    aliases={"的卢统计"},
-    force_whitespace=True,
-    priority=5,
-)
+dilu_matcher = on_command("jx3_dilu", aliases={"的卢统计"}, force_whitespace=True, priority=5)
 
 
 @dilu_matcher.handle()

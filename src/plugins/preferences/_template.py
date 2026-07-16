@@ -3,9 +3,9 @@ template_preferences = """
     <div class="preference-name">{{ name }}</div>
     <div class="preference-values">
         {% for k, f in values.items() %}
-        <div class="value-item">
+        <div class="value-item{% if f %} current{% endif %}">
             {% if f %}
-                <strong>{{ k }}（当前）</strong>
+                {{ k }}<span class="current-mark">当前</span>
             {% else %}
                 {{ k }}
             {% endif %}

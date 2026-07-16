@@ -14,9 +14,7 @@ from src.utils.database.player import search_player
 from .detail import VIEW_TYPES, get_exp_info
 
 
-achievement_overview_matcher = on_command(
-    "jx3_exp", aliases={"资历分布"}, priority=5, force_whitespace=True
-)
+achievement_overview_matcher = on_command("jx3_exp", aliases={"资历分布"}, priority=5, force_whitespace=True)
 
 
 @achievement_overview_matcher.handle()

@@ -20,12 +20,7 @@ from .statistics import get_serendipity_statistics
 from .collect import get_serendipity_collect
 
 
-collect_serendipity_matcher = on_command(
-    "jx3_collect_serendipity",
-    aliases={"奇遇汇总", "汇总"},
-    force_whitespace=True,
-    priority=5,
-)
+collect_serendipity_matcher = on_command("jx3_collect_serendipity", aliases={"奇遇汇总", "汇总"}, force_whitespace=True, priority=5)
 
 
 @collect_serendipity_matcher.handle()
@@ -57,12 +52,7 @@ async def _(event: GroupMessageEvent, argument: Message = CommandArg()):
     await collect_serendipity_matcher.finish(image)
 
 
-statistics_serendipity_matcher = on_command(
-    "jx3_statistics_serendipity",
-    aliases={"奇遇统计", "统计"},
-    force_whitespace=True,
-    priority=5,
-)
+statistics_serendipity_matcher = on_command("jx3_statistics_serendipity", aliases={"奇遇统计", "统计"}, force_whitespace=True, priority=5)
 
 
 @statistics_serendipity_matcher.handle()
@@ -84,12 +74,7 @@ async def _(event: GroupMessageEvent, argument: Message = CommandArg()):
     await statistics_serendipity_matcher.finish(image)
 
 
-recent_serendipity_matcher = on_command(
-    "jx3_recent_serendipity",
-    aliases={"近期奇遇"},
-    force_whitespace=True,
-    priority=5,
-)
+recent_serendipity_matcher = on_command("jx3_recent_serendipity", aliases={"近期奇遇"}, force_whitespace=True, priority=5)
 
 
 @recent_serendipity_matcher.handle()

@@ -54,18 +54,25 @@ class MediaWikiClient:
 
     @classmethod
     async def get_site_name(cls, api: str) -> str:
-        hostname = urlparse(api).hostname
-        if hostname == "wiki.biligame.com":
-            return "Minecraft Wiki"
+        parsed = urlparse(api)
+        hostname = parsed.hostname
         if hostname == "wiki.arcaea.cn":
             return "Arcaea Wiki"
         data = await cls._post(
             api,
             {"action": "query", "meta": "siteinfo", "format": "json"},
         )
-        if data is None:
-            return urlparse(api).hostname or "未知 Wiki"
-        return data["query"]["general"]["sitename"]
+        if data is not None:
+            site_name = data.get("query", {}).get("general", {}).get("sitename")
+            if site_name:
+                return site_name
+        if hostname == "wiki.biligame.com":
+            wiki_id = parsed.path.strip("/").split("/", 1)[0].lower()
+            return {
+                "jx3": "剑网3 Wiki",
+                "mc": "Minecraft Wiki",
+            }.get(wiki_id, f"{wiki_id} Wiki" if wiki_id else "Biligame Wiki")
+        return hostname or "未知 Wiki"
 
     @classmethod
     async def get_home_page(cls, api: str) -> str:

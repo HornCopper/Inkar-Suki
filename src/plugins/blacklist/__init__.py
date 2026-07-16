@@ -12,12 +12,7 @@ from src.templates import HTMLSourceCode
 from .process import Blacklist
 from ._template import additional_css, table_head, template_body
 
-BlockMatcher = on_command(
-    "block", 
-    aliases={"避雷", "加入黑名单"}, 
-    force_whitespace=True, 
-    priority=5
-)
+BlockMatcher = on_command("block", aliases={"避雷", "加入黑名单"}, force_whitespace=True, priority=5)
 
 
 @BlockMatcher.handle()

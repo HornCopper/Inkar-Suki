@@ -20,16 +20,10 @@ from .experience import get_zlrank
 from .game import GAME_RANK_NAMES, get_game_rank
 from .hps import get_hps_rank
 from .team import parse_team_rank_data
-from .trials import get_slrank
 
 from ._template import cqcrank_template_body, cqcrank_table_head
 
-game_rank_matcher = on_command(
-    "jx3_game_rank",
-    aliases={"江湖榜单", "榜单"},
-    priority=5,
-    force_whitespace=True,
-)
+game_rank_matcher = on_command("jx3_game_rank", aliases={"江湖榜单", "榜单"}, priority=5, force_whitespace=True)
 
 
 @game_rank_matcher.handle()
@@ -155,32 +149,6 @@ async def _(event: GroupMessageEvent, msg: Message = CommandArg()):
         dungeon_mode = ""
     reply_msg = await get_rank(str(dungeon_mode) + str(dungeon_name), boss_name, str(kungfu_name), "rhps")
     await rhps_rank_matcher.finish(reply_msg)
-
-slrank_matcher = on_command("jx3_slrank", aliases={"试炼之地", "试炼"}, priority=5, force_whitespace=True)
-
-@slrank_matcher.handle()
-async def _(event: GroupMessageEvent, msg: Message = CommandArg()):
-    if msg.extract_plain_text() == "":
-        return
-    args = msg.extract_plain_text().strip().split(" ")
-    if len(args) not in [1, 2]:
-        await slrank_matcher.finish(PROMPT.ArgumentCountInvalid)
-    if len(args) == 1:
-        server = Server(None, event.group_id).server
-        kungfu_name = args[0]
-    elif args[0] == "全服":
-        server = ""
-        kungfu_name = args[1]
-    else:
-        server = Server(args[0], event.group_id).server
-        kungfu_name = args[1]
-    kungfu_name = Kungfu(kungfu_name).name
-    if kungfu_name is None:
-        await slrank_matcher.finish(PROMPT.SchoolInvalid)
-    if server is None:
-        await slrank_matcher.finish(PROMPT.ServerNotExist)
-    reply_msg = await get_slrank(kungfu_name, server)
-    await slrank_matcher.finish(reply_msg)
 
 cqcrank_carry = on_command("jx3_cqc_carry", aliases={"池清川大C榜"}, priority=5, force_whitespace=True)
 

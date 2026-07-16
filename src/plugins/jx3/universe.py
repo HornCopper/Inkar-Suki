@@ -111,8 +111,11 @@ from .pvp import (
 from .rank import (
     exp_rank_matcher,
     rhps_rank_matcher,
-    rdps_rank_matcher,
-    slrank_matcher
+    rdps_rank_matcher
+)
+from .trial import (
+    trial_dps_matcher,
+    trial_rank_matcher
 )
 from .recruit import (
     recruit_matcher

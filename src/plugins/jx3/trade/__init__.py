@@ -39,12 +39,7 @@ class TradeServer(Server):
         return final_server
 
 
-auction_matcher = on_command(
-    "jx3_auction",
-    aliases={"阵营拍卖", "拍卖"},
-    force_whitespace=True,
-    priority=5,
-)
+auction_matcher = on_command("jx3_auction", aliases={"阵营拍卖", "拍卖"}, force_whitespace=True, priority=5)
 
 
 @auction_matcher.handle()
@@ -82,12 +77,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     await auction_matcher.finish(image)
         
 
-trade_matcher = on_command(
-    "jx3_trade_v3",
-    aliases={"jx3_trade", "交易行", "交易行v2", "交易行v3"},
-    force_whitespace=True,
-    priority=5,
-)
+trade_matcher = on_command("jx3_trade_v3", aliases={"jx3_trade", "交易行", "交易行v2", "交易行v3"}, force_whitespace=True, priority=5)
 
 @trade_matcher.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
@@ -111,12 +101,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     msg = await instance.generate_image()
     await trade_matcher.finish(msg)
 
-trade_sl_matcher = on_command(
-    "jx3_trade_shilian_v3",
-    aliases={"jx3_shilian", "交易行试炼", "交易行试炼v2", "交易行试炼v3"},
-    force_whitespace=True,
-    priority=5,
-)
+trade_sl_matcher = on_command("jx3_trade_shilian_v3", aliases={"jx3_shilian", "交易行试炼", "交易行试炼v2", "交易行试炼v3"}, force_whitespace=True, priority=5)
 
 @trade_sl_matcher.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):

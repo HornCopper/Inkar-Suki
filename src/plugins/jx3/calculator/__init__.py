@@ -1697,12 +1697,7 @@ async def _finish_damage_timeline(
     await matcher.finish(await _render_damage_timeline_image(data, instance, compare=compare, kline_only=kline))
 
 
-rd_analysis_support_matcher = on_command(
-    "jx3_rd_analysis_support",
-    aliases={"RD分析支持", "rd分析支持", "Rd分析支持"},
-    priority=5,
-    force_whitespace=True,
-)
+rd_analysis_support_matcher = on_command("jx3_rd_analysis_support", aliases={"RD分析支持", "rd分析支持", "Rd分析支持"}, priority=5, force_whitespace=True)
 
 
 @rd_analysis_support_matcher.handle()
@@ -1710,12 +1705,7 @@ async def _():
     await rd_analysis_support_matcher.finish(RD_ANALYSIS_SUPPORT_TEXT)
 
 
-jcl_analysis_help_matcher = on_command(
-    "jx3_jcl_analysis",
-    aliases={"JCL分析", "jcl分析", "Jcl分析"},
-    priority=5,
-    force_whitespace=True,
-)
+jcl_analysis_help_matcher = on_command("jx3_jcl_analysis", aliases={"JCL分析", "jcl分析", "Jcl分析"}, priority=5, force_whitespace=True)
 
 
 @jcl_analysis_help_matcher.handle()
@@ -1726,12 +1716,7 @@ async def _(matcher: Matcher, args: Message = CommandArg()):
     await matcher.finish(_jcl_analysis_help_message())
 
 
-custom_loop_help_matcher = on_command(
-    "jx3_custom_loop_help",
-    aliases={"自定义循环"},
-    priority=5,
-    force_whitespace=True,
-)
+custom_loop_help_matcher = on_command("jx3_custom_loop_help", aliases={"自定义循环"}, priority=5, force_whitespace=True)
 
 
 @custom_loop_help_matcher.handle()
@@ -1742,12 +1727,7 @@ async def _(matcher: Matcher, args: Message = CommandArg()):
     await matcher.finish(await _render_custom_loop_help_image())
 
 
-calculator_support_matcher = on_command(
-    "jx3_calculator_support",
-    aliases={"计算器支持", "计算器心法", "计算器支持心法"},
-    priority=5,
-    force_whitespace=True,
-)
+calculator_support_matcher = on_command("jx3_calculator_support", aliases={"计算器支持", "计算器心法", "计算器支持心法"}, priority=5, force_whitespace=True)
 
 
 @calculator_support_matcher.handle()
@@ -1773,12 +1753,7 @@ async def _(matcher: Matcher, args: Message = CommandArg()):
     await matcher.finish(_format_calculator_support_detail(item))
 
 
-equipment_rating_support_matcher = on_command(
-    "jx3_equipment_rating_support",
-    aliases={"装备评级支持", "装备评级心法", "装备评级支持心法"},
-    priority=5,
-    force_whitespace=True,
-)
+equipment_rating_support_matcher = on_command("jx3_equipment_rating_support", aliases={"装备评级支持", "装备评级心法", "装备评级支持心法"}, priority=5, force_whitespace=True)
 
 
 @equipment_rating_support_matcher.handle()
@@ -1786,12 +1761,7 @@ async def _(matcher: Matcher, args: Message = CommandArg()):
     await equipment_rating_module.handle_equipment_rating_support(matcher, args)
 
 
-equipment_rating_matcher = on_command(
-    "jx3_equipment_rating",
-    aliases={"装备评级"},
-    priority=5,
-    force_whitespace=True,
-)
+equipment_rating_matcher = on_command("jx3_equipment_rating", aliases={"装备评级"}, priority=5, force_whitespace=True)
 
 
 @equipment_rating_matcher.handle()
@@ -1886,12 +1856,7 @@ async def _(event: GroupMessageEvent, matcher: Matcher, state: T_State, timeline
     await _finish_damage_timeline(event, matcher, state, timeline_loop_order)
 
 
-kline_game_matcher = on_command(
-    "jx3_damage_timeline_kline_game",
-    aliases={"循环k线游戏", "循环K线游戏"},
-    priority=5,
-    force_whitespace=True,
-)
+kline_game_matcher = on_command("jx3_damage_timeline_kline_game", aliases={"循环k线游戏", "循环K线游戏"}, priority=5, force_whitespace=True)
 
 
 @kline_game_matcher.handle()
@@ -1948,12 +1913,7 @@ async def _(matcher: Matcher, state: T_State, kline_game_action: Message = Arg()
     await matcher.reject("继续操作，或发送「结束」退出。")
 
 
-therapy_panel_matcher = on_command(
-    "jx3_calculator_therapy_panel",
-    aliases={"治疗面板"},
-    priority=5,
-    force_whitespace=True,
-)
+therapy_panel_matcher = on_command("jx3_calculator_therapy_panel", aliases={"治疗面板"}, priority=5, force_whitespace=True)
 
 
 @therapy_panel_matcher.handle()
@@ -1971,12 +1931,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     await therapy_panel_matcher.finish(await therapy_panel(server, parts[1]))
 
 
-calc_matcher = on_command(
-    "jx3_calculator",
-    aliases={"计算器", "T计算器", "QC计算器", "JC计算器", "TL计算器", "JY计算器", "WX计算器"},
-    priority=5,
-    force_whitespace=True,
-)
+calc_matcher = on_command("jx3_calculator", aliases={"计算器", "T计算器", "QC计算器", "JC计算器", "TL计算器", "JY计算器", "WX计算器"}, priority=5, force_whitespace=True)
 
 
 @calc_matcher.handle()
@@ -2104,12 +2059,7 @@ async def _(event: GroupMessageEvent, matcher: Matcher, state: T_State, loop_ord
         await calc_matcher.send(equip_image)
     await calc_matcher.finish(data)
 
-equip_compare = on_command(
-    "jx3_equip_compare",
-    aliases={"装备对比", "T装备对比", "QC装备对比", "JC装备对比", "TL装备对比", "JY装备对比", "WX装备对比"},
-    priority=5,
-    force_whitespace=True,
-)
+equip_compare = on_command("jx3_equip_compare", aliases={"装备对比", "T装备对比", "QC装备对比", "JC装备对比", "TL装备对比", "JY装备对比", "WX装备对比"}, priority=5, force_whitespace=True)
 
 @equip_compare.handle()
 async def _(
@@ -2609,12 +2559,7 @@ async def _ensure_public_loop_approval_permission(event: GroupMessageEvent, matc
         await matcher.finish(denied(PUBLIC_LOOP_APPROVE_PERMISSION_NODE))
 
 
-submit_public_loop_matcher = on_command(
-    "jx3_submit_public_loop",
-    aliases={"提交公有循环"},
-    priority=5,
-    force_whitespace=True,
-)
+submit_public_loop_matcher = on_command("jx3_submit_public_loop", aliases={"提交公有循环"}, priority=5, force_whitespace=True)
 
 
 @submit_public_loop_matcher.handle()
@@ -2680,12 +2625,7 @@ async def _(bot: Bot, event: GroupMessageEvent, state: T_State, public_loop_orde
     await submit_public_loop_matcher.finish(msg)
 
 
-public_loop_approval_config_matcher = on_command(
-    "jx3_public_loop_approval_config",
-    aliases={"公有循环审批设置", "公有循环审批配置"},
-    priority=5,
-    force_whitespace=True,
-)
+public_loop_approval_config_matcher = on_command("jx3_public_loop_approval_config", aliases={"公有循环审批设置", "公有循环审批配置"}, priority=5, force_whitespace=True)
 
 
 @public_loop_approval_config_matcher.handle()
@@ -2793,12 +2733,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     await public_loop_approval_config_matcher.finish(PUBLIC_LOOP_APPROVAL_CONFIG_HELP_TEXT)
 
 
-approve_public_loop_matcher = on_command(
-    "jx3_approve_public_loop",
-    aliases={"公有循环审批", "审批公有循环"},
-    priority=5,
-    force_whitespace=True,
-)
+approve_public_loop_matcher = on_command("jx3_approve_public_loop", aliases={"公有循环审批", "审批公有循环"}, priority=5, force_whitespace=True)
 
 
 @approve_public_loop_matcher.handle()
@@ -3017,12 +2952,7 @@ def _parse_delete_loop_selection(text: str, loop_count: int) -> list[int] | str:
     return results
 
 
-rename_calculator_loop_matcher = on_command(
-    "jx3_rename_calc_loop",
-    aliases={"循环改名", "改循环名", "修改循环名", "变更循环名字"},
-    priority=5,
-    force_whitespace=True,
-)
+rename_calculator_loop_matcher = on_command("jx3_rename_calc_loop", aliases={"循环改名", "改循环名", "修改循环名", "变更循环名字"}, priority=5, force_whitespace=True)
 
 
 @rename_calculator_loop_matcher.handle()
@@ -3135,12 +3065,7 @@ async def _(event: GroupMessageEvent, state: T_State, rename_loop_new_name: Mess
     await rename_calculator_loop_matcher.finish(msg)
 
 
-remove_calculator_loop_matcher = on_command(
-    "jx3_rm_calc_loop",
-    aliases={"删除循环"},
-    priority=5,
-    force_whitespace=True,
-)
+remove_calculator_loop_matcher = on_command("jx3_rm_calc_loop", aliases={"删除循环"}, priority=5, force_whitespace=True)
 
 
 @remove_calculator_loop_matcher.handle()
@@ -3215,12 +3140,7 @@ async def _(event: GroupMessageEvent, state: T_State, delete_loop_order: Message
     await remove_calculator_loop_matcher.finish(msg or "未删除任何循环。")
 
 
-remove_all_calculator_loop_matcher = on_command(
-    "jx3_rm_all_calc_loop",
-    aliases={"删除循环all"},
-    priority=5,
-    force_whitespace=True,
-)
+remove_all_calculator_loop_matcher = on_command("jx3_rm_all_calc_loop", aliases={"删除循环all"}, priority=5, force_whitespace=True)
 
 
 @remove_all_calculator_loop_matcher.handle()
