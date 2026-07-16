@@ -934,6 +934,10 @@
             border-top: 1px solid #e6e6e6;
         }
 
+        .bottom-line-between {
+            margin-top: 0;
+        }
+
         .combat-advice {
             padding: 26px 26px 24px;
         }
@@ -1003,6 +1007,382 @@
             line-height: 1.2;
             font-weight: 900;
             white-space: nowrap;
+        }
+
+        .trial-land-card {
+            margin-top: 18px;
+            padding: 18px;
+            border: 1px solid color-mix(in srgb, {{ theme_color }} 22%, #dce5ee);
+            border-radius: 10px;
+            background:
+                linear-gradient(135deg, color-mix(in srgb, {{ theme_color }} 7%, #ffffff), #ffffff 42%);
+            box-shadow: 0 10px 26px rgb(48 64 80 / 8%);
+        }
+
+        .trial-land-section-label {
+            color: #7f8b97;
+            font-size: 10px;
+            line-height: 1.35;
+            font-weight: 900;
+        }
+
+        .trial-land-stage-one {
+            background: #4e8fd8;
+        }
+
+        .trial-land-stage-two {
+            background: #e49a4b;
+        }
+
+        .trial-land-stage-fallback {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 8px;
+        }
+
+        .trial-land-stage-recommendation {
+            min-width: 0;
+            padding: 9px 10px;
+            border-radius: 7px;
+            background: #f4f7f9;
+        }
+
+        .trial-land-stage-recommendation strong {
+            display: block;
+            margin-top: 5px;
+            color: #4b5661;
+            font-size: 10px;
+            line-height: 1.4;
+            font-weight: 900;
+            overflow-wrap: anywhere;
+        }
+
+        .trial-land-empty-detail {
+            margin-top: 9px;
+            padding: 10px 11px;
+            border-radius: 7px;
+            background: #f4f7f9;
+            color: #84909b;
+            font-size: 9px;
+            line-height: 1.45;
+            font-weight: 800;
+        }
+
+        .trial-land-warning {
+            display: flex;
+            align-items: baseline;
+            gap: 10px;
+            margin-top: 16px;
+            padding: 9px 12px;
+            border-left: 3px solid #d5a65a;
+            background: #fff9ef;
+            color: #8c682e;
+            font-size: 11px;
+            line-height: 1.45;
+        }
+
+        .trial-land-warning strong {
+            white-space: nowrap;
+        }
+
+        .trial-land-layout-b {
+            display: grid;
+            grid-template-columns: minmax(0, .72fr) minmax(0, 1.42fr) minmax(0, .96fr) minmax(0, 1.18fr);
+            align-items: stretch;
+            min-width: 0;
+        }
+
+        .trial-land-column {
+            min-width: 0;
+            padding: 0 16px;
+        }
+
+        .trial-land-column:first-child {
+            padding-left: 0;
+        }
+
+        .trial-land-column:last-child {
+            padding-right: 0;
+        }
+
+        .trial-land-column + .trial-land-column {
+            border-left: 1px solid #dfe7ed;
+        }
+
+        .trial-land-column-heading {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            min-width: 0;
+            margin-bottom: 12px;
+            color: #3f4954;
+            font-size: 12px;
+            line-height: 1.3;
+            font-weight: 900;
+        }
+
+        .trial-land-column-index {
+            flex: none;
+            color: {{ theme_color }};
+            font-size: 9px;
+        }
+
+        .trial-land-overview-list {
+            display: grid;
+            gap: 11px;
+        }
+
+        .trial-land-overview-item {
+            min-width: 0;
+            padding-bottom: 11px;
+            border-bottom: 1px solid #e4eaf0;
+        }
+
+        .trial-land-overview-item:last-child {
+            padding-bottom: 0;
+            border-bottom: 0;
+        }
+
+        .trial-land-overview-label {
+            color: #84909b;
+            font-size: 9px;
+            line-height: 1.3;
+            font-weight: 900;
+        }
+
+        .trial-land-overview-value {
+            display: block;
+            margin-top: 4px;
+            color: {{ theme_color }};
+            font-size: 18px;
+            line-height: 1.15;
+            font-weight: 900;
+            overflow-wrap: anywhere;
+        }
+
+        .trial-land-overview-warning .trial-land-overview-value {
+            color: #b57932;
+        }
+
+        .trial-land-overview-muted .trial-land-overview-value {
+            color: #7f8b97;
+        }
+
+        .trial-land-overview-note {
+            margin-top: 4px;
+            color: #7d8995;
+            font-size: 9px;
+            line-height: 1.4;
+            font-weight: 800;
+            overflow-wrap: anywhere;
+        }
+
+        .trial-land-boss-heading {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 5px 10px;
+            margin-bottom: 8px;
+            color: #59646f;
+            font-size: 10px;
+            line-height: 1.3;
+            font-weight: 900;
+        }
+
+        .trial-land-boss-legend {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .trial-land-boss-legend span {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            color: #87929d;
+            font-size: 8px;
+            font-weight: 900;
+            white-space: nowrap;
+        }
+
+        .trial-land-stage-mark {
+            display: inline-block;
+            flex: none;
+            width: 3px;
+            height: 12px;
+            border-radius: 999px;
+        }
+
+        .trial-land-boss-legend .trial-land-stage-mark {
+            height: 8px;
+        }
+
+        .trial-land-boss-grid {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr);
+            gap: 7px;
+        }
+
+        .trial-land-boss-item {
+            display: grid;
+            grid-template-columns: 46px minmax(0, 1fr) 34px;
+            align-items: center;
+            gap: 6px;
+            min-width: 0;
+        }
+
+        .trial-land-boss-name,
+        .trial-land-boss-floor {
+            color: #4d5863;
+            font-size: 10px;
+            line-height: 1.25;
+            font-weight: 900;
+        }
+
+        .trial-land-boss-name {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            white-space: nowrap;
+        }
+
+        .trial-land-boss-name .trial-land-stage-mark {
+            flex: 0 0 auto;
+            width: 3px;
+            height: 11px;
+        }
+
+        .trial-land-boss-track {
+            height: 6px;
+            min-width: 0;
+            overflow: hidden;
+            border-radius: 999px;
+            background: #e8edf1;
+        }
+
+        .trial-land-boss-fill {
+            display: block;
+            height: 100%;
+            border-radius: inherit;
+        }
+
+        .trial-land-boss-fill.trial-land-stage-one {
+            background: #4ea4ed;
+        }
+
+        .trial-land-boss-fill.trial-land-stage-two {
+            background: #ef9348;
+        }
+
+        .trial-land-boss-floor {
+            text-align: right;
+            white-space: nowrap;
+        }
+
+        .trial-land-gains {
+            min-width: 0;
+        }
+
+        .trial-land-gains-title {
+            margin-bottom: 9px;
+            color: #4b5661;
+            font-size: 10px;
+            line-height: 1.3;
+            font-weight: 900;
+        }
+
+        .trial-land-gain-list {
+            display: grid;
+            gap: 7px;
+        }
+
+        .trial-land-gain-value {
+            display: flex;
+            align-items: baseline;
+            justify-content: space-between;
+            gap: 8px;
+            min-width: 0;
+            color: #56616c;
+            font-size: 9px;
+            line-height: 1.3;
+            font-weight: 900;
+        }
+
+        .trial-land-gain-value strong {
+            color: {{ theme_color }};
+            font-size: 10px;
+            white-space: nowrap;
+        }
+
+        .trial-land-gain-track {
+            height: 5px;
+            margin-top: 5px;
+            overflow: hidden;
+            border-radius: 999px;
+            background: #e9eef2;
+        }
+
+        .trial-land-gain-fill {
+            height: 100%;
+            border-radius: inherit;
+            background: color-mix(in srgb, {{ theme_color }} 70%, #7f98ad);
+        }
+
+        .trial-land-consumable-list {
+            display: grid;
+            gap: 10px;
+        }
+
+        .trial-land-consumable-item {
+            display: grid;
+            grid-template-columns: 34px minmax(0, 1fr);
+            align-items: center;
+            gap: 9px;
+            min-width: 0;
+        }
+
+        .trial-land-consumable-icon,
+        .trial-land-consumable-placeholder {
+            width: 34px;
+            height: 34px;
+            border-radius: 5px;
+            object-fit: cover;
+            box-shadow: inset 0 0 0 1px rgb(86 102 116 / 16%);
+        }
+
+        .trial-land-consumable-placeholder {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #eef3f6;
+            color: #7f8b97;
+            font-size: 10px;
+            font-weight: 900;
+        }
+
+        .trial-land-consumable-body {
+            min-width: 0;
+        }
+
+        .trial-land-consumable-body strong {
+            display: block;
+            color: #4b5661;
+            font-size: 10px;
+            line-height: 1.3;
+            font-weight: 900;
+            overflow-wrap: anywhere;
+        }
+
+        .trial-land-consumable-body span {
+            display: block;
+            margin-top: 3px;
+            color: #84909b;
+            font-size: 9px;
+            line-height: 1.4;
+            font-weight: 800;
+            overflow-wrap: anywhere;
         }
 
         .combat-block {
@@ -1152,6 +1532,9 @@
                         <div class="total-meta">
                             <div class="side-row"><span>评级增益</span><strong>{{ meta.income_name }}</strong></div>
                             <div class="side-row"><span>{{ "破产概率" if meta.rating_model == "therapy_ruin" else "评级循环" }}</span><strong>{{ meta.loop_name }}</strong></div>
+                            {% if meta.rating_model != "therapy_ruin" and meta.jcl and meta.jcl.weapon %}
+                            <div class="side-row"><span>循环类型</span><strong>{{ meta.jcl.weapon }}循环</strong></div>
+                            {% endif %}
                         </div>
                     </div>
                 </section>
@@ -1298,8 +1681,190 @@
             </main>
         </div>
 
-        {% if adaptive_consumables or talents or rating_timeline %}
+        {% if adaptive_consumables or talents or rating_timeline or trial_land %}
         <div class="bottom-line"></div>
+        {% set trial_land_reference %}
+        {% if trial_land %}
+        <section class="combat-advice">
+            <div class="combat-heading">
+                <div class="combat-heading-text">
+                    <div class="combat-title">试炼之地参考</div>
+                    <div class="combat-subtitle">不考虑猴戏，仅考虑木桩dps的复刻。</div>
+                </div>
+            </div>
+            {% if trial_land and trial_land.status == "ok" %}
+            {% set boss_rows = trial_land.boss_rows or [] %}
+            {% set trial_incomes = trial_land.attribute_incomes or [] %}
+            {% set trial_summary_metrics = trial_land.summary_metrics or [] %}
+            <section class="trial-land-card">
+                <div class="trial-land-layout-b">
+                    <div class="trial-land-column">
+                        <div class="trial-land-column-heading">
+                            <span class="trial-land-column-index">01</span>
+                            <span>试炼概览</span>
+                        </div>
+                        <div class="trial-land-overview-list">
+                            {% if trial_summary_metrics %}
+                            {% for metric in trial_summary_metrics[:3] %}
+                            <div class="trial-land-overview-item trial-land-overview-{{ metric.state or 'default' }}">
+                                <div class="trial-land-overview-label">{{ metric.label }}</div>
+                                <strong class="trial-land-overview-value">{{ metric.value }}</strong>
+                                {% if metric.key not in ["max_floor", "expected_dps"] and metric.detail %}
+                                <div class="trial-land-overview-note">{{ metric.detail }}</div>
+                                {% endif %}
+                            </div>
+                            {% endfor %}
+                            {% else %}
+                            <div class="trial-land-overview-item">
+                                <div class="trial-land-overview-label">最高可通关</div>
+                                <strong class="trial-land-overview-value">{{ trial_land.max_floor_text }}</strong>
+                            </div>
+                            <div class="trial-land-overview-item">
+                                <div class="trial-land-overview-label">试炼预期DPS（133级首领）</div>
+                                <strong class="trial-land-overview-value">{{ trial_land.expected_dps_text or trial_land.raw_dps_text }}</strong>
+                            </div>
+                            <div class="trial-land-overview-item">
+                                <div class="trial-land-overview-label">通关组合</div>
+                                <strong class="trial-land-overview-value">1 + 2</strong>
+                                <div class="trial-land-overview-note">阶段一选 1 个 · 阶段二选 2 个</div>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="trial-land-column">
+                        <div class="trial-land-column-heading">
+                            <span class="trial-land-column-index">02</span>
+                            <span>各 Boss 可通过层数</span>
+                        </div>
+                        <div class="trial-land-boss-heading">
+                            <div class="trial-land-boss-legend">
+                                <span><i class="trial-land-stage-mark trial-land-stage-one"></i>阶段一</span>
+                                <span><i class="trial-land-stage-mark trial-land-stage-two"></i>阶段二</span>
+                            </div>
+                        </div>
+                        {% if boss_rows %}
+                        <div class="trial-land-boss-grid">
+                            {% for boss in boss_rows %}
+                            {% set is_first_stage = boss.stage == 1 or boss.stage == "first" or boss.stage == "一" %}
+                            {% set boss_progress = boss.progress_percent if boss.progress_percent is defined else (boss.progress or 0) %}
+                            <div class="trial-land-boss-item">
+                                <span class="trial-land-boss-name">
+                                    <i class="trial-land-stage-mark {{ 'trial-land-stage-one' if is_first_stage else 'trial-land-stage-two' }}"></i>
+                                    {{ boss.name or boss.label or boss.id }}
+                                </span>
+                                <span class="trial-land-boss-track" title="{{ boss.progress_percent_text or boss_progress ~ '%' }} · {{ boss.progress_basis or '血量表层数' }}">
+                                    <i class="trial-land-boss-fill {{ 'trial-land-stage-one' if is_first_stage else 'trial-land-stage-two' }}" style="width: {{ boss_progress }}%;"></i>
+                                </span>
+                                <strong class="trial-land-boss-floor">
+                                    {% if boss.floor_text %}
+                                    {{ boss.floor_text }}
+                                    {% elif boss.max_floor_text %}
+                                    {{ boss.max_floor_text }}
+                                    {% elif boss.max_floor is defined %}
+                                    {{ boss.max_floor }}层
+                                    {% else %}
+                                    —
+                                    {% endif %}
+                                </strong>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        {% else %}
+                        <div class="trial-land-stage-fallback">
+                            <div class="trial-land-stage-recommendation">
+                                <div class="trial-land-section-label">阶段一 · 推荐 1 个</div>
+                                <strong>{{ trial_land.first_bosses | join(" / ") }}</strong>
+                            </div>
+                            <div class="trial-land-stage-recommendation">
+                                <div class="trial-land-section-label">阶段二 · 推荐 2 个</div>
+                                <strong>{{ trial_land.second_bosses | join(" / ") }}</strong>
+                            </div>
+                        </div>
+                        <div class="trial-land-empty-detail">详细 Boss 层数将在 calculator 返回逐项结果后自动展开。</div>
+                        {% endif %}
+
+                    </div>
+
+                    <div class="trial-land-column">
+                        <div class="trial-land-column-heading">
+                            <span class="trial-land-column-index">03</span>
+                            <span>属性收益</span>
+                        </div>
+                        <div class="trial-land-gains">
+                            <div class="trial-land-gains-title">每附魔属性收益</div>
+                            {% if trial_incomes %}
+                            <div class="trial-land-gain-list">
+                                {% for income in trial_incomes[:6] %}
+                                {% set income_progress = income.bar_percent or income.progress_percent or income.percent or income.relative_percent or 0 %}
+                                <div class="trial-land-gain-item">
+                                    <div class="trial-land-gain-value">
+                                        <span>{{ income.label or income.name or income.attribute_name or income.attribute_key }}</span>
+                                        <strong>
+                                            {% if income.dps_per_enchant_text %}
+                                            {{ income.dps_per_enchant_text }}
+                                            {% elif income.value_text %}
+                                            {{ income.value_text }}
+                                            {% elif income.dps_per_enchant is defined %}
+                                            +{{ income.dps_per_enchant }}
+                                            {% else %}
+                                            —
+                                            {% endif %}
+                                        </strong>
+                                    </div>
+                                    <div class="trial-land-gain-track">
+                                        <div class="trial-land-gain-fill" style="width: {{ income_progress }}%;"></div>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                            {% else %}
+                            <div class="trial-land-empty-detail">暂无试炼属性边际收益明细。</div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="trial-land-column">
+                        <div class="trial-land-column-heading">
+                            <span class="trial-land-column-index">04</span>
+                            <span>本次锁定增益</span>
+                        </div>
+                        {% set trial_selected_consumables = trial_land.consumables or [] %}
+                        {% set trial_fixed_consumables = trial_land.fixed_consumables or [] %}
+                        {% set trial_consumables = trial_land.consumable_items or (trial_selected_consumables + trial_fixed_consumables) %}
+                        {% if trial_consumables %}
+                        <div class="trial-land-consumable-list">
+                            {% for item in trial_consumables[:5] %}
+                            <div class="trial-land-consumable-item">
+                                {% if item.icon %}
+                                <img class="trial-land-consumable-icon" src="{{ item.icon }}" alt="">
+                                {% else %}
+                                <span class="trial-land-consumable-placeholder">{{ (item.label or "增益")[:1] }}</span>
+                                {% endif %}
+                                <div class="trial-land-consumable-body">
+                                    <strong>{{ item.label }}</strong>
+                                    <span>{{ item.group if item.name == item.label else item.name }}</span>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        {% else %}
+                        <div class="trial-land-empty-detail">暂无锁定增益明细。</div>
+                        {% endif %}
+                    </div>
+
+                </div>
+            </section>
+            {% elif trial_land and trial_land.status == "failed" %}
+            <div class="trial-land-warning">
+                <strong>试炼之地预估未展示</strong>
+                <span>{{ trial_land.message }}</span>
+            </div>
+            {% endif %}
+        </section>
+        {% endif %}
+        {% endset %}
+        {% if adaptive_consumables or rating_timeline %}
         <section class="combat-advice">
             <div class="combat-heading">
                 <div class="combat-heading-text">
@@ -1447,20 +2012,30 @@
                 </section>
             </div>
             {% endif %}
-            {% if talents %}
-            <div class="combat-block">
-                <div class="combat-subheading">奇穴</div>
-                <div class="talent-strip">
-                    {% for talent in talents %}
-                    <div class="talent">
-                        <img src="{{ talent.icon }}" alt="">
-                        <div class="talent-name">{{ talent.name }}</div>
-                    </div>
-                    {% endfor %}
-                </div>
-            </div>
-            {% endif %}
         </section>
+        {% endif %}
+        {% if trial_land %}
+        {% if adaptive_consumables or rating_timeline %}
+        <div class="bottom-line bottom-line-between"></div>
+        {% endif %}
+        {{ trial_land_reference }}
+        {% endif %}
+        {% if talents %}
+        {% if adaptive_consumables or rating_timeline or trial_land %}
+        <div class="bottom-line bottom-line-between"></div>
+        {% endif %}
+        <section class="combat-advice">
+            <div class="combat-subheading">奇穴</div>
+            <div class="talent-strip">
+                {% for talent in talents %}
+                <div class="talent">
+                    <img src="{{ talent.icon }}" alt="">
+                    <div class="talent-name">{{ talent.name }}</div>
+                </div>
+                {% endfor %}
+            </div>
+        </section>
+        {% endif %}
         {% endif %}
 
         <div class="rating-footer {% if equipment_rating_qrcode %}rating-footer-with-qrcode{% endif %}">
@@ -1472,7 +2047,7 @@
             <div class="footer-qrcode-card">
                 <div>
                     <div class="footer-qrcode-title">扫码进群</div>
-                    <div class="footer-qrcode-subtitle">心法支持 / 配装交流</div>
+                    <div class="footer-qrcode-subtitle">心法支持 / 配装交流 / 获取报告</div>
                     <div class="footer-qrcode-group">群号：650495414</div>
                 </div>
                 <img src="{{ equipment_rating_qrcode }}" alt="扫码进群">
