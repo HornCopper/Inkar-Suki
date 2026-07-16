@@ -143,7 +143,7 @@ async def therapy_panel(server: str, role_name: str) -> Any:
     )
     kungfu_id = int(data.get("kungfu_id") or equip.kungfu_id)
     kungfu = Kungfu.with_internel_id(kungfu_id, convert_to_pc=True)
-    theme_color = kungfu.color if kungfu.id != 10821 else "#A18DE3"
+    theme_color = kungfu.color
     attr_cards = [
         ("根骨", format_number(attributes.get("MainAttrValue"))),
         ("基础治疗量", format_number(attributes.get("BaseTherapy"))),

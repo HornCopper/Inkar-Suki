@@ -137,7 +137,7 @@ class UniversalCalculator(BaseCalculator):
                 html_template="calculator_new",
                 **{
                     "font": build_path(ASSETS, ["font", "PingFangSC-Semibold.otf"]),
-                    "color": kungfu.color if kungfu.id != 10821 else "#A18DE3",
+                    "color": kungfu.color,
                     "kungfu": kungfu.name,
                     "icon": kungfu.icon,
                     "final_dps": str(int(data["damage_per_second"])),

@@ -1,7 +1,7 @@
 {
   "version": 1,
   "title": "四参数 Beta 拟合：全局公共上下界归一化分布",
-  "generated_at": "2026-05-23 12:12:18",
+  "generated_at": "2026-07-16 18:31:12",
   "color_config": "src/assets/source/jx3/equipment_rating_distribution_colors.json",
   "global": {
     "L": 252.0,
@@ -134,7 +134,7 @@
       "kungfu_id": 10821,
       "name": "幽罗引",
       "image": "distribution/10821.svg",
-      "color": "#6f8fd8",
+      "color": "#3C2B5A",
       "alpha": 2.28526294,
       "beta": 3.54807385,
       "mean": 0.39175913,

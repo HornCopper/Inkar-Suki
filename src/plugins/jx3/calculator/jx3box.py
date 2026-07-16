@@ -180,7 +180,7 @@ class JX3BOXCalculator(BaseCalculator):
                 html_template="calculator_new",
                 **{
                     "font": build_path(ASSETS, ["font", "PingFangSC-Semibold.otf"]),
-                    "color": self.kungfu.color if self.kungfu.id != 10821 else "#A18DE3",
+                    "color": self.kungfu.color,
                     "kungfu": self.kungfu.name,
                     "icon": self.kungfu.icon,
                     "final_dps": str(int(data["damage_per_second"])),

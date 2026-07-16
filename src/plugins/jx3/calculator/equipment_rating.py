@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import math
 from pathlib import Path
 from typing import Any
 
@@ -98,9 +99,17 @@ EQUIPMENT_RATING_DISTRIBUTION_PATH = build_path(
     ASSETS, ["source", "jx3", "equipment_rating_distribution.json"]
 )
 ADAPTIVE_ICON_ITEM_NAME_BY_CODE = {
+    "BLSZY": "百炼水煮鱼",
     "FY_ATTACK_INGOT_PHYSICS": "风语·瀑沙熔锭（外攻）",
     "FY_ATTACK_INGOT_MAGIC": "风语·坠宵熔锭（内攻）",
     "FY_THERAPY_INGOT": "风语·絮泊熔锭（疗伤）",
+    "HOME_WINE_FEN_THIRTEEN_DAYS": "汾酒·旬又三",
+    "HOME_WINE_GUANWAI_THIRTEEN_DAYS": "关外白酒·旬又三",
+    "HOME_WINE_GAOLIANG_THIRTEEN_DAYS": "高粱酒·旬又三",
+    "HOME_WINE_ZHUANGYUAN_THIRTEEN_DAYS": "状元红·旬又三",
+    "HOME_WINE_NUERHONG_THIRTEEN_DAYS": "女儿红·旬又三",
+    "XUFENG_NINGWEI_QIUSHUANG": "煦风·宁为秋霜",
+    "XUFENG_YANYAN_YUFEI": "煦风·燕燕于飞",
     "CREATIVE_FOOD_SHENG_LIFE_DOWN_STRAIN": "创意食品·盛",
     "CREATIVE_FOOD_SHENG_LIFE_DOWN_MAGIC_ATTACK": "创意食品·盛",
     "CREATIVE_FOOD_SHENG_LIFE_DOWN_PHYSICS_ATTACK": "创意食品·盛",
@@ -586,6 +595,553 @@ def _format_signed_percent(value: Any) -> str:
 
 def _as_dict(value: Any) -> dict[str, Any]:
     return value if isinstance(value, dict) else {}
+
+
+def _trial_land_int(value: Any) -> int | None:
+    number = _trial_land_float(value)
+    return int(number) if number is not None else None
+
+
+def _trial_land_float(value: Any) -> float | None:
+    try:
+        number = float(value)
+    except (TypeError, ValueError):
+        return None
+    return number if math.isfinite(number) else None
+
+
+def _trial_land_bool(value: Any) -> bool:
+    if isinstance(value, bool):
+        return value
+    if isinstance(value, (int, float)):
+        return value != 0
+    return str(value or "").strip().lower() in {"1", "true", "yes", "on"}
+
+
+def _trial_land_item_name(value: Any) -> str:
+    if isinstance(value, dict):
+        return str(value.get("name") or value.get("label") or value.get("code") or "").strip()
+    return str(value or "").strip()
+
+
+def _trial_land_item_fields(value: Any) -> tuple[str, str]:
+    code = str(_as_dict(value).get("code") or "").strip()
+    name = _trial_land_item_name(value)
+    if not code and isinstance(value, str) and value.strip() in ADAPTIVE_ICON_ITEM_NAME_BY_CODE:
+        code = value.strip()
+    if code and (not name or name == code):
+        name = ADAPTIVE_ICON_ITEM_NAME_BY_CODE.get(code, name or code)
+    return name, code
+
+
+def _trial_land_boss_name_map(bosses: Any) -> dict[str, str]:
+    names: dict[str, str] = {}
+    for boss in bosses if isinstance(bosses, list) else []:
+        if not isinstance(boss, dict):
+            continue
+        boss_id = str(boss.get("id") or "").strip()
+        name = str(boss.get("name") or "").strip()
+        if boss_id and name:
+            names[boss_id] = name
+    return names
+
+
+def _trial_land_boss_names(stage: Any, boss_names: dict[str, str]) -> list[str]:
+    stage_data = _as_dict(stage)
+    boss_ids = stage_data.get("selected_boss_ids")
+    if not isinstance(boss_ids, list):
+        return []
+    names = []
+    for boss_id in boss_ids:
+        normalized_id = str(boss_id or "").strip()
+        name = boss_names.get(normalized_id, "")
+        if name and name not in names:
+            names.append(name)
+    return names
+
+
+def _trial_land_selected_boss_ids(stages: Any) -> list[str]:
+    selected: list[str] = []
+    for stage_key in ("first", "second"):
+        boss_ids = _as_dict(_as_dict(stages).get(stage_key)).get("selected_boss_ids")
+        if not isinstance(boss_ids, list):
+            continue
+        for boss_id in boss_ids:
+            normalized_id = str(boss_id or "").strip()
+            if normalized_id and normalized_id not in selected:
+                selected.append(normalized_id)
+    return selected
+
+
+def _prepare_trial_land_target(raw: Any, boss_names: dict[str, str]) -> dict[str, Any] | None:
+    if not isinstance(raw, dict):
+        return None
+    floor = _trial_land_int(raw.get("floor"))
+    required_dps = _trial_land_int(raw.get("required_dps"))
+    gap_dps = _trial_land_int(raw.get("gap_dps"))
+    reached = raw.get("reached")
+    bottleneck_stage = str(raw.get("bottleneck_stage") or "").strip().lower()
+    if (
+        floor is None
+        or floor <= 0
+        or required_dps is None
+        or required_dps < 0
+        or gap_dps is None
+        or gap_dps < 0
+        or not isinstance(reached, bool)
+        or bottleneck_stage not in {"first", "second", "both"}
+    ):
+        return None
+
+    gap_percent_raw = raw.get("gap_percent")
+    gap_percent = None if gap_percent_raw is None else _trial_land_float(gap_percent_raw)
+    if gap_percent is not None and gap_percent < 0:
+        return None
+    stages = _as_dict(raw.get("stages"))
+    first_bosses = _trial_land_boss_names(stages.get("first"), boss_names)[:1]
+    second_bosses = _trial_land_boss_names(stages.get("second"), boss_names)[:2]
+    if len(first_bosses) != 1 or len(second_bosses) != 2:
+        return None
+
+    bottleneck_text = {
+        "first": "阶段一",
+        "second": "阶段二",
+        "both": "两个阶段",
+    }[bottleneck_stage]
+    return {
+        "floor": floor,
+        "floor_text": f"第{floor}层",
+        "required_dps": required_dps,
+        "required_dps_text": _format_number(required_dps),
+        "gap_dps": gap_dps,
+        "gap_dps_text": _format_number(gap_dps),
+        "gap_percent": gap_percent,
+        "gap_percent_text": f"+{gap_percent:.2f}%" if gap_percent is not None else "无法换算",
+        "reached": reached,
+        "status_text": "已达到" if reached else "尚有差距",
+        "bottleneck_stage": bottleneck_stage,
+        "bottleneck_text": bottleneck_text,
+        "selected_boss_ids": _trial_land_selected_boss_ids(stages),
+        "first_bosses": first_bosses,
+        "second_bosses": second_bosses,
+        "route_text": f"{first_bosses[0]} / {' + '.join(second_bosses)}",
+    }
+
+
+def _prepare_trial_land_boss_rows(
+    raw: Any,
+    *,
+    selected_boss_ids: set[str],
+    data_max_floor: int | None,
+) -> list[dict[str, Any]]:
+    rows = []
+    for order, boss in enumerate(raw if isinstance(raw, list) else []):
+        if not isinstance(boss, dict):
+            continue
+        boss_id = str(boss.get("id") or "").strip()
+        name = str(boss.get("name") or "").strip()
+        stage = _trial_land_int(boss.get("stage"))
+        max_floor = _trial_land_int(boss.get("max_floor"))
+        if not boss_id or not name or stage not in {1, 2} or max_floor is None or max_floor < 0:
+            continue
+
+        target_required_dps = _trial_land_int(boss.get("target_required_dps"))
+        target_floor_hp = _trial_land_int(boss.get("target_floor_hp"))
+        if data_max_floor is not None and data_max_floor > 0:
+            progress = max_floor / data_max_floor * 100
+            progress_basis = "血量表层数"
+        else:
+            progress = 0
+            progress_basis = "层数"
+        progress = round(min(100.0, max(0.0, progress)), 1)
+        rows.append(
+            {
+                "id": boss_id,
+                "name": name,
+                "stage": stage,
+                "stage_text": f"阶段{'一' if stage == 1 else '二'}",
+                "max_floor": max_floor,
+                "max_floor_text": f"{max_floor}层" if max_floor > 0 else "未通过第1层",
+                "progress_percent": progress,
+                "progress_percent_text": f"{progress:.1f}%",
+                "progress_basis": progress_basis,
+                "selected": boss_id in selected_boss_ids,
+                "target_required_dps": target_required_dps,
+                "target_required_dps_text": _format_number(target_required_dps) if target_required_dps is not None else "",
+                "target_floor_hp": target_floor_hp,
+                "target_floor_hp_text": _format_number(target_floor_hp) if target_floor_hp is not None else "",
+                "_order": order,
+            }
+        )
+    rows.sort(key=lambda item: (item["stage"], item["_order"]))
+    for item in rows:
+        item.pop("_order", None)
+    return rows
+
+
+TRIAL_LAND_ATTRIBUTE_LABELS = {
+    "atPhysicsAttackPowerBase": "外攻",
+    "atMagicAttackPowerBase": "内攻",
+    "atPhysicsCriticalStrike": "会心",
+    "atMagicCriticalStrike": "会心",
+    "atPhysicsCriticalDamagePowerBase": "会效",
+    "atMagicCriticalDamagePowerBase": "会效",
+    "atPhysicsOvercomeBase": "破防",
+    "atMagicOvercome": "破防",
+    "atSurplusValueBase": "破招",
+    "atStrainBase": "无双",
+}
+
+
+def _prepare_trial_land_attribute_incomes(raw: Any, target: dict[str, Any] | None) -> list[dict[str, Any]]:
+    gap_dps = int(target["gap_dps"]) if target is not None else None
+    reached = bool(target["reached"]) if target is not None else False
+    incomes = []
+    for item in raw if isinstance(raw, list) else []:
+        if not isinstance(item, dict) or str(item.get("metric_key") or "") != "raw_dps":
+            continue
+        attribute_key = str(item.get("attribute_key") or "").strip()
+        dps_per_100 = _trial_land_float(item.get("dps_per_100"))
+        dps_per_point = _trial_land_float(item.get("dps_per_point"))
+        dps_per_enchant = _trial_land_float(item.get("dps_per_sample"))
+        sample_value = _trial_land_int(item.get("sample_value"))
+        label = TRIAL_LAND_ATTRIBUTE_LABELS.get(attribute_key) or get_attr_name(attribute_key)
+        if not attribute_key or not label or sample_value is None or sample_value <= 0:
+            continue
+        if dps_per_point is None and dps_per_100 is not None:
+            dps_per_point = dps_per_100 / 100
+        if dps_per_enchant is None and dps_per_point is not None:
+            dps_per_enchant = dps_per_point * sample_value
+        if dps_per_enchant is None:
+            continue
+        if dps_per_point is None:
+            dps_per_point = dps_per_enchant / sample_value
+        if target is None:
+            points_needed = None
+            points_needed_text = "待目标数据"
+        elif reached or gap_dps == 0:
+            points_needed = 0
+            points_needed_text = "已达标"
+        elif dps_per_point > 0:
+            points_needed = math.ceil(gap_dps / dps_per_point)
+            points_needed_text = f"约 {_format_number(points_needed)} 点"
+        else:
+            points_needed = None
+            points_needed_text = "无法估算"
+        incomes.append(
+            {
+                "attribute_key": attribute_key,
+                "label": label,
+                "sample_value": sample_value,
+                "sample_value_text": _format_number(sample_value),
+                "dps_per_enchant": dps_per_enchant,
+                "dps_per_enchant_text": f"{dps_per_enchant:+,.0f}",
+                "value_text": f"每附魔约 {dps_per_enchant:+,.0f} DPS",
+                "points_needed": points_needed,
+                "points_needed_text": points_needed_text,
+            }
+        )
+    incomes.sort(key=lambda item: item["dps_per_enchant"], reverse=True)
+    max_income = max((max(0.0, item["dps_per_enchant"]) for item in incomes), default=0.0)
+    for index, item in enumerate(incomes):
+        bar_percent = max(0.0, item["dps_per_enchant"]) / max_income * 100 if max_income > 0 else 0.0
+        item["bar_percent"] = round(bar_percent, 1)
+        item["bar_width"] = f"{bar_percent:.1f}%"
+        item["is_top"] = index == 0
+    return incomes
+
+
+def _trial_land_summary_metrics(
+    *,
+    max_floor_text: str,
+    expected_dps: int,
+    capped: bool,
+    target: dict[str, Any] | None,
+    wine_locked_for_haste: bool,
+) -> list[dict[str, str]]:
+    if target is None:
+        target_metric = (
+            {
+                "key": "target_gap",
+                "label": "数据上限",
+                "value": "已达到",
+                "detail": "旧 calculator 未返回目标门槛",
+                "state": "ok",
+            }
+            if capped
+            else {
+                "key": "target_gap",
+                "label": "下一目标",
+                "value": "待计算",
+                "detail": "当前 calculator 未返回目标差距",
+                "state": "muted",
+            }
+        )
+    else:
+        reached = bool(target["reached"])
+        target_metric = {
+            "key": "target_gap",
+            "label": f"到 {target['floor']} 层",
+            "value": "已达到" if reached else target["gap_percent_text"],
+            "detail": "无需额外DPS" if reached else f"还差 {target['gap_dps_text']} DPS",
+            "state": "ok" if reached else "warning",
+        }
+    return [
+        {
+            "key": "max_floor",
+            "label": "最高可通关",
+            "value": max_floor_text,
+            "detail": (
+                "已达到血量表上限"
+                if capped
+                else (
+                    f"{target['floor']}层目标：{target['bottleneck_text']}瓶颈"
+                    if target is not None
+                    else "按三首领通关规则"
+                )
+            ),
+            "state": "ok",
+        },
+        {
+            "key": "expected_dps",
+            "label": "试炼预期DPS（133级首领）",
+            "value": _format_number(expected_dps),
+            "detail": "加速酒已锁定" if wine_locked_for_haste else "主属性酒已锁定",
+            "state": "default",
+        },
+        target_metric,
+    ]
+
+
+def _trial_land_optimization_steps(
+    target: dict[str, Any] | None,
+    attribute_incomes: list[dict[str, Any]],
+) -> list[dict[str, Any]]:
+    if target is None:
+        return []
+    reached = bool(target["reached"])
+    positive_incomes = [item for item in attribute_incomes if item["dps_per_enchant"] > 0]
+    best_income = positive_incomes[0] if positive_incomes else None
+    second_income = positive_incomes[1] if len(positive_incomes) > 1 else None
+    if best_income is None:
+        priority_text = "暂无可靠属性优先级"
+    elif second_income is None:
+        priority_text = f"优先{best_income['label']}"
+    else:
+        priority_text = f"优先{best_income['label']}，其次{second_income['label']}"
+    route_detail = f"阶段一选 {target['first_bosses'][0]}；阶段二选 {'、'.join(target['second_bosses'])}"
+    if reached:
+        return [
+            {
+                "key": "threshold",
+                "index": 1,
+                "title": f"维持{target['bottleneck_text']}阈值",
+                "value": f"当前已满足 {target['required_dps_text']} DPS",
+                "detail": route_detail,
+                "state": "ok",
+            },
+            {
+                "key": "route",
+                "index": 2,
+                "title": "保持锁定首领路线",
+                "value": target["route_text"],
+                "detail": "三个首领均按当前试炼增益计算",
+                "state": "ok",
+            },
+            {
+                "key": "attribute",
+                "index": 3,
+                "title": "属性无需为通关额外堆叠",
+                "value": "当前试炼预期DPS已达标",
+                "detail": "保持锁定增益和循环稳定性即可",
+                "state": "ok",
+            },
+        ]
+
+    if best_income is not None:
+        attribute_value = f"{best_income['label']}{best_income['points_needed_text']}"
+        if second_income is not None:
+            attribute_value += f"，或{second_income['label']}{second_income['points_needed_text']}"
+        attribute_detail = "按当前样本边际收益线性估算"
+        attribute_state = "warning"
+    else:
+        attribute_value = "暂无可靠属性样本"
+        attribute_detail = "建议先提升整体装分后重新评级"
+        attribute_state = "muted"
+    return [
+        {
+            "key": "threshold",
+            "index": 1,
+            "title": f"补齐{target['bottleneck_text']}阈值",
+            "value": f"目标门槛 {target['required_dps_text']} DPS",
+            "detail": route_detail,
+            "state": "warning",
+        },
+        {
+            "key": "dps_gap",
+            "index": 2,
+            "title": f"提高 {target['gap_dps_text']} DPS",
+            "value": (
+                f"相对当前约 {target['gap_percent_text']}"
+                if target["gap_percent"] is not None
+                else "当前DPS为 0，暂无法换算比例"
+            ),
+            "detail": "以试炼预期DPS为准",
+            "state": "warning",
+        },
+        {
+            "key": "attribute",
+            "index": 3,
+            "title": priority_text,
+            "value": attribute_value,
+            "detail": attribute_detail,
+            "state": attribute_state,
+        },
+    ]
+
+
+def _prepare_trial_land(raw: Any) -> dict[str, Any] | None:
+    if raw is None:
+        return None
+    if not isinstance(raw, dict):
+        return {
+            "status": "failed",
+            "message": "试炼之地预估返回格式异常，已跳过展示。",
+        }
+
+    status = str(raw.get("status") or "").strip().lower().replace("-", "_").replace(" ", "_")
+    if status in {"not_applicable", "not_applicable_to_role", "skipped", "disabled"}:
+        return None
+    if status != "ok":
+        warnings = raw.get("warnings")
+        warning = next(
+            (str(item).strip() for item in warnings if str(item).strip()),
+            "",
+        ) if isinstance(warnings, list) else ""
+        message = str(raw.get("message") or warning or "试炼之地预估暂不可用。").strip()
+        if len(message) > 120:
+            message = message[:117] + "..."
+        return {
+            "status": "failed",
+            "message": message,
+        }
+
+    metric = str(raw.get("metric") or "").strip().lower()
+    dps = _trial_land_int(raw.get("dps"))
+    max_floor = _trial_land_int(raw.get("max_floor"))
+    if metric != "raw_dps" or dps is None or dps < 0 or max_floor is None or max_floor < 0:
+        return {
+            "status": "failed",
+            "message": "试炼之地预估数据不完整，已跳过展示。",
+        }
+
+    stages = _as_dict(raw.get("stages"))
+    boss_names = _trial_land_boss_name_map(raw.get("bosses"))
+    first_bosses = _trial_land_boss_names(stages.get("first"), boss_names)[:1]
+    second_bosses = _trial_land_boss_names(stages.get("second"), boss_names)[:2]
+    if len(first_bosses) != 1 or len(second_bosses) != 2:
+        return {
+            "status": "failed",
+            "message": "试炼之地预估缺少推荐首领，已跳过展示。",
+        }
+    capped = _trial_land_bool(raw.get("capped"))
+    max_floor_text = f"{max_floor}层" if max_floor > 0 else "未通过第1层"
+    target = _prepare_trial_land_target(raw.get("target"), boss_names)
+    selected_boss_ids = set(
+        target["selected_boss_ids"]
+        if target is not None
+        else _trial_land_selected_boss_ids(stages)
+    )
+    data_max_floor = _trial_land_int(_as_dict(raw.get("data")).get("max_floor"))
+    boss_rows = _prepare_trial_land_boss_rows(
+        raw.get("bosses"),
+        selected_boss_ids=selected_boss_ids,
+        data_max_floor=data_max_floor,
+    )
+    attribute_incomes = _prepare_trial_land_attribute_incomes(raw.get("attribute_incomes"), target)
+    buffs = _as_dict(raw.get("buffs"))
+    wine_locked_for_haste = _trial_land_bool(_as_dict(raw.get("haste")).get("wine_locked_for_haste"))
+    selected = _as_dict(buffs.get("selected"))
+    consumables = []
+    for key, label in (
+        ("wine", "酒"),
+        ("creative_food", "创意料理"),
+        ("ointment", "香膏"),
+    ):
+        raw_item = selected.get(key)
+        name, code = _trial_land_item_fields(raw_item)
+        name = name or "未提供"
+        consumables.append(
+            {
+                "key": key,
+                "label": label,
+                "name": name,
+                "code": code,
+                "group": "择优增益",
+                "icon": _adaptive_icon({"name": name, "codes": [code] if code else []}),
+            }
+        )
+    fixed_consumables = []
+    for index, item in enumerate(buffs.get("fixed") if isinstance(buffs.get("fixed"), list) else []):
+        name, code = _trial_land_item_fields(item)
+        if not name:
+            continue
+        if code == "BLSZY" or "百炼水煮鱼" in name:
+            base_key = "fish"
+            label = "百炼水煮鱼"
+            display_order = 2
+        elif "INGOT" in code or "熔锭" in name:
+            base_key = "ingot"
+            label = "熔锭"
+            display_order = 1
+        else:
+            base_key = f"fixed_{index + 1}"
+            label = "固定增益"
+            display_order = index + 3
+        key = base_key
+        if any(existing["key"] == key for existing in fixed_consumables):
+            key = f"{base_key}_{index + 1}"
+        fixed_consumables.append(
+            {
+                "key": key,
+                "label": label,
+                "name": name,
+                "code": code,
+                "group": "固定增益",
+                "icon": _adaptive_icon({"name": name, "codes": [code] if code else []}),
+                "_display_order": display_order,
+            }
+        )
+    fixed_consumables.sort(key=lambda item: item["_display_order"])
+    for item in fixed_consumables:
+        item.pop("_display_order", None)
+    return {
+        "status": "ok",
+        "max_floor": max_floor,
+        "max_floor_text": max_floor_text,
+        "raw_dps": dps,
+        "raw_dps_text": _format_number(dps),
+        "expected_dps_text": _format_number(dps),
+        "capped": capped,
+        "first_bosses": first_bosses,
+        "second_bosses": second_bosses,
+        "target_available": target is not None,
+        "target": target,
+        "summary_metrics": _trial_land_summary_metrics(
+            max_floor_text=max_floor_text,
+            expected_dps=dps,
+            capped=capped,
+            target=target,
+            wine_locked_for_haste=wine_locked_for_haste,
+        ),
+        "boss_rows": boss_rows,
+        "boss_rows_complete": len(boss_rows) == 9,
+        "optimization_steps": _trial_land_optimization_steps(target, attribute_incomes),
+        "attribute_incomes": attribute_incomes,
+        "fixed_consumables": fixed_consumables,
+        "consumables": consumables,
+        "consumable_items": [*consumables, *fixed_consumables],
+    }
 
 
 def _equipment_rating_timeline_loop_payload(meta: dict[str, Any]) -> dict[str, Any] | None:
@@ -1661,6 +2217,11 @@ async def render_equipment_rating_image(
     kungfu = Kungfu.with_internel_id(meta["kungfu_id"])
     theme_color = kungfu.color if kungfu.name else "#4f6f87"
     is_therapy_rating = summary.get("metric") == "therapy_ruin_capacity"
+    trial_land = (
+        _prepare_trial_land(data.get("trial_land"))
+        if kungfu.abbr == "D" and not is_therapy_rating
+        else None
+    )
     role_info, basic_attrs, detail_attrs = _prepare_attributes(summary, kungfu, rating_equip)
     battle_time = _to_float(summary.get("battle_time"))
     haste_level = _haste_level(summary.get("current_haste"))
@@ -1710,6 +2271,7 @@ async def render_equipment_rating_image(
         detail_attrs=detail_attrs,
         attribute_incomes=_prepare_attribute_incomes(summary),
         adaptive_consumables=_prepare_adaptive_consumables(data.get("adaptive_consumables")),
+        trial_land=trial_land,
         equipment_rating_rank=rank_data,
         rating_timeline=_prepare_rating_timeline(timeline_data),
         equipment_rating_qrcode=_rating_group_qrcode(),
@@ -1964,7 +2526,8 @@ async def _finish_equipment_rating_calculation(
     role_id: str = "",
     global_role_id: int = 0,
 ):
-    data = await _request_equipment_rating_data(payload)
+    rating_payload = {**payload, "include_trial_land": True}
+    data = await _request_equipment_rating_data(rating_payload)
     if isinstance(data, str):
         await matcher.finish(data)
     if global_role_id <= 0 and rating_equip is not None:
