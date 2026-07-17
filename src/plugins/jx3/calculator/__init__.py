@@ -1,6 +1,8 @@
 from pathlib import Path
 from typing import Any, cast, Callable
+from jinja2 import Template
 from nonebot import on_command
+from nonebot.log import logger
 from nonebot.params import CommandArg, Arg, RawCommand
 from nonebot.typing import T_State
 from nonebot.matcher import Matcher
@@ -46,7 +48,9 @@ from .traverse import (
     save_rating_cache,
 )
 from .rdps import BLACalculator, TRDCalculator
-from .jcl_analyze import CQCAnalyze, FALAnalyze, YXCAnalyze, RODAnalyze, HPSAnalyze, CALAnalyze, ASNAnalyze, THRAnalyze, THFAnalyze, LGZAnalyze, LNXAnalyze
+from .jcl_analyze import CQCAnalyze, FALAnalyze, YXCAnalyze, RODAnalyze, DPSAnalyze, CALAnalyze, ASNAnalyze, THRAnalyze, THFAnalyze, LGZAnalyze, LNXAnalyze
+from ._template import calculator_timeline_template, custom_loop_help_template
+
 from .therapy_panel import therapy_panel
 from . import equipment_rating as equipment_rating_module
 import re
@@ -166,105 +170,7 @@ async def _render_custom_loop_help_image():
     jcl_export_image = Path(
         build_path(ASSETS, ["image", "jx3", "calculator", "custom_loop_jcl_export.png"])
     ).as_uri()
-    html_source = """
-<!doctype html>
-<html>
-<head>
-<meta charset="utf-8">
-<style>
-body { margin: 0; background: #edf1f7; font-family: "Microsoft YaHei", "PingFang SC", Arial, sans-serif; color: #202638; }
-.guide { width: 920px; box-sizing: border-box; padding: 34px; background: #f7f9fc; }
-.header { padding: 28px 30px; background: #243149; color: #fff; border-radius: 8px; }
-.eyebrow { font-size: 18px; color: #b9c7dc; font-weight: 700; }
-.title { margin-top: 8px; font-size: 34px; line-height: 1.22; font-weight: 900; }
-.subtitle { margin-top: 12px; font-size: 18px; color: #d8e0ed; line-height: 1.6; }
-.section { margin-top: 18px; padding: 24px 26px; background: #fff; border: 1px solid #e0e5ef; border-radius: 8px; }
-.section-title { font-size: 24px; font-weight: 900; margin-bottom: 18px; color: #1f2937; }
-.section-subtitle { margin-top: -8px; margin-bottom: 15px; color: #5d687a; font-size: 17px; line-height: 1.55; }
-.image-frame { overflow: hidden; border-radius: 8px; border: 1px solid #d8e0ec; background: #111827; }
-.guide-image { display: block; width: 100%; height: auto; }
-.caption { margin-top: 10px; color: #5f6878; font-size: 16px; line-height: 1.55; }
-.steps { display: grid; gap: 12px; }
-.step { display: grid; grid-template-columns: 42px 1fr; gap: 14px; align-items: start; }
-.num { width: 42px; height: 42px; border-radius: 50%; background: #2f6bff; color: #fff; display: flex; align-items: center; justify-content: center; font-size: 19px; font-weight: 900; }
-.text { min-height: 42px; display: flex; align-items: center; font-size: 19px; line-height: 1.62; color: #333b4d; }
-.code { margin: 10px 0 4px; padding: 13px 15px; border-radius: 6px; background: #f1f5fb; border: 1px solid #d9e2ef; font-size: 20px; font-weight: 800; color: #1d2b44; }
-.example { display: inline-block; margin: 6px 10px 0 0; padding: 9px 12px; background: #fff8e6; border: 1px solid #f2d17a; border-radius: 6px; color: #62430b; font-size: 17px; font-weight: 700; }
-.note { margin-top: 16px; padding: 14px 16px; background: #edf7ef; border: 1px solid #b7dfbf; border-radius: 6px; color: #275431; font-size: 18px; line-height: 1.6; font-weight: 700; }
-.usage { display: grid; gap: 10px; }
-.usage-item { padding: 13px 15px; background: #f7f9fc; border: 1px solid #e0e5ef; border-radius: 6px; font-size: 18px; line-height: 1.6; color: #343d50; }
-.command { color: #1f57d6; font-weight: 900; }
-.footer { margin-top: 16px; color: #697386; font-size: 15px; text-align: right; }
-</style>
-</head>
-<body>
-<div class="guide">
-  <div class="header">
-    <div class="eyebrow">自定义循环 help</div>
-    <div class="title">如何制作一个专属于自己的 JCL 计算器循环</div>
-    <div class="subtitle">按要求录制木桩 JCL，上传群文件后即可作为自己的计算器循环使用。</div>
-  </div>
-  <div class="section">
-    <div class="section-title">制作 JCL</div>
-    <div class="steps">
-      <div class="step"><div class="num">1</div><div class="text">先按照图片这样勾选设置。</div></div>
-      <div class="step"><div class="num">2</div><div class="text">去木桩面前。</div></div>
-      <div class="step"><div class="num">3</div><div class="text">开始打。</div></div>
-      <div class="step"><div class="num">4</div><div class="text">打到你认为 OK 的时间，点伤害统计清空（用来验证 DPS 是否正确），随后停手 F1 选中自己。</div></div>
-      <div class="step"><div class="num">5</div><div class="text">点 JCL 文件位置，找到你刚刚打的木桩 JCL 文件。</div></div>
-      <div class="step"><div class="num">6</div><div class="text">按下面格式命名：</div></div>
-    </div>
-    <div class="code">CAL-心法名-加速阈值-紫武/橙武-循环名.jcl</div>
-    <div class="example">CAL-隐龙诀-30158-紫武-测试1.jcl</div>
-    <div class="example">CAL-莫问-19285-橙武-测试2.jcl</div>
-    <div class="steps" style="margin-top: 16px;">
-      <div class="step"><div class="num">7</div><div class="text">上传群文件。</div></div>
-    </div>
-    <div class="note">至此，JCL 已经导入成功，接下来是计算。</div>
-  </div>
-  <div class="section">
-    <div class="section-title">JCL 导出方法</div>
-    <div class="section-subtitle">打开插件集的角色统计界面，切到装备统计页，点击右上角导出。弹出的文本内容用于确认当前装备数据；JCL 文件本体仍按上面的步骤从 JCL 文件位置找到并上传。</div>
-    <div class="image-frame"><img class="guide-image" src="__JCL_EXPORT_IMAGE__"></div>
-    <div class="caption">图中红框位置：装备统计页签与导出按钮。</div>
-  </div>
-  <div class="section">
-    <div class="section-title">使用自定义循环</div>
-    <div class="usage">
-      <div class="usage-item">1. 发送 <span class="command">偏好 计算器来源 自定义</span> 可以使用上传的 JCL。</div>
-      <div class="usage-item">2. 发送 <span class="command">偏好 计算器来源 公用</span> 可以恢复使用公用循环库。</div>
-      <div class="usage-item">3. 按原本的计算器命令正常使用即可，包括 T计算器、DPS计算器、装备对比等均可。</div>
-    </div>
-  </div>
-  <div class="section">
-    <div class="section-title">提交公有循环</div>
-    <div class="usage">
-      <div class="usage-item">1. 发送 <span class="command">提交公有循环</span>，机器人会返回你上传过的自定义循环列表；也可以发送 <span class="command">提交公有循环 心法名</span> 只看指定心法。</div>
-      <div class="usage-item">2. 发送要提交的编号后，循环会进入审批群待审；审批通过后会移动到公用循环库。</div>
-      <div class="usage-item">3. 示例：<span class="command">提交公有循环 莫问</span>，列表返回后发送 <span class="command">1</span>。</div>
-    </div>
-  </div>
-  <div class="section">
-    <div class="section-title">变更循环名字</div>
-    <div class="usage">
-      <div class="usage-item">1. 发送 <span class="command">循环改名 心法名</span>，机器人会列出你提供的公有循环和对应私有循环。</div>
-      <div class="usage-item">2. 发送要改名的编号后，再发送新的循环名；只会变更文件名里的循环名部分。</div>
-      <div class="usage-item">3. 拥有改名权限的用户可发送 <span class="command">循环改名 QQ号 心法名</span> 变更指定用户提供的循环。</div>
-    </div>
-  </div>
-  <div class="section">
-    <div class="section-title">删除自定义循环</div>
-    <div class="usage">
-      <div class="usage-item">1. 发送 <span class="command">删除循环 心法名</span>，机器人会返回该心法循环列表；再发送编号删除单个或多个循环。</div>
-      <div class="usage-item">2. 发送 <span class="command">删除循环all 心法名</span>，删除该心法下你上传的全部自定义循环。</div>
-      <div class="usage-item">3. 示例：<span class="command">删除循环 莫问</span>，列表返回后发送 <span class="command">1,2</span>；或发送 <span class="command">删除循环all 莫问</span>。</div>
-    </div>
-  </div>
-  <div class="footer">命令：自定义循环 help</div>
-</div>
-</body>
-</html>
-""".replace("__JCL_EXPORT_IMAGE__", html.escape(jcl_export_image, quote=True))
+    html_source = custom_loop_help_template.replace("__JCL_EXPORT_IMAGE__", html.escape(jcl_export_image, quote=True))
     return await generate(
         html_source,
         ".guide",
@@ -1158,87 +1064,18 @@ async def _render_damage_timeline_image(
     if game_mode:
         subtitle_text = "期权模拟 · 标的：滚动DPS收盘价 · T随机15/30/45/60s · 权利金3%"
         badge_text = "看涨 / 看跌 / 自动行权"
-    html_source = f"""
-<!doctype html>
-<html>
-<head>
-<meta charset="utf-8">
-<style>
-body {{ margin: 0; background: #edf1f7; font-family: "Microsoft YaHei", "PingFang SC", Arial, sans-serif; color: #1f2430; }}
-body.kline-page {{ background: #05070b; color: #e5e7eb; }}
-.canvas {{ width: 1040px; padding: 34px; background: #f7f9fc; }}
-.canvas.kline-mode {{ background: #05070b; padding: 28px; }}
-.header {{ display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 22px; }}
-.title {{ font-size: 34px; font-weight: 800; }}
-.subtitle {{ margin-top: 8px; color: #697386; font-size: 18px; }}
-.badge {{ color: #fff; background: #263247; border-radius: 6px; padding: 8px 12px; font-weight: 700; }}
-.panel {{ background: #fff; border: 1px solid #e2e6ef; border-radius: 8px; padding: 22px; margin-bottom: 18px; }}
-.legend {{ display: flex; gap: 14px; flex-wrap: wrap; margin-bottom: 16px; }}
-.legend-item {{ font-size: 16px; color: #4d5668; }}
-.legend-item i {{ display: inline-block; width: 18px; height: 5px; border-radius: 5px; margin-right: 7px; vertical-align: middle; }}
-.stats {{ display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }}
-.stat-card {{ border-left: 5px solid #2F6BFF; background: #fafbfe; border-radius: 6px; padding: 14px; }}
-.stat-title {{ font-size: 18px; font-weight: 800; }}
-.stat-grid {{ display: grid; grid-template-columns: 1fr 1fr; gap: 6px 12px; margin-top: 10px; color: #566074; font-size: 14px; }}
-.stat-grid b {{ color: #1f2430; }}
-.kline-mode .header {{ margin-bottom: 18px; padding-bottom: 18px; border-bottom: 1px solid #172033; }}
-.kline-mode .title {{ color: #f8fafc; font-size: 30px; letter-spacing: 0; }}
-.kline-mode .subtitle {{ color: #94a3b8; font-size: 15px; }}
-.kline-mode .badge {{ background: #0b111b; border: 1px solid #243244; color: #cbd5e1; border-radius: 4px; }}
-.kline-mode .panel {{ background: #080d14; border-color: #1b2533; border-radius: 4px; }}
-.kline-mode .legend {{ margin-bottom: 14px; }}
-.kline-mode .legend-item {{ color: #cbd5e1; }}
-.kline-mode .stat-card {{ background: #0b111b; border: 1px solid #1e293b; border-left: 4px solid #2F6BFF; border-radius: 4px; }}
-.kline-mode .stat-title {{ color: #e5e7eb; }}
-.kline-mode .stat-grid {{ color: #8492a6; }}
-.kline-mode .stat-grid b {{ color: #f8fafc; }}
-.chart-title {{ font-size: 21px; font-weight: 800; margin-bottom: 8px; }}
-.chart {{ width: 100%; height: 350px; overflow: visible; }}
-.axis-label {{ fill: #858da0; font-size: 13px; }}
-.peak-label {{ font-size: 14px; font-weight: 700; }}
-.buff-frame {{ fill-opacity: 0.1; stroke-opacity: 0.42; stroke-width: 1.4; }}
-.buff-frame-label {{ font-size: 12px; font-weight: 800; opacity: 0.86; }}
-.kline-panel {{ background: #070A0F; border-color: #172033; }}
-.kline-mode .kline-panel {{ background: #05080d; padding: 20px 22px 18px; }}
-.kline-heading {{ color: #E5E7EB; margin-bottom: 4px; }}
-.kline-subtitle {{ color: #8B95A7; font-size: 14px; margin-bottom: 8px; }}
-.kline-chart {{ width: 100%; height: 456px; overflow: visible; }}
-.kline-grid {{ stroke: #1C2430; stroke-width: 1; }}
-.kline-axis {{ stroke: #334155; stroke-width: 1.2; }}
-.kline-zero-axis {{ stroke: #64748B; stroke-width: 1.2; stroke-dasharray: 6 5; }}
-.kline-axis-label {{ fill: #8B95A7; font-size: 13px; }}
-.kline-ma-line {{ stroke-width: 2.2; stroke-linejoin: round; stroke-linecap: round; }}
-.kline-ma-line.ma5 {{ stroke: #FACC15; }}
-.kline-ma-line.ma10 {{ stroke: #38BDF8; }}
-.kline-ma-line.ma20 {{ stroke: #C084FC; }}
-.kline-ma-label {{ font-size: 13px; font-weight: 900; }}
-.kline-ma-label.ma5 {{ fill: #FACC15; }}
-.kline-ma-label.ma10 {{ fill: #38BDF8; }}
-.kline-ma-label.ma20 {{ fill: #C084FC; }}
-.kline-panel .buff-frame {{ fill-opacity: 0.08; stroke-opacity: 0.28; }}
-.kline-panel .buff-frame-label {{ font-size: 12px; font-weight: 800; opacity: 0.82; }}
-</style>
-</head>
-<body class="{body_class}">
-<div class="{canvas_class}">
-  <div class="header">
-    <div>
-      <div class="title">{html.escape(title)}</div>
-      <div class="subtitle">{subtitle_text}</div>
-    </div>
-    <div class="badge">{badge_text}</div>
-  </div>
-  <div class="panel">
-    <div class="legend">{"".join(legend_items)}</div>
-    <div class="stats">{"".join(stat_cards)}</div>
-  </div>
-  {f'<div class="panel kline-panel">{kline_chart}</div>' if kline_chart else ''}
-  {'' if kline_only else f'<div class="panel">{damage_chart}</div>'}
-  {'' if kline_only else f'<div class="panel">{dps_chart}</div>'}
-</div>
-</body>
-</html>
-"""
+    html_source = Template(calculator_timeline_template).render(
+        value_0=body_class,
+        value_1=canvas_class,
+        value_2=html.escape(title),
+        value_3=subtitle_text,
+        value_4=badge_text,
+        value_5=''.join(legend_items),
+        value_6=''.join(stat_cards),
+        value_7=f'<div class="panel kline-panel">{kline_chart}</div>' if kline_chart else '',
+        value_8='' if kline_only else f'<div class="panel">{damage_chart}</div>',
+        value_9='' if kline_only else f'<div class="panel">{dps_chart}</div>',
+    )
     return await generate(
         html_source,
         ".canvas",
@@ -3173,6 +3010,38 @@ def check_jcl_name(filename: str, prefix: str) -> bool:
     )
     return bool(pattern.match(filename[4:]))
 
+
+jcl_equipment_import_lock = asyncio.Lock()
+
+
+def _save_jcl_equipment(instance: JX3PlayerAttribute) -> None:
+    instance.validate()
+    instance.save()
+
+
+async def _import_jcl_equipment(url: str) -> tuple[int, int]:
+    response = await Request(url).get(timeout=600)
+    jcl_text = await asyncio.to_thread(
+        response.content.decode,
+        "gbk",
+        "replace"
+    )
+    attributes_data = await JX3PlayerAttribute.from_jcl(jcl_text)
+    saved = 0
+    failed = 0
+    async with jcl_equipment_import_lock:
+        for instance in attributes_data:
+            try:
+                await asyncio.to_thread(_save_jcl_equipment, instance)
+                saved += 1
+            except Exception as exc:
+                failed += 1
+                logger.warning(
+                    f"JCL 本地装备保存失败：{instance.name}"
+                    f"（{instance.global_role_id}）：{exc}"
+                )
+    return saved, failed
+
 @notice.handle()
 async def _(bot: Bot, event: GroupUploadNoticeEvent):
     analyzer: Callable | None = None
@@ -3188,8 +3057,8 @@ async def _(bot: Bot, event: GroupUploadNoticeEvent):
         analyzer = YXCAnalyze
     elif check_jcl_name(event.file.name, "ROD-"):
         analyzer = RODAnalyze
-    # elif check_jcl_name(event.file.name, "HPS-"):
-    #     analyzer = HPSAnalyze
+    elif check_jcl_name(event.file.name, "DPS-"):
+        analyzer = DPSAnalyze
     elif event.file.name.startswith("CAL-"):
         analyzer = CALAnalyze
     elif check_jcl_name(event.file.name, "ASN-"):
@@ -3215,8 +3084,16 @@ async def _(bot: Bot, event: GroupUploadNoticeEvent):
             bus_id = event.model_dump()["file"]["busid"]
             file_data = await bot.call_api("get_group_file_url", group_id=event.group_id, file_id=file_id, bus_id=bus_id)
             url = file_data["url"]
+        equipment_import_task = asyncio.create_task(_import_jcl_equipment(url))
         try:
-            image = await analyzer(event.file.name[4:], url, is_anonymous, event.user_id)
-            await bot.send_group_msg(group_id=event.group_id, message=Message(image))
-        except json.decoder.JSONDecodeError:
-            await bot.send_group_msg(group_id=event.group_id, message="啊哦，音卡的服务器目前似乎暂时有些小问题，请稍后再使用JCL分析？")
+            try:
+                image = await analyzer(event.file.name[4:], url, is_anonymous, event.user_id)
+                await bot.send_group_msg(group_id=event.group_id, message=Message(image))
+            except json.decoder.JSONDecodeError:
+                await bot.send_group_msg(group_id=event.group_id, message="啊哦，音卡的服务器目前似乎暂时有些小问题，请稍后再使用JCL分析？")
+        finally:
+            try:
+                saved, failed = await equipment_import_task
+                logger.info(f"JCL 本地装备导入完成：成功 {saved} 条，失败 {failed} 条")
+            except Exception as exc:
+                logger.warning(f"JCL 本地装备导入失败：{exc}")

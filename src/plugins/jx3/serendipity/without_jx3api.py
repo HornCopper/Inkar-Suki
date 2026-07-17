@@ -127,6 +127,7 @@ class JX3Serendipity:
         server: str,
         name: str,
         global_role_id: str = "",
+        role_id: str = "",
     ) -> list[dict]:
         """Supplement JX3API records with community and achievement data."""
         await self.get_my_data(server, name)
@@ -150,7 +151,31 @@ class JX3Serendipity:
                     "level": item["level"],
                     "time": 0,
                 }
-        return sort_dict_list(list(merged.values()), "time")[::-1]
+        result = sort_dict_list(list(merged.values()), "time")[::-1]
+        if role_id:
+            local_data: list[SerendipityData] | Any = serendipity_db.where_all(
+                SerendipityData(),
+                "server = ? AND roleId = ?",
+                server,
+                role_id,
+                default=[],
+            )
+            self.save(
+                local_data,
+                [
+                    {
+                        "name": item.get("event") or item.get("name"),
+                        "level": int(item.get("level") or 1),
+                        "time": int(item.get("time") or 0),
+                    }
+                    for item in result
+                    if item.get("event") or item.get("name")
+                ],
+                name,
+                server,
+                role_id,
+            )
+        return result
 
     def get_local_data(self, local_data: list[SerendipityData]) -> list[dict[str, int | str]]:
         result = []
@@ -190,14 +215,20 @@ class JX3Serendipity:
 
     @staticmethod
     def save(local_data: list[SerendipityData], remote_data: list[dict], name: str, server: str, uid: str, /):
-        local_names = [data.serendipityName for data in local_data]
+        local_by_name = {data.serendipityName: data for data in local_data}
         if len(local_data) > 0:
             if local_data[0].roleName != name: # player name changed
                 for data in local_data:
                     data.roleName = name
                     serendipity_db.save(data)
         for tp_serendipity in remote_data:
-            if tp_serendipity["name"] in local_names:
+            existing = local_by_name.get(tp_serendipity["name"])
+            if existing:
+                remote_time = int(tp_serendipity.get("time") or 0)
+                if remote_time > existing.time:
+                    existing.time = remote_time
+                    existing.level = int(tp_serendipity.get("level") or existing.level)
+                    serendipity_db.save(existing)
                 continue
             else:
                 serendipity_db.save(

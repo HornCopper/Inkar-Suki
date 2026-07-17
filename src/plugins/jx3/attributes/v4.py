@@ -1,11 +1,16 @@
 from pathlib import Path
+from typing import cast
 from jinja2 import Template
 
 from src.const.prompts import PROMPT
 from src.const.jx3.kungfu import Kungfu
+from src.const.jx3.server import Server
 from src.const.path import ASSETS, TEMPLATES, SHOW, build_path
 from src.utils.file import read
-from src.utils.network import cache_image
+from src.utils.network import Request, cache_image
+from src.utils.time import Time
+from src.utils.database import serendipity_db
+from src.utils.database.classes import SerendipityData, RoleData
 from src.utils.database.player import search_player
 from src.utils.generate import generate
 from src.templates import get_saohua
@@ -33,6 +38,59 @@ def _rating_icon_html(grade: str | None) -> str:
         'style="position: absolute; top: 32px; left: -20px; '
         'width: 42px; height: 42px; object-fit: contain; z-index: 3;">'
     )
+
+
+async def _get_role_qualification(role_info: RoleData) -> str:
+    server = Server(role_info.serverName)
+    params = {
+        "zone": server.zone,
+        "server": server.server,
+        "game_role_id": role_info.roleId,
+        "game_global_role_id": role_info.globalRoleId
+    }
+    try:
+        data = (await Request("https://m.pvp.xoyo.com/badge/get-role-badge-data", params=params).post(tuilan=True)).json()
+        if data["code"] != 0:
+            return ""
+        for badge in data["data"]["badge_data"]:
+            if badge["id"] == "10003":
+                return str(badge["value"])
+    except Exception:
+        return ""
+    return ""
+
+
+async def _get_latest_serendipity(role_info: RoleData) -> dict[str, str]:
+    records = cast(
+        list[SerendipityData],
+        serendipity_db.where_all(
+            SerendipityData(),
+            "server = ? AND (roleId = ? OR roleId = ? OR roleName = ?) AND time > 0",
+            role_info.serverName,
+            role_info.roleId,
+            role_info.globalRoleId,
+            role_info.roleName,
+            default=[],
+        ) or [],
+    )
+    latest = max(records, key=lambda record: record.time, default=None)
+
+    event_name = latest.serendipityName if latest else ""
+    level = int(latest.level or 1) if latest else 1
+    category = {2: "peerless", 3: "pet"}.get(level, "common")
+    icon_directory = Path(
+        build_path(
+            ASSETS,
+            ["image", "jx3", "serendipity", "serendipity", category],
+        )
+    )
+    icon_path = icon_directory / f"{event_name}.png"
+
+    return {
+        "name": event_name or "暂无记录",
+        "relative_time": Time().relate(latest.time) if latest else "尚无已记录时间的奇遇",
+        "icon": icon_path.as_uri() if icon_path.is_file() else "",
+    }
 
 async def parse_equip(equip: Equip, last: bool = False, rating_grade: str | None = None) -> str:
     result = Template(
@@ -140,6 +198,9 @@ async def get_attr_v4(server: str, name: str, conditions: str = ""):
     basic_info["心法"] = kungfu.name or "未知"
     basic_info["标识"] = role_info.roleId
     basic_info["全服"] = role_info.globalRoleId
+    qualification = await _get_role_qualification(role_info)
+    if qualification:
+        basic_info["资历"] = qualification
     main_attr, detailed_attr = split_display_attributes(current_equip.attributes, kungfu.abbr)
     all_equip_records = []
     for each_other_equip in other_equips:
@@ -160,6 +221,7 @@ async def get_attr_v4(server: str, name: str, conditions: str = ""):
                 tag=each_other_equip.tag,
                 score=each_other_equip.score,
                 msg=prefix + each_other_equip.tag,
+                saved_time=Time(each_other_equip.timestamp).format("%Y-%m-%d %H:%M"),
             )
         )
     rating_cache = get_latest_rating_cache(current_equip.equip_lines, current_equip.kungfu_id)
@@ -189,6 +251,7 @@ async def get_attr_v4(server: str, name: str, conditions: str = ""):
         for talent
         in current_equip.talents
     ]
+    latest_serendipity = await _get_latest_serendipity(role_info)
     image = await get_attr_v4_image(
         name=name,
         server=server,
@@ -200,7 +263,8 @@ async def get_attr_v4(server: str, name: str, conditions: str = ""):
         score=current_equip.score,
         kungfu_icon=kungfu.icon,
         equips=equips,
-        talents=talents
+        talents=talents,
+        latest_serendipity=latest_serendipity,
     )
     return image
 
@@ -215,7 +279,8 @@ async def get_attr_v4_image(
     score: int,
     kungfu_icon: str,
     equips: list[str],
-    talents: list[str]
+    talents: list[str],
+    latest_serendipity: dict[str, str],
 ):
     font = ASSETS + "/font/PingFangSC-Semibold.otf"
     fzjz_font = ASSETS + "/font/fzjz.ttf"
@@ -236,6 +301,7 @@ async def get_attr_v4_image(
         equips=equips,
         talents=talents,
         other_equips=all_equips,
+        latest_serendipity=latest_serendipity,
         font=font,
         fzjz_font=fzjz_font,
         saohua=get_saohua(),

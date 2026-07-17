@@ -10,7 +10,7 @@ template_equip = """
         <div style="color: rgb{{ color }}">{{ name }}（{{ quality }}）</div>
         <div class="attributes">{{ attr }}</div>
         <div class="source">{{ source }}</div>
-        <div class="source" style="color: rgb(255, 165, 0);font-size:14px">{{ effect }}</div>
+        <div class="source equipment-effect">{{ effect }}</div>
     </div>
     <div class="equipment-icons-wrapper">
         <p>{{ strength }}</p>
@@ -48,7 +48,8 @@ template_other = """
     <img src="{{ icon }}"
         style="width: 50px; height: 50px;">
     <div style="display: grid;">{{ kungfu }}·{{ tag }}（{{ score }}）<br>
-        <p style="font-size: 13px;">标签：{{ msg }}
+        <p style="font-size: 13px; margin: 0;">标签：{{ msg }}</p>
+        <p style="font-size: 13px; margin: 0; color: #888;">保存时间：{{ saved_time }}</p>
     </div>
 </div>"""
 

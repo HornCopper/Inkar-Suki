@@ -77,7 +77,7 @@ async def get_serendipity_image_v4(server: str, name: str):
         ).get()
         payload = response.json()
         records = await JX3Serendipity().merge_api_with_my_data(
-            payload.get("data") or [], server, name, player.globalRoleId
+            payload.get("data") or [], server, name, player.globalRoleId, player.roleId
         )
     else:
         records = await JX3Serendipity().integration(

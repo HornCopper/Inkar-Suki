@@ -153,6 +153,10 @@
                     "desc": "同步角色属性数据（等待 JX3API 提供相关接口后启用）"
                 },
                 {
+                    "name": "attribute.equipment.delete",
+                    "desc": "删除角色指定心法的装备缓存"
+                },
+                {
                     "name": "trade.item_alias.manage",
                     "desc": "新增物品别名映射"
                 },

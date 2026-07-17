@@ -6,6 +6,8 @@ import json
 import re
 from pathlib import Path
 from typing import Any, cast
+from jinja2 import Template
+
 
 from src.config import Config
 from src.const.path import ASSETS, build_path
@@ -19,6 +21,8 @@ from src.utils.time import Time
 
 from .compare import AttributesFull
 from .base import normalize_calculator_jcl_data
+from ._template import equipment_rating_result_template
+
 from .universe import UniversalCalculator
 
 
@@ -645,249 +649,21 @@ async def render_rating_table_image(
     rated_slots = html.escape(str(summary.get("rated_slots", 0)))
     total_slots = html.escape(str(summary.get("total_slots", 0)))
     source_note = f"评分由装备评级接口计算；最优解从候选装备与当前装备中共同取最高{metric_name}。"
-    html_source = f"""
-<!DOCTYPE html>
-<html lang="zh-CN">
-<head>
-<meta charset="UTF-8">
-<style>
-* {{
-    box-sizing: border-box;
-}}
-body {{
-    margin: 0;
-    width: 1600px;
-    background: #f5f6fa;
-    color: #333;
-    font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
-}}
-.container {{
-    --theme-color: #3f7fbf;
-    width: 1560px;
-    margin: 20px;
-    background: #fff;
-    border: 1px solid #ddd;
-    border-radius: 12px;
-    overflow: hidden;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-}}
-.header {{
-    display: flex;
-    align-items: flex-end;
-    justify-content: space-between;
-    gap: 24px;
-    padding: 24px;
-    background: #fafafa;
-    border-bottom: 1px solid #ddd;
-}}
-.title {{
-    font-size: 32px;
-    font-weight: 800;
-    line-height: 1.2;
-    color: var(--theme-color);
-    border-left: 5px solid var(--theme-color);
-    padding-left: 12px;
-}}
-.subtitle {{
-    margin-top: 8px;
-    font-size: 18px;
-    color: #555;
-    padding-left: 17px;
-}}
-.legend {{
-    max-width: 560px;
-    text-align: right;
-    font-size: 17px;
-    line-height: 1.55;
-    color: #777;
-}}
-.rating-total {{
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-    gap: 16px;
-    margin-bottom: 8px;
-}}
-.rating-total img {{
-    width: 58px;
-    height: 58px;
-    object-fit: contain;
-}}
-.total-score {{
-    font-size: 28px;
-    line-height: 1.1;
-    font-weight: 800;
-    color: var(--theme-color);
-}}
-.total-meta {{
-    margin-top: 4px;
-    font-size: 15px;
-    color: #777;
-}}
-table {{
-    width: calc(100% - 48px);
-    margin: 24px;
-    border-collapse: collapse;
-    table-layout: fixed;
-    overflow: hidden;
-    border-radius: 8px;
-    background: #fff;
-    border: 1px solid #eee;
-}}
-thead {{
-    background: var(--theme-color);
-    color: #fff;
-}}
-th {{
-    padding: 13px 12px;
-    font-size: 16px;
-    font-weight: 700;
-    text-align: left;
-    white-space: nowrap;
-}}
-td {{
-    padding: 12px;
-    font-size: 17px;
-    line-height: 1.35;
-    border-bottom: 1px solid #f0f0f0;
-    vertical-align: middle;
-}}
-tbody tr:nth-child(even) {{
-    background: #fafafa;
-}}
-tbody tr:last-child td {{
-    border-bottom: 0;
-}}
-.slot {{
-    font-weight: 800;
-    color: var(--theme-color);
-}}
-.grade-stack {{
-    position: relative;
-    width: 64px;
-    height: 64px;
-    margin: 0 auto;
-}}
-.grade-icon {{
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 64px;
-    height: 64px;
-    object-fit: contain;
-}}
-.rank,
-.percent,
-.dps,
-.diff {{
-    font-variant-numeric: tabular-nums;
-    white-space: nowrap;
-}}
-.percent {{
-    font-weight: 800;
-    color: var(--theme-color);
-}}
-.dps {{
-    color: #333;
-}}
-.equip {{
-    word-break: break-all;
-    color: #444;
-}}
-.equip-name {{
-    display: flex;
-    align-items: baseline;
-    gap: 7px;
-    font-weight: 800;
-    color: #333;
-}}
-.quality {{
-    display: inline-block;
-    min-width: 48px;
-    padding: 2px 6px;
-    border-radius: 6px;
-    background: #f0f0f0;
-    color: var(--theme-color);
-    font-size: 14px;
-    line-height: 1.3;
-    text-align: center;
-}}
-.attr {{
-    margin-top: 5px;
-    font-size: 14px;
-    line-height: 1.35;
-    color: #777;
-}}
-.diff {{
-    font-weight: 800;
-}}
-.plus {{
-    color: var(--theme-color);
-}}
-.best {{
-    color: var(--theme-color);
-}}
-.minus {{
-    color: #777;
-}}
-.note {{
-    font-size: 14px;
-    color: #777;
-}}
-.footer {{
-    margin-top: 0;
-    padding: 15px 24px;
-    background: #f0f0f0;
-    border-top: 1px solid #ddd;
-    text-align: center;
-    font-size: 16px;
-    color: #777;
-}}
-</style>
-</head>
-<body>
-<div class="container">
-    <div class="header">
-        <div>
-            <div class="title">{html.escape(title)}</div>
-            {subtitle_html}
-        </div>
-        <div class="legend">
-            <div class="rating-total">
-                <img src="{_asset_uri("image", "jx3", "equipment_rating", RANK_ICON_FILES.get(str(summary.get("grade", "D")), "rank_d.png"))}" alt="{total_grade}">
-                <div>
-                    <div class="total-score">{total_score_text} 分</div>
-                    <div class="total-meta">{metric_name} {current_dps_text} · 有效部位 {rated_slots}/{total_slots}</div>
-                </div>
-            </div>
-            <div>{source_note}</div>
-        </div>
-    </div>
-    <table>
-        <thead>
-            <tr>
-                <th style="width: 72px;">部位</th>
-                <th style="width: 86px;">评级</th>
-                <th style="width: 92px;">排名</th>
-                <th style="width: 90px;">评分</th>
-                <th style="width: 90px;">最优强度</th>
-                <th style="width: 122px;">当前{metric_unit}</th>
-                <th>当前装备</th>
-                <th style="width: 122px;">最优{metric_unit}</th>
-                <th>最优装备</th>
-                <th style="width: 116px;">差值</th>
-                <th style="width: 172px;">备注</th>
-            </tr>
-        </thead>
-        <tbody>
-            {''.join(rows)}
-        </tbody>
-    </table>
-    <div class="footer">单件评分、总评分和评级均来自装备评级接口。</div>
-</div>
-</body>
-</html>
-"""
+    html_source = Template(equipment_rating_result_template).render(
+        value_0=html.escape(title),
+        value_1=subtitle_html,
+        value_2=_asset_uri('image', 'jx3', 'equipment_rating', RANK_ICON_FILES.get(str(summary.get('grade', 'D')), 'rank_d.png')),
+        value_3=total_grade,
+        value_4=total_score_text,
+        value_5=metric_name,
+        value_6=current_dps_text,
+        value_7=rated_slots,
+        value_8=total_slots,
+        value_9=source_note,
+        value_10=metric_unit,
+        value_11=metric_unit,
+        value_12=''.join(rows),
+    )
     return await generate(
         html_source,
         ".container",

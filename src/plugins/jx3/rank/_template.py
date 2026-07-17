@@ -97,7 +97,7 @@ hps_template_img_weapon = """
     <span>{{ name }}({{ quality }})</span>
 </div>"""
 
-hps_template_body = """
+battle_rank_template_body = """
 <tr>
     <td class="short-column">
         <img src="{{ kungfu_icon }}" alt="icon" width="30" height="30">
@@ -105,8 +105,7 @@ hps_template_body = """
     <td class="short-column">{{ rank_num }}</td>
     <td class="short-column">{{ role_name }}</td>
     <td class="short-column">{{ role_server }}</td>
-    <td class="short-column">{{ hps }}</td>
-    <td class="short-column">{{ aps }}</td>
+    <td class="short-column">{{ primary_value }}</td>
     <td class="short-column">{{ time_cost }}</td>
     <td class="short-column">
         <div style="display: flex; align-items: center; gap: 10px;">

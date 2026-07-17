@@ -19,10 +19,11 @@ from src.const.prompts import PROMPT
 from src.utils.network import Request
 from src.utils.analyze import check_number
 from src.utils.database import db, logs_db
-from src.utils.database.classes import EquipReplacementLog, RoleData
+from src.utils.database.classes import EquipReplacementLog, PlayerEquipsCache, RoleData
 from src.utils.database.attributes import JX3PlayerAttribute, parse_conditions
 from src.utils.database.operation import get_group_settings
 from src.utils.database.player import search_player, get_uid_data
+from src.utils.permission import check_permission, denied
 
 from src.plugins.preferences.app import Preference
 from src.plugins.notice import notice
@@ -46,10 +47,16 @@ SPECIAL_PVE_KUNGFU_TAGS = {
     10821: "WXPVE",
 }
 
+
+def _is_attribute_selector(value: str) -> bool:
+    return bool(parse_conditions(value)) or Kungfu(value).id is not None
+
 ATTRIBUTE_IMAGE_SEND_FAILED = (
     "属性图已生成，但 QQ 富媒体上传失败。"
     "建议重启 napcat。"
 )
+
+DELETE_EQUIPMENT_PERMISSION_NODE = "jx3.attribute.equipment.delete"
 
 async def finish_attribute_response(matcher: type[Matcher], data: Any) -> None:
     try:
@@ -61,19 +68,80 @@ async def finish_attribute_response(matcher: type[Matcher], data: Any) -> None:
         except ActionFailed as fallback_exc:
             logger.warning(f"属性查询文本降级发送失败，已忽略本次发送错误：{fallback_exc}")
 
+
+delete_equipment_matcher = on_command(
+    "jx3_delete_equipment",
+    aliases={"删除装备"},
+    force_whitespace=True,
+    priority=5,
+)
+
+
+@delete_equipment_matcher.handle()
+async def _(event: GroupMessageEvent, args: Message = CommandArg()):
+    if not check_permission(event.user_id, DELETE_EQUIPMENT_PERMISSION_NODE):
+        await delete_equipment_matcher.finish(denied(DELETE_EQUIPMENT_PERMISSION_NODE))
+
+    parts = args.extract_plain_text().strip().split()
+    if len(parts) not in (3, 4):
+        await delete_equipment_matcher.finish(
+            "参考格式：删除装备 <服务器> <角色名> <心法> [标签]"
+        )
+
+    server_input, role_name, kungfu_name = parts[:3]
+    server = Server(server_input).server
+    if not server:
+        await delete_equipment_matcher.finish(PROMPT.ServerNotExist)
+    tag = parts[3].upper() if len(parts) == 4 else ""
+    kungfu = Kungfu(kungfu_name)
+    kungfu_id = kungfu.id
+    if kungfu_id is None:
+        await delete_equipment_matcher.finish(f"无法识别心法：{kungfu_name}")
+
+    role_info = await search_player(role_name=role_name, server_name=server)
+    if not role_info.globalRoleId:
+        await delete_equipment_matcher.finish(PROMPT.PlayerNotExist)
+
+    condition = "global_role_id = ? AND kungfu_id = ?"
+    condition_args: list[str | int] = [str(role_info.globalRoleId), kungfu_id]
+    if tag:
+        condition += " AND UPPER(tag) = ?"
+        condition_args.append(tag)
+
+    records = cast(
+        list[PlayerEquipsCache],
+        db.where_all(
+            PlayerEquipsCache(),
+            condition,
+            *condition_args,
+            default=[],
+        ) or [],
+    )
+    if not records:
+        scope = f"、标签 {tag}" if tag else ""
+        await delete_equipment_matcher.finish(
+            f"未找到 {server} {role_name} 的 {kungfu.name or kungfu_name}{scope} 装备。"
+        )
+
+    db.delete(PlayerEquipsCache(), condition, *condition_args)
+    scope = f"、标签 {tag}" if tag else "的全部标签"
+    await delete_equipment_matcher.finish(
+        f"已删除 {server} {role_name} 的 {kungfu.name or kungfu_name}{scope}装备，共 {len(records)} 条。"
+    )
+
 @attribute_matcher.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     if args.extract_plain_text() == "":
         return
     arg = args.extract_plain_text().strip().split(" ")
     if len(arg) not in [1, 2, 3]:
-        await attribute_matcher.finish(PROMPT.ArgumentCountInvalid + "\n参考格式：属性 <服务器> <角色名>\n参考格式：属性 [角色名·服务器]\n参加格式：属性 角色名·服务器")
+        await attribute_matcher.finish(PROMPT.ArgumentCountInvalid + "\n参考格式：属性 <服务器> <角色名> [标签/心法]\n参考格式：属性 <角色名> <标签/心法>（使用本群绑定服务器）\n参考格式：属性 <角色名·服务器>")
     if len(arg) == 1:
         server = None
         role_name = arg[0]
         tags = ""
     elif len(arg) == 2:
-        if parse_conditions(arg[-1]):
+        if _is_attribute_selector(arg[-1]):
             server = None
             role_name = arg[0]
             tags = arg[1]
@@ -124,13 +192,13 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
         return
     arg = args.extract_plain_text().strip().split(" ")
     if len(arg) not in [1, 2, 3]:
-        await attribute_v4_matcher.finish(PROMPT.ArgumentCountInvalid + "\n参考格式：属性v4 <服务器> <角色名>")
+        await attribute_v4_matcher.finish(PROMPT.ArgumentCountInvalid + "\n参考格式：属性v4 <服务器> <角色名> [标签/心法]\n参考格式：属性v4 <角色名> <标签/心法>（使用本群绑定服务器）")
     if len(arg) == 1:
         server = None
         role_name = arg[0]
         tags = ""
     elif len(arg) == 2:
-        if parse_conditions(arg[-1]):
+        if _is_attribute_selector(arg[-1]):
             server = None
             role_name = arg[0]
             tags = arg[1]
@@ -554,54 +622,70 @@ async def _(event: GroupMessageEvent, state: T_State, num: Message = Arg()):
     await replace_enchant_matcher.finish(f"已替换为 {enchant.name}，请尝试使用 属性 命令查询效果！")
 
 attribute_db_executor = ThreadPoolExecutor(max_workers=1)
+attribute_import_tasks: set[asyncio.Task[None]] = set()
+
+
+def _finish_attribute_import_task(task: asyncio.Task[None]) -> None:
+    attribute_import_tasks.discard(task)
+    try:
+        task.result()
+    except Exception as exc:
+        logger.exception(f"ATTR 文件后台导入失败：{exc}")
+
+
+async def _import_attribute_jcl(bot: Bot, event: GroupUploadNoticeEvent) -> None:
+    msg = "以下全局玩家ID完成入库："
+    try:
+        url = event.model_dump()["file"]["url"]
+    except KeyError:
+        file_id = event.model_dump()["file"]["id"]
+        bus_id = event.model_dump()["file"]["busid"]
+        file_data = await bot.call_api("get_group_file_url", group_id=event.group_id, file_id=file_id, bus_id=bus_id)
+        url = file_data["url"]
+    response = await Request(url).get()
+    if len(response.content) > 2 * 1024 * 1024 and "Preview" not in get_group_settings(event.group_id, "additions"):
+        return
+    jcl_text = await asyncio.to_thread(response.content.decode, "gbk", "replace")
+    attributes_data = await JX3PlayerAttribute.from_jcl(jcl_text)
+    if not attributes_data:
+        await bot.send_group_msg(group_id=event.group_id, message="未识别到可入库的属性数据。")
+        return
+    loop = asyncio.get_running_loop()
+    results = await asyncio.gather(*[
+        loop.run_in_executor(attribute_db_executor, save_attribute_instance, each_data)
+        for each_data in attributes_data
+    ], return_exceptions=True)
+    saved_data = [
+        each_data
+        for each_data, result in zip(attributes_data, results)
+        if not isinstance(result, BaseException)
+    ]
+    failed_data = [
+        format_attribute_save_error(each_data, cast(BaseException, result))
+        for each_data, result in zip(attributes_data, results)
+        if isinstance(result, BaseException)
+    ]
+    if not saved_data:
+        msg = "未发现可用装备数据，已跳过不可用数据。"
+    else:
+        msg = "以下全局玩家ID完成入库："
+    for each_data in saved_data:
+        msg += f"\n{each_data.name}（{each_data.global_role_id}）"
+    if failed_data:
+        msg += "\n以下装备数据不可用，已跳过："
+        for line in failed_data[:10]:
+            msg += f"\n{line[:160]}"
+        if len(failed_data) > 10:
+            msg += f"\n另有 {len(failed_data) - 10} 条不可用数据已跳过。"
+    await bot.send_group_msg(group_id=event.group_id, message=msg)
+
 
 @notice.handle()
 async def _(bot: Bot, event: GroupUploadNoticeEvent):
-    if event.file.name.endswith(".jcl"):
-        if event.file.name[:4] not in ["ATTR"]:
-            return
-        msg = "以下全局玩家ID完成入库："
-        try:
-            url = event.model_dump()["file"]["url"]
-        except KeyError:
-            file_id = event.model_dump()["file"]["id"]
-            bus_id = event.model_dump()["file"]["busid"]
-            file_data = await bot.call_api("get_group_file_url", group_id=event.group_id, file_id=file_id, bus_id=bus_id)
-            url = file_data["url"]
-        response = await Request(url).get()
-        response.encoding = "gbk"
-        jcl_text = response.text
-        if len(response.content) > 2 * 1024 * 1024 and "Preview" not in get_group_settings(event.group_id, "additions"):
-            return
-        attributes_data = await JX3PlayerAttribute.from_jcl(jcl_text)
-        if not attributes_data:
-            await bot.send_group_msg(group_id=event.group_id, message="未识别到可入库的属性数据。")
-            return
-        loop = asyncio.get_running_loop()
-        results = await asyncio.gather(*[
-            loop.run_in_executor(attribute_db_executor, save_attribute_instance, each_data)
-            for each_data in attributes_data
-        ], return_exceptions=True)
-        saved_data = [
-            each_data
-            for each_data, result in zip(attributes_data, results)
-            if not isinstance(result, BaseException)
-        ]
-        failed_data = [
-            format_attribute_save_error(each_data, cast(BaseException, result))
-            for each_data, result in zip(attributes_data, results)
-            if isinstance(result, BaseException)
-        ]
-        if not saved_data:
-            msg = "未发现可用装备数据，已跳过不可用数据。"
-        else:
-            msg = "以下全局玩家ID完成入库："
-        for each_data in saved_data:
-            msg += f"\n{each_data.name}（{each_data.global_role_id}）"
-        if failed_data:
-            msg += "\n以下装备数据不可用，已跳过："
-            for line in failed_data[:10]:
-                msg += f"\n{line[:160]}"
-            if len(failed_data) > 10:
-                msg += f"\n另有 {len(failed_data) - 10} 条不可用数据已跳过。"
-        await bot.send_group_msg(group_id=event.group_id, message=msg)
+    if not event.file.name.endswith(".jcl"):
+        return
+    if event.file.name[:4] != "ATTR":
+        return
+    task = asyncio.create_task(_import_attribute_jcl(bot, event))
+    attribute_import_tasks.add(task)
+    task.add_done_callback(_finish_attribute_import_task)

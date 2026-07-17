@@ -1,4 +1,5 @@
 from functools import cached_property, lru_cache
+from io import StringIO
 from typing import Literal, Any, cast, overload
 from typing_extensions import Self
 
@@ -1288,65 +1289,84 @@ class JX3PlayerAttribute:
 
     @classmethod
     async def from_jcl(cls, jcl_content: str, only_threapy: bool = False) -> list[Self]:
-        jcl_lines = jcl_content.strip().split("\n")
-        player_info_lines: dict[int, list] = {}
-        player_name: dict[int, str] = {}
-        for each_jcl_line in jcl_lines:
-            parts = each_jcl_line.strip().split("\t")
-            if len(parts) < 6 or parts[4] != "4":
-                continue
-            lua_table_raw = parts[5]
-            try:
-                lua_table = cast(list, await asyncio.to_thread(parse_luatable, lua_table_raw))
-            except Exception:
-                continue
-            if len(lua_table) >= 8:
-                try:
-                    global_role_id = int(lua_table[7])
-                except TypeError:
+        def parse_records() -> list[tuple[list, list[int], int, int, int, str]]:
+            global_id_pattern = re.compile(
+                r'(?:\[8\]\s*=\s*)?(?:"(\d+)"|(\d+))\s*}\s*$'
+            )
+            player_lines: dict[int, tuple[str, int]] = {}
+            for each_jcl_line in StringIO(jcl_content):
+                parts = each_jcl_line.split("\t", 5)
+                if len(parts) < 6 or parts[4] != "4":
                     continue
-                player_name[global_role_id] = lua_table[1]
-                if global_role_id not in player_info_lines or len(player_info_lines[global_role_id]) < len(lua_table):
-                    player_info_lines[global_role_id] = lua_table
+                lua_table_raw = parts[5]
+                match = global_id_pattern.search(lua_table_raw)
+                if not match:
+                    continue
+                global_role_id = int(match.group(1) or match.group(2))
+                try:
+                    timestamp = int(parts[2])
+                except ValueError:
+                    timestamp = Time().raw_time
+                if (
+                    global_role_id not in player_lines
+                    or len(player_lines[global_role_id][0]) < len(lua_table_raw)
+                ):
+                    player_lines[global_role_id] = (lua_table_raw, timestamp)
 
-        async def build_attr(global_role_id: int, lua_table: list):
-            try:
-                equips_lines = []
-                for each_equip in lua_table[5]:
-                    try:
-                        if int(each_equip[0]) in range(0, 13):
-                            equips_lines.append(each_equip)
-                    except (TypeError, ValueError, IndexError):
+            records = []
+            for expected_global_role_id, player_line in player_lines.items():
+                lua_table_raw, timestamp = player_line
+                try:
+                    lua_table = cast(list, parse_luatable(lua_table_raw))
+                    if len(lua_table) < 8:
                         continue
-                talents_lines = []
-                for each_talent in lua_table[6]:
-                    try:
-                        talents_lines.append(int(each_talent[1]))
-                    except (TypeError, ValueError, IndexError):
+                    global_role_id = int(lua_table[7])
+                    if global_role_id != expected_global_role_id:
                         continue
-                kungfu_id = Kungfu.with_internel_id(int(lua_table[3]), True).id
-            except (TypeError, ValueError, IndexError):
-                return None
-            if not equips_lines or kungfu_id is None:
-                return None
-            if only_threapy and kungfu_id not in [10080, 10028, 10176, 10448, 10626]:
-                return None
-            return cls(
+                    equips_lines = []
+                    for each_equip in lua_table[5]:
+                        try:
+                            if int(each_equip[0]) in range(0, 13):
+                                equips_lines.append(each_equip)
+                        except (TypeError, ValueError, IndexError):
+                            continue
+                    talents_lines = []
+                    for each_talent in lua_table[6]:
+                        try:
+                            talents_lines.append(int(each_talent[1]))
+                        except (TypeError, ValueError, IndexError):
+                            continue
+                    kungfu_id = Kungfu.with_internel_id(
+                        int(lua_table[3]), True
+                    ).id
+                except (TypeError, ValueError, IndexError, SyntaxError):
+                    continue
+                if not equips_lines or kungfu_id is None:
+                    continue
+                if only_threapy and kungfu_id not in [10080, 10028, 10176, 10448, 10626]:
+                    continue
+                records.append((
+                    equips_lines,
+                    talents_lines,
+                    kungfu_id,
+                    global_role_id,
+                    timestamp,
+                    str(lua_table[1])
+                ))
+            return records
+
+        records = await asyncio.to_thread(parse_records)
+        return [
+            cls(
                 equips_lines,
                 talents_lines,
-                cast(int, kungfu_id),
+                kungfu_id,
                 global_role_id,
-                name=player_name.get(global_role_id, "未知")
+                timestamp,
+                name=player_name
             )
-        tasks = []
-        for rid, lua in player_info_lines.items():
-            instance = build_attr(rid, lua)
-            if instance is not None:
-                tasks.append(instance)
-        return [
-            instance
-            for instance in await asyncio.gather(*tasks)
-            if instance is not None
+            for equips_lines, talents_lines, kungfu_id, global_role_id, timestamp, player_name
+            in records
         ]
 
     @overload
@@ -1360,6 +1380,7 @@ class JX3PlayerAttribute:
     @classmethod
     async def from_database(cls, global_role_id: int, tag: str = "", all: bool = False) -> Self | list[Self] | None:
         tags = parse_conditions(tag)
+        requested_kungfu_id = Kungfu(tag).id
         all_equips: list[PlayerEquipsCache] | Any = db.where_all(PlayerEquipsCache(), "global_role_id = ?", str(global_role_id), default=[])
         if not all_equips:
             return None
@@ -1382,7 +1403,14 @@ class JX3PlayerAttribute:
             return None
         final_equips = usable_equips
         final_equip: tuple[PlayerEquipsCache, Self] | None = None
-        if not tags:
+        if requested_kungfu_id is not None:
+            matching_equips = [
+                equip for equip in final_equips
+                if equip[0].kungfu_id == requested_kungfu_id
+            ]
+            if matching_equips:
+                final_equip = max(matching_equips, key=lambda equip: equip[0].timestamp)
+        elif not tags:
             final_equip = max(final_equips, key=lambda x: x[0].timestamp)
         else:
             for each_tag in ["PVE", "PVP", "PVX"]:

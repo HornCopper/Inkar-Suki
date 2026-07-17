@@ -18,7 +18,7 @@ from src.templates import HTMLSourceCode
 from .dungeon import get_rank
 from .experience import get_zlrank
 from .game import GAME_RANK_NAMES, get_game_rank
-from .hps import get_hps_rank
+from .hps import get_battle_rank
 from .team import parse_team_rank_data
 
 from ._template import cqcrank_template_body, cqcrank_table_head
@@ -295,19 +295,25 @@ async def _(event: GroupMessageEvent, raw_arg: Message = CommandArg()):
         msg = await parse_team_rank_data(dungeon_name, dungeon_mode, boss_name)
         await team_rank_matcher.finish(msg)
 
-hps_rank_matcher = on_command("jx3_hps_rank", aliases={"HPS排行榜", "HPS天梯", "hps排行榜", "hps天梯"}, priority=5)
+battle_rank_matcher = on_command(
+    "jx3_battle_rank", aliases={"天梯", "天梯榜"}, priority=5
+)
 
-@hps_rank_matcher.handle()
+
+@battle_rank_matcher.handle()
 async def _(event: GroupMessageEvent, msg: Message = CommandArg()):
     if msg.extract_plain_text() == "":
         return
     args = msg.extract_plain_text().strip().split(" ")
     if len(args) != 2:
-        await hps_rank_matcher.finish(PROMPT.ArgumentCountInvalid + "\n参考格式：HPS排行榜 <首领名> <心法名>")
+        await battle_rank_matcher.finish(
+            PROMPT.ArgumentCountInvalid
+            + "\n参考格式：天梯 <首领名> <心法名>"
+        )
     boss_name = args[0]
     kungfu_name = args[1]
-    result = await get_hps_rank(kungfu_name, boss_name)
-    await hps_rank_matcher.finish(result)
+    result = await get_battle_rank(kungfu_name, boss_name)
+    await battle_rank_matcher.finish(result)
 
 thrrank_carry = on_command("jx3_thr_carry", aliases={"唐怀仁大C榜"}, priority=5, force_whitespace=True)
 

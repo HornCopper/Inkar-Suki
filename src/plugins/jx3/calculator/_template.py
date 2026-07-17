@@ -888,3 +888,735 @@ lnx_template_body = """
 </body>
 </html>
 """
+equipment_rating_help_template = r"""
+
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<script>
+window.MathJax = {
+  tex: {
+    inlineMath: [["\\(", "\\)"]],
+    displayMath: [["\\[", "\\]"]]
+  },
+  svg: { fontCache: "global" }
+};
+</script>
+<script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+<style>
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  width: 980px;
+  background: #f3f6f9;
+  color: #202630;
+  font-family: "Microsoft YaHei", "PingFang SC", Arial, sans-serif;
+}
+.guide {
+  width: 980px;
+  padding: 36px;
+  background: #f3f6f9;
+}
+.hero {
+  padding: 30px 34px;
+  border-radius: 8px;
+  background: #243149;
+  color: #fff;
+}
+.eyebrow {
+  font-size: 18px;
+  line-height: 1.25;
+  color: #b9c7dc;
+  font-weight: 800;
+}
+.title {
+  margin-top: 8px;
+  font-size: 34px;
+  line-height: 1.2;
+  font-weight: 900;
+}
+.subtitle {
+  margin-top: 12px;
+  max-width: 820px;
+  font-size: 18px;
+  line-height: 1.65;
+  color: #d9e2ee;
+}
+.section {
+  margin-top: 18px;
+  padding: 24px 26px;
+  border: 1px solid #e0e5ed;
+  border-radius: 8px;
+  background: #fff;
+}
+.section-title {
+  margin-bottom: 14px;
+  font-size: 24px;
+  line-height: 1.25;
+  font-weight: 900;
+  color: #18202c;
+}
+.steps {
+  display: grid;
+  gap: 11px;
+}
+.step {
+  display: grid;
+  grid-template-columns: 34px 1fr;
+  gap: 12px;
+  align-items: start;
+  font-size: 18px;
+  line-height: 1.62;
+  color: #333b4d;
+}
+.num {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #2f6bff;
+  color: #fff;
+  font-size: 16px;
+  font-weight: 900;
+}
+.command {
+  display: inline-block;
+  padding: 2px 7px;
+  border-radius: 5px;
+  background: #edf2ff;
+  color: #2354d6;
+  font-weight: 900;
+}
+.examples {
+  margin-top: 9px;
+  display: grid;
+  gap: 7px;
+  font-size: 16px;
+  line-height: 1.45;
+  color: #5a6473;
+}
+.formula-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+.formula-block {
+  min-width: 0;
+  padding: 18px;
+  border: 1px solid #dde5ef;
+  border-radius: 8px;
+  background: #f8fafc;
+}
+.formula-title {
+  font-size: 18px;
+  font-weight: 900;
+  color: #253044;
+}
+.formula {
+  margin: 12px 0;
+  min-height: 68px;
+  overflow: hidden;
+  color: #141a24;
+}
+.formula-note {
+  font-size: 15px;
+  line-height: 1.55;
+  color: #5b6574;
+}
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px;
+}
+.chip {
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: #f5f7fb;
+  border: 1px solid #dfe5ee;
+  color: #303848;
+  font-size: 16px;
+  font-weight: 900;
+}
+.notice {
+  padding: 18px 20px;
+  border-left: 5px solid #ff8a00;
+  background: #fff7e8;
+  color: #563813;
+  font-size: 18px;
+  line-height: 1.65;
+  font-weight: 800;
+}
+.footer {
+  margin-top: 18px;
+  color: #7a8392;
+  font-size: 14px;
+  text-align: right;
+}
+</style>
+</head>
+<body>
+<div class="guide">
+  <div class="hero">
+    <div class="eyebrow">装备评级 help</div>
+    <div class="title">评级给出的评分只能够衡量当前配装距离毕业的程度</div>
+    <div class="subtitle">输出与防御心法会在同一条评级 JCL、同一套默认评级增益下比较当前部位、空槽样本和候选装备；奶妈心法使用承压模型，以目标破产概率下的最大每秒承伤作为评分指标。</div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">使用步骤</div>
+    <div class="steps">
+      <div class="step"><div class="num">1</div><div>先提交属性：<span class="command">提交属性 &lt;服务器&gt; &lt;角色名&gt; &lt;心法&gt; &lt;茗伊装备导出码&gt;</span></div></div>
+      <div class="step"><div class="num">2</div><div>再执行评级：<span class="command">装备评级 &lt;服务器&gt; &lt;角色名/ID&gt; [&lt;心法&gt;] [评级列表]</span> 或 <span class="command">装备评级 &lt;魔盒配装ID&gt; [评级列表]</span>
+        <div class="examples">
+          <div>角色名：<span class="command">装备评级 剑胆琴心 倦收天</span></div>
+          <div>评级列表：<span class="command">装备评级 剑胆琴心 倦收天 评级列表</span></div>
+          <div>魔盒配装：<span class="command">装备评级 123456 评级列表</span></div>
+        </div>
+      </div></div>
+      <div class="step"><div class="num">3</div><div>查看支持心法：<span class="command">装备评级支持</span> 或 <span class="command">装备评级支持 &lt;心法名&gt;</span></div></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">评级依据</div>
+    <div class="steps">
+      <div class="step"><div class="num">A</div><div>每个部位会计算三类样本：当前装备、去掉该部位后的空槽样本、同部位候选装备。</div></div>
+      <div class="step"><div class="num">B</div><div>所有样本使用同一条评级 JCL 和默认评级增益，避免把循环和增益差异混进装备评分。</div></div>
+      <div class="step"><div class="num">C</div><div>“最优候选”来自当前候选池中评级指标最高的该部位装备；输出与防御心法看修正 DPS，奶妈心法看承压能力。</div></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">奶妈承压评级依据</div>
+    <div class="steps">
+      <div class="step"><div class="num">H</div><div>直接使用装备面板的治疗量、会心、会效和加速。不考虑装备特效，心法特性，纯静态面板计算。</div></div>
+      <div class="step"><div class="num">T</div><div>高压窗口 \(T=10\) 秒，血量上限 \(U=3200000\)，目标破产概率 \(q=5\%\)。伤害从 \(t=0\) 开始，到 \(t=10\) 结束，共结算 11 次。</div></div>
+      <div class="step"><div class="num">G</div><div>治疗间隔 \(\Delta=1.5/(1+a_{\mathrm{eff}}/210078)\)，其中 \(a_{\mathrm{eff}}=\min(a,42057)\)。每个治疗时间点按 3 次独立治疗计算，会心按面板概率分布。</div></div>
+    </div>
+    <div class="formula-grid" style="margin-top: 16px;">
+      <div class="formula-block">
+        <div class="formula-title">血量递推</div>
+        <div class="formula">\[
+R_0 = U - d
+\]
+\[
+R_{i+1} = \min(U, R_i + H_i) - d
+\]</div>
+        <div class="formula-note">若任意结算后 \(R_i < 0\)，则视为破产。治疗 \(H_i\) 统计区间 \([i,i+1)\) 内发生的所有治疗，并先受血量上限截断。</div>
+      </div>
+      <div class="formula-block">
+        <div class="formula-title">承压能力</div>
+        <div class="formula">\[
+\tau = \inf\{i : R_i < 0\}
+\]
+\[
+d^* = \max\{d: \Pr(\tau \le T) \le q\}
+\]</div>
+        <div class="formula-note">\(\tau\) 是首次破产的整数伤害结算点。承压能力 \(d^*\)为每秒承伤。单件评分固定当前推荐的小药、熔锭和阵眼配置后，比较当前、空槽和候选装备的 \(d^*\)。</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">计算公式</div>
+    <div class="formula-grid">
+      <div class="formula-block">
+        <div class="formula-title">单件评分</div>
+        <div class="formula">\[
+S_i = \operatorname{clip}_{0}^{100}\left(
+\frac{D_{\mathrm{current}} - D_{\mathrm{empty}, i}}
+{D_{\mathrm{best}, i} - D_{\mathrm{empty}, i}} \times 100
+\right)
+\]</div>
+        <div class="formula-note">空槽 DPS 是该部位被移除后的基线；分数越高，代表该部位越接近当前候选池中的最优替换。</div>
+      </div>
+      <div class="formula-block">
+        <div class="formula-title">配装总评</div>
+        <div class="formula">\[
+S_{\mathrm{total}} =
+\frac{\sum_i S_i W_i}{\sum_i W_i}
+\]</div>
+        <div class="formula-note">\(W_i\) 是当前部位装分。总评按当前各部位装分加权平均，显示时保留 1 位小数。</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">加速惩罚与补偿</div>
+    <div class="formula-grid">
+      <div class="formula-block">
+        <div class="formula-title">修正系数</div>
+        <div class="formula">\[
+\Delta H = H_{\mathrm{required}} - H_{\mathrm{actual}}
+\]
+\[
+C =
+\begin{cases}
+\max\left(0, 1 - \Delta H \times \frac{0.01}{3279}\right), & \Delta H > 0 \\
+1 + (-\Delta H) \times \frac{0.006}{3279}, & \Delta H < 0 \\
+1, & \Delta H = 0
+\end{cases}
+\]</div>
+        <div class="formula-note">缺加速按 1% / 3279 点折损；溢出加速按 0.6% / 3279 点补偿。</div>
+      </div>
+      <div class="formula-block">
+        <div class="formula-title">修正后 DPS</div>
+        <div class="formula">\[
+D_{\mathrm{adjusted}} = \left\lfloor D_{\mathrm{raw}} \times C \right\rfloor
+\]</div>
+        <div class="formula-note">单件评分中的 DPS 使用修正后 DPS。当前装备、空槽样本、候选装备都会先应用同一套加速修正规则。</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">等级阈值</div>
+    <div class="chips">
+      <div class="chip">ACE ≥ 95</div>
+      <div class="chip">S+ ≥ 90</div>
+      <div class="chip">S ≥ 85</div>
+      <div class="chip">A ≥ 80</div>
+      <div class="chip">B ≥ 70</div>
+      <div class="chip">C ≥ 60</div>
+      <div class="chip">D ＜ 60</div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="notice">该评级与实际 DPS 无单调性相关：高分不等于实际 DPS 必然更高，低分也不等于实际 DPS 必然更低。它只表示当前配装距离该心法、该评级循环、该候选池下毕业配装的接近程度。</div>
+  </div>
+
+  <div class="footer">命令：装备评级 help</div>
+</div>
+</body>
+</html>
+"""
+custom_loop_help_template = r"""
+
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+body { margin: 0; background: #edf1f7; font-family: "Microsoft YaHei", "PingFang SC", Arial, sans-serif; color: #202638; }
+.guide { width: 920px; box-sizing: border-box; padding: 34px; background: #f7f9fc; }
+.header { padding: 28px 30px; background: #243149; color: #fff; border-radius: 8px; }
+.eyebrow { font-size: 18px; color: #b9c7dc; font-weight: 700; }
+.title { margin-top: 8px; font-size: 34px; line-height: 1.22; font-weight: 900; }
+.subtitle { margin-top: 12px; font-size: 18px; color: #d8e0ed; line-height: 1.6; }
+.section { margin-top: 18px; padding: 24px 26px; background: #fff; border: 1px solid #e0e5ef; border-radius: 8px; }
+.section-title { font-size: 24px; font-weight: 900; margin-bottom: 18px; color: #1f2937; }
+.section-subtitle { margin-top: -8px; margin-bottom: 15px; color: #5d687a; font-size: 17px; line-height: 1.55; }
+.image-frame { overflow: hidden; border-radius: 8px; border: 1px solid #d8e0ec; background: #111827; }
+.guide-image { display: block; width: 100%; height: auto; }
+.caption { margin-top: 10px; color: #5f6878; font-size: 16px; line-height: 1.55; }
+.steps { display: grid; gap: 12px; }
+.step { display: grid; grid-template-columns: 42px 1fr; gap: 14px; align-items: start; }
+.num { width: 42px; height: 42px; border-radius: 50%; background: #2f6bff; color: #fff; display: flex; align-items: center; justify-content: center; font-size: 19px; font-weight: 900; }
+.text { min-height: 42px; display: flex; align-items: center; font-size: 19px; line-height: 1.62; color: #333b4d; }
+.code { margin: 10px 0 4px; padding: 13px 15px; border-radius: 6px; background: #f1f5fb; border: 1px solid #d9e2ef; font-size: 20px; font-weight: 800; color: #1d2b44; }
+.example { display: inline-block; margin: 6px 10px 0 0; padding: 9px 12px; background: #fff8e6; border: 1px solid #f2d17a; border-radius: 6px; color: #62430b; font-size: 17px; font-weight: 700; }
+.note { margin-top: 16px; padding: 14px 16px; background: #edf7ef; border: 1px solid #b7dfbf; border-radius: 6px; color: #275431; font-size: 18px; line-height: 1.6; font-weight: 700; }
+.usage { display: grid; gap: 10px; }
+.usage-item { padding: 13px 15px; background: #f7f9fc; border: 1px solid #e0e5ef; border-radius: 6px; font-size: 18px; line-height: 1.6; color: #343d50; }
+.command { color: #1f57d6; font-weight: 900; }
+.footer { margin-top: 16px; color: #697386; font-size: 15px; text-align: right; }
+</style>
+</head>
+<body>
+<div class="guide">
+  <div class="header">
+    <div class="eyebrow">自定义循环 help</div>
+    <div class="title">如何制作一个专属于自己的 JCL 计算器循环</div>
+    <div class="subtitle">按要求录制木桩 JCL，上传群文件后即可作为自己的计算器循环使用。</div>
+  </div>
+  <div class="section">
+    <div class="section-title">制作 JCL</div>
+    <div class="steps">
+      <div class="step"><div class="num">1</div><div class="text">先按照图片这样勾选设置。</div></div>
+      <div class="step"><div class="num">2</div><div class="text">去木桩面前。</div></div>
+      <div class="step"><div class="num">3</div><div class="text">开始打。</div></div>
+      <div class="step"><div class="num">4</div><div class="text">打到你认为 OK 的时间，点伤害统计清空（用来验证 DPS 是否正确），随后停手 F1 选中自己。</div></div>
+      <div class="step"><div class="num">5</div><div class="text">点 JCL 文件位置，找到你刚刚打的木桩 JCL 文件。</div></div>
+      <div class="step"><div class="num">6</div><div class="text">按下面格式命名：</div></div>
+    </div>
+    <div class="code">CAL-心法名-加速阈值-紫武/橙武-循环名.jcl</div>
+    <div class="example">CAL-隐龙诀-30158-紫武-测试1.jcl</div>
+    <div class="example">CAL-莫问-19285-橙武-测试2.jcl</div>
+    <div class="steps" style="margin-top: 16px;">
+      <div class="step"><div class="num">7</div><div class="text">上传群文件。</div></div>
+    </div>
+    <div class="note">至此，JCL 已经导入成功，接下来是计算。</div>
+  </div>
+  <div class="section">
+    <div class="section-title">JCL 导出方法</div>
+    <div class="section-subtitle">打开插件集的角色统计界面，切到装备统计页，点击右上角导出。弹出的文本内容用于确认当前装备数据；JCL 文件本体仍按上面的步骤从 JCL 文件位置找到并上传。</div>
+    <div class="image-frame"><img class="guide-image" src="__JCL_EXPORT_IMAGE__"></div>
+    <div class="caption">图中红框位置：装备统计页签与导出按钮。</div>
+  </div>
+  <div class="section">
+    <div class="section-title">使用自定义循环</div>
+    <div class="usage">
+      <div class="usage-item">1. 发送 <span class="command">偏好 计算器来源 自定义</span> 可以使用上传的 JCL。</div>
+      <div class="usage-item">2. 发送 <span class="command">偏好 计算器来源 公用</span> 可以恢复使用公用循环库。</div>
+      <div class="usage-item">3. 按原本的计算器命令正常使用即可，包括 T计算器、DPS计算器、装备对比等均可。</div>
+    </div>
+  </div>
+  <div class="section">
+    <div class="section-title">提交公有循环</div>
+    <div class="usage">
+      <div class="usage-item">1. 发送 <span class="command">提交公有循环</span>，机器人会返回你上传过的自定义循环列表；也可以发送 <span class="command">提交公有循环 心法名</span> 只看指定心法。</div>
+      <div class="usage-item">2. 发送要提交的编号后，循环会进入审批群待审；审批通过后会移动到公用循环库。</div>
+      <div class="usage-item">3. 示例：<span class="command">提交公有循环 莫问</span>，列表返回后发送 <span class="command">1</span>。</div>
+    </div>
+  </div>
+  <div class="section">
+    <div class="section-title">变更循环名字</div>
+    <div class="usage">
+      <div class="usage-item">1. 发送 <span class="command">循环改名 心法名</span>，机器人会列出你提供的公有循环和对应私有循环。</div>
+      <div class="usage-item">2. 发送要改名的编号后，再发送新的循环名；只会变更文件名里的循环名部分。</div>
+      <div class="usage-item">3. 拥有改名权限的用户可发送 <span class="command">循环改名 QQ号 心法名</span> 变更指定用户提供的循环。</div>
+    </div>
+  </div>
+  <div class="section">
+    <div class="section-title">删除自定义循环</div>
+    <div class="usage">
+      <div class="usage-item">1. 发送 <span class="command">删除循环 心法名</span>，机器人会返回该心法循环列表；再发送编号删除单个或多个循环。</div>
+      <div class="usage-item">2. 发送 <span class="command">删除循环all 心法名</span>，删除该心法下你上传的全部自定义循环。</div>
+      <div class="usage-item">3. 示例：<span class="command">删除循环 莫问</span>，列表返回后发送 <span class="command">1,2</span>；或发送 <span class="command">删除循环all 莫问</span>。</div>
+    </div>
+  </div>
+  <div class="footer">命令：自定义循环 help</div>
+</div>
+</body>
+</html>
+"""
+equipment_rating_result_template = r"""
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<style>
+* {
+    box-sizing: border-box;
+}
+body {
+    margin: 0;
+    width: 1600px;
+    background: #f5f6fa;
+    color: #333;
+    font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+}
+.container {
+    --theme-color: #3f7fbf;
+    width: 1560px;
+    margin: 20px;
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+.header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 24px;
+    padding: 24px;
+    background: #fafafa;
+    border-bottom: 1px solid #ddd;
+}
+.title {
+    font-size: 32px;
+    font-weight: 800;
+    line-height: 1.2;
+    color: var(--theme-color);
+    border-left: 5px solid var(--theme-color);
+    padding-left: 12px;
+}
+.subtitle {
+    margin-top: 8px;
+    font-size: 18px;
+    color: #555;
+    padding-left: 17px;
+}
+.legend {
+    max-width: 560px;
+    text-align: right;
+    font-size: 17px;
+    line-height: 1.55;
+    color: #777;
+}
+.rating-total {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 16px;
+    margin-bottom: 8px;
+}
+.rating-total img {
+    width: 58px;
+    height: 58px;
+    object-fit: contain;
+}
+.total-score {
+    font-size: 28px;
+    line-height: 1.1;
+    font-weight: 800;
+    color: var(--theme-color);
+}
+.total-meta {
+    margin-top: 4px;
+    font-size: 15px;
+    color: #777;
+}
+table {
+    width: calc(100% - 48px);
+    margin: 24px;
+    border-collapse: collapse;
+    table-layout: fixed;
+    overflow: hidden;
+    border-radius: 8px;
+    background: #fff;
+    border: 1px solid #eee;
+}
+thead {
+    background: var(--theme-color);
+    color: #fff;
+}
+th {
+    padding: 13px 12px;
+    font-size: 16px;
+    font-weight: 700;
+    text-align: left;
+    white-space: nowrap;
+}
+td {
+    padding: 12px;
+    font-size: 17px;
+    line-height: 1.35;
+    border-bottom: 1px solid #f0f0f0;
+    vertical-align: middle;
+}
+tbody tr:nth-child(even) {
+    background: #fafafa;
+}
+tbody tr:last-child td {
+    border-bottom: 0;
+}
+.slot {
+    font-weight: 800;
+    color: var(--theme-color);
+}
+.grade-stack {
+    position: relative;
+    width: 64px;
+    height: 64px;
+    margin: 0 auto;
+}
+.grade-icon {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 64px;
+    height: 64px;
+    object-fit: contain;
+}
+.rank,
+.percent,
+.dps,
+.diff {
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+}
+.percent {
+    font-weight: 800;
+    color: var(--theme-color);
+}
+.dps {
+    color: #333;
+}
+.equip {
+    word-break: break-all;
+    color: #444;
+}
+.equip-name {
+    display: flex;
+    align-items: baseline;
+    gap: 7px;
+    font-weight: 800;
+    color: #333;
+}
+.quality {
+    display: inline-block;
+    min-width: 48px;
+    padding: 2px 6px;
+    border-radius: 6px;
+    background: #f0f0f0;
+    color: var(--theme-color);
+    font-size: 14px;
+    line-height: 1.3;
+    text-align: center;
+}
+.attr {
+    margin-top: 5px;
+    font-size: 14px;
+    line-height: 1.35;
+    color: #777;
+}
+.diff {
+    font-weight: 800;
+}
+.plus {
+    color: var(--theme-color);
+}
+.best {
+    color: var(--theme-color);
+}
+.minus {
+    color: #777;
+}
+.note {
+    font-size: 14px;
+    color: #777;
+}
+.footer {
+    margin-top: 0;
+    padding: 15px 24px;
+    background: #f0f0f0;
+    border-top: 1px solid #ddd;
+    text-align: center;
+    font-size: 16px;
+    color: #777;
+}
+</style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <div>
+            <div class="title">{{ value_0 }}</div>
+            {{ value_1 }}
+        </div>
+        <div class="legend">
+            <div class="rating-total">
+                <img src="{{ value_2 }}" alt="{{ value_3 }}">
+                <div>
+                    <div class="total-score">{{ value_4 }} 分</div>
+                    <div class="total-meta">{{ value_5 }} {{ value_6 }} · 有效部位 {{ value_7 }}/{{ value_8 }}</div>
+                </div>
+            </div>
+            <div>{{ value_9 }}</div>
+        </div>
+    </div>
+    <table>
+        <thead>
+            <tr>
+                <th style="width: 72px;">部位</th>
+                <th style="width: 86px;">评级</th>
+                <th style="width: 92px;">排名</th>
+                <th style="width: 90px;">评分</th>
+                <th style="width: 90px;">最优强度</th>
+                <th style="width: 122px;">当前{{ value_10 }}</th>
+                <th>当前装备</th>
+                <th style="width: 122px;">最优{{ value_11 }}</th>
+                <th>最优装备</th>
+                <th style="width: 116px;">差值</th>
+                <th style="width: 172px;">备注</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{ value_12 }}
+        </tbody>
+    </table>
+    <div class="footer">单件评分、总评分和评级均来自装备评级接口。</div>
+</div>
+</body>
+</html>
+"""
+calculator_timeline_template = r"""
+
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+body { margin: 0; background: #edf1f7; font-family: "Microsoft YaHei", "PingFang SC", Arial, sans-serif; color: #1f2430; }
+body.kline-page { background: #05070b; color: #e5e7eb; }
+.canvas { width: 1040px; padding: 34px; background: #f7f9fc; }
+.canvas.kline-mode { background: #05070b; padding: 28px; }
+.header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 22px; }
+.title { font-size: 34px; font-weight: 800; }
+.subtitle { margin-top: 8px; color: #697386; font-size: 18px; }
+.badge { color: #fff; background: #263247; border-radius: 6px; padding: 8px 12px; font-weight: 700; }
+.panel { background: #fff; border: 1px solid #e2e6ef; border-radius: 8px; padding: 22px; margin-bottom: 18px; }
+.legend { display: flex; gap: 14px; flex-wrap: wrap; margin-bottom: 16px; }
+.legend-item { font-size: 16px; color: #4d5668; }
+.legend-item i { display: inline-block; width: 18px; height: 5px; border-radius: 5px; margin-right: 7px; vertical-align: middle; }
+.stats { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.stat-card { border-left: 5px solid #2F6BFF; background: #fafbfe; border-radius: 6px; padding: 14px; }
+.stat-title { font-size: 18px; font-weight: 800; }
+.stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 12px; margin-top: 10px; color: #566074; font-size: 14px; }
+.stat-grid b { color: #1f2430; }
+.kline-mode .header { margin-bottom: 18px; padding-bottom: 18px; border-bottom: 1px solid #172033; }
+.kline-mode .title { color: #f8fafc; font-size: 30px; letter-spacing: 0; }
+.kline-mode .subtitle { color: #94a3b8; font-size: 15px; }
+.kline-mode .badge { background: #0b111b; border: 1px solid #243244; color: #cbd5e1; border-radius: 4px; }
+.kline-mode .panel { background: #080d14; border-color: #1b2533; border-radius: 4px; }
+.kline-mode .legend { margin-bottom: 14px; }
+.kline-mode .legend-item { color: #cbd5e1; }
+.kline-mode .stat-card { background: #0b111b; border: 1px solid #1e293b; border-left: 4px solid #2F6BFF; border-radius: 4px; }
+.kline-mode .stat-title { color: #e5e7eb; }
+.kline-mode .stat-grid { color: #8492a6; }
+.kline-mode .stat-grid b { color: #f8fafc; }
+.chart-title { font-size: 21px; font-weight: 800; margin-bottom: 8px; }
+.chart { width: 100%; height: 350px; overflow: visible; }
+.axis-label { fill: #858da0; font-size: 13px; }
+.peak-label { font-size: 14px; font-weight: 700; }
+.buff-frame { fill-opacity: 0.1; stroke-opacity: 0.42; stroke-width: 1.4; }
+.buff-frame-label { font-size: 12px; font-weight: 800; opacity: 0.86; }
+.kline-panel { background: #070A0F; border-color: #172033; }
+.kline-mode .kline-panel { background: #05080d; padding: 20px 22px 18px; }
+.kline-heading { color: #E5E7EB; margin-bottom: 4px; }
+.kline-subtitle { color: #8B95A7; font-size: 14px; margin-bottom: 8px; }
+.kline-chart { width: 100%; height: 456px; overflow: visible; }
+.kline-grid { stroke: #1C2430; stroke-width: 1; }
+.kline-axis { stroke: #334155; stroke-width: 1.2; }
+.kline-zero-axis { stroke: #64748B; stroke-width: 1.2; stroke-dasharray: 6 5; }
+.kline-axis-label { fill: #8B95A7; font-size: 13px; }
+.kline-ma-line { stroke-width: 2.2; stroke-linejoin: round; stroke-linecap: round; }
+.kline-ma-line.ma5 { stroke: #FACC15; }
+.kline-ma-line.ma10 { stroke: #38BDF8; }
+.kline-ma-line.ma20 { stroke: #C084FC; }
+.kline-ma-label { font-size: 13px; font-weight: 900; }
+.kline-ma-label.ma5 { fill: #FACC15; }
+.kline-ma-label.ma10 { fill: #38BDF8; }
+.kline-ma-label.ma20 { fill: #C084FC; }
+.kline-panel .buff-frame { fill-opacity: 0.08; stroke-opacity: 0.28; }
+.kline-panel .buff-frame-label { font-size: 12px; font-weight: 800; opacity: 0.82; }
+</style>
+</head>
+<body class="{{ value_0 }}">
+<div class="{{ value_1 }}">
+  <div class="header">
+    <div>
+      <div class="title">{{ value_2 }}</div>
+      <div class="subtitle">{{ value_3 }}</div>
+    </div>
+    <div class="badge">{{ value_4 }}</div>
+  </div>
+  <div class="panel">
+    <div class="legend">{{ value_5 }}</div>
+    <div class="stats">{{ value_6 }}</div>
+  </div>
+  {{ value_7 }}
+  {{ value_8 }}
+  {{ value_9 }}
+</div>
+</body>
+</html>
+"""

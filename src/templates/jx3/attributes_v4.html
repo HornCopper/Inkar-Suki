@@ -114,6 +114,52 @@
             border-top: 1px solid #ddd;
         }
 
+        .latest-serendipity {
+            width: 100%;
+        }
+
+        .latest-serendipity img {
+            display: block;
+            width: 100%;
+            height: auto;
+            border-radius: 8px;
+            object-fit: cover;
+        }
+
+        .serendipity-name {
+            margin-top: 8px;
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .serendipity-relative-time {
+            margin-top: 4px;
+            font-size: 16px;
+            color: #888;
+        }
+
+        .all-equipment {
+            margin: 0;
+            padding: 0;
+        }
+
+        .all-equipment-grid {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 16px 20px;
+        }
+
+        .all-equipment-item {
+            min-width: 0;
+            padding-left: 20px;
+            border-left: 1px solid #ddd;
+        }
+
+        .all-equipment-item:nth-child(4n + 1) {
+            padding-left: 0;
+            border-left: 0;
+        }
+
         .equipment-header {
             display: flex;
             align-items: center;
@@ -174,6 +220,7 @@
 
         .equipment-details {
             flex: 1;
+            min-width: 0;
         }
 
         .equipment-details .name {
@@ -187,8 +234,22 @@
         }
 
         .equipment-details .source {
+            overflow: hidden;
             font-size: 18px;
             color: #888;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .equipment-details .equipment-effect {
+            display: -webkit-box;
+            overflow: hidden;
+            color: rgb(255, 165, 0);
+            font-size: 14px;
+            -webkit-box-orient: vertical;
+            -webkit-line-clamp: 2;
+            text-overflow: ellipsis;
+            white-space: normal;
         }
 
         .equipment-icons img {
@@ -208,6 +269,9 @@
             flex-wrap: wrap;
             justify-content: space-around;
             text-align: center;
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 1px solid #ddd;
         }
 
         .talent {
@@ -303,6 +367,7 @@
         footer {
             background: #f0f0f0;
             text-align: center;
+            margin-top: 24px;
             padding: 15px;
             font-size: 0.9em;
             color: #777;
@@ -337,11 +402,13 @@
                     <span class="info-value">{{ value }}</span>
                 </div>
                 {% endfor %}
-                <h2 style="font-size: 25px;color: #000"><strong>所有装备</strong></h2>
-                {% for equip in other_equips %}
-                {{ equip }}<div class="divider"></div>
-                {% endfor %}
-                <p>可用“属性 服务器 角色 标签”查询</p>
+                {% if latest_serendipity.icon %}
+                <h2 style="font-size: 25px;color: #000"><strong>最新奇遇</strong></h2>
+                <div class="latest-serendipity">
+                    <img src="{{ latest_serendipity.icon }}" alt="奇遇图标">
+                </div>
+                <p class="serendipity-relative-time">触发于 · {{ latest_serendipity.relative_time }}</p>
+                {% endif %}
                 {{ show }}
             </div>
             <div class="right-column">
@@ -359,6 +426,13 @@
             </div>
         </div>
         <div class="bottom-box">
+            <section class="all-equipment">
+                <div class="all-equipment-grid">
+                    {% for equip in other_equips %}
+                    <div class="all-equipment-item">{{ equip }}</div>
+                    {% endfor %}
+                </div>
+            </section>
             <div class="talents">
                 {% for talent in talents %}
                 {{ talent }}

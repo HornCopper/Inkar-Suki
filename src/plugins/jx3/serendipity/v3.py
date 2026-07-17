@@ -213,7 +213,7 @@ async def get_serendipity_image_v3(server: str, name: str):
         }
         serendipity_data = (await Request(url, params=params).get()).json()
         data: list[dict] = await JX3Serendipity().merge_api_with_my_data(
-            serendipity_data["data"], server, name, global_role_id
+            serendipity_data["data"], server, name, global_role_id, uid
         )
     else:
         data: list[dict] = await JX3Serendipity().integration(
