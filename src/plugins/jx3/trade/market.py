@@ -261,8 +261,9 @@ class JX3Trade:
                 params={"server": server or None, "limit": 20},
             ).get()
         ).json()
-        records = data["data"]["logs"]
-        if not records:
+        payload = data.get("data") if isinstance(data, dict) else None
+        records = payload.get("logs") if isinstance(payload, dict) else None
+        if not isinstance(records, list):
             return []
         return [cls.legacy_log_to_daily(record) for record in records]
 
@@ -274,8 +275,9 @@ class JX3Trade:
                 params={"server": server, "limit": 20},
             ).get()
         ).json()
-        records = data["data"]["prices"]
-        if not records:
+        payload = data.get("data") if isinstance(data, dict) else None
+        records = payload.get("prices") if isinstance(payload, dict) else None
+        if not isinstance(records, list):
             return []
         return [cls.legacy_price_to_detail(record) for record in records]
 
