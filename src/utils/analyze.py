@@ -117,6 +117,18 @@ def parse_luatable(text: str) -> list[str | list[str]]:
     text = text.replace("{", "[").replace("}", "]")
     return ast.literal_eval(text)
 
+
+def parse_jcl_player_table(text: str) -> list:
+    lua_table = parse_luatable(text)
+    if (
+        len(lua_table) >= 7
+        and isinstance(lua_table[4], list)
+        and isinstance(lua_table[5], list)
+        and isinstance(lua_table[6], (int, str))
+    ):
+        return [*lua_table[:4], None, *lua_table[4:]]
+    return lua_table
+
 def parse_skillevent(raw_text: str) -> str:
     match = re.search(r"text=\"(.*?)\"", raw_text)
     if not match:

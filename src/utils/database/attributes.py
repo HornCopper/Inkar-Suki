@@ -12,7 +12,13 @@ from src.utils.database import attribute_db as db
 from src.utils.database.classes import PlayerEquipsCache
 from src.utils.database.tabs import read_tab
 from src.utils.network import Request
-from src.utils.analyze import R, TuilanData, merge_dicts, parse_luatable, parse_skillevent
+from src.utils.analyze import (
+    R,
+    TuilanData,
+    merge_dicts,
+    parse_jcl_player_table,
+    parse_skillevent,
+)
 from src.utils.exceptions import TabFileMissException
 from src.utils.database.constant import (
     A, B, C,
@@ -1317,7 +1323,7 @@ class JX3PlayerAttribute:
             for expected_global_role_id, player_line in player_lines.items():
                 lua_table_raw, timestamp = player_line
                 try:
-                    lua_table = cast(list, parse_luatable(lua_table_raw))
+                    lua_table = parse_jcl_player_table(lua_table_raw)
                     if len(lua_table) < 8:
                         continue
                     global_role_id = int(lua_table[7])

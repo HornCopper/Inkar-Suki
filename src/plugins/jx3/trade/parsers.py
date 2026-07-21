@@ -65,7 +65,9 @@ class ShilianEquipParser:
             else:
                 self._attrs.append("全会心")
                 self._attrs.append("全会心效果")
-        if self._fd("破") and not self._fd("纯破") and not self._fd("破招"):
+        # “破招”里的“破”不代表破防，但不应阻止同一查询中单独的“破防”。
+        remaining_overcome_text = self.raw.replace("破招", "")
+        if "破" in remaining_overcome_text and not self._fd("纯破"):
             self._attrs.append(self._basic_type + "破防")
         if self._fd("招") or self._fd("破破"):
             self._attrs.append("破招")

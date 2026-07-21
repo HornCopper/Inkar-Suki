@@ -1,6 +1,5 @@
 from typing import Any, Literal
 from collections import defaultdict
-import html
 import math
 from jinja2 import Template
 from httpx import AsyncClient
@@ -38,7 +37,8 @@ from ._template import (
     lgz_detail_template_body_main,
     lgz_detail_template_body_sub,
 
-    lnx_template_body
+    lnx_template_body,
+    qjh_template_body,
 )
 
 def save_data(data: dict[str, dict[str, int | str]], value_type: bool, rank_key: Literal["THR", "CQC"]) -> None:
@@ -257,12 +257,8 @@ async def RODAnalyze(file_name: str, url: str, anonymous: bool = False, user_id:
     image = await generate(html, ".container", segment=True)
     return image
 
-async def DPSAnalyze(
-    file_name: str,
-    url: str,
-    anonymous: bool = False,
-    user_id: int = 0,
-):
+# Damage Per Second
+async def DPSAnalyze(file_name: str, url: str, anonymous: bool = False, user_id: int = 0,):
     async with AsyncClient(verify=False) as client:
         resp = await client.post(
             f"{Config.jx3.api.cqc_url}/dps_analyze",
@@ -345,6 +341,7 @@ async def DPSAnalyze(
     image = await generate(html, ".container", segment=True)
     return image
 
+# CalCuLator
 async def CALAnalyze(file_name: str, url: str, anonymous: bool = False, user_id: int = 0):
     async with AsyncClient(verify=False) as client:
         resp = await client.post(f"{Config.jx3.api.calculator_url}/submit_jcl", json={"url": url, "name": file_name, "user_id": user_id}, timeout=600)
@@ -525,12 +522,13 @@ def _lnx_format_percent(value: float) -> str:
     return f"{value:.1f}%"
 
 
-def _lnx_role_html(entity: dict[str, Any]) -> str:
-    name = html.escape(str(entity.get("display_name") or entity.get("name") or "未知来源"))
-    icon = html.escape(str(entity.get("icon") or ""))
-    entity_type = html.escape(str(entity.get("type") or ""))
-    sub = f"<div class=\"muted\">{entity_type}</div>" if entity_type and entity_type != "玩家" else ""
-    return f"<div class=\"role-cell\"><img src=\"{icon}\"><div>{name}{sub}</div></div>"
+def _lnx_role_view(entity: dict[str, Any]) -> dict[str, str]:
+    entity_type = str(entity.get("type") or "")
+    return {
+        "name": str(entity.get("display_name") or entity.get("name") or "未知来源"),
+        "icon": str(entity.get("icon") or ""),
+        "type": entity_type if entity_type != "玩家" else "",
+    }
 
 
 def _lnx_short_text(value: Any, limit: int = 5) -> str:
@@ -565,19 +563,6 @@ def _lnx_chart_entity_label(entity: dict[str, Any]) -> str:
     if kungfu_name:
         return f"{kungfu_name} {role_name}"
     return role_name
-
-
-def _lnx_table(headers: list[str], rows: list[list[str]], empty_text: str = "无数据", css_class: str = "") -> str:
-    head = "".join(f"<th>{html.escape(header)}</th>" for header in headers)
-    if not rows:
-        body = f"<tr><td colspan=\"{len(headers)}\" class=\"muted\">{html.escape(empty_text)}</td></tr>"
-    else:
-        body = "\n".join(
-            "<tr>" + "".join(cell for cell in row) + "</tr>"
-            for row in rows
-        )
-    class_attr = f" class=\"{html.escape(css_class)}\"" if css_class else ""
-    return f"<table{class_attr}><thead><tr>{head}</tr></thead><tbody>{body}</tbody></table>"
 
 
 def _lnx_stat() -> dict[str, Any]:
@@ -844,62 +829,52 @@ def build_lnx_analysis_data(raw_data: Any, anonymous: bool = False) -> list[dict
     return phases
 
 
-def _lnx_bar_cell(value: float, max_value: float) -> str:
+def _lnx_bar_view(value: float, max_value: float) -> dict[str, str]:
     ratio = 0.0 if max_value <= 0 else min(max(value / max_value, 0.0), 1.0)
-    return (
-        f"<td class=\"num contribution-bar\" style=\"--bar:{ratio * 100:.2f}%\">"
-        f"<span>{_lnx_format_number(value)}</span>"
-        "</td>"
-    )
+    return {"ratio": f"{ratio * 100:.2f}%", "value": _lnx_format_number(value)}
 
 
-def _lnx_contribution_rows(rows: list[dict[str, Any]]) -> list[list[str]]:
+def _lnx_contribution_rows(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
     result = []
     max_total = max((_lnx_safe_float(row.get("weighted_total"), 0.0) for row in rows), default=0.0)
     max_mitigation = max((_lnx_safe_float(row.get("mitigation_weighted"), 0.0) for row in rows), default=0.0)
     max_heal = max((_lnx_safe_float(row.get("heal_weighted"), 0.0) for row in rows), default=0.0)
     for index, row in enumerate(rows, 1):
-        result.append(
-            [
-                f"<td class=\"rank\">{index}</td>",
-                f"<td>{_lnx_role_html(row['entity'])}</td>",
-                _lnx_bar_cell(row["weighted_total"], max_total),
-                _lnx_bar_cell(row["mitigation_weighted"], max_mitigation),
-                _lnx_bar_cell(row["heal_weighted"], max_heal),
-            ]
-        )
+        result.append({
+            "rank": index,
+            "role": _lnx_role_view(row["entity"]),
+            "total": _lnx_bar_view(row["weighted_total"], max_total),
+            "mitigation": _lnx_bar_view(row["mitigation_weighted"], max_mitigation),
+            "heal": _lnx_bar_view(row["heal_weighted"], max_heal),
+        })
     return result
 
 
-def _lnx_single_contribution_rows(rows: list[dict[str, Any]], value_key: str) -> list[list[str]]:
+def _lnx_single_contribution_rows(rows: list[dict[str, Any]], value_key: str) -> list[dict[str, Any]]:
     result = []
     max_value = max((_lnx_safe_float(row.get(value_key), 0.0) for row in rows), default=0.0)
     for index, row in enumerate(rows, 1):
-        result.append(
-            [
-                f"<td class=\"rank\">{index}</td>",
-                f"<td>{_lnx_role_html(row['entity'])}</td>",
-                _lnx_bar_cell(row[value_key], max_value),
-            ]
-        )
+        result.append({
+            "rank": index,
+            "role": _lnx_role_view(row["entity"]),
+            "value": _lnx_bar_view(row[value_key], max_value),
+        })
     return result
 
 
-def _lnx_buff_rows(rows: list[dict[str, Any]]) -> list[list[str]]:
+def _lnx_buff_rows(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
     result = []
     max_weighted = max((_lnx_safe_float(row.get("weighted"), 0.0) for row in rows), default=0.0)
     for index, row in enumerate(rows, 1):
         target_count = len(row.get("targets", set()))
-        result.append(
-            [
-                f"<td class=\"rank\">{index}</td>",
-                f"<td>{_lnx_role_html(row['applier'])}</td>",
-                f"<td>{html.escape(str(row['buff_name']))}</td>",
-                f"<td class=\"num\">{_lnx_format_percent(row['percent'])}</td>",
-                _lnx_bar_cell(row["weighted"], max_weighted),
-                f"<td class=\"num muted\">{row['count']}次 / {target_count}人</td>",
-            ]
-        )
+        result.append({
+            "rank": index,
+            "role": _lnx_role_view(row["applier"]),
+            "buff": str(row["buff_name"]),
+            "percent": _lnx_format_percent(row["percent"]),
+            "weighted": _lnx_bar_view(row["weighted"], max_weighted),
+            "coverage": f"{row['count']}次 / {target_count}人",
+        })
     return result
 
 
@@ -908,20 +883,13 @@ def _lnx_format_ratio(value: float) -> str:
     return f"{percent:.1f}%" if percent < 10 else f"{percent:.0f}%"
 
 
-def _lnx_pie_card(title: str, items: list[dict[str, Any]]) -> str:
+def _lnx_pie_card(title: str, items: list[dict[str, Any]]) -> dict[str, Any]:
     valid_items = [item for item in items if _lnx_safe_float(item.get("value"), 0.0) > 0]
     total = sum(_lnx_safe_float(item.get("value"), 0.0) for item in valid_items)
     if total <= 0:
-        return f"""
-        <div class="pie-card">
-            <div class="pie-title">{html.escape(title)}</div>
-            <div class="muted">无贡献数据</div>
-        </div>
-        """
+        return {"title": title, "empty": True}
 
-    slice_rows = []
-    guide_rows = []
-    label_rows = []
+    chart_items = []
     marker_id = f"lnx-rose-arrow-{id(valid_items)}"
     chart_width = 406.0
     chart_height = 265.0
@@ -977,57 +945,38 @@ def _lnx_pie_card(title: str, items: list[dict[str, Any]]) -> str:
             f"M {line_start_x:.1f} {line_start_y:.1f} "
             f"Q {control_x:.1f} {control_y:.1f} {line_end_x:.1f} {line_end_y:.1f}"
         )
-        slice_rows.append(
-            "<g class=\"rose-slice-group\">"
-            "<path class=\"rose-slice\" "
-            f"d=\"M {inner_start_x:.1f} {inner_start_y:.1f} "
+        slice_path = (
+            f"M {inner_start_x:.1f} {inner_start_y:.1f} "
             f"L {outer_start_x:.1f} {outer_start_y:.1f} "
             f"A {radius:.1f} {radius:.1f} 0 {large_arc} 1 {outer_end_x:.1f} {outer_end_y:.1f} "
             f"L {inner_end_x:.1f} {inner_end_y:.1f} "
-            f"A {inner_radius:.1f} {inner_radius:.1f} 0 {large_arc} 0 {inner_start_x:.1f} {inner_start_y:.1f} Z\" "
-            f"fill=\"{item['color']}\" />"
-            "</g>"
-        )
-        guide_rows.append(
-            f"<path class=\"rose-guide-shadow\" d=\"{guide_path}\" />"
-            f"<path class=\"rose-guide-line\" d=\"{guide_path}\" marker-end=\"url(#{marker_id})\" />"
+            f"A {inner_radius:.1f} {inner_radius:.1f} 0 {large_arc} 0 {inner_start_x:.1f} {inner_start_y:.1f} Z"
         )
         icon = str(item.get("icon") or "").strip()
-        icon_html = (
-            f"<img src=\"{html.escape(icon)}\">"
-            if icon else f"<span class=\"rose-label-dot\" style=\"background:{item['color']};\"></span>"
-        )
-        label_rows.append(
-            "<span class=\"rose-entity-label\" "
-            f"style=\"left:{label_x:.1f}px;top:{label_y:.1f}px;--label-color:{item['color']};\">"
-            f"{icon_html}<span class=\"rose-entity-name\">{html.escape(str(item.get('chart_label') or item['label']))}</span>"
-            f"<b>{_lnx_format_ratio(ratio)}</b></span>"
-        )
+        chart_items.append({
+            "path": slice_path,
+            "guide": guide_path,
+            "color": item["color"],
+            "icon": icon,
+            "label": str(item.get("chart_label") or item["label"]),
+            "percent": _lnx_format_ratio(ratio),
+            "left": f"{label_x:.1f}px",
+            "top": f"{label_y:.1f}px",
+        })
 
-    return f"""
-    <div class="pie-card">
-        <div class="pie-title">{html.escape(title)}</div>
-        <div class="pie-body">
-            <div class="pie-chart">
-                <svg class="rose-chart" viewBox="0 0 {chart_width:.0f} {chart_height:.0f}" aria-hidden="true">
-                    <defs>
-                        <marker id="{marker_id}" viewBox="0 0 5 5" refX="4.6" refY="2.5" markerWidth="5" markerHeight="5" orient="auto">
-                            <path d="M0,0 L5,2.5 L0,5 Z"></path>
-                        </marker>
-                    </defs>
-                    <circle class="rose-backdrop" cx="{center_x:.1f}" cy="{center_y:.1f}" r="80"></circle>
-                    {"".join(slice_rows)}
-                    {"".join(guide_rows)}
-                    <circle class="rose-core" cx="{center_x:.1f}" cy="{center_y:.1f}" r="15"></circle>
-                </svg>
-                {"".join(label_rows)}
-            </div>
-        </div>
-    </div>
-    """
+    return {
+        "title": title,
+        "empty": False,
+        "marker_id": marker_id,
+        "width": f"{chart_width:.0f}",
+        "height": f"{chart_height:.0f}",
+        "center_x": f"{center_x:.1f}",
+        "center_y": f"{center_y:.1f}",
+        "items": chart_items,
+    }
 
 
-def _lnx_pie_html(title: str, rows: list[dict[str, Any]], value_key: str) -> str:
+def _lnx_pie_data(title: str, rows: list[dict[str, Any]], value_key: str) -> dict[str, Any]:
     valid_rows = [row for row in rows if _lnx_safe_float(row.get(value_key), 0.0) > 0]
     total = sum(_lnx_safe_float(row.get(value_key), 0.0) for row in valid_rows)
     items: list[dict[str, Any]] = []
@@ -1051,7 +1000,7 @@ def _lnx_pie_html(title: str, rows: list[dict[str, Any]], value_key: str) -> str
     return _lnx_pie_card(title, items)
 
 
-def _lnx_absorb_pie_html(phase: dict[str, Any]) -> str:
+def _lnx_absorb_pie_data(phase: dict[str, Any]) -> dict[str, Any]:
     weighted_total = max(0.0, _lnx_safe_float(_lnx_dict(phase.get("totals")).get("weighted"), 0.0))
     absorb = max(0.0, _lnx_safe_float(_lnx_dict(phase.get("totals")).get("absorb_weighted"), 0.0))
     other = max(0.0, weighted_total - absorb)
@@ -1064,115 +1013,52 @@ def _lnx_absorb_pie_html(phase: dict[str, Any]) -> str:
     )
 
 
-def _lnx_wave_pills(rows: list[dict[str, Any]]) -> str:
-    if not rows:
-        return "<div class=\"muted\">无波次数据</div>"
-    total_cells = "\n".join(
-        (
-            "<div class=\"wave-card\">"
-            f"<div class=\"wave-index\">W{row['index']} / {row['time_weight']:.2f}</div>"
-            f"<div class=\"wave-value\">{_lnx_format_number(row['total_weighted'])}</div>"
-            "</div>"
-        )
-        for row in rows
-    )
-    absorb_cells = "\n".join(
-        (
-            "<div class=\"wave-card\">"
-            f"<div class=\"wave-index\">W{row['index']} / {row['time_weight']:.2f}</div>"
-            f"<div class=\"wave-value\">{_lnx_format_number(row['absorb_weighted'])}</div>"
-            "</div>"
-        )
-        for row in rows
-    )
-    return f"""
-    <div class="wave-stack">
-        <div class="wave-label-pill">总贡献</div>
-        <div class="wave-grid">{total_cells}</div>
-        <div class="wave-label-pill">化解</div>
-        <div class="wave-grid">{absorb_cells}</div>
-    </div>
-    """
-
-
 def render_lnx_analysis_html(raw_data: Any, anonymous: bool = False) -> str:
     phases = build_lnx_analysis_data(raw_data, anonymous)
     lnx_mark = ASSETS + "/image/jx3/calculator/lnx_mark.png"
-    sections = []
+    rendered_phases = []
     for phase in phases:
-        combined_table = _lnx_table(
-            ["#", "角色", "加权总贡献", "加权减伤", "加权治疗"],
-            _lnx_contribution_rows(phase["players"][:10]),
-            css_class="contribution-summary-table",
-        )
-        mitigation_table = _lnx_table(
-            ["#", "角色", "加权减伤"],
-            _lnx_single_contribution_rows(phase["mitigation_players"][:10], "mitigation_weighted"),
-            css_class="contribution-side-table",
-        )
-        heal_table = _lnx_table(
-            ["#", "角色", "加权治疗"],
-            _lnx_single_contribution_rows(phase["heal_players"][:10], "heal_weighted"),
-            css_class="contribution-side-table",
-        )
-        buff_table = _lnx_table(
-            ["#", "来源", "Buff", "减伤", "加权贡献", "覆盖"],
-            _lnx_buff_rows(phase["mitigation_buffs"]),
-            css_class="buff-detail-table",
-        )
-        pie_panel = "\n".join(
-            [
-                _lnx_pie_html("减伤贡献占比 Top 5", phase["mitigation_players"], "mitigation_weighted"),
-                _lnx_pie_html("治疗贡献占比 Top 5", phase["heal_players"], "heal_weighted"),
-                _lnx_absorb_pie_html(phase),
-            ]
-        )
-        section = f"""
-        <section class="phase-card">
-            <img class="phase-watermark" src="{html.escape(lnx_mark)}" aria-hidden="true">
-            <div class="phase-header">
-                <div>
-                    <div class="phase-name">Phase {phase['phase_index']}</div>
-                    <div class="phase-meta">波次 {phase['wave_count']} / 终止 W{phase['terminal_wave']} / trigger_line {html.escape(str(phase['trigger_line']))}</div>
-                </div>
-                <div class="badge">按 weighted_contribution 降序</div>
-            </div>
-            <div class="triple-col">
-                <div>
-                    <div class="section-title">综合贡献 Top 10</div>
-                    {combined_table}
-                </div>
-                <div>
-                    <div class="section-title">减伤贡献 Top 10</div>
-                    {mitigation_table}
-                </div>
-                <div>
-                    <div class="section-title">治疗贡献 Top 10</div>
-                    {heal_table}
-                </div>
-            </div>
-            <div class="detail-row">
-                <div>
-                    <div class="section-title">减伤 Buff 明细</div>
-                    {buff_table}
-                </div>
-                <div>
-                    <div class="section-title">贡献占比</div>
-                    <div class="pie-panel">{pie_panel}</div>
-                </div>
-            </div>
-            <div class="section-title">Wave 加权总贡献与化解总量</div>
-            {_lnx_wave_pills(phase['waves'])}
-        </section>
-        """
-        sections.append(section)
-    if not sections:
-        sections.append("<section class=\"phase-card\"><div class=\"phase-name\">未识别到鲁念雪分析数据</div></section>")
+        rendered_phases.append({
+            "phase_index": phase["phase_index"],
+            "wave_count": phase["wave_count"],
+            "terminal_wave": phase["terminal_wave"],
+            "trigger_line": phase["trigger_line"],
+            "players": _lnx_contribution_rows(phase["players"][:10]),
+            "mitigation_players": _lnx_single_contribution_rows(
+                phase["mitigation_players"][:10], "mitigation_weighted"
+            ),
+            "heal_players": _lnx_single_contribution_rows(
+                phase["heal_players"][:10], "heal_weighted"
+            ),
+            "buffs": _lnx_buff_rows(phase["mitigation_buffs"]),
+            "pies": [
+                _lnx_pie_data(
+                    "减伤贡献占比 Top 5",
+                    phase["mitigation_players"],
+                    "mitigation_weighted",
+                ),
+                _lnx_pie_data(
+                    "治疗贡献占比 Top 5",
+                    phase["heal_players"],
+                    "heal_weighted",
+                ),
+                _lnx_absorb_pie_data(phase),
+            ],
+            "waves": [
+                {
+                    "index": row["index"],
+                    "weight": f"{row['time_weight']:.2f}",
+                    "total": _lnx_format_number(row["total_weighted"]),
+                    "absorb": _lnx_format_number(row["absorb_weighted"]),
+                }
+                for row in phase["waves"]
+            ],
+        })
     return Template(lnx_template_body).render(
         font=ASSETS + "/font/PingFangSC-Semibold.otf",
         lnx_mark=lnx_mark,
         decay_rate=LNX_DECAY_RATE,
-        sections="\n".join(sections),
+        phases=rendered_phases,
         saohua=get_saohua(),
     )
 
@@ -1181,7 +1067,7 @@ async def render_lnx_analysis(raw_data: Any, anonymous: bool = False):
     html_content = render_lnx_analysis_html(raw_data, anonymous)
     return await generate(html_content, ".lnx-report", segment=True, viewport={"width": 1800, "height": 1200})
 
-
+# Lu Nian Xue
 async def LNXAnalyze(file_name: str, url: str, anonymous: bool = False, user_id: int = 0):
     async with AsyncClient(verify=False) as client:
         resp = await client.post(
@@ -1194,6 +1080,134 @@ async def LNXAnalyze(file_name: str, url: str, anonymous: bool = False, user_id:
         return data.get("msg") or "鲁念雪分析失败，请检查 JCL 是否完整。"
     raw_data = data.get("data", data) if isinstance(data, dict) else data
     return await render_lnx_analysis(raw_data, anonymous)
+
+# Qian Ji yuan shu Health (已弃用)
+# Qian Ji yuan shu Vine
+async def QJHAnalyze(file_name: str, url: str, anonymous: bool = False, user_id: int = 0):
+    async with AsyncClient(verify=False) as client:
+        resp = await client.post(
+            f"{Config.jx3.api.cqc_url}/qjh_analyze",
+            json={"jcl_url": url, "jcl_name": file_name},
+            timeout=600,
+        )
+        data = resp.json()
+    if isinstance(data, dict) and "code" in data and data["code"] != 200:
+        return (
+            data["msg"]
+            if "msg" in data and data["msg"]
+            else "QJH 分析失败，请检查 JCL 是否完整。"
+        )
+    raw_data = data["data"] if isinstance(data, dict) else data
+    rounds = raw_data if isinstance(raw_data, list) else []
+    anonymous_names: dict[str, str] = {}
+    rendered_rounds = []
+
+    for round_index, round_data in enumerate(rounds, 1):
+        if not isinstance(round_data, dict):
+            continue
+        vines = round_data["vines"]
+        if not isinstance(vines, list):
+            vines = []
+        rendered_vines = []
+        for vine_index, vine in enumerate(vines, 1):
+            if not isinstance(vine, dict):
+                continue
+            finisher = vine["finished_by"]
+            finisher = finisher if isinstance(finisher, dict) else {}
+            original_name = str(finisher["name"] or "未识别")
+            if anonymous and original_name != "未识别":
+                if original_name not in anonymous_names:
+                    anonymous_names[original_name] = f"匿名玩家 {len(anonymous_names) + 1}"
+                player_name = anonymous_names[original_name]
+            else:
+                player_name = original_name
+            marker = str(vine["label"] or f"第 {vine_index} 条")
+            skill = str(finisher["skill"] or "未知技能")
+            finish_healing = int(finisher["healing"] or 0)
+            effective_healing = int(finisher["effective_healing"] or 0)
+            overhealing = int(finisher["overhealing"] or 0)
+            total_effective_healing = int(vine["total_effective_healing"] or 0)
+            window_ms = (
+                int(vine["window_ms"] or 3_000)
+                if "window_ms" in vine
+                else 3_000
+            )
+            window_seconds = f"{window_ms / 1000:g}s"
+            rendered_healers = []
+            healers = vine["healers"]
+            if not isinstance(healers, list):
+                healers = []
+            for healer in healers:
+                if not isinstance(healer, dict):
+                    continue
+                healer_name = str(healer["name"] or "未识别")
+                healer_kungfu = Kungfu.with_internel_id(
+                    int(healer["kungfu_id"] or 0), True
+                )
+                healer_healing = int(healer["healing"] or 0)
+                healer_effective = int(healer["effective_healing"] or 0)
+                is_final = bool(healer["final"])
+                if anonymous and healer_name != "未识别":
+                    if healer_name not in anonymous_names:
+                        anonymous_names[healer_name] = f"匿名玩家 {len(anonymous_names) + 1}"
+                    healer_name = anonymous_names[healer_name]
+                skills = healer["skills"]
+                if not isinstance(skills, dict):
+                    skills = {}
+                rendered_healers.append({
+                    "kind": "healer",
+                    "final": is_final,
+                    "icon": healer_kungfu.icon,
+                    "name": healer_name,
+                    "count": sum(
+                        len(values)
+                        for values in skills.values()
+                        if isinstance(values, list)
+                    ),
+                    "healing": f"{healer_healing:,}",
+                    "effective": f"{healer_effective:,}",
+                })
+                for skill_name, skill_values in skills.items():
+                    values = skill_values if isinstance(skill_values, list) else []
+                    skill_total = sum(int(value) for value in values)
+                    skill_percent = (
+                        f"{skill_total / healer_healing * 100:.2f}%"
+                        if healer_healing > 0 else "0.00%"
+                    )
+                    rendered_healers.append({
+                        "kind": "skill",
+                        "name": str(skill_name or "未知技能"),
+                        "count": len(values),
+                        "healing": f"{skill_total:,}",
+                        "percent": skill_percent,
+                    })
+            rendered_vines.append({
+                "marker": marker,
+                "window": window_seconds,
+                "total_effective": f"{total_effective_healing:,}",
+                "player_name": player_name,
+                "skill": skill,
+                "finish_healing": f"{finish_healing:,}",
+                "effective_healing": f"{effective_healing:,}",
+                "overhealing": f"{overhealing:,}",
+                "healers": rendered_healers,
+            })
+        rendered_rounds.append({
+            "number": round_data["round"],
+            "vines": rendered_vines,
+        })
+
+    html_content = Template(qjh_template_body).render(
+        font=ASSETS + "/font/PingFangSC-Semibold.otf",
+        rounds=rendered_rounds,
+        saohua=get_saohua(),
+    )
+    return await generate(
+        html_content,
+        ".qjh-report",
+        segment=True,
+        viewport={"width": 1700, "height": 1200},
+    )
 
 # A Shi Na (Cheng Qing)
 async def ASNAnalyze(file_name: str, url: str, anonymous: bool = False, user_id: int = 0):

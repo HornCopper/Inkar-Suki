@@ -295,6 +295,172 @@ lgz_detail_template_body_sub = """
 </tr>
 """
 
+qjh_template_body = """
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        @font-face {
+            font-family: Harmony;
+            src: url("{{ font }}");
+        }
+        body {
+            font-family: Harmony, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: #fff;
+        }
+        .qjh-report {
+            display: inline-block;
+            min-width: 1500px;
+            padding: 20px;
+            background: white;
+            box-sizing: border-box;
+        }
+        .report-title {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 4px 4px 18px;
+            color: #444;
+        }
+        .report-title strong { font-size: 30px; }
+        .report-title span { color: #777; font-size: 20px; }
+        .round-card {
+            margin-bottom: 24px;
+            border: 1px solid #e6e6e6;
+        }
+        .round-title {
+            padding: 12px 16px;
+            background: #f0f0f0;
+            color: #444;
+            font-size: 26px;
+            font-weight: 600;
+        }
+        .vines {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 24px;
+            padding: 18px;
+            align-items: start;
+        }
+        .vine-panel {
+            border: 1px solid #e8e8e8;
+            background: #fff;
+        }
+        .vine-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 14px;
+            background: #f8f9fa;
+            border-bottom: 1px solid #eee;
+        }
+        .vine-name { color: #444; font-size: 24px; font-weight: 600; }
+        .vine-total { color: #777; font-size: 17px; }
+        .finish-detail {
+            padding: 10px 14px;
+            border-bottom: 1px solid #eee;
+            color: #666;
+            font-size: 17px;
+            line-height: 1.6;
+        }
+        .finish-detail strong { color: #2c7be5; }
+        table { width: 100%; border-collapse: collapse; }
+        th {
+            padding: 10px 8px;
+            background: #f8f9fa;
+            color: #555;
+            font-size: 17px;
+            font-weight: 600;
+            text-align: center;
+            white-space: nowrap;
+        }
+        td {
+            padding: 9px 8px;
+            border-top: 1px solid #eee;
+            color: #444;
+            font-size: 17px;
+            text-align: center;
+        }
+        .healer-row td { background: #fff; }
+        .healer-row.final td { background: #f2f7fd; }
+        .healer-icon { width: 42px; height: 42px; vertical-align: middle; }
+        .skill-row td {
+            padding: 5px 8px;
+            border-top: none;
+            background: #fafafa;
+            color: #666;
+            font-size: 15px;
+        }
+        .skill-name { padding-left: 22px !important; text-align: left; }
+        .final-tag { color: #2c7be5; font-weight: 600; }
+        .empty { padding: 24px; color: #999; font-size: 18px; text-align: center; }
+        footer {
+            margin-top: 10px;
+            padding: 15px;
+            background: #f0f0f0;
+            color: #777;
+            font-size: 20px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+<main class="qjh-report">
+    <div class="report-title"><strong>千机源枢 - 藤蔓每轮最后治疗</strong><span>共 {{ rounds|length }} 轮</span></div>
+    {% for round in rounds %}
+    <section class="round-card">
+        <div class="round-title">第 {{ round.number|e }} 轮</div>
+        <div class="vines">
+            {% for vine in round.vines %}
+            <article class="vine-panel">
+                <div class="vine-head">
+                    <div class="vine-name">藤蔓[{{ vine.marker|e }}]</div>
+                    <div class="vine-total">最后 {{ vine.window }} 内有效治疗 {{ vine.total_effective }}</div>
+                </div>
+                <div class="finish-detail">
+                    奶爆：<strong>{{ vine.player_name|e }}</strong>　
+                    收尾技能：<strong>{{ vine.skill|e }}</strong><br>
+                    收尾治疗 {{ vine.finish_healing }}　有效 {{ vine.effective_healing }}　过量 {{ vine.overhealing }}
+                </div>
+                <table>
+                    <thead><tr><th>心法</th><th>角色 / 技能</th><th>次数</th><th>治疗</th><th>有效 / 占比</th><th>状态</th></tr></thead>
+                    <tbody>
+                        {% for row in vine.healers %}
+                            {% if row.kind == "healer" %}
+                            <tr class="healer-row{% if row.final %} final{% endif %}">
+                                <td><img class="healer-icon" src="{{ row.icon|e }}"></td>
+                                <td>{{ row.name|e }}</td><td>{{ row.count }}</td><td>{{ row.healing }}</td><td>{{ row.effective }}</td>
+                                <td class="{% if row.final %}final-tag{% endif %}">{% if row.final %}奶爆{% else %}参与{% endif %}</td>
+                            </tr>
+                            {% else %}
+                            <tr class="skill-row">
+                                <td></td><td class="skill-name">{{ row.name|e }}</td><td>{{ row.count }}</td>
+                                <td>{{ row.healing }}</td><td>{{ row.percent }}</td><td></td>
+                            </tr>
+                            {% endif %}
+                        {% else %}
+                        <tr><td class="empty" colspan="6">未识别到治疗明细</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </article>
+            {% else %}
+            <div class="empty">本轮未识别到藤蔓记录</div>
+            {% endfor %}
+        </div>
+    </section>
+    {% else %}
+    <section class="round-card"><div class="empty">未识别到有效的藤蔓奶爆记录</div></section>
+    {% endfor %}
+    <footer>千机源枢 藤蔓奶爆记录 | Inkar Suki: {{ saohua }}</footer>
+</main>
+</body>
+</html>
+"""
+
 lnx_template_body = """
 <!DOCTYPE html>
 <html lang="zh-CN">
@@ -881,7 +1047,100 @@ lnx_template_body = """
             </div>
         </div>
 
-        {{ sections }}
+        {% macro role_cell(role) %}
+        <div class="role-cell"><img src="{{ role.icon|e }}"><div>{{ role.name|e }}{% if role.type %}<div class="muted">{{ role.type|e }}</div>{% endif %}</div></div>
+        {% endmacro %}
+        {% macro bar_cell(bar) %}
+        <td class="num contribution-bar" style="--bar:{{ bar.ratio }}"><span>{{ bar.value }}</span></td>
+        {% endmacro %}
+        {% macro side_table(rows, value_title) %}
+        <table class="contribution-side-table">
+            <thead><tr><th>#</th><th>角色</th><th>{{ value_title }}</th></tr></thead>
+            <tbody>
+                {% for row in rows %}<tr><td class="rank">{{ row.rank }}</td><td>{{ role_cell(row.role) }}</td>{{ bar_cell(row.value) }}</tr>
+                {% else %}<tr><td colspan="3" class="muted">无数据</td></tr>{% endfor %}
+            </tbody>
+        </table>
+        {% endmacro %}
+
+        {% for phase in phases %}
+        <section class="phase-card">
+            <img class="phase-watermark" src="{{ lnx_mark|e }}" aria-hidden="true">
+            <div class="phase-header">
+                <div>
+                    <div class="phase-name">Phase {{ phase.phase_index }}</div>
+                    <div class="phase-meta">波次 {{ phase.wave_count }} / 终止 W{{ phase.terminal_wave }} / trigger_line {{ phase.trigger_line|e }}</div>
+                </div>
+                <div class="badge">按 weighted_contribution 降序</div>
+            </div>
+            <div class="triple-col">
+                <div>
+                    <div class="section-title">综合贡献 Top 10</div>
+                    <table class="contribution-summary-table">
+                        <thead><tr><th>#</th><th>角色</th><th>加权总贡献</th><th>加权减伤</th><th>加权治疗</th></tr></thead>
+                        <tbody>
+                            {% for row in phase.players %}
+                            <tr><td class="rank">{{ row.rank }}</td><td>{{ role_cell(row.role) }}</td>{{ bar_cell(row.total) }}{{ bar_cell(row.mitigation) }}{{ bar_cell(row.heal) }}</tr>
+                            {% else %}<tr><td colspan="5" class="muted">无数据</td></tr>{% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <div><div class="section-title">减伤贡献 Top 10</div>{{ side_table(phase.mitigation_players, "加权减伤") }}</div>
+                <div><div class="section-title">治疗贡献 Top 10</div>{{ side_table(phase.heal_players, "加权治疗") }}</div>
+            </div>
+            <div class="detail-row">
+                <div>
+                    <div class="section-title">减伤 Buff 明细</div>
+                    <table class="buff-detail-table">
+                        <thead><tr><th>#</th><th>来源</th><th>Buff</th><th>减伤</th><th>加权贡献</th><th>覆盖</th></tr></thead>
+                        <tbody>
+                            {% for row in phase.buffs %}
+                            <tr><td class="rank">{{ row.rank }}</td><td>{{ role_cell(row.role) }}</td><td>{{ row.buff|e }}</td><td class="num">{{ row.percent }}</td>{{ bar_cell(row.weighted) }}<td class="num muted">{{ row.coverage }}</td></tr>
+                            {% else %}<tr><td colspan="6" class="muted">无数据</td></tr>{% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <div>
+                    <div class="section-title">贡献占比</div>
+                    <div class="pie-panel">
+                        {% for pie in phase.pies %}
+                        <div class="pie-card">
+                            <div class="pie-title">{{ pie.title|e }}</div>
+                            {% if pie.empty %}<div class="muted">无贡献数据</div>{% else %}
+                            <div class="pie-body"><div class="pie-chart">
+                                <svg class="rose-chart" viewBox="0 0 {{ pie.width }} {{ pie.height }}" aria-hidden="true">
+                                    <defs><marker id="{{ pie.marker_id }}" viewBox="0 0 5 5" refX="4.6" refY="2.5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0,0 L5,2.5 L0,5 Z"></path></marker></defs>
+                                    <circle class="rose-backdrop" cx="{{ pie.center_x }}" cy="{{ pie.center_y }}" r="80"></circle>
+                                    {% for item in pie["items"] %}<g class="rose-slice-group"><path class="rose-slice" d="{{ item.path }}" fill="{{ item.color }}" /></g>{% endfor %}
+                                    {% for item in pie["items"] %}<path class="rose-guide-shadow" d="{{ item.guide }}" /><path class="rose-guide-line" d="{{ item.guide }}" marker-end="url(#{{ pie.marker_id }})" />{% endfor %}
+                                    <circle class="rose-core" cx="{{ pie.center_x }}" cy="{{ pie.center_y }}" r="15"></circle>
+                                </svg>
+                                {% for item in pie["items"] %}
+                                <span class="rose-entity-label" style="left:{{ item.left }};top:{{ item.top }};--label-color:{{ item.color }};">
+                                    {% if item.icon %}<img src="{{ item.icon|e }}">{% else %}<span class="rose-label-dot" style="background:{{ item.color }};"></span>{% endif %}
+                                    <span class="rose-entity-name">{{ item.label|e }}</span><b>{{ item.percent }}</b>
+                                </span>
+                                {% endfor %}
+                            </div></div>
+                            {% endif %}
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            <div class="section-title">Wave 加权总贡献与化解总量</div>
+            {% if phase.waves %}
+            <div class="wave-stack">
+                <div class="wave-label-pill">总贡献</div>
+                <div class="wave-grid">{% for wave in phase.waves %}<div class="wave-card"><div class="wave-index">W{{ wave.index }} / {{ wave.weight }}</div><div class="wave-value">{{ wave.total }}</div></div>{% endfor %}</div>
+                <div class="wave-label-pill">化解</div>
+                <div class="wave-grid">{% for wave in phase.waves %}<div class="wave-card"><div class="wave-index">W{{ wave.index }} / {{ wave.weight }}</div><div class="wave-value">{{ wave.absorb }}</div></div>{% endfor %}</div>
+            </div>
+            {% else %}<div class="muted">无波次数据</div>{% endif %}
+        </section>
+        {% else %}
+        <section class="phase-card"><div class="phase-name">未识别到鲁念雪分析数据</div></section>
+        {% endfor %}
 
         <footer>Inkar-Suki：{{ saohua }}</footer>
     </div>

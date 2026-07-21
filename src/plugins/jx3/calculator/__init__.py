@@ -48,7 +48,7 @@ from .traverse import (
     save_rating_cache,
 )
 from .rdps import BLACalculator, TRDCalculator
-from .jcl_analyze import CQCAnalyze, FALAnalyze, YXCAnalyze, RODAnalyze, DPSAnalyze, CALAnalyze, ASNAnalyze, THRAnalyze, THFAnalyze, LGZAnalyze, LNXAnalyze
+from .jcl_analyze import CQCAnalyze, FALAnalyze, YXCAnalyze, RODAnalyze, DPSAnalyze, CALAnalyze, ASNAnalyze, THRAnalyze, THFAnalyze, LGZAnalyze, LNXAnalyze, QJHAnalyze
 from ._template import calculator_timeline_template, custom_loop_help_template
 
 from .therapy_panel import therapy_panel
@@ -3071,6 +3071,10 @@ async def _(bot: Bot, event: GroupUploadNoticeEvent):
         analyzer = LGZAnalyze
     elif check_jcl_name(event.file.name, "LNX-"):
         analyzer = LNXAnalyze
+    # elif check_jcl_name(event.file.name, "QJH-"):
+    # 由于某位花间玩家的强烈抗议
+    elif check_jcl_name(event.file.name, "QJV-"):
+        analyzer = QJHAnalyze
     else:
         return
     
