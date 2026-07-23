@@ -17,6 +17,7 @@ from src.utils.analyze import (
     TuilanData,
     merge_dicts,
     parse_jcl_player_table,
+    parse_luatable,
     parse_skillevent,
 )
 from src.utils.exceptions import TabFileMissException
