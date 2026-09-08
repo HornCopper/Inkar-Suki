@@ -2147,7 +2147,7 @@ async def _build_equipment_rating_payload_by_kungfu(
     pve_tag = _equipment_rating_pve_tag(kungfu_id)
     pve_equips = await JX3PlayerAttribute.from_database(int(player_data.globalRoleId), pve_tag, all=True)
     if pve_equips is None:
-        await matcher.finish(PROMPT.EquipNotFound)
+        await matcher.finish(PROMPT.EquipNotFound + "\n或先查询属性检查是否有 PVE 装备的记录。")
     target_equip = next(
         (
             equip
