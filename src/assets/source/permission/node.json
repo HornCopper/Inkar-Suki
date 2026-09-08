@@ -173,6 +173,10 @@
                     "desc": "使用高级计算器功能"
                 },
                 {
+                    "name": "calculator.rating.distribution.export",
+                    "desc": "导出心法评级对应榜单的分布统计图"
+                },
+                {
                     "name": "calculator.public_loop.approve",
                     "desc": "审批公有计算器循环提交"
                 },

@@ -5,7 +5,7 @@ from nonebot.log import logger
 from nonebot.params import CommandArg, Arg, RawCommand
 from nonebot.typing import T_State
 from nonebot.matcher import Matcher
-from nonebot.adapters.onebot.v11 import Bot, Message, GroupMessageEvent, GroupUploadNoticeEvent, MessageSegment as ms
+from nonebot.adapters.onebot.v11 import Bot, Message, MessageEvent, GroupMessageEvent, GroupUploadNoticeEvent, MessageSegment as ms
 
 from src.config import Config
 from src.const.path import ASSETS, DATA, build_path
@@ -56,6 +56,7 @@ from ._template import calculator_timeline_template, custom_loop_help_template
 
 from .therapy_panel import therapy_panel
 from . import equipment_rating as equipment_rating_module
+from . import rating_distribution as rating_distribution_module
 import re
 import json
 import copy
@@ -1617,6 +1618,19 @@ async def _(event: GroupMessageEvent, matcher: Matcher, state: T_State, args: Me
 @equipment_rating_matcher.got("rating_jcl_order")
 async def _(event: GroupMessageEvent, matcher: Matcher, state: T_State, rating_jcl_order: Message = Arg()):
     await equipment_rating_module.handle_equipment_rating_loop_order(event, matcher, state, rating_jcl_order)
+
+
+rating_distribution_matcher = on_command("jx3_rating_distribution", command_key="计算器", aliases={"评级分布"}, priority=5, force_whitespace=True)
+
+
+@rating_distribution_matcher.handle()
+async def _(event: MessageEvent, matcher: Matcher, state: T_State, args: Message = CommandArg()):
+    await rating_distribution_module.handle_rating_distribution(event, matcher, state, args)
+
+
+@rating_distribution_matcher.got("rating_distribution_order")
+async def _(event: MessageEvent, matcher: Matcher, state: T_State, rating_distribution_order: Message = Arg()):
+    await rating_distribution_module.handle_rating_distribution_order(event, matcher, state, rating_distribution_order)
 
 
 timeline_matcher = on_command(

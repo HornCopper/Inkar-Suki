@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ kungfu_name }} · {{ route_name }} · 评级分布</title>
+    <style>
+        @font-face { font-family: RatingFont; src: url("{{ font }}"); }
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            width: 1220px;
+            background: #fff;
+            color: #242832;
+            font-family: RatingFont, "Microsoft YaHei", "PingFang SC", sans-serif;
+        }
+        .rating-distribution {
+            --theme: {{ theme_color }};
+            --ink: {{ theme_ink }};
+            width: 1220px;
+            padding: 44px 44px 28px;
+            background: #fff;
+        }
+        .report-body { display: grid; grid-template-columns: 210px minmax(0, 1fr); gap: 28px; }
+        .sidebar { min-width: 0; padding-right: 26px; border-right: 1px solid #e6e6e6; }
+        .kungfu-icon { display: block; width: 58px; height: 58px; object-fit: cover; margin-bottom: 16px; }
+        .build-title { margin: 0; font-size: 34px; font-weight: 900; line-height: 1.2; overflow-wrap: anywhere; }
+        .build-subtitle { margin-top: 9px; color: #616b76; font-size: 18px; }
+        .side-section { margin-top: 32px; }
+        .side-heading { margin: 0 0 14px; font-size: 20px; font-weight: 900; color: #20262f; }
+        .sample-value { margin-top: 4px; font-size: 60px; line-height: 1.12; letter-spacing: -2px; color: var(--ink); overflow-wrap: anywhere; }
+        .sample-unit { margin-top: 8px; font-size: 14px; color: #7c8793; }
+        .sample-rule { width: 32px; height: 3px; margin-top: 20px; border-radius: 2px; background: var(--theme); }
+        .side-row { display: flex; justify-content: space-between; gap: 10px; margin-top: 10px; font-size: 14px; line-height: 1.5; color: #7b8590; }
+        .side-row strong { color: #434e5a; text-align: right; font-weight: 800; }
+        .range-item { margin-top: 16px; font-size: 13px; color: #7b8590; }
+        .range-item strong { display: block; margin-top: 4px; font-size: 22px; line-height: 1.3; color: #394552; overflow-wrap: anywhere; }
+        .content { min-width: 0; }
+        .dps-header {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            min-height: 124px;
+            padding: 20px 24px;
+            border: 1px solid #e7edf3;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #fff 0%, #f8fbff 100%);
+            box-shadow: 0 8px 24px rgba(52, 72, 90, .06);
+        }
+        .header-avatar { width: 72px; height: 72px; flex: 0 0 72px; object-fit: cover; border: 2px solid rgba(122,169,200,.28); border-radius: 50%; box-shadow: 0 8px 20px rgba(52,72,90,.13); }
+        .header-text { min-width: 0; flex: 1; }
+        .header-title { margin: 0; font-size: 31px; font-weight: 900; color: #202b36; line-height: 1.25; }
+        .route { margin-top: 9px; font-size: 14px; line-height: 1.6; color: #6e7883; overflow-wrap: anywhere; }
+        .header-chip { flex: 0 0 auto; padding: 6px 11px; border: 1px solid #f0d7a6; border-radius: 6px; background: #fff3dc; color: #8c5b1e; font-size: 12px; }
+        .chart-panel { margin-top: 24px; padding: 22px 20px 0; border: 1px solid #e8edf1; border-radius: 12px; background: #fff; }
+        .section-title { display: flex; justify-content: space-between; align-items: center; gap: 18px; }
+        .section-title h2 { display: flex; align-items: center; gap: 10px; margin: 0; font-size: 20px; font-weight: 900; color: #253240; }
+        .section-title h2::before { content: ""; width: 4px; height: 18px; background: var(--theme); border-radius: 2px; }
+        .section-title span { color: #84909b; font-size: 12px; }
+        .chart { display: block; width: 100%; height: auto; margin-top: 22px; overflow: visible; }
+        .grid-line { stroke: #e9eef3; stroke-width: 1; stroke-dasharray: 4 5; }
+        .axis-line { stroke: #c8d1da; stroke-width: 1; }
+        .axis-tick { fill: #7b8997; font-size: 14px; }
+        .axis-title { fill: #687887; font-size: 14px; }
+        .chart-caption { margin: 2px 0 18px; color: #8994a0; font-size: 11px; line-height: 1.8; }
+        .route-legend { display: grid; gap: 10px; margin: 18px 0 0; padding: 14px 0 16px; border-bottom: 1px solid #eff2f5; }
+        .legend-item { display: flex; align-items: baseline; gap: 10px; font-size: 12px; line-height: 1.6; color: #637181; }
+        .legend-line { width: 22px; flex: 0 0 22px; align-self: center; border-top: 3px solid var(--route-color); border-radius: 3px; }
+        .legend-item.muted { color: #9aa4ae; }
+        .legend-item.muted .legend-line { border-top-width: 2px; opacity: .45; }
+        .legend-item.empty .legend-line { border-top-style: dashed; opacity: .5; }
+        .legend-name { min-width: 0; flex: 1; overflow-wrap: anywhere; }
+        .legend-count { flex: 0 0 auto; color: #87929e; font-size: 11px; }
+        .legend-tag { font-size: 10px; margin-left: 6px; color: #8994a0; }
+        .legend-selected { padding: 2px 5px; background: #f0f5f8; color: #536b7d; border-radius: 4px; font-size: 10px; margin-right: 5px; }
+        .route-statistics { margin-top: 18px; border: 1px solid #e8edf1; border-radius: 10px; overflow: hidden; }
+        .route-statistics table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+        .route-statistics th { background: #f8fafc; padding: 11px 10px; color: #8a95a0; font-size: 11px; font-weight: normal; text-align: right; }
+        .route-statistics td { padding: 13px 10px; border-top: 1px solid #edf1f4; text-align: right; color: #526171; font-size: 12px; overflow-wrap: anywhere; }
+        .route-statistics th:first-child, .route-statistics td:first-child { width: 12%; padding-left: 16px; text-align: left; }
+        .route-statistics th:nth-child(2), .route-statistics td:nth-child(2) { width: 10%; }
+        .route-statistics th:last-child, .route-statistics td:last-child { padding-right: 16px; }
+        .table-weapon { display: inline-flex; align-items: center; gap: 8px; }
+        .table-weapon i { width: 7px; height: 7px; flex: 0 0 7px; background: var(--route-color); border-radius: 50%; }
+        .route-statistics td.median-cell { color: #8d6839; background: #fffcf7; }
+        .notice { margin-top: 16px; padding: 11px 14px; border-left: 3px solid #e2eaf0; background: #f8fafc; color: #7c8995; font-size: 12px; line-height: 1.75; }
+        .report-footer { display: flex; justify-content: space-between; gap: 20px; margin-top: 26px; padding-top: 15px; border-top: 1px solid #edf0f3; color: #8b96a1; font-size: 11px; line-height: 1.5; }
+        .report-footer span { overflow-wrap: anywhere; }
+    </style>
+</head>
+<body>
+<main class="rating-distribution">
+    <div class="report-body">
+        <aside class="sidebar">
+            {% if kungfu_icon %}<img class="kungfu-icon" src="{{ kungfu_icon }}" alt="">{% endif %}
+            <h1 class="build-title">{{ kungfu_name }}</h1>
+            <div class="build-subtitle">评级分布</div>
+
+            <section class="side-section">
+                <h2 class="side-heading">{{ "当前路由样本" if selected else "榜单路由" }}</h2>
+                <div class="sample-value">{{ selected.count if selected else route_count }}</div>
+                <div class="sample-unit">{{ "个有效角色" if selected else "条路由 · " ~ populated_count ~ " 条有数据" }}</div>
+                <div class="sample-rule"></div>
+            </section>
+            <section class="side-section">
+                <h2 class="side-heading">统计范围</h2>
+                <div class="side-row"><span>区服</span><strong>全部区服</strong></div>
+                <div class="side-row"><span>记录</span><strong>各榜每角色最新</strong></div>
+                <div class="side-row"><span>指标</span><strong>{{ metric_label }}</strong></div>
+            </section>
+            <section class="side-section">
+                <h2 class="side-heading">{{ "当前路由范围" if selected else "整体数值范围" }}</h2>
+                <div class="range-item">最高<strong>{{ selected_maximum if selected else maximum }}</strong></div>
+                <div class="range-item">最低<strong>{{ selected_minimum if selected else minimum }}</strong></div>
+            </section>
+        </aside>
+
+        <div class="content">
+            <header class="dps-header">
+                {% if header_avatar %}<img class="header-avatar" src="{{ header_avatar }}" alt="">{% endif %}
+                <div class="header-text">
+                    <div class="header-title">{{ kungfu_name }}分布报告</div>
+                    <div class="route">{{ route_name }}</div>
+                </div>
+                <div class="header-chip">实际排名</div>
+            </header>
+
+            <section class="chart-panel">
+                <div class="section-title"><h2>{{ "承压" if metric_label == "承压值" else "伤害" }}分布</h2><span>{{ "当前路由高亮" if selected else "全部路由对照" if route_count > 1 else "单路由分布" }}</span></div>
+                <div class="route-legend">
+                    {% for route in routes %}
+                    <div class="legend-item{% if route.muted %} muted{% endif %}{% if not route["values"] %} empty{% endif %}" style="--route-color: {{ route.stroke }}" data-route-key="{{ route.key }}">
+                        <i class="legend-line"></i>
+                        <span class="legend-name">{% if route.selected %}<span class="legend-selected">当前</span>{% endif %}{{ route.name }}{% if route.note %}<span class="legend-tag">{{ route.note }}</span>{% endif %}</span>
+                        <span class="legend-count">{{ route.count }} 个角色</span>
+                    </div>
+                    {% endfor %}
+                </div>
+                <svg class="chart" viewBox="0 0 928 382" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="{{ kungfu_name }} {{ route_name }} {{ metric_label }} 实际排名分布">
+                    <text class="axis-title" x="72" y="15">{{ "概率密度" if has_density else "记录位置（无连续分布）" }} {{ density_unit }}</text>
+                    {% for tick in y_ticks %}
+                    <line class="grid-line" x1="72" x2="908" y1="{{ tick.y }}" y2="{{ tick.y }}" />
+                    <text class="axis-tick" x="58" y="{{ tick.y + 5 }}" text-anchor="end">{{ tick.label }}</text>
+                    {% endfor %}
+                    {% for route in draw_routes %}
+                    {% if route.path %}
+                    <path class="density-curve" data-route-key="{{ route.key }}" d="{{ route.path }}" fill="none" stroke="{{ route.stroke }}" stroke-width="{{ route.stroke_width }}" opacity="{{ route.opacity }}" stroke-linecap="round" stroke-linejoin="round" />
+                    {% elif route.point_x is not none %}
+                    <g class="point-mass" data-route-key="{{ route.key }}" stroke="{{ route.stroke }}" opacity="{{ route.opacity }}">
+                        <line x1="{{ route.point_x }}" x2="{{ route.point_x }}" y1="{{ route.point_y }}" y2="320" stroke-width="{{ route.stroke_width }}" stroke-dasharray="4 5" />
+                        <circle cx="{{ route.point_x }}" cy="{{ route.point_y }}" r="4" fill="{{ route.stroke }}" stroke-width="0" />
+                    </g>
+                    {% endif %}
+                    {% endfor %}
+                    <line class="axis-line" x1="72" x2="908" y1="320" y2="320" />
+                    {% for tick in x_ticks %}
+                    <line class="axis-line" x1="{{ tick.x }}" x2="{{ tick.x }}" y1="320" y2="326" />
+                    <text class="axis-tick" x="{{ tick.x }}" y="348" text-anchor="middle">{{ tick.label }}</text>
+                    {% endfor %}
+                    <text class="axis-title" x="490" y="379" text-anchor="middle">{{ metric_label }} · 实际数值</text>
+                </svg>
+                <div class="chart-caption">{% if has_density %}连续曲线为实际排名样本的平滑密度估计，各曲线面积独立归一化为 1。{% else %}单条记录或全部数值相同，以竖线标示实际数值，不估计连续分布。{% endif %}{% if selected %}彩色表示当前路由，灰色为其他路由。{% endif %}</div>
+            </section>
+
+            <div class="route-statistics">
+                <table>
+                    <thead><tr><th>{{ "模型" if metric_label == "承压值" else "武器" }}</th><th>有效角色</th><th>P25</th><th>中位数 P50</th><th>P75</th><th>最大值</th></tr></thead>
+                    <tbody>
+                        {% for route in ([selected] if selected else routes) %}
+                        <tr><td><span class="table-weapon" style="--route-color: {{ route.color }}"><i></i>{{ route.weapon }}</span></td><td>{{ route.count }}</td>{% for quantile in route.quantiles %}<td{% if quantile.key == 'P50' %} class="median-cell"{% endif %}>{{ quantile.value }}</td>{% endfor %}<td>{{ route.maximum }}</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <div class="notice">{% if selected and not selected["values"] %}当前路由暂无有效排名数据，图中仅展示其他路由作为对照。{% endif %}各榜按每角色最新有效记录统计，同一角色可出现在多个路由。分位数采用线性插值。单条或相同数值仅标示位置，竖线高度不表示密度。</div>
+        </div>
+    </div>
+    <footer class="report-footer"><span>Inkar Suki · 装备评级</span><span>统计时间 {{ updated_at }}</span></footer>
+</main>
+</body>
+</html>

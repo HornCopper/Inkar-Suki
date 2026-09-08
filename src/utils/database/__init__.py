@@ -15,6 +15,9 @@ from src.utils.database.classes import (
     Population,
     PlayerEquipsCache,
     EquipmentRatingCache,
+    EquipmentRatingRaceEventCache,
+    EquipmentRatingRaceBossCache,
+    EquipmentRatingRaceRoleCache,
     RoleData,
     JX3APIWSData,
     RequestData,
@@ -51,6 +54,9 @@ cache_db.auto_migrate(
     BanRecord(),
     JX3APIWSData(),
     RequestData(),
+    EquipmentRatingRaceEventCache(),
+    EquipmentRatingRaceBossCache(),
+    EquipmentRatingRaceRoleCache(),
     GroupMessage()
 )
 

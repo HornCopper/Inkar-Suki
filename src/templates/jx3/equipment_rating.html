@@ -300,6 +300,132 @@
             background: linear-gradient(90deg, rgba(243, 152, 0, 0.22), rgba(243, 152, 0, 0.75), rgba(243, 152, 0, 0.18));
         }
 
+        .race-rank-strip {
+            display: grid;
+            grid-template-columns: auto minmax(0, 1fr);
+            align-items: start;
+            gap: 14px;
+            margin: -6px 0 6px;
+            padding: 8px 14px 4px;
+        }
+
+        .race-rank-heading {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            min-height: 26px;
+            color: #344a59;
+            font-size: 14px;
+            line-height: 1.2;
+            font-weight: 900;
+            white-space: nowrap;
+        }
+
+        .race-rank-heading::before {
+            content: "";
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #4da4ca;
+            box-shadow: 0 0 0 3px rgba(77, 164, 202, 0.12);
+        }
+
+        .race-rank-groups {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 8px 18px;
+            min-width: 0;
+        }
+
+        .race-rank-group,
+        .race-rank-items {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 7px;
+            min-width: 0;
+        }
+
+        .race-rank-label {
+            padding: 3px 8px;
+            border-radius: 999px;
+            font-size: 12px;
+            line-height: 1.2;
+            font-weight: 900;
+            white-space: nowrap;
+        }
+
+        .race-rank-group-best .race-rank-label {
+            color: #cf7414;
+        }
+
+        .race-rank-group-latest .race-rank-label {
+            color: #2d78b2;
+        }
+
+        .race-rank-item {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            min-height: 26px;
+            padding: 3px 9px;
+            border: 1px solid #e1e9ef;
+            border-radius: 6px;
+            background: rgba(255, 255, 255, 0.9);
+            color: #4c5963;
+            font-size: 13px;
+            line-height: 1.2;
+            font-weight: 800;
+            white-space: nowrap;
+        }
+
+        .race-rank-item strong {
+            display: inline-flex;
+            align-items: center;
+            padding: 2px 6px;
+            border: 1px solid #dce5eb;
+            border-radius: 999px;
+            background: #f5f8fa;
+            color: #52616d;
+            font-size: 12px;
+            line-height: 1.1;
+            font-weight: 900;
+        }
+
+        .race-rank-item strong.race-rank-tier-red {
+            border-color: #f1b9b9;
+            background: #fff0f0;
+            color: #d83c3c;
+        }
+
+        .race-rank-item strong.race-rank-tier-orange {
+            border-color: #f0c792;
+            background: #fff5e7;
+            color: #cf7414;
+        }
+
+        .race-rank-item strong.race-rank-tier-purple {
+            border-color: #d5c0ee;
+            background: #f6f0ff;
+            color: #8352bd;
+        }
+
+        .race-rank-item strong.race-rank-tier-blue {
+            border-color: #b9d8ee;
+            background: #edf7ff;
+            color: #2d78b2;
+        }
+
+        .race-rank-latest-mark {
+            padding-left: 6px;
+            border-left: 1px solid #d8e7ef;
+            color: #3182a2;
+            font-size: 10px;
+            font-style: normal;
+            font-weight: 900;
+        }
+
         .income-bars {
             display: flex;
             flex-direction: column;
@@ -1614,6 +1740,39 @@
                 </header>
 
                 <div class="accent-line"></div>
+
+                {% if race_rank %}
+                <section class="race-rank-strip">
+                    <div class="race-rank-heading">百强竞速</div>
+                    <div class="race-rank-groups">
+                        {% for group in race_rank.groups %}
+                        <div class="race-rank-group race-rank-group-{{ group.kind }}">
+                            <span class="race-rank-label">{{ group.label }}</span>
+                            <div class="race-rank-items">
+                                {% for item in group["items"] %}
+                                {% if item.rank <= 3 %}
+                                {% set rank_tier = "red" %}
+                                {% elif item.rank <= 10 %}
+                                {% set rank_tier = "orange" %}
+                                {% elif item.rank <= 50 %}
+                                {% set rank_tier = "purple" %}
+                                {% else %}
+                                {% set rank_tier = "blue" %}
+                                {% endif %}
+                                <span class="race-rank-item">
+                                    {{ item.boss_name }}
+                                    <strong class="race-rank-tier-{{ rank_tier }}">{{ item.rank }}</strong>
+                                    {% if group.mark_latest_item and item.is_latest %}
+                                    <em class="race-rank-latest-mark">最新</em>
+                                    {% endif %}
+                                </span>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </section>
+                {% endif %}
 
                 <div class="slot-list">
                     {% for slot in slots %}

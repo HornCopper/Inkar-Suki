@@ -39,9 +39,21 @@ class Jx3WS(BaseModel):
     enable: bool = False
 
 
+class Jx3RaceRank(BaseModel):
+    enabled: bool = True
+    event_id: int = 23
+    event_api: str = "https://team.jx3box.com/api/team/rank/events/{event_id}"
+    boss_rank_api: str = (
+        "https://team.jx3box.com/api/team/race/achieve/{achievement_id}/top100"
+        "?server={server}&event_id={event_id}"
+    )
+    cache_version: int = 1
+
+
 class Jx3Config(BaseModel):
     api: Jx3API
     ws: Jx3WS
+    race_rank: Jx3RaceRank = Jx3RaceRank()
 
 class QWeather(BaseModel):
     url: str

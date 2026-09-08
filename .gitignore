@@ -191,3 +191,7 @@ src/plugins/book/
 order.json
 src/show/
 src/plugins/beta/
+
+# Workbuddy
+.Workbuddy
+docs

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import asyncio
 import json
 import math
 from pathlib import Path
@@ -47,6 +48,7 @@ from .loop_selection import (
     calculator_loop_entries as _calculator_loop_entries,
     format_calculator_loop_selection,
 )
+from .race_rank import get_equipment_rating_race_rank
 from .timeline_render import _chart_svg, _format_compact_number
 from .universe import UniversalCalculator
 
@@ -1907,6 +1909,7 @@ async def render_equipment_rating_image(
     rating_equip: JX3PlayerAttribute | None = None,
     timeline_data: dict[str, Any] | None = None,
     rank_data: dict[str, Any] | None = None,
+    race_rank_data: dict[str, Any] | None = None,
 ):
     meta = data["meta"]
     summary = data["summary"]
@@ -1969,6 +1972,7 @@ async def render_equipment_rating_image(
         adaptive_consumables=_prepare_adaptive_consumables(data.get("adaptive_consumables")),
         trial_land=trial_land,
         equipment_rating_rank=rank_data,
+        race_rank=race_rank_data,
         rating_timeline=_prepare_rating_timeline(timeline_data),
         equipment_rating_qrcode=_rating_group_qrcode(),
         tank_vitality_conversion=_prepare_tank_vitality_conversion(summary, kungfu),
@@ -2222,9 +2226,22 @@ async def _finish_equipment_rating_calculation(
     role_id: str = "",
     global_role_id: int = 0,
 ):
+    race_rank_task = (
+        asyncio.create_task(get_equipment_rating_race_rank(global_role_id))
+        if global_role_id > 0
+        else None
+    )
     rating_payload = {**payload, "include_trial_land": True}
     data = await _request_equipment_rating_data(rating_payload)
     if isinstance(data, str):
+        if race_rank_task is not None:
+            race_rank_task.cancel()
+            try:
+                await race_rank_task
+            except asyncio.CancelledError:
+                pass
+            except Exception as exc:
+                logger.warning(f"装备评级百强数据清理失败：{exc}")
         await matcher.finish(data)
     if global_role_id <= 0 and rating_equip is not None:
         global_role_id = int(rating_equip.global_role_id)
@@ -2235,9 +2252,23 @@ async def _finish_equipment_rating_calculation(
         except Exception as exc:
             logger.warning(f"装备评级排名记录失败：{exc}")
     timeline_data = await _request_equipment_rating_timeline(data, payload)
+    race_rank_data = None
+    if race_rank_task is not None:
+        try:
+            race_rank_data = await race_rank_task
+        except Exception as exc:
+            logger.warning(f"装备评级百强数据生成失败：{exc}")
     await finish_equipment_rating_response(
         matcher,
-        await render_equipment_rating_image(data, role_name, server_name, rating_equip, timeline_data, rank_data)
+        await render_equipment_rating_image(
+            data,
+            role_name,
+            server_name,
+            rating_equip,
+            timeline_data,
+            rank_data,
+            race_rank_data,
+        )
     )
 
 

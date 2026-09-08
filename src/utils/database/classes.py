@@ -124,6 +124,36 @@ class RequestData(LiteModel):
     response_data: str = ""
     timestamp: int = 0
 
+
+class EquipmentRatingRaceEventCache(LiteModel):
+    TABLE_NAME: ClassVar[str] = "equipment_rating_race_event"
+    source_key: str = ""
+    event_id: int = 0
+    event_name: str = ""
+    boss_map: list = []
+    timestamp: int = 0
+
+
+class EquipmentRatingRaceBossCache(LiteModel):
+    TABLE_NAME: ClassVar[str] = "equipment_rating_race_boss"
+    source_key: str = ""
+    event_id: int = 0
+    achievement_id: int = 0
+    boss_name: str = ""
+    records: list = []
+    timestamp: int = 0
+
+
+class EquipmentRatingRaceRoleCache(LiteModel):
+    TABLE_NAME: ClassVar[str] = "equipment_rating_race_role"
+    source_key: str = ""
+    event_id: int = 0
+    guid: str = ""
+    resolved_achievement_ids: list = []
+    results: list = []
+    timestamp: int = 0
+
+
 class RoleData(LiteModel):
     TABLE_NAME: ClassVar[str] = "role_data"
     bodyName: str = ""

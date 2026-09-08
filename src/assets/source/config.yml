@@ -34,6 +34,12 @@ jx3: # 剑网3 相关配置
         url: "" # JX3API WebSocket 地址
         token: "" # JX3API WebSocket Token
         enable: False # 是否启用 JX3API Websocket
+    race_rank: # 装备评级报告中的秘境百强竞速数据
+        enabled: True
+        event_id: 23
+        event_api: "https://team.jx3box.com/api/team/rank/events/{event_id}"
+        boss_rank_api: "https://team.jx3box.com/api/team/race/achieve/{achievement_id}/top100?server={server}&event_id={event_id}"
+        cache_version: 1 # 修改赛事、接口语义或需要整体刷新缓存时递增
 
 weather: # 天气(和风天气)相关数据
     url: "" # 和风天气API地址(不带斜杠)
