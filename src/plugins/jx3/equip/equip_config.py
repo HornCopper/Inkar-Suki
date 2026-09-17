@@ -8,6 +8,7 @@ from src.const.jx3.kungfu import Kungfu
 from src.const.jx3.school import School
 from src.utils.network import Request, cache_image
 from src.utils.generate import get_uuid
+from src.utils.database.constant import HASTE_DIVISOR
 from src.plugins.jx3.attributes.v2_remake import (
     get_school_background
 )
@@ -32,7 +33,7 @@ class SingleAttr:
         if self.percent:
             return str(self._value) + "%"
         if self.speed_percent and self.name == "加速":
-            return "%.2f%%" % (self._value / 210078.0 * 100)
+            return "%.2f%%" % (self._value / HASTE_DIVISOR * 100)
         return str(self._value)
 
 class Enchant(BasicItem):

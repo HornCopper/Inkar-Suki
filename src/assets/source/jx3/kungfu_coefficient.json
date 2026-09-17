@@ -1,132 +1,132 @@
 {
     "冰心诀": {
-        "Attack": 2048,
-        "Critical": 297
+        "Attack": 748,
+        "Critical": 20
     },
     "云裳心经": {
-        "Therapy": 3236,
-        "Critical": 389
+        "Therapy": 727,
+        "Critical": 41
     },
     "花间游": {
-        "Attack": 2079,
-        "Overcome": 205
+        "Attack": 686,
+        "Overcome": 82
     },
     "离经易道": {
-        "Therapy": 3052,
-        "Critical": 758
+        "Therapy": 686,
+        "Critical": 82
     },
     "毒经": {
-        "Attack": 2079,
-        "Overcome": 205
+        "Attack": 748,
+        "Overcome": 20
     },
     "补天诀": {
-        "Therapy": 3420,
+        "Therapy": 768,
         "Critical": 0
     },
     "莫问": {
-        "Attack": 2007,
-        "Critical": 410
+        "Attack": 737,
+        "Critical": 31
     },
     "相知": {
-        "Therapy": 3144,
-        "Critical": 573
+        "Therapy": 707,
+        "Critical": 61
     },
     "无方": {
-        "Attack": 1976,
-        "Overcome": 512
+        "Attack": 707,
+        "Overcome": 61
     },
     "灵素": {
-        "Therapy": 3318,
-        "Critical": 205
+        "Therapy": 748,
+        "Critical": 20
     },
     "傲血战意": {
-        "Attack": 1843,
-        "Overcome": 287
+        "Attack": 563,
+        "Overcome": 205
     },
     "铁牢律": {
-        "PhysicsShield": 184,
-        "Attack": 41
+        "PhysicsShield": 164,
+        "Attack": 146
     },
     "易筋经": {
-        "Attack": 2007,
-        "Critical": 410
+        "Attack": 666,
+        "Critical": 102
     },
     "洗髓经": {
-        "MagicShield": 184,
-        "Attack": 51
+        "MagicShield": 164,
+        "Attack": 163
     },
     "焚影圣诀": {
-        "Attack": 2038,
-        "Critical": 307
+        "Attack": 635,
+        "Critical": 133
     },
     "明尊琉璃体": {
-        "Attack": 51
+        "Attack": 163
     },
     "分山劲": {
-        "Attack": 1925,
+        "Attack": 768,
         "Overcome": 0
     },
     "铁骨衣": {
-        "Attack": 41
+        "Attack": 146
     },
     "紫霞功": {
-        "Attack": 1946,
-        "Critical": 625
+        "Attack": 727,
+        "Critical": 41
     },
     "太虚剑意": {
-        "Attack": 1731,
-        "Critical": 696
+        "Attack": 727,
+        "Critical": 41
     },
     "天罗诡道": {
-        "Attack": 1946,
-        "Critical": 635
+        "Attack": 543,
+        "Critical": 225
     },
     "惊羽诀": {
-        "Attack": 1731,
-        "Critical": 707
+        "Attack": 584,
+        "Critical": 184
     },
     "问水诀": {
-        "Attack": 1843,
-        "Critical": 287
+        "Attack": 717,
+        "Overcome": 51
     },
     "山居剑意": {
-        "Attack": 1843,
-        "Critical": 287
+        "Attack": 717,
+        "Overcome": 51
     },
     "笑尘诀": {
-        "Attack": 1772,
-        "Overcome": 553
+        "Attack": 573,
+        "Overcome": 195
     },
     "北傲诀": {
-        "Attack": 1802,
-        "Overcome": 420
+        "Attack": 553,
+        "Overcome": 215
     },
     "凌海诀": {
-        "Attack": 1802,
-        "Overcome": 420
+        "Attack": 707,
+        "Critical": 61
     },
     "隐龙诀": {
-        "Attack": 1772,
-        "Overcome": 553
+        "Attack": 737,
+        "Overcome": 31
     },
     "太玄经": {
-        "Attack": 1976,
-        "Critical": 512
+        "Attack": 645,
+        "Critical": 123
     },
     "孤锋诀": {
-        "Attack": 1843,
-        "Critical": 287
+        "Attack": 604,
+        "Critical": 164
     },
     "山海心诀": {
-        "Attack": 1731,
-        "Critical": 696
+        "Attack": 717,
+        "Critical": 51
     },
     "周天功": {
-        "Attack": 1997,
-        "Critical": 461
+        "Attack": 625,
+        "Critical": 143
     },
     "幽罗引": {
-        "Attack": 1976,
-        "Critical": 512
+        "Attack": 717,
+        "Critical": 51
     }
 }

@@ -1,6 +1,9 @@
 from src.config import Config
+from src.const.prompts import PROMPT
+from src.const.jx3.server import Server
 from src.utils.decorators import token_required
 from src.utils.network import Request
+from src.utils.database.player import search_player
 
 @token_required
 async def get_role_info(server: str, name: str, token: str = ""):
@@ -25,3 +28,21 @@ async def get_role_info(server: str, name: str, token: str = ""):
     _global_role_id = data["data"]["globalId"]
     msg = msg + f"\n服务器：{_zone} - {_server}\n角色名称：{_name}\n标识：{_role_id}\n体型：{_force_name}·{_body_name}\n帮会：{_camp_name} - {_tong_name}\n全服标识：{_global_role_id}"
     return msg
+
+async def get_online_info(server: str, name: str) -> str:
+    role_info = await search_player(role_name=name, server_name=server)
+    if not role_info.roleId:
+        return PROMPT.PlayerNotExist
+    url = f"{Config.jx3.api.cqc_url}/role_online"
+    params = {
+        "zone": Server(server).zone or "",
+        "server": server,
+        "name": name,
+        "role_id": role_info.roleId,
+        "global_role_id": role_info.globalRoleId,
+        "token": Config.jx3.api.ticket
+    }
+    data = (await Request(url, params=params).get()).json()
+    status = bool(data["data"][0]["gameLogin"])
+    key = "在线" if status else "离线"
+    return f"[{name}·{server}] 当前{key}"

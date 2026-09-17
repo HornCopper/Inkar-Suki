@@ -1,38 +1,38 @@
 {
     "冰心诀": {
-        "atMagicAttackPowerBase": 7387
+        "atMagicAttackPowerBase": 2586
     },
     "云裳心经": {
-        "atTherapyPowerBase": 18992
+        "atTherapyPowerBase": 6822
     },
     "花间游": {
-        "atMagicAttackPowerBase": 7242
+        "atMagicAttackPowerBase": 2535
     },
     "离经易道": {
-        "atTherapyPowerBase": 17725
+        "atTherapyPowerBase": 6367
     },
     "毒经": {
-        "atMagicAttackPowerBase": 7242
+        "atMagicAttackPowerBase": 2535
     },
-    "补天诀":{
-        "atTherapyPowerBase": 18358
+    "补天诀": {
+        "atTherapyPowerBase": 6595
     },
     "莫问": {
-        "atMagicAttackPowerBase": 6518,
-        "atMagicCriticalStrike": 3962
+        "atMagicAttackPowerBase": 2282,
+        "atMagicCriticalStrike": 308
     },
     "相知": {
-        "atTherapyPowerBase": 19625
+        "atTherapyPowerBase": 7049
     },
     "无方": {
-        "atMagicAttackPowerBase": 6663,
-        "atMagicOvercome": 5527
+        "atMagicAttackPowerBase": 2332,
+        "atMagicOvercome": 363
     },
     "灵素": {
-        "atTherapyPowerBase": 19625
+        "atTherapyPowerBase": 7049
     },
     "傲血战意": {
-        "atPhysicsAttackPowerBase": 7164
+        "atPhysicsAttackPowerBase": 2789
     },
     "铁牢律": {
         "atPhysicsShieldBase": 9102,
@@ -41,14 +41,14 @@
         "atParryValueBase": 15085
     },
     "易筋经": {
-        "atMagicAttackPowerBase": 7242
+        "atMagicAttackPowerBase": 2535
     },
     "洗髓经": {
         "atPhysicsShieldBase": 6763,
         "atMagicShield": 9372
     },
     "焚影圣诀": {
-        "atMagicAttackPowerBase": 7604
+        "atMagicAttackPowerBase": 2662
     },
     "明尊琉璃体": {
         "atPhysicsShieldBase": 6111,
@@ -56,8 +56,8 @@
         "atDodge": 6522
     },
     "分山劲": {
-        "atPhysicsAttackPowerBase": 6522,
-        "atPhysicsOvercomeBase": 4696
+        "atPhysicsAttackPowerBase": 2535,
+        "atPhysicsOvercomeBase": 164
     },
     "铁骨衣": {
         "atPhysicsShieldBase": 6763,
@@ -66,61 +66,61 @@
         "atParryValueBase": 15085
     },
     "紫霞功": {
-        "atMagicAttackPowerBase": 6518,
-        "atMagicCriticalStrike": 5527
+        "atMagicAttackPowerBase": 2282,
+        "atMagicCriticalStrike": 363
     },
     "太虚剑意": {
-        "atPhysicsAttackPowerBase": 6187,
-        "atPhysicsCriticalStrike": 9025
+        "atPhysicsAttackPowerBase": 2408,
+        "atPhysicsCriticalStrike": 401
     },
     "天罗诡道": {
-        "atMagicAttackPowerBase": 6518,
-        "atPhysicsCriticalStrike": 3962
+        "atMagicAttackPowerBase": 2282,
+        "atPhysicsCriticalStrike": 308
     },
     "惊羽诀": {
-        "atPhysicsAttackPowerBase": 6187,
-        "atPhysicsOvercomeBase": 9025
+        "atPhysicsAttackPowerBase": 2408,
+        "atPhysicsOvercomeBase": 401
     },
     "问水诀": {
-        "atPhysicsAttackPowerBase": 6513,
-        "atPhysicsCriticalStrike": 7827
+        "atPhysicsAttackPowerBase": 2535,
+        "atPhysicsCriticalStrike": 274
     },
     "山居剑意": {
-        "atPhysicsAttackPowerBase": 6513,
-        "atPhysicsCriticalStrike": 7827
+        "atPhysicsAttackPowerBase": 2535,
+        "atPhysicsCriticalStrike": 274
     },
     "笑尘诀": {
-        "atPhysicsAttackPowerBase": 6839
+        "atPhysicsAttackPowerBase": 2662
     },
     "北傲诀": {
-        "atPhysicsAttackPowerBase": 7034
+        "atPhysicsAttackPowerBase": 2738
     },
     "凌海诀": {
-        "atPhysicsAttackPowerBase": 6839,
-        "atPhysicsCriticalStrike": 6628
+        "atPhysicsAttackPowerBase": 2662,
+        "atPhysicsCriticalStrike": 147
     },
     "隐龙诀": {
-        "atPhysicsAttackPowerBase": 6904,
-        "atPhysicsCriticalStrike": 6389
+        "atPhysicsAttackPowerBase": 2687,
+        "atPhysicsOvercomeBase": 122
     },
     "太玄经": {
-        "atMagicAttackPowerBase": 7387,
-        "atMagicCriticalStrike": 7347
+        "atMagicAttackPowerBase": 2586,
+        "atMagicCriticalStrike": 223
     },
     "孤锋诀": {
-        "atPhysicsAttackPowerBase": 6318,
-        "atPhysicsCriticalStrike": 8546
+        "atPhysicsAttackPowerBase": 2459,
+        "atPhysicsCriticalStrike": 350
     },
     "山海心诀": {
-        "atPhysicsAttackPowerBase": 6187,
-        "atPhysicsCriticalStrike": 9025
+        "atPhysicsAttackPowerBase": 2408,
+        "atPhysicsCriticalStrike": 401
     },
     "周天功": {
-        "atMagicAttackPowerBase": 6518,
-        "atMagicCriticalStrike": 5527
+        "atMagicAttackPowerBase": 2282,
+        "atMagicCriticalStrike": 363
     },
     "幽罗引": {
-        "atMagicAttackPowerBase": 7459,
-        "atMagicCriticalStrike": 2412
+        "atMagicAttackPowerBase": 2611,
+        "atMagicCriticalStrike": 34
     }
 }

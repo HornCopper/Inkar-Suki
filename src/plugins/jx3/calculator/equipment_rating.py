@@ -30,6 +30,7 @@ from src.utils.database.classes import EquipmentRatingDpsRank
 from src.utils.database.constant import (
     CRITICAL_DAMAGE_DIVISOR,
     CRITICAL_DIVISOR,
+    HASTE_DIVISOR,
     OVERCOME_DIVISOR,
     STRAIN_DIVISOR,
 )
@@ -246,12 +247,12 @@ def _format_number(value: Any) -> str:
         return "0"
 
 
-def _format_haste(value: Any) -> str:
+def _format_haste(value: Any, kungfu_id: int = 0) -> str:
     try:
         haste = float(str(value).replace(",", ""))
     except (TypeError, ValueError):
         haste = 0
-    return f"{int(haste)} / {_haste_level(haste)}"
+    return f"{int(haste)} / {_haste_level(haste, kungfu_id)}"
 
 
 def _format_plain_int(value: Any) -> str:
@@ -1259,19 +1260,14 @@ def _percent_from_rating(value: Any, divisor: float, base: float = 0) -> str:
     return _format_percent((_to_float(value) / divisor + base) * 100)
 
 
-def _haste_level(value: Any) -> int:
-    haste = _to_float(value)
-    if haste < 206:
-        return 0
-    if haste < 9232:
-        return 1
-    if haste < 19285:
-        return 2
-    if haste < 30158:
-        return 3
-    if haste < 42057:
-        return 4
-    return 5
+def _haste_level(value: Any, kungfu_id: int = 0) -> int:
+    origin_frames = 16 if kungfu_id in (10242, 10243) else 24
+    haste = max(0, _to_float(value))
+    guoshi_haste = int(haste / HASTE_DIVISOR * 1024)
+    if kungfu_id == 10081:
+        guoshi_haste += 205
+    current_frames = int(origin_frames * 1024 / (guoshi_haste + 1024))
+    return min(5, max(0, origin_frames - current_frames))
 
 
 def _grade_icon(grade: Any) -> str:
@@ -1590,11 +1586,11 @@ def _prepare_attributes(
         if display_attrs:
             basic_display_attrs, detail_display_attrs = split_display_attributes(display_attrs, kungfu.abbr)
             basic_attrs = [
-                _prepare_display_attribute_row(name, value)
+                _prepare_display_attribute_row(name, value, kungfu.id or 0)
                 for name, value in basic_display_attrs.items()
             ]
             detail_attrs = [
-                _prepare_display_attribute_row(name, value)
+                _prepare_display_attribute_row(name, value, kungfu.id or 0)
                 for name, value in detail_display_attrs.items()
                 if str(name) not in HIDDEN_DETAIL_ATTRIBUTE_LABELS
             ]
@@ -1609,7 +1605,7 @@ def _prepare_attributes(
         detail_attrs = [
             {"label": "会心", "value": _format_percent(_to_float(attributes.get("Critical")) * 100)},
             {"label": "会效", "value": _format_percent(_to_float(attributes.get("CriticalDamage")) * 100)},
-            {"label": "加速", "value": _format_haste(attributes.get("Haste"))},
+            {"label": "加速", "value": _format_haste(attributes.get("Haste"), kungfu.id or 0)},
         ]
         return role_info, basic_attrs, detail_attrs
     basic_attrs = [
@@ -1624,15 +1620,15 @@ def _prepare_attributes(
         {"label": "破防", "value": _percent_from_rating(attributes.get("Overcome"), OVERCOME_DIVISOR)},
         {"label": "无双", "value": _percent_from_rating(attributes.get("Strain"), STRAIN_DIVISOR)},
         {"label": "破招", "value": _format_number(attributes.get("Surplus"))},
-        {"label": "加速", "value": _format_haste(attributes.get("Haste"))},
+        {"label": "加速", "value": _format_haste(attributes.get("Haste"), kungfu.id or 0)},
     ]
     return role_info, basic_attrs, detail_attrs
 
 
-def _prepare_display_attribute_row(name: Any, value: Any) -> dict[str, str]:
+def _prepare_display_attribute_row(name: Any, value: Any, kungfu_id: int = 0) -> dict[str, str]:
     label = str(name)
     if label == "加速":
-        return {"label": label, "value": _format_haste(value)}
+        return {"label": label, "value": _format_haste(value, kungfu_id)}
     return {"label": label, "value": str(value)}
 
 
@@ -1673,7 +1669,7 @@ def _prepare_attribute_incomes(summary: dict[str, Any]) -> list[dict[str, Any]]:
     return incomes
 
 
-def _prepare_adaptive_haste(raw: Any) -> dict[str, str] | None:
+def _prepare_adaptive_haste(raw: Any, kungfu_id: int = 0) -> dict[str, str] | None:
     if not isinstance(raw, dict):
         return None
     required = int(_to_float(raw.get("required")))
@@ -1685,8 +1681,8 @@ def _prepare_adaptive_haste(raw: Any) -> dict[str, str] | None:
     if satisfied:
         status_text = "已满足"
         detail_parts = [
-            f"当前 {_format_number(actual)}（{_haste_level(actual)}段）",
-            f"目标 {_format_number(required)}（{_haste_level(required)}段）",
+            f"当前 {_format_number(actual)}（{_haste_level(actual, kungfu_id)}段）",
+            f"目标 {_format_number(required)}（{_haste_level(required, kungfu_id)}段）",
         ]
         if delta > 0:
             detail_parts.append(f"溢出 {_format_number(delta)}")
@@ -1700,8 +1696,8 @@ def _prepare_adaptive_haste(raw: Any) -> dict[str, str] | None:
         "status": "未满足",
         "detail": " · ".join(
             [
-                f"当前 {_format_number(actual)}（{_haste_level(actual)}段）",
-                f"目标 {_format_number(required)}（{_haste_level(required)}段）",
+                f"当前 {_format_number(actual)}（{_haste_level(actual, kungfu_id)}段）",
+                f"目标 {_format_number(required)}（{_haste_level(required, kungfu_id)}段）",
                 f"还差 {_format_number(abs(delta))}",
             ]
         ),
@@ -1735,7 +1731,7 @@ def _prepare_adaptive_formation(item: Any, rank: int | None = None) -> dict[str,
     }
 
 
-def _prepare_adaptive_consumables(raw: Any) -> dict[str, Any] | None:
+def _prepare_adaptive_consumables(raw: Any, kungfu_id: int = 0) -> dict[str, Any] | None:
     if not isinstance(raw, dict):
         return None
     status = str(raw.get("status") or "")
@@ -1816,7 +1812,7 @@ def _prepare_adaptive_consumables(raw: Any) -> dict[str, Any] | None:
         "delta_text": _format_signed(raw.get("delta")),
         "delta_percent_text": _format_signed_percent(raw.get("delta_percent")),
         "full_income_codes": [str(code) for code in raw.get("full_income_codes") or [] if str(code)],
-        "haste": _prepare_adaptive_haste(raw.get("haste")),
+        "haste": _prepare_adaptive_haste(raw.get("haste"), kungfu_id),
         "formation": formation,
         "formations": formation_entries,
         "groups": groups,
@@ -1923,7 +1919,7 @@ async def render_equipment_rating_image(
     )
     role_info, basic_attrs, detail_attrs = _prepare_attributes(summary, kungfu, rating_equip)
     battle_time = _to_float(summary.get("battle_time"))
-    haste_level = _haste_level(summary.get("current_haste"))
+    haste_level = _haste_level(summary.get("current_haste"), kungfu.id or 0)
     summary_view = {
         **summary,
         "current_score_text": _format_number(summary.get("current_score")),
@@ -1969,7 +1965,10 @@ async def render_equipment_rating_image(
         basic_attrs=basic_attrs,
         detail_attrs=detail_attrs,
         attribute_incomes=_prepare_attribute_incomes(summary),
-        adaptive_consumables=_prepare_adaptive_consumables(data.get("adaptive_consumables")),
+        adaptive_consumables=_prepare_adaptive_consumables(
+            data.get("adaptive_consumables"),
+            kungfu.id or 0,
+        ),
         trial_land=trial_land,
         equipment_rating_rank=rank_data,
         race_rank=race_rank_data,

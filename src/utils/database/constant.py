@@ -1,3 +1,6 @@
+from math import ceil
+
+
 StrengthIncome = [
     0, 0.005, 0.013, 0.024, 0.038, 0.055, 0.075, 0.098, 0.124
 ]
@@ -10,9 +13,9 @@ EquipLocations = [
 # MaxStrengthLevel = 32000
 # MaxStrengthLevel = 37400
 
-MinStrengthLevel = 27800
+# MinStrengthLevel = 27800
 
-MaxStrengthLevel = 43900
+# MaxStrengthLevel = 43900
 # 能不能别抄自己写
 
 Colors = [
@@ -75,6 +78,7 @@ AttributesShort = {
     "atSurplusValueBase": "破招",
     "atHasteBase": "加速",
 
+    "atAllTypeAttackPowerBase": "攻击",
     "atAllTypeOvercomeBase": "破防",
     "atAllTypeCriticalStrike": "会心",
     "atAllTypeCriticalDamagePowerBase": "会效",
@@ -88,20 +92,24 @@ AttributesShort = {
     "atMaxLifeBase": "气血"
 }
 
-Spunk_to_Attack_Cof = 185 / 1024 # 元气转基础攻击
-Strength_to_Attack_Cof = 167 / 1024 # 力道转基础攻击
-Spunk_to_BaseOvercome_Cof = 307 / 1024 # 元气转基础破防
-Strength_to_BaseOvercome_Cof = 307 / 1024 # 力道转基础破防
+Spunk_to_Attack_Cof = 195 / 1000 # 元气转基础攻击
+Strength_to_Attack_Cof = 195 / 1000 # 力道转基础攻击
+Spunk_to_BaseOvercome_Cof = 61 / 1000 # 元气转基础破防
+Strength_to_BaseOvercome_Cof = 61 / 1000 # 力道转基础破防
 
-Agility_to_Critical_Cof = 922 / 1024 # 身法转会心
-Spirit_to_Critical_Cof = 922 / 1024 # 根骨转会心
+Agility_to_Critical_Cof = 256 / 1024 # 身法转会心
+Spirit_to_Critical_Cof = 256 / 1024 # 根骨转会心
+PVX_STRAIN = 1220 / 1000 # 全能转无双
 
-CRITICAL_DIVISOR = 197703.0
-CRITICAL_DAMAGE_DIVISOR = 72844.2
-OVERCOME_DIVISOR = 225957.6
-STRAIN_DIVISOR = 133333.2
-HASTE_DIVISOR = 210078.0
-SHIELD_134 = 83679
-SHIELD_134_CONST = 155408.88
-SHIELD_130_CONST = 126007.2
-DECRITICAL_DAMAGE_DIVISOR = 33046.2
+CURRENT_LEVEL = 50
+LEVEL_CONST = 33 * CURRENT_LEVEL - 660
+CRITICAL_DIVISOR = 9.609 * LEVEL_CONST
+CRITICAL_DAMAGE_DIVISOR = 3.54 * LEVEL_CONST
+OVERCOME_DIVISOR = 10.483 * LEVEL_CONST
+STRAIN_DIVISOR = 7.117 * LEVEL_CONST
+HASTE_DIVISOR = 10.21 * LEVEL_CONST
+HASTE_205_PER_1024_BREAKPOINT = ceil(205 / 1024 * HASTE_DIVISOR)
+SHIELD_134 = 6592
+SHIELD_134_CONST = 12243.264
+SHIELD_130_CONST = 10802.88
+DECRITICAL_DAMAGE_DIVISOR = 5148
