@@ -1,6 +1,9 @@
+import json
+
 from jinja2 import Template
 
 from src.config import Config
+from src.const.path import ASSETS, build_path
 from src.utils.decorators import token_required
 from src.utils.network import Request
 from src.utils.time import Time
@@ -9,8 +12,10 @@ from src.templates import HTMLSourceCode
 
 from ._template import template_interserver, template_local, table_recruit_head
 
-async def check_ad(msg: str, data: dict) -> bool:
-    data = data["data"]
+RECRUIT_WORDS_PATH = build_path(ASSETS, ["source", "jx3", "recruit_words.json"])
+
+
+async def check_ad(msg: str, data: list[list[str]]) -> bool:
     for x in data:
         status = []
         for num in range(len(x)):
@@ -38,7 +43,10 @@ async def get_recruit_image(server: str, keyword: str = "", local: bool = False,
     data = (await Request(url, params=params).get()).json()
     if data["code"] != 200:
         return "唔……未找到相关团队，请检查后重试！"
-    adFlags = (await Request("https://inkar-suki.codethink.cn/filters").get()).json()
+    adFlags = []
+    if filter:
+        with open(RECRUIT_WORDS_PATH, encoding="utf-8") as words_file:
+            adFlags = json.load(words_file)
     time_now = Time(data["time"]).format("%H:%M:%S")
     data = data["data"]
     contents = []
