@@ -195,3 +195,5 @@ src/plugins/beta/
 # Workbuddy
 .Workbuddy
 docs
+
+tests/

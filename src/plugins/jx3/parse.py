@@ -126,6 +126,28 @@ class InkarSukiVideoPushEvent(JX3APIPushEvent):
     def msg(self) -> JX3APIOutputMsg:
         return JX3APIOutputMsg(msg=self.message, server=self.image_url, name="创作者")
 
+@handle_event(50003)
+class TestServerPushEvent(JX3APIPushEvent):
+    message: str
+
+    @override
+    def msg(self) -> JX3APIOutputMsg:
+        return JX3APIOutputMsg(msg=self.message, name="体服公告")
+
+@handle_event(50004)
+class InkarSukiWeiboPushEvent(JX3APIPushEvent):
+    message: str
+    uid: str
+    post_id: str
+
+    @override
+    def msg(self) -> JX3APIOutputMsg:
+        return JX3APIOutputMsg(msg=self.message, name="咸鱼")
+
+    @override
+    def provide_data(self) -> tuple[str, str]:
+        return self.post_id, self.uid
+
 def parse_data(raw_data: dict):
     """
     解析原始数据并返回相应的事件实例。

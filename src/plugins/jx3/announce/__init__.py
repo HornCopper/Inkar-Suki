@@ -1,18 +1,12 @@
-from pathlib import Path
-
 from nonebot.adapters.onebot.v11 import (
     Message,
-    GroupMessageEvent,
-    MessageSegment as ms
+    GroupMessageEvent
 )
 from nonebot.params import CommandArg
 
 from src.config import Config
-from src.const.path import ASSETS, build_path
 from src.utils.command import on_command
 from src.utils.network import Request
-
-import os
 
 from .image import get_image
 
@@ -27,13 +21,8 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     """
     if args.extract_plain_text() != "":
         return
-    image_path = build_path(ASSETS, ["image", "jx3", "update.png"])
-    if os.path.exists(image_path):
-        img = Request(Path(image_path).as_uri()).local_content
-        await announce_matcher.finish(ms.image(img))
-    else:
-        img = await get_image()
-        await announce_matcher.finish(img)
+    img = await get_image()
+    await announce_matcher.finish(img)
 
 beta_announce_matcher = on_command("jx3_beta_announce", command_key="公告", aliases={"体服公告", "体服更新"}, priority=5, force_whitespace=True)
 

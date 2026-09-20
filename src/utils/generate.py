@@ -36,6 +36,7 @@ class ScreenshotConfig:
         hide_classes (list): list of class names for elements to hide before taking the screenshot. Defaults to an empty list.
         device_scale_factor (float): Device scale factor for higher resolution screenshots. Defaults to 1.0.
         output_path (str): Path to save the screenshot. Defaults to an auto-generated file if not specified.
+        user_agent (str): Browser user agent override. Defaults to the browser user agent.
     """
 
     def __init__(self, 
@@ -50,7 +51,8 @@ class ScreenshotConfig:
                 hide_classes: list = [],
                 device_scale_factor: float = 1.0,
                 output_path: str = "",
-                wait_for_network: int = 20):
+                wait_for_network: int = 20,
+                user_agent: str = ""):
         self.web = web
         self.locate = locate
         self.first = first
@@ -63,20 +65,26 @@ class ScreenshotConfig:
         self.device_scale_factor = device_scale_factor
         self.output_path = output_path
         self.wait_for_network = wait_for_network
+        self.user_agent = user_agent
 
 class ScreenshotGenerator:
     _browser: Browser | Any = None
     _context: BrowserContext | Any = None
     _playwright: Any | None = None
+    _launch_lock: asyncio.Lock | None = None
 
 
     @classmethod
     async def launch(cls):
-        if cls._browser is None:
-            cls._playwright = await async_playwright().start()
-            cls._browser = await cls._playwright.chromium.launch(headless=True)
-            cls._context = await cls._browser.new_context()
-            logger.info("Playwright 已载入")
+        if cls._launch_lock is None:
+            cls._launch_lock = asyncio.Lock()
+        async with cls._launch_lock:
+            if cls._browser is None:
+                cls._playwright = await async_playwright().start()
+                cls._browser = await cls._playwright.chromium.launch(headless=True)
+            if cls._context is None:
+                cls._context = await cls._browser.new_context()
+                logger.info("Playwright 已载入")
 
     @classmethod
     async def close(cls):
@@ -94,25 +102,25 @@ class ScreenshotGenerator:
         根据配置生成截图。
         """
         if self._browser is None or self._context is None:
-            asyncio.create_task(ScreenshotGenerator.launch())
-            # raise ValueError("Browser has not been initialized!")
+            await ScreenshotGenerator.launch()
 
-        page = await self._browser.new_page(viewport=config.viewport) # type: ignore
-        if config.wait_for_network:
-            await page.goto(page_source, wait_until="networkidle")
-        else:
-            await page.goto(page_source)
+        page_options: dict[str, Any] = {"viewport": config.viewport}
+        if config.user_agent:
+            page_options["user_agent"] = config.user_agent
+        page = await self._browser.new_page(**page_options) # type: ignore
+        try:
+            if config.wait_for_network:
+                await page.goto(page_source, wait_until="networkidle")
+            else:
+                await page.goto(page_source)
 
-        # 应用自定义的 CSS 和 JS
-        await self._apply_customizations(page, config)
+            # 应用自定义的 CSS 和 JS
+            await self._apply_customizations(page, config)
 
-        # 保存截图
-        screenshot_path = await self._save_screenshot(page, config)
-        
-        # 关闭页面
-        await page.close()
-
-        return screenshot_path
+            # 保存截图
+            return await self._save_screenshot(page, config)
+        finally:
+            await page.close()
 
     async def _apply_customizations(self, page, config: ScreenshotConfig):
         """
@@ -156,6 +164,7 @@ async def generate(
     device_scale_factor: float = 1.0,
     output_path: str = "",
     wait_for_network: bool = False,
+    user_agent: str = "",
     *,
     segment: Literal[False] = False
 ) -> str:
@@ -175,6 +184,7 @@ async def generate(
     device_scale_factor: float = 1.0,
     output_path: str = "",
     wait_for_network: bool = False,
+    user_agent: str = "",
     *,
     segment: Literal[True] = True
 ) -> ms:
@@ -194,6 +204,7 @@ async def generate(
     device_scale_factor: float = 1.0,
     output_path: str = "",
     wait_for_network: bool = False,
+    user_agent: str = "",
     *,
     segment: bool = False
 ) -> str | ms:
@@ -211,6 +222,7 @@ async def generate(
         device_scale_factor (float): 设备像素比。
         output_path (str): 保存截图的路径。
         wait_for_network (bool): 是否等待页面网络元素加载完毕。
+        user_agent (str): 自定义浏览器 User-Agent。
     """
     
     # 确定 source 类型
@@ -243,7 +255,8 @@ async def generate(
         hide_classes=hide_classes,
         device_scale_factor=device_scale_factor,
         output_path=output_path,
-        wait_for_network=wait_for_network
+        wait_for_network=wait_for_network,
+        user_agent=user_agent
     )
     
     generator = ScreenshotGenerator()

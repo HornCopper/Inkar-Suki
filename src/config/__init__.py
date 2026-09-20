@@ -27,7 +27,6 @@ class Jx3API(BaseModel):
     xsk_secret: str = ""
     sign_secret: str = ""
     enable: bool = False
-    weibo: bool = False
     calculator_url: str = ""
     bla_url: str = ""
     cqc_url: str = ""

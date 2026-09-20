@@ -107,6 +107,9 @@ from .personal import (
     personal_bind_matcher,
     personal_unbind_matcher
 )
+from .pindou import (
+    pindou_matcher
+)
 from .pvp import (
     arena_record_matcher
 )

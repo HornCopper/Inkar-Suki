@@ -3,30 +3,24 @@ from nonebot.log import logger
 from nonebot.adapters.onebot.v11 import MessageSegment
 
 from src.config import Config
-from src.const.path import ASSETS, build_path
-from src.utils.generate import (
-    ScreenshotGenerator
-)
 from src.utils.time import Time
 from src.utils.database import cache_db
 from src.utils.database.classes import JX3APIWSData
 from src.utils.database.operation import send_subscribe
 from src.utils.network import Request
-from src.plugins.jx3.announce.image import get_image as get_announce_image
+from src.plugins.jx3.announce.image import get_beta_push_image, get_push_image
+from src.plugins.jx3.weibo import get_weibo_push_image
 
 from .parse import (
     get_registered_actions,
     parse_data,
     JX3APIOutputMsg
 )
-from .weibo import poll_weibo_api
 from .universe import * # 要不你来一个一个导？  # noqa: F403
 
-import re
 import asyncio
 import websockets
 import json
-import os
 
 driver = get_driver()
 
@@ -59,17 +53,30 @@ async def websocket_client(ws_url: str, headers: dict):
                     message = msg.msg
                     server = msg.server
                     if name == "公告":
-                        url, title = parsed.provide_data()
-                        if re.match(r"(\d+)月(\d+)日(.*?)版本更新公告", title):
-                            if os.path.exists(build_path(ASSETS, ["image", "jx3", "update.png"])):
-                                os.remove(build_path(ASSETS, ["image", "jx3", "update.png"]))
-                            await get_announce_image()
+                        url, _ = parsed.provide_data()
+                        try:
+                            message = msg.msg + await get_push_image(url)
+                        except Exception:
+                            logger.exception(f"生成官网公告截图失败，继续发送文字公告：{url}")
+                    if name == "体服公告":
+                        try:
+                            message = msg.msg + await get_beta_push_image()
+                        except Exception:
+                            logger.exception("生成体服公告截图失败，继续发送文字公告")
+                    if name == "咸鱼":
+                        post_id, _ = parsed.provide_data()
+                        try:
+                            message = msg.msg + await get_weibo_push_image(post_id)
+                        except Exception:
+                            logger.exception(
+                                f"生成微博卡片截图失败，继续发送文字：{post_id}"
+                            )
                     if name in ["生日祝福", "创作者"]:
                         image = (await Request(server).get()).content
                         message = msg.msg + MessageSegment.image(image)
                         server = ""
                     await send_subscribe(name, message, server)
-                    logger.info(message)
+                    logger.info(msg.msg)
         except websockets.exceptions.ConnectionClosed:
             logger.warning("WebSocket connection closed, retrying...")
         except Exception as e:
@@ -83,6 +90,3 @@ async def on_startup():
         "token": Config.jx3.ws.token
     }
     asyncio.create_task(websocket_client(ws_url, headers))
-    asyncio.create_task(ScreenshotGenerator.launch())
-    if Config.jx3.api.weibo:
-        asyncio.create_task(poll_weibo_api("2046281757", interval=600))
