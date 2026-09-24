@@ -19,121 +19,192 @@
         }
 
         .card {
-            width: 320px;
-            background: #2B3D3D;
-            border: 1px solid #666;
-            padding: 12px 16px;
-            border-radius: 8px;
-            box-shadow: 0 0 8px #000 inset;
+            width: 380px;
+            border: 1px solid #e7ebef;
+            border-radius: 4px;
+            font-family: Harmony, "Microsoft YaHei", sans-serif;
         }
 
-        .title {
+        html body .equipment-card .report-header {
+            padding: 16px 18px;
+            margin-bottom: 0;
+        }
+
+        html body .equipment-card .report-header .report-title {
+            font-size: 24px;
+        }
+
+        html body .equipment-card .report-header .equip-name {
+            color: var(--equip-color) !important;
             font-size: 18px;
-            font-weight: bold;
+            font-weight: 700;
+            line-height: 1.35;
+            word-break: break-word;
         }
 
-        .icon {
-            float: right;
-            color: #aaffaa;
-            font-size: 14px;
+        .equip-strength {
+            margin-top: 4px;
+            font-size: 18px;
+            line-height: 1.35;
         }
 
-        .info {
+        .equip-heading {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+        }
+
+        .equip-heading-text {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .equip-meta {
             margin-top: 8px;
-            line-height: 1.5;
+            color: #667085;
+            font-size: 13px;
+            line-height: 1.4;
+        }
+
+        .equip-meta strong {
+            color: #2c3e50;
+            font-weight: 700;
+        }
+
+        .equip-icon {
+            width: 54px;
+            height: 54px;
+            flex: 0 0 54px;
+            object-fit: contain;
+            background: #f8f9fa;
+            border: 1px solid #e7ebef;
+            border-radius: 4px;
+        }
+
+        .equip-section {
+            margin-top: 14px;
+        }
+
+        .equip-section-label {
+            margin-bottom: 4px;
+            color: #667085;
+            font-size: 14px;
+            font-weight: 700;
         }
 
         .skillevent {
-            color: #ffa500;
-            margin-top: 8px;
+            color: #9a6120;
+            margin-top: 14px;
             line-height: 1.5;
-            text-decoration: underline;
         }
 
         .attr-green {
-            color: rgb(0, 210, 75);
+            color: #167c4a;
         }
 
         .attr-detail {
             display: inline-block;
-            padding: 2px 8px;
-            border-radius: 12px;
-            background: #00ff00;
-            color: #000000;
-            margin-top: 8px;
+            max-width: 100%;
+            overflow-wrap: anywhere;
+            padding: 5px 8px;
+            border: 1px solid #cbe9d6;
+            border-radius: 4px;
+            background: #eaf8ef;
+            color: #167c4a;
+            margin-top: 5px;
+            font-size: 14px;
         }
 
         .set-detail {
             display: inline-block;
-            padding: 2px 8px;
-            border-radius: 12px;
-            background: #ffa500;
-            color: #000000;
-            margin-top: 8px;
+            max-width: 100%;
+            overflow-wrap: anywhere;
+            padding: 5px 8px;
+            border: 1px solid #f2d9ab;
+            border-radius: 4px;
+            background: #fff8e8;
+            color: #946018;
+            margin-top: 5px;
+            font-size: 14px;
         }
 
         .note {
-            color: #aaaaaa;
-            font-size: 13px;
-            margin-top: 6px;
-        }
-
-        .gems {
-            margin-top: 12px;
-            color: #ffcc66;
+            color: #8b939e;
+            font-size: 12px;
+            line-height: 1.5;
+            margin-top: 14px;
         }
 
         .gem-slot {
             display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
         }
 
         .gem {
             display: flex;
             align-items: center;
-            padding: 2px 8px;
-            border-radius: 6px;
-            font-size: 14px;
+            gap: 4px;
+            padding: 2px 6px;
+            border-radius: 4px;
+            background: #f8f9fa;
+            color: #667085;
+            font-size: 13px;
         }
 
         .gem img {
             width: 20px;
             height: 20px;
         }
+
+        html body .style2-report.equipment-card .report-footer {
+            margin-top: 16px;
+            padding: 8px 10px;
+            font-size: 13px !important;
+            line-height: 1.35;
+        }
     </style>
 </head>
 
 <body>
-    <div class="card">
-        <div>
-            <span class="title" style="color: {{ color }}">{{ name }} {{ strength }}</span>
-        </div>
-
-        <div class="icon"><img src="{{ icon }}"></div>
-
-        <div class="info">{{ quality }} {{ location }}</div>
-        <div class="attr-green">
-            {{ green_attrs }}
-        </div>
-
-        <div class="gems">
-            <div>镶嵌孔：</div>
-            <div class="gem-slot">
-                {{ diamonds }}
+    <div class="card style2-report equipment-card" style="--equip-color: {{ color }}">
+        <div class="report-header">
+            <h1 class="report-title">装备信息</h1>
+            <div class="equip-heading">
+                <div class="equip-heading-text">
+                    <p class="report-subtitle equip-name">{{ name }}</p>
+                    {% if strength %}<div class="equip-strength">{{ strength }}</div>{% endif %}
+                    <div class="equip-meta">品级 <strong>{{ quality }}</strong> · {{ location }}</div>
+                </div>
+                <img class="equip-icon" src="{{ icon }}" alt="{{ name }}">
             </div>
         </div>
 
-        <div class="attr-green">
-            <div>套装效果：</div>
+        {% if green_attrs %}<div class="equip-section attr-green">
+            {{ green_attrs }}
+        </div>{% endif %}
+
+        {% if diamonds %}<div class="equip-section">
+            <div class="equip-section-label">镶嵌孔</div>
+            <div class="gem-slot">
+                {{ diamonds }}
+            </div>
+        </div>{% endif %}
+
+        {% if set %}<div class="equip-section attr-green">
+            <div class="equip-section-label">套装效果</div>
             {{ set }}
-        </div>
+        </div>{% endif %}
 
-        <div class="skillevent">
+        {% if skillevent %}<div class="skillevent">
             {{ skillevent }}
-        </div>
+        </div>{% endif %}
 
-        <div class="note">
+        {% if remark %}<div class="note">
             {{ remark }}
-        </div>
+        </div>{% endif %}
+        <footer class="report-footer">Inkar-Suki: {{ saohua }}</footer>
     </div>
 </body>
 

@@ -396,4 +396,4 @@ async def generate_shilian_box(level: int, user_choice: int, group_id: int, bot:
         boxes = "\n".join(result),
         saohua = get_saohua()
     )
-    return await generate(html, "body", segment=True)
+    return await generate(html, ".report", segment=True)

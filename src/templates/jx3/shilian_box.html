@@ -10,11 +10,28 @@
         }
 
         body {
-            background-color: #2c2f34;
-            padding: 20px;
+            margin: 0;
+            background-color: #fff;
             font-family: Harmony;
-            color: #000;
+            color: #2c3e50;
         }
+
+        .report {
+            display: inline-block;
+            padding: 24px;
+            background: #fff;
+        }
+
+        .report-header {
+            margin-bottom: 20px;
+            padding: 20px 24px;
+            background: #f8f9fa;
+            border: 1px solid #e7ebef;
+            border-radius: 4px;
+        }
+
+        .report-title { margin: 0; color: #2c3e50; font-size: 30px; }
+        .report-subtitle { margin: 8px 0 0; color: #666; font-size: 18px; }
 
         .container {
             display: flex;
@@ -22,6 +39,8 @@
             background-color: #fff;
             gap: 20px;
             padding: 18px;
+            border: 1px solid #e7ebef;
+            border-radius: 4px;
         }
 
         .box {
@@ -67,15 +86,22 @@
             padding: 15px;
             font-size: 0.9em;
             color: #777;
+            margin-top: 20px;
         }
     </style>
 </head>
 
 <body>
-    <div class="container">
-        {{ boxes }}
-    </div>
-    <footer>翻牌模拟 | Inkar Suki: {{ saohua }}</footer>
+    <main class="report">
+        <header class="report-header">
+            <h1 class="report-title">试炼之地 · 翻牌模拟</h1>
+            <p class="report-subtitle">翻牌结果与物品预览</p>
+        </header>
+        <div class="container">
+            {{ boxes }}
+        </div>
+        <footer>翻牌模拟 | Inkar Suki: {{ saohua }}</footer>
+    </main>
 </body>
 
 </html>

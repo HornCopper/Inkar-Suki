@@ -176,7 +176,12 @@ async def _render_custom_loop_help_image():
     jcl_export_image = Path(
         build_path(ASSETS, ["image", "jx3", "calculator", "custom_loop_jcl_export.png"])
     ).as_uri()
-    html_source = custom_loop_help_template.replace("__JCL_EXPORT_IMAGE__", html.escape(jcl_export_image, quote=True))
+    font_uri = Path(build_path(ASSETS, ["font", "PingFangSC-Semibold.otf"])).as_uri()
+    html_source = (
+        custom_loop_help_template
+        .replace("__JCL_EXPORT_IMAGE__", html.escape(jcl_export_image, quote=True))
+        .replace("__FONT_URI__", html.escape(font_uri, quote=True))
+    )
     return await generate(
         html_source,
         ".guide",

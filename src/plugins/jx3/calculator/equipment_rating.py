@@ -161,7 +161,9 @@ def _load_equipment_rating_distribution() -> dict[str, Any]:
 
 
 async def _render_equipment_rating_help_image():
-    html_source = equipment_rating_help_template
+    html_source = equipment_rating_help_template.replace(
+        "__FONT_URI__", _asset_uri("font", "PingFangSC-Semibold.otf")
+    )
     return await generate(
         html_source,
         ".guide",

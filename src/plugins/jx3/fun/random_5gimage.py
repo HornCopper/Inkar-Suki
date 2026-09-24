@@ -4,6 +4,7 @@ import asyncio
 from dataclasses import dataclass
 from functools import cache
 from html import escape
+from pathlib import Path
 from random import choice
 from typing import Any
 
@@ -193,7 +194,7 @@ async def render_random_5gimage(result: RandomFiveGImageResult):
     profit_text = "无法计算" if profit is None else format_signed_price(profit)
     profit_class = "neutral" if profit is None or profit == 0 else ("plus" if profit > 0 else "minus")
     html = Template(template_random_5gimage).render(
-        font=build_path(ASSETS, ["font", "PingFangSC-Semibold.otf"]),
+        font=Path(build_path(ASSETS, ["font", "PingFangSC-Semibold.otf"])).as_uri(),
         box_icon=box_icon,
         box_name=trim_image_name(result.box.name),
         box_price=format_price(result.box_price),
@@ -203,7 +204,6 @@ async def render_random_5gimage(result: RandomFiveGImageResult):
         profit=profit_text,
         profit_class=profit_class,
         server=result.server,
-        appinfo=f"随机武技图 · {result.server}",
         bot_name=Config.bot_basic.bot_name_argument,
         saohua=get_saohua(),
     )

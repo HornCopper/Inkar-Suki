@@ -135,8 +135,8 @@
             display: inline-block;
             padding: 2px 8px;
             border-radius: 12px;
-            background: #2c7be5;
-            color: #FFFFFF;
+            background: var(--inkar-accent, #2c7be5);
+            color: var(--inkar-on-accent, #FFFFFF);
             font-size: 24px;
         }
 
@@ -152,9 +152,11 @@
 </head>
 
 <body>
-    <div class="container">
-        <div style="padding: 40px"></div>
-        <div class="header">{{ title }}</div>
+    <div class="container style2-report">
+        <div class="report-header">
+            <h1 class="report-title">战斗统计</h1>
+            <p class="report-subtitle">{{ title }}</p>
+        </div>
         <div class="dps-display">阶段战斗时长：{{ battle_time }}</div>
         <div class="content">
             <div class="card">
@@ -169,7 +171,7 @@
                     {{ hps_stastic }}
                 </div>
             </div>
-            <footer>Inkar Suki: {{ saohua }}</footer>
+            <footer class="report-footer">Inkar-Suki: {{ saohua }}</footer>
         </div>
     </div>
 </body>

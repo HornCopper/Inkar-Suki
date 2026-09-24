@@ -170,26 +170,35 @@ class JX3Trade:
             return f"无法解析试炼词条：{reason}\n请确保包含品级、内/外功、属性和部位，例如：41400外功双会招头"
         attrs, location, quality, kungfu_type = parser.attributes, parser.location, parser.quality, parser.kungfu_type
         attr_keys = shilian_attrs_to_keys(attrs)
-        if quality <= 25500:
-            end_word = "荒"
-        elif 28000 <= quality <= 30200:
-            end_word = "玄"
-        elif 32500 <= quality <= 35300:
-            end_word = "地"
+        name_prefix = f"{cls.shilian_basic}{location}·{kungfu_type}·"
+        if quality == 700:
+            # 压缩后的品级不再适用旧的“荒/玄/地/天”分段。
+            searches = [(name_prefix, quality)]
         else:
-            end_word = "天"
-        name = f"{cls.shilian_basic}{location}·{kungfu_type}·{end_word}"
-        data = search_local_shilian_equips(name, quality, attr_keys)
-        for item in data:
-            equipment_attr = {
-                attr["key"]
-                for attr in item["attributes"]
-                if attr["color"] == "green" and attr["key"]
-            }
-            if set(attr_keys) == equipment_attr:
-                cls._node_data = data
-                item_id: str = item["id"]
-                return cls([item_id], server)
+            if quality <= 25500:
+                end_word = "荒"
+            elif 28000 <= quality <= 30200:
+                end_word = "玄"
+            elif 32500 <= quality <= 35300:
+                end_word = "地"
+            else:
+                end_word = "天"
+            searches = [(name_prefix + end_word, quality)]
+            if quality == 41400:
+                # 旧 41400 品装备在当前表中以 700 品存储。
+                searches.append((name_prefix, 700))
+        for name, level in searches:
+            data = search_local_shilian_equips(name, level, attr_keys)
+            for item in data:
+                equipment_attr = {
+                    attr["key"]
+                    for attr in item["attributes"]
+                    if attr["color"] == "green" and attr["key"]
+                }
+                if set(attr_keys) == equipment_attr:
+                    cls._node_data = data
+                    item_id: str = item["id"]
+                    return cls([item_id], server)
         return "未找到满足条件的装备，请检查该词条后重试！"
     
     @classmethod
@@ -505,6 +514,7 @@ class JX3Trade:
             read(TEMPLATES + "/jx3/trade_v3.html")
         ).render(
             font = ASSETS + "/font/PingFangSC-Semibold.otf",
+            server = self.server,
             summary = final_log,
             table = final_prices,
             info = info,

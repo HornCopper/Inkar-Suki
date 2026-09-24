@@ -6,6 +6,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title></title>
     <style>
+        .price-report {
+            width: min(1100px, 100%);
+            margin: 0 auto;
+        }
+
         body {
             font-family: Arial, sans-serif;
             margin: 0;
@@ -21,7 +26,7 @@
 
         .header {
             width: 100%;
-            max-width: 900px;
+            box-sizing: border-box;
             margin: 20px 0;
             padding: 20px;
             background: rgba(255, 255, 255, 0.8);
@@ -41,26 +46,25 @@
         }
 
         .container {
-            width: 90%;
-            max-width: 1000px;
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: space-between;
+            width: 100%;
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 20px;
         }
 
         .section {
-            width: 45%;
+            box-sizing: border-box;
+            min-width: 0;
             background: rgba(255, 255, 255, 0.8);
             border-radius: 10px;
-            margin: 10px 0;
             padding: 20px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
             backdrop-filter: blur(10px);
         }
 
         @media screen and (max-width: 900px) {
-            .section {
-                width: 100%;
+            .container {
+                grid-template-columns: 1fr;
             }
         }
 
@@ -98,7 +102,7 @@
 
         .chart-container {
             width: 100%;
-            max-width: 1000px;
+            box-sizing: border-box;
             margin-top: 20px;
             display: flex;
             justify-content: center;
@@ -130,7 +134,7 @@
         }
 
         body {
-            max-width: 1000px;
+            width: 100%;
             font-family: Harmony, sans-serif;
             font-size: 20px;
         }
@@ -138,6 +142,11 @@
 </head>
 
 <body>
+    <main class="price-report style2-report">
+    <div class="report-header">
+        <h1 class="report-title">物价查询</h1>
+        <p class="report-subtitle">{{ item_name }}{% if item_alias %} · {{ item_alias }}{% endif %}</p>
+    </div>
     <div class="header">
         <img src="{{ item_image }}" alt="{{ item_name }}" onerror="this.onerror=null;this.src='{{ default_item_image }}';">
         <div class="description">
@@ -200,6 +209,8 @@
     <div class="chart-container">
         <div id="price" class="chart"></div>
     </div>
+    <footer class="report-footer">Inkar-Suki: {{ saohua }}</footer>
+    </main>
 
     <script src="https://inkar-suki.codethink.cn/Inkar-Suki-Docs/js/echarts.min.js"></script>
     <script>

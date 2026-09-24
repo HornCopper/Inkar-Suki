@@ -167,10 +167,11 @@
 
         .copyright {
             margin-top: 22px;
-            padding-top: 13px;
+            padding: 13px 10px;
             border-top: 1px solid #edf0f2;
-            color: #98a2aa;
-            font-size: 11px;
+            background: #f0f0f0;
+            color: #777;
+            font-size: 14px;
             line-height: 18px;
             text-align: center;
         }
@@ -181,11 +182,11 @@
         <header class="map-header">
             <div>
                 <div class="map-title">百战异闻录</div>
-                <div class="map-subtitle">本周首领与关卡效果路线</div>
+                <div class="map-subtitle">本周首领与关卡效果路线 · {{ period_info }}</div>
             </div>
         </header>
         <section class="u-list">{{ table_content }}</section>
-        <footer class="copyright">Inkar Suki · {{ application_name }}</footer>
+        <div class="copyright" role="contentinfo">Inkar-Suki: {{ saohua }}</div>
     </main>
 </body>
 </html>

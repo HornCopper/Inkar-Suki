@@ -15,7 +15,7 @@ template_body = """
     <td>{{ desc }}</td>
     <td>{{ value }}</td>
     <td style="width: 250px">
-        <div class="progress-bar">
+        <div class="progress-bar" style="margin: 0 auto;">
             <div class="progress" style="width: {{ progress }}%;"></div>
             <span class="progress-text">{{ current }}/{{ target }}</span>
         </div>

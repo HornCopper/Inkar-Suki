@@ -82,6 +82,9 @@ from .firework import (
 from .gold import (
     coin_price_matcher
 )
+from .haste import (
+    haste_matcher
+)
 from .horse import (
     horse_chat_matcher,
     horse_spawn_matcher

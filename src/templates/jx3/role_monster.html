@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <title></title>
+    <title>角色百战 · 精耐</title>
     <style>
         @charset "UTF-8";
 
@@ -17,36 +17,75 @@
             margin: 0;
             padding: 0;
             background-color: #fff;
+            color: #2c3e50;
+        }
+
+        .report {
+            width: 1100px;
+            padding: 24px;
+            background: #fff;
+        }
+
+        .report-header {
+            margin-bottom: 20px;
+            padding: 20px 24px;
+            background: #f8f9fa;
+            border: 1px solid #e7ebef;
+            border-radius: 4px;
+        }
+
+        .report-title {
+            margin: 0;
+            font-size: 30px;
+            line-height: 1.3;
+        }
+
+        .report-subtitle {
+            margin: 8px 0 0;
+            color: #666;
+            font-size: 18px;
         }
 
         .summary {
-            text-align: center;
-            font-size: 24px;
-            font-weight: bold;
-            padding: 20px 0 10px;
             display: flex;
-            justify-content: center;
-            gap: 40px;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        .summary-card {
+            flex: 1;
+            padding: 16px 20px;
+            background: #f8f9fa;
+            border: 1px solid #e7ebef;
+            border-radius: 4px;
+        }
+
+        .summary-label {
+            color: #666;
+            font-size: 16px;
+        }
+
+        .summary-value {
+            margin-top: 4px;
+            font-size: 28px;
+            font-weight: 700;
         }
 
         .tip {
-            color: #c4cbd0;
-            text-align: center;
+            color: #666;
             font-size: 16px;
             margin-bottom: 20px;
         }
 
-        .m-bmap {
-            padding-top: 20px;
+        .section-title {
+            margin: 0 0 12px;
+            font-size: 22px;
         }
 
         .container {
-            width: 1100px auto;
-            margin: 0 auto;
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-            gap: 20px 10px;
-            justify-content: center;
+            grid-template-columns: repeat(5, minmax(0, 1fr));
+            gap: 12px;
         }
 
         .item {
@@ -54,16 +93,12 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding-bottom: 20px;
-        }
-
-        .item::after {
-            position: absolute;
-            content: '';
-            width: 100%;
-            height: 1px;
-            background-color: #dee1e5;
-            bottom: 0;
+            min-height: 128px;
+            padding: 18px 12px;
+            background: #fff;
+            border: 1px solid #e7ebef;
+            border-radius: 4px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
         }
 
         .item-icon {
@@ -99,35 +134,46 @@
 
 
         .item-name {
-            font-size: 15px;
+            font-size: 16px;
             margin-top: 10px;
+            text-align: center;
         }
 
         footer {
             background: #f0f0f0;
             text-align: center;
             padding: 15px;
-            font-size: 0.9em;
+            font-size: 20px;
             color: #777;
-            width: 100%;
-            margin: 0 auto;
+            margin-top: 20px;
             border-top: 1px solid #dee1e5;
         }
     </style>
 </head>
 
 <body>
-    <div class="summary">
-        <div>精力: {{ energy }}</div>
-        <div>耐力: {{ stamina }}</div>
+    <div class="report">
+        <header class="report-header">
+            <h1 class="report-title">角色百战 · 精耐</h1>
+            <p class="report-subtitle">{{ name }}·{{ server }}</p>
+        </header>
+        <div class="summary">
+            <div class="summary-card">
+                <div class="summary-label">精力</div>
+                <div class="summary-value">{{ energy }}</div>
+            </div>
+            <div class="summary-card">
+                <div class="summary-label">耐力</div>
+                <div class="summary-value">{{ stamina }}</div>
+            </div>
+        </div>
+        <p class="tip">提示：在世界频道发言可更新技能和精耐数值</p>
+        <h2 class="section-title">技能等级</h2>
+        <div class="container">
+            {{ table_content }}
+        </div>
+        <footer>Inkar-Suki: {{ msg }}</footer>
     </div>
-    <div class="tip">
-        提示: 在世界频道发言可更新技能和精耐数值
-    </div>
-    <div class="container">
-        {{ table_content }}
-    </div>
-    <footer>角色百战/{{ name }}·{{ server }} | Inkar Suki: {{ msg }}</footer>
 </body>
 
 </html>

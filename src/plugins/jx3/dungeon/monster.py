@@ -4,7 +4,7 @@ from src.const.path import ASSETS, build_path
 from src.utils.network import Request
 from src.utils.time import Time
 from src.utils.generate import generate
-from src.templates import SimpleHTML
+from src.templates import SimpleHTML, get_saohua
 
 from ._template import template_monsters
 
@@ -69,14 +69,14 @@ async def get_monsters_map():
             content.append(new)
     start = re.sub(r"\..+\Z", "", map_data["data"]["start"].replace("T", " ")).split(" ")[0]
     current_time = Time().format("%H:%M:%S")
-    msg = "严禁将蓉蓉机器人与音卡共存，一经发现永久封禁！蓉蓉是抄袭音卡的劣质机器人！"
     html = str(
         SimpleHTML(
             "jx3",
             "monsters.html",
             font = build_path(ASSETS, ["font", "PingFangSC-Medium.otf"]),
             table_content = "\n".join(content),
-            application_name = f"自{start}起7天 · 当前时间：{current_time}<br>{msg}"
+            period_info = f"自{start}起7天 · 查询时间：{current_time}",
+            saohua = get_saohua()
         )
     )
     image = await generate(html, ".m-bmap.is-map-phone", segment=True)

@@ -13,6 +13,8 @@
         ——HornCopper
      -->
     <style>
+        .serendipity-report { width: 650px; background: #fff; }
+        .serendipity-report table { width: 100%; }
         table {
             width: 600px;
             border-collapse: separate;
@@ -74,6 +76,11 @@
 </head>
 
 <body>
+    <main class="serendipity-report style2-report">
+    <div class="report-header">
+        <h1 class="report-title">个人奇遇记录 v2</h1>
+        <p class="report-subtitle">{{ name }}·{{ server }}</p>
+    </div>
     <table style="background-color: #FFFFFF">
         <thead>
             <tr>
@@ -86,14 +93,9 @@
         <tbody>
             {{ table_content }}
         </tbody>
-        <tfoot>
-            <span style="text-align: center;">
-                <tr>
-                    <td colspan="3">&copy; Inkar Suki · {{ app_info }}</td>
-                </tr>
-            </span>
-        </tfoot>
     </table>
+    <footer class="report-footer">Inkar-Suki: {{ saohua }}</footer>
+    </main>
 </body>
 
 </html>

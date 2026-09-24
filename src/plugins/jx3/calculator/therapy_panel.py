@@ -1,5 +1,6 @@
 ﻿from typing import Any
 import html
+from pathlib import Path
 
 from jinja2 import Template
 
@@ -157,7 +158,7 @@ async def therapy_panel(server: str, role_name: str) -> Any:
         for label, value in attr_cards
     )
     html_source = Template(therapy_panel_template).render(
-        font=build_path(ASSETS, ["font", "PingFangSC-Semibold.otf"]),
+        font=Path(build_path(ASSETS, ["font", "PingFangSC-Semibold.otf"])).as_uri(),
         theme_color=theme_color,
         kungfu_icon=kungfu.icon,
         role_name=html.escape(str(player_info.roleName or player_info.roleId or "-")),

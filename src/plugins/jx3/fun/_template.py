@@ -92,56 +92,72 @@ template_random_5gimage = """
   font-family: panel-font;
   src: url("{{ font }}");
 }
+* { box-sizing: border-box; }
 body {
   margin: 0;
-  background: transparent;
+  background: #fff;
   font-family: panel-font, sans-serif;
 }
-.card {
+html body .style2-report.random-image-card {
   width: 820px;
-  padding: 28px 28px 18px;
-  background: #f7f2e8;
-  color: #263242;
-  border: 1px solid #e2d7c4;
-  border-radius: 8px;
-  box-shadow: 0 14px 38px rgba(57, 45, 28, .18);
+  background: #fff !important;
+  color: #2c3e50;
+  font-family: panel-font, sans-serif;
+  border: 1px solid #e7ebef;
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, .05);
 }
 .items {
   display: grid;
   grid-template-columns: 1fr 1fr;
   align-items: stretch;
-  gap: 18px;
+  gap: 16px;
 }
 .item {
-  min-height: 250px;
-  padding: 22px;
-  background: #fffaf0;
-  border: 1px solid #e4d7c2;
-  border-radius: 8px;
+  min-height: 264px;
+  padding: 18px;
+  background: #fff;
+  border: 1px solid #e7ebef;
+  border-radius: 4px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   text-align: center;
 }
 .label {
-  font-size: 16px;
+  width: 100%;
+  font-size: 15px;
   color: #667085;
-  margin-bottom: 16px;
+  text-align: left;
+  margin-bottom: 14px;
 }
 .icon {
   width: 96px;
   height: 96px;
-  border-radius: 8px;
-  box-shadow: 0 0 0 1px rgba(77, 63, 42, .18);
+  object-fit: contain;
+  border: 1px solid #e7ebef;
+  border-radius: 4px;
+  background: #f8f9fa;
 }
 .name {
-  height: 56px;
-  margin-top: 16px;
+  min-height: 50px;
+  margin-top: 14px;
   font-size: 20px;
-  line-height: 28px;
-  color: #1f2937;
+  line-height: 1.35;
+  font-weight: 700;
+  overflow-wrap: anywhere;
 }
+.price-block {
+  width: 100%;
+  margin-top: auto;
+  padding-top: 12px;
+  border-top: 1px solid #e7ebef;
+}
+.price-label { color: #667085; font-size: 13px; }
 .price {
-  margin-top: 16px;
-  font-size: 22px;
-  color: #8f5f14;
+  margin-top: 4px;
+  font-size: 20px;
+  color: #2c3e50;
 }
 .price img,
 .profit img {
@@ -149,60 +165,72 @@ body {
   margin: 0 2px;
 }
 .profit {
-  width: 290px;
-  margin: 10px auto 0;
-  padding: 10px 18px;
-  background: #fffaf0;
-  border: 1px solid #e4d7c2;
-  border-radius: 8px;
-  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: 16px;
+  padding: 14px 18px;
+  background: #f8f9fa;
+  border: 1px solid #e7ebef;
+  border-radius: 4px;
+}
+.profit.plus {
+  background: #eef8f1;
+  border-color: #cbe9d6;
+}
+.profit.minus {
+  background: #fff3f2;
+  border-color: #f2d0cd;
 }
 .profit .caption {
   color: #667085;
-  font-size: 15px;
-  margin-bottom: 4px;
+  font-size: 16px;
 }
 .profit .value {
   font-size: 24px;
+  font-weight: 700;
 }
-.plus { color: #1f8f55; }
-.minus { color: #c24141; }
+.plus { color: #167c4a; }
+.minus { color: #ad3737; }
 .neutral { color: #475467; }
-footer {
-  background: #f0f0f0;
-  text-align: center;
-  padding: 15px;
-  font-size: 20px;
-  color: #777;
+html body .style2-report.random-image-card .report-footer {
   margin-top: 16px;
+  padding: 10px 12px;
+  font-size: 16px !important;
+  line-height: 1.4;
 }
 .no-price {
-  color: #98a2b3;
+  color: #667085;
 }
 </style>
 </head>
 <body>
-<div class="card">
+<main class="card style2-report random-image-card">
+  <div class="report-header">
+    <h1 class="report-title">随机武技图</h1>
+    <p class="report-subtitle">{{ server }} · 武技殊影图·{{ box_name }}</p>
+  </div>
   <div class="items">
     <div class="item">
       <div class="label">使用的原始图</div>
-      <img class="icon" src="{{ box_icon }}">
+      <img class="icon" src="{{ box_icon }}" alt="武技殊影图·{{ box_name }}">
       <div class="name">{{ box_name }}</div>
-      <div class="price">{{ box_price }}</div>
+      <div class="price-block"><div class="price-label">参考价</div><div class="price">{{ box_price }}</div></div>
     </div>
     <div class="item">
       <div class="label">开出的图</div>
-      <img class="icon" src="{{ opened_icon }}">
+      <img class="icon" src="{{ opened_icon }}" alt="{{ opened_name }}">
       <div class="name">{{ opened_name }}</div>
-      <div class="price">{{ opened_price }}</div>
+      <div class="price-block"><div class="price-label">参考价</div><div class="price">{{ opened_price }}</div></div>
     </div>
   </div>
-  <div class="profit">
+  <div class="profit {{ profit_class }}">
     <div class="caption">本次盈亏</div>
     <div class="value {{ profit_class }}">{{ profit }}</div>
   </div>
-  <footer>{{ appinfo }} | {{ bot_name }}: {{ saohua }}</footer>
-</div>
+  <footer class="report-footer">{{ bot_name }}: {{ saohua }}</footer>
+</main>
 </body>
 </html>
 """

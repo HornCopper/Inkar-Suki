@@ -97,13 +97,15 @@ class HTMLSourceCode:
             footer: str = get_saohua(),
             additional_css: str = "",
             additional_js: Path | None = None,
+            report_title: str | None = None,
             **kwargs
     ):
         """
         初始化`HTML`生成器实例。
 
         Args:
-            application_name (str): 需要生成的`HTML`的模块名。
+            application_name (str): 页面名称；默认以首个` · `拆分为大标题和查询信息。
+            report_title (str, None): 可选的大标题；指定后`application_name`整体作为副标题。
             font_path (str): 非必需。`HTML`整体字体，不传入则使用`src/assets/font/PingFangSC-Medium.otf`。
             footer (str): 非必需。页面最底部的字符串，推荐剑网3模块使用骚话，其他模块使用说明。
             additional_css (str): 额外定义的`CSS`，如果需要使用请提前定义！
@@ -112,7 +114,13 @@ class HTMLSourceCode:
 
         **务必传入`table_head`和`table_body`参数！哪怕没有提示！！**
         """
-        self.name = application_name
+        if report_title is None:
+            title, _, subtitle = application_name.partition(" · ")
+            self.report_title = title or Config.bot_basic.bot_name_argument
+            self.name = subtitle
+        else:
+            self.report_title = report_title
+            self.name = application_name
         self.font = font_path    
         self.font_extra = "font-weight: 700;" if font_path.endswith("PingFangSC-Semibold-Bold.otf") else ""
         self.footer = footer
@@ -134,6 +142,7 @@ class HTMLSourceCode:
             font = self.font,
             font_extra = self.font_extra,
             bot_name = Config.bot_basic.bot_name_argument,
+            report_title = self.report_title,
             app_info = self.name,
             footer_msg = self.footer,
             js = self.js,

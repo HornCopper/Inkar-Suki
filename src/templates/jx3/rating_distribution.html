@@ -88,11 +88,15 @@
     </style>
 </head>
 <body>
-<main class="rating-distribution">
+<main class="rating-distribution style2-report">
+    <div class="report-header">
+        <h1 class="report-title">评级分布</h1>
+        <p class="report-subtitle">{{ kungfu_name }} · {{ route_name }} · {{ updated_at }}</p>
+    </div>
     <div class="report-body">
         <aside class="sidebar">
             {% if kungfu_icon %}<img class="kungfu-icon" src="{{ kungfu_icon }}" alt="">{% endif %}
-            <h1 class="build-title">{{ kungfu_name }}</h1>
+            <div class="build-title">{{ kungfu_name }}</div>
             <div class="build-subtitle">评级分布</div>
 
             <section class="side-section">
@@ -174,7 +178,7 @@
             <div class="notice">{% if selected and not selected["values"] %}当前路由暂无有效排名数据，图中仅展示其他路由作为对照。{% endif %}各榜按每角色最新有效记录统计，同一角色可出现在多个路由。分位数采用线性插值。单条或相同数值仅标示位置，竖线高度不表示密度。</div>
         </div>
     </div>
-    <footer class="report-footer"><span>Inkar Suki · 装备评级</span><span>统计时间 {{ updated_at }}</span></footer>
+    <footer class="report-footer">Inkar-Suki: {{ saohua }}</footer>
 </main>
 </body>
 </html>

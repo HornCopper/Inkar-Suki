@@ -12,6 +12,7 @@ from src.utils.file import read
 from src.utils.generate import generate
 from src.utils.network import Request
 from src.utils.time import Time
+from src.templates import get_saohua
 
 from ._template import template_wujia
 
@@ -204,8 +205,9 @@ async def get_single_item_price(item_name: str, exact: bool = False) -> str | di
         max=y_max,
         min=y_min,
         values=json.dumps(prices, ensure_ascii=False),
+        saohua=get_saohua(),
     )
-    final_path = await generate(html, "body", False)
+    final_path = await generate(html, ".price-report", False)
     if not isinstance(final_path, str):
         return
     return Path(final_path).as_uri()

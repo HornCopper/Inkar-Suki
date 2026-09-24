@@ -30,10 +30,10 @@
     </style>
 </head>
 <body>
-    <main class="serendipity-panel">
-        <header><h1>{{ name }}<span>· {{ server }}</span></h1><div class="summary">已触发 {{ triggered }} / {{ total }}</div></header>
+    <main class="serendipity-panel style2-report">
+        <header class="report-header"><h1 class="report-title">个人奇遇记录 v4</h1><p class="report-subtitle">{{ name }}·{{ server }} · 已触发 {{ triggered }} / {{ total }}</p></header>
         <section class="cards">{{ cards }}</section>
-        <footer>&copy; Inkar Suki · {{ app_info }}</footer>
+        <footer class="report-footer">Inkar-Suki: {{ saohua }}</footer>
     </main>
 </body>
 </html>

@@ -95,7 +95,11 @@
 </head>
 
 <body>
-    <div class="container">
+    <div class="container style2-report">
+        <div class="report-header">
+            <h1 class="report-title">万宝楼</h1>
+            <p class="report-subtitle">{{ name }}·{{ server }}</p>
+        </div>
         <div class="header">
             <div class="left">
                 <div class="character-img">
@@ -133,7 +137,8 @@
             </div>
             {% endfor %}
         </div>
-        <footer>Inkar Suki: {{ saohua }}</footer>
+        <footer class="report-footer">Inkar-Suki: {{ saohua }}</footer>
+    </div>
 </body>
 
 </html>

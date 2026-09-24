@@ -29,7 +29,7 @@ therapy_panel_template = """
 <style>
 @font-face { font-family: PanelFont; src: url("{{ font }}"); }
 body { margin: 0; background: #f5f6fa; font-family: PanelFont, "Microsoft YaHei", sans-serif; color: #333; }
-.therapy-panel { width: max-content; min-width: 1366px; background: #fff; display: flex; flex-direction: column; border: 1px solid #ddd; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,.1); overflow: hidden; }
+.therapy-panel { width: max-content; min-width: 1366px; background: #fff; display: flex; flex-direction: column; border: 1px solid #ddd; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,.1); overflow: hidden; font-family: PanelFont, "Microsoft YaHei", sans-serif; }
 .main-content { display: flex; width: max-content; min-width: 100%; }
 .left-panel { width: 410px; flex: 0 0 410px; padding: 24px; box-sizing: border-box; background: #fafafa; border-right: 1px solid #ddd; display: flex; flex-direction: column; gap: 20px; }
 .right-panel { flex: 0 0 auto; padding: 24px; box-sizing: border-box; background: #fff; }
@@ -56,7 +56,11 @@ footer { background: #f0f0f0; text-align: center; padding: 15px; font-size: 1.2e
 </style>
 </head>
 <body>
-<div class="therapy-panel">
+<div class="therapy-panel style2-report">
+  <div class="report-header">
+    <h1 class="report-title">治疗面板</h1>
+    <p class="report-subtitle">{{ role_name }}·{{ server_name }} · {{ kungfu_name }}</p>
+  </div>
   <div class="main-content">
     <div class="left-panel">
       <div>
@@ -80,7 +84,7 @@ footer { background: #f0f0f0; text-align: center; padding: 15px; font-size: 1.2e
       <div class="skills-grid">{{ skill_rows }}</div>
     </div>
   </div>
-  <footer>Inkar Suki: {{ saohua }}</footer>
+  <footer class="report-footer">Inkar-Suki: {{ saohua }}</footer>
 </div>
 </body>
 </html>
@@ -366,7 +370,7 @@ qjh_template_body = """
             font-size: 17px;
             line-height: 1.6;
         }
-        .finish-detail strong { color: #2c7be5; }
+        .finish-detail strong { color: var(--inkar-accent-ink, #2c7be5); }
         table { width: 100%; border-collapse: collapse; }
         th {
             padding: 10px 8px;
@@ -395,7 +399,7 @@ qjh_template_body = """
             font-size: 15px;
         }
         .skill-name { padding-left: 22px !important; text-align: left; }
-        .final-tag { color: #2c7be5; font-weight: 600; }
+        .final-tag { color: var(--inkar-accent-ink, #2c7be5); font-weight: 600; }
         .empty { padding: 24px; color: #999; font-size: 18px; text-align: center; }
         footer {
             margin-top: 10px;
@@ -408,8 +412,8 @@ qjh_template_body = """
     </style>
 </head>
 <body>
-<main class="qjh-report">
-    <div class="report-title"><strong>千机源枢 - 藤蔓每轮最后治疗</strong><span>共 {{ rounds|length }} 轮</span></div>
+<main class="qjh-report style2-report">
+    <div class="report-header"><h1 class="report-title">千机源枢 · 藤蔓治疗分析</h1><p class="report-subtitle">共 {{ rounds|length }} 轮 · 每轮最后治疗</p></div>
     {% for round in rounds %}
     <section class="round-card">
         <div class="round-title">第 {{ round.number|e }} 轮</div>
@@ -455,7 +459,7 @@ qjh_template_body = """
     {% else %}
     <section class="round-card"><div class="empty">未识别到有效的藤蔓奶爆记录</div></section>
     {% endfor %}
-    <footer>千机源枢 藤蔓奶爆记录 | Inkar Suki: {{ saohua }}</footer>
+    <footer class="report-footer">Inkar-Suki: {{ saohua }}</footer>
 </main>
 </body>
 </html>
@@ -1164,29 +1168,31 @@ window.MathJax = {
 </script>
 <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
 <style>
+@font-face { font-family: Harmony; src: url("__FONT_URI__"); }
 * { box-sizing: border-box; }
 body {
   margin: 0;
   width: 980px;
   background: #f3f6f9;
   color: #202630;
-  font-family: "Microsoft YaHei", "PingFang SC", Arial, sans-serif;
+  font-family: Harmony, "Microsoft YaHei", "PingFang SC", Arial, sans-serif;
 }
 .guide {
   width: 980px;
   padding: 36px;
   background: #f3f6f9;
 }
-.hero {
+html body .guide.rating-help .hero {
   padding: 30px 34px;
-  border-radius: 8px;
-  background: #243149;
-  color: #fff;
+  border: 1px solid #e7ebef !important;
+  border-radius: 4px;
+  background: #f8f9fa !important;
+  color: #2c3e50 !important;
 }
 .eyebrow {
   font-size: 18px;
   line-height: 1.25;
-  color: #b9c7dc;
+  color: #245ca9;
   font-weight: 800;
 }
 .title {
@@ -1200,7 +1206,7 @@ body {
   max-width: 820px;
   font-size: 18px;
   line-height: 1.65;
-  color: #d9e2ee;
+  color: #526071;
 }
 .section {
   margin-top: 18px;
@@ -1317,7 +1323,7 @@ body {
 </style>
 </head>
 <body>
-<div class="guide">
+<div class="guide rating-help">
   <div class="hero">
     <div class="eyebrow">装备评级 help</div>
     <div class="title">评级给出的评分只能够衡量当前配装距离毕业的程度</div>
@@ -1460,12 +1466,13 @@ custom_loop_help_template = r"""
 <head>
 <meta charset="utf-8">
 <style>
-body { margin: 0; background: #edf1f7; font-family: "Microsoft YaHei", "PingFang SC", Arial, sans-serif; color: #202638; }
+@font-face { font-family: Harmony; src: url("__FONT_URI__"); }
+body { margin: 0; background: #edf1f7; font-family: Harmony, "Microsoft YaHei", "PingFang SC", Arial, sans-serif; color: #202638; }
 .guide { width: 920px; box-sizing: border-box; padding: 34px; background: #f7f9fc; }
-.header { padding: 28px 30px; background: #243149; color: #fff; border-radius: 8px; }
-.eyebrow { font-size: 18px; color: #b9c7dc; font-weight: 700; }
+html body .guide.custom-loop-help .header { padding: 28px 30px; background: #f8f9fa !important; color: #2c3e50 !important; border: 1px solid #e7ebef !important; border-radius: 4px; }
+.eyebrow { font-size: 18px; color: #245ca9; font-weight: 700; }
 .title { margin-top: 8px; font-size: 34px; line-height: 1.22; font-weight: 900; }
-.subtitle { margin-top: 12px; font-size: 18px; color: #d8e0ed; line-height: 1.6; }
+.subtitle { margin-top: 12px; font-size: 18px; color: #526071; line-height: 1.6; }
 .section { margin-top: 18px; padding: 24px 26px; background: #fff; border: 1px solid #e0e5ef; border-radius: 8px; }
 .section-title { font-size: 24px; font-weight: 900; margin-bottom: 18px; color: #1f2937; }
 .section-subtitle { margin-top: -8px; margin-bottom: 15px; color: #5d687a; font-size: 17px; line-height: 1.55; }
@@ -1486,7 +1493,7 @@ body { margin: 0; background: #edf1f7; font-family: "Microsoft YaHei", "PingFang
 </style>
 </head>
 <body>
-<div class="guide">
+<div class="guide custom-loop-help">
   <div class="header">
     <div class="eyebrow">自定义循环 help</div>
     <div class="title">如何制作一个专属于自己的 JCL 计算器循环</div>

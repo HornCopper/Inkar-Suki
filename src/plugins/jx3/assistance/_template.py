@@ -9,6 +9,7 @@ template_assistance_unit = """
                 {{ name }}
             </span><br>
             （{{ qq }}）
+            <span class="member-time">{{ time }}</span>
         </div>
     </div>
 </div>

@@ -6,7 +6,7 @@ from src.const.path import ASSETS, TEMPLATES, build_path
 from src.utils.file import read
 from src.utils.database.operation import get_group_settings
 from src.utils.generate import generate
-from src.templates import SimpleHTML
+from src.templates import SimpleHTML, get_saohua
 
 from ._template import template_subscribe
 
@@ -63,13 +63,14 @@ async def generate_group_info(bot: Bot, group_id: str):
         SimpleHTML(
             "jx3",
             "subscribe.html",
-            css_ = Path(build_path(TEMPLATES, ["jx3", "subscribe.css"])),
+            css_ = Path(build_path(TEMPLATES, ["jx3", "subscribe.css"])).as_uri(),
             font = build_path(ASSETS, ["font", "PingFangSC-Medium.otf"]),
             subscribe_contents = final_subscribe_contents,
             additions_contents = final_additions_contents,
             group_id = group_id,
             group_name = group_name,
-            grass_image = Path(build_path(ASSETS, ["image", "minecraft", "grass.png"])).as_uri()
+            grass_image = Path(build_path(ASSETS, ["image", "minecraft", "grass.png"])).as_uri(),
+            saohua = get_saohua()
         )
     )
     image = await generate(html, ".total", segment=True)

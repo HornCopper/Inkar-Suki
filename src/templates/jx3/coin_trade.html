@@ -10,47 +10,70 @@
         ——HornCopper
     -->
     <style>
-        table {
-            width: 800px;
-            border-collapse: separate;
-            border-spacing: 0;
-            border: 1px solid #000;
+        * { box-sizing: border-box; }
+
+        body { margin: 0; background: #fff; color: #2c3e50; }
+
+        .container {
+            width: 1040px;
+            padding: 24px;
+            background: #fff;
         }
 
-        th {
-            background-color: #333;
-            color: #fff;
-            padding: 8px;
-            text-align: center;
+        .report-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 24px;
+            padding: 20px 24px;
+            background: #f8f9fa;
+            border: 1px solid #e7ebef;
+            border-radius: 4px;
         }
 
-        td {
-            padding: 20px;
+        h1 { margin: 0; font-size: 30px; line-height: 1.2; }
+        .report-subtitle { margin-top: 8px; color: #666; font-size: 18px; }
+        .report-meta { text-align: right; color: #666; font-size: 18px; }
+        .server-tag {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            background: var(--inkar-accent-surface, #e8f4ff);
+            color: var(--inkar-accent-ink, #2c7be5);
+            font-size: 20px;
+        }
+
+        .report-section { margin-top: 20px; }
+        .section-title { margin: 0 0 12px; color: #2c3e50; font-size: 22px; }
+
+        .item-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: #fff;
+            border: 1px solid #e7ebef;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, .05);
+        }
+
+        .item-table th,
+        .item-table td {
+            padding: 14px 12px;
+            border: 1px solid #e7ebef;
             text-align: center;
+            font-size: 21px;
             white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            border-bottom: 1px solid #D3D3D3;
-            margin-bottom: 1px;
         }
 
-        tbody tr:not(:first-child) {
-            border: 1px solid black;
-        }
+        .item-table th { background: #f8f9fa; color: #444; font-weight: 600; }
+        .chart-panel { padding: 16px; border: 1px solid #e7ebef; border-radius: 4px; }
+        #Chart { width: 100%; height: 360px; }
 
-        .short-column {
-            width: 150px;
-        }
-
-        tfoot {
+        footer {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f0f0f0;
+            color: #777;
             text-align: center;
-            font-size: 12px;
-        }
-
-        #Chart {
-            width: 800px;
-            height: 400px;
-            margin: 0 auto;
+            font-size: 20px;
         }
 
         @font-face {
@@ -66,30 +89,41 @@
 </head>
 
 <body>
-    <table style="background-color: #FFFFFF">
-        <thead>
-            <tr>
-                <th class="short-column">日期</th>
-                <th class="short-column">贴吧</th>
-                <th class="short-column">万宝楼</th>
-                <th class="short-column">DD373</th>
-                <th class="short-column">UU898</th>
-            </tr>
-        </thead>
-        <tbody>
-            {{ table_content }}
-            <tr>
-                <td colspan="6">
-                    <div id="Chart"></div>
-                </td>
-            </tr>
-        </tbody>
-        <tfoot>
-            <tr>
-                <td colspan="6">&copy; Inkar Suki · {{ app_name }} · {{ server }} · {{ app_time }}<br>{{ saohua }}</td>
-            </tr>
-        </tfoot>
-    </table>
+    <main class="container">
+        <header class="report-header">
+            <div>
+                <h1>{{ app_name }}</h1>
+                <div class="report-subtitle">各平台金币价格与近期走势</div>
+            </div>
+            <div class="report-meta">
+                <span class="server-tag">{{ server or "全服" }}</span>
+                <div>生成于 {{ app_time }}</div>
+            </div>
+        </header>
+
+        <section class="report-section">
+            <h2 class="section-title">平台价格</h2>
+            <table class="item-table">
+                <thead>
+                    <tr>
+                        <th>日期</th>
+                        <th>贴吧</th>
+                        <th>万宝楼</th>
+                        <th>DD373</th>
+                        <th>UU898</th>
+                    </tr>
+                </thead>
+                <tbody>{{ table_content }}</tbody>
+            </table>
+        </section>
+
+        <section class="report-section">
+            <h2 class="section-title">近期走势</h2>
+            <div class="chart-panel"><div id="Chart"></div></div>
+        </section>
+
+        <footer>&copy; Inkar Suki · {{ saohua }}</footer>
+    </main>
 
     <script src="https://inkar-suki.codethink.cn/Inkar-Suki-Docs/js/echarts.min.js"></script>
     <script>

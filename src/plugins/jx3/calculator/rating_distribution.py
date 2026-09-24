@@ -24,6 +24,7 @@ from src.utils.database.classes import EquipmentRatingDpsRank
 from src.utils.generate import generate
 from src.utils.permission import check_permission, denied
 from src.utils.time import Time
+from src.templates import get_saohua
 
 from .equipment_rating import (
     RATING_LOOP_LIST_KEYWORDS,
@@ -311,6 +312,7 @@ def build_distribution_html(
         route_name=selected["name"] if selected else ordered[0]["name"] if len(ordered) == 1 else "全部武器路由 · 同图对照",
         metric_label=metric_label,
         updated_at=updated_at,
+        saohua=get_saohua(),
         selected=selected,
         route_count=len(ordered),
         populated_count=sum(bool(item["values"]) for item in ordered),

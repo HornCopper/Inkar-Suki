@@ -10,17 +10,22 @@
         }
 
         .el-row {
-            width: 850px;
-            display: flex;
-            justify-content: flex-start;
-            align-items: center;
-            flex-wrap: wrap;
+            width: 100%;
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 10px;
+        }
+
+        .el-row::before,
+        .el-row::after {
+            display: none;
+            content: none;
         }
 
         .el-col {
-            margin-left: 15px;
-            margin-bottom: 10px;
-            width: 250px;
+            box-sizing: border-box;
+            min-width: 0;
+            width: 100%;
             height: 90px;
             border: 1px solid rgb(179, 179, 179);
             border-radius: 5px;
@@ -32,15 +37,19 @@
         }
 
         .el-box {
-
             display: flex;
             align-items: center;
+            min-width: 0;
+        }
+
+        .el-text {
+            min-width: 0;
         }
 
         .el-status {
-
             display: flex;
             align-items: center;
+            flex-shrink: 0;
         }
 
         .disabled {
@@ -106,10 +115,11 @@
         }
 
 
-        .mc_design {
+        .grass-strip {
+            height: 93px;
+            margin: 16px -24px -24px;
             background-image: url("{{ grass_image }}");
-            background-position: bottom;
-            padding-bottom: 90px;
+            background-position: left bottom;
             background-repeat: repeat-x;
         }
 
@@ -125,13 +135,13 @@
 </head>
 
 <body>
-    <div class="total mc_design" style="width:860px;padding-top:5px">
-        <!-- 通用划线 -->
-        <div class="el-divider el-divider--horizontal" style="width:850px">
-            <div class="el-divider__text is-left">群聊 {{ group_name }}（{{ group_id }}）关于本群</div>
+    <div class="total style2-report" style="width:860px">
+        <div class="report-header">
+            <h1 class="report-title">本群订阅</h1>
+            <p class="report-subtitle">{{ group_name }} · {{ group_id }}</p>
         </div>
 
-        <div class="el-mini-divider el-divider--horizontal" style="width:850px">
+        <div class="el-mini-divider el-divider--horizontal">
             <div class="el-divider__text is-left">订阅内容（使用 订阅/开启 加上下面的小标题即可订阅，多个请用空格分隔，如需关闭请使用 退订/关闭）</div>
         </div>
 
@@ -140,13 +150,15 @@
             {{ subscribe_contents }}
         </div>
 
-        <div class="el-mini-divider el-divider--horizontal" style="width:850px">
+        <div class="el-mini-divider el-divider--horizontal">
             <div class="el-divider__text is-left">功能附加（使用 开启/订阅 加上下面的小标题即可订阅，多个请用空格分隔，如需关闭请使用 退订/关闭）</div>
         </div>
 
         <div class="el-row">
             {{ additions_contents }}
         </div>
+        <footer class="report-footer">Inkar-Suki: {{ saohua }}</footer>
+        <div class="grass-strip" aria-hidden="true"></div>
     </div>
 </body>
 

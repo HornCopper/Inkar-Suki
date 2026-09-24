@@ -6,7 +6,7 @@ from jinja2 import Template
 
 from src.config import Config
 from src.const.path import ASSETS, build_path
-from src.templates import SimpleHTML
+from src.templates import SimpleHTML, get_saohua
 from src.utils.generate import generate
 from src.utils.network import Request
 from src.utils.time import Time
@@ -63,6 +63,7 @@ async def get_serendipity_collect(server: str, days: int):
             server=server,
             days=days,
             total=sum(record["count"] for record in data["data"]),
+            saohua=get_saohua(),
             rows="\n".join(rows),
         )
     )

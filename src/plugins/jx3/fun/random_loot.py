@@ -1,5 +1,6 @@
 from typing import cast
 from typing_extensions import Self
+from pathlib import Path
 from random import choice, sample, randrange
 from jinja2 import Template
 
@@ -8,7 +9,7 @@ from src.const.path import ASSETS, CONST
 from src.utils.network import Request, cache_image
 from src.utils.generate import generate
 from src.utils.file import read, write
-from src.templates import SimpleHTML
+from src.templates import SimpleHTML, get_saohua
 
 from ._template import (
     template_loot,
@@ -711,9 +712,10 @@ class RandomLoot:
             SimpleHTML(
                 "jx3",
                 "dungeon_loots_horizontal" if horizontal else "dungeon_loots",
-                font = ASSETS + "/font/PingFangSC-Semibold.otf",
+                font = Path(ASSETS, "font", "PingFangSC-Semibold.otf").as_uri(),
                 dungeon_name = self.name,
                 item_count = sum(len(items) for items in data.values()),
+                saohua = get_saohua(),
                 loots = "\n".join(loots)
             )
         )

@@ -270,11 +270,11 @@
     </style>
 </head>
 <body>
-<main class="qjd-report">
-    <header class="report-title">
+<main class="qjd-report style2-report">
+    <header class="report-title report-header">
         <div>
-            <div class="title-main">千机源枢 · 藤蔓旁机卒打断分析</div>
-            <div class="title-sub">机卒波次与藤蔓波次一一对应；死亡终止不计为漏打断。</div>
+            <h1 class="title-main report-title">千机源枢 · 藤蔓旁机卒打断分析</h1>
+            <p class="title-sub report-subtitle">机卒波次与藤蔓波次一一对应；死亡终止不计为漏打断。</p>
         </div>
         <div class="report-stat">共 {{ summary.wave_count }} 轮{% if summary.missed_interrupt %}<span class="bad"> · {{ summary.missed_interrupt }} 次漏打断</span>{% endif %}</div>
     </header>
@@ -321,7 +321,7 @@
     </section>
     {% else %}<div class="empty">未识别到藤蔓旁机卒打断数据</div>{% endfor %}
 
-    <footer>千机源枢机卒打断统计 | Inkar-Suki：{{ saohua }}</footer>
+    <footer class="report-footer">Inkar-Suki: {{ saohua }}</footer>
 </main>
 </body>
 </html>

@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <style>
+    @font-face { font-family: Harmony; src: url("{{ font }}"); }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: #fff; color: #2c3e50; font-family: Harmony, sans-serif; }
+    html body .style2-report.haste-report {
+      width: 780px;
+      background: #fff !important;
+      border: 1px solid #e7ebef;
+      border-radius: 4px;
+      font-family: Harmony, sans-serif;
+    }
+    .haste-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+    .haste-table th, .haste-table td { padding: 13px 12px; text-align: center; }
+    .haste-table th { font-size: 16px; }
+    .haste-table td { font-size: 18px; font-variant-numeric: tabular-nums; }
+    .haste-table td:last-child { font-weight: 700; }
+    .haste-table .baseline td { background: #f8f9fa; color: #667085; }
+    .haste-table .skipped-hint { display: block; margin-top: 3px; color: #667085; font-size: 12px; font-weight: 400; }
+    .haste-note { margin-top: 14px; color: #667085; font-size: 14px; line-height: 1.5; }
+    html body .style2-report.haste-report .report-footer {
+      margin-top: 18px;
+      padding: 10px 12px;
+      font-size: 16px !important;
+      line-height: 1.4;
+    }
+  </style>
+</head>
+<body>
+  <main class="style2-report haste-report">
+    <div class="report-header">
+      <h1 class="report-title">加速阈值</h1>
+      <p class="report-subtitle">{{ origin_frame }} 帧基础读条 · 当前 {{ level }} 级 · {% if addition_rate %}{{ '不受限' if unlimited else '受限' }}附加加速 {{ addition_rate }}/1024{% else %}不计额外加速{% endif %}</p>
+    </div>
+    <table class="item-table haste-table">
+      <thead><tr><th>不慢于</th><th>读条时间</th><th>最低面板加速率</th><th>最低加速等级</th></tr></thead>
+      <tbody>
+        {% for row in rows %}
+        <tr{% if loop.first %} class="baseline"{% endif %}>
+          <td>{{ row.frame }} 帧</td>
+          <td>{{ row.seconds }} 秒</td>
+          <td>{{ row.rate }}%</td>
+          <td>{{ row.rating }}{% if row.skipped %}<span class="skipped-hint">已达到 {{ row.actual_frame }} 帧</span>{% endif %}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    <div class="haste-note">加速率显示最低等级对应的面板百分比；帧数判定先取整到 1024 档。{% if unlimited %}装备加速封顶 256/1024，附加 {{ addition_rate }}/1024 不受此上限影响。{% else %}装备与附加加速合计封顶 256/1024{% if addition_rate %}（附加 {{ addition_rate }}/1024）{% endif %}。{% endif %}仅列出上限内可达到或跨过的帧数。</div>
+    <footer class="report-footer">Inkar-Suki: {{ saohua }}</footer>
+  </main>
+</body>
+</html>

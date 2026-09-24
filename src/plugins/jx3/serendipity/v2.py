@@ -8,7 +8,7 @@ from src.utils.network import Request
 from src.utils.time import Time
 from src.utils.database.player import search_player
 from src.utils.generate import generate
-from src.templates import SimpleHTML
+from src.templates import SimpleHTML, get_saohua
 
 from ._template import template_serendity, poem
 from .without_jx3api import JX3Serendipity
@@ -78,10 +78,13 @@ async def get_serendipity_v2(server: str, name: str, type: bool):
             "serendipity_v2",
             font = build_path(ASSETS, ["font", "PingFangSC-Medium.otf"]),
             table_content = "\n".join(tables),
+            name = name,
+            server = server,
+            saohua = get_saohua(),
             app_info = f"个人奇遇记录 · {server} · {name} · " + Time().format("%H:%M:%S"),
             title_image = build_path(ASSETS, ["image", "jx3", "serendipity", "vector", "title.png"]),
             poem_image = build_path(ASSETS, ["image", "jx3", "serendipity", "vector", "poem.png"])
         )
     )
-    image = await generate(html, "table", segment=True)
+    image = await generate(html, ".serendipity-report", segment=True)
     return image

@@ -675,7 +675,8 @@ class Equip:
     
     def _post_parse(self):
         self._icon, self._name = TabCache.get_icon_for_equip(self._ui_id)
-        self.extra_score += int(self.fivestone_score + 0.5)
+        # 五行石与五彩石合计后统一取整，避免混合镶嵌多算一分。
+        self.extra_score += self.fivestone_score
         self.score += int(self.extra_score + 0.5)
         if int(self._permanent_enchant) != 0:
             enchant_data = TabCache.get_enchant(self._permanent_enchant) 

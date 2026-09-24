@@ -14,7 +14,7 @@ from src.utils.time import Time
 from src.utils.generate import generate
 from src.utils.database.operation import get_group_settings, set_group_settings
 
-from src.templates import SimpleHTML
+from src.templates import SimpleHTML, get_saohua
 
 from ._template import template_assistance_unit
 from .sort_v1 import rearrange_teams as sort_teams_v1
@@ -35,6 +35,15 @@ def parse_limit(s: str) -> dict[str, int] | Literal[False]:
     for value, key in matches:
         result[key] = int(value)
     return result
+
+def format_member_time(value: object) -> str:
+    try:
+        timestamp = int(value)
+        if timestamp <= 0:
+            return "未知"
+        return Time(timestamp).format("%Y-%m-%d %H:%M")
+    except (TypeError, ValueError, OSError, OverflowError):
+        return "未知"
 
 class Assistance:
     def __init__(self):
@@ -288,7 +297,8 @@ class Assistance:
                                 color = to_transparent_hex(color),
                                 icon = icon,
                                 name = name,
-                                qq = qq
+                                qq = qq,
+                                time = format_member_time(a.get("time"))
                             )
                         else:
                             cell_content = "<div class=\"cell\"></div>"
@@ -305,6 +315,7 @@ class Assistance:
                     D_count = str(count["D"]),
                     B_count = str(count["B"]),
                     font = font,
+                    footer_msg = get_saohua(),
                     # background = bg,
                     title = i["description"]
                 )

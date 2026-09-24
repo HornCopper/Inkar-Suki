@@ -26,7 +26,20 @@
             width: 100%;
             max-width: 1600px;
             margin: 0 auto;
+            padding: 24px;
+            background: #fff;
         }
+
+        .report-header {
+            margin-bottom: 20px;
+            padding: 20px 24px;
+            background: #f8f9fa;
+            border: 1px solid #e7ebef;
+            border-radius: 4px;
+        }
+
+        .report-title { margin: 0; color: #2c3e50; font-size: 30px; }
+        .report-subtitle { margin: 8px 0 0; color: #666; font-size: 18px; }
 
         .content {
             display: flex;
@@ -164,6 +177,10 @@
 
 <body>
     <div class="container">
+        <header class="report-header">
+            <h1 class="report-title">名人堂 · 团队排名</h1>
+            <p class="report-subtitle">{{ dungeon_full_name }} · {{ boss_name }}</p>
+        </header>
         {{ teams }}
         <footer>名人堂 · {{ dungeon_full_name }} · {{ boss_name }} | Inkar Suki: {{ saohua }}</footer>
     </div>

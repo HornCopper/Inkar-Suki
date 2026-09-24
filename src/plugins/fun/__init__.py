@@ -229,6 +229,7 @@ def _collect_inkar_help_entries() -> list[dict[str, Any]]:
 
 async def _render_inkar_help_image():
     entries = _collect_inkar_help_entries()
+    font_uri = Path(build_path(ASSETS, ["font", "PingFangSC-Semibold.otf"])).as_uri()
     category_order = ["通用帮助", "剑三功能", "参数帮助", "其他帮助"]
     grouped_entries = {
         category: [entry for entry in entries if entry["category"] == category]
@@ -259,12 +260,13 @@ async def _render_inkar_help_image():
 <head>
 <meta charset="utf-8">
 <style>
-body {{ margin: 0; background: #edf1f7; font-family: "Microsoft YaHei", "PingFang SC", Arial, sans-serif; color: #202638; }}
+@font-face {{ font-family: Harmony; src: url("{font_uri}"); }}
+body {{ margin: 0; background: #edf1f7; font-family: Harmony, "Microsoft YaHei", "PingFang SC", Arial, sans-serif; color: #202638; }}
 .page {{ width: 980px; box-sizing: border-box; padding: 34px; background: #f7f9fc; }}
-.header {{ padding: 30px 32px; background: #243149; color: #fff; border-radius: 8px; }}
-.eyebrow {{ color: #b9c7dc; font-size: 18px; font-weight: 800; }}
+html body .page.inkar-help .header {{ padding: 30px 32px; background: #f8f9fa !important; color: #2c3e50 !important; border: 1px solid #e7ebef !important; border-radius: 4px; }}
+.eyebrow {{ color: #245ca9; font-size: 18px; font-weight: 800; }}
 .title {{ margin-top: 8px; font-size: 38px; line-height: 1.2; font-weight: 900; }}
-.subtitle {{ margin-top: 12px; color: #d8e0ed; font-size: 18px; line-height: 1.6; }}
+.subtitle {{ margin-top: 12px; color: #526071; font-size: 18px; line-height: 1.6; }}
 .section {{ margin-top: 18px; background: #fff; border: 1px solid #e0e5ef; border-radius: 8px; padding: 22px; }}
 .section-title {{ display: flex; justify-content: space-between; align-items: center; font-size: 24px; font-weight: 900; color: #1f2937; margin-bottom: 14px; }}
 .section-title span {{ color: #647084; font-size: 16px; font-weight: 800; }}
@@ -276,7 +278,7 @@ body {{ margin: 0; background: #edf1f7; font-family: "Microsoft YaHei", "PingFan
 </style>
 </head>
 <body>
-<div class="page">
+<div class="page inkar-help">
   <div class="header">
     <div class="eyebrow">inkar help</div>
     <div class="title">音卡帮助指令索引</div>

@@ -1,4 +1,5 @@
 from functools import lru_cache
+from html import escape
 from typing import Any, Iterable
 
 from jinja2 import Template
@@ -254,7 +255,8 @@ async def get_exp_info(
     )
     html = str(
         HTMLSourceCode(
-            application_name=f"资历分布 · [{name}·{server}] · {view}",
+            application_name=f"{escape(name)}·{escape(server)} · {escape(view)}",
+            report_title="资历分布",
             table_head=global_view_head,
             table_body=summary + "\n" + "\n".join(tables),
             additional_css="""
@@ -280,7 +282,7 @@ async def get_exp_info(
                 }
                 .achievement-summary strong { font-size: 28px; }
                 .summary-meta { margin-left: 8px; color: #667582; }
-                .summary-value { float: right; color: #2c7be5; font-weight: 600; }
+                .summary-value { float: right; color: var(--inkar-accent-ink, #2c7be5); font-weight: 600; }
                 .progress-bar { max-width: none; width: 300px; margin: 0 auto; }
                 .progress { background: linear-gradient(90deg, #76c7c0, #4da7d8); }
             """,

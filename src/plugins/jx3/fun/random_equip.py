@@ -1,4 +1,5 @@
 from jinja2 import Template
+from pathlib import Path
 
 from src.config import Config
 from src.const.path import ASSETS, TEMPLATES
@@ -7,6 +8,7 @@ from src.utils.database.constant import Colors, EquipLocations, StrengthIncome
 from src.utils.database.attributes import TabCache
 from src.utils.generate import generate
 from src.utils.file import read
+from src.templates import get_saohua
 from src.plugins.jx3.calculator.compare import AttributesFull, subtype_locations
 
 from src.plugins.jx3.equip._template import _template_green_attrs, _template_diamonds, _template_set_attrs
@@ -95,7 +97,8 @@ async def get_equip_info(params: dict) -> dict:
 
 async def get_equip_info_image(info: dict):
     arguments = {
-        "font": ASSETS + "/font/PingFangSC-Semibold.otf",
+        "font": Path(ASSETS, "font", "PingFangSC-Semibold.otf").as_uri(),
+        "saohua": get_saohua(),
         **info
     }
     html = Template(

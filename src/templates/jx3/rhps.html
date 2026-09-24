@@ -143,15 +143,12 @@
 </head>
 
 <body>
-    <div class="container">
-        <div style="padding: 40px"></div>
-        <div class="header">剑三警长 - RHPS复盘工具</div>
-        <div class="dps-display">团队总RHPS：{{ rhps }}</div>
-        <div style="text-align: center;">
-            <div style="font-size: 25px;text-align: center;color: #555;display: inline-block;padding: 2px 8px;border-radius: 12px;background: #ff0000;color: #FFFFFF;">
-                当前首领：{{ dungeon }}·{{ boss }}
-            </div>
+    <div class="container style2-report">
+        <div class="report-header">
+            <h1 class="report-title">剑三警长 · RHPS复盘</h1>
+            <p class="report-subtitle">{{ dungeon }}·{{ boss }}</p>
         </div>
+        <div class="dps-display">团队总RHPS：{{ rhps }}</div>
         <div class="content">
             <div class="card">
                 <h3>玩家RHPS统计</h3>
@@ -170,7 +167,7 @@
                 5. 本协议仅对jx3bla主仓库的主分支有效，开发者如果需要修改代码，需要同时维护此协议，否则视为本协议无效。<br>
                 6. 本工具使用花姐的“剑三警长”进行分析，上述协议从程序内复制而来，使用本功能也需要遵守上述协议！
             </div>
-            <footer>Inkar Suki: {{ saohua }}</footer>
+            <footer class="report-footer">Inkar-Suki: {{ saohua }}</footer>
         </div>
     </div>
 </body>

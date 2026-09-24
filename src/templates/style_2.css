@@ -1,0 +1,343 @@
+/* Shared visual baseline for locally rendered bot images.
+   Keep dimensions and semantic item/grade colors in the source templates. */
+:root {
+    --inkar-background: #ffffff;
+    --inkar-surface: #ffffff;
+    --inkar-muted-surface: #f8f9fa;
+    --inkar-text: #2c3e50;
+    --inkar-secondary-text: #666666;
+    --inkar-border: #e7ebef;
+    --inkar-accent: #2c7be5;
+    --inkar-accent-ink: #2c7be5;
+    --inkar-accent-surface: #e8f4ff;
+    --inkar-on-accent: #ffffff;
+    --inkar-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+/* Explicit report chrome for feature-specific templates. */
+html body .style2-report {
+    box-sizing: border-box;
+    padding: 24px !important;
+}
+
+html body .style2-report > .report-header {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+html body .style2-report .report-footer {
+    display: block;
+    margin-top: 20px;
+    padding: 15px;
+    background: #f0f0f0 !important;
+    color: #777777 !important;
+    text-align: center;
+    font-size: 20px;
+}
+
+html body .style2-report.panel {
+    background: #ffffff !important;
+    color: var(--inkar-text) !important;
+    border-color: var(--inkar-border) !important;
+    box-shadow: var(--inkar-shadow) !important;
+}
+
+html body .style2-report.panel :is(.boss-row th, .boss-header) {
+    background: var(--inkar-muted-surface) !important;
+    color: var(--inkar-text) !important;
+    border-color: var(--inkar-border) !important;
+}
+
+html body .style2-report.panel :is(.boss-row--rare th, .boss-block--rare .boss-header, .loot-row--rare, .loot-card--rare) {
+    background: #fff9e9 !important;
+    color: #8f5f14 !important;
+}
+
+html body .style2-report.panel .item-name {
+    text-shadow: none !important;
+}
+
+html body .style2-report.panel .item-attr {
+    color: #167c4a !important;
+}
+
+/* A report is a padded page, not just a recolored table. */
+html body .report-header {
+    padding: 20px 24px;
+    margin-bottom: 20px;
+    background: var(--inkar-muted-surface) !important;
+    border: 1px solid var(--inkar-border) !important;
+    border-radius: 4px;
+}
+
+html body .report-header .report-title {
+    margin: 0;
+    color: var(--inkar-text) !important;
+    font-size: 30px;
+    line-height: 1.3;
+}
+
+html body .report-header .report-subtitle {
+    margin: 8px 0 0;
+    color: var(--inkar-secondary-text) !important;
+    font-size: 18px;
+}
+
+html body .report-section {
+    margin-top: 20px;
+}
+
+html body .report-section .section-title {
+    margin: 0 0 12px;
+    color: var(--inkar-text) !important;
+    font-size: 22px;
+    text-decoration: none;
+}
+
+html body {
+    margin: 0 !important;
+    background: var(--inkar-background) !important;
+    color: var(--inkar-text) !important;
+    font-family: Harmony, "PingFang SC", "Microsoft YaHei", sans-serif !important;
+}
+
+html body :is(.container, .report, .panel, .serendipity-panel, .collect-card, .message-box) {
+    background-color: var(--inkar-surface) !important;
+    border-color: var(--inkar-border) !important;
+}
+
+html body table {
+    background-color: var(--inkar-surface) !important;
+    border-color: var(--inkar-border) !important;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05) !important;
+}
+
+html body table th {
+    background: var(--inkar-muted-surface) !important;
+    color: #444444 !important;
+    border-color: var(--inkar-border) !important;
+}
+
+html body table td {
+    border-color: var(--inkar-border) !important;
+}
+
+/* Stronger horizontal rules make adjacent data rows easier to follow. */
+html body .item-table tbody td {
+    border-top: 1px solid #cbd5df !important;
+}
+
+html body :is(header, .header, .hero) {
+    background: var(--inkar-muted-surface) !important;
+    color: var(--inkar-text) !important;
+    border-color: var(--inkar-border) !important;
+}
+
+html body :is(header, .header, .hero) :is(h1, h2, h3, .title, .hero-name, .eyebrow, .summary, .metric-label, .metric-value) {
+    color: var(--inkar-text) !important;
+}
+
+html body :is(.summary-card, .item-info, .event-card, .metric, .card) {
+    background: var(--inkar-muted-surface) !important;
+    border-color: var(--inkar-border) !important;
+    border-radius: 4px !important;
+    box-shadow: var(--inkar-shadow) !important;
+}
+
+html body .box {
+    background: var(--inkar-muted-surface) !important;
+    border-color: var(--inkar-border) !important;
+    border-radius: 4px !important;
+    box-shadow: var(--inkar-shadow) !important;
+}
+
+html body .box.highlight {
+    border-color: #c79231 !important;
+}
+
+/* These tints convey state, so keep them within the shared light palette. */
+html body .event-card.peerless {
+    background: #fff9e9 !important;
+}
+
+html body .event-card.untriggered {
+    background: #eef0f2 !important;
+    color: #858b92 !important;
+}
+
+html body :is(.month-label, .hero-badge) {
+    background: var(--inkar-accent) !important;
+    color: var(--inkar-on-accent) !important;
+}
+
+html body :is(footer, .footer, tfoot) {
+    background: #f0f0f0 !important;
+    color: #777777 !important;
+    border-color: var(--inkar-border) !important;
+    font-size: 20px !important;
+}
+
+/* Weather and Mahjong previously used dark, translucent canvases. */
+html body :is(.weather-container, .blur-container) {
+    background: var(--inkar-surface) !important;
+    color: var(--inkar-text) !important;
+    border: 1px solid var(--inkar-border) !important;
+    border-radius: 4px !important;
+    box-shadow: var(--inkar-shadow) !important;
+    backdrop-filter: none !important;
+}
+
+html body .forecast {
+    background: var(--inkar-muted-surface) !important;
+    color: var(--inkar-text) !important;
+}
+
+html body .background-container {
+    background: var(--inkar-surface) !important;
+    color: var(--inkar-text) !important;
+}
+
+html body .blur-container :is(.title, .outlined-text, table, td) {
+    color: var(--inkar-text) !important;
+    text-shadow: none !important;
+}
+
+html body .blur-container .title {
+    font-family: Harmony, "PingFang SC", "Microsoft YaHei", sans-serif !important;
+}
+
+html body .blur-container :is(.name, .quote) {
+    color: var(--inkar-text) !important;
+}
+
+html body .blur-container table td {
+    background: var(--inkar-surface) !important;
+}
+
+/* Dungeon loot layouts use a dark in-game panel and bright text by default. */
+html body .panel {
+    background: var(--inkar-surface) !important;
+    color: var(--inkar-text) !important;
+    border-radius: 4px !important;
+    box-shadow: var(--inkar-shadow) !important;
+}
+
+html body .panel :is(.panel-title, .boss-header) {
+    background: var(--inkar-muted-surface) !important;
+    color: var(--inkar-text) !important;
+    border-color: var(--inkar-border) !important;
+    text-shadow: none !important;
+}
+
+html body .panel :is(.count, .generated) {
+    color: var(--inkar-secondary-text) !important;
+}
+
+html body .panel .bag-icon {
+    color: var(--inkar-accent) !important;
+    border-color: var(--inkar-accent) !important;
+}
+
+html body .panel :is(.loot-row--rare, .loot-card--rare) {
+    background: #fff9e9 !important;
+}
+
+html body .panel .boss-block--rare .boss-header,
+html body .panel .boss-row--rare th {
+    background: #fff9e9 !important;
+    color: #9a6120 !important;
+}
+
+html body .panel .item-name {
+    text-shadow: none !important;
+}
+
+html body .panel .item-attr {
+    color: #168555 !important;
+}
+
+/* Keep the original in-game palette inside random-loot boxes only. */
+html body .style2-report.panel .loot-frame table {
+    background: transparent !important;
+    box-shadow: none !important;
+}
+
+html body .style2-report.panel .loot-frame :is(.boss-row th, .boss-header) {
+    background: rgba(56, 104, 104, .48) !important;
+    color: #a7d5cb !important;
+    border-color: rgba(140, 199, 187, .16) !important;
+}
+
+html body .style2-report.panel .loot-frame :is(.boss-row--rare th, .boss-block--rare .boss-header) {
+    background: linear-gradient(90deg, rgba(158, 46, 35, .9), rgba(103, 54, 36, .72)) !important;
+    color: #ffe0a0 !important;
+    border-color: rgba(242, 189, 93, .5) !important;
+}
+
+html body .style2-report.panel .loot-frame--vertical .loot-row--rare {
+    background: linear-gradient(90deg, rgba(112, 83, 45, .42), rgba(74, 61, 43, .34)) !important;
+    color: #d9e8e4 !important;
+}
+
+html body .style2-report.panel .loot-frame--horizontal .loot-card--rare {
+    background: rgba(112, 83, 45, .34) !important;
+    color: #d9e8e4 !important;
+}
+
+html body .style2-report.panel .loot-frame .item-name {
+    text-shadow: 0 1px 2px rgba(0, 0, 0, .9) !important;
+}
+
+html body .style2-report.panel .loot-frame .item-attr {
+    color: #18d875 !important;
+}
+
+/* The timeline's optional K-line mode also has dark chart surfaces. */
+html body .canvas.kline-mode,
+html body .kline-mode :is(.panel, .kline-panel) {
+    background: var(--inkar-surface) !important;
+    color: var(--inkar-text) !important;
+}
+
+html body .kline-mode .stat-card {
+    background: var(--inkar-muted-surface) !important;
+    border-color: var(--inkar-border) !important;
+}
+
+html body .kline-mode :is(.title, .chart-title, .kline-heading, .stat-title, .stat-grid b) {
+    color: var(--inkar-text) !important;
+}
+
+html body .kline-mode :is(.subtitle, .legend-item, .stat-grid, .kline-subtitle) {
+    color: var(--inkar-secondary-text) !important;
+}
+
+html body .kline-mode .badge {
+    background: #e8f4ff !important;
+    color: var(--inkar-accent) !important;
+    border-color: #cfe4fa !important;
+}
+
+html body .kline-grid {
+    stroke: var(--inkar-border) !important;
+}
+
+html body :is(.kline-axis, .kline-zero-axis) {
+    stroke: #9aa7b5 !important;
+}
+
+html body .kline-axis-label {
+    fill: var(--inkar-secondary-text) !important;
+}
+
+html body .card .attr-green {
+    color: #168555 !important;
+}
+
+html body .card .skillevent {
+    color: #9a6120 !important;
+}
+
+html body .card .icon {
+    color: var(--inkar-accent) !important;
+}

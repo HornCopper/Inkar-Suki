@@ -11,6 +11,7 @@ import uuid
 from PIL import Image
 
 from src.const.path import ASSETS, CACHE
+from src.utils.image_style import frame_report
 
 
 SUITS = "mps"
@@ -307,7 +308,7 @@ def render_hand_image(tiles: list[int] | tuple[int, ...]) -> str:
         cache_dir = Path(CACHE)
         cache_dir.mkdir(parents=True, exist_ok=True)
         output_path = cache_dir / f"mahjong_tenpai_{uuid.uuid4().hex}.png"
-        canvas.save(output_path, format="PNG")
+        frame_report(canvas).save(output_path, format="PNG")
         return str(output_path)
     finally:
         for image in images:

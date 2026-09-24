@@ -52,4 +52,4 @@ async def get_coin_price_image(server: str = ""):
     for platform in types:
         input_data[types[platform]] = json.dumps([each_price[platform] for each_price in data["data"]], ensure_ascii=False)
     html = Template(read(TEMPLATES + "/jx3/coin_trade.html")).render(**input_data)
-    return await generate(html, "table", segment=True)
+    return await generate(html, ".container", segment=True)

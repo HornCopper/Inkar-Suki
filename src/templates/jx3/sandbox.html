@@ -4,40 +4,12 @@
 <head>
     {{ css }}
     <style>
-        .map-title {
-            position: absolute;
-            top: 10px;
-            left: 55%;
-            transform: translateX(-50%);
-            font-size: 2vw;
-            color: rgb(247, 234, 188);
-            padding: 5px;
-            border-radius: 5px;
-            white-space: nowrap;
+        .sandbox-report {
+            width: 1387px;
         }
 
-        .map-time {
-            position: absolute;
-            top: 50px;
-            left: 55%;
-            transform: translateX(-50%);
-            font-size: 1vw;
-            color: rgb(247, 234, 188);
-            padding: 5px;
-            border-radius: 5px;
-            white-space: nowrap;
-        }
-
-        .footer {
-            position: absolute;
-            bottom: 0px;
-            left: 55%;
-            transform: translateX(-50%);
-            font-size: 1vw;
-            color: rgb(247, 234, 188);
-            padding: 5px;
-            border-radius: 5px;
-            white-space: nowrap;
+        .sandbox-report .m-sandbox-map {
+            margin-top: 0;
         }
 
 
@@ -53,10 +25,13 @@
 </head>
 
 <body>
-    <div class="m-sandbox-map">
+    <main class="sandbox-report style2-report">
+        <div class="report-header">
+            <h1 class="report-title">沙盘</h1>
+            <p class="report-subtitle">{{ server }} · 更新于 {{ update_time }}</p>
+        </div>
+        <div class="m-sandbox-map">
         <div class="m-sandboxMap">
-            <div class="map-title">{{ server }}</div>
-            <div class="map-time">{{ update_time }}</div>
             <!--阵营防线-->
             <div class="u-mapLine"></div>
 
@@ -262,9 +237,10 @@
             <div class="u-icon" style="left: 326px; top: 222px;">
                 <div><img class="i-icon $扶风郡" src="https://img.jx3box.com/image/camp/?01.png"></div>
             </div>
-            <div class="footer">&copy; Inkar Suki</div>
         </div>
-    </div>
+        </div>
+        <footer class="report-footer">Inkar-Suki: {{ saohua }}</footer>
+    </main>
     <script>
         const camps = {{ camps | tojson }};
         Object.entries(camps).forEach(function ([castle, camp]) {

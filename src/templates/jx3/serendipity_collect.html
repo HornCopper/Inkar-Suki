@@ -28,10 +28,10 @@
     </style>
 </head>
 <body>
-    <main class="collect-card">
-        <header><h1>奇遇汇总 · {{ server }}</h1><div class="summary">最近 {{ days }} 天共触发 {{ total }} 次奇遇</div></header>
+    <main class="collect-card style2-report">
+        <header class="report-header"><h1 class="report-title">奇遇汇总</h1><p class="report-subtitle">{{ server }} · 最近 {{ days }} 天共触发 {{ total }} 次奇遇</p></header>
         <section class="cards">{{ rows }}</section>
-        <footer>Inkar Suki · 奇遇汇总</footer>
+        <footer class="report-footer">Inkar-Suki: {{ saohua }}</footer>
     </main>
 </body>
 </html>

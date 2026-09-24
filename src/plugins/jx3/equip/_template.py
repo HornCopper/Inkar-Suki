@@ -202,4 +202,5 @@ _template_set_attrs = """
 <div>
     <span class="set-detail">
         [{{ count }}]{{ attr }}
-</span>"""
+    </span>
+</div>"""

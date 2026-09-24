@@ -13,8 +13,8 @@
 
         body {
             font-family: Harmony, sans-serif;
-            background-color: #303030;
-            color: white;
+            background-color: #fff;
+            color: #2c3e50;
             text-align: center;
             transform: scale(1.5);
             transform-origin: center top;
@@ -23,14 +23,29 @@
         .weather-container {
             max-width: 400px;
             margin: 50px auto;
-            background: rgba(0, 0, 0, 0.6);
-            padding: 20px;
-            border-radius: 10px;
+            background: #fff;
+            padding: 24px;
+            border-radius: 4px;
+            border: 1px solid #e7ebef;
         }
 
-        .location {
-            font-size: 24px;
-            font-weight: bold;
+        .report-header {
+            margin-bottom: 20px;
+            padding: 20px 24px;
+            background: #f8f9fa;
+            border: 1px solid #e7ebef;
+            border-radius: 4px;
+            text-align: left;
+        }
+
+        .report-title { margin: 0; color: #2c3e50; font-size: 30px; }
+        .report-subtitle { margin: 8px 0 0; color: #666; font-size: 18px; }
+
+        .weather-summary {
+            padding: 16px;
+            background: #f8f9fa;
+            border: 1px solid #e7ebef;
+            border-radius: 4px;
         }
 
         .temperature-container {
@@ -60,9 +75,10 @@
 
         .forecast {
             margin-top: 20px;
-            padding: 10px;
-            background: rgba(255, 255, 255, 0.2);
-            border-radius: 10px;
+            padding: 16px;
+            background: #f8f9fa;
+            border: 1px solid #e7ebef;
+            border-radius: 4px;
         }
 
         .forecast-item {
@@ -72,12 +88,12 @@
         }
 
         footer {
-            background: #303030;
+            background: #f0f0f0;
             text-align: center;
             padding: 10px;
             font-size: 0.9em;
             color: #777;
-            border-radius: 10px;
+            border-radius: 4px;
             margin-top: 20px;
         }
     </style>
@@ -85,7 +101,11 @@
 
 <body>
     <div class="weather-container">
-        <div class="location">{{ name }}</div>
+        <header class="report-header">
+            <h1 class="report-title">{{ name }}天气</h1>
+            <p class="report-subtitle">实时天气与未来预报</p>
+        </header>
+        <div class="weather-summary">
         <div class="temperature-container">
             <div class="temperature">{{ current_temp }}</div>
             <div class="temp-range">{{ today_min_temp }} / {{ today_max_temp }}</div>
@@ -97,6 +117,7 @@
         </div>
         <div class="details">
             👕穿衣建议：<br>{{ cloth_advice }}
+        </div>
         </div>
         <div class="forecast">
             {{ future_weather }}

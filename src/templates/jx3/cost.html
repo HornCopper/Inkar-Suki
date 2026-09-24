@@ -17,9 +17,20 @@
             margin: auto;
             background: #fff;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            padding: 20px;
-            border-radius: 8px;
+            padding: 24px;
+            border-radius: 4px;
         }
+
+        .report-header {
+            margin-bottom: 20px;
+            padding: 20px 24px;
+            background: #f8f9fa;
+            border: 1px solid #e7ebef;
+            border-radius: 4px;
+        }
+
+        .report-title { margin: 0; color: #2c3e50; font-size: 30px; }
+        .report-subtitle { margin: 8px 0 0; color: #666; font-size: 18px; }
 
         .title {
             text-align: center;
@@ -124,6 +135,10 @@
 
 <body>
     <div class="container">
+        <header class="report-header">
+            <h1 class="report-title">技艺成本 · {{ server }}</h1>
+            <p class="report-subtitle">{{ name }} · 材料与收益估算</p>
+        </header>
 
         <div class="section">
             <div class="item">

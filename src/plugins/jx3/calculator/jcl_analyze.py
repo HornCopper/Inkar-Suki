@@ -1341,7 +1341,7 @@ def build_qjd_analysis_data(raw_data: Any, anonymous: bool = False) -> dict[str,
         "missed_interrupt": _qjd_safe_int(raw_summary.get("missed_interrupt"), computed["missed_interrupt"]),
         "unmatched": _qjd_safe_int(raw_summary.get("unmatched_44112_sources")),
     }
-    summary["success_rate"] = (
+    summary["success_rate"] = ( # type: ignore
         f"{summary['interrupted'] / (summary['interrupted'] + summary['missed_interrupt']) * 100:.1f}%"
         if summary["interrupted"] + summary["missed_interrupt"] else "—"
     )

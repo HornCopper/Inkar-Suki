@@ -75,6 +75,7 @@ class JX3APIWSData(LiteModel):
 class PersonalSetting(BaseModel):
     attribute: str = "v4"
     theme: str = "浅色"
+    ui_color: str = "默认"
     trade: str = "v3"
     serendipity: str = "v3"
     anonymous: str = "否"

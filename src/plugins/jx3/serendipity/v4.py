@@ -9,7 +9,7 @@ from src.config import Config
 from src.const.jx3.school import School
 from src.const.path import ASSETS, build_path
 from src.const.prompts import PROMPT
-from src.templates import SimpleHTML
+from src.templates import SimpleHTML, get_saohua
 from src.utils.database.player import search_player
 from src.utils.generate import generate
 from src.utils.network import Request
@@ -170,6 +170,7 @@ async def get_serendipity_image_v4(server: str, name: str):
         server=server,
         triggered=triggered_count,
         total=len(catalogue),
+        saohua=get_saohua(),
         cards="\n".join(cards),
         app_info=f"个人奇遇记录 · {server} · {name} · " + Time().format("%H:%M:%S"),
     ))

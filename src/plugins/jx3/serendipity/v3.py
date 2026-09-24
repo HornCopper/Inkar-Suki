@@ -11,7 +11,7 @@ from src.utils.generate import generate
 from src.utils.time import Time
 from src.utils.network import Request
 from src.utils.database.player import search_player
-from src.templates import SimpleHTML
+from src.templates import SimpleHTML, get_saohua
 from src.utils.analyze import sort_dict_list
 
 from ._template import template_v3_cell, template_v3_row
@@ -247,6 +247,7 @@ async def get_serendipity_image_v3(server: str, name: str):
             "total": f"{len(data)}/{len(local_common + local_peerless + local_pet)}",
             "peerless": len(peerless),
             "pet": len(pet),
+            "saohua": get_saohua(),
             "app_info": f"个人奇遇记录 · {server} · {name} · " + Time().format("%H:%M:%S"),
             "table_content_peerless": "\n".join(peerless_table),
             "table_content_common": "\n".join(common_table),
@@ -254,5 +255,5 @@ async def get_serendipity_image_v3(server: str, name: str):
         }
         )
     )
-    image = await generate(html, ".total", segment=True)
+    image = await generate(html, ".serendipity-report", segment=True)
     return image

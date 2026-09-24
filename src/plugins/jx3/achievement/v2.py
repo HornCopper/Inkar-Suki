@@ -1,5 +1,6 @@
 from jinja2 import Template
 from pathlib import Path
+from html import escape
 
 from src.const.path import (
     TEMPLATES,
@@ -92,7 +93,11 @@ async def get_progress_v2(
 
     html = str(
         HTMLSourceCode(
-            application_name=f"成就百科 · [{name}·{server}] · {achievement}",
+            application_name=(
+                f"{escape(name)}·{escape(server)}"
+                f" · {escape(achievement)}"
+            ),
+            report_title="成就百科",
             additional_css=Path(
                 build_path(TEMPLATES, ["jx3", "achievements_v2.css"])
             ).as_uri(),
@@ -121,7 +126,11 @@ async def zone_achievement(
 
     html = str(
         HTMLSourceCode(
-            application_name=f"成就百科 · [{name}·{server}] · {mode}{zone}",
+            application_name=(
+                f"{escape(name)}·{escape(server)}"
+                f" · 副本：{escape(zone)} · 难度：{escape(mode)}"
+            ),
+            report_title="成就百科",
             additional_css=Path(
                 build_path(TEMPLATES, ["jx3", "achievements_v2.css"])
             ).as_uri(),

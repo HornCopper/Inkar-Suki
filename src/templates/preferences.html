@@ -104,8 +104,8 @@
         }
 
         .value-item.current {
-            color: #2c7be5;
-            background: #e8f4ff;
+            color: var(--inkar-accent-ink, #2c7be5);
+            background: var(--inkar-accent-surface, #e8f4ff);
             font-weight: 600;
         }
 
@@ -135,8 +135,8 @@
             display: inline-block;
             margin: 0 3px;
             padding: 0 8px;
-            color: #2c7be5;
-            background: #e8f4ff;
+            color: var(--inkar-accent-ink, #2c7be5);
+            background: var(--inkar-accent-surface, #e8f4ff);
             border-radius: 4px;
         }
 
@@ -151,10 +151,10 @@
 
 <body>
 
-    <div class="preference-container">
-        <div class="page-title">
-            <h1>个人偏好</h1>
-            <p>查看可用选项与当前设置</p>
+    <div class="preference-container style2-report">
+        <div class="page-title report-header">
+            <h1 class="report-title">个人偏好</h1>
+            <p class="report-subtitle">查看可用选项与当前设置</p>
         </div>
         <div class="preference-header">
             <div class="preference-name">偏好项</div>
@@ -169,8 +169,8 @@
         <div class="section">
             <div>发送 <span class="command">偏好 偏好项</span> 查询当前设置，发送 <span class="command">偏好 偏好项 设定值</span> 修改设置</div>
             <div>例如：<span class="command">偏好 属性</span><span class="command">偏好 属性 v4</span></div>
-            <div class="copyright">&copy; Inkar Suki · 个人偏好设置</div>
         </div>
+        <footer class="report-footer">Inkar-Suki: {{ saohua }}</footer>
     </div>
 </body>
 

@@ -35,15 +35,36 @@
         .container {
             width: 80vw;
             height: 80vh;
+            padding: 14px;
             display: flex;
             flex-direction: column;
-            justify-content: space-between;
+            gap: 12px;
+        }
+
+        .team-header {
+            padding: 12px 16px;
+            background: #f8f9fa;
+            border: 1px solid #e7ebef;
+            border-radius: 4px;
+        }
+
+        .team-header h1 {
+            color: #2c3e50;
+            font-size: 22px;
+            line-height: 1.3;
+        }
+
+        .team-header p {
+            margin-top: 4px;
+            color: #666;
+            font-size: 13px;
         }
 
         .main {
             flex: 1;
+            min-height: 0;
             display: flex;
-            gap: 20px;
+            gap: 12px;
         }
 
         .grid {
@@ -59,7 +80,8 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            border: 1px solid rgba(0, 0, 0, 0.1);
+            border: 1px solid #e7ebef;
+            border-radius: 4px;
         }
 
         .player {
@@ -74,21 +96,35 @@
             margin-right: 6px;
         }
 
-        .info-box {
-            width: 240px;
-            background: #f9f9f9;
-            border: 1px solid #ddd;
-            padding: 16px;
+        .member-time {
+            display: block;
+            margin-top: 3px;
+            color: #666;
+            font-size: 10px;
+            white-space: nowrap;
+        }
+
+        .sidebar {
+            width: 220px;
+            flex: 0 0 220px;
             display: flex;
             flex-direction: column;
-            justify-content: space-between;
+            gap: 10px;
+        }
+
+        .info-box {
+            width: 100%;
+            background: #f8f9fa;
+            border: 1px solid #e7ebef;
+            border-radius: 4px;
+            padding: 16px;
         }
 
         .info-title {
             font-size: 18px;
             font-weight: bold;
             margin-bottom: 12px;
-            color: #333;
+            color: #2c3e50;
         }
 
         .info-content {
@@ -97,11 +133,47 @@
             line-height: 1.8;
         }
 
-        .info-footer {
-            font-size: 12px;
-            color: #999;
+        .command-box {
+            margin-top: auto;
+            padding: 12px;
+            background: #f8f9fa;
+            border: 1px solid #e7ebef;
+            border-radius: 4px;
+        }
+
+        .command-box h2 {
+            margin-bottom: 8px;
+            color: #2c3e50;
+            font-size: 15px;
+        }
+
+        .command-box li {
+            margin-top: 4px;
+            color: #444;
+            font-size: 11px;
+            line-height: 1.5;
+            list-style: none;
+        }
+
+        .command-box strong {
+            color: #2c3e50;
+        }
+
+        .command-hint {
+            margin-top: 8px;
+            color: #666;
+            font-size: 10px;
+            line-height: 1.5;
+        }
+
+        .team-footer {
+            padding: 10px 12px;
+            background: #f0f0f0;
+            border-top: 1px solid #e7ebef;
+            font-size: 14px;
+            font-weight: 600;
+            color: #666;
             text-align: center;
-            margin-top: 12px;
         }
 
         .outlined-text {
@@ -112,28 +184,41 @@
 
 <body>
     <div class="container">
+        <div class="team-header">
+            <h1>开团工具</h1>
+            <p>{{ title }} · 创建者：{{ creator }}</p>
+        </div>
         <div class="main">
             <div class="grid outlined-text">
                 {{ table_content }}
             </div>
 
-            <div class="info-box">
-                <div>
-                    <div class="info-title">{{ title }}</div>
+            <div class="sidebar">
+                <div class="info-box">
+                    <div class="info-title">职业统计</div>
                     <div class="info-content">
-                        创建者：{{ creator }}<br>
-                        当前统计：<br>
                         ▸ 防御：{{ T_count }}<br>
                         ▸ 治疗：{{ N_count }}<br>
                         ▸ 伤害：{{ D_count }}<br>
                         ▸ 老板：{{ B_count }}
                     </div>
                 </div>
-                <div class="info-footer">
-                    Inkar Suki | 开团工具
+                <div class="command-box">
+                    <h2>团队命令速查</h2>
+                    <ul>
+                        <li><strong>团队列表</strong> / <strong>查看全部团队</strong></li>
+                        <li><strong>查看团队</strong> [团队]</li>
+                        <li><strong>报名</strong> [团队] 职业 角色名</li>
+                        <li><strong>取消报名</strong> [团队] 角色名</li>
+                        <li><strong>创建团队</strong> 名称 [限制]</li>
+                        <li><strong>解散团队</strong> [团队]</li>
+                        <li><strong>修改团队限制</strong> 团队 限制</li>
+                    </ul>
+                    <p class="command-hint">团队＝关键词或序号；只有一个团队时可省略 [团队]。限制例：3T5N15D1B。</p>
                 </div>
             </div>
         </div>
+        <div class="team-footer" role="contentinfo">Inkar-Suki: {{ footer_msg }}</div>
     </div>
 </body>
 
