@@ -19,6 +19,16 @@
             min-width: 1500px;
         }
 
+        .container.compact {
+            box-sizing: border-box;
+            width: 900px;
+            min-width: 0;
+        }
+
+        .container.compact table {
+            min-width: 0;
+        }
+
         table {
             border-collapse: collapse;
             width: 100%;
@@ -111,7 +121,7 @@
 </head>
 
 <body>
-    <div class="container">
+    <div class="container{% if compact %} compact{% endif %}">
         <div class="two-columns">
             {{ tables }}
         </div>

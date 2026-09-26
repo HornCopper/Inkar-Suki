@@ -30,6 +30,8 @@ ANALYZER_PREFIXES = (
     "LNX-",
     "QJD-",
     "QJV-",
+    "SCY-",
+    "TCS-",
 )
 
 def _day_start(value: datetime) -> datetime:

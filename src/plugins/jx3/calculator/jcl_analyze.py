@@ -1,5 +1,6 @@
 from typing import Any, Literal
 from collections import defaultdict
+from html import escape
 import math
 from jinja2 import Template
 from httpx import AsyncClient
@@ -218,6 +219,109 @@ async def YXCAnalyze(file_name: str, url: str, anonymous: bool = False, user_id:
     )
     image = await generate(html, ".container", segment=True)
     return image
+
+
+def _tcs_safe_int(value: Any) -> int:
+    try:
+        return int(value)
+    except (TypeError, ValueError):
+        return 0
+
+
+def build_tcs_analysis_data(raw_data: Any, anonymous: bool = False) -> list[list[dict[str, Any]]]:
+    if isinstance(raw_data, dict):
+        raw_data = raw_data.get("data")
+    records = raw_data if isinstance(raw_data, list) else []
+    groups: list[list[dict[str, Any]]] = []
+    current_group: list[dict[str, Any]] = []
+
+    for record in records:
+        if record == {}:
+            if current_group:
+                groups.append(current_group)
+                current_group = []
+            continue
+        if not isinstance(record, dict):
+            continue
+
+        total = max(0, _tcs_safe_int(record.get("value")))
+        raw_skills = record.get("skills")
+        raw_skills = raw_skills if isinstance(raw_skills, dict) else {}
+        skills = []
+        for skill_name, raw_values in raw_skills.items():
+            if not isinstance(raw_values, list):
+                continue
+            values = [_tcs_safe_int(value) for value in raw_values]
+            skill_total = sum(values)
+            skills.append({
+                "name": str(skill_name),
+                "count": len(values),
+                "value": skill_total,
+                "percent": f"{skill_total / total * 100:.2f}%" if total else "0.00%",
+            })
+        skills.sort(key=lambda skill: skill["value"], reverse=True)
+
+        kungfu = Kungfu.with_internel_id(_tcs_safe_int(record.get("kungfu_id")), True)
+        current_group.append({
+            "name": "匿名玩家" if anonymous else str(record.get("name") or "未知玩家"),
+            "icon": kungfu.icon,
+            "value": total,
+            "skills": skills,
+        })
+
+    if current_group:
+        groups.append(current_group)
+    return groups
+
+
+def render_tcs_analysis_html(raw_data: Any, anonymous: bool = False) -> str | None:
+    groups = build_tcs_analysis_data(raw_data, anonymous)
+    if not groups:
+        return None
+
+    final_tables = []
+    for group in groups:
+        rows = []
+        for record in group:
+            rows.append(Template(hps_detail_template_body_main).render(
+                icon=escape(str(record["icon"]), quote=True),
+                name=escape(record["name"]),
+                value=f"{record['value']:,}",
+            ))
+            for skill in record["skills"]:
+                rows.append(Template(hps_detail_template_body_sub).render(
+                    name=escape(skill["name"]),
+                    count=skill["count"],
+                    value=f"{skill['value']:,}",
+                    percent=skill["percent"],
+                ))
+        final_tables.append(Template(yxc_table.replace("有效治疗", "承疗量")).render(
+            tables="\n".join(rows)
+        ))
+
+    return Template(read(TEMPLATES + "/jx3/health_detail.html")).render(
+        font=ASSETS + "/font/PingFangSC-Semibold.otf",
+        tables="\n".join(final_tables),
+        saohua=get_saohua(),
+        function_name="田承嗣 · 天陨一剑承疗统计",
+        compact=True,
+    )
+
+
+async def TCSAnalyze(file_name: str, url: str, anonymous: bool = False, user_id: int = 0):
+    async with AsyncClient(verify=False) as client:
+        resp = await client.post(
+            f"{Config.jx3.api.cqc_url}/tcs_analyze",
+            json={"jcl_url": url, "jcl_name": file_name},
+            timeout=600,
+        )
+        data = resp.json()
+    if isinstance(data, dict) and data.get("code") not in (None, 200):
+        return data.get("msg") or "田承嗣天陨一剑承疗分析失败，请检查 JCL 是否完整。"
+    html = render_tcs_analysis_html(data, anonymous)
+    if html is None:
+        return "未识别到天陨一剑承疗记录，请检查 JCL 是否完整。"
+    return await generate(html, ".container", segment=True)
 
 # Reason of Death
 async def RODAnalyze(file_name: str, url: str, anonymous: bool = False, user_id: int = 0):
@@ -1381,6 +1485,203 @@ async def QJDAnalyze(file_name: str, url: str, anonymous: bool = False, user_id:
         return data.get("msg") or "千机源枢机卒打断分析失败，请检查 JCL 是否完整。"
     raw_data = data.get("data", data) if isinstance(data, dict) else data
     return await render_qjd_analysis(raw_data, anonymous)
+
+
+def _scy_safe_int(value: Any, default: int = 0) -> int:
+    try:
+        return int(value)
+    except (TypeError, ValueError):
+        return default
+
+
+def _scy_time(value: Any, timestamp: Any = None) -> str:
+    raw = str(value or "").strip()
+    if raw:
+        if "T" in raw:
+            raw = raw.split("T", 1)[1]
+        return raw[:8] or "—"
+    raw_timestamp = _scy_safe_int(timestamp)
+    return Time(raw_timestamp).format("%H:%M:%S") if raw_timestamp else "—"
+
+
+def _scy_milliseconds(item: dict[str, Any], name: str) -> int | None:
+    milliseconds = item.get(f"{name}_ms")
+    if milliseconds is not None:
+        return _scy_safe_int(milliseconds)
+    timestamp = item.get(f"{name}_timestamp")
+    if timestamp is None:
+        return None
+    timestamp_value = _scy_safe_int(timestamp)
+    return timestamp_value if timestamp_value >= 10**12 else timestamp_value * 1000
+
+
+def _scy_record_key(item: dict[str, Any]) -> tuple[int, int, int]:
+    return (
+        _scy_safe_int(item.get("player_id")),
+        _scy_milliseconds(item, "cast_start") or -1,
+        _scy_milliseconds(item, "hit") or -1,
+    )
+
+
+def build_scy_analysis_data(raw_data: Any, anonymous: bool = False) -> dict[str, Any]:
+    if isinstance(raw_data, dict) and "data" in raw_data:
+        raw_data = raw_data.get("data")
+    data = raw_data if isinstance(raw_data, dict) else {}
+    raw_swords = data.get("swords")
+    raw_swords = raw_swords if isinstance(raw_swords, list) else []
+    raw_unmatched = data.get("unmatched_casts")
+    raw_unmatched = raw_unmatched if isinstance(raw_unmatched, list) else []
+
+    anonymous_names: dict[str, str] = {}
+
+    def player_name(item: dict[str, Any]) -> str:
+        original = str(item.get("player_name") or "未知玩家").strip() or "未知玩家"
+        if not anonymous or original == "未知玩家":
+            return original
+        player_key = str(item.get("player_id") or original)
+        if player_key not in anonymous_names:
+            anonymous_names[player_key] = f"匿名玩家 {len(anonymous_names) + 1}"
+        return anonymous_names[player_key]
+
+    unmatched_by_sword: dict[int, list[dict[str, Any]]] = defaultdict(list)
+    for unmatched_item in raw_unmatched:
+        if isinstance(unmatched_item, dict):
+            unmatched_by_sword[_scy_safe_int(unmatched_item.get("inferred_sword_order"))].append(unmatched_item)
+
+    swords: list[dict[str, Any]] = []
+    for sword_index, sword_item in enumerate(raw_swords, 1):
+        if not isinstance(sword_item, dict):
+            continue
+        order = max(1, _scy_safe_int(sword_item.get("order"), sword_index))
+        raw_activations = sword_item.get("activations")
+        activations = (
+            [item for item in raw_activations if isinstance(item, dict)]
+            if isinstance(raw_activations, list)
+            else []
+        )
+        raw_attempts = sword_item.get("cast_attempts")
+        attempts = (
+            [dict(item) for item in raw_attempts if isinstance(item, dict)]
+            if isinstance(raw_attempts, list)
+            else []
+        )
+        if not attempts:
+            attempts = [dict(item) for item in activations]
+
+        seen_keys = {_scy_record_key(item) for item in attempts}
+        for activation in activations:
+            key = _scy_record_key(activation)
+            if key not in seen_keys:
+                attempts.append(dict(activation))
+                seen_keys.add(key)
+        for unmatched_item in unmatched_by_sword.get(order, []):
+            key = _scy_record_key(unmatched_item)
+            if key not in seen_keys:
+                inferred_item = dict(unmatched_item)
+                inferred_item.setdefault("match_status", "unmatched_cast")
+                inferred_item.setdefault("sword_assignment", "spawn_interval_inference")
+                attempts.append(inferred_item)
+                seen_keys.add(key)
+
+        attempts.sort(key=lambda item: (
+            _scy_milliseconds(item, "cast_start") or 2**63 - 1,
+            _scy_milliseconds(item, "hit") or 2**63 - 1,
+        ))
+        rows: list[dict[str, Any]] = []
+        counts = {"matched": 0, "unmatched_cast": 0, "missing_cast": 0}
+        successful_players: set[str] = set()
+        for item in attempts:
+            status = str(item.get("match_status") or "unknown")
+            if status not in {"matched", "unmatched_cast", "missing_cast"}:
+                status = "unknown"
+            if status in counts:
+                counts[status] += 1
+            if status == "matched":
+                player_id = _scy_safe_int(item.get("player_id"))
+                player_key = (
+                    f"id:{player_id}"
+                    if player_id
+                    else f"name:{str(item.get('player_name') or '').strip()}"
+                )
+                successful_players.add(player_key)
+            assignment = str(item.get("sword_assignment") or "")
+            kungfu = Kungfu.with_internel_id(
+                _scy_safe_int(item.get("kungfu_id")),
+                True,
+            )
+            rows.append({
+                "status": status,
+                "status_label": {
+                    "matched": "拔剑成功",
+                    "unmatched_cast": "未拔出",
+                    "missing_cast": "缺少读条",
+                }.get(status, "未识别"),
+                "player_name": player_name(item),
+                "icon": kungfu.icon,
+                "kungfu": kungfu.name or "未知心法",
+                "cast_time": _scy_time(
+                    item.get("cast_start_time"),
+                    item.get("cast_start_timestamp"),
+                ),
+                "hit_time": _scy_time(
+                    item.get("hit_time"),
+                    item.get("hit_timestamp"),
+                ),
+                "assignment": {
+                    "hit_target": "命中目标",
+                    "spawn_interval_inference": "按剑次推断",
+                }.get(assignment, "—"),
+            })
+
+        swords.append({
+            "order": order,
+            "spawn_time": _scy_time(
+                sword_item.get("spawn_time"),
+                sword_item.get("spawn_timestamp"),
+            ),
+            "counts": counts,
+            "cast_count": counts["matched"] + counts["unmatched_cast"],
+            "successful_player_count": len(successful_players),
+            "is_successful": len(successful_players) >= 3,
+            "rows": rows,
+        })
+
+    swords.sort(key=lambda item: item["order"])
+    return {"swords": swords}
+
+
+def render_scy_analysis_html(raw_data: Any, anonymous: bool = False) -> str:
+    report = build_scy_analysis_data(raw_data, anonymous)
+    return Template(read(TEMPLATES + "/jx3/scy_analysis.html")).render(
+        font=ASSETS + "/font/PingFangSC-Semibold.otf",
+        swords=report["swords"],
+        saohua=get_saohua(),
+    )
+
+
+async def render_scy_analysis(raw_data: Any, anonymous: bool = False):
+    html_content = render_scy_analysis_html(raw_data, anonymous)
+    return await generate(
+        html_content,
+        ".scy-report",
+        segment=True,
+        viewport={"width": 1000, "height": 1200},
+    )
+
+
+# Shi Chao Yi sword activation analysis
+async def SCYAnalyze(file_name: str, url: str, anonymous: bool = False, user_id: int = 0):
+    async with AsyncClient(verify=False) as client:
+        resp = await client.post(
+            f"{Config.jx3.api.cqc_url}/scy_analyze",
+            json={"jcl_url": url, "jcl_name": file_name},
+            timeout=600,
+        )
+        data = resp.json()
+    if isinstance(data, dict) and data.get("code") not in (None, 200):
+        return data.get("msg") or "史朝义拔剑分析失败，请检查 JCL 是否完整。"
+    raw_data = data.get("data", data) if isinstance(data, dict) else data
+    return await render_scy_analysis(raw_data, anonymous)
 
 # Qian Ji yuan shu Health (已弃用)
 # Qian Ji yuan shu Vine

@@ -51,7 +51,24 @@ from .traverse import (
     save_rating_cache,
 )
 from .rdps import BLACalculator, TRDCalculator
-from .jcl_analyze import CQCAnalyze, FALAnalyze, YXCAnalyze, RODAnalyze, DPSAnalyze, CALAnalyze, ASNAnalyze, THRAnalyze, THFAnalyze, LGZAnalyze, LNNAnalyze, LNXAnalyze, QJDAnalyze, QJHAnalyze
+from .jcl_analyze import (
+    CQCAnalyze,
+    FALAnalyze,
+    YXCAnalyze,
+    TCSAnalyze,
+    RODAnalyze,
+    DPSAnalyze,
+    CALAnalyze,
+    ASNAnalyze,
+    THRAnalyze,
+    THFAnalyze,
+    LGZAnalyze,
+    LNNAnalyze,
+    LNXAnalyze,
+    QJDAnalyze,
+    QJHAnalyze,
+    SCYAnalyze,
+)
 from ._template import calculator_timeline_template, custom_loop_help_template
 
 from .therapy_panel import therapy_panel
@@ -117,6 +134,7 @@ JCL_ANALYSIS_HELP_TEXT = (
     "【LNN-】鲁念雪 衡鹊在 BOSS 读条前被击杀的轮次与伤害明细\n"
     "【LNX-】鲁念雪 每阶段减伤/治疗/化解贡献统计\n"
     "【QJD-】千机源枢 藤蔓旁机卒每轮打断情况\n"
+    "【SCY-】史朝义 每把剑的拔剑成功与未拔出记录\n"
     "【ASN-】阿史那承庆 QTE计数+死侍HPS统计\n"
     "【THR-】唐怀仁P1 DPS统计+榜单\n"
     "【TRD-】唐怀仁 P1 阶段 RDPS 分析（powered by 剑三警长）\n"
@@ -126,6 +144,7 @@ JCL_ANALYSIS_HELP_TEXT = (
     "【LGZ-】柳公子传功记录\n"
     "【FAL-】前三次攻击记录，用于查开怪，尤其是阿里曼幻身的圣柱\n"
     "【YXC-】尹雪尘承伤统计，注意只会记录每个玩家的有效而非全部治疗\n"
+    "【TCS-】田承嗣 天陨一剑承疗与技能明细统计\n"
     "【ROD-】重伤记录统计\n"
     "注意，复制同目录的文件会有“ - 副本”后缀，需要删掉。"
 )
@@ -3082,6 +3101,8 @@ async def _(bot: Bot, event: GroupUploadNoticeEvent):
         analyzer = FALAnalyze
     elif check_jcl_name(event.file.name, "YXC-"):
         analyzer = YXCAnalyze
+    elif check_jcl_name(event.file.name, "TCS-"):
+        analyzer = TCSAnalyze
     elif check_jcl_name(event.file.name, "ROD-"):
         analyzer = RODAnalyze
     elif check_jcl_name(event.file.name, "DPS-"):
@@ -3102,6 +3123,8 @@ async def _(bot: Bot, event: GroupUploadNoticeEvent):
         analyzer = LNXAnalyze
     elif check_jcl_name(event.file.name, "QJD-"):
         analyzer = QJDAnalyze
+    elif check_jcl_name(event.file.name, "SCY-"):
+        analyzer = SCYAnalyze
     # elif check_jcl_name(event.file.name, "QJH-"):
     # 由于某位花间玩家的强烈抗议
     elif check_jcl_name(event.file.name, "QJV-"):

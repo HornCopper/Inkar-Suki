@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        @font-face {
+            font-family: Harmony;
+            src: url("{{ font }}");
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            background: #fff;
+            color: #444;
+            font-family: Harmony, "Microsoft YaHei", sans-serif;
+        }
+
+        .scy-report {
+            display: inline-block;
+            width: 900px;
+            min-height: 400px;
+            padding: 20px;
+            background: #fff;
+        }
+
+        .report-title {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 24px;
+            padding: 4px 4px 18px;
+        }
+
+        .title-main {
+            margin: 0;
+            color: #444;
+            font-size: 30px;
+            font-weight: 700;
+        }
+
+        .title-sub {
+            margin: 6px 0 0;
+            color: #777;
+            font-size: 18px;
+        }
+
+        .sword-card {
+            margin-bottom: 24px;
+            border: 1px solid #e6e6e6;
+            background: #fff;
+        }
+
+        .sword-card.failed { border-color: #e4b3b3; }
+
+        .sword-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+            padding: 12px 16px;
+            background: #f0f0f0;
+        }
+
+        .sword-card.failed .sword-head { background: #fff5f5; }
+        .sword-title { color: #444; font-size: 26px; font-weight: 600; }
+        .sword-sub { margin-top: 3px; color: #888; font-size: 14px; }
+        .sword-meta { color: #777; font-size: 17px; }
+        .sword-meta .bad { margin-left: 10px; color: #c43d3d; font-weight: 700; }
+        .sword-meta .warn { margin-left: 10px; color: #a96917; font-weight: 700; }
+        .sword-verdict {
+            display: inline-block;
+            margin-left: 10px;
+            padding: 4px 9px;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: 700;
+        }
+        .sword-verdict.success { background: #e8f5ee; color: #27835c; }
+        .sword-verdict.failed { background: #fdeaea; color: #c43d3d; }
+
+        table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+        th {
+            padding: 10px 8px;
+            background: #f8f9fa;
+            color: #555;
+            font-size: 16px;
+            font-weight: 600;
+            text-align: center;
+            white-space: nowrap;
+        }
+        td {
+            padding: 10px 8px;
+            border-top: 1px solid #eee;
+            color: #444;
+            font-size: 16px;
+            text-align: center;
+            vertical-align: middle;
+        }
+
+        .status-column { width: 110px; }
+        .time-column { width: 120px; }
+        .assignment-column { width: 130px; }
+        .record-row.unmatched_cast td { background: #fff7f7; }
+        .record-row.missing_cast td { background: #fffaf0; }
+        .status {
+            display: inline-block;
+            min-width: 82px;
+            padding: 4px 9px;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: 700;
+        }
+        .status.matched { background: #e8f5ee; color: #27835c; }
+        .status.unmatched_cast { background: #fdeaea; color: #c43d3d; }
+        .status.missing_cast { background: #fff0d8; color: #a96917; }
+        .status.unknown { background: #f1f1f1; color: #777; }
+        .player {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            min-width: 0;
+            text-align: center;
+        }
+        .player img {
+            flex: 0 0 auto;
+            width: 42px;
+            height: 42px;
+            border-radius: 8px;
+        }
+        .player-name { overflow: hidden; font-weight: 600; text-overflow: ellipsis; white-space: nowrap; }
+        .time { font-variant-numeric: tabular-nums; white-space: nowrap; }
+        .assignment { color: #666; }
+        .empty { padding: 28px; color: #999; font-size: 18px; text-align: center; }
+        footer {
+            margin-top: 10px;
+            padding: 15px;
+            background: #f0f0f0;
+            color: #777;
+            font-size: 20px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+<main class="scy-report style2-report">
+    <header class="report-title report-header">
+        <div>
+            <h1 class="title-main report-title">史朝义 · 拔剑记录分析</h1>
+            <p class="title-sub report-subtitle">按剑出现次序整理拔剑读条、命中结果与推断归属。</p>
+        </div>
+    </header>
+
+    {% for sword in swords %}
+    <section class="sword-card{% if not sword.is_successful %} failed{% endif %}">
+        <div class="sword-head">
+            <div>
+                <div class="sword-title">第 {{ sword.order }} 把剑</div>
+                <div class="sword-sub">出现时间 {{ sword.spawn_time }}</div>
+            </div>
+            <div class="sword-meta">{{ sword.cast_count }} 次尝试 · {{ sword.successful_player_count }} 人成功{% if sword.counts.unmatched_cast %}<span class="bad">· {{ sword.counts.unmatched_cast }} 次未拔出</span>{% endif %}{% if sword.counts.missing_cast %}<span class="warn">· {{ sword.counts.missing_cast }} 次缺少读条</span>{% endif %}<span class="sword-verdict {% if sword.is_successful %}success{% else %}failed{% endif %}">{% if sword.is_successful %}拔剑成功{% else %}拔剑失败{% endif %}</span></div>
+        </div>
+        <table>
+            <thead><tr><th class="status-column">结果</th><th>玩家</th><th class="time-column">读条开始</th><th class="time-column">命中时间</th><th class="assignment-column">归属依据</th></tr></thead>
+            <tbody>
+                {% for row in sword.rows %}
+                <tr class="record-row {{ row.status }}">
+                    <td><span class="status {{ row.status }}">{{ row.status_label|e }}</span></td>
+                    <td><div class="player"><img src="{{ row.icon|e }}" alt="{{ row.kungfu|e }}"><span class="player-name">{{ row.player_name|e }}</span></div></td>
+                    <td class="time">{{ row.cast_time }}</td>
+                    <td class="time">{{ row.hit_time }}</td>
+                    <td class="assignment">{{ row.assignment|e }}</td>
+                </tr>
+                {% else %}<tr><td class="empty" colspan="5">该剑没有拔剑记录</td></tr>{% endfor %}
+            </tbody>
+        </table>
+    </section>
+    {% else %}<div class="empty">未识别到史朝义拔剑数据</div>{% endfor %}
+
+    <footer class="report-footer">Inkar-Suki: {{ saohua }}</footer>
+</main>
+</body>
+</html>
