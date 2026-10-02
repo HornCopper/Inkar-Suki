@@ -1,4 +1,5 @@
 import shlex
+from html import escape
 from jinja2 import Template
 
 from nonebot.adapters.onebot.v11 import Message, MessageEvent, MessageSegment
@@ -15,7 +16,10 @@ from src.utils.time import Time
 from src.utils.generate import generate
 from src.templates import HTMLSourceCode
 
-from ._template import backpack_table_head, backpack_row, backpack_css
+from ._template import (
+    backpack_table_head, backpack_row, backpack_css,
+    pending_prize_table_head, pending_prize_row,
+)
 
 
 POOL_HELP = """签到奖池：每次成功签到最多抽中一件奖品，概率独立于原签到金币奖励。
@@ -25,6 +29,7 @@ POOL_HELP = """签到奖池：每次成功签到最多抽中一件奖品，概�
 补货：签到奖池 补货 <奖品编号> <数量>
 上下架：签到奖池 <上架|下架|删除> <奖品编号>
 中奖记录：签到奖池 记录 <QQ号> [页码]
+未兑奖记录：签到奖池 未兑奖 <奖品编号> [页码]
 标记兑付：签到奖池 兑付 <背包记录编号>
 我的奖品：背包 [页码]
 例如：签到奖池 投放 "纪念徽章" 5% 10
@@ -98,6 +103,48 @@ def backpack_listing(user_id: int, page: int) -> str:
     ))
 
 
+def pending_prize_listing(prize_id: int, page: int) -> str:
+    """列出同一个投放奖品的全部待兑付记录，奖品删除后仍可查询。"""
+    prize = db.where_one(CheckinPrize(), "id = ?", prize_id)
+    if prize is not None:
+        name = prize.name
+    else:
+        historical_award = db.where_one(
+            CheckinPrizeAward(), "prize_id = ? ORDER BY id DESC LIMIT 1", prize_id,
+        )
+        if historical_award is None:
+            raise ValueError("没有这个奖品编号，也没有对应的中奖记录。请先查看签到奖池。")
+        name = historical_award.prize_name
+    total = db.fetch_all(
+        "SELECT COUNT(*) FROM checkin_prize_awards WHERE prize_id = ? AND delivered_at = 0",
+        prize_id,
+    )[0][0]
+    pages, offset = page_bounds(total, page)
+    awards = db.where_all(
+        CheckinPrizeAward(), "prize_id = ? AND delivered_at = 0 ORDER BY id LIMIT ? OFFSET ?",
+        prize_id, PAGE_SIZE, offset, default=[],
+    )
+    row_template = Template(pending_prize_row, autoescape=True)
+    rows = [row_template.render(
+        prize_name=award.prize_name, award_id=award.id, user_id=award.user_id,
+        provider_id=award.provider_id,
+        awarded_at=Time(award.awarded_at).format("%Y-%m-%d %H:%M"),
+    ) for award in awards]
+    if not awards:
+        rows.append("""<tr><td colspan="5" class="backpack-empty">
+            <p class="backpack-empty-title">没有未兑奖记录</p>
+            <p class="backpack-empty-hint">该奖品尚未被抽中，或中奖奖品均已兑付。</p>
+        </td></tr>""")
+    footer = f"第 {page}/{pages} 页 · 每页 {PAGE_SIZE} 件 · 实际发放后使用「签到奖池 兑付 记录编号」标记已兑付。"
+    if page < pages:
+        footer += f" 下一页：签到奖池 未兑奖 {prize_id} {page + 1}"
+    return str(HTMLSourceCode(
+        application_name=f"未兑奖记录 · 奖品 #{prize_id} {escape(name)} · 共 {total} 件待兑付",
+        table_head=pending_prize_table_head, table_body="\n".join(rows),
+        additional_css=backpack_css, footer=footer,
+    ))
+
+
 PrizePoolMatcher = on_command("签到奖池", force_whitespace=True, priority=5)
 BackpackMatcher = on_command("背包", aliases={"我的背包"}, force_whitespace=True, priority=5)
 
@@ -129,6 +176,9 @@ async def handle_prize_pool(event: MessageEvent, args: Message = CommandArg()):
                 response = f"已{action}奖品 #{prize.id}：{prize.name}。"
             elif action == "记录" and len(parts) in {2, 3}:
                 html = backpack_listing(positive_number(parts[1]), positive_number(parts[2]) if len(parts) == 3 else 1)
+                response = await generate(html, ".container", segment=True)
+            elif action in {"未兑奖", "未兑付", "待兑付"} and len(parts) in {2, 3}:
+                html = pending_prize_listing(positive_number(parts[1]), positive_number(parts[2]) if len(parts) == 3 else 1)
                 response = await generate(html, ".container", segment=True)
             elif action == "兑付" and len(parts) == 2:
                 award = manager.deliver(positive_number(parts[1]))

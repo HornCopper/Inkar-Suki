@@ -44,6 +44,27 @@ backpack_row = """
 </tr>
 """
 
+pending_prize_table_head = """
+<th>奖品</th>
+<th>记录编号</th>
+<th>获奖用户</th>
+<th>投放人</th>
+<th>获得时间</th>
+"""
+
+pending_prize_row = """
+<tr>
+    <td class="backpack-prize">
+        <span class="backpack-prize-name">{{ prize_name }}</span>
+        <span class="backpack-quantity">×1</span>
+    </td>
+    <td class="backpack-record">#{{ award_id }}</td>
+    <td>{{ user_id }}</td>
+    <td class="backpack-provider">{{ provider_id }}</td>
+    <td class="backpack-date">{{ awarded_at }}</td>
+</tr>
+"""
+
 backpack_css = """
 .container { min-width: 1040px; max-width: 1240px; }
 .item-table { width: 100%; min-width: 1040px; }
