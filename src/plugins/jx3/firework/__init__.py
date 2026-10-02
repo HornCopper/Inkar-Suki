@@ -18,7 +18,7 @@ firework_matcher = on_command("jx3_firework", command_key="烟花", aliases={"�
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     if not (
         Config.jx3.api.enable
-        and check_group_permission(event.group_id, "group.application.preview")
+        and check_group_permission(event.group_id, "group.application.firework_records")
     ):
         return
     if args.extract_plain_text() == "":

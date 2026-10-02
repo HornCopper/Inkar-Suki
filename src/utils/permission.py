@@ -1,19 +1,23 @@
 from functools import cache
 from fnmatch import fnmatchcase
 import json
-from typing import Any, Sequence
+from typing import Any, Literal, Sequence
 
 from src.const.path import ASSETS, build_path
-from src.utils.database.classes import Account
+from src.utils.database.classes import Account, GroupSettings
 from src.utils.database import db
 
 
-def _is_bot_owner(user_id: str | int) -> bool:
+def _bot_owner_ids() -> tuple[str, ...]:
     try:
         from src.config import Config
     except ModuleNotFoundError:
-        return False
-    return str(user_id) in Config.bot_basic.bot_owner
+        return ()
+    return tuple(Config.bot_basic.bot_owner)
+
+
+def _is_bot_owner(user_id: str | int) -> bool:
+    return str(user_id) in _bot_owner_ids()
 
 
 def _normalize_node(node: str | int) -> str:
@@ -90,10 +94,21 @@ def _check_node_permission(account: Account, required: str | int) -> bool:
         return False
     if required == "*":
         return "*" in account.permission_nodes
-    grants, denies = _split_permission_nodes(account.permission_nodes)
+    return _check_nodes_permission(account.permission_nodes, required)
+
+
+def _check_nodes_permission(nodes: Sequence[str | int], required: str | int) -> bool:
+    grants, denies = _split_permission_nodes(nodes)
     if any(_node_match(node, required) for node in denies):
         return False
     return any(_node_match(node, required) for node in grants)
+
+
+def _check_user_permission(account: Account, node: str | int) -> bool:
+    if _is_bot_owner(account.user_id):
+        _, denies = _split_permission_nodes(account.permission_nodes)
+        return not any(_node_match(denied_node, node) for denied_node in denies)
+    return _check_node_permission(account, node)
 
 
 def normalize_permission_nodes(nodes: Sequence[str | int]) -> list[str]:
@@ -182,25 +197,45 @@ def check_permission(user_id: str | int, node: str | int) -> bool:
         int(user_id),
         default=Account(user_id=int(user_id)),
     )
-    if _is_bot_owner(user_id):
-        _, denies = _split_permission_nodes(data.permission_nodes)
-        return not any(_node_match(denied_node, node) for denied_node in denies)
-    return _check_node_permission(data, node)
+    return _check_user_permission(data, node)
 
 
 def check_group_permission(group_id: str | int, node: str | int) -> bool:
-    from src.utils.database.classes import GroupSettings
-
     data: GroupSettings | Any = db.where_one(
         GroupSettings(),
         "group_id = ?",
         str(group_id),
         default=GroupSettings(group_id=str(group_id)),
     )
-    grants, denies = _split_permission_nodes(data.permission_nodes)
-    if any(_node_match(denied_node, node) for denied_node in denies):
-        return False
-    return any(_node_match(granted_node, node) for granted_node in grants)
+    return _check_nodes_permission(data.permission_nodes, node)
+
+
+def get_permission_holders(node: str, scope: Literal["user", "group"]) -> list[str]:
+    """反查具体节点的有效持有者，一次读取账户，避免逐个查询数据库。"""
+    if scope not in {"user", "group"}:
+        raise ValueError("查询范围需要是用户或群。")
+    node = _normalize_node(node)
+    if "*" in node or node.startswith("-") or not is_defined_permission_node(node, scope):
+        raise ValueError("请使用该查询范围内已定义的具体权限节点，不支持通配符或拒绝节点。")
+
+    matches: set[str] = set()
+    if scope == "user":
+        accounts: dict[str, Account] = {}
+        for account in db.where_all(Account(), "1=1 ORDER BY id", default=[]):
+            if account.user_id > 0:
+                accounts.setdefault(str(account.user_id), account)
+        # Bot 主人即使没有账户记录也具备权限，显式拒绝仍然生效。
+        for owner_id in _bot_owner_ids():
+            if owner_id.isdigit() and int(owner_id) > 0:
+                accounts.setdefault(owner_id, Account(user_id=int(owner_id)))
+        matches.update(user_id for user_id, account in accounts.items() if _check_user_permission(account, node))
+    else:
+        groups: dict[str, GroupSettings] = {}
+        for group in db.where_all(GroupSettings(), "1=1 ORDER BY id", default=[]):
+            if group.group_id.isdigit() and int(group.group_id) > 0:
+                groups.setdefault(group.group_id, group)
+        matches.update(group_id for group_id, group in groups.items() if _check_nodes_permission(group.permission_nodes, node))
+    return sorted(matches, key=int)
 
 
 def denied(node: str | int) -> str:

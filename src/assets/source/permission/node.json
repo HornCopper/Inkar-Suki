@@ -213,8 +213,12 @@
                             "desc": "允许本群使用角色名片查询"
                         },
                         {
-                            "name": "preview",
-                            "desc": "测试用权限，请勿授权"
+                            "name": "chat_records",
+                            "desc": "允许本群使用角色聊天记录查询（聊天、发言）"
+                        },
+                        {
+                            "name": "firework_records",
+                            "desc": "允许本群使用角色烟花记录查询（烟花）"
                         }
                     ]
                 }

@@ -35,6 +35,7 @@ from src.utils.message import message_universal
 
 from ._message import leave_msg
 from . import developer as _developer
+from . import permission_lookup as _permission_lookup
 
 try:
     from . import auto_accept as _auto_accept  # type: ignore

@@ -15,7 +15,7 @@ chat_records_matcher = on_command("jx3_chat_records", command_key="聊天", alia
 
 @chat_records_matcher.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
-    if not Config.jx3.api.enable or not check_group_permission(event.group_id, "group.application.preview"):
+    if not Config.jx3.api.enable or not check_group_permission(event.group_id, "group.application.chat_records"):
         return
     if args.extract_plain_text() == "":
         return
