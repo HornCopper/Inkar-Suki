@@ -9,6 +9,27 @@ class Account(LiteModel):
     permission_nodes: list[str] = []
     last_checkin: int = 0
 
+class CheckinPrize(LiteModel):
+    TABLE_NAME: ClassVar[str] = "checkin_prizes"
+    name: str = ""
+    probability: int = 0  # 百万分比，100% = 1_000_000
+    remaining: int = -1  # -1 表示不限量
+    enabled: bool = True
+    creator_id: int = 0
+    created_at: int = 0
+
+
+class CheckinPrizeAward(LiteModel):
+    TABLE_NAME: ClassVar[str] = "checkin_prize_awards"
+    user_id: int = 0
+    prize_id: int = 0
+    prize_name: str = ""
+    provider_id: int = 0
+    awarded_at: int = 0
+    delivered_at: int = 0
+    delivered_by: int = 0
+
+
 class Affections(LiteModel):
     TABLE_NAME: ClassVar[str] = "affections"
     server: str = ""

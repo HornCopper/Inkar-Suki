@@ -1,77 +1,137 @@
-from src.utils.network import Request
-
+import ipaddress
 import re
+from dataclasses import dataclass
+
+from mcstatus import BedrockServer, JavaServer
+
+
+GAME_MODE_NAMES = {
+    "survival": "生存",
+    "creative": "创造",
+    "adventure": "冒险",
+    "spectator": "旁观",
+}
+QUERY_TIMEOUT = 5
+
+
+@dataclass(frozen=True)
+class ServerAddress:
+    host: str
+    port: int
+    port_was_given: bool
+
+    @property
+    def lookup_target(self) -> str:
+        host = f"[{self.host}]" if ":" in self.host else self.host
+        if self.port_was_given:
+            return f"{host}:{self.port}"
+        return host
+
+    @property
+    def display(self) -> str:
+        host = f"[{self.host}]" if ":" in self.host else self.host
+        return f"{host}:{self.port}"
+
 
 def clean(string: str) -> str:
-    return re.sub(r"§.", "", string)
+    """移除文本中的 Minecraft 旧版格式代码。"""
+    return re.sub(r"§[0-9A-FK-ORX]", "", str(string), flags=re.IGNORECASE).strip()
+
+
+def _parse_address(raw_address: str, default_port: int) -> ServerAddress:
+    address = raw_address.strip()
+    if not address:
+        raise ValueError("地址不能为空")
+    if any(char.isspace() for char in address) or any(char in address for char in "/?#@"):
+        raise ValueError("地址中包含无效字符")
+
+    port_was_given = False
+    if address.startswith("["):
+        match = re.fullmatch(r"\[([^]]+)](?::([^:]+))?", address)
+        if match is None:
+            raise ValueError("IPv6 地址格式有误")
+        host, raw_port = match.groups()
+        try:
+            ipaddress.IPv6Address(host)
+        except ValueError as exc:
+            raise ValueError("IPv6 地址格式有误") from exc
+        port_was_given = raw_port is not None
+    elif address.count(":") > 1:
+        try:
+            ipaddress.IPv6Address(address)
+        except ValueError as exc:
+            raise ValueError("地址格式有误；IPv6 指定端口时请使用 [地址]:端口") from exc
+        host, raw_port = address, None
+    elif ":" in address:
+        host, raw_port = address.rsplit(":", 1)
+        port_was_given = True
+    else:
+        host, raw_port = address, None
+
+    host = host.strip()
+    if not host or len(host) > 253:
+        raise ValueError("主机名格式有误")
+
+    if raw_port is None:
+        port = default_port
+    else:
+        try:
+            port = int(raw_port)
+        except (TypeError, ValueError) as exc:
+            raise ValueError("端口必须是数字") from exc
+        if not 1 <= port <= 65535:
+            raise ValueError("端口必须在 1 到 65535 之间")
+
+    return ServerAddress(host=host, port=port, port_was_given=port_was_given)
+
+
+def _format_status(address: ServerAddress, status, *, bedrock: bool) -> str:
+    edition = "基岩版" if bedrock else "Java 版"
+    motd = status.motd.to_plain().strip() or "无"
+    lines = [
+        f"已经查到{edition}服务器啦：",
+        f"地址：{address.display}",
+        f"在线人数：{status.players.online}/{status.players.max}",
+        f"版本：{clean(status.version.name)}",
+    ]
+
+    if bedrock and status.gamemode:
+        game_mode = clean(status.gamemode)
+        lines.append(f"游戏模式：{GAME_MODE_NAMES.get(game_mode.lower(), game_mode)}")
+
+    lines.extend((f"延迟：{status.latency:.0f} ms", f"介绍：{motd}"))
+    return "\n".join(lines)
+
+
+async def _query_server(raw_address: str, *, bedrock: bool) -> str:
+    edition = "基岩版" if bedrock else "Java 版"
+    default_port = 19132 if bedrock else 25565
+    try:
+        address = _parse_address(raw_address, default_port)
+    except ValueError as exc:
+        return f"地址输入有误：{exc}。"
+
+    try:
+        if bedrock:
+            server = BedrockServer(address.host, address.port, timeout=QUERY_TIMEOUT)
+        elif address.port_was_given:
+            server = JavaServer(address.host, address.port, timeout=QUERY_TIMEOUT)
+        else:
+            # Java 客户端会在未指定端口时查询 _minecraft._tcp SRV 记录。
+            server = await JavaServer.async_lookup(address.host, timeout=QUERY_TIMEOUT)
+        status = await server.async_status(tries=1)
+    except Exception:
+        return (
+            f"未查询到{edition}服务器：{address.display}\n"
+            "服务器可能离线、无法从机器人所在网络访问，或地址、端口不正确。"
+        )
+
+    return _format_status(address, status, bedrock=bedrock)
 
 
 async def get_java_server(raw_ip: str) -> str:
-    ip = raw_ip.split(":") 
-    if len(ip) > 2:
-        return "唔……暂时无法识别IPv6地址，或者是您的地址输入有误哦~"
-    elif len(ip) == 2:
-        port = ip[1]
-        ip = ip[0]
-    else:
-        ip = ip[0]
-        port = 25565
-    try:
-        final_link = f"http://motd.wd-api.com/v1/java?host={ip}&platform={port}"
-        infomation = (await Request(final_link).get()).json()
-    except Exception as _:
-        return "唔……获取信息失败：连接API超时。"
-    try:
-        error = infomation["message"]
-        if error.find("getaddrinfo ENOTFOUND") != -1:
-            return "唔……获取信息失败：DNS出错，域名尚未绑定该IP地址。"
-        else:
-            return "唔……获取信息失败：未知错误。"
-    except Exception as _:
-        desc = ""
-        for i in infomation["description"]["extra"]:
-            desc = desc + clean(i["text"])
-        maxp = infomation["players"]["max"]
-        onlp = infomation["players"]["online"]
-        return f"已经查到Java版服务器啦：\n地址：{ip}:{port}\n在线人数：{onlp}/{maxp}\n介绍：{desc}"
+    return await _query_server(raw_ip, bedrock=False)
 
 
 async def get_bedrock_server(raw_ip: str) -> str:
-    ip = raw_ip.split(":")
-    if len(ip) > 2:
-        return "唔……暂时无法识别IPv6地址，或者是您的地址输入有误哦~"
-    elif len(ip) == 2:
-        port = ip[1]
-        ip = ip[0]
-    else:
-        ip = ip[0]
-        port = 19132
-    try:
-        final_link = f"http://motd.wd-api.com/v1/bedrock?host={ip}&platform={port}"
-        infomation = (await Request(final_link).get()).json()
-    except Exception as _:
-        return "唔……获取信息失败：连接API超时。"
-    try:
-        error = infomation["message"]
-        if error.find("getaddrinfo ENOTFOUND") != -1:
-            return "唔……域名解析失败。"
-        else:
-            return "唔……未知错误。"
-    except Exception as _:
-        unpack_data = infomation["data"].split(";")
-        motd_1 = clean(unpack_data[1])
-        motd_2 = clean(unpack_data[7])
-        player_count = unpack_data[4]
-        max_players = unpack_data[5]
-        edition = unpack_data[0]
-        version_name = unpack_data[3]
-        game_mode = unpack_data[8]
-        if game_mode == "Survival":
-            game_mode = "生存"
-        elif game_mode == "Creative":
-            game_mode = "创造"
-        elif game_mode == "Adventure":
-            game_mode = "冒险"
-        else:
-            game_mode = "未知"
-        return f"已经查到基岩版服务器啦：\n地址：{ip}:{port}\n在线人数：{player_count}/{max_players}\n版本：{edition}{version_name}\n游戏模式：{game_mode}\n介绍：{motd_1} - {motd_2}"
+    return await _query_server(raw_ip, bedrock=True)

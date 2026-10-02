@@ -3,8 +3,9 @@
 原作者：@Snowykami
 本文件按原始仓库：LiteyukiStudio/LiteyukiBot
 """
-from typing import Any, Callable, ClassVar, TypeVar
+from typing import Any, Callable, ClassVar, Iterator, TypeVar, overload
 from functools import wraps
+from contextlib import contextmanager
 from packaging.version import parse
 from pydantic import BaseModel
 
@@ -17,6 +18,7 @@ import threading
 import time
 
 T = TypeVar("T")
+ModelT = TypeVar("ModelT", bound="LiteModel")
 
 NoneType = type(None)
 
@@ -32,6 +34,8 @@ def database_operation(func):
                 try:
                     return func(self, *args, **kwargs)
                 except sqlite3.OperationalError as error:
+                    if self._transaction_depth:
+                        raise
                     if "locked" not in str(error).lower() or attempt == 3:
                         raise
                     self.conn.rollback()
@@ -60,6 +64,7 @@ class Database:
 
         self.db_name = db_name
         self._lock = threading.RLock()
+        self._transaction_depth = 0
         self.conn = sqlite3.connect(db_name, timeout=5, check_same_thread=False)
         self.conn.execute("PRAGMA busy_timeout = 5000")
         self.conn.execute("PRAGMA journal_mode = WAL")
@@ -68,8 +73,45 @@ class Database:
 
         self._on_save_callbacks = []
 
+    @contextmanager
+    def transaction(self) -> Iterator["Database"]:
+        """将多次读写作为一个事务提交，嵌套调用使用保存点。"""
+        with self._lock:
+            depth = self._transaction_depth
+            savepoint = f"database_transaction_{depth}"
+            if depth:
+                self.conn.execute(f"SAVEPOINT {savepoint}")
+            else:
+                self.conn.execute("BEGIN IMMEDIATE")
+            self._transaction_depth += 1
+            try:
+                yield self
+                if depth:
+                    self.conn.execute(f"RELEASE SAVEPOINT {savepoint}")
+                else:
+                    self.conn.commit()
+            except BaseException:
+                if depth:
+                    self.conn.execute(f"ROLLBACK TO SAVEPOINT {savepoint}")
+                    self.conn.execute(f"RELEASE SAVEPOINT {savepoint}")
+                else:
+                    self.conn.rollback()
+                raise
+            finally:
+                self._transaction_depth -= 1
+
+    def _commit(self) -> None:
+        if not self._transaction_depth:
+            self.conn.commit()
+
+    @overload
+    def where_one(self, model: ModelT, condition: str = "", *args: Any, default: T) -> ModelT | T: ...
+
+    @overload
+    def where_one(self, model: ModelT, condition: str = "", *args: Any) -> ModelT | None: ...
+
     @database_operation
-    def where_one(self, model: LiteModel, condition: str = "", *args: Any, default: T = None) -> LiteModel | T | None:
+    def where_one(self, model: ModelT, condition: str = "", *args: Any, default: T | None = None) -> ModelT | T | None:
         """查询第一个
         Args:
             model: 数据模型实例
@@ -83,8 +125,14 @@ class Database:
         all_results = self.where_all(model, condition, *args)
         return all_results[0] if all_results else default
 
+    @overload
+    def where_all(self, model: ModelT, condition: str = "", *args: Any, default: T) -> list[ModelT] | T: ...
+
+    @overload
+    def where_all(self, model: ModelT, condition: str = "", *args: Any) -> list[ModelT] | None: ...
+
     @database_operation
-    def where_all(self, model: LiteModel, condition: str = "", *args: Any, default: T = None) -> list[LiteModel | T] | T | None:
+    def where_all(self, model: ModelT, condition: str = "", *args: Any, default: T | None = None) -> list[ModelT] | T | None:
         """查询所有
         Args:
             model: 数据模型实例
@@ -165,7 +213,7 @@ class Database:
                 fields = ', '.join([f'"{field}"' for field in fields])
                 placeholders = ', '.join('?' for _ in values)
                 self.cursor.execute(f"INSERT OR REPLACE INTO {table_name}({fields}) VALUES ({placeholders})", tuple(values))
-                self.conn.commit()
+                self._commit()
                 foreign_id = self.cursor.execute("SELECT last_insert_rowid()").fetchone()[0]
                 return f"{self.FOREIGN_KEY_PREFIX}{foreign_id}@{table_name}"  
             else:
@@ -257,7 +305,7 @@ class Database:
         if not condition and not allow_empty:
             raise ValueError("删除操作必须提供条件")
         self.cursor.execute(f"DELETE FROM {table_name} WHERE {condition}", args)
-        self.conn.commit()
+        self._commit()
 
     @database_operation
     def auto_migrate(self, *args: LiteModel) -> None:
@@ -301,7 +349,7 @@ class Database:
                     self.cursor.execute(
                         f'ALTER TABLE "{model.TABLE_NAME}" DROP COLUMN "{e_field}"'
                     )
-        self.conn.commit()
+        self._commit()
 
     @database_operation
     def fetch_all(self, query: str, *args: Any) -> list[tuple[Any, ...]]:

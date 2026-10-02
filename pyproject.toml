@@ -21,6 +21,7 @@ dependencies = [
     "nonebot-plugin-handle>=0.4.1",
     "beautifulsoup4>=4.12.3",
     "nonebot-plugin-liteyukibot>=0.1.9",
+    "mcstatus>=14.2.0,<15.0.0",
 ]
 
 [tool.nonebot]

@@ -77,6 +77,10 @@
                 {
                     "name": "coin.manage",
                     "desc": "增加或减少用户金币"
+                },
+                {
+                    "name": "checkin.pool.manage",
+                    "desc": "管理签到奖池的投放、概率、库存、上下架和奖品兑付"
                 }
             ]
         },

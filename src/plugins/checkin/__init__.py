@@ -68,11 +68,14 @@ async def _(event: MessageEvent, args: Message = CommandArg()):
     if args.extract_plain_text() != "":
         return
     status: CheckinRewards | Literal[False] = AccountManage(event.user_id).checkin()
-    if not status:
+    if status is False:
         await CheckinMatcher.finish("您已经签到过了哦，请等待次日0点后重试！")
+        return
     msg = ms.at(event.user_id) + f" 签到成功！\n本日幸运值：{status.lucky_value}\n金币：+{status.coin}\n累计签到：{status.total_days}天"
     if status.is_lucky:
         msg += "\n触发额外奖励！获得 500 金币！"
+    if status.pool_prize:
+        msg += f"\n抽中奖池奖励：{status.pool_prize.prize_name} ×1！已存入背包（记录 #{status.pool_prize.id}）。发送「背包」查看。"
     await CheckinMatcher.finish(msg)
 
 CoinMatcher = on_command("金币", command_key=None, aliases={"余额"}, force_whitespace=True, priority=5)
@@ -198,3 +201,6 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     )
     image = await generate(html, ".container", segment=True)
     await CoinRankMatcher.finish(image)
+
+
+from . import prize_commands

@@ -30,9 +30,9 @@ mcjes = on_command("jes", command_key="jes", force_whitespace=True, priority=5) 
 
 @mcjes.handle()
 async def _(args: Message = CommandArg()):
-    if args.extract_plain_text() == "":
-        return
-    ip = args.extract_plain_text()
+    ip = args.extract_plain_text().strip()
+    if not ip:
+        await mcjes.finish("请输入 Java 版服务器地址，例如：jes mc.example.com:25565")
     msg = await get_java_server(ip)
     await mcjes.finish(msg)
 
@@ -40,8 +40,8 @@ mcbes = on_command("bes", command_key="bes", force_whitespace=True, priority=5) 
 
 @mcbes.handle()
 async def _(args: Message = CommandArg()):
-    if args.extract_plain_text() == "":
-        return
-    ip = args.extract_plain_text()
+    ip = args.extract_plain_text().strip()
+    if not ip:
+        await mcbes.finish("请输入基岩版服务器地址，例如：bes play.example.com:19132")
     msg = await get_bedrock_server(ip)
     await mcbes.finish(msg)

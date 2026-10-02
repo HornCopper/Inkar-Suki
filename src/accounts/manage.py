@@ -3,7 +3,8 @@ from pydantic import BaseModel
 from datetime import datetime, timedelta
 
 from src.utils.database import db
-from src.utils.database.classes import Account
+from src.utils.database.classes import Account, CheckinPrizeAward
+from src.accounts.prize_pool import draw_checkin_prize
 from src.utils.time import Time
 
 import random
@@ -14,6 +15,7 @@ class CheckinRewards(BaseModel):
     is_lucky: bool  # 是否触发额外奖励
     coin: int  # 签到获得的金币（包含额外）
     lucky_value: int  # 幸运值
+    pool_prize: CheckinPrizeAward | None = None  # 独立的奖池奖励
 
 
 class AccountManage:
@@ -54,26 +56,34 @@ class AccountManage:
         return period_start <= last_checkin_time < period_end
 
     def checkin(self) -> Literal[False] | CheckinRewards:
-        if self.checkin_status:
-            return False
+        with db.transaction():
+            # 重新读取，避免两个签到请求使用同一份过期账户数据。
+            self.data = db.where_one(
+                Account(), "user_id = ?", int(self.user_id),
+                default=Account(user_id=int(self.user_id)),
+            )
+            if self.checkin_status:
+                return False
 
-        coin = random.randint(100, 300)
-        lucky = True if random.randint(0, 100) % 25 == 0 else False
-        if lucky:
-            coin += 500
+            coin = random.randint(100, 300)
+            lucky = True if random.randint(0, 100) % 25 == 0 else False
+            if lucky:
+                coin += 500
 
-        self.data.coins += coin
-        self.data.checkin_counts += 1
-        self._update_last_checkin_data()
+            self.data.coins += coin
+            self.data.checkin_counts += 1
+            self._update_last_checkin_data()
 
-        db.save(self.data)
+            db.save(self.data)
 
-        return CheckinRewards(
-            total_days=self.checkin_counts,
-            is_lucky=lucky,
-            coin=coin,
-            lucky_value=random.randint(0, 100),
-        )
+            rewards = CheckinRewards(
+                total_days=self.checkin_counts,
+                is_lucky=lucky,
+                coin=coin,
+                lucky_value=random.randint(0, 100),
+            )
+            rewards.pool_prize = draw_checkin_prize(int(self.user_id))
+            return rewards
 
     def add_coin(self, counts: int) -> None:
         final_coins = self.coins + counts
