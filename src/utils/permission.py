@@ -215,8 +215,8 @@ def get_permission_holders(node: str, scope: Literal["user", "group"]) -> list[s
     if scope not in {"user", "group"}:
         raise ValueError("查询范围需要是用户或群。")
     node = _normalize_node(node)
-    if "*" in node or node.startswith("-") or not is_defined_permission_node(node, scope):
-        raise ValueError("请使用该查询范围内已定义的具体权限节点，不支持通配符或拒绝节点。")
+    if not node or "*" in node or node.startswith("-"):
+        raise ValueError("请使用非空的具体权限节点，不支持通配符或拒绝节点。")
 
     matches: set[str] = set()
     if scope == "user":

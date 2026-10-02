@@ -13,7 +13,7 @@ PAGE_SIZE = 20
 HELP = """格式：权限反查 <用户|群> <权限节点> [页码]
 例如：权限反查 群 group.application.chat_records
 例如：权限反查 用户 economy.checkin.pool.manage
-按实际生效的权限匹配，包含父节点授权和通配符授权，排除被显式拒绝的对象。
+节点无需预先定义。按实际生效的权限匹配，包含父节点授权和通配符授权，排除被显式拒绝的对象。
 用户范围包含 Bot 主人；群范围查询已保存群配置。每页 20 个。"""
 
 PermissionHoldersMatcher = on_command(
