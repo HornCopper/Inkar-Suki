@@ -38,10 +38,11 @@ from . import developer as _developer
 from . import permission_lookup as _permission_lookup
 
 try:
-    from . import auto_accept as _auto_accept  # type: ignore
+    from .auto_accept import *  # type: ignore
     # 仅用于公共实例，个人实例如有需要可自行创建`auto_accept.py`并写入逻辑。
 except:  # noqa: E722
     pass
+
 
 import os
 import random

@@ -89,7 +89,7 @@ async def convert_preview(
     try:
         response = await Request(endpoint, params=payload).post(timeout=DEFAULT_TIMEOUT_SECONDS)
     except Exception as exc:
-        raise PindouServiceError("无法连接拼豆转换服务。") from exc
+        raise PindouServiceError("无法连接拼豆转换服务。\n可能是当前使用人数较多，请稍后重试。") from exc
     if response.status_code >= 400:
         raise PindouServiceError(_error_detail(response))
     try:
