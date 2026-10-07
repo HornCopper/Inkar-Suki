@@ -469,6 +469,17 @@
         "progress": true,
         "source": "ui/Image/UICommon/CasterBar2.UITex",
         "frame": 6
+      },
+      {
+        "name": "Image_BgCY",
+        "src": "chunyang/Image_BgCY.png",
+        "x": 18,
+        "y": 18,
+        "width": 408,
+        "height": 71,
+        "progress": false,
+        "source": "ui/Image/UICommon/CasterBar2.UITex",
+        "frame": 5
       }
     ],
     "particleTextures": [
@@ -558,24 +569,24 @@
     },
     "headGlow": {
       "src": "chunyang/head_glow.png",
-      "x": 50.4,
-      "y": 70.2,
-      "size": 36,
+      "x": 46,
+      "y": 49.95,
+      "size": 62,
       "points": [
         [
           -5,
-          -4.8
+          -21.3
         ],
         [
           14,
-          -6.4
+          -28.400000000000002
         ],
         [
           26,
-          -4.0
+          -17.75
         ]
       ],
-      "source": "assets/chunyang/particle_5.png"
+      "source": "chunyang/particle_5.png"
     }
   },
   {
