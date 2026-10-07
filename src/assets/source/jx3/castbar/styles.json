@@ -1,0 +1,3195 @@
+[
+  {
+    "id": "changge",
+    "name": "长歌",
+    "skill": "徵",
+    "handle": "Handle_ChangGe",
+    "width": 451,
+    "height": 111,
+    "text": {
+      "x": 108,
+      "y": 18,
+      "width": 186,
+      "height": 30
+    },
+    "layers": [
+      {
+        "name": "Image_BgCg_B",
+        "src": "changge/Image_BgCg_B.png",
+        "x": 58,
+        "y": 37,
+        "width": 357,
+        "height": 39,
+        "progress": false,
+        "source": "ui/Image/UICommon/CasterBar.UITex",
+        "frame": 29
+      },
+      {
+        "name": "Image_ProgressCg",
+        "src": "changge/Image_ProgressCg.png",
+        "x": 65,
+        "y": 55,
+        "width": 330,
+        "height": 8,
+        "progress": true,
+        "source": "ui/Image/UICommon/CasterBar.UITex",
+        "frame": 28
+      },
+      {
+        "name": "Image_BgCg",
+        "src": "changge/Image_BgCg.png",
+        "x": 28,
+        "y": 27,
+        "width": 405,
+        "height": 52,
+        "progress": false,
+        "source": "ui/Image/UICommon/CasterBar.UITex",
+        "frame": 27
+      }
+    ],
+    "particleTextures": [
+      {
+        "src": "changge/particle_0.png",
+        "source": "data/source/other/特效/贴图/qt_其他/c_长歌条下层01.tga",
+        "extracted": "data/source/other/特效/贴图/qt_其他/c_长歌条下层01.dds",
+        "width": 64,
+        "height": 16
+      },
+      {
+        "src": "changge/particle_1.png",
+        "source": "data/source/other/特效/贴图/yw_烟雾/yw_烟雾12.tga",
+        "extracted": "data/source/other/特效/贴图/yw_烟雾/yw_烟雾12.dds",
+        "width": 64,
+        "height": 64
+      },
+      {
+        "src": "changge/particle_2.png",
+        "source": "data/source/other/特效/贴图/gx_光效/a_alpha10.tga",
+        "extracted": "data/source/other/特效/贴图/gx_光效/a_alpha10.dds",
+        "width": 32,
+        "height": 32
+      },
+      {
+        "src": "changge/particle_3.png",
+        "source": "data/source/other/特效/贴图/qt_其他/c_长歌条边缘01.tga",
+        "extracted": "data/source/other/特效/贴图/qt_其他/c_长歌条边缘01.dds",
+        "width": 64,
+        "height": 16
+      },
+      {
+        "src": "changge/particle_4.png",
+        "source": "data/source/other/特效/贴图/qt_其他/y_樱花粉01.tga",
+        "extracted": "data/source/other/特效/贴图/qt_其他/y_樱花粉01.dds",
+        "width": 64,
+        "height": 64
+      },
+      {
+        "src": "changge/particle_5.png",
+        "source": "data/source/other/特效/贴图/gx_光效/g_光点01.tga",
+        "extracted": "data/source/other/特效/贴图/gx_光效/g_光点01.dds",
+        "width": 64,
+        "height": 64
+      },
+      {
+        "src": "changge/particle_6.png",
+        "source": "data/source/other/特效/贴图/qt_其他/y_羽毛.tga",
+        "extracted": "data/source/other/特效/贴图/qt_其他/y_羽毛.dds",
+        "width": 64,
+        "height": 64
+      },
+      {
+        "src": "changge/particle_7.png",
+        "source": "data/source/other/特效/贴图/gx_光效/gq_x光圈10.tga",
+        "extracted": "data/source/other/特效/贴图/gx_光效/gq_x光圈10.dds",
+        "width": 64,
+        "height": 64
+      }
+    ],
+    "nativeEffects": [
+      "data/source/other/新特效/其他/Pss/C_长歌技能条下层01.pss",
+      "data/source/other/新特效/其他/Pss/C_长歌技能条上层01.pss"
+    ],
+    "segment": {
+      "line": {
+        "src": "changge/Image_CGDivide.png",
+        "width": 11,
+        "height": 12,
+        "source": "ui/Image/UICommon/CasterBar3.UITex",
+        "frame": 71
+      },
+      "shine": {
+        "src": "changge/Image_CGShine.png",
+        "width": 37,
+        "height": 69,
+        "source": "ui/Image/UICommon/CasterBar3.UITex",
+        "frame": 45
+      }
+    },
+    "headGlow": {
+      "src": "changge/head_glow.png",
+      "x": 48.8,
+      "y": 50.400000000000006,
+      "size": 52,
+      "points": [
+        [
+          -5,
+          -15.6
+        ],
+        [
+          14,
+          -20.8
+        ],
+        [
+          26,
+          -13.0
+        ]
+      ],
+      "source": "assets/changge/particle_5.png"
+    }
+  },
+  {
+    "id": "tiance",
+    "name": "天策",
+    "skill": "龙吟",
+    "handle": "Handle_TianCe",
+    "width": 454,
+    "height": 110,
+    "text": {
+      "x": 106,
+      "y": 26,
+      "width": 300,
+      "height": 17
+    },
+    "layers": [
+      {
+        "name": "Image_BgTC",
+        "src": "tiance/Image_BgTC.png",
+        "x": 82,
+        "y": 56,
+        "width": 340,
+        "height": 12,
+        "progress": false,
+        "source": "ui/Image/UICommon/CasterBar2.UITex",
+        "frame": 20
+      },
+      {
+        "name": "Image_ProgressTC",
+        "src": "tiance/Image_ProgressTC.png",
+        "x": 86,
+        "y": 57,
+        "width": 333,
+        "height": 8,
+        "progress": true,
+        "source": "ui/Image/UICommon/CasterBar2.UITex",
+        "frame": 19
+      },
+      {
+        "name": "Image_BgCJ_0",
+        "src": "tiance/Image_BgCJ_0.png",
+        "x": 18,
+        "y": 18,
+        "width": 418,
+        "height": 60,
+        "progress": false,
+        "source": "ui/Image/UICommon/CasterBar2.UITex",
+        "frame": 18
+      }
+    ],
+    "particleTextures": [
+      {
+        "src": "tiance/particle_0.png",
+        "source": "data/source/other/特效/贴图/qt_其他/t_天策ui上层01.tga",
+        "extracted": "data/source/other/特效/贴图/qt_其他/t_天策ui上层01.dds",
+        "width": 64,
+        "height": 16
+      },
+      {
+        "src": "tiance/particle_1.png",
+        "source": "data/source/other/特效/贴图/gx_光效/s_水纹02.tga",
+        "extracted": "data/source/other/特效/贴图/gx_光效/s_水纹02.dds",
+        "width": 64,
+        "height": 64
+      },
+      {
+        "src": "tiance/particle_2.png",
+        "source": "data/source/other/特效/贴图/gx_光效/g_光点01_02.tga",
+        "extracted": "data/source/other/特效/贴图/gx_光效/g_光点01_02.dds",
+        "width": 64,
+        "height": 64
+      },
+      {
+        "src": "tiance/particle_3.png",
+        "source": "data/source/other/特效/贴图/gx_光效/a_alpha01.tga",
+        "extracted": "data/source/other/特效/贴图/gx_光效/a_alpha01.dds",
+        "width": 32,
+        "height": 32
+      },
+      {
+        "src": "tiance/particle_4.png",
+        "source": "data/source/other/特效/贴图/gx_光效/r_柔光04.tga",
+        "extracted": "data/source/other/特效/贴图/gx_光效/r_柔光04.dds",
+        "width": 32,
+        "height": 64
+      },
+      {
+        "src": "tiance/particle_5.png",
+        "source": "data/source/other/特效/贴图/yw_烟雾/yw_烟雾.tga",
+        "extracted": "data/source/other/特效/贴图/yw_烟雾/yw_烟雾.dds",
+        "width": 64,
+        "height": 64
+      },
+      {
+        "src": "tiance/particle_6.png",
+        "source": "data/source/other/特效/贴图/gx_光效/gq_光球01.tga",
+        "extracted": "data/source/other/特效/贴图/gx_光效/gq_光球01.dds",
+        "width": 64,
+        "height": 64
+      },
+      {
+        "src": "tiance/particle_7.png",
+        "source": "data/source/other/特效/贴图/yw_烟雾/h_火星01.tga",
+        "extracted": "data/source/other/特效/贴图/yw_烟雾/h_火星01.dds",
+        "width": 64,
+        "height": 32
+      }
+    ],
+    "nativeEffects": [
+      "data/source/other/新特效/其他/Pss/T_天策UI上层01.pss"
+    ],
+    "segment": {
+      "line": {
+        "src": "tiance/Image_TCDivide.png",
+        "width": 11,
+        "height": 12,
+        "source": "ui/Image/UICommon/CasterBar3.UITex",
+        "frame": 66
+      },
+      "shine": {
+        "src": "tiance/Image_TCShine.png",
+        "width": 37,
+        "height": 69,
+        "source": "ui/Image/UICommon/CasterBar3.UITex",
+        "frame": 37
+      }
+    },
+    "headGlow": {
+      "src": "tiance/head_glow.png",
+      "x": 42.0,
+      "y": 45.0,
+      "size": 60,
+      "points": [
+        [
+          -5,
+          -18.0
+        ],
+        [
+          14,
+          -24.0
+        ],
+        [
+          26,
+          -15.0
+        ]
+      ],
+      "source": "assets/tiance/particle_2.png"
+    }
+  },
+  {
+    "id": "wanhua",
+    "name": "万花",
+    "skill": "读条",
+    "handle": "Handle_WanHua",
+    "width": 451,
+    "height": 110,
+    "text": {
+      "x": 100,
+      "y": 18,
+      "width": 186,
+      "height": 30
+    },
+    "layers": [
+      {
+        "name": "Image_BgWH_B",
+        "src": "wanhua/Image_BgWH_B.png",
+        "x": 61,
+        "y": 40,
+        "width": 341,
+        "height": 39,
+        "progress": false,
+        "source": "ui/Image/UICommon/CasterBar2.UITex",
+        "frame": 23
+      },
+      {
+        "name": "Image_ProgressWH",
+        "src": "wanhua/Image_ProgressWH.png",
+        "x": 66,
+        "y": 54,
+        "width": 332,
+        "height": 12,
+        "progress": true,
+        "source": "ui/Image/UICommon/CasterBar2.UITex",
+        "frame": 22
+      },
+      {
+        "name": "Image_BgWH",
+        "src": "wanhua/Image_BgWH.png",
+        "x": 18,
+        "y": 18,
+        "width": 407,
+        "height": 60,
+        "progress": false,
+        "source": "ui/Image/UICommon/CasterBar2.UITex",
+        "frame": 21
+      }
+    ],
+    "particleTextures": [
+      {
+        "src": "wanhua/particle_0.png",
+        "source": "data/source/other/特效/贴图/qt_其他/w_万花技能条01.tga",
+        "extracted": "data/source/other/特效/贴图/qt_其他/w_万花技能条01.dds",
+        "width": 64,
+        "height": 16
+      },
+      {
+        "src": "wanhua/particle_1.png",
+        "source": "data/source/other/特效/贴图/yw_烟雾/yw_烟雾12.tga",
+        "extracted": "data/source/other/特效/贴图/yw_烟雾/yw_烟雾12.dds",
+        "width": 64,
+        "height": 64
+      },
+      {
+        "src": "wanhua/particle_2.png",
+        "source": "data/source/other/特效/贴图/gx_光效/a_alpha10.tga",
+        "extracted": "data/source/other/特效/贴图/gx_光效/a_alpha10.dds",
+        "width": 32,
+        "height": 32
+      },
+      {
+        "src": "wanhua/particle_3.png",
+        "source": "data/source/other/特效/贴图/qt_其他/y_樱花.tga",
+        "extracted": "data/source/other/特效/贴图/qt_其他/y_樱花.dds",
+        "width": 64,
+        "height": 64
+      },
+      {
+        "src": "wanhua/particle_4.png",
+        "source": "data/source/other/特效/贴图/gx_光效/g_光点01.tga",
+        "extracted": "data/source/other/特效/贴图/gx_光效/g_光点01.dds",
+        "width": 64,
+        "height": 64
+      },
+      {
+        "src": "wanhua/particle_5.png",
+        "source": "data/source/other/特效/贴图/qt_其他/s_树叶.tga",
+        "extracted": "data/source/other/特效/贴图/qt_其他/s_树叶.dds",
+        "width": 32,
+        "height": 64
+      },
+      {
+        "src": "wanhua/particle_6.png",
+        "source": "data/source/other/特效/贴图/gx_光效/xx_x星星.tga",
+        "extracted": "data/source/other/特效/贴图/gx_光效/xx_x星星.dds",
+        "width": 64,
+        "height": 64
+      }
+    ],
+    "nativeEffects": [
+      "data/source/other/新特效/其他/Pss/W_万花技能条01.pss"
+    ],
+    "segment": {
+      "line": {
+        "src": "wanhua/Image_WHDivide.png",
+        "width": 11,
+        "height": 12,
+        "source": "ui/Image/UICommon/CasterBar3.UITex",
+        "frame": 69
+      },
+      "shine": {
+        "src": "wanhua/Image_WHShine.png",
+        "width": 37,
+        "height": 69,
+        "source": "ui/Image/UICommon/CasterBar3.UITex",
+        "frame": 39
+      }
+    },
+    "headGlow": {
+      "src": "wanhua/head_glow.png",
+      "x": 42.0,
+      "y": 45.0,
+      "size": 60,
+      "points": [
+        [
+          -5,
+          -18.0
+        ],
+        [
+          14,
+          -24.0
+        ],
+        [
+          26,
+          -15.0
+        ]
+      ],
+      "source": "assets/wanhua/particle_4.png"
+    }
+  },
+  {
+    "id": "chunyang",
+    "name": "纯阳",
+    "skill": "四象轮回",
+    "handle": "Handle_ChunYang",
+    "width": 451,
+    "height": 110,
+    "text": {
+      "x": 94,
+      "y": 29,
+      "width": 186,
+      "height": 30
+    },
+    "layers": [
+      {
+        "name": "Image_BgCY_B",
+        "src": "chunyang/Image_BgCY_B.png",
+        "x": 44,
+        "y": 63,
+        "width": 350,
+        "height": 16,
+        "progress": false,
+        "source": "ui/Image/UICommon/CasterBar2.UITex",
+        "frame": 7
+      },
+      {
+        "name": "Image_ProgressCY",
+        "src": "chunyang/Image_ProgressCY.png",
+        "x": 48,
+        "y": 67,
+        "width": 338,
+        "height": 8,
+        "progress": true,
+        "source": "ui/Image/UICommon/CasterBar2.UITex",
+        "frame": 6
+      }
+    ],
+    "particleTextures": [
+      {
+        "src": "chunyang/particle_0.png",
+        "source": "data/source/other/特效/贴图/qt_其他/c_纯阳条下层01.tga",
+        "extracted": "data/source/other/特效/贴图/qt_其他/c_纯阳条下层01.dds",
+        "width": 64,
+        "height": 16
+      },
+      {
+        "src": "chunyang/particle_1.png",
+        "source": "data/source/other/特效/贴图/yw_烟雾/yw_烟雾12.tga",
+        "extracted": "data/source/other/特效/贴图/yw_烟雾/yw_烟雾12.dds",
+        "width": 64,
+        "height": 64
+      },
+      {
+        "src": "chunyang/particle_2.png",
+        "source": "data/source/other/特效/贴图/gx_光效/a_alpha10.tga",
+        "extracted": "data/source/other/特效/贴图/gx_光效/a_alpha10.dds",
+        "width": 32,
+        "height": 32
+      },
+      {
+        "src": "chunyang/particle_3.png",
+        "source": "data/source/other/特效/贴图/qt_其他/c_纯阳条边缘01.tga",
+        "extracted": "data/source/other/特效/贴图/qt_其他/c_纯阳条边缘01.dds",
+        "width": 64,
+        "height": 16
+      },
+      {
+        "src": "chunyang/particle_4.png",
+        "source": "data/source/other/特效/贴图/qt_其他/y_羽毛.tga",
+        "extracted": "data/source/other/特效/贴图/qt_其他/y_羽毛.dds",
+        "width": 64,
+        "height": 64
+      },
+      {
+        "src": "chunyang/particle_5.png",
+        "source": "data/source/other/特效/贴图/gx_光效/g_光点01.tga",
+        "extracted": "data/source/other/特效/贴图/gx_光效/g_光点01.dds",
+        "width": 64,
+        "height": 64
+      },
+      {
+        "src": "chunyang/particle_6.png",
+        "source": "data/source/other/特效/贴图/gx_光效/xx_x星星.tga",
+        "extracted": "data/source/other/特效/贴图/gx_光效/xx_x星星.dds",
+        "width": 64,
+        "height": 64
+      },
+      {
+        "src": "chunyang/particle_7.png",
+        "source": "data/source/other/特效/贴图/yw_烟雾/y_云雾01.tga",
+        "extracted": "data/source/other/特效/贴图/yw_烟雾/y_云雾01.dds",
+        "width": 64,
+        "height": 32
+      },
+      {
+        "src": "chunyang/particle_8.png",
+        "source": "data/source/other/特效/贴图/yw_烟雾/yw_j烟雾8.tga",
+        "extracted": "data/source/other/特效/贴图/yw_烟雾/yw_j烟雾8.dds",
+        "width": 64,
+        "height": 64
+      }
+    ],
+    "nativeEffects": [
+      "data/source/other/新特效/其他/Pss/C_纯阳技能条下层01.pss",
+      "data/source/other/新特效/其他/Pss/C_纯阳技能条上层01.pss"
+    ],
+    "segment": {
+      "line": {
+        "src": "chunyang/Image_CYDivide.png",
+        "width": 11,
+        "height": 12,
+        "source": "ui/Image/UICommon/CasterBar3.UITex",
+        "frame": 65
+      },
+      "shine": {
+        "src": "chunyang/Image_CYShine.png",
+        "width": 37,
+        "height": 69,
+        "source": "ui/Image/UICommon/CasterBar3.UITex",
+        "frame": 46
+      }
+    },
+    "headGlow": {
+      "src": "chunyang/head_glow.png",
+      "x": 50.4,
+      "y": 70.2,
+      "size": 36,
+      "points": [
+        [
+          -5,
+          -4.8
+        ],
+        [
+          14,
+          -6.4
+        ],
+        [
+          26,
+          -4.0
+        ]
+      ],
+      "source": "assets/chunyang/particle_5.png"
+    }
+  },
+  {
+    "id": "qixiu",
+    "name": "七秀",
+    "skill": "回雪飘摇",
+    "handle": "Handle_QiXiu",
+    "width": 459,
+    "height": 110,
+    "text": {
+      "x": 105,
+      "y": 20,
+      "width": 186,
+      "height": 30
+    },
+    "layers": [
+      {
+        "name": "Image_BgQX",
+        "src": "qixiu/Image_BgQX.png",
+        "x": 66,
+        "y": 38,
+        "width": 342,
+        "height": 43,
+        "progress": false,
+        "source": "ui/Image/UICommon/CasterBar.UITex",
+        "frame": 0
+      },
+      {
+        "name": "Image_ProgressQX",
+        "src": "qixiu/Image_ProgressQX.png",
+        "x": 74,
+        "y": 58,
+        "width": 326,
+        "height": 8,
+        "progress": true,
+        "source": "ui/Image/UICommon/CasterBar.UITex",
+        "frame": 1
+      },
+      {
+        "name": "Image_BgQX_0",
+        "src": "qixiu/Image_BgQX_0.png",
+        "x": 18,
+        "y": 29,
+        "width": 258,
+        "height": 53,
+        "progress": false,
+        "source": "ui/Image/UICommon/CasterBar.UITex",
+        "frame": 2
+      }
+    ],
+    "particleTextures": [
+      {
+        "src": "qixiu/particle_0.png",
+        "source": "data/source/other/特效/贴图/qt_其他/q_七秀条下层01.tga",
+        "extracted": "data/source/other/特效/贴图/qt_其他/q_七秀条下层01.dds",
+        "width": 64,
+        "height": 16
+      },
+      {
+        "src": "qixiu/particle_1.png",
+        "source": "data/source/other/特效/贴图/yw_烟雾/yw_烟雾12.tga",
+        "extracted": "data/source/other/特效/贴图/yw_烟雾/yw_烟雾12.dds",
+        "width": 64,
+        "height": 64
+      },
+      {
+        "src": "qixiu/particle_2.png",
+        "source": "data/source/other/特效/贴图/gx_光效/a_alpha10.tga",
+        "extracted": "data/source/other/特效/贴图/gx_光效/a_alpha10.dds",
+        "width": 32,
+        "height": 32
+      },
+      {
+        "src": "qixiu/particle_3.png",
+        "source": "data/source/other/特效/贴图/gx_光效/g_光圈02.tga",
+        "extracted": "data/source/other/特效/贴图/gx_光效/g_光圈02.dds",
+        "width": 64,
+        "height": 64
+      },
+      {
+        "src": "qixiu/particle_4.png",
+        "source": "data/source/other/特效/贴图/qt_其他/q_七秀条边缘01.tga",
+        "extracted": "data/source/other/特效/贴图/qt_其他/q_七秀条边缘01.dds",
+        "width": 64,
+        "height": 16
+      },
+      {
+        "src": "qixiu/particle_5.png",
+        "source": "data/source/other/特效/贴图/gx_光效/xx_x星星.tga",
+        "extracted": "data/source/other/特效/贴图/gx_光效/xx_x星星.dds",
+        "width": 64,
+        "height": 64
+      },
+      {
+        "src": "qixiu/particle_6.png",
+        "source": "data/source/other/特效/贴图/gx_光效/xx_星星02.tga",
+        "extracted": "data/source/other/特效/贴图/gx_光效/xx_星星02.dds",
+        "width": 64,
+        "height": 64
+      },
+      {
+        "src": "qixiu/particle_7.png",
+        "source": "data/source/other/特效/贴图/qt_其他/h_花瓣.tga",
+        "extracted": "data/source/other/特效/贴图/qt_其他/h_花瓣.dds",
+        "width": 64,
+        "height": 64
+      },
+      {
+        "src": "qixiu/particle_8.png",
+        "source": "data/source/other/特效/贴图/gx_光效/y_光芒01.tga",
+        "extracted": "data/source/other/特效/贴图/gx_光效/y_光芒01.dds",
+        "width": 64,
+        "height": 64
+      },
+      {
+        "src": "qixiu/particle_9.png",
+        "source": "data/source/other/特效/贴图/gx_光效/x星光02.tga",
+        "extracted": "data/source/other/特效/贴图/gx_光效/x星光02.dds",
+        "width": 64,
+        "height": 64
+      }
+    ],
+    "nativeEffects": [
+      "data/source/other/新特效/其他/Pss/Q_七秀技能条下层01.pss",
+      "data/source/other/新特效/其他/Pss/Q_七秀技能条上层01.pss"
+    ],
+    "segment": {
+      "line": {
+        "src": "qixiu/Image_QXDivide.png",
+        "width": 11,
+        "height": 12,
+        "source": "ui/Image/UICommon/CasterBar3.UITex",
+        "frame": 60
+      },
+      "shine": {
+        "src": "qixiu/Image_QXShine.png",
+        "width": 37,
+        "height": 69,
+        "source": "ui/Image/UICommon/CasterBar3.UITex",
+        "frame": 34
+      }
+    },
+    "headGlow": {
+      "src": "qixiu/head_glow.png",
+      "x": 83.2,
+      "y": 57.35,
+      "size": 43,
+      "points": [
+        [
+          -5,
+          -12.9
+        ],
+        [
+          14,
+          -17.2
+        ],
+        [
+          26,
+          -10.75
+        ]
+      ],
+      "source": "assets/qixiu/Image_QXShine.png"
+    }
+  },
+  {
+    "id": "shaolin",
+    "name": "少林",
+    "skill": "读条",
+    "handle": "Handle_ShaoLin",
+    "width": 451,
+    "height": 111,
+    "text": {
+      "x": 107,
+      "y": 21,
+      "width": 186,
+      "height": 30
+    },
+    "layers": [
+      {
+        "name": "Image_BgSL",
+        "src": "shaolin/Image_BgSL.png",
+        "x": 18,
+        "y": 25,
+        "width": 397,
+        "height": 68,
+        "progress": false,
+        "source": "ui/Image/UICommon/CasterBar4.UITex",
+        "frame": 1
+      },
+      {
+        "name": "Image_ProgressSL",
+        "src": "shaolin/Image_ProgressSL.png",
+        "x": 88,
+        "y": 58,
+        "width": 312,
+        "height": 8,
+        "progress": true,
+        "source": "ui/Image/UICommon/CasterBar3.UITex",
+        "frame": 0
+      }
+    ],
+    "particleTextures": [
+      {
+        "src": "shaolin/particle_0.png",
+        "source": "data/source/other/特效/贴图/gx_光效/xx_星星01.tga",
+        "extracted": "data/source/other/特效/贴图/gx_光效/xx_星星01.dds",
+        "width": 64,
+        "height": 64
+      },
+      {
+        "src": "shaolin/particle_1.png",
+        "source": "data/source/other/特效/贴图/gx_光效/gq_x光圈1.tga",
+        "extracted": "data/source/other/特效/贴图/gx_光效/gq_x光圈1.dds",
+        "width": 64,
+        "height": 64
+      },
+      {
+        "src": "shaolin/particle_2.png",
+        "source": "data/source/other/特效/贴图/gx_光效/gx_光圈9.tga",
+        "extracted": "data/source/other/特效/贴图/gx_光效/gx_光圈9.dds",
+        "width": 64,
+        "height": 64
+      },
+      {
+        "src": "shaolin/particle_3.png",
+        "source": "data/source/other/特效/贴图/qt_其他/f_梵文01.tga",
+        "extracted": "data/source/other/特效/贴图/qt_其他/f_梵文01.dds",
+        "width": 64,
+        "height": 64
+      },
+      {
+        "src": "shaolin/particle_4.png",
+        "source": "data/source/other/特效/贴图/gx_光效/g_光条01.tga",
+        "extracted": "data/source/other/特效/贴图/gx_光效/g_光条01.dds",
+        "width": 16,
+        "height": 64
+      },
+      {
+        "src": "shaolin/particle_5.png",
+        "source": "data/source/other/特效/贴图/gx_光效/g_光02.tga",
+        "extracted": "data/source/other/特效/贴图/gx_光效/g_光02.dds",
+        "width": 16,
+        "height": 64
+      },
+      {
+        "src": "shaolin/particle_6.png",
+        "source": "data/source/other/特效/贴图/gx_光效/a_alpha01.tga",
+        "extracted": "data/source/other/特效/贴图/gx_光效/a_alpha01.dds",
+        "width": 32,
+        "height": 32
+      },
+      {
+        "src": "shaolin/particle_7.png",
+        "source": "data/source/other/特效/贴图/gx_光效/r_柔光04.tga",
+        "extracted": "data/source/other/特效/贴图/gx_光效/r_柔光04.dds",
+        "width": 32,
+        "height": 64
+      },
+      {
+        "src": "shaolin/particle_8.png",
+        "source": "data/source/other/特效/贴图/gx_光效/xx_星星02.tga",
+        "extracted": "data/source/other/特效/贴图/gx_光效/xx_星星02.dds",
+        "width": 64,
+        "height": 64
+      },
+      {
+        "src": "shaolin/particle_9.png",
+        "source": "data/source/other/特效/贴图/qt_其他/s_少林ui轻功下层01.tga",
+        "extracted": "data/source/other/特效/贴图/qt_其他/s_少林ui轻功下层01.dds",
+        "width": 64,
+        "height": 64
+      }
+    ],
+    "nativeEffects": [
+      "data/source/other/新特效/其他/Pss/s_少林UI上层01.pss"
+    ],
+    "segment": {
+      "line": {
+        "src": "shaolin/Image_SLDivide.png",
+        "width": 11,
+        "height": 12,
+        "source": "ui/Image/UICommon/CasterBar3.UITex",
+        "frame": 64
+      },
+      "shine": {
+        "src": "shaolin/Image_SLShine.png",
+        "width": 37,
+        "height": 69,
+        "source": "ui/Image/UICommon/CasterBar3.UITex",
+        "frame": 44
+      }
+    },
+    "headGlow": {
+      "src": "shaolin/head_glow.png",
+      "x": 45.2,
+      "y": 55.6,
+      "size": 62,
+      "points": [
+        [
+          -5,
+          -20.4
+        ],
+        [
+          14,
+          -27.200000000000003
+        ],
+        [
+          26,
+          -17.0
+        ]
+      ],
+      "source": "assets/shaolin/Image_SLShine.png"
+    }
+  },
+  {
+    "id": "cangjian",
+    "name": "藏剑",
+    "skill": "读条",
+    "handle": "Handle_CangJian",
+    "width": 471,
+    "height": 112,
+    "text": {
+      "x": 124,
+      "y": 21,
+      "width": 186,
+      "height": 30
+    },
+    "layers": [
+      {
+        "name": "Image_BgCJ_B",
+        "src": "cangjian/Image_BgCJ_B.png",
+        "x": 90,
+        "y": 37,
+        "width": 337,
+        "height": 40,
+        "progress": false,
+        "source": "ui/Image/UICommon/CasterBar2.UITex",
+        "frame": 4
+      },
+      {
+        "name": "Image_ProgressCJ",
+        "src": "cangjian/Image_ProgressCJ.png",
+        "x": 98,
+        "y": 57,
+        "width": 327,
+        "height": 8,
+        "progress": true,
+        "source": "ui/Image/UICommon/CasterBar2.UITex",
+        "frame": 3
+      },
+      {
+        "name": "Image_BgCJ",
+        "src": "cangjian/Image_BgCJ.png",
+        "x": 18,
+        "y": 23,
+        "width": 417,
+        "height": 71,
+        "progress": false,
+        "source": "ui/Image/UICommon/CasterBar2.UITex",
+        "frame": 2
+      }
+    ],
+    "particleTextures": [
+      {
+        "src": "cangjian/particle_0.png",
+        "source": "data/source/other/特效/贴图/qt_其他/c_藏剑ui下层01.tga",
+        "extracted": "data/source/other/特效/贴图/qt_其他/c_藏剑ui下层01.dds",
+        "width": 64,
+        "height": 16
+      },
+      {
+        "src": "cangjian/particle_1.png",
+        "source": "data/source/other/特效/贴图/gx_光效/w_纹理.tga",
+        "extracted": "data/source/other/特效/贴图/gx_光效/w_纹理.dds",
+        "width": 64,
+        "height": 64
+      },
+      {
+        "src": "cangjian/particle_2.png",
+        "source": "data/source/other/特效/贴图/qt_其他/c_藏剑ui上层01.tga",
+        "extracted": "data/source/other/特效/贴图/qt_其他/c_藏剑ui上层01.dds",
+        "width": 64,
+        "height": 16
+      },
+      {
+        "src": "cangjian/particle_3.png",
+        "source": "data/source/other/特效/贴图/gx_光效/xx_x星星.tga",
+        "extracted": "data/source/other/特效/贴图/gx_光效/xx_x星星.dds",
+        "width": 64,
+        "height": 64
+      },
+      {
+        "src": "cangjian/particle_4.png",
+        "source": "data/source/other/特效/贴图/qt_其他/y_银杏叶子02.tga",
+        "extracted": "data/source/other/特效/贴图/qt_其他/y_银杏叶子02.dds",
+        "width": 64,
+        "height": 64
+      },
+      {
+        "src": "cangjian/particle_5.png",
+        "source": "data/source/other/特效/贴图/yw_烟雾/l_流烟02.tga",
+        "extracted": "data/source/other/特效/贴图/yw_烟雾/l_流烟02.dds",
+        "width": 64,
+        "height": 32
+      },
+      {
+        "src": "cangjian/particle_6.png",
+        "source": "data/source/other/特效/贴图/gx_光效/xx_星星02.tga",
+        "extracted": "data/source/other/特效/贴图/gx_光效/xx_星星02.dds",
+        "width": 64,
+        "height": 64
+      },
+      {
+        "src": "cangjian/particle_7.png",
+        "source": "data/source/other/特效/贴图/gx_光效/十子闪.tga",
+        "extracted": "data/source/other/特效/贴图/gx_光效/十子闪.dds",
+        "width": 64,
+        "height": 64
+      }
+    ],
+    "nativeEffects": [
+      "data/source/other/新特效/其他/Pss/c_藏剑UI上层01.pss"
+    ],
+    "segment": {
+      "line": {
+        "src": "cangjian/Image_CJDivide.png",
+        "width": 11,
+        "height": 12,
+        "source": "ui/Image/UICommon/CasterBar3.UITex",
+        "frame": 70
+      },
+      "shine": {
+        "src": "cangjian/Image_CJShine.png",
+        "width": 37,
+        "height": 69,
+        "source": "ui/Image/UICommon/CasterBar3.UITex",
+        "frame": 41
+      }
+    },
+    "headGlow": {
+      "src": "cangjian/head_glow.png",
+      "x": 46,
+      "y": 54.95,
+      "size": 62,
+      "points": [
+        [
+          -5,
+          -21.3
+        ],
+        [
+          14,
+          -28.400000000000002
+        ],
+        [
+          26,
+          -17.75
+        ]
+      ],
+      "source": "assets/cangjian/Image_CJShine.png"
+    }
+  },
+  {
+    "id": "gaibang",
+    "name": "丐帮",
+    "skill": "读条",
+    "handle": "Handle_GaiBang_Nomal",
+    "width": 451,
+    "height": 114,
+    "text": {
+      "x": 103,
+      "y": 26,
+      "width": 186,
+      "height": 30
+    },
+    "layers": [
+      {
+        "name": "Image_GBBg_B_N",
+        "src": "gaibang/Image_GBBg_B_N.png",
+        "x": 44,
+        "y": 56,
+        "width": 383,
+        "height": 29,
+        "progress": false,
+        "source": "ui/Image/UICommon/CasterBar.UITex",
+        "frame": 13
+      },
+      {
+        "name": "Image_GBProgress_N",
+        "src": "gaibang/Image_GBProgress_N.png",
+        "x": 49,
+        "y": 61,
+        "width": 345,
+        "height": 8,
+        "progress": true,
+        "source": "ui/Image/UICommon/CasterBar.UITex",
+        "frame": 12
+      },
+      {
+        "name": "Image_GBBg_N",
+        "src": "gaibang/Image_GBBg_N.png",
+        "x": 18,
+        "y": 18,
+        "width": 168,
+        "height": 77,
+        "progress": false,
+        "source": "ui/Image/UICommon/CasterBar.UITex",
+        "frame": 11
+      }
+    ],
+    "particleTextures": [
+      {
+        "src": "gaibang/particle_0.png",
+        "source": "data/source/other/特效/贴图/qt_其他/g_丐帮ui下层01.tga",
+        "extracted": "data/source/other/特效/贴图/qt_其他/g_丐帮ui下层01.dds",
+        "width": 64,
+        "height": 16
+      },
+      {
+        "src": "gaibang/particle_1.png",
+        "source": "data/source/other/特效/贴图/gx_光效/s_水纹01.tga",
+        "extracted": "data/source/other/特效/贴图/gx_光效/s_水纹01.dds",
+        "width": 64,
+        "height": 64
+      },
+      {
+        "src": "gaibang/particle_2.png",
+        "source": "data/source/other/特效/贴图/yw_烟雾/z_fire06.tga",
+        "extracted": "data/source/other/特效/贴图/yw_烟雾/z_fire06.dds",
+        "width": 64,
+        "height": 32
+      },
+      {
+        "src": "gaibang/particle_3.png",
+        "source": "data/source/other/特效/贴图/gx_光效/a_alpha01.tga",
+        "extracted": "data/source/other/特效/贴图/gx_光效/a_alpha01.dds",
+        "width": 32,
+        "height": 32
+      },
+      {
+        "src": "gaibang/particle_4.png",
+        "source": "data/source/other/特效/贴图/gx_光效/r_柔光04.tga",
+        "extracted": "data/source/other/特效/贴图/gx_光效/r_柔光04.dds",
+        "width": 32,
+        "height": 64
+      },
+      {
+        "src": "gaibang/particle_5.png",
+        "source": "data/source/other/特效/贴图/yw_烟雾/yw_烟雾.tga",
+        "extracted": "data/source/other/特效/贴图/yw_烟雾/yw_烟雾.dds",
+        "width": 64,
+        "height": 64
+      },
+      {
+        "src": "gaibang/particle_6.png",
+        "source": "data/source/other/特效/贴图/qt_其他/g_丐帮ui上层01.tga",
+        "extracted": "data/source/other/特效/贴图/qt_其他/g_丐帮ui上层01.dds",
+        "width": 64,
+        "height": 16
+      },
+      {
+        "src": "gaibang/particle_7.png",
+        "source": "data/source/other/特效/贴图/qt_其他/yz_x叶子03.tga",
+        "extracted": "data/source/other/特效/贴图/qt_其他/yz_x叶子03.dds",
+        "width": 64,
+        "height": 64
+      },
+      {
+        "src": "gaibang/particle_8.png",
+        "source": "data/source/other/特效/贴图/gx_光效/xx_x星星.tga",
+        "extracted": "data/source/other/特效/贴图/gx_光效/xx_x星星.dds",
+        "width": 64,
+        "height": 64
+      },
+      {
+        "src": "gaibang/particle_9.png",
+        "source": "data/source/other/特效/贴图/gx_光效/xx_星星02.tga",
+        "extracted": "data/source/other/特效/贴图/gx_光效/xx_星星02.dds",
+        "width": 64,
+        "height": 64
+      },
+      {
+        "src": "gaibang/particle_10.png",
+        "source": "data/source/other/特效/贴图/qt_其他/s_shuihua04.tga",
+        "extracted": "data/source/other/特效/贴图/qt_其他/s_shuihua04.dds",
+        "width": 64,
+        "height": 64
+      }
+    ],
+    "nativeEffects": [
+      "data/source/other/新特效/其他/Pss/G_丐帮UI上层01.pss"
+    ],
+    "segment": {
+      "line": {
+        "src": "gaibang/Image_GBDivide_N.png",
+        "width": 11,
+        "height": 12,
+        "source": "ui/Image/UICommon/CasterBar3.UITex",
+        "frame": 68
+      },
+      "shine": {
+        "src": "gaibang/Image_GBShine_N.png",
+        "width": 37,
+        "height": 69,
+        "source": "ui/Image/UICommon/CasterBar3.UITex",
+        "frame": 36
+      }
+    },
+    "headGlow": {
+      "src": "gaibang/head_glow.png",
+      "x": 46,
+      "y": 52.65,
+      "size": 62,
+      "points": [
+        [
+          -5,
+          -23.099999999999998
+        ],
+        [
+          14,
+          -30.8
+        ],
+        [
+          26,
+          -19.25
+        ]
+      ],
+      "source": "assets/gaibang/Image_GBShine_N.png"
+    }
+  },
+  {
+    "id": "mingjiao",
+    "name": "明教",
+    "skill": "读条",
+    "handle": "Handle_MingJiao",
+    "width": 451,
+    "height": 110,
+    "text": {
+      "x": 105,
+      "y": 23,
+      "width": 186,
+      "height": 30
+    },
+    "layers": [
+      {
+        "name": "Image_BgMJ",
+        "src": "mingjiao/Image_BgMJ.png",
+        "x": 18,
+        "y": 23,
+        "width": 414,
+        "height": 67,
+        "progress": false,
+        "source": "ui/Image/UICommon/CasterBar.UITex",
+        "frame": 15
+      },
+      {
+        "name": "Image_ProgressMJ",
+        "src": "mingjiao/Image_ProgressMJ.png",
+        "x": 76,
+        "y": 58,
+        "width": 323,
+        "height": 8,
+        "progress": true,
+        "source": "ui/Image/UICommon/CasterBar.UITex",
+        "frame": 14
+      }
+    ],
+    "particleTextures": [
+      {
+        "src": "mingjiao/particle_0.png",
+        "source": "data/source/other/特效/贴图/qt_其他/m_明教ui上层01.tga",
+        "extracted": "data/source/other/特效/贴图/qt_其他/m_明教ui上层01.dds",
+        "width": 64,
+        "height": 16
+      },
+      {
+        "src": "mingjiao/particle_1.png",
+        "source": "data/source/other/特效/贴图/gx_光效/j_极光12.tga",
+        "extracted": "data/source/other/特效/贴图/gx_光效/j_极光12.dds",
+        "width": 64,
+        "height": 32
+      },
+      {
+        "src": "mingjiao/particle_2.png",
+        "source": "data/source/other/特效/贴图/gx_光效/xx_x星星.tga",
+        "extracted": "data/source/other/特效/贴图/gx_光效/xx_x星星.dds",
+        "width": 64,
+        "height": 64
+      },
+      {
+        "src": "mingjiao/particle_3.png",
+        "source": "data/source/other/特效/贴图/gx_光效/a_alpha01.tga",
+        "extracted": "data/source/other/特效/贴图/gx_光效/a_alpha01.dds",
+        "width": 32,
+        "height": 32
+      },
+      {
+        "src": "mingjiao/particle_4.png",
+        "source": "data/source/other/特效/贴图/gx_光效/r_柔光04.tga",
+        "extracted": "data/source/other/特效/贴图/gx_光效/r_柔光04.dds",
+        "width": 32,
+        "height": 64
+      },
+      {
+        "src": "mingjiao/particle_5.png",
+        "source": "data/source/other/特效/贴图/gx_光效/w_纹理5.tga",
+        "extracted": "data/source/other/特效/贴图/gx_光效/w_纹理5.dds",
+        "width": 32,
+        "height": 64
+      },
+      {
+        "src": "mingjiao/particle_6.png",
+        "source": "data/source/other/特效/贴图/gx_光效/xx_星星01.tga",
+        "extracted": "data/source/other/特效/贴图/gx_光效/xx_星星01.dds",
+        "width": 64,
+        "height": 64
+      },
+      {
+        "src": "mingjiao/particle_7.png",
+        "source": "data/source/other/特效/贴图/gx_光效/xx_星星02.tga",
+        "extracted": "data/source/other/特效/贴图/gx_光效/xx_星星02.dds",
+        "width": 64,
+        "height": 64
+      },
+      {
+        "src": "mingjiao/particle_8.png",
+        "source": "data/source/other/特效/贴图/gx_光效/a_alpha03.tga",
+        "extracted": "data/source/other/特效/贴图/gx_光效/a_alpha03.dds",
+        "width": 64,
+        "height": 64
+      },
+      {
+        "src": "mingjiao/particle_9.png",
+        "source": "data/source/other/特效/贴图/gx_光效/b_波纹03.tga",
+        "extracted": "data/source/other/特效/贴图/gx_光效/b_波纹03.dds",
+        "width": 64,
+        "height": 64
+      },
+      {
+        "src": "mingjiao/particle_10.png",
+        "source": "data/source/other/特效/贴图/gx_光效/g_光点01_02.tga",
+        "extracted": "data/source/other/特效/贴图/gx_光效/g_光点01_02.dds",
+        "width": 64,
+        "height": 64
+      }
+    ],
+    "nativeEffects": [
+      "data/source/other/新特效/其他/Pss/M_明教UI上层01.pss"
+    ],
+    "segment": {
+      "line": {
+        "src": "mingjiao/Image_MJDivide.png",
+        "width": 11,
+        "height": 12,
+        "source": "ui/Image/UICommon/CasterBar3.UITex",
+        "frame": 63
+      },
+      "shine": {
+        "src": "mingjiao/Image_MJShine.png",
+        "width": 37,
+        "height": 69,
+        "source": "ui/Image/UICommon/CasterBar3.UITex",
+        "frame": 40
+      }
+    },
+    "headGlow": {
+      "src": "mingjiao/head_glow.png",
+      "x": 44.8,
+      "y": 53.150000000000006,
+      "size": 62,
+      "points": [
+        [
+          -5,
+          -20.099999999999998
+        ],
+        [
+          14,
+          -26.8
+        ],
+        [
+          26,
+          -16.75
+        ]
+      ],
+      "source": "assets/mingjiao/particle_10.png"
+    }
+  },
+  {
+    "id": "wudu",
+    "name": "五毒",
+    "skill": "读条",
+    "handle": "Handle_WuDu",
+    "width": 460,
+    "height": 110,
+    "text": {
+      "x": 118,
+      "y": 21,
+      "width": 186,
+      "height": 30
+    },
+    "layers": [
+      {
+        "name": "Image_BgWD_B",
+        "src": "wudu/Image_BgWD_B.png",
+        "x": 18,
+        "y": 18,
+        "width": 424,
+        "height": 70,
+        "progress": false,
+        "source": "ui/Image/UICommon/CasterBar2.UITex",
+        "frame": 26
+      },
+      {
+        "name": "Image_ProgressWD",
+        "src": "wudu/Image_ProgressWD.png",
+        "x": 62,
+        "y": 59,
+        "width": 342,
+        "height": 8,
+        "progress": true,
+        "source": "ui/Image/UICommon/CasterBar2.UITex",
+        "frame": 25
+      },
+      {
+        "name": "Image_BgWD",
+        "src": "wudu/Image_BgWD.png",
+        "x": 282,
+        "y": 35,
+        "width": 29,
+        "height": 29,
+        "progress": false,
+        "source": "ui/Image/UICommon/CasterBar2.UITex",
+        "frame": 24
+      }
+    ],
+    "particleTextures": [
+      {
+        "src": "wudu/particle_0.png",
+        "source": "data/source/other/特效/贴图/qt_其他/w_五毒技能条下层01.tga",
+        "extracted": "data/source/other/特效/贴图/qt_其他/w_五毒技能条下层01.dds",
+        "width": 64,
+        "height": 16
+      },
+      {
+        "src": "wudu/particle_1.png",
+        "source": "data/source/other/特效/贴图/yw_烟雾/yw_烟雾12.tga",
+        "extracted": "data/source/other/特效/贴图/yw_烟雾/yw_烟雾12.dds",
+        "width": 64,
+        "height": 64
+      },
+      {
+        "src": "wudu/particle_2.png",
+        "source": "data/source/other/特效/贴图/gx_光效/a_alpha10.tga",
+        "extracted": "data/source/other/特效/贴图/gx_光效/a_alpha10.dds",
+        "width": 32,
+        "height": 32
+      },
+      {
+        "src": "wudu/particle_3.png",
+        "source": "data/source/other/特效/贴图/qt_其他/h_蝴蝶08.tga",
+        "extracted": "data/source/other/特效/贴图/qt_其他/h_蝴蝶08.dds",
+        "width": 64,
+        "height": 64
+      },
+      {
+        "src": "wudu/particle_4.png",
+        "source": "data/source/other/特效/贴图/gx_光效/g_光点01.tga",
+        "extracted": "data/source/other/特效/贴图/gx_光效/g_光点01.dds",
+        "width": 64,
+        "height": 64
+      },
+      {
+        "src": "wudu/particle_5.png",
+        "source": "data/source/other/特效/贴图/gx_光效/z_爆点sf03_mz.tga",
+        "extracted": "data/source/other/特效/贴图/gx_光效/z_爆点sf03_mz.dds",
+        "width": 64,
+        "height": 64
+      }
+    ],
+    "nativeEffects": [
+      "data/source/other/新特效/其他/Pss/W_五毒技能条下层01.pss",
+      "data/source/other/新特效/其他/Pss/W_五毒技能条上层01.pss"
+    ],
+    "segment": {
+      "line": {
+        "src": "wudu/Image_WDDivide.png",
+        "width": 11,
+        "height": 12,
+        "source": "ui/Image/UICommon/CasterBar3.UITex",
+        "frame": 69
+      },
+      "shine": {
+        "src": "wudu/Image_WDShine.png",
+        "width": 37,
+        "height": 80,
+        "source": "ui/Image/UICommon/CasterBar3.UITex",
+        "frame": 42
+      }
+    },
+    "headGlow": {
+      "src": "wudu/head_glow.png",
+      "x": 46,
+      "y": 49.5,
+      "size": 62,
+      "points": [
+        [
+          -5,
+          -21.0
+        ],
+        [
+          14,
+          -28.0
+        ],
+        [
+          26,
+          -17.5
+        ]
+      ],
+      "source": "assets/wudu/particle_4.png"
+    }
+  },
+  {
+    "id": "tangmen",
+    "name": "唐门",
+    "skill": "读条",
+    "handle": "Handle_TangMen",
+    "width": 462,
+    "height": 110,
+    "text": {
+      "x": 118,
+      "y": 18,
+      "width": 186,
+      "height": 30
+    },
+    "layers": [
+      {
+        "name": "Image_BgTM",
+        "src": "tangmen/Image_BgTM.png",
+        "x": 18,
+        "y": 18,
+        "width": 426,
+        "height": 68,
+        "progress": false,
+        "source": "ui/Image/UICommon/CasterBar4.UITex",
+        "frame": 6
+      },
+      {
+        "name": "Image_ProgressTM",
+        "src": "tangmen/Image_ProgressTM.png",
+        "x": 64,
+        "y": 54,
+        "width": 343,
+        "height": 8,
+        "progress": true,
+        "source": "ui/Image/UICommon/CasterBar3.UITex",
+        "frame": 5
+      }
+    ],
+    "particleTextures": [
+      {
+        "src": "tangmen/particle_0.png",
+        "source": "data/source/other/特效/贴图/qt_其他/t_唐门ui轻功上层01.tga",
+        "extracted": "data/source/other/特效/贴图/qt_其他/t_唐门ui轻功上层01.dds",
+        "width": 64,
+        "height": 16
+      },
+      {
+        "src": "tangmen/particle_1.png",
+        "source": "data/source/other/特效/贴图/yw_烟雾/yw_烟雾12.tga",
+        "extracted": "data/source/other/特效/贴图/yw_烟雾/yw_烟雾12.dds",
+        "width": 64,
+        "height": 64
+      },
+      {
+        "src": "tangmen/particle_2.png",
+        "source": "data/source/other/特效/贴图/gx_光效/g_光点01.tga",
+        "extracted": "data/source/other/特效/贴图/gx_光效/g_光点01.dds",
+        "width": 64,
+        "height": 64
+      },
+      {
+        "src": "tangmen/particle_3.png",
+        "source": "data/source/other/特效/贴图/gx_光效/xx_星星02.tga",
+        "extracted": "data/source/other/特效/贴图/gx_光效/xx_星星02.dds",
+        "width": 64,
+        "height": 64
+      },
+      {
+        "src": "tangmen/particle_4.png",
+        "source": "data/source/other/特效/贴图/gx_光效/xx_x星星.tga",
+        "extracted": "data/source/other/特效/贴图/gx_光效/xx_x星星.dds",
+        "width": 64,
+        "height": 64
+      }
+    ],
+    "nativeEffects": [
+      "data/source/other/新特效/其他/Pss/T_唐门UI上层01.pss"
+    ],
+    "segment": {
+      "line": {
+        "src": "tangmen/Image_TMDivide.png",
+        "width": 11,
+        "height": 12,
+        "source": "ui/Image/UICommon/CasterBar3.UITex",
+        "frame": 72
+      },
+      "shine": {
+        "src": "tangmen/Image_TMShine.png",
+        "width": 37,
+        "height": 69,
+        "source": "ui/Image/UICommon/CasterBar3.UITex",
+        "frame": 38
+      }
+    },
+    "headGlow": {
+      "src": "tangmen/head_glow.png",
+      "x": 45.2,
+      "y": 48.6,
+      "size": 62,
+      "points": [
+        [
+          -5,
+          -20.4
+        ],
+        [
+          14,
+          -27.200000000000003
+        ],
+        [
+          26,
+          -17.0
+        ]
+      ],
+      "source": "assets/tangmen/particle_2.png"
+    }
+  },
+  {
+    "id": "cangyun",
+    "name": "苍云",
+    "skill": "读条",
+    "handle": "Handle_CangYun_Common",
+    "width": 451,
+    "height": 114,
+    "text": {
+      "x": 103,
+      "y": 21,
+      "width": 186,
+      "height": 30
+    },
+    "layers": [
+      {
+        "name": "Image_ProgressBarBg",
+        "src": "cangyun/Image_ProgressBarBg.png",
+        "x": 18,
+        "y": 30,
+        "width": 408,
+        "height": 66,
+        "progress": false,
+        "source": "ui/Image/UICommon/CasterBar.UITex",
+        "frame": 4
+      },
+      {
+        "name": "Image_ProgressBar",
+        "src": "cangyun/Image_ProgressBar.png",
+        "x": 82,
+        "y": 56,
+        "width": 311,
+        "height": 8,
+        "progress": true,
+        "source": "ui/Image/UICommon/CasterBar.UITex",
+        "frame": 3
+      }
+    ],
+    "particleTextures": [
+      {
+        "src": "cangyun/particle_0.png",
+        "source": "data/source/other/特效/贴图/gx_光效/s_水纹02.tga",
+        "extracted": "data/source/other/特效/贴图/gx_光效/s_水纹02.dds",
+        "width": 64,
+        "height": 64
+      },
+      {
+        "src": "cangyun/particle_1.png",
+        "source": "data/source/other/特效/贴图/qt_其他/c_苍云ui下层01.tga",
+        "extracted": "data/source/other/特效/贴图/qt_其他/c_苍云ui下层01.dds",
+        "width": 64,
+        "height": 16
+      },
+      {
+        "src": "cangyun/particle_2.png",
+        "source": "data/source/other/特效/贴图/qt_其他/c_苍云ui上层01.tga",
+        "extracted": "data/source/other/特效/贴图/qt_其他/c_苍云ui上层01.dds",
+        "width": 64,
+        "height": 64
+      },
+      {
+        "src": "cangyun/particle_3.png",
+        "source": "data/source/other/特效/贴图/gx_光效/s_水纹01.tga",
+        "extracted": "data/source/other/特效/贴图/gx_光效/s_水纹01.dds",
+        "width": 64,
+        "height": 64
+      },
+      {
+        "src": "cangyun/particle_4.png",
+        "source": "data/source/other/特效/贴图/yw_烟雾/h_火星01.tga",
+        "extracted": "data/source/other/特效/贴图/yw_烟雾/h_火星01.dds",
+        "width": 64,
+        "height": 32
+      },
+      {
+        "src": "cangyun/particle_5.png",
+        "source": "data/source/other/特效/贴图/gx_光效/g_光条01.tga",
+        "extracted": "data/source/other/特效/贴图/gx_光效/g_光条01.dds",
+        "width": 16,
+        "height": 64
+      },
+      {
+        "src": "cangyun/particle_6.png",
+        "source": "data/source/other/特效/贴图/gx_光效/g_光02.tga",
+        "extracted": "data/source/other/特效/贴图/gx_光效/g_光02.dds",
+        "width": 16,
+        "height": 64
+      },
+      {
+        "src": "cangyun/particle_7.png",
+        "source": "data/source/other/特效/贴图/gx_光效/x星光02.tga",
+        "extracted": "data/source/other/特效/贴图/gx_光效/x星光02.dds",
+        "width": 64,
+        "height": 64
+      },
+      {
+        "src": "cangyun/particle_8.png",
+        "source": "data/source/other/特效/贴图/yw_烟雾/z_fire03.tga",
+        "extracted": "data/source/other/特效/贴图/yw_烟雾/z_fire03.dds",
+        "width": 64,
+        "height": 32
+      },
+      {
+        "src": "cangyun/particle_9.png",
+        "source": "data/source/other/特效/贴图/gx_光效/xx_星星01.tga",
+        "extracted": "data/source/other/特效/贴图/gx_光效/xx_星星01.dds",
+        "width": 64,
+        "height": 64
+      },
+      {
+        "src": "cangyun/particle_10.png",
+        "source": "data/source/other/特效/贴图/gx_光效/xx_星星02.tga",
+        "extracted": "data/source/other/特效/贴图/gx_光效/xx_星星02.dds",
+        "width": 64,
+        "height": 64
+      }
+    ],
+    "nativeEffects": [
+      "data/source/other/新特效/其他/Pss/c_苍云UI上层01.pss"
+    ],
+    "segment": {
+      "line": {
+        "src": "cangyun/Image_CYDivide1.png",
+        "width": 11,
+        "height": 12,
+        "source": "ui/Image/UICommon/CasterBar3.UITex",
+        "frame": 61
+      },
+      "shine": {
+        "src": "cangyun/Image_CYShine1.png",
+        "width": 37,
+        "height": 69,
+        "source": "ui/Image/UICommon/CasterBar3.UITex",
+        "frame": 35
+      }
+    },
+    "headGlow": {
+      "src": "cangyun/head_glow.png",
+      "x": 44.400000000000006,
+      "y": 59.7,
+      "size": 62,
+      "points": [
+        [
+          -5,
+          -19.8
+        ],
+        [
+          14,
+          -26.400000000000002
+        ],
+        [
+          26,
+          -16.5
+        ]
+      ],
+      "source": "assets/cangyun/Image_CYShine1.png"
+    }
+  },
+  {
+    "id": "badao",
+    "name": "霸刀",
+    "skill": "读条",
+    "handle": "Handle_BaDao",
+    "width": 451,
+    "height": 114,
+    "text": {
+      "x": 109,
+      "y": 21,
+      "width": 186,
+      "height": 30
+    },
+    "layers": [
+      {
+        "name": "Image_BgBD_0",
+        "src": "badao/Image_BgBD_0.png",
+        "x": 61,
+        "y": 55,
+        "width": 346,
+        "height": 12,
+        "progress": false,
+        "source": "ui/Image/UICommon/CasterBar3.UITex",
+        "frame": 4
+      },
+      {
+        "name": "Image_ProgressBD",
+        "src": "badao/Image_ProgressBD.png",
+        "x": 80,
+        "y": 57,
+        "width": 302,
+        "height": 8,
+        "progress": true,
+        "source": "ui/Image/UICommon/CasterBar3.UITex",
+        "frame": 3
+      },
+      {
+        "name": "Image_BgBD",
+        "src": "badao/Image_BgBD.png",
+        "x": 18,
+        "y": 30,
+        "width": 392,
+        "height": 66,
+        "progress": false,
+        "source": "ui/Image/UICommon/CasterBar4.UITex",
+        "frame": 2
+      }
+    ],
+    "particleTextures": [
+      {
+        "src": "badao/particle_0.png",
+        "source": "data/source/other/特效/贴图/gx_光效/a_alpha10.tga",
+        "extracted": "data/source/other/特效/贴图/gx_光效/a_alpha10.dds",
+        "width": 32,
+        "height": 32
+      },
+      {
+        "src": "badao/particle_1.png",
+        "source": "data/source/other/特效/贴图/qt_其他/b_霸刀ui轻功下层01.tga",
+        "extracted": "data/source/other/特效/贴图/qt_其他/b_霸刀ui轻功下层01.dds",
+        "width": 64,
+        "height": 16
+      },
+      {
+        "src": "badao/particle_2.png",
+        "source": "data/source/other/特效/贴图/qt_其他/b_霸刀ui轻功上层01.tga",
+        "extracted": "data/source/other/特效/贴图/qt_其他/b_霸刀ui轻功上层01.dds",
+        "width": 64,
+        "height": 16
+      },
+      {
+        "src": "badao/particle_3.png",
+        "source": "data/source/other/特效/贴图/gx_光效/s_水纹02.tga",
+        "extracted": "data/source/other/特效/贴图/gx_光效/s_水纹02.dds",
+        "width": 64,
+        "height": 64
+      },
+      {
+        "src": "badao/particle_4.png",
+        "source": "data/source/other/特效/贴图/gx_光效/xx_x星星.tga",
+        "extracted": "data/source/other/特效/贴图/gx_光效/xx_x星星.dds",
+        "width": 64,
+        "height": 64
+      },
+      {
+        "src": "badao/particle_5.png",
+        "source": "data/source/other/特效/贴图/gx_光效/g_光点01.tga",
+        "extracted": "data/source/other/特效/贴图/gx_光效/g_光点01.dds",
+        "width": 64,
+        "height": 64
+      },
+      {
+        "src": "badao/particle_6.png",
+        "source": "data/source/other/特效/贴图/gx_光效/s_闪电03.tga",
+        "extracted": "data/source/other/特效/贴图/gx_光效/s_闪电03.dds",
+        "width": 64,
+        "height": 64
+      }
+    ],
+    "nativeEffects": [
+      "data/source/other/新特效/其他/Pss/B_霸刀UI上层01.pss"
+    ],
+    "segment": {
+      "line": {
+        "src": "badao/Image_BDDivide.png",
+        "width": 11,
+        "height": 12,
+        "source": "ui/Image/UICommon/CasterBar3.UITex",
+        "frame": 62
+      },
+      "shine": {
+        "src": "badao/Image_BDShine.png",
+        "width": 37,
+        "height": 69,
+        "source": "ui/Image/UICommon/CasterBar3.UITex",
+        "frame": 43
+      }
+    },
+    "headGlow": {
+      "src": "badao/head_glow.png",
+      "x": 44.400000000000006,
+      "y": 59.7,
+      "size": 62,
+      "points": [
+        [
+          -5,
+          -19.8
+        ],
+        [
+          14,
+          -26.400000000000002
+        ],
+        [
+          26,
+          -16.5
+        ]
+      ],
+      "source": "assets/badao/particle_5.png"
+    }
+  },
+  {
+    "id": "penglai",
+    "name": "蓬莱",
+    "skill": "读条",
+    "handle": "Handle_PengLai",
+    "width": 457,
+    "height": 110,
+    "text": {
+      "x": 100,
+      "y": 18,
+      "width": 186,
+      "height": 30
+    },
+    "layers": [
+      {
+        "name": "Image_BgPL_B",
+        "src": "penglai/Image_BgPL_B.png",
+        "x": 79,
+        "y": 52,
+        "width": 318,
+        "height": 12,
+        "progress": false,
+        "source": "ui/Image/UICommon/CasterBar3.UITex",
+        "frame": 80
+      },
+      {
+        "name": "Image_ProgressPL",
+        "src": "penglai/Image_ProgressPL.png",
+        "x": 85,
+        "y": 54,
+        "width": 311,
+        "height": 8,
+        "progress": true,
+        "source": "ui/Image/UICommon/CasterBar3.UITex",
+        "frame": 81
+      },
+      {
+        "name": "Image_BgPL",
+        "src": "penglai/Image_BgPL.png",
+        "x": 18,
+        "y": 18,
+        "width": 421,
+        "height": 68,
+        "progress": false,
+        "source": "ui/Image/UICommon/CasterBar4.UITex",
+        "frame": 82
+      }
+    ],
+    "particleTextures": [
+      {
+        "src": "penglai/particle_0.png",
+        "source": "data/source/other/特效/贴图/gx_光效/y_无缝01.tga",
+        "extracted": "data/source/other/特效/贴图/gx_光效/y_无缝01.dds",
+        "width": 64,
+        "height": 64
+      },
+      {
+        "src": "penglai/particle_1.png",
+        "source": "data/source/other/特效/贴图/qt_其他/p_蓬莱技能条.tga",
+        "extracted": "data/source/other/特效/贴图/qt_其他/p_蓬莱技能条.dds",
+        "width": 64,
+        "height": 16
+      },
+      {
+        "src": "penglai/particle_2.png",
+        "source": "data/source/other/特效/贴图/qt_其他/p_蓬莱技能条图标.tga",
+        "extracted": "data/source/other/特效/贴图/qt_其他/p_蓬莱技能条图标.dds",
+        "width": 64,
+        "height": 32
+      },
+      {
+        "src": "penglai/particle_3.png",
+        "source": "data/source/other/特效/贴图/gx_光效/l_流光01.tga",
+        "extracted": "data/source/other/特效/贴图/gx_光效/l_流光01.dds",
+        "width": 64,
+        "height": 32
+      },
+      {
+        "src": "penglai/particle_4.png",
+        "source": "data/source/other/特效/贴图/gx_光效/z_mask04.tga",
+        "extracted": "data/source/other/特效/贴图/gx_光效/z_mask04.dds",
+        "width": 64,
+        "height": 64
+      },
+      {
+        "src": "penglai/particle_5.png",
+        "source": "data/source/other/特效/贴图/gx_光效/xx_x星星.tga",
+        "extracted": "data/source/other/特效/贴图/gx_光效/xx_x星星.dds",
+        "width": 64,
+        "height": 64
+      },
+      {
+        "src": "penglai/particle_6.png",
+        "source": "data/source/other/特效/贴图/gx_光效/z_粒子序列01.tga",
+        "extracted": "data/source/other/特效/贴图/gx_光效/z_粒子序列01.dds",
+        "width": 64,
+        "height": 64
+      },
+      {
+        "src": "penglai/particle_7.png",
+        "source": "data/source/other/特效/贴图/gx_光效/sd_水滴01.tga",
+        "extracted": "data/source/other/特效/贴图/gx_光效/sd_水滴01.dds",
+        "width": 64,
+        "height": 64
+      }
+    ],
+    "nativeEffects": [
+      "data/source/other/HD特效/其他/Pss/p_蓬莱技能条.pss"
+    ],
+    "segment": {
+      "line": {
+        "src": "penglai/Image_PLDivide.png",
+        "width": 11,
+        "height": 12,
+        "source": "ui/Image/UICommon/CasterBar3.UITex",
+        "frame": 78
+      },
+      "shine": {
+        "src": "penglai/Image_PLShine.png",
+        "width": 37,
+        "height": 69,
+        "source": "ui/Image/UICommon/CasterBar3.UITex",
+        "frame": 38
+      }
+    },
+    "headGlow": {
+      "src": "penglai/head_glow.png",
+      "x": 45.2,
+      "y": 48.6,
+      "size": 62,
+      "points": [
+        [
+          -5,
+          -20.4
+        ],
+        [
+          14,
+          -27.200000000000003
+        ],
+        [
+          26,
+          -17.0
+        ]
+      ],
+      "source": "assets/penglai/Image_PLShine.png"
+    }
+  },
+  {
+    "id": "lingxue",
+    "name": "凌雪阁",
+    "skill": "读条",
+    "handle": "Handle_LingXueGe",
+    "width": 463,
+    "height": 110,
+    "text": {
+      "x": 125,
+      "y": 24,
+      "width": 186,
+      "height": 30
+    },
+    "layers": [
+      {
+        "name": "Image_BgLXG",
+        "src": "lingxue/Image_BgLXG.png",
+        "x": 18,
+        "y": 18,
+        "width": 427,
+        "height": 66,
+        "progress": false,
+        "source": "ui/Image/UICommon/CasterBar4.UITex",
+        "frame": 0
+      },
+      {
+        "name": "Image_ProgressLXG",
+        "src": "lingxue/Image_ProgressLXG.png",
+        "x": 68,
+        "y": 57,
+        "width": 345,
+        "height": 8,
+        "progress": true,
+        "source": "ui/Image/UICommon/CasterBar4.UITex",
+        "frame": 3
+      }
+    ],
+    "particleTextures": [
+      {
+        "src": "lingxue/particle_0.png",
+        "source": "data/source/other/特效/贴图/gx_光效/y_无缝01.tga",
+        "extracted": "data/source/other/特效/贴图/gx_光效/y_无缝01.dds",
+        "width": 64,
+        "height": 64
+      },
+      {
+        "src": "lingxue/particle_1.png",
+        "source": "data/source/other/特效/贴图/qt_其他/l_凌雪技能条.tga",
+        "extracted": "data/source/other/特效/贴图/qt_其他/l_凌雪技能条.dds",
+        "width": 64,
+        "height": 16
+      },
+      {
+        "src": "lingxue/particle_2.png",
+        "source": "data/source/other/特效/贴图/qt_其他/l_凌雪技能条图标.tga",
+        "extracted": "data/source/other/特效/贴图/qt_其他/l_凌雪技能条图标.dds",
+        "width": 64,
+        "height": 32
+      },
+      {
+        "src": "lingxue/particle_3.png",
+        "source": "data/source/other/特效/贴图/gx_光效/l_流光01.tga",
+        "extracted": "data/source/other/特效/贴图/gx_光效/l_流光01.dds",
+        "width": 64,
+        "height": 32
+      },
+      {
+        "src": "lingxue/particle_4.png",
+        "source": "data/source/other/特效/贴图/gx_光效/z_mask04.tga",
+        "extracted": "data/source/other/特效/贴图/gx_光效/z_mask04.dds",
+        "width": 64,
+        "height": 64
+      },
+      {
+        "src": "lingxue/particle_5.png",
+        "source": "data/source/other/特效/贴图/gx_光效/xx_x星星.tga",
+        "extracted": "data/source/other/特效/贴图/gx_光效/xx_x星星.dds",
+        "width": 64,
+        "height": 64
+      },
+      {
+        "src": "lingxue/particle_6.png",
+        "source": "data/source/other/特效/贴图/gx_光效/z_粒子序列01.tga",
+        "extracted": "data/source/other/特效/贴图/gx_光效/z_粒子序列01.dds",
+        "width": 64,
+        "height": 64
+      },
+      {
+        "src": "lingxue/particle_7.png",
+        "source": "data/source/other/特效/贴图/gx_光效/sd_闪电04hd.tga",
+        "extracted": "data/source/other/特效/贴图/gx_光效/sd_闪电04hd.dds",
+        "width": 64,
+        "height": 64
+      },
+      {
+        "src": "lingxue/particle_8.png",
+        "source": "data/source/other/特效/贴图/gx_光效/s_h闪电_02.tga",
+        "extracted": "data/source/other/特效/贴图/gx_光效/s_h闪电_02.dds",
+        "width": 64,
+        "height": 64
+      }
+    ],
+    "nativeEffects": [
+      "data/source/other/hd特效/其他/pss/l_凌雪技能条.pss"
+    ],
+    "segment": {
+      "line": {
+        "src": "lingxue/Image_LXGDivide.png",
+        "width": 9,
+        "height": 20,
+        "source": "ui/Image/UICommon/CasterBar4.UITex",
+        "frame": 9
+      },
+      "shine": {
+        "src": "lingxue/Image_LXGShine.png",
+        "width": 37,
+        "height": 69,
+        "source": "ui/Image/UICommon/CasterBar3.UITex",
+        "frame": 38
+      }
+    },
+    "headGlow": {
+      "src": "lingxue/head_glow.png",
+      "x": 44.400000000000006,
+      "y": 47.7,
+      "size": 62,
+      "points": [
+        [
+          -5,
+          -19.8
+        ],
+        [
+          14,
+          -26.400000000000002
+        ],
+        [
+          26,
+          -16.5
+        ]
+      ],
+      "source": "assets/lingxue/Image_LXGShine.png"
+    }
+  },
+  {
+    "id": "yantian",
+    "name": "衍天宗",
+    "skill": "读条",
+    "handle": "Handle_YanTianZong",
+    "width": 451,
+    "height": 110,
+    "text": {
+      "x": 125,
+      "y": 24,
+      "width": 186,
+      "height": 30
+    },
+    "layers": [
+      {
+        "name": "Image_BgYTZ",
+        "src": "yantian/Image_BgYTZ.png",
+        "x": 18,
+        "y": 18,
+        "width": 395,
+        "height": 67,
+        "progress": false,
+        "source": "ui/Image/UICommon/CasterBar4.UITex",
+        "frame": 12
+      },
+      {
+        "name": "Image_ProgressYTZ",
+        "src": "yantian/Image_ProgressYTZ.png",
+        "x": 70,
+        "y": 55,
+        "width": 337,
+        "height": 8,
+        "progress": true,
+        "source": "ui/Image/UICommon/CasterBar4.UITex",
+        "frame": 10
+      }
+    ],
+    "particleTextures": [
+      {
+        "src": "yantian/particle_0.png",
+        "source": "data/source/other/特效/贴图/qt_其他/y_衍天宗技能条01.tga",
+        "extracted": "data/source/other/特效/贴图/qt_其他/y_衍天宗技能条01.dds",
+        "width": 64,
+        "height": 16
+      },
+      {
+        "src": "yantian/particle_1.png",
+        "source": "data/source/other/特效/贴图/yw_烟雾/yw_烟雾12.tga",
+        "extracted": "data/source/other/特效/贴图/yw_烟雾/yw_烟雾12.dds",
+        "width": 64,
+        "height": 64
+      },
+      {
+        "src": "yantian/particle_2.png",
+        "source": "data/source/other/特效/贴图/qt_其他/y_衍天宗技能条02.tga",
+        "extracted": "data/source/other/特效/贴图/qt_其他/y_衍天宗技能条02.dds",
+        "width": 64,
+        "height": 16
+      },
+      {
+        "src": "yantian/particle_3.png",
+        "source": "data/source/other/特效/贴图/gx_光效/g_光晕007hd.tga",
+        "extracted": "data/source/other/特效/贴图/gx_光效/g_光晕007hd.dds",
+        "width": 64,
+        "height": 64
+      },
+      {
+        "src": "yantian/particle_4.png",
+        "source": "data/source/other/特效/贴图/qt_其他/ui_图标衍天01.tga",
+        "extracted": "data/source/other/特效/贴图/qt_其他/ui_图标衍天01.dds",
+        "width": 64,
+        "height": 64
+      },
+      {
+        "src": "yantian/particle_5.png",
+        "source": "data/source/other/特效/贴图/gx_光效/a_alpha28.tga",
+        "extracted": "data/source/other/特效/贴图/gx_光效/a_alpha28.dds",
+        "width": 64,
+        "height": 64
+      },
+      {
+        "src": "yantian/particle_6.png",
+        "source": "data/source/other/特效/贴图/gx_光效/s_水纹03.tga",
+        "extracted": "data/source/other/特效/贴图/gx_光效/s_水纹03.dds",
+        "width": 64,
+        "height": 64
+      },
+      {
+        "src": "yantian/particle_7.png",
+        "source": "data/source/other/特效/贴图/gx_光效/s_水波_hd.tga",
+        "extracted": "data/source/other/特效/贴图/gx_光效/s_水波_hd.dds",
+        "width": 64,
+        "height": 64
+      },
+      {
+        "src": "yantian/particle_8.png",
+        "source": "data/source/other/特效/贴图/gx_光效/xx_x星星.tga",
+        "extracted": "data/source/other/特效/贴图/gx_光效/xx_x星星.dds",
+        "width": 64,
+        "height": 64
+      },
+      {
+        "src": "yantian/particle_9.png",
+        "source": "data/source/other/特效/贴图/gx_光效/z_爆点01.tga",
+        "extracted": "data/source/other/特效/贴图/gx_光效/z_爆点01.dds",
+        "width": 64,
+        "height": 64
+      }
+    ],
+    "nativeEffects": [
+      "data/source/other/新特效/其他/Pss/ui_衍天图标01.pss"
+    ],
+    "segment": {
+      "line": {
+        "src": "yantian/Image_YTZDivide.png",
+        "width": 9,
+        "height": 20,
+        "source": "ui/Image/UICommon/CasterBar4.UITex",
+        "frame": 15
+      },
+      "shine": {
+        "src": "yantian/Image_YTZShine.png",
+        "width": 37,
+        "height": 69,
+        "source": "ui/Image/UICommon/CasterBar3.UITex",
+        "frame": 44
+      }
+    },
+    "headGlow": {
+      "src": "yantian/head_glow.png",
+      "x": 44.8,
+      "y": 48.150000000000006,
+      "size": 62,
+      "points": [
+        [
+          -5,
+          -20.099999999999998
+        ],
+        [
+          14,
+          -26.8
+        ],
+        [
+          26,
+          -16.75
+        ]
+      ],
+      "source": "assets/yantian/Image_YTZShine.png"
+    }
+  },
+  {
+    "id": "yaozong",
+    "name": "药宗",
+    "skill": "读条",
+    "handle": "Handle_YaoZong",
+    "width": 451,
+    "height": 110,
+    "text": {
+      "x": 125,
+      "y": 24,
+      "width": 186,
+      "height": 30
+    },
+    "layers": [
+      {
+        "name": "Image_BgYZ",
+        "src": "yaozong/Image_BgYZ.png",
+        "x": 18,
+        "y": 18,
+        "width": 398,
+        "height": 67,
+        "progress": false,
+        "source": "ui/Image/UICommon/CasterBar4.UITex",
+        "frame": 16
+      },
+      {
+        "name": "Image_ProgressYZ",
+        "src": "yaozong/Image_ProgressYZ.png",
+        "x": 60,
+        "y": 53,
+        "width": 339,
+        "height": 8,
+        "progress": true,
+        "source": "ui/Image/UICommon/CasterBar4.UITex",
+        "frame": 17
+      }
+    ],
+    "particleTextures": [
+      {
+        "src": "yaozong/particle_0.png",
+        "source": "data/source/other/特效/贴图/qt_其他/ui_药宗技能条01.tga",
+        "extracted": "data/source/other/特效/贴图/qt_其他/ui_药宗技能条01.dds",
+        "width": 64,
+        "height": 16
+      },
+      {
+        "src": "yaozong/particle_1.png",
+        "source": "data/source/other/特效/贴图/yw_烟雾/n_noise01.tga",
+        "extracted": "data/source/other/特效/贴图/yw_烟雾/n_noise01.dds",
+        "width": 64,
+        "height": 64
+      },
+      {
+        "src": "yaozong/particle_2.png",
+        "source": "data/source/other/特效/贴图/gx_光效/z_粒子序列01.tga",
+        "extracted": "data/source/other/特效/贴图/gx_光效/z_粒子序列01.dds",
+        "width": 64,
+        "height": 64
+      },
+      {
+        "src": "yaozong/particle_3.png",
+        "source": "data/source/other/特效/贴图/gx_光效/l_流光01.tga",
+        "extracted": "data/source/other/特效/贴图/gx_光效/l_流光01.dds",
+        "width": 64,
+        "height": 32
+      },
+      {
+        "src": "yaozong/particle_4.png",
+        "source": "data/source/other/特效/贴图/gx_光效/z_mask04.tga",
+        "extracted": "data/source/other/特效/贴图/gx_光效/z_mask04.dds",
+        "width": 64,
+        "height": 64
+      },
+      {
+        "src": "yaozong/particle_5.png",
+        "source": "data/source/other/特效/贴图/qt_其他/ui_僵尸战场花瓣_黑白.tga",
+        "extracted": "data/source/other/特效/贴图/qt_其他/ui_僵尸战场花瓣_黑白.dds",
+        "width": 64,
+        "height": 64
+      },
+      {
+        "src": "yaozong/particle_6.png",
+        "source": "data/source/other/特效/贴图/gx_光效/z_爆点01.tga",
+        "extracted": "data/source/other/特效/贴图/gx_光效/z_爆点01.dds",
+        "width": 64,
+        "height": 64
+      },
+      {
+        "src": "yaozong/particle_7.png",
+        "source": "data/source/other/特效/贴图/gx_光效/xx_x星星.tga",
+        "extracted": "data/source/other/特效/贴图/gx_光效/xx_x星星.dds",
+        "width": 64,
+        "height": 64
+      }
+    ],
+    "nativeEffects": [
+      "data/source/other/HD特效/其他/Pss/UI_药宗技能条.pss"
+    ],
+    "segment": {
+      "line": {
+        "src": "yaozong/Image_YZDivide.png",
+        "width": 11,
+        "height": 12,
+        "source": "ui/Image/UICommon/CasterBar4.UITex",
+        "frame": 21
+      },
+      "shine": {
+        "src": "yaozong/Image_YZShine.png",
+        "width": 37,
+        "height": 69,
+        "source": "ui/Image/UICommon/CasterBar4.UITex",
+        "frame": 20
+      }
+    },
+    "headGlow": {
+      "src": "yaozong/head_glow.png",
+      "x": 44.8,
+      "y": 48.150000000000006,
+      "size": 62,
+      "points": [
+        [
+          -5,
+          -20.099999999999998
+        ],
+        [
+          14,
+          -26.8
+        ],
+        [
+          26,
+          -16.75
+        ]
+      ],
+      "source": "assets/yaozong/Image_YZShine.png"
+    }
+  },
+  {
+    "id": "daozong",
+    "name": "刀宗",
+    "skill": "读条",
+    "handle": "Handle_DaoZong",
+    "width": 516,
+    "height": 110,
+    "text": {
+      "x": 164,
+      "y": 24,
+      "width": 186,
+      "height": 30
+    },
+    "layers": [
+      {
+        "name": "Image_BgDZ",
+        "src": "daozong/Image_BgDZ.png",
+        "x": 18,
+        "y": 26,
+        "width": 480,
+        "height": 64,
+        "progress": false,
+        "source": "ui/Image/UICommon/CasterBar5.UITex",
+        "frame": 0
+      },
+      {
+        "name": "Image_ProgressDZ1",
+        "src": "daozong/Image_ProgressDZ1.png",
+        "x": 124,
+        "y": 55,
+        "width": 314,
+        "height": 8,
+        "progress": true,
+        "source": "ui/Image/UICommon/CasterBar5.UITex",
+        "frame": 3
+      }
+    ],
+    "particleTextures": [
+      {
+        "src": "daozong/particle_0.png",
+        "source": "data/source/other/特效/贴图/yw_烟雾/yw_烟雾12.tga",
+        "extracted": "data/source/other/特效/贴图/yw_烟雾/yw_烟雾12.dds",
+        "width": 64,
+        "height": 64
+      },
+      {
+        "src": "daozong/particle_1.png",
+        "source": "data/source/other/特效/贴图/qt_其他/d_刀宗技能条01.tga",
+        "extracted": "data/source/other/特效/贴图/qt_其他/d_刀宗技能条01.dds",
+        "width": 64,
+        "height": 16
+      },
+      {
+        "src": "daozong/particle_2.png",
+        "source": "data/source/other/特效/贴图/qt_其他/d_刀宗技能条02.tga",
+        "extracted": "data/source/other/特效/贴图/qt_其他/d_刀宗技能条02.dds",
+        "width": 64,
+        "height": 16
+      },
+      {
+        "src": "daozong/particle_3.png",
+        "source": "data/source/other/特效/贴图/gx_光效/xx_x星星.tga",
+        "extracted": "data/source/other/特效/贴图/gx_光效/xx_x星星.dds",
+        "width": 64,
+        "height": 64
+      },
+      {
+        "src": "daozong/particle_4.png",
+        "source": "data/source/other/特效/贴图/gx_光效/gq_光球02.tga",
+        "extracted": "data/source/other/特效/贴图/gx_光效/gq_光球02.dds",
+        "width": 64,
+        "height": 64
+      },
+      {
+        "src": "daozong/particle_5.png",
+        "source": "data/source/other/特效/贴图/gx_光效/z_四方连续02.tga",
+        "extracted": "data/source/other/特效/贴图/gx_光效/z_四方连续02.dds",
+        "width": 64,
+        "height": 64
+      },
+      {
+        "src": "daozong/particle_6.png",
+        "source": "data/source/other/特效/贴图/gx_光效/gx_光线06_1.tga",
+        "extracted": "data/source/other/特效/贴图/gx_光效/gx_光线06_1.dds",
+        "width": 64,
+        "height": 64
+      },
+      {
+        "src": "daozong/particle_7.png",
+        "source": "data/source/other/特效/贴图/gx_光效/w_纹理16.tga",
+        "extracted": "data/source/other/特效/贴图/gx_光效/w_纹理16.dds",
+        "width": 64,
+        "height": 64
+      },
+      {
+        "src": "daozong/particle_8.png",
+        "source": "data/source/other/特效/贴图/gx_光效/z_mask04.tga",
+        "extracted": "data/source/other/特效/贴图/gx_光效/z_mask04.dds",
+        "width": 64,
+        "height": 64
+      }
+    ],
+    "nativeEffects": [
+      "data/source/other/HD特效/其他/Pss/ui_刀宗图标01.pss"
+    ],
+    "segment": {
+      "line": {
+        "src": "daozong/Image_DZDivide.png",
+        "width": 12,
+        "height": 12,
+        "source": "ui/Image/UICommon/CasterBar5.UITex",
+        "frame": 2
+      },
+      "shine": {
+        "src": "daozong/Image_DZShine.png",
+        "width": 40,
+        "height": 72,
+        "source": "ui/Image/UICommon/CasterBar5.UITex",
+        "frame": 1
+      }
+    },
+    "headGlow": {
+      "src": "daozong/head_glow.png",
+      "x": 43.6,
+      "y": 54.8,
+      "size": 62,
+      "points": [
+        [
+          -5,
+          -19.2
+        ],
+        [
+          14,
+          -25.6
+        ],
+        [
+          26,
+          -16.0
+        ]
+      ],
+      "source": "assets/daozong/Image_DZShine.png"
+    }
+  },
+  {
+    "id": "wanling",
+    "name": "万灵",
+    "skill": "读条",
+    "handle": "Handle_WanLing",
+    "width": 516,
+    "height": 110,
+    "text": {
+      "x": 164,
+      "y": 24,
+      "width": 186,
+      "height": 30
+    },
+    "layers": [
+      {
+        "name": "Image_BgWL",
+        "src": "wanling/Image_BgWL.png",
+        "x": 18,
+        "y": 26,
+        "width": 480,
+        "height": 64,
+        "progress": false,
+        "source": "ui/Image/UICommon/CasterBar5.UITex",
+        "frame": 8
+      },
+      {
+        "name": "Image_ProgressWL",
+        "src": "wanling/Image_ProgressWL.png",
+        "x": 124,
+        "y": 55,
+        "width": 314,
+        "height": 8,
+        "progress": true,
+        "source": "ui/Image/UICommon/CasterBar5.UITex",
+        "frame": 11
+      }
+    ],
+    "particleTextures": [
+      {
+        "src": "wanling/particle_0.png",
+        "source": "data/source/other/特效/贴图/qt_其他/ui_万灵技能条底色_01.tga",
+        "extracted": "data/source/other/特效/贴图/qt_其他/ui_万灵技能条底色_01.dds",
+        "width": 64,
+        "height": 16
+      },
+      {
+        "src": "wanling/particle_1.png",
+        "source": "data/source/other/特效/贴图/gx_光效/q_气浪.tga",
+        "extracted": "data/source/other/特效/贴图/gx_光效/q_气浪.dds",
+        "width": 16,
+        "height": 64
+      },
+      {
+        "src": "wanling/particle_2.png",
+        "source": "data/source/other/特效/贴图/gx_光效/a_alpha06.tga",
+        "extracted": "data/source/other/特效/贴图/gx_光效/a_alpha06.dds",
+        "width": 64,
+        "height": 64
+      },
+      {
+        "src": "wanling/particle_3.png",
+        "source": "data/source/other/特效/贴图/qt_其他/ui_万灵技能条_边框_01.tga",
+        "extracted": "data/source/other/特效/贴图/qt_其他/ui_万灵技能条_边框_01.dds",
+        "width": 64,
+        "height": 16
+      },
+      {
+        "src": "wanling/particle_4.png",
+        "source": "data/source/other/特效/贴图/yw_烟雾/n_noise01.tga",
+        "extracted": "data/source/other/特效/贴图/yw_烟雾/n_noise01.dds",
+        "width": 64,
+        "height": 64
+      },
+      {
+        "src": "wanling/particle_5.png",
+        "source": "data/source/other/特效/贴图/gx_光效/z_粒子序列01.tga",
+        "extracted": "data/source/other/特效/贴图/gx_光效/z_粒子序列01.dds",
+        "width": 64,
+        "height": 64
+      },
+      {
+        "src": "wanling/particle_6.png",
+        "source": "data/source/other/特效/贴图/gx_光效/w_万灵渐变_01.tga",
+        "extracted": "data/source/other/特效/贴图/gx_光效/w_万灵渐变_01.dds",
+        "width": 64,
+        "height": 64
+      },
+      {
+        "src": "wanling/particle_7.png",
+        "source": "data/source/other/特效/贴图/gx_光效/g_光点01.tga",
+        "extracted": "data/source/other/特效/贴图/gx_光效/g_光点01.dds",
+        "width": 64,
+        "height": 64
+      },
+      {
+        "src": "wanling/particle_8.png",
+        "source": "data/source/other/特效/贴图/qt_其他/h_花瓣.tga",
+        "extracted": "data/source/other/特效/贴图/qt_其他/h_花瓣.dds",
+        "width": 64,
+        "height": 64
+      },
+      {
+        "src": "wanling/particle_9.png",
+        "source": "data/source/other/特效/贴图/gx_光效/z_guang02.tga",
+        "extracted": "data/source/other/特效/贴图/gx_光效/z_guang02.dds",
+        "width": 64,
+        "height": 64
+      },
+      {
+        "src": "wanling/particle_10.png",
+        "source": "data/source/other/特效/贴图/gx_光效/l_流光01hd.tga",
+        "extracted": "data/source/other/特效/贴图/gx_光效/l_流光01hd.dds",
+        "width": 64,
+        "height": 64
+      },
+      {
+        "src": "wanling/particle_11.png",
+        "source": "data/source/other/特效/贴图/gx_光效/l_流光01.tga",
+        "extracted": "data/source/other/特效/贴图/gx_光效/l_流光01.dds",
+        "width": 64,
+        "height": 32
+      },
+      {
+        "src": "wanling/particle_12.png",
+        "source": "data/source/other/特效/贴图/yw_烟雾/z_fire03.tga",
+        "extracted": "data/source/other/特效/贴图/yw_烟雾/z_fire03.dds",
+        "width": 64,
+        "height": 32
+      },
+      {
+        "src": "wanling/particle_13.png",
+        "source": "data/source/other/特效/贴图/gx_光效/g_光03.tga",
+        "extracted": "data/source/other/特效/贴图/gx_光效/g_光03.dds",
+        "width": 64,
+        "height": 64
+      }
+    ],
+    "nativeEffects": [
+      "data/source/other/HD特效/其他/Pss/UI_万灵技能条_01.pss"
+    ],
+    "segment": {
+      "line": {
+        "src": "wanling/Image_WLDivide.png",
+        "width": 12,
+        "height": 12,
+        "source": "ui/Image/UICommon/CasterBar5.UITex",
+        "frame": 10
+      },
+      "shine": {
+        "src": "wanling/Image_WLShine.png",
+        "width": 40,
+        "height": 72,
+        "source": "ui/Image/UICommon/CasterBar5.UITex",
+        "frame": 9
+      }
+    },
+    "headGlow": {
+      "src": "wanling/head_glow.png",
+      "x": 43.6,
+      "y": 54.8,
+      "size": 62,
+      "points": [
+        [
+          -5,
+          -19.2
+        ],
+        [
+          14,
+          -25.6
+        ],
+        [
+          26,
+          -16.0
+        ]
+      ],
+      "source": "assets/wanling/particle_7.png"
+    }
+  },
+  {
+    "id": "duanshi",
+    "name": "段氏",
+    "skill": "读条",
+    "handle": "Handle_DuanShi",
+    "width": 516,
+    "height": 110,
+    "text": {
+      "x": 164,
+      "y": 24,
+      "width": 186,
+      "height": 30
+    },
+    "layers": [
+      {
+        "name": "Image_BgDS",
+        "src": "duanshi/Image_BgDS.png",
+        "x": 18,
+        "y": 26,
+        "width": 480,
+        "height": 64,
+        "progress": false,
+        "source": "ui/Image/UICommon/CasterBar5.UITex",
+        "frame": 14
+      },
+      {
+        "name": "Image_ProgressDS",
+        "src": "duanshi/Image_ProgressDS.png",
+        "x": 124,
+        "y": 55,
+        "width": 314,
+        "height": 8,
+        "progress": true,
+        "source": "ui/Image/UICommon/CasterBar5.UITex",
+        "frame": 18
+      }
+    ],
+    "particleTextures": [
+      {
+        "src": "duanshi/particle_0.png",
+        "source": "data/source/other/特效/贴图/qt_其他/ui头像框/ui_段氏技能读条框.tga",
+        "extracted": "data/source/other/特效/贴图/qt_其他/ui头像框/ui_段氏技能读条框.tga",
+        "width": 480,
+        "height": 64
+      },
+      {
+        "src": "duanshi/particle_1.png",
+        "source": "data/source/other/特效/贴图/yw_烟雾/n_noise01.tga",
+        "extracted": "data/source/other/特效/贴图/yw_烟雾/n_noise01.dds",
+        "width": 64,
+        "height": 64
+      },
+      {
+        "src": "duanshi/particle_2.png",
+        "source": "data/source/other/特效/贴图/gx_光效/g_光点01.tga",
+        "extracted": "data/source/other/特效/贴图/gx_光效/g_光点01.dds",
+        "width": 64,
+        "height": 64
+      },
+      {
+        "src": "duanshi/particle_3.png",
+        "source": "data/source/other/特效/贴图/gx_光效/l_流光01.tga",
+        "extracted": "data/source/other/特效/贴图/gx_光效/l_流光01.dds",
+        "width": 64,
+        "height": 32
+      },
+      {
+        "src": "duanshi/particle_4.png",
+        "source": "data/source/other/特效/贴图/gx_光效/z_mask04.tga",
+        "extracted": "data/source/other/特效/贴图/gx_光效/z_mask04.dds",
+        "width": 64,
+        "height": 64
+      },
+      {
+        "src": "duanshi/particle_5.png",
+        "source": "data/source/other/特效/贴图/gx_光效/j_渐变图56.tga",
+        "extracted": "data/source/other/特效/贴图/gx_光效/j_渐变图56.dds",
+        "width": 64,
+        "height": 64
+      },
+      {
+        "src": "duanshi/particle_6.png",
+        "source": "data/source/other/特效/贴图/qt_其他/y_羽毛01.tga",
+        "extracted": "data/source/other/特效/贴图/qt_其他/y_羽毛01.dds",
+        "width": 64,
+        "height": 64
+      },
+      {
+        "src": "duanshi/particle_7.png",
+        "source": "data/source/other/特效/贴图/gx_光效/z_爆点01.tga",
+        "extracted": "data/source/other/特效/贴图/gx_光效/z_爆点01.dds",
+        "width": 64,
+        "height": 64
+      }
+    ],
+    "nativeEffects": [
+      "data/source/other/HD特效/其他/Pss/UI_段氏技能条_01.pss"
+    ],
+    "segment": {
+      "line": {
+        "src": "duanshi/Image_DSDivide.png",
+        "width": 12,
+        "height": 12,
+        "source": "ui/Image/UICommon/CasterBar5.UITex",
+        "frame": 17
+      },
+      "shine": {
+        "src": "duanshi/Image_DSShine.png",
+        "width": 40,
+        "height": 72,
+        "source": "ui/Image/UICommon/CasterBar5.UITex",
+        "frame": 16
+      }
+    },
+    "headGlow": {
+      "src": "duanshi/head_glow.png",
+      "x": 43.6,
+      "y": 54.8,
+      "size": 62,
+      "points": [
+        [
+          -5,
+          -19.2
+        ],
+        [
+          14,
+          -25.6
+        ],
+        [
+          26,
+          -16.0
+        ]
+      ],
+      "source": "assets/duanshi/particle_2.png"
+    }
+  },
+  {
+    "id": "wuxiang",
+    "name": "无相楼",
+    "skill": "读条",
+    "handle": "Handle_WuXiangLou",
+    "width": 516,
+    "height": 110,
+    "text": {
+      "x": 164,
+      "y": 24,
+      "width": 186,
+      "height": 30
+    },
+    "layers": [
+      {
+        "name": "Image_BgWXL",
+        "src": "wuxiang/Image_BgWXL.png",
+        "x": 18,
+        "y": 26,
+        "width": 480,
+        "height": 64,
+        "progress": false,
+        "source": "ui/Image/UICommon/CasterBar5.UITex",
+        "frame": 21
+      },
+      {
+        "name": "Image_ProgressWXL",
+        "src": "wuxiang/Image_ProgressWXL.png",
+        "x": 124,
+        "y": 55,
+        "width": 314,
+        "height": 8,
+        "progress": true,
+        "source": "ui/Image/UICommon/CasterBar5.UITex",
+        "frame": 25
+      }
+    ],
+    "particleTextures": [
+      {
+        "src": "wuxiang/particle_0.png",
+        "source": "data/source/other/特效/贴图/qt_其他/ui头像框/ui_段氏技能读条框.tga",
+        "extracted": "data/source/other/特效/贴图/qt_其他/ui头像框/ui_段氏技能读条框.tga",
+        "width": 480,
+        "height": 64
+      },
+      {
+        "src": "wuxiang/particle_1.png",
+        "source": "data/source/other/特效/贴图/yw_烟雾/n_noise01.tga",
+        "extracted": "data/source/other/特效/贴图/yw_烟雾/n_noise01.dds",
+        "width": 64,
+        "height": 64
+      },
+      {
+        "src": "wuxiang/particle_2.png",
+        "source": "data/source/other/特效/贴图/gx_光效/g_光点01.tga",
+        "extracted": "data/source/other/特效/贴图/gx_光效/g_光点01.dds",
+        "width": 64,
+        "height": 64
+      },
+      {
+        "src": "wuxiang/particle_3.png",
+        "source": "data/source/other/特效/贴图/gx_光效/l_流光01.tga",
+        "extracted": "data/source/other/特效/贴图/gx_光效/l_流光01.dds",
+        "width": 64,
+        "height": 32
+      },
+      {
+        "src": "wuxiang/particle_4.png",
+        "source": "data/source/other/特效/贴图/gx_光效/z_mask04.tga",
+        "extracted": "data/source/other/特效/贴图/gx_光效/z_mask04.dds",
+        "width": 64,
+        "height": 64
+      },
+      {
+        "src": "wuxiang/particle_5.png",
+        "source": "data/source/other/特效/贴图/gx_光效/j_渐变图56.tga",
+        "extracted": "data/source/other/特效/贴图/gx_光效/j_渐变图56.dds",
+        "width": 64,
+        "height": 64
+      },
+      {
+        "src": "wuxiang/particle_6.png",
+        "source": "data/source/other/特效/贴图/qt_其他/y_羽毛01.tga",
+        "extracted": "data/source/other/特效/贴图/qt_其他/y_羽毛01.dds",
+        "width": 64,
+        "height": 64
+      },
+      {
+        "src": "wuxiang/particle_7.png",
+        "source": "data/source/other/特效/贴图/gx_光效/z_爆点01.tga",
+        "extracted": "data/source/other/特效/贴图/gx_光效/z_爆点01.dds",
+        "width": 64,
+        "height": 64
+      }
+    ],
+    "nativeEffects": [
+      "data/source/other/HD特效/其他/Pss/UI_段氏技能条_01.pss"
+    ],
+    "segment": {
+      "line": {
+        "src": "wuxiang/Image_WXLDivide.png",
+        "width": 12,
+        "height": 12,
+        "source": "ui/Image/UICommon/CasterBar5.UITex",
+        "frame": 23
+      },
+      "shine": {
+        "src": "wuxiang/Image_WXLShine.png",
+        "width": 40,
+        "height": 72,
+        "source": "ui/Image/UICommon/CasterBar5.UITex",
+        "frame": 24
+      }
+    },
+    "headGlow": {
+      "src": "wuxiang/head_glow.png",
+      "x": 43.6,
+      "y": 54.8,
+      "size": 62,
+      "points": [
+        [
+          -5,
+          -19.2
+        ],
+        [
+          14,
+          -25.6
+        ],
+        [
+          26,
+          -16.0
+        ]
+      ],
+      "source": "assets/wuxiang/particle_2.png"
+    }
+  },
+  {
+    "id": "common",
+    "name": "通用",
+    "skill": "读条",
+    "handle": "Handle_Common",
+    "width": 451,
+    "height": 125,
+    "text": {
+      "x": 98,
+      "y": 21,
+      "width": 269,
+      "height": 30
+    },
+    "layers": [
+      {
+        "name": "Image_Bg",
+        "src": "common/Image_Bg.png",
+        "x": 18,
+        "y": 18,
+        "width": 412,
+        "height": 89,
+        "progress": false,
+        "source": "ui/Image/Common/MainPanel_1.UITex",
+        "frame": 24
+      },
+      {
+        "name": "Image_Progress",
+        "src": "common/Image_Progress.png",
+        "x": 68,
+        "y": 56,
+        "width": 324,
+        "height": 11,
+        "progress": true,
+        "source": "ui/Image/Common/MainPanel_1.UITex",
+        "frame": 23
+      }
+    ],
+    "particleTextures": [
+      {
+        "src": "common/particle_0.png",
+        "source": "data/source/other/特效/贴图/gx_光效/a_alpha10.tga",
+        "extracted": "data/source/other/特效/贴图/gx_光效/a_alpha10.dds",
+        "width": 32,
+        "height": 32
+      },
+      {
+        "src": "common/particle_1.png",
+        "source": "data/source/other/特效/贴图/qt_其他/t_通用ui轻功上层01.tga",
+        "extracted": "data/source/other/特效/贴图/qt_其他/t_通用ui轻功上层01.dds",
+        "width": 64,
+        "height": 16
+      },
+      {
+        "src": "common/particle_2.png",
+        "source": "data/source/other/特效/贴图/gx_光效/s_水纹01.tga",
+        "extracted": "data/source/other/特效/贴图/gx_光效/s_水纹01.dds",
+        "width": 64,
+        "height": 64
+      },
+      {
+        "src": "common/particle_3.png",
+        "source": "data/source/other/特效/贴图/gx_光效/g_光点01.tga",
+        "extracted": "data/source/other/特效/贴图/gx_光效/g_光点01.dds",
+        "width": 64,
+        "height": 64
+      },
+      {
+        "src": "common/particle_4.png",
+        "source": "data/source/other/特效/贴图/gx_光效/十子闪.tga",
+        "extracted": "data/source/other/特效/贴图/gx_光效/十子闪.dds",
+        "width": 64,
+        "height": 64
+      }
+    ],
+    "nativeEffects": [
+      "data/source/other/新特效/其他/Pss/T_通用UI上层01.pss"
+    ],
+    "segment": {
+      "line": {
+        "src": "common/Image_CODivide.png",
+        "width": 11,
+        "height": 12,
+        "source": "ui/Image/UICommon/CasterBar3.UITex",
+        "frame": 65
+      },
+      "shine": {
+        "src": "common/Image_COShine.png",
+        "width": 37,
+        "height": 69,
+        "source": "ui/Image/UICommon/CasterBar3.UITex",
+        "frame": 46
+      }
+    },
+    "headGlow": {
+      "src": "common/head_glow.png",
+      "x": 46,
+      "y": 58.050000000000004,
+      "size": 62,
+      "points": [
+        [
+          -5,
+          -26.7
+        ],
+        [
+          14,
+          -35.6
+        ],
+        [
+          26,
+          -22.25
+        ]
+      ],
+      "source": "assets/common/particle_3.png"
+    }
+  }
+]

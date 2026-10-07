@@ -85,6 +85,9 @@ from .gold import (
 from .haste import (
     haste_matcher
 )
+from .castbar import (
+    castbar_matcher
+)
 from .horse import (
     horse_chat_matcher,
     horse_spawn_matcher

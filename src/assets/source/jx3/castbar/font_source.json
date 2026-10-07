@@ -1,0 +1,34 @@
+{
+  "font": {
+    "name": "方正黑体15白-阴影灰7",
+    "fontid": "1",
+    "color": "white",
+    "size": "0",
+    "bordercolor": "black",
+    "bordersize": "0",
+    "projectioncolor": "gray7",
+    "projectionsize": "1"
+  },
+  "fontlist": {
+    "ismipmap": "0",
+    "isantialias": "1",
+    "size": "15",
+    "border": "0",
+    "vertical": "0",
+    "projection": "1",
+    "dpi": "86",
+    "name": "黑体",
+    "file": "\\UI\\Font\\fzht_GBK.ttf"
+  },
+  "fontpathlist": {
+    "name": "黑体",
+    "file": "\\UI\\Font\\fzht_GBK.ttf"
+  },
+  "fontFile": {
+    "source": "F:/JX3_EXP/bin/zhcn_exp/ui/Font/fzht_GBK.TTF",
+    "included": "font/fzht.ttf",
+    "sha256": "88bb8b847cddf8b562ccabf5296426f3b1f9f44c270aaecbf82ec8ff8986f38b",
+    "family": "方正黑体_GBK",
+    "postscriptName": "FZHTK--GBK1-0"
+  }
+}
