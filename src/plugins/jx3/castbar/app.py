@@ -1,12 +1,16 @@
 """Robot command parsing and in-memory castbar generation."""
+import asyncio
+from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass
 from functools import lru_cache
 import io
 import math
 import re
 import shlex
+import threading
 
 from . import renderer
+from .cache import ByteCache
 from .fonts import enumerate_fonts
 
 HELP = """读条 职业 [名称] [时长] [正/倒] [小节] [尺寸]
@@ -19,7 +23,8 @@ HELP = """读条 职业 [名称] [时长] [正/倒] [小节] [尺寸]
 参数：职业、名称、时长、方向、时间（当前帧）、格式=png/gif/apng、范围=完整/当前、宽、高、尺寸、倍率=1/2/3、小节=数量/关、粒子=开/关、强度=0~2、字体、字号=8~36、计时=开/关、背景=透明/深色/浅色、帧率=10/20/30。
 只填宽或高自动保持比例；同时填宽高可拉伸。
 读条 职业：列出职业；读条 字体 [关键词]：查询机器人主机字体。
-APNG 以文件发送，GIF/PNG 以图片发送。"""
+APNG 以文件发送，GIF/PNG 以图片发送。
+生成任务按顺序排队，同时只生成一张；排队结束后自动发送。"""
 
 SCHOOL_ALIASES = {style['id']: style['id'] for style in renderer.STYLES}
 SCHOOL_ALIASES.update({style['name']: style['id'] for style in renderer.STYLES})
@@ -45,6 +50,10 @@ OPTION_ALIASES.update({
 })
 POSITIONAL_FIELDS = ('名称', '时长', '方向', '小节', '尺寸')
 SIZE_PATTERN = re.compile(r'(\d+)\s*[xX×]\s*(\d+)')
+IMAGE_CACHE = ByteCache(max_bytes=32 * 1024 * 1024, max_entries=64)
+_RENDER_EXECUTOR = ThreadPoolExecutor(max_workers=1, thread_name_prefix='castbar')
+_QUEUE_LOCK = threading.Lock()
+_QUEUED_JOBS = []
 
 
 @dataclass(frozen=True)
@@ -118,6 +127,14 @@ def information(text: str) -> str | None:
         return '未找到匹配字体。默认可用“方正黑体_GBK”。'
     labels = '\n'.join(font['label'] for font in matches[:30])
     return f'机器人主机字体（匹配 {len(matches)} 项）：\n{labels}' + ('\n请加关键词缩小范围。' if len(matches)>30 else '')
+
+
+async def information_async(text: str) -> str | None:
+    tokens = split_command(text)
+    if tokens and tokens[0] == '字体':
+        return await asyncio.to_thread(information, text)
+    # Ordinary commands must reach the queue before yielding, preserving order.
+    return information(text)
 
 
 def _numeric_token(token: str) -> bool:
@@ -246,12 +263,13 @@ def parse_request(text: str) -> tuple[dict, str]:
 
 
 def generate_image(text: str) -> GeneratedImage:
-    # Hold the lock inside the worker: cancellation must not allow another render
-    # to overlap a thread that is still encoding an animation.
-    if not renderer.EXPORT_LOCK.acquire(blocking=False):
-        raise ValueError('正在生成另一张读条图片，请稍后再试。')
-    try:
+    # The worker retains the lock even if its awaiting coroutine is cancelled.
+    with renderer.EXPORT_LOCK:
         data, format_ = parse_request(text)
+        key = (format_, tuple(sorted(data.items())))
+        cached = IMAGE_CACHE.get(key)
+        if cached is not None:
+            return cached
         if format_ == 'gif':
             content = renderer.gif_bytes(data)
         elif format_ == 'apng':
@@ -262,6 +280,30 @@ def generate_image(text: str) -> GeneratedImage:
             content = output.getvalue()
         suffix = 'apng.png' if format_ == 'apng' else format_
         filename = f"castbar_{data['school']}_{data['direction']}_{data['width']}x{data['height']}.{suffix}"
-        return GeneratedImage(content, filename, format_)
-    finally:
-        renderer.EXPORT_LOCK.release()
+        image = GeneratedImage(content, filename, format_)
+        IMAGE_CACHE.put(key, image, len(content))
+        return image
+
+
+def _remove_finished_job(future):
+    with _QUEUE_LOCK:
+        _QUEUED_JOBS.remove(future)
+
+
+async def generate_image_async(text: str, on_queued=None) -> GeneratedImage:
+    """Submit in arrival order without occupying the bot's default thread pool."""
+    with _QUEUE_LOCK:
+        ahead = sum(not job.done() for job in _QUEUED_JOBS)
+        future = _RENDER_EXECUTOR.submit(generate_image, text)
+        _QUEUED_JOBS.append(future)
+    future.add_done_callback(_remove_finished_job)
+    pending = asyncio.wrap_future(future)
+    try:
+        if ahead and on_queued is not None:
+            await on_queued(ahead)
+        return await pending
+    except BaseException:
+        # Pending jobs can be skipped; running threads finish before the next job.
+        future.cancel()
+        pending.cancel()
+        raise

@@ -10,6 +10,7 @@ from PIL import Image, ImageChops, ImageDraw
 
 from src.const.path import ASSETS, build_path
 
+from .cache import ByteCache
 from .fonts import enumerate_fonts, text_runs
 
 IMAGE_PATH = Path(build_path(ASSETS, ['image', 'jx3', 'castbar']))
@@ -17,6 +18,7 @@ SOURCE_PATH = Path(build_path(ASSETS, ['source', 'jx3', 'castbar']))
 STYLES = json.loads((SOURCE_PATH / 'styles.json').read_text(encoding='utf-8'))
 BY_ID = {s['id']: s for s in STYLES}
 EXPORT_LOCK = threading.Lock()
+RESIZED_ASSETS = ByteCache(max_bytes=32 * 1024 * 1024, max_entries=512)
 GAME_FONT_PATH = Path(build_path(ASSETS, ['font', 'fzht.ttf']))
 DEFAULT_FONT_SIZE = 15  # FontScheme 18 -> FontID 1 -> fontlist.ini Size=15.
 
@@ -94,6 +96,28 @@ def asset(path):
     return Image.open(IMAGE_PATH / path).convert('RGBA')
 
 
+def resized_asset(path, size):
+    # Cached sprites are shared: callers must copy before changing pixels.
+    key = (path, size)
+    sprite = RESIZED_ASSETS.get(key)
+    if sprite is None:
+        sprite = asset(path).resize(size, Image.Resampling.LANCZOS)
+        RESIZED_ASSETS.put(key, sprite, sprite.width * sprite.height * 4)
+    return sprite
+
+
+def particle_asset(path, size):
+    key = ('particle', path, size)
+    sprite = RESIZED_ASSETS.get(key)
+    if sprite is None:
+        sprite = resized_asset(path, size).copy()
+        r, g, b, alpha = sprite.split()
+        light = ImageChops.lighter(ImageChops.lighter(r, g), b)
+        sprite.putalpha(ImageChops.multiply(alpha, light))
+        RESIZED_ASSETS.put(key, sprite, sprite.width * sprite.height * 4)
+    return sprite
+
+
 def particle_sources(style):
     sprites = [t for t in style['particleTextures'] if any(k in t['source'] for k in ['光点', '羽毛', '樱花', '火星', '叶子'])]
     return sprites[:5] or style['particleTextures'][:3]
@@ -129,7 +153,7 @@ def render_native(data, elapsed):
     bg = {'transparent': (0, 0, 0, 0), 'dark': (24, 38, 56, 255), 'light': (232, 240, 246, 255)}[data['background']]
     image = Image.new('RGBA', (style['width']*scale, style['height']*scale), bg)
     for layer in style['layers']:
-        sprite = asset(layer['src']).resize((layer['width']*scale, layer['height']*scale), Image.Resampling.LANCZOS)
+        sprite = resized_asset(layer['src'], (layer['width']*scale, layer['height']*scale))
         if layer['progress']:
             # Crop the full texture; do not squeeze it into a shrinking width.
             width = round(sprite.width * fill)
@@ -140,34 +164,34 @@ def render_native(data, elapsed):
     if data['particles'] and data['strength']:
         head = style.get('headGlow')
         if head:
-            glow = asset(head['src'])
             pulse = (0.18 + 0.08*math.sin(elapsed*4.8)) * min(2, data['strength'])
             marks = [(head['x'], head['y'], head['size'], pulse)]
             for i, (dx, dy) in enumerate(head['points']):
                 phase = 0.5 + 0.5*math.sin(elapsed*(3.9+i*0.7)+i*2.1)
                 marks.append((head['x']+dx, head['y']+dy, 18+phase*12, (0.2+phase*0.6)*min(2, data['strength'])))
             for x, y, size, opacity in marks:
-                sprite = glow.resize((max(1, round(size*scale)), max(1, round(size*scale))), Image.Resampling.LANCZOS).copy()
+                sprite = resized_asset(head['src'], (max(1, round(size*scale)), max(1, round(size*scale)))).copy()
                 sprite.putalpha(sprite.getchannel('A').point(lambda a: round(a*min(1, opacity))))
                 image.alpha_composite(sprite, (round(x*scale-sprite.width/2), round(y*scale-sprite.height/2)))
         for part in particles(style, elapsed, data['strength']):
             size = max(1, round(part['size']*scale))
             if part['src']:
-                sprite = asset(part['src']).resize((size, size), Image.Resampling.LANCZOS)
+                sprite = particle_asset(part['src'], (size, size)).copy()
             else:
                 sprite = Image.new('RGBA', (size, size))
                 ImageDraw.Draw(sprite).ellipse((size/3, size/3, size*2/3, size*2/3), fill=(145, 225, 250, 255))
+                r, g, b, alpha = sprite.split()
+                light = ImageChops.lighter(ImageChops.lighter(r, g), b)
+                sprite.putalpha(ImageChops.multiply(alpha, light))
             # Original particle materials often use additive blending on black.
-            r, g, b, alpha = sprite.split()
-            light = ImageChops.lighter(ImageChops.lighter(r, g), b)
-            alpha = ImageChops.multiply(alpha, light).point(lambda v: round(v*part['alpha']))
+            alpha = sprite.getchannel('A').point(lambda v: round(v*part['alpha']))
             sprite.putalpha(alpha)
             sprite = sprite.rotate(-math.degrees(part['angle']), Image.Resampling.BICUBIC, expand=True)
             image.alpha_composite(sprite, (round(part['x']*scale-sprite.width/2), round(part['y']*scale-sprite.height/2)))
     if data['direction'] == 'reverse' and data['showSegments']:
         bar = next(l for l in style['layers'] if l['progress'])
         line = style['segment']['line']
-        sprite = asset(line['src']).resize((line['width']*scale, line['height']*scale), Image.Resampling.LANCZOS)
+        sprite = resized_asset(line['src'], (line['width']*scale, line['height']*scale))
         for i in range(1, data['segments']):
             x = bar['x'] + bar['width'] * i / data['segments']
             y = bar['y'] + bar['height']/2
@@ -175,7 +199,7 @@ def render_native(data, elapsed):
             delta = elapsed - data['duration'] * (data['segments']-i) / data['segments']
             shine = style['segment'].get('shine')
             if shine and 0 <= delta < 0.18:
-                flare = asset(shine['src']).resize((shine['width']*scale, shine['height']*scale), Image.Resampling.LANCZOS).copy()
+                flare = resized_asset(shine['src'], (shine['width']*scale, shine['height']*scale)).copy()
                 flare.putalpha(flare.getchannel('A').point(lambda a: round(a*(1-delta/0.18))))
                 image.alpha_composite(flare, (round(x*scale-flare.width/2), round(y*scale-flare.height/2)))
     text = style['text']
@@ -214,7 +238,9 @@ def gif_bytes(data):
     for elapsed in times:
         rgba = render(data, elapsed)
         rgb = rgba.convert('RGB')
-        frame = rgb.quantize(colors=255, method=Image.Quantize.MEDIANCUT)
+        # Palette generation dominates GIF export; octree keeps all frames and
+        # output pixels while avoiding a median-cut pass for every frame.
+        frame = rgb.quantize(colors=255, method=Image.Quantize.FASTOCTREE)
         # Use a dedicated transparent palette entry. GIF supports binary alpha.
         alpha = rgba.getchannel('A').point(lambda v: 255 if v < 96 else 0)
         frame.paste(255, mask=alpha)

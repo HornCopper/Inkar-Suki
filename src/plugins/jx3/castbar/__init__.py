@@ -1,4 +1,3 @@
-import asyncio
 import base64
 
 from nonebot.adapters.onebot.v11 import Bot, GroupMessageEvent, Message, MessageSegment, PrivateMessageEvent
@@ -8,7 +7,7 @@ from nonebot.params import CommandArg
 
 from src.utils.command import on_command
 
-from .app import generate_image, information
+from .app import generate_image_async, information_async
 
 
 castbar_matcher = on_command(
@@ -24,9 +23,16 @@ async def _(
     args: Message = CommandArg(),
 ):
     text = args.extract_plain_text().strip()
+
+    async def notify_queue(ahead: int):
+        try:
+            await castbar_matcher.send(f'读条生成已排队，前面还有 {ahead} 个任务，完成后自动发送。')
+        except ActionFailed:
+            logger.exception('读条排队提示发送失败')
+
     try:
-        help_text = await asyncio.to_thread(information, text)
-        image = None if help_text is not None else await asyncio.to_thread(generate_image, text)
+        help_text = await information_async(text)
+        image = None if help_text is not None else await generate_image_async(text, notify_queue)
     except ValueError as error:
         await castbar_matcher.finish(str(error))
     except Exception:
