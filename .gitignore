@@ -196,6 +196,5 @@ src/plugins/beta/
 .Workbuddy
 docs
 
-tests/*
-!tests/test_castbar.py
+/tests/
 /tools/
