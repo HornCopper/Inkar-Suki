@@ -22,8 +22,10 @@ CARD_TEMPLATE = """
 <article class="event-card {{ category }}{% if not triggered %} untriggered{% endif %}">
     {% if month_label %}<span class="month-label">{{ month_label }}</span>{% endif %}
     <div class="ink-circle">
+        <img class="event-icon" src="{{ serendipity_icon }}" alt="">
         {% if show_path %}<img class="event-art" src="{{ show_path }}" alt="{{ event_name }}">{% endif %}
         {% if name_path %}<img class="event-name" src="{{ name_path }}" alt="{{ event_name }}">{% else %}<span class="event-name-text">{{ event_name }}</span>{% endif %}
+        <img class="event-close" src="{{ serendipity_close }}" alt="">
         {% if peerless_icon %}<img class="peerless-badge" src="{{ peerless_icon }}" alt="绝世">{% endif %}
     </div>
     {% if not triggered %}<img class="attempted-icon" src="{{ attempted_icon }}" alt="已尝试">{% endif %}
@@ -146,6 +148,12 @@ async def get_serendipity_image_v4(server: str, name: str):
                 )
                 if item["category"] == "peerless"
                 else ""
+            ),
+            serendipity_icon=build_path(
+                ASSETS, ["image", "jx3", "serendipity", "vector", "icon.png"]
+            ),
+            serendipity_close=build_path(
+                ASSETS, ["image", "jx3", "serendipity", "vector", "close.png"]
             ),
             triggered=record is not None,
             show_path=_show_path(item["name"], item["category"], school),

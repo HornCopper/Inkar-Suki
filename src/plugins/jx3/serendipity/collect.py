@@ -47,6 +47,12 @@ async def get_serendipity_collect(server: str, days: int):
                     build_path(ASSETS, ["image", "jx3", "serendipity", "vector", "peerless.png"])
                     if category == "peerless" else ""
                 ),
+                serendipity_icon=build_path(
+                    ASSETS, ["image", "jx3", "serendipity", "vector", "icon.png"]
+                ),
+                serendipity_close=build_path(
+                    ASSETS, ["image", "jx3", "serendipity", "vector", "close.png"]
+                ),
                 count=record["count"],
                 role_name=latest["name"],
                 time=Time(latest["time"]).format(),

@@ -177,6 +177,9 @@ def generate_table(
                 serendipity_icon=build_path(
                     ASSETS, ["image", "jx3", "serendipity", "vector", "icon.png"]
                 ),
+                serendipity_close=build_path(
+                    ASSETS, ["image", "jx3", "serendipity", "vector", "close.png"]
+                ),
                 name=name,
                 category=path_map[level - 1],
                 status=status,

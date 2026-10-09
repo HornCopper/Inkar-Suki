@@ -1,6 +1,6 @@
 from pathlib import Path
 from typing import Literal
-from PIL import Image
+from src.utils.serendipity_image import compose_serendipity_image
 
 from nonebot.adapters.onebot.v11 import MessageSegment as ms
 
@@ -49,35 +49,16 @@ def get_serendipity_image(serendipity_path: str) -> ms:
     if serendipity_path.split("/")[-2] == "fireworks":
         return ms.image(Request(Path(serendipity_path).as_uri()).local_content)
     serendipity_file_name = serendipity_path.split("/")[-1][:-4]
-    cache_path = CONST + "/cache/serendipity/" + serendipity_file_name + "_centered.png"
+    cache_path = CONST + "/cache/serendipity/" + serendipity_file_name + "_client_ini_v1.png"
     if os.path.exists(cache_path):
         return ms.image(Request(Path(cache_path).as_uri()).local_content)
-    if "-" in serendipity_file_name:
-        serendipity_name, _ = serendipity_file_name.split("-")
-    else:
-        serendipity_name = serendipity_file_name
-    
-    background: Image.Image = Image.open(ASSETS + "/image/jx3/serendipity/vector/background.png")
-    serendipity_show = Image.open(serendipity_path)
-    icon = Image.open(ASSETS + "/image/jx3/serendipity/vector/icon.png")
-    name_path = ASSETS + f"/image/jx3/serendipity/name/{serendipity_name}.png"
-    if not os.path.exists(name_path):
-        name_path = ASSETS + "/image/jx3/serendipity/name/宠物奇缘.png"
-    name = Image.open(name_path)
-
-    background.alpha_composite(serendipity_show, (0, 0))
-    background.alpha_composite(icon, (40, 48))
-    # Name textures have different widths. Anchor their visual canvas to the
-    # centre of the ink background instead of relying on the old fixed x=145.
-    name_x = (background.width - name.width) // 2
-    background.alpha_composite(name, (name_x, 420))
+    background = compose_serendipity_image(serendipity_path, ASSETS)
 
     final_path = build_path(CACHE, [get_uuid() + ".png"])
     background.save(final_path)
     with open(final_path, "rb") as a:
         image = a.read()
-    if not os.path.exists(CONST + "/cache/serendipity/"):
-        os.mkdir(CONST + "/cache/serendipity/")
+    Path(cache_path).parent.mkdir(parents=True, exist_ok=True)
     with open(cache_path, "wb") as b:
         b.write(image)
     return ms.image(Request(Path(final_path).as_uri()).local_content)

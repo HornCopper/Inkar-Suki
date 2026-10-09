@@ -14,13 +14,15 @@
         .card-row { display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px; margin-bottom: 14px; }
         .card-row:last-child { margin-bottom: 0; }
         .event-card { min-height: 235px; padding: 8px 6px 11px; border: 1px solid #e7edf3; border-radius: 9px; background: linear-gradient(135deg, #fff, #fafcff); text-align: center; box-shadow: 0 3px 10px rgba(52, 72, 90, .05); }
-        .ink-circle { position: relative; width: 150px; height: 159px; margin: 0 auto; background: url("{{ ink_background }}") center/150px 159px no-repeat; }
-        .event-art { position: absolute; inset: 0; width: 150px; height: 159px; object-fit: contain; }
-        .event-name { position: absolute; left: 50%; top: 135px; max-width: 105px; height: 12px; object-fit: contain; transform: translateX(-50%); }
-        .event-name-text { position: absolute; left: 50%; top: 132px; width: 120px; color: #554a45; font-size: 13px; font-weight: 600; transform: translateX(-50%); }
-        .peerless-badge { position: absolute; z-index: 2; top: 8px; right: -18px; width: 42px; height: 20px; object-fit: contain; }
-        .event-count { position: absolute; top: 8px; right: -20px; min-width: 42px; padding: 3px 7px; border-radius: 10px; color: #9a6120; background: #fff3d5; font-size: 12px; }
-        .has-peerless .event-count { top: 34px; }
+        /* LuckyMeetingInfo.ini coordinates, uniformly scaled by 0.3. */
+        .ink-circle { position: relative; width: 150px; height: 156.6px; margin: 0 auto; background: url("{{ ink_background }}") center/150px 156.6px no-repeat; }
+        .event-art { position: absolute; inset: 0; width: 150px; height: 156.6px; object-fit: fill; }
+        .event-icon { position: absolute; left: 18px; top: 12px; width: 12.3px; height: 21.9px; }
+        .event-name { position: absolute; left: 49.2px; top: 133.8px; width: 48px; height: 13.8px; object-fit: fill; }
+        .event-close { position: absolute; left: 129px; top: 15px; width: 10.8px; height: 10.8px; }
+        .event-name-text { position: absolute; left: 49.2px; top: 133.8px; width: 48px; height: 13.8px; color: #554a45; font-size: 10px; line-height: 13.8px; font-weight: 600; }
+        .peerless-badge { position: absolute; z-index: 2; top: -8px; right: -18px; width: 42px; height: 20px; object-fit: contain; }
+        .event-count { position: absolute; top: 30px; right: -20px; min-width: 42px; padding: 3px 7px; border-radius: 10px; color: #9a6120; background: #fff3d5; font-size: 12px; }
         .latest-role { margin-top: 2px; font-size: 15px; font-weight: 600; }
         .latest-time { margin-top: 4px; color: #626a73; font-size: 12px; }
         .relative-time { margin-top: 2px; color: #969da6; font-size: 12px; }

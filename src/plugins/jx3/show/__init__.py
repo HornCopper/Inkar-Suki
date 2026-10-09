@@ -53,3 +53,6 @@ async def _(event: GroupMessageEvent, full_argument: Message = CommandArg()):
     )
     msg = ms.at(event.user_id) + f" 查询成功！来自：{name}·{server}｜点赞数量：{praise_count}" + image
     await show_matcher.finish(msg)
+
+
+from .qiyu_card import qiyu_card_matcher

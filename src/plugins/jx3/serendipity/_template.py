@@ -16,9 +16,10 @@ template_v3_cell = """
     {% if featured_image_path %}
     <div class="element-container featured-card {{ status }}-card">
         <div class="ink-circle">
-            <img class="feature-art {{ status }}-color" src="{{ featured_image_path }}" alt="{{ name }}.png">
             <img class="feature-icon" src="{{ serendipity_icon }}" alt="">
+            <img class="feature-art {{ status }}-color" src="{{ featured_image_path }}" alt="{{ name }}.png">
             <img class="feature-name" src="{{ featured_name_path }}" alt="{{ name }}">
+            <img class="feature-close" src="{{ serendipity_close }}" alt="">
         </div>
         <div class="status-row featured-status">
             <span class="status-dot"></span>
@@ -83,8 +84,10 @@ statistics_serendipity_row = """
 collect_serendipity_card = """
 <article class="event-card{% if peerless_icon %} has-peerless{% endif %}">
     <div class="ink-circle">
+        <img class="event-icon" src="{{ serendipity_icon }}" alt="">
         {% if show_path %}<img class="event-art" src="{{ show_path }}" alt="{{ event_name }}">{% endif %}
         {% if name_path %}<img class="event-name" src="{{ name_path }}" alt="{{ event_name }}">{% else %}<span class="event-name-text">{{ event_name }}</span>{% endif %}
+        <img class="event-close" src="{{ serendipity_close }}" alt="">
         {% if peerless_icon %}<img class="peerless-badge" src="{{ peerless_icon }}" alt="绝世">{% endif %}
         <span class="event-count">{{ count }} 次</span>
     </div>

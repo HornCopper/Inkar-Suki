@@ -146,7 +146,8 @@ from .server import (
     server_matcher
 )
 from .show import (
-    show_matcher
+    show_matcher,
+    qiyu_card_matcher
 )
 from .skill import (
     matrix_matcher,

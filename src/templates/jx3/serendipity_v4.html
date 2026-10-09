@@ -18,12 +18,15 @@
         .event-card.untriggered { color: #858b92; background: #ededed; box-shadow: none; }
         .event-card.untriggered .ink-circle { filter: grayscale(100%); }
         .month-label { position: absolute; z-index: 4; left: -5px; top: -7px; padding: 4px 9px 4px 8px; border-radius: 4px 10px 10px 4px; color: #fff; background: #c47b90; box-shadow: 0 2px 5px rgba(105,57,70,.18); font-size: 12px; font-weight: 600; letter-spacing: .3px; }
-        .ink-circle { position: relative; width: 150px; height: 159px; margin: 0 auto; background: url("{{ ink_background }}") center/150px 159px no-repeat; }
-        .event-art { position: absolute; inset: 0; width: 150px; height: 159px; object-fit: contain; }
-        .event-name { position: absolute; left: 50%; top: 135px; max-width: 105px; height: 12px; object-fit: contain; transform: translateX(-50%); }
-        .event-name-text { position: absolute; left: 50%; top: 132px; width: 120px; color: #554a45; font-size: 13px; font-weight: 600; transform: translateX(-50%); }
+        /* LuckyMeetingInfo.ini coordinates, uniformly scaled by 0.3. */
+        .ink-circle { position: relative; width: 150px; height: 156.6px; margin: 0 auto; background: url("{{ ink_background }}") center/150px 156.6px no-repeat; }
+        .event-art { position: absolute; inset: 0; width: 150px; height: 156.6px; object-fit: fill; }
+        .event-icon { position: absolute; left: 18px; top: 12px; width: 12.3px; height: 21.9px; }
+        .event-name { position: absolute; left: 49.2px; top: 133.8px; width: 48px; height: 13.8px; object-fit: fill; }
+        .event-close { position: absolute; left: 129px; top: 15px; width: 10.8px; height: 10.8px; }
+        .event-name-text { position: absolute; left: 49.2px; top: 133.8px; width: 48px; height: 13.8px; color: #554a45; font-size: 10px; line-height: 13.8px; font-weight: 600; }
         .attempted-icon { position: absolute; z-index: 3; left: 50%; top: 62px; width: 92px; height: 52px; object-fit: contain; transform: translateX(-50%); }
-        .peerless-badge { position: absolute; z-index: 2; top: 8px; right: -12px; width: 42px; height: 20px; object-fit: contain; }
+        .peerless-badge { position: absolute; z-index: 2; top: -8px; right: -12px; width: 42px; height: 20px; object-fit: contain; }
         .event-time { margin-top: 3px; font-size: 13px; font-weight: 600; }
         .relative-time { margin-top: 4px; color: #777f88; font-size: 12px; }
         footer { padding: 11px; border-top: 1px solid #e5e7eb; color: #8a9099; background: #f7f8fa; font-size: 12px; text-align: center; }

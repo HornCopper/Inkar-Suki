@@ -145,43 +145,49 @@
             padding-bottom: 4px;
         }
 
+        /* LuckyMeetingInfo.ini coordinates, uniformly scaled by 0.3. */
         .ink-circle {
             position: relative;
             width: 150px;
-            height: 159px;
-            flex: 0 0 159px;
+            height: 156.6px;
+            flex: 0 0 156.6px;
             background-image: url("{{ ink_background }}");
             background-position: center;
             background-repeat: no-repeat;
-            background-size: 150px 159px;
+            background-size: 150px 156.6px;
         }
 
         .feature-art {
             position: absolute;
             inset: 0;
             width: 150px;
-            height: 159px;
-            object-fit: contain;
+            height: 156.6px;
+            object-fit: fill;
         }
 
         .feature-icon {
             position: absolute;
-            left: 13px;
-            top: 15px;
-            width: 13px;
-            height: 24px;
-            object-fit: contain;
+            left: 18px;
+            top: 12px;
+            width: 12.3px;
+            height: 21.9px;
         }
 
         .feature-name {
             position: absolute;
-            left: 50%;
-            top: 135px;
-            width: auto;
-            height: 12px;
-            max-width: 100px;
-            object-fit: contain;
-            transform: translateX(-50%);
+            left: 49.2px;
+            top: 133.8px;
+            width: 48px;
+            height: 13.8px;
+            object-fit: fill;
+        }
+
+        .feature-close {
+            position: absolute;
+            left: 129px;
+            top: 15px;
+            width: 10.8px;
+            height: 10.8px;
         }
 
         .featured-status {
