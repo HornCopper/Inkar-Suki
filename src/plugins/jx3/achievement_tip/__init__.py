@@ -13,6 +13,13 @@ from src.utils.command import on_command
 
 from .app import generate_image_async
 from .options import information, parse_request
+from .renderer import IMAGE_PATH
+
+
+ICON_PRESETS = {
+    '五甲': IMAGE_PATH / 'preset_wujia.png',
+    '无伤': IMAGE_PATH / 'preset_wushang.png',
+}
 
 
 achievement_tip_matcher = on_command(
@@ -88,7 +95,11 @@ async def handle_achievement_tip(
 
 @achievement_tip_matcher.got(
     'achievement_icon',
-    prompt='请发送一张图片作为成就图标，或发送“头像”使用你的 QQ 头像。发送其他内容则取消本次生成。',
+    prompt='请发送一张图片作为成就图标，或回复以下文字：\n'
+           '“头像”：使用你的 QQ 头像。\n'
+           '【五甲】：使用五甲预设图标。\n'
+           '【无伤】：使用无伤预设图标。\n'
+           '发送其他内容则取消本次生成。',
 )
 async def generate_achievement_tip(
     bot: Bot,
@@ -97,8 +108,10 @@ async def generate_achievement_tip(
     icon: Message = Arg('achievement_icon'),
 ):
     has_image = any(segment.type == 'image' for segment in icon)
-    use_avatar = all(segment.is_text() for segment in icon) and icon.extract_plain_text().strip() == '头像'
-    if not has_image and not use_avatar:
+    choice = icon.extract_plain_text().strip() if all(segment.is_text() for segment in icon) else None
+    if choice and choice.startswith('【') and choice.endswith('】'):
+        choice = choice[1:-1]
+    if not has_image and choice != '头像' and choice not in ICON_PRESETS:
         await achievement_tip_matcher.finish('已取消本次成就提示生成。')
 
     async def notify_queue(ahead: int):
@@ -111,8 +124,10 @@ async def generate_achievement_tip(
         request = state['achievement_request']
         if has_image:
             source = await image_source(bot, icon)
-        else:
+        elif choice == '头像':
             source = f'https://q.qlogo.cn/headimg_dl?dst_uin={event.user_id}&spec=100&img_type=jpg'
+        else:
+            source = ICON_PRESETS[choice].read_bytes()
         image = await generate_image_async(request, source, notify_queue)
     except ValueError as error:
         await achievement_tip_matcher.finish(str(error))
