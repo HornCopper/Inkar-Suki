@@ -4,8 +4,10 @@ from nonebot import get_driver
 from nonebot.adapters.onebot.v11 import Bot, GroupMessageEvent, Message, MessageSegment, PrivateMessageEvent
 from nonebot.exception import ActionFailed
 from nonebot.log import logger
+from nonebot.matcher import Matcher
 from nonebot.message import event_preprocessor
-from nonebot.params import CommandArg
+from nonebot.params import Arg, CommandArg
+from nonebot.typing import T_State
 
 from src.utils.command import on_command
 
@@ -68,14 +70,36 @@ async def image_source(bot: Bot, message: Message) -> str | None:
 
 @achievement_tip_matcher.handle()
 async def handle_achievement_tip(
-    bot: Bot,
-    event: GroupMessageEvent | PrivateMessageEvent,
+    matcher: Matcher,
+    state: T_State,
     args: Message = CommandArg(),
 ):
     text = args.extract_plain_text().strip()
     help_text = information(text)
     if help_text is not None:
         await achievement_tip_matcher.finish(help_text)
+    try:
+        state['achievement_request'] = parse_request(text)
+    except ValueError as error:
+        await achievement_tip_matcher.finish(str(error))
+    if any(segment.type == 'image' for segment in args):
+        matcher.set_arg('achievement_icon', args)
+
+
+@achievement_tip_matcher.got(
+    'achievement_icon',
+    prompt='请发送一张图片作为成就图标，或发送“头像”使用你的 QQ 头像。发送其他内容则取消本次生成。',
+)
+async def generate_achievement_tip(
+    bot: Bot,
+    event: GroupMessageEvent | PrivateMessageEvent,
+    state: T_State,
+    icon: Message = Arg('achievement_icon'),
+):
+    has_image = any(segment.type == 'image' for segment in icon)
+    use_avatar = all(segment.is_text() for segment in icon) and icon.extract_plain_text().strip() == '头像'
+    if not has_image and not use_avatar:
+        await achievement_tip_matcher.finish('已取消本次成就提示生成。')
 
     async def notify_queue(ahead: int):
         try:
@@ -84,9 +108,10 @@ async def handle_achievement_tip(
             logger.exception('成就提示排队消息发送失败')
 
     try:
-        request = parse_request(text)
-        source = await image_source(bot, args)
-        if source is None:
+        request = state['achievement_request']
+        if has_image:
+            source = await image_source(bot, icon)
+        else:
             source = f'https://q.qlogo.cn/headimg_dl?dst_uin={event.user_id}&spec=100&img_type=jpg'
         image = await generate_image_async(request, source, notify_queue)
     except ValueError as error:
