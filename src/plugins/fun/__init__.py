@@ -368,7 +368,7 @@ async def random_number(args: Message = CommandArg()):
         await RandomNumberMatcher.finish("x 和 y 必须为整数。\n" + RANDOM_NUMBER_HELP_TEXT)
     if lower > upper:
         await RandomNumberMatcher.finish("x 不能大于 y。\n" + RANDOM_NUMBER_HELP_TEXT)
-    await RandomNumberMatcher.finish(str(random.randint(lower, upper)))
+    await RandomNumberMatcher.finish(f"为你抽取到的随机数为：" + str(random.randint(lower, upper)))
 
 
 BMIMatcher = on_command("bmi", command_key=None, aliases={"BMI", "身体质量指数"}, force_whitespace=True, priority=5)
