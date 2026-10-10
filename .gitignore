@@ -198,3 +198,7 @@ docs
 
 /tests/
 /tools/
+
+# Asset provenance records kept only on the local machine.
+/src/assets/source/jx3/achievement_tip/sources.json
+/src/assets/source/jx3/castbar/font_source.json

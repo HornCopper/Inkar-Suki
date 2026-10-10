@@ -352,6 +352,25 @@ async def _(event: MessageEvent):
     await What2EatMatcher.send("正在为你找好吃的……")
     await What2EatMatcher.send(msg, at_sender=True)
 
+RANDOM_NUMBER_HELP_TEXT = "格式：随机数 x y\nx、y 必须为整数，且 x ≤ y；结果包含两端点。"
+
+RandomNumberMatcher = on_command("随机数", command_key="随机数", force_whitespace=True, priority=5)
+
+
+@RandomNumberMatcher.handle()
+async def random_number(args: Message = CommandArg()):
+    values = args.extract_plain_text().split()
+    if len(values) != 2:
+        await RandomNumberMatcher.finish(RANDOM_NUMBER_HELP_TEXT)
+    try:
+        lower, upper = map(int, values)
+    except ValueError:
+        await RandomNumberMatcher.finish("x 和 y 必须为整数。\n" + RANDOM_NUMBER_HELP_TEXT)
+    if lower > upper:
+        await RandomNumberMatcher.finish("x 不能大于 y。\n" + RANDOM_NUMBER_HELP_TEXT)
+    await RandomNumberMatcher.finish(str(random.randint(lower, upper)))
+
+
 BMIMatcher = on_command("bmi", command_key=None, aliases={"BMI", "身体质量指数"}, force_whitespace=True, priority=5)
 
 @BMIMatcher.handle()

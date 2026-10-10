@@ -2,6 +2,9 @@ from .achievement import (
     zone_achievement_matcher,
     achievement_v2_matcher
 )
+from .achievement_tip import (
+    achievement_tip_matcher
+)
 from .almanac import (
     almanac_matcher,
     almanac_image_matcher
