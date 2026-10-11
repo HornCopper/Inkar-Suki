@@ -30033,7 +30033,7 @@ ID	Value	ModifyType	Param1Min	Param1Max	Param2Min	Param2Max	Group1	Group2	Group3
 30031	0	atSkillEventHandler	1507	1507												
 30032	0	atSkillEventHandler	1508	1508												
 30033	0	atDamageToLifeForSelf	102	102												
-30034	0	atLifeReplenishExt	3210	3210												
+30034	0	atLifeReplenishExt	115	115												
 30035	0	atDecriticalDamagePowerBase	766	766	0	0	0	0	0	0	0	0	0	0	0	0
 30036	0	atPhysicsAttackPowerBase	1035	1035	0	0	0	0	0	0	0	0	0	0	0	0
 30037	0	atAllTypeCriticalStrike	1072	1072	0	0	0	0	0	0	0	0	0	0	0	0
@@ -115663,13 +115663,17 @@ ID	Value	ModifyType	Param1Min	Param1Max	Param2Min	Param2Max	Group1	Group2	Group3
 115903		atPVXAllRound	194	194												
 115904		atPVXAllRound	194	194	1	1										
 115905		atPVXAllRound	227	227	1	1										
-115911		atSkillEventHandler	3237	3237												
-115910		atSkillEventHandler	3236	3236												
-115909		atSkillEventHandler	3235	3235												
-115912		atSkillEventHandler	3238	3238												
+115906		atSkillEventHandler	3232	3232												
 115907		atSkillEventHandler	3233	3233												
 115908		atSkillEventHandler	3234	3234												
-115906		atSkillEventHandler	3232	3232												
+115909		atSkillEventHandler	3235	3235												
+115910		atSkillEventHandler	3236	3236												
+115911		atSkillEventHandler	3237	3237												
+115912		atSkillEventHandler	3238	3238												
+115913		atSkillEventHandler	3239	3239												
+115914		atSkillEventHandler	3240	3240												
+115915		atSkillEventHandler	3240	3240												
+115916		atSkillEventHandler	3242	3242												
 115917	0	atSkillEventHandler	3243	3243	0	0	0	0	0	0	0	0	0	0	0	0
 115918	0	atSkillEventHandler	3244	3244	0	0	0	0	0	0	0	0	0	0	0	0
 115919	0	atSkillEventHandler	3245	3245	0	0	0	0	0	0	0	0	0	0	0	0
@@ -115703,10 +115707,6 @@ ID	Value	ModifyType	Param1Min	Param1Max	Param2Min	Param2Max	Group1	Group2	Group3
 115947	0	atSkillEventHandler	3273	3273	0	0	0	0	0	0	0	0	0	0	0	0
 115948	0	atSkillEventHandler	3274	3274	0	0	0	0	0	0	0	0	0	0	0	0
 115949		atSkillEventHandler	3275	3275												
-115913		atSkillEventHandler	3239	3239												
-115914		atSkillEventHandler	3240	3240												
-115915		atSkillEventHandler	3241	3241												
-115916		atSkillEventHandler	3242	3242												
 115950		atPVXAllRound	19	19												
 115951		atPVXAllRound	63	63												
 115952		atPVXAllRound	155	155												
@@ -115714,3 +115714,219 @@ ID	Value	ModifyType	Param1Min	Param1Max	Param2Min	Param2Max	Group1	Group2	Group3
 115954		atPVXAllRound	78	78												
 115955		atPVXAllRound	271	271												
 115956		atPVXAllRound	136	136												
+115957		atBasePotentialAdd	33	33												
+115958		atBasePotentialAdd	40	40												
+115959		atBasePotentialAdd	22	22												
+115960		atPVXAllRound	81	81	1	1										
+115961		atPVXAllRound	86	86	1	1										
+115962		atPVXAllRound	85	85	1	1										
+115963		atPVXAllRound	111	111	1	1										
+115964		atPVXAllRound	100	100	1	1										
+115965		atPVXAllRound	138	138	1	1										
+115966		atPVXAllRound	161	161	1	1										
+115967		atPoisonOvercomeBase	351	351												
+115968		atMagicShield	937	937												
+115969		atPhysicsShieldBase	1072	1072												
+115970		atMagicShield	1072	1072												
+115971		atPVXAllRound	45	45	1	1										
+115972		atPVXAllRound	89	89	1	1										
+115973		atSolarCriticalStrike	711	711												
+115974		atNeutralCriticalStrike	711	711												
+115975		atLunarCriticalStrike	711	711												
+115976		atPoisonCriticalStrike	711	711												
+115977		atSolarAndLunarCriticalStrike	711	711												
+115978		atSolarCriticalStrike	772	772												
+115979		atNeutralCriticalStrike	772	772												
+115980		atLunarCriticalStrike	772	772												
+115981		atPoisonCriticalStrike	772	772												
+115982		atSolarAndLunarCriticalStrike	772	772												
+115983		atDecriticalDamagePowerBase	313	313												
+115984		atDecriticalDamagePowerBase	473	473												
+115985		atAllTypeOvercomeBase	348	348												
+115986		atAllTypeOvercomeBase	791	791												
+115987		atAllTypeOvercomeBase	243	243												
+115988		atAllTypeOvercomeBase	404	404												
+115989		atAllTypeOvercomeBase	918	918												
+115990		atAllTypeOvercomeBase	283	283												
+115991		atDecriticalDamagePowerBase	1077	1077												
+115992		atAllTypeOvercomeBase	479	479												
+115993		atPhysicsShieldBase	1831	1831												
+115994		atMagicShield	1831	1831												
+115995		atAllTypeOvercomeBase	1089	1089												
+115996		atDecriticalDamagePowerBase	754	754												
+115997		atAllTypeOvercomeBase	335	335												
+115998		atAllTypeOvercomeBase	505	505												
+115999		atAllTypeAttackPowerBase	1930	1930												
+116000		atAllTypeOvercomeBase	1148	1148												
+116001		atDecriticalDamagePowerBase	353	353												
+116002		atDecriticalDamagePowerBase	795	795												
+116003		atAllTypeOvercomeBase	353	353												
+116004		atAllTypeAttackPowerBase	1483	1483												
+116005		atAllTypeAttackPowerBase	1774	1774												
+116006		atBasePotentialAdd	465	465												
+116007		atAllTypeAttackPowerBase	2059	2059												
+116008		atBasePotentialAdd	540	540												
+116009		atAllTypeAttackPowerBase	2441	2441												
+116010		atBasePotentialAdd	640	640												
+116011		atHasteBase	933	933												
+116012		atAllTypeAttackPowerBase	2574	2574												
+116013		atBasePotentialAdd	388	388												
+116014		atAllTypeOvercomeBase	565	565												
+116015		atBasePotentialAdd	450	450												
+116016		atHasteBase	656	656												
+116017		atAllTypeOvercomeBase	656	656												
+116018		atBasePotentialAdd	533	533												
+116019		atAllTypeOvercomeBase	778	778												
+116020		atSolarAttackPowerBase	607	607												
+116021		atNeutralAttackPowerBase	960	960												
+116022		atSolarOvercomeBase	348	348												
+116023		atMagicShield	1536	1536												
+116024		atNeutralOvercomeBase	348	348												
+116025		atSolarOvercomeBase	375	375												
+116026		atPoisonOvercomeBase	414	414												
+116027		atNeutralAttackPowerBase	1110	1110												
+116028		atSolarAttackPowerBase	1200	1200												
+116029		atNeutralAttackPowerBase	1186	1186												
+116030		atLunarAttackPowerBase	1186	1186												
+116031		atPoisonCriticalStrike	395	395												
+116032		atSolarCriticalStrike	375	375												
+116033		atNeutralAttackPowerBase	1214	1214												
+116034		atTherapyPowerBase	1561	1561												
+116035		atPoisonAttackPowerBase	1214	1214												
+116036		atSolarAndLunarAttackPowerBase	1214	1214												
+116037		atLunarAttackPowerBase	1214	1214												
+116038		atPhysicsCriticalStrike	302	302												
+116039		atTherapyPowerBase	398	398												
+116040		atMagicShield	814	814	0	0										
+116041		atStrainBase	451	451	0	0										
+116042		atPhysicsShieldBase	814	814												
+116043		atStrainBase	676	676	0	0										
+116044		atStrainBase	644	644	0	0										
+116045		atPhysicsShieldBase	523	523												
+116046		atToughnessBase	161	161												
+116047		atStrainBase	580	580	0	0										
+116048		atPhysicsCriticalStrike	432	432												
+116049		atMagicCriticalStrike	293	293												
+116050		atPhysicsCriticalStrike	293	293												
+116051		atMagicCriticalStrike	319	319												
+116052		atHasteBase	418	418	0	0										
+116053		atDecriticalDamagePowerBase	440	440	0	0										
+116054		atToughnessBase	158	158												
+116055		atDecriticalDamagePowerBase	396	396	0	0										
+116056		atToughnessBase	176	176												
+116057		atMagicCriticalStrike	307	307												
+116058		atPhysicsCriticalStrike	307	307												
+116059		atTherapyPowerBase	360	360												
+116060		atMagicCriticalStrike	334	334												
+116061		atHasteBase	307	307	0	0										
+116062		atHasteBase	438	438	0	0										
+116063		atTherapyPowerBase	514	514												
+116064		atHasteBase	477	477	0	0										
+116065		atSpunkBase	291	291	0	0										
+116066		atStrengthBase	291	291	0	0										
+116067		atAgilityBase	291	291	0	0										
+116068		atTherapyPowerBase	623	623												
+116069		atMagicCriticalStrike	259	259												
+116070		atStrainBase	406	406	0	0										
+116071		atPhysicsCriticalStrike	259	259												
+116072		atTherapyPowerBase	618	618												
+116073		atMagicShield	698	698	0	0										
+116074		atToughnessBase	107	107												
+116075		atSpunkBase	376	376	0	0										
+116076		atSolarOvercomeBase	657	657	0	0										
+116077		atStrainBase	515	515	0	0										
+116078		atVitalityBase	1099	1099	0	0										
+116079		atStrainBase	997	997	0	0										
+116080		atNeutralAttackPowerBase	1141	1141	0	0										
+116081		atNeutralOvercomeBase	657	657	0	0										
+116082		atSpiritBase	429	429	0	0										
+116083		atStrengthBase	376	376	0	0										
+116084		atPhysicsOvercomeBase	657	657	0	0										
+116085		atAgilityBase	376	376	0	0										
+116086		atLunarOvercomeBase	657	657	0	0										
+116087		atPoisonOvercomeBase	657	657	0	0										
+116088		atSolarAndLunarOvercomeBase	657	657	0	0										
+116089		atSolarCriticalStrike	700	700	0	0										
+116090		atNeutralCriticalStrike	700	700	0	0										
+116091		atNeutralCriticalStrike	610	610	0	0										
+116092		atPhysicsAttackPowerBase	1176	1176	0	0										
+116093		atPhysicsCriticalStrike	700	700	0	0										
+116094		atLunarAttackPowerBase	1176	1176	0	0										
+116095		atLunarCriticalStrike	610	610	0	0										
+116096		atPoisonCriticalStrike	700	700	0	0										
+116097		atPoisonCriticalStrike	610	610	0	0										
+116098		atSolarAndLunarAttackPowerBase	1176	1176	0	0										
+116099		atSpunkBase	387	387	0	0										
+116100		atSolarCriticalStrike	733	733												
+116101		atNeutralCriticalStrike	733	733	0	0										
+116102		atNeutralCriticalStrike	639	639	0	0										
+116103		atStrengthBase	387	387	0	0										
+116104		atAgilityBase	387	387	0	0										
+116105		atPoisonAttackPowerBase	1232	1232	0	0										
+116106		atPoisonCriticalStrike	733	733												
+116107		atSolarAndLunarAttackPowerBase	1232	1232	0	0										
+116108		atSolarAndLunarCriticalStrike	733	733												
+116109		atVitalityBase	861	861	0	0										
+116110		atSpunkBase	398	398	0	0										
+116111		atSolarAttackPowerBase	1265	1265	0	0										
+116112		atSolarCriticalStrike	753	753	0	0										
+116113		atNeutralAttackPowerBase	1265	1265	0	0										
+116114		atNeutralCriticalStrike	753	753	0	0										
+116115		atSpiritBase	398	398	0	0										
+116116		atStrengthBase	398	398	0	0										
+116117		atPhysicsAttackPowerBase	1265	1265	0	0										
+116118		atPhysicsCriticalStrike	753	753	0	0										
+116119		atLunarAttackPowerBase	1265	1265	0	0										
+116120		atLunarCriticalStrike	753	753	0	0										
+116121		atPoisonAttackPowerBase	1265	1265	0	0										
+116122		atPoisonCriticalStrike	753	753	0	0										
+116123		atSolarAndLunarAttackPowerBase	1265	1265	0	0										
+116124		atSolarAndLunarCriticalStrike	753	753	0	0										
+116125		atSpiritBase	162	162												
+116126		atMagicCriticalStrike	223	223												
+116127		atPhysicsCriticalStrike	223	223												
+116128		atMagicCriticalStrike	239	239												
+116129		atMagicShield	300	300	0	0										
+116130		atToughnessBase	92	92												
+116136	0	atSkillEventHandler	3286	3286	0	0	0	0	0	0	0	0	0	0	0	0
+116137	0	atSkillEventHandler	3287	3287	0	0	0	0	0	0	0	0	0	0	0	0
+116138	0	atSkillEventHandler	3287	3287	0	0	0	0	0	0	0	0	0	0	0	0
+116139	0	atSkillEventHandler	3289	3289	0	0	0	0	0	0	0	0	0	0	0	0
+116140	0	atSkillEventHandler	3290	3290	0	0	0	0	0	0	0	0	0	0	0	0
+116141	0	atSkillEventHandler	3290	3290	0	0	0	0	0	0	0	0	0	0	0	0
+116142	0	atSkillEventHandler	3292	3292	0	0	0	0	0	0	0	0	0	0	0	0
+116143	0	atSkillEventHandler	3293	3293	0	0	0	0	0	0	0	0	0	0	0	0
+116144	0	atSkillEventHandler	3293	3293	0	0	0	0	0	0	0	0	0	0	0	0
+116145		atSkillEventHandler	3295	3295												
+116146		atSkillEventHandler	3296	3296												
+116147		atSkillEventHandler	3297	3297												
+116148		atSkillEventHandler	3298	3298												
+116149		atSkillEventHandler	3299	3299												
+116150		atSkillEventHandler	3300	3300												
+116151		atSkillEventHandler	3301	3301												
+116152		atSkillEventHandler	3302	3302												
+116153		atSkillEventHandler	3303	3303												
+116154		atSkillEventHandler	3304	3304												
+116155		atSkillEventHandler	3305	3305												
+116156		atSkillEventHandler	3306	3306												
+116157		atSkillEventHandler	3307	3307												
+116158		atSkillEventHandler	3308	3308												
+116159		atSkillEventHandler	3309	3309												
+116160		atSkillEventHandler	3310	3310												
+116161		atSkillEventHandler	3311	3311												
+116162		atSkillEventHandler	3312	3312												
+116163		atSkillEventHandler	3313	3313												
+116164		atSkillEventHandler	3314	3314												
+116165		atSkillEventHandler	3315	3315												
+116166		atSkillEventHandler	3316	3316												
+116167		atSkillEventHandler	3317	3317												
+116168		atSkillEventHandler	3318	3318												
+116169		atSkillEventHandler	3319	3319												
+116170		atSkillEventHandler	3320	3320												
+116171		atSkillEventHandler	3321	3321												
+116172		atSkillEventHandler	3322	3322												
+116173		atSkillEventHandler	3323	3323												
+116174		atSkillEventHandler	3324	3324												
+116175		atSkillEventHandler	3325	3325												
+116176		atSkillEventHandler	3326	3326												
+116177		atSkillEventHandler	3327	3327												
