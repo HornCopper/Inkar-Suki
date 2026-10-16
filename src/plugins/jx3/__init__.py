@@ -59,10 +59,11 @@ async def websocket_client(ws_url: str, headers: dict):
                         except Exception:
                             logger.exception(f"生成官网公告截图失败，继续发送文字公告：{url}")
                     if name == "体服公告":
-                        try:
-                            message = msg.msg + await get_beta_push_image()
-                        except Exception:
-                            logger.exception("生成体服公告截图失败，继续发送文字公告")
+                        if parsed.diff is not None:
+                            try:
+                                message = msg.msg + await get_beta_push_image(parsed.diff)
+                            except Exception:
+                                logger.exception("生成体服公告差异图失败，继续发送文字公告")
                     if name == "咸鱼":
                         post_id, _ = parsed.provide_data()
                         try:

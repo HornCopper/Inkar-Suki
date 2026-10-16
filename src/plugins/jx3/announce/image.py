@@ -8,9 +8,13 @@ from urllib.parse import urlparse
 
 from nonebot.adapters.onebot.v11 import MessageSegment
 
+from src.config import Config
 from src.const.path import ASSETS, CACHE, build_path
+from src.templates import get_saohua
 from src.utils.network import Request
 from src.utils.generate import generate
+
+from .diff import BetaAnnouncementDiff, build_beta_diff_html
 
 MOBILE_USER_AGENT = (
     "Mozilla/5.0 (Linux; Android 14; Pixel 8 Pro) "
@@ -23,7 +27,6 @@ PUSH_IMAGE_CACHE_VERSION = "wide-800-fixed-content-v5"
 PUSH_IMAGE_WAIT_TIMEOUT = 180
 PUSH_IMAGE_LOCK_STALE_AFTER = 600
 PUSH_IMAGE_FAILURE_COOLDOWN = 300
-BETA_PUSH_COALESCE_SECONDS = 30
 
 prefix_html_code = """
 <html>
@@ -188,29 +191,24 @@ async def _ensure_push_image(url: str) -> Path:
     return await _ensure_cached_push_image(f"official:{url}", render)
 
 
-async def _ensure_beta_push_image() -> Path:
-    def is_recent(image_path: Path) -> bool:
-        try:
-            return (
-                _has_complete_image(image_path)
-                and time.time() - image_path.stat().st_mtime <= BETA_PUSH_COALESCE_SECONDS
-            )
-        except OSError:
-            return False
+async def _ensure_beta_push_image(diff: BetaAnnouncementDiff) -> Path:
+    bot_name = Config.bot_basic.bot_name_argument
 
     async def render(temporary_path: Path):
-        raw_html = (
-            await Request("https://jx3.xoyo.com/launcher/update/latest_exp.html").get()
-        ).text
-        html = _build_update_html(raw_html)
         await generate(
-            html.replace("font-family:微软雅黑;", ""),
-            "div",
+            build_beta_diff_html(
+                diff, PROJECT_FONT_PATH.as_uri(),
+                bot_name=bot_name, footer_message=get_saohua(),
+            ),
+            ".beta-diff",
             True,
+            viewport={"width": 1600, "height": 900},
+            additional_js="document.fonts.ready",
             output_path=str(temporary_path),
         )
 
-    return await _ensure_cached_push_image("beta:latest_exp", render, is_recent)
+    # The payload identifies the exact revision, even if another update arrives immediately.
+    return await _ensure_cached_push_image(f"beta-diff-v2-footer:{bot_name}:{diff.model_dump_json()}", render)
 
 
 async def get_push_image(url: str) -> MessageSegment:
@@ -219,7 +217,7 @@ async def get_push_image(url: str) -> MessageSegment:
     return MessageSegment.image(image)
 
 
-async def get_beta_push_image() -> MessageSegment:
-    image_path = await _ensure_beta_push_image()
+async def get_beta_push_image(diff: BetaAnnouncementDiff) -> MessageSegment:
+    image_path = await _ensure_beta_push_image(diff)
     image = await asyncio.to_thread(image_path.read_bytes)
     return MessageSegment.image(image)

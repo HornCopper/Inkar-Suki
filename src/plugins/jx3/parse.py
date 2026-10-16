@@ -7,6 +7,7 @@ from nonebot.adapters.onebot.v11 import Message
 
 from src.utils.typing import override
 from src.utils.time import Time
+from src.plugins.jx3.announce.diff import BetaAnnouncementDiff
 
 handler: dict[
     int,
@@ -129,6 +130,7 @@ class InkarSukiVideoPushEvent(JX3APIPushEvent):
 @handle_event(50003)
 class TestServerPushEvent(JX3APIPushEvent):
     message: str
+    diff: BetaAnnouncementDiff | None = None
 
     @override
     def msg(self) -> JX3APIOutputMsg:
