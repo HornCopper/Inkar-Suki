@@ -1,4 +1,5 @@
 from jinja2 import Template
+from html import escape
 from pathlib import Path
 
 from src.config import Config
@@ -12,6 +13,8 @@ from src.templates import get_saohua
 from src.plugins.jx3.calculator.compare import AttributesFull, subtype_locations
 
 from ._template import _template_green_attrs, _template_diamonds, _template_set_attrs
+
+from src.plugins.jx3.equip.recipe_display import iter_set_attributes
 
 async def get_equip_info(equip_name: str, quality: int = -1) -> list[tuple[str, dict]] | str:
     params: dict = {
@@ -50,6 +53,11 @@ async def get_equip_info(equip_name: str, quality: int = -1) -> list[tuple[str, 
                         "· " + TabCache.get_effect_by_skill_handler_id(int(attr_value))
                     )
                     continue
+                if attr_key_name == "atSetEquipmentRecipe":
+                    description = each_equip.get(f"Magic{n}Description")
+                    if description:
+                        skillevent.append("· " + escape(description))
+                    continue
                 attr_name = AttributesFull.get(attr_key_name, "未知属性")
                 if attr_name == "未知属性":
                     continue
@@ -75,21 +83,21 @@ async def get_equip_info(equip_name: str, quality: int = -1) -> list[tuple[str, 
                     )
                 )
             final_set_attrs = []
-            for set_count, set_attrs in each_equip.get("SetAttributes", {}).items():
-                for set_attr in set_attrs:
-                    each_attr_key, each_attr_value = next(iter(set_attr.items()))
-                    if each_attr_key in AttributesFull:
-                        msg = f"{AttributesFull[each_attr_key]}提高{each_attr_value}点"
-                    elif each_attr_key == "atSkillEventHandler":
-                        msg = TabCache.get_effect_by_skill_handler_id(int(each_attr_value))
-                    else:
-                        msg = "未知效果(未解析)"
-                    final_set_attrs.append(
-                        Template(_template_set_attrs).render(
-                            count = str(set_count),
-                            attr = msg
-                        )
+            for set_count, each_attr_key, each_attr_value, description in iter_set_attributes(each_equip):
+                if each_attr_key in AttributesFull:
+                    msg = f"{AttributesFull[each_attr_key]}提高{each_attr_value}点"
+                elif each_attr_key == "atSkillEventHandler":
+                    msg = TabCache.get_effect_by_skill_handler_id(int(each_attr_value))
+                elif each_attr_key == "atSetEquipmentRecipe" and description:
+                    msg = escape(description)
+                else:
+                    msg = "未知效果(未解析)"
+                final_set_attrs.append(
+                    Template(_template_set_attrs).render(
+                        count = str(set_count),
+                        attr = msg
                     )
+                )
             remark = "备注：" + each_equip["MagicType"] + "（" + each_equip["Index"] + "_" + each_equip["ID"] + "）"
             result = {
                 "color": color,
