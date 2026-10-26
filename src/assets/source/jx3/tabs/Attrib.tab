@@ -66264,7 +66264,7 @@ ID	Value	ModifyType	Param1Min	Param1Max	Param2Min	Param2Max	Group1	Group2	Group3
 66262		atPhysicsAttackPowerBase	4479	4479												
 66263	0	atSkillEventHandler	2633	2633	0	0	0	0	0	0	0	0	0	0	0	0
 66264		atMoveSpeedPercent	103	103												
-66265		atLifeReplenishExt	21000	21000												
+66265		atLifeReplenishExt	209	209												
 66266		atMagicAttackPowerBase	1094	1094												
 66267		atSurplusValueBase	2507	2507												
 66268		atTherapyPowerBase	2199	2199												
@@ -110895,7 +110895,7 @@ ID	Value	ModifyType	Param1Min	Param1Max	Param2Min	Param2Max	Group1	Group2	Group3
 111134		atHasteBase	31	31												
 111135	0	atMaxLifeAdditional	121	121	0	0										
 111136	0	atMagicAttackPowerBase	14	14	0	0										
-111137	0	atMaxLifeAdditional	88	61	0	0										
+111137	0	atMaxLifeAdditional	88	88	0	0										
 111138	0	atMagicAttackPowerBase	12	12	0	0										
 111139	0	atStrainBase	1	1	0	0										
 111140	0	atNeutralHitValue	1	1	0	0										
@@ -115888,6 +115888,11 @@ ID	Value	ModifyType	Param1Min	Param1Max	Param2Min	Param2Max	Group1	Group2	Group3
 116128		atMagicCriticalStrike	239	239												
 116129		atMagicShield	300	300	0	0										
 116130		atToughnessBase	92	92												
+116131		atStrainBase	328	328	0	0										
+116132		atTherapyPowerBase	523	523												
+116133		atMagicShield	590	590	0	0										
+116134		atToughnessBase	91	91												
+116135		atMagicCriticalStrike	219	219												
 116136	0	atSkillEventHandler	3286	3286	0	0	0	0	0	0	0	0	0	0	0	0
 116137	0	atSkillEventHandler	3287	3287	0	0	0	0	0	0	0	0	0	0	0	0
 116138	0	atSkillEventHandler	3287	3287	0	0	0	0	0	0	0	0	0	0	0	0
@@ -115930,3 +115935,58 @@ ID	Value	ModifyType	Param1Min	Param1Max	Param2Min	Param2Max	Group1	Group2	Group3
 116175		atSkillEventHandler	3325	3325												
 116176		atSkillEventHandler	3326	3326												
 116177		atSkillEventHandler	3327	3327												
+116178		atAllTypeCriticalDamagePowerBase	140	140												
+116179		atAllTypeCriticalStrike	112	112												
+116180		atStrainBase	112	112												
+116181		atHasteBase	112	112												
+116182		atMagicOvercome	102	102												
+116183		atHasteBase	102	102												
+116184		atPhysicsOvercomeBase	102	102												
+116185		atAllTypeCriticalStrike	102	102												
+116186		atToughnessBase	120	120												
+116187		atDecriticalDamagePowerBase	120	120												
+116188		atSkillEventHandler	3328	3328												
+116189		atSkillEventHandler	3329	3329												
+116190		atSkillEventHandler	3330	3330												
+116191		atAllTypeOvercomeBase	53	53												
+116192		atAllTypeOvercomeBase	66	66												
+116193		atAllTypeOvercomeBase	55	55												
+116194		atPVXAllRound	153	153	1	1										
+116195		atPVXAllRound	179	179	1	1										
+116196		atPVXAllRound	133	133	1	1										
+116197		atPVXAllRound	214	214	1	1										
+116198		atAllTypeOvercomeBase	631	631												
+116199		atAllTypeAttackPowerBase	2413	2413												
+116200		atAllTypeCriticalStrike	1214	1214												
+116201		atAllTypeOvercomeBase	1435	1435												
+116202		atDecriticalDamagePowerBase	994	994												
+116203		atAllTypeOvercomeBase	442	442												
+116204		atPhysicsShieldBase	2681	2681												
+116205		atMagicShield	2681	2681												
+116206		atBasePotentialAdd	85	85												
+116207		atBasePotentialAdd	98	98												
+116208		atBasePotentialAdd	111	111												
+116209		atBasePotentialAdd	82	82												
+116210		atBasePotentialAdd	96	96												
+116211		atBasePotentialAdd	194	194												
+116212		atBasePotentialAdd	133	133												
+116213		atBasePotentialAdd	81	81												
+116214		atBasePotentialAdd	93	93												
+116215		atBasePotentialAdd	68	68												
+116216		atBasePotentialAdd	80	80												
+116217		atBasePotentialAdd	137	137												
+116218		atBasePotentialAdd	162	162												
+116219		atSkillEventHandler	3331	3331												
+116220		atSkillEventHandler	3332	3332												
+116221		atSkillEventHandler	3333	3333												
+116222		atSkillEventHandler	3334	3334												
+116223		atSkillEventHandler	3335	3335												
+116224		atSkillEventHandler	3336	3336												
+116225		atSkillEventHandler	3337	3337												
+116226		atSkillEventHandler	3338	3338												
+116227		atStrainBase	1610	1610												
+116228		atMaxLifeAdditional	3037	3037												
+116229		atMaxLifeAdditional	4556	4556												
+116230		atPVXAllRound	304	304												
+116231		atManaReplenishExt	117	117												
+116232		atDecriticalDamagePowerBase	9	9												

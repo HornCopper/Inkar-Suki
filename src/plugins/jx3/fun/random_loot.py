@@ -9,6 +9,7 @@ from src.const.path import ASSETS, CONST
 from src.utils.network import Request, cache_image
 from src.utils.generate import generate
 from src.utils.file import read, write
+from src.utils.database.constant import CURRENT_LEVEL
 from src.templates import SimpleHTML, get_saohua
 
 from ._template import (
@@ -33,8 +34,6 @@ from .random_loot_source import get_local_lua_boss_drops
 import re
 import os
 import json
-
-current_level = 130
 
 current_dungeon = ["会战弓月城"]
 
@@ -68,7 +67,7 @@ class RandomLoot:
                     if each_dungeon["name"] == name:
                         for each_mode in each_dungeon["maps"]:
                             if each_mode["mode"] == mode:
-                                return cls(int(each_mode["map_id"]), level == current_level, name in current_dungeon, mode + name)
+                                return cls(int(each_mode["map_id"]), level == CURRENT_LEVEL, name in current_dungeon, mode + name)
                             
     @staticmethod
     def _parse_attributes(data: dict) -> str:

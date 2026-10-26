@@ -88,6 +88,9 @@ from .gold import (
 from .haste import (
     haste_matcher
 )
+from .card import (
+    social_card_matcher
+)
 from .castbar import (
     castbar_matcher
 )
