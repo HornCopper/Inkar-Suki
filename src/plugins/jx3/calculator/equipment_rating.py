@@ -104,6 +104,14 @@ EQUIPMENT_RATING_DISTRIBUTION_PATH = build_path(
     ASSETS, ["source", "jx3", "equipment_rating_distribution.json"]
 )
 ADAPTIVE_ICON_ITEM_NAME_BY_CODE = {
+    "FYYD_PHYSICS": "巴山夜雨宴（外攻）",
+    "FYYD_MAGIC": "嘉陵月夜宴（内攻）",
+    "CA_BANQUET_PHYSICS": "华岳开锋宴（外攻）",
+    "CA_BANQUET_MAGIC": "未央宫庭宴（内攻）",
+    **{f"FY_CRYSTAL_BANQUET_{attr}": "巴渝珍馐宴（通用）"
+       for attr in ("VITALITY", "AGILITY", "SPUNK", "STRENGTH", "SPIRIT")},
+    **{f"CA_BANQUET_{attr}": "长安珍馐宴（通用）"
+       for attr in ("VITALITY", "AGILITY", "SPUNK", "STRENGTH", "SPIRIT")},
     "BLSZY": "百炼水煮鱼",
     "FY_ATTACK_INGOT_PHYSICS": "风语·瀑沙熔锭（外攻）",
     "FY_ATTACK_INGOT_MAGIC": "风语·坠宵熔锭（内攻）",
@@ -142,6 +150,7 @@ ADAPTIVE_FORMATION_FALLBACK_ICON_IDS = {
 ADAPTIVE_DISPLAY_GROUPS = [
     ("food", "食品类", {"辅助食品", "增强食品"}),
     ("medicine", "药品类", {"辅助药品", "增强药品"}),
+    ("banquet", "常规宴席", {"常规宴席"}),
     ("home", "家园类（酒 / 创意料理）", {"家园酒", "创意料理·盛"}),
     ("ingot", "熔锭", {"熔锭"}),
 ]
