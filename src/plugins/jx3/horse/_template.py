@@ -1,6 +1,5 @@
 from src.const.path import ASSETS, build_path
 
-
 template_dilu = """
 <tr>
     <td class="short-column">{{ server }}</td>

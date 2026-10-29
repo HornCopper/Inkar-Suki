@@ -10,14 +10,14 @@ from nonebot.adapters.onebot.v11 import (
     Message,
     MessageEvent,
     GroupMessageEvent,
-    MessageSegment as ms
+    MessageSegment as ms,
 )
 
 from src.config import Config
 from src.const.path import (
     ASSETS,
     PLUGINS,
-    build_path
+    build_path,
 )
 from src.utils.command import on_command
 from src.utils.network import Request
@@ -33,18 +33,16 @@ import os
 
 from ._message import answers as a
 
-What2EatMatcher = on_regex(r"^(/)?[今|明|后]?[天|日]?(早|中|晚)?(上|午|餐|饭|夜宵|宵夜)?吃(什么|啥|点啥)$", priority=5)
-What2DrinkMatcher = on_regex(r"^(/)?[今|明|后]?[天|日]?(早|中|晚)?(上|午|餐|饭|夜宵|宵夜)?喝(什么|啥|点啥)$", priority=5)
+What2EatMatcher = on_regex(r"^(/)?[今|明|后]?[天|日]?(早|中|晚)?(上|午|餐|饭|夜宵|宵夜)?吃(什么|啥|点啥)$", priority = 5)
+What2DrinkMatcher = on_regex(r"^(/)?[今|明|后]?[天|日]?(早|中|晚)?(上|午|餐|饭|夜宵|宵夜)?喝(什么|啥|点啥)$", priority = 5)
 
 HELP_COMMAND_KEYWORDS = ("help", "帮助", "支持", "文档", "使用说明", "功能")
 HELP_ARGUMENT_KEYWORDS = ("help", "帮助", "参数", "示例")
-
 
 def _literal_string(node: ast.AST) -> str | None:
     if isinstance(node, ast.Constant) and isinstance(node.value, str):
         return node.value
     return None
-
 
 def _literal_strings(node: ast.AST) -> list[str]:
     value = _literal_string(node)
@@ -55,20 +53,14 @@ def _literal_strings(node: ast.AST) -> list[str]:
         for element in node.elts:
             results.extend(_literal_strings(element))
         return results
-    if (
-        isinstance(node, ast.Call)
-        and isinstance(node.func, ast.Name)
-        and node.func.id == "_prefixed_command_aliases"
-        and node.args
-    ):
+    if (isinstance(node, ast.Call) and isinstance(node.func, ast.Name) and node.func.id == "_prefixed_command_aliases"
+            and node.args):
         value = _literal_string(node.args[0])
         return [value] if value is not None else []
     return []
 
-
 def _is_on_command_call(node: ast.AST) -> bool:
     return isinstance(node, ast.Call) and isinstance(node.func, ast.Name) and node.func.id == "on_command"
-
 
 def _decorator_matcher_name(node: ast.AST) -> str | None:
     if not isinstance(node, ast.Call) or not isinstance(node.func, ast.Attribute):
@@ -78,14 +70,12 @@ def _decorator_matcher_name(node: ast.AST) -> str | None:
     value = node.func.value
     return value.id if isinstance(value, ast.Name) else None
 
-
 def _called_function_names(node: ast.AST) -> set[str]:
     names: set[str] = set()
     for child in ast.walk(node):
         if isinstance(child, ast.Call) and isinstance(child.func, ast.Name):
             names.add(child.func.id)
     return names
-
 
 def _node_string_values(node: ast.AST) -> set[str]:
     values: set[str] = set()
@@ -95,10 +85,8 @@ def _node_string_values(node: ast.AST) -> set[str]:
             values.add(value)
     return values
 
-
 def _node_names(node: ast.AST) -> set[str]:
     return {child.id for child in ast.walk(node) if isinstance(child, ast.Name)}
-
 
 def _has_help_argument_trigger(node: ast.AST) -> bool:
     values = _node_string_values(node)
@@ -106,7 +94,6 @@ def _has_help_argument_trigger(node: ast.AST) -> bool:
     if "help" in lower_values and any(keyword in values for keyword in HELP_ARGUMENT_KEYWORDS[1:]):
         return True
     return any(name.endswith("HELP_TEXT") for name in _node_names(node))
-
 
 def _extract_command_matchers(tree: ast.AST) -> dict[str, dict[str, Any]]:
     matchers: dict[str, dict[str, Any]] = {}
@@ -131,28 +118,14 @@ def _extract_command_matchers(tree: ast.AST) -> dict[str, dict[str, Any]]:
             matchers[matcher_name] = {"command": command, "aliases": aliases}
     return matchers
 
-
 def _extract_help_matcher_names(tree: ast.AST) -> set[str]:
-    functions = [
-        node
-        for node in ast.walk(tree)
-        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef))
-    ]
-    helper_by_name = {
-        node.name: node
-        for node in functions
-        if node.name != "_"
-    }
-    help_helpers = {
-        name
-        for name, node in helper_by_name.items()
-        if _has_help_argument_trigger(node)
-    }
+    functions = [node for node in ast.walk(tree) if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef))]
+    helper_by_name = {node.name: node for node in functions if node.name != "_"}
+    help_helpers = {name for name, node in helper_by_name.items() if _has_help_argument_trigger(node)}
     help_matchers: set[str] = set()
     for function in functions:
         matcher_names = [
-            matcher_name
-            for decorator in function.decorator_list
+            matcher_name for decorator in function.decorator_list
             if (matcher_name := _decorator_matcher_name(decorator)) is not None
         ]
         if not matcher_names:
@@ -164,10 +137,8 @@ def _extract_help_matcher_names(tree: ast.AST) -> set[str]:
             help_matchers.update(matcher_names)
     return help_matchers
 
-
 def _is_internal_command(command: str) -> bool:
     return command.startswith("jx3_") or bool(command) and command.replace("_", "").isascii() and command.islower()
-
 
 def _display_command(command: str, aliases: list[str]) -> str:
     if command == "inkar":
@@ -176,7 +147,6 @@ def _display_command(command: str, aliases: list[str]) -> str:
         if not _is_internal_command(candidate):
             return candidate
     return command
-
 
 def _help_category(path: Path, entry_type: str) -> str:
     if any(part == "jx3" for part in path.parts):
@@ -187,12 +157,11 @@ def _help_category(path: Path, entry_type: str) -> str:
         return "通用帮助"
     return "其他帮助"
 
-
 def _collect_inkar_help_entries() -> list[dict[str, Any]]:
     entries: dict[str, dict[str, Any]] = {}
     for source_path in Path(PLUGINS).rglob("*.py"):
         try:
-            source = source_path.read_text(encoding="utf-8")
+            source = source_path.read_text(encoding = "utf-8")
             tree = ast.parse(source)
         except Exception:
             continue
@@ -202,12 +171,9 @@ def _collect_inkar_help_entries() -> list[dict[str, Any]]:
             command = matcher_data["command"]
             aliases = matcher_data["aliases"]
             visible_commands = [command, *aliases]
-            keyword_commands = [
-                item for item in visible_commands if item != command or not _is_internal_command(item)
-            ]
+            keyword_commands = [item for item in visible_commands if item != command or not _is_internal_command(item)]
             is_help_command = any(
-                any(keyword.lower() in item.lower() for keyword in HELP_COMMAND_KEYWORDS)
-                for item in keyword_commands
+                any(keyword.lower() in item.lower() for keyword in HELP_COMMAND_KEYWORDS) for item in keyword_commands
             )
             is_argument_help = matcher_name in help_matchers and not is_help_command
             if not is_help_command and not is_argument_help:
@@ -222,10 +188,10 @@ def _collect_inkar_help_entries() -> list[dict[str, Any]]:
             entries[key] = {
                 "command": display,
                 "aliases": alias_text or display,
-                "category": _help_category(source_path.relative_to(PLUGINS), "argument" if is_argument_help else "command"),
+                "category":
+                _help_category(source_path.relative_to(PLUGINS), "argument" if is_argument_help else "command"),
             }
-    return sorted(entries.values(), key=lambda item: (item["category"], item["command"]))
-
+    return sorted(entries.values(), key = lambda item: (item["category"], item["command"]))
 
 async def _render_inkar_help_image():
     entries = _collect_inkar_help_entries()
@@ -243,16 +209,16 @@ async def _render_inkar_help_image():
         item_html = []
         for entry in items:
             item_html.append(
-                '<div class="help-item">'
+                "<div class=\"help-item\">"
                 f'<div class="cmd">{html.escape(entry["command"])}</div>'
                 f'<div class="aliases">{html.escape(entry["aliases"])}</div>'
-                '</div>'
+                "</div>",
             )
         cards.append(
-            '<section class="section">'
+            "<section class=\"section\">"
             f'<div class="section-title">{html.escape(category)} <span>{len(items)}</span></div>'
             f'<div class="grid">{"".join(item_html)}</div>'
-            '</section>'
+            "</section>",
         )
     html_source = f"""
 <!doctype html>
@@ -294,68 +260,80 @@ html body .page.inkar-help .header {{ padding: 30px 32px; background: #f8f9fa !i
         html_source,
         ".page",
         False,
-        segment=True,
-        viewport={"width": 1040, "height": 1800},
+        segment = True,
+        viewport = {
+            "width": 1040,
+            "height": 1800,
+        },
     )
 
 @What2DrinkMatcher.handle()
 async def _(event: MessageEvent):
-    image_name = random.choice(os.listdir(
-        build_path(
-            ASSETS,
-            [
-                "image",
-                "what2eat",
-                "drink"
-            ]
-        )
-    ))
-    image_path = Path( 
-        build_path(
-            ASSETS,
-            [
-                "image",
-                "what2eat",
-                "drink"
-            ],
-            end_with_slash=True
-        ) + image_name
+    image_name = random.choice(
+        os.listdir(
+            build_path(
+                ASSETS,
+                [
+                    "image",
+                    "what2eat",
+                    "drink",
+                ],
+            ),
+        ),
     )
-    msg = (f"{Config.bot_basic.bot_name}建议你喝: \n⭐{image_path.stem}⭐\n" + ms.image(Request(image_path.as_uri()).local_content))
+    image_path = Path(
+        build_path(
+            ASSETS,
+            [
+                "image",
+                "what2eat",
+                "drink",
+            ],
+            end_with_slash = True,
+        ) + image_name,
+    )
+    msg = (
+        f"{Config.bot_basic.bot_name}建议你喝: \n⭐{image_path.stem}⭐\n" +
+        ms.image(Request(image_path.as_uri()).local_content)
+    )
     await What2DrinkMatcher.send("正在为你找好喝的……")
-    await What2DrinkMatcher.send(msg, at_sender=True)
+    await What2DrinkMatcher.send(msg, at_sender = True)
 
 @What2EatMatcher.handle()
 async def _(event: MessageEvent):
-    image_name = random.choice(os.listdir(
-        build_path(
-            ASSETS,
-            [
-                "image",
-                "what2eat",
-                "eat"
-            ]
-        )
-    ))
-    image_path = Path( 
-        build_path(
-            ASSETS,
-            [
-                "image",
-                "what2eat",
-                "eat"
-            ],
-            end_with_slash=True
-        ) + image_name
+    image_name = random.choice(
+        os.listdir(
+            build_path(
+                ASSETS,
+                [
+                    "image",
+                    "what2eat",
+                    "eat",
+                ],
+            ),
+        ),
     )
-    msg = (f"{Config.bot_basic.bot_name}建议你吃: \n⭐{image_path.stem}⭐\n" + ms.image(Request(image_path.as_uri()).local_content))
+    image_path = Path(
+        build_path(
+            ASSETS,
+            [
+                "image",
+                "what2eat",
+                "eat",
+            ],
+            end_with_slash = True,
+        ) + image_name,
+    )
+    msg = (
+        f"{Config.bot_basic.bot_name}建议你吃: \n⭐{image_path.stem}⭐\n" +
+        ms.image(Request(image_path.as_uri()).local_content)
+    )
     await What2EatMatcher.send("正在为你找好吃的……")
-    await What2EatMatcher.send(msg, at_sender=True)
+    await What2EatMatcher.send(msg, at_sender = True)
 
 RANDOM_NUMBER_HELP_TEXT = "格式：随机数 x y\nx、y 必须为整数，且 x ≤ y；结果包含两端点。"
 
-RandomNumberMatcher = on_command("随机数", command_key="随机数", force_whitespace=True, priority=5)
-
+RandomNumberMatcher = on_command("随机数", command_key = "随机数", force_whitespace = True, priority = 5)
 
 @RandomNumberMatcher.handle()
 async def random_number(args: Message = CommandArg()):
@@ -370,8 +348,7 @@ async def random_number(args: Message = CommandArg()):
         await RandomNumberMatcher.finish("x 不能大于 y。\n" + RANDOM_NUMBER_HELP_TEXT)
     await RandomNumberMatcher.finish(f"为你抽取到的随机数为：" + str(random.randint(lower, upper)))
 
-
-BMIMatcher = on_command("bmi", command_key=None, aliases={"BMI", "身体质量指数"}, force_whitespace=True, priority=5)
+BMIMatcher = on_command("bmi", command_key = None, aliases = {"BMI", "身体质量指数"}, force_whitespace = True, priority = 5)
 
 @BMIMatcher.handle()
 async def _(event: MessageEvent, args: Message = CommandArg()):
@@ -385,7 +362,7 @@ async def _(event: MessageEvent, args: Message = CommandArg()):
             await BMIMatcher.finish("唔……请参考以下格式，注意两个参数都是纯数字哦~\nBMI 身高(米) 体重(千克)")
     height = float(arg[0])
     weight = float(arg[1])
-    bmi_value = weight / (height*height)
+    bmi_value = weight / (height * height)
     final_result = round(bmi_value, 1)
     if final_result <= 18.4:
         msg = f"您的BMI计算结果是：{final_result}，属于偏瘦（0~18.4）哦~"
@@ -397,15 +374,26 @@ async def _(event: MessageEvent, args: Message = CommandArg()):
         msg = f"您的BMI计算结果是：{final_result}，属于肥胖（28.0+）哦~\n音卡建议您少吃高热量食物，多多运动保持健康身体哦！"
     await BMIMatcher.finish(msg)
 
-HelpMatcher = on_command("help", command_key="帮助", aliases={"帮助", "功能", "查看", "文档", "使用说明"}, force_whitespace=True, priority=5)
-InkarHelpMatcher = on_command("inkar", command_key="帮助", aliases={"Inkar", "INKAR", "音卡"}, force_whitespace=True, priority=5)
+HelpMatcher = on_command(
+    "help",
+    command_key = "帮助",
+    aliases = {"帮助", "功能", "查看", "文档", "使用说明"},
+    force_whitespace = True,
+    priority = 5,
+)
+InkarHelpMatcher = on_command(
+    "inkar",
+    command_key = "帮助",
+    aliases = {"Inkar", "INKAR", "音卡"},
+    force_whitespace = True,
+    priority = 5,
+)
 
 @HelpMatcher.handle()
 async def help_(args: Message = CommandArg()):
     if args.extract_plain_text() != "":
         return
     await HelpMatcher.finish("Inkar Suki · 音卡使用文档：\nhttps://inkar-suki.codethink.cn/Inkar-Suki-Docs/#/usage")
-
 
 @InkarHelpMatcher.handle()
 async def _(args: Message = CommandArg()):
@@ -414,8 +402,7 @@ async def _(args: Message = CommandArg()):
         await InkarHelpMatcher.finish("参考格式：inkar help")
     await InkarHelpMatcher.finish(await _render_inkar_help_image())
 
-
-RandomDogImageMatcher = on_command("随机狗图", command_key=None, aliases={"随机lwx"}, priority=5)
+RandomDogImageMatcher = on_command("随机狗图", command_key = None, aliases = {"随机lwx"}, priority = 5)
 
 @RandomDogImageMatcher.handle()
 async def _(event: MessageEvent, args: Message = CommandArg()):
@@ -430,12 +417,11 @@ async def _(event: MessageEvent, args: Message = CommandArg()):
                         ASSETS,
                         [
                             "image",
-                            "lwx"
-                        ]
-                        ,
-                        end_with_slash=True
-                    ) + str(random.randint(1,4)) + ".jpg"
-                ).as_uri()
+                            "lwx",
+                        ],
+                        end_with_slash = True,
+                    ) + str(random.randint(1, 4)) + ".jpg",
+                ).as_uri(),
             ).local_content
             await RandomDogImageMatcher.finish(ms.image(img))
     if rdint <= 10:
@@ -445,19 +431,18 @@ async def _(event: MessageEvent, args: Message = CommandArg()):
                     ASSETS,
                     [
                         "image",
-                        "lwx"
-                    ]
-                    ,
-                    end_with_slash=True
-                ) + str(random.randint(1,4)) + ".jpg"
-            ).as_uri()
+                        "lwx",
+                    ],
+                    end_with_slash = True,
+                ) + str(random.randint(1, 4)) + ".jpg",
+            ).as_uri(),
         ).local_content
         await RandomDogImageMatcher.finish(ms.image(img))
     data = (await Request("https://api.thedogapi.com/v1/images/search?size=full").get()).json()
     image = (await Request(data[0]["url"]).get()).content
     await RandomDogImageMatcher.finish(ms.image(image))
 
-RandomDragonImageMatcher = on_command("随机龙图", command_key=None, priority=5)
+RandomDragonImageMatcher = on_command("随机龙图", command_key = None, priority = 5)
 
 @RandomDragonImageMatcher.handle()
 async def _(args: Message = CommandArg()):
@@ -466,15 +451,9 @@ async def _(args: Message = CommandArg()):
     batch_choice = random.choice(["batch1/", "batch2/", "batch3/"])
     base_url = "https://git.acwing.com/Est/dragon/-/raw/main/"
     rdnum = random.randint(
-        (
-            int(batch_choice[-2])
-            -1
-        )*500+1,
-        (
-            int(batch_choice[-2])
-            *500
-        )
-            )
+        (int(batch_choice[-2]) - 1) * 500 + 1,
+        (int(batch_choice[-2]) * 500),
+    )
     for ext in [".jpg", ".png", ".gif"]:
         image_url = f"{base_url}{batch_choice}dragon_{rdnum}_{ext}"
         resp = await Request(image_url).get()
@@ -482,7 +461,7 @@ async def _(args: Message = CommandArg()):
             image = resp.content
             await RandomDragonImageMatcher.finish(ms.image(image))
 
-AnswerBookMatcher = on_command("答案之书", command_key="答案之书", priority=5, force_whitespace=True)
+AnswerBookMatcher = on_command("答案之书", command_key = "答案之书", priority = 5, force_whitespace = True)
 
 @AnswerBookMatcher.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
@@ -492,15 +471,15 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
         answer = random.choice(a)
         await AnswerBookMatcher.finish("答案之书给出的建议是：\n" + answer)
 
-CustomBanMatcher = on_command("抽奖", command_key="抽奖", aliases={"抽大奖", "十连抽", "百连抽", "抽巨奖"}, priority=5)
+CustomBanMatcher = on_command("抽奖", command_key = "抽奖", aliases = {"抽大奖", "十连抽", "百连抽", "抽巨奖"}, priority = 5)
 
 @CustomBanMatcher.handle()
 async def _(bot: Bot, event: GroupMessageEvent, cmd: str = RawCommand(), args: Message = CommandArg()):
     if args.extract_plain_text() != "":
         return
     additions = get_group_settings(event.group_id, "additions")
-    self_role = await bot.get_group_member_info(group_id=event.group_id, user_id=event.self_id)
-    terminal_role = await bot.get_group_member_info(group_id=event.group_id, user_id=event.user_id)
+    self_role = await bot.get_group_member_info(group_id = event.group_id, user_id = event.self_id)
+    terminal_role = await bot.get_group_member_info(group_id = event.group_id, user_id = event.user_id)
     if "抽奖" not in additions:
         await CustomBanMatcher.finish("本群尚未启用抽奖！\n发送“订阅 抽奖”即可启用。包含以下命令：\n抽奖、抽大奖、十连抽、百连抽")
     if self_role["role"] not in ["owner", "admin"] or terminal_role["role"] in ["owner", "admin"]:
@@ -510,32 +489,37 @@ async def _(bot: Bot, event: GroupMessageEvent, cmd: str = RawCommand(), args: M
         "抽大奖": 60,
         "十连抽": 150,
         "百连抽": 1500,
-        "抽巨奖": 43200
+        "抽巨奖": 43200,
     }
     reward_time = random.randint(0, max_time[cmd])
-    await bot.send_group_msg(group_id=event.group_id, message=f"恭喜你{cmd}的奖励时长：{reward_time}分钟！")
+    await bot.send_group_msg(group_id = event.group_id, message = f"恭喜你{cmd}的奖励时长：{reward_time}分钟！")
     cache_db.save(
         BanRecord(
             user_id = event.user_id,
             group_id = event.group_id,
-            expire = Time().raw_time + reward_time * 60
-        )
+            expire = Time().raw_time + reward_time * 60,
+        ),
     )
-    await bot.set_group_ban(group_id=event.group_id, user_id=event.user_id, duration=reward_time*60)
+    await bot.set_group_ban(group_id = event.group_id, user_id = event.user_id, duration = reward_time * 60)
 
-AllLiftBanMatcher = on_command("大赦天下", command_key="大赦天下", priority=5, force_whitespace=True)
+AllLiftBanMatcher = on_command("大赦天下", command_key = "大赦天下", priority = 5, force_whitespace = True)
 
 @AllLiftBanMatcher.handle()
 async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
-    terminal_role = await bot.get_group_member_info(group_id=event.group_id, user_id=event.user_id)
+    terminal_role = await bot.get_group_member_info(group_id = event.group_id, user_id = event.user_id)
     if terminal_role["role"] not in ["owner", "admin"]:
         await AllLiftBanMatcher.finish("只有群主或管理员才可以大赦天下！")
-    ban_record: list[BanRecord] | Any = cache_db.where_all(BanRecord(), "group_id = ?", str(event.group_id), default=[])
+    ban_record: list[BanRecord] | Any = cache_db.where_all(
+        BanRecord(),
+        "group_id = ?",
+        str(event.group_id),
+        default = [],
+    )
     if not ban_record:
         await AllLiftBanMatcher.finish("当前没有抽奖人员处于禁言状态！")
     else:
         unban_persons: list[int] = [b.user_id for b in ban_record]
         for p in unban_persons:
-            await bot.set_group_ban(group_id=event.group_id, user_id=p, duration=0)
+            await bot.set_group_ban(group_id = event.group_id, user_id = p, duration = 0)
         cache_db.delete(BanRecord(), "group_id = ?", str(event.group_id))
         await AllLiftBanMatcher.finish("已解除所有抽奖的禁言！")

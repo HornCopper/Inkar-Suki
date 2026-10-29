@@ -27,7 +27,7 @@ b: dict[str, list[str]] = {
     "衍天": ["太玄经"],
     "刀宗": ["孤锋诀"],
     "万灵": ["山海心诀"],
-    "段氏": ["周天功"]
+    "段氏": ["周天功"],
 }
 
 c = """
@@ -43,8 +43,8 @@ def d(e: str):
     g = e.split("：")[1].strip()
     h = g.find("其他门派")
     if h != -1:
-        i = g[:h-1].strip()
-        j = g[h+4:].strip()
+        i = g[:h - 1].strip()
+        j = g[h + 4:].strip()
     else:
         i = g
         j = ""
@@ -66,11 +66,7 @@ def p(q: str) -> str:
 
 def t(u: str) -> str:
     v = "\n".join(
-        [
-            "<img src=\"" + ASSETS + "/image/jx3/kungfu/" + w + ".png\" class=\"faction-icon\">"
-            for w
-            in b[u]
-        ]
+        ["<img src=\"" + ASSETS + "/image/jx3/kungfu/" + w + ".png\" class=\"faction-icon\">" for w in b[u]],
     )
     return v + u
 
@@ -81,23 +77,31 @@ def x(y: str) -> Any:
     _, ad, ae = d(z[2])
     af = k(z[3:z.index("")])
     ag = []
-    for ah in z[z.index("")+1:-4]:
+    for ah in z[z.index("") + 1:-4]:
         ag.append(
             Template(
-                c
+                c,
             ).render(
-                p1 = re.sub(r"（.*?）", "", ah.split("推荐")[0]),
-                p2 = re.sub(r"（.*?）", "", ah.split("推荐")[1]),
-                p3 = p(ah)
-            )
+                p1 = re.sub(
+                    r"（.*?）",
+                    "",
+                    ah.split("推荐")[0],
+                ),
+                p2 = re.sub(
+                    r"（.*?）",
+                    "",
+                    ah.split("推荐")[1],
+                ),
+                p3 = p(ah),
+            ),
         )
     ai = [f"<p>{aj}</p>" for aj in z[-4:-2]]
     ak = f"<p>{z[-2]}</p>"
     al = z[-1]
     html = Template(
-        read(TEMPLATES + "/jx3/almanac.html")
+        read(TEMPLATES + "/jx3/almanac.html"),
     ).render(
-        date = (datetime.now() + timedelta(days=1)).strftime("%Y.%m.%d"),
+        date = (datetime.now() + timedelta(days = 1)).strftime("%Y.%m.%d"),
         day_type = aa,
         week_day = al,
         s_schools = "\n".join([t(ab) for ab in ab.split("，")]),
@@ -107,6 +111,6 @@ def x(y: str) -> Any:
         lucky_time = af,
         general = "\n".join(ag),
         drop_recommend = "\n".join(ai),
-        shilian_recommend = ak
+        shilian_recommend = ak,
     )
     return html

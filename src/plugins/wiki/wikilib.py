@@ -5,7 +5,6 @@ from bs4 import BeautifulSoup
 
 from src.utils.network import Request
 
-
 class MediaWikiClient:
     headers = {
         "User-Agent": "Inkar-Suki WikiBot/1.0",
@@ -22,18 +21,16 @@ class MediaWikiClient:
         body = parse.urlencode(params)
         for _ in range(attempts):
             try:
-                return (
-                    await Request(api, headers=cls.form_headers, params=body).post()
-                ).json()
+                return (await Request(api, headers = cls.form_headers, params = body).post()).json()
             except Exception:
                 continue
         return None
 
     @classmethod
     async def discover_api(cls, page_url: str) -> dict:
-        response = await Request(page_url, headers=cls.headers).get()
+        response = await Request(page_url, headers = cls.headers).get()
         soup = BeautifulSoup(response.text, "html.parser")
-        edit_uri = soup.find("link", rel="EditURI")
+        edit_uri = soup.find("link", rel = "EditURI")
         if edit_uri is not None and edit_uri.get("href"):
             api = urljoin(page_url, str(edit_uri["href"]).split("?", 1)[0])
             return {"status": 200, "data": api}
@@ -46,7 +43,11 @@ class MediaWikiClient:
 
         validation = await cls._post(
             api,
-            {"action": "query", "titles": "Main Page", "format": "json"},
+            {
+                "action": "query",
+                "titles": "Main Page",
+                "format": "json",
+            },
         )
         if validation is None or "query" not in validation:
             return {"status": 500}
@@ -60,7 +61,11 @@ class MediaWikiClient:
             return "Arcaea Wiki"
         data = await cls._post(
             api,
-            {"action": "query", "meta": "siteinfo", "format": "json"},
+            {
+                "action": "query",
+                "meta": "siteinfo",
+                "format": "json",
+            },
         )
         if data is not None:
             site_name = data.get("query", {}).get("general", {}).get("sitename")
@@ -71,14 +76,21 @@ class MediaWikiClient:
             return {
                 "jx3": "剑网3 Wiki",
                 "mc": "Minecraft Wiki",
-            }.get(wiki_id, f"{wiki_id} Wiki" if wiki_id else "Biligame Wiki")
+            }.get(
+                wiki_id,
+                f"{wiki_id} Wiki" if wiki_id else "Biligame Wiki",
+            )
         return hostname or "未知 Wiki"
 
     @classmethod
     async def get_home_page(cls, api: str) -> str:
         data = await cls._post(
             api,
-            {"action": "query", "meta": "siteinfo", "format": "json"},
+            {
+                "action": "query",
+                "meta": "siteinfo",
+                "format": "json",
+            },
         )
         if data is None:
             parsed = urlparse(api)
@@ -111,15 +123,11 @@ class MediaWikiClient:
                     "format": "json",
                 },
             )
-            if (
-                interwiki is not None
-                and "query" in interwiki
-                and "interwiki" in interwiki["query"]
-            ):
+            if (interwiki is not None and "query" in interwiki and "interwiki" in interwiki["query"]):
                 target_url = interwiki["query"]["interwiki"][0]["url"]
                 target = await cls.discover_api(target_url)
                 if target["status"] == 200:
-                    return await cls.lookup(target["data"], title.split(":", maxsplit=1)[1])
+                    return await cls.lookup(target["data"], title.split(":", maxsplit = 1)[1])
                 return {"status": 201, "link": target_url}
 
         data = await cls._post(
@@ -223,7 +231,7 @@ class MediaWikiClient:
     @classmethod
     async def _lookup_html(cls, api: str, title: str) -> dict:
         link = cls.article_url(api, title)
-        response = await Request(link, headers=cls.headers).get()
+        response = await Request(link, headers = cls.headers).get()
         if response.status_code == 404:
             return {"status": 404}
         soup = BeautifulSoup(response.text, "html.parser")
@@ -232,14 +240,14 @@ class MediaWikiClient:
             return {"status": 502, "reason": "该百科阻止了连接请求，请稍后再试。"}
         description = cls._first_paragraph(str(content))
         heading = soup.select_one("#firstHeading")
-        actual_title = heading.get_text(strip=True) if heading else title
+        actual_title = heading.get_text(strip = True) if heading else title
         result = {
             "status": 200,
             "link": str(response.url),
             "desc": description,
         }
         if actual_title != title:
-            result.update(status=301, redirect=[title, actual_title])
+            result.update(status = 301, redirect = [title, actual_title])
         return result
 
     @staticmethod
@@ -248,15 +256,10 @@ class MediaWikiClient:
         for element in content.select("style, script, table, .mw-empty-elt, .navbox"):
             element.decompose()
         paragraph = next(
-            (
-                item
-                for item in content.select(".mw-parser-output > p")
-                if item.get_text(strip=True)
-            ),
+            (item for item in content.select(".mw-parser-output > p") if item.get_text(strip = True)),
             content.find("p"),
         )
         return f"\n{paragraph.get_text(' ', strip=True)}" if paragraph else ""
-
 
 class wiki:
     """兼容既有 Wiki 命令入口的 MediaWiki 操作接口。"""

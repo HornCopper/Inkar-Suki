@@ -21,7 +21,13 @@ from .role_monster import get_role_monsters_map
 from .monster import get_monsters_map
 from .raid import get_raid_record_image
 
-zone_record_matcher = on_command("jx3_zones", command_key="副本", aliases={"副本v1"}, force_whitespace=True, priority=5)
+zone_record_matcher = on_command(
+    "jx3_zones",
+    command_key = "副本",
+    aliases = {"副本v1"},
+    force_whitespace = True,
+    priority = 5,
+)
 
 @zone_record_matcher.handle()
 async def _(event: GroupMessageEvent, message: Message = CommandArg()):
@@ -29,7 +35,9 @@ async def _(event: GroupMessageEvent, message: Message = CommandArg()):
         return
     args = message.extract_plain_text().strip().split(" ")
     if len(args) not in [1, 2]:
-        await zone_record_matcher.finish(PROMPT.ArgumentCountInvalid + "\n参考格式：副本v1 <服务器> <角色名>\n参考格式：副本v1 <服务器> <多角色>\n多角色以英文分号(;)分割。")
+        await zone_record_matcher.finish(
+            PROMPT.ArgumentCountInvalid + "\n参考格式：副本v1 <服务器> <角色名>\n参考格式：副本v1 <服务器> <多角色>\n多角色以英文分号(;)分割。",
+        )
     if len(args) == 1:
         server = None
         name = args[0]
@@ -50,7 +58,13 @@ async def _(event: GroupMessageEvent, message: Message = CommandArg()):
         data = await teamcd_v1(server, name)
     await zone_record_matcher.finish(data)
 
-zone_record_v2_matcher = on_command("jx3_zones_v2", command_key="副本", aliases={"副本v2", "副本"}, force_whitespace=True, priority=5)
+zone_record_v2_matcher = on_command(
+    "jx3_zones_v2",
+    command_key = "副本",
+    aliases = {"副本v2", "副本"},
+    force_whitespace = True,
+    priority = 5,
+)
 
 @zone_record_v2_matcher.handle()
 async def _(event: GroupMessageEvent, message: Message = CommandArg()):
@@ -59,9 +73,7 @@ async def _(event: GroupMessageEvent, message: Message = CommandArg()):
     args = message.extract_plain_text().strip().split()
     if len(args) not in [1, 2]:
         await zone_record_v2_matcher.finish(
-            PROMPT.ArgumentCountInvalid
-            + "\n参考格式：副本 <角色名>（使用本群绑定服务器）"
-            + "\n参考格式：副本 <服务器> <角色名>"
+            PROMPT.ArgumentCountInvalid + "\n参考格式：副本 <角色名>（使用本群绑定服务器）" + "\n参考格式：副本 <服务器> <角色名>",
         )
     if len(args) == 1:
         server = None
@@ -73,10 +85,16 @@ async def _(event: GroupMessageEvent, message: Message = CommandArg()):
     if server is None:
         await zone_record_v2_matcher.finish(PROMPT.ServerNotExist)
     await zone_record_v2_matcher.finish(
-        await get_raid_record_image(server, role_name)
+        await get_raid_record_image(server, role_name),
     )
 
-all_roles_teamcd_v1_matcher = on_command("jx3_zoneslist_v1", command_key="副本", aliases={"副本列表v1"}, force_whitespace=True, priority=5)
+all_roles_teamcd_v1_matcher = on_command(
+    "jx3_zoneslist_v1",
+    command_key = "副本",
+    aliases = {"副本列表v1"},
+    force_whitespace = True,
+    priority = 5,
+)
 
 @all_roles_teamcd_v1_matcher.handle()
 async def _(event: GroupMessageEvent, message: Message = CommandArg()):
@@ -84,7 +102,13 @@ async def _(event: GroupMessageEvent, message: Message = CommandArg()):
     image = await get_personal_roles_teamcd_image_v1(event.user_id, msg)
     await all_roles_teamcd_v1_matcher.finish(image)
 
-all_roles_teamcd_v2_matcher = on_command("jx3_zoneslist", command_key="副本", aliases={"副本列表v2", "副本列表"}, force_whitespace=True, priority=5)
+all_roles_teamcd_v2_matcher = on_command(
+    "jx3_zoneslist",
+    command_key = "副本",
+    aliases = {"副本列表v2", "副本列表"},
+    force_whitespace = True,
+    priority = 5,
+)
 
 @all_roles_teamcd_v2_matcher.handle()
 async def _(event: GroupMessageEvent, message: Message = CommandArg()):
@@ -94,7 +118,13 @@ async def _(event: GroupMessageEvent, message: Message = CommandArg()):
     image = await get_personal_roles_teamcd_image_v2(event.user_id, msg)
     await all_roles_teamcd_v2_matcher.finish(image)
 
-drops_list_matcher = on_command("jx3_drops", command_key="掉落", aliases={"掉落列表"}, force_whitespace=True, priority=5)
+drops_list_matcher = on_command(
+    "jx3_drops",
+    command_key = "掉落",
+    aliases = {"掉落列表"},
+    force_whitespace = True,
+    priority = 5,
+)
 
 @drops_list_matcher.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
@@ -107,12 +137,18 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     mode = arg[1]
     boss = arg[2]
     dungeonInstance = Dungeon(map, mode)
-    if dungeonInstance.name is None or dungeonInstance.mode is None:
+    if dungeonInstance.mode is None:
         await drops_list_matcher.finish(PROMPT.DungeonInvalid)
-    data = await get_drop_list_image(dungeonInstance.name, dungeonInstance.mode, boss)
+    data = await get_drop_list_image(dungeonInstance.name or map, dungeonInstance.mode, boss)
     await drops_list_matcher.finish(data)
 
-monsters_matcher = on_command("jx3_monsters_v2", command_key="百战", aliases={"百战v2", "百战"}, force_whitespace=True, priority=5)
+monsters_matcher = on_command(
+    "jx3_monsters_v2",
+    command_key = "百战",
+    aliases = {"百战v2", "百战"},
+    force_whitespace = True,
+    priority = 5,
+)
 
 @monsters_matcher.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
@@ -121,7 +157,13 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     img = await get_monsters_map()
     await monsters_matcher.finish(img)
 
-role_monsters_matcher = on_command("jx3_role_monster", command_key="精耐", aliases={"精耐"}, force_whitespace=True, priority=5)
+role_monsters_matcher = on_command(
+    "jx3_role_monster",
+    command_key = "精耐",
+    aliases = {"精耐"},
+    force_whitespace = True,
+    priority = 5,
+)
 
 @role_monsters_matcher.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
@@ -144,7 +186,13 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     data = await get_role_monsters_map(server, role_name)
     await role_monsters_matcher.finish(data)
 
-allserver_item_record_matcher = on_command("jx3_itemrecord_allserver", command_key="掉落", aliases={"全服掉落"}, force_whitespace=True, priority=5)
+allserver_item_record_matcher = on_command(
+    "jx3_itemrecord_allserver",
+    command_key = "掉落",
+    aliases = {"全服掉落"},
+    force_whitespace = True,
+    priority = 5,
+)
 
 @allserver_item_record_matcher.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):

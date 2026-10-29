@@ -29,7 +29,7 @@ from src.utils.database.classes import (
     EquipReplacementLog,
     CommandUsage,
     AnalyzerUsage,
-    RandomImageRecord
+    RandomImageRecord,
 )
 
 from src.const.path import DATA, build_path
@@ -49,7 +49,7 @@ db.auto_migrate(
     PersonalSettings(),
     Population(),
     RoleData(),
-    RandomAffectionRecord()
+    RandomAffectionRecord(),
 )
 
 cache_db = Database(build_path(DATA, ["cache.db"]))
@@ -61,20 +61,20 @@ cache_db.auto_migrate(
     EquipmentRatingRaceEventCache(),
     EquipmentRatingRaceBossCache(),
     EquipmentRatingRaceRoleCache(),
-    GroupMessage()
+    GroupMessage(),
 )
 
 serendipity_db = Database(build_path(DATA, ["serendipity.db"]))
 
 serendipity_db.auto_migrate(
-    SerendipityData()
+    SerendipityData(),
 )
 
 attribute_db = Database(build_path(DATA, ["attributes.db"]))
 
 attribute_db.auto_migrate(
     PlayerEquipsCache(),
-    EquipmentRatingCache()
+    EquipmentRatingCache(),
 )
 
 rank_db = Database(build_path(DATA, ["rank.db"]))
@@ -82,7 +82,7 @@ rank_db = Database(build_path(DATA, ["rank.db"]))
 rank_db.auto_migrate(
     CQCRank(),
     THRRank(),
-    EquipmentRatingDpsRank()
+    EquipmentRatingDpsRank(),
 )
 
 logs_db = Database(build_path(DATA, ["logs.db"]))
@@ -91,5 +91,5 @@ logs_db.auto_migrate(
     EquipReplacementLog(),
     CommandUsage(),
     AnalyzerUsage(),
-    RandomImageRecord()
+    RandomImageRecord(),
 )

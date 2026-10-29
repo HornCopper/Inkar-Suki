@@ -14,7 +14,7 @@ from ._template import (
     koromo_api_pr,
     gamemode,
     max_points,
-    template_majsoul_record
+    template_majsoul_record,
 )
 
 def getRank(raw_data: dict | int) -> str:
@@ -24,12 +24,12 @@ def getRank(raw_data: dict | int) -> str:
         id = raw_data
     major = id % 10000
     minor = math.floor(major / 100)
-    rank = "初士杰豪圣"[minor-1] if minor != 7 else "魂天"
+    rank = "初士杰豪圣"[minor - 1] if minor != 7 else "魂天"
     label = rank + str(major % 100)
     return label
 
 async def find_player(keyword: str) -> str:
-    final_url = koromo_api_sp.format(player=keyword)
+    final_url = koromo_api_sp.format(player = keyword)
     data = (await Request(final_url).get()).json()
     msg = "查找到下列玩家：\n"
     if len(data) == 0:
@@ -39,7 +39,7 @@ async def find_player(keyword: str) -> str:
     return msg[:-1]
 
 async def get_id_by_name(keyword: str, mode: str = "16.12.9.15.11.8") -> list | int:
-    final_url = koromo_api_sp.format(player=keyword)
+    final_url = koromo_api_sp.format(player = keyword)
     data = (await Request(final_url).get()).json()
     if len(data) == 0:
         return ["未找到任何玩家，或者该ID不准确，请检查后重试！"]
@@ -70,21 +70,30 @@ def process_nickname(string: str, match: str) -> str:
         return "<span style=\"color:gold\"><b>" + string + "</b></span>"
     else:
         return string
-    
-async def player_pt(name: str = "", mode="16.12.9.15.11.8") -> str:
+
+async def player_pt(name: str = "", mode = "16.12.9.15.11.8") -> str:
     if name is None:
         return "请输入玩家名！"
     pid = await get_id_by_name(name)
     if isinstance(pid, list):
         return pid[0]
-    final_url = koromo_api_ps.format(player_id=pid, end_timestamp=str(Time().raw_time*1000), start_timestamp="1262304000000", mode=mode)
+    final_url = koromo_api_ps.format(
+        player_id = pid,
+        end_timestamp = str(Time().raw_time * 1000),
+        start_timestamp = "1262304000000",
+        mode = mode,
+    )
     data = (await Request(final_url).get()).json()
     rank = getRank(data["level"]["id"])
     level = max_points[rank] if rank[0] != "魂" else "20.0"
-    score = str(data["level"]["score"] + data["level"]["delta"]) if rank[0] != "魂" else str(round((data["level"]["score"] + data["level"]["delta"]) / 100, 1))
+    score = str(data["level"]["score"] + data["level"]["delta"]) if rank[0] != "魂" else str(
+        round((data["level"]["score"] + data["level"]["delta"]) / 100, 1),
+    )
     rank_max = getRank(data["max_level"]["id"])
     level_max = max_points[rank_max] if rank_max[0] != "魂" else "20.0"
-    score_max = str(data["max_level"]["score"] + data["max_level"]["delta"]) if rank_max[0] != "魂" else str(round((data["max_level"]["score"] + data["max_level"]["delta"]) / 100, 1))
+    score_max = str(data["max_level"]["score"] + data["max_level"]["delta"]) if rank_max[0] != "魂" else str(
+        round((data["max_level"]["score"] + data["max_level"]["delta"]) / 100, 1),
+    )
     return f"[{rank}] {name}（{pid}）\n当前PT：[{rank}] {score}/{level}\n最高PT：[{rank_max}] {score_max}/{level_max}\n来源：雀魂牌谱屋"
 
 async def get_records(name: str = "", mode: str = "16.12.9.15.11.8"):
@@ -93,7 +102,12 @@ async def get_records(name: str = "", mode: str = "16.12.9.15.11.8"):
     pid = await get_id_by_name(name)
     if isinstance(pid, list):
         return pid[0]
-    final_url = koromo_api_pr.format(player_id=pid, end_timestamp=str(Time().raw_time*1000), start_timestamp="1262304000000", mode=mode)
+    final_url = koromo_api_pr.format(
+        player_id = pid,
+        end_timestamp = str(Time().raw_time * 1000),
+        start_timestamp = "1262304000000",
+        mode = mode,
+    )
     data = (await Request(final_url).get()).json()
     if data == {}:
         return "PID输入错误，或该玩家没有任何记录！"
@@ -103,11 +117,19 @@ async def get_records(name: str = "", mode: str = "16.12.9.15.11.8"):
             level = get_mode_name(i["modeId"])
             sorted_players = list(reversed(sort_dict_list(i["players"], "score")))
             place = get_player_sort(pid, sorted_players)
-            done_time = Time(i["endTime"]).format("%Y-%m-%d<br>%H:%M:%S") 
-            name_1st = "[" + getRank(sorted_players[0]["level"]) + "] " + process_nickname(sorted_players[0]["nickname"], name)
-            name_2nd = "[" + getRank(sorted_players[1]["level"]) + "] " + process_nickname(sorted_players[1]["nickname"], name)
-            name_3rd = "[" + getRank(sorted_players[2]["level"]) + "] " + process_nickname(sorted_players[2]["nickname"], name)
-            name_4th = "[" + getRank(sorted_players[3]["level"]) + "] " + process_nickname(sorted_players[3]["nickname"], name)
+            done_time = Time(i["endTime"]).format("%Y-%m-%d<br>%H:%M:%S")
+            name_1st = "[" + getRank(
+                sorted_players[0]["level"],
+            ) + "] " + process_nickname(sorted_players[0]["nickname"], name)
+            name_2nd = "[" + getRank(
+                sorted_players[1]["level"],
+            ) + "] " + process_nickname(sorted_players[1]["nickname"], name)
+            name_3rd = "[" + getRank(
+                sorted_players[2]["level"],
+            ) + "] " + process_nickname(sorted_players[2]["nickname"], name)
+            name_4th = "[" + getRank(
+                sorted_players[3]["level"],
+            ) + "] " + process_nickname(sorted_players[3]["nickname"], name)
             score_1st = str(sorted_players[0]["score"])
             score_2nd = str(sorted_players[1]["score"])
             score_3rd = str(sorted_players[2]["score"])
@@ -131,7 +153,7 @@ async def get_records(name: str = "", mode: str = "16.12.9.15.11.8"):
                 gr1 = grading_1st,
                 gr2 = grading_2nd,
                 gr3 = grading_3rd,
-                gr4 = grading_4th
+                gr4 = grading_4th,
             )
             tables.append(template)
         html = str(
@@ -139,8 +161,8 @@ async def get_records(name: str = "", mode: str = "16.12.9.15.11.8"):
                 "majsoul",
                 "majsoul_record",
                 player_name = name,
-                table_content = "\n".join(tables)
-            )
+                table_content = "\n".join(tables),
+            ),
         )
-        image = await generate(html, ".background-container", segment=True)
+        image = await generate(html, ".background-container", segment = True)
         return image

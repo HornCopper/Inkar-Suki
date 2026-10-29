@@ -9,9 +9,13 @@ from src.utils.permission import check_group_permission
 
 from .api import get_chat_records
 
-
-chat_records_matcher = on_command("jx3_chat_records", command_key="聊天", aliases={"聊天", "发言"}, force_whitespace=True, priority=5)
-
+chat_records_matcher = on_command(
+    "jx3_chat_records",
+    command_key = "聊天",
+    aliases = {"聊天", "发言"},
+    force_whitespace = True,
+    priority = 5,
+)
 
 @chat_records_matcher.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
@@ -35,8 +39,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
         await chat_records_matcher.finish(PROMPT.ServerNotExist)
     if len(options) > 2:
         await chat_records_matcher.finish(
-            PROMPT.ArgumentCountInvalid
-            + "\n参考格式：聊天 <服务器> <角色名> [页码] [每页数量]"
+            PROMPT.ArgumentCountInvalid + "\n参考格式：聊天 <服务器> <角色名> [页码] [每页数量]",
         )
 
     try:

@@ -2,7 +2,7 @@ from src.utils.network import Request
 
 import socket
 
-def tcping(host, port, timeout=3):
+def tcping(host, port, timeout = 3):
     sock = None
     try:
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -14,7 +14,6 @@ def tcping(host, port, timeout=3):
     finally:
         if sock is not None:
             sock.close()
-
 
 async def get_server_status(_server: str = "") -> str:
     servers = (await Request("https://spider2.jx3box.com/api/spider/server/server_state").get()).json()

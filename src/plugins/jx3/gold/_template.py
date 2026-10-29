@@ -11,5 +11,5 @@ types = {
     "tieba": "tieba",
     "wanbaolou": "wbl",
     "dd373": "dd373",
-    "uu898": "uu898"
+    "uu898": "uu898",
 }

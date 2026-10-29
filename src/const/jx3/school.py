@@ -6,7 +6,6 @@ from src.const.jx3.kungfu import Kungfu, kungfu_colors_data
 
 from .constant import school_aliases_data, school_internel_id_data
 
-
 class School:
     school_aliases: dict[str, list[str]] = school_aliases_data
     school_internel_id: dict[str, str] = school_internel_id_data

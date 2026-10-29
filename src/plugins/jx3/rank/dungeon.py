@@ -40,19 +40,21 @@ name_to_pinyin = {
     "孤锋诀": "gufengjue",
     "山海心诀": "shanhaixinjue",
     "周天功": "zhoutiangong",
-    "幽罗引": "youluoyin"
+    "幽罗引": "youluoyin",
 }
 
-async def get_rank(dungeon_full_name: str, boss_name: str, kungfu_name: str, order_by: Literal["rdps", "rhps"] = "rdps"):
+async def get_rank(
+    dungeon_full_name: str, boss_name: str, kungfu_name: str, order_by: Literal["rdps", "rhps"] = "rdps"
+):
     url = "http://jx3bla.moeheart.cn/getRank"
     params = {
         "map": dungeon_full_name,
         "boss": boss_name,
         "occ": name_to_pinyin[kungfu_name],
         "page": 1,
-        "orderby": order_by
+        "orderby": order_by,
     }
-    data: dict[str, Any] = (await Request(url, params=params).get()).json()
+    data: dict[str, Any] = (await Request(url, params = params).get()).json()
     if data["result"]["num"] == 0:
         return "未找到相关数据，请检查首领名称！"
     tables = []
@@ -64,17 +66,16 @@ async def get_rank(dungeon_full_name: str, boss_name: str, kungfu_name: str, ord
                 kungfu_icon = Kungfu(kungfu_name).icon,
                 name = record["id"],
                 server = record["server"],
-                value = str(int(record[order_by]))
-            )
+                value = str(int(record[order_by])),
+            ),
         )
         rank += 1
     html = str(
         HTMLSourceCode(
             application_name = f"门派天梯 · {dungeon_full_name} · {boss_name}",
             table_head = rank_table_head,
-            table_body = "\n".join(tables)
-        )
+            table_body = "\n".join(tables),
+        ),
     )
-    image = await generate(html, ".container", segment=True)
+    image = await generate(html, ".container", segment = True)
     return image
-

@@ -6,8 +6,7 @@ from src.utils.network import Request
 
 import random
 
-emoji_matcher = on_command("jx3_emoji", command_key=None, aliases={"随机表情"}, force_whitespace=True, priority=5)
-
+emoji_matcher = on_command("jx3_emoji", command_key = None, aliases = {"随机表情"}, force_whitespace = True, priority = 5)
 
 @emoji_matcher.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):

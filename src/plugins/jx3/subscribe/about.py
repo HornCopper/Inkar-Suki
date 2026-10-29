@@ -13,8 +13,12 @@ from ._template import template_subscribe
 import json
 
 async def generate_group_info(bot: Bot, group_id: str):
-    subscribe_options = json.loads(read(build_path(ASSETS, ["source", "subscribe"], end_with_slash=True) + "options.json"))
-    additions_options = json.loads(read(build_path(ASSETS, ["source", "subscribe"], end_with_slash=True) + "additions.json"))
+    subscribe_options = json.loads(
+        read(build_path(ASSETS, ["source", "subscribe"], end_with_slash = True) + "options.json"),
+    )
+    additions_options = json.loads(
+        read(build_path(ASSETS, ["source", "subscribe"], end_with_slash = True) + "additions.json"),
+    )
     current_subscribe = get_group_settings(group_id, "subscribe")
     current_additions = get_group_settings(group_id, "additions")
     subscribe_contents = []
@@ -34,8 +38,8 @@ async def generate_group_info(bot: Bot, group_id: str):
                 subject = i,
                 description = desc,
                 status = status,
-                flag = flag
-            )
+                flag = flag,
+            ),
         )
     for i in list(additions_options):
         desc = additions_options[i][0]
@@ -52,12 +56,12 @@ async def generate_group_info(bot: Bot, group_id: str):
                 subject = i,
                 description = desc,
                 status = status,
-                flag = flag
-            )
+                flag = flag,
+            ),
         )
     final_subscribe_contents = "\n".join(subscribe_contents)
     final_additions_contents = "\n".join(additions_contents)
-    group_info = await bot.call_api("get_group_info", group_id=int(group_id))
+    group_info = await bot.call_api("get_group_info", group_id = int(group_id))
     group_name = group_info["group_name"]
     html = str(
         SimpleHTML(
@@ -70,8 +74,8 @@ async def generate_group_info(bot: Bot, group_id: str):
             group_id = group_id,
             group_name = group_name,
             grass_image = Path(build_path(ASSETS, ["image", "minecraft", "grass.png"])).as_uri(),
-            saohua = get_saohua()
-        )
+            saohua = get_saohua(),
+        ),
     )
-    image = await generate(html, ".total", segment=True)
+    image = await generate(html, ".total", segment = True)
     return image

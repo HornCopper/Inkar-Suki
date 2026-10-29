@@ -20,7 +20,7 @@ ticket = Config.jx3.api.ticket
 bot_name = Config.bot_basic.bot_name_argument
 
 async def get_serendipity_v2(server: str, name: str, type: bool):
-    role_data = await search_player(role_name=name, server_name=server)
+    role_data = await search_player(role_name = name, server_name = server)
     role_id = role_data.roleId
     if role_id == "":
         return PROMPT.PlayerNotExist
@@ -29,15 +29,22 @@ async def get_serendipity_v2(server: str, name: str, type: bool):
         params = {
             "server": server,
             "name": name,
-            "token": token
+            "token": token,
         }
-        serendipity_data = (await Request(url, params=params).get()).json()
+        serendipity_data = (await Request(url, params = params).get()).json()
         data: list[dict] = await JX3Serendipity().merge_api_with_my_data(
-            serendipity_data["data"], server, name, role_data.globalRoleId, role_id
+            serendipity_data["data"],
+            server,
+            name,
+            role_data.globalRoleId,
+            role_id,
         )
     else:
         serendipity_data = await JX3Serendipity().integration(
-            server, name, role_id, role_data.globalRoleId
+            server,
+            name,
+            role_id,
+            role_data.globalRoleId,
         )
         data = serendipity_data
     # 笔记：1 → 世界奇遇；2 → 绝世奇遇；3 → 宠物奇遇
@@ -45,13 +52,17 @@ async def get_serendipity_v2(server: str, name: str, type: bool):
     tables = []
     type_map = ["common", "peerless", "pet"]
     for i in data:
-        if type and i["level"] >= 3: # 绝世+普通
+        if type and i["level"] >= 3:  # 绝世+普通
             continue
-        if not type and i["level"] != 3: # 宠物
+        if not type and i["level"] != 3:  # 宠物
             continue
         serendipity_name = i["event"] if Config.jx3.api.enable else i["name"]
         flag = build_path(ASSETS, ["image", "jx3", "serendipity", "vector", "peerless.png"]) if i["level"] == 2 else ""
-        icon = build_path(ASSETS, ["image", "jx3", "serendipity", "serendipity", type_map[i["level"]-1]], end_with_slash=True) + serendipity_name + ".png"
+        icon = build_path(
+            ASSETS,
+            ["image", "jx3", "serendipity", "serendipity", type_map[i["level"] - 1]],
+            end_with_slash = True,
+        ) + serendipity_name + ".png"
         if not os.path.exists(icon):
             continue
         if i["time"] != 0:
@@ -66,8 +77,8 @@ async def get_serendipity_v2(server: str, name: str, type: bool):
                 serendipity_icon = icon,
                 actual_time = str(time_gotten),
                 relative_time = relate_time,
-                serendipity_name = serendipity_name
-            )
+                serendipity_name = serendipity_name,
+            ),
         )
     if len(tables) == 0:
         return "唔……您似乎只有宠物奇遇哦。"
@@ -83,8 +94,8 @@ async def get_serendipity_v2(server: str, name: str, type: bool):
             saohua = get_saohua(),
             app_info = f"个人奇遇记录 · {server} · {name} · " + Time().format("%H:%M:%S"),
             title_image = build_path(ASSETS, ["image", "jx3", "serendipity", "vector", "title.png"]),
-            poem_image = build_path(ASSETS, ["image", "jx3", "serendipity", "vector", "poem.png"])
-        )
+            poem_image = build_path(ASSETS, ["image", "jx3", "serendipity", "vector", "poem.png"]),
+        ),
     )
-    image = await generate(html, ".serendipity-report", segment=True)
+    image = await generate(html, ".serendipity-report", segment = True)
     return image

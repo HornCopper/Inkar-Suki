@@ -1,18 +1,18 @@
 from .achievement import (
     zone_achievement_matcher,
-    achievement_v2_matcher
+    achievement_v2_matcher,
 )
 from .achievement_tip import (
-    achievement_tip_matcher
+    achievement_tip_matcher,
 )
 from .almanac import (
     almanac_matcher,
-    almanac_image_matcher
+    almanac_image_matcher,
 )
 from .announce import (
     announce_matcher,
     beta_announce_matcher,
-    skill_change_matcher
+    skill_change_matcher,
 )
 from .assistance import (
     book_team_matcher,
@@ -21,158 +21,158 @@ from .assistance import (
     create_team_matcher,
     lookup_team_matcher,
     dissolve_team_matcher,
-    share_team_matcher
+    share_team_matcher,
 )
 from .team_health import (
     bind_raid_team_matcher,
     raid_team_manage_matcher,
-    register_raid_team_matcher
+    register_raid_team_matcher,
 )
 from .attributes import (
     attribute_v2remake_matcher,
     attribute_v4_matcher,
     attribute_repo,
-    attribute_matcher
+    attribute_matcher,
 )
 from .bind import (
     server_bind_matcher,
-    role_check_matcher
+    role_check_matcher,
 )
 from .calculator import (
     calc_matcher,
-    equip_compare
+    equip_compare,
 )
 from .cost import (
-    cost_calc_matcher
+    cost_calc_matcher,
 )
 from .affections import (
     bind_affection_matcher,
     delete_affection_matcher,
-    affection_crt_matcher
+    affection_crt_matcher,
 )
 from .daily import (
-    daily_matcher
+    daily_matcher,
 )
 from .detail import (
-    achievement_overview_matcher
+    achievement_overview_matcher,
 )
 from .dungeon import (
     monsters_matcher,
     drops_list_matcher,
     zone_record_matcher,
     allserver_item_record_matcher,
-    role_monsters_matcher
+    role_monsters_matcher,
 )
 from .emoji import (
-    emoji_matcher
+    emoji_matcher,
 )
 from .equip import (
     referenced_equip_matcher,
     equip_find_matcher,
-    enchant_find_matcher
+    enchant_find_matcher,
 )
 from .events import (
     chutian_matcher,
     yuncong_matcher,
-    zhue_matcher
+    zhue_matcher,
 )
 from .exam import (
-    exam_matcher
+    exam_matcher,
 )
 from .firework import (
-    firework_matcher
+    firework_matcher,
 )
 from .gold import (
-    coin_price_matcher
+    coin_price_matcher,
 )
 from .haste import (
-    haste_matcher
+    haste_matcher,
 )
 from .card import (
-    social_card_matcher
+    social_card_matcher,
 )
 from .castbar import (
-    castbar_matcher
+    castbar_matcher,
 )
 from .horse import (
     horse_chat_matcher,
-    horse_spawn_matcher
+    horse_spawn_matcher,
 )
 from .fun import (
     saohua_matcher,
     tiangou_matcher,
     random_loot_matcher,
-    random_shilian_matcher
+    random_shilian_matcher,
 )
 from .lookup import (
-    lookup_matcher
+    lookup_matcher,
 )
 from .message import (
-    chat_records_matcher
+    chat_records_matcher,
 )
 from .penzai import (
     dunhao_matcher,
-    waiguan_matcher
+    waiguan_matcher,
 )
 from .personal import (
     all_personal_roles_matcher,
     personal_bind_matcher,
-    personal_unbind_matcher
+    personal_unbind_matcher,
 )
 from .pindou import (
-    pindou_matcher
+    pindou_matcher,
 )
 from .pvp import (
-    arena_record_matcher
+    arena_record_matcher,
 )
 from .rank import (
     exp_rank_matcher,
     rhps_rank_matcher,
-    rdps_rank_matcher
+    rdps_rank_matcher,
 )
 from .trial import (
     trial_dps_matcher,
-    trial_rank_matcher
+    trial_rank_matcher,
 )
 from .recruit import (
-    recruit_matcher
+    recruit_matcher,
 )
 from .role import (
-    role_info_matcher
+    role_info_matcher,
 )
 from .sandbox import (
-    sandbox_matcher
+    sandbox_matcher,
 )
 from .serendipity import (
     serendipity_v2_matcher,
     serendipity_v3_matcher,
-    preposition_matcher
+    preposition_matcher,
 )
 from .server import (
-    server_matcher
+    server_matcher,
 )
 from .show import (
     show_matcher,
-    qiyu_card_matcher
+    qiyu_card_matcher,
 )
 from .skill import (
     matrix_matcher,
     macro_matcher,
-    skill_matcher
+    skill_matcher,
 )
 from .snacks import (
-    school_snacks_matcher
+    school_snacks_matcher,
 )
 from .subscribe import (
     enable_matcher,
-    disable_matcher
+    disable_matcher,
 )
 from .trade import (
     trade_matcher,
     trade_sl_matcher,
     item_price_v2_matcher,
-    wanbaolou_role_matcher
+    wanbaolou_role_matcher,
 )
 from .version import (
-    version_matcher
+    version_matcher,
 )

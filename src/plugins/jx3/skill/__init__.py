@@ -10,7 +10,7 @@ from .martix import get_matrix
 from .talent import get_talent_info
 from .skill import get_buff, get_skill
 
-macro_matcher = on_command("jx3_macro_v2", command_key="宏", aliases={"宏"}, force_whitespace=True, priority=5)
+macro_matcher = on_command("jx3_macro_v2", command_key = "宏", aliases = {"宏"}, force_whitespace = True, priority = 5)
 
 @macro_matcher.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
@@ -22,7 +22,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     data = await get_macro(kungfu)
     await macro_matcher.finish(data)
 
-matrix_matcher = on_command("jx3_matrix", command_key="阵眼", aliases={"阵眼"}, force_whitespace=True, priority=5)
+matrix_matcher = on_command("jx3_matrix", command_key = "阵眼", aliases = {"阵眼"}, force_whitespace = True, priority = 5)
 
 @matrix_matcher.handle()
 async def _(args: Message = CommandArg()):
@@ -38,8 +38,8 @@ async def _(args: Message = CommandArg()):
         await matrix_matcher.finish(msg)
     else:
         await matrix_matcher.finish(PROMPT.KungfuNotExist)
-    
-talent_matcher = on_command("jx3_qixue", command_key="奇穴", aliases={"奇穴"}, force_whitespace=True, priority=5)
+
+talent_matcher = on_command("jx3_qixue", command_key = "奇穴", aliases = {"奇穴"}, force_whitespace = True, priority = 5)
 
 @talent_matcher.handle()
 async def _(argument: Message = CommandArg()):
@@ -67,7 +67,7 @@ async def _(argument: Message = CommandArg()):
     msg = await get_talent_info(qixue, kungfu, season)
     await talent_matcher.finish(msg)
 
-skill_matcher = on_command("jx3_skill", command_key="技能", aliases={"技能"}, force_whitespace=True, priority=5)
+skill_matcher = on_command("jx3_skill", command_key = "技能", aliases = {"技能"}, force_whitespace = True, priority = 5)
 
 @skill_matcher.handle()
 async def _(argument: Message = CommandArg()):
@@ -80,7 +80,13 @@ async def _(argument: Message = CommandArg()):
     msg = await get_skill(args)
     await skill_matcher.finish(msg)
 
-buff_matcher = on_command("jx3_buff", command_key="气劲", aliases={"气劲", "BUFF", "buff", "Buff"}, force_whitespace=True, priority=5)
+buff_matcher = on_command(
+    "jx3_buff",
+    command_key = "气劲",
+    aliases = {"气劲", "BUFF", "buff", "Buff"},
+    force_whitespace = True,
+    priority = 5,
+)
 
 @buff_matcher.handle()
 async def _(argument: Message = CommandArg()):

@@ -15,8 +15,7 @@ from .server import get_bedrock_server, get_java_server
 #     msg = await get_be_version()
 #     await mcbv.finish(msg)
 
-mcjv = on_command("mcjv", command_key="mcjv", force_whitespace=True, priority=5)  # 获取MC Java版最新版本
-
+mcjv = on_command("mcjv", command_key = "mcjv", force_whitespace = True, priority = 5)  # 获取MC Java版最新版本
 
 @mcjv.handle()
 async def _(args: Message = CommandArg()):
@@ -25,8 +24,7 @@ async def _(args: Message = CommandArg()):
     msg = await get_je_version()
     await mcjv.finish(msg)
 
-mcjes = on_command("jes", command_key="jes", force_whitespace=True, priority=5)  # 获取MC Java版服务器信息
-
+mcjes = on_command("jes", command_key = "jes", force_whitespace = True, priority = 5)  # 获取MC Java版服务器信息
 
 @mcjes.handle()
 async def _(args: Message = CommandArg()):
@@ -36,7 +34,7 @@ async def _(args: Message = CommandArg()):
     msg = await get_java_server(ip)
     await mcjes.finish(msg)
 
-mcbes = on_command("bes", command_key="bes", force_whitespace=True, priority=5)  # 获取MC 基岩版服务器信息
+mcbes = on_command("bes", command_key = "bes", force_whitespace = True, priority = 5)  # 获取MC 基岩版服务器信息
 
 @mcbes.handle()
 async def _(args: Message = CommandArg()):

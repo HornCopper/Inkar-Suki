@@ -7,18 +7,16 @@ from typing import Literal
 
 from pydantic import BaseModel, Field, model_validator
 
-
 class AnnouncementSectionDiff(BaseModel):
-    path: list[str] = Field(min_length=1)
-    before: list[str] = Field(default_factory=list)
-    after: list[str] = Field(default_factory=list)
+    path: list[str] = Field(min_length = 1)
+    before: list[str] = Field(default_factory = list)
+    after: list[str] = Field(default_factory = list)
 
-    @model_validator(mode="after")
+    @model_validator(mode = "after")
     def require_change(self):
         if self.before == self.after:
             raise ValueError("章节必须包含正文差异")
         return self
-
 
 class BetaAnnouncementDiff(BaseModel):
     schema_version: Literal[1] = 1
@@ -27,26 +25,24 @@ class BetaAnnouncementDiff(BaseModel):
     client_version: str = ""
     previous_recorded_at: str = ""
     recorded_at: str = ""
-    sections: list[AnnouncementSectionDiff] = Field(min_length=1)
-
+    sections: list[AnnouncementSectionDiff] = Field(min_length = 1)
 
 def _inline_diff(before: str, after: str) -> tuple[str, str]:
     old_parts, new_parts = [], []
-    for tag, i, j, k, l in SequenceMatcher(None, before, after, autojunk=False).get_opcodes():
+    for tag, i, j, k, l in SequenceMatcher(None, before, after, autojunk = False).get_opcodes():
         if tag == "equal":
             old_parts.append(escape(before[i:j]))
             new_parts.append(escape(after[k:l]))
         else:
             if tag in {"delete", "replace"}:
-                old_parts.append(f'<del>{escape(before[i:j])}</del>')
+                old_parts.append(f"<del>{escape(before[i:j])}</del>")
             if tag in {"insert", "replace"}:
-                new_parts.append(f'<mark>{escape(after[k:l])}</mark>')
+                new_parts.append(f"<mark>{escape(after[k:l])}</mark>")
     return "".join(old_parts), "".join(new_parts)
-
 
 def _cell(text: str | None, kind: str = "context", *, markup: bool = False) -> str:
     if text is None:
-        return '<div class="diff-cell absent">—</div>'
+        return "<div class=\"diff-cell absent\">—</div>"
     content = escape(text)
     if markup:
         content = text
@@ -56,15 +52,16 @@ def _cell(text: str | None, kind: str = "context", *, markup: bool = False) -> s
         content = f"<del>{content}</del>"
     return f'<div class="diff-cell {kind}">{content}</div>'
 
-
 def _row(old: str, new: str) -> str:
     return f'<div class="diff-row">{old}{new}</div>'
-
 
 def _section_body(section: AnnouncementSectionDiff) -> str:
     parts = []
     for tag, i, j, k, l in SequenceMatcher(
-        None, section.before, section.after, autojunk=False,
+            None,
+            section.before,
+            section.after,
+            autojunk = False,
     ).get_opcodes():
         if tag == "equal":
             parts.extend(_row(_cell(line), _cell(line)) for line in section.after[k:l])
@@ -78,20 +75,24 @@ def _section_body(section: AnnouncementSectionDiff) -> str:
                     parts.append(_row(_cell(None), _cell(new, "added")))
                 elif new is None:
                     parts.append(_row(_cell(old, "removed"), _cell(None)))
-                elif SequenceMatcher(None, old, new, autojunk=False).ratio() < 0.4:
+                elif SequenceMatcher(None, old, new, autojunk = False).ratio() < 0.4:
                     parts.append(_row(_cell(old, "removed"), _cell(new, "added")))
                 else:
                     old_html, new_html = _inline_diff(old, new)
-                    parts.append(_row(
-                        _cell(old_html, "modified", markup=True),
-                        _cell(new_html, "modified", markup=True),
-                    ))
+                    parts.append(
+                        _row(
+                            _cell(old_html, "modified", markup = True),
+                            _cell(new_html, "modified", markup = True),
+                        ),
+                    )
     return "".join(parts)
 
-
 def build_beta_diff_html(
-    diff: BetaAnnouncementDiff, font_uri: str, *,
-    bot_name: str = "Inkar-Suki", footer_message: str = "",
+    diff: BetaAnnouncementDiff,
+    font_uri: str,
+    *,
+    bot_name: str = "Inkar-Suki",
+    footer_message: str = "",
 ) -> str:
     sections = []
     for section in diff.sections:
@@ -99,8 +100,8 @@ def build_beta_diff_html(
         path = " / ".join(escape(part) for part in section.path)
         sections.append(
             f'<section><h2>{path}<span class="section-kind">{kind}</span></h2>'
-            '<div class="diff-row column-headings"><div>更新前</div><div>更新后</div></div>'
-            f'{_section_body(section)}</section>'
+            "<div class=\"diff-row column-headings\"><div>更新前</div><div>更新后</div></div>"
+            f"{_section_body(section)}</section>",
         )
     compared = ""
     if diff.previous_recorded_at:

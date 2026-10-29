@@ -2,7 +2,7 @@ from pathlib import Path
 from jinja2 import Template
 
 from src.const.path import TEMPLATES, build_path
-from src.utils.network import Request
+from src.utils.jx3_dungeons import find_dungeon, dungeon_drops
 from src.utils.generate import generate
 
 from src.templates import HTMLSourceCode
@@ -12,42 +12,35 @@ from src.plugins.jx3.fun.random_item import item_colors as COLOR
 import re
 
 from ._template import (
-    star, 
-    template_drop, 
-    table_drop_head
+    star,
+    template_drop,
+    table_drop_head,
 )
 
 async def get_map(name: str, mode: str) -> int | None:
-    params = {
-        "mode": 2
-    }
-    data = (await Request(url="https://m.pvp.xoyo.com/dungeon/list", params=params).post(tuilan=True)).json()
-    for i in data["data"]:
-        for x in i["dungeon_infos"]:
-            if x["name"] == name:
-                for y in x["maps"]:
-                    if y["mode"] == mode:
-                        return y["map_id"]
-
+    record = await find_dungeon(name, mode)
+    return record["id"] if record else None
 
 async def get_boss(map: str, mode: str, boss: str) -> str | None:
     map_id = await get_map(map, mode)
-    params = {
-        "map_id": map_id
-    }
-    data = (await Request(url="https://m.pvp.xoyo.com/dungeon/info", params=params).post(tuilan=True)).json()
-    for i in data["data"]["info"]["boss_infos"]:
-        if i["name"] == boss:
-            return i["index"]
-
+    if map_id is not None and boss in await dungeon_drops(map_id):
+        return boss
 
 async def get_drops(map: str, mode: str, boss: str) -> dict:
-    boss_id = await get_boss(map, mode, boss)
-    params = {
-        "boss_id": boss_id
+    map_id = await get_map(map, mode)
+    if map_id is None:
+        raise KeyError(map)
+    pools = await dungeon_drops(map_id)
+    if boss not in pools:
+        raise KeyError(boss)
+    items = pools[boss]
+    return {
+        "data": {
+            "armors": [r for r in items if r["id"].startswith(("7_", "8_"))],
+            "weapons": [r for r in items if r["id"].startswith("6_")],
+            "others": [r for r in items if r["id"].startswith(("5_", "10_"))],
+        },
     }
-    data = (await Request(url="https://m.pvp.xoyo.com/dungeon/boss-drop", params=params).post(tuilan=True)).json()
-    return data
 
 def parse_attr(data: dict) -> str:
     msg = ""
@@ -61,7 +54,23 @@ def parse_attr(data: dict) -> str:
         attr = attr.replace("外功防御", "外防")
         attr = attr.replace("内功防御", "内防")
         attr = attr.replace("会心效果", "会效")
-        filter_string = ["全", "阴性", "阳性", "阴阳", "毒性", "值", "成效", "体质", "等级", "混元性", "招式产生威胁", "水下呼吸时间", "抗摔系数", "马术气力上限", "气力上限"]
+        filter_string = [
+            "全",
+            "阴性",
+            "阳性",
+            "阴阳",
+            "毒性",
+            "值",
+            "成效",
+            "体质",
+            "等级",
+            "混元性",
+            "招式产生威胁",
+            "水下呼吸时间",
+            "抗摔系数",
+            "马术气力上限",
+            "气力上限",
+        ]
         for y in filter_string:
             attr = attr.replace(y, "")
         if attr != "" and len(attr) <= 4:
@@ -69,10 +78,7 @@ def parse_attr(data: dict) -> str:
     msg = msg.replace(" 能 ", " 全能 ").replace(" 能", " 全能")
     return msg.strip()
 
-# 暂时不打算做5人副本，5人副本与10人副本的请求地址不同。
-# 10人/25人：https://m.pvp.xoyo.com/dungeon/list
-# 5人：https://m.pvp.xoyo.com/dungeon/list-all
-# 暂时未知数据是否相同，后续考虑是否添加。
+# 自管 bot_api 提供 10/25 人团本目录和掉落编号，物品资料由本地原表解析。
 
 equip_types = ["帽子", "上衣", "腰带", "护臂", "裤子", "鞋", "项链", "腰坠", "戒指", "投掷囊"]
 
@@ -146,15 +152,15 @@ async def get_drop_list_image(map: str, mode: str, boss: str):
                     equip_type = i["Icon"]["SubKind"]
                     score = "不适用"
                     if equip_type == "帽子":
-                        score = str(int(int(quailty)*1.62))
+                        score = str(int(int(quailty) * 1.62))
                     elif equip_type in ["上衣", "裤子"]:
-                        score = str(int(int(quailty)*1.8))
+                        score = str(int(int(quailty) * 1.8))
                     elif equip_type in ["腰带", "护臂", "鞋"]:
-                        score = str(int(int(quailty)*1.26))
+                        score = str(int(int(quailty) * 1.26))
                     elif equip_type in ["项链", "腰坠", "戒指"]:
-                        score = str(int(int(quailty)*0.9))
+                        score = str(int(int(quailty) * 0.9))
                     elif equip_type in ["投掷囊"]:
-                        score = str(int(int(quailty)*1.08))
+                        score = str(int(int(quailty) * 1.08))
             else:
                 type_ = "未知"
                 color = COLOR[int(i["Color"]) if "Color" in i else 4]
@@ -182,8 +188,8 @@ async def get_drop_list_image(map: str, mode: str, boss: str):
                     stars = stars,
                     quality = quailty,
                     score = score,
-                    fivestone = fivestone
-                )
+                    fivestone = fivestone,
+                ),
             )
         for i in weapons:
             name = i["Name"]
@@ -208,17 +214,19 @@ async def get_drop_list_image(map: str, mode: str, boss: str):
             else:
                 stars = "<p>不适用</p>"
             quailty = i["Quality"]
-            score = str(int(int(quailty)*2.16))
-            Template(template_drop).render(
-                icon = icon,
-                color = COLOR[int(i["Color"]) if "Color" in i else 4],
-                name = name,
-                attrs = attrs,
-                type = type_,
-                stars = stars,
-                quality = quailty,
-                score = score,
-                fivestone = fivestone
+            score = str(int(int(quailty) * 2.16))
+            table_content.append(
+                Template(template_drop).render(
+                    icon = icon,
+                    color = COLOR[int(i["Color"]) if "Color" in i else 4],
+                    name = name,
+                    attrs = attrs,
+                    type = type_,
+                    stars = stars,
+                    quality = quailty,
+                    score = score,
+                    fivestone = fivestone,
+                ),
             )
         for i in others:
             type_ = "不适用"
@@ -242,16 +250,16 @@ async def get_drop_list_image(map: str, mode: str, boss: str):
                     stars = stars,
                     quality = quailty,
                     score = score,
-                    fivestone = fivestone
-                )
+                    fivestone = fivestone,
+                ),
             )
         html = str(
             HTMLSourceCode(
                 application_name = f"掉落列表 · {mode}{map} · {boss}",
                 additional_css = Path(build_path(TEMPLATES, ["jx3", "drop.css"])).as_uri(),
                 table_head = table_drop_head,
-                table_body = "\n".join(table_content)
-            )
+                table_body = "\n".join(table_content),
+            ),
         )
-        image = await generate(html, ".container", False, 500, segment=True)
+        image = await generate(html, ".container", False, 500, segment = True)
         return image

@@ -14,9 +14,13 @@ from .process import (
     find_solution,
 )
 
-
-TwentyFourMatcher = on_command("twentyFour", command_key="24点", aliases={"24点"}, force_whitespace=True, priority=5)
-
+TwentyFourMatcher = on_command(
+    "twentyFour",
+    command_key = "24点",
+    aliases = {"24点"},
+    force_whitespace = True,
+    priority = 5,
+)
 
 @TwentyFourMatcher.handle()
 async def _(state: T_State, event: MessageEvent, args: Message = CommandArg()):
@@ -26,9 +30,8 @@ async def _(state: T_State, event: MessageEvent, args: Message = CommandArg()):
     state["numbers"] = numbers
     await TwentyFourMatcher.send(
         f"音卡翻出了这组数字：{numbers}\n"
-        "请告诉我一个表达式，使其结果为 24。（若无解，可以告诉我“无解”，表达式使用英文半角括号）"
+        "请告诉我一个表达式，使其结果为 24。（若无解，可以告诉我“无解”，表达式使用英文半角括号）",
     )
-
 
 @TwentyFourMatcher.receive("answer")
 async def __(state: T_State, event: MessageEvent = Received("answer")):
@@ -39,7 +42,7 @@ async def __(state: T_State, event: MessageEvent = Received("answer")):
         if solution:
             AccountManage(event.user_id).reduce_coin(180)
             await TwentyFourMatcher.finish(
-                f"唔……回答错误，并非无解哦。\n其中一组解为：{solution}\n您失去了 180 枚金币。"
+                f"唔……回答错误，并非无解哦。\n其中一组解为：{solution}\n您失去了 180 枚金币。",
             )
         else:
             AccountManage(event.user_id).add_coin(300)

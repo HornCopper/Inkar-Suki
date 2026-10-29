@@ -1,11 +1,10 @@
 from src.const.path import ASSETS, build_path
 from src.utils.database.tabs import read_tab
 
-
 ADVENTURE_TABLE = build_path(
-    ASSETS, ["source", "jx3", "tabs", "adventure", "Adventure.txt"]
+    ASSETS,
+    ["source", "jx3", "tabs", "adventure", "Adventure.txt"],
 )
-
 
 async def get_preposition(name: str = ""):
     table = read_tab(ADVENTURE_TABLE)

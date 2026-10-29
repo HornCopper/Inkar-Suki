@@ -23,7 +23,11 @@ async def get_tieba_source(url: str) -> str:
 
 async def get_wg(name) -> str | None | list[str | list]:
     timestamp = int(datetime.datetime.now().timestamp())
-    data = (await Request(f"https://www.j3dh.com/v1/wg/data/exterior?exterior={name}&ignorePriceFlag=true&page=0&refresh=v1&time={timestamp}").get()).json()
+    data = (
+        await Request(
+            f"https://www.j3dh.com/v1/wg/data/exterior?exterior={name}&ignorePriceFlag=true&page=0&refresh=v1&time={timestamp}",
+        ).get()
+    ).json()
     if data["Code"] != 0:
         return "唔……API请求失败！"
     else:
@@ -52,8 +56,8 @@ async def get_wg(name) -> str | None | list[str | list]:
                         num = str(i + 1),
                         context = title,
                         time = str(final_time),
-                        place = place
-                    )
+                        place = place,
+                    ),
                 )
                 num = num + 1
                 if num == 10:
@@ -65,8 +69,8 @@ async def get_wg(name) -> str | None | list[str | list]:
                     application_name = f"贴吧物价 · " + Time().format("%H:%M:%S"),
                     additional_js = Path(build_path(TEMPLATES, ["jx3", "waiguan.js"])),
                     table_head = table_waiguan_head,
-                    table_body = "\n".join(table)
-                )
+                    table_body = "\n".join(table),
+                ),
             )
             final_path = await generate(html, ".container", False)
             if not isinstance(final_path, str):

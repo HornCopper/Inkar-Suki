@@ -42,7 +42,7 @@ def get_serendipity(school: str | Literal[False]) -> str | None:
         return random.choice(pool)
     elif get_random(firework_percent):
         return ASSETS + "/image/jx3/fireworks/" + random.choice(
-            os.listdir(ASSETS + "/image/jx3/fireworks/")
+            os.listdir(ASSETS + "/image/jx3/fireworks/"),
         )
 
 def get_serendipity_image(serendipity_path: str) -> ms:
@@ -58,7 +58,7 @@ def get_serendipity_image(serendipity_path: str) -> ms:
     background.save(final_path)
     with open(final_path, "rb") as a:
         image = a.read()
-    Path(cache_path).parent.mkdir(parents=True, exist_ok=True)
+    Path(cache_path).parent.mkdir(parents = True, exist_ok = True)
     with open(cache_path, "wb") as b:
         b.write(image)
     return ms.image(Request(Path(final_path).as_uri()).local_content)

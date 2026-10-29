@@ -7,7 +7,13 @@ from src.utils.command import on_command
 
 from .api import get_coin_price_image
 
-coin_price_matcher = on_command("jx3_demon", command_key="金价", aliases={"金价"}, force_whitespace=True, priority=5)
+coin_price_matcher = on_command(
+    "jx3_demon",
+    command_key = "金价",
+    aliases = {"金价"},
+    force_whitespace = True,
+    priority = 5,
+)
 
 @coin_price_matcher.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):

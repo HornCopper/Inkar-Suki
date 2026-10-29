@@ -12,60 +12,51 @@ from src.utils.network import Request
 
 from ._template import SLRANK_TABLE_BODY, SLRANK_TABLE_HEAD
 
-
 async def get_trial_rank(school: str, server: str):
     params = {"name": school, "token": Config.jx3.api.token}
     if server:
         params["server"] = server
-    data = (
-        await Request(
-            f"{Config.jx3.api.url}/rank/trials",
-            params=params,
-        ).get()
-    ).json()
+    data = (await Request(
+        f"{Config.jx3.api.url}/rank/trials",
+        params = params,
+    ).get()).json()
     if data["code"] != 200 or not data["data"]:
         return "未找到该心法的试炼榜单，请检查服务器和心法名称后重试！"
     groups = [data["data"]] if isinstance(data["data"], dict) else data["data"]
-    records = [
-        (group["server"], record)
-        for group in groups
-        for record in group["data"]
-    ]
+    records = [(group["server"], record) for group in groups for record in group["data"]]
     if not server:
         records.sort(
-            key=lambda item: (
+            key = lambda item: (
                 item[1]["maxLevel"],
                 item[1]["totalScore"],
                 item[1]["equipScore"],
             ),
-            reverse=True,
+            reverse = True,
         )
         records = records[:50]
 
     rows = [
         Template(SLRANK_TABLE_BODY).render(
-            rank=rank,
-            server=record_server,
-            role_name=record["roleName"],
-            level=record["maxLevel"],
-            grade=f"{int(record['totalScore']):,}",
-            score=record["equipScore"],
-        )
-        for rank, (record_server, record) in enumerate(records, 1)
+            rank = rank,
+            server = record_server,
+            role_name = record["roleName"],
+            level = record["maxLevel"],
+            grade = f"{int(record['totalScore']):,}",
+            score = record["equipScore"],
+        ) for rank, (record_server, record) in enumerate(records, 1)
     ]
     source = str(
         HTMLSourceCode(
-            application_name=f"试炼之地 · {server or '全服'} · {school}",
-            table_head=SLRANK_TABLE_HEAD,
-            table_body="\n".join(rows),
-        )
+            application_name = f"试炼之地 · {server or '全服'} · {school}",
+            table_head = SLRANK_TABLE_HEAD,
+            table_body = "\n".join(rows),
+        ),
     )
-    return await generate(source, ".container", segment=True)
-
+    return await generate(source, ".container", segment = True)
 
 async def get_trial_dps(floor: int) -> ms | str:
     try:
-        response = await Request(f"{Config.jx3.api.calculator_url}/trial").get(timeout=30)
+        response = await Request(f"{Config.jx3.api.calculator_url}/trial").get(timeout = 30)
         response.raise_for_status()
         data: Any = response.json()
         floor_data = next(row for row in data["rows"] if row["floor"] == floor)
@@ -74,11 +65,7 @@ async def get_trial_dps(floor: int) -> ms | str:
     except Exception:
         return "试炼秒伤查询失败，请确认 calculator 服务可用后重试！"
 
-    bosses = [
-        (name, hp)
-        for name, hp in floor_data.items()
-        if name not in {"floor", "multiplier", "分身"}
-    ]
+    bosses = [(name, hp) for name, hp in floor_data.items() if name not in {"floor", "multiplier", "分身"}]
     if not bosses or any(not isinstance(name, str) or not isinstance(hp, int) for name, hp in bosses):
         return "试炼血量接口返回的数据格式有误，请稍后重试！"
 
@@ -92,15 +79,15 @@ async def get_trial_dps(floor: int) -> ms | str:
             f"<td>{html.escape(name)}</td>"
             f"<td>{math.ceil(clear_hp / clear_seconds):,}</td>"
             f"<td>{math.ceil(perfect_hp / perfect_seconds):,}</td>"
-            "</tr>"
+            "</tr>",
         )
 
     source = str(
         HTMLSourceCode(
-            application_name=f"试炼之地 · 第 {floor} 层 DPS",
-            footer="计算时长已扣除 2s：子、寅、雷神 178s / 118s；其他首领 298s / 178s",
-            table_head="<th>首领名</th><th>通关</th><th>完美</th>",
-            table_body="".join(rows),
-        )
+            application_name = f"试炼之地 · 第 {floor} 层 DPS",
+            footer = "计算时长已扣除 2s：子、寅、雷神 178s / 118s；其他首领 298s / 178s",
+            table_head = "<th>首领名</th><th>通关</th><th>完美</th>",
+            table_body = "".join(rows),
+        ),
     )
-    return await generate(source, ".container", segment=True)
+    return await generate(source, ".container", segment = True)

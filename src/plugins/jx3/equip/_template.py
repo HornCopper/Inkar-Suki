@@ -11,131 +11,131 @@ attr_map = {
     "Parry": "招架",
     "Toughness": "御劲",
     "Decritical": "化劲",
-    "PVXAllRound": "全能"
+    "PVXAllRound": "全能",
 }
 
 panel_attr_d = [
     {
         "label": "面板攻击",
-        "key": "attack"
+        "key": "attack",
     },
     {
         "label": "基础攻击",
-        "key": "baseAttack"
+        "key": "baseAttack",
     },
     {
         "label": "会心",
-        "key": "critialPercent"
+        "key": "critialPercent",
     },
     {
         "label": "会心效果",
-        "key": "criticalDamagePercent"
+        "key": "criticalDamagePercent",
     },
     {
         "label": "加速",
-        "key": "haste"
+        "key": "haste",
     },
     {
         "label": "主属性",
-        "key": "primary"
+        "key": "primary",
     },
     {
         "label": "破防",
-        "key": "overcomePercent"
+        "key": "overcomePercent",
     },
     {
         "label": "无双",
-        "key": "strainPercent"
+        "key": "strainPercent",
     },
     {
         "label": "破招",
-        "key": "surplus"
+        "key": "surplus",
     },
     {
         "label": "最大气血值",
-        "key": "life"
+        "key": "life",
     },
     {
         "label": "御劲",
-        "key": "toughnessPercent"
+        "key": "toughnessPercent",
     },
     {
         "label": "化劲",
-        "key": "decriticalDamagePercent"
-    }
+        "key": "decriticalDamagePercent",
+    },
 ]
 
 panel_attr_n = [
     {
         "label": "面板治疗量",
-        "key": "therapy"
+        "key": "therapy",
     },
     {
         "label": "基础治疗量",
-        "key": "therapyBase"
+        "key": "therapyBase",
     },
     {
         "label": "会心",
-        "key": "critialPercent"
+        "key": "critialPercent",
     },
     {
         "label": "会心效果",
-        "key": "criticalDamagePercent"
+        "key": "criticalDamagePercent",
     },
     {
         "label": "加速",
-        "key": "haste"
+        "key": "haste",
     },
     {
         "label": "根骨",
-        "key": "primary"
+        "key": "primary",
     },
     {
         "label": "外防",
-        "key": "physicsShieldPercent"
+        "key": "physicsShieldPercent",
     },
     {
         "label": "内防",
-        "key": "magicShieldPercent"
+        "key": "magicShieldPercent",
     },
     {
         "label": "破招",
-        "key": "surplus"
+        "key": "surplus",
     },
     {
         "label": "最大气血值",
-        "key": "life"
+        "key": "life",
     },
     {
         "label": "御劲",
-        "key": "toughnessPercent"
+        "key": "toughnessPercent",
     },
     {
         "label": "化劲",
-        "key": "decriticalDamagePercent"
-    }
+        "key": "decriticalDamagePercent",
+    },
 ]
 
 panel_attr_t = [
     {
         "label": "体质",
-        "key": "parimary"
+        "key": "parimary",
     },
     {
         "label": "最大气血值",
-        "key": "life"
+        "key": "life",
     },
     {
         "label": "外防",
-        "key": "physicsShieldPercent"
+        "key": "physicsShieldPercent",
     },
     {
         "label": "内防",
-        "key": "magicShieldPercent"
+        "key": "magicShieldPercent",
     },
     {
         "label": "御劲",
-        "key": "toughnessPercent"
+        "key": "toughnessPercent",
     },
     {
         "label": "化劲",
@@ -143,28 +143,28 @@ panel_attr_t = [
     },
     {
         "label": "破招",
-        "key": "surplus"
+        "key": "surplus",
     },
     {
         "label": "无双",
-        "key": "strainPercent"
+        "key": "strainPercent",
     },
     {
         "label": "闪避",
-        "key": "dodgePercent"
+        "key": "dodgePercent",
     },
     {
         "label": "招架",
-        "key": "parryPercent"
+        "key": "parryPercent",
     },
     {
         "label": "拆招",
-        "key": "parryValue"
+        "key": "parryValue",
     },
     {
         "label": "加速",
-        "key": "haste"
-    }
+        "key": "haste",
+    },
 ]
 
 location_map = {
@@ -180,7 +180,7 @@ location_map = {
     "RING_2": "戒指",
     "SECONDARY_WEAPON": "远程武器",
     "PRIMARY_WEAPON": "近战武器",
-    "TERTIARY_WEAPON": "藏剑重剑"
+    "TERTIARY_WEAPON": "藏剑重剑",
 }
 
 _template_green_attrs = """

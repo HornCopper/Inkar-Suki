@@ -20,11 +20,11 @@ def is_in_current_cycle(timestamp):
     now = datetime.now()
     current_weekday = now.weekday()
     if current_weekday == 1 and now.hour < 7:
-        start_of_cycle = datetime(now.year, now.month, now.day, 7) - timedelta(days=7)
+        start_of_cycle = datetime(now.year, now.month, now.day, 7) - timedelta(days = 7)
     else:
         days_to_tuesday = (current_weekday - 1) % 7
-        start_of_cycle = datetime(now.year, now.month, now.day, 7) - timedelta(days=days_to_tuesday)
-    end_of_cycle = start_of_cycle + timedelta(days=6, hours=24)
+        start_of_cycle = datetime(now.year, now.month, now.day, 7) - timedelta(days = days_to_tuesday)
+    end_of_cycle = start_of_cycle + timedelta(days = 6, hours = 24)
     timestamp_dt = datetime.fromtimestamp(timestamp)
     return start_of_cycle <= timestamp_dt < end_of_cycle
 
@@ -32,15 +32,16 @@ def is_in_current_week(timestamp):
     now = datetime.now()
     current_weekday = now.weekday()
     if current_weekday == 0 and now.hour < 7:
-        start_of_week = datetime(now.year, now.month, now.day, 7) - timedelta(days=7)
+        start_of_week = datetime(now.year, now.month, now.day, 7) - timedelta(days = 7)
     else:
         days_to_monday = current_weekday % 7
-        start_of_week = datetime(now.year, now.month, now.day, 7) - timedelta(days=days_to_monday)
-    end_of_week = start_of_week + timedelta(days=7)
+        start_of_week = datetime(now.year, now.month, now.day, 7) - timedelta(days = days_to_monday)
+    end_of_week = start_of_week + timedelta(days = 7)
     timestamp_dt = datetime.fromtimestamp(timestamp)
     return start_of_week <= timestamp_dt < end_of_week
 
 async def get_horse_next_spawn(server):
+
     def parse_info(raw_msg: str, flush_time: str):
         next_times = {}
 
@@ -55,7 +56,7 @@ async def get_horse_next_spawn(server):
                     next_times[horse_type] = "无法预知"
                 else:
                     created_at = datetime.strptime(flush_time, "%Y-%m-%dT%H:%M:%S+08:00")
-                    next_spawn_time = created_at + timedelta(minutes=int(time_remaining))
+                    next_spawn_time = created_at + timedelta(minutes = int(time_remaining))
                     time_difference = next_spawn_time - datetime.now()
                     minutes = int(time_difference.total_seconds() // 60)
                     if minutes > 0:
@@ -67,16 +68,29 @@ async def get_horse_next_spawn(server):
             result += f"\n{horse[:-2]} 将于{time}后刷新"
         ans = result.strip()
         return ans if ans != "" else "时间尚久，无法预知。"
-    ct_data = (await Request(f"https://next2.jx3box.com/api/game/reporter/horse?pageIndex=1&pageSize=50&server={server}&type=chitu-horse&subtype=share_msg").get()).json()
+
+    ct_data = (
+        await Request(
+            f"https://next2.jx3box.com/api/game/reporter/horse?pageIndex=1&pageSize=50&server={server}&type=chitu-horse&subtype=share_msg",
+        ).get()
+    ).json()
     chitu_flushed = False
     if ct_data["data"].get("list") is not None:
         if is_in_current_cycle(ct_data["data"]["list"][0]["time"]):
             chitu_flushed = True
-    dl_data = (await Request(f"https://next2.jx3box.com/api/game/reporter/horse?pageIndex=1&pageSize=50&server={server}&type=dilu-horse&subtype=share_msg").get()).json()
+    dl_data = (
+        await Request(
+            f"https://next2.jx3box.com/api/game/reporter/horse?pageIndex=1&pageSize=50&server={server}&type=dilu-horse&subtype=share_msg",
+        ).get()
+    ).json()
     dilu_flushed = False
     if is_in_current_week(dl_data["data"]["list"][0]["time"]):
         dilu_flushed = True
-    web_data = (await Request(f"https://next2.jx3box.com/api/game/reporter/horse?pageIndex=1&pageSize=50&server={server}&type=horse&subtype=npc_chat").get()).json()
+    web_data = (
+        await Request(
+            f"https://next2.jx3box.com/api/game/reporter/horse?pageIndex=1&pageSize=50&server={server}&type=horse&subtype=npc_chat",
+        ).get()
+    ).json()
     msg = {}
     ft = {}
     maps = ["鲲鹏岛", "阴山大草原", "黑戈壁"]

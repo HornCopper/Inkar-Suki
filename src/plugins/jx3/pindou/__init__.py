@@ -14,8 +14,13 @@ from .options import PARAMETER_PROMPT, PindouOptionError, parse_options
 from src.const.prompts import PROMPT
 from .sources import get_card_image_url, resolve_card_server
 
-jiayuanpindou_matcher = on_command("jx3_pindou", command_key="拼豆", aliases={"家园拼豆"}, force_whitespace=True, priority=5)
-
+jiayuanpindou_matcher = on_command(
+    "jx3_pindou",
+    command_key = "拼豆",
+    aliases = {"家园拼豆"},
+    force_whitespace = True,
+    priority = 5,
+)
 
 @jiayuanpindou_matcher.handle()
 async def _(event: GroupMessageEvent, message: Message = CommandArg()):
@@ -23,21 +28,16 @@ async def _(event: GroupMessageEvent, message: Message = CommandArg()):
         await jiayuanpindou_matcher.finish("参考格式：家园拼豆")
     await jiayuanpindou_matcher.finish("图片转化家园拼豆蓝图网址：\nhttps://txjydps.online/pindou2jx3/")
 
-
 TRIGGER = "拼豆蓝图"
-ACTION_PROMPT = (
-    "回复“下载链接”获取家园蓝图文件；\n"
-    "回复“调整参数”修改蓝图转换参数；\n"
-    "回复其他内容停止本次蓝图转换。\n\n回复“家园拼豆”获取拼豆网址，可以体验更多特性！"
-)
+ACTION_PROMPT = ("回复“下载链接”获取家园蓝图文件；\n"
+                 "回复“调整参数”修改蓝图转换参数；\n"
+                 "回复其他内容停止本次蓝图转换。\n\n回复“家园拼豆”获取拼豆网址，可以体验更多特性！")
 IMAGE_PROMPT = "请发送一张图片，收到后将按默认参数转换拼豆蓝图。回复“取消”退出。\n请注意不要发送太快，若发送图片后未产生提示，请等待3秒左右再次发送。"
 CARD_USAGE = "格式：拼豆蓝图 名片 服务器 角色名\n例如：拼豆蓝图 名片 华乾 谢焚卿"
-
 
 async def _is_pindou_request(event: MessageEvent) -> bool:
     message = event.get_message()
     return TRIGGER in message.extract_plain_text()
-
 
 def _first_image(message: Message):
     return next(
@@ -45,19 +45,16 @@ def _first_image(message: Message):
         None,
     )
 
-
 def _safe_filename(raw_name: object) -> str:
     filename = str(raw_name or "image.png").replace("\\", "/").rsplit("/", 1)[-1]
     filename = filename.strip()[:255]
     return filename or "image.png"
 
-
 pindou_matcher = on_message(
-    rule=Rule(_is_pindou_request),
-    priority=5,
-    block=True,
+    rule = Rule(_is_pindou_request),
+    priority = 5,
+    block = True,
 )
-
 
 async def _show_preview(state: T_State, options: dict):
     preview = await convert_preview(
@@ -70,15 +67,12 @@ async def _show_preview(state: T_State, options: dict):
     state["pindou_options_dict"] = options
     state["pindou_stage"] = "action"
 
-
 async def _generate_initial_preview(image_segment: ms, state: T_State):
     image_url = str(
-        image_segment.data.get("url")
-        or (
+        image_segment.data.get("url") or (
             image_segment.data.get("file")
-            if str(image_segment.data.get("file") or "").startswith(("http://", "https://"))
-            else ""
-        )
+            if str(image_segment.data.get("file") or "").startswith(("http://", "https://"), ) else ""
+        ),
     )
     if not image_url:
         await pindou_matcher.finish("无法取得这张图片的下载地址，请重新发送原图后再试。")
@@ -97,7 +91,6 @@ async def _generate_initial_preview(image_segment: ms, state: T_State):
         await _show_preview(state, parse_options("默认"))
     except PindouServiceError as exc:
         await pindou_matcher.finish(f"转换预览图失败：{exc}")
-
 
 @pindou_matcher.handle()
 async def start_pindou(event: MessageEvent, state: T_State):
@@ -130,7 +123,6 @@ async def start_pindou(event: MessageEvent, state: T_State):
 
     await _generate_initial_preview(image_segment, state)
     await pindou_matcher.send(ACTION_PROMPT)
-
 
 @pindou_matcher.got("pindou_reply")
 async def handle_pindou_reply(
@@ -183,6 +175,5 @@ async def handle_pindou_reply(
     except PindouServiceError as exc:
         await matcher.reject(f"转换下载链接失败：{exc}\n{ACTION_PROMPT}")
     await pindou_matcher.finish(
-        Message(f"家园拼豆蓝图下载链接（有效期24小时）：\n{download.link}\n\n材料清单：\n")
-        + ms.image(download.materials)
+        Message(f"家园拼豆蓝图下载链接（有效期24小时）：\n{download.link}\n\n材料清单：\n") + ms.image(download.materials),
     )

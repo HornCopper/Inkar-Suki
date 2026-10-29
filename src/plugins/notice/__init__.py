@@ -3,15 +3,15 @@ from random import randint
 
 from nonebot import on_notice, on_request
 from nonebot.adapters.onebot.v11 import (
-    Bot, 
+    Bot,
     Message,
     GroupMessageEvent,
-    GroupIncreaseNoticeEvent, 
+    GroupIncreaseNoticeEvent,
     GroupRequestEvent,
-    GroupDecreaseNoticeEvent, 
+    GroupDecreaseNoticeEvent,
     GroupBanNoticeEvent,
     PokeNotifyEvent,
-    MessageSegment as ms
+    MessageSegment as ms,
 )
 from nonebot.params import CommandArg
 
@@ -29,7 +29,7 @@ from ._message import self_enter_msg
 
 notice_to = Config.bot_basic.bot_notice
 
-notice = on_notice(priority=5)
+notice = on_notice(priority = 5)
 
 @notice.handle()
 async def _(bot: Bot, event: GroupIncreaseNoticeEvent):
@@ -42,27 +42,31 @@ async def _(bot: Bot, event: GroupIncreaseNoticeEvent):
         if not isinstance(welcome_msg, str):
             return
         msg = ms.at(obj) + " " + welcome_msg
-        await bot.call_api("send_group_msg", group_id=group, message=msg)
+        await bot.call_api("send_group_msg", group_id = group, message = msg)
         return
     group_id = str(event.group_id)
-    exist_db = db.where_one(GroupSettings(), "group_id = ?", group_id, default=None)
+    exist_db = db.where_one(GroupSettings(), "group_id = ?", group_id, default = None)
     if exist_db is not None:
         return
-    new_settings = GroupSettings(group_id=group_id)
+    new_settings = GroupSettings(group_id = group_id)
     db.save(new_settings)
     if "禁用欢迎语" in get_group_settings(event.group_id, "additions"):
         return
     else:
-        await bot.call_api("send_group_msg", group_id=event.group_id, message=self_enter_msg.replace("$GROUP_ID", str(event.group_id)))
+        await bot.call_api(
+            "send_group_msg",
+            group_id = event.group_id,
+            message = self_enter_msg.replace("$GROUP_ID", str(event.group_id)),
+        )
 
 async def notice_and_ban(bot: Bot, event: GroupDecreaseNoticeEvent | GroupBanNoticeEvent, action: str):
     message = f"唔……{Config.bot_basic.bot_name}在群聊（{event.group_id}）被{action}啦！\n操作者：{event.operator_id}，已自动封禁！"
     notice = notice_to
     if Ban(event.operator_id).status:
         return
-    banlist_obj: BannedUser = BannedUser(user_id=event.operator_id, reason="T")
+    banlist_obj: BannedUser = BannedUser(user_id = event.operator_id, reason = "T")
     db.save(banlist_obj)
-    await bot.call_api("send_group_msg", group_id=int(notice[str(event.self_id)]), message=message)
+    await bot.call_api("send_group_msg", group_id = int(notice[str(event.self_id)]), message = message)
 
 @notice.handle()
 async def _(bot: Bot, event: GroupBanNoticeEvent):
@@ -71,9 +75,8 @@ async def _(bot: Bot, event: GroupBanNoticeEvent):
         return
     if str(event.user_id) not in notice_to:
         return
-    await bot.call_api("set_group_leave", group_id=event.group_id)
+    await bot.call_api("set_group_leave", group_id = event.group_id)
     await notice_and_ban(bot, event, "禁言")
-
 
 @notice.handle()
 async def _(bot: Bot, event: GroupDecreaseNoticeEvent):
@@ -93,7 +96,7 @@ async def _(event: PokeNotifyEvent):
         image = (await Request(f"https://inkar-suki.codethink.cn/Inkar-Suki-Docs/img/emoji_{index}.jpg").get()).content
         await notice.finish("音卡在呢！找音卡有什么事吗！(^ω^)" + ms.image(image))
 
-request = on_request(priority=5)
+request = on_request(priority = 5)
 
 @request.handle()
 async def _(bot: Bot, event: GroupRequestEvent):
@@ -101,16 +104,22 @@ async def _(bot: Bot, event: GroupRequestEvent):
         group = event.group_id
         user = event.user_id
         if Ban(event.user_id).status:
-            await bot.call_api("set_group_add_request", flag=event.flag, sub_type="invite", approve=False, reason="邀请人已被音卡封禁！无法邀请音卡入群！")
+            await bot.call_api(
+                "set_group_add_request",
+                flag = event.flag,
+                sub_type = "invite",
+                approve = False,
+                reason = "邀请人已被音卡封禁！无法邀请音卡入群！",
+            )
         flag = event.flag
         time = event.time
         new = {
             "group_id": group,
             "user_id": user,
             "flag": flag,
-            "time": time
+            "time": time,
         }
-        applications_data: Applicationslist | Any = db.where_one(Applicationslist(), default=Applicationslist())
+        applications_data: Applicationslist | Any = db.where_one(Applicationslist(), default = Applicationslist())
         applications_list = applications_data.applications_list
         if new in applications_list:
             return
@@ -118,10 +127,15 @@ async def _(bot: Bot, event: GroupRequestEvent):
         applications_data.applications_list = applications_list
         db.save(applications_data)
         msg = f"收到新的加群申请：\n邀请人：{user}\n群号：{group}"
-        await bot.call_api("send_group_msg", group_id=int(notice_to[str(event.self_id)]), message=msg)
+        await bot.call_api("send_group_msg", group_id = int(notice_to[str(event.self_id)]), message = msg)
 
-
-WelcomeEditMatcher = on_command("welcome", command_key=None, aliases={"修改欢迎语"}, force_whitespace=True, priority=5)
+WelcomeEditMatcher = on_command(
+    "welcome",
+    command_key = None,
+    aliases = {"修改欢迎语"},
+    force_whitespace = True,
+    priority = 5,
+)
 
 @WelcomeEditMatcher.handle()
 async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
@@ -129,7 +143,12 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
         return
     arg_msg = args.extract_plain_text()
     permission = check_permission(str(event.user_id), "group.welcome.edit")
-    personal_data = await bot.call_api("get_group_member_info", group_id=event.group_id, user_id=event.user_id, no_cache=True)
+    personal_data = await bot.call_api(
+        "get_group_member_info",
+        group_id = event.group_id,
+        user_id = event.user_id,
+        no_cache = True,
+    )
     group_admin = personal_data["role"] in ["owner", "admin"]
     if not permission and not group_admin:
         await WelcomeEditMatcher.finish(denied("group.welcome.edit"))

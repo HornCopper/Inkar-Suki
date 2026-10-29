@@ -16,9 +16,7 @@ from src.utils.generate import generate
 from ._template import interwiki_table_head, interwiki_table_row
 from .wikilib import wiki as wiki_
 
-
-SimpleWikiMatcher = on_command("wiki", command_key="wiki", aliases={"iwiki"}, force_whitespace=True, priority=5)
-
+SimpleWikiMatcher = on_command("wiki", command_key = "wiki", aliases = {"iwiki"}, force_whitespace = True, priority = 5)
 
 @SimpleWikiMatcher.handle()
 async def _(event: GroupMessageEvent, state: T_State, args: Message = CommandArg()):
@@ -28,7 +26,7 @@ async def _(event: GroupMessageEvent, state: T_State, args: Message = CommandArg
     api = None
     lookup_title = title
     if ":" in title:
-        prefix, prefixed_title = title.split(":", maxsplit=1)
+        prefix, prefixed_title = title.split(":", maxsplit = 1)
         local_api = get_local_api(str(event.group_id), prefix)
         if local_api is not False:
             api = local_api
@@ -48,7 +46,7 @@ async def _(event: GroupMessageEvent, state: T_State, args: Message = CommandArg
         for i in range(len(results)):
             msg = msg + "\n" + str(i) + "." + results[i]
         await SimpleWikiMatcher.send(
-            msg[1:] + "\n发送序号以搜索，发送其他内容则取消搜索。"
+            msg[1:] + "\n发送序号以搜索，发送其他内容则取消搜索。",
         )
         return
     elif info["status"] == 201:
@@ -71,9 +69,7 @@ async def _(event: GroupMessageEvent, state: T_State, args: Message = CommandArg
     elif info["status"] == 502:
         await SimpleWikiMatcher.finish(info["reason"])
 
-
-StartWikiMatcher = on_command("startwiki", command_key="startwiki", force_whitespace=True, priority=5)
-
+StartWikiMatcher = on_command("startwiki", command_key = "startwiki", force_whitespace = True, priority = 5)
 
 @StartWikiMatcher.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
@@ -86,9 +82,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     home_page = await wiki_.get_home_page(api)
     await StartWikiMatcher.finish(f"当前起始Wiki：{site_name}\n首页：{home_page}")
 
-
-WikiHelpMatcher = on_command("wikihelp", command_key=None, force_whitespace=True, priority=5)
-
+WikiHelpMatcher = on_command("wikihelp", command_key = None, force_whitespace = True, priority = 5)
 
 @WikiHelpMatcher.handle()
 async def _(args: Message = CommandArg()):
@@ -103,11 +97,10 @@ async def _(args: Message = CommandArg()):
         "interwiki list：查看自定义Wiki\n"
         "interwiki add <前缀> <Wiki页面链接>：添加自定义Wiki\n"
         "interwiki del <前缀>：删除自定义Wiki\n"
-        "interwiki upd <前缀> <Wiki页面链接>：更新自定义Wiki"
+        "interwiki upd <前缀> <Wiki页面链接>：更新自定义Wiki",
     )
 
-SetWikiMatcher = on_command("setwiki", command_key="setwiki", force_whitespace=True, priority=5)
-
+SetWikiMatcher = on_command("setwiki", command_key = "setwiki", force_whitespace = True, priority = 5)
 
 @SetWikiMatcher.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
@@ -125,9 +118,8 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
         set_group_settings(str(event.group_id), "wiki", now)
         site_name = await wiki_.get_site_info(link)
         await SetWikiMatcher.finish(
-            f"初始Wiki修改成功！\n当前Wiki：{site_name}"
+            f"初始Wiki修改成功！\n当前Wiki：{site_name}",
         )
-
 
 def check_interwiki_prefix(group, prefix):
     data = get_group_settings(group, "wiki")
@@ -136,9 +128,13 @@ def check_interwiki_prefix(group, prefix):
             return True
     return False
 
-
-InterWikiManageMatcher = on_command("interwiki", command_key="interwiki", aliases={"iw"}, force_whitespace=True, priority=5)
-
+InterWikiManageMatcher = on_command(
+    "interwiki",
+    command_key = "interwiki",
+    aliases = {"iw"},
+    force_whitespace = True,
+    priority = 5,
+)
 
 @InterWikiManageMatcher.handle()
 async def _(bot: Bot, event: GroupMessageEvent, full_argument: Message = CommandArg()):
@@ -152,26 +148,30 @@ async def _(bot: Bot, event: GroupMessageEvent, full_argument: Message = Command
         if not records:
             await InterWikiManageMatcher.finish("当前群尚未设置自定义Wiki。")
         site_names = await asyncio.gather(
-            *(wiki_.get_site_info(record["link"]) for record in records)
+            *(wiki_.get_site_info(record["link"]) for record in records),
         )
         rows = [
             Template(interwiki_table_row).render(
-                prefix=record["prefix"],
-                site_name=site_name,
-            )
-            for record, site_name in zip(records, site_names)
+                prefix = record["prefix"],
+                site_name = site_name,
+            ) for record, site_name in zip(records, site_names)
         ]
         html = str(
             HTMLSourceCode(
-                application_name="自定义Wiki",
-                table_head=interwiki_table_head,
-                table_body="".join(rows),
-            )
+                application_name = "自定义Wiki",
+                table_head = interwiki_table_head,
+                table_body = "".join(rows),
+            ),
         )
         await InterWikiManageMatcher.finish(
-            await generate(html, ".container", segment=True)
+            await generate(html, ".container", segment = True),
         )
-    personal_data = await bot.call_api("get_group_member_info", group_id=event.group_id, user_id=event.user_id, no_cache=True)
+    personal_data = await bot.call_api(
+        "get_group_member_info",
+        group_id = event.group_id,
+        user_id = event.user_id,
+        no_cache = True,
+    )
     group_admin = personal_data["role"] in ["owner", "admin"]
     if not group_admin:
         if not check_permission(str(event.user_id), "wiki.interwiki.manage"):
@@ -209,7 +209,7 @@ async def _(bot: Bot, event: GroupMessageEvent, full_argument: Message = Command
         if len(args) != 3:
             await InterWikiManageMatcher.finish(PROMPT.ArgumentInvalid)
         prefix = args[1]
-        link = args[2] 
+        link = args[2]
         api = await wiki_.get_api(link)
         if api["status"] == 500:
             await InterWikiManageMatcher.finish("唔……此站点非有效的MediaWiki，请检查后重试~")
@@ -226,14 +226,12 @@ async def _(bot: Bot, event: GroupMessageEvent, full_argument: Message = Command
 
     await InterWikiManageMatcher.finish(PROMPT.ArgumentInvalid)
 
-
 def get_local_api(group, prefix):
     local_data = get_group_settings(group, "wiki")
     for i in local_data["interwiki"]:
         if i["prefix"] == prefix:
             return i["link"]
     return False
-
 
 @SimpleWikiMatcher.got("num")
 async def __(state: T_State, num: Message = Arg()):
@@ -252,4 +250,3 @@ async def __(state: T_State, num: Message = Arg()):
     desc = info["desc"]
     msg = f"查询到「{title}」：\n{link}{desc}"
     await SimpleWikiMatcher.finish(msg)
-

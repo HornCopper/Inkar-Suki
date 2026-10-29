@@ -23,6 +23,7 @@ from .auction import get_auction_image
 from .market import JX3Trade
 
 class TradeServer(Server):
+
     @property
     @override
     def server(self) -> str | None:
@@ -38,9 +39,13 @@ class TradeServer(Server):
             final_server = None
         return final_server
 
-
-auction_matcher = on_command("jx3_auction", command_key="拍卖", aliases={"阵营拍卖", "拍卖"}, force_whitespace=True, priority=5)
-
+auction_matcher = on_command(
+    "jx3_auction",
+    command_key = "拍卖",
+    aliases = {"阵营拍卖", "拍卖"},
+    force_whitespace = True,
+    priority = 5,
+)
 
 @auction_matcher.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
@@ -48,7 +53,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
         return
 
     argument = args.extract_plain_text().strip()
-    parts = argument.split(maxsplit=1) if argument else []
+    parts = argument.split(maxsplit = 1) if argument else []
     bound_server = TradeServer(None, event.group_id).server
     server: str | None = None
     name = ""
@@ -68,16 +73,19 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
 
     if server is None:
         await auction_matcher.finish(
-            PROMPT.ServerNotExist
-            + "\n参考格式：阵营拍卖 <服务器> [物品名]"
-            + "\n群聊已绑定服务器时，可以省略服务器。"
+            PROMPT.ServerNotExist + "\n参考格式：阵营拍卖 <服务器> [物品名]" + "\n群聊已绑定服务器时，可以省略服务器。",
         )
 
     image = await get_auction_image(server, name)
     await auction_matcher.finish(image)
-        
 
-trade_matcher = on_command("jx3_trade_v3", command_key="交易行", aliases={"jx3_trade", "交易行", "交易行v2", "交易行v3"}, force_whitespace=True, priority=5)
+trade_matcher = on_command(
+    "jx3_trade_v3",
+    command_key = "交易行",
+    aliases = {"jx3_trade", "交易行", "交易行v2", "交易行v3"},
+    force_whitespace = True,
+    priority = 5,
+)
 
 @trade_matcher.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
@@ -101,7 +109,13 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     msg = await instance.generate_image()
     await trade_matcher.finish(msg)
 
-trade_sl_matcher = on_command("jx3_trade_shilian_v3", command_key="交易行", aliases={"jx3_shilian", "交易行试炼", "交易行试炼v2", "交易行试炼v3"}, force_whitespace=True, priority=5)
+trade_sl_matcher = on_command(
+    "jx3_trade_shilian_v3",
+    command_key = "交易行",
+    aliases = {"jx3_shilian", "交易行试炼", "交易行试炼v2", "交易行试炼v3"},
+    force_whitespace = True,
+    priority = 5,
+)
 
 @trade_sl_matcher.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
@@ -125,7 +139,13 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     image = await instance.generate_image()
     await trade_sl_matcher.finish(image)
 
-item_price_v2_matcher = on_command("jx3_item_v2", command_key="物价", aliases={"物价v2", "物价"}, force_whitespace=True, priority=5)
+item_price_v2_matcher = on_command(
+    "jx3_item_v2",
+    command_key = "物价",
+    aliases = {"物价v2", "物价"},
+    force_whitespace = True,
+    priority = 5,
+)
 
 @item_price_v2_matcher.handle()
 async def _(event: GroupMessageEvent, state: T_State, args: Message = CommandArg()):
@@ -153,7 +173,7 @@ async def _(event: GroupMessageEvent, state: T_State, args: Message = CommandArg
             await item_price_v2_matcher.finish(ms.image(img_content))
         state["v"] = aliases
         msg = "音卡找到下面的相关物品，请回复前方序号来搜索！"
-        for num, name in enumerate(aliases, start=1):
+        for num, name in enumerate(aliases, start = 1):
             msg += f"\n[{num}] {name}"
         await item_price_v2_matcher.send(msg)
         return
@@ -169,14 +189,20 @@ async def _(event: GroupMessageEvent, state: T_State, num: Message = Arg()):
         await item_price_v2_matcher.finish("唔……输入的不是数字，取消搜索。")
     if int(num_) > len(data):
         await item_price_v2_matcher.finish("唔……不存在该数字对应的搜索结果，请重新搜索！")
-    name = data[int(num_)-1]
+    name = data[int(num_) - 1]
     img = await get_single_item_price(name, True)
     if not isinstance(img, str):
         return
     img_content = Request(img).local_content
     await item_price_v2_matcher.finish(ms.image(img_content))
 
-wanbaolou_role_matcher = on_command("jx3_wbl", command_key="万宝楼", aliases={"万宝楼"}, priority=5, force_whitespace=True)
+wanbaolou_role_matcher = on_command(
+    "jx3_wbl",
+    command_key = "万宝楼",
+    aliases = {"万宝楼"},
+    priority = 5,
+    force_whitespace = True,
+)
 
 @wanbaolou_role_matcher.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
@@ -188,7 +214,13 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     msg = await get_wbl_role(int(num))
     await wanbaolou_role_matcher.finish(msg)
 
-item_aliases_matcher = on_command("jx3_itemaliases", command_key=None, aliases={"物品别名", "物品别称"}, priority=5, force_whitespace=True)
+item_aliases_matcher = on_command(
+    "jx3_itemaliases",
+    command_key = None,
+    aliases = {"物品别名", "物品别称"},
+    priority = 5,
+    force_whitespace = True,
+)
 
 @item_aliases_matcher.handle()
 async def _(event: GroupMessageEvent, argument: Message = CommandArg()):
@@ -199,13 +231,13 @@ async def _(event: GroupMessageEvent, argument: Message = CommandArg()):
         await item_aliases_matcher.finish("唔……参数数量不正确，请参考命令格式：\n物品别名 别名 实际名")
     map_name = args[0]
     raw_name = args[1]
-    local_data: ItemKeywordMap | None | Any = db.where_one(ItemKeywordMap(), "raw_name = ?", map_name, default=None)
+    local_data: ItemKeywordMap | None | Any = db.where_one(ItemKeywordMap(), "raw_name = ?", map_name, default = None)
     if local_data is not None:
         await item_aliases_matcher.finish("无法继续添加别名映射：检测到重复别名！")
     db.save(
         ItemKeywordMap(
-            map_name=map_name,
-            raw_name=raw_name
-        )
+            map_name = map_name,
+            raw_name = raw_name,
+        ),
     )
     await item_aliases_matcher.finish(f"已添加物品别名映射：{map_name} -> {raw_name}！")

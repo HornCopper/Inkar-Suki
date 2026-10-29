@@ -10,10 +10,10 @@ async def get_role_info(server: str, name: str, token: str = ""):
     params = {
         "token": token,
         "name": name,
-        "server": server
+        "server": server,
     }
     url = f"{Config.jx3.api.url}/role/detail"
-    data = (await Request(url, params=params).get()).json()
+    data = (await Request(url, params = params).get()).json()
     if data["code"] == 404:
         return "没有找到该玩家哦~\n需要该玩家在世界频道发言后方可查询。"
     msg = "以下信息仅供参考！\n数据可能已经过期，但UID之类的仍可参考。"
@@ -30,7 +30,7 @@ async def get_role_info(server: str, name: str, token: str = ""):
     return msg
 
 async def get_online_info(server: str, name: str) -> str:
-    role_info = await search_player(role_name=name, server_name=server)
+    role_info = await search_player(role_name = name, server_name = server)
     if not role_info.roleId:
         return PROMPT.PlayerNotExist
     url = f"{Config.jx3.api.cqc_url}/role_online"
@@ -40,9 +40,9 @@ async def get_online_info(server: str, name: str) -> str:
         "name": name,
         "role_id": role_info.roleId,
         "global_role_id": role_info.globalRoleId,
-        "token": Config.jx3.api.ticket
+        "token": Config.jx3.api.ticket,
     }
-    data = (await Request(url, params=params).get()).json()
+    data = (await Request(url, params = params).get()).json()
     status = bool(data["data"][0]["gameLogin"])
     key = "在线" if status else "离线"
     return f"[{name}·{server}] 当前{key}"

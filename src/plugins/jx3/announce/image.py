@@ -41,24 +41,24 @@ prefix_html_code = """
         font-family: Harmony, sans-serif !important;
     }
 </style>
-""".replace("font_url", PROJECT_FONT_PATH.as_uri())
+""".replace(
+    "font_url",
+    PROJECT_FONT_PATH.as_uri(),
+)
 
 async def get_image(ver: str = "latest"):
     raw_html = (await Request(f"https://jx3.xoyo.com/launcher/update/{ver}.html").get()).text
     html = _build_update_html(raw_html)
-    return await generate(html.replace("font-family:微软雅黑;", ""), "div", True, segment=True)
-
+    return await generate(html.replace("font-family:微软雅黑;", ""), "div", True, segment = True)
 
 def _build_update_html(raw_html: str) -> str:
     return prefix_html_code + raw_html + "</div></html>"
-
 
 def _push_image_paths(url: str) -> tuple[Path, Path, Path]:
     cache_key = f"{PUSH_IMAGE_CACHE_VERSION}\0{url}"
     digest = hashlib.sha256(cache_key.encode("utf-8")).hexdigest()
     image_path = PUSH_IMAGE_CACHE / f"{digest}.png"
     return image_path, image_path.with_suffix(".lock"), image_path.with_suffix(".failed")
-
 
 def _push_image_css() -> str:
     font = base64.b64encode(PROJECT_FONT_PATH.read_bytes()).decode("ascii")
@@ -91,16 +91,14 @@ def _push_image_css() -> str:
         }}
     """
 
-
 def _has_complete_image(image_path: Path) -> bool:
     try:
         return image_path.is_file() and image_path.stat().st_size > 0
     except OSError:
         return False
 
-
 def _try_acquire_lock(lock_path: Path) -> bool:
-    lock_path.parent.mkdir(parents=True, exist_ok=True)
+    lock_path.parent.mkdir(parents = True, exist_ok = True)
     try:
         descriptor = os.open(lock_path, os.O_CREAT | os.O_EXCL | os.O_WRONLY)
     except FileExistsError:
@@ -111,14 +109,12 @@ def _try_acquire_lock(lock_path: Path) -> bool:
         os.close(descriptor)
     return True
 
-
 def _remove_stale_lock(lock_path: Path) -> None:
     try:
         if time.time() - lock_path.stat().st_mtime > PUSH_IMAGE_LOCK_STALE_AFTER:
             lock_path.unlink()
     except FileNotFoundError:
         pass
-
 
 def _has_recent_failure(failure_path: Path) -> bool:
     try:
@@ -129,11 +125,10 @@ def _has_recent_failure(failure_path: Path) -> bool:
         pass
     return False
 
-
 async def _ensure_cached_push_image(
     cache_key: str,
     render,
-    is_usable=_has_complete_image,
+    is_usable = _has_complete_image,
 ) -> Path:
     """Render one shared screenshot across all Gunicorn worker processes."""
     image_path, lock_path, failure_path = _push_image_paths(cache_key)
@@ -144,19 +139,19 @@ async def _ensure_cached_push_image(
             raise RuntimeError("Announcement screenshot generation recently failed")
         if _try_acquire_lock(lock_path):
             temporary_path = image_path.with_name(
-                f"{image_path.stem}.{os.getpid()}.{time.time_ns()}.png"
+                f"{image_path.stem}.{os.getpid()}.{time.time_ns()}.png",
             )
             try:
                 if not is_usable(image_path):
                     await render(temporary_path)
                     os.replace(temporary_path, image_path)
-                    failure_path.unlink(missing_ok=True)
+                    failure_path.unlink(missing_ok = True)
             except Exception:
                 failure_path.touch()
                 raise
             finally:
-                temporary_path.unlink(missing_ok=True)
-                lock_path.unlink(missing_ok=True)
+                temporary_path.unlink(missing_ok = True)
+                lock_path.unlink(missing_ok = True)
             break
 
         _remove_stale_lock(lock_path)
@@ -168,7 +163,6 @@ async def _ensure_cached_push_image(
         raise RuntimeError("Announcement screenshot was not generated")
     return image_path
 
-
 async def _ensure_push_image(url: str) -> Path:
     parsed_url = urlparse(url)
     if parsed_url.scheme not in {"http", "https"} or parsed_url.hostname != "jx3.xoyo.com":
@@ -179,17 +173,19 @@ async def _ensure_push_image(url: str) -> Path:
             url,
             ".article-wrapper",
             True,
-            delay=1000,
-            additional_css=_push_image_css(),
-            additional_js="document.fonts.ready",
-            viewport={"width": 800, "height": 900},
-            output_path=str(temporary_path),
-            wait_for_network=True,
-            user_agent=MOBILE_USER_AGENT,
+            delay = 1000,
+            additional_css = _push_image_css(),
+            additional_js = "document.fonts.ready",
+            viewport = {
+                "width": 800,
+                "height": 900,
+            },
+            output_path = str(temporary_path),
+            wait_for_network = True,
+            user_agent = MOBILE_USER_AGENT,
         )
 
     return await _ensure_cached_push_image(f"official:{url}", render)
-
 
 async def _ensure_beta_push_image(diff: BetaAnnouncementDiff) -> Path:
     bot_name = Config.bot_basic.bot_name_argument
@@ -197,25 +193,28 @@ async def _ensure_beta_push_image(diff: BetaAnnouncementDiff) -> Path:
     async def render(temporary_path: Path):
         await generate(
             build_beta_diff_html(
-                diff, PROJECT_FONT_PATH.as_uri(),
-                bot_name=bot_name, footer_message=get_saohua(),
+                diff,
+                PROJECT_FONT_PATH.as_uri(),
+                bot_name = bot_name,
+                footer_message = get_saohua(),
             ),
             ".beta-diff",
             True,
-            viewport={"width": 1600, "height": 900},
-            additional_js="document.fonts.ready",
-            output_path=str(temporary_path),
+            viewport = {
+                "width": 1600,
+                "height": 900,
+            },
+            additional_js = "document.fonts.ready",
+            output_path = str(temporary_path),
         )
 
     # The payload identifies the exact revision, even if another update arrives immediately.
     return await _ensure_cached_push_image(f"beta-diff-v2-footer:{bot_name}:{diff.model_dump_json()}", render)
 
-
 async def get_push_image(url: str) -> MessageSegment:
     image_path = await _ensure_push_image(url)
     image = await asyncio.to_thread(image_path.read_bytes)
     return MessageSegment.image(image)
-
 
 async def get_beta_push_image(diff: BetaAnnouncementDiff) -> MessageSegment:
     image_path = await _ensure_beta_push_image(diff)

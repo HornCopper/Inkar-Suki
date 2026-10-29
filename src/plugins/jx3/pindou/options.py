@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from typing import Any
 
-
 DEFAULT_OPTIONS: dict[str, Any] = {
     "width": 400,
     "budget": 30000,
@@ -24,10 +23,8 @@ PARAMETER_PROMPT = """请按顺序回复，用空格分隔：
 只改宽度可回复：128
 回复“默认”直接使用；“-”或末尾省略项用默认值。“取消”退出。"""
 
-
 class PindouOptionError(ValueError):
     pass
-
 
 def _integer(token: str, field: str, minimum: int, maximum: int) -> int:
     try:
@@ -38,7 +35,6 @@ def _integer(token: str, field: str, minimum: int, maximum: int) -> int:
         raise PindouOptionError(f"{field} 必须在 {minimum}-{maximum} 之间。")
     return value
 
-
 def _number(token: str, field: str, minimum: float, maximum: float) -> float | int:
     try:
         value = float(token)
@@ -48,13 +44,11 @@ def _number(token: str, field: str, minimum: float, maximum: float) -> float | i
         raise PindouOptionError(f"{field} 必须在 {minimum:g}-{maximum:g} 之间。")
     return int(value) if value.is_integer() else value
 
-
 def _choice(token: str, field: str, choices: dict[str, str]) -> str:
     value = token.strip()
     if value not in choices:
         raise PindouOptionError(f"{field} 只能是 {' / '.join(choices)}。")
     return choices[value]
-
 
 def _parse_value(field: str, token: str) -> Any:
     if field == "width":
@@ -69,7 +63,6 @@ def _parse_value(field: str, token: str) -> Any:
         return _number(token, "单格边长", 0.5, 8)
     raise PindouOptionError(f"不支持的参数：{field}。")
 
-
 def parse_options(text: str) -> dict[str, Any]:
     normalized = text.strip()
     if normalized.lower() in {"默认", "default"}:
@@ -80,7 +73,7 @@ def parse_options(text: str) -> dict[str, Any]:
     tokens = normalized.split()
     if len(tokens) > len(OPTION_ORDER):
         raise PindouOptionError(
-            f"最多需要 {len(OPTION_ORDER)} 项，目前收到 {len(tokens)} 项。"
+            f"最多需要 {len(OPTION_ORDER)} 项，目前收到 {len(tokens)} 项。",
         )
 
     options = DEFAULT_OPTIONS.copy()
@@ -90,5 +83,3 @@ def parse_options(text: str) -> dict[str, Any]:
         field = OPTION_ORDER[index]
         options[field] = _parse_value(field, token)
     return options
-
-

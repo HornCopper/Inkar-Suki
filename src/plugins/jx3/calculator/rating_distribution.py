@@ -35,7 +35,6 @@ from .equipment_rating import (
 )
 from .universe import UniversalCalculator
 
-
 RATING_DISTRIBUTION_PERMISSION = "jx3.calculator.rating.distribution.export"
 RATING_DISTRIBUTION_USAGE = (
     "评级分布 <心法>：同图展示所有默认武器路由\n"
@@ -47,7 +46,6 @@ RATING_DISTRIBUTION_USAGE = (
     "奶妈：评级分布 <心法>（承压分布）\n"
     "各路由分别统计榜单内角色的最新有效记录，仅输出分布统计图。"
 )
-
 
 _SRC = Path(__file__).resolve().parents[3]
 _PLOT_LEFT = 72
@@ -61,33 +59,24 @@ _QUANTILES = (
     (0.75, "P75", "75% 分位", "#578b80"),
 )
 
-
-@lru_cache(maxsize=1)
+@lru_cache(maxsize = 1)
 def _template():
     source = (_SRC / "templates" / "jx3" / "rating_distribution.html").read_text(
-        encoding="utf-8"
+        encoding = "utf-8",
     )
-    return Environment(autoescape=True).from_string(source)
+    return Environment(autoescape = True).from_string(source)
 
-
-@lru_cache(maxsize=1)
+@lru_cache(maxsize = 1)
 def _appearance_assets() -> tuple[dict, dict[str, str], str]:
     """Reuse rating-card assets without importing the bot or resolving user paths."""
     assets = _SRC / "assets"
     try:
-        colors = json.loads(
-            (assets / "source" / "jx3" / "kungfu_colors.json").read_text(encoding="utf-8")
-        )
+        colors = json.loads((assets / "source" / "jx3" / "kungfu_colors.json").read_text(encoding = "utf-8"), )
     except (OSError, json.JSONDecodeError):
         colors = {}
-    icons = {
-        path.stem: path.as_uri()
-        for path in (assets / "image" / "jx3" / "kungfu").glob("*.png")
-        if path.is_file()
-    }
+    icons = {path.stem: path.as_uri() for path in (assets / "image" / "jx3" / "kungfu").glob("*.png") if path.is_file()}
     avatar = assets / "image" / "jx3" / "equipment_rating" / "Inkar.jpg"
     return colors if isinstance(colors, dict) else {}, icons, avatar.as_uri() if avatar.is_file() else ""
-
 
 def _appearance(kungfu_name: str) -> dict[str, str]:
     colors, icons, avatar = _appearance_assets()
@@ -99,7 +88,7 @@ def _appearance(kungfu_name: str) -> dict[str, str]:
     ink = rgb
     while True:
         channels = [channel / 255 for channel in ink]
-        linear = [value / 12.92 if value <= 0.04045 else ((value + 0.055) / 1.055) ** 2.4 for value in channels]
+        linear = [value / 12.92 if value <= 0.04045 else ((value + 0.055) / 1.055)**2.4 for value in channels]
         luminance = sum(value * weight for value, weight in zip(linear, (0.2126, 0.7152, 0.0722)))
         if 1.05 / (luminance + 0.05) >= 4.5:
             break
@@ -112,7 +101,6 @@ def _appearance(kungfu_name: str) -> dict[str, str]:
         "header_avatar": avatar,
     }
 
-
 def _quantile(values: list[int], probability: float) -> float:
     """Use inclusive linear interpolation between adjacent sorted records."""
     position = (len(values) - 1) * probability
@@ -120,10 +108,8 @@ def _quantile(values: list[int], probability: float) -> float:
     fraction = position - lower
     return values[lower] + (values[min(lower + 1, len(values) - 1)] - values[lower]) * fraction
 
-
 def _number(value: float | int) -> str:
     return f"{value:,.2f}".rstrip("0").rstrip(".")
-
 
 def _axis_number(value: float | int) -> str:
     if abs(value) >= 100_000_000:
@@ -132,11 +118,9 @@ def _axis_number(value: float | int) -> str:
         return f"{value / 10_000:.2f}".rstrip("0").rstrip(".") + "万"
     return _number(value)
 
-
 def _nice_step(value: float) -> float:
-    power = 10 ** floor(log10(max(1e-300, value)))
+    power = 10**floor(log10(max(1e-300, value)))
     return next(multiplier * power for multiplier in (1, 2, 5, 10) if multiplier * power >= value)
-
 
 def _route_color(weapon: str) -> str:
     """Keep weapon colors stable across requests and highlight selections."""
@@ -147,16 +131,14 @@ def _route_color(weapon: str) -> str:
     channels = hls_to_rgb(hue, 0.46, 0.55)
     return "#{:02x}{:02x}{:02x}".format(*(round(channel * 255) for channel in channels))
 
-
 def _bandwidth(values: list[int]) -> float:
     if len(values) < 2 or values[0] == values[-1]:
         return 0.0
     mean = sum(values) / len(values)
-    deviation = sqrt(sum((value - mean) ** 2 for value in values) / (len(values) - 1))
+    deviation = sqrt(sum((value - mean)**2 for value in values) / (len(values) - 1))
     spread = (_quantile(values, 0.75) - _quantile(values, 0.25)) / 1.34
     scale = min(deviation, spread) if spread > 0 else deviation
-    return max(1.0, 0.9 * scale * len(values) ** -0.2)
-
+    return max(1.0, 0.9 * scale * len(values)**-0.2)
 
 def _density(values: list[int], xs: list[float], bandwidth: float) -> list[float]:
     """Linear-bin samples before Gaussian smoothing: O(N + grid_size ** 2).
@@ -175,7 +157,7 @@ def _density(values: list[int], xs: list[float], bandwidth: float) -> list[float
     # Sub-pixel peaks remain legible on a chart shared by distant routes.
     bandwidth = max(bandwidth, 1.5 * dx)
     radius = min(len(xs) - 1, ceil(4 * bandwidth / dx))
-    kernel = [exp(-0.5 * (offset * dx / bandwidth) ** 2) for offset in range(radius + 1)]
+    kernel = [exp(-0.5 * (offset * dx / bandwidth)**2) for offset in range(radius + 1)]
     result = [0.0] * len(xs)
     for index, count in enumerate(counts):
         if count:
@@ -183,7 +165,6 @@ def _density(values: list[int], xs: list[float], bandwidth: float) -> list[float
                 result[target] += count * kernel[abs(target - index)]
     area = (sum(result) - (result[0] + result[-1]) / 2) * dx
     return [value / area for value in result]
-
 
 def _chart_data(series: list[dict], highlighted_key: str | None) -> dict:
     """Prepare common axes before applying presentation-only highlighting."""
@@ -202,7 +183,7 @@ def _chart_data(series: list[dict], highlighted_key: str | None) -> dict:
     for item in populated:
         if item["values"][0] != item["values"][-1]:
             curves[item["key"]] = _density(item["values"], xs, bandwidths[item["key"]])
-    peak = max((max(curve) for curve in curves.values()), default=0)
+    peak = max((max(curve) for curve in curves.values()), default = 0)
     y_step = _nice_step(peak * 1.08 / 4) if peak else 1
     y_maximum = ceil(peak * 1.08 / y_step) * y_step if peak else 1
     exponent = floor(log10(y_maximum)) if peak else 0
@@ -214,9 +195,8 @@ def _chart_data(series: list[dict], highlighted_key: str | None) -> dict:
     y_ticks = [
         {
             "y": round(_PLOT_TOP + _PLOT_HEIGHT - index * y_step / y_maximum * _PLOT_HEIGHT, 3),
-            "label": _number(index * y_step / 10 ** exponent) if peak else "",
-        }
-        for index in range(round(y_maximum / y_step) + 1)
+            "label": _number(index * y_step / 10**exponent) if peak else "",
+        } for index in range(round(y_maximum / y_step) + 1)
     ]
     x_step = max(1, _nice_step(axis_span / 6))
     x_ticks = []
@@ -234,21 +214,36 @@ def _chart_data(series: list[dict], highlighted_key: str | None) -> dict:
         muted = highlighted_key is not None and item["key"] != highlighted_key
         route = {
             **item,
-            "count": _number(len(values)),
-            "maximum": _number(values[-1]) if values else "—",
-            "color": _route_color(item["weapon"]),
-            "muted": muted,
-            "selected": item["key"] == highlighted_key,
-            "stroke": "#8aa0b3" if muted else _route_color(item["weapon"]),
-            "opacity": 0.32 if muted else 1,
-            "stroke_width": 1.6 if muted else 3,
+            "count":
+            _number(len(values)),
+            "maximum":
+            _number(values[-1]) if values else "—",
+            "color":
+            _route_color(item["weapon"]),
+            "muted":
+            muted,
+            "selected":
+            item["key"] == highlighted_key,
+            "stroke":
+            "#8aa0b3" if muted else _route_color(item["weapon"]),
+            "opacity":
+            0.32 if muted else 1,
+            "stroke_width":
+            1.6 if muted else 3,
             "quantiles": [
-                {"key": key, "label": label, "color": color, "value": _number(_quantile(values, probability)) if values else "—"}
-                for probability, key, label, color in _QUANTILES
+                {
+                    "key": key,
+                    "label": label,
+                    "color": color,
+                    "value": _number(_quantile(values, probability)) if values else "—",
+                } for probability, key, label, color in _QUANTILES
             ],
-            "path": "",
-            "point_x": None,
-            "note": "暂无数据" if not values else "",
+            "path":
+            "",
+            "point_x":
+            None,
+            "note":
+            "暂无数据" if not values else "",
         }
         if values:
             if values[0] == values[-1]:
@@ -265,7 +260,7 @@ def _chart_data(series: list[dict], highlighted_key: str | None) -> dict:
         rendered.append(route)
     return {
         "routes": rendered,
-        "draw_routes": sorted(rendered, key=lambda item: not item["muted"]),
+        "draw_routes": sorted(rendered, key = lambda item: not item["muted"]),
         "x_ticks": x_ticks,
         "y_ticks": y_ticks,
         "density_unit": f"×10{superscript}" if peak and exponent else "",
@@ -273,7 +268,6 @@ def _chart_data(series: list[dict], highlighted_key: str | None) -> dict:
         "minimum": _number(minimum),
         "maximum": _number(maximum),
     }
-
 
 def build_distribution_html(
     series: list[dict],
@@ -288,13 +282,11 @@ def build_distribution_html(
     Each series supplies key, name, weapon and positive-integer values. Empty
     routes remain in the legend; an entirely empty selection is an error.
     """
-    if not series or any(
-        not isinstance(item, dict)
-        or any(not isinstance(item.get(key), str) or not item[key] for key in ("key", "name", "weapon"))
-        or not isinstance(item.get("values"), list)
-        or any(type(value) is not int or value <= 0 for value in item["values"])
-        for item in series
-    ):
+    if not series or any(not isinstance(item, dict) or any(not isinstance(item.get(key), str) or not item[key]
+                                                           for key in ("key", "name", "weapon"))
+                         or not isinstance(item.get("values"), list) or any(type(value) is not int or value <= 0
+                                                                            for value in item["values"])
+                         for item in series):
         raise ValueError("评级分布需要完整的路由信息与有效的正整数排名记录。")
     if not any(item["values"] for item in series):
         raise ValueError("评级分布暂无有效排名数据。")
@@ -307,28 +299,26 @@ def build_distribution_html(
     selected = next((item for item in chart["routes"] if item["selected"]), None)
     stats_values = selected["values"] if selected else []
     return _template().render(
-        font=(_SRC / "assets" / "font" / "PingFangSC-Semibold.otf").as_uri(),
-        kungfu_name=kungfu_name,
-        route_name=selected["name"] if selected else ordered[0]["name"] if len(ordered) == 1 else "全部武器路由 · 同图对照",
-        metric_label=metric_label,
-        updated_at=updated_at,
-        saohua=get_saohua(),
-        selected=selected,
-        route_count=len(ordered),
-        populated_count=sum(bool(item["values"]) for item in ordered),
-        selected_minimum=_number(stats_values[0]) if stats_values else "—",
-        selected_maximum=_number(stats_values[-1]) if stats_values else "—",
+        font = (_SRC / "assets" / "font" / "PingFangSC-Semibold.otf").as_uri(),
+        kungfu_name = kungfu_name,
+        route_name = selected["name"] if selected else ordered[0]["name"] if len(ordered) == 1 else "全部武器路由 · 同图对照",
+        metric_label = metric_label,
+        updated_at = updated_at,
+        saohua = get_saohua(),
+        selected = selected,
+        route_count = len(ordered),
+        populated_count = sum(bool(item["values"]) for item in ordered),
+        selected_minimum = _number(stats_values[0]) if stats_values else "—",
+        selected_maximum = _number(stats_values[-1]) if stats_values else "—",
         **_appearance(kungfu_name),
         **chart,
     )
-
 
 def _weapon_type(value: str) -> str:
     for name in ("紫武", "橙武"):
         if name in value:
             return name
     return value.strip()
-
 
 def _jcl_route(jcl: dict[str, Any], source: str, user_id: int = 0) -> dict[str, str]:
     weapon = str(jcl.get("weapon") or "").strip()
@@ -337,9 +327,15 @@ def _jcl_route(jcl: dict[str, Any], source: str, user_id: int = 0) -> dict[str, 
     if not weapon or not haste or not loop:
         raise ValueError("评级循环数据不完整。")
     meta = {
-        "jcl": {"weapon": weapon, "haste": haste, "raw_loop": loop},
+        "jcl": {
+            "weapon": weapon,
+            "haste": haste,
+            "raw_loop": loop,
+        },
         "jcl_source": source,
-        "jcl_loop": {"user_id": user_id},
+        "jcl_loop": {
+            "user_id": user_id,
+        },
     }
     source_name = {"rating_jcl": "默认评级", "jcl": "公有循环", "custom_jcl": "自定义循环"}[source]
     return {
@@ -349,18 +345,22 @@ def _jcl_route(jcl: dict[str, Any], source: str, user_id: int = 0) -> dict[str, 
         "metric": "DPS",
     }
 
-
 def _default_routes(item: dict[str, Any]) -> list[dict[str, str]]:
     if item.get("rating_model") == "therapy_ruin":
         model_name = str((item.get("jcl_record") or {}).get("season") or "").strip()
         if not model_name:
             raise ValueError("calculator 未提供奶妈承压模型信息。")
-        return [{
-            "key": _equipment_rating_rank_jcl_key({"rating_model": "therapy_ruin", "loop_name": model_name}),
-            "name": f"承压模型 · 破产概率 {model_name}",
-            "weapon": "承压",
-            "metric": "承压值",
-        }]
+        return [
+            {
+                "key": _equipment_rating_rank_jcl_key({
+                    "rating_model": "therapy_ruin",
+                    "loop_name": model_name,
+                }, ),
+                "name": f"承压模型 · 破产概率 {model_name}",
+                "weapon": "承压",
+                "metric": "承压值",
+            },
+        ]
     # 与 calculator 的默认选择一致：每个武器类型取第一个评级专用 JCL。
     routes: dict[str, dict[str, str]] = {}
     for jcl in item.get("jcls") or []:
@@ -368,13 +368,11 @@ def _default_routes(item: dict[str, Any]) -> list[dict[str, str]]:
         routes.setdefault(route["weapon"], route)
     return list(routes.values())
 
-
 def _select_weapon_route(routes: list[dict[str, str]], selector: str) -> dict[str, str] | None:
     if selector in {"特效", "特效武器"}:
         matches = [route for route in routes if route["weapon"] not in {"紫武", "橙武", "承压"}]
         return matches[0] if len(matches) == 1 else None
     return next((route for route in routes if route["weapon"] == selector), None)
-
 
 def _rank_values(kungfu_id: int, route: dict[str, str]) -> list[int]:
     records = rank_db.where_all(
@@ -382,19 +380,15 @@ def _rank_values(kungfu_id: int, route: dict[str, str]) -> list[int]:
         "kungfu_id = ? AND jcl_key = ?",
         kungfu_id,
         route["key"],
-        default=[],
+        default = [],
     ) or []
     return [
-        int(record.dps)
-        for record in records
-        if isinstance(record, EquipmentRatingDpsRank) and int(record.dps or 0) > 0
+        int(record.dps) for record in records if isinstance(record, EquipmentRatingDpsRank) and int(record.dps or 0) > 0
     ]
-
 
 async def _ensure_permission(event: MessageEvent, matcher: Matcher) -> None:
     if not check_permission(event.user_id, RATING_DISTRIBUTION_PERMISSION):
         await matcher.finish(denied(RATING_DISTRIBUTION_PERMISSION))
-
 
 async def _send_distribution(
     matcher: Matcher,
@@ -403,7 +397,7 @@ async def _send_distribution(
     *,
     highlighted_key: str | None = None,
 ) -> None:
-    kungfu_name = Kungfu.with_internel_id(kungfu_id, convert_to_pc=True).name or str(kungfu_id)
+    kungfu_name = Kungfu.with_internel_id(kungfu_id, convert_to_pc = True).name or str(kungfu_id)
     if not routes:
         await matcher.finish(f"{kungfu_name}当前没有可用的评级路由。")
         return
@@ -421,16 +415,19 @@ async def _send_distribution(
         html_source = await asyncio.to_thread(
             build_distribution_html,
             series,
-            kungfu_name=kungfu_name,
-            metric_label=routes[0]["metric"],
-            updated_at=Time().format(),
-            highlighted_key=highlighted_key,
+            kungfu_name = kungfu_name,
+            metric_label = routes[0]["metric"],
+            updated_at = Time().format(),
+            highlighted_key = highlighted_key,
         )
         image = await generate(
             html_source,
             ".rating-distribution",
-            segment=True,
-            viewport={"width": 1220, "height": 1000},
+            segment = True,
+            viewport = {
+                "width": 1220,
+                "height": 1000,
+            },
         )
     except Exception:
         logger.exception("评级分布图片生成失败")
@@ -440,7 +437,6 @@ async def _send_distribution(
         await matcher.finish(image)
     except ActionFailed:
         await matcher.finish("评级分布图片已生成，但 QQ/NapCat 拒绝了图片上传，请稍后重试。")
-
 
 async def _choose_routes(
     event: MessageEvent,
@@ -460,9 +456,11 @@ async def _choose_routes(
         lines.append(f"{index}. {route['name']}")
     await matcher.send("\n".join(lines))
 
-
 async def handle_rating_distribution(
-    event: MessageEvent, matcher: Matcher, state: T_State, args: Message,
+    event: MessageEvent,
+    matcher: Matcher,
+    state: T_State,
+    args: Message,
 ) -> None:
     await _ensure_permission(event, matcher)
     parts = args.extract_plain_text().split()
@@ -472,8 +470,8 @@ async def handle_rating_distribution(
     if len(parts) > 2:
         await matcher.finish("参数格式错误。\n" + RATING_DISTRIBUTION_USAGE)
         return
-    raw_kungfu = Kungfu.with_internel_id(parts[0], convert_to_pc=True) if parts[0].isdigit() else Kungfu(parts[0])
-    kungfu = Kungfu.with_internel_id(raw_kungfu.id or 0, convert_to_pc=True)
+    raw_kungfu = Kungfu.with_internel_id(parts[0], convert_to_pc = True) if parts[0].isdigit() else Kungfu(parts[0])
+    kungfu = Kungfu.with_internel_id(raw_kungfu.id or 0, convert_to_pc = True)
     if not kungfu.id:
         await matcher.finish("未识别该心法，请使用心法名称、简称或心法 ID。")
         return
@@ -496,7 +494,7 @@ async def handle_rating_distribution(
 
     if selector in RATING_LOOP_LIST_KEYWORDS and item.get("rating_model") != "therapy_ruin":
         try:
-            entries = await _fetch_equipment_rating_loop_entries(event, UniversalCalculator(kungfu_id=kungfu_id))
+            entries = await _fetch_equipment_rating_loop_entries(event, UniversalCalculator(kungfu_id = kungfu_id))
             if not isinstance(entries, str):
                 routes = [
                     _jcl_route(entry, "custom_jcl" if entry.get("user_id") else "jcl", int(entry.get("user_id") or 0))
@@ -526,21 +524,19 @@ async def handle_rating_distribution(
         names = "、".join(route["weapon"] for route in routes) or "无"
         await matcher.finish(f"{kungfu.name}没有唯一匹配的【{selector}】评级路由。\n可用路由：{names}")
         return
-    await _send_distribution(matcher, kungfu_id, routes, highlighted_key=route["key"])
-
+    await _send_distribution(matcher, kungfu_id, routes, highlighted_key = route["key"])
 
 async def handle_rating_distribution_order(
-    event: MessageEvent, matcher: Matcher, state: T_State, order: Message,
+    event: MessageEvent,
+    matcher: Matcher,
+    state: T_State,
+    order: Message,
 ) -> None:
     await _ensure_permission(event, matcher)
     routes = state.get("rating_distribution_routes")
     kungfu_id = state.get("rating_distribution_kungfu_id")
-    if (
-        state.get("rating_distribution_user_id") != event.user_id
-        or not isinstance(routes, list)
-        or not routes
-        or not isinstance(kungfu_id, int)
-    ):
+    if (state.get("rating_distribution_user_id") != event.user_id or not isinstance(routes, list) or not routes
+            or not isinstance(kungfu_id, int)):
         await matcher.finish("评级分布会话已失效，请重新发起命令。")
         return
     text = order.extract_plain_text().strip()
@@ -551,4 +547,4 @@ async def handle_rating_distribution_order(
         await matcher.reject(f"请输入 1～{len(routes)} 的序号，或回复“取消”。")
         return
     route = routes[int(text) - 1]
-    await _send_distribution(matcher, kungfu_id, [route], highlighted_key=route["key"])
+    await _send_distribution(matcher, kungfu_id, [route], highlighted_key = route["key"])

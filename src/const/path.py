@@ -3,7 +3,6 @@ import os
 
 UTILS: str = f"{os.getcwd()}/src/utils"
 
-
 def get_path(path: str) -> str:
     t = Path(UTILS)
     return str(t.parent / path).replace("\\", "/")
@@ -16,7 +15,6 @@ PLUGINS: str = get_path("plugins")
 CONST: str = get_path("const")
 CONFIG: str = get_path("config")
 SHOW: str = get_path("show")
-
 
 def build_path(const: str, path: list[str], end_with_slash: bool = False) -> str:
     end = "" if not end_with_slash else "/"

@@ -8,14 +8,11 @@ from src.utils.database import logs_db
 from src.utils.database.classes import CommandUsage
 from src.utils.time import Time
 
-
 COMMAND_KEYS: set[str] = set()
-
 
 def get_command_keys() -> set[str]:
     """返回当前进程内所有参与统计的命令 key。"""
     return COMMAND_KEYS.copy()
-
 
 def on_command(
     command: str | tuple[str, ...],
@@ -34,9 +31,9 @@ def on_command(
             try:
                 logs_db.save(
                     CommandUsage(
-                        command_key=command_key,
-                        timestamp=Time().raw_time,
-                    )
+                        command_key = command_key,
+                        timestamp = Time().raw_time,
+                    ),
                 )
             except Exception:
                 logger.exception(f"命令调用统计写入失败：{command_key}")

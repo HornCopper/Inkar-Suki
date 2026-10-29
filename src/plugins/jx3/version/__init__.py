@@ -5,7 +5,13 @@ from src.utils.command import on_command
 
 from .api import get_latest_version
 
-version_matcher = on_command("jx3_version", command_key="版本", aliases={"版本", "体服版本"}, priority=5, force_whitespace=True)
+version_matcher = on_command(
+    "jx3_version",
+    command_key = "版本",
+    aliases = {"版本", "体服版本"},
+    priority = 5,
+    force_whitespace = True,
+)
 
 @version_matcher.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg(), cmd: str = RawCommand()):

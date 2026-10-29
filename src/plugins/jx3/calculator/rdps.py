@@ -52,7 +52,6 @@ def _normalize_merged_jcl_analysis(data: dict[str, Any]) -> dict[str, Any]:
         },
     }
 
-
 def _normalize_bla_analysis(data: dict[str, Any]) -> dict[str, Any]:
     if "rdps" in data and "rhps" in data:
         return data
@@ -66,18 +65,27 @@ async def BLACalculator(file_name: str, url: str, anonymous: bool = False, user_
 async def TRDCalculator(file_name: str, url: str, anonymous: bool = False, user_id: int = 0):
     return await BLACalculate(file_name, url, anonymous, "thr_p1")
 
-async def BLACalculate(file_name: str, url: str, anonymous: bool = False, analyze_type: Literal["default", "thr_p1"] = "default"):
+async def BLACalculate(
+    file_name: str, url: str, anonymous: bool = False, analyze_type: Literal["default", "thr_p1"] = "default"
+):
     if analyze_type == "thr_p1":
         url_path = "jcl_thr_p1"
     else:
         url_path = "jcl"
-    async with AsyncClient(verify=False) as client:
-        resp = await client.post(f"{Config.jx3.api.bla_url}/{url_path}", params={"file_name": file_name, "url": url}, timeout=600)
+    async with AsyncClient(verify = False) as client:
+        resp = await client.post(
+            f"{Config.jx3.api.bla_url}/{url_path}",
+            params = {
+                "file_name": file_name,
+                "url": url,
+            },
+            timeout = 600,
+        )
         raw_data = resp.json()
         data = _normalize_bla_analysis(raw_data)
     pattern = r"^\d{4}(?:-\d{2}){5}-(?P<dungeon>.+?)\(\d+\)-(?P<boss>.+?)\(\d+\)\.jcl$"
     regex_match = re.match(pattern, file_name)
-    dungeon, boss = regex_match.group("dungeon"), regex_match.group("boss") #type: ignore
+    dungeon, boss = regex_match.group("dungeon"), regex_match.group("boss")  #type: ignore
     boss = raw_data.get("overall", {}).get("boss") or boss
     if analyze_type == "thr_p1":
         boss = boss + "【仅第一阶段】"
@@ -97,20 +105,18 @@ async def BLACalculate(file_name: str, url: str, anonymous: bool = False, analyz
     for name, p_data in rdps_player_data.items():
         if not check_number(name):
             # 非玩家RDPS
-            rdps_results.append(
-                {
-                    "name": name,
-                    "rdps": int(p_data["dps"]),
-                    "kungfu": None
-                }
-            )
+            rdps_results.append({
+                "name": name,
+                "rdps": int(p_data["dps"]),
+                "kungfu": None,
+            }, )
         else:
             # 玩家RDPS
             kungfu_id = p_data["occ"]
             if check_number(kungfu_id):
                 # 单心法职业
                 kungfu = Kungfu(
-                    School.with_internel_id(int(kungfu_id)).name
+                    School.with_internel_id(int(kungfu_id)).name,
                 )
             else:
                 t = ""
@@ -136,36 +142,32 @@ async def BLACalculate(file_name: str, url: str, anonymous: bool = False, analyz
                     else:
                         t = "JY"
                 kungfu = Kungfu(
-                    str(School.with_internel_id(int(force_id)).name) + t
+                    str(School.with_internel_id(int(force_id)).name) + t,
                 )
             player_name = p_data["name"]
             if anonymous:
                 player_name = "匿名玩家"
-            rdps_results.append(
-                {
-                    "name": player_name,
-                    "rdps": int(p_data["dps"]),
-                    "kungfu": kungfu
-                }
-            )
-    
+            rdps_results.append({
+                "name": player_name,
+                "rdps": int(p_data["dps"]),
+                "kungfu": kungfu,
+            }, )
+
     for name, p_data in rhps_player_data.items():
         if not check_number(name):
             # 非玩家RDPS
-            rhps_results.append(
-                {
-                    "name": name,
-                    "rhps": int(p_data["hps"]),
-                    "kungfu": None
-                }
-            )
+            rhps_results.append({
+                "name": name,
+                "rhps": int(p_data["hps"]),
+                "kungfu": None,
+            }, )
         else:
             # 玩家RDPS
             kungfu_id = p_data["occ"]
             if check_number(kungfu_id):
                 # 单心法职业
                 kungfu = Kungfu(
-                    School.with_internel_id(int(kungfu_id)).name
+                    School.with_internel_id(int(kungfu_id)).name,
                 )
             else:
                 t = ""
@@ -191,25 +193,23 @@ async def BLACalculate(file_name: str, url: str, anonymous: bool = False, analyz
                     else:
                         t = "JY"
                 kungfu = Kungfu(
-                    str(School.with_internel_id(int(force_id)).name) + t
+                    str(School.with_internel_id(int(force_id)).name) + t,
                 )
             player_name = p_data["name"]
             if anonymous:
                 player_name = "匿名玩家"
-            rhps_results.append(
-                {
-                    "name": player_name,
-                    "rhps": int(p_data["hps"]),
-                    "kungfu": kungfu
-                }
-            )
+            rhps_results.append({
+                "name": player_name,
+                "rhps": int(p_data["hps"]),
+                "kungfu": kungfu,
+            }, )
 
     final_rdps = []
     final_rhps = []
 
     rdps_final_results = sort_dict_list(rdps_results, "rdps")[::-1]
     rhps_final_results = sort_dict_list(rhps_results, "rhps")[::-1]
-    
+
     rd_rank = 1
     rh_rank = 1
 
@@ -222,8 +222,8 @@ async def BLACalculate(file_name: str, url: str, anonymous: bool = False, analyz
                     rdps = "{:,}".format(int(each_rdps["rdps"])),
                     display = str(round(each_rdps["rdps"] / rdps_final_results[0]["rdps"], 4) * 100),
                     color = "#000000",
-                    percent = str(round(int(each_rdps["rdps"]) / int(rdps_data["sum"]) * 100, 2)) + "%"
-                )
+                    percent = str(round(int(each_rdps["rdps"]) / int(rdps_data["sum"]) * 100, 2)) + "%",
+                ),
             )
         else:
             kungfu: Kungfu = each_rdps["kungfu"]
@@ -234,8 +234,8 @@ async def BLACalculate(file_name: str, url: str, anonymous: bool = False, analyz
                     rdps = "{:,}".format(int(each_rdps["rdps"])),
                     display = str(round(each_rdps["rdps"] / rdps_final_results[0]["rdps"], 4) * 100),
                     color = kungfu.color,
-                    percent = str(round(int(each_rdps["rdps"]) / int(rdps_data["sum"]) * 100, 2)) + "%"
-                )
+                    percent = str(round(int(each_rdps["rdps"]) / int(rdps_data["sum"]) * 100, 2)) + "%",
+                ),
             )
             rd_rank += 1
 
@@ -248,8 +248,8 @@ async def BLACalculate(file_name: str, url: str, anonymous: bool = False, analyz
                     rdps = "{:,}".format(int(each_rhps["rhps"])),
                     display = str(round(each_rhps["rhps"] / rhps_final_results[0]["rhps"], 4) * 100),
                     color = "#000000",
-                    percent = str(round(int(each_rhps["rhps"]) / int(rhps_data["sum"]) * 100, 2)) + "%"
-                )
+                    percent = str(round(int(each_rhps["rhps"]) / int(rhps_data["sum"]) * 100, 2)) + "%",
+                ),
             )
         else:
             kungfu: Kungfu = each_rhps["kungfu"]
@@ -260,8 +260,8 @@ async def BLACalculate(file_name: str, url: str, anonymous: bool = False, analyz
                     rdps = "{:,}".format(int(each_rhps["rhps"])),
                     display = str(round(each_rhps["rhps"] / rhps_final_results[0]["rhps"], 4) * 100),
                     color = kungfu.color,
-                    percent = str(round(int(each_rhps["rhps"]) / int(rhps_data["sum"]) * 100, 2)) + "%"
-                )
+                    percent = str(round(int(each_rhps["rhps"]) / int(rhps_data["sum"]) * 100, 2)) + "%",
+                ),
             )
             rh_rank += 1
 
@@ -274,10 +274,10 @@ async def BLACalculate(file_name: str, url: str, anonymous: bool = False, analyz
             rdps = total_rdps,
             rdps_players = "\n".join(final_rdps),
             saohua = get_saohua(),
-            font = ASSETS + "/font/PingFangSC-Semibold.otf"
-        )
+            font = ASSETS + "/font/PingFangSC-Semibold.otf",
+        ),
     )
-    rdps_image = await generate(html, ".container", segment=True)
+    rdps_image = await generate(html, ".container", segment = True)
     html = str(
         SimpleHTML(
             "jx3",
@@ -287,8 +287,8 @@ async def BLACalculate(file_name: str, url: str, anonymous: bool = False, analyz
             rhps = total_rhps,
             rhps_players = "\n".join(final_rhps),
             saohua = get_saohua(),
-            font = ASSETS + "/font/PingFangSC-Semibold.otf"
-        )
+            font = ASSETS + "/font/PingFangSC-Semibold.otf",
+        ),
     )
-    rhps_image = await generate(html, ".container", segment=True)
+    rhps_image = await generate(html, ".container", segment = True)
     return rdps_image + rhps_image

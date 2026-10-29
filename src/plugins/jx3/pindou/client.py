@@ -9,39 +9,33 @@ from urllib.parse import urlencode, urlparse
 from src.config import Config
 from src.utils.network import Request
 
-
 MAX_IMAGE_BYTES = 16 * 1024 * 1024
 DEFAULT_TIMEOUT_SECONDS = 180
 DOWNLOAD_TTL_SECONDS = 24 * 60 * 60
 PUBLIC_DOWNLOAD_URL = "https://inkar-suki.codethink.cn/download"
 
-
-@dataclass(frozen=True, slots=True)
+@dataclass(frozen = True, slots = True)
 class PreparedPreview:
     image: bytes
     result_id: str
 
-
-@dataclass(frozen=True, slots=True)
+@dataclass(frozen = True, slots = True)
 class PreparedDownload:
     link: str
     materials: bytes
 
-
 class PindouServiceError(RuntimeError):
     pass
-
 
 def _api_base_url() -> str:
     configured = str(Config.jx3.api.cqc_url or "").strip().rstrip("/")
     if not configured:
         raise PindouServiceError(
-            "请先在 src/config/config.yml 中配置 jx3.api.cqc_url。"
+            "请先在 src/config/config.yml 中配置 jx3.api.cqc_url。",
         )
     if configured.endswith("/pindou/convert"):
         configured = configured[:-len("/pindou/convert")]
     return configured
-
 
 def _error_detail(response: Any) -> str:
     try:
@@ -54,14 +48,13 @@ def _error_detail(response: Any) -> str:
             return str(detail)[:500]
     return str(body)[:500]
 
-
 async def download_image(url: str) -> bytes:
     parsed = urlparse(url)
     if parsed.scheme not in {"http", "https"} or not parsed.netloc:
         raise PindouServiceError("图片地址不是有效的 HTTP/HTTPS 地址。")
 
     try:
-        response = await Request(url).get(timeout=30)
+        response = await Request(url).get(timeout = 30)
     except Exception as exc:
         raise PindouServiceError("下载图片时网络请求失败。") from exc
     if response.status_code >= 400:
@@ -73,7 +66,6 @@ async def download_image(url: str) -> bytes:
     if len(content) > MAX_IMAGE_BYTES:
         raise PindouServiceError("图片超过 16 MiB 限制。")
     return content
-
 
 async def convert_preview(
     image: bytes,
@@ -87,7 +79,7 @@ async def convert_preview(
     }
     endpoint = f"{_api_base_url()}/pindou/prepare"
     try:
-        response = await Request(endpoint, params=payload).post(timeout=DEFAULT_TIMEOUT_SECONDS)
+        response = await Request(endpoint, params = payload).post(timeout = DEFAULT_TIMEOUT_SECONDS)
     except Exception as exc:
         raise PindouServiceError("无法连接拼豆转换服务。\n可能是当前使用人数较多，请稍后重试。") from exc
     if response.status_code >= 400:
@@ -100,13 +92,12 @@ async def convert_preview(
             raise ValueError("resultId")
         if not isinstance(encoded_preview, str) or len(encoded_preview) > 24 * 1024 * 1024:
             raise ValueError("preview")
-        preview = base64.b64decode(encoded_preview, validate=True)
+        preview = base64.b64decode(encoded_preview, validate = True)
         if not preview or len(preview) > MAX_IMAGE_BYTES:
             raise ValueError("preview")
     except (ValueError, KeyError, TypeError) as exc:
         raise PindouServiceError("转换服务返回了无效的预览结果。") from exc
-    return PreparedPreview(image=preview, result_id=result_id)
-
+    return PreparedPreview(image = preview, result_id = result_id)
 
 async def create_download_link(result_id: str) -> PreparedDownload:
     """Publish the cached blueprint and retrieve its matching material sheet."""
@@ -114,11 +105,13 @@ async def create_download_link(result_id: str) -> PreparedDownload:
     try:
         response = await Request(
             endpoint,
-            params={
+            params = {
                 "resultId": result_id,
                 "expires_at": int(time.time()) + DOWNLOAD_TTL_SECONDS,
             },
-        ).post(timeout=60)
+        ).post(
+            timeout = 60,
+        )
     except Exception as exc:
         raise PindouServiceError("无法连接下载服务，请稍后重试。") from exc
     if response.status_code >= 400:
@@ -135,13 +128,12 @@ async def create_download_link(result_id: str) -> PreparedDownload:
         encoded = materials["imageBase64"]
         if materials["mediaType"] != "image/png" or not isinstance(encoded, str) or len(encoded) > 24 * 1024 * 1024:
             raise ValueError("materials")
-        image = base64.b64decode(encoded, validate=True)
+        image = base64.b64decode(encoded, validate = True)
         if len(image) > MAX_IMAGE_BYTES or not image.startswith(b"\x89PNG\r\n\x1a\n"):
             raise ValueError("materials image")
     except (ValueError, KeyError, TypeError) as exc:
         raise PindouServiceError("下载服务未返回有效的材料清单图片，请重新生成预览后重试。") from exc
     return PreparedDownload(
-        link=f"{PUBLIC_DOWNLOAD_URL}?{urlencode({'token': token})}",
-        materials=image,
+        link = f"{PUBLIC_DOWNLOAD_URL}?{urlencode({'token': token})}",
+        materials = image,
     )
-

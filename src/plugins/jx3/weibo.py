@@ -9,7 +9,6 @@ from nonebot.adapters.onebot.v11 import MessageSegment
 from src.const.path import CACHE, build_path
 from src.utils.generate import generate
 
-
 MOBILE_USER_AGENT = (
     "Mozilla/5.0 (Linux; Android 14; Pixel 8) "
     "AppleWebKit/537.36 (KHTML, like Gecko) "
@@ -52,12 +51,10 @@ WEIBO_SCREENSHOT_READY_JS = """
     ])
 """
 
-
 def _screenshot_paths(post_id: str) -> tuple[Path, Path, Path]:
     stem = f"{post_id}.{WEIBO_SCREENSHOT_CACHE_VERSION}"
     image_path = WEIBO_SCREENSHOT_CACHE / f"{stem}.png"
     return image_path, image_path.with_suffix(".lock"), image_path.with_suffix(".failed")
-
 
 def _has_complete_image(image_path: Path) -> bool:
     try:
@@ -65,9 +62,8 @@ def _has_complete_image(image_path: Path) -> bool:
     except OSError:
         return False
 
-
 def _try_acquire_lock(lock_path: Path) -> bool:
-    lock_path.parent.mkdir(parents=True, exist_ok=True)
+    lock_path.parent.mkdir(parents = True, exist_ok = True)
     try:
         descriptor = os.open(lock_path, os.O_CREAT | os.O_EXCL | os.O_WRONLY)
     except FileExistsError:
@@ -78,14 +74,12 @@ def _try_acquire_lock(lock_path: Path) -> bool:
         os.close(descriptor)
     return True
 
-
 def _remove_stale_lock(lock_path: Path) -> None:
     try:
         if time.time() - lock_path.stat().st_mtime > WEIBO_SCREENSHOT_LOCK_STALE_AFTER:
             lock_path.unlink()
     except FileNotFoundError:
         pass
-
 
 def _has_recent_failure(failure_path: Path) -> bool:
     try:
@@ -96,21 +90,22 @@ def _has_recent_failure(failure_path: Path) -> bool:
         pass
     return False
 
-
 async def _render_post_card(post_id: str, output_path: Path) -> None:
     await generate(
         f"https://m.weibo.cn/detail/{post_id}",
         ".f-weibo",
         True,
-        delay=5000,
-        additional_css=WEIBO_SCREENSHOT_CSS,
-        additional_js=WEIBO_SCREENSHOT_READY_JS,
-        viewport={"width": 800, "height": 1000},
-        output_path=str(output_path),
-        wait_for_network=False,
-        user_agent=MOBILE_USER_AGENT,
+        delay = 5000,
+        additional_css = WEIBO_SCREENSHOT_CSS,
+        additional_js = WEIBO_SCREENSHOT_READY_JS,
+        viewport = {
+            "width": 800,
+            "height": 1000,
+        },
+        output_path = str(output_path),
+        wait_for_network = False,
+        user_agent = MOBILE_USER_AGENT,
     )
-
 
 async def _ensure_post_card(post_id: str) -> Path:
     if not WEIBO_POST_ID_PATTERN.fullmatch(post_id):
@@ -124,19 +119,19 @@ async def _ensure_post_card(post_id: str) -> Path:
             raise RuntimeError("微博卡片截图最近生成失败")
         if _try_acquire_lock(lock_path):
             temporary_path = image_path.with_name(
-                f"{image_path.stem}.{os.getpid()}.{time.time_ns()}.png"
+                f"{image_path.stem}.{os.getpid()}.{time.time_ns()}.png",
             )
             try:
                 if not _has_complete_image(image_path):
                     await _render_post_card(post_id, temporary_path)
                     os.replace(temporary_path, image_path)
-                    failure_path.unlink(missing_ok=True)
+                    failure_path.unlink(missing_ok = True)
             except Exception:
                 failure_path.touch()
                 raise
             finally:
-                temporary_path.unlink(missing_ok=True)
-                lock_path.unlink(missing_ok=True)
+                temporary_path.unlink(missing_ok = True)
+                lock_path.unlink(missing_ok = True)
             break
 
         _remove_stale_lock(lock_path)
@@ -147,7 +142,6 @@ async def _ensure_post_card(post_id: str) -> Path:
     if not _has_complete_image(image_path):
         raise RuntimeError("微博卡片截图未生成")
     return image_path
-
 
 async def get_weibo_push_image(post_id: str) -> MessageSegment:
     image_path = await _ensure_post_card(post_id)

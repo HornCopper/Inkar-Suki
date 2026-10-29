@@ -24,7 +24,7 @@ max_points = {
     "豪3": 3600,
     "圣1": 4000,
     "圣2": 6000,
-    "圣3": 9000
+    "圣3": 9000,
 }
 
 gamemode = {
@@ -39,10 +39,10 @@ gamemode = {
     "三玉东": 23,
     "三玉": 24,
     "三王东": 25,
-    "三王座": 26
+    "三王座": 26,
 }
 
-koromo_api_sp = "https://5-data.amae-koromo.com/api/v2/pl4/search_player/{player}?limit=20&tag=all" 
+koromo_api_sp = "https://5-data.amae-koromo.com/api/v2/pl4/search_player/{player}?limit=20&tag=all"
 
 koromo_api_pr = "https://5-data.amae-koromo.com/api/v2/pl4/player_records/{player_id}/{end_timestamp}/{start_timestamp}?limit=8&mode={mode}&descending=true"
 

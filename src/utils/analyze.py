@@ -4,7 +4,19 @@ import re
 import ast
 
 Locations = [
-    "武器", None, "暗器", "上衣", "帽子", "项链", "戒指", "戒指", "腰带", "腰坠", "下装", "鞋子", "护腕"
+    "武器",
+    None,
+    "暗器",
+    "上衣",
+    "帽子",
+    "项链",
+    "戒指",
+    "戒指",
+    "腰带",
+    "腰坠",
+    "下装",
+    "鞋子",
+    "护腕",
 ]
 
 def invert_dict(d: dict[str, str]) -> dict[str, str]:
@@ -16,7 +28,7 @@ def invert_dict(d: dict[str, str]) -> dict[str, str]:
     """
     return {v: k for k, v in d.items()}
 
-def sort_dict_list(dict_list: list[dict], key_name: str) ->list[dict]:
+def sort_dict_list(dict_list: list[dict], key_name: str) -> list[dict]:
     """
     将`list[dict]`类型的变量，按`dict`的共有`key`的`value`进行排序。
 
@@ -26,7 +38,7 @@ def sort_dict_list(dict_list: list[dict], key_name: str) ->list[dict]:
         dict_list (list[dict]): 传入的字典列表。
         key_name (str): 排序依据`key`。
     """
-    sorted_list = sorted(dict_list, key=lambda x: x[key_name])
+    sorted_list = sorted(dict_list, key = lambda x: x[key_name])
     return sorted_list
 
 def merge_dict_lists(list1: list[dict], list2: list[dict]) -> list[dict]:
@@ -46,7 +58,6 @@ def merge_dict_lists(list1: list[dict], list2: list[dict]) -> list[dict]:
         else:
             list1.append(d)
     return list1
-
 
 def check_number(value: str | int) -> bool:
     """
@@ -109,7 +120,7 @@ def R(x: float, n: int = 0) -> float:
     """
     四舍五入。
     """
-    f = 10 ** n
+    f = 10**n
     return int(x * f + (0.5 if x >= 0 else -0.5)) / f
 
 def parse_luatable(text: str) -> list[str | list[str]]:
@@ -117,15 +128,10 @@ def parse_luatable(text: str) -> list[str | list[str]]:
     text = text.replace("{", "[").replace("}", "]")
     return ast.literal_eval(text)
 
-
 def parse_jcl_player_table(text: str) -> list:
     lua_table = parse_luatable(text)
-    if (
-        len(lua_table) >= 7
-        and isinstance(lua_table[4], list)
-        and isinstance(lua_table[5], list)
-        and isinstance(lua_table[6], (int, str))
-    ):
+    if (len(lua_table) >= 7 and isinstance(lua_table[4], list) and isinstance(lua_table[5], list)
+            and isinstance(lua_table[6], (int, str))):
         return [*lua_table[:4], None, *lua_table[4:]]
     return lua_table
 
@@ -138,6 +144,7 @@ def parse_skillevent(raw_text: str) -> str:
     return text
 
 class TuilanData:
+
     def __init__(self, tuilan_data: dict[str, Any]):
         self.tuilan_data = tuilan_data
 
@@ -153,9 +160,7 @@ class TuilanData:
             fivestones.append(fivestone_data)
         if location_id == 0:
             if "ColorStone" in equip_data:
-                fivestones.append(
-                    [0, int(equip_data["ColorStone"]["ID"])]
-                )
+                fivestones.append([0, int(equip_data["ColorStone"]["ID"])], )
         p_enchant = 0
         c_enchant = 0
         if "WPermanentEnchant" in equip_data:
@@ -170,7 +175,7 @@ class TuilanData:
             fivestones,
             p_enchant,
             c_enchant,
-            0
+            0,
         ]
         return final_data
 

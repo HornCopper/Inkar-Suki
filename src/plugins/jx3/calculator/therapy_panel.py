@@ -17,9 +17,7 @@ from src.templates import get_saohua
 
 from ._template import therapy_panel_template
 
-
 THERAPY_KUNGFU_IDS = {10080, 10028, 10176, 10448, 10626}
-
 
 async def _resolve_therapy_equip(global_role_id: int) -> JX3PlayerAttribute | None:
     equip = await JX3PlayerAttribute.from_database(global_role_id, "HPSPVE", False)
@@ -29,17 +27,13 @@ async def _resolve_therapy_equip(global_role_id: int) -> JX3PlayerAttribute | No
     all_equips = await JX3PlayerAttribute.from_database(global_role_id, "", True)
     if not all_equips:
         return None
-    therapy_equips = [
-        item
-        for item in all_equips
-        if item.tag == "PVE" and int(item.kungfu_id) in THERAPY_KUNGFU_IDS
-    ]
+    therapy_equips = [item for item in all_equips if item.tag == "PVE" and int(item.kungfu_id) in THERAPY_KUNGFU_IDS]
     if not therapy_equips:
         return None
-    return max(therapy_equips, key=lambda item: item.timestamp)
-
+    return max(therapy_equips, key = lambda item: item.timestamp)
 
 async def therapy_panel(server: str, role_name: str) -> Any:
+
     def format_skill_name(name: Any) -> str:
         skill_name = html.escape(str(name or "-")).replace("[", "<br>[", 1)
         if skill_name.startswith("<br>"):
@@ -68,14 +62,16 @@ async def therapy_panel(server: str, role_name: str) -> Any:
         rows: list[str] = []
         max_expected = max(
             (float(skill.get("expected_heal") or skill.get("heal") or 0) for skill in skills),
-            default=0,
+            default = 0,
         )
         for skill in skills:
             icon_id = int(skill.get("icon_id") or 0)
             icon = f"https://icon.jx3box.com/icon/{icon_id}.png" if icon_id else ""
             icon_html = f'<img src="{icon}">' if icon else ""
             try:
-                width = float(skill.get("expected_heal") or skill.get("heal") or 0) / max_expected * 100 if max_expected else 0
+                width = float(
+                    skill.get("expected_heal") or skill.get("heal") or 0,
+                ) / max_expected * 100 if max_expected else 0
             except (TypeError, ValueError, ZeroDivisionError):
                 width = 0
             skill_name = format_skill_name(skill.get("name"))
@@ -95,9 +91,9 @@ async def therapy_panel(server: str, role_name: str) -> Any:
                     </div>
                     <div class="bar"><div style="width: {max(0, min(width, 100)):.2f}%; background: {theme_color}"></div></div>
                 </div>
-                """
+                """,
             )
-        return "\n".join(rows) or '<div class="empty">暂无技能数据</div>'
+        return "\n".join(rows) or "<div class=\"empty\">暂无技能数据</div>"
 
     def skill_card_width(skills: list[dict[str, Any]]) -> int:
         max_chars = 0
@@ -106,7 +102,7 @@ async def therapy_panel(server: str, role_name: str) -> Any:
                 max_chars = max(max_chars, len(line))
         return max(176, min(320, max_chars * 16 + 74))
 
-    player_info = await search_player(role_name=role_name, server_name=server)
+    player_info = await search_player(role_name = role_name, server_name = server)
     if player_info.roleId == "" or player_info.globalRoleId == "":
         return PROMPT.PlayerNotExist
 
@@ -115,15 +111,20 @@ async def therapy_panel(server: str, role_name: str) -> Any:
     if equip is None:
         return PROMPT.EquipNotFound
     if equip.kungfu_id not in THERAPY_KUNGFU_IDS:
-        kungfu_name = Kungfu.with_internel_id(equip.kungfu_id, convert_to_pc=True).name or str(equip.kungfu_id)
+        kungfu_name = Kungfu.with_internel_id(equip.kungfu_id, convert_to_pc = True).name or str(equip.kungfu_id)
         return f"治疗面板仅支持治疗心法，当前识别为：{kungfu_name}"
 
     try:
         result = (
             await Request(
                 f"{Config.jx3.api.calculator_url}/calculate_therapy",
-                params={"kungfu_id": equip.kungfu_id, "jcl_data": equip.equip_lines},
-            ).post(timeout=30)
+                params = {
+                    "kungfu_id": equip.kungfu_id,
+                    "jcl_data": equip.equip_lines,
+                },
+            ).post(
+                timeout = 30,
+            )
         ).json()
     except Exception:
         return "治疗面板计算失败，请确认 calculator 服务可用后重试！"
@@ -137,13 +138,11 @@ async def therapy_panel(server: str, role_name: str) -> Any:
     raw_attributes = data.get("attributes")
     attributes: dict[str, Any] = raw_attributes if isinstance(raw_attributes, dict) else {}
     raw_skills = data.get("skills")
-    skills: list[dict[str, Any]] = (
-        [skill for skill in raw_skills if isinstance(skill, dict)]
-        if isinstance(raw_skills, list)
-        else []
-    )
+    skills: list[dict[
+        str,
+        Any]] = ([skill for skill in raw_skills if isinstance(skill, dict)] if isinstance(raw_skills, list) else [])
     kungfu_id = int(data.get("kungfu_id") or equip.kungfu_id)
-    kungfu = Kungfu.with_internel_id(kungfu_id, convert_to_pc=True)
+    kungfu = Kungfu.with_internel_id(kungfu_id, convert_to_pc = True)
     theme_color = kungfu.color
     attr_cards = [
         ("根骨", format_number(attributes.get("MainAttrValue"))),
@@ -158,16 +157,16 @@ async def therapy_panel(server: str, role_name: str) -> Any:
         for label, value in attr_cards
     )
     html_source = Template(therapy_panel_template).render(
-        font=Path(build_path(ASSETS, ["font", "PingFangSC-Semibold.otf"])).as_uri(),
-        theme_color=theme_color,
-        kungfu_icon=kungfu.icon,
-        role_name=html.escape(str(player_info.roleName or player_info.roleId or "-")),
-        server_name=html.escape(str(Server(player_info.serverName).server or player_info.serverName or "-")),
-        kungfu_name=html.escape(str(kungfu.name or kungfu_id)),
-        score=format_number(data.get("score")),
-        attr_html=attr_html,
-        skill_rows=skill_rows(skills, theme_color),
-        skill_card_width=skill_card_width(skills),
-        saohua=get_saohua(),
+        font = Path(build_path(ASSETS, ["font", "PingFangSC-Semibold.otf"])).as_uri(),
+        theme_color = theme_color,
+        kungfu_icon = kungfu.icon,
+        role_name = html.escape(str(player_info.roleName or player_info.roleId or "-")),
+        server_name = html.escape(str(Server(player_info.serverName).server or player_info.serverName or "-")),
+        kungfu_name = html.escape(str(kungfu.name or kungfu_id)),
+        score = format_number(data.get("score")),
+        attr_html = attr_html,
+        skill_rows = skill_rows(skills, theme_color),
+        skill_card_width = skill_card_width(skills),
+        saohua = get_saohua(),
     )
-    return await generate(html_source, ".therapy-panel", False, segment=True, full_screen=True)
+    return await generate(html_source, ".therapy-panel", False, segment = True, full_screen = True)

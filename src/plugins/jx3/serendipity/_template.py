@@ -1,4 +1,4 @@
-poem = "<td class=\"short-column-content\" rowspan=\"114514\"></td>" # 来点诗句
+poem = "<td class=\"short-column-content\" rowspan=\"114514\"></td>"  # 来点诗句
 
 template_serendity = """
 <tr>

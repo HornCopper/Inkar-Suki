@@ -37,7 +37,6 @@ from src.plugins.jx3.calculator.equipment_rating import (
     record_equipment_rating_rank,
 )
 
-
 TEAM_HEALTH_CAPACITY = 25
 TEAM_HEALTH_TEMPLATE = build_path(TEMPLATES, ["jx3", "team_health_check.html"])
 TEAM_HEALTH_CACHE_VERSION = 2
@@ -50,48 +49,37 @@ BIND_KUNGFU_SELECT_TTL = 300
 _PENDING_DELETE_TEAMS: dict[tuple[int, str], int] = {}
 _PENDING_BIND_KUNGFU_SELECTIONS: dict[tuple[int | None, int], dict[str, Any]] = {}
 
-
 def _escape(value: Any) -> str:
-    return html.escape(str(value if value is not None else ""), quote=True)
-
+    return html.escape(str(value if value is not None else ""), quote = True)
 
 def _as_dict(value: Any) -> dict[str, Any]:
     return value if isinstance(value, dict) else {}
 
-
 def _normalize_team_name(team_name: str) -> str:
     return team_name.strip()
-
 
 def _delete_team_confirm_key(user_id: int, team_name: str) -> tuple[int, str]:
     return int(user_id), _normalize_team_name(team_name)
 
-
 def _bind_kungfu_selection_key(group_id: int | None, user_id: int) -> tuple[int | None, int]:
     return (int(group_id) if group_id is not None else None), int(user_id)
-
 
 def _cleanup_delete_team_confirmations() -> None:
     now = Time().raw_time
     expired_keys = [
-        key
-        for key, timestamp in _PENDING_DELETE_TEAMS.items()
-        if now - int(timestamp) > DELETE_TEAM_CONFIRM_TTL
+        key for key, timestamp in _PENDING_DELETE_TEAMS.items() if now - int(timestamp) > DELETE_TEAM_CONFIRM_TTL
     ]
     for key in expired_keys:
         _PENDING_DELETE_TEAMS.pop(key, None)
 
-
 def _cleanup_bind_kungfu_selections() -> None:
     now = Time().raw_time
     expired_keys = [
-        key
-        for key, context in _PENDING_BIND_KUNGFU_SELECTIONS.items()
+        key for key, context in _PENDING_BIND_KUNGFU_SELECTIONS.items()
         if now - int(context.get("timestamp") or 0) > BIND_KUNGFU_SELECT_TTL
     ]
     for key in expired_keys:
         _PENDING_BIND_KUNGFU_SELECTIONS.pop(key, None)
-
 
 def _format_time(timestamp: Any) -> str:
     try:
@@ -99,38 +87,43 @@ def _format_time(timestamp: Any) -> str:
     except Exception:
         return "-"
 
-
 def _owned_team(creator_id: int, team_name: str) -> RaidTeamHealth | None:
-    return cast(RaidTeamHealth | None, db.where_one(
-        RaidTeamHealth(),
-        "creator_id = ? AND team_name = ?",
-        int(creator_id),
-        team_name,
-        default=None,
-    ))
-
-
-def _owned_teams(creator_id: int) -> list[RaidTeamHealth]:
-    teams = cast(list[RaidTeamHealth], db.where_all(
-        RaidTeamHealth(),
-        "creator_id = ?",
-        int(creator_id),
-        default=[],
-    ))
-    return sorted(
-        list(teams or []),
-        key=lambda team: (int(team.create_time or 0), str(team.team_name or "")),
+    return cast(
+        RaidTeamHealth | None,
+        db.where_one(
+            RaidTeamHealth(),
+            "creator_id = ? AND team_name = ?",
+            int(creator_id),
+            team_name,
+            default = None,
+        ),
     )
 
+def _owned_teams(creator_id: int) -> list[RaidTeamHealth]:
+    teams = cast(
+        list[RaidTeamHealth],
+        db.where_all(
+            RaidTeamHealth(),
+            "creator_id = ?",
+            int(creator_id),
+            default = [],
+        ),
+    )
+    return sorted(
+        list(teams or []),
+        key = lambda team: (int(team.create_time or 0), str(team.team_name or "")),
+    )
 
 def _team_by_feature_code(feature_code: str) -> RaidTeamHealth | None:
-    return cast(RaidTeamHealth | None, db.where_one(
-        RaidTeamHealth(),
-        "feature_code = ?",
-        feature_code.strip().upper(),
-        default=None,
-    ))
-
+    return cast(
+        RaidTeamHealth | None,
+        db.where_one(
+            RaidTeamHealth(),
+            "feature_code = ?",
+            feature_code.strip().upper(),
+            default = None,
+        ),
+    )
 
 def _generate_feature_code() -> str:
     while True:
@@ -138,51 +131,43 @@ def _generate_feature_code() -> str:
         if _team_by_feature_code(code) is None:
             return code
 
-
 def _member_key(member: dict[str, Any]) -> tuple[str, str]:
     return (
         str(member.get("server") or ""),
         str(member.get("role_name") or ""),
     )
 
-
 async def _resolve_player(server: str, role: str) -> RoleData | None:
     try:
         if check_number(role):
             player_data = await search_player(
-                role_name=role,
-                role_id=role,
-                server_name=server,
-                local_lookup=True,
+                role_name = role,
+                role_id = role,
+                server_name = server,
+                local_lookup = True,
             )
             if player_data.roleId == "":
-                player_data = await get_uid_data(role_id=role, server=server, msg=False)
+                player_data = await get_uid_data(role_id = role, server = server, msg = False)
         else:
-            player_data = await search_player(role_name=role, server_name=server)
+            player_data = await search_player(role_name = role, server_name = server)
     except Exception:
         return None
     if not player_data or player_data.roleId == "" or player_data.globalRoleId == "":
         return None
     return player_data
 
-
 async def _rating_equip(global_role_id: int, kungfu_id: int) -> JX3PlayerAttribute | None:
     try:
         pve_tag = _equipment_rating_pve_tag(kungfu_id)
-        pve_equips = await JX3PlayerAttribute.from_database(global_role_id, pve_tag, all=True)
+        pve_equips = await JX3PlayerAttribute.from_database(global_role_id, pve_tag, all = True)
     except Exception:
         return None
     if not pve_equips:
         return None
     return next(
-        (
-            equip
-            for equip in pve_equips
-            if int(equip.kungfu_id) == int(kungfu_id) and equip.tag == "PVE"
-        ),
+        (equip for equip in pve_equips if int(equip.kungfu_id) == int(kungfu_id) and equip.tag == "PVE"),
         None,
     )
-
 
 async def _select_kungfu(global_role_id: int, kungfu_name: str | None) -> int | str:
     try:
@@ -204,16 +189,10 @@ async def _select_kungfu(global_role_id: int, kungfu_name: str | None) -> int | 
     if len(options) == 1:
         return int(options[0]["kungfu_id"])
 
-    option_lines = [
-        f"{index}. {option['name']}"
-        for index, option in enumerate(options, start=1)
-    ]
+    option_lines = [f"{index}. {option['name']}" for index, option in enumerate(options, start = 1)]
     return (
-        "检测到该角色有多个可用于装备评级的 PVE 心法，请指定心法：\n"
-        + "\n".join(option_lines)
-        + "\n可直接回复序号，或使用：绑定团队 <区服> <角色> <心法> <团队唯一特征码>"
+        "检测到该角色有多个可用于装备评级的 PVE 心法，请指定心法：\n" + "\n".join(option_lines) + "\n可直接回复序号，或使用：绑定团队 <区服> <角色> <心法> <团队唯一特征码>"
     )
-
 
 async def _resolve_bind_target(
     group_id: int | None,
@@ -243,18 +222,9 @@ async def _resolve_bind_target(
         return "绑定失败：未找到角色信息，请检查区服和角色名。"
     return team, server, player_data
 
-
 def format_bind_kungfu_selection(options: list[dict[str, Any]]) -> str:
-    option_lines = [
-        f"{index}. {option['name']}"
-        for index, option in enumerate(options, start=1)
-    ]
-    return (
-        "检测到该角色有多个可用于装备评级的 PVE 心法，请指定心法：\n"
-        + "\n".join(option_lines)
-        + "\n请直接回复序号；回复 0 或 取消 可取消本次绑定。"
-    )
-
+    option_lines = [f"{index}. {option['name']}" for index, option in enumerate(options, start = 1)]
+    return ("检测到该角色有多个可用于装备评级的 PVE 心法，请指定心法：\n" + "\n".join(option_lines) + "\n请直接回复序号；回复 0 或 取消 可取消本次绑定。")
 
 async def prepare_bind_team_member_selection(
     group_id: int | None,
@@ -283,7 +253,6 @@ async def prepare_bind_team_member_selection(
         "options": options,
     }
 
-
 def remember_bind_kungfu_selection(
     group_id: int | None,
     user_id: int,
@@ -293,7 +262,6 @@ def remember_bind_kungfu_selection(
     context = dict(selection)
     context["timestamp"] = Time().raw_time
     _PENDING_BIND_KUNGFU_SELECTIONS[_bind_kungfu_selection_key(group_id, user_id)] = context
-
 
 async def consume_bind_kungfu_selection(
     group_id: int | None,
@@ -329,7 +297,6 @@ async def consume_bind_kungfu_selection(
         kungfu,
     )
 
-
 def create_team(group_id: int, creator_id: int, team_name: str) -> str:
     team_name = _normalize_team_name(team_name)
     if not team_name:
@@ -341,13 +308,13 @@ def create_team(group_id: int, creator_id: int, team_name: str) -> str:
 
     now = Time().raw_time
     team = RaidTeamHealth(
-        creator_id=int(creator_id),
-        group_id=int(group_id),
-        team_name=team_name,
-        feature_code=_generate_feature_code(),
-        members=[],
-        create_time=now,
-        update_time=now,
+        creator_id = int(creator_id),
+        group_id = int(group_id),
+        team_name = team_name,
+        feature_code = _generate_feature_code(),
+        members = [],
+        create_time = now,
+        update_time = now,
     )
     db.save(team)
     return (
@@ -356,7 +323,6 @@ def create_team(group_id: int, creator_id: int, team_name: str) -> str:
         "成员可在本群使用：绑定团队 <区服> <角色> <团队唯一特征码>\n"
         "团队创建者也可私聊使用绑定团队和团队管理。"
     )
-
 
 async def bind_team_member(
     group_id: int | None,
@@ -377,7 +343,7 @@ async def bind_team_member(
 
     target_equip = await _rating_equip(int(player_data.globalRoleId), kungfu_id)
     if target_equip is None:
-        kungfu = Kungfu.with_internel_id(kungfu_id, convert_to_pc=True).name or str(kungfu_id)
+        kungfu = Kungfu.with_internel_id(kungfu_id, convert_to_pc = True).name or str(kungfu_id)
         return (
             f"绑定失败：未找到 {player_data.roleName} 的 {kungfu} PVE 装备数据。\n"
             f"请先使用：提交属性 {server} {player_data.roleName} {kungfu}"
@@ -391,17 +357,13 @@ async def bind_team_member(
         "role_id": player_data.roleId,
         "global_role_id": int(player_data.globalRoleId),
         "kungfu_id": int(kungfu_id),
-        "kungfu_name": Kungfu.with_internel_id(kungfu_id, convert_to_pc=True).name or str(kungfu_id),
+        "kungfu_name": Kungfu.with_internel_id(kungfu_id, convert_to_pc = True).name or str(kungfu_id),
         "bind_time": Time().raw_time,
         "equip_time": int(target_equip.timestamp),
     }
 
     existing_index = next(
-        (
-            index
-            for index, member in enumerate(members)
-            if _member_key(member) == _member_key(new_member)
-        ),
+        (index for index, member in enumerate(members) if _member_key(member) == _member_key(new_member)),
         None,
     )
     overwritten = existing_index is not None
@@ -422,7 +384,6 @@ async def bind_team_member(
         f"团队：{team.team_name}，当前成员 {len(members)}/{TEAM_HEALTH_CAPACITY}"
     )
 
-
 def reset_feature_code(creator_id: int, team_name: str) -> str:
     team = _owned_team(creator_id, _normalize_team_name(team_name))
     if team is None:
@@ -431,7 +392,6 @@ def reset_feature_code(creator_id: int, team_name: str) -> str:
     team.update_time = Time().raw_time
     db.save(team)
     return f"已重置团队「{team.team_name}」的唯一特征码：{team.feature_code}"
-
 
 def query_team_status(creator_id: int, team_name: str) -> str:
     team = _owned_team(creator_id, _normalize_team_name(team_name))
@@ -452,15 +412,14 @@ def query_team_status(creator_id: int, team_name: str) -> str:
         return "\n".join(lines)
 
     lines.append("成员列表：")
-    for index, member in enumerate(members, start=1):
+    for index, member in enumerate(members, start = 1):
         lines.append(
             f"{index}. {member.get('role_name')}·{member.get('server')} "
             f"({member.get('kungfu_name')}) "
             f"ID {member.get('role_id')} "
-            f"装备更新 {_format_time(member.get('equip_time'))}"
+            f"装备更新 {_format_time(member.get('equip_time'))}",
         )
     return "\n".join(lines)
-
 
 def team_management_help() -> str:
     return (
@@ -480,30 +439,27 @@ def team_management_help() -> str:
         "说明：团队按发起命令 QQ 名下团队名查找；绑定成员最多 25 个，同团队内同区服同角色重复绑定会覆盖原记录。"
     )
 
-
 def list_owned_teams(creator_id: int) -> str:
     teams = _owned_teams(creator_id)
     if not teams:
         return "当前账号名下暂无团队。\n可在群内发送：注册团队 <团队名>"
 
     lines = [f"我的团队：共 {len(teams)} 个"]
-    for index, team in enumerate(teams, start=1):
+    for index, team in enumerate(teams, start = 1):
         members = list(team.members or [])
         lines.append(
             f"{index}. {team.team_name} "
             f"成员 {len(members)}/{TEAM_HEALTH_CAPACITY} "
             f"注册群 {team.group_id} "
             f"特征码 {team.feature_code} "
-            f"更新 {_format_time(team.update_time)}"
+            f"更新 {_format_time(team.update_time)}",
         )
     lines.append("查看详情：团队管理 <团队名> 状态")
     return "\n".join(lines)
 
-
 def remember_delete_team_confirmation(user_id: int, team_name: str) -> None:
     _cleanup_delete_team_confirmations()
     _PENDING_DELETE_TEAMS[_delete_team_confirm_key(user_id, team_name)] = Time().raw_time
-
 
 def consume_delete_team_confirmation(user_id: int, team_name: str) -> str | None:
     key = _delete_team_confirm_key(user_id, team_name)
@@ -513,7 +469,6 @@ def consume_delete_team_confirmation(user_id: int, team_name: str) -> str | None
     if Time().raw_time - int(timestamp) > DELETE_TEAM_CONFIRM_TTL:
         return "删除团队确认已过期，请重新发起命令。"
     return None
-
 
 def prepare_delete_team_confirmation(creator_id: int, team_name: str) -> str:
     team_name = _normalize_team_name(team_name)
@@ -528,7 +483,6 @@ def prepare_delete_team_confirmation(creator_id: int, team_name: str) -> str:
         "该确认 5 分钟内有效。"
     )
 
-
 def delete_team(creator_id: int, team_name: str) -> str:
     team_name = _normalize_team_name(team_name)
     _PENDING_DELETE_TEAMS.pop(_delete_team_confirm_key(creator_id, team_name), None)
@@ -538,8 +492,9 @@ def delete_team(creator_id: int, team_name: str) -> str:
     db.delete(RaidTeamHealth(), "creator_id = ? AND team_name = ?", int(creator_id), team_name)
     return f"已删除团队：{team.team_name}"
 
-
-def delete_member(creator_id: int, team_name: str, role_name: str, server_arg: str | None = None, group_id: int | None = None) -> str:
+def delete_member(
+    creator_id: int, team_name: str, role_name: str, server_arg: str | None = None, group_id: int | None = None
+) -> str:
     team = _owned_team(creator_id, _normalize_team_name(team_name))
     if team is None:
         return "未找到你名下的对应团队。"
@@ -552,29 +507,22 @@ def delete_member(creator_id: int, team_name: str, role_name: str, server_arg: s
 
     members: list[dict[str, Any]] = list(team.members or [])
     matches = [
-        member
-        for member in members
-        if str(member.get("role_name")) == role_name
-        and (server is None or str(member.get("server")) == server)
+        member for member in members
+        if str(member.get("role_name")) == role_name and (server is None or str(member.get("server")) == server)
     ]
     if not matches:
         return "未找到对应成员。"
     if len(matches) > 1 and server is None:
         candidates = "\n".join(
-            f"- {member.get('server')} {member.get('role_name')} ({member.get('kungfu_name')})"
-            for member in matches
+            f"- {member.get('server')} {member.get('role_name')} ({member.get('kungfu_name')})" for member in matches
         )
-        return (
-            "检测到多个同名角色，请带区服删除：\n"
-            f"{candidates}\n"
-            f"参考格式：团队管理 {team.team_name} 删除成员 <区服> {role_name}"
-        )
+        return ("检测到多个同名角色，请带区服删除：\n"
+                f"{candidates}\n"
+                f"参考格式：团队管理 {team.team_name} 删除成员 <区服> {role_name}")
 
     target = matches[0]
     members = [
-        member
-        for member in members
-        if not (
+        member for member in members if not (
             str(member.get("server")) == str(target.get("server"))
             and str(member.get("role_name")) == str(target.get("role_name"))
         )
@@ -584,16 +532,17 @@ def delete_member(creator_id: int, team_name: str, role_name: str, server_arg: s
     db.save(team)
     return f"已删除成员：{target.get('role_name')}·{target.get('server')}"
 
-
 def _rating_grade_class(grade: str) -> str:
-    return (
-        "grade-"
-        + grade.lower()
-        .replace("+", "-plus")
-        .replace(" ", "-")
-        .replace("/", "-")
-    )
-
+    return ("grade-" + grade.lower().replace(
+        "+",
+        "-plus",
+    ).replace(
+        " ",
+        "-",
+    ).replace(
+        "/",
+        "-",
+    ))
 
 def _empty_recommendation() -> dict[str, str]:
     return {
@@ -601,11 +550,9 @@ def _empty_recommendation() -> dict[str, str]:
         "icon": "",
     }
 
-
 def _json_hash(value: Any) -> str:
-    raw = json.dumps(value, ensure_ascii=False, sort_keys=True, default=str)
+    raw = json.dumps(value, ensure_ascii = False, sort_keys = True, default = str)
     return hashlib.sha256(raw.encode("utf-8")).hexdigest()
-
 
 def _team_health_cache_key(
     member: dict[str, Any],
@@ -621,7 +568,6 @@ def _team_health_cache_key(
         "candidate_level": dict(TEAM_HEALTH_CANDIDATE_LEVEL),
     }
 
-
 def _cached_team_health_row(member: dict[str, Any], cache_key: dict[str, Any]) -> dict[str, Any] | None:
     cache = member.get("health_cache")
     if not isinstance(cache, dict):
@@ -635,7 +581,6 @@ def _cached_team_health_row(member: dict[str, Any], cache_key: dict[str, Any]) -
         return None
     return dict(row)
 
-
 def _team_health_rank_data(data: dict[str, Any]) -> dict[str, Any]:
     adaptive = _as_dict(data.get("adaptive_consumables"))
     return {
@@ -645,7 +590,6 @@ def _team_health_rank_data(data: dict[str, Any]) -> dict[str, Any]:
             "dps": adaptive.get("dps"),
         },
     }
-
 
 def _record_team_health_rank(member: dict[str, Any], rank_data: dict[str, Any]) -> None:
     if not isinstance(rank_data, dict):
@@ -661,7 +605,6 @@ def _record_team_health_rank(member: dict[str, Any], rank_data: dict[str, Any]) 
     except Exception as exc:
         logger.warning(f"团队评级伤害排名记录失败：{exc}")
 
-
 def _team_health_cache(
     cache_key: dict[str, Any],
     row: dict[str, Any],
@@ -675,7 +618,6 @@ def _team_health_cache(
         "cache_time": Time().raw_time,
     }
 
-
 def _recommendation_item(item: dict[str, Any], *, with_delta: bool = False) -> dict[str, str]:
     name = str(item.get("name") or "").strip()
     if with_delta:
@@ -687,7 +629,6 @@ def _recommendation_item(item: dict[str, Any], *, with_delta: bool = False) -> d
         "icon": _escape(str(item.get("icon") or "").strip()),
     }
 
-
 def _formation_recommendations(prepared_consumables: dict[str, Any] | None) -> list[dict[str, str]]:
     if not prepared_consumables:
         return [_empty_recommendation(), _empty_recommendation(), _empty_recommendation()]
@@ -698,12 +639,8 @@ def _formation_recommendations(prepared_consumables: dict[str, Any] | None) -> l
         name = str(item.get("name") or "").strip()
         if not name:
             continue
-        recommendations.append(_recommendation_item(item, with_delta=True))
-    return (
-        recommendations
-        + [_empty_recommendation(), _empty_recommendation(), _empty_recommendation()]
-    )[:3]
-
+        recommendations.append(_recommendation_item(item, with_delta = True))
+    return (recommendations + [_empty_recommendation(), _empty_recommendation(), _empty_recommendation()])[:3]
 
 def _consumable_recommendations(prepared_consumables: dict[str, Any] | None) -> dict[str, list[dict[str, str]]]:
     recommendations = {
@@ -719,20 +656,18 @@ def _consumable_recommendations(prepared_consumables: dict[str, Any] | None) -> 
         if key not in recommendations:
             continue
         entries = [
-            _recommendation_item(item)
-            for item in group.get("entries") or []
+            _recommendation_item(item) for item in group.get("entries") or []
             if isinstance(item, dict) and item.get("name")
         ]
         if entries:
             recommendations[key] = entries
     return recommendations
 
-
 def _result_payload(member: dict[str, Any], data: dict[str, Any], equip: JX3PlayerAttribute) -> dict[str, Any]:
     summary = _as_dict(data.get("summary"))
     meta = _as_dict(data.get("meta"))
     kungfu_id = int(member.get("kungfu_id") or meta.get("kungfu_id") or 0)
-    kungfu = Kungfu.with_internel_id(kungfu_id, convert_to_pc=True)
+    kungfu = Kungfu.with_internel_id(kungfu_id, convert_to_pc = True)
     grade = str(summary.get("grade") or "D")
     prepared_consumables = _prepare_adaptive_consumables(data.get("adaptive_consumables"))
     tank = _prepare_tank_vitality_conversion(summary, kungfu)
@@ -759,7 +694,6 @@ def _result_payload(member: dict[str, Any], data: dict[str, Any], equip: JX3Play
         "ingot_recommendations": consumables["ingot"],
         "tank_stacks": _escape(f"{tank['stacks']}层") if tank else "-",
     }
-
 
 async def _rate_member(member: dict[str, Any]) -> dict[str, Any]:
     try:
@@ -805,7 +739,7 @@ async def _rate_member(member: dict[str, Any]) -> dict[str, Any]:
         }
     except Exception as exc:
         kungfu_id = int(member.get("kungfu_id") or 0)
-        kungfu = Kungfu.with_internel_id(kungfu_id, convert_to_pc=True)
+        kungfu = Kungfu.with_internel_id(kungfu_id, convert_to_pc = True)
         return {
             "row": {
                 "ok": False,
@@ -838,8 +772,9 @@ async def _rate_member(member: dict[str, Any]) -> dict[str, Any]:
             "equip_time": int(member.get("equip_time") or 0),
         }
 
-
-def _save_team_health_cache_results(team: RaidTeamHealth, members: list[dict[str, Any]], results: list[dict[str, Any]]) -> None:
+def _save_team_health_cache_results(
+    team: RaidTeamHealth, members: list[dict[str, Any]], results: list[dict[str, Any]]
+) -> None:
     changed = False
     updated_members = []
     for member, result in zip(members, results):
@@ -865,7 +800,6 @@ def _save_team_health_cache_results(team: RaidTeamHealth, members: list[dict[str
     team.update_time = Time().raw_time
     db.save(team)
 
-
 async def render_team_health_check(creator_id: int, team_name: str) -> str | ms:
     team = _owned_team(creator_id, _normalize_team_name(team_name))
     if team is None:
@@ -884,26 +818,29 @@ async def render_team_health_check(creator_id: int, team_name: str) -> str | ms:
     _save_team_health_cache_results(team, members, results)
     sorted_results = sorted(
         enumerate(results),
-        key=lambda item: (-float(item[1]["row"].get("sort_score", -1)), item[0]),
+        key = lambda item: (-float(item[1]["row"].get("sort_score", -1)), item[0]),
     )
     rows = [item["row"] for _, item in sorted_results]
     ok_count = sum(1 for row in rows if row.get("ok"))
     cache_hit_count = sum(1 for item in results if item.get("cache_hit"))
     refreshed_count = sum(1 for item in results if item.get("cache") and not item.get("cache_hit"))
     html_source = Template(read(TEAM_HEALTH_TEMPLATE)).render(
-        font=Path(build_path(ASSETS, ["font", "PingFangSC-Medium.otf"])).as_uri(),
-        team_name=_escape(team.team_name),
-        member_count=len(members),
-        ok_count=ok_count,
-        cache_hit_count=cache_hit_count,
-        refreshed_count=refreshed_count,
-        capacity=TEAM_HEALTH_CAPACITY,
-        generated_at=Time().format("%m-%d %H:%M"),
-        rows=rows,
+        font = Path(build_path(ASSETS, ["font", "PingFangSC-Medium.otf"])).as_uri(),
+        team_name = _escape(team.team_name),
+        member_count = len(members),
+        ok_count = ok_count,
+        cache_hit_count = cache_hit_count,
+        refreshed_count = refreshed_count,
+        capacity = TEAM_HEALTH_CAPACITY,
+        generated_at = Time().format("%m-%d %H:%M"),
+        rows = rows,
     )
     return await generate(
         html_source,
         ".team-health-canvas",
-        segment=True,
-        viewport={"width": 2520, "height": 2400},
+        segment = True,
+        viewport = {
+            "width": 2520,
+            "height": 2400,
+        },
     )

@@ -1,6 +1,6 @@
 from __future__ import annotations
 from pydantic import BaseModel
-from typing import Literal, Callable, Type
+from typing import Literal, Callable, TypeVar
 from dataclasses import dataclass
 
 from nonebot.adapters.onebot.v11 import Message
@@ -9,21 +9,19 @@ from src.utils.typing import override
 from src.utils.time import Time
 from src.plugins.jx3.announce.diff import BetaAnnouncementDiff
 
-handler: dict[
-    int,
-    Callable[
-        [dict],
-        JX3APIPushEvent
-    ]
-] = {}
+EventType = TypeVar("EventType", bound = "JX3APIPushEvent")
 
-def handle_event(action: int):
+handler: dict[int, Callable[[dict], JX3APIPushEvent]] = {}
+
+def handle_event(action: int) -> Callable[[type[EventType]], type[EventType]]:
     """
     装饰器，用于注册事件类到处理器中。
     """
-    def decorator_func(event_class: Type[JX3APIPushEvent]):
+
+    def decorator_func(event_class: type[EventType]) -> type[EventType]:
         handler[action] = lambda data: event_class(**data)
         return event_class
+
     return decorator_func
 
 @dataclass
@@ -35,7 +33,7 @@ class JX3APIOutputMsg:
 class JX3APIPushEvent(BaseModel):
     action: int = 0
     detail: dict = {}
-    
+
     def msg(self) -> JX3APIOutputMsg:
         ...
 
@@ -51,7 +49,11 @@ class JX3APIServerEvent(JX3APIPushEvent):
     def msg(self) -> JX3APIOutputMsg:
         status_str = "开服" if self.status else "维护"
         current_time = Time().format("%H:%M")
-        return JX3APIOutputMsg(msg=f"{self.server} 在 {current_time} {status_str}啦！", server=self.server, name="开服")
+        return JX3APIOutputMsg(
+            msg = f"{self.server} 在 {current_time} {status_str}啦！",
+            server = self.server,
+            name = "开服",
+        )
 
 @handle_event(2002)
 class JX3APINewsEvent(JX3APIPushEvent):
@@ -61,8 +63,8 @@ class JX3APINewsEvent(JX3APIPushEvent):
 
     @override
     def msg(self) -> JX3APIOutputMsg:
-        return JX3APIOutputMsg(msg=f"有新的官方公告！\n标题：{self.title}\n链接：{self.url}\n日期：{self.date}", name="公告")
-    
+        return JX3APIOutputMsg(msg = f"有新的官方公告！\n标题：{self.title}\n链接：{self.url}\n日期：{self.date}", name = "公告")
+
     @override
     def provide_data(self) -> tuple[str, str]:
         return self.url, self.title
@@ -76,7 +78,11 @@ class JX3APIClientUpdateEvent(JX3APIPushEvent):
 
     @override
     def msg(self) -> JX3APIOutputMsg:
-        return JX3APIOutputMsg(msg=f"检测到游戏客户端更新！\n版本：{self.now_version} -> {self.new_version}\n本次更新有{self.package_num}个更新包，共计{self.package_size}！", name="更新")
+        return JX3APIOutputMsg(
+            msg =
+            f"检测到游戏客户端更新！\n版本：{self.now_version} -> {self.new_version}\n本次更新有{self.package_num}个更新包，共计{self.package_size}！",
+            name = "更新",
+        )
 
 @handle_event(2004)
 class JX3API818Event(JX3APIPushEvent):
@@ -87,7 +93,7 @@ class JX3API818Event(JX3APIPushEvent):
 
     @override
     def msg(self) -> JX3APIOutputMsg:
-        return JX3APIOutputMsg(msg=f"有新的八卦推送来啦！\n标题：{self.title}\n{self.url}\n来源：{self.name}吧", name="818")
+        return JX3APIOutputMsg(msg = f"有新的八卦推送来啦！\n标题：{self.title}\n{self.url}\n来源：{self.name}吧", name = "818")
 
 @handle_event(2005)
 class JX3APIPassEvent(JX3APIPushEvent):
@@ -97,8 +103,8 @@ class JX3APIPassEvent(JX3APIPushEvent):
 
     @override
     def msg(self) -> JX3APIOutputMsg:
-        return JX3APIOutputMsg(msg=f"{self.server} 的【{self.castle}】变为 可争夺 状态！", server=self.server, name="关隘")
-    
+        return JX3APIOutputMsg(msg = f"{self.server} 的【{self.castle}】变为 可争夺 状态！", server = self.server, name = "关隘")
+
 @handle_event(2006)
 class JX3APIYuncongEvent(JX3APIPushEvent):
     name: str = ""
@@ -107,7 +113,7 @@ class JX3APIYuncongEvent(JX3APIPushEvent):
 
     @override
     def msg(self) -> JX3APIOutputMsg:
-        return JX3APIOutputMsg(msg=f"云从社的 {self.name}（{self.desc}）活动即将在10分钟后开始，敬请留意！", name="云从")
+        return JX3APIOutputMsg(msg = f"云从社的 {self.name}（{self.desc}）活动即将在10分钟后开始，敬请留意！", name = "云从")
 
 @handle_event(50001)
 class InkarSukiBirthdayEvent(JX3APIPushEvent):
@@ -116,7 +122,7 @@ class InkarSukiBirthdayEvent(JX3APIPushEvent):
 
     @override
     def msg(self) -> JX3APIOutputMsg:
-        return JX3APIOutputMsg(msg=self.message, server=self.image_url, name="生日祝福")
+        return JX3APIOutputMsg(msg = self.message, server = self.image_url, name = "生日祝福")
 
 @handle_event(50002)
 class InkarSukiVideoPushEvent(JX3APIPushEvent):
@@ -125,7 +131,7 @@ class InkarSukiVideoPushEvent(JX3APIPushEvent):
 
     @override
     def msg(self) -> JX3APIOutputMsg:
-        return JX3APIOutputMsg(msg=self.message, server=self.image_url, name="创作者")
+        return JX3APIOutputMsg(msg = self.message, server = self.image_url, name = "创作者")
 
 @handle_event(50003)
 class TestServerPushEvent(JX3APIPushEvent):
@@ -134,7 +140,7 @@ class TestServerPushEvent(JX3APIPushEvent):
 
     @override
     def msg(self) -> JX3APIOutputMsg:
-        return JX3APIOutputMsg(msg=self.message, name="体服公告")
+        return JX3APIOutputMsg(msg = self.message, name = "体服公告")
 
 @handle_event(50004)
 class InkarSukiWeiboPushEvent(JX3APIPushEvent):
@@ -144,7 +150,7 @@ class InkarSukiWeiboPushEvent(JX3APIPushEvent):
 
     @override
     def msg(self) -> JX3APIOutputMsg:
-        return JX3APIOutputMsg(msg=self.message, name="咸鱼")
+        return JX3APIOutputMsg(msg = self.message, name = "咸鱼")
 
     @override
     def provide_data(self) -> tuple[str, str]:
@@ -158,7 +164,7 @@ def parse_data(raw_data: dict):
     action: int = data.action
     body: dict = data.detail
     handler_class = handler.get(action)
-    
+
     if handler_class:
         return handler_class(body)
     else:

@@ -2,6 +2,7 @@ from dataclasses import dataclass, field
 from typing import Literal, Any
 
 from src.utils.analyze import Locations
+from src.utils.jx3_attributes import AttributesFull
 from src.utils.network import Request
 
 from .base import BaseCalculator
@@ -17,67 +18,7 @@ subtype_locations = {
     7: 9,
     8: 10,
     9: 11,
-    10: 12
-}
-
-AttributesFull = {
-    "atPhysicsAttackPowerBase": "外功攻击",
-    "atPhysicsCriticalStrike": "外功会心",
-    "atPhysicsOvercomeBase": "外功破防",
-    "atPhysicsCriticalDamagePowerBase": "外功会心效果",
-    "atPhysicsShieldBase": "外功防御",
-
-    "atSolarAndLunarAttackPowerBase": "阴阳内功攻击",
-    "atSolarAndLunarCriticalStrike": "阴阳内功会心",
-    "atSolarAndLunarOvercomeBase": "阴阳内功破防",
-    "atSolarAndLunarCriticalDamagePowerBase": "阴阳内功会心效果",
-
-    "atNeutralAttackPowerBase": "混元内功攻击",
-    "atNeutralCriticalStrike": "混元内功会心",
-    "atNeutralOvercomeBase": "混元内功破防",
-    "atNeutralCriticalDamagePowerBase": "混元内功会心效果",
-
-    "atSolarAttackPowerBase": "阳性内功攻击",
-    "atSolarCriticalStrike": "阳性内功会心",
-    "atSolarOvercomeBase": "阳性内功破防",
-    "atSolarCriticalDamagePowerBase": "阳性内功会心效果",
-
-    "atLunarAttackPowerBase": "阴性内功攻击",
-    "atLunarCriticalStrike": "阴性内功会心",
-    "atLunarOvercomeBase": "阴性内功破防",
-    "atLunarCriticalDamagePowerBase": "阴性内功会心效果",
-
-    "atPoisonAttackPowerBase": "毒性内功攻击",
-    "atPoisonCriticalStrike": "毒性内功会心",
-    "atPoisonOvercomeBase": "毒性内功破防",
-    "atPoisonCriticalDamagePowerBase": "毒性内功会心效果",
-
-    "atMagicAttackPowerBase": "内功攻击",
-    "atMagicOvercome": "内功破防",
-    "atMagicCriticalStrike": "内功会心",
-    "atMagicCriticalDamagePowerBase": "内功会心效果",
-    "atMagicShield": "内功防御",
-
-    "atStrainBase": "无双",
-    "atSurplusValueBase": "破招",
-    "atHasteBase": "加速",
-
-    "atAllTypeOvercomeBase": "全破防",
-    "atAllTypeCriticalStrike": "全会心",
-    "atAllTypeCriticalDamagePowerBase": "全会心效果",
-
-    "atToughnessBase": "御劲",
-    "atDecriticalDamagePowerBase": "化劲",
-
-    "atMaxLifeBase": "气血",
-    "atTherapyPowerBase": "治疗成效",
-
-    "atSpiritBase": "根骨",
-    "atStrengthBase": "力道",
-    "atAgilityBase": "身法",
-    "atSpunkBase": "元气",
-    "atVitalityBase": "体质",
-    "atBasePotentialAdd": "全属性"
+    10: 12,
 }
 
 def parse_attr(equip_data: dict[str, Any]) -> list[str]:
@@ -98,27 +39,27 @@ class EquipInfo:
     location: str
     item_id: int
     location_code: int
-    attr: list[str] = field(default_factory=list)
+    attr: list[str] = field(default_factory = list)
     subkind: Literal["精简", "散件", "特效"] = "散件"
 
     def __eq__(self, other):
         if not isinstance(other, EquipInfo):
             return False
-        return (self.attr == other.attr and
-                self.name == other.name and
-                self.quality == other.quality and
-                self.location == other.location)
+        return (
+            self.attr == other.attr and self.name == other.name and self.quality == other.quality
+            and self.location == other.location
+        )
 
     def __hash__(self):
         return hash((self.attr, self.name, self.quality, self.location))
-    
+
 @dataclass
 class EnchantInfo:
     name: str
     enchant_id: int
     desc: str
     location_code: int
-    is_common: bool = False # 是否为大附魔
+    is_common: bool = False  # 是否为大附魔
 
     def __eq__(self, other):
         if not isinstance(other, EnchantInfo):
@@ -140,7 +81,8 @@ async def get_equip_list(equip_name: str) -> list[EquipInfo]:
             item_id = int(each_equip["ID"]),
             location_code = subtype_locations[int(each_equip["SubType"])],
             location = Locations[subtype_locations[int(each_equip["SubType"])]],
-            subkind = "特效" if ("atSkillEventHandler" in each_equip.values()) else ("精简" if each_equip["BelongSchool"] == "精简" else "散件")
+            subkind = "特效" if ("atSkillEventHandler" in each_equip.values()) else
+            ("精简" if each_equip["BelongSchool"] == "精简" else "散件"),
         )
         if result not in results:
             results.append(result)
@@ -161,8 +103,8 @@ async def get_enchant_list(enchant_name: str) -> list[EnchantInfo]:
             name = each_enchant["Name"],
             enchant_id = int(each_enchant["ID"]),
             desc = each_enchant["AttriName"],
-            location_code=location_code,
-            is_common=(each_enchant["Time"] == "60")
+            location_code = location_code,
+            is_common = (each_enchant["Time"] == "60"),
         )
         if result not in results:
             results.append(result)

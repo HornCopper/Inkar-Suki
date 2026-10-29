@@ -1,6 +1,6 @@
 from nonebot.adapters.onebot.v11 import (
     Message,
-    GroupMessageEvent
+    GroupMessageEvent,
 )
 from nonebot.params import CommandArg
 
@@ -11,10 +11,16 @@ from src.utils.command import on_command
 
 from .v2 import (
     get_progress_v2,
-    zone_achievement
+    zone_achievement,
 )
 
-achievement_v2_matcher = on_command("jx3_progress_v2", command_key="成就", aliases={"成就", "成就进度", "进度"}, force_whitespace=True, priority=5)
+achievement_v2_matcher = on_command(
+    "jx3_progress_v2",
+    command_key = "成就",
+    aliases = {"成就", "成就进度", "进度"},
+    force_whitespace = True,
+    priority = 5,
+)
 
 @achievement_v2_matcher.handle()
 async def _(event: GroupMessageEvent, msg: Message = CommandArg()):
@@ -33,7 +39,7 @@ async def _(event: GroupMessageEvent, msg: Message = CommandArg()):
         role_name = args[1]
         achievement_name = args[2]
 
-    group_server = Server(server_name=server, group_id=event.group_id)
+    group_server = Server(server_name = server, group_id = event.group_id)
 
     if not group_server.server:
         await achievement_v2_matcher.finish(PROMPT.ServerNotExist)
@@ -41,7 +47,13 @@ async def _(event: GroupMessageEvent, msg: Message = CommandArg()):
     data = await get_progress_v2(group_server.server, role_name, achievement_name)
     await achievement_v2_matcher.finish(data)
 
-zone_achievement_matcher = on_command("jx3_zoneachi", command_key="团本成就", aliases={"团本成就"}, force_whitespace=True, priority=5)
+zone_achievement_matcher = on_command(
+    "jx3_zoneachi",
+    command_key = "团本成就",
+    aliases = {"团本成就"},
+    force_whitespace = True,
+    priority = 5,
+)
 
 @zone_achievement_matcher.handle()
 async def _(event: GroupMessageEvent, full_argument: Message = CommandArg()):
@@ -56,7 +68,7 @@ async def _(event: GroupMessageEvent, full_argument: Message = CommandArg()):
         
         团本成就 ID DNAME
         """
-        GroupServer = Server(group_id=event.group_id).server
+        GroupServer = Server(group_id = event.group_id).server
         if not GroupServer:
             await zone_achievement_matcher.finish(PROMPT.ServerNotExist)
         DungeonName = Dungeon(args[1], "").name
@@ -81,7 +93,7 @@ async def _(event: GroupMessageEvent, full_argument: Message = CommandArg()):
 
             团本成就 ID DNAME DMODE
             """
-            server = Server(group_id=event.group_id).server
+            server = Server(group_id = event.group_id).server
             if not server:
                 await zone_achievement_matcher.finish(PROMPT.ServerNotExist)
             role_name = args[0]
@@ -100,8 +112,7 @@ async def _(event: GroupMessageEvent, full_argument: Message = CommandArg()):
             if not zone:
                 await zone_achievement_matcher.finish(PROMPT.DungeonNameInvalid)
             mode = "10人普通"
-            
-    
+
     else:
         """
         四参数：

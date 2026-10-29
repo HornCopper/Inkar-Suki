@@ -6,7 +6,7 @@ from nonebot.adapters.onebot.v11 import (
     Bot,
     Message,
     GroupMessageEvent,
-    GroupUploadNoticeEvent
+    GroupUploadNoticeEvent,
 )
 from nonebot.params import CommandArg, Arg
 from nonebot.matcher import Matcher
@@ -37,7 +37,13 @@ from .v2_remake import get_attr_v2_remake, get_attr_v2_remake_build, get_attr_v2
 from .v4 import get_attr_v4
 from .equip_replace import EQUIP_LOCATION, replace_enchant_in_equip_lines
 
-attribute_matcher = on_command("jx3_attribute", command_key="属性", aliases={"属性", "查装"}, force_whitespace=True, priority=5)
+attribute_matcher = on_command(
+    "jx3_attribute",
+    command_key = "属性",
+    aliases = {"属性", "查装"},
+    force_whitespace = True,
+    priority = 5,
+)
 
 SPECIAL_PVE_KUNGFU_TAGS = {
     10014: "QCPVE",
@@ -47,14 +53,11 @@ SPECIAL_PVE_KUNGFU_TAGS = {
     10821: "WXPVE",
 }
 
-
 def _is_attribute_selector(value: str) -> bool:
     return bool(parse_conditions(value)) or Kungfu(value).id is not None
 
-ATTRIBUTE_IMAGE_SEND_FAILED = (
-    "属性图已生成，但 QQ 富媒体上传失败。"
-    "建议重启 napcat。"
-)
+ATTRIBUTE_IMAGE_SEND_FAILED = ("属性图已生成，但 QQ 富媒体上传失败。"
+                               "建议重启 napcat。")
 
 DELETE_EQUIPMENT_PERMISSION_NODE = "jx3.attribute.equipment.delete"
 
@@ -68,15 +71,13 @@ async def finish_attribute_response(matcher: type[Matcher], data: Any) -> None:
         except ActionFailed as fallback_exc:
             logger.warning(f"属性查询文本降级发送失败，已忽略本次发送错误：{fallback_exc}")
 
-
 delete_equipment_matcher = on_command(
     "jx3_delete_equipment",
-    command_key=None,
-    aliases={"删除装备"},
-    force_whitespace=True,
-    priority=5,
+    command_key = None,
+    aliases = {"删除装备"},
+    force_whitespace = True,
+    priority = 5,
 )
-
 
 @delete_equipment_matcher.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
@@ -86,7 +87,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     parts = args.extract_plain_text().strip().split()
     if len(parts) not in (3, 4):
         await delete_equipment_matcher.finish(
-            "参考格式：删除装备 <服务器> <角色名> <心法> [标签]"
+            "参考格式：删除装备 <服务器> <角色名> <心法> [标签]",
         )
 
     server_input, role_name, kungfu_name = parts[:3]
@@ -99,7 +100,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     if kungfu_id is None:
         await delete_equipment_matcher.finish(f"无法识别心法：{kungfu_name}")
 
-    role_info = await search_player(role_name=role_name, server_name=server)
+    role_info = await search_player(role_name = role_name, server_name = server)
     if not role_info.globalRoleId:
         await delete_equipment_matcher.finish(PROMPT.PlayerNotExist)
 
@@ -115,19 +116,19 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
             PlayerEquipsCache(),
             condition,
             *condition_args,
-            default=[],
+            default = [],
         ) or [],
     )
     if not records:
         scope = f"、标签 {tag}" if tag else ""
         await delete_equipment_matcher.finish(
-            f"未找到 {server} {role_name} 的 {kungfu.name or kungfu_name}{scope} 装备。"
+            f"未找到 {server} {role_name} 的 {kungfu.name or kungfu_name}{scope} 装备。",
         )
 
     db.delete(PlayerEquipsCache(), condition, *condition_args)
     scope = f"、标签 {tag}" if tag else "的全部标签"
     await delete_equipment_matcher.finish(
-        f"已删除 {server} {role_name} 的 {kungfu.name or kungfu_name}{scope}装备，共 {len(records)} 条。"
+        f"已删除 {server} {role_name} 的 {kungfu.name or kungfu_name}{scope}装备，共 {len(records)} 条。",
     )
 
 @attribute_matcher.handle()
@@ -136,7 +137,10 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
         return
     arg = args.extract_plain_text().strip().split(" ")
     if len(arg) not in [1, 2, 3]:
-        await attribute_matcher.finish(PROMPT.ArgumentCountInvalid + "\n参考格式：属性 <服务器> <角色名> [标签/心法]\n参考格式：属性 <角色名> <标签/心法>（使用本群绑定服务器）\n参考格式：属性 <角色名·服务器>")
+        await attribute_matcher.finish(
+            PROMPT.ArgumentCountInvalid +
+            "\n参考格式：属性 <服务器> <角色名> [标签/心法]\n参考格式：属性 <角色名> <标签/心法>（使用本群绑定服务器）\n参考格式：属性 <角色名·服务器>",
+        )
     if len(arg) == 1:
         server = None
         role_name = arg[0]
@@ -159,12 +163,18 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
         await attribute_matcher.finish(PROMPT.ServerNotExist)
     ver = Preference(event.user_id, "", "").setting("属性")
     if ver == "v4":
-        data = await get_attr_v4(server, role_name, tags, group_id=event.group_id)
+        data = await get_attr_v4(server, role_name, tags, group_id = event.group_id)
     else:
-        data = await get_attr_v2_remake(server, role_name, segment=True, group_id=event.group_id)
+        data = await get_attr_v2_remake(server, role_name, segment = True, group_id = event.group_id)
     await finish_attribute_response(attribute_matcher, data)
 
-attribute_v2remake_matcher = on_command("jx3_addritube_v2_remake", command_key="属性", aliases={"属性v2r", "查装v2r"}, force_whitespace=True, priority=5)
+attribute_v2remake_matcher = on_command(
+    "jx3_addritube_v2_remake",
+    command_key = "属性",
+    aliases = {"属性v2r", "查装v2r"},
+    force_whitespace = True,
+    priority = 5,
+)
 
 @attribute_v2remake_matcher.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
@@ -182,10 +192,16 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     server = Server(server, event.group_id).server
     if not server:
         await attribute_v2remake_matcher.finish(PROMPT.ServerNotExist)
-    data = await get_attr_v2_remake(server, role, segment=True, group_id=event.group_id)
+    data = await get_attr_v2_remake(server, role, segment = True, group_id = event.group_id)
     await finish_attribute_response(attribute_v2remake_matcher, data)
 
-attribute_v4_matcher = on_command("jx3_addritube_v4", command_key="属性", aliases={"属性v4", "查装v4"}, force_whitespace=True, priority=5)
+attribute_v4_matcher = on_command(
+    "jx3_addritube_v4",
+    command_key = "属性",
+    aliases = {"属性v4", "查装v4"},
+    force_whitespace = True,
+    priority = 5,
+)
 
 @attribute_v4_matcher.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
@@ -193,7 +209,9 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
         return
     arg = args.extract_plain_text().strip().split(" ")
     if len(arg) not in [1, 2, 3]:
-        await attribute_v4_matcher.finish(PROMPT.ArgumentCountInvalid + "\n参考格式：属性v4 <服务器> <角色名> [标签/心法]\n参考格式：属性v4 <角色名> <标签/心法>（使用本群绑定服务器）")
+        await attribute_v4_matcher.finish(
+            PROMPT.ArgumentCountInvalid + "\n参考格式：属性v4 <服务器> <角色名> [标签/心法]\n参考格式：属性v4 <角色名> <标签/心法>（使用本群绑定服务器）",
+        )
     if len(arg) == 1:
         server = None
         role_name = arg[0]
@@ -214,10 +232,16 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     server = Server(server, event.group_id).server
     if not server:
         await attribute_v4_matcher.finish(PROMPT.ServerNotExist)
-    data = await get_attr_v4(server, role_name, tags, group_id=event.group_id)
+    data = await get_attr_v4(server, role_name, tags, group_id = event.group_id)
     await finish_attribute_response(attribute_v4_matcher, data)
 
-attribute_repo = on_command("jx3_attribute_repo", command_key="属性", aliases={"属性库"}, priority=5, force_whitespace=True)
+attribute_repo = on_command(
+    "jx3_attribute_repo",
+    command_key = "属性",
+    aliases = {"属性库"},
+    priority = 5,
+    force_whitespace = True,
+)
 
 @attribute_repo.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
@@ -229,7 +253,13 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     image = await get_attr_v2_remake_global(int(num))
     await finish_attribute_response(attribute_repo, image)
 
-attribute_build = on_command("jx3_attribute_build", command_key="配装器", aliases={"配装器"}, priority=5, force_whitespace=True)
+attribute_build = on_command(
+    "jx3_attribute_build",
+    command_key = "配装器",
+    aliases = {"配装器"},
+    priority = 5,
+    force_whitespace = True,
+)
 
 @attribute_build.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
@@ -249,11 +279,11 @@ ATTRIBUTE_SUBMIT_USAGE = (
 
 async def get_attribute_submit_player(role: str, server: str):
     if check_number(role):
-        player_info = await search_player(role_name=role, role_id=role, server_name=server, local_lookup=True)
+        player_info = await search_player(role_name = role, role_id = role, server_name = server, local_lookup = True)
         if player_info.roleId == "":
-            player_info = await get_uid_data(role_id=role, server=server, msg=False)
+            player_info = await get_uid_data(role_id = role, server = server, msg = False)
     else:
-        player_info = await search_player(role_name=role, server_name=server)
+        player_info = await search_player(role_name = role, server_name = server)
     return player_info
 
 LOCAL_GLOBAL_ROLE_ID_BASE = 8_000_000_000_000_000_000
@@ -267,13 +297,13 @@ def build_attribute_submit_role(role: str, server: str, player_info: RoleData) -
     global_role_id = player_info.globalRoleId or build_local_global_role_id(role_name, server)
     role_id = player_info.roleId or (role if check_number(role) else global_role_id)
     return RoleData(
-        bodyName=player_info.bodyName,
-        campName=player_info.campName,
-        forceName=player_info.forceName,
-        globalRoleId=global_role_id,
-        roleName=role_name,
-        roleId=role_id,
-        serverName=server,
+        bodyName = player_info.bodyName,
+        campName = player_info.campName,
+        forceName = player_info.forceName,
+        globalRoleId = global_role_id,
+        roleName = role_name,
+        roleId = role_id,
+        serverName = server,
     )
 
 def save_attribute_submit_role(role_info: RoleData) -> None:
@@ -291,7 +321,7 @@ def save_attribute_instance(
     only_if_newer: bool = False,
 ) -> bool:
     validate_attribute_instance(instance)
-    return instance.save(only_if_newer=only_if_newer)
+    return instance.save(only_if_newer = only_if_newer)
 
 def format_attribute_save_error(instance: JX3PlayerAttribute, exc: BaseException) -> str:
     kungfu = Kungfu.with_internel_id(instance.kungfu_id).name or str(instance.kungfu_id)
@@ -320,7 +350,7 @@ def _attribute_submit_role_name(role_info: RoleData) -> str:
 async def format_attribute_submit_success(role_info: RoleData, kungfu_id: int) -> str:
     role_name = _attribute_submit_role_name(role_info)
     message = f"已导入装备数据，请尝试使用指令：属性 {role_info.serverName} {role_name}"
-    kungfu_name = Kungfu.with_internel_id(kungfu_id, convert_to_pc=True).name or str(kungfu_id)
+    kungfu_name = Kungfu.with_internel_id(kungfu_id, convert_to_pc = True).name or str(kungfu_id)
     support_status = await get_equipment_rating_support_status(kungfu_id)
     if support_status is True:
         message += (
@@ -334,7 +364,13 @@ async def format_attribute_submit_success(role_info: RoleData, kungfu_id: int) -
         message += "\n暂时无法确认该心法是否支持装备评级，请稍后使用 装备评级支持 查询。"
     return message
 
-attribute_submit = on_command("jx3_attribute_submit", command_key=None, aliases={"提交属性"}, priority=5, force_whitespace=True)
+attribute_submit = on_command(
+    "jx3_attribute_submit",
+    command_key = None,
+    aliases = {"提交属性"},
+    priority = 5,
+    force_whitespace = True,
+)
 
 @attribute_submit.handle()
 async def _(event: GroupMessageEvent, state: T_State, matcher: Matcher, msg: Message = CommandArg()):
@@ -344,18 +380,18 @@ async def _(event: GroupMessageEvent, state: T_State, matcher: Matcher, msg: Mes
         return
     if plain_text.lower() in {"help", "帮助", "参数", "示例"}:
         await attribute_submit.finish(ATTRIBUTE_SUBMIT_USAGE)
-    args = plain_text.split(maxsplit=3)
+    args = plain_text.split(maxsplit = 3)
     if len(args) == 4:
         server = Server(args[0], event.group_id).server
         role = args[1]
         kungfu_name = args[2]
         equip_data = args[3]
         if server is None:
-            await attribute_submit.finish(PROMPT.ServerInvalid  + "\n参考格式：提交属性 <服务器> <角色名> <心法>")
+            await attribute_submit.finish(PROMPT.ServerInvalid + "\n参考格式：提交属性 <服务器> <角色名> <心法>")
         role_info, kungfu_id_pc = await save_plugin_attribute(role, server, kungfu_name, equip_data)
         await attribute_submit.finish(await format_attribute_submit_success(role_info, kungfu_id_pc))
 
-    args = plain_text.split(maxsplit=2)
+    args = plain_text.split(maxsplit = 2)
     if len(args) == 3 and Kungfu(args[1]).id is not None and Kungfu(args[2]).id is None:
         server = Server(None, event.group_id).server
         role = args[0]
@@ -401,7 +437,6 @@ async def _(event: GroupMessageEvent, state: T_State, equip_data: Message = Arg(
         await attribute_submit.finish(f"导入的装备数据不可用，已拒绝入库：\n{e}")
     await attribute_submit.finish(await format_attribute_submit_success(state["role_info"], state["kungfu_id"]))
 
-
 def _pve_tag_for_kungfu(kungfu_id: int) -> str:
     if kungfu_id in SPECIAL_PVE_KUNGFU_TAGS:
         return SPECIAL_PVE_KUNGFU_TAGS[kungfu_id]
@@ -411,7 +446,6 @@ def _pve_tag_for_kungfu(kungfu_id: int) -> str:
     if abbr == "N":
         return "HPSPVE"
     return "DPSPVE"
-
 
 async def _pve_kungfu_options(global_role_id: int) -> list[dict[str, Any]]:
     all_equips = await JX3PlayerAttribute.from_database(global_role_id, "", True)
@@ -426,33 +460,36 @@ async def _pve_kungfu_options(global_role_id: int) -> list[dict[str, Any]]:
         if current is None or equip.timestamp > current.timestamp:
             latest_by_kungfu[kungfu_id] = equip
     options: list[dict[str, Any]] = []
-    for kungfu_id, equip in sorted(latest_by_kungfu.items(), key=lambda item: item[1].timestamp, reverse=True):
-        kungfu = Kungfu.with_internel_id(kungfu_id, convert_to_pc=True)
+    for kungfu_id, equip in sorted(latest_by_kungfu.items(), key = lambda item: item[1].timestamp, reverse = True):
+        kungfu = Kungfu.with_internel_id(kungfu_id, convert_to_pc = True)
         options.append(
             {
                 "kungfu_id": kungfu_id,
                 "tag": _pve_tag_for_kungfu(kungfu_id),
                 "name": kungfu.name or str(kungfu_id),
-            }
+            },
         )
     return options
 
-
 def _format_replace_equip_kungfu_selection(options: list[dict[str, Any]]) -> str:
     msg = "检测到该玩家有多套 PVE 心法装备，请先选择要替换的心法："
-    for index, option in enumerate(options, start=1):
+    for index, option in enumerate(options, start = 1):
         msg += f"\n{index}. {option['name']}"
     return msg
 
-
 def _format_replace_equip_selection(equips: list[EquipInfo]) -> str:
     reply_msg = "请从下面选择装备进行替换！"
-    for index, equip in enumerate(equips, start=1):
+    for index, equip in enumerate(equips, start = 1):
         reply_msg += f"\n{index}. ({equip.subkind}) {equip.name}\n{equip.quality} {' '.join(equip.attr)}"
     return reply_msg
 
-
-replace_equip_matcher = on_command("jx3_attribute_replace_equip", command_key=None, aliases={"替换装备", "装备替换"}, priority=5, force_whitespace=True)
+replace_equip_matcher = on_command(
+    "jx3_attribute_replace_equip",
+    command_key = None,
+    aliases = {"替换装备", "装备替换"},
+    priority = 5,
+    force_whitespace = True,
+)
 
 @replace_equip_matcher.handle()
 async def _(event: GroupMessageEvent, state: T_State, matcher: Matcher, msg: Message = CommandArg()):
@@ -468,7 +505,7 @@ async def _(event: GroupMessageEvent, state: T_State, matcher: Matcher, msg: Mes
     equip_keyword = args[3]
     if server is None:
         await replace_equip_matcher.finish(PROMPT.ServerInvalid)
-    role_info = await search_player(role_name=role_name, server_name=server)
+    role_info = await search_player(role_name = role_name, server_name = server)
     if role_info.globalRoleId == "":
         await replace_equip_matcher.finish(PROMPT.PlayerNotExist)
     await JX3PlayerAttribute.from_tuilan(role_info.roleId, role_info.serverName, role_info.globalRoleId)
@@ -478,7 +515,8 @@ async def _(event: GroupMessageEvent, state: T_State, matcher: Matcher, msg: Mes
     equips = await get_equip_list(equip_keyword)
     match_equips = []
     for each_equip in equips:
-        if each_equip.location_code == to_replace_location_code or (each_equip.location_code == 6 and to_replace_location_code == 7):
+        if each_equip.location_code == to_replace_location_code or (each_equip.location_code == 6
+                                                                    and to_replace_location_code == 7):
             match_equips.append(each_equip)
     if not match_equips:
         await replace_equip_matcher.finish("未找到符合条件的装备，请尝试更换关键词！")
@@ -527,18 +565,14 @@ async def _(event: GroupMessageEvent, matcher: Matcher, state: T_State, num: Mes
     new_log = EquipReplacementLog(
         user_id = event.user_id,
         message = f"替换了 {equip.name}（{equip.item_id}） 作为 {kungfu_name} PVE 的装备",
-        global_role_id = global_role_id
+        global_role_id = global_role_id,
     )
     logs_db.save(new_log)
     pve_equips = await JX3PlayerAttribute.from_database(global_role_id, tag, True)
     if pve_equips is None:
         await replace_equip_matcher.finish(PROMPT.EquipNotFound)
     current_data = next(
-        (
-            item
-            for item in pve_equips
-            if int(item.kungfu_id) == int(kungfu_id) and item.tag == "PVE"
-        ),
+        (item for item in pve_equips if int(item.kungfu_id) == int(kungfu_id) and item.tag == "PVE"),
         None,
     )
     if current_data is None:
@@ -549,7 +583,13 @@ async def _(event: GroupMessageEvent, matcher: Matcher, state: T_State, num: Mes
     current_data.save()
     await replace_equip_matcher.finish(f"已替换为 {equip.name}，请尝试使用 属性 命令查询效果！")
 
-replace_enchant_matcher = on_command("jx3_attribute_replace_enchant", command_key=None, aliases={"替换附魔"}, priority=5, force_whitespace=True)
+replace_enchant_matcher = on_command(
+    "jx3_attribute_replace_enchant",
+    command_key = None,
+    aliases = {"替换附魔"},
+    priority = 5,
+    force_whitespace = True,
+)
 
 @replace_enchant_matcher.handle()
 async def _(event: GroupMessageEvent, state: T_State, matcher: Matcher, msg: Message = CommandArg()):
@@ -558,7 +598,9 @@ async def _(event: GroupMessageEvent, state: T_State, matcher: Matcher, msg: Mes
         return
     args = msg.extract_plain_text().strip().split(" ")
     if len(args) != 5:
-        await replace_enchant_matcher.finish(PROMPT.ArgumentCountInvalid + "\n参考格式：替换附魔 <服务器> <角色名> <标签> <装备部位> <附魔关键词>")
+        await replace_enchant_matcher.finish(
+            PROMPT.ArgumentCountInvalid + "\n参考格式：替换附魔 <服务器> <角色名> <标签> <装备部位> <附魔关键词>",
+        )
     server = Server(args[0], event.group_id).server
     role_name = args[1]
     tag = args[2]
@@ -566,7 +608,7 @@ async def _(event: GroupMessageEvent, state: T_State, matcher: Matcher, msg: Mes
     enchant_keyword = args[4]
     if server is None:
         await replace_enchant_matcher.finish(PROMPT.ServerInvalid)
-    role_info = await search_player(role_name=role_name, server_name=server)
+    role_info = await search_player(role_name = role_name, server_name = server)
     if role_info.globalRoleId == "":
         await replace_enchant_matcher.finish(PROMPT.PlayerNotExist)
     if equip_location not in EQUIP_LOCATION:
@@ -575,7 +617,8 @@ async def _(event: GroupMessageEvent, state: T_State, matcher: Matcher, msg: Mes
     enchants = await get_enchant_list(enchant_keyword)
     match_enchants = []
     for each_enchant in enchants:
-        if each_enchant.location_code == to_replace_location_code or (each_enchant.location_code == 6 and to_replace_location_code == 7):
+        if each_enchant.location_code == to_replace_location_code or (each_enchant.location_code == 6
+                                                                      and to_replace_location_code == 7):
             match_enchants.append(each_enchant)
     if not match_enchants:
         await replace_enchant_matcher.finish("未找到符合条件的附魔，请尝试更换关键词！")
@@ -609,7 +652,7 @@ async def _(event: GroupMessageEvent, state: T_State, num: Message = Arg()):
     new_log = EquipReplacementLog(
         user_id = event.user_id,
         message = f"替换了 {enchant.name}（{enchant.enchant_id}） 作为 {tag} 的附魔",
-        global_role_id = global_role_id
+        global_role_id = global_role_id,
     )
     logs_db.save(new_log)
     try:
@@ -617,17 +660,16 @@ async def _(event: GroupMessageEvent, state: T_State, num: Message = Arg()):
             current_data.equip_lines,
             replace_location_code,
             enchant.enchant_id,
-            is_color_stone=enchant.name.startswith("彩·"),
-            is_common=enchant.is_common,
+            is_color_stone = enchant.name.startswith("彩·"),
+            is_common = enchant.is_common,
         )
     except ValueError:
         await replace_enchant_matcher.finish(PROMPT.EquipNotFound)
     current_data.save()
     await replace_enchant_matcher.finish(f"已替换为 {enchant.name}，请尝试使用 属性 命令查询效果！")
 
-attribute_db_executor = ThreadPoolExecutor(max_workers=1)
+attribute_db_executor = ThreadPoolExecutor(max_workers = 1)
 attribute_import_tasks: set[asyncio.Task[None]] = set()
-
 
 def _finish_attribute_import_task(task: asyncio.Task[None]) -> None:
     attribute_import_tasks.discard(task)
@@ -636,7 +678,6 @@ def _finish_attribute_import_task(task: asyncio.Task[None]) -> None:
     except Exception as exc:
         logger.exception(f"ATTR 文件后台导入失败：{exc}")
 
-
 async def _import_attribute_jcl(bot: Bot, event: GroupUploadNoticeEvent) -> None:
     msg = "以下全局玩家ID完成入库："
     try:
@@ -644,7 +685,12 @@ async def _import_attribute_jcl(bot: Bot, event: GroupUploadNoticeEvent) -> None
     except KeyError:
         file_id = event.model_dump()["file"]["id"]
         bus_id = event.model_dump()["file"]["busid"]
-        file_data = await bot.call_api("get_group_file_url", group_id=event.group_id, file_id=file_id, bus_id=bus_id)
+        file_data = await bot.call_api(
+            "get_group_file_url",
+            group_id = event.group_id,
+            file_id = file_id,
+            bus_id = bus_id,
+        )
         url = file_data["url"]
     response = await Request(url).get()
     if len(response.content) > 2 * 1024 * 1024 and "Preview" not in get_group_settings(event.group_id, "additions"):
@@ -652,30 +698,23 @@ async def _import_attribute_jcl(bot: Bot, event: GroupUploadNoticeEvent) -> None
     jcl_text = await asyncio.to_thread(response.content.decode, "gbk", "replace")
     attributes_data = await JX3PlayerAttribute.from_jcl(jcl_text)
     if not attributes_data:
-        await bot.send_group_msg(group_id=event.group_id, message="未识别到可入库的属性数据。")
+        await bot.send_group_msg(group_id = event.group_id, message = "未识别到可入库的属性数据。")
         return
     loop = asyncio.get_running_loop()
-    results = await asyncio.gather(*[
-        loop.run_in_executor(
-            attribute_db_executor,
-            lambda data=each_data: save_attribute_instance(data, only_if_newer=True),
-        )
-        for each_data in attributes_data
-    ], return_exceptions=True)
-    saved_data = [
-        each_data
-        for each_data, result in zip(attributes_data, results)
-        if result is True
-    ]
-    skipped_data = [
-        each_data
-        for each_data, result in zip(attributes_data, results)
-        if result is False
-    ]
+    results = await asyncio.gather(
+        *[
+            loop.run_in_executor(
+                attribute_db_executor,
+                lambda data = each_data: save_attribute_instance(data, only_if_newer = True),
+            ) for each_data in attributes_data
+        ],
+        return_exceptions = True,
+    )
+    saved_data = [each_data for each_data, result in zip(attributes_data, results) if result is True]
+    skipped_data = [each_data for each_data, result in zip(attributes_data, results) if result is False]
     failed_data = [
         format_attribute_save_error(each_data, cast(BaseException, result))
-        for each_data, result in zip(attributes_data, results)
-        if isinstance(result, BaseException)
+        for each_data, result in zip(attributes_data, results) if isinstance(result, BaseException)
     ]
     if not saved_data and skipped_data:
         msg = "识别到的装备均已有时间戳更新或相同的记录，未执行替换。"
@@ -695,8 +734,7 @@ async def _import_attribute_jcl(bot: Bot, event: GroupUploadNoticeEvent) -> None
             msg += f"\n{line[:160]}"
         if len(failed_data) > 10:
             msg += f"\n另有 {len(failed_data) - 10} 条不可用数据已跳过。"
-    await bot.send_group_msg(group_id=event.group_id, message=msg)
-
+    await bot.send_group_msg(group_id = event.group_id, message = msg)
 
 @notice.handle()
 async def _(bot: Bot, event: GroupUploadNoticeEvent):

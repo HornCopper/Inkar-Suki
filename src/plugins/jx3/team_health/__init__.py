@@ -24,16 +24,12 @@ from .app import (
     team_management_help,
 )
 
-
 TeamHealthMessageEvent = GroupMessageEvent | PrivateMessageEvent
-
 
 def _group_id(event: TeamHealthMessageEvent) -> int | None:
     return event.group_id if isinstance(event, GroupMessageEvent) else None
 
-
-register_raid_team_matcher = on_command("注册团队", command_key=None, priority=5, force_whitespace=True)
-
+register_raid_team_matcher = on_command("注册团队", command_key = None, priority = 5, force_whitespace = True)
 
 @register_raid_team_matcher.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
@@ -41,13 +37,11 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     if team_name == "":
         await register_raid_team_matcher.finish("参考格式：注册团队 <团队名>")
     await register_raid_team_matcher.finish(
-        create_team(event.group_id, event.user_id, team_name)
+        create_team(event.group_id, event.user_id, team_name),
     )
 
-
-bind_raid_team_matcher = on_command("绑定团队", command_key=None, priority=5, force_whitespace=True)
-select_bind_kungfu_matcher = on_message(priority=10, block=False)
-
+bind_raid_team_matcher = on_command("绑定团队", command_key = None, priority = 5, force_whitespace = True)
+select_bind_kungfu_matcher = on_message(priority = 10, block = False)
 
 @bind_raid_team_matcher.handle()
 async def _(event: TeamHealthMessageEvent, args: Message = CommandArg()):
@@ -55,7 +49,7 @@ async def _(event: TeamHealthMessageEvent, args: Message = CommandArg()):
     if len(parts) not in [3, 4]:
         await bind_raid_team_matcher.finish(
             "参考格式：绑定团队 <区服> <角色> <团队唯一特征码>\n"
-            "多心法角色：绑定团队 <区服> <角色> <心法> <团队唯一特征码>"
+            "多心法角色：绑定团队 <区服> <角色> <心法> <团队唯一特征码>",
         )
     if len(parts) == 3:
         server, role, feature_code = parts
@@ -92,7 +86,6 @@ async def _(event: TeamHealthMessageEvent, args: Message = CommandArg()):
         msg = f"绑定失败：{exc}"
     await bind_raid_team_matcher.finish(msg)
 
-
 @select_bind_kungfu_matcher.handle()
 async def _(event: TeamHealthMessageEvent):
     text = event.message.extract_plain_text().strip()
@@ -111,10 +104,8 @@ async def _(event: TeamHealthMessageEvent):
         return
     await select_bind_kungfu_matcher.finish(msg)
 
-
-raid_team_manage_matcher = on_command("团队管理", command_key=None, priority=5, force_whitespace=True)
-confirm_delete_team_matcher = on_command("确认删除", command_key=None, priority=5, force_whitespace=True)
-
+raid_team_manage_matcher = on_command("团队管理", command_key = None, priority = 5, force_whitespace = True)
+confirm_delete_team_matcher = on_command("确认删除", command_key = None, priority = 5, force_whitespace = True)
 
 @raid_team_manage_matcher.handle()
 async def _(event: TeamHealthMessageEvent, args: Message = CommandArg()):
@@ -150,24 +141,24 @@ async def _(event: TeamHealthMessageEvent, args: Message = CommandArg()):
         if len(parts) != 2:
             await raid_team_manage_matcher.finish(
                 "参考格式：团队管理 <团队名> 删除团队\n"
-                "直接确认：团队管理 <团队名> 删除团队 确认"
+                "直接确认：团队管理 <团队名> 删除团队 确认",
             )
         await raid_team_manage_matcher.finish(
-            prepare_delete_team_confirmation(event.user_id, team_name)
+            prepare_delete_team_confirmation(event.user_id, team_name),
         )
 
     if action == "删除成员":
         if len(parts) == 3:
             await raid_team_manage_matcher.finish(
-                delete_member(event.user_id, team_name, parts[2], group_id=_group_id(event))
+                delete_member(event.user_id, team_name, parts[2], group_id = _group_id(event)),
             )
         if len(parts) == 4:
             await raid_team_manage_matcher.finish(
-                delete_member(event.user_id, team_name, parts[3], parts[2], _group_id(event))
+                delete_member(event.user_id, team_name, parts[3], parts[2], _group_id(event)),
             )
         await raid_team_manage_matcher.finish(
             "参考格式：团队管理 <团队名> 删除成员 <角色名>\n"
-            "同名跨区服：团队管理 <团队名> 删除成员 <区服> <角色名>"
+            "同名跨区服：团队管理 <团队名> 删除成员 <区服> <角色名>",
         )
 
     if action == "体检":
@@ -179,13 +170,12 @@ async def _(event: TeamHealthMessageEvent, args: Message = CommandArg()):
             await raid_team_manage_matcher.finish(result)
         except ActionFailed:
             await raid_team_manage_matcher.finish(
-                "团队体检图片已生成，但 QQ/NapCat 拒绝了图片上传，建议重启 NapCat 后重试。"
+                "团队体检图片已生成，但 QQ/NapCat 拒绝了图片上传，建议重启 NapCat 后重试。",
             )
 
     await raid_team_manage_matcher.finish(
-        "未知团队管理动作。\n" + team_management_help()
+        "未知团队管理动作。\n" + team_management_help(),
     )
-
 
 @confirm_delete_team_matcher.handle()
 async def _(event: TeamHealthMessageEvent, args: Message = CommandArg()):

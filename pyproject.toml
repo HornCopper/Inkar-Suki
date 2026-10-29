@@ -33,3 +33,20 @@ plugin_dirs = ["src/plugins"]
 builtin_plugins = []
 
 [tool.pdm]
+
+[tool.pyright]
+include = ["src", "bot.py", "config.py", "dev_reload.py"]
+exclude = ["src/assets", "src/cache", "src/data"]
+pythonVersion = "3.10"
+
+[tool.yapf]
+based_on_style = "pep8"
+column_limit = 120
+indent_width = 4
+spaces_around_default_or_named_assign = true
+blank_lines_around_top_level_definition = 1
+join_multiple_lines = false
+dedent_closing_brackets = true
+coalesce_brackets = false
+split_before_first_argument = true
+split_arguments_when_comma_terminated = true

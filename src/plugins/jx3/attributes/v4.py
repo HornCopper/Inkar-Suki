@@ -20,25 +20,24 @@ from src.plugins.jx3.calculator.traverse import get_latest_rating_cache
 import os
 
 from ._template import (
-    template_enchant, 
-    template_equip, 
-    template_talent, 
-    template_other, 
-    template_show
+    template_enchant,
+    template_equip,
+    template_talent,
+    template_other,
+    template_show,
 )
 
 def _rating_icon_html(grade: str | None) -> str:
     if not grade:
         return ""
     icon = Path(
-        build_path(ASSETS, ["image", "jx3", "rank", f"rank_{grade.lower()}.png"])
+        build_path(ASSETS, ["image", "jx3", "rank", f"rank_{grade.lower()}.png"]),
     ).as_uri()
     return (
         f'<img src="{icon}" '
-        'style="position: absolute; top: 32px; left: -20px; '
-        'width: 42px; height: 42px; object-fit: contain; z-index: 3;">'
+        "style=\"position: absolute; top: 32px; left: -20px; "
+        "width: 42px; height: 42px; object-fit: contain; z-index: 3;\">"
     )
-
 
 async def _get_role_qualification(role_info: RoleData) -> str:
     server = Server(role_info.serverName)
@@ -46,10 +45,17 @@ async def _get_role_qualification(role_info: RoleData) -> str:
         "zone": server.zone,
         "server": server.server,
         "game_role_id": role_info.roleId,
-        "game_global_role_id": role_info.globalRoleId
+        "game_global_role_id": role_info.globalRoleId,
     }
     try:
-        data = (await Request("https://m.pvp.xoyo.com/badge/get-role-badge-data", params=params).post(tuilan=True)).json()
+        data = (
+            await Request(
+                "https://m.pvp.xoyo.com/badge/get-role-badge-data",
+                params = params,
+            ).post(
+                tuilan = True,
+            )
+        ).json()
         if data["code"] != 0:
             return ""
         for badge in data["data"]["badge_data"]:
@@ -58,7 +64,6 @@ async def _get_role_qualification(role_info: RoleData) -> str:
     except Exception:
         return ""
     return ""
-
 
 async def _get_latest_serendipity(role_info: RoleData) -> dict[str, str]:
     records = cast(
@@ -70,10 +75,10 @@ async def _get_latest_serendipity(role_info: RoleData) -> dict[str, str]:
             role_info.roleId,
             role_info.globalRoleId,
             role_info.roleName,
-            default=[],
+            default = [],
         ) or [],
     )
-    latest = max(records, key=lambda record: record.time, default=None)
+    latest = max(records, key = lambda record: record.time, default = None)
 
     event_name = latest.serendipityName if latest else ""
     level = int(latest.level or 1) if latest else 1
@@ -82,7 +87,7 @@ async def _get_latest_serendipity(role_info: RoleData) -> dict[str, str]:
         build_path(
             ASSETS,
             ["image", "jx3", "serendipity", "serendipity", category],
-        )
+        ),
     )
     icon_path = icon_directory / f"{event_name}.png"
 
@@ -99,7 +104,7 @@ async def parse_equip(equip: Equip, last: bool = False, rating_grade: str | None
             if last
             else template_equip + "<div class=\"divider\"></div>"
         )
-    ).render(
+    ,).render(
         icon=await cache_image(equip.icon),
         name=equip.name,
         attr=equip.attribute,
@@ -121,60 +126,60 @@ async def parse_equip(equip: Equip, last: bool = False, rating_grade: str | None
                         else "max_strength.png",
                     ],
                 )
-            ).as_uri()
+            ,).as_uri()
         )
         if not (equip.color == "(255, 165, 0)")
         else Path(
             build_path(ASSETS, ["image", "jx3", "attributes", "flicker.png"])
-        ),
+        ,),
         enchants=[
             Template(template_enchant).render(
                 icon=icon,
                 name=name
-            )
+            ,)
             for icon, name
             in [
                 (
                     Path(
                         ASSETS + "/image/jx3/attributes/permanent_enchant.png"
-                    ).as_uri(),
+                    ,).as_uri(),
                     equip.permanent_enchant
                 ),
                 (
                     Path(
                         ASSETS + "/image/jx3/attributes/common_enchant.png"
-                    ).as_uri(),
+                    ,).as_uri(),
                     (equip.common_enchant if equip.location_index not in [0, 1] else "")
                 ),
                 (
                     Path(
                         await cache_image(equip.color_stone_icon)
-                    ).as_uri(),
+                    ,).as_uri(),
                     equip.color_stone
                 )
-            ]
+            ,]
             if name
         ],
         fivestones={
             attr: Path(
                 ASSETS + "/image/jx3/attributes/wuxingshi/" + str(level) + ".png"
-            ).as_uri()
+            ,).as_uri()
             for attr, level
             in equip.diamonds
         },
         peerless="<img src=\""
         + Path(
             build_path(ASSETS, ["image", "jx3", "attributes", "peerless.png"])
-        ).as_uri()
+        ,).as_uri()
         + "\" style=\"position: absolute;top: 0; left: -20px;\">"
         if equip.peerless
         else "",
         rating=_rating_icon_html(rating_grade)
-    )
+    ,)
     return result
 
 async def get_attr_v4(server: str, name: str, conditions: str = "", group_id: int = 0):
-    role_info = await search_player(role_name=name, server_name=server)
+    role_info = await search_player(role_name = name, server_name = server)
     if not role_info.roleId:
         return PROMPT.PlayerNotExist
     # await JX3PlayerAttribute.from_tuilan(role_info.roleId, role_info.serverName, role_info.globalRoleId)
@@ -189,7 +194,7 @@ async def get_attr_v4(server: str, name: str, conditions: str = "", group_id: in
     show_path = SHOW + f"/{name}·{server}.png"
     if os.path.exists(show_path):
         show = Template(template_show).render(
-            show_path=show_path
+            show_path = show_path,
         )
     basic_info = {}
     basic_info["门派"] = role_info.forceName
@@ -212,59 +217,54 @@ async def get_attr_v4(server: str, name: str, conditions: str = "", group_id: in
                 "天罗诡道": "TL",
                 "太虚剑意": "JC",
                 "紫霞功": "QC",
-                "幽罗引": "WX"
+                "幽罗引": "WX",
             }[other_kungfu.kungfu_name]
         all_equip_records.append(
             Template(template_other).render(
-                icon=other_kungfu.icon,
-                kungfu=other_kungfu.kungfu_name,
-                tag=each_other_equip.tag,
-                score=each_other_equip.score,
-                msg=prefix + each_other_equip.tag,
-                saved_time=Time(each_other_equip.timestamp).format("%Y-%m-%d %H:%M"),
-            )
+                icon = other_kungfu.icon,
+                kungfu = other_kungfu.kungfu_name,
+                tag = each_other_equip.tag,
+                score = each_other_equip.score,
+                msg = prefix + each_other_equip.tag,
+                saved_time = Time(each_other_equip.timestamp).format("%Y-%m-%d %H:%M"),
+            ),
         )
     rating_cache = get_latest_rating_cache(current_equip.equip_lines, current_equip.kungfu_id)
     rating_by_location = {}
     if rating_cache is not None:
         rating_by_location = {
             rating["location_code"]: rating["grade"]
-            for rating in rating_cache.ratings
-            if "location_code" in rating and "grade" in rating
+            for rating in rating_cache.ratings if "location_code" in rating and "grade" in rating
         }
     all_equips = current_equip.equips
-    equips = [
-        await parse_equip(e, rating_grade=rating_by_location.get(e.location_index))
-        for e in all_equips[:-1]
-    ] + [
-        await parse_equip(
-            all_equips[-1],
-            True,
-            rating_grade=rating_by_location.get(all_equips[-1].location_index),
-        )
-    ]
+    equips = [await parse_equip(e, rating_grade = rating_by_location.get(e.location_index))
+              for e in all_equips[:-1]] + [
+                  await parse_equip(
+                      all_equips[-1],
+                      True,
+                      rating_grade = rating_by_location.get(all_equips[-1].location_index),
+                  ),
+              ]
     talents = [
         Template(template_talent).render(
-            icon=await cache_image(talent.icon),
-            name=talent.name
-        )
-        for talent
-        in current_equip.talents
+            icon = await cache_image(talent.icon),
+            name = talent.name,
+        ) for talent in current_equip.talents
     ]
     latest_serendipity = await _get_latest_serendipity(role_info)
     image = await get_attr_v4_image(
-        name=name,
-        server=server,
-        basic_info=basic_info,
-        main_attr=main_attr,
-        detailed_attr=detailed_attr,
-        all_equips=all_equip_records,
-        show=(show or ""),
-        score=current_equip.score,
-        kungfu_icon=kungfu.icon,
-        equips=equips,
-        talents=talents,
-        latest_serendipity=latest_serendipity,
+        name = name,
+        server = server,
+        basic_info = basic_info,
+        main_attr = main_attr,
+        detailed_attr = detailed_attr,
+        all_equips = all_equip_records,
+        show = (show or ""),
+        score = current_equip.score,
+        kungfu_icon = kungfu.icon,
+        equips = equips,
+        talents = talents,
+        latest_serendipity = latest_serendipity,
     )
     return image
 
@@ -288,29 +288,32 @@ async def get_attr_v4_image(
     if show is not None:
         info_margin = "8px"
     html = Template(
-        read(TEMPLATES + "/jx3/attributes_v4.html")
+        read(TEMPLATES + "/jx3/attributes_v4.html"),
     ).render(
-        info_margin=info_margin,
-        name=name,
-        server=server,
-        info=basic_info,
-        basic_attr=main_attr,
-        detailed_attr=detailed_attr,
-        score=score,
-        kungfu_icon=kungfu_icon,
-        equips=equips,
-        talents=talents,
-        other_equips=all_equips,
-        latest_serendipity=latest_serendipity,
-        font=font,
-        fzjz_font=fzjz_font,
-        saohua=get_saohua(),
-        show=show
+        info_margin = info_margin,
+        name = name,
+        server = server,
+        info = basic_info,
+        basic_attr = main_attr,
+        detailed_attr = detailed_attr,
+        score = score,
+        kungfu_icon = kungfu_icon,
+        equips = equips,
+        talents = talents,
+        other_equips = all_equips,
+        latest_serendipity = latest_serendipity,
+        font = font,
+        fzjz_font = fzjz_font,
+        saohua = get_saohua(),
+        show = show,
     )
     return await generate(
         html,
         ".container",
-        segment=True,
-        wait_for_network=True,
-        viewport={"height": 1080, "width": 1920},
+        segment = True,
+        wait_for_network = True,
+        viewport = {
+            "height": 1080,
+            "width": 1920,
+        },
     )

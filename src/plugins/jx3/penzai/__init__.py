@@ -10,7 +10,7 @@ from src.const.prompts import PROMPT
 from .dh import get_dh
 from .wg import get_wg
 
-dunhao_matcher = on_command("jx3_dh", command_key="物价", aliases={"蹲号"}, force_whitespace=True, priority=5)
+dunhao_matcher = on_command("jx3_dh", command_key = "物价", aliases = {"蹲号"}, force_whitespace = True, priority = 5)
 
 @dunhao_matcher.handle()
 async def _(event: GroupMessageEvent, matcher: Matcher, state: T_State, args: Message = CommandArg()):
@@ -36,7 +36,7 @@ async def _(event: GroupMessageEvent, matcher: Matcher, state: T_State, args: Me
     else:
         await dunhao_matcher.finish(data)
 
-@dunhao_matcher.got("num", prompt="回复标题前方的序号，音卡就可以给你链接啦！")
+@dunhao_matcher.got("num", prompt = "回复标题前方的序号，音卡就可以给你链接啦！")
 async def _(event: GroupMessageEvent, state: T_State, num: Message = Arg()):
     num_ = num.extract_plain_text()
     if not check_number(num_):
@@ -44,10 +44,10 @@ async def _(event: GroupMessageEvent, state: T_State, num: Message = Arg()):
     else:
         links = state["links"]
         floors = state["floors"]
-        floor = str(floors[int(num_)-1])
-        await dunhao_matcher.finish(links[int(num_)-1] + f"\n请前往{floor}楼哦~")
+        floor = str(floors[int(num_) - 1])
+        await dunhao_matcher.finish(links[int(num_) - 1] + f"\n请前往{floor}楼哦~")
 
-waiguan_matcher = on_command("jx3_wg", command_key="物价", aliases={"贴吧物价"}, force_whitespace=True, priority=5)
+waiguan_matcher = on_command("jx3_wg", command_key = "物价", aliases = {"贴吧物价"}, force_whitespace = True, priority = 5)
 
 @waiguan_matcher.handle()
 async def _(event: GroupMessageEvent, matcher: Matcher, state: T_State, args: Message = CommandArg()):
@@ -73,7 +73,7 @@ async def _(event: GroupMessageEvent, matcher: Matcher, state: T_State, args: Me
     else:
         await waiguan_matcher.finish(data)
 
-@waiguan_matcher.got("num", prompt="回复标题前方的序号，音卡就可以给你链接啦！")
+@waiguan_matcher.got("num", prompt = "回复标题前方的序号，音卡就可以给你链接啦！")
 async def _(event: GroupMessageEvent, state: T_State, num: Message = Arg()):
     num_ = num.extract_plain_text()
     if not check_number(num_):
@@ -81,5 +81,5 @@ async def _(event: GroupMessageEvent, state: T_State, num: Message = Arg()):
     else:
         links = state["links"]
         floors = state["floors"]
-        floor = str(floors[int(num_)-1])
-        await waiguan_matcher.finish(links[int(num_)-1] + f"\n请前往{floor}楼哦~")
+        floor = str(floors[int(num_) - 1])
+        await waiguan_matcher.finish(links[int(num_) - 1] + f"\n请前往{floor}楼哦~")

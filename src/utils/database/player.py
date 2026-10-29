@@ -15,9 +15,9 @@ async def get_role_id(roleName: str, serverName: str) -> dict | None:
         params = {
             "token": Config.jx3.api.token,
             "server": serverName,
-            "name": roleName
+            "name": roleName,
         }
-        response = await Request(url, params=params).get()
+        response = await Request(url, params = params).get()
         if response.status_code != 200:
             return None
         data = response.json()
@@ -26,16 +26,16 @@ async def get_role_id(roleName: str, serverName: str) -> dict | None:
         return data["data"]
     else:
         return None
-    
+
 async def submit_role_force(roleName: str, serverName: str) -> str | None:
     if Config.jx3.api.enable:
         url = f"{Config.jx3.api.url}/role/detail"
         params = {
             "token": Config.jx3.api.token,
             "server": serverName,
-            "name": roleName
+            "name": roleName,
         }
-        response = await Request(url, params=params).get()
+        response = await Request(url, params = params).get()
         if response.status_code != 200:
             return None
         data = response.json()
@@ -45,27 +45,53 @@ async def submit_role_force(roleName: str, serverName: str) -> str | None:
         db.delete(RoleData(), "roleName = ? AND serverName = ?", roleName, serverName)
         db.delete(RoleData(), "globalRoleId = ?", globalRoleId)
         new_data = RoleData(
-            bodyName=data["data"]["bodyName"],
-            campName=data["data"]["campName"],
-            forceName=data["data"]["forceName"],
-            globalRoleId=globalRoleId,
-            roleName=roleName,
-            roleId=data["data"]["roleId"],
-            serverName=serverName
+            bodyName = data["data"]["bodyName"],
+            campName = data["data"]["campName"],
+            forceName = data["data"]["forceName"],
+            globalRoleId = globalRoleId,
+            roleName = roleName,
+            roleId = data["data"]["roleId"],
+            serverName = serverName,
         )
         db.save(new_data)
         return f"强制绑定成功！\n记录数据：\n[{roleName}·{serverName}]"
     else:
         return "该音卡实例未启用 JX3API，请联系 Bot 管理员！"
-    
-@overload
-async def get_uid_data(global_role_id: str = "", role_id: str = "", server: str = "", role_name: str = "", msg: Literal[True] = True) -> str: ...
 
 @overload
-async def get_uid_data(global_role_id: str = "", role_id: str = "", server: str = "", role_name: str = "", msg: Literal[False] = False) -> RoleData: ...
+async def get_uid_data(
+    global_role_id: str = "",
+    role_id: str = "",
+    server: str = "",
+    role_name: str = "",
+    msg: Literal[True] = True
+) -> str:
+    ...
 
-async def get_uid_data(global_role_id: str = "", role_id: str = "", server: str = "", role_name: str = "", msg: bool = True) -> str | RoleData:
-    current_data: RoleData | None | Any = db.where_one(RoleData(), "roleId = ? AND serverName = ?", role_id, server, default=None)
+@overload
+async def get_uid_data(
+    global_role_id: str = "",
+    role_id: str = "",
+    server: str = "",
+    role_name: str = "",
+    msg: Literal[False] = False
+) -> RoleData:
+    ...
+
+async def get_uid_data(
+    global_role_id: str = "",
+    role_id: str = "",
+    server: str = "",
+    role_name: str = "",
+    msg: bool = True
+) -> str | RoleData:
+    current_data: RoleData | None | Any = db.where_one(
+        RoleData(),
+        "roleId = ? AND serverName = ?",
+        role_id,
+        server,
+        default = None,
+    )
     if current_data is not None:
         prefix = f"绑定成功！\n原始数据：[{current_data.roleName} · {current_data.serverName}]\n更新数据："
     else:
@@ -73,9 +99,9 @@ async def get_uid_data(global_role_id: str = "", role_id: str = "", server: str 
     params = {
         "role_id": role_id,
         "zone": Server(server).zone,
-        "server": server
+        "server": server,
     }
-    data = (await Request("https://m.pvp.xoyo.com/role/indicator", params=params).post(tuilan=True)).json()
+    data = (await Request("https://m.pvp.xoyo.com/role/indicator", params = params).post(tuilan = True)).json()
     data: dict[str, Any] = data["data"]["role_info"]
     if data is None:
         return PROMPT.UIDInvalid if msg else RoleData()
@@ -95,9 +121,9 @@ async def get_uid_data(global_role_id: str = "", role_id: str = "", server: str 
         params = {
             "token": Config.jx3.api.token,
             "server": server,
-            "name": roleName
+            "name": roleName,
         }
-        response = await Request(url, params=params).get()
+        response = await Request(url, params = params).get()
         api_data = response.json()
         if api_data["code"] == 200:
             globalRoleId = api_data["data"]["globalId"]
@@ -106,15 +132,15 @@ async def get_uid_data(global_role_id: str = "", role_id: str = "", server: str 
 
     roleId = data.pop("role_id")
     serverName = data.pop("server")
-    
+
     updated_data = RoleData(
-        bodyName=bodyName,
-        campName=campName,
-        forceName=forceName,
-        globalRoleId=globalRoleId,
-        roleName=roleName,
-        roleId=roleId,
-        serverName=serverName
+        bodyName = bodyName,
+        campName = campName,
+        forceName = forceName,
+        globalRoleId = globalRoleId,
+        roleName = roleName,
+        roleId = roleId,
+        serverName = serverName,
     )
 
     db.save(updated_data)
@@ -125,11 +151,7 @@ async def get_uid_data(global_role_id: str = "", role_id: str = "", server: str 
         return updated_data
 
 async def search_player(
-    role_name: str = "",
-    role_id: str = "",
-    server_name: str = "",
-    *,
-    local_lookup: bool = False
+    role_name: str = "", role_id: str = "", server_name: str = "", *, local_lookup: bool = False
 ) -> RoleData:
     if role_name.startswith("朝三暮四"):
         return RoleData()
@@ -139,9 +161,16 @@ async def search_player(
         server_name = server_name.rstrip("]")
     if not bool(re.match(r"^[\u4e00-\u9fff0-9@]*$", role_name)):
         return RoleData()
-    player_data: RoleData | Any = db.where_one(RoleData(), "(roleName = ? OR roleId = ?) AND serverName = ?", role_name, role_id, server_name, default=RoleData())
+    player_data: RoleData | Any = db.where_one(
+        RoleData(),
+        "(roleName = ? OR roleId = ?) AND serverName = ?",
+        role_name,
+        role_id,
+        server_name,
+        default = RoleData(),
+    )
     if player_data.roleId == "" and not local_lookup:
-        uid_data = await get_role_id(roleName=role_name, serverName=server_name)
+        uid_data = await get_role_id(roleName = role_name, serverName = server_name)
         if uid_data is None:
             return RoleData()
         player_data = await get_uid_data(uid_data["globalId"], uid_data["roleId"], server_name, role_name, False)

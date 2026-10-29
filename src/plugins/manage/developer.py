@@ -12,7 +12,7 @@ from src.utils.database.classes import Account, GroupSettings
 
 import json
 
-ScreenShotMatcher = on_command("screenshot", command_key=None, priority=5, force_whitespace=True)
+ScreenShotMatcher = on_command("screenshot", command_key = None, priority = 5, force_whitespace = True)
 
 @ScreenShotMatcher.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
@@ -22,12 +22,12 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     if not check_permission(event.user_id, "manage.screenshot"):
         return
     try:
-        image = await generate(url, full_screen=True, viewport={"height": 1080, "width": 1920}, segment=True)
+        image = await generate(url, full_screen = True, viewport = {"height": 1080, "width": 1920}, segment = True)
     except:  # noqa: E722
         await ScreenShotMatcher.finish("Screenshot Failed!")
     await ScreenShotMatcher.finish(image)
 
-ResetGlobalPermissionMatcher = on_command("重置权限", command_key=None, priority=5, force_whitespace=True)
+ResetGlobalPermissionMatcher = on_command("重置权限", command_key = None, priority = 5, force_whitespace = True)
 
 @ResetGlobalPermissionMatcher.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
@@ -45,7 +45,7 @@ async def _(event: GroupMessageEvent, confirm: Message = Arg()):
             db.save(account)
     await ResetGlobalPermissionMatcher.finish("已重置所有人的权限！")
 
-ResetGlobalCoinMatcher = on_command("重置货币", command_key=None, priority=5, force_whitespace=True)
+ResetGlobalCoinMatcher = on_command("重置货币", command_key = None, priority = 5, force_whitespace = True)
 
 @ResetGlobalCoinMatcher.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
@@ -63,7 +63,7 @@ async def _(event: GroupMessageEvent, confirm: Message = Arg()):
             db.save(account)
     await ResetGlobalCoinMatcher.finish("已重置所有人的货币！")
 
-SetInvitorMatcher = on_command("设置邀请人", command_key=None, priority=5, force_whitespace=True)
+SetInvitorMatcher = on_command("设置邀请人", command_key = None, priority = 5, force_whitespace = True)
 
 @SetInvitorMatcher.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
@@ -76,12 +76,17 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
         await SetInvitorMatcher.finish("格式错误：设置邀请人 群号 QQ号")
     group_id = arg[0]
     user_id = arg[1]
-    current_setting: GroupSettings | Any = db.where_one(GroupSettings(), "group_id = ?", group_id, default=GroupSettings(group_id=group_id))
+    current_setting: GroupSettings | Any = db.where_one(
+        GroupSettings(),
+        "group_id = ?",
+        group_id,
+        default = GroupSettings(group_id = group_id),
+    )
     current_setting.invitor = int(user_id)
     db.save(current_setting)
     await SetInvitorMatcher.finish(f"成功设置群[{group_id}]的邀请人为[{user_id}]！")
 
-onebot_api_call = on_command("调用API", command_key=None, priority=5, force_whitespace=True)
+onebot_api_call = on_command("调用API", command_key = None, priority = 5, force_whitespace = True)
 
 @onebot_api_call.handle()
 async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):

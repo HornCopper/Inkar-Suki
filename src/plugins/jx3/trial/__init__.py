@@ -9,9 +9,13 @@ from src.utils.analyze import check_number
 
 from .api import get_trial_dps, get_trial_rank
 
-
-trial_rank_matcher = on_command("jx3_slrank", command_key="试炼", aliases={"试炼之地", "试炼"}, priority=5, force_whitespace=True)
-
+trial_rank_matcher = on_command(
+    "jx3_slrank",
+    command_key = "试炼",
+    aliases = {"试炼之地", "试炼"},
+    priority = 5,
+    force_whitespace = True,
+)
 
 @trial_rank_matcher.handle()
 async def _(event: GroupMessageEvent, msg: Message = CommandArg()):
@@ -37,9 +41,13 @@ async def _(event: GroupMessageEvent, msg: Message = CommandArg()):
         await trial_rank_matcher.finish(PROMPT.ServerNotExist)
     await trial_rank_matcher.finish(await get_trial_rank(trial_name, server))
 
-
-trial_dps_matcher = on_command("jx3_trial_dps", command_key="秒伤", aliases={"试炼秒伤"}, priority=5, force_whitespace=True)
-
+trial_dps_matcher = on_command(
+    "jx3_trial_dps",
+    command_key = "秒伤",
+    aliases = {"试炼秒伤"},
+    priority = 5,
+    force_whitespace = True,
+)
 
 @trial_dps_matcher.handle()
 async def _(args: Message = CommandArg()):

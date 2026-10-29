@@ -20,23 +20,22 @@ async def generate_snacks_image(season: str = "风语", *, data: dict[str, list[
             Template(template_table).render(
                 image = image,
                 color = Kungfu(kungfu).color,
-                values = values
-            )
+                values = values,
+            ),
         )
     html = str(
         HTMLSourceCode(
-            application_name="小药",
+            application_name = "小药",
             table_head = table_head,
-            table_body = "\n".join(tables)
-        )
+            table_body = "\n".join(tables),
+        ),
     )
-    return await generate(html, ".container", segment=True)
-    
+    return await generate(html, ".container", segment = True)
 
-school_snacks_matcher = on_command("小药", command_key="小药", priority=5, force_whitespace=True)
+school_snacks_matcher = on_command("小药", command_key = "小药", priority = 5, force_whitespace = True)
 
 @school_snacks_matcher.handle()
 async def _(event: GroupMessageEvent, msg: Message = CommandArg()):
     data = Kungfu.kungfu_snacks
-    image = await generate_snacks_image(data=data)
+    image = await generate_snacks_image(data = data)
     await school_snacks_matcher.finish(image)

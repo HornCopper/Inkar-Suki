@@ -6,7 +6,6 @@ from src.templates import HTMLSourceCode
 from src.utils.generate import generate
 from src.utils.network import Request
 
-
 GAME_RANK_NAMES = (
     "名士五十强",
     "老江湖五十强",
@@ -46,12 +45,11 @@ TABLE_HEAD = """<th class="short-column">排名</th>
 TABLE_ROW = """<tr><td class="short-column">{{ rank }}</td>
 {% for value in values %}<td class="short-column">{{ value }}</td>{% endfor %}</tr>"""
 
-
 async def get_game_rank(server: str, rank_name: str):
     params = {"name": rank_name, "token": Config.jx3.api.token}
     if server:
         params["server"] = server
-    response = (await Request(f"{Config.jx3.api.url}/rank/statistics", params=params).get()).json()
+    response = (await Request(f"{Config.jx3.api.url}/rank/statistics", params = params).get()).json()
     if response["code"] != 200 or not response["data"]:
         return "未找到该榜单的数据，请检查服务器和榜单名称后重试！"
 
@@ -64,11 +62,7 @@ async def get_game_rank(server: str, rank_name: str):
                 item["server"] = group["server"]
             item["rank"] = rank
             records.append(item)
-    columns = [
-        (field, label)
-        for field, label in FIELD_NAMES
-        if any(field in record for record in records)
-    ]
+    columns = [(field, label) for field, label in FIELD_NAMES if any(field in record for record in records)]
 
     images = []
     pages = [records[index:index + 100] for index in range(0, len(records), 100)]
@@ -81,14 +75,14 @@ async def get_game_rank(server: str, rank_name: str):
                 if field == "totalScore" and isinstance(value, (int, float)):
                     value = f"{value:,}"
                 values.append(value)
-            rows.append(Template(TABLE_ROW).render(rank=record["rank"], values=values))
+            rows.append(Template(TABLE_ROW).render(rank = record["rank"], values = values))
         page_suffix = f" · {page_number}/{len(pages)}" if len(pages) > 1 else ""
         html = str(
             HTMLSourceCode(
-                application_name=f"江湖榜单 · {server or '全服'} · {rank_name}{page_suffix}",
-                table_head=Template(TABLE_HEAD).render(columns=[label for _, label in columns]),
-                table_body="".join(rows),
-            )
+                application_name = f"江湖榜单 · {server or '全服'} · {rank_name}{page_suffix}",
+                table_head = Template(TABLE_HEAD).render(columns = [label for _, label in columns]),
+                table_body = "".join(rows),
+            ),
         )
-        images.append(await generate(html, ".container", segment=True))
+        images.append(await generate(html, ".container", segment = True))
     return Message(images)

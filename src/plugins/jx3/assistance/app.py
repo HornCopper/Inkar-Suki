@@ -1,4 +1,4 @@
-from typing import Literal, overload
+from typing import Any, Literal, overload
 from datetime import datetime
 from jinja2 import Template
 
@@ -8,7 +8,7 @@ from src.config import Config
 from src.const.jx3.kungfu import Kungfu
 from src.const.path import (
     ASSETS,
-    build_path
+    build_path,
 )
 from src.utils.time import Time
 from src.utils.generate import generate
@@ -36,7 +36,7 @@ def parse_limit(s: str) -> dict[str, int] | Literal[False]:
         result[key] = int(value)
     return result
 
-def format_member_time(value: object) -> str:
+def format_member_time(value: Any) -> str:
     try:
         timestamp = int(value)
         if timestamp <= 0:
@@ -46,6 +46,7 @@ def format_member_time(value: object) -> str:
         return "未知"
 
 class Assistance:
+
     def __init__(self):
         pass
 
@@ -67,11 +68,11 @@ class Assistance:
             if i["description"] == keyword or str(opening.index(i) + 1) == keyword:
                 return False
         return True
-    
+
     def get_kungfu_icon(self, kungfu_name: str) -> str:
         if kungfu_name != "老板":
             return Kungfu(kungfu_name).icon
-        return build_path(ASSETS, ["image", "jx3", "kungfu"], end_with_slash=True) + "老板.png"
+        return build_path(ASSETS, ["image", "jx3", "kungfu"], end_with_slash = True) + "老板.png"
 
     def create_group(self, group_id: str, keyword: str, creator_id: str, /, limit: str = "") -> str | None:
         status = self.check_description(group_id, keyword)
@@ -83,7 +84,7 @@ class Assistance:
             "member": [[], [], [], [], []],
             "create_time": Time().raw_time,
             "description": keyword,
-            "limit": limit
+            "limit": limit,
         }
         opening = get_group_settings(group_id, "opening")
         if not isinstance(opening, list):
@@ -119,7 +120,13 @@ class Assistance:
             if not parsed_limit:
                 applyable = True
             else:
-                if self.stastic_roles(status["member"]).get(self.role_type_abbr(role_actual_type), 0) < parsed_limit.get(self.role_type_abbr(role_actual_type), 0):
+                if self.stastic_roles(status["member"]).get(
+                        self.role_type_abbr(role_actual_type),
+                        0,
+                ) < parsed_limit.get(
+                        self.role_type_abbr(role_actual_type),
+                        0,
+                ):
                     applyable = True
         if not applyable:
             return "您所申请或预留的职业类型已达到团长限制的最大数量，您可以更换其他职业参与本次团队活动！\n可使用“团队列表”查看该团队的职业人数限制！\n可使用“查看团队”查看该团队目前报名情况！"
@@ -127,7 +134,7 @@ class Assistance:
             "role": role_name,
             "role_type": role_actual_type,
             "apply": user_id,
-            "time": Time().raw_time
+            "time": Time().raw_time,
         }
         storge_status = self.storge(group_id, keyword, new)
         if not storge_status:
@@ -157,7 +164,9 @@ class Assistance:
         if not cancelled:
             raise ValueError("Please check the `assistance` app.py class `Assistance` method `cancel apply`!")
 
-    def dissolve(self, group_id: str, keyword: str, user_id: str, is_admin: bool, dissolve_all: bool = False) -> str | None:
+    def dissolve(
+        self, group_id: str, keyword: str, user_id: str, is_admin: bool, dissolve_all: bool = False
+    ) -> str | None:
         now = get_group_settings(group_id, "opening")
         if not isinstance(now, list):
             return None
@@ -224,7 +233,7 @@ class Assistance:
                             return True
                 return i
         return False
-    
+
     def role_type_abbr(self, role_type: str) -> str:
         if role_type in ["铁牢律", "明尊琉璃体", "洗髓经", "铁骨衣"]:
             return "T"
@@ -234,26 +243,37 @@ class Assistance:
             return "B"
         else:
             return "D"
-        
+
     def share_team(self, from_group: int, to_group: int, keyword: str, creator: int) -> bool:
         if self.check_description(str(from_group), keyword) or not self.check_description(str(to_group), keyword):
             return False
         raw_teams: list[dict] = get_group_settings(str(from_group), "opening")
         goal_teams: list[dict] = get_group_settings(str(to_group), "opening")
         for each_team in raw_teams:
-            if (str(each_team["creator"]) == str(creator) or str(creator) in Config.bot_basic.bot_owner) and (each_team["description"] == keyword or str(raw_teams.index(each_team) + 1) == keyword):
+            if (str(each_team["creator"]) == str(creator) or str(creator) in Config.bot_basic.bot_owner) and (
+                    each_team["description"] == keyword or str(raw_teams.index(each_team) + 1) == keyword):
                 goal_teams.append(each_team)
                 set_group_settings(str(to_group), "opening", goal_teams)
                 return True
         return False
-    
-    @overload
-    async def generate_html(self, group_id: str, keyword: str, new_sort_method: bool = False, all: Literal[False] = False) -> str | ms: ...
 
     @overload
-    async def generate_html(self, group_id: str, keyword: str, new_sort_method: bool = False, all: Literal[True] = True) -> list[ms]: ...
+    async def generate_html(
+        self, group_id: str, keyword: str, new_sort_method: bool = False, all: Literal[False] = False
+    ) -> str | ms:
+        ...
 
-    async def generate_html(self, group_id: str, keyword: str, new_sort_method: bool = False, all: bool = False) -> str | ms | list[ms]:
+    @overload
+    async def generate_html(
+        self, group_id: str, keyword: str, new_sort_method: bool = False, all: Literal[True] = True
+    ) -> list[ms]:
+        ...
+
+    async def generate_html(self,
+                            group_id: str,
+                            keyword: str,
+                            new_sort_method: bool = False,
+                            all: bool = False) -> str | ms | list[ms]:
         if new_sort_method:
             method = sort_teams_v2
         else:
@@ -269,7 +289,7 @@ class Assistance:
                     "T": 0,
                     "N": 0,
                     "D": 0,
-                    "B": 0
+                    "B": 0,
                 }
                 html_table = "<table>"
                 sorted_team = method(i["member"])
@@ -298,7 +318,7 @@ class Assistance:
                                 icon = icon,
                                 name = name,
                                 qq = qq,
-                                time = format_member_time(a.get("time"))
+                                time = format_member_time(a.get("time")),
                             )
                         else:
                             cell_content = "<div class=\"cell\"></div>"
@@ -317,15 +337,22 @@ class Assistance:
                     font = font,
                     footer_msg = get_saohua(),
                     # background = bg,
-                    title = i["description"]
+                    title = i["description"],
                 )
-                image = await generate(str(html), ".container", segment=True, viewport={"width": 1366, "height": 768})
+                image = await generate(
+                    str(html),
+                    ".container",
+                    segment = True,
+                    viewport = {
+                        "width": 1366,
+                        "height": 768,
+                    },
+                )
                 images.append(image)
         if images == []:
             return "未找到相关团队！"
         else:
             return images
-    
 
 def get_yzk_answer() -> str:
     time_table = {
@@ -424,7 +451,7 @@ def get_yzk_answer() -> str:
         "23:00:00": "东-9,南-0,西-1,北-5",
         "23:15:00": "东-9,南-0,西-1,北-6",
         "23:30:00": "东-9,南-0,西-1,北-7",
-        "23:45:00": "东-9,南-0,西-1,北-8"
+        "23:45:00": "东-9,南-0,西-1,北-8",
     }
     now = datetime.now()
     hours = now.strftime("%H")
@@ -465,7 +492,7 @@ def get_gyc_answer(points: str) -> tuple[list[str], int] | None:
             if x in remaining:
                 dist = abs(step) // 2
                 entries.append((dist, cw, x))
-        entries.sort(key=lambda x: (x[0], x[1]))
+        entries.sort(key = lambda x: (x[0], x[1]))
         options[n] = [e[2] for e in entries]
 
     assign = {}

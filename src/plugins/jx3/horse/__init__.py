@@ -8,9 +8,7 @@ from src.utils.command import on_command
 from .api import get_horse_reporter, get_horse_next_spawn
 from .dilu import get_dilu_records
 
-
-dilu_matcher = on_command("jx3_dilu", command_key="抓马", aliases={"的卢统计"}, force_whitespace=True, priority=5)
-
+dilu_matcher = on_command("jx3_dilu", command_key = "抓马", aliases = {"的卢统计"}, force_whitespace = True, priority = 5)
 
 @dilu_matcher.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
@@ -29,7 +27,13 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     image = await get_dilu_records(server)
     await dilu_matcher.finish(image)
 
-horse_chat_matcher = on_command("jx3_horse_v1", command_key="抓马", aliases={"抓马v1", "马场v1"}, force_whitespace=True, priority=5)
+horse_chat_matcher = on_command(
+    "jx3_horse_v1",
+    command_key = "抓马",
+    aliases = {"抓马v1", "马场v1"},
+    force_whitespace = True,
+    priority = 5,
+)
 
 @horse_chat_matcher.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
@@ -39,7 +43,13 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     msg = await get_horse_reporter(server)
     await horse_chat_matcher.finish(msg)
 
-horse_spawn_matcher = on_command("jx3_horse_v2", command_key="抓马", aliases={"抓马", "马场"}, force_whitespace=True, priority=5)
+horse_spawn_matcher = on_command(
+    "jx3_horse_v2",
+    command_key = "抓马",
+    aliases = {"抓马", "马场"},
+    force_whitespace = True,
+    priority = 5,
+)
 
 @horse_spawn_matcher.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):

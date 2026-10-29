@@ -10,8 +10,48 @@ from src.utils.database.classes import PlayerEquipsCache
 
 INCOMES = {
     "无增益": [],
-    "满增益": ["LDCF","CY","JF","HLSJ_1","HLSJ_2","PJ","XR","HXQJ","ZF","JHZ","CSY_SYMX","QS","LZWH","ZXYZ","XWGD","ZZM","PH","XQ","HRL"],
-    "满增益风雷": ["LDCF","CY","JF","HLSJ_1","HLSJ_2","PJ","XR","HXQJ","ZF","JHZ","CSY_SYMX","QS","LZWH","ZXYZ","XWGD","NM","PH","XQ","HRL"]
+    "满增益": [
+        "LDCF",
+        "CY",
+        "JF",
+        "HLSJ_1",
+        "HLSJ_2",
+        "PJ",
+        "XR",
+        "HXQJ",
+        "ZF",
+        "JHZ",
+        "CSY_SYMX",
+        "QS",
+        "LZWH",
+        "ZXYZ",
+        "XWGD",
+        "ZZM",
+        "PH",
+        "XQ",
+        "HRL",
+    ],
+    "满增益风雷": [
+        "LDCF",
+        "CY",
+        "JF",
+        "HLSJ_1",
+        "HLSJ_2",
+        "PJ",
+        "XR",
+        "HXQJ",
+        "ZF",
+        "JHZ",
+        "CSY_SYMX",
+        "QS",
+        "LZWH",
+        "ZXYZ",
+        "XWGD",
+        "NM",
+        "PH",
+        "XQ",
+        "HRL",
+    ],
 }
 
 FULL_INCOME_WITH_CONSUMABLES = {"满增益", "满增益风雷"}
@@ -60,9 +100,8 @@ FORMATIONS = {
     "七绝逍遥阵": ["QJXYZ"],
     "天鼓雷音阵": ["TGLYZ"],
     "万蛊噬心阵": ["WGSXZ", "WGSXZ_SELF"],
-    "横云破锋阵": ["HYPFZ", "HYPFZ_SELF"]
+    "横云破锋阵": ["HYPFZ", "HYPFZ_SELF"],
 }
-
 
 def _calculator_kungfu_type(kungfu_id: int, base_attr: str | None) -> str:
     """按 calculator 的心法分类选择内外功熔锭和宴席。"""
@@ -70,19 +109,17 @@ def _calculator_kungfu_type(kungfu_id: int, base_attr: str | None) -> str:
         return "Magic"
     return "Physics"
 
-
 def _calculator_feast_codes(kungfu: Kungfu, base_attr: str, kungfu_type: str) -> list[str]:
     if kungfu.abbr == "T":
         return list(CRYSTAL_BANQUET_FEASTS)
     return FEASTS[kungfu_type]
-
 
 def get_calculator_income_codes(income_name: str, kungfu_id: int) -> list[str]:
     income_codes = list(INCOMES[income_name])
     if income_name not in FULL_INCOME_WITH_CONSUMABLES:
         return income_codes
 
-    kungfu = Kungfu.with_internel_id(kungfu_id, convert_to_pc=True)
+    kungfu = Kungfu.with_internel_id(kungfu_id, convert_to_pc = True)
     base_attr = kungfu.base
     if kungfu_id in VITALITY_KUNGFU_IDS:
         base_attr = "体质"
@@ -91,13 +128,9 @@ def get_calculator_income_codes(income_name: str, kungfu_id: int) -> list[str]:
     kungfu_type = _calculator_kungfu_type(kungfu_id, base_attr)
     ingot_codes = THERAPY_INGOTS if kungfu.abbr == "N" else ATTACK_INGOTS[kungfu_type]
     return (
-        income_codes
-        + MAIN_ATTR_CONSUMABLES.get(base_attr, [])
-        + ingot_codes
-        + _calculator_feast_codes(kungfu, base_attr, kungfu_type)
-        + SHARED_FEASTS
+        income_codes + MAIN_ATTR_CONSUMABLES.get(base_attr, []) + ingot_codes +
+        _calculator_feast_codes(kungfu, base_attr, kungfu_type) + SHARED_FEASTS
     )
-
 
 class BaseCalculator:
     calculator_url = Config.jx3.api.calculator_url
@@ -107,7 +140,7 @@ class BaseCalculator:
         instance = await JX3PlayerAttribute.from_database(global_role_id, tag, False)
         if instance is None:
             return PROMPT.EquipNotFound
-        return cls(equip_data=instance, info=("未知", "未知"))
+        return cls(equip_data = instance, info = ("未知", "未知"))
 
     @classmethod
     async def with_name(cls, name: str, server: str, tag: str) -> "Self | str":
@@ -118,8 +151,8 @@ class BaseCalculator:
         instance = await JX3PlayerAttribute.from_database(int(player_data.globalRoleId), tag, False)
         if instance is None:
             return PROMPT.EquipNotFound
-        return cls(equip_data=instance, info=(name, server))
-    
+        return cls(equip_data = instance, info = (name, server))
+
     def __init__(self, equip_data: JX3PlayerAttribute | None = None, info: tuple[str, str] = ("", "")):
         self.equip_data = cast(JX3PlayerAttribute, equip_data)
         self.info = info
@@ -133,23 +166,19 @@ class BaseCalculator:
         kungfu_id = getattr(self, "kungfu_id", 0) or getattr(self.equip_data, "kungfu_id", 0)
         return int(kungfu_id or 0)
 
-
 FIVESTONE_ITEM_ID_RANGES = (
     range(24442, 24449 + 1),
     range(24423, 24430 + 1),
 )
 
-
 def _is_calculator_fivestone_item_id(item_id: int) -> bool:
     return any(item_id in item_range for item_range in FIVESTONE_ITEM_ID_RANGES)
-
 
 def _calculator_fivestone_item_id_from_slot_level(slot_level: int) -> int | None:
     level = slot_level + 1
     if level not in range(1, 8 + 1):
         return None
     return level + 24441
-
 
 def normalize_calculator_jcl_data(jcl_data: list[list]) -> list[list]:
     normalized_data = []

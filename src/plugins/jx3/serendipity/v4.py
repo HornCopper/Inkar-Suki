@@ -17,7 +17,6 @@ from src.utils.time import Time
 
 from .without_jx3api import JX3Serendipity
 
-
 CARD_TEMPLATE = """
 <article class="event-card {{ category }}{% if not triggered %} untriggered{% endif %}">
     {% if month_label %}<span class="month-label">{{ month_label }}</span>{% endif %}
@@ -34,27 +33,28 @@ CARD_TEMPLATE = """
 </article>
 """
 
-
 def _catalogue() -> list[dict]:
     result = []
     for level, category in (
         (1, "common"),
         (2, "peerless"),
     ):
-        directory = Path(build_path(
-            ASSETS, ["image", "jx3", "serendipity", "serendipity", category]
-        ))
-        result.extend(
-            {"name": path.stem, "level": level, "category": category}
-            for path in directory.glob("*.png")
+        directory = Path(
+            build_path(
+                ASSETS,
+                ["image", "jx3", "serendipity", "serendipity", category],
+            ),
         )
+        result.extend({"name": path.stem, "level": level, "category": category} for path in directory.glob("*.png"))
     return result
 
-
 def _show_path(name: str, category: str, school: str) -> str:
-    directory = Path(build_path(
-        ASSETS, ["image", "jx3", "serendipity", "show", category]
-    ))
+    directory = Path(
+        build_path(
+            ASSETS,
+            ["image", "jx3", "serendipity", "show", category],
+        ),
+    )
     school_path = directory / f"{name}-{school}.png"
     if school and school_path.is_file():
         return school_path.as_posix()
@@ -66,41 +66,50 @@ def _show_path(name: str, category: str, school: str) -> str:
     variants = list(directory.glob(f"{name}-*.png"))
     return choice(variants).as_posix() if variants else ""
 
-
 async def get_serendipity_image_v4(server: str, name: str):
-    player = await search_player(role_name=name, server_name=server)
+    player = await search_player(role_name = name, server_name = server)
     if not player.roleId:
         return PROMPT.PlayerNotExist
 
     if Config.jx3.api.enable:
         response = await Request(
             f"{Config.jx3.api.url}/event/records",
-            params={"server": server, "name": name, "token": Config.jx3.api.token},
+            params = {
+                "server": server,
+                "name": name,
+                "token": Config.jx3.api.token,
+            },
         ).get()
         payload = response.json()
         records = await JX3Serendipity().merge_api_with_my_data(
-            payload.get("data") or [], server, name, player.globalRoleId, player.roleId
+            payload.get("data") or [],
+            server,
+            name,
+            player.globalRoleId,
+            player.roleId,
         )
     else:
         records = await JX3Serendipity().integration(
-            server, name, player.roleId, player.globalRoleId
+            server,
+            name,
+            player.roleId,
+            player.globalRoleId,
         )
 
     record_map = {
         (item.get("event") or item.get("name")): item
-        for item in records
-        if item.get("event") or item.get("name")
+        for item in records if item.get("event") or item.get("name")
     }
     catalogue = _catalogue()
     # Dated records are newest-first, completed records with an unknown date
     # follow, and never-triggered entries remain together at the bottom.
     catalogue.sort(
-        key=lambda item: (
+        key = lambda item: (
             1 if item["name"] in record_map else 0,
             int(record_map.get(item["name"], {}).get("time") or 0),
             item["name"],
         ),
-        reverse=True,
+        reverse = True,
     )
 
     school = School(player.forceName).name or player.forceName
@@ -130,56 +139,59 @@ async def get_serendipity_image_v4(server: str, name: str):
         if timestamp:
             date = datetime.fromtimestamp(timestamp)
             month = (date.year, date.month)
-            if (
-                (first_dated_record or month_counts[month] >= 2)
-                and month not in handled_months
-            ):
+            if ((first_dated_record or month_counts[month] >= 2) and month not in handled_months):
                 month_label = f"{date.year}.{date.month}"
                 handled_months.add(month)
             first_dated_record = False
-        cards.append(Template(CARD_TEMPLATE).render(
-            event_name=item["name"],
-            category=item["category"],
-            month_label=month_label,
-            peerless_icon=(
-                build_path(
+        cards.append(
+            Template(CARD_TEMPLATE).render(
+                event_name = item["name"],
+                category = item["category"],
+                month_label = month_label,
+                peerless_icon = (
+                    build_path(
+                        ASSETS,
+                        ["image", "jx3", "serendipity", "vector", "peerless.png"],
+                    ) if item["category"] == "peerless" else ""
+                ),
+                serendipity_icon = build_path(
                     ASSETS,
-                    ["image", "jx3", "serendipity", "vector", "peerless.png"],
-                )
-                if item["category"] == "peerless"
-                else ""
+                    ["image", "jx3", "serendipity", "vector", "icon.png"],
+                ),
+                serendipity_close = build_path(
+                    ASSETS,
+                    ["image", "jx3", "serendipity", "vector", "close.png"],
+                ),
+                triggered = record is not None,
+                show_path = _show_path(item["name"], item["category"], school),
+                name_path = name_path.as_posix() if name_path.is_file() else "",
+                time = time_text,
+                relative_time = relative_time,
+                attempted_icon = build_path(
+                    ASSETS,
+                    ["image", "jx3", "serendipity", "vector", "attempted.png"],
+                ),
             ),
-            serendipity_icon=build_path(
-                ASSETS, ["image", "jx3", "serendipity", "vector", "icon.png"]
-            ),
-            serendipity_close=build_path(
-                ASSETS, ["image", "jx3", "serendipity", "vector", "close.png"]
-            ),
-            triggered=record is not None,
-            show_path=_show_path(item["name"], item["category"], school),
-            name_path=name_path.as_posix() if name_path.is_file() else "",
-            time=time_text,
-            relative_time=relative_time,
-            attempted_icon=build_path(
-                ASSETS, ["image", "jx3", "serendipity", "vector", "attempted.png"]
-            ),
-        ))
+        )
 
     catalogue_names = {item["name"] for item in catalogue}
     triggered_count = len(catalogue_names.intersection(record_map))
-    html = str(SimpleHTML(
-        "jx3",
-        "serendipity_v4.html",
-        font=build_path(ASSETS, ["font", "PingFangSC-Medium.otf"]),
-        ink_background=build_path(
-            ASSETS, ["image", "jx3", "serendipity", "vector", "background.png"]
+    html = str(
+        SimpleHTML(
+            "jx3",
+            "serendipity_v4.html",
+            font = build_path(ASSETS, ["font", "PingFangSC-Medium.otf"]),
+            ink_background = build_path(
+                ASSETS,
+                ["image", "jx3", "serendipity", "vector", "background.png"],
+            ),
+            name = name,
+            server = server,
+            triggered = triggered_count,
+            total = len(catalogue),
+            saohua = get_saohua(),
+            cards = "\n".join(cards),
+            app_info = f"个人奇遇记录 · {server} · {name} · " + Time().format("%H:%M:%S"),
         ),
-        name=name,
-        server=server,
-        triggered=triggered_count,
-        total=len(catalogue),
-        saohua=get_saohua(),
-        cards="\n".join(cards),
-        app_info=f"个人奇遇记录 · {server} · {name} · " + Time().format("%H:%M:%S"),
-    ))
-    return await generate(html, ".serendipity-panel", segment=True)
+    )
+    return await generate(html, ".serendipity-panel", segment = True)

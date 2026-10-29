@@ -1,6 +1,7 @@
 ﻿from typing import ClassVar
 
 from src.utils.database.lib import LiteModel, BaseModel
+
 class Account(LiteModel):
     TABLE_NAME: ClassVar[str] = "accounts"
     user_id: int = 0
@@ -18,7 +19,6 @@ class CheckinPrize(LiteModel):
     creator_id: int = 0
     created_at: int = 0
 
-
 class CheckinPrizeAward(LiteModel):
     TABLE_NAME: ClassVar[str] = "checkin_prize_awards"
     user_id: int = 0
@@ -28,7 +28,6 @@ class CheckinPrizeAward(LiteModel):
     awarded_at: int = 0
     delivered_at: int = 0
     delivered_by: int = 0
-
 
 class Affections(LiteModel):
     TABLE_NAME: ClassVar[str] = "affections"
@@ -48,7 +47,7 @@ class Applicationslist(LiteModel):
 class BannedUser(LiteModel):
     TABLE_NAME: ClassVar[str] = "ban"
     user_id: int = 0
-    reason: str = ""    
+    reason: str = ""
 
 class BanRecord(LiteModel):
     TABLE_NAME: ClassVar[str] = "ban_record"
@@ -64,7 +63,7 @@ class GroupSettings(LiteModel):
     additions: list[str] = []
     permission_nodes: list[str] = []
     welcome: str = "欢迎入群！"
-    blacklist: list[dict[str, str]] = [] 
+    blacklist: list[dict[str, str]] = []
     wiki: dict = {"startwiki": "", "interwiki": []}
     webhook: list[str] = []
     opening: list = []
@@ -146,7 +145,6 @@ class RequestData(LiteModel):
     response_data: str = ""
     timestamp: int = 0
 
-
 class EquipmentRatingRaceEventCache(LiteModel):
     TABLE_NAME: ClassVar[str] = "equipment_rating_race_event"
     source_key: str = ""
@@ -154,7 +152,6 @@ class EquipmentRatingRaceEventCache(LiteModel):
     event_name: str = ""
     boss_map: list = []
     timestamp: int = 0
-
 
 class EquipmentRatingRaceBossCache(LiteModel):
     TABLE_NAME: ClassVar[str] = "equipment_rating_race_boss"
@@ -165,7 +162,6 @@ class EquipmentRatingRaceBossCache(LiteModel):
     records: list = []
     timestamp: int = 0
 
-
 class EquipmentRatingRaceRoleCache(LiteModel):
     TABLE_NAME: ClassVar[str] = "equipment_rating_race_role"
     source_key: str = ""
@@ -174,7 +170,6 @@ class EquipmentRatingRaceRoleCache(LiteModel):
     resolved_achievement_ids: list = []
     results: list = []
     timestamp: int = 0
-
 
 class RoleData(LiteModel):
     TABLE_NAME: ClassVar[str] = "role_data"
@@ -189,18 +184,20 @@ class RoleData(LiteModel):
     def __eq__(self, other):
         if not isinstance(other, RoleData):
             return False
-        return (self.serverName == other.serverName and
-                self.roleName == other.roleName and
-                self.roleId == other.roleId and
-                self.globalRoleId == other.globalRoleId)
+        return (
+            self.serverName == other.serverName and self.roleName == other.roleName and self.roleId == other.roleId
+            and self.globalRoleId == other.globalRoleId
+        )
 
     def __hash__(self):
         return hash((self.serverName, self.roleName, self.roleId, self.globalRoleId))
 
     def __repr__(self):
-        return (f"RoleData(serverName={self.serverName}, "
-                f"roleName={self.roleName}, roleId={self.roleId}, "
-                f"globalRoleId={self.globalRoleId})")
+        return (
+            f"RoleData(serverName={self.serverName}, "
+            f"roleName={self.roleName}, roleId={self.roleId}, "
+            f"globalRoleId={self.globalRoleId})"
+        )
 
 class SerendipityData(LiteModel):
     TABLE_NAME: ClassVar[str] = "serendipities"
@@ -265,18 +262,15 @@ class EquipReplacementLog(LiteModel):
     message: str = ""
     global_role_id: int = 0
 
-
 class CommandUsage(LiteModel):
     TABLE_NAME: ClassVar[str] = "command_usage"
     command_key: str = ""
     timestamp: int = 0
 
-
 class AnalyzerUsage(LiteModel):
     TABLE_NAME: ClassVar[str] = "analyzer_usage"
     prefix: str = ""
     timestamp: int = 0
-
 
 class RandomImageRecord(LiteModel):
     TABLE_NAME: ClassVar[str] = "random_image_record"
@@ -291,4 +285,3 @@ class RandomImageRecord(LiteModel):
     result_price: int = 0
     profit: int = 0
     timestamp: int = 0
-

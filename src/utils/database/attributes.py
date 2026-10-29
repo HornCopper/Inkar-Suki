@@ -22,11 +22,13 @@ from src.utils.analyze import (
 )
 from src.utils.exceptions import TabFileMissException
 from src.utils.database.constant import (
-    A, B, C,
+    A,
+    B,
+    C,
     CRITICAL_DAMAGE_DIVISOR,
     CRITICAL_DIVISOR,
     DECRITICAL_DAMAGE_DIVISOR,
-    OVERCOME_DIVISOR, 
+    OVERCOME_DIVISOR,
     PVX_STRAIN,
     SHIELD_130_CONST,
     STRAIN_DIVISOR,
@@ -38,7 +40,7 @@ from src.utils.database.constant import (
     Spunk_to_BaseOvercome_Cof,
     Strength_to_Attack_Cof,
     Strength_to_BaseOvercome_Cof,
-    StrengthIncome
+    StrengthIncome,
 )
 from src.utils.time import Time
 
@@ -49,7 +51,6 @@ import zlib
 import asyncio
 import base64
 
-
 def normalize_kungfu_id(kungfu_id: int | str) -> int:
     kungfu_id = int(kungfu_id)
     pc_kungfu_id = Kungfu.with_internel_id(kungfu_id, True).id
@@ -59,11 +60,12 @@ def normalize_kungfu_id(kungfu_id: int | str) -> int:
         return 10144
     return kungfu_id
 
-
 def parse_plugin_data(data: str) -> list[dict]:
+
     def replace_array(m):
         inner = m.group(1)
         return "[" + inner + "]"
+
     data = data.replace("-", "+").replace("_", "/")
     padding = 4 - len(data) % 4
     if padding != 4:
@@ -87,7 +89,6 @@ MAIN_DISPLAY_ATTRIBUTES_BY_KUNGFU_ABBR = {
     "T": {"内功防御", "外功防御", "基础体质", "御劲"},
 }
 
-
 def split_display_attributes(
     attributes: dict[str, Any],
     kungfu_abbr: str,
@@ -106,52 +107,86 @@ def split_display_attributes(
     return main_attr, detailed_attr
 
 def get_fivestone_level(item_index: int) -> int:
-    if item_index in range(24442, 24449+1):
+    if item_index in range(24442, 24449 + 1):
         return item_index - 24441
-    elif item_index in range(24423, 24430+1):
+    elif item_index in range(24423, 24430 + 1):
         return item_index - 24422
     else:
         raise ValueError(f"无法识别该五行石：5_{item_index}")
-
 
 def calculate_fivestone_level_multiplier(level: int) -> float:
     if level <= 6:
         return 0.195 * level
     return (0.65 * level - 3.2) * 1.3
 
-
 def calculate_fivestone_score(level: int) -> float:
     return A * B * calculate_fivestone_level_multiplier(level) * 1355 / 27800
 
-
 def calculate_fivestone_attribute(base_value: float, level: int) -> int:
     return int(
-        base_value * calculate_fivestone_level_multiplier(level) * 1355 / 27800
+        base_value * calculate_fivestone_level_multiplier(level) * 1355 / 27800,
     )
-
 
 def calculate_color_stone_score(level: int) -> float:
     return level * 78.11594202898551
 
-
 MAGIC_DAMAGE_KUNGFU_IDS = {
-    10003, 10014, 10021, 10081, 10175, 10225,
-    10242, 10447, 10615, 10627, 10786, 10821,
+    10003,
+    10014,
+    10021,
+    10081,
+    10175,
+    10225,
+    10242,
+    10447,
+    10615,
+    10627,
+    10786,
+    10821,
 }
 
 COMMON_ENCHANT_ATTRIBUTES = {
-    "于阗玉邑·伤·帽": {"magic": 28, "physics": 28},
-    "于阗玉镇·伤·帽": {"magic": 30, "physics": 30},
-    "于阗玉川·伤·帽": {"magic": 35, "physics": 35},
-    "于阗玉邦·伤·帽": {"magic": 41, "physics": 41},
-    "于阗玉都·伤·帽": {"magic": 48, "physics": 48},
-    "于阗玉邑·伤·衣": {"magic": 32, "physics": 32},
-    "于阗玉镇·伤·衣": {"magic": 36, "physics": 36},
-    "于阗玉川·伤·衣": {"magic": 41, "physics": 41},
-    "于阗玉邦·伤·衣": {"magic": 48, "physics": 48},
-    "于阗玉都·伤·衣": {"magic": 56, "physics": 56},
+    "于阗玉邑·伤·帽": {
+        "magic": 28,
+        "physics": 28,
+    },
+    "于阗玉镇·伤·帽": {
+        "magic": 30,
+        "physics": 30,
+    },
+    "于阗玉川·伤·帽": {
+        "magic": 35,
+        "physics": 35,
+    },
+    "于阗玉邦·伤·帽": {
+        "magic": 41,
+        "physics": 41,
+    },
+    "于阗玉都·伤·帽": {
+        "magic": 48,
+        "physics": 48,
+    },
+    "于阗玉邑·伤·衣": {
+        "magic": 32,
+        "physics": 32,
+    },
+    "于阗玉镇·伤·衣": {
+        "magic": 36,
+        "physics": 36,
+    },
+    "于阗玉川·伤·衣": {
+        "magic": 41,
+        "physics": 41,
+    },
+    "于阗玉邦·伤·衣": {
+        "magic": 48,
+        "physics": 48,
+    },
+    "于阗玉都·伤·衣": {
+        "magic": 56,
+        "physics": 56,
+    },
 }
-
 
 def get_common_enchant_attributes(enchant_name: str, kungfu_id: int) -> dict[str, int]:
     """Resolve the executable-script attributes of damage hat/chest enchants."""
@@ -161,19 +196,10 @@ def get_common_enchant_attributes(enchant_name: str, kungfu_id: int) -> dict[str
     damage_type = "magic" if kungfu_id in MAGIC_DAMAGE_KUNGFU_IDS else "physics"
     value = values[damage_type]
     if enchant_name.endswith("·帽"):
-        attribute_name = (
-            "atMagicOvercome"
-            if damage_type == "magic"
-            else "atPhysicsOvercomeBase"
-        )
+        attribute_name = ("atMagicOvercome" if damage_type == "magic" else "atPhysicsOvercomeBase")
     else:
-        attribute_name = (
-            "atMagicAttackPowerBase"
-            if damage_type == "magic"
-            else "atPhysicsAttackPowerBase"
-        )
+        attribute_name = ("atMagicAttackPowerBase" if damage_type == "magic" else "atPhysicsAttackPowerBase")
     return {attribute_name: value}
-
 
 def parse_conditions(input_str: str) -> list[str] | Literal[False]:
     input_str = input_str.strip().upper()
@@ -190,43 +216,43 @@ def parse_conditions(input_str: str) -> list[str] | Literal[False]:
     return matches
 
 def init_tab_cache():
-    TabCache._Attrib = read_tab(ASSETS + "/source/jx3/tabs/Attrib.tab")
-    TabCache._Custom_Armor = read_tab(ASSETS + "/source/jx3/tabs/Custom_Armor.tab")
-    TabCache._Custom_Trinket = read_tab(ASSETS + "/source/jx3/tabs/Custom_Trinket.tab")
-    TabCache._Custom_Weapon = read_tab(ASSETS + "/source/jx3/tabs/Custom_Weapon.tab")
-    TabCache._Enchant = read_tab(ASSETS + "/source/jx3/tabs/Enchant.tab")
-    TabCache._Set = read_tab(ASSETS + "/source/jx3/tabs/Set.tab")
-    TabCache._Item = read_tab(ASSETS + "/source/jx3/tabs/Item.txt")
-    TabCache._Other = read_tab(ASSETS + "/source/jx3/tabs/Other.tab")
-    TabCache._skill = read_tab(ASSETS + "/source/jx3/tabs/Skill.txt")
-    TabCache._skillevent = read_tab(ASSETS + "/source/jx3/tabs/Skillevent.txt")
+    TabCache._Attrib = read_tab(ASSETS + "/source/jx3/tabs/item/Attrib.tab")
+    TabCache._Custom_Armor = read_tab(ASSETS + "/source/jx3/tabs/item/Custom_Armor.tab")
+    TabCache._Custom_Trinket = read_tab(ASSETS + "/source/jx3/tabs/item/Custom_Trinket.tab")
+    TabCache._Custom_Weapon = read_tab(ASSETS + "/source/jx3/tabs/item/Custom_Weapon.tab")
+    TabCache._Enchant = read_tab(ASSETS + "/source/jx3/tabs/item/Enchant.tab")
+    TabCache._Set = read_tab(ASSETS + "/source/jx3/tabs/item/Set.tab")
+    TabCache._Item = read_tab(ASSETS + "/source/jx3/tabs/item/Item.txt")
+    TabCache._Other = read_tab(ASSETS + "/source/jx3/tabs/item/Other.tab")
+    TabCache._skill = read_tab(ASSETS + "/source/jx3/tabs/skill/Skill.txt")
+    TabCache._skillevent = read_tab(ASSETS + "/source/jx3/tabs/skill/Skillevent.txt")
 
 class TabDescriptor:
+
     def __init__(self, name):
         self.name = name
-    
+
     def __get__(self, instance, owner):
         if not hasattr(owner, "_initialized") or not owner._initialized:
             init_tab_cache()
             owner._initialized = True
-        
-        return getattr(owner, f"_{self.name}")
 
+        return getattr(owner, f"_{self.name}")
 
 class TabCache:
     Custom_Armor: Any = TabDescriptor("Custom_Armor")
-    Custom_Trinket: Any  = TabDescriptor("Custom_Trinket")
-    Custom_Weapon: Any  = TabDescriptor("Custom_Weapon")
-    Enchant: Any  = TabDescriptor("Enchant")
-    Attrib: Any  = TabDescriptor("Attrib")
-    Set: Any  = TabDescriptor("Set")
-    Item: Any  = TabDescriptor("Item")
-    Other: Any  = TabDescriptor("Other")
-    skill: Any  = TabDescriptor("skill")
-    skillevent: Any  = TabDescriptor("skillevent")
-    
+    Custom_Trinket: Any = TabDescriptor("Custom_Trinket")
+    Custom_Weapon: Any = TabDescriptor("Custom_Weapon")
+    Enchant: Any = TabDescriptor("Enchant")
+    Attrib: Any = TabDescriptor("Attrib")
+    Set: Any = TabDescriptor("Set")
+    Item: Any = TabDescriptor("Item")
+    Other: Any = TabDescriptor("Other")
+    skill: Any = TabDescriptor("skill")
+    skillevent: Any = TabDescriptor("skillevent")
+
     _initialized = False
-    
+
     _Custom_Armor: list[list] = []
     _Custom_Trinket: list[list] = []
     _Custom_Weapon: list[list] = []
@@ -249,19 +275,18 @@ class TabCache:
         """检查是否已经初始化"""
         return cls._initialized
 
-
     @classmethod
-    @lru_cache(maxsize=None)
+    @lru_cache(maxsize = None)
     def get_icon_for_equip(cls, ui_id: int) -> tuple[int, str]:
         for each_item in cls.Item:
             if each_item[0] == str(ui_id):
                 return int(each_item[1] or 1434), each_item[4]
         raise TabFileMissException(
-            f"在 Item.txt 中无法找到 UIID {ui_id} 对应的物品，请检查该 Tab 是否过期！"
+            f"在 Item.txt 中无法找到 UIID {ui_id} 对应的物品，请检查该 Tab 是否过期！",
         )
 
     @classmethod
-    @lru_cache(maxsize=None)
+    @lru_cache(maxsize = None)
     def get_icon_for_skill(cls, skill_id: int) -> tuple[int, str]:
         for each_skill in cls.skill:
             if each_skill[0] == str(skill_id):
@@ -269,7 +294,7 @@ class TabCache:
         return (1434, "未知")
 
     @classmethod
-    @lru_cache(maxsize=None)
+    @lru_cache(maxsize = None)
     def get_equip(cls, equip_id: int, tab_key: Literal[1, 2, 3]) -> list:
         if tab_key == 1:
             tab_file = cls.Custom_Armor
@@ -282,11 +307,11 @@ class TabCache:
             if each_equip[0] == str(equip_id):
                 return each_equip
         raise TabFileMissException(
-            f"在 装备库Tab 中无法找到 ID {equip_id} 对应的装备，请检查三个装备库 Tab 是否过期！\n装备库 Tab KEY {tab_key}"
+            f"在 装备库Tab 中无法找到 ID {equip_id} 对应的装备，请检查三个装备库 Tab 是否过期！\n装备库 Tab KEY {tab_key}",
         )
 
     @classmethod
-    @lru_cache(maxsize=None)
+    @lru_cache(maxsize = None)
     def get_attrib(cls, magic_type: int) -> tuple[str, float, float]:
         for each_attrib in cls.Attrib:
             if each_attrib[0] == str(magic_type):
@@ -305,21 +330,21 @@ class TabCache:
                     float(_max),
                 )
         raise TabFileMissException(
-            f"在 属性库Tab 中无法找到 ID {magic_type} 对应的属性，请检查 属性库Tab 是否过期！"
+            f"在 属性库Tab 中无法找到 ID {magic_type} 对应的属性，请检查 属性库Tab 是否过期！",
         )
 
     @classmethod
-    @lru_cache(maxsize=None)
+    @lru_cache(maxsize = None)
     def get_enchant(cls, enchant_id: int) -> list:
         for each_enchant in cls.Enchant:
             if each_enchant[0] == str(enchant_id):
                 return each_enchant
         raise TabFileMissException(
-            f"在 附魔库Tab 中 无法找到 ID {enchant_id} 对应的附魔，请检查 附魔Tab 是否过期！"
+            f"在 附魔库Tab 中 无法找到 ID {enchant_id} 对应的附魔，请检查 附魔Tab 是否过期！",
         )
 
     @classmethod
-    @lru_cache(maxsize=None)
+    @lru_cache(maxsize = None)
     def get_colorstone_from_jcl(cls, colorstone_item_index: int) -> tuple[list, int]:
         for each_other in cls.Other:
             if each_other[0] == str(colorstone_item_index):
@@ -328,21 +353,21 @@ class TabCache:
                     if each_enchant[2] == ui_id:
                         return each_enchant, cls.get_icon_for_equip(int(ui_id))[0]
         raise TabFileMissException(
-            f"在 附魔库Tab 和 其他物品Tab 中 无法找到 ID {colorstone_item_index} 对应的五彩石，请检查上述 Tab 是否过期！"
+            f"在 附魔库Tab 和 其他物品Tab 中 无法找到 ID {colorstone_item_index} 对应的五彩石，请检查上述 Tab 是否过期！",
         )
 
     @classmethod
-    @lru_cache(maxsize=None)
+    @lru_cache(maxsize = None)
     def get_colorstone_from_enchant(cls, colorstone_item_index: int) -> tuple[list, int]:
         for each_enchant in cls.Enchant:
             if each_enchant[0] == str(colorstone_item_index):
                 return each_enchant, cls.get_icon_for_equip(int(each_enchant[2]))[0]
         raise TabFileMissException(
-            f"在 附魔库Tab 中 无法找到 ID {colorstone_item_index} 对应的五彩石，请检查上述 Tab 是否过期！"
+            f"在 附魔库Tab 中 无法找到 ID {colorstone_item_index} 对应的五彩石，请检查上述 Tab 是否过期！",
         )
-    
+
     @classmethod
-    @lru_cache(maxsize=None)
+    @lru_cache(maxsize = None)
     def get_effect_by_skill_handler_id(cls, skill_handler_id: int) -> str:
         for each_effect in cls.skillevent:
             if each_effect[0] == str(skill_handler_id):
@@ -350,7 +375,7 @@ class TabCache:
         return ""
 
     @classmethod
-    @lru_cache(maxsize=None)
+    @lru_cache(maxsize = None)
     def get_set(cls, set_id: int, set_count: int) -> dict[str, float]:
         results = {}
         for each_set in cls.Set:
@@ -366,14 +391,14 @@ class TabCache:
                             if attrib_key == "":
                                 continue
                             modify_type, param1min, param1max = cls.get_attrib(
-                                attrib_key
+                                attrib_key,
                             )
                             if modify_type in ["atInvalid", ""]:
                                 break
                             if modify_type == "atSkillEventHandler":
                                 continue
                             results[modify_type] = results.get(modify_type, 0) + float(
-                                param1min
+                                param1min,
                             )
         return results
 
@@ -415,11 +440,11 @@ class Equip:
         else:
             if color == 4:
                 equip_score = int(self._quality * 1.26 + 0.5)
-        
+
         self._source = f"{armor_data[73]}：{armor_data[72]}"
 
         self.score += int(equip_score)
-        self.extra_score += int((1/2) * equip_score * self._strength * (0.003 * self._strength + 0.007) + 0.5)
+        self.extra_score += int((1 / 2) * equip_score * self._strength * (0.003 * self._strength + 0.007) + 0.5)
 
         diamond_index = 0
 
@@ -435,16 +460,16 @@ class Equip:
             Equip.equip_sets[set_id] = Equip.equip_sets.get(set_id, 0) + 1
 
         # Base
-        for i in [k for k in range(22, 37+1) if (k - 22) % 3 == 0]:
+        for i in [k for k in range(22, 37 + 1) if (k - 22) % 3 == 0]:
             base_type = armor_data[i]
             if base_type in ["atInvalid", ""]:
                 break
-            base_min = float(armor_data[i+1])
+            base_min = float(armor_data[i + 1])
             # base_max = float(armor_data[i+2])
             self.attributes[base_type] = self.attributes.get(base_type, 0) + int(base_min)
-        
+
         # Magic
-        for i in range(52, 67+1):
+        for i in range(52, 67 + 1):
             attrib_key = armor_data[i]
             if attrib_key == "":
                 break
@@ -457,22 +482,20 @@ class Equip:
                 continue
             if modify_type in AttributesShort:
                 self._attribute.append(
-                    get_attr_name(modify_type)
+                    get_attr_name(modify_type),
                 )
             final_value = param1min + R(param1min * StrengthIncome[self._strength])
             self.attributes[modify_type] = self.attributes.get(modify_type, 0) + int(final_value)
 
         # Diamond
-        for i in [k for k in range(97, 100+1) if k % 2 == 1]:
+        for i in [k for k in range(97, 100 + 1) if k % 2 == 1]:
             diamond_attrib_id = int(armor_data[i])
             if diamond_attrib_id == 0:
                 break
             modify_type, param1min, param1max = TabCache.get_attrib(diamond_attrib_id)
             diamond_level = self._diamonds[diamond_index]
             diamond_index += 1
-            self._diamonds_with_attr.append(
-                (get_attr_name(modify_type), diamond_level)
-            )
+            self._diamonds_with_attr.append((get_attr_name(modify_type), diamond_level), )
             self.fivestone_score += calculate_fivestone_score(diamond_level)
             final_value = calculate_fivestone_attribute(param1min, diamond_level)
             self.attributes[modify_type] = self.attributes.get(modify_type, 0) + final_value
@@ -497,11 +520,11 @@ class Equip:
         elif color == 5:
             equip_score = int(1 * self._quality + 0.5)
             # 能不能别抄自己写
-        
+
         self._source = f"{trinket_data[73]}：{trinket_data[72]}"
 
         self.score += int(equip_score)
-        self.extra_score += int((1/2) * equip_score * self._strength * (0.003 * self._strength + 0.007) + 0.5)
+        self.extra_score += int((1 / 2) * equip_score * self._strength * (0.003 * self._strength + 0.007) + 0.5)
 
         diamond_index = 0
 
@@ -528,12 +551,12 @@ class Equip:
             base_type = trinket_data[i]
             if base_type in ["atInvalid", ""]:
                 break
-            base_min = float(trinket_data[i+1])
+            base_min = float(trinket_data[i + 1])
             # base_max = float(trinket_data[i+2])
             self.attributes[base_type] = self.attributes.get(base_type, 0) + int(base_min)
-        
+
         # Magic
-        for i in range(52, 67+1):
+        for i in range(52, 67 + 1):
             attrib_key = trinket_data[i]
             if attrib_key == "":
                 break
@@ -546,23 +569,21 @@ class Equip:
                 continue
             if modify_type in AttributesShort:
                 self._attribute.append(
-                    get_attr_name(modify_type)
+                    get_attr_name(modify_type),
                 )
             final_value = param1min + R(param1min * StrengthIncome[self._strength])
             self.attributes[modify_type] = self.attributes.get(modify_type, 0) + int(final_value)
 
         # Diamond
         if str(self.jcl_line[0]) not in ["6", "7"]:
-            for i in [k for k in range(99, 103+1) if k % 2 == 1]:
+            for i in [k for k in range(99, 103 + 1) if k % 2 == 1]:
                 diamond_attrib_id = int(trinket_data[i])
                 if diamond_attrib_id == 0:
                     break
                 modify_type, param1min, param1max = TabCache.get_attrib(diamond_attrib_id)
                 diamond_level = self._diamonds[diamond_index]
                 diamond_index += 1
-                self._diamonds_with_attr.append(
-                    (get_attr_name(modify_type), diamond_level)
-                )
+                self._diamonds_with_attr.append((get_attr_name(modify_type), diamond_level), )
                 self.fivestone_score += calculate_fivestone_score(diamond_level)
                 final_value = calculate_fivestone_attribute(param1min, diamond_level)
                 self.attributes[modify_type] = self.attributes.get(modify_type, 0) + final_value
@@ -591,15 +612,15 @@ class Equip:
                 # 能不能别抄自己写
         else:
             equip_score = int(1.08 * self._quality + 0.5)
-        
+
         self._source = f"{weapon_data[74]}：{weapon_data[73]}"
 
         self.score += int(equip_score)
-        self.extra_score += int((1/2) * equip_score * self._strength * (0.003 * self._strength + 0.007) + 0.5)
+        self.extra_score += int((1 / 2) * equip_score * self._strength * (0.003 * self._strength + 0.007) + 0.5)
 
         diamond_index = 0
 
-        self._color =  Colors[int(weapon_data[22])]
+        self._color = Colors[int(weapon_data[22])]
 
         if weapon_data[71] == "精简" or \
             weapon_data[69] != "":
@@ -611,16 +632,16 @@ class Equip:
             Equip.equip_sets[set_id] = Equip.equip_sets.get(set_id, 0) + 1
 
         # Base
-        for i in [k for k in range(23, 29+1) if (k - 23) % 3 == 0]:
+        for i in [k for k in range(23, 29 + 1) if (k - 23) % 3 == 0]:
             base_type = weapon_data[i]
             if base_type in ["atInvalid", ""]:
                 break
-            base_min = float(weapon_data[i+1])
+            base_min = float(weapon_data[i + 1])
             # base_max = float(weapon_data[i+2])
             self.attributes[base_type] = self.attributes.get(base_type, 0) + int(base_min)
-        
+
         # Magic
-        for i in range(53, 67+1):
+        for i in range(53, 67 + 1):
             attrib_key = weapon_data[i]
             if attrib_key == "":
                 break
@@ -633,26 +654,24 @@ class Equip:
                 continue
             if modify_type in AttributesShort:
                 self._attribute.append(
-                    get_attr_name(modify_type)
+                    get_attr_name(modify_type),
                 )
             final_value = param1min + R(param1min * StrengthIncome[self._strength])
             self.attributes[modify_type] = self.attributes.get(modify_type, 0) + int(final_value)
 
         # Diamond
-        for i in [k for k in range(97, 101+1) if k % 2 == 1]:
+        for i in [k for k in range(97, 101 + 1) if k % 2 == 1]:
             diamond_attrib_id = int(weapon_data[i])
             if diamond_attrib_id == 0:
                 break
             modify_type, param1min, param1max = TabCache.get_attrib(diamond_attrib_id)
             diamond_level = self._diamonds[diamond_index]
-            self._diamonds_with_attr.append(
-                (get_attr_name(modify_type), diamond_level)
-            )
+            self._diamonds_with_attr.append((get_attr_name(modify_type), diamond_level), )
             diamond_index += 1
             self.fivestone_score += calculate_fivestone_score(diamond_level)
             final_value = calculate_fivestone_attribute(param1min, diamond_level)
             self.attributes[modify_type] = self.attributes.get(modify_type, 0) + final_value
-        
+
         # ColorStone
         if str(self.jcl_line[0]) in ["0", "1"]:
             if self._color_stone == 0 and len(self.jcl_line[4]) > 3:
@@ -670,16 +689,16 @@ class Equip:
                     attr_name = colorstone_data[i]
                     if attr_name == "":
                         break
-                    attr_value = float(colorstone_data[i+1])
+                    attr_value = float(colorstone_data[i + 1])
                     self.attributes[attr_name] = self.attributes.get(attr_name, 0) + int(attr_value)
-    
+
     def _post_parse(self):
         self._icon, self._name = TabCache.get_icon_for_equip(self._ui_id)
         # 五行石与五彩石合计后统一取整，避免混合镶嵌多算一分。
         self.extra_score += self.fivestone_score
         self.score += int(self.extra_score + 0.5)
         if int(self._permanent_enchant) != 0:
-            enchant_data = TabCache.get_enchant(self._permanent_enchant) 
+            enchant_data = TabCache.get_enchant(self._permanent_enchant)
             self._permanent_enchant_name = enchant_data[1]
             attr_name = enchant_data[4]
             attr_value = float(enchant_data[5])
@@ -693,23 +712,23 @@ class Equip:
     @property
     def icon(self) -> str:
         return f"https://icon.jx3box.com/icon/{self._icon}.png"
-    
+
     @property
     def name(self) -> str:
         return self._name
-    
+
     @property
     def color(self) -> str:
         return self._color
-    
+
     @property
     def attribute(self) -> str:
         return " ".join([a for a in self._attribute if a != "体质"])
-    
+
     @property
     def quality(self) -> int:
         return self._quality
-    
+
     @property
     def permanent_enchant(self) -> str:
         return self._permanent_enchant_name
@@ -725,34 +744,34 @@ class Equip:
     @property
     def color_stone_icon(self) -> str:
         return f"https://icon.jx3box.com/icon/{self._color_stone_icon}.png"
-    
+
     @property
     def peerless(self) -> bool:
         return self._peerless
-    
+
     @property
     def strength(self) -> int:
         return self._strength
-    
+
     @property
     def max_strength(self) -> int:
         return self._max_strength
-    
+
     @property
     def diamonds(self) -> list[tuple[str, int]]:
         return self._diamonds_with_attr
-    
+
     @property
     def source(self) -> str:
         return self._source
-    
+
     @cached_property
     def effect(self) -> str:
         text = TabCache.get_effect_by_skill_handler_id(self.skill_event_handler)
         idx = text.rfind("。", 0, text.rfind("。"))
         if idx == -1:
             return text
-        return text[:idx+1]
+        return text[:idx + 1]
 
     def __init__(self, jcl_line: list):
         self.jcl_line = jcl_line
@@ -777,7 +796,7 @@ class Equip:
         self._color_stone: int = 0
         self._color_stone_name: str = ""
         self._color_stone_icon: int = 0
-        self._color_stone_source: bool = False # False JCL True Tuilan
+        self._color_stone_source: bool = False  # False JCL True Tuilan
         self._peerless: bool = False
         self._max_strength: int = 0
         self._diamonds_with_attr: list[tuple[str, int]] = []
@@ -786,28 +805,26 @@ class Equip:
 
     def parse(self):
         equip_index = self.jcl_line[0]
-        if equip_index in [3, 4, 8, 10, 11, 12]: # 上衣 帽子 腰带 下装 鞋子 护腕
+        if equip_index in [3, 4, 8, 10, 11, 12]:  # 上衣 帽子 腰带 下装 鞋子 护腕
             self._armor_parse()
-        elif equip_index in [5, 6, 7, 9]: # 项链 戒指 戒指 腰坠
+        elif equip_index in [5, 6, 7, 9]:  # 项链 戒指 戒指 腰坠
             self._trinket_parse()
-        else: # 武器（可能包含藏剑） 暗器
+        else:  # 武器（可能包含藏剑） 暗器
             self._weapon_parse()
 
 class Talent:
+
     def __init__(self, skill_id: int):
         self.skill_id = skill_id
         self.icon_id, self.name = TabCache.get_icon_for_skill(skill_id)
-    
+
     @property
     def icon(self):
         return f"https://icon.jx3box.com/icon/{self.icon_id}.png"
 
 class FinalAttr:
-    def __init__(
-            self,
-            equip_attr: dict[str, int],
-            kungfu_id: int
-        ):
+
+    def __init__(self, equip_attr: dict[str, int], kungfu_id: int):
         self.equip_attr: dict[str, int] = equip_attr
         self.kungfu_id = kungfu_id
         self.attr: dict[str, float] = {
@@ -815,28 +832,28 @@ class FinalAttr:
             "atStrengthBase": 17,
             "atAgilityBase": 18,
             "atSpunkBase": 17,
-            "atVitalityBase": 18
+            "atVitalityBase": 18,
         }
-        if "atBasePotentialAdd" in equip_attr: # 全属性
+        if "atBasePotentialAdd" in equip_attr:  # 全属性
             for each_basic_attr in self.attr:
                 self.attr[each_basic_attr] += equip_attr["atBasePotentialAdd"]
 
     def get_kungfu_base(self):
-        if self.kungfu_id in [10014, 10081, 10447, 10175, 10627, 10821]: # 根骨
+        if self.kungfu_id in [10014, 10081, 10447, 10175, 10627, 10821]:  # 根骨
             return "atSpiritBase"
-        elif self.kungfu_id in [10003, 10225, 10242, 10615, 10021, 10786]: # 元气
+        elif self.kungfu_id in [10003, 10225, 10242, 10615, 10021, 10786]:  # 元气
             return "atSpunkBase"
-        elif self.kungfu_id in [10015, 10533, 10144, 10585, 10390, 10756]: # 身法
+        elif self.kungfu_id in [10015, 10533, 10144, 10585, 10390, 10756]:  # 身法
             return "atAgilityBase"
-        elif self.kungfu_id in [10224, 10698, 10026, 10268, 10464]: # 力道
+        elif self.kungfu_id in [10224, 10698, 10026, 10268, 10464]:  # 力道
             return "atStrengthBase"
-        elif self.kungfu_id in [10062, 10002, 10243, 10389]: # 体质
+        elif self.kungfu_id in [10062, 10002, 10243, 10389]:  # 体质
             return "atVitalityBase"
-        elif self.kungfu_id in [10080, 10028, 10176, 10448, 10626]: # 治疗
+        elif self.kungfu_id in [10080, 10028, 10176, 10448, 10626]:  # 治疗
             return "atSpiritBase"
         else:
             raise
-    
+
     @property
     def kungfu_type(self) -> str:
         main_attr = self.get_kungfu_base()
@@ -844,65 +861,56 @@ class FinalAttr:
             return "Magic"
         else:
             return "Physics"
-        
+
     @property
     def extra_base_attack(self) -> dict[str, float]:
         # 额外的基础攻击 由元气和力道提供
         return {
             "atPhysicsAttackPowerBase": self.attr.get("atStrengthBase", 17) * Strength_to_Attack_Cof,
-            "atMagicAttackPowerBase": self.attr.get("atSpunkBase", 17) * Spunk_to_Attack_Cof
+            "atMagicAttackPowerBase": self.attr.get("atSpunkBase", 17) * Spunk_to_Attack_Cof,
         }
-    
+
     @property
     def extra_base_overcome(self) -> dict[str, float]:
         # 额外的基础破防 由元气和力道提供
         return {
             "atPhysicsOvercomeBase": self.attr.get("atStrengthBase", 17) * Strength_to_BaseOvercome_Cof,
-            "atMagicOvercome": self.attr.get("atSpunkBase", 17) * Spunk_to_BaseOvercome_Cof
+            "atMagicOvercome": self.attr.get("atSpunkBase", 17) * Spunk_to_BaseOvercome_Cof,
         }
-    
+
     @property
     def extra_critical(self) -> dict[str, float]:
         # 额外的会心等级 由身法和根骨提供
         return {
             "atPhysicsCriticalStrike": int(self.attr.get("atAgilityBase", 18) * Agility_to_Critical_Cof + 0.5),
-            "atMagicCriticalStrike": int(self.attr.get("atSpiritBase", 18) * Spirit_to_Critical_Cof + 0.5)
+            "atMagicCriticalStrike": int(self.attr.get("atSpiritBase", 18) * Spirit_to_Critical_Cof + 0.5),
         }
-        
+
     def _wxl_main_attr_value(self) -> int:
         return int(
             self.attr.get("atSpiritBase", 18) + max(
                 self.attr.get("atSpunkBase", 17),
                 self.attr.get("atAgilityBase", 18),
                 self.attr.get("atStrengthBase", 17),
-            )
+            ),
         )
 
     def _wxl_base_attack(self) -> float:
         magic_attack = (
-            self.attr.get("atMagicAttackPowerBase", 0) -
-            self.attr.get("atSpunkBase", 17) * Spunk_to_Attack_Cof
+            self.attr.get("atMagicAttackPowerBase", 0) - self.attr.get("atSpunkBase", 17) * Spunk_to_Attack_Cof
         )
         physics_attack = (
-            self.attr.get("atPhysicsAttackPowerBase", 0) -
-            self.attr.get("atStrengthBase", 17) * Strength_to_Attack_Cof
+            self.attr.get("atPhysicsAttackPowerBase", 0) - self.attr.get("atStrengthBase", 17) * Strength_to_Attack_Cof
         )
-        weapon_damage = (
-            self.attr.get("atMeleeWeaponDamageBase", 0) +
-            self.attr.get("atMeleeWeaponDamageRand", 0) / 2
-        )
+        weapon_damage = (self.attr.get("atMeleeWeaponDamageBase", 0) + self.attr.get("atMeleeWeaponDamageRand", 0) / 2)
         return (
-            int(self.attr.get("atAllTypeAttackPowerBase", 0)) +
-            int(self.attr.get("atLunarAttackPowerBase", 0)) +
-            int(magic_attack) +
-            int(self.attr.get("atSolarAndLunarAttackPowerBase", 0)) +
-            max(
+            int(self.attr.get("atAllTypeAttackPowerBase", 0)) + int(self.attr.get("atLunarAttackPowerBase", 0)) +
+            int(magic_attack) + int(self.attr.get("atSolarAndLunarAttackPowerBase", 0)) + max(
                 int(self.attr.get("atSolarAttackPowerBase", 0)),
                 int(self.attr.get("atNeutralAttackPowerBase", 0)),
                 int(self.attr.get("atPoisonAttackPowerBase", 0)),
                 int(physics_attack * 1138 / 1024),
-            ) +
-            weapon_damage * 758 / 1024
+            ) + weapon_damage * 758 / 1024
         )
 
     def _wxl_critical(self, main_attr_value: int) -> int:
@@ -916,16 +924,14 @@ class FinalAttr:
             int(self.attr.get("atAgilityBase", 18) * Agility_to_Critical_Cof + 0.5)
         )
         return int(
-            int(self.attr.get("atLunarCriticalStrike", 0)) +
-            int(magic_critical) +
-            int(self.attr.get("atSolarAndLunarCriticalStrike", 0)) +
-            int(self.attr.get("atAllTypeCriticalStrike", 0)) +
+            int(self.attr.get("atLunarCriticalStrike", 0)) + int(magic_critical) +
+            int(self.attr.get("atSolarAndLunarCriticalStrike", 0)) + int(self.attr.get("atAllTypeCriticalStrike", 0)) +
             max(
                 self.attr.get("atSolarCriticalStrike", 0),
                 self.attr.get("atNeutralCriticalStrike", 0),
                 self.attr.get("atPoisonCriticalStrike", 0),
                 physics_critical,
-            )
+            ),
         )
 
     def _wxl_critical_damage(self) -> int:
@@ -933,30 +939,25 @@ class FinalAttr:
             int(self.attr.get("atLunarCriticalDamagePowerBase", 0)) +
             int(self.attr.get("atMagicCriticalDamagePowerBase", 0)) +
             int(self.attr.get("atSolarAndLunarCriticalDamagePowerBase", 0)) +
-            int(self.attr.get("atAllTypeCriticalDamagePowerBase", 0)) +
-            max(
+            int(self.attr.get("atAllTypeCriticalDamagePowerBase", 0)) + max(
                 self.attr.get("atSolarCriticalDamagePowerBase", 0),
                 self.attr.get("atNeutralCriticalDamagePowerBase", 0),
                 self.attr.get("atPoisonCriticalDamagePowerBase", 0),
                 self.attr.get("atPhysicsCriticalDamagePowerBase", 0),
-            )
+            ),
         )
 
     def _wxl_base_overcome(self) -> float:
         magic_overcome = (
-            self.attr.get("atMagicOvercome", 0) -
-            self.attr.get("atSpunkBase", 17) * Spunk_to_BaseOvercome_Cof
+            self.attr.get("atMagicOvercome", 0) - self.attr.get("atSpunkBase", 17) * Spunk_to_BaseOvercome_Cof
         )
         physics_overcome = (
             self.attr.get("atPhysicsOvercomeBase", 0) -
             self.attr.get("atStrengthBase", 17) * Strength_to_BaseOvercome_Cof
         )
         return (
-            int(self.attr.get("atAllTypeOvercomeBase", 0)) +
-            int(self.attr.get("atLunarOvercomeBase", 0)) +
-            int(magic_overcome) +
-            int(self.attr.get("atSolarAndLunarOvercomeBase", 0)) +
-            max(
+            int(self.attr.get("atAllTypeOvercomeBase", 0)) + int(self.attr.get("atLunarOvercomeBase", 0)) +
+            int(magic_overcome) + int(self.attr.get("atSolarAndLunarOvercomeBase", 0)) + max(
                 self.attr.get("atSolarOvercomeBase", 0),
                 self.attr.get("atNeutralOvercomeBase", 0),
                 self.attr.get("atPoisonOvercomeBase", 0),
@@ -965,18 +966,18 @@ class FinalAttr:
         )
 
     def _select_panel_damage_type(
-            self,
-            physics_value: int | float,
-            *magic_values: int | float,
-        ) -> int | float:
+        self,
+        physics_value: int | float,
+        *magic_values: int | float,
+    ) -> int | float:
         """Select attributes from the current kungfu's damage category."""
         if self.kungfu_type == "Physics":
             return physics_value
         return max(magic_values)
 
     def output_attr(self) -> dict[str, str]:
-        self.equip_attr.pop("atSkillEventHandler", None) # 套装效果（施展招式）
-        self.equip_attr.pop("atSetEquipmentRecipe", None) # 套装效果（伤害提高）
+        self.equip_attr.pop("atSkillEventHandler", None)  # 套装效果（施展招式）
+        self.equip_attr.pop("atSetEquipmentRecipe", None)  # 套装效果（伤害提高）
         kungfu_name = str(Kungfu.with_internel_id(self.kungfu_id).name)
         if kungfu_name == "山居问水剑·悟":
             kungfu_name = "问水诀"
@@ -984,21 +985,24 @@ class FinalAttr:
             kungfu_name = kungfu_name[:-2]
         self.attr = merge_dicts(
             copy.deepcopy(Kungfu.kungfu_basic[kungfu_name]),
-            self.attr
+            self.attr,
         )
         self.attr = merge_dicts(
             cast(dict[str, float], self.equip_attr),
-            self.attr
+            self.attr,
         )
 
         self.attr = merge_dicts(
-            self.attr, self.extra_base_attack
+            self.attr,
+            self.extra_base_attack,
         )
         self.attr = merge_dicts(
-            self.attr, self.extra_base_overcome
+            self.attr,
+            self.extra_base_overcome,
         )
         self.attr = merge_dicts(
-            self.attr, self.extra_critical
+            self.attr,
+            self.extra_critical,
         )
 
         kungfu_main_attr = self.get_kungfu_base()
@@ -1006,7 +1010,9 @@ class FinalAttr:
         if self.kungfu_id == 10821:
             main_attr_value = self._wxl_main_attr_value()
         coefficient_main_attr = main_attr_value
-        weapon_damage = int(self.attr.get("atMeleeWeaponDamageBase", 0) + self.attr.get("atMeleeWeaponDamageRand", 0) / 2)
+        weapon_damage = int(
+            self.attr.get("atMeleeWeaponDamageBase", 0) + self.attr.get("atMeleeWeaponDamageRand", 0) / 2,
+        )
         attack = int(self.attr.get("atAllTypeAttackPowerBase", 0)) + self._select_panel_damage_type(
             int(self.attr.get("atPhysicsAttackPowerBase", 0)), # 外功基础攻击
 
@@ -1017,13 +1023,13 @@ class FinalAttr:
             int(self.attr.get("atSolarAttackPowerBase", 0)) + \
             int(self.attr.get("atMagicAttackPowerBase", 0)) + \
             int(self.attr.get("atSolarAndLunarAttackPowerBase", 0)), # 阳性基础攻击 内功基础攻击 阴阳基础攻击
-            
+
             int(self.attr.get("atNeutralAttackPowerBase", 0)) + \
             int(self.attr.get("atMagicAttackPowerBase", 0)), # 混元基础攻击 内功基础攻击
 
             int(self.attr.get("atPoisonAttackPowerBase", 0)) + \
             int(self.attr.get("atMagicAttackPowerBase", 0)) # 毒性基础攻击 内功基础攻击
-        )
+        ,)
         if self.kungfu_id == 10821:
             attack = self._wxl_base_attack()
         base_therapy = self.attr.get("atTherapyPowerBase", 0)
@@ -1054,8 +1060,7 @@ class FinalAttr:
         if self.kungfu_id == 10225:
             # 天罗诡道的会心属性走外功会心。
             critical = (
-                int(self.attr.get("atPhysicsCriticalStrike", 0)) +
-                int(self.attr.get("atAllTypeCriticalStrike", 0))
+                int(self.attr.get("atPhysicsCriticalStrike", 0)) + int(self.attr.get("atAllTypeCriticalStrike", 0))
             )
         if self.kungfu_id == 10821:
             critical = self._wxl_critical(main_attr_value)
@@ -1067,16 +1072,16 @@ class FinalAttr:
             int(self.attr.get("atMagicCriticalDamagePowerBase", 0)) + \
             int(self.attr.get("atSolarAndLunarCriticalDamagePowerBase", 0)) + \
             int(self.attr.get("atAllTypeCriticalDamagePowerBase", 0)), # 阴性会效 内功会效 阴阳会效 全会效
-            
+
             int(self.attr.get("atSolarCriticalDamagePowerBase", 0)) + \
             int(self.attr.get("atMagicCriticalDamagePowerBase", 0)) + \
             int(self.attr.get("atSolarAndLunarCriticalDamagePowerBase", 0)) + \
             int(self.attr.get("atAllTypeCriticalDamagePowerBase", 0)), # 阳性会效 内功会效 阴阳会心 全会效
-            
+
             int(self.attr.get("atNeutralCriticalDamagePowerBase", 0)) + \
             int(self.attr.get("atMagicCriticalDamagePowerBase", 0)) + \
             int(self.attr.get("atAllTypeCriticalDamagePowerBase", 0)), # 混元会效 内功会效 全会效
-            
+
             int(self.attr.get("atPoisonCriticalDamagePowerBase", 0)) + \
             int(self.attr.get("atMagicCriticalDamagePowerBase", 0)) + \
             int(self.attr.get("atAllTypeCriticalDamagePowerBase", 0)), # 毒性会效 内功会效 全会效
@@ -1089,17 +1094,17 @@ class FinalAttr:
             int(self.attr.get("atLunarOvercomeBase", 0)) + \
             int(self.attr.get("atMagicOvercome", 0)) + \
             int(self.attr.get("atSolarAndLunarOvercomeBase", 0)), # 阴性基础破防 内功基础破防 阴阳基础破防
-            
+
             int(self.attr.get("atSolarOvercomeBase", 0)) + \
             int(self.attr.get("atMagicOvercome", 0)) + \
             int(self.attr.get("atSolarAndLunarOvercomeBase", 0)), # 阳性基础破防 内功基础破防 阴阳基础破防
-            
+
             int(self.attr.get("atNeutralOvercomeBase", 0)) + \
             int(self.attr.get("atMagicOvercome", 0)), # 混元基础破防 内功基础破防
-            
+
             int(self.attr.get("atPoisonOvercomeBase", 0)) + \
             int(self.attr.get("atMagicOvercome", 0)) # 毒性基础破防 内功基础破防
-        )
+        ,)
         if self.kungfu_id == 10821:
             base_overcome = self._wxl_base_overcome()
         final_overcome = copy.deepcopy(base_overcome)
@@ -1113,12 +1118,12 @@ class FinalAttr:
         vitality = int(
             base_vitality * \
             (1 + int(self.attr.get("atVitalityBasePercentAdd", 0)) / 1024)
-        )
+        ,)
         base_spirit = int(self.attr.get("atSpiritBase", 0))
         spirit = int(
             base_spirit * \
             (1 + int(self.attr.get("atSpiritBasePercentAdd", 0)) / 1024)
-        )
+        ,)
         physics_shield = self.attr.get("atPhysicsShieldBase", 0)
         magic_shield = self.attr.get("atMagicShield", 0)
         toughness = self.attr.get("atToughnessBase", 0)
@@ -1139,51 +1144,106 @@ class FinalAttr:
         if abbr == "D":
             display_final_attack = round(final_attack) if self.kungfu_id == 10821 else int(final_attack)
             return {
-                "攻击力": str(display_final_attack),
-                "基础攻击力": str(int(attack)),
-                "会心": str(R(critical / CRITICAL_DIVISOR * 100, 2)) + "%",
-                "会心效果": str(R((critical_damage / CRITICAL_DAMAGE_DIVISOR + 1.75) * 100, 2)) + "%",
-                "加速": str(haste),
-                get_attr_name(kungfu_main_attr): str(main_attr_value),
-                "破防": str(R(final_overcome / OVERCOME_DIVISOR * 100, 2)) + "%",
-                "无双": str(R(strain / STRAIN_DIVISOR * 100, 2)) + "%",
-                "破招": str(surplus),
-                "武器伤害": str(weapon_damage),
-                "御劲": str(R(toughness / CRITICAL_DIVISOR * 100, 2)) + "%",
-                "化劲": str(round((int((decritical_damage / (decritical_damage + DECRITICAL_DAMAGE_DIVISOR)) * 1024) + 102) * 100 / 1024, 2)) + "%"
+                "攻击力":
+                str(display_final_attack),
+                "基础攻击力":
+                str(int(attack)),
+                "会心":
+                str(R(critical / CRITICAL_DIVISOR * 100, 2)) + "%",
+                "会心效果":
+                str(R((critical_damage / CRITICAL_DAMAGE_DIVISOR + 1.75) * 100, 2)) + "%",
+                "加速":
+                str(haste),
+                get_attr_name(kungfu_main_attr):
+                str(main_attr_value),
+                "破防":
+                str(R(final_overcome / OVERCOME_DIVISOR * 100, 2)) + "%",
+                "无双":
+                str(R(strain / STRAIN_DIVISOR * 100, 2)) + "%",
+                "破招":
+                str(surplus),
+                "武器伤害":
+                str(weapon_damage),
+                "御劲":
+                str(R(toughness / CRITICAL_DIVISOR * 100, 2)) + "%",
+                "化劲":
+                str(
+                    round(
+                        (int((decritical_damage /
+                              (decritical_damage + DECRITICAL_DAMAGE_DIVISOR)) * 1024, ) + 102) * 100 / 1024,
+                        2,
+                    ),
+                ) + "%",
             }
         elif abbr == "N":
             return {
-                "治疗量": str(final_therapy),
-                "基础治疗量": str(base_therapy),
-                "会心": str(R(critical / CRITICAL_DIVISOR * 100, 2)) + "%",
-                "会心效果": str(R((critical_damage / CRITICAL_DAMAGE_DIVISOR + 1.75) * 100, 2)) + "%",
-                "加速": str(haste),
-                "根骨": str(spirit),
-                "破防": str(R(final_overcome / OVERCOME_DIVISOR * 100, 2)) + "%",
-                "无双": str(R(strain / STRAIN_DIVISOR * 100, 2)) + "%",
-                "破招": str(surplus),
-                "基础根骨": str(base_spirit),
-                "御劲": str(R(toughness / CRITICAL_DIVISOR * 100, 2)) + "%",
-                "化劲": str(round((int((decritical_damage / (decritical_damage + DECRITICAL_DAMAGE_DIVISOR)) * 1024) + 102) * 100 / 1024, 2)) + "%"
+                "治疗量":
+                str(final_therapy),
+                "基础治疗量":
+                str(base_therapy),
+                "会心":
+                str(R(critical / CRITICAL_DIVISOR * 100, 2)) + "%",
+                "会心效果":
+                str(R((critical_damage / CRITICAL_DAMAGE_DIVISOR + 1.75) * 100, 2)) + "%",
+                "加速":
+                str(haste),
+                "根骨":
+                str(spirit),
+                "破防":
+                str(R(final_overcome / OVERCOME_DIVISOR * 100, 2)) + "%",
+                "无双":
+                str(R(strain / STRAIN_DIVISOR * 100, 2)) + "%",
+                "破招":
+                str(surplus),
+                "基础根骨":
+                str(base_spirit),
+                "御劲":
+                str(R(toughness / CRITICAL_DIVISOR * 100, 2)) + "%",
+                "化劲":
+                str(
+                    round(
+                        (int((decritical_damage /
+                              (decritical_damage + DECRITICAL_DAMAGE_DIVISOR)) * 1024, ) + 102) * 100 / 1024,
+                        2,
+                    ),
+                ) + "%",
             }
         else:
             return {
-                "内功防御": str(R(magic_shield / (magic_shield + SHIELD_130_CONST) * 100, 2)) + "%",
-                "外功防御": str(R(physics_shield / (physics_shield + SHIELD_130_CONST) * 100, 2)) + "%",
-                "会心": str(R(critical / CRITICAL_DIVISOR * 100, 2)) + "%",
-                "会心效果": str(R((critical_damage / CRITICAL_DAMAGE_DIVISOR + 1.75) * 100, 2)) + "%",
-                "加速": str(haste),
-                "体质": str(vitality),
-                "破防": str(R(final_overcome / OVERCOME_DIVISOR * 100, 2)) + "%",
-                "无双": str(R(strain / STRAIN_DIVISOR * 100, 2)) + "%",
-                "破招": str(surplus),
-                "基础体质": str(base_vitality),
-                "御劲": str(R(toughness / CRITICAL_DIVISOR * 100, 2)) + "%",
-                "化劲": str(round((int((decritical_damage / (decritical_damage + DECRITICAL_DAMAGE_DIVISOR)) * 1024)) * 100 / 1024, 2)) + "%"
+                "内功防御":
+                str(R(magic_shield / (magic_shield + SHIELD_130_CONST) * 100, 2)) + "%",
+                "外功防御":
+                str(R(physics_shield / (physics_shield + SHIELD_130_CONST) * 100, 2)) + "%",
+                "会心":
+                str(R(critical / CRITICAL_DIVISOR * 100, 2)) + "%",
+                "会心效果":
+                str(R((critical_damage / CRITICAL_DAMAGE_DIVISOR + 1.75) * 100, 2)) + "%",
+                "加速":
+                str(haste),
+                "体质":
+                str(vitality),
+                "破防":
+                str(R(final_overcome / OVERCOME_DIVISOR * 100, 2)) + "%",
+                "无双":
+                str(R(strain / STRAIN_DIVISOR * 100, 2)) + "%",
+                "破招":
+                str(surplus),
+                "基础体质":
+                str(base_vitality),
+                "御劲":
+                str(R(toughness / CRITICAL_DIVISOR * 100, 2)) + "%",
+                "化劲":
+                str(
+                    round(
+                        (int((decritical_damage /
+                              (decritical_damage + DECRITICAL_DAMAGE_DIVISOR)) * 1024, )) * 100 / 1024,
+                        2,
+                    ),
+                ) + "%",
             }
 
 class JX3PlayerAttribute:
+
     @classmethod
     async def from_jx3api(cls, server: str, name: str, url_require: bool = False, group_id: int = 0) -> str | None:
         if not url_require:
@@ -1195,45 +1255,45 @@ class JX3PlayerAttribute:
                 "server": server,
                 "name": name,
                 "group_id": group_id,
-                "format": "client"
+                "format": "client",
             }
             try:
-                raw_data = (await Request(url, params=params).get()).json()
+                raw_data = (await Request(url, params = params).get()).json()
             except Exception:
                 return None
-            
+
         if raw_data["status"] != 200:
             return PROMPT.PlayerNotExist
         results = []
-        
+
         if "equipList" not in raw_data["detail"]:
             return None
 
         for each_equip in raw_data["detail"]["equipList"]:
             position_id = each_equip["nItemIndex"]
-            
-            if position_id not in range(0, 12+1):
+
+            if position_id not in range(0, 12 + 1):
                 continue
 
             tab_type = each_equip["dwTabType"]
             tab_index = each_equip["dwTabIndex"]
             strength_level = each_equip["nStrengthLevel"]
-            
+
             diamonds = []
 
             for each_diamond in each_equip.get("aSlotItem", []):
                 diamonds.append(
-                    each_diamond
+                    each_diamond,
                 )
-            
+
             if position_id == 0:
                 diamonds.extend(
-                    each_equip["ColorInfo"]
+                    each_equip["ColorInfo"],
                 )
 
             permanent_enchant_id = each_equip["dwPermanentEnchantID"]
             common_enchant_id = each_equip["dwTemporaryEnchantID"]
-            
+
             results.append(
                 [
                     position_id,
@@ -1243,8 +1303,8 @@ class JX3PlayerAttribute:
                     diamonds,
                     permanent_enchant_id,
                     common_enchant_id,
-                    0
-                ]
+                    0,
+                ],
             )
 
         instance = cls(
@@ -1252,7 +1312,7 @@ class JX3PlayerAttribute:
             [],
             int(raw_data["detail"]["kungfuId"]),
             int(raw_data["detail"]["globalId"]),
-            timestamp=int(raw_data["detail"]["cacheTime"])
+            timestamp = int(raw_data["detail"]["cacheTime"]),
         )
         try:
             instance.save()
@@ -1264,17 +1324,28 @@ class JX3PlayerAttribute:
         params = {
             "zone": Server(server_name).zone,
             "server": Server(server_name).server,
-            "game_role_id": role_id
+            "game_role_id": role_id,
         }
-        data = (await Request("https://m.pvp.xoyo.com/mine/equip/get-role-equip", params=params).post(tuilan=True)).json()
+        data = (
+            await Request(
+                "https://m.pvp.xoyo.com/mine/equip/get-role-equip",
+                params = params,
+            ).post(
+                tuilan = True,
+            )
+        ).json()
         if data["code"] != 0:
             return None
         jcl_lines = TuilanData(data).output_jcl_line()
-        
+
         instance = cls(
-            jcl_lines, [],
-            cast(int, Kungfu.with_internel_id(int(data["data"]["Kungfu"]["KungfuID"]), True).id),
-            int(global_role_id)
+            jcl_lines,
+            [],
+            cast(
+                int,
+                Kungfu.with_internel_id(int(data["data"]["Kungfu"]["KungfuID"]), True).id,
+            ),
+            int(global_role_id),
         )
         try:
             instance.save()
@@ -1284,20 +1355,24 @@ class JX3PlayerAttribute:
     @classmethod
     async def frmo_jcl_line(cls, jcl_line: str) -> Self:
         lua_table = cast(list, parse_luatable(jcl_line))
-        equips_lines = [e for e in lua_table[5] if int(e[0]) in range(0, 12+1)]
+        equips_lines = [e for e in lua_table[5] if int(e[0]) in range(0, 12 + 1)]
         talents_lines = [int(t[1]) for t in lua_table[6]]
         if lua_table[7]:
             global_role_id = int(lua_table[7])
         else:
             global_role_id = 0
         result = cls(
-            equips_lines, talents_lines,
-            cast(int, Kungfu.with_internel_id(int(lua_table[3]), True).id),
+            equips_lines,
+            talents_lines,
+            cast(
+                int,
+                Kungfu.with_internel_id(int(lua_table[3]), True).id,
+            ),
             global_role_id,
-            name=lua_table[1]
+            name = lua_table[1],
         )
         return result
-    
+
     @classmethod
     async def from_plugin(cls, data: str, kungfu_id: int, global_role_id: int) -> Self:
         kungfu_id = normalize_kungfu_id(kungfu_id)
@@ -1311,33 +1386,25 @@ class JX3PlayerAttribute:
             diamonds = []
             for each_diamond in each_equip["aDiamondEnchant"]:
                 if each_diamond in range(6210, 6217 + 1):
-                    diamonds.append(
-                        [
-                            5,
-                            each_diamond - 6210 + 24441
-                        ]
-                    )
+                    diamonds.append([
+                        5,
+                        each_diamond - 6210 + 24441,
+                    ], )
                 elif each_diamond == 6218:
-                    diamonds.append(
-                        [
-                            5,
-                            24449
-                        ]
-                    )
+                    diamonds.append([
+                        5,
+                        24449,
+                    ], )
                 else:
-                    diamonds.append(
-                        [
-                            5,
-                            each_diamond - 6218 + 24441 + 1
-                        ]
-                    )
+                    diamonds.append([
+                        5,
+                        each_diamond - 6218 + 24441 + 1,
+                    ], )
             if each_equip["dwItemFEAEnchantID"] != 0:
-                diamonds.append(
-                    [
-                        0,
-                        each_equip["dwItemFEAEnchantID"]
-                    ]
-                )
+                diamonds.append([
+                    0,
+                    each_equip["dwItemFEAEnchantID"],
+                ], )
             equips_lines.append(
                 [
                     int(each_equip["nPos"]),
@@ -1347,21 +1414,22 @@ class JX3PlayerAttribute:
                     diamonds,
                     int(each_equip["dwPermanentEnchantID"]),
                     int(each_equip["dwTemporaryEnchantID"]),
-                    0
-                ]
+                    0,
+                ],
             )
         return cls(
             equips_lines,
             [],
             kungfu_id,
-            global_role_id
+            global_role_id,
         )
 
     @classmethod
     async def from_jcl(cls, jcl_content: str, only_threapy: bool = False) -> list[Self]:
+
         def parse_records() -> list[tuple[list, list[int], int, int, int, str]]:
             global_id_pattern = re.compile(
-                r'(?:\[8\]\s*=\s*)?(?:"(\d+)"|(\d+))\s*}\s*$'
+                r'(?:\[8\]\s*=\s*)?(?:"(\d+)"|(\d+))\s*}\s*$',
             )
             player_lines: dict[int, tuple[str, int]] = {}
             for each_jcl_line in StringIO(jcl_content):
@@ -1377,10 +1445,7 @@ class JX3PlayerAttribute:
                     timestamp = int(parts[2])
                 except ValueError:
                     timestamp = Time().raw_time
-                if (
-                    global_role_id not in player_lines
-                    or len(player_lines[global_role_id][0]) < len(lua_table_raw)
-                ):
+                if (global_role_id not in player_lines or len(player_lines[global_role_id][0]) < len(lua_table_raw)):
                     player_lines[global_role_id] = (lua_table_raw, timestamp)
 
             records = []
@@ -1407,7 +1472,8 @@ class JX3PlayerAttribute:
                         except (TypeError, ValueError, IndexError):
                             continue
                     kungfu_id = Kungfu.with_internel_id(
-                        int(lua_table[3]), True
+                        int(lua_table[3]),
+                        True,
                     ).id
                 except (TypeError, ValueError, IndexError, SyntaxError):
                     continue
@@ -1415,14 +1481,9 @@ class JX3PlayerAttribute:
                     continue
                 if only_threapy and kungfu_id not in [10080, 10028, 10176, 10448, 10626]:
                     continue
-                records.append((
-                    equips_lines,
-                    talents_lines,
-                    kungfu_id,
-                    global_role_id,
-                    timestamp,
-                    str(lua_table[1])
-                ))
+                records.append(
+                    (equips_lines, talents_lines, kungfu_id, global_role_id, timestamp, str(lua_table[1])),
+                )
             return records
 
         records = await asyncio.to_thread(parse_records)
@@ -1433,25 +1494,30 @@ class JX3PlayerAttribute:
                 kungfu_id,
                 global_role_id,
                 timestamp,
-                name=player_name
-            )
-            for equips_lines, talents_lines, kungfu_id, global_role_id, timestamp, player_name
-            in records
+                name = player_name,
+            ) for equips_lines, talents_lines, kungfu_id, global_role_id, timestamp, player_name in records
         ]
 
     @overload
     @classmethod
-    async def from_database(cls, global_role_id: int, tag: str = "", all: Literal[False] = False) -> Self | None: ...
+    async def from_database(cls, global_role_id: int, tag: str = "", all: Literal[False] = False) -> Self | None:
+        ...
 
     @overload
     @classmethod
-    async def from_database(cls, global_role_id: int, tag: str = "", all: Literal[True] = True) -> list[Self] | None: ...
+    async def from_database(cls, global_role_id: int, tag: str = "", all: Literal[True] = True) -> list[Self] | None:
+        ...
 
     @classmethod
     async def from_database(cls, global_role_id: int, tag: str = "", all: bool = False) -> Self | list[Self] | None:
         tags = parse_conditions(tag)
         requested_kungfu_id = Kungfu(tag).id
-        all_equips: list[PlayerEquipsCache] | Any = db.where_all(PlayerEquipsCache(), "global_role_id = ?", str(global_role_id), default=[])
+        all_equips: list[PlayerEquipsCache] | Any = db.where_all(
+            PlayerEquipsCache(),
+            "global_role_id = ?",
+            str(global_role_id),
+            default = [],
+        )
         if not all_equips:
             return None
         usable_equips: list[tuple[PlayerEquipsCache, Self]] = []
@@ -1463,7 +1529,7 @@ class JX3PlayerAttribute:
                 each_equip.global_role_id,
                 each_equip.timestamp,
                 each_equip.tag,
-                database_id=each_equip.id,
+                database_id = each_equip.id,
             )
             try:
                 instance.validate()
@@ -1475,19 +1541,16 @@ class JX3PlayerAttribute:
         final_equips = usable_equips
         final_equip: tuple[PlayerEquipsCache, Self] | None = None
         if requested_kungfu_id is not None:
-            matching_equips = [
-                equip for equip in final_equips
-                if equip[0].kungfu_id == requested_kungfu_id
-            ]
+            matching_equips = [equip for equip in final_equips if equip[0].kungfu_id == requested_kungfu_id]
             if matching_equips:
-                final_equip = max(matching_equips, key=lambda equip: equip[0].timestamp)
+                final_equip = max(matching_equips, key = lambda equip: equip[0].timestamp)
         elif not tags:
-            final_equip = max(final_equips, key=lambda x: x[0].timestamp)
+            final_equip = max(final_equips, key = lambda x: x[0].timestamp)
         else:
             for each_tag in ["PVE", "PVP", "PVX"]:
                 if each_tag in tags:
                     final_equips = [e for e in final_equips if e[0].tag == each_tag]
-            final_equips = sorted(final_equips, key=lambda x: x[0].timestamp, reverse=True)
+            final_equips = sorted(final_equips, key = lambda x: x[0].timestamp, reverse = True)
             for each_equip, instance in final_equips:
                 if each_equip.kungfu_id in [10014, 10015, 10224, 10225, 10821]:
                     if (
@@ -1508,29 +1571,24 @@ class JX3PlayerAttribute:
             return None
         if all:
             other_equips = sorted(
-                (
-                    equip
-                    for equip in usable_equips
-                    if equip[0].id != final_equip[0].id
-                ),
-                key=lambda equip: equip[0].timestamp,
-                reverse=True,
+                (equip for equip in usable_equips if equip[0].id != final_equip[0].id),
+                key = lambda equip: equip[0].timestamp,
+                reverse = True,
             )
             return [final_equip[1]] + [instance for _, instance in other_equips]
         return final_equip[1]
-                    
 
     def __init__(
-            self,
-            equips_lines: list,
-            talents_lines: list[int],
-            kungfu_id: int,
-            global_role_id: int,
-            timestamp: int = 0,
-            equip_tag: str = "",
-            name: str = "",
-            database_id: int | None = None,
-        ):
+        self,
+        equips_lines: list,
+        talents_lines: list[int],
+        kungfu_id: int,
+        global_role_id: int,
+        timestamp: int = 0,
+        equip_tag: str = "",
+        name: str = "",
+        database_id: int | None = None,
+    ):
         Equip.purge()
         self.equip_lines = equips_lines
         self.talents_lines = talents_lines
@@ -1553,7 +1611,7 @@ class JX3PlayerAttribute:
         results = []
         order = [4, 3, 8, 12, 10, 11, 5, 9, 6, 7, 2, 0, 1]
         priority = {val: i for i, val in enumerate(order)}
-        sorted_lines = sorted(self.equip_lines, key=lambda obj: priority.get(int(obj[0]), len(order)))
+        sorted_lines = sorted(self.equip_lines, key = lambda obj: priority.get(int(obj[0]), len(order)))
         light_weapon: Equip | None = None
         for e in sorted_lines:
             if int(e[0]) != 1:
@@ -1578,11 +1636,8 @@ class JX3PlayerAttribute:
 
     @cached_property
     def talents(self) -> list[Talent]:
-        return [
-            Talent(t)
-            for t in self.talents_lines
-        ]
-    
+        return [Talent(t) for t in self.talents_lines]
+
     @cached_property
     def score(self):
         all_equips = self.equips
@@ -1595,8 +1650,7 @@ class JX3PlayerAttribute:
     def attributes(self) -> dict[str, str]:
         basic_attr = {}
         attr_equips = [
-            each_equip
-            for each_equip in self.equips
+            each_equip for each_equip in self.equips
             if not (self.kungfu_id == 10144 and each_equip.location_index == 1)
         ]
         for each_equip in attr_equips:
@@ -1608,7 +1662,7 @@ class JX3PlayerAttribute:
                 each_equip.common_enchant,
                 self.kungfu_id,
             )
-            basic_attr = merge_dicts(common_enchant_attr, basic_attr) # type: ignore
+            basic_attr = merge_dicts(common_enchant_attr, basic_attr)  # type: ignore
         equip_sets: dict[int, int] = {}
         for each_equip in attr_equips:
             if each_equip._set_id is not None:
@@ -1621,13 +1675,13 @@ class JX3PlayerAttribute:
     def save(self, *, only_if_newer: bool = False) -> bool:
         # Keep the read/compare/write sequence atomic across attribute import threads.
         with db._lock:
-            return self._save(only_if_newer=only_if_newer)
+            return self._save(only_if_newer = only_if_newer)
 
     def _save(self, *, only_if_newer: bool = False) -> bool:
         pretags = {
             "PVE": 0,
             "PVP": 0,
-            "PVX": 0
+            "PVX": 0,
         }
         if self.tag == "":
             for e in self.equips:
@@ -1637,7 +1691,7 @@ class JX3PlayerAttribute:
                     pretags["PVX"] += 1
                 else:
                     pretags["PVE"] += 1
-            self.tag = max(pretags, key=lambda k: pretags[k])
+            self.tag = max(pretags, key = lambda k: pretags[k])
         if self.database_id is not None:
             exist_same_tag_equip = cast(
                 PlayerEquipsCache | None,
@@ -1645,14 +1699,10 @@ class JX3PlayerAttribute:
                     PlayerEquipsCache(),
                     "id = ?",
                     self.database_id,
-                    default=None,
+                    default = None,
                 ),
             )
-            same_tag_equips = (
-                [exist_same_tag_equip]
-                if exist_same_tag_equip is not None
-                else []
-            )
+            same_tag_equips = ([exist_same_tag_equip] if exist_same_tag_equip is not None else [])
         else:
             same_tag_equips = cast(
                 list[PlayerEquipsCache],
@@ -1662,26 +1712,23 @@ class JX3PlayerAttribute:
                     self.global_role_id,
                     self.tag,
                     self.kungfu_id,
-                    default=[],
+                    default = [],
                 ) or [],
             )
             exist_same_tag_equip = (
-                max(same_tag_equips, key=lambda equip: equip.timestamp)
-                if same_tag_equips
-                else None
+                max(same_tag_equips, key = lambda equip: equip.timestamp) if same_tag_equips else None
             )
         if exist_same_tag_equip is not None:
             if any(equip.timestamp > self.timestamp for equip in same_tag_equips):
                 return False
-            if only_if_newer and any(
-                equip.timestamp == self.timestamp for equip in same_tag_equips
-            ):
+            if only_if_newer and any(equip.timestamp == self.timestamp for equip in same_tag_equips):
                 return False
             exist_same_tag_equip.equips_data = self.equip_lines
             exist_same_tag_equip.global_role_id = self.global_role_id
             exist_same_tag_equip.kungfu_id = self.kungfu_id
             exist_same_tag_equip.timestamp = self.timestamp
-            if exist_same_tag_equip.talents_data and self.talents and not (all([(t.name == "未知") for t in self.talents])):
+            if exist_same_tag_equip.talents_data and self.talents and not (all([(t.name == "未知")
+                                                                                for t in self.talents], )):
                 exist_same_tag_equip.talents_data = self.talents_lines
         else:
             exist_same_tag_equip = PlayerEquipsCache(
@@ -1690,7 +1737,7 @@ class JX3PlayerAttribute:
                 global_role_id = self.global_role_id,
                 kungfu_id = self.kungfu_id,
                 tag = self.tag,
-                timestamp = self.timestamp
+                timestamp = self.timestamp,
             )
         db.save(exist_same_tag_equip)
         return True

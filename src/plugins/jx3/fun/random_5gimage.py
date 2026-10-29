@@ -48,7 +48,6 @@ IMAGE_INDEX_MAP = {
 
 IMAGE_NAME_PREFIX = "武技殊影图·"
 
-
 @dataclass
 class FiveGImageItem:
     name: str
@@ -67,7 +66,6 @@ class FiveGImageItem:
             raise ValueError(f"Item `{self.name}` has no icon_id.")
         return f"https://icon.jx3box.com/icon/{self.icon_id}.png"
 
-
 @dataclass
 class RandomFiveGImageResult:
     server: str
@@ -82,11 +80,9 @@ class RandomFiveGImageResult:
             return None
         return self.opened_price - self.box_price
 
-
 def normalize_image_index(raw: str) -> str | None:
     raw = raw.strip().upper()
     return IMAGE_INDEX_MAP.get(raw)
-
 
 def load_image_box(index_name: str) -> tuple[FiveGImageItem, list[FiveGImageItem]] | None:
     data = json.loads(read(IMAGE_DATA_PATH))
@@ -95,21 +91,19 @@ def load_image_box(index_name: str) -> tuple[FiveGImageItem, list[FiveGImageItem
         if box.get("name") != box_name:
             continue
         box_item = FiveGImageItem(
-            name=str(box.get("name", "")),
-            item_id=str(box.get("item_id", "")),
-            icon_id=box.get("icon_id"),
+            name = str(box.get("name", "")),
+            item_id = str(box.get("item_id", "")),
+            icon_id = box.get("icon_id"),
         )
         items = [
             FiveGImageItem(
-                name=str(item.get("name", "")),
-                item_id=str(item.get("item_id", "")),
-                icon_id=item.get("icon_id"),
-            )
-            for item in box.get("items", [])
+                name = str(item.get("name", "")),
+                item_id = str(item.get("item_id", "")),
+                icon_id = item.get("icon_id"),
+            ) for item in box.get("items", [])
         ]
         return box_item, items
     return None
-
 
 @cache
 def load_image_items_by_id() -> dict[str, FiveGImageItem]:
@@ -117,67 +111,58 @@ def load_image_items_by_id() -> dict[str, FiveGImageItem]:
     items: dict[str, FiveGImageItem] = {}
     for box in data.get("boxes", []):
         box_item = FiveGImageItem(
-            name=str(box.get("name", "")),
-            item_id=str(box.get("item_id", "")),
-            icon_id=box.get("icon_id"),
+            name = str(box.get("name", "")),
+            item_id = str(box.get("item_id", "")),
+            icon_id = box.get("icon_id"),
         )
         if box_item.item_id:
             items[box_item.item_id] = box_item
         for item in box.get("items", []):
             image_item = FiveGImageItem(
-                name=str(item.get("name", "")),
-                item_id=str(item.get("item_id", "")),
-                icon_id=item.get("icon_id"),
+                name = str(item.get("name", "")),
+                item_id = str(item.get("item_id", "")),
+                icon_id = item.get("icon_id"),
             )
             if image_item.item_id:
                 items[image_item.item_id] = image_item
     return items
 
-
 def trim_image_name(name: str) -> str:
     return name.removeprefix(IMAGE_NAME_PREFIX)
-
 
 def format_image_item(name: str, item_id: str) -> str:
     display_name = escape(trim_image_name(name))
     item = load_image_items_by_id().get(str(item_id or ""))
     if item is None or item.icon_id is None:
         return f'<span class="record-item">{display_name}</span>'
-    return (
-        '<span class="record-item">'
-        f'<img src="{escape(item.icon)}" alt="">'
-        f"{display_name}"
-        "</span>"
-    )
-
+    return ("<span class=\"record-item\">"
+            f'<img src="{escape(item.icon)}" alt="">'
+            f"{display_name}"
+            "</span>")
 
 async def get_latest_trade_price(server: str, item_id: str) -> int | None:
     url = "https://next2.jx3box.com/api/auction/"
     params = {"server": server, "item_id": item_id, "aggregate_type": "hourly"}
-    data: list[dict[str, Any]] = (await Request(url, params=params).post()).json()
+    data: list[dict[str, Any]] = (await Request(url, params = params).post()).json()
     if not data:
         params["aggregate_type"] = "daily"
-        data = (await Request(url, params=params).post()).json()
+        data = (await Request(url, params = params).post()).json()
     if not data:
         return None
     return int(sort_dict_list(data, "timestamp")[-1]["price"])
 
-
 def format_price(price: int | None) -> str:
     if price is None:
-        return '<span class="no-price">暂无数据</span>'
+        return "<span class=\"no-price\">暂无数据</span>"
     return coin_to_image(calculate_price(price))
-
 
 def format_signed_price(price: int) -> str:
     prefix = "+" if price > 0 else ""
     return prefix + coin_to_image(calculate_price(price))
 
-
 def format_signed_text(price: int) -> str:
     prefix = "+" if price > 0 else ""
     return prefix + calculate_price(price)
-
 
 def profit_class(price: int, base_class: str = "price-cell") -> str:
     if price > 0:
@@ -186,7 +171,6 @@ def profit_class(price: int, base_class: str = "price-cell") -> str:
         return f"{base_class} profit-minus"
     return base_class
 
-
 async def render_random_5gimage(result: RandomFiveGImageResult):
     box_icon = await cache_image(result.box.icon) if result.box.icon else ""
     opened_icon = await cache_image(result.opened.icon) if result.opened.icon else ""
@@ -194,21 +178,20 @@ async def render_random_5gimage(result: RandomFiveGImageResult):
     profit_text = "无法计算" if profit is None else format_signed_price(profit)
     profit_class = "neutral" if profit is None or profit == 0 else ("plus" if profit > 0 else "minus")
     html = Template(template_random_5gimage).render(
-        font=Path(build_path(ASSETS, ["font", "PingFangSC-Semibold.otf"])).as_uri(),
-        box_icon=box_icon,
-        box_name=trim_image_name(result.box.name),
-        box_price=format_price(result.box_price),
-        opened_icon=opened_icon,
-        opened_name=trim_image_name(result.opened.name),
-        opened_price=format_price(result.opened_price),
-        profit=profit_text,
-        profit_class=profit_class,
-        server=result.server,
-        bot_name=Config.bot_basic.bot_name_argument,
-        saohua=get_saohua(),
+        font = Path(build_path(ASSETS, ["font", "PingFangSC-Semibold.otf"])).as_uri(),
+        box_icon = box_icon,
+        box_name = trim_image_name(result.box.name),
+        box_price = format_price(result.box_price),
+        opened_icon = opened_icon,
+        opened_name = trim_image_name(result.opened.name),
+        opened_price = format_price(result.opened_price),
+        profit = profit_text,
+        profit_class = profit_class,
+        server = result.server,
+        bot_name = Config.bot_basic.bot_name_argument,
+        saohua = get_saohua(),
     )
-    return await generate(html, ".card", segment=True, wait_for_network=True)
-
+    return await generate(html, ".card", segment = True, wait_for_network = True)
 
 async def generate_random_5gimage(server: str, index_name: str, user_id: int, group_id: int):
     loaded = load_image_box(index_name)
@@ -221,55 +204,54 @@ async def generate_random_5gimage(server: str, index_name: str, user_id: int, gr
     box_price = await get_latest_trade_price(server, box.trade_item_id)
     opened_price = await get_latest_trade_price(server, opened.trade_item_id)
     result = RandomFiveGImageResult(
-        server=server,
-        box=box,
-        opened=opened,
-        box_price=box_price,
-        opened_price=opened_price,
+        server = server,
+        box = box,
+        opened = opened,
+        box_price = box_price,
+        opened_price = opened_price,
     )
     if result.profit is not None:
         logs_db.save(
             RandomImageRecord(
-                user_id=user_id,
-                group_id=group_id,
-                server=server,
-                box_name=box.name,
-                box_item_id=box.item_id,
-                box_price=box_price or 0,
-                result_name=opened.name,
-                result_item_id=opened.item_id,
-                result_price=opened_price or 0,
-                profit=result.profit,
-                timestamp=Time().raw_time,
-            )
+                user_id = user_id,
+                group_id = group_id,
+                server = server,
+                box_name = box.name,
+                box_item_id = box.item_id,
+                box_price = box_price or 0,
+                result_name = opened.name,
+                result_item_id = opened.item_id,
+                result_price = opened_price or 0,
+                profit = result.profit,
+                timestamp = Time().raw_time,
+            ),
         )
     return await render_random_5gimage(result), result.profit is not None
-
 
 async def get_random_5gimage_record_image(user_id: int, group_id: int):
     records: list[RandomImageRecord] | Any = logs_db.where_all(
         RandomImageRecord(),
         "user_id = ?",
         user_id,
-        default=[],
+        default = [],
     )
     if not records:
         return "还没有开图记录。"
-    records = sorted(records, key=lambda record: record.timestamp, reverse=True)
+    records = sorted(records, key = lambda record: record.timestamp, reverse = True)
     total_profit = sum(record.profit for record in records)
     table_body = []
     for record in records[:30]:
         table_body.append(
             Template(template_random_5gimage_record).render(
-                time=Time(record.timestamp).format("%Y-%m-%d %H:%M:%S"),
-                server=record.server,
-                box_name=format_image_item(record.box_name, record.box_item_id),
-                result_name=format_image_item(record.result_name, record.result_item_id),
-                box_price=format_price(record.box_price),
-                result_price=format_price(record.result_price),
-                profit=format_signed_price(record.profit),
-                profit_class=profit_class(record.profit),
-            )
+                time = Time(record.timestamp).format("%Y-%m-%d %H:%M:%S"),
+                server = record.server,
+                box_name = format_image_item(record.box_name, record.box_item_id),
+                result_name = format_image_item(record.result_name, record.result_item_id),
+                box_price = format_price(record.box_price),
+                result_price = format_price(record.result_price),
+                profit = format_signed_price(record.profit),
+                profit_class = profit_class(record.profit),
+            ),
         )
     css = """
 .item-table td img {
@@ -298,14 +280,13 @@ async def get_random_5gimage_record_image(user_id: int, group_id: int):
 """
     html = str(
         HTMLSourceCode(
-            application_name=f"开图战绩 · {len(records)}次 · 累计盈亏 {format_signed_text(total_profit)}",
-            table_head=table_random_5gimage_record_head,
-            table_body="\n".join(table_body),
-            additional_css=css,
-        )
+            application_name = f"开图战绩 · {len(records)}次 · 累计盈亏 {format_signed_text(total_profit)}",
+            table_head = table_random_5gimage_record_head,
+            table_body = "\n".join(table_body),
+            additional_css = css,
+        ),
     )
-    return await generate(html, ".container", segment=True, wait_for_network=True)
-
+    return await generate(html, ".container", segment = True, wait_for_network = True)
 
 async def get_rank_nickname(bot: Any, user_id: int, member_map: dict[int, dict[str, Any]]) -> str:
     member = member_map.get(user_id, {})
@@ -313,11 +294,10 @@ async def get_rank_nickname(bot: Any, user_id: int, member_map: dict[int, dict[s
     if nickname:
         return str(nickname)[:15]
     try:
-        stranger = await bot.get_stranger_info(user_id=user_id, no_cache=False)
+        stranger = await bot.get_stranger_info(user_id = user_id, no_cache = False)
     except Exception:
         return str(user_id)
     return str(stranger.get("nickname") or user_id)[:15]
-
 
 def _query_random_5gimage_rank_data(
     rank_type: str,
@@ -325,8 +305,7 @@ def _query_random_5gimage_rank_data(
     """由数据库完成开图记录聚合，仅取排行榜需要的前 30 名。"""
     order_by = (
         "total_profit ASC, open_count DESC, first_record_id ASC"
-        if rank_type == "亏损"
-        else "total_profit DESC, open_count DESC, first_record_id ASC"
+        if rank_type == "亏损" else "total_profit DESC, open_count DESC, first_record_id ASC"
     )
     rows = logs_db.fetch_all(
         f"""
@@ -342,15 +321,12 @@ def _query_random_5gimage_rank_data(
         )
         ORDER BY {order_by}
         LIMIT 30
-        """
+        """,
     )
     if not rows:
         return [], 0
-    return [
-        (int(user_id), int(open_count), int(total_profit))
-        for user_id, open_count, total_profit, _ in rows
-    ], int(rows[0][3])
-
+    return [(int(user_id), int(open_count), int(total_profit))
+            for user_id, open_count, total_profit, _ in rows], int(rows[0][3])
 
 async def get_random_5gimage_rank_data(
     rank_type: str,
@@ -358,38 +334,34 @@ async def get_random_5gimage_rank_data(
     """在线程中查询排行榜，避免数据库忙等待阻塞事件循环。"""
     return await asyncio.to_thread(_query_random_5gimage_rank_data, rank_type)
 
-
 async def get_random_5gimage_rank_image(bot: Any, group_id: int, rank_type: str = "赢取"):
     ranked, user_count = await get_random_5gimage_rank_data(rank_type)
     if not ranked:
         return "还没有开图记录。"
 
-    members = await bot.get_group_member_list(group_id=group_id)
+    members = await bot.get_group_member_list(group_id = group_id)
     member_map = {int(member["user_id"]): member for member in members}
     nicknames = await asyncio.gather(
-        *(
-            get_rank_nickname(bot, user_id, member_map)
-            for user_id, _, _ in ranked
-        )
+        *(get_rank_nickname(bot, user_id, member_map) for user_id, _, _ in ranked),
     )
 
     table_body = []
     for rank, ((user_id, open_count, total_profit), nickname) in enumerate(
-        zip(ranked, nicknames),
-        start=1,
+            zip(ranked, nicknames),
+            start = 1,
     ):
         avg_profit = int(total_profit / open_count)
         table_body.append(
             Template(template_random_5gimage_rank).render(
-                rank=rank,
-                avatar=f"https://q.qlogo.cn/headimg_dl?dst_uin={user_id}&spec=100&img_type=jpg",
-                nickname=nickname,
-                count=open_count,
-                total_profit=format_signed_price(total_profit),
-                avg_profit=format_signed_price(avg_profit),
-                total_class=profit_class(total_profit),
-                avg_class=profit_class(avg_profit),
-            )
+                rank = rank,
+                avatar = f"https://q.qlogo.cn/headimg_dl?dst_uin={user_id}&spec=100&img_type=jpg",
+                nickname = nickname,
+                count = open_count,
+                total_profit = format_signed_price(total_profit),
+                avg_profit = format_signed_price(avg_profit),
+                total_class = profit_class(total_profit),
+                avg_class = profit_class(avg_profit),
+            ),
         )
 
     css = """
@@ -412,10 +384,10 @@ async def get_random_5gimage_rank_image(bot: Any, group_id: int, rank_type: str 
 """
     html = str(
         HTMLSourceCode(
-            application_name=f"开图排行 · {rank_type} · {user_count}人",
-            table_head=table_random_5gimage_rank_head,
-            table_body="\n".join(table_body),
-            additional_css=css,
-        )
+            application_name = f"开图排行 · {rank_type} · {user_count}人",
+            table_head = table_random_5gimage_rank_head,
+            table_body = "\n".join(table_body),
+            additional_css = css,
+        ),
     )
-    return await generate(html, ".container", segment=True, wait_for_network=True)
+    return await generate(html, ".container", segment = True, wait_for_network = True)

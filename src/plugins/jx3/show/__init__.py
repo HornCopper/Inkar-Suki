@@ -2,7 +2,7 @@ from nonebot.params import CommandArg
 from nonebot.adapters.onebot.v11 import (
     Message,
     GroupMessageEvent,
-    MessageSegment as ms
+    MessageSegment as ms,
 )
 
 from src.config import Config
@@ -21,7 +21,13 @@ def cache_show(image_bytes: bytes, name: str, server: str) -> None:
     path = SHOW + f"/{name}·{server}.png"
     write(path, image_bytes, "wb")
 
-show_matcher = on_command("jx3_show", command_key="名片", aliases={"名片", "qq秀", "QQ秀", "名片秀"}, force_whitespace=True, priority=5)
+show_matcher = on_command(
+    "jx3_show",
+    command_key = "名片",
+    aliases = {"名片", "qq秀", "QQ秀", "名片秀"},
+    force_whitespace = True,
+    priority = 5,
+)
 
 @show_matcher.handle()
 async def _(event: GroupMessageEvent, full_argument: Message = CommandArg()):
@@ -39,7 +45,7 @@ async def _(event: GroupMessageEvent, full_argument: Message = CommandArg()):
     server = Server(server, event.group_id).server
     if server is None:
         await show_matcher.finish(PROMPT.ServerNotExist)
-    role_data = await search_player(role_name=name, server_name=server)
+    role_data = await search_player(role_name = name, server_name = server)
     if not role_data.roleId:
         await show_matcher.finish(PROMPT.PlayerNotExist)
     role_card = await get_role_card_url(role_data)
@@ -49,10 +55,9 @@ async def _(event: GroupMessageEvent, full_argument: Message = CommandArg()):
     image_bytes = (await Request(image_url).get()).content
     cache_show(image_bytes, name, server)
     image = ms.image(
-        image_bytes
+        image_bytes,
     )
     msg = ms.at(event.user_id) + f" 查询成功！来自：{name}·{server}｜点赞数量：{praise_count}" + image
     await show_matcher.finish(msg)
-
 
 from .qiyu_card import qiyu_card_matcher

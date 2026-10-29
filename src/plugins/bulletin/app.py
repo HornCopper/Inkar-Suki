@@ -6,7 +6,7 @@ from nonebot.adapters.onebot.v11 import MessageSegment as ms
 from src.const.path import (
     ASSETS,
     CACHE,
-    build_path
+    build_path,
 )
 from src.utils.generate import get_uuid
 from src.utils.network import Request
@@ -20,9 +20,12 @@ async def get_bulletin_img(msg: str, type_: str):
             [
                 "image",
                 "bulletin",
-                {"S": "sad.jpg", "G": "glad.jpg"}[type_]
-            ]
-        )
+                {
+                    "S": "sad.jpg",
+                    "G": "glad.jpg",
+                }[type_],
+            ],
+        ),
     )
     draw = ImageDraw.Draw(background)
     width, height = background.size
@@ -40,28 +43,28 @@ async def get_bulletin_img(msg: str, type_: str):
             ASSETS,
             [
                 "font",
-                "syst-heavy.otf"
-            ]
+                "syst-heavy.otf",
+            ],
         ),
-        fsize
+        fsize,
     )
-    bbox = draw.textbbox((0, 0), msg, font=font)  
-    text_width = bbox[2] - bbox[0]  
+    bbox = draw.textbbox((0, 0), msg, font = font)
+    text_width = bbox[2] - bbox[0]
     text_height = bbox[3] - bbox[1]
-    x = (width - text_width) / 2  
+    x = (width - text_width) / 2
     y = (height - text_height) / 2
     if type_ == "G":
-        f = (255, 0, 0) # fill color
-        o = (255, 255, 0) # outline color
+        f = (255, 0, 0)  # fill color
+        o = (255, 255, 0)  # outline color
     else:
         f = (0, 0, 0)
         o = (255, 255, 255)
-    draw.text((x, y), msg, font=font, align="center", fill=f, outline=o, stroke_fill=o, stroke_width=1)
+    draw.text((x, y), msg, font = font, align = "center", fill = f, outline = o, stroke_fill = o, stroke_width = 1)
     new_file = build_path(
         CACHE,
         [
-            get_uuid() + ".jpg"
-        ]
+            get_uuid() + ".jpg",
+        ],
     )
     background.save(new_file)
     return ms.image(Request(Path(new_file).as_uri()).local_content)

@@ -1,0 +1,1472 @@
+ShopTemplateID	ShopName	ConfigFile	CanRepair	ScriptName	RequireForceID	PlayerRemoteDataID	CustomShop	comment	SystemShop
+1	名剑大会·255品恶人谷藏剑装备	Arena\Lv255_ER_CJ.tab	1					装备	
+2	名剑大会·255品恶人谷纯阳装备	Arena\Lv255_ER_CY.tab	1					装备	
+3	名剑大会·255品恶人谷七秀装备	Arena\Lv255_ER_QX.tab	1					装备	
+4	名剑大会·255品恶人谷少林装备	Arena\Lv255_ER_SL.tab	1					装备	
+5	名剑大会·255品恶人谷天策装备	Arena\Lv255_ER_TC.tab	1					装备	
+6	名剑大会·255品恶人谷唐门装备	Arena\Lv255_ER_TM.tab	1					装备	
+7	名剑大会·255品恶人谷五毒装备	Arena\Lv255_ER_WD.tab	1					装备	
+8	名剑大会·255品恶人谷万花装备	Arena\Lv255_ER_WH.tab	1					装备	
+9	名剑大会·255品浩气盟藏剑装备	Arena\Lv255_HQ_CJ.tab	1					装备	
+10	名剑大会·255品浩气盟纯阳装备	Arena\Lv255_HQ_CY.tab	1					装备	
+11	名剑大会·255品浩气盟七秀装备	Arena\Lv255_HQ_QX.tab	1					装备	
+12	名剑大会·255品浩气盟少林装备	Arena\Lv255_HQ_SL.tab	1					装备	
+13	名剑大会·255品浩气盟天策装备	Arena\Lv255_HQ_TC.tab	1					装备	
+14	名剑大会·255品浩气盟唐门装备	Arena\Lv255_HQ_TM.tab	1					装备	
+15	名剑大会·255品浩气盟五毒装备	Arena\Lv255_HQ_WD.tab	1					装备	
+16	名剑大会·255品浩气盟万花装备	Arena\Lv255_HQ_WH.tab	1					装备	
+17	名剑大会·255品中立藏剑装备	Arena\Lv255_ZL_CJ.tab	1					装备	
+18	名剑大会·255品中立纯阳装备	Arena\Lv255_ZL_CY.tab	1					装备	
+19	名剑大会·255品中立七秀装备	Arena\Lv255_ZL_QX.tab	1					装备	
+20	名剑大会·255品中立少林装备	Arena\Lv255_ZL_SL.tab	1					装备	
+21	名剑大会·255品中立天策装备	Arena\Lv255_ZL_TC.tab	1					装备	
+22	名剑大会·255品中立唐门装备	Arena\Lv255_ZL_TM.tab	1					装备	
+23	名剑大会·255品中立五毒装备	Arena\Lv255_ZL_WD.tab	1					装备	
+24	名剑大会·255品中立万花装备	Arena\Lv255_ZL_WH.tab	1					装备	
+25	名剑大会·270品中立藏剑装备	Arena\Lv270_ZL_CJ.tab	1					装备	
+26	名剑大会·270品中立纯阳装备	Arena\Lv270_ZL_CY.tab	1					装备	
+27	名剑大会·270品中立七秀装备	Arena\Lv270_ZL_QX.tab	1					装备	
+28	名剑大会·270品中立少林装备	Arena\Lv270_ZL_SL.tab	1					装备	
+29	名剑大会·270品中立天策装备	Arena\Lv270_ZL_TC.tab	1					装备	
+30	名剑大会·270品中立唐门装备	Arena\Lv270_ZL_TM.tab	1					装备	
+31	名剑大会·270品中立五毒装备	Arena\Lv270_ZL_WD.tab	1					装备	
+32	名剑大会·270品中立万花装备	Arena\Lv270_ZL_WH.tab	1					装备	
+33	名剑大会·270品阵营藏剑装备	Arena\Lv270_ZY_CJ.tab	1					装备	
+34	名剑大会·270品阵营纯阳装备	Arena\Lv270_ZY_CY.tab	1					装备	
+35	名剑大会·270品阵营七秀装备	Arena\Lv270_ZY_QX.tab	1					装备	
+36	名剑大会·270品阵营少林装备	Arena\Lv270_ZY_SL.tab	1					装备	
+37	名剑大会·270品阵营天策装备	Arena\Lv270_ZY_TC.tab	1					装备	
+38	名剑大会·270品阵营唐门装备	Arena\Lv270_ZY_TM.tab	1					装备	
+39	名剑大会·270品阵营五毒装备	Arena\Lv270_ZY_WD.tab	1					装备	
+40	名剑大会·270品阵营万花装备	Arena\Lv270_ZY_WH.tab	1					装备	
+41	名剑大会·295品中立藏剑装备	Arena\Lv295_ZL_CJ.tab	1					装备	
+42	名剑大会·295品中立纯阳装备	Arena\Lv295_ZL_CY.tab	1					装备	
+43	名剑大会·295品中立七秀装备	Arena\Lv295_ZL_QX.tab	1					装备	
+44	名剑大会·295品中立少林装备	Arena\Lv295_ZL_SL.tab	1					装备	
+45	名剑大会·295品中立天策装备	Arena\Lv295_ZL_TC.tab	1					装备	
+46	名剑大会·295品中立唐门装备	Arena\Lv295_ZL_TM.tab	1					装备	
+47	名剑大会·295品中立五毒装备	Arena\Lv295_ZL_WD.tab	1					装备	
+48	名剑大会·295品中立万花装备	Arena\Lv295_ZL_WH.tab	1					装备	
+49	名剑大会·295品阵营藏剑装备	Arena\Lv295_ZY_CJ.tab	1					装备	
+50	名剑大会·295品阵营纯阳装备	Arena\Lv295_ZY_CY.tab	1					装备	
+51	名剑大会·295品阵营七秀装备	Arena\Lv295_ZY_QX.tab	1					装备	
+52	名剑大会·295品阵营少林装备	Arena\Lv295_ZY_SL.tab	1					装备	
+53	名剑大会·295品阵营天策装备	Arena\Lv295_ZY_TC.tab	1					装备	
+54	名剑大会·295品阵营唐门装备	Arena\Lv295_ZY_TM.tab	1					装备	
+55	名剑大会·295品阵营五毒装备	Arena\Lv295_ZY_WD.tab	1					装备	
+56	名剑大会·295品阵营万花装备	Arena\Lv295_ZY_WH.tab	1					装备	
+57	长安城·书籍	City\ChangAn_Book.tab						其他	
+58	长安城·坐骑	City\ChangAn_Horse.tab						其他	
+59	长安城·配方	City\ChangAn_Recipe.tab						其他	
+60	坐骑	City\ChengDu_Horse.tab		scripts/Map/逐鹿中原/shop/通用维修商店.lua				其他	1
+61	成都·配方	City\ChengDu_Recipe.tab						其他	
+62	洛阳城·书籍	City\LuoYang_Book.tab						其他	
+63	洛阳城·坐骑	City\LuoYang_Horse.tab						其他	
+64	洛阳城·配方	City\LuoYang_Recipe.tab						其他	
+65	扬州城·书籍	City\YangZhou_Book.tab						其他	
+66	扬州城·坐骑	City\YangZhou_Horse.tab						其他	
+67	扬州城·配方	City\YangZhou_Recipe.tab						其他	
+68	江湖贡献·110品装备	Contribution\Lv110_All.tab	1					装备	
+69	江湖贡献·120-130品装备	Contribution\Lv120-130_All.tab	1					装备	
+70	江湖贡献·120品装备	Contribution\Lv120_All.tab	1					装备	
+71	江湖贡献·130品装备	Contribution\Lv130_All.tab	1					装备	
+72	江湖贡献·140品装备	Contribution\Lv140_All.tab	1					装备	
+73	江湖贡献·200品武器	Contribution\Lv200_Weapon.tab	1					装备	
+74	江湖贡献·205品下装	Contribution\Lv205_Lower.tab	1					装备	
+75	江湖贡献·205品上装	Contribution\Lv205_Upper.tab	1					装备	
+76	江湖贡献·225品装备	Contribution\Lv225_All.tab	1					装备	
+77	江湖贡献·245品装备	Contribution\Lv245_All.tab	1					装备	
+78	江湖贡献·265品装备	Contribution\Lv265_All.tab	1					装备	
+79	江湖贡献·62品装备	Contribution\Lv62_All.tab	1					装备	
+80	生活技艺·铸造材料	Craft\Foundry.tab	1	scripts/Map/逐鹿中原/shop/通用维修商店.lua				生活技能	1
+81	生活技艺·医术材料	Craft\Medical.tab						生活技能	1
+82	阅读·抄书材料	Craft\Reading.tab						其他	1
+83	生活技艺·烹饪调味品	Craft\Seasoning.tab		scripts/Map/逐鹿中原/shop/通用维修商店.lua				生活技能	1
+84	生活技艺·缝纫材料	Craft\Tailoring.tab		scripts/Map/逐鹿中原/shop/通用维修商店.lua				生活技能	1
+85	生活技艺·烹饪蔬菜	Craft\Vegetable.tab		scripts/Map/逐鹿中原/shop/通用维修商店.lua				生活技能	1
+86	生活技艺·烹饪酒水	Craft\Wine.tab		scripts/Map/逐鹿中原/shop/通用维修商店.lua				生活技能	1
+87	春节·奇货	Festival\ChunJie_Currency_Goods.tab						其他	1
+88	春节·年兽	Festival\ChunJie_Currency_Special.tab		scripts/Map/节日春节/shop/抽奖金钱统计.lua				其他	1
+89	春节-金币·礼盒	Festival\ChunJie_Gold_GiftBox.tab						其他	
+90	春节-金币·封家肉品	Festival\ChunJie_Gold_Hunter.tab						其他	
+91	春节-金币·烟花	Festival\ChunJie_Gold_Lights.tab						其他	1
+92	冬至-货币·佳品	Festival\DongZhi_Currency_Goods.tab						其他	1
+93	冬至-金币·杂货	Festival\DongZhi_Gold_Materials.tab						其他	1
+94	冬至-金币·西域商品	Festival\DongZhi_Gold_WestWard.tab						其他	1
+95	端午·粽子	Festival\DuanWu_Gold_Goods.tab						其他	1
+96	端午·粽子材料	Festival\DuanWu_Gold_Materials.tab						其他	1
+97	活动-美人图·丁老三的小店	Festival\Party_BeautyGirlPhotos.tab						其他	
+98	活动-赛马·出租比赛马驹	Festival\Party_HorseRace.tab						其他	
+99	活动-茶馆·茶叶	Festival\Party_TeaBar.tab						其他	
+100	阿甘的天工囊	Festival\Pet_AGan_Package.tab	1	scripts/Map/逐鹿中原/shop/通用维修商店.lua				其他	
+101	百宝袋	Festival\Pet_YuDengLong_Packge.tab	1	scripts/Map/逐鹿中原/shop/通用维修商店.lua				其他	
+102	清明·奇货	Festival\QingMing_Gold_Gift.tab						其他	1
+103	七夕·奇货	Festival\QiXi_Currency_Goods.tab						其他	1
+104	中秋·奇货	Festival\ZhongQiu_Currency_Goods.tab						其他	1
+105	中秋·佳品	Festival\ZhongQiu_Glod_Lights.tab						其他	1
+106	藏剑·书籍	Force\CangJian_Book.tab						其他	
+107	藏剑·配方	Force\CangJian_Recipe.tab						其他	
+108	纯阳·书籍	Force\ChunYang_Book.tab						其他	
+109	纯阳-任务·同心锁	Force\ChunYang_Mission_Lock.tab						其他	
+110	纯阳-任务·长安贡酒	Force\ChunYang_Mission_Wine.tab						其他	
+111	纯阳·配方	Force\ChunYang_Recipe.tab						其他	
+112	七秀·书籍	Force\QiXiu_Book.tab						其他	
+113	七秀·配方	Force\QiXiu_Recipe.tab						其他	
+114	少林·书籍	Force\ShaoLin_Book.tab						其他	
+115	少林-任务·酒水	Force\ShaoLin_Mission_Wine.tab						其他	
+116	少林·配方	Force\ShaoLin_Recipe.tab						其他	
+117	唐门-任务·庙会花灯	Force\TangMen_Mission_Lights.tab						其他	
+118	唐门·书籍	Force\TangMen_Book.tab						其他	
+119	天策·书籍	Force\TianCe_Book.tab						其他	
+120	天策·配方	Force\TianCe_Recipe.tab						其他	
+121	万花·书籍	Force\WanHua_Book.tab						其他	
+122	万花·配方	Force\WanHua_Recipe.tab						其他	
+123	五毒-任务·山歌	Force\WuDu_Mission_Song.tab						其他	
+124	侠行·255-310品藏剑装备	Justice\Lv230-280_CJ.tab	1					装备	
+125	侠行·255-310品纯阳装备	Justice\Lv230-280_CY.tab	1					装备	
+126	侠行·255-310品七秀装备	Justice\Lv230-280_QX.tab	1					装备	
+127	侠行·255-310品少林装备	Justice\Lv230-280_SL.tab	1					装备	
+128	侠行·255-310品天策装备	Justice\Lv230-280_TC.tab	1					装备	
+129	侠行·255-310品唐门装备	Justice\Lv230-280_TM.tab	1					装备	
+130	侠行·255-310品五毒装备	Justice\Lv230-280_WD.tab	1					装备	
+131	侠行·255-310品万花装备	Justice\Lv230-280_WH.tab	1					装备	
+132	侠行·290品下装	Justice\Lv290_Lower.tab	1					装备	
+133	侠行·290品其它	Justice\Lv290_Trinket.tab	1					装备	
+134	侠行·290品上装	Justice\Lv290_Upper.tab	1					装备	
+135	侠行·挂件	Justice\Trinket.tab	1					其他	1
+136	稻香村·防具	Newbie\Armor.tab	1					装备	
+137	稻香村·小吃美食	Newbie\Food.tab						其他	
+138	稻香村·杂货	Newbie\Goods.tab	1					其他	
+139	稻香村·药品	Newbie\Medicine.tab						其他	
+140	稻香村·武器	Newbie\Weapon.tab	1					装备	
+141	声望-镖局联盟·120品物资	Popularity\70th_BiaoJu_Lv120_Weapon.tab	1		42			其他	
+142	声望-镖局联盟·60品武器	Popularity\70th_BiaoJu_Lv60_Weapon.tab	1		42			装备	
+143	声望-藏剑·装备	Popularity\70th_CangJian_Armor.tab	1		18			装备	
+144	声望-藏剑·物资	Popularity\70th_CangJian_Goods.tab			18			其他	
+145	声望-长安·装备	Popularity\70th_ChangAn_Armor.tab	1		36			装备	
+146	声望-长安·物资	Popularity\70th_ChangAn_Goods.tab						其他	
+147	声望-天道轩·装备	Popularity\70th_ChangGeMen_Armor.tab	1		45			装备	
+148	声望-纯阳·装备	Popularity\70th_ChunYang_Armor.tab	1		14			装备	
+149	声望-纯阳·物资	Popularity\70th_ChunYang_Goods.tab			14			其他	
+150	声望-刀宗·装备	Popularity\70th_DaoZong_Armor.tab	1		47			装备	
+151	声望-东漓寨·装备	Popularity\70th_DongLiZhai_Armor.tab	1		44			装备	
+152	声望-恶人谷·装备	Popularity\70th_ERenGu_Armor.tab	1		49			装备	
+153	声望-恶人谷·物资	Popularity\70th_ERenGu_Goods.tab			49			其他	
+154	声望-恶人谷·饰品	Popularity\70th_ERenGu_Trinket.tab	1		49			其他	
+155	声望-浩气盟·装备	Popularity\70th_HaoQiMeng_Armor.tab	1		50			装备	
+156	声望-浩气盟·物资	Popularity\70th_HaoQiMeng_Goods.tab			50			其他	
+157	声望-浩气盟·饰品	Popularity\70th_HaoQiMeng_Trinket.tab	1		50			其他	
+158	声望-昆仑·装备	Popularity\70th_KunLun_Armor.tab	1	scripts/Map/逐鹿中原/shop/通用维修商店.lua	46			装备	
+159	声望-洛阳·装备	Popularity\70th_LuoYang_Armor.tab	1		35			装备	
+160	声望-洛阳·物资	Popularity\70th_LuoYang_Goods.tab			35			其他	
+161	声望-觅宝会·物资	Popularity\70th_MiBaoHui_Goods.tab			75			其他	
+162	声望-南洋商会·装备	Popularity\70th_NanYangShangHui_Armor.tab	1		43			装备	
+163	声望-七秀·装备	Popularity\70th_QiXiu_Armor.tab	1		15			装备	
+164	声望-七秀·物资	Popularity\70th_QiXiu_Goods.tab			15			其他	
+165	声望-少林·装备	Popularity\70th_ShaoLin_Armor.tab	1		11			装备	
+166	声望-少林·物资	Popularity\70th_ShaoLin_Goods.tab			11			其他	
+167	声望-天策·装备	Popularity\70th_TianCe_Armor.tab	1		13			装备	
+168	声望-天策·物资	Popularity\70th_TianCe_Goods.tab			13			其他	
+169	声望-万花·装备	Popularity\70th_WanHua_Armor.tab	1		12			装备	
+170	声望-万花·物资	Popularity\70th_WanHua_Goods.tab			12			其他	
+171	声望-扬州·物资	Popularity\70th_YangZhou_Goods.tab	1					其他	
+172	声望-扬州·装备	Popularity\70th_YangZhou_Armor.tab			34			装备	
+173	声望-隐元会·装备	Popularity\70th_YinYuanHui_Armor.tab	1		48			装备	
+174	声望-霸刀·装备	Popularity\80th_BaDaoZiWeiTang_Armor.tab	1		84			装备	
+175	声望-霸刀·物资	Popularity\80th_BaDaoZiWeiTang_Goods.tab			84			其他	
+176	声望-拜火教·装备	Popularity\80th_BaiHuoJiao_Armor.tab	1		89			装备	
+177	声望-拜火教·物资	Popularity\80th_BaiHuoJiao_Goods.tab			89			其他	
+178	声望-无愧南灵·装备	Popularity\80th_CangShanErHai_Armor.tab	1	scripts/Map/逐鹿中原/shop/通用维修商店.lua	94			装备	
+179	声望-无愧南灵·物资	Popularity\80th_CangShanErHai_Goods.tab		scripts/Map/逐鹿中原/shop/通用维修商店.lua	94			其他	
+180	声望-大理宫·装备	Popularity\80th_DuanShiDaLiGong_Armor.tab	1	scripts/Map/逐鹿中原/shop/通用维修商店.lua	85			装备	
+181	声望-大理宫·物资	Popularity\80th_DuanShiDaLiGong_Goods.tab			85			其他	
+182	声望-九黎族·物资	Popularity\80th_JiuLiZu_Goods.tab		scripts/Map/逐鹿中原/shop/通用维修商店.lua	90			其他	
+183	声望-藏经阁·装备	Popularity\80th_ShaoLinCangJingGe_Armor.tab	1		83			装备	
+184	声望-藏经阁·物资	Popularity\80th_ShaoLinCangJingGe_Goods.tab			83			其他	
+185	声望-塔纳离恨冢·装备	Popularity\80th_TaNaLiHenZhong_Armor.tab	1		93			装备	
+186	声望-塔纳·装备	Popularity\80th_TaNa_Armor.tab	1		86			装备	
+187	声望-塔纳·物资	Popularity\80th_TaNa_Goods.tab			86			其他	
+188	声望-唐门·装备	Popularity\80th_TangMen_Armor.tab	1		17			装备	
+189	声望-天南王家·物资	Popularity\80th_TianNanWangJia_Goods.tab			88			其他	
+190	声望-天南王家·装备	Popularity\80th_TinaNanWangJia_Armor.tab	1		88			装备	
+191	声望-祝融殿·装备	Popularity\80th_ZhuRongDian_Armor.tab	1		87			装备	
+192	声望-祝融殿·物资	Popularity\80th_ZhuRongDian_Goods.tab			87			其他	
+193	声望-五毒·装备	Popularity\80th_WuDu_Armor.tab			16			装备	
+194	声望-轩辕社·装备	Popularity\80th_XuanYuanShe_Armor.tab	1	scripts/Map/逐鹿中原/shop/通用维修商店.lua	82			装备	
+195	声望-轩辕社·物资	Popularity\80th_XuanYuanShe_Goods.tab		scripts/Map/逐鹿中原/shop/通用维修商店.lua	82			其他	
+196	威望·110品恶人谷装备	Prestige\Lv110_ER_All.tab	1					装备	
+197	威望·110品浩气盟装备	Prestige\Lv110_HQ_All.tab	1					装备	
+198	威望·恶人谷装备	Prestige\Lv120_ER_Armor.tab	1					装备	
+199	威望·120品恶人谷暗器	Prestige\Lv120_ER_Weapon.tab	1					装备	
+200	威望·浩气盟装备	Prestige\Lv120_HQ_Armor.tab	1					装备	
+201	威望·120品浩气盟暗器	Prestige\Lv120_HQ_Weapon.tab	1					装备	
+202	威望·135品恶人谷饰品	Prestige\Lv135_ER_Trinket.tab	1					装备	
+203	威望·135品浩气盟饰品	Prestige\Lv135_HQ_Trinket.tab	1					装备	
+204	威望·145品恶人谷装备	Prestige\Lv145_ER_All.tab	1					装备	
+205	威望·145品浩气盟装备	Prestige\Lv145_HQ_All.tab	1					装备	
+206	威望·150品恶人谷饰品	Prestige\Lv150_ER_Trinket.tab	1					装备	
+207	威望·150品浩气盟饰品	Prestige\Lv150_HQ_Trinket.tab	1					装备	
+208	威望·165品恶人谷装备	Prestige\Lv165_ER_All.tab	1					装备	
+209	威望·165品恶人谷藏剑装备	Prestige\Lv165_ER_CJ.tab	1					装备	
+210	威望·165品恶人谷纯阳装备	Prestige\Lv165_ER_CY.tab	1					装备	
+211	威望·165品恶人谷七秀装备	Prestige\Lv165_ER_QX.tab	1					装备	
+212	威望·165品恶人谷少林装备	Prestige\Lv165_ER_SL.tab	1					装备	
+213	威望·165品恶人谷天策装备	Prestige\Lv165_ER_TC.tab	1					装备	
+214	威望·165品恶人谷唐门装备	Prestige\Lv165_ER_TM.tab	1					装备	
+215	威望·165品恶人谷五毒装备	Prestige\Lv165_ER_WD.tab	1					装备	
+216	威望·165品恶人谷万花装备	Prestige\Lv165_ER_WH.tab	1					装备	
+217	威望·165品浩气盟装备	Prestige\Lv165_HQ_All.tab	1					装备	
+218	威望·165品浩气盟藏剑装备	Prestige\Lv165_HQ_CJ.tab	1					装备	
+219	威望·165品浩气盟纯阳装备	Prestige\Lv165_HQ_CY.tab	1					装备	
+220	威望·165品浩气盟七秀装备	Prestige\Lv165_HQ_QX.tab	1					装备	
+221	威望·165品浩气盟少林装备	Prestige\Lv165_HQ_SL.tab	1					装备	
+222	威望·165品浩气盟天策装备	Prestige\Lv165_HQ_TC.tab	1					装备	
+223	威望·165品浩气盟唐门装备	Prestige\Lv165_HQ_TM.tab	1					装备	
+224	威望·165品浩气盟五毒装备	Prestige\Lv165_HQ_WD.tab	1					装备	
+225	威望·165品浩气盟万花装备	Prestige\Lv165_HQ_WH.tab	1					装备	
+226	威望·205品恶人谷藏剑装备	Prestige\Lv205_ER_CJ.tab	1					装备	
+227	威望·205品恶人谷纯阳装备	Prestige\Lv205_ER_CY.tab	1					装备	
+228	威望·205品恶人谷七秀装备	Prestige\Lv205_ER_QX.tab	1					装备	
+229	威望·205品恶人谷少林装备	Prestige\Lv205_ER_SL.tab	1					装备	
+230	威望·205品恶人谷天策装备	Prestige\Lv205_ER_TC.tab	1					装备	
+231	威望·205品恶人谷唐门装备	Prestige\Lv205_ER_TM.tab	1					装备	
+232	威望·205品恶人谷五毒装备	Prestige\Lv205_ER_WD.tab	1					装备	
+233	威望·205品恶人谷万花装备	Prestige\Lv205_ER_WH.tab	1					装备	
+234	威望·205品浩气盟藏剑装备	Prestige\Lv205_HQ_CJ.tab	1					装备	
+235	威望·205品浩气盟纯阳装备	Prestige\Lv205_HQ_CY.tab	1					装备	
+236	威望·205品浩气盟七秀装备	Prestige\Lv205_HQ_QX.tab	1					装备	
+237	威望·205品浩气盟少林装备	Prestige\Lv205_HQ_SL.tab	1					装备	
+238	威望·205品浩气盟天策装备	Prestige\Lv205_HQ_TC.tab	1					装备	
+239	威望·205品浩气盟唐门装备	Prestige\Lv205_HQ_TM.tab	1					装备	
+240	威望·205品浩气盟五毒装备	Prestige\Lv205_HQ_WD.tab	1					装备	
+241	威望·205品浩气盟万花装备	Prestige\Lv205_HQ_WH.tab	1					装备	
+242	威望·255品恶人谷藏剑装备	Prestige\Lv230-255_ER_CJ.tab	1					装备	
+243	威望·255品恶人谷纯阳装备	Prestige\Lv230-255_ER_CY.tab	1					装备	
+244	威望·255品恶人谷七秀装备	Prestige\Lv230-255_ER_QX.tab	1					装备	
+245	威望·255品恶人谷少林装备	Prestige\Lv230-255_ER_SL.tab	1					装备	
+246	威望·255品恶人谷天策装备	Prestige\Lv230-255_ER_TC.tab	1					装备	
+247	威望·255品恶人谷唐门装备	Prestige\Lv230-255_ER_TM.tab	1					装备	
+248	威望·255品恶人谷五毒装备	Prestige\Lv230-255_ER_WD.tab	1					装备	
+249	威望·255品恶人谷万花装备	Prestige\Lv230-255_ER_WH.tab	1					装备	
+250	威望·255品浩气盟藏剑装备	Prestige\Lv230-255_HQ_CJ.tab	1					装备	
+251	威望·255品浩气盟纯阳装备	Prestige\Lv230-255_HQ_CY.tab	1					装备	
+252	威望·255品浩气盟七秀装备	Prestige\Lv230-255_HQ_QX.tab	1					装备	
+253	威望·255品浩气盟少林装备	Prestige\Lv230-255_HQ_SL.tab	1					装备	
+254	威望·255品浩气盟天策装备	Prestige\Lv230-255_HQ_TC.tab	1					装备	
+255	威望·255品浩气盟唐门装备	Prestige\Lv230-255_HQ_TM.tab	1					装备	
+256	威望·255品浩气盟五毒装备	Prestige\Lv230-255_HQ_WD.tab	1					装备	
+257	威望·255品浩气盟万花装备	Prestige\Lv230-255_HQ_WH.tab	1					装备	
+258	威望·230品恶人谷饰品	Prestige\Lv230_ER_Trinket.tab	1					装备	
+259	威望·230品浩气盟饰品	Prestige\Lv230_HQ_Trinket.tab	1					装备	
+260	威望·255品恶人谷饰品	Prestige\Lv255_ER_Trinket.tab	1					装备	
+261	威望·255品浩气盟饰品	Prestige\Lv255_HQ_Trinket.tab	1					装备	
+262	威望·280-310品恶人谷藏剑装备	Prestige\Lv280_ER_CJ.tab	1					装备	
+263	威望·280-310品恶人谷纯阳装备	Prestige\Lv280_ER_CY.tab	1					装备	
+264	威望·280-310品恶人谷七秀装备	Prestige\Lv280_ER_QX.tab	1					装备	
+265	威望·280-310品恶人谷少林装备	Prestige\Lv280_ER_SL.tab	1					装备	
+266	威望·280-310品恶人谷天策装备	Prestige\Lv280_ER_TC.tab	1					装备	
+267	威望·280-310品恶人谷唐门装备	Prestige\Lv280_ER_TM.tab	1					装备	
+268	威望·280-310品恶人谷五毒装备	Prestige\Lv280_ER_WD.tab	1					装备	
+269	威望·280-310品恶人谷万花装备	Prestige\Lv280_ER_WH.tab	1					装备	
+270	威望·280-310品浩气盟藏剑装备	Prestige\Lv280_HQ_CJ.tab	1					装备	
+271	威望·280-310品浩气盟纯阳装备	Prestige\Lv280_HQ_CY.tab	1					装备	
+272	威望·280-310品浩气盟七秀装备	Prestige\Lv280_HQ_QX.tab	1					装备	
+273	威望·280-310品浩气盟少林装备	Prestige\Lv280_HQ_SL.tab	1					装备	
+274	威望·280-310品浩气盟天策装备	Prestige\Lv280_HQ_TC.tab	1					装备	
+275	威望·280-310品浩气盟唐门装备	Prestige\Lv280_HQ_TM.tab	1					装备	
+276	威望·280-310品浩气盟五毒装备	Prestige\Lv280_HQ_WD.tab	1					装备	
+277	威望·280-310品浩气盟万花装备	Prestige\Lv280_HQ_WH.tab	1					装备	
+278	挂件·恶人谷	Prestige\Trinket_ER.tab	1					其他	1
+279	挂件·浩气盟	Prestige\Trinket_HQ.tab	1					其他	1
+280	巴陵县·书籍	Scene\BaLingXian_Book.tab		scripts/Map/逐鹿中原/shop/通用维修商店.lua				其他	
+281	巴陵县·配方	Scene\BaLingXian_Recipe.tab		scripts/Map/逐鹿中原/shop/通用维修商店.lua				其他	
+282	苍山洱海·海鲜	Scene\CangShanErHai_Fish.tab						其他	
+283	苍山洱海·酒水	Scene\CangShanErHai_Wine_1.tab		scripts/Map/逐鹿中原/shop/通用维修商店.lua				其他	
+284	苍山洱海·酒水	Scene\CangShanErHai_Wine_2.tab						其他	
+285	苍山洱海·酒水	Scene\CangShanErHai_Wine_3.tab						其他	
+286	长安·书籍	Scene\ChangAn_Book.tab						其他	
+287	长安·面罩	Scene\ChangAn_Mask.tab						其他	
+288	长安·配方	Scene\ChangAn_Recipe.tab						其他	
+289	恶人谷·书籍	Scene\ERenGu_Book.tab						其他	
+290	恶人谷·配方	Scene\ERenGu_Recipe.tab						其他	
+291	枫华谷·书籍	Scene\FengHuaGu_Book.tab						其他	
+292	枫华谷-任务·笔墨纸砚	Scene\FengHuaGu_Mission_Writing.tab						其他	
+293	枫华谷-任务·甜蜜酱	Scene\FengHuaGu_Misson_Seasoning.tab						其他	
+294	枫华谷·配方	Scene\FengHuaGu_Recipe.tab						其他	
+295	浩气盟·书籍	Scene\HaoQiMeng_Book.tab						其他	
+296	浩气盟·配方	Scene\HaoQiMeng_Recipe.tab						其他	
+297	金水镇·书籍	Scene\JinShuiZhen_Book.tab		scripts/Map/逐鹿中原/shop/通用维修商店.lua				其他	
+298	金水镇-任务·冰块	Scene\JinShuiZhen_Mission_Ice.tab		scripts/Map/逐鹿中原/shop/通用维修商店.lua				其他	
+299	金水镇-任务·灯芯	Scene\JinShuiZhen_Mission_Lamp.tab		scripts/Map/逐鹿中原/shop/通用维修商店.lua				其他	
+300	金水镇·配方	Scene\JinShuiZhen_Recipe.tab		scripts/Map/逐鹿中原/shop/通用维修商店.lua				其他	
+301	寇岛·书籍	Scene\KouDao_Book.tab						其他	
+302	寇岛·配方	Scene\KouDao_Recipe.tab						其他	
+303	寇岛·大唐特产	Scene\KouDao_Special.tab						其他	
+304	昆仑·书籍	Scene\KunLun_Book.tab		scripts/Map/逐鹿中原/shop/通用维修商店.lua				其他	
+305	昆仑·配方	Scene\KunLun_Recipe.tab		scripts/Map/逐鹿中原/shop/通用维修商店.lua				其他	
+306	龙门荒漠·书籍	Scene\LongMenHuangMo_Book.tab		scripts/Map/逐鹿中原/shop/通用维修商店.lua				其他	
+307	龙门荒漠·配方	Scene\LongMenHuangMo_Recipe.tab		scripts/Map/逐鹿中原/shop/通用维修商店.lua				其他	
+308	洛道·书籍	Scene\LuoDao_Book.tab		scripts/Map/逐鹿中原/shop/通用维修商店.lua				其他	
+309	洛道·配方	Scene\LuoDao_Recipe.tab		scripts/Map/逐鹿中原/shop/通用维修商店.lua				其他	
+310	洛阳·书籍	Scene\LuoYang_Book.tab						其他	
+311	洛阳-任务·军服	Scene\LuoYang_Mission_Clothes.tab						其他	
+312	洛阳·配方	Scene\LuoYang_Recipe.tab						其他	
+313	南屏山·书籍	Scene\NanPingShan_Book.tab		scripts/Map/逐鹿中原/shop/通用维修商店.lua				其他	
+314	南屏山·配方	Scene\NanPingShan_Recipe.tab		scripts/Map/逐鹿中原/shop/通用维修商店.lua				其他	
+315	南屏山·稀有商品	Scene\NanPingShan_Special.tab						其他	
+316	瞿塘峡·书籍	Scene\QuTangXia_Book.tab		scripts/Map/逐鹿中原/shop/通用维修商店.lua				其他	
+317	瞿塘峡-任务·少儿的衣衫	Scene\QuTangXia_Mission_Clothes.tab		scripts/Map/逐鹿中原/shop/通用维修商店.lua				其他	
+318	瞿塘峡·配方	Scene\QuTangXia_Recipe.tab		scripts/Map/逐鹿中原/shop/通用维修商店.lua				其他	
+319	扬州·书籍	Scene\YangZhou_Book.tab						其他	
+320	扬州·配方	Scene\YangZhou_Recipe.tab						其他	
+321	扬州·奇货	Scene\YangZhou_Special.tab						其他	
+322	帮会·牌匾	Sociaty\BianE_1.tab						其他	
+323	帮会·牌匾	Sociaty\BianE_2.tab						其他	
+324	帮会·牌匾	Sociaty\BianE_3.tab						其他	
+325	帮会·牌匾	Sociaty\BianE_4.tab						其他	
+326	帮会·丹房	Sociaty\DanFang_1.tab						其他	
+327	帮会·丹房	Sociaty\DanFang_2.tab						其他	
+328	帮会·丹房	Sociaty\DanFang_3.tab						其他	
+329	帮会-钓鱼·火折子	Sociaty\Fishing_Fire.tab						其他	
+330	钓鱼·渔具	Sociaty\Fishing_Gear.tab		scripts/Map/逐鹿中原/shop/通用维修商店.lua				其他	
+331	帮会·战旗	Sociaty\Flag_1.tab						其他	
+332	帮会·战旗	Sociaty\Flag_2.tab						其他	
+333	帮会·战旗	Sociaty\Flag_3.tab						其他	
+334	帮会·战旗	Sociaty\Flag_4.tab						其他	
+335	帮会·花盆	Sociaty\FlowerPot_1.tab						其他	
+336	帮会·花盆	Sociaty\FlowerPot_2.tab						其他	
+337	帮会·花盆	Sociaty\FlowerPot_3.tab						其他	
+338	帮会·工房	Sociaty\GongFang_1.tab						其他	
+339	帮会·工房	Sociaty\GongFang_2.tab						其他	
+340	帮会·工房	Sociaty\GongFang_3.tab						其他	
+341	帮会·宝物	Sociaty\Grocery_1.tab						其他	
+342	帮会·宝物	Sociaty\Grocery_2.tab						其他	
+343	帮会·宝物	Sociaty\Grocery_3.tab						其他	
+344	帮会·宝物	Sociaty\Grocery_4.tab						其他	
+345	帮会·藏剑甲字书库	Sociaty\Library_CangJian_1.tab						其他	
+346	帮会·藏剑乙字书库	Sociaty\Library_CangJian_2.tab						其他	
+347	帮会·纯阳甲字书库	Sociaty\Library_ChunYang_1.tab						其他	
+348	帮会·纯阳乙字书库	Sociaty\Library_ChunYang_2.tab						其他	
+349	帮会·甲字书库	Sociaty\Library_JiangHu_1.tab						其他	
+350	帮会·乙字书库	Sociaty\Library_JiangHu_2.tab						其他	
+351	帮会·丙字书库	Sociaty\Library_JiangHu_3.tab						其他	
+352	帮会·七秀甲字书库	Sociaty\Library_QiXiu_1.tab						其他	
+353	帮会·七秀乙字书库	Sociaty\Library_QiXiu_2.tab						其他	
+354	帮会·少林甲字书库	Sociaty\Library_ShaoLin_1.tab						其他	
+355	帮会·少林乙字书库	Sociaty\Library_ShaoLin_2.tab						其他	
+356	帮会·唐门甲字书库	Sociaty\Library_TangMen_1.tab						其他	
+357	帮会·唐门乙字书库	Sociaty\Library_TangMen_2.tab						其他	
+358	帮会·天策甲字书库	Sociaty\Library_TianCe_1.tab						其他	
+359	帮会·天策乙字书库	Sociaty\Library_TianCe_2.tab						其他	
+360	帮会·万花甲字书库	Sociaty\Library_WanHua_1.tab						其他	
+361	帮会·万花乙字书库	Sociaty\Library_WanHua_2.tab						其他	
+362	帮会·五毒甲字书库	Sociaty\Library_WuDu_1.tab						其他	
+363	帮会·五毒乙字书库	Sociaty\Library_WuDu_2.tab						其他	
+364	擂台·宴席	Sociaty\Ring_Feast.tab						其他	
+365	擂台·鲜花	Sociaty\Ring_Flower.tab						其他	
+366	擂台·小吃	Sociaty\Ring_Food.tab						其他	
+367	擂台·昭义帖	Sociaty\Ring_Vote.tab						其他	
+368	帮会·种子	Sociaty\Seed_1.tab						其他	
+369	帮会·种子	Sociaty\Seed_2.tab						其他	
+370	帮会·种子	Sociaty\Seed_3.tab						其他	
+371	帮会·种子	Sociaty\Seed_4.tab						其他	
+372	成就·装备	Special\70th_Achienement_Armor.tab	1					装备	
+373	成就·称号	Special\70th_Achievement_Tital.tab						其他	
+374	第二门派·藏剑秘笈	Special\70th_SecondForce_CangJian.tab						其他	
+375	第二门派·纯阳秘笈	Special\70th_SecondForce_ChunYang.tab						其他	
+376	第二门派·七秀秘笈	Special\70th_SecondForce_QiXiu.tab						其他	
+377	第二门派·少林秘笈	Special\70th_SecondForce_ShaoLin.tab						其他	
+378	第二门派·天策秘笈	Special\70th_SecondForce_TianCe.tab						其他	
+379	第二门派·万花秘笈	Special\70th_SecondForce_WanHua.tab						其他	
+380	师徒·挂件	Special\70th_ShiTu_Toy.tab						其他	
+381	防具	Usual\Armor_All.tab	1	scripts/Map/逐鹿中原/shop/通用维修商店.lua				装备	
+382	腰带	Usual\Armor_Belt.tab	1					装备	
+383	衣服	Usual\Armor_Coat.tab	1					装备	
+384	帽子	Usual\Armor_Hat.tab	1					装备	
+385	护手	Usual\Armor_Nipper.tab	1					装备	
+386	裤子	Usual\Armor_Pants.tab	1					装备	
+387	鞋子	Usual\Armor_Shoes.tab	1					装备	
+388	背包	Usual\Bag.tab						其他	
+389	小吃美食	Usual\Food.tab		scripts/Map/逐鹿中原/shop/通用维修商店.lua				其他	
+390	礼品	Usual\Gift.tab						其他	
+391	杂货	Usual\Goods.tab	1	scripts/Map/逐鹿中原/shop/通用维修商店.lua				其他	
+392	坐骑	Usual\Horse.tab		scripts/Map/逐鹿中原/shop/通用维修商店.lua				其他	
+393	马具	Usual\Horse_Armor.tab	1	scripts/Map/逐鹿中原/shop/通用维修商店.lua				其他	1
+394	饲料	Usual\Horse_Fodder.tab		scripts/Map/逐鹿中原/shop/通用维修商店.lua				其他	1
+395	灵丹妙药	Usual\Medicine.tab		scripts/Map/逐鹿中原/shop/通用维修商店.lua				其他	
+396	香火	Usual\PrayCandles.tab						其他	
+397	武器	Usual\Weapon_All.tab	1	scripts/Map/逐鹿中原/shop/通用维修商店.lua				装备	
+398	武器·千机匣	Usual\Weapon_Bow.tab	1					装备	
+399	武器·笔	Usual\Weapon_Brush.tab	1					装备	
+400	武器·虫笛	Usual\Weapon_Flute.tab	1					装备	
+401	暗器	Usual\Weapon_Range.tab	1	scripts/Map/逐鹿中原/shop/通用维修商店.lua				装备	
+402	武器·枪	Usual\Weapon_Spear.tab	1					装备	
+403	武器·棍	Usual\Weapon_Stick.tab	1					装备	
+404	武器·剑	Usual\Weapon_Sword.tab	1					装备	
+405	武器·双兵	Usual\Weapon_SwordOfCouple.tab	1					装备	
+406	武器·重剑	Usual\Weapon_SwordOfGiant.tab	1					装备	
+407	五行石	Usual\WuXingShi.tab		scripts/Map/逐鹿中原/shop/通用维修商店.lua				五行石	1
+408	稀世材料	Special\80th_Material_Swap.tab						装备	
+409	兑换·桃李饰品	Special\70th_ShiTu_Trinket.tab	1					其他	
+410	冬至-货币·恶人谷205品·武器	Festival\DongZhi_Currency_ER_Lv205_Weapon.tab	1					其他	
+411	冬至-货币·浩气盟205品·武器	Festival\DongZhi_Currency_HQ_Lv205_Weapon.tab	1					其他	
+412	冬至-货币·秘境装备	Festival\DongZhi_Currency_PVE_Lv205.tab	1					其他	1
+413	冬至-货币·趣味装备	Festival\DongZhi_Currency_PVE_Lv230.tab	1					其他	1
+414	威望-兑换·230-255品浩气盟藏剑装备	Prestige\Transfer_Lv230-255_HQ_CJ.tab	1					装备	
+415	威望-兑换·230-255品浩气盟纯阳装备	Prestige\Transfer_Lv230-255_HQ_CY.tab	1					装备	
+416	威望-兑换·230-255品浩气盟少林装备	Prestige\Transfer_Lv230-255_HQ_SL.tab	1					装备	
+417	威望-兑换·230-255品浩气盟七秀装备	Prestige\Transfer_Lv230-255_HQ_QX.tab	1					装备	
+418	威望-兑换·230-255品浩气盟天策装备	Prestige\Transfer_Lv230-255_HQ_TC.tab	1					装备	
+419	威望-兑换·230-255品浩气盟万花装备	Prestige\Transfer_Lv230-255_HQ_WH.tab	1					装备	
+420	威望-兑换·230-255品浩气盟五毒装备	Prestige\Transfer_Lv230-255_HQ_WD.tab	1					装备	
+421	威望-兑换·230-255品恶人谷藏剑装备	Prestige\Transfer_Lv230-255_ER_CJ.tab	1					装备	
+422	威望-兑换·230-255品恶人谷纯阳装备	Prestige\Transfer_Lv230-255_ER_CY.tab	1					装备	
+423	威望-兑换·230-255品恶人谷少林装备	Prestige\Transfer_Lv230-255_ER_SL.tab	1					装备	
+424	威望-兑换·230-255品恶人谷七秀装备	Prestige\Transfer_Lv230-255_ER_QX.tab	1					装备	
+425	威望-兑换·230-255品恶人谷天策装备	Prestige\Transfer_Lv230-255_ER_TC.tab	1					装备	
+426	威望-兑换·230-255品恶人谷万花装备	Prestige\Transfer_Lv230-255_ER_WH.tab	1					装备	
+427	威望-兑换·230-255品恶人谷五毒装备	Prestige\Transfer_Lv230-255_ER_WD.tab	1					装备	
+428	冬至-货币·恶人谷205品·上衣	Festival\DongZhi_Currency_ER_Lv205_Coat.tab	1					其他	
+429	冬至-货币·浩气盟205品·上衣	Festival\DongZhi_Currency_HQ_Lv205_Coat.tab	1					其他	
+430	冬至-货币·恶人谷205品腰带	Festival\DongZhi_Currency_ER_Lv205_Belt.tab	1					其他	
+431	冬至-货币·浩气盟205品·腰带	Festival\DongZhi_Currency_HQ_Lv205_Belt.tab	1					其他	
+432	兑换牌·125-145品装备	Currency\Lv125-145_All_Blue.tab	1					装备	
+433	兑换牌·145-170品藏剑装备	Currency\Lv145-170_CJ.tab	1					装备	
+434	兑换牌·145-170品纯阳装备	Currency\Lv145-170_CY.tab	1					装备	
+435	兑换牌·145-170品七秀装备	Currency\Lv145-170_QX.tab	1					装备	
+436	兑换牌·145-170品少林装备	Currency\Lv145-170_SL.tab	1					装备	
+437	兑换牌·145-170品天策装备	Currency\Lv145-170_TC.tab	1					装备	
+438	兑换牌·145-170品唐门装备	Currency\Lv145-170_TM.tab	1					装备	
+439	兑换牌·145-170品五毒装备	Currency\Lv145-170_WD.tab	1					装备	
+440	兑换牌·145-170品万花装备	Currency\Lv145-170_WH.tab	1					装备	
+441	兑换牌·145品装备	Currency\Lv145_All_Blue.tab	1					装备	
+442	兑换牌·145品装备	Currency\Lv145_All.tab	1					装备	
+443	兑换牌·145品恶人谷少林装备	Currency\Lv145_PVP_ER_SL.tab	1					装备	
+444	兑换牌·145品浩气盟少林装备	Currency\Lv145_PVP_HQ_SL.tab	1					装备	
+445	兑换牌·160品装备	Currency\Lv160_All.tab	1					装备	
+446	兑换牌·160品纯阳装备	Currency\Lv160_CY.tab	1					装备	
+447	兑换牌·160品七秀装备	Currency\Lv160_QX.tab	1					装备	
+448	兑换牌·160品少林装备	Currency\Lv160_SL.tab	1					装备	
+449	兑换牌·160品天策装备	Currency\Lv160_TC.tab	1					装备	
+450	兑换牌·160品万花装备	Currency\Lv160_WH.tab	1					装备	
+451	兑换牌·170品装备	Currency\Lv175_All.tab	1					装备	
+452	兑换牌·170品纯阳装备	Currency\Lv175_CY.tab	1					装备	
+453	兑换牌·170品七秀装备	Currency\Lv175_QX.tab	1					装备	
+454	兑换牌·170品少林装备	Currency\Lv175_SL.tab	1					装备	
+455	兑换牌·170品天策装备	Currency\Lv175_TC.tab	1					装备	
+456	兑换牌·170品万花装备	Currency\Lv175_WH.tab	1					装备	
+457	威望-兑换·230-255品浩气盟唐门装备	Prestige\Transfer_Lv230-255_HQ_TM.tab	1					装备	
+458	威望-兑换·230-255品恶人谷唐门装备	Prestige\Transfer_Lv230-255_ER_TM.tab	1					装备	
+459	冬至-货币·恶人谷280品·腰坠	Festival\DongZhi_Currency_ER_Lv230_Belt.tab	1					其他	
+460	冬至-货币·恶人谷230品·上衣	Festival\DongZhi_Currency_ER_Lv230_Coat.tab	1					其他	
+461	冬至-货币·恶人谷230品·帽子	Festival\DongZhi_Currency_ER_Lv230_Head.tab	1					其他	
+462	冬至-货币·恶人谷230品·下装	Festival\DongZhi_Currency_ER_Lv230_Pants.tab	1					其他	
+463	冬至-货币·恶人谷280品·戒指	Festival\DongZhi_Currency_ER_Lv230_Ring.tab	1					其他	
+464	冬至-货币·恶人谷280品·项链	Festival\DongZhi_Currency_ER_Lv230_Tricket.tab	1					其他	
+465	冬至-货币·浩气盟280品·腰坠	Festival\DongZhi_Currency_HQ_Lv230_Belt.tab	1					其他	
+466	冬至-货币·浩气盟230品·上衣	Festival\DongZhi_Currency_HQ_Lv230_Coat.tab	1					其他	
+467	冬至-货币·浩气盟230品·帽子	Festival\DongZhi_Currency_HQ_Lv230_Head.tab	1					其他	
+468	冬至-货币·浩气盟230品·下装	Festival\DongZhi_Currency_HQ_Lv230_Pants.tab	1					其他	
+469	冬至-货币·浩气盟280品·戒指	Festival\DongZhi_Currency_HQ_Lv230_Ring.tab	1					其他	
+470	冬至-货币·浩气盟280品·项链	Festival\DongZhi_Currency_HQ_Lv230_Tricket.tab	1					其他	
+471	春节·佳品	Festival\ChunJie_Gold_Goods.tab						其他	1
+472	兑换牌·145品恶人谷天策装备	Currency\Lv145_PVP_ER_TC.tab	1					装备	
+473	兑换牌·145品浩气盟天策装备	Currency\Lv145_PVP_HQ_TC.tab	1					装备	
+474	兑换牌·145品恶人谷七秀装备	Currency\Lv145_PVP_ER_QX.tab	1					装备	
+475	兑换牌·145品浩气盟七秀装备	Currency\Lv145_PVP_HQ_QX.tab	1					装备	
+476	兑换牌·145品恶人谷万花装备	Currency\Lv145_PVP_ER_WH.tab	1					装备	
+477	兑换牌·145品浩气盟万花装备	Currency\Lv145_PVP_HQ_WH.tab	1					装备	
+478	兑换牌·145品恶人谷纯阳装备	Currency\Lv145_PVP_ER_CY.tab	1					装备	
+479	兑换牌·145品浩气盟纯阳装备	Currency\Lv145_PVP_HQ_CY.tab	1					装备	
+480	兑换牌·145品恶人谷藏剑装备	Currency\Lv145_PVP_ER_CJ.tab	1					装备	
+481	兑换牌·145品浩气盟藏剑装备	Currency\Lv145_PVP_HQ_CJ.tab	1					装备	
+482	绝世神兵	Special\70th_WeaponOfOrange.tab	1					装备	1
+483	兑换牌·145品藏剑装备	Currency\Lv145_ZiYun_CJ.tab	1					装备	
+484	兑换牌·145品纯阳装备	Currency\Lv145_ZiYun_CY.tab	1					装备	
+485	兑换牌·145品七秀装备	Currency\Lv145_ZiYun_QX.tab	1					装备	
+486	兑换牌·145品少林装备	Currency\Lv145_ZiYun_SL.tab	1					装备	
+487	兑换牌·145品天策装备	Currency\Lv145_ZiYun_TC.tab	1					装备	
+488	兑换牌·145品万花装备	Currency\Lv145_ZiYun_WH.tab	1					装备	
+489	名剑大会·赛季奖品	Arena\Season_Prize.tab						装备	
+490	春节·玄兵阵介绍	Festival\ChunJie_NoSell_Formation.tab						装备	
+491	绝世神兵·荻花圣殿	Special\80th_Weapon_Orange.tab	1					装备	
+492	珠联璧合·绝世	Special\80th_Weapon_ZhuLianBiHe.tab	1					装备	
+493	兑换牌·205-310品少林装备	Currency\Lv205-280_SL.tab	1					装备	
+494	兑换牌·205-310品天策装备	Currency\Lv205-280_TC.tab	1					装备	
+495	兑换牌·205-310品七秀装备	Currency\Lv205-280_QX.tab	1					装备	
+496	兑换牌·205-310品万花装备	Currency\Lv205-280_WH.tab	1					装备	
+497	兑换牌·205-310品纯阳装备	Currency\Lv205-280_CY.tab	1					装备	
+498	兑换牌·205-310品藏剑装备	Currency\Lv205-280_CJ.tab	1					装备	
+499	兑换牌·205-310品五毒装备	Currency\Lv205-280_WD.tab	1					装备	
+500	兑换牌·205-310品唐门装备	Currency\Lv205-280_TM.tab	1					装备	
+501	河西飞剑·好兵	Festival\YuanDan_Currency_Weapon.tab	1					装备	1
+502	兑换牌·280品少林装备	Currency\Lv280_FuBen_SL.tab	1					装备	
+503	兑换牌·280品天策装备	Currency\Lv280_FuBen_TC.tab	1					装备	
+504	兑换牌·280品七秀装备	Currency\Lv280_FuBen_QX.tab	1					装备	
+505	兑换牌·280品万花装备	Currency\Lv280_FuBen_WH.tab	1					装备	
+506	兑换牌·280品纯阳装备	Currency\Lv280_FuBen_CY.tab	1					装备	
+507	兑换牌·280品藏剑装备	Currency\Lv280_FuBen_CJ.tab	1					装备	
+508	兑换牌·280品五毒装备	Currency\Lv280_FuBen_WD.tab	1					装备	
+509	兑换牌·280品唐门装备	Currency\Lv280_FuBen_TM.tab	1					装备	
+510	帮会·江湖书库	Sociaty\Library_JiangHu_Skill.tab						其他	
+511	七夕-货币·装备	Festival\QiXi_Currency_Armor.tab	1					其他	
+512	七夕·佳品	Festival\QiXi_Gold_Love.tab						其他	1
+521	帮会·草药种子	Sociaty\Herb.tab						其他	
+523	巴陵县-任务·黑鹿王	Scene\BaLingXian_Mission_Dear.tab		scripts/Map/逐鹿中原/shop/通用维修商店.lua				其他	
+524	明教-任务·宣纸	Scene\MingJiao_Mission_Paper.tab						其他	
+525	明教-任务·天竺糖果	Scene\MingJiao_Mission_Candy.tab						其他	
+526	明教-任务·中原服饰	Scene\MingJiao_Mission_Clothes.tab						其他	
+527	名剑大会·295品中立明教装备	Arena\Lv295_ZL_MJ.tab	1					装备	
+528	名剑大会·295品阵营明教装备	Arena\Lv295_ZY_MJ.tab	1					装备	
+529	名剑大会·325品中立藏剑装备	Arena\Lv325_ZL_CJ.tab	1					装备	
+530	名剑大会·325品中立纯阳装备	Arena\Lv325_ZL_CY.tab	1					装备	
+531	名剑大会·325品中立明教装备	Arena\Lv325_ZL_MJ.tab	1					装备	
+532	名剑大会·325品中立七秀装备	Arena\Lv325_ZL_QX.tab	1					装备	
+533	名剑大会·325品中立少林装备	Arena\Lv325_ZL_SL.tab	1					装备	
+534	名剑大会·325品中立天策装备	Arena\Lv325_ZL_TC.tab	1					装备	
+535	名剑大会·325品中立唐门装备	Arena\Lv325_ZL_TM.tab	1					装备	
+536	名剑大会·325品中立五毒装备	Arena\Lv325_ZL_WD.tab	1					装备	
+537	名剑大会·325品中立万花装备	Arena\Lv325_ZL_WH.tab	1					装备	
+538	名剑大会·325品阵营藏剑装备	Arena\Lv325_ZY_CJ.tab	1					装备	
+539	名剑大会·325品阵营纯阳装备	Arena\Lv325_ZY_CY.tab	1					装备	
+540	名剑大会·325品阵营明教装备	Arena\Lv325_ZY_MJ.tab	1					装备	
+541	名剑大会·325品阵营七秀装备	Arena\Lv325_ZY_QX.tab	1					装备	
+542	名剑大会·325品阵营少林装备	Arena\Lv325_ZY_SL.tab	1					装备	
+543	名剑大会·325品阵营天策装备	Arena\Lv325_ZY_TC.tab	1					装备	
+544	名剑大会·325品阵营唐门装备	Arena\Lv325_ZY_TM.tab	1					装备	
+545	名剑大会·325品阵营五毒装备	Arena\Lv325_ZY_WD.tab	1					装备	
+546	名剑大会·325品阵营万花装备	Arena\Lv325_ZY_WH.tab	1					装备	
+548	侠行·255-310品明教装备	Justice\Lv230-280_MJ.tab	1					装备	
+549	侠行·320品装备	Justice\Lv320_All.tab	1					装备	
+550	威望·255品恶人谷明教装备	Prestige\Lv230-255_ER_MJ.tab	1					装备	
+551	威望·255品浩气盟明教装备	Prestige\Lv230-255_HQ_MJ.tab	1					装备	
+552	威望·280-310品恶人谷明教装备	Prestige\Lv280_ER_MJ.tab	1					装备	
+553	威望·280-310品浩气盟明教装备	Prestige\Lv280_HQ_MJ.tab	1					装备	
+572	兑换牌·145-170品明教装备	Currency\Lv145-170_MJ.tab	1					装备	
+573	兑换牌·205-310品明教装备	Currency\Lv205-280_MJ.tab	1					装备	
+574	兑换牌·280品明教装备	Currency\Lv280_FuBen_MJ.tab	1					装备	
+575	声望-明教·装备	Popularity\80th_MingJiao_Armor.tab	1					装备	
+576	声望-段氏山城·装备	Popularity\80th_NanZhaoHuangGong_Armor.tab	1		97			装备	
+577	声望-段氏山城·物资	Popularity\80th_NanZhaoHuangGong_Goods.tab			97			其他	
+578	大牢物资	Special\80th_DaTangJianYu.tab						其他	
+579	战备物资	Sociaty\TongCraft_Flag.tab	1					其他	
+580	帮会·明教甲字书库	Sociaty\Library_MingJiao_1.tab						其他	
+581	活动·杂货	Special\80th_JianXin_Goods.tab	1					其他	
+582	江湖贡献·290品武器	Contribution\Lv290_Weapon.tab	1					装备	
+583	洛阳-任务·包子	Scene\LuoYang_Mission_Food.tab						其他	
+584	江湖贡献·290品上装	Contribution\Lv290_Upper.tab	1					装备	
+585	江湖贡献·290品下装	Contribution\Lv290_Lower.tab	1					装备	
+586	马嵬驿-任务·红布	Scene\MaWeiYi_Mission_Cloth.tab						其他	
+587	凌雪阁·江湖良品	Special\80th_Killer.tab						其他	
+588	江湖贡献·290品饰品	Contribution\Lv290_Trinket.tab	1					装备	
+589	活动-茶馆·流民	Festival\Party_TeaBar_Refugee.tab		scripts/Map/主城茶馆/shop/流民商店.lua				其他	
+590	活动-茶馆·古物	Festival\Party_TeaBar_Antique.tab						其他	
+591	祈福	Special\80th_Earthquake_BlessItem.tab						其他	
+592	吉祥杂货铺	Special\80th_Activity_Special.tab						其他	
+593	声望-朔方军·装备	Popularity\90th_YiXianTian.tab	1	scripts/Map/逐鹿中原/shop/通用维修商店.lua	103			装备	
+594	声望-义军·装备	Popularity\90th_HuaQingGong.tab	1		104			装备	
+595	枫华谷-任务·布娃娃	Scene\FengHuaGu_Mission_Toy.tab						其他	
+596	名剑大会·440品阵营藏剑装备	Arena\Lv435_ZY_CJ.tab	1					装备	
+597	名剑大会·440品阵营纯阳装备	Arena\Lv435_ZY_CY.tab	1					装备	
+598	名剑大会·440品阵营丐帮装备	Arena\Lv435_ZY_GB.tab	1					装备	
+599	名剑大会·440品阵营明教装备	Arena\Lv435_ZY_MJ.tab	1					装备	
+600	名剑大会·440品阵营七秀装备	Arena\Lv435_ZY_QX.tab	1					装备	
+601	名剑大会·440品阵营少林装备	Arena\Lv435_ZY_SL.tab	1					装备	
+602	名剑大会·440品阵营天策装备	Arena\Lv435_ZY_TC.tab	1					装备	
+603	名剑大会·440品阵营唐门装备	Arena\Lv435_ZY_TM.tab	1					装备	
+604	名剑大会·440品阵营五毒装备	Arena\Lv435_ZY_WD.tab	1					装备	
+605	名剑大会·440品阵营万花装备	Arena\Lv435_ZY_WH.tab	1					装备	
+606	名剑大会·400品中立万花装备	Arena\Lv395_ZL_WH.tab	1					装备	
+607	名剑大会·400品中立藏剑装备	Arena\Lv395_ZL_CJ.tab	1					装备	
+608	名剑大会·400品中立纯阳装备	Arena\Lv395_ZL_CY.tab	1					装备	
+609	名剑大会·400品中立丐帮装备	Arena\Lv395_ZL_GB.tab	1					装备	
+610	名剑大会·400品中立明教装备	Arena\Lv395_ZL_MJ.tab	1					装备	
+611	名剑大会·400品中立七秀装备	Arena\Lv395_ZL_QX.tab	1					装备	
+612	名剑大会·400品中立少林装备	Arena\Lv395_ZL_SL.tab	1					装备	
+613	名剑大会·400品中立天策装备	Arena\Lv395_ZL_TC.tab	1					装备	
+614	名剑大会·400品中立唐门装备	Arena\Lv395_ZL_TM.tab	1					装备	
+615	名剑大会·400品中立五毒装备	Arena\Lv395_ZL_WD.tab	1					装备	
+616	名剑大会·400品阵营五毒装备	Arena\Lv395_ZY_WD.tab	1					装备	
+617	名剑大会·440品中立藏剑装备	Arena\Lv435_ZL_CJ.tab	1					装备	
+618	名剑大会·440品中立纯阳装备	Arena\Lv435_ZL_CY.tab	1					装备	
+619	名剑大会·440品中立丐帮装备	Arena\Lv435_ZL_GB.tab	1					装备	
+620	名剑大会·440品中立明教装备	Arena\Lv435_ZL_MJ.tab	1					装备	
+621	名剑大会·440品中立七秀装备	Arena\Lv435_ZL_QX.tab	1					装备	
+622	名剑大会·440品中立少林装备	Arena\Lv435_ZL_SL.tab	1					装备	
+623	名剑大会·440品中立天策装备	Arena\Lv435_ZL_TC.tab	1					装备	
+624	名剑大会·400品阵营万花装备	Arena\Lv395_ZY_WH.tab	1					装备	
+625	名剑大会·400品阵营七秀装备	Arena\Lv395_ZY_QX.tab	1					装备	
+626	名剑大会·400品阵营少林装备	Arena\Lv395_ZY_SL.tab	1					装备	
+627	名剑大会·400品阵营天策装备	Arena\Lv395_ZY_TC.tab	1					装备	
+628	名剑大会·400品阵营唐门装备	Arena\Lv395_ZY_TM.tab	1					装备	
+629	名剑大会·440品中立唐门装备	Arena\Lv435_ZL_TM.tab	1					装备	
+630	名剑大会·440品中立五毒装备	Arena\Lv435_ZL_WD.tab	1					装备	
+631	名剑大会·440品中立万花装备	Arena\Lv435_ZL_WH.tab	1					装备	
+632	名剑大会·400品阵营藏剑装备	Arena\Lv395_ZY_CJ.tab	1					装备	
+633	名剑大会·400品阵营纯阳装备	Arena\Lv395_ZY_CY.tab	1					装备	
+634	名剑大会·400品阵营明教装备	Arena\Lv395_ZY_MJ.tab	1					装备	
+635	名剑大会·400品阵营丐帮装备	Arena\Lv395_ZY_GB.tab	1					装备	
+636	威望·370-435品浩气盟藏剑装备	Prestige\Lv395_Blue_HQ_CJ.tab	1					装备	
+637	威望·370-435品浩气盟纯阳装备	Prestige\Lv395_Blue_HQ_CY.tab	1					装备	
+638	威望·370-435品浩气盟丐帮装备	Prestige\Lv395_Blue_HQ_GB.tab	1					装备	
+639	威望·370-435品浩气盟明教装备	Prestige\Lv395_Blue_HQ_MJ.tab	1					装备	
+640	威望·370-435品浩气盟七秀装备	Prestige\Lv395_Blue_HQ_QX.tab	1					装备	
+641	威望·370-435品浩气盟少林装备	Prestige\Lv395_Blue_HQ_SL.tab	1					装备	
+642	威望·370-435品浩气盟天策装备	Prestige\Lv395_Blue_HQ_TC.tab	1					装备	
+643	威望·370-435品浩气盟唐门装备	Prestige\Lv395_Blue_HQ_TM.tab	1					装备	
+644	威望·370-435品浩气盟五毒装备	Prestige\Lv395_Blue_HQ_WD.tab	1					装备	
+645	威望·370-435品浩气盟万花装备	Prestige\Lv395_Blue_HQ_WH.tab	1					装备	
+646	威望·370-435品恶人谷藏剑装备	Prestige\Lv395_Blue_ER_CJ.tab	1					装备	
+647	威望·370-435品恶人谷纯阳装备	Prestige\Lv395_Blue_ER_CY.tab	1					装备	
+648	威望·370-435品恶人谷丐帮装备	Prestige\Lv395_Blue_ER_GB.tab	1					装备	
+649	威望·370-435品恶人谷明教装备	Prestige\Lv395_Blue_ER_MJ.tab	1					装备	
+650	威望·370-435品恶人谷七秀装备	Prestige\Lv395_Blue_ER_QX.tab	1					装备	
+651	威望·370-435品恶人谷少林装备	Prestige\Lv395_Blue_ER_SL.tab	1					装备	
+652	威望·370-435品恶人谷天策装备	Prestige\Lv395_Blue_ER_TC.tab	1					装备	
+653	威望·370-435品恶人谷唐门装备	Prestige\Lv395_Blue_ER_TM.tab	1					装备	
+654	威望·370-435品恶人谷五毒装备	Prestige\Lv395_Blue_ER_WD.tab	1					装备	
+655	威望·370-435品恶人谷万花装备	Prestige\Lv395_Blue_ER_WH.tab	1					装备	
+656	侠行·395品藏剑装备	Justice\Lv395_Justice_CJ.tab	1					装备	
+657	侠行·405品装备	Justice\Lv405_Justice_ALL.tab	1					装备	
+658	侠行·395品丐帮装备	Justice\Lv395_Justice_GB.tab	1					装备	
+659	侠行·395品纯阳装备	Justice\Lv395_Justice_CY.tab	1					装备	
+660	侠行·395品明教装备	Justice\Lv395_Justice_MJ.tab	1					装备	
+661	侠行·395品七秀装备	Justice\Lv395_Justice_QX.tab	1					装备	
+662	侠行·395品少林装备	Justice\Lv395_Justice_SL.tab	1					装备	
+663	侠行·395品天策装备	Justice\Lv395_Justice_TC.tab	1					装备	
+664	侠行·395品唐门装备	Justice\Lv395_Justice_TM.tab	1					装备	
+665	侠行·395品五毒装备	Justice\Lv395_Justice_WD.tab	1					装备	
+666	侠行·395品万花装备	Justice\Lv395_Justice_WH.tab	1					装备	
+667	兑换牌·370-515品藏剑装备	Currency\Lv395-435_PZ_CJ.tab	1					装备	
+668	兑换牌·370-515品纯阳装备	Currency\Lv395-435_PZ_CY.tab	1					装备	
+669	兑换牌·370-515品丐帮装备	Currency\Lv395-435_PZ_GB.tab	1					装备	
+670	兑换牌·370-515品明教装备	Currency\Lv395-435_PZ_MJ.tab	1					装备	
+671	兑换牌·370-515品七秀装备	Currency\Lv395-435_PZ_QX.tab	1					装备	
+672	兑换牌·370-515品少林装备	Currency\Lv395-435_PZ_SL.tab	1					装备	
+673	兑换牌·370-515品天策装备	Currency\Lv395-435_PZ_TC.tab	1					装备	
+674	兑换牌·370-515品唐门装备	Currency\Lv395-435_PZ_TM.tab	1					装备	
+675	兑换牌·370-515品五毒装备	Currency\Lv395-435_PZ_WD.tab	1					装备	
+676	兑换牌·370-515品万花装备	Currency\Lv395-435_PZ_WH.tab	1					装备	
+677	威望·395-475品恶人谷天策装备	Prestige\Lv395-435_ER_TC.tab	1					装备	
+678	威望·395-475品恶人谷唐门装备	Prestige\Lv395-435_ER_TM.tab	1					装备	
+679	威望·395-475品恶人谷丐帮装备	Prestige\Lv395-435_ER_GB.tab	1					装备	
+680	威望·395-475品恶人谷明教装备	Prestige\Lv395-435_ER_MJ.tab	1					装备	
+681	威望·395-475品恶人谷七秀装备	Prestige\Lv395-435_ER_QX.tab	1					装备	
+682	威望·395-475品恶人谷少林装备	Prestige\Lv395-435_ER_SL.tab	1					装备	
+683	威望·395-475品恶人谷五毒装备	Prestige\Lv395-435_ER_WD.tab	1					装备	
+684	威望·395-475品恶人谷万花装备	Prestige\Lv395-435_ER_WH.tab	1					装备	
+685	威望·395-475品恶人谷纯阳装备	Prestige\Lv395-435_ER_CY.tab	1					装备	
+686	威望·395-475品恶人谷藏剑装备	Prestige\Lv395-435_ER_CJ.tab	1					装备	
+687	威望·395-475品浩气盟万花装备	Prestige\Lv395-435_HQ_WH.tab	1					装备	
+688	威望·395-475品浩气盟五毒装备	Prestige\Lv395-435_HQ_WD.tab	1					装备	
+689	威望·395-475品浩气盟唐门装备	Prestige\Lv395-435_HQ_TM.tab	1					装备	
+690	威望·395-475品浩气盟天策装备	Prestige\Lv395-435_HQ_TC.tab	1					装备	
+691	威望·395-475品浩气盟少林装备	Prestige\Lv395-435_HQ_SL.tab	1					装备	
+692	威望·395-475品浩气盟七秀装备	Prestige\Lv395-435_HQ_QX.tab	1					装备	
+693	威望·395-475品浩气盟明教装备	Prestige\Lv395-435_HQ_MJ.tab	1					装备	
+694	威望·395-475品浩气盟丐帮装备	Prestige\Lv395-435_HQ_GB.tab	1					装备	
+695	威望·395-475品浩气盟纯阳装备	Prestige\Lv395-435_HQ_CY.tab	1					装备	
+696	威望·395-475品浩气盟藏剑装备	Prestige\Lv395-435_HQ_CJ.tab	1					装备	
+697	江湖贡献·370品下装	Contribution\Lv395_Blue_Lower.tab	1					装备	
+698	江湖贡献·370品上装	Contribution\Lv395_Blue_Upper.tab	1					装备	
+700	灵丹妙药	Scene\ZhanLuan_FengHuaGu_Med.tab	0	scripts/Map/逐鹿中原/shop/通用维修商店.lua				其他	
+701	武器	Scene\ZhanLuan_FengHuaGu_Weapon.tab	1	scripts/Map/逐鹿中原/shop/通用维修商店.lua				装备	
+702	杂货	Scene\ZhanLuan_FengHuaGu_Goods.tab	1	scripts/Map/逐鹿中原/shop/通用维修商店.lua				其他	
+703	侠行·310品纯阳装备	Justice\Lv310_Justice_CY.tab	1					装备	
+704	侠行·310品丐帮装备	Justice\Lv310_Justice_GB.tab	1					装备	
+705	侠行·310品明教装备	Justice\Lv310_Justice_MJ.tab	1					装备	
+706	侠行·310品七秀装备	Justice\Lv310_Justice_QX.tab	1					装备	
+707	侠行·310品少林装备	Justice\Lv310_Justice_SL.tab	1					装备	
+708	侠行·310品唐门装备	Justice\Lv310_Justice_TM.tab	1					装备	
+709	侠行·310品五毒装备	Justice\Lv310_Justice_WD.tab	1					装备	
+710	侠行·310品万花装备	Justice\Lv310_Justice_WH.tab	1					装备	
+711	侠行·310品天策装备	Justice\Lv310_Justice_TC.tab	1					装备	
+712	侠行·310品藏剑装备	Justice\Lv310_Justice_CJ.tab	1					装备	
+761	糖葫芦	Festival\ChildDay_Goods.tab						其他	
+762	声望-屠狼会·装备	Popularity\90th_LuoYang_ZhanLuan.tab	1		111			装备	
+763	声望-屠狼会·物资	Popularity\90th_LuoYang_ZhanLuan_Goods.tab						其他	
+764	声望-凌烟阁·装备	Popularity\90th_TianCe_ZhanLuan.tab	1		109			装备	
+765	声望-大唐兵部·装备	Popularity\90th_ZhanBaoJunXie.tab	1		107			装备	
+766	声望-李唐皇室·装备	Popularity\90th_DaMingGong.tab	1		108			装备	
+767	声望-潼关守备军·物资	Popularity\90th_FengHuaGu_ZhanLuan_Goods.tab		scripts/Map/逐鹿中原/shop/通用维修商店.lua	110			其他	
+768	声望-潼关守备军·装备	Popularity\90th_FengHuaGu_ZhanLuan.tab	1	scripts/Map/逐鹿中原/shop/通用维修商店.lua	110			装备	
+769	声望-李唐皇室·物资	Popularity\90th_DaMingGong_Goods.tab			108			其他	
+770	声望-义军·物资	Popularity\90th_HuaQingGong_Goods.tab			104			其他	
+771	声望-琅琊颜氏·装备	Popularity\90th_HuqQingGongHuiYi.tab	1		105			装备	
+772	声望-琅琊颜氏·物资	Popularity\90th_HuqQingGongHuiYi_Goods.tab						其他	
+773	声望-凌烟阁·物资	Popularity\90th_TianCe_ZhanLuan_Goods.tab						其他	
+774	声望-朔方军·物资	Popularity\90th_YiXianTian_Goods.tab		scripts/Map/逐鹿中原/shop/通用维修商店.lua				其他	
+775	声望-大唐兵部·物资	Popularity\90th_ZhanBaoJunXie_Goods.tab			107			其他	
+776	声望-丐帮·物资	Popularity\90th_GaiBang_Goods.tab			19			其他	
+777	声望-丐帮·装备	Popularity\90th_GaiBang.tab	1		19			装备	
+778	碎片·神兵利器	Special\90th_XuanLongShi.tab						其他	
+779	丐帮·书籍	Force\GaiBang_Book.tab			19			其他	
+780	侠行·家具物资	Justice\TreasureBox.tab		scripts/Map/逐鹿中原/shop/通用维修商店.lua		1167		家具	1
+782	帮会·丐帮甲字书库	Sociaty\Library_GaiBang_1.tab						其他	
+783	丐帮-任务·鱼干	Force\GaiBang_Mission_Fish.tab						其他	
+784	江湖贡献·395品饰品	Contribution\Lv395_Trinket.tab	1					装备	
+785	侠行·420品装备	Justice\Lv420_Data0723.tab	1					装备	
+786	长安城·布料	Scene\ChangAnInner_Clothes1.tab						其他	
+787	长安城·服装	Scene\ChangAnInner_Clothes2.tab						其他	
+788	长安城·水果	Scene\ChangAnInner_Fruits.tab						其他	
+789	江湖贡献·395品装备	Contribution\Lv395_All.tab	1					装备	
+790	侠行·445品装备	Justice\Lv445_Data0909.tab	1					装备	
+791	声望-靖世军义·装备	Popularity\90th_Jing-Yi_Armor.tab	1		116			装备	
+792	声望-靖世军忠·装备	Popularity\90th_Jing-Zhong_Armor.tab	1		114			装备	
+793	声望-西域商会·装备	Popularity\90th_XiYuShangHui_Armor.tab	1		115			装备	
+794	洗炼石	Usual\XiLianShi.tab						其他	
+795	声望-大燕长安府·物资	Popularity\90th_DaYaChangAnFu.tab			113			其他	
+796	帮会·藏剑书库-珍藏	Sociaty\Library_CangJian_3.tab						其他	
+797	帮会·纯阳书库-珍藏	Sociaty\Library_ChunYang_3.tab						其他	
+798	帮会·丐帮书库-珍藏	Sociaty\Library_GaiBang_3.tab						其他	
+799	帮会·明教书库-珍藏	Sociaty\Library_MingJiao_3.tab						其他	
+800	帮会·七秀书库-珍藏	Sociaty\Library_QiXiu_3.tab						其他	
+801	帮会·少林书库-珍藏	Sociaty\Library_ShaoLin_3.tab						其他	
+802	帮会·唐门书库-珍藏	Sociaty\Library_TangMen_3.tab						其他	
+803	帮会·天策书库-珍藏	Sociaty\Library_TianCe_3.tab						其他	
+804	帮会·万花书库-珍藏	Sociaty\Library_WanHua_3.tab						其他	
+805	帮会·五毒书库-珍藏	Sociaty\Library_WuDu_3.tab						其他	
+806	服装店	Festival\Yure_131031.tab	1					其他	
+808	声望-军器监·装备	Popularity\90th_JunQiJian_Amor.tab	1		118			装备	
+809	声望-英灵殿·装备	Popularity\90th_YingLingDian_Amor.tab	1		119			装备	
+810	侠行·485品装备	Justice\Lv485_Data1121.tab	1					装备	
+811	珠联璧合·铉	Special\90th_Date1121_ZhuLianBiHe.tab	1					装备	
+812	名剑大会·中立逾越之石	Arena\Lv480_ZL_UpStone.tab	1					其他	
+813	名剑大会·阵营逾越之石	Arena\Lv480_ZY_UpStone.tab	1					其他	
+814	威望·逾越之石	Prestige\Lv475_UpStone.tab	1					其他	
+815	江湖贡献·425品装备	Contribution\Lv425_Amor.tab	1					装备	
+816	侠行·435品万花装备	Justice\Lv435_Justice_WH.tab	1					装备	
+817	侠行·435品五毒装备	Justice\Lv435_Justice_WD.tab	1					装备	
+818	侠行·435品唐门装备	Justice\Lv435_Justice_TM.tab	1					装备	
+819	侠行·435品天策装备	Justice\Lv435_Justice_TC.tab	1					装备	
+820	侠行·435品少林装备	Justice\Lv435_Justice_SL.tab	1					装备	
+821	侠行·435品七秀装备	Justice\Lv435_Justice_QX.tab	1					装备	
+822	侠行·435品明教装备	Justice\Lv435_Justice_MJ.tab	1					装备	
+823	侠行·435品丐帮装备	Justice\Lv435_Justice_GB.tab	1					装备	
+824	侠行·435品纯阳装备	Justice\Lv435_Justice_CY.tab	1					装备	
+825	侠行·435品藏剑装备	Justice\Lv435_Justice_CJ.tab	1					装备	
+826	出售货物	Special\90th_TradeBuy01.tab						其他	
+827	收购货物	Special\90th_TradeSell01.tab						其他	
+828	靖世军·魂	Festival\Yure_140305.tab	1					其他	
+831	声望·刹那千年	Popularity\90th_ChaNaQianNian_Armor.tab	1		121			其他	
+832	本地特产	Special\90th_Trade_BaiLongKou.tab		scripts/Map/逐鹿中原/shop/据点贸易商店.lua				阵营日常	
+833	本地特产	Special\90th_Trade_BaLinXian.tab		scripts/Map/逐鹿中原/shop/据点贸易商店.lua				阵营日常	
+834	本地特产	Special\90th_Trade_ErHai.tab		scripts/Map/逐鹿中原/shop/据点贸易商店.lua				阵营日常	
+835	本地特产	Special\90th_Trade_FengHuaGu.tab		scripts/Map/逐鹿中原/shop/据点贸易商店.lua				阵营日常	
+836	本地特产	Special\90th_Trade_HeiLongZhao.tab		scripts/Map/逐鹿中原/shop/据点贸易商店.lua				阵营日常	
+837	本地特产	Special\90th_Trade_JinShuiZhen.tab		scripts/Map/逐鹿中原/shop/据点贸易商店.lua				阵营日常	
+838	本地特产	Special\90th_Trade_KunLun.tab		scripts/Map/逐鹿中原/shop/据点贸易商店.lua				阵营日常	
+839	本地特产	Special\90th_Trade_LongMen.tab		scripts/Map/逐鹿中原/shop/据点贸易商店.lua				阵营日常	
+840	本地特产	Special\90th_Trade_LuoDao.tab		scripts/Map/逐鹿中原/shop/据点贸易商店.lua				阵营日常	
+841	本地特产	Special\90th_Trade_MaWeiYi.tab		scripts/Map/逐鹿中原/shop/据点贸易商店.lua				阵营日常	
+842	本地特产	Special\90th_Trade_NanPinShan.tab		scripts/Map/逐鹿中原/shop/据点贸易商店.lua				阵营日常	
+843	本地特产	Special\90th_Trade_QuTangXia.tab		scripts/Map/逐鹿中原/shop/据点贸易商店.lua				阵营日常	
+844	本地特产	Special\90th_Trade_RongTianLing.tab		scripts/Map/逐鹿中原/shop/据点贸易商店.lua				阵营日常	
+845	本地特产	Special\90th_Trade_WuLiangShan.tab		scripts/Map/逐鹿中原/shop/据点贸易商店.lua				阵营日常	
+846	杂货商·载具物资	Sociaty\TongSpecial.tab		scripts\Map\逐鹿中原\shop\帮会资金_载具.lua				其他	
+847	威望·475-515品恶人谷万花装备	Prestige\Lv480-515_ER_WH.tab	1					装备	
+848	威望·475-515品恶人谷五毒装备	Prestige\Lv480-515_ER_WD.tab	1					装备	
+849	威望·475-515品恶人谷唐门装备	Prestige\Lv480-515_ER_TM.tab	1					装备	
+850	威望·475-515品恶人谷天策装备	Prestige\Lv480-515_ER_TC.tab	1					装备	
+851	威望·475-515品恶人谷少林装备	Prestige\Lv480-515_ER_SL.tab	1					装备	
+852	威望·475-515品恶人谷七秀装备	Prestige\Lv480-515_ER_QX.tab	1					装备	
+853	威望·475-515品恶人谷明教装备	Prestige\Lv480-515_ER_MJ.tab	1					装备	
+854	威望·475-515品恶人谷丐帮装备	Prestige\Lv480-515_ER_GB.tab	1					装备	
+855	威望·475-515品恶人谷纯阳装备	Prestige\Lv480-515_ER_CY.tab	1					装备	
+856	威望·475-515品恶人谷藏剑装备	Prestige\Lv480-515_ER_CJ.tab	1					装备	
+857	威望·475-515品浩气盟藏剑装备	Prestige\Lv480-515_HQ_CJ.tab	1					装备	
+858	威望·475-515品浩气盟纯阳装备	Prestige\Lv480-515_HQ_CY.tab	1					装备	
+859	威望·475-515品浩气盟丐帮装备	Prestige\Lv480-515_HQ_GB.tab	1					装备	
+860	威望·475-515品浩气盟明教装备	Prestige\Lv480-515_HQ_MJ.tab	1					装备	
+861	威望·475-515品浩气盟七秀装备	Prestige\Lv480-515_HQ_QX.tab	1					装备	
+862	威望·475-515品浩气盟少林装备	Prestige\Lv480-515_HQ_SL.tab	1					装备	
+863	威望·475-515品浩气盟天策装备	Prestige\Lv480-515_HQ_TC.tab	1					装备	
+864	威望·475-515品浩气盟唐门装备	Prestige\Lv480-515_HQ_TM.tab	1					装备	
+865	威望·475-515品浩气盟五毒装备	Prestige\Lv480-515_HQ_WD.tab	1					装备	
+866	威望·475-515品浩气盟万花装备	Prestige\Lv480-515_HQ_WH.tab	1					装备	
+867	江湖贡献·465品装备	Contribution\Lv465_Amor.tab	1					装备	
+868	声望-隐元天部·装备	Popularity\90th_YinYuanTianBu.tab	1		124			装备	
+869	声望-墨氏门徒·装备	Popularity\90th_MoShiMenTu.tab	1		123			装备	
+870	声望-太初陵社·装备	Popularity\90th_TaiChu.tab	1		125			装备	
+871	侠行·525品装备	Justice\Lv515_Data421.tab	1					装备	
+872	名剑大会·480-515品中立明教装备	Arena\Lv515_ZL_MJ.tab	1					装备	
+873	名剑大会·480-515品中立七秀装备	Arena\Lv515_ZL_QX.tab	1					装备	
+874	名剑大会·480-515品阵营万花装备	Arena\Lv515_ZY_WH.tab	1					装备	
+875	名剑大会·480-515品阵营五毒装备	Arena\Lv515_ZY_WD.tab	1					装备	
+876	名剑大会·480-515品阵营唐门装备	Arena\Lv515_ZY_TM.tab	1					装备	
+877	名剑大会·480-515品阵营天策装备	Arena\Lv515_ZY_TC.tab	1					装备	
+878	名剑大会·480-515品阵营少林装备	Arena\Lv515_ZY_SL.tab	1					装备	
+879	名剑大会·480-515品阵营七秀装备	Arena\Lv515_ZY_QX.tab	1					装备	
+880	名剑大会·480-515品阵营明教装备	Arena\Lv515_ZY_MJ.tab	1					装备	
+881	名剑大会·480-515品阵营丐帮装备	Arena\Lv515_ZY_GB.tab	1					装备	
+882	名剑大会·480-515品阵营纯阳装备	Arena\Lv515_ZY_CY.tab	1					装备	
+883	名剑大会·480-515品阵营藏剑装备	Arena\Lv515_ZY_CJ.tab	1					装备	
+884	名剑大会·480-515品中立五毒装备	Arena\Lv515_ZL_WD.tab	1					装备	
+885	名剑大会·480-515品中立丐帮装备	Arena\Lv515_ZL_GB.tab	1					装备	
+886	名剑大会·480-515品中立藏剑装备	Arena\Lv515_ZL_CJ.tab	1					装备	
+887	名剑大会·480-515品中立万花装备	Arena\Lv515_ZL_WH.tab	1					装备	
+888	名剑大会·480-515品中立唐门装备	Arena\Lv515_ZL_TM.tab	1					装备	
+889	名剑大会·480-515品中立天策装备	Arena\Lv515_ZL_TC.tab	1					装备	
+890	名剑大会·480-515品中立少林装备	Arena\Lv515_ZL_SL.tab	1					装备	
+891	名剑大会·480-515品中立纯阳装备	Arena\Lv515_ZL_CY.tab	1					装备	
+892	精美画纸	Festival\BeautyGril_JingMeiHuaZhi.tab						其他	
+893	声望-隐元天部·物资	Popularity\90th_YinYuanTianBu_Goods.tab						其他	
+894	声望-太初陵社·物资	Popularity\90th_TaiChu_Goods.tab			125			其他	
+895	江湖贡献·395品上装	Contribution\Lv395_Upper.tab						装备	
+896	江湖贡献·395品下装	Contribution\Lv395_Lower.tab						装备	
+897	珠联璧合·戮	Special\90th_Date421_ZhuLianBiHe.tab	1					装备	
+898	战旗·帮会资金	Sociaty\Flag_4_Fund.tab						其他	
+899	战旗·帮会资金	Sociaty\Flag_3_Fund.tab						其他	
+900	战旗·帮会资金	Sociaty\Flag_2_Fund.tab						其他	
+901	战旗·帮会资金	Sociaty\Flag_1_Fund.tab						其他	
+902	城防物资	Special\90th_Trade_Act.tab		scripts/Map/前线支援/shop/城防物资商店.lua				其他	
+903	载具·金币	Sociaty\TongSpecialGold.tab		scripts/Map/逐鹿中原/shop/个人金币_载具.lua				其他	
+904	生活技艺·淬炼材料	Craft\Recasting.tab						生活技能	
+905	声望-春明门·装备	Popularity\90th_ChunMingMen.tab	1		126			装备	
+906	重阳·奇货	Festival\ChongYang_Currency_Goods.tab						其他	1
+907	重阳·佳品	Festival\ChongYang_Currency_Armor.tab						其他	
+908	苍雪龙城·奇货	Festival\CangYunYuRe_Currency_Goods.tab						其他	
+909	苍雪龙城·佳品	Festival\CangYunYuRe_Currency_Armor.tab						其他	
+910	苍云·书籍	Force\CangYun_Book.tab						其他	
+911	苍云·任务·糖葫芦	Force\CangYun_Mission_Hulu.tab						其他	
+912	苍云·任务·汾酒	Force\CangYun_Mission_Wine.tab						其他	
+913	苍云·任务·黑釉瓷碗	Force\CangYun_Mission_Bowl.tab						其他	
+914	声望·苍云·装备	Popularity\90th_CangYun_Armor.tab	1		127			装备	
+915	声望·苍云·物资	Popularity\90th_CangYun_Goods.tab	1		127			其他	
+916	兑换牌·395-435品苍云装备	Currency\Lv395-435_PZ_XJCY.tab	1					装备	
+917	侠行·435品苍云装备	Justice\Lv435_Justice_XJCY.tab	1					装备	
+918	名剑·终级套装	Arena\Arena_Equip1.tab	1					装备	1
+919	名剑·高级套装	Arena\Arena_Equip2.tab	1					装备	1
+920	侠行·散件	Justice\Justice_4.tab	1					装备	1
+921	兑换牌·苍云	Currency\PZ_XJCY.tab	1					装备	
+922	侠行·终级套装	Justice\Justice_1.tab	1					装备	1
+923	侠行·藏剑	Justice\Justice_CJ.tab	1					装备	
+924	侠行·纯阳	Justice\Justice_CY.tab	1					装备	
+925	侠行·丐帮	Justice\Justice_GB.tab	1					装备	
+926	侠行·明教	Justice\Justice_MJ.tab	1					装备	
+927	侠行·七秀	Justice\Justice_QX.tab	1					装备	
+928	侠行·少林	Justice\Justice_SL.tab	1					装备	
+929	侠行·天策	Justice\Justice_TC.tab	1					装备	
+930	侠行·唐门	Justice\Justice_TM.tab	1					装备	
+931	侠行·五毒	Justice\Justice_WD.tab	1					装备	
+932	侠行·万花	Justice\Justice_WH.tab	1					装备	
+933	侠行·苍云	Justice\Justice_XJCY.tab	1					装备	
+934	高级套装·恶人谷	Prestige\Prestige_ZJ_2_ER.tab	1	scripts/Map/逐鹿中原/shop/阵营商店中立不能购买.lua				装备	1
+935	高级套装·浩气盟	Prestige\Prestige_ZJ_2_HQ.tab	1	scripts/Map/逐鹿中原/shop/阵营商店中立不能购买.lua				装备	1
+936	帮会·藏剑书库	Sociaty\Library_CangJian.tab						其他	
+937	帮会·纯阳书库	Sociaty\Library_ChunYang.tab						其他	
+938	帮会·丐帮书库	Sociaty\Library_GaiBang.tab						其他	
+939	帮会书库·修为	Sociaty\Library_JiangHu.tab						其他	
+940	帮会·明教书库	Sociaty\Library_MingJiao.tab						其他	
+941	帮会·七秀书库	Sociaty\Library_QiXiu.tab						其他	
+942	帮会·少林书库	Sociaty\Library_ShaoLin.tab						其他	
+943	帮会·唐门书库	Sociaty\Library_TangMen.tab						其他	
+944	帮会·天策书库	Sociaty\Library_TianCe.tab						其他	
+945	帮会·万花书库	Sociaty\Library_WanHua.tab						其他	
+946	帮会·五毒书库	Sociaty\Library_WuDu.tab						其他	
+947	兑换牌商人	Currency\Currency_PZ.tab	1					装备	
+948	兑换牌·藏剑	Currency\PZ_CJ.tab	1					装备	
+949	兑换牌·纯阳	Currency\PZ_CY.tab	1					装备	
+950	兑换牌·明教	Currency\PZ_MJ.tab	1					装备	
+951	兑换牌·七秀	Currency\PZ_QX.tab	1					装备	
+952	兑换牌·少林	Currency\PZ_SL.tab	1					装备	
+953	兑换牌·天策	Currency\PZ_TC.tab	1					装备	
+954	兑换牌·唐门	Currency\PZ_TM.tab	1					装备	
+955	兑换牌·五毒	Currency\PZ_WD.tab	1					装备	
+956	兑换牌·万花	Currency\PZ_WH.tab	1					装备	
+957	兑换牌·丐帮	Currency\PZ_GB.tab	1					装备	
+958	名剑大会·255品中立苍云装备	Arena\Lv255_ZL_XJCY.tab	1					装备	
+959	名剑大会·270品中立苍云装备	Arena\Lv270_ZL_XJCY.tab	1					装备	
+960	名剑大会·270品阵营苍云装备	Arena\Lv270_ZY_XJCY.tab	1					装备	
+961	名剑大会·295品中立苍云装备	Arena\Lv295_ZL_XJCY.tab	1					装备	
+962	名剑大会·295品阵营苍云装备	Arena\Lv295_ZY_XJCY.tab	1					装备	
+963	名剑大会·325品中立苍云装备	Arena\Lv325_ZL_XJCY.tab	1					装备	
+964	名剑大会·325品阵营苍云装备	Arena\Lv325_ZY_XJCY.tab	1					装备	
+965	名剑大会·400品中立苍云装备	Arena\Lv400_ZL_XJCY.tab	1					装备	
+966	名剑大会·400品阵营苍云装备	Arena\Lv400_ZY_XJCY.tab	1					装备	
+967	名剑大会·435品中立苍云装备	Arena\Lv435_ZL_XJCY.tab	1					装备	
+968	名剑大会·435品阵营苍云装备	Arena\Lv435_ZY_XJCY.tab	1					装备	
+969	威望·165品恶人谷苍云装备	Prestige\Lv165_ER_XJCY.tab	1					装备	
+970	威望·165品浩气盟苍云装备	Prestige\Lv165_HQ_XJCY.tab	1					装备	
+971	威望·205品恶人谷苍云装备	Prestige\Lv205_ER_XJCY.tab	1					装备	
+972	威望·205品浩气盟苍云装备	Prestige\Lv205_HQ_XJCY.tab	1					装备	
+973	威望·280恶人谷苍云装备	Prestige\Lv280_ER_XJCY.tab	1					装备	
+974	威望·280浩气盟苍云装备	Prestige\Lv280_HQ_XJCY.tab	1					装备	
+975	威望·395-475品恶人谷苍云装备	Prestige\Lv395-435_ER_XJCY.tab	1					装备	
+976	威望·395-475品浩气盟苍云装备	Prestige\Lv395-435_HQ_XJCY.tab	1					装备	
+977	威望-兑换·230-255品恶人谷苍云装备	Prestige\Transfer_Lv230-255_ER_XJCY.tab	1					装备	
+978	威望-兑换·230-255品浩气盟苍云装备	Prestige\Transfer_Lv230-255_HQ_XJCY.tab	1					装备	
+979	名剑大会·480-515品阵营苍云装备	Arena\Lv515_ZL_XJCY.tab	1					装备	
+980	名剑大会·480-515品阵营苍云装备	Arena\Lv515_ZY_XJCY.tab	1					装备	
+982	声望·龙城飞将·装备	Popularity\90th_TaiYuanCheng1_Armor.tab	1		139			装备	
+983	声望·烽火北望·装备	Popularity\90th_TaiYuanCheng2_Armor.tab	1		140			装备	
+984	声望·灵武先锋军·装备	Popularity\90th_TaiYuan1_Armor.tab	1		132			装备	
+985	声望·太原义士·装备	Popularity\90th_TaiYuan2_Armor.tab	1		133			装备	
+986	声望·武林盟·装备	Popularity\90th_TaiYuan3_Armor.tab	1		134			装备	
+987	声望·建宁铁卫·装备	Popularity\90th_TaiYuan4_Armor.tab	1		135			装备	
+988	声望·河东商会·装备	Popularity\90th_TaiYuan5_Armor.tab	1		137			装备	
+989	声望·太原联军·装备	Popularity\90th_TaiYuan6_Armor.tab	1		138			装备	
+990	苍云任务·一颗糖果	Force\CangYun_Mission_Candy.tab						其他	
+991	声望·龙城飞将·物资	Popularity\90th_TaiYuanCheng1_Goods.tab			139			其他	
+992	声望·烽火北望·物资	Popularity\90th_TaiYuanCheng2_Goods.tab			140			其他	
+993	声望·太原联军·物资	Popularity\90th_TaiYuan6_Goods.tab						其他	
+994	声望·河东商会·物资	Popularity\90th_TaiYuan5_Goods.tab						其他	
+995	声望·灵武先锋军·物资	Popularity\90th_TaiYuan1_Goods.tab			132			其他	
+996	声望·太原义士·物资	Popularity\90th_TaiYuan2_Goods.tab			133			其他	
+997	声望·建宁铁卫·物资	Popularity\90th_TaiYuan4_Goods.tab						其他	
+998	声望·武林盟·物资	Popularity\90th_TaiYuan3_Goods.tab			134			其他	
+999	珠联璧合·苍	Special\90th_Weapon_ZhuLianBiHe.tab	1					装备	
+1000	帮会·苍云书库	Sociaty\Library_CangYun.tab						其他	
+1001	终级套装·恶人谷	Prestige\Prestige_ZJ_1_ER.tab	1	scripts/Map/逐鹿中原/shop/阵营商店中立不能购买.lua				装备	1
+1002	终级套装·浩气盟	Prestige\Prestige_ZJ_1_HQ.tab	1	scripts/Map/逐鹿中原/shop/阵营商店中立不能购买.lua				装备	1
+1003	声望·隐元会·物资	Popularity\70th_YinYuanHui_Goods.tab			48			其他	
+1004	声望·天道轩·物资	Popularity\70th_ChangGeMen_Goods.tab			45			其他	
+1005	声望·东篱寨·物资	Popularity\70th_DongLiZhai_Goods.tab			44			其他	
+1006	声望·南洋商会·物资	Popularity\70th_NanYangShangHui_Goods.tab			43			其他	
+1007	声望·明教·物资	Popularity\80th_MingJiao_Goods.tab			20			其他	
+1008	声望·唐门·物资	Popularity\80th_TangMen_Goods.tab			17			其他	
+1009	声望·五毒·物资	Popularity\80th_WuDu_Goods.tab			16			其他	
+1010	声望·靖世军义·物资	Popularity\90th_Jing-Yi_Goods.tab			116			其他	
+1011	声望·靖世军忠·物资	Popularity\90th_Jing-Zhong_Goods.tab			114			其他	
+1012	声望·西域商会·物资	Popularity\90th_XiYuShangHui_Goods.tab			115			其他	
+1013	声望·英灵殿·物资	Popularity\90th_YingLingDian_Goods.tab			119			其他	
+1014	玉贤的宝贝	Festival\YunYingHuoDong_FengZhi.tab						其他	
+1015	花朝节-货币·佳品	Festival\HuaZhaoJie_Currency_Goods.tab						其他	1
+1016	太原·坐骑	City\TaiYuan_Horse.tab						其他	
+1017	珠联璧合·侠	Special\90th_Weapon_420ZhuLianBiHe.tab	1					装备	
+1018	端午·钓鱼	Festival\DuanWu_Fishing_Goods.tab						其他	1
+1019	儿童节·奇货	Festival\LiuYi_Gold.tab						其他	1
+1020	声望·江南叶商行-装备	Popularity\90th_JiangNanYeShangHang_Goods.tab	1		141			其他	
+1024	阵营物资	Special\95th_GongFang.tab	1					其他	
+1025	帮会·长歌书库	Sociaty\Library_ChangGe.tab	0					其他	
+1026	千岛湖·书籍	Scene\QianDaoHu_Book.tab	0					其他	
+1027	长歌门·书籍	Force\ChangGeMen_Book.tab	0					其他	
+1028	阵营载具	Special\95th_HeiGeBiZaiJu.tab	1					其他	
+1029	阵营载具	Special\95th_GongFangZaiJu.tab	1					其他	
+1030	巴蜀风云·神兵利器	Special\80th_XiaoChengWu.tab	1	scripts/Map/逐鹿中原/shop/通用维修商店.lua				装备	
+1034	长歌门·任务·酒	Scene\ChangGeMen_Wine.tab						其他	
+1035	五台山·奇货	Scene\WuTaiShan_CaiDan.tab						其他	
+1037	声望·隐贤居·物资	Popularity\95th_YinXianJu_Goods.tab						其他	
+1038	声望·觅音明心园·物资	Popularity\95th_NiYinMingXinYuan_Goods.tab						其他	
+1039	声望·商会玉带楼·物资	Popularity\95th_YuDaiLou_Goods.tab			154			其他	
+1040	声望·源氏狩魂组·物资	Popularity\95th_ShouHunZu_Goods.tab			155			其他	
+1041	声望·白云会·物资	Popularity\95th_BaiYunHui_Goods.tab						其他	
+1042	声望·名僧会·物资	Popularity\95th_MingSengHui_Goods.tab						其他	
+1043	声望·长歌·物资	Popularity\95th_ChangGeMen_Goods.tab			128			其他	
+1044	兑换牌·长歌	Currency\PZ_CGM.tab	1					装备	
+1045	侠行·长歌装备	Justice\Justice_CGM.tab	1					装备	
+1046	声望·商会玉带楼·装备	Popularity\95th_YuDaiLou_Armor.tab	1		154			装备	
+1047	声望·源氏狩魂组·装备	Popularity\95th_ShouHunZu_Armor.tab	1		155			装备	
+1048	声望·恶人谷细柳堂·装备	Popularity\95th_KongShanTang_Armor.tab	1		148			装备	
+1049	声望·觅宝会漠西部·装备	Popularity\95th_MoXiBu_Armor.tab	1		147			装备	
+1050	声望·阴山集市·装备	Popularity\95th_YinShanHeiShi_Armor.tab	1		146			装备	
+1051	声望·浩气盟新雨阁·装备	Popularity\95th_XinYuTang_Armor.tab	1		149			装备	
+1052	声望·长歌·装备	Popularity\95th_ChangGeMen_Armor.tab	1		128			装备	
+1053	声望·回纥商队·装备	Popularity\95th_HuiHuShangDui_Armor.tab	1		142			装备	
+1054	声望·黑水城·装备	Popularity\95th_HeiShuiCheng_Armor.tab	1		143			装备	
+1055	声望·淮南商行·装备	Popularity\95th_HuaiNanShangHang_Armor.tab	1		144			装备	
+1056	声望·无遮会·装备	Popularity\95th_WuZheHui_Armor.tab	1		145			装备	
+1057	声望·隐贤居·装备	Popularity\95th_YinXianJu_Armor.tab	1		150			装备	
+1058	声望·名僧会·装备	Popularity\95th_MingSengHui_Armor.tab	1		152			装备	
+1059	声望·白云会·装备	Popularity\95th_BaiYunHui_Armor.tab	1		151			装备	
+1060	声望·觅音明心园·装备	Popularity\95th_NiYinMingXinYuan_Armor.tab	1		153			装备	
+1061	书籍·长歌门	Scene\ChangGeMen_Book.tab						其他	
+1062	书籍·五台山	Scene\WuTaiShan_Book.tab			152			其他	
+1063	武库·兵鉴迷篇	Sociaty\BigEnchant.tab	0					其他	
+1067	声望·黑水城·物资	Popularity\95th_HeiShuiCheng_Goods.tab			143			其他	
+1068	声望·淮南商行·物资	Popularity\95th_HuaiNanShangHang_Goods.tab			144			其他	
+1069	声望·回纥商队·物资	Popularity\95th_HuiHuShangDui_Goods.tab			142			其他	
+1070	声望·恶人谷细柳堂·物资	Popularity\95th_KongShanTang_Goods.tab						其他	
+1071	声望·觅宝会漠西部·物资	Popularity\95th_MoXiBu_Goods.tab			147			其他	
+1072	声望·无遮会·物资	Popularity\95th_WuZheHui_Goods.tab			145			其他	
+1073	声望·浩气盟新雨阁·物资	Popularity\95th_XinYuTang_Goods.tab						其他	
+1074	声望·阴山集市·物资	Popularity\95th_YinShanHeiShi_Goods.tab			146			其他	
+1079	珠联璧合·渊	Special\95th_Weapon_JianDanQinXin.tab	1					装备	
+1080	兑换·兵鉴迷篇	Special\95th_MenPaiShiJian.tab						其他	
+1081	清明·强化	Festival\QingMing_Gold_Materials.tab						其他	1
+1082	声望·永安行·装备	Popularity\95th_YongAnXing_Armor.tab	1		160			装备	
+1083	声望·永安行·物资	Popularity\95th_YongAnXing_Goods.tab	1		160			其他	
+1084	心语花灯店	Festival\DuanWu_Gold_Lanterns.tab						其他	
+1085	端午·奇货	Festival\DuanWu_Gold_Item.tab		scripts/Map/节日端午/shop/端午节商店.lua				其他	1
+1086	声望·凌云会·装备	Popularity\95th_LingYunHui_Armor.tab	1		161			装备	
+1087	霸刀·塞北营·装备	Popularity\95th_SaiBeiYing_Armor.tab	1		162			装备	
+1088	书籍·霸刀	Scene/BaDaoMen_Book.tab	0					其他	
+1089	兑换牌·霸刀	Currency\PZ_BDSZ.tab	1					装备	
+1090	帮会·霸刀书库	Sociaty\Library_BaDao.tab	0					其他	
+1091	珠联璧合·梦	Special\95th_Weapon_FengGuBaDao.tab	1					装备	
+1092	声望·郭子仪部·靖武·装备	Popularity\95th_GuoZiYi_JingWu_Armor.tab	1		163			装备	
+1093	声望·郭子仪部·靖武·物资	Popularity\95th_GuoZiYi_JingWu_Goods.tab	1		163			其他	
+1094	声望·精金阁·装备	Popularity\95th_JingJinGe_Armor.tab	1		164			装备	
+1095	声望·精金阁·物资	Popularity\95th_JingJinGe_Goods.tab	1		164			其他	
+1096	声望·洛阳光复联军·荡寇·装备	Popularity\95th_LuoYangGuangFu_DangKou_Armor.tab	1		165			装备	
+1097	声望·洛阳光复联军·荡寇·物资	Popularity\95th_LuoYangGuangFu_DangKou_Goods.tab	1					其他	
+1098	声望·洛阳光复联军·旌表·装备	Popularity\95th_LuoYangGuangFu_JingBiao_Armor.tab	1		166			装备	
+1099	声望·洛阳光复联军·旌表·物资	Popularity\95th_LuoYangGuangFu_JingBiao_Goods.tab	1					其他	
+1100	侠行·霸刀	Justice\Justice_BDSZ.tab	1					装备	
+1101	霸刀·物资	Popularity\95th_BaDaoShanZhuang_Goods.tab	1		129			其他	
+1102	霸刀·装备	Popularity\95th_BaDaoShanZhuang_Armor.tab	1		129			装备	
+1103	天街灯市·花灯	Festival\ChunJie_TJDS_huadeng.tab	0					其他	
+1104	天街灯市·烟花	Festival\ChunJie_TJDS_yanhua.tab	0					其他	
+1105	天街灯市·奇趣	Festival\ChunJie_TJDS_qiqu.tab	0					其他	
+1106	元宵·奇货	Festival\Yuanxiao_Qihuo.tab	0					其他	1
+1107	刀谷迷踪-货币·首饰	Festival\DaoGuMiZong_HuoBi_Armor.tab	1					装备	
+1108	珠联璧合·凌	Special\95th_Weapon_RiYueLingKong.tab						装备	
+1109	声望·扬名擂·装备	Popularity\95th_YangMingLei_Armor.tab	1		167			装备	
+1110	声望·扬名擂·物资	Popularity\95th_YangMingLei_Goods.tab	1					其他	
+1111	声望·北山会·怒涛堂·装备	Popularity\95th_BeiShanHui_NuHaiTang_Armor.tab	1		168			装备	
+1112	声望·北山会·怒涛堂·物资	Popularity\95th_BeiShanHui_NuHaiTang_Goods.tab	1		168			其他	
+1113	声望·北山会·弄影堂·装备	Popularity\95th_BeiShanHui_NongYingTang_Armor.tab	1		169			装备	
+1114	声望·北山会·弄影堂·物资	Popularity\95th_BeiShanHui_NongYingTang_Goods.tab	1					其他	
+1115	帮会·宴席	Sociaty\YanXi.tab						其他	
+1116	武器	Usual\Weapon_All_PVP.tab	1	scripts/Map/逐鹿中原/shop/通用维修商店.lua				装备	
+1117	中元·奇货	Festival\Zhongyuan_Currency_Goods.tab	1					其他	1
+1118	魂晶兑换	Prestige\Prestige_ER_PF.tab	1					其他	
+1119	魂晶兑换	Prestige\Prestige_HQ_PF.tab	1					其他	
+1120	神兵疑云·奇货	Festival\Yure_58625.tab	1					其他	
+1121	声望·浩气盟霜雷殿·装备	Popularity\95th_SLD_Armor.tab	1		177			装备	
+1122	声望·浩气盟霜雷殿·物资	Popularity\95th_SLD_Goods.tab	1					其他	
+1123	声望·恶人谷惊风院·装备	Popularity\95th_JFY_Armor.tab	1		176			装备	
+1124	声望·恶人谷惊风院·物资	Popularity\95th_JFY_Goods.tab	1					其他	
+1125	声望·五毒·圣蝎殿·装备	Popularity\95th_YWHFB_Armor.tab	1		172			装备	
+1126	声望·五毒·圣蝎殿·物资	Popularity\95th_YWHFB_Goods.tab	1					其他	
+1127	声望·隐元会·天玄阁风部·装备	Popularity\95th_DXMSFB_Armor.tab	1		173			装备	
+1128	声望·隐元会·天玄阁风部·物资	Popularity\95th_DXMSFB_Goods.tab	1		173			其他	
+1129	声望·霸刀山庄·驭海堂·装备	Popularity\95th_LYBZSS_Armor.tab	1		174			装备	
+1130	声望·霸刀山庄·驭海堂·物资	Popularity\95th_LYBZSS_Goods.tab	1					其他	
+1131	声望·独孤世家·九军·装备	Popularity\95th_LYBYRF_Armor.tab	1		175			装备	
+1132	声望·独孤世家·九军·物资	Popularity\95th_LYBYRF_Goods.tab	1					其他	
+1133	珠联璧合·重制	Special\95th_Weapon_ChongZhiBan.tab	1					装备	
+1134	飞沙令·秘境装备	Survival\95th_HHKS_PVE_Armor.tab	1					装备	1
+1135	飞沙令·对抗装备	Survival\95th_HHKS_PVP_Armor.tab	1					装备	1
+1136	飞沙令·通用强化	Survival\95th_HHKS_Goods.tab						其他	1
+1137	飞沙令·外观装扮	Survival\95th_HHKS_Exterior.tab						其他	1
+1138	威望·本届物资	Prestige\Prestige_ZJ_Goods.tab	0			1167		家具	1
+1139	腊八节·材料	Festival\LaBaJie_Currency_Materials.tab	0					其他	1
+1140	腊八节·兑换	Festival\LaBaJie_Currency_Goods.tab	0			1179		其他	1
+1141	儿童节·趣味	Festival/LiuYi_Currency.tab						其他	1
+1142	珠联璧合·破晓	Special\95th_Weapon_poxiao201806.tab	1					装备	
+1143	丐帮·忠义堂·声望商·装备	Popularity\95th_YXHTQ_Armor.tab	1		178			装备	
+1144	丐帮·忠义堂·声望商·物资	Popularity\95th_YXHTQ_Goods.tab	1		178			其他	
+1145	霸刀·止戈堂·声望商·装备	Popularity\95th_YXLSD_Armor.tab	1		179			装备	
+1146	霸刀·止戈堂·声望商·物资	Popularity\95th_YXLSD_Goods.tab	1					其他	
+1147	踏浪寻仙·物资	Festival\Yure_20181025.tab	1					其他	
+1148	蓬莱·装备	Popularity/100th_penglai_Armor.tab	1		130			装备	
+1149	蓬莱·物资	Popularity/100th_penglai_Goods.tab	1		130			其他	
+1150	兑换牌·蓬莱	Currency/PZ_PL.tab	1					装备	
+1151	侠行·蓬莱	Justice/Justice_PL.tab	1					装备	
+1152	蓬莱·书商	Force/Penglai_Book.tab						其他	
+1153	冰火岛·装备	Popularity/100th_BHD_Armor.tab	1		186			装备	
+1154	冰火岛·物资（废弃商店ID）	Popularity/100th_BHD_Goods.tab	1						
+1155	珠联璧合·世外蓬莱	Special\100th_Weapon_PL.tab	1					装备	
+1156	防具兑换·绝世	Special\100th_Armor_PL.tab	1					装备	
+1158	迷渊岛·装备	Popularity\100th_MiYuanDao_Armor.tab	1		180			装备	
+1159	盘丝洞·装备	Popularity\100th_PanSiDong_Armor.tab	1		181			装备	
+1160	泥兰洞天·装备	Popularity\100th_NilaDongTian_Armor.tab	1		182			装备	
+1161	镜泊湖·装备	Popularity\100th_JingBoHu_Armor.tab	1		183			装备	
+1162	恶人谷·驭帆堂	Popularity/100th_ERYWD_Armor.tab	1		201			装备	
+1163	浩气盟·平涛阁	Popularity/100th_HQZZYT_Armor.tab	1		200			装备	
+1164	帮会·蓬莱书库	Sociaty\Library_Penglai.tab	0					其他	
+1165	忆昔石	Usual\ResetDungon.tab	0					其他	1
+1166	康氏泥兰园·装备	Popularity\100th_PQ_KSNLY_Armor.tab	1		187			装备	
+1167	侠客岛·姜氏·装备	Popularity\100th_PQ_XKDJS_Armor.tab	1		188			装备	
+1168	贺氏商会·装备	Popularity\100th_PQ_HSSH_Armor.tab	1		189			装备	
+1169	东海丐帮分舵·装备	Popularity\100th_PQ_DHGB_Armor.tab	1		190			装备	
+1170	擂台·杂货	Special\100th_LeiTai.tab	0	scripts/Tong/shop/王甜甜.lua				其他	
+1171	侠客岛·鱼饵	Scene\XiaKeDao_Fish.tab	0					其他	
+1172	天工币商店	Craft/TianGongBi.tab	0					其他	1
+1173	杂货	Scene/Wudu_Goods.tab	1					其他	
+1174	花朝节-货币·强化	Festival\HuaZhaoJie_Currency_Enchant.tab						其他	1
+1175	愚人节商店	Festival/FoolDay_Gold.tab						其他	1
+1176	东海三家联军·装备	Popularity/100th_DongHaiSanJiaUnity.tab	1		195			装备	
+1177	周天哨·装备	Popularity/100th_ZhouTianShao.tab	1		196			装备	
+1178	活动商店	Festival/NHZF_preHeat_Currency.tab	1					其他	
+1179	儿童节·强化	Festival/LiuYi_Fumo.tab						其他	1
+1180	端午·强化	Festival/DuanWu_Fumo.tab						其他	1
+1181	鲲鹏岛·声望商	Popularity/100th_Kunpengdao_BWL.tab	1		197			其他	
+1182	鲲鹏岛·马肉火烧	Scene/KunPengDao_mrhs.tab						其他	
+1183	鲲鹏岛·章鱼挂件	Scene/KunPengDao_zygj.tab						其他	
+1184	师徒·物资	Special/100th_ShiTu_Trinket.tab	0					其他	1
+1185	七夕·强化	Festival/Qixi_Fumo.tab						其他	1
+1186	本地特产	Special\100th_Trade_ZhenYing.tab		scripts/Map/逐鹿中原/shop/据点贸易商店.lua				阵营日常	
+1187	本地特产	Special\100th_Trade_LongMenBaLing.tab		scripts/Map/逐鹿中原/shop/据点贸易商店.lua				阵营日常	
+1188	中元·强化	Festival/Zhongyuan_Currency_Fumo.tab						其他	1
+1189	浪客行·物品·壹壹	Festival/LangKeXing_Goods_1_1.tab	0	scripts/Map/ACT_浪客行/shop/内部商店任务.lua				其他	
+1190	浪客行·物品·贰壹	Festival/LangKeXing_Goods_2_1.tab	0	scripts/Map/ACT_浪客行/shop/内部商店任务.lua				其他	
+1191	浪客行·物品·贰贰	Festival/LangKeXing_Goods_2_2.tab	0	scripts/Map/ACT_浪客行/shop/内部商店任务.lua				其他	
+1192	浪客行·物品·贰叁	Festival/LangKeXing_Goods_2_3.tab	0	scripts/Map/ACT_浪客行/shop/内部商店任务.lua				其他	
+1193	浪客行·物品·贰肆	Festival/LangKeXing_Goods_2_4.tab	0	scripts/Map/ACT_浪客行/shop/内部商店任务.lua				其他	
+1194	浪客行·物品·叁壹	Festival/LangKeXing_Goods_3_1.tab	0	scripts/Map/ACT_浪客行/shop/内部商店任务.lua				其他	
+1195	浪客行·物品·叁贰	Festival/LangKeXing_Goods_3_2.tab	0	scripts/Map/ACT_浪客行/shop/内部商店任务.lua				其他	
+1196	浪客行·物品·叁叁	Festival/LangKeXing_Goods_3_3.tab	0	scripts/Map/ACT_浪客行/shop/内部商店任务.lua				其他	
+1197	浪客行·物品·叁肆	Festival/LangKeXing_Goods_3_4.tab	0	scripts/Map/ACT_浪客行/shop/内部商店任务.lua				其他	
+1198	怀旧神兵挂件	Survival\10year_old_weapon.tab	1					其他	
+1199	浪客行-货币·强化	Festival/LangKeXing_Currency_Fumo.tab						其他	
+1200	中秋·强化	Festival\ZhongQiu_Currency_Fumo.tab						其他	1
+1201	重阳·强化	Festival\Chongyang_Currency_Fumo.tab						其他	1
+1202	凌雪阁·装备	Popularity/100th_lingxuege_Armor.tab	1		131			装备	
+1203	凌雪阁·物资	Popularity/100th_lingxuege_Goods.tab	1		131			其他	
+1204	兑换牌·凌雪阁	Currency/PZ_LXG.tab	1					装备	
+1205	侠行·凌雪阁	Justice/Justice_LXG.tab	1					装备	
+1206	凌雪阁·书商	Force/Lingxuge_Book.tab						其他	
+1207	烽火动狂澜·物资	Festival\Yure_20191021.tab	1					其他	
+1208	帮会·凌雪阁书库	Sociaty\Library_LingXueGe.tab	0					其他	
+1209	蔷薇列岛·装备	Popularity/100th_201911_QWLD.tab	1		198			装备	
+1210	南溟船队·装备	Popularity/100th_201911_BRLJ.tab	1		202			装备	
+1211	明教·书籍	Scene\MingJiao_Book.tab			20			其他	
+1212	战乱长安·书籍	Scene\ZhanLuanChangAn_Book.tab			104			其他	
+1213	马嵬驿·书籍	Scene\MaWeiYi_Book.tab						其他	
+1214	大唐军马场·物资	Craft/horse203.tab			203			其他	
+1215	石林马场·物资	Craft/horse206.tab			206			其他	
+1216	霸王马场·物资	Craft/horse207.tab			207			其他	
+1217	仙雀梦华裳·珍品	Festival/XianQueMengHuaShang.tab						其他	
+1218	冬至-货币·强化	Festival/Dongzhi_Fumo.tab						其他	1
+1219	元旦-货币·强化	Festival\YuanDan_Currency_Fumo.tab	1					其他	1
+1220	春节·强化	Festival/Chunjie_Fumo.tab						其他	1
+1221	元宵·强化	Festival/Yuanxiao_Fumo.tab						其他	1
+1222	浪客行·装备	Festival/LangKeXing_Equip.tab	1					装备	1
+1223	龙泉府·任务·茶水	Scene\LongQuanFu_Mission_Tea.tab	0	scripts/Map/ACT_场景预热/shop/龙泉府茶水摊.lua				其他	
+1224	风云将变·物资	Festival/Yure_20200420.tab	1					其他	
+1225	宠物出行·装备	Scene/Home_PetTravel.tab	1	scripts/Map/家园系统/npc/宠物出行商店.lua				装备	
+1226	太子卫率府·装备	Popularity/100th_202005_FYYB.tab	1		210			装备	
+1227	梓匠材料商店	Craft\funiture.tab	1	scripts/Map/逐鹿中原/shop/通用维修商店.lua				生活技能	1
+1228	名剑·本届物资	Arena/Arena_Funiture.tab	1					家具	1
+1229	侠客岛·姜氏·物资	Popularity/100th_PQ_XKDJS_good.tab	1		188			其他	
+1230	家园花草种子	Scene/Home_Flower.tab						家园其他	1
+1231	家园书籍商店	Scene/Home_Book.tab						家园其他	
+1232	家园酿酒材料商	Scene/Home_Wine.tab						家园其他	1
+1233	家园炊事材料商	Scene/Home_cook.tab						家园其他	1
+1234	家园花铺	Scene/Home_SellFlower.tab		scripts/Map/家园系统/npc/花卉兑换商.lua				家园其他	1
+1235	浪客行·物资	Festival/LangKeXing_Goods.tab	1					其他	1
+1236	声望-塔纳离恨冢·物资	Popularity\80th_TaNaLiHenZhong_Goods.tab	1		93			其他	
+1237	太子卫率府·物资	Popularity/100th_202005_FYYB_Goods.tab	1		210			其他	
+1238	声望-墨氏门徒·物资	Popularity\90th_MoShiMenTu_Goods.tab	1		123			其他	
+1239	声望·凌云会·物资	Popularity\95th_LingYunHui_Goods.tab	1		161			其他	
+1240	大水南方令·本届家具	Scene/Home_YZHSFuniture.tab	1					家具	1
+1241	棋牌·物资	Scene/Home_MaJiang_Good.tab	1					家具	
+1242	棋牌·叶子令	Scene/Home_MaJiang_Yezi.tab	1					家园其他	1
+1243	兑换·星海蜃影	Festival/Gift828.tab	1					其他	
+1244	帮会·战旗	Sociaty\Flag_5.tab						其他	
+1245	战旗·帮会资金	Sociaty\Flag_5_Fund.tab						其他	
+1246	帮会书库·金币	Sociaty/Library_JiangHu_0_book.tab						其他	
+1247	宴席出售	Sociaty/TongFeast.tab						其他	
+1248	仗剑江湖·物资	Festival/Yure_20200921.tab						其他	
+1249	家园作物种子	Scene/Home_Crops.tab						家园其他	1
+1250	衍天宗·装备	Popularity/110th_YanTianZong_Armor.tab	1		216			装备	
+1251	衍天宗·物资	Popularity/110th_YanTianZong_Goods.tab	1		216			家具	
+1252	兑换牌·衍天宗	Currency/PZ_YTZ.tab	1					装备	
+1253	侠行·衍天宗	Justice/Justice_YTZ.tab	1					装备	
+1254	衍天宗·书商	Force/YanTianZong_Book.tab						其他	
+1255	浩气盟·矿车入门装备	Popularity/110th_KuangCheHq_Armor2.tab	1	scripts/Map/逐鹿中原/shop/阵营商店中立不能购买.lua	233			装备	
+1256	恶人谷·矿车入门装备	Popularity/110th_KuangCheEr_Armor2.tab	1	scripts/Map/逐鹿中原/shop/阵营商店中立不能购买.lua	234			装备	
+1257	珠联璧合·乾元	Special\110th_Weapon_PL.tab	1					装备	
+1258	防具兑换·乾元	Special\110th_Armor_PL.tab	1					装备	
+1259	藏剑·祭剑堂·装备	Popularity/110th_5JianZhongJingBian_Armor.tab	1		246			装备	
+1261	少林·罗汉堂·装备	Popularity/110th_5LuoHanMen_Armor.tab	1		243			装备	
+1262	七秀·碧霞会·装备	Popularity/110th_5WuTongShanZhuang_Armor.tab	1		242			装备	
+1263	万花·同心盟·装备	Popularity/110th_5YueLuoSanXing_Armor.tab	1		244			装备	
+1264	达摩洞·装备	Popularity/110th_25DaMoDong_Armor.tab	1		245			装备	
+1265	家园异肥和土壤	Scene/Home_Earth.tab						家园其他	1
+1266	帮会·衍天宗书库	Sociaty\Library_YanTianZong.tab	0					其他	
+1267	大水南方令·往届家具	Scene/Home_YZHSFunitureOld.tab	1					家具	1
+1268	帮会资金·外食	Sociaty/TongTakeOut.tab		scripts/Map/帮会领地/shop/打包外卖商店.lua				其他	
+1269	藏剑·祭剑堂·物资	Popularity/110th_5JianZhongJingBian_Good.tab	1		246			家具	
+1270	少林·罗汉堂·物资	Popularity/110th_5LuoHanMen_Good.tab	1		243			家具	
+1271	七秀·碧霞会·物资	Popularity/110th_5WuTongShanZhuang_Good.tab	1		242			家具	
+1272	万花·同心盟·物资	Popularity/110th_5YueLuoSanXing_Good.tab	1		244			家具	
+1273	矿车声望物资	Popularity/110th_XingJiedian_Good.tab	1		233			家具	
+1274	矿车声望物资	Popularity/110th_DuanChouDian_Good.tab	1		234			家具	
+1275	演武棋商店	Festival\YanWuQi.tab						其他	1
+1276	帮会资金·外食	Sociaty/TongTakeOut90.tab		scripts/Map/帮会领地/shop/打包外卖商店.lua				其他	
+1277	蔷薇列岛·书籍	Popularity/100th_201911_QWLD_Book.tab			198			其他	
+1278	声望-靖世军义·书籍	Popularity\90th_Jing-Yi_Book.tab			116			其他	
+1279	声望-凌烟阁·书籍	Popularity\90th_TianCe_ZhanLuan_Book.tab			109			其他	
+1280	声望·靖世军忠·书籍	Popularity\90th_Jing-Zhong_Book.tab			114			其他	
+1281	南溟船队·书籍	Popularity/100th_201911_BRLJ_Book.tab			202			其他	
+1282	安史之乱·神兵利器	Special\90th_XiaoChengWu.tab	1	scripts/Map/逐鹿中原/shop/通用维修商店.lua				装备	
+1283	仙雀梦华裳·珍品	Festival/XianQueMengHuaShang2022.tab						其他	
+1284	经首道源尹氏·书籍	Popularity/100th_PanSiDong_Book.tab	1		181			其他	
+1285	达摩洞·物资	Popularity/110th_25DaMoDong_Goods.tab	1		245			家具	
+1286	长夜欲晓·物资	Festival/Yure_20210318.tab	1					其他	
+1287	家园·舆图	Scene/Home_DigFuniture.tab						家园其他	1
+1290	江虞盟军·装备	Popularity/110th_25BaiDi_Armor.tab	1		251			装备	
+1291	江虞盟军·物资	Popularity/110th_25BaiDi_Good.tab	1		251			家具	
+1292	漳水营·装备	Popularity/110th_ZhangShuiNanLu_Armor.tab	1		252			装备	
+1294	大水南方令·本届半价	Scene/Home_YZHSFuniture_half.tab	1			1059		家具	1
+1295	书籍商人	Scene/Taiyuan_Book.tab						其他	
+1296	恶人谷·扬威殿	Popularity/100th_ERYWD_Armor.tab	1		184			装备	
+1297	浩气盟·镇远堂	Popularity/100th_HQZZYT_Armor.tab	1		185			装备	
+1298	名剑·往届物资	Arena/Arena_Funiture_Old.tab	1					家具	1
+1299	威望·往届物资	Prestige\Prestige_ZJ_Goods_Old.tab	0					家具	1
+1300	儿童节·限量	Festival/LiuYi_limit.tab				1080		其他	1
+1301	名剑杯竞猜·限量商店	Arena/Arena_Guess.tab				1081		其他	
+1302	棋牌·限时兑换	Scene/Home_MaJiang_Limit.tab	1					其他	
+1303	端午·限量	Festival/DuanWu_limit.tab				1057		其他	1
+1304	镜泊湖·书籍	Popularity\100th_JingBoHu_Good.tab	1		183			其他	
+1305	迷渊岛·书籍	Popularity\100th_MiYuanDao_Book.tab			180			其他	
+1306	天宝华瓣·珍品	Festival\TianBaoHuaBan.tab						其他	
+1307	七夕·限量	Festival\QiXi_Currency_Limit.tab				1060		其他	1
+1308	中元·限量	Festival\Zhongyuan_Limit.tab	1			1061		其他	1
+1309	家园游商	Scene/Home_RandomFurniture.tab		scripts/Map/家园系统/shop/特殊商人购买回调.lua		1086	1	家具	
+1310	十二周年·物资	Festival\2021828_FuDao.tab						其他	
+1311	十二周年·烟花	Festival\2021828_YanHua.tab						其他	
+1312	十二周年·鲜花	Festival\2021828_XianHua.tab						其他	
+1313	十二周年·玩具	Festival\2021828_WanJu.tab						其他	
+1314	十二周年·花灯	Festival\2021828_HuaDeng.tab						其他	
+1315	十二周年·酒	Festival\2021828_Jiu.tab						其他	
+1316	十二周年·糖葫芦	Festival\2021828_TangHuLu.tab						其他	
+1317	十二周年·书	Festival\2021828_Shu.tab						其他	
+1318	十二周年·馍	Festival\2021828_Mo.tab						其他	
+1319	十二周年·基因药剂	Festival\2021828_JiYinYaoJi.tab						其他	
+1320	十二周年·赛博朋克	Festival\2021828_SaiBoPengKe.tab						其他	
+1321	十七周年·物资	Festival\2021828_DuiHuan.tab		scripts/Map/ACT_周年庆活动/shop/周年活动商店购买.lua		1063		其他	1
+1322	中秋·限量	Festival\ZhongQiu_Limit.tab				1082		其他	1
+1323	书剑天涯·物资	Festival\Yure_20210913_Limit.tab						其他	1
+1324	奇踪·商店	Scene\DaoBaoZei_Translate.tab						其他	
+1325	家园声望商店	Scene/Home_RandomBuff.tab		scripts/Map/家园系统/shop/家园声望商.lua			1	家园其他	
+1326	预热·兑换	Festival\Yure_20210927.tab						其他	
+1327	帮会·北天药宗书库	Sociaty\Library_BeiTianYaoZong.tab	0					其他	
+1328	重阳·限量	Festival\Chongyang_Limit.tab				1067		其他	1
+1329	北天药宗·装备	Popularity/110th_YaoZong_Armor.tab	1		217			装备	
+1330	北天药宗·物资	Popularity/110th_YaoZong_Goods.tab	1		217			家具	
+1331	兑换牌·北天药宗	Currency/PZ_BTYZ.tab	1					装备	
+1332	侠行·北天药宗	Justice/Justice_BTYZ.tab	1					装备	
+1333	北天药宗·书商	Force/BeiTianYaoZong_Book.tab						其他	
+1334	（废弃商店ID）	Newbie\Armor.tab	1						
+1335	蚕丛寨·奇货·物资	Popularity/110th_CanCong_Currency.tab	1		255			其他	
+1336	百蛊殿·装备	Popularity/110th_LYDZ_Armor.tab	1		254			装备	
+1337	百蛊殿·物资	Popularity/110th_LYDZ_Goods.tab	1		254			家具	
+1338	家园·物资·每周刷新	Scene/Home_ResetItem.tab	1			1086		家园其他	1
+1339	百蛊殿·趣味	Popularity/110th_LYDZ_Fun.tab	1					其他	
+1340	家园管家助战·物资	Scene/Home_ButlerHelp.tab	1					家园其他	
+1341	蚕丛寨·奇货·装备	Popularity/110th_CanCong_CurrencyEquip.tab	1		255			装备	
+1342	蚕丛寨·奇货·趣味	Popularity/110th_CanCong_CurrencyFun.tab	1		255			其他	
+1343	岱舆诀·残卷	Festival/YunShanJing_small.tab	1					其他	
+1344	岱舆诀·玉简	Festival/YunShanJing_big.tab	1					其他	
+1345	帮会·丹房	Sociaty\DanFang_4.tab						其他	
+1346	冬至-货币·限量	Festival\DongZhi_Limit.tab				1068		其他	1
+1347	康氏泥兰园·物资	Popularity\100th_PQ_KSNLY_good.tab	1		187			其他	
+1348	贺氏商会·物资	Popularity\100th_PQ_HSSH_good.tab	1		189			其他	
+1349	东海丐帮分舵·物资	Popularity\100th_PQ_DHGB_good.tab	1		190			其他	
+1350	私邸宅园入住地契	Scene\PHome_Passport.tab		scripts/Map/家园系统/shop/个人家园资格购买商人.lua		1105		家园其他	
+1351	元旦-货币·佳品	Festival\YuanDan_Limit.tab				1069		其他	1
+1352	冰雪盛会-限量商店	Festival\BingXueShengHui_Limit.tab				1107		其他	
+1353	私邸宅园·鱼苗	Scene\Home_FishFry.tab						家园其他	1
+1354	私邸宅园·鱼苗·誉	Scene\Home_FishFry2.tab						家园其他	
+1355	私邸宅园·鱼饲料	Scene\Home_FishFood.tab						家园其他	1
+1356	春节·限量	Festival\ChunJie_Limit.tab				1070		其他	1
+1357	春联·限量	Festival\ChunJie_ChunLian_Limit.tab				1070		其他	1
+1358	家园奇货	Scene/Home_YuanZhaiBi_Limit.tab				1086		家园其他	
+1359	元宵·限量	Festival\Yuanxiao_Limit.tab				1073		其他	1
+1360	花朝节-限量	Festival\HuaZhaoJie_Currency_Limit.tab				1075		其他	1
+1361	预热·兑换	Festival\Yure_20220328.tab		scripts/Map/ACT_场景预热/shop/商店购买封石.lua				其他	
+1362	初级套装·恶人谷	Prestige\Prestige_ZJ_3_ER.tab	1	scripts/Map/逐鹿中原/shop/阵营商店中立不能购买.lua				装备	1
+1363	初级套装·浩气盟	Prestige\Prestige_ZJ_3_HQ.tab	1	scripts/Map/逐鹿中原/shop/阵营商店中立不能购买.lua				装备	1
+1364	名剑·初级套装	Arena\Arena_Equip3.tab	1					装备	1
+1365	清明·限量	Festival\QingMing_Limit.tab				1078		其他	1
+1366	浩气盟·矿车进阶装备	Popularity/110th_KuangCheHq_Armor1.tab	1	scripts/Map/逐鹿中原/shop/阵营商店中立不能购买.lua	233			装备	
+1367	恶人谷·矿车进阶装备	Popularity/110th_KuangCheEr_Armor1.tab	1	scripts/Map/逐鹿中原/shop/阵营商店中立不能购买.lua	234			装备	
+1368	侠行·高级套装	Justice\Justice_2.tab	1					装备	1
+1369	佑阳联军·装备	Popularity/110th_HYZZ_Armor.tab	1		257			装备	
+1372	名剑·终级套装（刷表用）	Arena\Arena_Equip1_Show.tab	1					装备	
+1373	终级套装·浩气盟（刷表用）	Prestige\Prestige_ZJ_1_HQ_Show.tab	1					装备	
+1374	终级套装·恶人谷（刷表用）	Prestige\Prestige_ZJ_1_ER_Show.tab	1					装备	
+1375	羊村大作战商店(数据块已解绑，限购功能无法使用)	Festival\LiuYi_MeiYangYang.tab						其他	
+1376	羊村大作战商店-物资	Festival\LiuYi_MeiYangYang_Good.tab						其他	
+1377	佑阳联军·物资	Popularity/110th_HYZZ_Goods.tab	1		257			家具	
+1378	飞沙令·家具物资	Survival\95th_HHKS_Funiture.tab						家具	1
+1379	孔明灯商店	Scene/QianDaoHu_Light.tab	1					其他	
+1380	可疑的书店	Scene/TangXiaoKe_HaoGan.tab						其他	
+1381	十三周年·小吃小药	Festival\2022828_XiaoChi.tab						其他	
+1382	十三周年·趣味道具	Festival\2022828_QuWei.tab						其他	
+1383	百溪·任务·布	Scene\BaiXi_Mission_Cloth.tab	0	scripts/Map/百溪/shop/染血猪头.lua				其他	
+1384	百溪·任务·肉	Scene\BaiXi_Mission_Meat.tab	0	scripts/Map/百溪/shop/染血猪头.lua				其他	
+1385	百溪·任务·药	Scene\BaiXi_Mission_Medicine.tab	0	scripts/Map/百溪/shop/药铺买药_掌柜.lua				其他	
+1386	比翼归鸿·兑换	Festival\Yure_20220926.tab	1					其他	
+1387	百战异闻录·修罗之印	Festival\BZYWL_SkillBook.tab	1					其他	1
+1388	百战异闻录·道具	Festival\BZYWL_Item.tab	1			1121		其他	1
+1389	声望-屠狼会·挂件	Popularity\90th_LuoYang_ZhanLuan_GuaJian.tab	1		111			其他	
+1390	声望-凌烟阁·挂件	Popularity\90th_TianCe_ZhanLuan_GuaJian.tab	1		109			其他	
+1392	浩气盟·矿车入门装备	Popularity/120th_KuangCheHq_Armor2.tab	1		260			装备	
+1393	恶人谷·矿车入门装备	Popularity/120th_KuangCheEr_Armor2.tab	1		261			装备	
+1394	名望·物资	Special\120th_MingWang_Goods.tab	1	scripts/Map/场景事件/shop/名望_装备_横刀断浪.lua				其他	1
+1395	平卢军·装备	Popularity/120th_XJD_Armor.tab	1		262			装备	
+1396	刀宗·装备	Popularity/120th_DaoZong_Armor.tab	1		218			装备	
+1397	刀宗·物资	Popularity/120th_DaoZong_Goods.tab	1		218			家具	
+1398	兑换牌·刀宗	Currency/PZ_DZ.tab	1					装备	
+1399	侠行·刀宗	Justice/Justice_DZ.tab	1					装备	
+1400	刀宗·书商	Force/DaoZong_Book.tab	1					其他	
+1401	珠联璧合·卓殊	Special\120th_Weapon_PL.tab	1					装备	
+1402	防具兑换·卓殊	Special\120th_Armor_PL.tab	1					装备	
+1403	浩气盟·矿车进阶装备	Popularity/120th_KuangCheHq_Armor1.tab	1		260			装备	
+1404	恶人谷·矿车进阶装备	Popularity/120th_KuangCheEr_Armor1.tab	1		261			装备	
+1405	清平尊·装备	Popularity/120th_5JiangTianYeYan_Armor.tab	1		263			装备	
+1406	梨园·装备	Popularity/120th_5WoShiYuan_Armor.tab	1		264			装备	
+1407	百溪相帮会·装备	Popularity/120th_5ZhenHaiGeDiJing_Armor.tab	1		265			装备	
+1408	家园·道具兑换	Scene/Home_ItemExchange.tab						家园其他	
+1409	据点贸易·本地货物	Special/120th_Trade_ER.tab		scripts/Map/逐鹿中原/shop/据点贸易商店.lua	49		1	其他	
+1410	据点贸易·本地货物	Special/120th_Trade_HQ.tab		scripts/Map/逐鹿中原/shop/据点贸易商店.lua	50		1	其他	
+1413	剑胆琴心·神兵利器	Special\95th_XiaoChengWu.tab	1	scripts/Map/逐鹿中原/shop/通用维修商店.lua				装备	
+1414	平卢军·物资	Popularity/120th_XJD_Goods.tab	1		262			家具	
+1415	八荒衡鉴·物资	Festival\LeYouJi_Limit.tab				1126		其他	1
+1416	薪火互助·物资	Festival\XinHuoHuZhu_Limit.tab				1128		其他	
+1417	沙海危途·珍品	Festival\BiaoRen_Goods.tab						其他	
+1418	糖葫芦商店	Special/120th_TangHuLu_Limit.tab				1134		其他	
+1419	糖葫芦商店	Festival\DengHui_TangHuLu.tab						其他	
+1420	小吃商店	Festival\DengHui_Food_Limit.tab				1138		其他	
+1421	水上坐骑商店	Festival\DengHui_ShuiShangZuoQi.tab				1138		其他	
+1422	家具商店	Festival\DengHui_Furniture.tab				1138		其他	
+1423	变身道具商店	Festival\DengHui_ChangeItem.tab				1138		其他	
+1424	尘世曼舞·珍品	Festival\LeYouJi_ManWu.tab				1126		其他	1
+1425	寻绎天机·限量	Festival\HuaJiangHu_Limit.tab				1139		其他	
+1427	列星虚境·珍品	Festival\LeYouJi_LieXingDao.tab				1126		其他	1
+1428	李渡鬼域·秘境装备	Festival\LeYouJi_PVE_Armor.tab						装备	1
+1429	李渡鬼域·对抗装备	Festival\LeYouJi_PVP_Armor.tab						装备	1
+1430	风幡武擂·兑换	Festival\Yure_20230327.tab		scripts/Map/ACT_场景预热/shop/202303_包含名望物品的商店.lua				其他	
+1431	套装·兑换牌	Currency\PZ_TongYong.tab	1					装备	1
+1432	凌然堂·装备	Popularity/120th_WYHL_Armor.tab	1		267			装备	
+1433	鹿桥驿·装备	Popularity/120th_5LuQiaoYi_Armor.tab	1		266			装备	
+1434	名望·周期刷新	Special\120th_MingWang_Reset.tab		scripts/Map/场景事件/shop/名望_装备_横刀断浪.lua		1125		其他	1
+1437	凌然堂·物资	Popularity/120th_WYHL_Goods.tab	1		267			家具	
+1438	浩气盟·物资	Popularity/120th_HeZhengXianFeng_Good.tab			260			家具	
+1439	恶人谷·物资	Popularity/120th_ZiJieXianFeng_Good.tab			261			家具	
+1440	虹猫蓝兔·物资	Festival/LiuYi_HongMaoLanTu.tab						其他	
+1441	南音行约·限量	Festival/ShaMo_Limit.tab		scripts/Map/ACT_活动通用/shop/节日商店特判能否购买.lua		1144		其他	1
+1442	周年家具商店	Festival/20230828_Furniture.tab						其他	
+1443	君山祭灵·兑换	Festival\Yure_20230925.tab		scripts/Map/ACT_场景预热/shop/202303_包含名望物品的商店.lua				其他	1
+1444	九老洞·装备	Popularity/120th_JLD_Armor.tab	1		270			装备	
+1445	万灵山庄·装备	Popularity/120th_WanLing_Armor.tab	1		219			装备	
+1446	万灵山庄·物资	Popularity/120th_WanLing_Goods.tab	1	scripts/Map/万灵山庄/shop/声望商.lua	219			家具	
+1447	兑换牌·万灵山庄	Currency/PZ_WLSZ.tab	1					装备	
+1448	侠行·万灵山庄	Justice/Justice_WLSZ.tab	1					装备	
+1449	万灵山庄·书商	Force/WanLing_Book.tab	1					其他	
+1450	阵营拍卖·浩气	Special\120th_PaiMai_ER.tab						装备	
+1451	阵营拍卖·恶人	Special\120th_PaiMai_HQ.tab						装备	
+1452	世界首领拍卖	Special\120th_PaiMai_ZL.tab						装备	
+1454	名望·物资	Special\120th_YunCongShe_Goods.tab		scripts/Map/场景事件/shop/名望_装备_银霜口.lua				其他	1
+1455	名望·周期刷新	Special\120th_YunCongShe_WReset.tab		scripts/Map/场景事件/shop/名望_装备_银霜口.lua		1125		其他	1
+1457	名望·物资	Special\120th_YunCongShe_DReset.tab		scripts/Map/场景事件/shop/名望_装备_银霜口.lua				其他	
+1458	重阳·货币	Festival\Chongyang_Material.tab				1067		其他	1
+1459	小黑奇遇记·强化	Festival/LuoXiaoHei_Fumo.tab						其他	1
+1460	小黑奇遇记·物资	Festival/LuoXiaoHei_Goods.tab				1148		其他	1
+1461	稻香村·王婆小店	Scene\TaoYuanFeiMeng_WPP.tab						其他	
+1462	乱点香茗·限量	Festival/ChaBaiDao_limit.tab				1156		其他	1
+1463	垂钓客·鱼饵	Scene/Home_FishMan.tab				1086		家园其他	1
+1464	冬至-货币兑换	Festival/DongZhi_Material.tab				1068		其他	1
+1465	九老洞·物资	Popularity/120th_JLD_Goods.tab						其他	
+1466	稻香村·王婆小店	Scene\TaoYuanFeiMeng_Goods.tab						其他	
+1467	家园调香材料商	Scene\Home_Perfume.tab						其他	1
+1468	家具商店	Scene\Home_Identity.tab		scripts/Map/家园身份/shop/家园身份家具商店.lua				家具	1
+1469	家园·物资·赛季刷新	Scene\Home_DSNFL_Limit.tab				1059		其他	1
+1470	园宅币·往届家具	Scene\Home_YZHSFunitureOld_Archi.tab						家具	1
+1471	春节·货币	Festival/ChunJie_Material.tab				1070		其他	1
+1472	稻香村·武器	Scene\TaoYuanFeiMeng_Weapon.tab	1					装备	
+1473	元宵·货币	Festival/YuanXiao_Material.tab				1073		其他	1
+1474	群英赛兑换商店	Festival/DaShiSai_Limit.tab				1161		其他	1
+1475	朔漠飞尘·兑换	Festival\Yure_20240325.tab						其他	1
+1476	盖世英侠·物资	Festival\GongFuXiongMao.tab				1163		其他	1
+1477	清明·货币	Festival\QingMing_Material.tab				1078		其他	1
+1478	休闲点·装备	Special\XiuXianDian_Equip.tab						装备	1
+1479	永安行·河西会·装备	Popularity/120th_LLF_Armor.tab			271			装备	
+1480	休闲点·物资	Special\XiuXianDian_Good.tab				1167		其他	1
+1482	少年游商店	Festival\YingXin_20240530.tab				1127		其他	1
+1483	端午·货币	Festival/DuanWu_Material.tab				1057		其他	1
+1484	非人哉·限量	Festival/FeiRenZai_limit.tab				1166		其他	1
+1485	暗器弹药	Usual\Weapon_Bullet.tab	1	scripts/Map/逐鹿中原/shop/通用维修商店.lua				其他	1
+1486	永安行·河西会·物资	Popularity/120th_LLF_Goods.tab						其他	
+1487	七夕·货币	Festival\QiXi_Material.tab				1060		其他	1
+1488	心语行约·限量（公益商店备用）	Festival/XinYu_Limit.tab		scripts/Map/ACT_活动通用/shop/节日商店特判能否购买.lua		1144		其他	1
+1489	中元·货币	Festival/ZhongYuan_Material.tab				1061		其他	1
+1490	中秋·货币	Festival/ZhongQiu_Material.tab				1082		其他	1
+1491	刀宗·帽子	Popularity/120th_DaoZong_CustomTrinket.tab		scripts/Map/刀宗/shop/刀宗购买帽子限制.lua	218			其他	
+1492	雪峰晤会·兑换	Festival\Yure_20240930.tab						其他	1
+1493	浩气盟·矿车装备	Popularity/130th_KuangCheHq_Armor1.tab	1		272			装备	
+1494	恶人谷·矿车装备	Popularity/130th_KuangCheEr_Armor1.tab	1		273			装备	
+1495	段氏·装备	Popularity/130th_DuanShi_Armor.tab	1		220			装备	
+1496	段氏·物资	Popularity/130th_DuanShi_Goods.tab	1		220			家具	
+1497	兑换牌·段氏	Currency/PZ_DS.tab	1					装备	
+1498	侠行·段氏	Justice/Justice_DS.tab	1					装备	
+1499	空城殿·装备	Popularity/130th_YZK_Armor.tab			277			装备	1
+1500	舍里克部·装备	Popularity/130th_5FengShaJiuLei_Armor.tab			276			装备	
+1501	昆仑·齐物阁·装备	Popularity/130th_5BuRanKu_Armor.tab			275			装备	
+1502	冰川宫·明净峰·装备	Popularity/130th_5BingChuanGongBaoKu_Armor.tab			274			装备	
+1504	世外蓬莱·神兵利器	Special\100th_XiaoChengWu.tab	1	scripts/Map/逐鹿中原/shop/通用维修商店.lua				装备	
+1505	珠联璧合·传说	Special\130th_Weapon_QG.tab	1					装备	
+1506	防具兑换·传说	Special\130th_Armor_QG.tab	1					装备	
+1508	名望·物资	Special\130th_PiFengHui_Goods.tab		scripts/Map/场景事件/shop/名望_装备_河西瀚漠.lua				其他	1
+1509	名望·周期刷新	Special\130th_PiFengHui_WReset.tab		scripts/Map/场景事件/shop/名望_装备_河西瀚漠.lua		1125		其他	1
+1512	段氏·书籍	Force/DuanShi_Book.tab			220			其他	
+1513	名望·书籍	Special\130th_PiFengHui_Book.tab		scripts/Map/场景事件/shop/名望_装备_河西瀚漠.lua				其他	1
+1514	茶馆·物资	Special\130th_ChaGuan_Goods.tab				1173		其他	1
+1515	秦时明月·限量	Festival/QinShiMingYue_Limit.tab				1177		其他	1
+1516	空城殿·物资	Popularity/130th_YZK_Goods.tab			277			家具	1
+1517	浩气盟·物资	Popularity/130th_FuQingXianFeng_Good.tab			272			家具	1
+1518	恶人谷·物资	Popularity/130th_HuaXiaoXianFeng_Good.tab			273			家具	1
+1519	腊八节·货币兑换	Festival\LaBaJie_Material.tab				1179		其他	1
+1520	玄晶兑换	Special\XuanJing_Exchange.tab						其他	1
+1521	烽沙归途·兑换	Festival\Yure_20250317.tab						其他	1
+1522	试炼之地·初级	Special\ShiLianZhiDi_Armor1.tab						装备	1
+1523	试炼之地·进阶	Special\ShiLianZhiDi_Armor2.tab						装备	1
+1524	名剑·竞技强化	Arena/Arena_Strength.tab	1					其他	1
+1525	东宫·装备	Popularity/130th_TJG_Armor.tab			280			装备	1
+1526	奢品商店·珍品	Special\HighValue_Goods.tab		scripts/Map/Act_运营活动通用/shop/奢品商店.lua				其他	1
+1528	威望·通用强化	Prestige\Prestige_Strength.tab	1					其他	1
+1529	威望·通用强化	Prestige\Prestige_Strength.tab	1					其他	1
+1532	侠行·初级套装	Justice\Justice_3.tab	1					装备	1
+1533	五行石·周兑换	Usual\WuXingShi_Goods.tab				1182		其他	1
+1534	除名券商店	Special\ChuMing.tab				1115		其他	
+1537	有兽焉·物资	Festival/LiuYi_YouShouYan.tab						其他	1
+1538	渝州·书商	Scene\YuZhou_Book.tab						其他	
+1539	飞沙令·周期刷新	Survival\Linhai_limit.tab				1187		其他	1
+1540	东宫·物资	Popularity/130th_TJG_Goods.tab			280			家具	1
+1541	奢品商店·家具	Special\HighValue_Furniture.tab				1189		家具	1
+1542	使至塞上·兑换	Festival\Yure_20250922.tab						其他	1
+1543	侠行·无相	Justice/Justice_WXL.tab	1					装备	
+1544	兑换牌·无相	Currency/PZ_WXL.tab	1					装备	
+1545	折罗曼·装备	Popularity/130th_HZGYC_Armor.tab			282			装备	1
+1546	折罗曼·物资	Popularity/130th_HZGYC_Goods.tab			282			家具	1
+1548	名望·物资	Special\130th_QiongYeWei_Goods.tab		scripts/Map/场景事件/shop/名望_装备_伊丽川.lua				其他	1
+1549	名望·周期刷新	Special\130th_QiongYeWei_WReset.tab		scripts/Map/场景事件/shop/名望_装备_伊丽川.lua		1125		其他	1
+1552	伊丽行游	Special\130th_XingYou_YiLi.tab		scripts/Map/ACT_大世界小游戏/shop/行游_伊丽.lua		1209		其他	1
+1553	秘境宝藏	Special\130th_YellowSfx_Armor.tab	1					装备	1
+1554	无相·装备	Popularity/130th_Wuxiang_Armor.tab	1		226			装备	
+1555	无相·物资	Popularity/130th_Wuxiang_Goods.tab	1		226				
+1556	名剑·初级套装（刷表用）	Arena\Arena_Equip3_Show.tab						装备	
+1557	初级套装·浩气盟（刷表用）	Prestige\Prestige_ZJ_3_HQ_Show.tab						装备	
+1558	初级套装·恶人谷（刷表用）	Prestige\Prestige_ZJ_3_ER_Show.tab						装备	
+1560	元宵·佳品	Festival\Yuanxiao_Goods.tab						其他	1
+1561	武林争霸赛·典藏	Festival\BangHuiLianSai_Goods.tab						其他	1
+1562	武林争霸赛·限量	Festival\BangHuiLianSai_Limit.tab				1167		其他	1
+1563	武林争霸赛·帮会（暂未启用）	Festival\BangHuiLianSai_Goods_Tong.tab						其他	1
+1564	周行令·每周限量	Special\WeeklyTask_Limit.tab				1222		其他	1
+1565	周行令·赛季限量	Special\WeeklyTask_Limit2.tab				1167		其他	1
+1566	五更声·装备	Popularity/130th_LFXC_Armor.tab			283			装备	1
+1567	追云令·装备	Special\ZhuiGan_Armor.tab				1167		装备	1
+1569	鸣铮玉·每周刷新	Arena\ArenaTower_Goods.tab				1134		其他	1
+1570	大富翁·物资	Festival/LiuYi_DaFuWeng.tab		scripts/Map/ACT_大富翁/shop/大富翁物资商店.lua		1080		其他	1
+1571	大富翁·货币	Festival/LiuYi_DaFuWeng_Material.tab				1080		其他	1
+1572	五更声·物资	Popularity/130th_LFXC_Goods.tab			283			家具	1
+1573	追云令·物资	Special\ZhuiGan_Goods.tab				1167		其他	1
+1574	师徒·家具	Special\ShiTu_Furniture.tab						家具	1
+1575	鹅鸭杀·物资	Festival\2026828_EYaSha.tab				1063		其他	1
+1576	机锁神都·兑换	Festival\Yure_20260921.tab		scripts/Map/洛阳城西/shop/机锁神都预热活动商店.lua		1122		其他	1
+1577	奉天证道·神兵利器	Special/110th_XiaoChengWu.tab	1	scripts/Map/逐鹿中原/shop/通用维修商店.lua				装备	
+1578	横刀断浪·神兵利器	Special/120th_XiaoChengWu.tab	1	scripts/Map/逐鹿中原/shop/通用维修商店.lua				装备	
+1579	名望·装备	Special\50th_MuYuanShe_Armor.tab	1	scripts/Map/场景事件/shop/名望_装备_木鸢社.lua				装备	1
+1580	名望·物资	Special\50th_MuYuanShe_Goods.tab		scripts/Map/场景事件/shop/名望_装备_木鸢社.lua				其他	1
+1581	名望·周期刷新	Special\50th_MuYuanShe_WReset.tab		scripts/Map/场景事件/shop/名望_装备_木鸢社.lua		1125		其他	1
+1582	名望·苍生铸世	Special\50th_MuYuanShe_Limit.tab		scripts/Map/场景事件/shop/名望_限量_木鸢社.lua		1125		其他	1
+1583	名望·物资	Special\50th_MuYuanShe_Limit2.tab		scripts/Map/场景事件/shop/名望_诛恶_木鸢社.lua				其他	1
+1584	唐军·装备	Popularity/50th_TangJun_Armor.tab			284			装备	1
+1585	云州墨家·装备	Popularity/50th_YunZhouMoJia_Armor.tab			285			装备	
+1586	渝新堂·装备	Popularity/50th_YuXinTang_Armor.tab			286			装备	
+1587	大同军·装备	Popularity/50th_DaTongJun_Armor.tab			287			装备	
+1588	长风营·装备	Popularity/50th_ChangFengYing_Armor.tab			288			装备	
+1589	珠联璧合	Special\50th_QieGao_Weapon.tab	1					装备	1
+1590	防具兑换（暂未启用）	Special\50th_QieGao_Armor.tab	1					装备	1
+1591	浩气盟·矿车装备	Popularity/50th_KuangChe_Equip_HQ.tab	1		289			装备	1
+1592	恶人谷·矿车装备	Popularity/50th_KuangChe_Equip_ER.tab	1		290			装备	1
+1593	名望·书籍	Special\50th_MuYuanShe_Book.tab		scripts/Map/场景事件/shop/名望_装备_木鸢社.lua				其他	1
+1594	铸世行游	Special\50th_XingYou_ZhuShi_Goods.tab		scripts/Map/墨家野外探索/shop/行游_云州渝州陕州.lua				其他	1
+1595	渝州·小吃	Scene\YuZhou_Special_1.tab						其他	
+1596	渝州·小吃	Scene\YuZhou_Special_2.tab						其他	
+1597	渝州·小吃	Scene\YuZhou_Special_3.tab						其他	

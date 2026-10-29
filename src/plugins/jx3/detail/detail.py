@@ -12,10 +12,10 @@ from src.utils.database.tabs import read_tab
 
 from ._template import global_view_head, template_global_view
 
-
 ACHIEVEMENT_API = "https://next2.jx3box.com/api/next2/user-achievements"
 ACHIEVEMENT_TABLE = build_path(
-    ASSETS, ["source", "jx3", "tabs", "achievement", "Achievement.txt"]
+    ASSETS,
+    ["source", "jx3", "tabs", "achievement", "Achievement.txt"],
 )
 ACHIEVEMENT_SUB_TABLE = build_path(
     ASSETS,
@@ -43,19 +43,14 @@ VIEW_TYPES = [
     VIEW_DUNGEON,
 ]
 
-
 def load_tab_dicts(path: str) -> list[dict[str, str]]:
     table = read_tab(path)
     if not table:
         return []
     header, *rows = table
-    return [
-        dict(zip(header, row + [""] * (len(header) - len(row))))
-        for row in rows
-    ]
+    return [dict(zip(header, row + [""] * (len(header) - len(row)))) for row in rows]
 
-
-@lru_cache(maxsize=1)
+@lru_cache(maxsize = 1)
 def load_sub_names() -> dict[int, str]:
     names: dict[int, str] = {}
     for row in load_tab_dicts(ACHIEVEMENT_SUB_TABLE):
@@ -65,8 +60,7 @@ def load_sub_names() -> dict[int, str]:
             continue
     return names
 
-
-@lru_cache(maxsize=1)
+@lru_cache(maxsize = 1)
 def load_detail_names() -> dict[int, str]:
     names: dict[int, str] = {}
     for row in load_tab_dicts(ACHIEVEMENT_DETAIL_TABLE):
@@ -76,19 +70,17 @@ def load_detail_names() -> dict[int, str]:
             continue
     return names
 
-
-@lru_cache(maxsize=1)
+@lru_cache(maxsize = 1)
 def load_achievement_points() -> dict[int, int]:
     points: dict[int, int] = {}
     for row in load_tab_dicts(ACHIEVEMENT_POINTS_TABLE):
         try:
-            points[int(row["ID"])] = int(row["RewardPoint"])
+            points[int(row["ID"])] = int(row["Point"] or 0)
         except (KeyError, TypeError, ValueError):
             continue
     return points
 
-
-@lru_cache(maxsize=1)
+@lru_cache(maxsize = 1)
 def load_achievement_table() -> tuple[dict[str, Any], ...]:
     records: list[dict[str, Any]] = []
     achievement_points = load_achievement_points()
@@ -100,12 +92,7 @@ def load_achievement_table() -> tuple[dict[str, Any], ...]:
             detail = int(row.get("Detail") or 0)
         except (KeyError, TypeError, ValueError):
             continue
-        if (
-            achievement_id <= 0
-            or row.get("Visible") != "1"
-            or general <= 0
-            or sub <= 0
-        ):
+        if (achievement_id <= 0 or row.get("Visible") != "1" or general <= 0 or sub <= 0):
             continue
         records.append(
             {
@@ -119,10 +106,9 @@ def load_achievement_table() -> tuple[dict[str, Any], ...]:
                 "icon_id": int(row.get("IconID") or 0),
                 "map_id": int(row.get("dwMapID") or 0),
                 "points": achievement_points.get(achievement_id, 0),
-            }
+            },
         )
     return tuple(records)
-
 
 def parse_completed_ids(value: Any) -> set[int]:
     if not isinstance(value, str):
@@ -135,18 +121,13 @@ def parse_completed_ids(value: Any) -> set[int]:
             continue
     return result
 
-
 def build_distribution(
     completed_ids: set[int],
     records: Iterable[dict[str, Any]],
     view: str = VIEW_GLOBAL,
 ) -> list[dict[str, Any]]:
     if view == VIEW_MAP:
-        records = (
-            record
-            for record in records
-            if record["general"] == 1 and record["sub"] == 8
-        )
+        records = (record for record in records if record["general"] == 1 and record["sub"] == 8)
         category_field = "detail"
         category_names = load_detail_names()
     elif view == VIEW_TOP:
@@ -158,11 +139,7 @@ def build_distribution(
         category_field = "sub"
         category_names = load_sub_names()
     elif view == VIEW_DUNGEON:
-        records = (
-            record
-            for record in records
-            if record["general"] == 1 and record["sub"] == 11
-        )
+        records = (record for record in records if record["general"] == 1 and record["sub"] == 11)
         category_field = "detail"
         category_names = load_detail_names()
     else:
@@ -192,10 +169,9 @@ def build_distribution(
                 "done": done,
                 "total": total,
                 "ratio": done / total if total else 0,
-            }
+            },
         )
-    return sorted(result, key=lambda item: (-item["done"], item["category_id"]))
-
+    return sorted(result, key = lambda item: (-item["done"], item["category_id"]))
 
 async def get_exp_info(
     server: str,
@@ -206,8 +182,12 @@ async def get_exp_info(
     try:
         response = await Request(
             ACHIEVEMENT_API,
-            params={"jx3id": global_role_id},
-        ).get(timeout=20)
+            params = {
+                "jx3id": global_role_id,
+            },
+        ).get(
+            timeout = 20,
+        )
         response.raise_for_status()
         payload = response.json()
     except Exception:
@@ -226,10 +206,10 @@ async def get_exp_info(
         ratio = category["ratio"]
         tables.append(
             Template(template_global_view).render(
-                subject=category["subject"],
-                width=str(round(ratio * 100)),
-                value=f'{category["done"]}/{category["total"]}',
-            )
+                subject = category["subject"],
+                width = str(round(ratio * 100)),
+                value = f'{category["done"]}/{category["total"]}',
+            ),
         )
 
     finished = sum(category["done"] for category in distribution)
@@ -244,22 +224,22 @@ async def get_exp_info(
                 <span class="summary-value">{{ finished }}/{{ total }}（{{ percent }}%）</span>
             </td>
         </tr>
-        """
+        """,
     ).render(
-        name=name,
-        server=server,
-        view=view,
-        finished=finished,
-        total=total,
-        percent=round(ratio * 100),
+        name = name,
+        server = server,
+        view = view,
+        finished = finished,
+        total = total,
+        percent = round(ratio * 100),
     )
     html = str(
         HTMLSourceCode(
-            application_name=f"{escape(name)}·{escape(server)} · {escape(view)}",
-            report_title="资历分布",
-            table_head=global_view_head,
-            table_body=summary + "\n" + "\n".join(tables),
-            additional_css="""
+            application_name = f"{escape(name)}·{escape(server)} · {escape(view)}",
+            report_title = "资历分布",
+            table_head = global_view_head,
+            table_body = summary + "\n" + "\n".join(tables),
+            additional_css = """
                 .container {
                     min-width: 0;
                     width: 820px;
@@ -286,6 +266,6 @@ async def get_exp_info(
                 .progress-bar { max-width: none; width: 300px; margin: 0 auto; }
                 .progress { background: linear-gradient(90deg, #76c7c0, #4da7d8); }
             """,
-        )
+        ),
     )
-    return await generate(html, ".container", segment=True)
+    return await generate(html, ".container", segment = True)

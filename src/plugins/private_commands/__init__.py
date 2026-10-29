@@ -7,12 +7,10 @@ from nonebot.message import event_preprocessor, handle_event
 
 from src.config import Config
 
-
-_PRIVATE_REPLY_USER: ContextVar[int | None] = ContextVar("private_reply_user", default=None)
-_PRIVATE_REPLY_GROUP: ContextVar[int | None] = ContextVar("private_reply_group", default=None)
+_PRIVATE_REPLY_USER: ContextVar[int | None] = ContextVar("private_reply_user", default = None)
+_PRIVATE_REPLY_GROUP: ContextVar[int | None] = ContextVar("private_reply_group", default = None)
 
 _ORIGINAL_CALL_API = Bot.call_api
-
 
 async def _private_command_call_api(bot: Bot, api: str, **data: Any) -> Any:
     user_id = _PRIVATE_REPLY_USER.get()
@@ -28,11 +26,9 @@ async def _private_command_call_api(bot: Bot, api: str, **data: Any) -> Any:
 
     return await _ORIGINAL_CALL_API(bot, api, **data)
 
-
 if not getattr(Bot.call_api, "private_command_patch", False):
     _private_command_call_api.private_command_patch = True  # type: ignore[attr-defined]
     Bot.call_api = _private_command_call_api  # type: ignore[method-assign]
-
 
 def _build_private_group_event(event: MessageEvent, group_id: int) -> GroupMessageEvent:
     data = event.model_dump()
@@ -45,7 +41,6 @@ def _build_private_group_event(event: MessageEvent, group_id: int) -> GroupMessa
     proxy_event_any.message_type = "private"
     proxy_event_any.private_command_proxy = True
     return proxy_event
-
 
 @event_preprocessor
 async def _(bot: Bot, event: MessageEvent):

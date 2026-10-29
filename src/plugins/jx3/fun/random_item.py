@@ -2,12 +2,13 @@ from random import random
 from pydantic import BaseModel
 
 item_colors = [
-    "(167, 167, 167)", # 灰色
-    "(255, 255, 255)", # 白色
-    "(0, 210, 75)", # 绿色
-    "(0, 126, 255)", # 蓝色
-    "(254, 45, 254)", # 紫色
-    "(255, 165, 0)" # 橙色
+    "(167, 167, 167)",  # 灰色
+    "(255, 255, 255)",  # 白色
+    "(0, 210, 75)",  # 绿色
+    "(0, 126, 255)",  # 蓝色
+    "(254, 45, 254)",  # 紫色
+    "(255, 165, 0)"  # 橙色
+    ,
 ]
 
 def get_random(probability: int) -> bool:
@@ -39,5 +40,5 @@ books = {
     "《纯阳别册·残卷》": "https://icon.jx3box.com/icon/2240.png",
     "《气经·残卷》": "https://icon.jx3box.com/icon/2264.png",
     "《相知剑意·残卷》": "https://icon.jx3box.com/icon/2739.png",
-    "《冰心诀·残卷》": "https://icon.jx3box.com/icon/2250.png"
+    "《冰心诀·残卷》": "https://icon.jx3box.com/icon/2250.png",
 }

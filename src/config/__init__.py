@@ -18,7 +18,6 @@ class GitHubConfig(BaseModel):
     web_path: str
     github_personal_token: str = ""
 
-
 class Jx3API(BaseModel):
     token: str
     token_v2: str = ""
@@ -31,12 +30,10 @@ class Jx3API(BaseModel):
     bla_url: str = ""
     cqc_url: str = ""
 
-
 class Jx3WS(BaseModel):
     url: str
     token: str = ""
     enable: bool = False
-
 
 class Jx3RaceRank(BaseModel):
     enabled: bool = True
@@ -47,7 +44,6 @@ class Jx3RaceRank(BaseModel):
         "?server={server}&event_id={event_id}"
     )
     cache_version: int = 1
-
 
 class Jx3Config(BaseModel):
     api: Jx3API
@@ -73,6 +69,5 @@ class config(BaseModel):
         config_data = yaml.safe_load(yaml_str)
         return cls(**config_data)
 
-
-with open(build_path(CONFIG, ["config.yml"]), "r", encoding="utf8") as f:
+with open(build_path(CONFIG, ["config.yml"]), "r", encoding = "utf8") as f:
     Config = config.from_yaml(f.read())

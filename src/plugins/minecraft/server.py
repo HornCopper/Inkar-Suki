@@ -4,7 +4,6 @@ from dataclasses import dataclass
 
 from mcstatus import BedrockServer, JavaServer
 
-
 GAME_MODE_NAMES = {
     "survival": "生存",
     "creative": "创造",
@@ -13,8 +12,7 @@ GAME_MODE_NAMES = {
 }
 QUERY_TIMEOUT = 5
 
-
-@dataclass(frozen=True)
+@dataclass(frozen = True)
 class ServerAddress:
     host: str
     port: int
@@ -32,11 +30,9 @@ class ServerAddress:
         host = f"[{self.host}]" if ":" in self.host else self.host
         return f"{host}:{self.port}"
 
-
 def clean(string: str) -> str:
     """移除文本中的 Minecraft 旧版格式代码。"""
-    return re.sub(r"§[0-9A-FK-ORX]", "", str(string), flags=re.IGNORECASE).strip()
-
+    return re.sub(r"§[0-9A-FK-ORX]", "", str(string), flags = re.IGNORECASE).strip()
 
 def _parse_address(raw_address: str, default_port: int) -> ServerAddress:
     address = raw_address.strip()
@@ -82,8 +78,7 @@ def _parse_address(raw_address: str, default_port: int) -> ServerAddress:
         if not 1 <= port <= 65535:
             raise ValueError("端口必须在 1 到 65535 之间")
 
-    return ServerAddress(host=host, port=port, port_was_given=port_was_given)
-
+    return ServerAddress(host = host, port = port, port_was_given = port_was_given)
 
 def _format_status(address: ServerAddress, status, *, bedrock: bool) -> str:
     edition = "基岩版" if bedrock else "Java 版"
@@ -102,7 +97,6 @@ def _format_status(address: ServerAddress, status, *, bedrock: bool) -> str:
     lines.extend((f"延迟：{status.latency:.0f} ms", f"介绍：{motd}"))
     return "\n".join(lines)
 
-
 async def _query_server(raw_address: str, *, bedrock: bool) -> str:
     edition = "基岩版" if bedrock else "Java 版"
     default_port = 19132 if bedrock else 25565
@@ -113,25 +107,21 @@ async def _query_server(raw_address: str, *, bedrock: bool) -> str:
 
     try:
         if bedrock:
-            server = BedrockServer(address.host, address.port, timeout=QUERY_TIMEOUT)
+            server = BedrockServer(address.host, address.port, timeout = QUERY_TIMEOUT)
         elif address.port_was_given:
-            server = JavaServer(address.host, address.port, timeout=QUERY_TIMEOUT)
+            server = JavaServer(address.host, address.port, timeout = QUERY_TIMEOUT)
         else:
             # Java 客户端会在未指定端口时查询 _minecraft._tcp SRV 记录。
-            server = await JavaServer.async_lookup(address.host, timeout=QUERY_TIMEOUT)
-        status = await server.async_status(tries=1)
+            server = await JavaServer.async_lookup(address.host, timeout = QUERY_TIMEOUT)
+        status = await server.async_status(tries = 1)
     except Exception:
-        return (
-            f"未查询到{edition}服务器：{address.display}\n"
-            "服务器可能离线、无法从机器人所在网络访问，或地址、端口不正确。"
-        )
+        return (f"未查询到{edition}服务器：{address.display}\n"
+                "服务器可能离线、无法从机器人所在网络访问，或地址、端口不正确。")
 
-    return _format_status(address, status, bedrock=bedrock)
-
+    return _format_status(address, status, bedrock = bedrock)
 
 async def get_java_server(raw_ip: str) -> str:
-    return await _query_server(raw_ip, bedrock=False)
-
+    return await _query_server(raw_ip, bedrock = False)
 
 async def get_bedrock_server(raw_ip: str) -> str:
-    return await _query_server(raw_ip, bedrock=True)
+    return await _query_server(raw_ip, bedrock = True)

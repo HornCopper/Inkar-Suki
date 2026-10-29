@@ -7,11 +7,9 @@ from src.utils.database.classes import CheckinPrize, CheckinPrizeAward
 from src.utils.permission import check_permission
 from src.utils.time import Time
 
-
 POOL_PERMISSION = "economy.checkin.pool.manage"
 PROBABILITY_SCALE = 1_000_000
 MAX_STOCK = 9_223_372_036_854_775_807
-
 
 def parse_probability(value: str) -> int:
     try:
@@ -31,15 +29,14 @@ def parse_probability(value: str) -> int:
         raise ValueError("概率最多支持四位小数。")
     return int(percent * 10_000)
 
-
 def format_probability(value: int) -> str:
     percent = f"{Decimal(value) / 10_000:f}"
     if "." in percent:
         percent = percent.rstrip("0").rstrip(".")
     return percent + "%"
 
-
 class PrizePoolManage:
+
     def __init__(self, operator_id: int):
         self.operator_id = operator_id
 
@@ -54,7 +51,7 @@ class PrizePoolManage:
         return prize
 
     def _validate_total(self, prize: CheckinPrize) -> None:
-        entries = db.where_all(CheckinPrize(), "enabled = 1", default=[])
+        entries = db.where_all(CheckinPrize(), "enabled = 1", default = [])
         total = sum(entry.probability for entry in entries if entry.id != prize.id)
         if prize.enabled and total + prize.probability > PROBABILITY_SCALE:
             raise ValueError("上架奖品的总概率不能超过 100%（包含已耗尽的奖品）。")
@@ -69,8 +66,13 @@ class PrizePoolManage:
         if remaining != -1 and not 0 < remaining <= MAX_STOCK:
             raise ValueError("投放数量需要是正整数，或使用「不限量」。")
         with db.transaction():
-            prize = CheckinPrize(name=name, probability=probability, remaining=remaining,
-                                 creator_id=self.operator_id, created_at=Time().raw_time)
+            prize = CheckinPrize(
+                name = name,
+                probability = probability,
+                remaining = remaining,
+                creator_id = self.operator_id,
+                created_at = Time().raw_time,
+            )
             self._validate_total(prize)
             db.save(prize)
             prize.id = db.fetch_all("SELECT last_insert_rowid()")[0][0]
@@ -114,10 +116,9 @@ class PrizePoolManage:
             db.save(award)
             return award
 
-
 def draw_checkin_prize(user_id: int) -> CheckinPrizeAward | None:
     """由签到事务调用，库存扣减和获奖记录随签到一起提交。"""
-    entries = db.where_all(CheckinPrize(), "enabled = 1 AND remaining != 0 ORDER BY id", default=[])
+    entries = db.where_all(CheckinPrize(), "enabled = 1 AND remaining != 0 ORDER BY id", default = [])
     if not entries:
         return None
     roll = random.randrange(PROBABILITY_SCALE)
@@ -131,9 +132,13 @@ def draw_checkin_prize(user_id: int) -> CheckinPrizeAward | None:
         if prize.remaining > 0:
             prize.remaining -= 1
             db.save(prize)
-        award = CheckinPrizeAward(user_id=user_id, prize_id=prize.id,
-                                  prize_name=prize.name, provider_id=prize.creator_id,
-                                  awarded_at=Time().raw_time)
+        award = CheckinPrizeAward(
+            user_id = user_id,
+            prize_id = prize.id,
+            prize_name = prize.name,
+            provider_id = prize.creator_id,
+            awarded_at = Time().raw_time,
+        )
         db.save(award)
         award.id = db.fetch_all("SELECT last_insert_rowid()")[0][0]
         return award

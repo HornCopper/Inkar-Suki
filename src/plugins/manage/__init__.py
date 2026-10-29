@@ -5,7 +5,7 @@ from nonebot.adapters.onebot.v11 import (
     MessageEvent,
     Bot,
     Message,
-    MessageSegment as ms
+    MessageSegment as ms,
 )
 from nonebot.params import CommandArg, Arg, RawCommand
 from nonebot.matcher import Matcher
@@ -13,7 +13,7 @@ from nonebot.matcher import Matcher
 from src.config import Config
 from src.const.path import (
     CACHE,
-    build_path
+    build_path,
 )
 from src.utils.command import on_command
 from src.utils.network import Request
@@ -43,53 +43,65 @@ try:
 except:  # noqa: E722
     pass
 
-
 import os
 import random
 
-DismissMatcher = on_command("dismiss", command_key=None, aliases={"移除音卡"}, force_whitespace=True, priority=5)
-
+DismissMatcher = on_command("dismiss", command_key = None, aliases = {"移除音卡"}, force_whitespace = True, priority = 5)
 
 @DismissMatcher.handle()
 async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
     if args.extract_plain_text() != "":
         return
-    personal_data = await bot.call_api("get_group_member_info", group_id=event.group_id, user_id=event.user_id, no_cache=True)
+    personal_data = await bot.call_api(
+        "get_group_member_info",
+        group_id = event.group_id,
+        user_id = event.user_id,
+        no_cache = True,
+    )
     user_permission = personal_data["role"] in ["owner", "admin"]
     if not (check_permission(str(event.user_id), "group.bot.dismiss") or user_permission):
         await DismissMatcher.finish(f"唔……只有群主或管理员才能移除{Config.bot_basic.bot_name}哦~")
     else:
         await DismissMatcher.send(f"确定要让{Config.bot_basic.bot_name}离开吗？如果是，请再发送一次“移除音卡”。")
 
-
 @DismissMatcher.got("confirm")
 async def _(bot: Bot, event: GroupMessageEvent, confirm: Message = Arg()):
     u_input = confirm.extract_plain_text()
     if u_input == "移除音卡":
         await DismissMatcher.send(leave_msg)
-        await bot.call_api("send_group_msg", group_id=int(Config.bot_basic.bot_notice[str(event.self_id)]), message=f"{Config.bot_basic.bot_name}按他们的要求，离开了{event.group_id}。")
-        await bot.call_api("set_group_leave", group_id=event.group_id)
+        await bot.call_api(
+            "send_group_msg",
+            group_id = int(Config.bot_basic.bot_notice[str(event.self_id)]),
+            message = f"{Config.bot_basic.bot_name}按他们的要求，离开了{event.group_id}。",
+        )
+        await bot.call_api("set_group_leave", group_id = event.group_id)
 
-
-ResetMatcher = on_command("recovery", command_key=None, aliases={"重置音卡"}, force_whitespace=True, priority=5)
+ResetMatcher = on_command("recovery", command_key = None, aliases = {"重置音卡"}, force_whitespace = True, priority = 5)
 
 @ResetMatcher.handle()
 async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
     if args.extract_plain_text() != "":
         return
-    personal_data = await bot.call_api("get_group_member_info", group_id=event.group_id, user_id=event.user_id, no_cache=True)
+    personal_data = await bot.call_api(
+        "get_group_member_info",
+        group_id = event.group_id,
+        user_id = event.user_id,
+        no_cache = True,
+    )
     user_permission = personal_data["role"] in ["owner", "admin"]
     if not (check_permission(str(event.user_id), "group.bot.reset") or user_permission):
         await ResetMatcher.finish(f"唔……只有群主或管理员才能重置{Config.bot_basic.bot_name}哦~")
     else:
-        await ResetMatcher.send(f"确定要重置{Config.bot_basic.bot_name}数据吗？如果是，请再发送一次“重置音卡”。\n注意：所有本群数据将会清空，包括绑定、订阅和邀请人等，该操作不可逆！")
+        await ResetMatcher.send(
+            f"确定要重置{Config.bot_basic.bot_name}数据吗？如果是，请再发送一次“重置音卡”。\n注意：所有本群数据将会清空，包括绑定、订阅和邀请人等，该操作不可逆！",
+        )
 
 @ResetMatcher.got("confirm")
 async def _(bot: Bot, event: GroupMessageEvent, confirm: Message = Arg()):
     u_input = confirm.extract_plain_text()
     if u_input == "重置音卡":
         db.delete(GroupSettings(), "group_id = ?", str(event.group_id))
-        group_settings = GroupSettings(group_id=str(event.group_id))
+        group_settings = GroupSettings(group_id = str(event.group_id))
         db.save(group_settings)
         await DismissMatcher.send("重置成功！可以重新开始绑定本群数据了！")
 
@@ -102,15 +114,15 @@ async def create_issue(uin: str, comment: str):
     url = f"https://api.github.com/repos/{Config.bot_basic.bot_repo}/issues"
     headers = {
         "Authorization": f"token {github_token}",
-        "Accept": "application/vnd.github.v3+json"
+        "Accept": "application/vnd.github.v3+json",
     }
     data = {
         "title": title,
-        "body": msg
+        "body": msg,
     }
-    await Request(url, headers=headers, params=data).post()
+    await Request(url, headers = headers, params = data).post()
 
-FeedbackMatcher = on_command("feedback", command_key=None, aliases={"反馈"}, force_whitespace=True, priority=5)
+FeedbackMatcher = on_command("feedback", command_key = None, aliases = {"反馈"}, force_whitespace = True, priority = 5)
 
 @FeedbackMatcher.handle()
 async def _(event: MessageEvent, args: Message = CommandArg()):
@@ -124,7 +136,7 @@ async def _(event: MessageEvent, args: Message = CommandArg()):
         await create_issue(user, msg)
         await FeedbackMatcher.finish("已经将您的反馈内容提交至Inkar Suki GitHub，处理完毕后我们会通过电子邮件等方式通知您，音卡感谢您的反馈！")
 
-EchoMatcher = on_command("echo", command_key=None, force_whitespace=True, priority=5)  # 复读机功能
+EchoMatcher = on_command("echo", command_key = None, force_whitespace = True, priority = 5)  # 复读机功能
 
 @EchoMatcher.handle()
 async def _(bot: Bot, event: MessageEvent, args: Message = CommandArg()):
@@ -134,7 +146,7 @@ async def _(bot: Bot, event: MessageEvent, args: Message = CommandArg()):
         await EchoMatcher.finish(denied("manage.echo"))
     await EchoMatcher.finish(args)
 
-PingMatcher = on_command("ping", command_key=None, force_whitespace=True, priority=5)  # 测试机器人是否在线
+PingMatcher = on_command("ping", command_key = None, force_whitespace = True, priority = 5)  # 测试机器人是否在线
 
 @PingMatcher.handle()
 async def _(bot: Bot, event: MessageEvent, args: Message = CommandArg()):
@@ -155,7 +167,7 @@ async def _(bot: Bot, event: MessageEvent, args: Message = CommandArg()):
         msg = f"咕咕咕，音卡来啦！\n现在是：{Time().format()}\n{group_count} | {register_count} | {friend_count}\n您拥有机器人的管理员权限！"
     await PingMatcher.finish(msg)
 
-PurgeMatcher = on_command("purge", command_key=None, force_whitespace=True, priority=5)
+PurgeMatcher = on_command("purge", command_key = None, force_whitespace = True, priority = 5)
 
 @PurgeMatcher.handle()
 async def _(event: MessageEvent, args: Message = CommandArg()):
@@ -171,7 +183,13 @@ async def _(event: MessageEvent, args: Message = CommandArg()):
     else:
         await PurgeMatcher.finish("好的，已帮你清除图片缓存~")
 
-AdminMatcher = on_command("setop", command_key=None, aliases={"admin", "setadmin"}, force_whitespace=True, priority=5)
+AdminMatcher = on_command(
+    "setop",
+    command_key = None,
+    aliases = {"admin", "setadmin"},
+    force_whitespace = True,
+    priority = 5,
+)
 
 @AdminMatcher.handle()
 async def _(bot: Bot, event: MessageEvent, full_argument: Message = CommandArg()):
@@ -194,10 +212,20 @@ async def _(bot: Bot, event: MessageEvent, full_argument: Message = CommandArg()
     if not target_id.isdigit():
         await AdminMatcher.finish("目标格式错误：QQ号或群号需要是数字。")
     if target_type == "u":
-        data: Account | GroupSettings | Any = db.where_one(Account(), "user_id = ?", int(target_id), default=Account(user_id=int(target_id)))
+        data: Account | GroupSettings | Any = db.where_one(
+            Account(),
+            "user_id = ?",
+            int(target_id),
+            default = Account(user_id = int(target_id)),
+        )
         target_name = f"用户（{target_id}）"
     else:
-        data = db.where_one(GroupSettings(), "group_id = ?", str(target_id), default=GroupSettings(group_id=str(target_id)))
+        data = db.where_one(
+            GroupSettings(),
+            "group_id = ?",
+            str(target_id),
+            default = GroupSettings(group_id = str(target_id)),
+        )
         target_name = f"群（{target_id}）"
     is_remove = node.startswith("-")
     node = node[1:] if is_remove else node
@@ -222,8 +250,13 @@ async def _(bot: Bot, event: MessageEvent, full_argument: Message = CommandArg()
     db.save(data)
     await AdminMatcher.finish(f"{target_name}的权限节点已{action}：{node}")
 
-
-PermissionNodesMatcher = on_command("permissions", command_key=None, aliases={"perms", "权限节点", "我的权限"}, force_whitespace=True, priority=5)
+PermissionNodesMatcher = on_command(
+    "permissions",
+    command_key = None,
+    aliases = {"perms", "权限节点", "我的权限"},
+    force_whitespace = True,
+    priority = 5,
+)
 
 @PermissionNodesMatcher.handle()
 async def _(event: MessageEvent, args: Message = CommandArg()):
@@ -244,8 +277,13 @@ async def _(event: MessageEvent, args: Message = CommandArg()):
         await PermissionNodesMatcher.finish(f"{target_desc}没有权限节点。")
     await PermissionNodesMatcher.finish(f"{target_desc}拥有的权限节点：\n" + "\n".join(f"- {node}" for node in nodes))
 
-
-GroupPermissionNodesMatcher = on_command("grouppermissions", command_key=None, aliases={"groupperms", "群权限"}, force_whitespace=True, priority=5)
+GroupPermissionNodesMatcher = on_command(
+    "grouppermissions",
+    command_key = None,
+    aliases = {"groupperms", "群权限"},
+    force_whitespace = True,
+    priority = 5,
+)
 
 @GroupPermissionNodesMatcher.handle()
 async def _(event: MessageEvent, args: Message = CommandArg()):
@@ -275,9 +313,14 @@ async def _(bot: Bot, event: MessageEvent, exception: None | Exception, cmd = Ra
         return
     if exception:
         if isinstance(exception, ConnectTimeout):
-            return # 不回了爱咋咋地
+            return  # 不回了爱咋咋地
         if isinstance(event, GroupMessageEvent):
-            await bot.call_api("send_group_msg", group_id=event.group_id, message=f"呜……音卡处理消息中遇到了代码错误，请将本消息告知开发者！\n{exception.__class__}: {exception}\n原始命令：\n{event.raw_message}")
+            await bot.call_api(
+                "send_group_msg",
+                group_id = event.group_id,
+                message =
+                f"呜……音卡处理消息中遇到了代码错误，请将本消息告知开发者！\n{exception.__class__}: {exception}\n原始命令：\n{event.raw_message}",
+            )
 
 async def get_emoji():
     api = "https://cms.jx3box.com/api/cms/post/emotions?type=&search=&star=&original=&page=1&per=50"
@@ -296,14 +339,14 @@ async def _(bot: Bot, matcher: Matcher, event: GroupMessageEvent):
     if "禁言" in group_additions and "退订" not in event.raw_message and not event.raw_message.startswith("ping"):
         matcher.stop_propagation()
         return
-    if "骚话" in group_subscribes and random.random() < 0.04: # 4%
+    if "骚话" in group_subscribes and random.random() < 0.04:  # 4%
         t = random.randint(0, 1)
         if t:
             data = (await Request(f"{Config.jx3.api.url}/saohua/random").get()).json()
             msg = data["data"]["text"]
-            await bot.send_group_msg(group_id=event.group_id, message=msg)
+            await bot.send_group_msg(group_id = event.group_id, message = msg)
         else:
             image = Message(await get_emoji())
             if image is None:
                 return
-            await bot.send_group_msg(group_id=event.group_id, message=image)
+            await bot.send_group_msg(group_id = event.group_id, message = image)

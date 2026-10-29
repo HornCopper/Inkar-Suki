@@ -6,6 +6,7 @@ class Time:
 
     ~~整挺好，一个时间处理我还要专门发个包去PyPI投厕.jpg~~
     """
+
     def __init__(self, time: int = 0):
         """
         初始化时间对象。
@@ -15,7 +16,7 @@ class Time:
         """
         time = int(datetime.now().timestamp()) if time == 0 else time
         self.current: int = time
-    
+
     @classmethod
     def from_string(cls, time_str: str, format: str = "") -> "Time":
         return cls(int(datetime.strptime(time_str, format).timestamp()))

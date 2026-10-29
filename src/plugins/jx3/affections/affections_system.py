@@ -7,7 +7,7 @@ from src.const.prompts import PROMPT
 from src.const.path import (
     ASSETS,
     TEMPLATES,
-    build_path
+    build_path,
 )
 from src.utils.database import db
 from src.utils.database.player import search_player
@@ -17,15 +17,15 @@ from src.utils.file import read
 from src.utils.generate import generate
 
 import random
-    
+
 def check_status(uin: int):
-    data: Affections | None | Any = db.where_one(Affections(), "uin_1 = ? OR uin_2 = ?", uin, uin, default=None)
+    data: Affections | None | Any = db.where_one(Affections(), "uin_1 = ? OR uin_2 = ?", uin, uin, default = None)
     if data is None:
         return False
     return True
-    
+
 async def get_school(name: str, server: str):
-    role_info = await search_player(role_name=name, server_name=server)
+    role_info = await search_player(role_name = name, server_name = server)
     if role_info.roleId == "":
         return False
     else:
@@ -49,7 +49,7 @@ async def bind_affection(uin_1: int, name_1: str, uin_2: int, name_2: str, group
         name_2 = name_2,
         time = custom_time,
         school_1 = school_1,
-        school_2 = school_2
+        school_2 = school_2,
     )
     db.save(new_data)
     return [PROMPT.AffectionBindComplete]
@@ -63,29 +63,29 @@ async def delete_affection(uin: int) -> list[str] | None:
 async def generate_affection_image(uin: int):
     if not check_status(uin):
         return PROMPT.AffectionGenerateWithNo
-    current_data: Affections | Any = db.where_one(Affections(), "uin_1 = ? OR uin_2 = ?", uin, uin, default=None)
+    current_data: Affections | Any = db.where_one(Affections(), "uin_1 = ? OR uin_2 = ?", uin, uin, default = None)
     btxbfont = build_path(
         ASSETS,
         [
-            "font", 
-            "包图小白体.ttf"
-        ]
+            "font",
+            "包图小白体.ttf",
+        ],
     )
     yozaifont = build_path(
         ASSETS,
         [
-            "font", 
-            "Yozai-Medium.ttf"
-        ]
+            "font",
+            "Yozai-Medium.ttf",
+        ],
     )
     bg = build_path(
         ASSETS,
         [
             "image",
             "jx3",
-            "assistance"
+            "assistance",
         ],
-        end_with_slash=True
+        end_with_slash = True,
     ) + str(random.randint(1, 9)) + ".jpg"
     uin_1 = current_data.uin_1
     uin_2 = current_data.uin_2
@@ -103,25 +103,25 @@ async def generate_affection_image(uin: int):
             TEMPLATES,
             [
                 "jx3",
-                "affections.html"
-            ]
-        )
+                "affections.html",
+            ],
+        ),
     )
     html = Template(html).render(
-        btxbfont=btxbfont,
-        yozaifont=yozaifont,
-        bg=bg,
-        uin_1=str(uin_1),
-        uin_2=str(uin_2),
-        color_1=color_1,
-        color_2=color_2,
-        img_1=img_1,
-        img_2=img_2,
-        name_1=name_1,
-        name_2=name_2,
-        server=server,
-        recognization=recognization,
-        relate=relate,
+        btxbfont = btxbfont,
+        yozaifont = yozaifont,
+        bg = bg,
+        uin_1 = str(uin_1),
+        uin_2 = str(uin_2),
+        color_1 = color_1,
+        color_2 = color_2,
+        img_1 = img_1,
+        img_2 = img_2,
+        name_1 = name_1,
+        name_2 = name_2,
+        server = server,
+        recognization = recognization,
+        relate = relate,
     )
-    image = await generate(html, ".background-container", segment=True)
+    image = await generate(html, ".background-container", segment = True)
     return image

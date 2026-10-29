@@ -11,8 +11,7 @@ from src.utils.message import message_universal
 
 from .process import Ban
 
-BanMatcher = on_command("ban", command_key=None, force_whitespace=True, priority=5)
-
+BanMatcher = on_command("ban", command_key = None, force_whitespace = True, priority = 5)
 
 @BanMatcher.handle()
 async def _(bot: Bot, event: MessageEvent, args: Message = CommandArg()):
@@ -28,9 +27,7 @@ async def _(bot: Bot, event: MessageEvent, args: Message = CommandArg()):
         await BanMatcher.finish(PROMPT.BanRepeatInvalid)
     await BanMatcher.finish(f"好的，{Config.bot_basic.bot_name}已经封禁({user_id})！")
 
-
-UnbanMatcher = on_command("unban", command_key=None, force_whitespace=True, priority=5)
-
+UnbanMatcher = on_command("unban", command_key = None, force_whitespace = True, priority = 5)
 
 @UnbanMatcher.handle()
 async def _(bot: Bot, event: MessageEvent, args: Message = CommandArg()):
@@ -45,7 +42,6 @@ async def _(bot: Bot, event: MessageEvent, args: Message = CommandArg()):
     if not status:
         await UnbanMatcher.finish("唔……解封失败（尚未封禁）。")
     await UnbanMatcher.finish(f"好的，已经全域解封({user_id})。")
-
 
 @message_universal.handle()
 async def _(matcher: Matcher, event: MessageEvent):

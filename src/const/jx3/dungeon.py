@@ -1,6 +1,5 @@
 from .constant import dungeon_mode_data, dungeon_name_data
 
-
 class Dungeon:
     dungeon_name: dict[str, list[str]] = dungeon_name_data
     dungeon_mode: dict[str, list[str]] = dungeon_mode_data

@@ -12,6 +12,7 @@ from src.templates import SimpleHTML, get_saohua
 from ._template import msg_box, template_arena_record
 
 class Indicator:
+
     def __init__(self, server: str = "", name: str = ""):
         self.server = server
         self.name = name
@@ -21,7 +22,7 @@ class Indicator:
 
     async def get_role_id(self) -> bool | str:
         if self._role_id is None:
-            role_info = await search_player(role_name=self.name, server_name=self.server)
+            role_info = await search_player(role_name = self.name, server_name = self.server)
             role_id = role_info.roleId
             if role_id == "":
                 return False
@@ -35,7 +36,9 @@ class Indicator:
                 "zone": Server(self.server).zone,
                 "server": self.server,
             }
-            self._person_data = (await Request("https://m.pvp.xoyo.com/role/indicator", params=params).post(tuilan=True)).json()
+            self._person_data = (
+                await Request("https://m.pvp.xoyo.com/role/indicator", params = params).post(tuilan = True)
+            ).json()
         return self._person_data
 
     async def get_person_id(self) -> bool | str | None:
@@ -68,9 +71,11 @@ class Indicator:
         params = {
             "person_id": person_id,
             "size": 10,
-            "cursor": 0
+            "cursor": 0,
         }
-        arena_record_data = (await Request("https://m.pvp.xoyo.com/mine/match/person-history", params=params).post(tuilan=True)).json()
+        arena_record_data = (
+            await Request("https://m.pvp.xoyo.com/mine/match/person-history", params = params).post(tuilan = True)
+        ).json()
         return arena_record_data
 
 async def get_arena_record(server: str = "", name: str = ""):
@@ -91,7 +96,7 @@ async def get_arena_record(server: str = "", name: str = ""):
             "percent": str(round(data["win_count"] / data["total_count"] * 100, 2)) + "%",
             "score": str(data["mmr"]),
             "best": str(data["mvp_count"]),
-            "rank_": data["ranking"]
+            "rank_": data["ranking"],
         }
         msgbox.append(Template(msg_box).render(**input_params))
     record = await indicator.get_person_arena_record()
@@ -113,7 +118,7 @@ async def get_arena_record(server: str = "", name: str = ""):
             "delta": delta,
             "color": "green" if i["mmr"] > 0 else "red",
             "status": "win" if i["won"] else "lose",
-            "result": "胜利" if i["won"] else "失败"
+            "result": "胜利" if i["won"] else "失败",
         }
         input_params["mvp_color"] = "gold" if i["mvp"] else "lightgrey"
         tables.append(Template(template_arena_record).render(**input_params))
@@ -123,14 +128,14 @@ async def get_arena_record(server: str = "", name: str = ""):
         "table": "\n".join(tables),
         "server": server,
         "name": name,
-        "saohua": get_saohua()
+        "saohua": get_saohua(),
     }
     html = str(
         SimpleHTML(
             "jx3",
             "arena_record",
-            **final_input
-        )
+            **final_input,
+        ),
     )
-    image = await generate(html, ".container", segment=True)
+    image = await generate(html, ".container", segment = True)
     return image

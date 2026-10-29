@@ -24,72 +24,67 @@ from ._template import template_body, table_head
 from .command_statistics import render_command_statistics
 from .analyzer_statistics import render_analyzer_statistics
 
-
 COMMAND_STATISTICS_PERMISSION_NODE = "bot.statistics.command"
-
 
 command_statistics_matcher = on_command(
     "command_statistics",
-    command_key=None,
-    aliases={"命令统计"},
-    force_whitespace=True,
-    priority=5,
+    command_key = None,
+    aliases = {"命令统计"},
+    force_whitespace = True,
+    priority = 5,
 )
-
 
 @command_statistics_matcher.handle()
 async def _(event: MessageEvent, args: Message = CommandArg()):
     if not check_permission(event.user_id, COMMAND_STATISTICS_PERMISSION_NODE):
         await command_statistics_matcher.finish(
-            denied(COMMAND_STATISTICS_PERMISSION_NODE)
+            denied(COMMAND_STATISTICS_PERMISSION_NODE),
         )
     await command_statistics_matcher.finish(
-        await render_command_statistics(args.extract_plain_text())
+        await render_command_statistics(args.extract_plain_text()),
     )
-
 
 analyzer_statistics_matcher = on_command(
     "analyzer_statistics",
-    command_key=None,
-    aliases={"分析器统计"},
-    force_whitespace=True,
-    priority=5,
+    command_key = None,
+    aliases = {"分析器统计"},
+    force_whitespace = True,
+    priority = 5,
 )
-
 
 @analyzer_statistics_matcher.handle()
 async def _(event: MessageEvent, args: Message = CommandArg()):
     if not check_permission(event.user_id, COMMAND_STATISTICS_PERMISSION_NODE):
         await analyzer_statistics_matcher.finish(
-            denied(COMMAND_STATISTICS_PERMISSION_NODE)
+            denied(COMMAND_STATISTICS_PERMISSION_NODE),
         )
     await analyzer_statistics_matcher.finish(
-        await render_analyzer_statistics(args.extract_plain_text())
+        await render_analyzer_statistics(args.extract_plain_text()),
     )
 
-
-today_message_count = on_command("today_message_count", command_key=None, aliases={"本群发言统计"}, priority=5)
-
+today_message_count = on_command("today_message_count", command_key = None, aliases = {"本群发言统计"}, priority = 5)
 
 @today_message_count.handle()
 async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
     start, end = get_date_timestamp(args.extract_plain_text())
     if args.extract_plain_text() == "all":
         start, end = (0, int(datetime.now().timestamp()))
-    group_data: list[GroupMessage] | Any = cache_db.where_all(GroupMessage(), "group_id = ?", event.group_id, default=[])
+    group_data: list[GroupMessage] | Any = cache_db.where_all(
+        GroupMessage(),
+        "group_id = ?",
+        event.group_id,
+        default = [],
+    )
     if len(group_data) == 0:
         await today_message_count.finish("唔……目前没有任何发言记录！")
-    group_member_data: list[dict] = await bot.call_api("get_group_member_list", group_id=event.group_id)
+    group_member_data: list[dict] = await bot.call_api("get_group_member_list", group_id = event.group_id)
     data = dict(
         sorted(
-            {
-                str(m.user_id): [d for d in m.messages if start <= d.timestamp <= end] 
-                for m
-                in group_data
-            }.items(),
-            key=lambda item: len(item[1]),
-            reverse=True
-        )
+            {str(m.user_id): [d for d in m.messages if start <= d.timestamp <= end]
+             for m in group_data}.items(),
+            key = lambda item: len(item[1]),
+            reverse = True,
+        ),
     )
     if all(value == [] for value in data.values()):
         await today_message_count.finish("唔……没有该时间段的发言记录！")
@@ -107,28 +102,26 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
         num += 1
         table.append(
             Template(
-                template_body
+                template_body,
             ).render(
                 rank = str(num),
                 avatar = f"https://q.qlogo.cn/headimg_dl?dst_uin={user_id}&spec=100&img_type=jpg",
                 nickname = nickname,
                 user_id = user_id,
-                count = msg_count
-            )
+                count = msg_count,
+            ),
         )
         if num == 50:
             break
     html = str(
         HTMLSourceCode(
-            application_name=f"发言统计 · {event.group_id}",
-            table_head=table_head,
-            table_body="\n".join(table)
-        )
+            application_name = f"发言统计 · {event.group_id}",
+            table_head = table_head,
+            table_body = "\n".join(table),
+        ),
     )
-    image = await generate(html, ".container", segment=True)
+    image = await generate(html, ".container", segment = True)
     await today_message_count.finish(image)
-    
-    
 
 @message_universal.handle()
 async def _(event: GroupMessageEvent):
@@ -137,14 +130,14 @@ async def _(event: GroupMessageEvent):
         "group_id = ? AND user_id = ?",
         event.group_id,
         event.user_id,
-        default=GroupMessage(
-            group_id=event.group_id,
-            user_id=event.user_id
-        )
+        default = GroupMessage(
+            group_id = event.group_id,
+            user_id = event.user_id,
+        ),
     )
     msg_list = group_data.messages
     msg_list.append(
-        MemberMessage(timestamp=Time().raw_time)
+        MemberMessage(timestamp = Time().raw_time),
     )
     group_data.messages = msg_list
     cache_db.save(group_data)

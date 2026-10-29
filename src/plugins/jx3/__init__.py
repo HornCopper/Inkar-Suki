@@ -1,6 +1,7 @@
 from nonebot import get_driver
 from nonebot.log import logger
 from nonebot.adapters.onebot.v11 import MessageSegment
+from typing import cast
 
 from src.config import Config
 from src.utils.time import Time
@@ -14,9 +15,10 @@ from src.plugins.jx3.weibo import get_weibo_push_image
 from .parse import (
     get_registered_actions,
     parse_data,
-    JX3APIOutputMsg
+    JX3APIOutputMsg,
+    TestServerPushEvent,
 )
-from .universe import * # 要不你来一个一个导？  # noqa: F403
+from .universe import *  # 要不你来一个一个导？  # noqa: F403
 
 import asyncio
 import websockets
@@ -29,7 +31,7 @@ async def websocket_client(ws_url: str, headers: dict):
         return
     while True:
         try:
-            async with websockets.connect(ws_url, extra_headers=headers) as websocket:
+            async with websockets.connect(ws_url, extra_headers = headers) as websocket:
                 logger.info("WebSocket connection established")
                 while True:
                     response_text = await websocket.recv()
@@ -46,8 +48,8 @@ async def websocket_client(ws_url: str, headers: dict):
                             action = response["action"],
                             event = msg.name,
                             data = response["detail"],
-                            timestamp = Time().raw_time
-                        )
+                            timestamp = Time().raw_time,
+                        ),
                     )
                     name = msg.name
                     message = msg.msg
@@ -59,9 +61,10 @@ async def websocket_client(ws_url: str, headers: dict):
                         except Exception:
                             logger.exception(f"生成官网公告截图失败，继续发送文字公告：{url}")
                     if name == "体服公告":
-                        if parsed.diff is not None:
+                        beta_event = cast(TestServerPushEvent, parsed)
+                        if beta_event.diff is not None:
                             try:
-                                message = msg.msg + await get_beta_push_image(parsed.diff)
+                                message = msg.msg + await get_beta_push_image(beta_event.diff)
                             except Exception:
                                 logger.exception("生成体服公告差异图失败，继续发送文字公告")
                     if name == "咸鱼":
@@ -70,7 +73,7 @@ async def websocket_client(ws_url: str, headers: dict):
                             message = msg.msg + await get_weibo_push_image(post_id)
                         except Exception:
                             logger.exception(
-                                f"生成微博卡片截图失败，继续发送文字：{post_id}"
+                                f"生成微博卡片截图失败，继续发送文字：{post_id}",
                             )
                     if name in ["生日祝福", "创作者"]:
                         image = (await Request(server).get()).content
@@ -88,6 +91,6 @@ async def websocket_client(ws_url: str, headers: dict):
 async def on_startup():
     ws_url = Config.jx3.ws.url
     headers = {
-        "token": Config.jx3.ws.token
+        "token": Config.jx3.ws.token,
     }
     asyncio.create_task(websocket_client(ws_url, headers))

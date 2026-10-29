@@ -1,6 +1,5 @@
 from dataclasses import dataclass, fields
 
-
 CHALLENGE_DUNGEONS = {
     "空城殿·上",
     "空城殿·下",
@@ -19,8 +18,7 @@ CHALLENGE_DUNGEON_TOTALS = {
     "阆风悬城·元心殿": 2,
 }
 
-
-@dataclass(frozen=True)
+@dataclass(frozen = True)
 class LootProbabilities:
     general_brand: int = 40
     weapon: int = 10
@@ -36,10 +34,10 @@ class LootProbabilities:
     final_boss_box: int = 20
 
     def scaled(self, multiplier: int) -> "LootProbabilities":
-        return LootProbabilities(**{
-            field.name: min(getattr(self, field.name) * multiplier, 100)
-            for field in fields(self)
-        })
+        return LootProbabilities(
+            **{field.name: min(getattr(self, field.name) * multiplier, 100)
+               for field in fields(self)},
+        )
 
 # 作弊工具
 # @dataclass(frozen=True)
@@ -57,11 +55,9 @@ class LootProbabilities:
 #     weapon_box_replacement: int = 100
 #     final_boss_box: int = 100
 
-
 LOOT_PROBABILITIES = LootProbabilities()
 
-
-@dataclass(frozen=True)
+@dataclass(frozen = True)
 class BossLootRule:
     index: int
     total: int
@@ -85,7 +81,6 @@ class BossLootRule:
     @property
     def position(self) -> str:
         return f"{self.index}/{self.total}"
-
 
 def get_boss_loot_rule(
     dungeon_name: str,

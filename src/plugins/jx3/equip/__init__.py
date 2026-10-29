@@ -13,7 +13,13 @@ from .equip_config import get_equips, get_equip_image
 from .equip_find import get_equip_info, get_equip_info_image
 from .enchant_find import get_enchant_list
 
-referenced_equip_matcher = on_command("jx3_pz", command_key="配装", aliases={"配装"}, force_whitespace=True, priority=5)
+referenced_equip_matcher = on_command(
+    "jx3_pz",
+    command_key = "配装",
+    aliases = {"配装"},
+    force_whitespace = True,
+    priority = 5,
+)
 
 @referenced_equip_matcher.handle()
 async def _(event: GroupMessageEvent, state: T_State, full_argument: Message = CommandArg()):
@@ -41,11 +47,11 @@ async def _(event: GroupMessageEvent, state: T_State, full_argument: Message = C
     else:
         state["d"] = data
         msg = "找到以下配装方案，请选择："
-        for n, d in enumerate(data, start=1):
+        for n, d in enumerate(data, start = 1):
             msg += f"\n{n}. （" + d["pz_author_info"]["display_name"] + "）" + d["title"]
         await referenced_equip_matcher.send(msg)
         return
-    
+
 @referenced_equip_matcher.got("num")
 async def _(event: GroupMessageEvent, state: T_State, num: Message = Arg()):
     n = num.extract_plain_text().strip()
@@ -58,7 +64,13 @@ async def _(event: GroupMessageEvent, state: T_State, num: Message = Arg()):
         image = ms.image(await get_equip_image(equip_id))
         await referenced_equip_matcher.finish(image)
 
-equip_find_matcher = on_command("jx3_equip_find", command_key="装备", aliases={"装备"}, priority=5, force_whitespace=True)
+equip_find_matcher = on_command(
+    "jx3_equip_find",
+    command_key = "装备",
+    aliases = {"装备"},
+    priority = 5,
+    force_whitespace = True,
+)
 
 @equip_find_matcher.handle()
 async def _(matcher: Matcher, state: T_State, event: GroupMessageEvent, args: Message = CommandArg()):
@@ -72,7 +84,9 @@ async def _(matcher: Matcher, state: T_State, event: GroupMessageEvent, args: Me
     elif len(arg) == 2:
         equip_name = arg[0]
         if not check_number(arg[1]):
-            await equip_find_matcher.finish(PROMPT.ArgumentInvalid + "\n参考格式：\n装备 关键词 品级\n装备 关键词\n如需精准搜索请使用方括号包裹关键词，纯关键词搜索仅支持主流品级！")
+            await equip_find_matcher.finish(
+                PROMPT.ArgumentInvalid + "\n参考格式：\n装备 关键词 品级\n装备 关键词\n如需精准搜索请使用方括号包裹关键词，纯关键词搜索仅支持主流品级！",
+            )
         quality = int(arg[1])
     else:
         await equip_find_matcher.finish(PROMPT.ArgumentCountInvalid)
@@ -100,11 +114,17 @@ async def _(state: T_State, event: GroupMessageEvent, num: Message = Arg()):
         await equip_find_matcher.finish(PROMPT.NumberInvalid)
     if int(equip_num) > len(state["equip_data"]):
         await equip_find_matcher.finish(PROMPT.NumberNotExist)
-    equip_data = state["equip_data"][int(equip_num)-1][1]
+    equip_data = state["equip_data"][int(equip_num) - 1][1]
     image = await get_equip_info_image(equip_data)
     await equip_find_matcher.finish(image)
 
-enchant_find_matcher = on_command("jx3_enchant_find", command_key="附魔", aliases={"附魔"}, priority=5, force_whitespace=True)
+enchant_find_matcher = on_command(
+    "jx3_enchant_find",
+    command_key = "附魔",
+    aliases = {"附魔"},
+    priority = 5,
+    force_whitespace = True,
+)
 
 @enchant_find_matcher.handle()
 async def _(matcher: Matcher, state: T_State, event: GroupMessageEvent, args: Message = CommandArg()):

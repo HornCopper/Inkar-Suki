@@ -5,13 +5,16 @@ from src.utils.command import on_command
 
 from .app import get_bulletin_img
 
-GladBulletinMatcher = on_command("bulletin_glad", command_key="喜报", aliases={"喜报"}, force_whitespace=True, priority=5)
+GladBulletinMatcher = on_command(
+    "bulletin_glad",
+    command_key = "喜报",
+    aliases = {"喜报"},
+    force_whitespace = True,
+    priority = 5,
+)
 
 @GladBulletinMatcher.handle()
-async def _(
-    event: GroupMessageEvent, 
-    args: Message = CommandArg()
-):
+async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     if args.extract_plain_text() == "":
         return
     msg = args.extract_plain_text()
@@ -23,13 +26,16 @@ async def _(
         img = await get_bulletin_img(msg, "G")
         await GladBulletinMatcher.finish(img)
 
-SadBulletinMatcher = on_command("bulletin_sad", command_key="悲报", aliases={"悲报"}, force_whitespace=True, priority=5)
+SadBulletinMatcher = on_command(
+    "bulletin_sad",
+    command_key = "悲报",
+    aliases = {"悲报"},
+    force_whitespace = True,
+    priority = 5,
+)
 
 @SadBulletinMatcher.handle()
-async def _(
-    event: GroupMessageEvent, 
-    args: Message = CommandArg()
-):
+async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     if args.extract_plain_text() == "":
         return
     msg = args.extract_plain_text()

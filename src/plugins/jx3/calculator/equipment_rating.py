@@ -4,10 +4,10 @@ import asyncio
 import json
 import math
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 
 from jinja2 import Template
-from nonebot.adapters.onebot.v11 import GroupMessageEvent, Message
+from nonebot.adapters.onebot.v11 import GroupMessageEvent, Message, MessageEvent
 from nonebot.exception import ActionFailed
 from nonebot.log import logger
 from nonebot.matcher import Matcher
@@ -53,7 +53,6 @@ from .race_rank import get_equipment_rating_race_rank
 from .timeline_render import _chart_svg, _format_compact_number
 from .universe import UniversalCalculator
 
-
 RANK_ICON_FILES = {
     "ACE": "rank_ace.png",
     "S+": "rank_s_plus.png",
@@ -64,19 +63,52 @@ RANK_ICON_FILES = {
     "D": "rank_d.png",
 }
 RANK_THEMES = {
-    "ACE": {"accent": "#ff304f", "light": "#ffd2da", "deep": "#8f0017", "rgb": "255 48 79"},
-    "S+": {"accent": "#ff7a00", "light": "#ffd4a3", "deep": "#a83a00", "rgb": "255 122 0"},
-    "S": {"accent": "#ffd24d", "light": "#fff1b6", "deep": "#9c6500", "rgb": "255 210 77"},
-    "A": {"accent": "#a85cff", "light": "#efe0ff", "deep": "#5620b8", "rgb": "168 92 255"},
-    "B": {"accent": "#3f8cff", "light": "#dceaff", "deep": "#0647ad", "rgb": "63 140 255"},
-    "C": {"accent": "#22c76f", "light": "#d6f7e4", "deep": "#066437", "rgb": "34 199 111"},
-    "D": {"accent": "#ffffff", "light": "#ffffff", "deep": "#9ca3af", "rgb": "190 196 206"},
+    "ACE": {
+        "accent": "#ff304f",
+        "light": "#ffd2da",
+        "deep": "#8f0017",
+        "rgb": "255 48 79",
+    },
+    "S+": {
+        "accent": "#ff7a00",
+        "light": "#ffd4a3",
+        "deep": "#a83a00",
+        "rgb": "255 122 0",
+    },
+    "S": {
+        "accent": "#ffd24d",
+        "light": "#fff1b6",
+        "deep": "#9c6500",
+        "rgb": "255 210 77",
+    },
+    "A": {
+        "accent": "#a85cff",
+        "light": "#efe0ff",
+        "deep": "#5620b8",
+        "rgb": "168 92 255",
+    },
+    "B": {
+        "accent": "#3f8cff",
+        "light": "#dceaff",
+        "deep": "#0647ad",
+        "rgb": "63 140 255",
+    },
+    "C": {
+        "accent": "#22c76f",
+        "light": "#d6f7e4",
+        "deep": "#066437",
+        "rgb": "34 199 111",
+    },
+    "D": {
+        "accent": "#ffffff",
+        "light": "#ffffff",
+        "deep": "#9ca3af",
+        "rgb": "190 196 206",
+    },
 }
 ADAPTIVE_FORMATION_RANK_GRADES = {1: "ACE", 2: "S+", 3: "S"}
-EQUIPMENT_RATING_IMAGE_SEND_FAILED = (
-    "装备评级图片已生成，但 QQ/NapCat 拒绝了图片上传。\n"
-    "建议重启 NapCat。"
-)
+EQUIPMENT_RATING_IMAGE_SEND_FAILED = ("装备评级图片已生成，但 QQ/NapCat 拒绝了图片上传。\n"
+                                      "建议重启 NapCat。")
 EQUIPMENT_RATING_STARTED = "装备评级中，请稍等片刻！"
 EQUIPMENT_RATING_TIMELINE_BIN_SIZE = 1.5
 EQUIPMENT_RATING_TIMELINE_ROLLING_WINDOW = 10
@@ -101,9 +133,18 @@ EQUIPMENT_RATING_USAGE = (
 )
 EQUIPMENT_RATING_HELP_KEYWORDS = {"help", "帮助", "？", "?"}
 EQUIPMENT_RATING_DISTRIBUTION_PATH = build_path(
-    ASSETS, ["source", "jx3", "equipment_rating_distribution.json"]
+    ASSETS,
+    ["source", "jx3", "equipment_rating_distribution.json"],
 )
 ADAPTIVE_ICON_ITEM_NAME_BY_CODE = {
+    "FYYD_PHYSICS": "巴山夜雨宴（外攻）",
+    "FYYD_MAGIC": "嘉陵月夜宴（内攻）",
+    "CA_BANQUET_PHYSICS": "华岳开锋宴（外攻）",
+    "CA_BANQUET_MAGIC": "未央宫庭宴（内攻）",
+    **{f"FY_CRYSTAL_BANQUET_{attr}": "巴渝珍馐宴（通用）"
+       for attr in ("VITALITY", "AGILITY", "SPUNK", "STRENGTH", "SPIRIT")},
+    **{f"CA_BANQUET_{attr}": "长安珍馐宴（通用）"
+       for attr in ("VITALITY", "AGILITY", "SPUNK", "STRENGTH", "SPIRIT")},
     "BLSZY": "百炼水煮鱼",
     "FY_ATTACK_INGOT_PHYSICS": "风语·瀑沙熔锭（外攻）",
     "FY_ATTACK_INGOT_MAGIC": "风语·坠宵熔锭（内攻）",
@@ -142,14 +183,13 @@ ADAPTIVE_FORMATION_FALLBACK_ICON_IDS = {
 ADAPTIVE_DISPLAY_GROUPS = [
     ("food", "食品类", {"辅助食品", "增强食品"}),
     ("medicine", "药品类", {"辅助药品", "增强药品"}),
+    ("banquet", "常规宴席", {"常规宴席"}),
     ("home", "家园类（酒 / 创意料理）", {"家园酒", "创意料理·盛"}),
     ("ingot", "熔锭", {"熔锭"}),
 ]
 
-
 def _asset_uri(*parts: str) -> str:
     return Path(build_path(ASSETS, list(parts))).as_uri()
-
 
 def _load_equipment_rating_distribution() -> dict[str, Any]:
     """读取预计算分布图索引；运行时只做静态资源查找，不做拟合计算。"""
@@ -159,20 +199,22 @@ def _load_equipment_rating_distribution() -> dict[str, Any]:
         payload = {}
     return payload if isinstance(payload, dict) else {}
 
-
 async def _render_equipment_rating_help_image():
     html_source = equipment_rating_help_template.replace(
-        "__FONT_URI__", _asset_uri("font", "PingFangSC-Semibold.otf")
+        "__FONT_URI__",
+        _asset_uri("font", "PingFangSC-Semibold.otf"),
     )
     return await generate(
         html_source,
         ".guide",
-        delay=800,
-        segment=True,
-        wait_for_network=True,
-        viewport={"width": 980, "height": 2550},
+        delay = 800,
+        segment = True,
+        wait_for_network = True,
+        viewport = {
+            "width": 980,
+            "height": 2550,
+        },
     )
-
 
 SLOT_DISPLAY_ORDER = [4, 3, 8, 12, 10, 11, 5, 9, 6, 7, 2, 0]
 SLOT_NAME_OVERRIDES = {"上衣": "衣服"}
@@ -222,18 +264,15 @@ ATTRIBUTE_INCOME_DISPLAY_KEYS = {
 TANK_VITALITY_CONVERSION_STEP = 3310
 TANK_VITALITY_CONVERSION_MAX_STACKS = 100
 
-
 def _is_hidden_attribute_text(value: Any) -> bool:
     text = str(value or "").strip()
     if not text or text in HIDDEN_ATTRIBUTE_TEXTS:
         return True
     return text.startswith("at") and not get_attr_name(text)
 
-
 def _short_attribute_text(value: Any) -> str:
     text = str(value or "").strip()
     return get_attr_name(text) or text
-
 
 def _to_float(value: Any, default: float = 0) -> float:
     try:
@@ -241,13 +280,11 @@ def _to_float(value: Any, default: float = 0) -> float:
     except (TypeError, ValueError):
         return default
 
-
 def _format_number(value: Any) -> str:
     try:
         return f"{int(float(value)):,}"
     except (TypeError, ValueError):
         return "0"
-
 
 def _format_haste(value: Any, kungfu_id: int = 0) -> str:
     try:
@@ -256,20 +293,17 @@ def _format_haste(value: Any, kungfu_id: int = 0) -> str:
         haste = 0
     return f"{int(haste)} / {_haste_level(haste, kungfu_id)}"
 
-
 def _format_plain_int(value: Any) -> str:
     try:
         return str(int(float(value)))
     except (TypeError, ValueError):
         return "0"
 
-
 def _format_signed(value: Any) -> str:
     try:
         return f"{int(float(value)):+,}"
     except (TypeError, ValueError):
         return "+0"
-
 
 def _format_signed_float(value: Any) -> str:
     number = _to_float(value)
@@ -281,13 +315,11 @@ def _format_signed_float(value: Any) -> str:
         return f"{number:+,.0f}"
     return f"{number:+.1f}"
 
-
 def _format_percent(value: Any) -> str:
     try:
         return f"{float(value):.1f}%"
     except (TypeError, ValueError):
         return "0.0%"
-
 
 def _format_signed_percent(value: Any) -> str:
     number = _to_float(value)
@@ -295,15 +327,12 @@ def _format_signed_percent(value: Any) -> str:
         return "+0.0%"
     return f"{number:+.1f}%"
 
-
 def _as_dict(value: Any) -> dict[str, Any]:
     return value if isinstance(value, dict) else {}
-
 
 def _trial_land_int(value: Any) -> int | None:
     number = _trial_land_float(value)
     return int(number) if number is not None else None
-
 
 def _trial_land_float(value: Any) -> float | None:
     try:
@@ -312,7 +341,6 @@ def _trial_land_float(value: Any) -> float | None:
         return None
     return number if math.isfinite(number) else None
 
-
 def _trial_land_bool(value: Any) -> bool:
     if isinstance(value, bool):
         return value
@@ -320,12 +348,10 @@ def _trial_land_bool(value: Any) -> bool:
         return value != 0
     return str(value or "").strip().lower() in {"1", "true", "yes", "on"}
 
-
 def _trial_land_item_name(value: Any) -> str:
     if isinstance(value, dict):
         return str(value.get("name") or value.get("label") or value.get("code") or "").strip()
     return str(value or "").strip()
-
 
 def _trial_land_item_fields(value: Any) -> tuple[str, str]:
     code = str(_as_dict(value).get("code") or "").strip()
@@ -335,7 +361,6 @@ def _trial_land_item_fields(value: Any) -> tuple[str, str]:
     if code and (not name or name == code):
         name = ADAPTIVE_ICON_ITEM_NAME_BY_CODE.get(code, name or code)
     return name, code
-
 
 def _trial_land_boss_name_map(bosses: Any) -> dict[str, str]:
     names: dict[str, str] = {}
@@ -347,7 +372,6 @@ def _trial_land_boss_name_map(bosses: Any) -> dict[str, str]:
         if boss_id and name:
             names[boss_id] = name
     return names
-
 
 def _trial_land_boss_names(stage: Any, boss_names: dict[str, str]) -> list[str]:
     stage_data = _as_dict(stage)
@@ -362,7 +386,6 @@ def _trial_land_boss_names(stage: Any, boss_names: dict[str, str]) -> list[str]:
             names.append(name)
     return names
 
-
 def _trial_land_selected_boss_ids(stages: Any) -> list[str]:
     selected: list[str] = []
     for stage_key in ("first", "second"):
@@ -375,7 +398,6 @@ def _trial_land_selected_boss_ids(stages: Any) -> list[str]:
                 selected.append(normalized_id)
     return selected
 
-
 def _prepare_trial_land_target(raw: Any, boss_names: dict[str, str]) -> dict[str, Any] | None:
     if not isinstance(raw, dict):
         return None
@@ -384,16 +406,8 @@ def _prepare_trial_land_target(raw: Any, boss_names: dict[str, str]) -> dict[str
     gap_dps = _trial_land_int(raw.get("gap_dps"))
     reached = raw.get("reached")
     bottleneck_stage = str(raw.get("bottleneck_stage") or "").strip().lower()
-    if (
-        floor is None
-        or floor <= 0
-        or required_dps is None
-        or required_dps < 0
-        or gap_dps is None
-        or gap_dps < 0
-        or not isinstance(reached, bool)
-        or bottleneck_stage not in {"first", "second", "both"}
-    ):
+    if (floor is None or floor <= 0 or required_dps is None or required_dps < 0 or gap_dps is None or gap_dps < 0
+            or not isinstance(reached, bool) or bottleneck_stage not in {"first", "second", "both"}):
         return None
 
     gap_percent_raw = raw.get("gap_percent")
@@ -429,7 +443,6 @@ def _prepare_trial_land_target(raw: Any, boss_names: dict[str, str]) -> dict[str
         "second_bosses": second_bosses,
         "route_text": f"{first_bosses[0]} / {' + '.join(second_bosses)}",
     }
-
 
 def _prepare_trial_land_boss_rows(
     raw: Any,
@@ -470,17 +483,17 @@ def _prepare_trial_land_boss_rows(
                 "progress_basis": progress_basis,
                 "selected": boss_id in selected_boss_ids,
                 "target_required_dps": target_required_dps,
-                "target_required_dps_text": _format_number(target_required_dps) if target_required_dps is not None else "",
+                "target_required_dps_text":
+                _format_number(target_required_dps) if target_required_dps is not None else "",
                 "target_floor_hp": target_floor_hp,
                 "target_floor_hp_text": _format_number(target_floor_hp) if target_floor_hp is not None else "",
                 "_order": order,
-            }
+            },
         )
-    rows.sort(key=lambda item: (item["stage"], item["_order"]))
+    rows.sort(key = lambda item: (item["stage"], item["_order"]))
     for item in rows:
         item.pop("_order", None)
     return rows
-
 
 TRIAL_LAND_ATTRIBUTE_LABELS = {
     "atPhysicsAttackPowerBase": "外攻",
@@ -492,7 +505,6 @@ TRIAL_LAND_ATTRIBUTE_LABELS = {
     "atSurplusValueBase": "破招",
     "atStrainBase": "无双",
 }
-
 
 def _prepare_trial_land_attribute_incomes(raw: Any, target: dict[str, Any] | None) -> list[dict[str, Any]]:
     gap_dps = int(target["gap_dps"]) if target is not None else None
@@ -524,7 +536,7 @@ def _prepare_trial_land_attribute_incomes(raw: Any, target: dict[str, Any] | Non
             points_needed = 0
             points_needed_text = "已达标"
         elif dps_per_point > 0:
-            points_needed = math.ceil(gap_dps / dps_per_point)
+            points_needed = math.ceil(cast(int, gap_dps) / dps_per_point)
             points_needed_text = f"约 {_format_number(points_needed)} 点"
         else:
             points_needed = None
@@ -540,17 +552,16 @@ def _prepare_trial_land_attribute_incomes(raw: Any, target: dict[str, Any] | Non
                 "value_text": f"每附魔约 {dps_per_enchant:+,.0f} DPS",
                 "points_needed": points_needed,
                 "points_needed_text": points_needed_text,
-            }
+            },
         )
-    incomes.sort(key=lambda item: item["dps_per_enchant"], reverse=True)
-    max_income = max((max(0.0, item["dps_per_enchant"]) for item in incomes), default=0.0)
+    incomes.sort(key = lambda item: item["dps_per_enchant"], reverse = True)
+    max_income = max((max(0.0, item["dps_per_enchant"]) for item in incomes), default = 0.0)
     for index, item in enumerate(incomes):
         bar_percent = max(0.0, item["dps_per_enchant"]) / max_income * 100 if max_income > 0 else 0.0
         item["bar_percent"] = round(bar_percent, 1)
         item["bar_width"] = f"{bar_percent:.1f}%"
         item["is_top"] = index == 0
     return incomes
-
 
 def _trial_land_summary_metrics(
     *,
@@ -568,9 +579,7 @@ def _trial_land_summary_metrics(
                 "value": "已达到",
                 "detail": "旧 calculator 未返回目标门槛",
                 "state": "ok",
-            }
-            if capped
-            else {
+            } if capped else {
                 "key": "target_gap",
                 "label": "下一目标",
                 "value": "待计算",
@@ -589,19 +598,18 @@ def _trial_land_summary_metrics(
         }
     return [
         {
-            "key": "max_floor",
-            "label": "最高可通关",
-            "value": max_floor_text,
+            "key":
+            "max_floor",
+            "label":
+            "最高可通关",
+            "value":
+            max_floor_text,
             "detail": (
-                "已达到血量表上限"
-                if capped
-                else (
-                    f"{target['floor']}层目标：{target['bottleneck_text']}瓶颈"
-                    if target is not None
-                    else "按三首领通关规则"
-                )
+                "已达到血量表上限" if capped else
+                (f"{target['floor']}层目标：{target['bottleneck_text']}瓶颈" if target is not None else "按三首领通关规则")
             ),
-            "state": "ok",
+            "state":
+            "ok",
         },
         {
             "key": "expected_dps",
@@ -612,7 +620,6 @@ def _trial_land_summary_metrics(
         },
         target_metric,
     ]
-
 
 def _trial_land_optimization_steps(
     target: dict[str, Any] | None,
@@ -682,11 +689,8 @@ def _trial_land_optimization_steps(
             "key": "dps_gap",
             "index": 2,
             "title": f"提高 {target['gap_dps_text']} DPS",
-            "value": (
-                f"相对当前约 {target['gap_percent_text']}"
-                if target["gap_percent"] is not None
-                else "当前DPS为 0，暂无法换算比例"
-            ),
+            "value":
+            (f"相对当前约 {target['gap_percent_text']}" if target["gap_percent"] is not None else "当前DPS为 0，暂无法换算比例"),
             "detail": "以试炼预期DPS为准",
             "state": "warning",
         },
@@ -699,7 +703,6 @@ def _trial_land_optimization_steps(
             "state": attribute_state,
         },
     ]
-
 
 def _prepare_trial_land(raw: Any) -> dict[str, Any] | None:
     if raw is None:
@@ -749,15 +752,13 @@ def _prepare_trial_land(raw: Any) -> dict[str, Any] | None:
     max_floor_text = f"{max_floor}层" if max_floor > 0 else "未通过第1层"
     target = _prepare_trial_land_target(raw.get("target"), boss_names)
     selected_boss_ids = set(
-        target["selected_boss_ids"]
-        if target is not None
-        else _trial_land_selected_boss_ids(stages)
+        target["selected_boss_ids"] if target is not None else _trial_land_selected_boss_ids(stages),
     )
     data_max_floor = _trial_land_int(_as_dict(raw.get("data")).get("max_floor"))
     boss_rows = _prepare_trial_land_boss_rows(
         raw.get("bosses"),
-        selected_boss_ids=selected_boss_ids,
-        data_max_floor=data_max_floor,
+        selected_boss_ids = selected_boss_ids,
+        data_max_floor = data_max_floor,
     )
     attribute_incomes = _prepare_trial_land_attribute_incomes(raw.get("attribute_incomes"), target)
     buffs = _as_dict(raw.get("buffs"))
@@ -779,11 +780,15 @@ def _prepare_trial_land(raw: Any) -> dict[str, Any] | None:
                 "name": name,
                 "code": code,
                 "group": "择优增益",
-                "icon": _adaptive_icon({"name": name, "codes": [code] if code else []}),
-            }
+                "icon": _adaptive_icon({
+                    "name": name,
+                    "codes": [code] if code else [],
+                }, ),
+            },
         )
     fixed_consumables = []
-    for index, item in enumerate(buffs.get("fixed") if isinstance(buffs.get("fixed"), list) else []):
+    fixed_buffs = buffs.get("fixed")
+    for index, item in enumerate(fixed_buffs if isinstance(fixed_buffs, list) else []):
         name, code = _trial_land_item_fields(item)
         if not name:
             continue
@@ -809,41 +814,61 @@ def _prepare_trial_land(raw: Any) -> dict[str, Any] | None:
                 "name": name,
                 "code": code,
                 "group": "固定增益",
-                "icon": _adaptive_icon({"name": name, "codes": [code] if code else []}),
+                "icon": _adaptive_icon({
+                    "name": name,
+                    "codes": [code] if code else [],
+                }, ),
                 "_display_order": display_order,
-            }
+            },
         )
-    fixed_consumables.sort(key=lambda item: item["_display_order"])
+    fixed_consumables.sort(key = lambda item: item["_display_order"])
     for item in fixed_consumables:
         item.pop("_display_order", None)
     return {
-        "status": "ok",
-        "max_floor": max_floor,
-        "max_floor_text": max_floor_text,
-        "raw_dps": dps,
-        "raw_dps_text": _format_number(dps),
-        "expected_dps_text": _format_number(dps),
-        "capped": capped,
-        "first_bosses": first_bosses,
-        "second_bosses": second_bosses,
-        "target_available": target is not None,
-        "target": target,
-        "summary_metrics": _trial_land_summary_metrics(
-            max_floor_text=max_floor_text,
-            expected_dps=dps,
-            capped=capped,
-            target=target,
-            wine_locked_for_haste=wine_locked_for_haste,
+        "status":
+        "ok",
+        "max_floor":
+        max_floor,
+        "max_floor_text":
+        max_floor_text,
+        "raw_dps":
+        dps,
+        "raw_dps_text":
+        _format_number(dps),
+        "expected_dps_text":
+        _format_number(dps),
+        "capped":
+        capped,
+        "first_bosses":
+        first_bosses,
+        "second_bosses":
+        second_bosses,
+        "target_available":
+        target is not None,
+        "target":
+        target,
+        "summary_metrics":
+        _trial_land_summary_metrics(
+            max_floor_text = max_floor_text,
+            expected_dps = dps,
+            capped = capped,
+            target = target,
+            wine_locked_for_haste = wine_locked_for_haste,
         ),
-        "boss_rows": boss_rows,
-        "boss_rows_complete": len(boss_rows) == 9,
-        "optimization_steps": _trial_land_optimization_steps(target, attribute_incomes),
-        "attribute_incomes": attribute_incomes,
-        "fixed_consumables": fixed_consumables,
-        "consumables": consumables,
+        "boss_rows":
+        boss_rows,
+        "boss_rows_complete":
+        len(boss_rows) == 9,
+        "optimization_steps":
+        _trial_land_optimization_steps(target, attribute_incomes),
+        "attribute_incomes":
+        attribute_incomes,
+        "fixed_consumables":
+        fixed_consumables,
+        "consumables":
+        consumables,
         "consumable_items": [*consumables, *fixed_consumables],
     }
-
 
 def _equipment_rating_timeline_loop_payload(meta: dict[str, Any]) -> dict[str, Any] | None:
     jcl = _as_dict(meta.get("jcl"))
@@ -865,7 +890,6 @@ def _equipment_rating_timeline_loop_payload(meta: dict[str, Any]) -> dict[str, A
     if str(meta.get("jcl_source") or "") == "rating_jcl":
         payload["source"] = "rating_jcl"
     return payload
-
 
 async def _request_equipment_rating_timeline(
     rating_data: dict[str, Any],
@@ -892,7 +916,12 @@ async def _request_equipment_rating_timeline(
         "rating_replay": True,
     }
     try:
-        response = await Request(f"{Config.jx3.api.calculator_url}/damage_timeline", params=payload).post(timeout=120)
+        response = await Request(
+            f"{Config.jx3.api.calculator_url}/damage_timeline",
+            params = payload,
+        ).post(
+            timeout = 120,
+        )
         result = response.json()
     except Exception as exc:
         logger.warning(f"装备评级循环曲线生成失败：{exc}")
@@ -902,7 +931,6 @@ async def _request_equipment_rating_timeline(
         return None
     data = result.get("data")
     return data if isinstance(data, dict) else None
-
 
 def _prepare_rating_timeline(timeline_data: dict[str, Any] | None) -> dict[str, str] | None:
     if not isinstance(timeline_data, dict):
@@ -919,8 +947,8 @@ def _prepare_rating_timeline(timeline_data: dict[str, Any] | None) -> dict[str, 
         460,
         142,
         True,
-        buff_overlays=timeline_data.get("buff_overlays") or [],
-        stroke_width=3,
+        buff_overlays = timeline_data.get("buff_overlays") or [],
+        stroke_width = 3,
     )
     if not chart:
         return None
@@ -933,22 +961,21 @@ def _prepare_rating_timeline(timeline_data: dict[str, Any] | None) -> dict[str, 
         "total_damage": _format_compact_number(adjusted.get("total_damage")),
     }
 
-
 def _equipment_rating_adaptive_dps(data: dict[str, Any]) -> int:
     adaptive = _as_dict(data.get("adaptive_consumables"))
     if adaptive.get("status") != "ok":
         return 0
     return int(_to_float(adaptive.get("dps")))
 
-
 def _equipment_rating_rank_label(data: dict[str, Any]) -> str:
-    summary = data.get("summary") if isinstance(data.get("summary"), dict) else {}
-    meta = data.get("meta") if isinstance(data.get("meta"), dict) else {}
+    summary_data = data.get("summary")
+    meta_data = data.get("meta")
+    summary = summary_data if isinstance(summary_data, dict) else {}
+    meta = meta_data if isinstance(meta_data, dict) else {}
     metric = str(summary.get("metric") or meta.get("metric") or "").strip()
     if metric == "therapy_ruin_capacity":
         return "承压排名"
     return "伤害排名"
-
 
 def _equipment_rating_rank_jcl_key(meta: dict[str, Any]) -> str:
     jcl = _as_dict(meta.get("jcl"))
@@ -959,7 +986,7 @@ def _equipment_rating_rank_jcl_key(meta: dict[str, Any]) -> str:
             "rating_model": rating_model,
             "model_name": str(meta.get("loop_name") or "").strip(),
         }
-        return json.dumps(payload, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
+        return json.dumps(payload, ensure_ascii = False, sort_keys = True, separators = (",", ":"))
     weapon = str(jcl.get("weapon") or "").strip()
     haste = str(jcl.get("haste") or "").strip()
     loop_name = str(jcl.get("raw_loop") or jcl.get("loop") or meta.get("loop_name") or "").strip()
@@ -972,8 +999,7 @@ def _equipment_rating_rank_jcl_key(meta: dict[str, Any]) -> str:
         "source": str(meta.get("jcl_source") or selected_loop.get("source") or "").strip(),
         "user_id": int(_to_float(selected_loop.get("user_id"))),
     }
-    return json.dumps(payload, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
-
+    return json.dumps(payload, ensure_ascii = False, sort_keys = True, separators = (",", ":"))
 
 def _equipment_rating_rank_jcl_name(meta: dict[str, Any]) -> str:
     jcl = _as_dict(meta.get("jcl"))
@@ -985,12 +1011,12 @@ def _equipment_rating_rank_jcl_name(meta: dict[str, Any]) -> str:
         return f"{prefix}_{loop_name}"
     return loop_name or str(meta.get("loop_name") or "评级专用循环")
 
-
-def _same_equipment_rating_role(record: EquipmentRatingDpsRank, server_name: str, role_id: str, global_role_id: int) -> bool:
+def _same_equipment_rating_role(
+    record: EquipmentRatingDpsRank, server_name: str, role_id: str, global_role_id: int
+) -> bool:
     if global_role_id > 0 and int(record.global_role_id or 0) == global_role_id:
         return True
     return bool(role_id) and record.server_name == server_name and record.role_id == role_id
-
 
 def _record_equipment_rating_rank(
     data: dict[str, Any],
@@ -1011,12 +1037,10 @@ def _record_equipment_rating_rank(
         "kungfu_id = ? AND jcl_key = ?",
         kungfu_id,
         jcl_key,
-        default=[],
+        default = [],
     ) or []
     same_role_records = [
-        record
-        for record in records
-        if isinstance(record, EquipmentRatingDpsRank)
+        record for record in records if isinstance(record, EquipmentRatingDpsRank)
         and _same_equipment_rating_role(record, server_name, role_id, global_role_id)
     ]
     current = same_role_records[0] if same_role_records else EquipmentRatingDpsRank()
@@ -1040,12 +1064,10 @@ def _record_equipment_rating_rank(
         "kungfu_id = ? AND jcl_key = ?",
         kungfu_id,
         jcl_key,
-        default=[],
+        default = [],
     ) or []
     valid_records = [
-        record
-        for record in ranking_records
-        if isinstance(record, EquipmentRatingDpsRank) and int(record.dps or 0) > 0
+        record for record in ranking_records if isinstance(record, EquipmentRatingDpsRank) and int(record.dps or 0) > 0
     ]
     if not valid_records:
         return None
@@ -1056,7 +1078,6 @@ def _record_equipment_rating_rank(
         "text": f"{_equipment_rating_rank_label(data)} 第 {rank} / {len(valid_records)}",
     }
 
-
 def record_equipment_rating_rank(
     data: dict[str, Any],
     role_name: str,
@@ -1066,10 +1087,9 @@ def record_equipment_rating_rank(
 ) -> dict[str, Any] | None:
     return _record_equipment_rating_rank(data, role_name, server_name, role_id, global_role_id)
 
-
 async def _fetch_supported_equipment_rating_data(timeout: int = 8) -> dict[str, Any] | str:
     try:
-        response = await Request(f"{Config.jx3.api.calculator_url}/equipment_rating/kungfus").get(timeout=timeout)
+        response = await Request(f"{Config.jx3.api.calculator_url}/equipment_rating/kungfus").get(timeout = timeout)
         if response.status_code == 404:
             return "装备评级支持心法查询失败：calculator 尚未加载支持心法接口，请重启 calculator 后重试。"
         if response.status_code >= 400:
@@ -1081,17 +1101,14 @@ async def _fetch_supported_equipment_rating_data(timeout: int = 8) -> dict[str, 
         return result.get("msg", "装备评级支持心法查询失败。")
     return result.get("data") or {}
 
-
 def _supported_kungfu_name(item: dict[str, Any]) -> str:
     kungfu_id = item.get("kungfu_id", 0)
-    kungfu = Kungfu.with_internel_id(kungfu_id, convert_to_pc=True)
+    kungfu = Kungfu.with_internel_id(kungfu_id, convert_to_pc = True)
     return str(item.get("name") or kungfu.name or "未知心法")
 
-
 def _supported_kungfu_school(item: dict[str, Any]) -> str:
-    kungfu = Kungfu.with_internel_id(item.get("kungfu_id", 0), convert_to_pc=True)
+    kungfu = Kungfu.with_internel_id(item.get("kungfu_id", 0), convert_to_pc = True)
     return kungfu.school or "其他"
-
 
 def _selected_rating_loop_text(item: dict[str, Any]) -> str:
     if item.get("rating_model") == "therapy_ruin":
@@ -1104,18 +1121,15 @@ def _selected_rating_loop_text(item: dict[str, Any]) -> str:
     ]
     return " · ".join(part for part in parts if part) or "未指定循环"
 
-
 def _selected_jcl_record(item: dict[str, Any]) -> dict[str, Any]:
     selected = item.get("selected") or {}
     record = selected.get("jcl_record") or item.get("jcl_record") or {}
     return record if isinstance(record, dict) else {}
 
-
 def _format_jcl_record_brief(item: dict[str, Any]) -> str:
     record = _selected_jcl_record(item)
     season = str(record.get("season") or "").strip()
     return season or "未标注"
-
 
 def _format_jcl_record_detail_lines(item: dict[str, Any]) -> list[str]:
     if item.get("rating_model") == "therapy_ruin":
@@ -1137,7 +1151,6 @@ def _format_jcl_record_detail_lines(item: dict[str, Any]) -> list[str]:
         lines.append(f"JCL备注：{note}")
     return lines
 
-
 def _find_supported_kungfu(kungfus: list[dict[str, Any]], kungfu_id: int) -> dict[str, Any] | None:
     for item in kungfus:
         if int(item.get("kungfu_id", 0)) == kungfu_id:
@@ -1146,25 +1159,21 @@ def _find_supported_kungfu(kungfus: list[dict[str, Any]], kungfu_id: int) -> dic
             return item
     return None
 
-
 async def get_equipment_rating_support_status(kungfu_id: int) -> bool | None:
-    data = await _fetch_supported_equipment_rating_data(timeout=2)
+    data = await _fetch_supported_equipment_rating_data(timeout = 2)
     if isinstance(data, str):
         return None
     kungfus = data.get("kungfus") or []
     return _find_supported_kungfu(kungfus, kungfu_id) is not None
 
-
 async def is_equipment_rating_supported_kungfu(kungfu_id: int) -> bool:
     return await get_equipment_rating_support_status(kungfu_id) is True
-
 
 def _supported_kungfu_sort_key(item: dict[str, Any]) -> int:
     try:
         return int(item.get("kungfu_id") or 0)
     except (TypeError, ValueError):
         return 0
-
 
 def _season_group_sort_key(group: tuple[str, list[dict[str, Any]]]) -> tuple[int, int]:
     season, items = group
@@ -1177,35 +1186,32 @@ def _season_group_sort_key(group: tuple[str, list[dict[str, Any]]]) -> tuple[int
     min_kungfu_id = min(_supported_kungfu_sort_key(item) for item in items)
     return (0 if season == current_season else 1, min_kungfu_id)
 
-
 def _format_supported_kungfu_list(data: dict[str, Any]) -> str:
     kungfus = data.get("kungfus") or []
     if not kungfus:
         return "当前 calculator 没有可用的装备评级心法。"
     season_groups: dict[str, list[dict[str, Any]]] = {}
-    for item in sorted(kungfus, key=_supported_kungfu_sort_key):
+    for item in sorted(kungfus, key = _supported_kungfu_sort_key):
         season = _format_jcl_record_brief(item)
         season_groups.setdefault(season, []).append(item)
 
     lines = [f"当前装备评级支持 {len(kungfus)} 个心法："]
-    for season, items in sorted(season_groups.items(), key=_season_group_sort_key):
+    for season, items in sorted(season_groups.items(), key = _season_group_sort_key):
         lines.append(f"【{season}】")
         school_groups: dict[str, list[dict[str, Any]]] = {}
         for item in items:
             school_groups.setdefault(_supported_kungfu_school(item), []).append(item)
         for school, school_items in sorted(
-            school_groups.items(),
-            key=lambda group: min(_supported_kungfu_sort_key(item) for item in group[1]),
+                school_groups.items(),
+                key = lambda group: min(_supported_kungfu_sort_key(item) for item in group[1]),
         ):
             names = "、".join(
-                _supported_kungfu_name(item)
-                for item in sorted(school_items, key=_supported_kungfu_sort_key)
+                _supported_kungfu_name(item) for item in sorted(school_items, key = _supported_kungfu_sort_key)
             )
             lines.append(f"{school}：{names}")
     lines.append("查询单个心法：装备评级支持 <心法名>")
     lines.append("装备评级使用示例：装备评级 剑胆琴心 倦收天 剑纯")
     return "\n".join(lines)
-
 
 def _format_supported_kungfu_detail(item: dict[str, Any]) -> str:
     selected = item.get("selected") or {}
@@ -1230,9 +1236,8 @@ def _format_supported_kungfu_detail(item: dict[str, Any]) -> str:
         lines.append(f"提示：{item['warning']}")
     return "\n".join(lines)
 
-
 async def _fetch_equipment_rating_loop_entries(
-    event: GroupMessageEvent,
+    event: MessageEvent,
     instance: UniversalCalculator | JX3BOXCalculator,
 ) -> list[dict[str, Any]] | str:
     use_custom_loops = Preference(event.user_id, "", "").setting("计算器来源") == "自定义"
@@ -1240,13 +1245,11 @@ async def _fetch_equipment_rating_loop_entries(
         instance,
         event.user_id,
         use_custom_loops,
-        public_error="该心法当前没有可用公共 JCL，默认装备评级仍可使用评级专用 JCL。",
+        public_error = "该心法当前没有可用公共 JCL，默认装备评级仍可使用评级专用 JCL。",
     )
-
 
 def _format_equipment_rating_loop_list(loops: list[dict[str, Any]]) -> str:
     return format_calculator_loop_selection(loops, "请选择装备评级循环，选择后会开始计算（列表与计算器循环列表一致）：")
-
 
 def _equipment_rating_loop_payload(loop_entry: dict[str, Any]) -> dict[str, Any]:
     return {
@@ -1257,10 +1260,8 @@ def _equipment_rating_loop_payload(loop_entry: dict[str, Any]) -> dict[str, Any]
         "user_id": int(loop_entry.get("user_id") or 0),
     }
 
-
 def _percent_from_rating(value: Any, divisor: float, base: float = 0) -> str:
     return _format_percent((_to_float(value) / divisor + base) * 100)
-
 
 def _haste_level(value: Any, kungfu_id: int = 0) -> int:
     origin_frames = 16 if kungfu_id in (10242, 10243) else 24
@@ -1271,43 +1272,27 @@ def _haste_level(value: Any, kungfu_id: int = 0) -> int:
     current_frames = int(origin_frames * 1024 / (guoshi_haste + 1024))
     return min(5, max(0, origin_frames - current_frames))
 
-
 def _grade_icon(grade: Any) -> str:
     return _asset_uri("image", "jx3", "equipment_rating", RANK_ICON_FILES.get(str(grade), "rank_d.png"))
-
 
 def _grade_theme(grade: Any) -> dict[str, str]:
     return RANK_THEMES.get(str(grade), RANK_THEMES["D"]).copy()
 
-
 def _rating_avatar() -> str:
     return _asset_uri("image", "jx3", "equipment_rating", "Inkar.jpg")
-
 
 def _rating_group_qrcode() -> str:
     path = Path(build_path(ASSETS, ["image", "jx3", "equipment_rating", "group_qrcode.png"]))
     return path.as_uri() if path.exists() else ""
 
-
 def _attr_text(attributes: Any) -> str:
     if isinstance(attributes, list):
-        return " ".join(
-            [
-                _short_attribute_text(item)
-                for item in attributes
-                if not _is_hidden_attribute_text(item)
-            ]
-        )
+        return " ".join([_short_attribute_text(item) for item in attributes if not _is_hidden_attribute_text(item)], )
     if isinstance(attributes, str):
         return " ".join(
-            [
-                _short_attribute_text(part)
-                for part in attributes.split()
-                if not _is_hidden_attribute_text(part)
-            ]
+            [_short_attribute_text(part) for part in attributes.split() if not _is_hidden_attribute_text(part)],
         )
     return ""
-
 
 def _equip_icon(detail: dict[str, Any]) -> str:
     try:
@@ -1316,13 +1301,11 @@ def _equip_icon(detail: dict[str, Any]) -> str:
         icon_id = 1434
     return f"https://icon.jx3box.com/icon/{icon_id}.png"
 
-
 def _jx3_icon(icon_id: Any) -> str:
     icon_id_int = int(_to_float(icon_id))
     if icon_id_int <= 0:
         icon_id_int = 1434
     return f"https://icon.jx3box.com/icon/{icon_id_int}.png"
-
 
 def _item_icon_by_name(name: str) -> str:
     if not name:
@@ -1335,7 +1318,6 @@ def _item_icon_by_name(name: str) -> str:
         return ""
     return ""
 
-
 def _skill_icon_by_name(name: str) -> str:
     if not name:
         return ""
@@ -1347,12 +1329,10 @@ def _skill_icon_by_name(name: str) -> str:
         return ""
     return ""
 
-
 def _formation_alias(name: str, item: dict[str, Any] | None = None) -> str:
     item = item if isinstance(item, dict) else {}
     alias = item.get("alias") or item.get("nickname") or ADAPTIVE_FORMATION_ALIASES.get(name, "")
     return str(alias).strip()
-
 
 def _formation_fallback_icon(name: str) -> str:
     icon_id = ADAPTIVE_FORMATION_FALLBACK_ICON_IDS.get(name)
@@ -1360,14 +1340,12 @@ def _formation_fallback_icon(name: str) -> str:
         return ""
     return _jx3_icon(icon_id)
 
-
 def _adaptive_icon(item: dict[str, Any]) -> str:
     category = str(item.get("category") or "")
     name = str(item.get("name") or "")
     if category == "阵眼":
         return (
-            _skill_icon_by_name(name)
-            or _formation_fallback_icon(name)
+            _skill_icon_by_name(name) or _formation_fallback_icon(name)
             or _asset_uri("image", "jx3", "attributes", "unknown.png")
         )
     for code in item.get("codes") or []:
@@ -1380,12 +1358,10 @@ def _adaptive_icon(item: dict[str, Any]) -> str:
         return icon
     return _asset_uri("image", "jx3", "attributes", "unknown.png")
 
-
 def _quality_class(detail: dict[str, Any]) -> str:
     if _to_float(detail.get("quality")) >= 5:
         return "quality5"
     return "quality4"
-
 
 def _decoration_attribute_text(item: dict[str, Any]) -> str:
     attribute_key = str(item.get("attribute_key") or "").strip()
@@ -1393,7 +1369,6 @@ def _decoration_attribute_text(item: dict[str, Any]) -> str:
     if not label:
         return ""
     return f"{label}+{_format_plain_int(item.get('value'))}"
-
 
 def _decoration_chips(detail: dict[str, Any]) -> list[dict[str, str]]:
     chips = []
@@ -1404,12 +1379,10 @@ def _decoration_chips(detail: dict[str, Any]) -> list[dict[str, str]]:
         if not text:
             continue
         level = _format_plain_int(embedding.get("level"))
-        chips.append(
-            {
-                "icon": _asset_uri("image", "jx3", "attributes", "wuxingshi", f"{level}.png"),
-                "text": text,
-            }
-        )
+        chips.append({
+            "icon": _asset_uri("image", "jx3", "attributes", "wuxingshi", f"{level}.png"),
+            "text": text,
+        }, )
     for enchant in detail.get("enchants") or []:
         if not isinstance(enchant, dict):
             continue
@@ -1418,12 +1391,10 @@ def _decoration_chips(detail: dict[str, Any]) -> list[dict[str, str]]:
             continue
         icon_kind = str(enchant.get("icon_kind") or enchant.get("kind") or "")
         icon_file = "common_enchant.png" if icon_kind == "common" else "permanent_enchant.png"
-        chips.append(
-            {
-                "icon": _asset_uri("image", "jx3", "attributes", icon_file),
-                "text": text,
-            }
-        )
+        chips.append({
+            "icon": _asset_uri("image", "jx3", "attributes", icon_file),
+            "text": text,
+        }, )
     color_stone = detail.get("color_stone")
     if isinstance(color_stone, dict):
         text = str(color_stone.get("text") or color_stone.get("name") or "").strip()
@@ -1432,10 +1403,9 @@ def _decoration_chips(detail: dict[str, Any]) -> list[dict[str, str]]:
                 {
                     "icon": str(color_stone.get("icon_url") or _asset_uri("image", "jx3", "attributes", "unknown.png")),
                     "text": text,
-                }
+                },
             )
     return chips
-
 
 def _best_equipment_text(best: dict[str, Any]) -> str:
     name = str(best.get("name") or "候选装备")
@@ -1447,19 +1417,13 @@ def _best_equipment_text(best: dict[str, Any]) -> str:
         details.append(attribute_text)
     return f"{name}（{' '.join(details)}）" if details else name
 
-
 def _prepare_ring_combination_notes(raw_items: Any) -> dict[int, str]:
-    combinations = [
-        item
-        for item in raw_items or []
-        if isinstance(item, dict) and _to_float(item.get("diff_dps")) > 0
-    ]
+    combinations = [item for item in raw_items or [] if isinstance(item, dict) and _to_float(item.get("diff_dps")) > 0]
     if not combinations:
         return {}
-    best_combo = max(combinations, key=lambda item: _to_float(item.get("diff_dps")))
+    best_combo = max(combinations, key = lambda item: _to_float(item.get("diff_dps")))
     names = [
-        str(item.get("name") or "").strip()
-        for item in best_combo.get("items") or []
+        str(item.get("name") or "").strip() for item in best_combo.get("items") or []
         if isinstance(item, dict) and str(item.get("name") or "").strip()
     ]
     if len(names) < 2:
@@ -1475,7 +1439,6 @@ def _prepare_ring_combination_notes(raw_items: Any) -> dict[int, str]:
             notes[location_code] = text
     return notes
 
-
 def _prepare_slots(
     slots: list[dict[str, Any]],
     ring_combination_notes: dict[int, str] | None = None,
@@ -1483,7 +1446,7 @@ def _prepare_slots(
     prepared = []
     ring_combination_notes = ring_combination_notes or {}
     order = {location: index for index, location in enumerate(SLOT_DISPLAY_ORDER)}
-    for slot in sorted(slots, key=lambda item: order.get(int(item.get("location_code", 99)), 99)):
+    for slot in sorted(slots, key = lambda item: order.get(int(item.get("location_code", 99)), 99)):
         location_code = int(slot.get("location_code", 99))
         rating = slot.get("rating")
         current = slot.get("current") or {}
@@ -1530,11 +1493,10 @@ def _prepare_slots(
                     "best_note": f"最优 {_best_equipment_text(best)}: {_format_signed(best_diff)}",
                     "has_haste_adjustment": bool(adjustment.get("applied")),
                     "upgrade_value": best_diff,
-                }
+                },
             )
         prepared.append(row)
     return prepared
-
 
 def _prepare_header_summary(summary: dict[str, Any], slots: list[dict[str, Any]]) -> dict[str, Any]:
     priority_slots = []
@@ -1546,13 +1508,13 @@ def _prepare_header_summary(summary: dict[str, Any], slots: list[dict[str, Any]]
                 "name": str(slot.get("location_name") or "").strip(),
                 "score": _to_float(slot.get("score_value"), 100),
                 "upgrade": _to_float(slot.get("upgrade_value")),
-            }
+            },
         )
     if any(item["upgrade"] > 0.01 for item in priority_slots):
         priority_slots = [item for item in priority_slots if item["upgrade"] > 0.01]
-        priority_slots.sort(key=lambda item: (-item["upgrade"], item["score"]))
+        priority_slots.sort(key = lambda item: (-item["upgrade"], item["score"]))
     else:
-        priority_slots.sort(key=lambda item: item["score"])
+        priority_slots.sort(key = lambda item: item["score"])
     names = []
     for item in priority_slots:
         if item["name"] and item["name"] not in names:
@@ -1564,7 +1526,6 @@ def _prepare_header_summary(summary: dict[str, Any], slots: list[dict[str, Any]]
         "priority_text": " / ".join(names) if names else "暂无明显短板",
     }
 
-
 def _prepare_attributes(
     summary: dict[str, Any],
     kungfu: Kungfu,
@@ -1575,10 +1536,22 @@ def _prepare_attributes(
     main_attr_label = MAIN_ATTR_LABELS.get(main_attr_key, "主属性")
     is_therapy_rating = summary.get("metric") == "therapy_ruin_capacity" or attributes.get("kungfu_type") == "Therapy"
     role_info = [
-        {"label": "门派", "value": kungfu.school or "-"},
-        {"label": "心法", "value": kungfu.name or "-"},
-        {"label": "主属性", "value": main_attr_label},
-        {"label": "目标", "value": "10秒承压窗口" if is_therapy_rating else "134级木桩"},
+        {
+            "label": "门派",
+            "value": kungfu.school or "-",
+        },
+        {
+            "label": "心法",
+            "value": kungfu.name or "-",
+        },
+        {
+            "label": "主属性",
+            "value": main_attr_label,
+        },
+        {
+            "label": "目标",
+            "value": "10秒承压窗口" if is_therapy_rating else "134级木桩",
+        },
     ]
     if rating_equip is not None:
         try:
@@ -1593,46 +1566,94 @@ def _prepare_attributes(
             ]
             detail_attrs = [
                 _prepare_display_attribute_row(name, value, kungfu.id or 0)
-                for name, value in detail_display_attrs.items()
-                if str(name) not in HIDDEN_DETAIL_ATTRIBUTE_LABELS
+                for name, value in detail_display_attrs.items() if str(name) not in HIDDEN_DETAIL_ATTRIBUTE_LABELS
             ]
             return role_info, basic_attrs, detail_attrs
     if is_therapy_rating:
         basic_attrs = [
-            {"label": "装分", "value": _format_number(summary.get("current_score"))},
-            {"label": "基础治疗", "value": _format_number(attributes.get("BaseTherapy"))},
-            {"label": "最终治疗", "value": _format_number(attributes.get("FinalTherapy"))},
-            {"label": main_attr_label, "value": _format_number(attributes.get("MainAttrValue"))},
+            {
+                "label": "装分",
+                "value": _format_number(summary.get("current_score")),
+            },
+            {
+                "label": "基础治疗",
+                "value": _format_number(attributes.get("BaseTherapy")),
+            },
+            {
+                "label": "最终治疗",
+                "value": _format_number(attributes.get("FinalTherapy")),
+            },
+            {
+                "label": main_attr_label,
+                "value": _format_number(attributes.get("MainAttrValue")),
+            },
         ]
         detail_attrs = [
-            {"label": "会心", "value": _format_percent(_to_float(attributes.get("Critical")) * 100)},
-            {"label": "会效", "value": _format_percent(_to_float(attributes.get("CriticalDamage")) * 100)},
-            {"label": "加速", "value": _format_haste(attributes.get("Haste"), kungfu.id or 0)},
+            {
+                "label": "会心",
+                "value": _format_percent(_to_float(attributes.get("Critical")) * 100),
+            },
+            {
+                "label": "会效",
+                "value": _format_percent(_to_float(attributes.get("CriticalDamage")) * 100),
+            },
+            {
+                "label": "加速",
+                "value": _format_haste(attributes.get("Haste"), kungfu.id or 0),
+            },
         ]
         return role_info, basic_attrs, detail_attrs
     basic_attrs = [
-        {"label": "装分", "value": _format_number(summary.get("current_score"))},
-        {"label": "基础攻击", "value": _format_number(attributes.get("BaseAttack"))},
-        {"label": "面板攻击", "value": _format_number(attributes.get("FinalAttack"))},
-        {"label": main_attr_label, "value": _format_number(attributes.get("MainAttrValue"))},
+        {
+            "label": "装分",
+            "value": _format_number(summary.get("current_score")),
+        },
+        {
+            "label": "基础攻击",
+            "value": _format_number(attributes.get("BaseAttack")),
+        },
+        {
+            "label": "面板攻击",
+            "value": _format_number(attributes.get("FinalAttack")),
+        },
+        {
+            "label": main_attr_label,
+            "value": _format_number(attributes.get("MainAttrValue")),
+        },
     ]
     detail_attrs = [
-        {"label": "会心", "value": _percent_from_rating(attributes.get("Critical"), CRITICAL_DIVISOR)},
-        {"label": "会效", "value": _percent_from_rating(attributes.get("CriticalDamage"), CRITICAL_DAMAGE_DIVISOR, 1.75)},
-        {"label": "破防", "value": _percent_from_rating(attributes.get("Overcome"), OVERCOME_DIVISOR)},
-        {"label": "无双", "value": _percent_from_rating(attributes.get("Strain"), STRAIN_DIVISOR)},
-        {"label": "破招", "value": _format_number(attributes.get("Surplus"))},
-        {"label": "加速", "value": _format_haste(attributes.get("Haste"), kungfu.id or 0)},
+        {
+            "label": "会心",
+            "value": _percent_from_rating(attributes.get("Critical"), CRITICAL_DIVISOR),
+        },
+        {
+            "label": "会效",
+            "value": _percent_from_rating(attributes.get("CriticalDamage"), CRITICAL_DAMAGE_DIVISOR, 1.75),
+        },
+        {
+            "label": "破防",
+            "value": _percent_from_rating(attributes.get("Overcome"), OVERCOME_DIVISOR),
+        },
+        {
+            "label": "无双",
+            "value": _percent_from_rating(attributes.get("Strain"), STRAIN_DIVISOR),
+        },
+        {
+            "label": "破招",
+            "value": _format_number(attributes.get("Surplus")),
+        },
+        {
+            "label": "加速",
+            "value": _format_haste(attributes.get("Haste"), kungfu.id or 0),
+        },
     ]
     return role_info, basic_attrs, detail_attrs
-
 
 def _prepare_display_attribute_row(name: Any, value: Any, kungfu_id: int = 0) -> dict[str, str]:
     label = str(name)
     if label == "加速":
         return {"label": label, "value": _format_haste(value, kungfu_id)}
     return {"label": label, "value": str(value)}
-
 
 def _prepare_attribute_incomes(summary: dict[str, Any]) -> list[dict[str, Any]]:
     raw_items = [item for item in summary.get("attribute_incomes") or [] if isinstance(item, dict)]
@@ -1649,27 +1670,26 @@ def _prepare_attribute_incomes(summary: dict[str, Any]) -> list[dict[str, Any]]:
         if "dps_per_enchant" not in item:
             continue
         value = _to_float(item.get("dps_per_enchant"))
-        label = str(item.get("name") or "").strip() or get_attr_name(attribute_key) or str(item.get("key") or "").strip()
+        label = str(item.get("name") or "").strip() or get_attr_name(attribute_key) or str(
+            item.get("key") or "",
+        ).strip()
         if label == "会心效果":
             label = "会效"
         if not label:
             continue
-        incomes.append(
-            {
-                "label": label,
-                "value": value,
-                "value_text": _format_signed_float(value),
-            }
-        )
+        incomes.append({
+            "label": label,
+            "value": value,
+            "value_text": _format_signed_float(value),
+        }, )
     if not incomes:
         return []
-    incomes.sort(key=lambda item: item["value"], reverse=True)
+    incomes.sort(key = lambda item: item["value"], reverse = True)
     max_value = max(abs(item["value"]) for item in incomes) or 1
     for item in incomes:
         item["percent"] = f"{max(4, abs(item['value']) / max_value * 100):.1f}"
     incomes[0]["is_top"] = True
     return incomes
-
 
 def _prepare_adaptive_haste(raw: Any, kungfu_id: int = 0) -> dict[str, str] | None:
     if not isinstance(raw, dict):
@@ -1694,17 +1714,19 @@ def _prepare_adaptive_haste(raw: Any, kungfu_id: int = 0) -> dict[str, str] | No
             "detail": " · ".join(detail_parts),
         }
     return {
-        "state": "missing",
-        "status": "未满足",
-        "detail": " · ".join(
+        "state":
+        "missing",
+        "status":
+        "未满足",
+        "detail":
+        " · ".join(
             [
                 f"当前 {_format_number(actual)}（{_haste_level(actual, kungfu_id)}段）",
                 f"目标 {_format_number(required)}（{_haste_level(required, kungfu_id)}段）",
                 f"还差 {_format_number(abs(delta))}",
-            ]
+            ],
         ),
     }
-
 
 def _prepare_adaptive_formation(item: Any, rank: int | None = None) -> dict[str, Any] | None:
     if not isinstance(item, dict):
@@ -1723,7 +1745,10 @@ def _prepare_adaptive_formation(item: Any, rank: int | None = None) -> dict[str,
     return {
         "category": category,
         "name": name,
-        "icon": _adaptive_icon({**item, "category": category}),
+        "icon": _adaptive_icon({
+            **item,
+            "category": category,
+        }, ),
         "note": " · ".join(note_parts),
         "label": f"第{rank}名" if rank else "推荐阵法",
         "rank_icon": _grade_icon(ADAPTIVE_FORMATION_RANK_GRADES.get(rank, "")) if rank else "",
@@ -1731,7 +1756,6 @@ def _prepare_adaptive_formation(item: Any, rank: int | None = None) -> dict[str,
         "delta_text": _format_signed_percent(item.get("delta_percent")),
         "is_adaptive": item.get("source") == "adaptive",
     }
-
 
 def _prepare_adaptive_consumables(raw: Any, kungfu_id: int = 0) -> dict[str, Any] | None:
     if not isinstance(raw, dict):
@@ -1749,14 +1773,11 @@ def _prepare_adaptive_consumables(raw: Any, kungfu_id: int = 0) -> dict[str, Any
         for index, (_, _, categories) in enumerate(ADAPTIVE_DISPLAY_GROUPS)
         for category in categories
     }
-    grouped_items = [
-        {
-            "key": key,
-            "category": label,
-            "entries": [],
-        }
-        for key, label, _ in ADAPTIVE_DISPLAY_GROUPS
-    ]
+    grouped_items = [{
+        "key": key,
+        "category": label,
+        "entries": [],
+    } for key, label, _ in ADAPTIVE_DISPLAY_GROUPS]
     formation = None
     formation_entries = []
     flat_items = []
@@ -1787,7 +1808,7 @@ def _prepare_adaptive_consumables(raw: Any, kungfu_id: int = 0) -> dict[str, Any
             continue
         grouped_items[index]["entries"].append(prepared_item)
         flat_items.append(prepared_item)
-    for index, item in enumerate(raw.get("formation_top") or [], start=1):
+    for index, item in enumerate(raw.get("formation_top") or [], start = 1):
         prepared_formation = _prepare_adaptive_formation(item, index)
         if prepared_formation:
             formation_entries.append(prepared_formation)
@@ -1821,7 +1842,6 @@ def _prepare_adaptive_consumables(raw: Any, kungfu_id: int = 0) -> dict[str, Any
         "entries": flat_items,
     }
 
-
 def _prepare_distribution_view(kungfu_id: Any) -> dict[str, str] | None:
     payload = _load_equipment_rating_distribution()
     items = payload.get("items") or {}
@@ -1839,7 +1859,6 @@ def _prepare_distribution_view(kungfu_id: Any) -> dict[str, str] | None:
         "caption": "2026年5月21日统计数据",
     }
 
-
 def _tank_vitality_conversion_item(
     attributes: dict[str, Any],
     *,
@@ -1852,9 +1871,8 @@ def _tank_vitality_conversion_item(
     stacks = min(base_vitality // TANK_VITALITY_CONVERSION_STEP, TANK_VITALITY_CONVERSION_MAX_STACKS)
     effective_vitality = stacks * TANK_VITALITY_CONVERSION_STEP
     next_delta = (
-        0
-        if stacks >= TANK_VITALITY_CONVERSION_MAX_STACKS or base_vitality == effective_vitality
-        else (stacks + 1) * TANK_VITALITY_CONVERSION_STEP - base_vitality
+        0 if stacks >= TANK_VITALITY_CONVERSION_MAX_STACKS or base_vitality == effective_vitality else
+        (stacks + 1) * TANK_VITALITY_CONVERSION_STEP - base_vitality
     )
     return {
         "title": title,
@@ -1867,19 +1885,18 @@ def _tank_vitality_conversion_item(
         "max_stacks": str(TANK_VITALITY_CONVERSION_MAX_STACKS),
     }
 
-
 def _prepare_tank_vitality_conversion(summary: dict[str, Any], kungfu: Kungfu) -> dict[str, Any] | None:
     if kungfu.abbr != "T":
         return None
     unbuffed_item = _tank_vitality_conversion_item(
         summary.get("unbuffed_attributes") or {},
-        title="裸小药",
-        formula_label="裸小药基础体质",
+        title = "裸小药",
+        formula_label = "裸小药基础体质",
     )
     full_item = _tank_vitality_conversion_item(
         summary.get("attributes") or {},
-        title="满小药",
-        formula_label="满小药基础体质",
+        title = "满小药",
+        formula_label = "满小药基础体质",
     )
     item = unbuffed_item or full_item
     if item is None:
@@ -1887,7 +1904,6 @@ def _prepare_tank_vitality_conversion(summary: dict[str, Any], kungfu: Kungfu) -
     if unbuffed_item is not None and full_item is not None:
         item["full_stacks"] = f"{full_item['stacks']}层"
     return item
-
 
 def _prepare_talents(talents: Any) -> list[dict[str, str]]:
     prepared = []
@@ -1898,7 +1914,6 @@ def _prepare_talents(talents: Any) -> list[dict[str, str]]:
             continue
         prepared.append({"name": talent.name, "icon": talent.icon})
     return prepared
-
 
 async def render_equipment_rating_image(
     data: dict[str, Any],
@@ -1914,11 +1929,7 @@ async def render_equipment_rating_image(
     kungfu = Kungfu.with_internel_id(meta["kungfu_id"])
     theme_color = kungfu.color if kungfu.name else "#4f6f87"
     is_therapy_rating = summary.get("metric") == "therapy_ruin_capacity"
-    trial_land = (
-        _prepare_trial_land(data.get("trial_land"))
-        if kungfu.abbr == "D" and not is_therapy_rating
-        else None
-    )
+    trial_land = (_prepare_trial_land(data.get("trial_land")) if kungfu.abbr == "D" and not is_therapy_rating else None)
     role_info, basic_attrs, detail_attrs = _prepare_attributes(summary, kungfu, rating_equip)
     battle_time = _to_float(summary.get("battle_time"))
     haste_level = _haste_level(summary.get("current_haste"), kungfu.id or 0)
@@ -1939,58 +1950,60 @@ async def render_equipment_rating_image(
         meta.get("loop_name", "评级专用循环"),
         f"{meta.get('jcl', {}).get('weapon', '')}{meta.get('jcl', {}).get('haste', '')}",
         meta.get("income_name", "默认增益"),
-        f"{summary.get('metric_name') or '承压能力'} {_format_number(summary.get('current_dps'))}" if is_therapy_rating else "",
+        f"{summary.get('metric_name') or '承压能力'} {_format_number(summary.get('current_dps'))}"
+        if is_therapy_rating else "",
         summary_view["haste_level_text"],
         summary_view["battle_time_text"],
     ]
     html = Template(
-        read(build_path(TEMPLATES, ["jx3", "equipment_rating.html"]))
+        read(build_path(TEMPLATES, ["jx3", "equipment_rating.html"])),
     ).render(
-        font=Path(build_path(ASSETS, ["font", "PingFangSC-Semibold.otf"])).as_uri(),
-        theme_color=theme_color,
-        role_name=role_name or "未命名配装",
-        server_name=server_name,
-        kungfu_name=kungfu.name or "未知心法",
-        kungfu_icon=Path(kungfu.icon).as_uri(),
-        meta=meta,
-        summary=summary_view,
-        header_avatar=_rating_avatar(),
-        header_summary={
+        font = Path(build_path(ASSETS, ["font", "PingFangSC-Semibold.otf"])).as_uri(),
+        theme_color = theme_color,
+        role_name = role_name or "未命名配装",
+        server_name = server_name,
+        kungfu_name = kungfu.name or "未知心法",
+        kungfu_icon = Path(kungfu.icon).as_uri(),
+        meta = meta,
+        summary = summary_view,
+        header_avatar = _rating_avatar(),
+        header_summary = {
             **_prepare_header_summary(summary_view, slots),
             "title": (
-                f"{kungfu.name}承压报告"
-                if is_therapy_rating and kungfu.name
-                else (f"{kungfu.name}体检报告" if kungfu.name else "体检报告")
+                f"{kungfu.name}承压报告" if is_therapy_rating and kungfu.name else
+                (f"{kungfu.name}体检报告" if kungfu.name else "体检报告")
             ),
         },
-        role_info=role_info,
-        basic_attrs=basic_attrs,
-        detail_attrs=detail_attrs,
-        attribute_incomes=_prepare_attribute_incomes(summary),
-        adaptive_consumables=_prepare_adaptive_consumables(
+        role_info = role_info,
+        basic_attrs = basic_attrs,
+        detail_attrs = detail_attrs,
+        attribute_incomes = _prepare_attribute_incomes(summary),
+        adaptive_consumables = _prepare_adaptive_consumables(
             data.get("adaptive_consumables"),
             kungfu.id or 0,
         ),
-        trial_land=trial_land,
-        equipment_rating_rank=rank_data,
-        race_rank=race_rank_data,
-        rating_timeline=_prepare_rating_timeline(timeline_data),
-        equipment_rating_qrcode=_rating_group_qrcode(),
-        tank_vitality_conversion=_prepare_tank_vitality_conversion(summary, kungfu),
-        distribution=_prepare_distribution_view(meta.get("kungfu_id")),
-        slots=slots,
-        talents=_prepare_talents(summary.get("talents")),
-        warnings=data.get("warnings", []),
-        chips=[chip for chip in chips if chip],
+        trial_land = trial_land,
+        equipment_rating_rank = rank_data,
+        race_rank = race_rank_data,
+        rating_timeline = _prepare_rating_timeline(timeline_data),
+        equipment_rating_qrcode = _rating_group_qrcode(),
+        tank_vitality_conversion = _prepare_tank_vitality_conversion(summary, kungfu),
+        distribution = _prepare_distribution_view(meta.get("kungfu_id")),
+        slots = slots,
+        talents = _prepare_talents(summary.get("talents")),
+        warnings = data.get("warnings", []),
+        chips = [chip for chip in chips if chip],
     )
     return await generate(
         html,
         ".rating-canvas",
-        segment=True,
-        wait_for_network=True,
-        viewport={"width": 1220, "height": 1800},
+        segment = True,
+        wait_for_network = True,
+        viewport = {
+            "width": 1220,
+            "height": 1800,
+        },
     )
-
 
 async def finish_equipment_rating_response(matcher: Matcher, image: Any):
     try:
@@ -2002,13 +2015,11 @@ async def finish_equipment_rating_response(matcher: Matcher, image: Any):
         except ActionFailed as fallback_exc:
             logger.error(f"装备评级文本降级发送仍失败：{fallback_exc}")
 
-
 async def _send_equipment_rating_started(matcher: Matcher):
     try:
         await matcher.send(EQUIPMENT_RATING_STARTED)
     except ActionFailed as exc:
         logger.warning(f"装备评级开始提示发送失败，继续计算：{exc}")
-
 
 async def _resolve_equipment_rating_target(
     event: GroupMessageEvent,
@@ -2024,7 +2035,6 @@ async def _resolve_equipment_rating_target(
         await matcher.finish(PROMPT.KungfuNotExist)
     return server, int(kungfu_id)
 
-
 async def _resolve_equipment_rating_player(
     matcher: Matcher,
     server: str,
@@ -2032,11 +2042,10 @@ async def _resolve_equipment_rating_player(
     *,
     refresh_tuilan: bool = True,
 ):
-    player_data = await _try_resolve_equipment_rating_player(server, role_id, refresh_tuilan=refresh_tuilan)
+    player_data = await _try_resolve_equipment_rating_player(server, role_id, refresh_tuilan = refresh_tuilan)
     if player_data is None:
         await matcher.finish(PROMPT.PlayerNotExist)
     return player_data
-
 
 async def _try_resolve_equipment_rating_player(
     server: str,
@@ -2046,11 +2055,16 @@ async def _try_resolve_equipment_rating_player(
 ):
     try:
         if role_id.isdigit():
-            player_data = await search_player(role_name=role_id, role_id=role_id, server_name=server, local_lookup=True)
+            player_data = await search_player(
+                role_name = role_id,
+                role_id = role_id,
+                server_name = server,
+                local_lookup = True,
+            )
             if player_data.roleId == "":
-                player_data = await get_uid_data(role_id=role_id, server=server, msg=False)
+                player_data = await get_uid_data(role_id = role_id, server = server, msg = False)
         else:
-            player_data = await search_player(role_name=role_id, server_name=server)
+            player_data = await search_player(role_name = role_id, server_name = server)
         if player_data.roleId == "":
             return None
         if refresh_tuilan:
@@ -2058,7 +2072,6 @@ async def _try_resolve_equipment_rating_player(
         return player_data
     except Exception:
         return None
-
 
 def _auto_select_rating_pve_tag(kungfu_id: int) -> str | None:
     if kungfu_id in SPECIAL_PVE_KUNGFU_TAGS:
@@ -2071,7 +2084,6 @@ def _auto_select_rating_pve_tag(kungfu_id: int) -> str | None:
     if abbr == "D":
         return "DPSPVE"
     return None
-
 
 async def _rating_pve_kungfu_options(global_role_id: int) -> list[dict[str, Any]]:
     all_equips = await JX3PlayerAttribute.from_database(global_role_id, "", True)
@@ -2091,20 +2103,17 @@ async def _rating_pve_kungfu_options(global_role_id: int) -> list[dict[str, Any]
             latest_by_kungfu[kungfu_id] = equip
 
     options: list[dict[str, Any]] = []
-    for kungfu_id, equip in sorted(latest_by_kungfu.items(), key=lambda item: item[1].timestamp, reverse=True):
-        kungfu = Kungfu.with_internel_id(kungfu_id, convert_to_pc=True)
+    for kungfu_id, equip in sorted(latest_by_kungfu.items(), key = lambda item: item[1].timestamp, reverse = True):
+        kungfu = Kungfu.with_internel_id(kungfu_id, convert_to_pc = True)
         tag = _auto_select_rating_pve_tag(kungfu_id)
         if tag is None:
             continue
-        options.append(
-            {
-                "tag": tag,
-                "kungfu_id": kungfu_id,
-                "name": kungfu.name or str(kungfu_id),
-            }
-        )
+        options.append({
+            "tag": tag,
+            "kungfu_id": kungfu_id,
+            "name": kungfu.name or str(kungfu_id),
+        }, )
     return options
-
 
 async def _default_rating_pve_kungfu_id(global_role_id: int) -> int | None:
     equip = await JX3PlayerAttribute.from_database(global_role_id, "DPSPVE", False)
@@ -2112,13 +2121,11 @@ async def _default_rating_pve_kungfu_id(global_role_id: int) -> int | None:
         return None
     return int(equip.kungfu_id)
 
-
 def _format_special_pve_kungfu_selection(options: list[dict[str, Any]]) -> str:
     msg = "检测到该玩家有多个可用于装备评级的 PVE 心法装备，请先选择心法："
-    for index, option in enumerate(options, start=1):
+    for index, option in enumerate(options, start = 1):
         msg += f"\n{index}. {option['name']}"
     return msg
-
 
 def _equipment_rating_pve_tag(kungfu_id: int) -> str:
     if kungfu_id in SPECIAL_PVE_KUNGFU_TAGS:
@@ -2130,7 +2137,6 @@ def _equipment_rating_pve_tag(kungfu_id: int) -> str:
         return "HPSPVE"
     return "DPSPVE"
 
-
 async def _build_equipment_rating_payload(
     event: GroupMessageEvent,
     matcher: Matcher,
@@ -2141,7 +2147,6 @@ async def _build_equipment_rating_payload(
     server, kungfu_id = await _resolve_equipment_rating_target(event, matcher, server_arg, kungfu_arg)
     return await _build_equipment_rating_payload_by_kungfu(matcher, server, role_id, kungfu_id)
 
-
 async def _build_equipment_rating_payload_by_kungfu(
     matcher: Matcher,
     server: str,
@@ -2150,15 +2155,11 @@ async def _build_equipment_rating_payload_by_kungfu(
 ):
     player_data = await _resolve_equipment_rating_player(matcher, server, role_id)
     pve_tag = _equipment_rating_pve_tag(kungfu_id)
-    pve_equips = await JX3PlayerAttribute.from_database(int(player_data.globalRoleId), pve_tag, all=True)
+    pve_equips = await JX3PlayerAttribute.from_database(int(player_data.globalRoleId), pve_tag, all = True)
     if pve_equips is None:
         await matcher.finish(PROMPT.EquipNotFound + "\n或先查询属性检查是否有 PVE 装备的记录。")
     target_equip = next(
-        (
-            equip
-            for equip in pve_equips
-            if equip.kungfu_id == kungfu_id and equip.tag == "PVE"
-        ),
+        (equip for equip in pve_equips if equip.kungfu_id == kungfu_id and equip.tag == "PVE"),
         None,
     )
     if target_equip is None:
@@ -2178,7 +2179,6 @@ async def _build_equipment_rating_payload_by_kungfu(
         },
     }
     return payload, player_data, target_equip
-
 
 async def _build_equipment_rating_payload_by_pzid(
     matcher: Matcher,
@@ -2202,10 +2202,14 @@ async def _build_equipment_rating_payload_by_pzid(
     }
     return payload, f"魔盒配装 {pzid}", "JX3BOX", None
 
-
 async def _request_equipment_rating_data(payload: dict[str, Any]) -> dict[str, Any] | str:
     try:
-        response = await Request(f"{Config.jx3.api.calculator_url}/equipment_rating", params=payload).post(timeout=300)
+        response = await Request(
+            f"{Config.jx3.api.calculator_url}/equipment_rating",
+            params = payload,
+        ).post(
+            timeout = 300,
+        )
         result = response.json()
     except Exception as exc:
         return f"装备评级计算失败：{exc}"
@@ -2217,7 +2221,6 @@ async def _request_equipment_rating_data(payload: dict[str, Any]) -> dict[str, A
         return "装备评级计算失败：calculator 返回数据为空。"
     return data
 
-
 async def _finish_equipment_rating_calculation(
     matcher: Matcher,
     payload: dict[str, Any],
@@ -2228,9 +2231,7 @@ async def _finish_equipment_rating_calculation(
     global_role_id: int = 0,
 ):
     race_rank_task = (
-        asyncio.create_task(get_equipment_rating_race_rank(global_role_id))
-        if global_role_id > 0
-        else None
+        asyncio.create_task(get_equipment_rating_race_rank(global_role_id)) if global_role_id > 0 else None
     )
     rating_payload = {**payload, "include_trial_land": True}
     data = await _request_equipment_rating_data(rating_payload)
@@ -2269,9 +2270,8 @@ async def _finish_equipment_rating_calculation(
             timeline_data,
             rank_data,
             race_rank_data,
-        )
+        ),
     )
-
 
 async def _resolve_bare_equipment_rating_kungfu_id(
     matcher: Matcher,
@@ -2297,7 +2297,6 @@ async def _resolve_bare_equipment_rating_kungfu_id(
         await matcher.finish("未指定心法，且未找到该玩家可用于自动选择的 PVE 心法装备，请使用：装备评级 <服务器> <角色名> <心法>")
     return kungfu_id
 
-
 async def _handle_equipment_rating_pzid(
     event: GroupMessageEvent,
     matcher: Matcher,
@@ -2308,7 +2307,7 @@ async def _handle_equipment_rating_pzid(
     payload, role_name, server_name, rating_equip = await _build_equipment_rating_payload_by_pzid(matcher, pzid)
     kungfu_id = int(payload["kungfu_id"])
     if use_public_loop_list:
-        loop_instance = JX3BOXCalculator(kungfu_id=kungfu_id)
+        loop_instance = JX3BOXCalculator(kungfu_id = kungfu_id)
         loops = await _fetch_equipment_rating_loop_entries(event, loop_instance)
         if isinstance(loops, str):
             await matcher.finish(loops)
@@ -2326,7 +2325,6 @@ async def _handle_equipment_rating_pzid(
         server_name,
         rating_equip,
     )
-
 
 async def handle_equipment_rating_support(matcher: Matcher, args: Message):
     query = args.extract_plain_text().strip()
@@ -2346,11 +2344,10 @@ async def handle_equipment_rating_support(matcher: Matcher, args: Message):
         await matcher.finish(PROMPT.KungfuNotExist)
     item = _find_supported_kungfu(kungfus, kungfu_id)
     if item is None:
-        kungfu = Kungfu.with_internel_id(kungfu_id, convert_to_pc=True)
+        kungfu = Kungfu.with_internel_id(kungfu_id, convert_to_pc = True)
         kungfu_name = kungfu.name or "该心法"
         await matcher.finish(f"当前装备评级暂不支持 {kungfu_name}。")
     await matcher.finish(_format_supported_kungfu_detail(item))
-
 
 async def handle_equipment_rating(event: GroupMessageEvent, matcher: Matcher, state: T_State, args: Message):
     plain_text = args.extract_plain_text().strip()
@@ -2404,7 +2401,7 @@ async def handle_equipment_rating(event: GroupMessageEvent, matcher: Matcher, st
             await matcher.finish(PROMPT.KungfuNotExist)
 
     if use_public_loop_list:
-        loop_instance = UniversalCalculator(kungfu_id=kungfu_id)
+        loop_instance = UniversalCalculator(kungfu_id = kungfu_id)
         loops = await _fetch_equipment_rating_loop_entries(event, loop_instance)
         if isinstance(loops, str):
             await matcher.finish(loops)
@@ -2416,7 +2413,12 @@ async def handle_equipment_rating(event: GroupMessageEvent, matcher: Matcher, st
         return
 
     await _send_equipment_rating_started(matcher)
-    payload, player_data, rating_equip = await _build_equipment_rating_payload_by_kungfu(matcher, server, arg[1], kungfu_id)
+    payload, player_data, rating_equip = await _build_equipment_rating_payload_by_kungfu(
+        matcher,
+        server,
+        arg[1],
+        kungfu_id,
+    )
     await _finish_equipment_rating_calculation(
         matcher,
         payload,
@@ -2426,7 +2428,6 @@ async def handle_equipment_rating(event: GroupMessageEvent, matcher: Matcher, st
         player_data.roleId,
         int(player_data.globalRoleId),
     )
-
 
 async def handle_equipment_rating_loop_order(
     event: GroupMessageEvent,
@@ -2454,7 +2455,7 @@ async def handle_equipment_rating_loop_order(
         state.pop("rating_jcl_order", None)
 
         if use_public_loop_list:
-            loop_instance = UniversalCalculator(kungfu_id=kungfu_id)
+            loop_instance = UniversalCalculator(kungfu_id = kungfu_id)
             loops = await _fetch_equipment_rating_loop_entries(event, loop_instance)
             if isinstance(loops, str):
                 await matcher.finish(loops)
@@ -2501,18 +2502,19 @@ async def handle_equipment_rating_loop_order(
     server = state.get("equipment_rating_server")
     role_arg = state.get("equipment_rating_role_arg")
     kungfu_id = state.get("equipment_rating_kungfu_id")
-    if (
-        not isinstance(loops, list)
-        or not isinstance(server, str)
-        or not isinstance(role_arg, str)
-        or not isinstance(kungfu_id, int)
-    ):
+    if (not isinstance(loops, list) or not isinstance(server, str) or not isinstance(role_arg, str)
+            or not isinstance(kungfu_id, int)):
         await matcher.finish("装备评级会话已失效，请重新发起命令。")
     index = int(num)
     if index < 1 or index > len(loops):
         await matcher.finish("超出可选范围，请重新发起命令！")
     await _send_equipment_rating_started(matcher)
-    payload, player_data, rating_equip = await _build_equipment_rating_payload_by_kungfu(matcher, server, role_arg, kungfu_id)
+    payload, player_data, rating_equip = await _build_equipment_rating_payload_by_kungfu(
+        matcher,
+        server,
+        role_arg,
+        kungfu_id,
+    )
     payload = {**payload, "jcl_loop": _equipment_rating_loop_payload(loops[index - 1])}
     await _finish_equipment_rating_calculation(
         matcher,

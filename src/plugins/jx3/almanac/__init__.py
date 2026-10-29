@@ -5,7 +5,7 @@ from collections import Counter
 from nonebot.adapters.onebot.v11 import (
     Message,
     GroupMessageEvent,
-    MessageSegment as ms
+    MessageSegment as ms,
 )
 from nonebot.params import CommandArg
 
@@ -21,8 +21,8 @@ import re
 from .image import x as get_almanac_image
 
 def extract_chinese(text):
-    chinese_chars = re.findall(r'[\u4e00-\u9fa5]+', text)
-    return ''.join(chinese_chars)
+    chinese_chars = re.findall(r"[\u4e00-\u9fa5]+", text)
+    return "".join(chinese_chars)
 
 def most_common_element(elements: list[str]) -> str:
     counter = Counter(elements)
@@ -35,7 +35,7 @@ def most_common_element(elements: list[str]) -> str:
     else:
         return "通用"
 
-almanac_matcher = on_command("jx3_almanac", command_key="剑三黄历", aliases={"剑三黄历"}, priority=5)
+almanac_matcher = on_command("jx3_almanac", command_key = "剑三黄历", aliases = {"剑三黄历"}, priority = 5)
 
 @almanac_matcher.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
@@ -46,18 +46,23 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
         image = ms.image(
             Request(
                 Path(
-                    CONST + "/cache/" + today + ".png"
-                ).as_uri()
-            ).local_content
+                    CONST + "/cache/" + today + ".png",
+                ).as_uri(),
+            ).local_content,
         )
         msg = image + "数据来自小红书【剑三黄历】欢迎关注！"
         await almanac_matcher.finish(msg)
 
-almanac_image_matcher = on_command("jx3_almanac_image", command_key=None, aliases={"黄历图片生成"}, priority=5)
+almanac_image_matcher = on_command("jx3_almanac_image", command_key = None, aliases = {"黄历图片生成"}, priority = 5)
 
 @almanac_image_matcher.handle()
 async def _(event: GroupMessageEvent, msg: Message = CommandArg()):
     full_msg = msg.extract_plain_text().strip().replace("\r", "\n")
     html: str = get_almanac_image(full_msg)
-    image = await generate(html, ".container", segment=True, output_path=CONST + "/cache/" + (datetime.now() + timedelta(days=1)).strftime("%Y-%m-%d") + ".png")
+    image = await generate(
+        html,
+        ".container",
+        segment = True,
+        output_path = CONST + "/cache/" + (datetime.now() + timedelta(days = 1)).strftime("%Y-%m-%d") + ".png",
+    )
     await almanac_image_matcher.finish(image)

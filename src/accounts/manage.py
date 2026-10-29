@@ -9,7 +9,6 @@ from src.utils.time import Time
 
 import random
 
-
 class CheckinRewards(BaseModel):
     total_days: int  # 累计签到
     is_lucky: bool  # 是否触发额外奖励
@@ -17,15 +16,15 @@ class CheckinRewards(BaseModel):
     lucky_value: int  # 幸运值
     pool_prize: CheckinPrizeAward | None = None  # 独立的奖池奖励
 
-
 class AccountManage:
+
     def __init__(self, user_id: int | str):
         self.user_id = user_id
         self.data: Account | Any = db.where_one(
             Account(),
             "user_id = ?",
             int(user_id),
-            default=Account(user_id=int(user_id)),
+            default = Account(user_id = int(user_id)),
         )
 
     @property
@@ -45,13 +44,13 @@ class AccountManage:
             is_in_cycle (bool): 是否在本周期内。
         """
         current_time = datetime.now()
-        today_0_am = current_time.replace(hour=0, minute=0, second=0, microsecond=0)
+        today_0_am = current_time.replace(hour = 0, minute = 0, second = 0, microsecond = 0)
         if current_time < today_0_am:
-            period_start = today_0_am - timedelta(days=1)
+            period_start = today_0_am - timedelta(days = 1)
             period_end = today_0_am
         else:
             period_start = today_0_am
-            period_end = today_0_am + timedelta(days=1)
+            period_end = today_0_am + timedelta(days = 1)
         last_checkin_time = datetime.fromtimestamp(self.data.last_checkin)
         return period_start <= last_checkin_time < period_end
 
@@ -59,8 +58,10 @@ class AccountManage:
         with db.transaction():
             # 重新读取，避免两个签到请求使用同一份过期账户数据。
             self.data = db.where_one(
-                Account(), "user_id = ?", int(self.user_id),
-                default=Account(user_id=int(self.user_id)),
+                Account(),
+                "user_id = ?",
+                int(self.user_id),
+                default = Account(user_id = int(self.user_id)),
             )
             if self.checkin_status:
                 return False
@@ -77,10 +78,10 @@ class AccountManage:
             db.save(self.data)
 
             rewards = CheckinRewards(
-                total_days=self.checkin_counts,
-                is_lucky=lucky,
-                coin=coin,
-                lucky_value=random.randint(0, 100),
+                total_days = self.checkin_counts,
+                is_lucky = lucky,
+                coin = coin,
+                lucky_value = random.randint(0, 100),
             )
             rewards.pool_prize = draw_checkin_prize(int(self.user_id))
             return rewards

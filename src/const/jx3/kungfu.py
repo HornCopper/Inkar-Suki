@@ -93,15 +93,8 @@ class Kungfu:
         心法图标。
         """
         if self.name is None:
-            return (
-                build_path(ASSETS, ["image", "jx3", "kungfu"], end_with_slash=True)
-                + "通用.png"
-            )
-        return (
-            build_path(ASSETS, ["image", "jx3", "kungfu"], end_with_slash=True)
-            + self.name
-            + ".png"
-        )
+            return (build_path(ASSETS, ["image", "jx3", "kungfu"], end_with_slash = True) + "通用.png")
+        return (build_path(ASSETS, ["image", "jx3", "kungfu"], end_with_slash = True) + self.name + ".png")
 
     @property
     def base(self) -> str | None:

@@ -12,7 +12,6 @@ from src.templates import SimpleHTML, get_saohua
 from ._template import teamrank_anyone_template, teamrank_team_template
 
 # 名人堂 by 花姐
-
 async def fetch_team_rank_data(dungeon_name: str, dungeon_mode: str, boss_name: str) -> dict:
     url = "http://jx3bla.moeheart.cn/getHoFRank"
     dungeon_full_name = dungeon_mode + dungeon_name
@@ -23,9 +22,9 @@ async def fetch_team_rank_data(dungeon_name: str, dungeon_mode: str, boss_name: 
         "map": dungeon_full_name,
         # "boss": "尹雪尘",
         "boss": boss_name,
-        "orderby": "firstkill"
+        "orderby": "firstkill",
     }
-    data = (await Request(url, params=params).get()).json()
+    data = (await Request(url, params = params).get()).json()
     return data
 
 async def parse_team_rank_data(dungeon_name: str, dungeon_mode: str, boss_name: str):
@@ -49,7 +48,7 @@ async def parse_team_rank_data(dungeon_name: str, dungeon_mode: str, boss_name: 
             if check_number(kungfu_id):
                 # 单心法职业
                 kungfu = Kungfu(
-                    School.with_internel_id(int(kungfu_id)).name
+                    School.with_internel_id(int(kungfu_id)).name,
                 )
             else:
                 t = ""
@@ -75,13 +74,13 @@ async def parse_team_rank_data(dungeon_name: str, dungeon_mode: str, boss_name: 
                     else:
                         t = "JY"
                 kungfu = Kungfu(
-                    str(School.with_internel_id(int(force_id)).name) + t
+                    str(School.with_internel_id(int(force_id)).name) + t,
                 )
             table_players.append(
                 Template(teamrank_anyone_template).render(
                     kungfu_icon = kungfu.icon,
-                    name = player_name
-                )
+                    name = player_name,
+                ),
             )
         table_teams.append(
             Template(teamrank_team_template).render(
@@ -90,8 +89,8 @@ async def parse_team_rank_data(dungeon_name: str, dungeon_mode: str, boss_name: 
                 server = f"@{team_server}",
                 finish_time = end_time,
                 time_cost = time_cost_str,
-                players = "\n".join(table_players)
-            )
+                players = "\n".join(table_players),
+            ),
         )
     html = str(
         SimpleHTML(
@@ -101,8 +100,8 @@ async def parse_team_rank_data(dungeon_name: str, dungeon_mode: str, boss_name: 
             teams = "\n".join(table_teams),
             dungeon_full_name = f"{dungeon_mode}{dungeon_name}",
             boss_name = boss_name,
-            saohua = get_saohua()
-        )
+            saohua = get_saohua(),
+        ),
     )
-    image = await generate(html, ".container", segment=True)
+    image = await generate(html, ".container", segment = True)
     return image

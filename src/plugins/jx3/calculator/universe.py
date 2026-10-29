@@ -17,6 +17,7 @@ from ._template import template_calculator_v2
 from .base import BaseCalculator, normalize_calculator_jcl_data
 
 class Universal(Kungfu):
+
     @classmethod
     def with_internel_id(cls, internel_id: int | str, convert_to_pc: bool = False) -> Self:
         # if int(internel_id) not in [10062, 100407]:
@@ -25,11 +26,12 @@ class Universal(Kungfu):
         return super().with_internel_id(internel_id)
 
 class UniversalCalculator(BaseCalculator):
+
     def __init__(self, jcl_data: list[list] = [], kungfu_id: int = 0, **kwargs):
         self.jcl_data = jcl_data
         self.kungfu_id = kungfu_id
         super().__init__(**kwargs)
-    
+
     def attrs(self, attributes: dict[str, float]) -> dict[str, str]:
         attr_names = {
             "BaseAttack": "基础攻击",
@@ -81,7 +83,7 @@ class UniversalCalculator(BaseCalculator):
             "full_income": self.income_list + self.formation_list,
             "kungfu_id": self.kungfu_id,
             # "tuilan_data": self.data,
-            **loop_arg
+            **loop_arg,
         }
         if self.jcl_data:
             params["jcl_data"] = normalize_calculator_jcl_data(self.jcl_data)
@@ -92,11 +94,11 @@ class UniversalCalculator(BaseCalculator):
         if user_id:
             url_path = "calculator_custom"
             params["user_id"] = user_id
-        data = (await Request(f"{self.calculator_url}/{url_path}", params=params).post(timeout=30)).json()
+        data = (await Request(f"{self.calculator_url}/{url_path}", params = params).post(timeout = 30)).json()
         if data["code"] == 404:
             return "加速不符合任何计算循环，请自行提供JCL或调整装备！"
         return data
-    
+
     async def image(self, loop_arg: dict[str, str], user_id: int = 0):
         data = await self.calculate(loop_arg, user_id)
         if isinstance(data, str):
@@ -115,26 +117,23 @@ class UniversalCalculator(BaseCalculator):
                         "skill": str(skill_data["name"]),
                         "display": str(
                             round(
-                                skill_data["damage"]
-                                / data["damage_details"][0]["damage"]
-                                * 100,
+                                skill_data["damage"] / data["damage_details"][0]["damage"] * 100,
                                 2,
-                            )
-                        )
-                        + "%",
+                            ),
+                        ) + "%",
                         "critical": str(skill_data["critical"]),
                         "percent": str(round(skill_data["damage"] / data["total_damage"] * 100, 2)) + "%",
                         "count": str(skill_data["count"]),
                         "value": "{:,}".format(int(skill_data["damage"])),
-                    }
-                )
+                    },
+                ),
             )
         kungfu = Kungfu.with_internel_id(self.equip_data.kungfu_id)
         name, server = self.info
         html = str(
             SimpleHTML(
-                html_type="jx3",
-                html_template="calculator_new",
+                html_type = "jx3",
+                html_template = "calculator_new",
                 **{
                     "font": build_path(ASSETS, ["font", "PingFangSC-Semibold.otf"]),
                     "color": kungfu.color,
@@ -145,8 +144,8 @@ class UniversalCalculator(BaseCalculator):
                     "server": server,
                     "score": data["attributes"]["score"],
                     "loop": f"{data['weapon']}·{data['haste']}-{data['loop_name']}",
-                    "provider": data['provider'],
-                    "time": data['battle_time'],
+                    "provider": data["provider"],
+                    "time": data["battle_time"],
                     "skills": "\n".join(tables),
                     "attrs": self.attrs(data["attributes"]),
                     "income": self.income_ver,
@@ -154,7 +153,7 @@ class UniversalCalculator(BaseCalculator):
                     "loop_talents": loop_talents,
                     "saohua": get_saohua(),
                 },
-            )
+            ),
         )
-        image = await generate(html, ".container", False, segment=True, full_screen=True)
+        image = await generate(html, ".container", False, segment = True, full_screen = True)
         return image

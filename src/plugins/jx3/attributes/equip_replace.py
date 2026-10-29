@@ -11,9 +11,8 @@ EQUIP_LOCATION = {
     "腰坠": 9,
     "下装": 10,
     "鞋子": 11,
-    "护腕": 12
+    "护腕": 12,
 }
-
 
 def replace_enchant_in_equip_lines(
     equip_lines: list,

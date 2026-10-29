@@ -15,7 +15,6 @@ from ._template import (
     hps_template_img_weapon,
 )
 
-
 async def get_battle_rank(kungfu_name: str, boss_name: str):
     rank_type = kungfu_name.upper()
     if rank_type in {"DPS", "HPS"}:
@@ -30,9 +29,7 @@ async def get_battle_rank(kungfu_name: str, boss_name: str):
     endpoint = "hps_rank" if is_healer else "dps_rank"
     primary_name = "HPS" if is_healer else "DPS"
     params = {"boss_name": boss_name, "kungfu_id": kungfu_id}
-    data = (
-        await Request(f"{Config.jx3.api.cqc_url}/{endpoint}", params=params).get()
-    ).json()
+    data = (await Request(f"{Config.jx3.api.cqc_url}/{endpoint}", params = params).get()).json()
     if data["code"] != 200:
         return "获取榜单失败！"
     if data["results"] == []:
@@ -47,9 +44,9 @@ async def get_battle_rank(kungfu_name: str, boss_name: str):
             icon_id, name = TabCache.get_icon_for_skill(each_talent)
             talents.append(
                 Template(hps_template_img_talent).render(
-                    icon=f"https://icon.jx3box.com/icon/{icon_id}.png",
-                    name=name,
-                )
+                    icon = f"https://icon.jx3box.com/icon/{icon_id}.png",
+                    name = name,
+                ),
             )
         weapon_id = each_record["weapon_id"]
         weapon_info = ""
@@ -60,10 +57,10 @@ async def get_battle_rank(kungfu_name: str, boss_name: str):
             color = "rgb" + Colors[int(weapon_data[22])]
             quality = int(weapon_data[12])
             weapon_info = Template(hps_template_img_weapon).render(
-                color=color,
-                icon=f"https://icon.jx3box.com/icon/{icon_id}.png",
-                name=name,
-                quality=quality
+                color = color,
+                icon = f"https://icon.jx3box.com/icon/{icon_id}.png",
+                name = name,
+                quality = quality,
             )
         if is_healer:
             primary_value = int(each_record["total_health"] / battle_time)
@@ -71,26 +68,26 @@ async def get_battle_rank(kungfu_name: str, boss_name: str):
             primary_value = int(each_record["total_damage"] / battle_time)
         tables.append(
             Template(battle_rank_template_body).render(
-                kungfu_icon=Kungfu.with_internel_id(each_record["kungfu_id"]).icon,
-                rank_num=rank_num,
-                role_name=each_record["role_name"],
-                role_server=each_record["server_name"],
-                primary_value="{:,}".format(primary_value),
-                time_cost=f"{battle_time // 60}:{battle_time % 60}",
-                talents="\n".join(talents),
-                weapon=weapon_info,
-            )
+                kungfu_icon = Kungfu.with_internel_id(each_record["kungfu_id"]).icon,
+                rank_num = rank_num,
+                role_name = each_record["role_name"],
+                role_server = each_record["server_name"],
+                primary_value = "{:,}".format(primary_value),
+                time_cost = f"{battle_time // 60}:{battle_time % 60}",
+                talents = "\n".join(talents),
+                weapon = weapon_info,
+            ),
         )
     html = str(
         SimpleHTML(
             "jx3",
             "hps_rank",
-            font=ASSETS + "/font/PingFangSC-Semibold.otf",
-            table="\n".join(tables),
-            boss_name=boss_name,
-            primary_name=primary_name,
-            saohua=get_saohua(),
-        )
+            font = ASSETS + "/font/PingFangSC-Semibold.otf",
+            table = "\n".join(tables),
+            boss_name = boss_name,
+            primary_name = primary_name,
+            saohua = get_saohua(),
+        ),
     )
-    image = await generate(html, ".container", segment=True)
+    image = await generate(html, ".container", segment = True)
     return image

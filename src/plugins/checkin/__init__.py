@@ -5,7 +5,7 @@ from nonebot.adapters.onebot.v11 import (
     Message,
     GroupMessageEvent,
     MessageEvent,
-    MessageSegment as ms
+    MessageSegment as ms,
 )
 from nonebot.params import CommandArg, ArgPlainText
 
@@ -25,7 +25,7 @@ from ._template import template_body, table_head
 
 import random
 
-LotMatcher = on_command("抽签", command_key="抽签", force_whitespace=True, priority=5)
+LotMatcher = on_command("抽签", command_key = "抽签", force_whitespace = True, priority = 5)
 
 @LotMatcher.handle()
 async def lq_(args: Message = CommandArg()):
@@ -38,30 +38,32 @@ async def pq_(reply: str = ArgPlainText("pb")):
     if reply == "确定" or "yes" or "抽取" or "嗯":
         pd = False
         for i in range(3):
-            a = random.randint(0,100)
-            if a >= 5 :
-                pd=True
+            a = random.randint(0, 100)
+            if a >= 5:
+                pd = True
                 await LotMatcher.send(
-                    message="抽到了正签"
+                    message = "抽到了正签",
                 )
                 break
             else:
                 await LotMatcher.send(
-                    message="是空签呢",
-                    at_sender=True,
+                    message = "是空签呢",
+                    at_sender = True,
                 )
-                pd=False
+                pd = False
                 break
 
         if pd is True:
-            await LotMatcher.finish(message=f"\n{random.choice(message_sign)}",at_sender=True)
+            await LotMatcher.finish(message = f"\n{random.choice(message_sign)}", at_sender = True)
         else:
-           await LotMatcher.finish()
+            await LotMatcher.finish()
     else:
-        await LotMatcher.finish("\n放弃了抽取",at_sender=True,)
+        await LotMatcher.finish(
+            "\n放弃了抽取",
+            at_sender = True,
+        )
 
-CheckinMatcher = on_command("签到", command_key="签到", aliases={"打卡"}, force_whitespace=True, priority=5)
-
+CheckinMatcher = on_command("签到", command_key = "签到", aliases = {"打卡"}, force_whitespace = True, priority = 5)
 
 @CheckinMatcher.handle()
 async def _(event: MessageEvent, args: Message = CommandArg()):
@@ -78,8 +80,7 @@ async def _(event: MessageEvent, args: Message = CommandArg()):
         msg += f"\n抽中奖池奖励：{status.pool_prize.prize_name} ×1！已存入背包（记录 #{status.pool_prize.id}）。发送「背包」查看。"
     await CheckinMatcher.finish(msg)
 
-CoinMatcher = on_command("金币", command_key=None, aliases={"余额"}, force_whitespace=True, priority=5)
-
+CoinMatcher = on_command("金币", command_key = None, aliases = {"余额"}, force_whitespace = True, priority = 5)
 
 @CoinMatcher.handle()
 async def _(event: MessageEvent, args: Message = CommandArg()):
@@ -88,8 +89,7 @@ async def _(event: MessageEvent, args: Message = CommandArg()):
     coin: int = AccountManage(event.user_id).coins
     await CoinMatcher.finish(ms.at(event.user_id) + f"\n您的金币余额为：\n{coin}枚")
 
-
-AddCoinMatcher = on_command("增加金币", command_key=None, force_whitespace=True, priority=5)
+AddCoinMatcher = on_command("增加金币", command_key = None, force_whitespace = True, priority = 5)
 
 @AddCoinMatcher.handle()
 async def _(event: MessageEvent, args: Message = CommandArg()):
@@ -107,7 +107,7 @@ async def _(event: MessageEvent, args: Message = CommandArg()):
     AccountManage(int(arg[0])).add_coin(int(arg[1]))
     await AddCoinMatcher.finish("已向该账户添加了" + arg[1] + "枚金币！")
 
-ReduceCoinMatcher = on_command("减少金币", command_key=None, force_whitespace=True, priority=5)
+ReduceCoinMatcher = on_command("减少金币", command_key = None, force_whitespace = True, priority = 5)
 
 @ReduceCoinMatcher.handle()
 async def _(event: MessageEvent, args: Message = CommandArg()):
@@ -125,7 +125,7 @@ async def _(event: MessageEvent, args: Message = CommandArg()):
     AccountManage(int(arg[0])).reduce_coin(int(arg[1]))
     await ReduceCoinMatcher.finish("已向该账户扣除了" + arg[1] + "枚金币！")
 
-TradeCoinMatcher = on_command("交易金币", command_key=None, force_whitespace=True, priority=5)
+TradeCoinMatcher = on_command("交易金币", command_key = None, force_whitespace = True, priority = 5)
 
 @TradeCoinMatcher.handle()
 async def _(event: MessageEvent, args: Message = CommandArg()):
@@ -143,13 +143,13 @@ async def _(event: MessageEvent, args: Message = CommandArg()):
         AccountManage(int(arg[0])).add_coin(int(arg[1]))
         await TradeCoinMatcher.finish("已成功将" + arg[1] + "枚金币从您的账户转到" + str(arg[0]) + "的账户！")
 
-CoinRankMatcher = on_command("金币排行", command_key=None, force_whitespace=True, priority=5)
+CoinRankMatcher = on_command("金币排行", command_key = None, force_whitespace = True, priority = 5)
 
 @CoinRankMatcher.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     if args.extract_plain_text() != "":
         return
-    accounts: list[Account] | Any = db.where_all(Account(), default=[])
+    accounts: list[Account] | Any = db.where_all(Account(), default = [])
     accounts_data: list[dict[str, Any]] = sort_dict_list([a.dump() for a in accounts], "coins")[::-1]
     table = []
     num = 0
@@ -164,10 +164,11 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
             Template(template_body).render(
                 rank = str(num),
                 avatar = "https://q.qlogo.cn/headimg_dl?dst_uin=" + str(account["user_id"]) + "&spec=100&img_type=jpg",
-                user_id = str(account["user_id"])[:2] + "*" * (len(str(account["user_id"])) - 4) + str(account["user_id"])[-2:],
+                user_id = str(account["user_id"])[:2] + "*" * (len(str(account["user_id"])) - 4) +
+                str(account["user_id"])[-2:],
                 coins = account["coins"],
-                count = account["checkin_counts"]
-            )
+                count = account["checkin_counts"],
+            ),
         )
     if not in_forward_30:
         rank = next((i for i, d in enumerate(accounts_data) if d["user_id"] == event.user_id), False)
@@ -176,11 +177,12 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
             table.append(
                 Template(template_body).render(
                     rank = rank + 1,
-                    avatar = "https://q.qlogo.cn/headimg_dl?dst_uin=" + str(account["user_id"]) + "&spec=100&img_type=jpg",
+                    avatar = "https://q.qlogo.cn/headimg_dl?dst_uin=" + str(account["user_id"]) +
+                    "&spec=100&img_type=jpg",
                     user_id = account["user_id"],
                     coins = account["coins"],
-                    count = account["checkin_counts"]
-                )
+                    count = account["checkin_counts"],
+                ),
             )
         else:
             table.append(
@@ -189,18 +191,17 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
                     avatar = "https://q.qlogo.cn/headimg_dl?dst_uin=" + str(event.user_id) + "&spec=100&img_type=jpg",
                     user_id = str(event.user_id),
                     coins = "0",
-                    count = "0"
-                )
+                    count = "0",
+                ),
             )
     html = str(
         HTMLSourceCode(
             application_name = "金币统计",
             table_head = table_head,
-            table_body = "\n".join(table)
-        )
+            table_body = "\n".join(table),
+        ),
     )
-    image = await generate(html, ".container", segment=True)
+    image = await generate(html, ".container", segment = True)
     await CoinRankMatcher.finish(image)
-
 
 from . import prize_commands

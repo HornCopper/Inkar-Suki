@@ -17,7 +17,6 @@ template_body = """
 </tr>
 """
 
-
 backpack_table_head = """
 <th>奖品</th>
 <th>记录编号</th>

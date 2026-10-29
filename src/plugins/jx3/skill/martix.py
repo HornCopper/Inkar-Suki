@@ -4,9 +4,8 @@ from functools import lru_cache
 from src.const.jx3.kungfu import Kungfu
 from src.const.path import ASSETS, build_path
 
-
 FORMULATION_PATH = build_path(ASSETS, ["source", "jx3", "kungfu_formulations.json"])
-SKILL_PATH = build_path(ASSETS, ["source", "jx3", "tabs", "Skill.txt"])
+SKILL_PATH = build_path(ASSETS, ["source", "jx3", "tabs", "skill", "Skill.txt"])
 LEVEL_NAMES = {
     1: "一重",
     2: "二重",
@@ -17,35 +16,27 @@ LEVEL_NAMES = {
     7: "闭阵",
 }
 
-
-@lru_cache(maxsize=1)
+@lru_cache(maxsize = 1)
 def _load_formulations() -> dict[str, int]:
-    with open(FORMULATION_PATH, encoding="utf-8") as formulation_file:
+    with open(FORMULATION_PATH, encoding = "utf-8") as formulation_file:
         return json.load(formulation_file)
 
-
-@lru_cache(maxsize=1)
+@lru_cache(maxsize = 1)
 def _load_skill_rows() -> list[dict[str, str]]:
-    with open(SKILL_PATH, encoding="gbk") as skill_file:
+    with open(SKILL_PATH, encoding = "gbk") as skill_file:
         rows = [line.rstrip("\n").split("\t") for line in skill_file]
     headers = rows[0]
     return [dict(zip(headers, row)) for row in rows[1:]]
 
-
 def _format_desc(desc: str) -> str:
     return desc.replace("\\n", "\n").strip()
 
-
 def _get_formulation_skill(skill_id: int) -> tuple[str, list[str]] | None:
-    skill_rows = [
-        row
-        for row in _load_skill_rows()
-        if row.get("SkillID") == str(skill_id)
-    ]
+    skill_rows = [row for row in _load_skill_rows() if row.get("SkillID") == str(skill_id)]
     if not skill_rows:
         return None
 
-    skill_rows.sort(key=lambda row: int(row.get("Level") or 0))
+    skill_rows.sort(key = lambda row: int(row.get("Level") or 0))
     skill_name = skill_rows[0].get("Name") or "阵眼"
     descriptions = []
     for row in skill_rows:
@@ -57,12 +48,11 @@ def _get_formulation_skill(skill_id: int) -> tuple[str, list[str]] | None:
         descriptions.append(f"{level_name}：{desc}")
     return skill_name, descriptions
 
-
 async def get_matrix(kungfu: Kungfu):
     if kungfu.name is None or kungfu.id is None:
         return "此心法不存在哦，请检查后重试。"
 
-    pc_kungfu = Kungfu.with_internel_id(kungfu.id, convert_to_pc=True)
+    pc_kungfu = Kungfu.with_internel_id(kungfu.id, convert_to_pc = True)
     if pc_kungfu.name is None or pc_kungfu.id is None:
         return "阵眼查询仅支持 PC 心法，请检查后重试。"
 

@@ -19,25 +19,19 @@ from src.utils.database.classes import CQCRank, THRRank
 
 from ._template import (
     bla_template_body,
-
     fal_table_head,
     fal_template_body,
-    
     yxc_table,
     hps_detail_template_body_main,
     hps_detail_template_body_sub,
-
     rod_table_head,
     rod_template_body,
     rod_css,
-
     asn_qte_table,
     asn_qte_template_body_main,
-
     lgz_table,
     lgz_detail_template_body_main,
     lgz_detail_template_body_sub,
-
     lnx_template_body,
     qjh_template_body,
 )
@@ -68,15 +62,17 @@ def save_data(data: dict[str, dict[str, int | str]], value_type: bool, rank_key:
         current_record: CQCRank | THRRank | Any = db.where_one(
             rank_model(),
             f"role_name = ? AND server_name = ? AND total_{key} = ?",
-            role_name, server_name, to_judge_value,
-            default=None
+            role_name,
+            server_name,
+            to_judge_value,
+            default = None,
         )
         if current_record is not None:
             continue
         new_data = rank_model(
             role_name = role_name,
             server_name = server_name,
-            kungfu_id = kungfu_id
+            kungfu_id = kungfu_id,
         )
         if value_type:
             setattr(new_data, f"total_{key}", total_damage)
@@ -85,11 +81,18 @@ def save_data(data: dict[str, dict[str, int | str]], value_type: bool, rank_key:
             setattr(new_data, f"total_{key}", total_health)
             setattr(new_data, f"{key}_per_second", health_per_second)
         db.save(new_data)
-            
+
 # Chi Qing Chuan
 async def CQCAnalyze(file_name: str, url: str, anonymous: bool = False, user_id: int = 0):
-    async with AsyncClient(verify=False) as client:
-        resp = await client.post(f"{Config.jx3.api.cqc_url}/cqc_analyze", json={"jcl_url": url, "jcl_name": file_name}, timeout=600)
+    async with AsyncClient(verify = False) as client:
+        resp = await client.post(
+            f"{Config.jx3.api.cqc_url}/cqc_analyze",
+            json = {
+                "jcl_url": url,
+                "jcl_name": file_name,
+            },
+            timeout = 600,
+        )
         data = resp.json()
 
     final_dps = []
@@ -104,10 +107,12 @@ async def CQCAnalyze(file_name: str, url: str, anonymous: bool = False, user_id:
                 icon = kungfu.icon,
                 name = player_name,
                 rdps = "{:,}".format(int(player_data["total_damage"])),
-                display = str(round(player_data["total_damage"] / list(data["data"][0].values())[0]["total_damage"], 4) * 100),
+                display = str(
+                    round(player_data["total_damage"] / list(data["data"][0].values())[0]["total_damage"], 4) * 100,
+                ),
                 color = kungfu.color,
-                percent = "{:,}".format(int(player_data['damage_per_second']))
-            )
+                percent = "{:,}".format(int(player_data["damage_per_second"])),
+            ),
         )
 
     for player_name, player_data in data["data"][1].items():
@@ -119,10 +124,12 @@ async def CQCAnalyze(file_name: str, url: str, anonymous: bool = False, user_id:
                 icon = kungfu.icon,
                 name = player_name,
                 rdps = "{:,}".format(int(player_data["total_health"])),
-                display = str(round(player_data["total_health"] / list(data["data"][1].values())[0]["total_health"], 4) * 100),
+                display = str(
+                    round(player_data["total_health"] / list(data["data"][1].values())[0]["total_health"], 4) * 100,
+                ),
                 color = kungfu.color,
-                percent = "{:,}".format(int(player_data['health_per_second']))
-            )
+                percent = "{:,}".format(int(player_data["health_per_second"])),
+            ),
         )
     try:
         save_data(data["data"][0], True, "CQC")
@@ -139,16 +146,23 @@ async def CQCAnalyze(file_name: str, url: str, anonymous: bool = False, user_id:
             dps_stastic = "\n".join(final_dps),
             hps_stastic = "\n".join(final_hps),
             saohua = get_saohua(),
-            font = ASSETS + "/font/PingFangSC-Semibold.otf"
-        )
+            font = ASSETS + "/font/PingFangSC-Semibold.otf",
+        ),
     )
-    dps_image = await generate(html, ".container", segment=True)
+    dps_image = await generate(html, ".container", segment = True)
     return dps_image
 
 # First Attacking List
 async def FALAnalyze(file_name: str, url: str, anonymous: bool = False, user_id: int = 0):
-    async with AsyncClient(verify=False) as client:
-        resp = await client.post(f"{Config.jx3.api.cqc_url}/fal_analyze", json={"jcl_url": url, "jcl_name": file_name}, timeout=600)
+    async with AsyncClient(verify = False) as client:
+        resp = await client.post(
+            f"{Config.jx3.api.cqc_url}/fal_analyze",
+            json = {
+                "jcl_url": url,
+                "jcl_name": file_name,
+            },
+            timeout = 600,
+        )
         data = resp.json()
     tables = []
     for each_record in data["data"]:
@@ -159,24 +173,32 @@ async def FALAnalyze(file_name: str, url: str, anonymous: bool = False, user_id:
             Template(fal_template_body).render(
                 time = Time(each_record["time"]).format("%H:%M:%S"),
                 releaser = releaser_name + "<br>（" + str(each_record["releaser_id"]) + "）",
-                target = each_record["target_name"] + "<br>（" + str(each_record["target_id"]) + "/" + str(each_record["target_template_id"]) + "）",
-                skill = str(each_record["skill_id"])
-            )
+                target = each_record["target_name"] + "<br>（" + str(each_record["target_id"]) + "/" +
+                str(each_record["target_template_id"]) + "）",
+                skill = str(each_record["skill_id"]),
+            ),
         )
     html = str(
         HTMLSourceCode(
             application_name = "开怪统计",
             table_head = fal_table_head,
-            table_body = "\n".join(tables)
-        )
+            table_body = "\n".join(tables),
+        ),
     )
-    image = await generate(html, ".container", segment=True)
-    return image  
+    image = await generate(html, ".container", segment = True)
+    return image
 
 # Yin Xue Chen
 async def YXCAnalyze(file_name: str, url: str, anonymous: bool = False, user_id: int = 0):
-    async with AsyncClient(verify=False) as client:
-        resp = await client.post(f"{Config.jx3.api.cqc_url}/yxc_analyze", json={"jcl_url": url, "jcl_name": file_name}, timeout=600)
+    async with AsyncClient(verify = False) as client:
+        resp = await client.post(
+            f"{Config.jx3.api.cqc_url}/yxc_analyze",
+            json = {
+                "jcl_url": url,
+                "jcl_name": file_name,
+            },
+            timeout = 600,
+        )
         data = resp.json()
     tables = []
     final_tables = []
@@ -184,8 +206,8 @@ async def YXCAnalyze(file_name: str, url: str, anonymous: bool = False, user_id:
         if each_record == {}:
             final_tables.append(
                 Template(yxc_table).render(
-                    tables = "\n".join(tables)
-                )
+                    tables = "\n".join(tables),
+                ),
             )
             tables = []
             continue
@@ -194,39 +216,37 @@ async def YXCAnalyze(file_name: str, url: str, anonymous: bool = False, user_id:
             player_name = "匿名玩家"
         tables.append(
             Template(hps_detail_template_body_main).render(
-                icon=Kungfu.with_internel_id(int(each_record["kungfu_id"]), True).icon,
-                name=player_name,
-                value=each_record["value"]
-            )
+                icon = Kungfu.with_internel_id(int(each_record["kungfu_id"]), True).icon,
+                name = player_name,
+                value = each_record["value"],
+            ),
         )
-        skills = dict(sorted(each_record["skills"].items(), key=lambda item: sum(item[1]), reverse=True))
+        skills = dict(sorted(each_record["skills"].items(), key = lambda item: sum(item[1]), reverse = True))
         for skill_name, skill_values in skills.items():
             tables.append(
                 Template(hps_detail_template_body_sub).render(
                     name = skill_name,
                     count = len(skill_values),
                     value = sum(skill_values),
-                    percent = str(round(sum(skill_values) / each_record["value"] * 100, 2)) + "%"
-                )
+                    percent = str(round(sum(skill_values) / each_record["value"] * 100, 2)) + "%",
+                ),
             )
     html = Template(
-        read(TEMPLATES + "/jx3/health_detail.html")
+        read(TEMPLATES + "/jx3/health_detail.html"),
     ).render(
         font = ASSETS + "/font/PingFangSC-Semibold.otf",
         tables = "\n".join(final_tables),
         saohua = get_saohua(),
-        function_name = "尹雪尘承伤统计"
+        function_name = "尹雪尘承伤统计",
     )
-    image = await generate(html, ".container", segment=True)
+    image = await generate(html, ".container", segment = True)
     return image
-
 
 def _tcs_safe_int(value: Any) -> int:
     try:
         return int(value)
     except (TypeError, ValueError):
         return 0
-
 
 def build_tcs_analysis_data(raw_data: Any, anonymous: bool = False) -> list[list[dict[str, Any]]]:
     if isinstance(raw_data, dict):
@@ -253,26 +273,29 @@ def build_tcs_analysis_data(raw_data: Any, anonymous: bool = False) -> list[list
                 continue
             values = [_tcs_safe_int(value) for value in raw_values]
             skill_total = sum(values)
-            skills.append({
-                "name": str(skill_name),
-                "count": len(values),
-                "value": skill_total,
-                "percent": f"{skill_total / total * 100:.2f}%" if total else "0.00%",
-            })
-        skills.sort(key=lambda skill: skill["value"], reverse=True)
+            skills.append(
+                {
+                    "name": str(skill_name),
+                    "count": len(values),
+                    "value": skill_total,
+                    "percent": f"{skill_total / total * 100:.2f}%" if total else "0.00%",
+                },
+            )
+        skills.sort(key = lambda skill: skill["value"], reverse = True)
 
         kungfu = Kungfu.with_internel_id(_tcs_safe_int(record.get("kungfu_id")), True)
-        current_group.append({
-            "name": "匿名玩家" if anonymous else str(record.get("name") or "未知玩家"),
-            "icon": kungfu.icon,
-            "value": total,
-            "skills": skills,
-        })
+        current_group.append(
+            {
+                "name": "匿名玩家" if anonymous else str(record.get("name") or "未知玩家"),
+                "icon": kungfu.icon,
+                "value": total,
+                "skills": skills,
+            },
+        )
 
     if current_group:
         groups.append(current_group)
     return groups
-
 
 def render_tcs_analysis_html(raw_data: Any, anonymous: bool = False) -> str | None:
     groups = build_tcs_analysis_data(raw_data, anonymous)
@@ -283,37 +306,45 @@ def render_tcs_analysis_html(raw_data: Any, anonymous: bool = False) -> str | No
     for group in groups:
         rows = []
         for record in group:
-            rows.append(Template(hps_detail_template_body_main).render(
-                icon=escape(str(record["icon"]), quote=True),
-                name=escape(record["name"]),
-                value=f"{record['value']:,}",
-            ))
+            rows.append(
+                Template(hps_detail_template_body_main).render(
+                    icon = escape(str(record["icon"]), quote = True),
+                    name = escape(record["name"]),
+                    value = f"{record['value']:,}",
+                ),
+            )
             for skill in record["skills"]:
-                rows.append(Template(hps_detail_template_body_sub).render(
-                    name=escape(skill["name"]),
-                    count=skill["count"],
-                    value=f"{skill['value']:,}",
-                    percent=skill["percent"],
-                ))
-        final_tables.append(Template(yxc_table.replace("有效治疗", "承疗量")).render(
-            tables="\n".join(rows)
-        ))
+                rows.append(
+                    Template(hps_detail_template_body_sub).render(
+                        name = escape(skill["name"]),
+                        count = skill["count"],
+                        value = f"{skill['value']:,}",
+                        percent = skill["percent"],
+                    ),
+                )
+        final_tables.append(
+            Template(yxc_table.replace("有效治疗", "承疗量")).render(
+                tables = "\n".join(rows),
+            ),
+        )
 
     return Template(read(TEMPLATES + "/jx3/health_detail.html")).render(
-        font=ASSETS + "/font/PingFangSC-Semibold.otf",
-        tables="\n".join(final_tables),
-        saohua=get_saohua(),
-        function_name="田承嗣 · 天陨一剑承疗统计",
-        compact=True,
+        font = ASSETS + "/font/PingFangSC-Semibold.otf",
+        tables = "\n".join(final_tables),
+        saohua = get_saohua(),
+        function_name = "田承嗣 · 天陨一剑承疗统计",
+        compact = True,
     )
 
-
 async def TCSAnalyze(file_name: str, url: str, anonymous: bool = False, user_id: int = 0):
-    async with AsyncClient(verify=False) as client:
+    async with AsyncClient(verify = False) as client:
         resp = await client.post(
             f"{Config.jx3.api.cqc_url}/tcs_analyze",
-            json={"jcl_url": url, "jcl_name": file_name},
-            timeout=600,
+            json = {
+                "jcl_url": url,
+                "jcl_name": file_name,
+            },
+            timeout = 600,
         )
         data = resp.json()
     if isinstance(data, dict) and data.get("code") not in (None, 200):
@@ -321,12 +352,19 @@ async def TCSAnalyze(file_name: str, url: str, anonymous: bool = False, user_id:
     html = render_tcs_analysis_html(data, anonymous)
     if html is None:
         return "未识别到天陨一剑承疗记录，请检查 JCL 是否完整。"
-    return await generate(html, ".container", segment=True)
+    return await generate(html, ".container", segment = True)
 
 # Reason of Death
 async def RODAnalyze(file_name: str, url: str, anonymous: bool = False, user_id: int = 0):
-    async with AsyncClient(verify=False) as client:
-        resp = await client.post(f"{Config.jx3.api.cqc_url}/rod_analyze", json={"jcl_url": url, "jcl_name": file_name}, timeout=600)
+    async with AsyncClient(verify = False) as client:
+        resp = await client.post(
+            f"{Config.jx3.api.cqc_url}/rod_analyze",
+            json = {
+                "jcl_url": url,
+                "jcl_name": file_name,
+            },
+            timeout = 600,
+        )
         data = resp.json()
     tables = []
     for each_record in data["data"]:
@@ -339,7 +377,7 @@ async def RODAnalyze(file_name: str, url: str, anonymous: bool = False, user_id:
             name = each_skill["name"]
             damage = each_skill["effective_damage"]
             skills.append(
-                f"[{time}]<span style=\"text-decoration: underline;\">{name}</span>：{damage}"
+                f"[{time}]<span style=\"text-decoration: underline;\">{name}</span>：{damage}",
             )
         tables.append(
             Template(rod_template_body).render(
@@ -347,27 +385,35 @@ async def RODAnalyze(file_name: str, url: str, anonymous: bool = False, user_id:
                 icon = Kungfu.with_internel_id(each_record["kungfu_id"], True).icon,
                 name = each_record["name"],
                 skills = ("<br>".join(skills) or "好像没有吃技能呢？<br>可能是战斗开始前死亡或者杯水到期等。"),
-                remark = remark
-            )
+                remark = remark,
+            ),
         )
     html = str(
         HTMLSourceCode(
             application_name = "重伤统计",
             table_head = rod_table_head,
             table_body = "\n".join(tables),
-            additional_css=rod_css
-        )
+            additional_css = rod_css,
+        ),
     )
-    image = await generate(html, ".container", segment=True)
+    image = await generate(html, ".container", segment = True)
     return image
 
 # Damage Per Second
-async def DPSAnalyze(file_name: str, url: str, anonymous: bool = False, user_id: int = 0,):
-    async with AsyncClient(verify=False) as client:
+async def DPSAnalyze(
+    file_name: str,
+    url: str,
+    anonymous: bool = False,
+    user_id: int = 0,
+):
+    async with AsyncClient(verify = False) as client:
         resp = await client.post(
             f"{Config.jx3.api.cqc_url}/dps_analyze",
-            json={"jcl_url": url, "jcl_name": file_name},
-            timeout=600,
+            json = {
+                "jcl_url": url,
+                "jcl_name": file_name,
+            },
+            timeout = 600,
         )
         data = resp.json()
     if not data["data"]:
@@ -381,74 +427,67 @@ async def DPSAnalyze(file_name: str, url: str, anonymous: bool = False, user_id:
         ("health", "health_per_second", "治疗", "HPS"),
     ]:
         for each_record in sort_dict_list(
-            analyze_data["values"], f"total_{value_type}"
+                analyze_data["values"],
+                f"total_{value_type}",
         )[::-1]:
             if each_record[f"total_{value_type}"] == 0:
                 continue
             tables.append(
                 Template(hps_detail_template_body_main).render(
-                    icon=Kungfu.with_internel_id(
-                        int(each_record["kungfu_id"]), True
+                    icon = Kungfu.with_internel_id(
+                        int(each_record["kungfu_id"]),
+                        True,
                     ).icon,
-                    name=each_record["name"],
-                    value=(
-                        str(each_record[f"total_{value_type}"])
-                        + "<br>"
-                        + str(each_record[rate_type])
-                        + f" {unit}"
+                    name = each_record["name"],
+                    value = (
+                        str(each_record[f"total_{value_type}"]) + "<br>" + str(each_record[rate_type]) + f" {unit}"
                     ),
-                )
+                ),
             )
-            skills = (
-                each_record["skills"][value_type]
-                if value_type == "health"
-                else []
-            )
+            skills = (each_record["skills"][value_type] if value_type == "health" else [])
             for skill in skills:
                 tables.append(
                     Template(hps_detail_template_body_sub).render(
-                        name=skill["name"],
-                        count=(
-                            str(skill["count"])
-                            + "（"
-                            + str(skill["critical"])
-                            + "会心）"
-                        ),
-                        value=skill["value"],
-                        percent=(
-                            str(
-                                round(
-                                    skill["value"]
-                                    / each_record[f"total_{value_type}"]
-                                    * 100,
-                                    2,
-                                )
-                            )
-                            + "%"
-                        ),
-                    )
+                        name = skill["name"],
+                        count = (str(skill["count"]) + "（" + str(skill["critical"]) + "会心）"),
+                        value = skill["value"],
+                        percent = (str(
+                            round(
+                                skill["value"] / each_record[f"total_{value_type}"] * 100,
+                                2,
+                            ),
+                        ) + "%"),
+                    ),
                 )
         final_tables.append(
             Template(yxc_table.replace("有效治疗", heading)).render(
-                tables="\n".join(tables)
-            )
+                tables = "\n".join(tables),
+            ),
         )
         tables = []
     html = Template(
-        read(TEMPLATES + "/jx3/health_detail.html")
+        read(TEMPLATES + "/jx3/health_detail.html"),
     ).render(
-        font=ASSETS + "/font/PingFangSC-Semibold.otf",
-        tables="\n".join(final_tables),
-        saohua=get_saohua(),
-        function_name=f"{boss_name} DPS HPS 统计",
+        font = ASSETS + "/font/PingFangSC-Semibold.otf",
+        tables = "\n".join(final_tables),
+        saohua = get_saohua(),
+        function_name = f"{boss_name} DPS HPS 统计",
     )
-    image = await generate(html, ".container", segment=True)
+    image = await generate(html, ".container", segment = True)
     return image
 
 # CalCuLator
 async def CALAnalyze(file_name: str, url: str, anonymous: bool = False, user_id: int = 0):
-    async with AsyncClient(verify=False) as client:
-        resp = await client.post(f"{Config.jx3.api.calculator_url}/submit_jcl", json={"url": url, "name": file_name, "user_id": user_id}, timeout=600)
+    async with AsyncClient(verify = False) as client:
+        resp = await client.post(
+            f"{Config.jx3.api.calculator_url}/submit_jcl",
+            json = {
+                "url": url,
+                "name": file_name,
+                "user_id": user_id,
+            },
+            timeout = 600,
+        )
         data = resp.json()
     if data["code"] != 200:
         if data["status"] == -1:
@@ -496,14 +535,11 @@ LNX_KUNGFU_SHORT_NAMES = {
     "山海心诀": "山海",
 }
 
-
 def _lnx_list(value: Any) -> list[Any]:
     return value if isinstance(value, list) else []
 
-
 def _lnx_dict(value: Any) -> dict[str, Any]:
     return value if isinstance(value, dict) else {}
-
 
 def _lnx_safe_float(value: Any, default: float = 0.0) -> float:
     try:
@@ -511,13 +547,11 @@ def _lnx_safe_float(value: Any, default: float = 0.0) -> float:
     except (TypeError, ValueError):
         return default
 
-
 def _lnx_safe_int(value: Any, default: int = 0) -> int:
     try:
         return int(value)
     except (TypeError, ValueError):
         return default
-
 
 def _lnx_entity_key(entity: dict[str, Any], default_name: str) -> str:
     entity_id = str(entity.get("id", "")).strip()
@@ -527,7 +561,6 @@ def _lnx_entity_key(entity: dict[str, Any], default_name: str) -> str:
     if entity_id and entity_id != "0":
         return f"id:{entity_id}"
     return f"name:{name}|type:{entity_type}|kungfu:{kungfu_id}"
-
 
 def _lnx_entity(raw_entity: Any, default_name: str, anonymous: bool = False) -> dict[str, Any]:
     entity = _lnx_dict(raw_entity)
@@ -547,10 +580,8 @@ def _lnx_entity(raw_entity: Any, default_name: str, anonymous: bool = False) -> 
         "icon": kungfu.icon,
     }
 
-
 def _lnx_reduction_percent(reduction: Any) -> float:
     return _lnx_safe_float(_lnx_dict(reduction).get("percent"), 0.0)
-
 
 def _lnx_is_magnetic_vulnerability(reduction: Any) -> bool:
     data = _lnx_dict(reduction)
@@ -559,24 +590,18 @@ def _lnx_is_magnetic_vulnerability(reduction: Any) -> bool:
         or str(data.get("name") or "").strip() == LNX_MAGNETIC_BUFF_NAME
     ) and _lnx_reduction_percent(data) < 0
 
-
 def _lnx_target_reductions(wave: dict[str, Any], anonymous: bool) -> dict[str, list[dict[str, Any]]]:
     reductions: dict[str, list[dict[str, Any]]] = defaultdict(list)
     for item in _lnx_list(wave.get("damage_reductions_by_player")):
         item_data = _lnx_dict(item)
         target = _lnx_entity(item_data.get("player"), "未知目标", anonymous)
-        reductions[target["key"]].extend(
-            _lnx_dict(reduction)
-            for reduction in _lnx_list(item_data.get("reductions"))
-        )
+        reductions[target["key"]].extend(_lnx_dict(reduction) for reduction in _lnx_list(item_data.get("reductions")))
     return reductions
-
 
 def _lnx_vulnerability_multiplier(reductions: list[dict[str, Any]]) -> float:
     if any(_lnx_is_magnetic_vulnerability(reduction) for reduction in reductions):
         return 1.3
     return 1.0
-
 
 def _lnx_restore_raw_damage(
     after_damage: float,
@@ -587,12 +612,9 @@ def _lnx_restore_raw_damage(
         return 0.0, 0.0
 
     positive_percents = sorted(
-        {
-            percent
-            for percent in (_lnx_reduction_percent(reduction) for reduction in reductions)
-            if 0 < percent < 100
-        },
-        reverse=True,
+        {percent
+         for percent in (_lnx_reduction_percent(reduction) for reduction in reductions) if 0 < percent < 100},
+        reverse = True,
     )
     for percent in [*positive_percents, 0.0]:
         denominator = vulnerability_multiplier * (1 - percent / 100)
@@ -604,7 +626,6 @@ def _lnx_restore_raw_damage(
 
     denominator = vulnerability_multiplier if vulnerability_multiplier > 0 else 1.0
     return min(after_damage / denominator, LNX_VULNERABLE_DAMAGE_LIMIT / denominator), 0.0
-
 
 def _lnx_format_number(value: float) -> str:
     rounded = int(round(value))
@@ -619,12 +640,10 @@ def _lnx_format_number(value: float) -> str:
         return f"{sign}{wan:.2f}万"
     return f"{rounded:,}"
 
-
 def _lnx_format_percent(value: float) -> str:
     if float(value).is_integer():
         return f"{int(value)}%"
     return f"{value:.1f}%"
-
 
 def _lnx_role_view(entity: dict[str, Any]) -> dict[str, str]:
     entity_type = str(entity.get("type") or "")
@@ -634,20 +653,17 @@ def _lnx_role_view(entity: dict[str, Any]) -> dict[str, str]:
         "type": entity_type if entity_type != "玩家" else "",
     }
 
-
 def _lnx_short_text(value: Any, limit: int = 5) -> str:
     text = str(value or "").strip()
     if len(text) <= limit:
         return text
     return text[:limit] + "…"
 
-
 def _lnx_short_role_name(entity: dict[str, Any]) -> str:
     name = str(entity.get("display_name") or entity.get("name") or "未知来源").strip()
     name = name.split("·", 1)[0]
     name = name.split("@", 1)[0]
     return _lnx_short_text(name, 5)
-
 
 def _lnx_short_kungfu_name(kungfu_name: Any) -> str:
     name = str(kungfu_name or "").strip()
@@ -660,14 +676,12 @@ def _lnx_short_kungfu_name(kungfu_name: Any) -> str:
             return _lnx_short_text(name[:-len(suffix)], 3)
     return _lnx_short_text(name, 3)
 
-
 def _lnx_chart_entity_label(entity: dict[str, Any]) -> str:
     role_name = _lnx_short_role_name(entity)
     kungfu_name = _lnx_short_kungfu_name(entity.get("kungfu_name"))
     if kungfu_name:
         return f"{kungfu_name} {role_name}"
     return role_name
-
 
 def _lnx_stat() -> dict[str, Any]:
     return {
@@ -677,7 +691,6 @@ def _lnx_stat() -> dict[str, Any]:
         "heal_raw": 0.0,
         "heal_weighted": 0.0,
     }
-
 
 def build_lnx_analysis_data(raw_data: Any, anonymous: bool = False) -> list[dict[str, Any]]:
     if isinstance(raw_data, dict) and "data" in raw_data:
@@ -707,11 +720,10 @@ def build_lnx_analysis_data(raw_data: Any, anonymous: bool = False) -> list[dict
                 after_damage = effective_damage + absorbed_damage
                 vulnerability_multiplier = _lnx_vulnerability_multiplier(reductions)
                 positive_percents = [
-                    percent
-                    for percent in (_lnx_reduction_percent(reduction) for reduction in reductions)
+                    percent for percent in (_lnx_reduction_percent(reduction) for reduction in reductions)
                     if 0 < percent < 100
                 ]
-                max_reduction_percent = max(positive_percents, default=0.0)
+                max_reduction_percent = max(positive_percents, default = 0.0)
                 raw_damage, selected_reduction_percent = _lnx_restore_raw_damage(
                     after_damage,
                     vulnerability_multiplier,
@@ -721,18 +733,12 @@ def build_lnx_analysis_data(raw_data: Any, anonymous: bool = False) -> list[dict
                 reduced_damage = max(0.0, vulnerable_damage - after_damage)
                 vulnerability_added_damage = max(0.0, vulnerable_damage - raw_damage)
                 selected_reductions = [
-                    reduction
-                    for reduction in reductions
-                    if (
+                    reduction for reduction in reductions if (
                         _lnx_reduction_percent(reduction) == selected_reduction_percent
                         and selected_reduction_percent > 0
                     )
                 ]
-                vulnerabilities = [
-                    reduction
-                    for reduction in reductions
-                    if _lnx_is_magnetic_vulnerability(reduction)
-                ]
+                vulnerabilities = [reduction for reduction in reductions if _lnx_is_magnetic_vulnerability(reduction)]
 
                 player_row = {
                     "entity": target,
@@ -761,14 +767,14 @@ def build_lnx_analysis_data(raw_data: Any, anonymous: bool = False) -> list[dict
                     "players": player_rows,
                     "wave_base_damage": max(
                         (player["vulnerable_damage"] for player in player_rows),
-                        default=0.0,
+                        default = 0.0,
                     ),
                     "target_reductions": reductions_by_target,
                     "target_contexts": target_contexts,
-                }
+                },
             )
 
-        terminal_wave = max((wave["index"] for wave in waves), default=0)
+        terminal_wave = max((wave["index"] for wave in waves), default = 0)
         phase_players: defaultdict[str, dict[str, Any]] = defaultdict(_lnx_stat)
         mitigation_buff_stats: dict[tuple[str, str, str, float], dict[str, Any]] = {}
         wave_summaries: list[dict[str, Any]] = []
@@ -792,10 +798,7 @@ def build_lnx_analysis_data(raw_data: Any, anonymous: bool = False) -> list[dict
                 item_data = _lnx_dict(item)
                 target = _lnx_entity(item_data.get("player"), "未知目标", anonymous)
                 target_key = target["key"]
-                reductions = [
-                    _lnx_dict(reduction)
-                    for reduction in _lnx_list(item_data.get("reductions"))
-                ]
+                reductions = [_lnx_dict(reduction) for reduction in _lnx_list(item_data.get("reductions"))]
                 base_damage = _lnx_safe_float(wave.get("wave_base_damage"), 0.0)
 
                 for reduction in reductions:
@@ -868,7 +871,7 @@ def build_lnx_analysis_data(raw_data: Any, anonymous: bool = False) -> list[dict
                     "absorb_raw": wave_absorb_raw,
                     "absorb_weighted": wave_absorb_weighted,
                     "total_weighted": wave_mitigation_weighted + wave_heal_weighted + wave_absorb_weighted,
-                }
+                },
             )
 
         player_rows = []
@@ -877,35 +880,28 @@ def build_lnx_analysis_data(raw_data: Any, anonymous: bool = False) -> list[dict
             raw_total = stat["mitigation_raw"] + stat["heal_raw"]
             if weighted_total <= 0 and raw_total <= 0:
                 continue
-            player_rows.append(
-                {
-                    **stat,
-                    "weighted_total": weighted_total,
-                    "raw_total": raw_total,
-                }
-            )
-        player_rows.sort(key=lambda item: item["weighted_total"], reverse=True)
+            player_rows.append({
+                **stat,
+                "weighted_total": weighted_total,
+                "raw_total": raw_total,
+            }, )
+        player_rows.sort(key = lambda item: item["weighted_total"], reverse = True)
 
-        mitigation_rows = [
-            row for row in player_rows if row["mitigation_weighted"] > 0
-        ]
-        mitigation_rows.sort(key=lambda item: item["mitigation_weighted"], reverse=True)
-        heal_rows = [
-            row for row in player_rows if row["heal_weighted"] > 0
-        ]
-        heal_rows.sort(key=lambda item: item["heal_weighted"], reverse=True)
+        mitigation_rows = [row for row in player_rows if row["mitigation_weighted"] > 0]
+        mitigation_rows.sort(key = lambda item: item["mitigation_weighted"], reverse = True)
+        heal_rows = [row for row in player_rows if row["heal_weighted"] > 0]
+        heal_rows.sort(key = lambda item: item["heal_weighted"], reverse = True)
         buff_rows = list(mitigation_buff_stats.values())
-        buff_rows.sort(key=lambda item: item["weighted"], reverse=True)
-        wave_summaries.sort(key=lambda item: item["index"])
+        buff_rows.sort(key = lambda item: item["weighted"], reverse = True)
+        wave_summaries.sort(key = lambda item: item["index"])
 
         phase_defaults_rows = [
             {
                 "entity": phase_entities[key],
                 "phase_default_raw_damage": value,
-            }
-            for key, value in phase_defaults.items()
+            } for key, value in phase_defaults.items()
         ]
-        phase_defaults_rows.sort(key=lambda item: item["phase_default_raw_damage"], reverse=True)
+        phase_defaults_rows.sort(key = lambda item: item["phase_default_raw_damage"], reverse = True)
 
         phases.append(
             {
@@ -928,64 +924,64 @@ def build_lnx_analysis_data(raw_data: Any, anonymous: bool = False) -> list[dict
                     "absorb_weighted": phase_absorb_weighted,
                     "weighted": phase_mitigation_weighted + phase_heal_weighted + phase_absorb_weighted,
                 },
-            }
+            },
         )
     return phases
-
 
 def _lnx_bar_view(value: float, max_value: float) -> dict[str, str]:
     ratio = 0.0 if max_value <= 0 else min(max(value / max_value, 0.0), 1.0)
     return {"ratio": f"{ratio * 100:.2f}%", "value": _lnx_format_number(value)}
 
-
 def _lnx_contribution_rows(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
     result = []
-    max_total = max((_lnx_safe_float(row.get("weighted_total"), 0.0) for row in rows), default=0.0)
-    max_mitigation = max((_lnx_safe_float(row.get("mitigation_weighted"), 0.0) for row in rows), default=0.0)
-    max_heal = max((_lnx_safe_float(row.get("heal_weighted"), 0.0) for row in rows), default=0.0)
+    max_total = max((_lnx_safe_float(row.get("weighted_total"), 0.0) for row in rows), default = 0.0)
+    max_mitigation = max((_lnx_safe_float(row.get("mitigation_weighted"), 0.0) for row in rows), default = 0.0)
+    max_heal = max((_lnx_safe_float(row.get("heal_weighted"), 0.0) for row in rows), default = 0.0)
     for index, row in enumerate(rows, 1):
-        result.append({
-            "rank": index,
-            "role": _lnx_role_view(row["entity"]),
-            "total": _lnx_bar_view(row["weighted_total"], max_total),
-            "mitigation": _lnx_bar_view(row["mitigation_weighted"], max_mitigation),
-            "heal": _lnx_bar_view(row["heal_weighted"], max_heal),
-        })
+        result.append(
+            {
+                "rank": index,
+                "role": _lnx_role_view(row["entity"]),
+                "total": _lnx_bar_view(row["weighted_total"], max_total),
+                "mitigation": _lnx_bar_view(row["mitigation_weighted"], max_mitigation),
+                "heal": _lnx_bar_view(row["heal_weighted"], max_heal),
+            },
+        )
     return result
-
 
 def _lnx_single_contribution_rows(rows: list[dict[str, Any]], value_key: str) -> list[dict[str, Any]]:
     result = []
-    max_value = max((_lnx_safe_float(row.get(value_key), 0.0) for row in rows), default=0.0)
+    max_value = max((_lnx_safe_float(row.get(value_key), 0.0) for row in rows), default = 0.0)
     for index, row in enumerate(rows, 1):
-        result.append({
-            "rank": index,
-            "role": _lnx_role_view(row["entity"]),
-            "value": _lnx_bar_view(row[value_key], max_value),
-        })
+        result.append(
+            {
+                "rank": index,
+                "role": _lnx_role_view(row["entity"]),
+                "value": _lnx_bar_view(row[value_key], max_value),
+            },
+        )
     return result
-
 
 def _lnx_buff_rows(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
     result = []
-    max_weighted = max((_lnx_safe_float(row.get("weighted"), 0.0) for row in rows), default=0.0)
+    max_weighted = max((_lnx_safe_float(row.get("weighted"), 0.0) for row in rows), default = 0.0)
     for index, row in enumerate(rows, 1):
         target_count = len(row.get("targets", set()))
-        result.append({
-            "rank": index,
-            "role": _lnx_role_view(row["applier"]),
-            "buff": str(row["buff_name"]),
-            "percent": _lnx_format_percent(row["percent"]),
-            "weighted": _lnx_bar_view(row["weighted"], max_weighted),
-            "coverage": f"{row['count']}次 / {target_count}人",
-        })
+        result.append(
+            {
+                "rank": index,
+                "role": _lnx_role_view(row["applier"]),
+                "buff": str(row["buff_name"]),
+                "percent": _lnx_format_percent(row["percent"]),
+                "weighted": _lnx_bar_view(row["weighted"], max_weighted),
+                "coverage": f"{row['count']}次 / {target_count}人",
+            },
+        )
     return result
-
 
 def _lnx_format_ratio(value: float) -> str:
     percent = value * 100
     return f"{percent:.1f}%" if percent < 10 else f"{percent:.0f}%"
-
 
 def _lnx_pie_card(title: str, items: list[dict[str, Any]]) -> dict[str, Any]:
     valid_items = [item for item in items if _lnx_safe_float(item.get("value"), 0.0) > 0]
@@ -1004,7 +1000,7 @@ def _lnx_pie_card(title: str, items: list[dict[str, Any]]) -> dict[str, Any]:
     min_radius = 42.0
     gap_angle = 3.0
     slice_angle = 360.0 / len(valid_items)
-    max_value = max((_lnx_safe_float(item.get("value"), 0.0) for item in valid_items), default=0.0)
+    max_value = max((_lnx_safe_float(item.get("value"), 0.0) for item in valid_items), default = 0.0)
     for index, item in enumerate(valid_items, 1):
         value = _lnx_safe_float(item.get("value"), 0.0)
         ratio = value / total if total else 0.0
@@ -1057,16 +1053,18 @@ def _lnx_pie_card(title: str, items: list[dict[str, Any]]) -> dict[str, Any]:
             f"A {inner_radius:.1f} {inner_radius:.1f} 0 {large_arc} 0 {inner_start_x:.1f} {inner_start_y:.1f} Z"
         )
         icon = str(item.get("icon") or "").strip()
-        chart_items.append({
-            "path": slice_path,
-            "guide": guide_path,
-            "color": item["color"],
-            "icon": icon,
-            "label": str(item.get("chart_label") or item["label"]),
-            "percent": _lnx_format_ratio(ratio),
-            "left": f"{label_x:.1f}px",
-            "top": f"{label_y:.1f}px",
-        })
+        chart_items.append(
+            {
+                "path": slice_path,
+                "guide": guide_path,
+                "color": item["color"],
+                "icon": icon,
+                "label": str(item.get("chart_label") or item["label"]),
+                "percent": _lnx_format_ratio(ratio),
+                "left": f"{label_x:.1f}px",
+                "top": f"{label_y:.1f}px",
+            },
+        )
 
     return {
         "title": title,
@@ -1078,7 +1076,6 @@ def _lnx_pie_card(title: str, items: list[dict[str, Any]]) -> dict[str, Any]:
         "center_y": f"{center_y:.1f}",
         "items": chart_items,
     }
-
 
 def _lnx_pie_data(title: str, rows: list[dict[str, Any]], value_key: str) -> dict[str, Any]:
     valid_rows = [row for row in rows if _lnx_safe_float(row.get(value_key), 0.0) > 0]
@@ -1094,7 +1091,7 @@ def _lnx_pie_data(title: str, rows: list[dict[str, Any]], value_key: str) -> dic
                 "icon": str(row["entity"].get("icon") or ""),
                 "value": value,
                 "color": LNX_PIE_COLORS[index % len(LNX_PIE_COLORS)],
-            }
+            },
         )
 
     other_value = max(0.0, total - sum(item["value"] for item in items))
@@ -1103,7 +1100,6 @@ def _lnx_pie_data(title: str, rows: list[dict[str, Any]], value_key: str) -> dic
 
     return _lnx_pie_card(title, items)
 
-
 def _lnx_absorb_pie_data(phase: dict[str, Any]) -> dict[str, Any]:
     weighted_total = max(0.0, _lnx_safe_float(_lnx_dict(phase.get("totals")).get("weighted"), 0.0))
     absorb = max(0.0, _lnx_safe_float(_lnx_dict(phase.get("totals")).get("absorb_weighted"), 0.0))
@@ -1111,73 +1107,94 @@ def _lnx_absorb_pie_data(phase: dict[str, Any]) -> dict[str, Any]:
     return _lnx_pie_card(
         "化解占总贡献",
         [
-            {"label": "化解贡献", "value": absorb, "color": LNX_PIE_COLORS[0]},
-            {"label": "其他贡献", "chart_label": "其他贡献", "value": other, "color": LNX_PIE_OTHER_COLOR},
+            {
+                "label": "化解贡献",
+                "value": absorb,
+                "color": LNX_PIE_COLORS[0],
+            },
+            {
+                "label": "其他贡献",
+                "chart_label": "其他贡献",
+                "value": other,
+                "color": LNX_PIE_OTHER_COLOR,
+            },
         ],
     )
-
 
 def render_lnx_analysis_html(raw_data: Any, anonymous: bool = False) -> str:
     phases = build_lnx_analysis_data(raw_data, anonymous)
     lnx_mark = ASSETS + "/image/jx3/calculator/lnx_mark.png"
     rendered_phases = []
     for phase in phases:
-        rendered_phases.append({
-            "phase_index": phase["phase_index"],
-            "wave_count": phase["wave_count"],
-            "terminal_wave": phase["terminal_wave"],
-            "trigger_line": phase["trigger_line"],
-            "players": _lnx_contribution_rows(phase["players"][:10]),
-            "mitigation_players": _lnx_single_contribution_rows(
-                phase["mitigation_players"][:10], "mitigation_weighted"
-            ),
-            "heal_players": _lnx_single_contribution_rows(
-                phase["heal_players"][:10], "heal_weighted"
-            ),
-            "buffs": _lnx_buff_rows(phase["mitigation_buffs"]),
-            "pies": [
-                _lnx_pie_data(
-                    "减伤贡献占比 Top 5",
-                    phase["mitigation_players"],
+        rendered_phases.append(
+            {
+                "phase_index":
+                phase["phase_index"],
+                "wave_count":
+                phase["wave_count"],
+                "terminal_wave":
+                phase["terminal_wave"],
+                "trigger_line":
+                phase["trigger_line"],
+                "players":
+                _lnx_contribution_rows(phase["players"][:10]),
+                "mitigation_players":
+                _lnx_single_contribution_rows(
+                    phase["mitigation_players"][:10],
                     "mitigation_weighted",
                 ),
-                _lnx_pie_data(
-                    "治疗贡献占比 Top 5",
-                    phase["heal_players"],
+                "heal_players":
+                _lnx_single_contribution_rows(
+                    phase["heal_players"][:10],
                     "heal_weighted",
                 ),
-                _lnx_absorb_pie_data(phase),
-            ],
-            "waves": [
-                {
-                    "index": row["index"],
-                    "weight": f"{row['time_weight']:.2f}",
-                    "total": _lnx_format_number(row["total_weighted"]),
-                    "absorb": _lnx_format_number(row["absorb_weighted"]),
-                }
-                for row in phase["waves"]
-            ],
-        })
+                "buffs":
+                _lnx_buff_rows(phase["mitigation_buffs"]),
+                "pies": [
+                    _lnx_pie_data(
+                        "减伤贡献占比 Top 5",
+                        phase["mitigation_players"],
+                        "mitigation_weighted",
+                    ),
+                    _lnx_pie_data(
+                        "治疗贡献占比 Top 5",
+                        phase["heal_players"],
+                        "heal_weighted",
+                    ),
+                    _lnx_absorb_pie_data(phase),
+                ],
+                "waves": [
+                    {
+                        "index": row["index"],
+                        "weight": f"{row['time_weight']:.2f}",
+                        "total": _lnx_format_number(row["total_weighted"]),
+                        "absorb": _lnx_format_number(row["absorb_weighted"]),
+                    } for row in phase["waves"]
+                ],
+            },
+        )
     return Template(lnx_template_body).render(
-        font=ASSETS + "/font/PingFangSC-Semibold.otf",
-        lnx_mark=lnx_mark,
-        decay_rate=LNX_DECAY_RATE,
-        phases=rendered_phases,
-        saohua=get_saohua(),
+        font = ASSETS + "/font/PingFangSC-Semibold.otf",
+        lnx_mark = lnx_mark,
+        decay_rate = LNX_DECAY_RATE,
+        phases = rendered_phases,
+        saohua = get_saohua(),
     )
-
 
 async def render_lnx_analysis(raw_data: Any, anonymous: bool = False):
     html_content = render_lnx_analysis_html(raw_data, anonymous)
-    return await generate(html_content, ".lnx-report", segment=True, viewport={"width": 1800, "height": 1200})
+    return await generate(html_content, ".lnx-report", segment = True, viewport = {"width": 1800, "height": 1200})
 
 # Lu Nian Xue
 async def LNXAnalyze(file_name: str, url: str, anonymous: bool = False, user_id: int = 0):
-    async with AsyncClient(verify=False) as client:
+    async with AsyncClient(verify = False) as client:
         resp = await client.post(
             f"{Config.jx3.api.cqc_url}/lnx_analyze",
-            json={"jcl_url": url, "jcl_name": file_name},
-            timeout=600
+            json = {
+                "jcl_url": url,
+                "jcl_name": file_name,
+            },
+            timeout = 600,
         )
         data = resp.json()
     if isinstance(data, dict) and data.get("code") not in (None, 200):
@@ -1185,13 +1202,11 @@ async def LNXAnalyze(file_name: str, url: str, anonymous: bool = False, user_id:
     raw_data = data.get("data", data) if isinstance(data, dict) else data
     return await render_lnx_analysis(raw_data, anonymous)
 
-
 def _lnn_safe_int(value: Any, default: int = 0) -> int:
     try:
         return int(value)
     except (TypeError, ValueError):
         return default
-
 
 def build_lnn_analysis_data(raw_data: Any, anonymous: bool = False) -> list[dict[str, Any]]:
     if isinstance(raw_data, dict) and "data" in raw_data:
@@ -1231,26 +1246,30 @@ def build_lnn_analysis_data(raw_data: Any, anonymous: bool = False) -> list[dict
                 if not isinstance(skill_item, dict):
                     continue
                 skill_damage = max(0, _lnn_safe_int(skill_item.get("damage")))
-                skills.append({
-                    "name": str(skill_item.get("name") or "未知技能"),
-                    "damage_value": skill_damage,
-                    "damage": f"{skill_damage:,}",
-                    "count": max(0, _lnn_safe_int(skill_item.get("count"))),
-                    "share": f"{skill_damage / damage * 100:.2f}%" if damage else "0.00%",
-                })
-            skills.sort(key=lambda item: item["damage_value"], reverse=True)
-            prepared_attackers.append({
-                "name": display_name,
-                "kungfu": kungfu.name or "未知心法",
-                "icon": kungfu.icon,
-                "color": kungfu.color,
-                "damage_value": damage,
-                "damage": f"{damage:,}",
-                "count": count,
-                "skills": skills,
-            })
+                skills.append(
+                    {
+                        "name": str(skill_item.get("name") or "未知技能"),
+                        "damage_value": skill_damage,
+                        "damage": f"{skill_damage:,}",
+                        "count": max(0, _lnn_safe_int(skill_item.get("count"))),
+                        "share": f"{skill_damage / damage * 100:.2f}%" if damage else "0.00%",
+                    },
+                )
+            skills.sort(key = lambda item: item["damage_value"], reverse = True)
+            prepared_attackers.append(
+                {
+                    "name": display_name,
+                    "kungfu": kungfu.name or "未知心法",
+                    "icon": kungfu.icon,
+                    "color": kungfu.color,
+                    "damage_value": damage,
+                    "damage": f"{damage:,}",
+                    "count": count,
+                    "skills": skills,
+                },
+            )
 
-        prepared_attackers.sort(key=lambda item: item["damage_value"], reverse=True)
+        prepared_attackers.sort(key = lambda item: item["damage_value"], reverse = True)
         total_damage = max(0, _lnn_safe_int(wave_item.get("total_damage")))
         if total_damage == 0:
             total_damage = sum(attacker["damage_value"] for attacker in prepared_attackers)
@@ -1264,48 +1283,53 @@ def build_lnn_analysis_data(raw_data: Any, anonymous: bool = False) -> list[dict
             attacker["share_value"] = f"{min(100.0, max(0.0, share_value)):.2f}"
             attacker["share"] = f"{share_value:.2f}%"
 
-        result.append({
-            "wave": max(1, _lnn_safe_int(wave_item.get("wave"), wave_order)),
-            "bird": str(wave_item.get("bird") or "未识别衡鹊"),
-            "expected_cast": str(wave_item.get("expected_cast") or "未知读条"),
-            "total_damage": f"{total_damage:,}",
-            "hit_count": hit_count,
-            "attacker_count": len(prepared_attackers),
-            "attackers": prepared_attackers,
-        })
+        result.append(
+            {
+                "wave": max(1, _lnn_safe_int(wave_item.get("wave"), wave_order)),
+                "bird": str(wave_item.get("bird") or "未识别衡鹊"),
+                "expected_cast": str(wave_item.get("expected_cast") or "未知读条"),
+                "total_damage": f"{total_damage:,}",
+                "hit_count": hit_count,
+                "attacker_count": len(prepared_attackers),
+                "attackers": prepared_attackers,
+            },
+        )
 
-    result.sort(key=lambda item: item["wave"])
+    result.sort(key = lambda item: item["wave"])
     return result
-
 
 def render_lnn_analysis_html(raw_data: Any, anonymous: bool = False) -> str:
     waves = build_lnn_analysis_data(raw_data, anonymous)
     return Template(read(TEMPLATES + "/jx3/lnn_analysis.html")).render(
-        font=ASSETS + "/font/PingFangSC-Semibold.otf",
-        lnn_mark=ASSETS + "/image/jx3/calculator/lnx_mark.png",
-        wave_count=len(waves),
-        waves=waves,
-        saohua=get_saohua(),
+        font = ASSETS + "/font/PingFangSC-Semibold.otf",
+        lnn_mark = ASSETS + "/image/jx3/calculator/lnx_mark.png",
+        wave_count = len(waves),
+        waves = waves,
+        saohua = get_saohua(),
     )
-
 
 async def render_lnn_analysis(raw_data: Any, anonymous: bool = False):
     html_content = render_lnn_analysis_html(raw_data, anonymous)
     return await generate(
         html_content,
         ".lnn-report",
-        segment=True,
-        viewport={"width": 1700, "height": 1200},
+        segment = True,
+        viewport = {
+            "width": 1700,
+            "height": 1200,
+        },
     )
-
 
 # Lu Nian Xue bird early-kill rounds
 async def LNNAnalyze(file_name: str, url: str, anonymous: bool = False, user_id: int = 0):
-    async with AsyncClient(verify=False) as client:
+    async with AsyncClient(verify = False) as client:
         resp = await client.post(
             f"{Config.jx3.api.cqc_url}/lnn_analyze",
-            json={"jcl_url": url, "jcl_name": file_name},
-            timeout=600,
+            json = {
+                "jcl_url": url,
+                "jcl_name": file_name,
+            },
+            timeout = 600,
         )
         data = resp.json()
     if isinstance(data, dict) and data.get("code") not in (None, 200):
@@ -1313,18 +1337,15 @@ async def LNNAnalyze(file_name: str, url: str, anonymous: bool = False, user_id:
     raw_data = data.get("data", data) if isinstance(data, dict) else data
     return await render_lnn_analysis(raw_data, anonymous)
 
-
 def _qjd_safe_int(value: Any, default: int = 0) -> int:
     try:
         return int(value)
     except (TypeError, ValueError):
         return default
 
-
 def _qjd_delay(value: Any) -> str:
     milliseconds = max(0, _qjd_safe_int(value))
     return f"{milliseconds / 1000:.3f}s"
-
 
 def build_qjd_analysis_data(raw_data: Any, anonymous: bool = False) -> dict[str, Any]:
     if isinstance(raw_data, dict) and "data" in raw_data:
@@ -1365,11 +1386,16 @@ def build_qjd_analysis_data(raw_data: Any, anonymous: bool = False) -> dict[str,
                 status = str(cast_item.get("status") or "unknown")
                 if status not in {"interrupted", "death_terminated", "missed_interrupt"}:
                     status = "unknown"
-                status_label = str(cast_item.get("status_label") or {
-                    "interrupted": "已打断",
-                    "death_terminated": "死亡终止",
-                    "missed_interrupt": "漏打断",
-                }.get(status, "未识别"))
+                status_label = str(
+                    cast_item.get("status_label") or {
+                        "interrupted": "已打断",
+                        "death_terminated": "死亡终止",
+                        "missed_interrupt": "漏打断",
+                    }.get(
+                        status,
+                        "未识别",
+                    ),
+                )
                 interrupter_item = cast_item.get("interrupter")
                 interrupter = interrupter_item if isinstance(interrupter_item, dict) else {}
                 original_name = str(interrupter.get("name") or "").strip()
@@ -1404,38 +1430,44 @@ def build_qjd_analysis_data(raw_data: Any, anonymous: bool = False) -> dict[str,
                     computed[status] += 1
                 wave_counts["cast_count"] += 1
                 computed["cast_count"] += 1
-                casts.append({
-                    "round": max(1, _qjd_safe_int(cast_item.get("round"), cast_order)),
-                    "status": status,
-                    "status_label": status_label,
-                    "actor_name": actor_name,
-                    "icon": icon,
-                    "kungfu": kungfu.name or "",
-                    "detail": detail,
-                    "delay": delay,
-                })
+                casts.append(
+                    {
+                        "round": max(1, _qjd_safe_int(cast_item.get("round"), cast_order)),
+                        "status": status,
+                        "status_label": status_label,
+                        "actor_name": actor_name,
+                        "icon": icon,
+                        "kungfu": kungfu.name or "",
+                        "detail": detail,
+                        "delay": delay,
+                    },
+                )
 
             computed["machine_count"] += 1
-            machines.append({
-                "npc_id": _qjd_safe_int(machine_item.get("npc_id")),
-                "position": str(machine_item.get("position") or "未识别位置"),
-                "vine": str(machine_item.get("vine") or "未识别"),
-                "side": str(machine_item.get("side") or "未识别"),
-                "cast_count": len(casts),
-                "counts": machine_counts,
-                "has_missed": machine_counts["missed_interrupt"] > 0,
-                "casts": casts,
-            })
+            machines.append(
+                {
+                    "npc_id": _qjd_safe_int(machine_item.get("npc_id")),
+                    "position": str(machine_item.get("position") or "未识别位置"),
+                    "vine": str(machine_item.get("vine") or "未识别"),
+                    "side": str(machine_item.get("side") or "未识别"),
+                    "cast_count": len(casts),
+                    "counts": machine_counts,
+                    "has_missed": machine_counts["missed_interrupt"] > 0,
+                    "casts": casts,
+                },
+            )
 
-        waves.append({
-            "wave": max(1, _qjd_safe_int(wave_item.get("wave"), wave_order)),
-            "machine_count": len(machines),
-            "counts": wave_counts,
-            "has_missed": wave_counts["missed_interrupt"] > 0,
-            "machines": machines,
-        })
+        waves.append(
+            {
+                "wave": max(1, _qjd_safe_int(wave_item.get("wave"), wave_order)),
+                "machine_count": len(machines),
+                "counts": wave_counts,
+                "has_missed": wave_counts["missed_interrupt"] > 0,
+                "machines": machines,
+            },
+        )
 
-    waves.sort(key=lambda item: item["wave"])
+    waves.sort(key = lambda item: item["wave"])
     summary = {
         "wave_count": _qjd_safe_int(raw_summary.get("wave_count"), len(waves)),
         "machine_count": _qjd_safe_int(raw_summary.get("machine_count"), computed["machine_count"]),
@@ -1451,34 +1483,37 @@ def build_qjd_analysis_data(raw_data: Any, anonymous: bool = False) -> dict[str,
     )
     return {"summary": summary, "waves": waves}
 
-
 def render_qjd_analysis_html(raw_data: Any, anonymous: bool = False) -> str:
     report = build_qjd_analysis_data(raw_data, anonymous)
     return Template(read(TEMPLATES + "/jx3/qjd_analysis.html")).render(
-        font=ASSETS + "/font/PingFangSC-Semibold.otf",
-        summary=report["summary"],
-        waves=report["waves"],
-        saohua=get_saohua(),
+        font = ASSETS + "/font/PingFangSC-Semibold.otf",
+        summary = report["summary"],
+        waves = report["waves"],
+        saohua = get_saohua(),
     )
-
 
 async def render_qjd_analysis(raw_data: Any, anonymous: bool = False):
     html_content = render_qjd_analysis_html(raw_data, anonymous)
     return await generate(
         html_content,
         ".qjd-report",
-        segment=True,
-        viewport={"width": 1700, "height": 1200},
+        segment = True,
+        viewport = {
+            "width": 1700,
+            "height": 1200,
+        },
     )
-
 
 # Qian Ji Yuan Shu machine interrupt analysis
 async def QJDAnalyze(file_name: str, url: str, anonymous: bool = False, user_id: int = 0):
-    async with AsyncClient(verify=False) as client:
+    async with AsyncClient(verify = False) as client:
         resp = await client.post(
             f"{Config.jx3.api.cqc_url}/qjd_analyze",
-            json={"jcl_url": url, "jcl_name": file_name},
-            timeout=600,
+            json = {
+                "jcl_url": url,
+                "jcl_name": file_name,
+            },
+            timeout = 600,
         )
         data = resp.json()
     if isinstance(data, dict) and data.get("code") not in (None, 200):
@@ -1486,13 +1521,11 @@ async def QJDAnalyze(file_name: str, url: str, anonymous: bool = False, user_id:
     raw_data = data.get("data", data) if isinstance(data, dict) else data
     return await render_qjd_analysis(raw_data, anonymous)
 
-
 def _scy_safe_int(value: Any, default: int = 0) -> int:
     try:
         return int(value)
     except (TypeError, ValueError):
         return default
-
 
 def _scy_time(value: Any, timestamp: Any = None) -> str:
     raw = str(value or "").strip()
@@ -1502,7 +1535,6 @@ def _scy_time(value: Any, timestamp: Any = None) -> str:
         return raw[:8] or "—"
     raw_timestamp = _scy_safe_int(timestamp)
     return Time(raw_timestamp).format("%H:%M:%S") if raw_timestamp else "—"
-
 
 def _scy_milliseconds(item: dict[str, Any], name: str) -> int | None:
     milliseconds = item.get(f"{name}_ms")
@@ -1514,14 +1546,12 @@ def _scy_milliseconds(item: dict[str, Any], name: str) -> int | None:
     timestamp_value = _scy_safe_int(timestamp)
     return timestamp_value if timestamp_value >= 10**12 else timestamp_value * 1000
 
-
 def _scy_record_key(item: dict[str, Any]) -> tuple[int, int, int]:
     return (
         _scy_safe_int(item.get("player_id")),
         _scy_milliseconds(item, "cast_start") or -1,
         _scy_milliseconds(item, "hit") or -1,
     )
-
 
 def build_scy_analysis_data(raw_data: Any, anonymous: bool = False) -> dict[str, Any]:
     if isinstance(raw_data, dict) and "data" in raw_data:
@@ -1555,15 +1585,11 @@ def build_scy_analysis_data(raw_data: Any, anonymous: bool = False) -> dict[str,
         order = max(1, _scy_safe_int(sword_item.get("order"), sword_index))
         raw_activations = sword_item.get("activations")
         activations = (
-            [item for item in raw_activations if isinstance(item, dict)]
-            if isinstance(raw_activations, list)
-            else []
+            [item for item in raw_activations if isinstance(item, dict)] if isinstance(raw_activations, list) else []
         )
         raw_attempts = sword_item.get("cast_attempts")
         attempts = (
-            [dict(item) for item in raw_attempts if isinstance(item, dict)]
-            if isinstance(raw_attempts, list)
-            else []
+            [dict(item) for item in raw_attempts if isinstance(item, dict)] if isinstance(raw_attempts, list) else []
         )
         if not attempts:
             attempts = [dict(item) for item in activations]
@@ -1583,10 +1609,12 @@ def build_scy_analysis_data(raw_data: Any, anonymous: bool = False) -> dict[str,
                 attempts.append(inferred_item)
                 seen_keys.add(key)
 
-        attempts.sort(key=lambda item: (
-            _scy_milliseconds(item, "cast_start") or 2**63 - 1,
-            _scy_milliseconds(item, "hit") or 2**63 - 1,
-        ))
+        attempts.sort(
+            key = lambda item: (
+                _scy_milliseconds(item, "cast_start") or 2**63 - 1,
+                _scy_milliseconds(item, "hit") or 2**63 - 1,
+            ),
+        )
         rows: list[dict[str, Any]] = []
         counts = {"matched": 0, "unmatched_cast": 0, "missing_cast": 0}
         successful_players: set[str] = set()
@@ -1598,84 +1626,93 @@ def build_scy_analysis_data(raw_data: Any, anonymous: bool = False) -> dict[str,
                 counts[status] += 1
             if status == "matched":
                 player_id = _scy_safe_int(item.get("player_id"))
-                player_key = (
-                    f"id:{player_id}"
-                    if player_id
-                    else f"name:{str(item.get('player_name') or '').strip()}"
-                )
+                player_key = (f"id:{player_id}" if player_id else f"name:{str(item.get('player_name') or '').strip()}")
                 successful_players.add(player_key)
             assignment = str(item.get("sword_assignment") or "")
             kungfu = Kungfu.with_internel_id(
                 _scy_safe_int(item.get("kungfu_id")),
                 True,
             )
-            rows.append({
-                "status": status,
-                "status_label": {
-                    "matched": "拔剑成功",
-                    "unmatched_cast": "未拔出",
-                    "missing_cast": "缺少读条",
-                }.get(status, "未识别"),
-                "player_name": player_name(item),
-                "icon": kungfu.icon,
-                "kungfu": kungfu.name or "未知心法",
-                "cast_time": _scy_time(
-                    item.get("cast_start_time"),
-                    item.get("cast_start_timestamp"),
-                ),
-                "hit_time": _scy_time(
-                    item.get("hit_time"),
-                    item.get("hit_timestamp"),
-                ),
-                "assignment": {
-                    "hit_target": "命中目标",
-                    "spawn_interval_inference": "按剑次推断",
-                }.get(assignment, "—"),
-            })
+            rows.append(
+                {
+                    "status": status,
+                    "status_label": {
+                        "matched": "拔剑成功",
+                        "unmatched_cast": "未拔出",
+                        "missing_cast": "缺少读条",
+                    }.get(
+                        status,
+                        "未识别",
+                    ),
+                    "player_name": player_name(item),
+                    "icon": kungfu.icon,
+                    "kungfu": kungfu.name or "未知心法",
+                    "cast_time": _scy_time(
+                        item.get("cast_start_time"),
+                        item.get("cast_start_timestamp"),
+                    ),
+                    "hit_time": _scy_time(
+                        item.get("hit_time"),
+                        item.get("hit_timestamp"),
+                    ),
+                    "assignment": {
+                        "hit_target": "命中目标",
+                        "spawn_interval_inference": "按剑次推断",
+                    }.get(
+                        assignment,
+                        "—",
+                    ),
+                },
+            )
 
-        swords.append({
-            "order": order,
-            "spawn_time": _scy_time(
-                sword_item.get("spawn_time"),
-                sword_item.get("spawn_timestamp"),
-            ),
-            "counts": counts,
-            "cast_count": counts["matched"] + counts["unmatched_cast"],
-            "successful_player_count": len(successful_players),
-            "is_successful": len(successful_players) >= 3,
-            "rows": rows,
-        })
+        swords.append(
+            {
+                "order": order,
+                "spawn_time": _scy_time(
+                    sword_item.get("spawn_time"),
+                    sword_item.get("spawn_timestamp"),
+                ),
+                "counts": counts,
+                "cast_count": counts["matched"] + counts["unmatched_cast"],
+                "successful_player_count": len(successful_players),
+                "is_successful": len(successful_players) >= 3,
+                "rows": rows,
+            },
+        )
 
-    swords.sort(key=lambda item: item["order"])
+    swords.sort(key = lambda item: item["order"])
     return {"swords": swords}
-
 
 def render_scy_analysis_html(raw_data: Any, anonymous: bool = False) -> str:
     report = build_scy_analysis_data(raw_data, anonymous)
     return Template(read(TEMPLATES + "/jx3/scy_analysis.html")).render(
-        font=ASSETS + "/font/PingFangSC-Semibold.otf",
-        swords=report["swords"],
-        saohua=get_saohua(),
+        font = ASSETS + "/font/PingFangSC-Semibold.otf",
+        swords = report["swords"],
+        saohua = get_saohua(),
     )
-
 
 async def render_scy_analysis(raw_data: Any, anonymous: bool = False):
     html_content = render_scy_analysis_html(raw_data, anonymous)
     return await generate(
         html_content,
         ".scy-report",
-        segment=True,
-        viewport={"width": 1000, "height": 1200},
+        segment = True,
+        viewport = {
+            "width": 1000,
+            "height": 1200,
+        },
     )
-
 
 # Shi Chao Yi sword activation analysis
 async def SCYAnalyze(file_name: str, url: str, anonymous: bool = False, user_id: int = 0):
-    async with AsyncClient(verify=False) as client:
+    async with AsyncClient(verify = False) as client:
         resp = await client.post(
             f"{Config.jx3.api.cqc_url}/scy_analyze",
-            json={"jcl_url": url, "jcl_name": file_name},
-            timeout=600,
+            json = {
+                "jcl_url": url,
+                "jcl_name": file_name,
+            },
+            timeout = 600,
         )
         data = resp.json()
     if isinstance(data, dict) and data.get("code") not in (None, 200):
@@ -1686,19 +1723,18 @@ async def SCYAnalyze(file_name: str, url: str, anonymous: bool = False, user_id:
 # Qian Ji yuan shu Health (已弃用)
 # Qian Ji yuan shu Vine
 async def QJHAnalyze(file_name: str, url: str, anonymous: bool = False, user_id: int = 0):
-    async with AsyncClient(verify=False) as client:
+    async with AsyncClient(verify = False) as client:
         resp = await client.post(
             f"{Config.jx3.api.cqc_url}/qjh_analyze",
-            json={"jcl_url": url, "jcl_name": file_name},
-            timeout=600,
+            json = {
+                "jcl_url": url,
+                "jcl_name": file_name,
+            },
+            timeout = 600,
         )
         data = resp.json()
     if isinstance(data, dict) and "code" in data and data["code"] != 200:
-        return (
-            data["msg"]
-            if "msg" in data and data["msg"]
-            else "QJH 分析失败，请检查 JCL 是否完整。"
-        )
+        return (data["msg"] if "msg" in data and data["msg"] else "QJH 分析失败，请检查 JCL 是否完整。")
     raw_data = data["data"] if isinstance(data, dict) else data
     rounds = raw_data if isinstance(raw_data, list) else []
     anonymous_names: dict[str, str] = {}
@@ -1729,11 +1765,7 @@ async def QJHAnalyze(file_name: str, url: str, anonymous: bool = False, user_id:
             effective_healing = int(finisher["effective_healing"] or 0)
             overhealing = int(finisher["overhealing"] or 0)
             total_effective_healing = int(vine["total_effective_healing"] or 0)
-            window_ms = (
-                int(vine["window_ms"] or 3_000)
-                if "window_ms" in vine
-                else 3_000
-            )
+            window_ms = (int(vine["window_ms"] or 3_000) if "window_ms" in vine else 3_000)
             window_seconds = f"{window_ms / 1000:g}s"
             rendered_healers = []
             healers = vine["healers"]
@@ -1744,7 +1776,8 @@ async def QJHAnalyze(file_name: str, url: str, anonymous: bool = False, user_id:
                     continue
                 healer_name = str(healer["name"] or "未识别")
                 healer_kungfu = Kungfu.with_internel_id(
-                    int(healer["kungfu_id"] or 0), True
+                    int(healer["kungfu_id"] or 0),
+                    True,
                 )
                 healer_healing = int(healer["healing"] or 0)
                 healer_effective = int(healer["effective_healing"] or 0)
@@ -1756,65 +1789,74 @@ async def QJHAnalyze(file_name: str, url: str, anonymous: bool = False, user_id:
                 skills = healer["skills"]
                 if not isinstance(skills, dict):
                     skills = {}
-                rendered_healers.append({
-                    "kind": "healer",
-                    "final": is_final,
-                    "icon": healer_kungfu.icon,
-                    "name": healer_name,
-                    "count": sum(
-                        len(values)
-                        for values in skills.values()
-                        if isinstance(values, list)
-                    ),
-                    "healing": f"{healer_healing:,}",
-                    "effective": f"{healer_effective:,}",
-                })
+                rendered_healers.append(
+                    {
+                        "kind": "healer",
+                        "final": is_final,
+                        "icon": healer_kungfu.icon,
+                        "name": healer_name,
+                        "count": sum(len(values) for values in skills.values() if isinstance(values, list)),
+                        "healing": f"{healer_healing:,}",
+                        "effective": f"{healer_effective:,}",
+                    },
+                )
                 for skill_name, skill_values in skills.items():
                     values = skill_values if isinstance(skill_values, list) else []
                     skill_total = sum(int(value) for value in values)
-                    skill_percent = (
-                        f"{skill_total / healer_healing * 100:.2f}%"
-                        if healer_healing > 0 else "0.00%"
+                    skill_percent = (f"{skill_total / healer_healing * 100:.2f}%" if healer_healing > 0 else "0.00%")
+                    rendered_healers.append(
+                        {
+                            "kind": "skill",
+                            "name": str(skill_name or "未知技能"),
+                            "count": len(values),
+                            "healing": f"{skill_total:,}",
+                            "percent": skill_percent,
+                        },
                     )
-                    rendered_healers.append({
-                        "kind": "skill",
-                        "name": str(skill_name or "未知技能"),
-                        "count": len(values),
-                        "healing": f"{skill_total:,}",
-                        "percent": skill_percent,
-                    })
-            rendered_vines.append({
-                "marker": marker,
-                "window": window_seconds,
-                "total_effective": f"{total_effective_healing:,}",
-                "player_name": player_name,
-                "skill": skill,
-                "finish_healing": f"{finish_healing:,}",
-                "effective_healing": f"{effective_healing:,}",
-                "overhealing": f"{overhealing:,}",
-                "healers": rendered_healers,
-            })
+            rendered_vines.append(
+                {
+                    "marker": marker,
+                    "window": window_seconds,
+                    "total_effective": f"{total_effective_healing:,}",
+                    "player_name": player_name,
+                    "skill": skill,
+                    "finish_healing": f"{finish_healing:,}",
+                    "effective_healing": f"{effective_healing:,}",
+                    "overhealing": f"{overhealing:,}",
+                    "healers": rendered_healers,
+                },
+            )
         rendered_rounds.append({
             "number": round_data["round"],
             "vines": rendered_vines,
-        })
+        }, )
 
     html_content = Template(qjh_template_body).render(
-        font=ASSETS + "/font/PingFangSC-Semibold.otf",
-        rounds=rendered_rounds,
-        saohua=get_saohua(),
+        font = ASSETS + "/font/PingFangSC-Semibold.otf",
+        rounds = rendered_rounds,
+        saohua = get_saohua(),
     )
     return await generate(
         html_content,
         ".qjh-report",
-        segment=True,
-        viewport={"width": 1700, "height": 1200},
+        segment = True,
+        viewport = {
+            "width": 1700,
+            "height": 1200,
+        },
     )
 
 # A Shi Na (Cheng Qing)
 async def ASNAnalyze(file_name: str, url: str, anonymous: bool = False, user_id: int = 0):
-    async with AsyncClient(verify=False) as client:
-        resp = await client.post(f"{Config.jx3.api.cqc_url}/asn_analyze", json={"jcl_url": url, "jcl_name": file_name}, timeout=600)
+    async with AsyncClient(verify = False) as client:
+        resp = await client.post(
+            f"{Config.jx3.api.cqc_url}/asn_analyze",
+            json = {
+                "jcl_url": url,
+                "jcl_name": file_name,
+            },
+            timeout = 600,
+        )
         data = resp.json()
     tables = []
     final_tables = []
@@ -1822,8 +1864,8 @@ async def ASNAnalyze(file_name: str, url: str, anonymous: bool = False, user_id:
         if each_record == {}:
             final_tables.append(
                 Template(yxc_table).render(
-                    tables = "\n".join(tables)
-                )
+                    tables = "\n".join(tables),
+                ),
             )
             tables = []
             continue
@@ -1832,63 +1874,74 @@ async def ASNAnalyze(file_name: str, url: str, anonymous: bool = False, user_id:
             player_name = "匿名玩家"
         tables.append(
             Template(hps_detail_template_body_main).render(
-                icon=Kungfu.with_internel_id(int(each_record["kungfu_id"]), True).icon,
-                name=player_name,
-                value=each_record["value"]
-            )
+                icon = Kungfu.with_internel_id(int(each_record["kungfu_id"]), True).icon,
+                name = player_name,
+                value = each_record["value"],
+            ),
         )
-        skills = dict(sorted(each_record["skills"].items(), key=lambda item: sum(item[1]), reverse=True))
+        skills = dict(sorted(each_record["skills"].items(), key = lambda item: sum(item[1]), reverse = True))
         for skill_name, skill_values in skills.items():
             tables.append(
                 Template(hps_detail_template_body_sub).render(
                     name = skill_name,
                     count = len(skill_values),
                     value = sum(skill_values),
-                    percent = str(round(sum(skill_values) / each_record["value"] * 100, 2)) + "%"
-                )
+                    percent = str(round(sum(skill_values) / each_record["value"] * 100, 2)) + "%",
+                ),
             )
     html = Template(
-        read(TEMPLATES + "/jx3/health_detail.html")
+        read(TEMPLATES + "/jx3/health_detail.html"),
     ).render(
         font = ASSETS + "/font/PingFangSC-Semibold.otf",
         tables = "\n".join(final_tables),
         saohua = get_saohua(),
-        function_name = "阿史那承庆 · 死侍期间治疗吸收盾 HPS 统计"
+        function_name = "阿史那承庆 · 死侍期间治疗吸收盾 HPS 统计",
     )
-    hps_image = await generate(html, ".container", segment=True)
+    hps_image = await generate(html, ".container", segment = True)
     round_tables = []
     for each_record in data["data"]["hit"]:
         round_rows = []
-        for player_name, values in dict(sorted(each_record.items(), key=lambda item: sum(item[1].values()), reverse=True)).items():
+        for player_name, values in dict(sorted(
+                each_record.items(),
+                key = lambda item: sum(item[1].values()),
+                reverse = True,
+        ), ).items():
             if anonymous:
                 player_name = "匿名玩家"
             round_rows.append(
                 Template(asn_qte_template_body_main).render(
-                    name=player_name,
-                    good=values["good"],
-                    bad=values["bad"]
-                )
+                    name = player_name,
+                    good = values["good"],
+                    bad = values["bad"],
+                ),
             )
         round_table = Template(asn_qte_table).render(
-            tables="\n".join(round_rows)
+            tables = "\n".join(round_rows),
         )
         round_tables.append(round_table)
     html = Template(
-        read(TEMPLATES + "/jx3/health_detail.html")
+        read(TEMPLATES + "/jx3/health_detail.html"),
     ).render(
-        font=ASSETS + "/font/PingFangSC-Semibold.otf",
-        tables="\n".join(round_tables),
-        saohua=get_saohua(),
-        function_name="阿史那承庆 · QTE 统计"
+        font = ASSETS + "/font/PingFangSC-Semibold.otf",
+        tables = "\n".join(round_tables),
+        saohua = get_saohua(),
+        function_name = "阿史那承庆 · QTE 统计",
     )
 
-    qte_image = await generate(html, ".container", segment=True)
+    qte_image = await generate(html, ".container", segment = True)
     return hps_image + qte_image
 
 # Tang Huai Ren
 async def THRAnalyze(file_name: str, url: str, anonymous: bool = False, user_id: int = 0):
-    async with AsyncClient(verify=False) as client:
-        resp = await client.post(f"{Config.jx3.api.cqc_url}/thr_analyze", json={"jcl_url": url, "jcl_name": file_name}, timeout=600)
+    async with AsyncClient(verify = False) as client:
+        resp = await client.post(
+            f"{Config.jx3.api.cqc_url}/thr_analyze",
+            json = {
+                "jcl_url": url,
+                "jcl_name": file_name,
+            },
+            timeout = 600,
+        )
         data = resp.json()
 
     if data["code"] == 400:
@@ -1908,12 +1961,14 @@ async def THRAnalyze(file_name: str, url: str, anonymous: bool = False, user_id:
             icon = kungfu.icon,
             name = player_name + " - " + str(round(player_data["total_damage"] / team_total_damage * 100, 2)) + "%",
             rdps = "{:,}".format(int(player_data["total_damage"])),
-            display = str(round(player_data["total_damage"] / list(data["data"][0].values())[0]["total_damage"], 4) * 100),
+            display = str(
+                round(player_data["total_damage"] / list(data["data"][0].values())[0]["total_damage"], 4) * 100,
+            ),
             color = kungfu.color,
-            percent = "{:,}".format(int(player_data['damage_per_second']))
+            percent = "{:,}".format(int(player_data["damage_per_second"])),
         )
         final_dps.append(
-            single_record
+            single_record,
         )
 
     for player_name, player_data in data["data"][1].items():
@@ -1925,10 +1980,12 @@ async def THRAnalyze(file_name: str, url: str, anonymous: bool = False, user_id:
                 icon = kungfu.icon,
                 name = player_name,
                 rdps = "{:,}".format(int(player_data["total_health"])),
-                display = str(round(player_data["total_health"] / list(data["data"][1].values())[0]["total_health"] * 100, 2)),
+                display = str(
+                    round(player_data["total_health"] / list(data["data"][1].values())[0]["total_health"] * 100, 2),
+                ),
                 color = kungfu.color,
-                percent = "{:,}".format(int(player_data['health_per_second']))
-            )
+                percent = "{:,}".format(int(player_data["health_per_second"])),
+            ),
         )
     try:
         save_data(data["data"][0], True, "THR")
@@ -1945,16 +2002,23 @@ async def THRAnalyze(file_name: str, url: str, anonymous: bool = False, user_id:
             dps_stastic = "\n".join(final_dps),
             hps_stastic = "\n".join(final_hps),
             saohua = get_saohua(),
-            font = ASSETS + "/font/PingFangSC-Semibold.otf"
-        )
+            font = ASSETS + "/font/PingFangSC-Semibold.otf",
+        ),
     )
-    dps_image = await generate(html, ".container", segment=True)
+    dps_image = await generate(html, ".container", segment = True)
     return dps_image
 
 # Tang Huai ren Final
 async def THFAnalyze(file_name: str, url: str, anonymous: bool = False, user_id: int = 0):
-    async with AsyncClient(verify=False) as client:
-        resp = await client.post(f"{Config.jx3.api.cqc_url}/thf_analyze", json={"jcl_url": url, "jcl_name": file_name}, timeout=600)
+    async with AsyncClient(verify = False) as client:
+        resp = await client.post(
+            f"{Config.jx3.api.cqc_url}/thf_analyze",
+            json = {
+                "jcl_url": url,
+                "jcl_name": file_name,
+            },
+            timeout = 600,
+        )
         data = resp.json()
 
     if data["code"] == 400:
@@ -1974,12 +2038,14 @@ async def THFAnalyze(file_name: str, url: str, anonymous: bool = False, user_id:
             icon = kungfu.icon,
             name = player_name + " - " + str(round(player_data["total_damage"] / team_total_damage * 100, 2)) + "%",
             rdps = "{:,}".format(int(player_data["total_damage"])),
-            display = str(round(player_data["total_damage"] / list(data["data"][0].values())[0]["total_damage"], 4) * 100),
+            display = str(
+                round(player_data["total_damage"] / list(data["data"][0].values())[0]["total_damage"], 4) * 100,
+            ),
             color = kungfu.color,
-            percent = "{:,}".format(int(player_data['damage_per_second']))
+            percent = "{:,}".format(int(player_data["damage_per_second"])),
         )
         final_dps.append(
-            single_record
+            single_record,
         )
 
     for player_name, player_data in data["data"][1].items():
@@ -1991,10 +2057,12 @@ async def THFAnalyze(file_name: str, url: str, anonymous: bool = False, user_id:
                 icon = kungfu.icon,
                 name = player_name,
                 rdps = "{:,}".format(int(player_data["total_health"])),
-                display = str(round(player_data["total_health"] / list(data["data"][1].values())[0]["total_health"] * 100, 2)),
+                display = str(
+                    round(player_data["total_health"] / list(data["data"][1].values())[0]["total_health"] * 100, 2),
+                ),
                 color = kungfu.color,
-                percent = "{:,}".format(int(player_data['health_per_second']))
-            )
+                percent = "{:,}".format(int(player_data["health_per_second"])),
+            ),
         )
 
     html = str(
@@ -2006,22 +2074,22 @@ async def THFAnalyze(file_name: str, url: str, anonymous: bool = False, user_id:
             dps_stastic = "\n".join(final_dps),
             hps_stastic = "\n".join(final_hps),
             saohua = get_saohua(),
-            font = ASSETS + "/font/PingFangSC-Semibold.otf"
-        )
+            font = ASSETS + "/font/PingFangSC-Semibold.otf",
+        ),
     )
-    dps_image = await generate(html, ".container", segment=True)
+    dps_image = await generate(html, ".container", segment = True)
     return dps_image
 
 # Liu Gong Zi
 async def LGZAnalyze(file_name: str, url: str, anonymous: bool = False, user_id: int = 0):
-    async with AsyncClient(verify=False) as client:
+    async with AsyncClient(verify = False) as client:
         resp = await client.post(
             f"{Config.jx3.api.cqc_url}/lgz_analyze",
-            json={
+            json = {
                 "jcl_url": url,
-                "jcl_name": file_name
+                "jcl_name": file_name,
             },
-            timeout=600
+            timeout = 600,
         )
         data = resp.json()
 
@@ -2039,10 +2107,11 @@ async def LGZAnalyze(file_name: str, url: str, anonymous: bool = False, user_id:
             return
         final_tables.append(
             Template(lgz_table).render(
-                tables="\n".join(tables)
-            )
+                tables = "\n".join(tables),
+            ),
         )
         tables = []
+
     for each_record in data:
         if not each_record:
             flush_tables()
@@ -2050,54 +2119,54 @@ async def LGZAnalyze(file_name: str, url: str, anonymous: bool = False, user_id:
         if each_record.get("disarm_kungfu") is not None:
             tables.append(
                 Template(lgz_detail_template_body_main).render(
-                    icon=Kungfu.with_internel_id(
+                    icon = Kungfu.with_internel_id(
                         int(each_record["disarm_kungfu"]),
-                        True
+                        True,
                     ).icon,
-                    name=each_record["disarm_name"],
-                    status="点名缴械",
-                    status_icon=ASSETS + "/image/jx3/attributes/2399.png",
-                    time=Time(each_record["disarm_time"]).format("%H:%M:%S")
-                )
+                    name = each_record["disarm_name"],
+                    status = "点名缴械",
+                    status_icon = ASSETS + "/image/jx3/attributes/2399.png",
+                    time = Time(each_record["disarm_time"]).format("%H:%M:%S"),
+                ),
             )
         if each_record.get("placer_kungfu") is not None:
             tables.append(
                 Template(lgz_detail_template_body_main).render(
-                    icon=Kungfu.with_internel_id(
+                    icon = Kungfu.with_internel_id(
                         int(each_record["placer_kungfu"]),
-                        True
+                        True,
                     ).icon,
-                    name=each_record["placer_name"],
-                    status="放置武器",
-                    status_icon=ASSETS + "/image/jx3/attributes/4558.png",
-                    time=Time(each_record["placer_time"]).format("%H:%M:%S")
-                )
+                    name = each_record["placer_name"],
+                    status = "放置武器",
+                    status_icon = ASSETS + "/image/jx3/attributes/4558.png",
+                    time = Time(each_record["placer_time"]).format("%H:%M:%S"),
+                ),
             )
         transferers = sort_dict_list(
             each_record.get("transferers", []),
-            "transferer_time"
+            "transferer_time",
         )
         for each_transferer in transferers:
             tables.append(
                 Template(lgz_detail_template_body_sub).render(
-                    icon=Kungfu.with_internel_id(
+                    icon = Kungfu.with_internel_id(
                         int(each_transferer["transferer_kungfu"]),
-                        True
+                        True,
                     ).icon,
-                    name=each_transferer["transferer_name"],
-                    status="传功完成",
-                    status_icon=ASSETS + "/image/jx3/attributes/2401.png",
-                    time=Time(each_transferer["transferer_time"]).format("%H:%M:%S")
-                )
+                    name = each_transferer["transferer_name"],
+                    status = "传功完成",
+                    status_icon = ASSETS + "/image/jx3/attributes/2401.png",
+                    time = Time(each_transferer["transferer_time"]).format("%H:%M:%S"),
+                ),
             )
     flush_tables()
     html = Template(
-        read(TEMPLATES + "/jx3/health_detail.html")
+        read(TEMPLATES + "/jx3/health_detail.html"),
     ).render(
-        font=ASSETS + "/font/PingFangSC-Semibold.otf",
-        tables="\n".join(final_tables),
-        saohua=get_saohua(),
-        function_name="柳公子 · 神秘装置记录"
+        font = ASSETS + "/font/PingFangSC-Semibold.otf",
+        tables = "\n".join(final_tables),
+        saohua = get_saohua(),
+        function_name = "柳公子 · 神秘装置记录",
     )
-    image = await generate(html, ".container", segment=True)
+    image = await generate(html, ".container", segment = True)
     return image

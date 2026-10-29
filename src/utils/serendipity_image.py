@@ -3,24 +3,23 @@ from pathlib import Path
 
 from PIL import Image
 
-
 def compose_serendipity_image(illustration: str | Path, assets: str | Path) -> Image.Image:
     illustration = Path(illustration)
-    base = Path(assets) / 'image/jx3/serendipity'
-    name = illustration.stem.split('-', 1)[0]
+    base = Path(assets) / "image/jx3/serendipity"
+    name = illustration.stem.split("-", 1)[0]
 
     def load(path: Path) -> Image.Image:
         with Image.open(path) as image:
-            return image.convert('RGBA')
+            return image.convert("RGBA")
 
-    background = load(base / 'vector/background.png')
+    background = load(base / "vector/background.png")
     source_size = background.size
     art = load(illustration)
-    icon = load(base / 'vector/icon.png')
-    close = load(base / 'vector/close.png')
-    name_path = base / 'name' / f'{name}.png'
+    icon = load(base / "vector/icon.png")
+    close = load(base / "vector/close.png")
+    name_path = base / "name" / f"{name}.png"
     if not name_path.is_file():
-        name_path = base / 'name/宠物奇缘.png'
+        name_path = base / "name/宠物奇缘.png"
     title = load(name_path)
     size = (500, 522)
     background = background.resize(size, Image.Resampling.LANCZOS)

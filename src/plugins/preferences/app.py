@@ -29,18 +29,19 @@ class Preference:
 
     def __init__(self, user_id: int, key: str = "", value: str = ""):
         self.data: dict[str, dict[str, str]] = json.loads(
-            read(build_path(ASSETS, ["source", "preference", "preferences.json"]))
+            read(build_path(ASSETS, ["source", "preference", "preferences.json"])),
         )
-        current_settings: PersonalSettings | Any = db.where_one(PersonalSettings(), "user_id = ?", str(user_id), default=PersonalSettings(user_id=user_id))
+        current_settings: PersonalSettings | Any = db.where_one(
+            PersonalSettings(),
+            "user_id = ?",
+            str(user_id),
+            default = PersonalSettings(user_id = user_id),
+        )
         self.settings = current_settings
         self.current = current_settings.setting
         self.key = key
         self.value = value
-        self.available = (
-            key in self.mapping
-            and key in self.data
-            and hasattr(self.current, self.mapping[key])
-        )
+        self.available = (key in self.mapping and key in self.data and hasattr(self.current, self.mapping[key]))
 
     def get(self) -> str:
         if not self.available:
@@ -51,7 +52,7 @@ class Preference:
                 f"当前{self.key}的偏好为：{result}",
                 self._format_available_values(),
                 self._format_setting_examples(),
-            ]
+            ],
         )
 
     def _format_available_values(self) -> str:
@@ -72,7 +73,7 @@ class Preference:
         for value in values:
             lines.append(f"偏好 {self.key} {value}")
         return "\n".join(lines)
-        
+
     def set(self) -> str:
         if not self.available:
             return "未找到相关偏好项！"
@@ -87,7 +88,7 @@ class Preference:
     def setting(self, key: str) -> str:
         result: str = getattr(self.current, self.mapping[key])
         return result
-    
+
     async def query(self):
         """
         获得个人偏好图
@@ -96,25 +97,30 @@ class Preference:
         for m in self.mapping:
             current = self.setting(m)
             values = (
-                {DEFAULT_UI_COLOR: current == DEFAULT_UI_COLOR, "#RRGGBB": False}
-                if m == "UI颜色" else {v: v == current for v in self.data[m]}
+                {
+                    DEFAULT_UI_COLOR: current == DEFAULT_UI_COLOR,
+                    "#RRGGBB": False,
+                } if m == "UI颜色" else {
+                    v: v == current
+                    for v in self.data[m]
+                }
             )
             if m == "UI颜色" and current != DEFAULT_UI_COLOR:
                 values[current] = True
             preferences.append(
                 Template(
-                    template_preferences
+                    template_preferences,
                 ).render(
                     name = m,
                     values = values,
-                    preferences = self.data[m]
-                )
+                    preferences = self.data[m],
+                ),
             )
         html = Template(
-            read(TEMPLATES + "/preferences.html")
+            read(TEMPLATES + "/preferences.html"),
         ).render(
             font = ASSETS + "/font/PingFangSC-Semibold.otf",
             prefeernce_items = preferences,
-            saohua = get_saohua()
+            saohua = get_saohua(),
         )
-        return await generate(html, ".preference-container", segment=True)
+        return await generate(html, ".preference-container", segment = True)

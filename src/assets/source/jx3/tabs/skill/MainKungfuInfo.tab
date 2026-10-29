@@ -1,0 +1,34 @@
+KungfuID	KungfuIndex	ForceID	TalentGroup	KungfuType	name	AdaptiveType	NonadaptiveType	NoneSchoolKungfu
+10002	1	1	1	T	洗髓经	SolarMagic	Physics	0
+10003	2	1	2	DPS	易筋经	SolarMagic	Physics	
+10014	3	4	3	DPS	紫霞功	NeutralMagic	Physics	
+10015	4	4	4	DPS	太虚剑意	Physics	SolarMagic	
+10021	5	2	5	DPS	花间游	NeutralMagic	Physics	
+10026	6	3	6	DPS	傲血战意	Physics	SolarMagic	
+10028	7	2	7	THERAPY	离经易道	NeutralMagic	Physics	
+10062	8	3	8	T	铁牢律	Physics	SolarMagic	
+10080	9	5	9	THERAPY	云裳心经	LunarMagic	Physics	
+10081	10	5	10	DPS	冰心诀	LunarMagic	Physics	
+10144	11	8	11	DPS	问水诀	Physics	SolarMagic	
+10145	12	8	11	DPS	山居剑意	Physics	SolarMagic	
+10175	13	6	13	DPS	毒经	Poison	Physics	
+10176	14	6	14	THERAPY	补天诀	Poison	Physics	
+10224	15	7	15	DPS	惊羽诀	Physics	Physics	
+10225	16	7	16	DPS	天罗诡道	Poison	Physics	
+10242	17	10	17	DPS	焚影圣诀	SolarMagic	Physics	
+10243	18	10	18	T	明尊琉璃体	SolarMagic	Physics	
+10268	19	9	19	DPS	笑尘诀	Physics	SolarMagic	
+10389	20	21	20	T	铁骨衣	Physics	SolarMagic	
+10390	21	21	21	DPS	分山劲	Physics	SolarMagic	
+10447	22	22	22	DPS	莫问	LunarMagic	Physics	
+10448	23	22	23	THERAPY	相知	LunarMagic	Physics	
+10464	24	23	24	DPS	北傲诀	Physics	SolarMagic	
+10533	25	24	25	DPS	凌海诀	Physics	SolarMagic	
+10585	26	25	26	DPS	隐龙诀	Physics	SolarMagic	
+10615	27	211	27	DPS	太玄经	NeutralMagic	Physics	
+10626	28	212	28	THERAPY	灵素	Poison	Physics	
+10627	29	212	29	DPS	无方	Poison	Physics	
+10698	30	213	30	DPS	孤锋诀	Physics	SolarMagic	
+10756	32	214	32	DPS	山海心诀	Physics	SolarMagic	
+10786	33	215	33	DPS	周天功	NeutralMagic	Physics	
+10821	34	0	34	DPS	幽罗引	LunarMagic	SolarMagic	1

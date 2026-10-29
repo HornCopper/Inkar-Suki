@@ -38,8 +38,8 @@ async def get_dh(type_: str) -> str | list[str | list] | None:
                 Template(template_dh).render(
                     num = str(i + 1),
                     context = title,
-                    time = final_time
-                )
+                    time = final_time,
+                ),
             )
             num = num + 1
             if num == 10:
@@ -50,8 +50,8 @@ async def get_dh(type_: str) -> str | list[str | list] | None:
             HTMLSourceCode(
                 application_name = f"盆栽蹲号 · " + Time().format("%H:%M:%S"),
                 table_head = table_dunhao_head,
-                table_body = "\n".join(tables)
-            )
+                table_body = "\n".join(tables),
+            ),
         )
         final_path = await generate(html, ".container", False)
         return [Path(final_path).as_uri(), links, floors]

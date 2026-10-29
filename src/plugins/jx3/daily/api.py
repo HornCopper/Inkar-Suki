@@ -16,9 +16,9 @@ async def get_daily_info(predict: int = 0):
     """
     url = f"{Config.jx3.api.url}/active/calendar"
     params = {
-        "predict": predict
+        "predict": predict,
     }
-    data = (await Request(url, params=params).get()).json()
+    data = (await Request(url, params = params).get()).json()
     data = data["data"]
     leader = "今日无世界首领"
     if "leader" in data:

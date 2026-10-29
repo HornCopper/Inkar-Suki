@@ -1,7 +1,7 @@
 from nonebot.params import CommandArg
 from nonebot.adapters.onebot.v11 import (
     Message,
-    GroupMessageEvent
+    GroupMessageEvent,
 )
 
 from src.config import Config
@@ -12,7 +12,7 @@ from src.utils.database.operation import get_group_settings
 
 from .api import get_recruit_image
 
-recruit_matcher = on_command("jx3_recruit", command_key="招募", aliases={"招募"}, force_whitespace=True, priority=5)
+recruit_matcher = on_command("jx3_recruit", command_key = "招募", aliases = {"招募"}, force_whitespace = True, priority = 5)
 
 @recruit_matcher.handle()
 async def _(event: GroupMessageEvent, full_argument: Message = CommandArg()):

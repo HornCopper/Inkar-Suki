@@ -6,11 +6,11 @@ from src.const.prompts import PROMPT
 from src.const.jx3.server import Server
 from src.utils.command import on_command
 from src.utils.analyze import check_number
-from src.utils.network import Request
+from src.utils.jx3_data import get_recipe
 
 from .processer import get_item_data, JX3CostCalc
 
-cost_calc_matcher = on_command("成本", command_key="成本", priority=5, force_whitespace=True)
+cost_calc_matcher = on_command("成本", command_key = "成本", priority = 5, force_whitespace = True)
 
 @cost_calc_matcher.handle()
 async def _(event: GroupMessageEvent, state: T_State, argument: Message = CommandArg()):
@@ -35,7 +35,7 @@ async def _(event: GroupMessageEvent, state: T_State, argument: Message = Comman
         msg = "音卡找到下面的相关物品，请回复前方序号来搜索！"
         state["d"] = item_data
         state["s"] = server
-        for num, name in enumerate(item_data, start=1):
+        for num, name in enumerate(item_data, start = 1):
             n, _ = next(iter(name.items()))
             msg += f"\n[{num}] {n}"
             if num == 20:
@@ -52,9 +52,12 @@ async def _(event: GroupMessageEvent, state: T_State, num: Message = Arg()):
     server: str = state["s"]
     if not check_number(num_):
         await cost_calc_matcher.finish("唔……输入的不是数字，取消搜索。")
-    if int(num_) > len(data):
+    if not 1 <= int(num_) <= len(data):
         await cost_calc_matcher.finish("唔……不存在该数字对应的搜索结果，请重新搜索！")
-    name_with_url = data[int(num_)-1]
-    _, url = next(iter(name_with_url.items()))
-    image = await JX3CostCalc((await Request(url).get()).json(), server).render_image()
+    selection = data[int(num_) - 1]
+    _, key = next(iter(selection.items()))
+    recipe = get_recipe(key)
+    if recipe is None:
+        await cost_calc_matcher.finish("配方资料已更新，请重新查询。")
+    image = await JX3CostCalc(recipe, server).render_image()
     await cost_calc_matcher.finish(image)

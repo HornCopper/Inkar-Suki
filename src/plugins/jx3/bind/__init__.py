@@ -15,11 +15,22 @@ def group_server_bind(group_id: str, server: str | None) -> None:
     else:
         set_group_settings(group_id, "server", "")
 
-server_bind_matcher = on_command("jx3_bind", command_key=None, aliases={"绑定", "绑定区服"}, force_whitespace=True, priority=5)
+server_bind_matcher = on_command(
+    "jx3_bind",
+    command_key = None,
+    aliases = {"绑定", "绑定区服"},
+    force_whitespace = True,
+    priority = 5,
+)
 
 @server_bind_matcher.handle()
 async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
-    personal_data = await bot.call_api("get_group_member_info", group_id = event.group_id, user_id = event.user_id, no_cache = True)
+    personal_data = await bot.call_api(
+        "get_group_member_info",
+        group_id = event.group_id,
+        user_id = event.user_id,
+        no_cache = True,
+    )
     group_admin = personal_data["role"] in ["owner", "admin"]
     robot_admin = check_permission(str(event.user_id), "jx3.server.bind")
     if not group_admin and not robot_admin:
@@ -27,7 +38,7 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
     server = args.extract_plain_text()
     group_id = str(event.group_id)
     exact_server = Server(server).server
-    group_server_bind(group_id=group_id, server=exact_server if server else "")
+    group_server_bind(group_id = group_id, server = exact_server if server else "")
     if server == "":
         await server_bind_matcher.finish("已清除本群的绑定信息！")
     if server is None:
@@ -36,7 +47,13 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
         return
     await server_bind_matcher.finish("绑定成功！\n当前区服为：" + exact_server)
 
-role_check_matcher = on_command("jx3_checkrole", command_key=None, aliases={"提交角色"}, priority=5, force_whitespace=True)
+role_check_matcher = on_command(
+    "jx3_checkrole",
+    command_key = None,
+    aliases = {"提交角色"},
+    priority = 5,
+    force_whitespace = True,
+)
 
 @role_check_matcher.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):

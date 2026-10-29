@@ -2,21 +2,17 @@ from __future__ import annotations
 
 from typing import Any, Protocol
 
-
-CALCULATOR_CUSTOM_LOOP_ERROR = (
-    "未找到可用的公有循环或自定义循环，请检查计算器循环库或上传自定义 JCL！\n"
-    "切换方式：发送「偏好 计算器来源 公用」"
-)
+CALCULATOR_CUSTOM_LOOP_ERROR = ("未找到可用的公有循环或自定义循环，请检查计算器循环库或上传自定义 JCL！\n"
+                                "切换方式：发送「偏好 计算器来源 公用」")
 CALCULATOR_PUBLIC_LOOP_ERROR = (
     "该玩家下线时的心法当前尚未实现计算器，可尝试使用指定计算器（如有）或等待该心法支持！\n"
     "也可能是当前使用的计算器循环库中并无该心法，请切换公用循环库或自定义循环库，详情见「偏好」。"
 )
 
-
 class CalculatorLoopProvider(Protocol):
+
     async def get_loop(self, user_id: int = 0) -> dict[str, dict[str, str]] | str:
         ...
-
 
 def calculator_loop_entries_from_map(
     loops: dict[str, dict[str, str]],
@@ -29,10 +25,8 @@ def calculator_loop_entries_from_map(
             "section": section,
             "user_id": user_id,
             **loop_data,
-        }
-        for loop_name, loop_data in loops.items()
+        } for loop_name, loop_data in loops.items()
     ]
-
 
 async def calculator_loop_entries(
     instance: CalculatorLoopProvider,
@@ -57,11 +51,10 @@ async def calculator_loop_entries(
         return public_error
     return calculator_loop_entries_from_map(loops, "", 0)
 
-
 def format_calculator_loop_selection(entries: list[dict[str, Any]], prompt: str = "请选择计算循环！") -> str:
     msg = prompt
     current_section = ""
-    for index, entry in enumerate(entries, start=1):
+    for index, entry in enumerate(entries, start = 1):
         section = str(entry.get("section") or "")
         if section and section != current_section:
             msg += f"\n【{section}】"

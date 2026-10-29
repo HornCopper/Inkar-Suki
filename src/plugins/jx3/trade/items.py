@@ -7,13 +7,12 @@ from typing import Any
 from src.const.path import ASSETS, build_path
 from src.utils.database.tabs import read_tab
 
-
-ITEM_TABLE = Path(build_path(ASSETS, ["source", "jx3", "tabs", "Item.txt"]))
+ITEM_TABLE = Path(build_path(ASSETS, ["source", "jx3", "tabs", "item", "Item.txt"]))
 DETAIL_TABLES = (
-    (7, Path(build_path(ASSETS, ["source", "jx3", "tabs", "Custom_Armor.tab"]))),
-    (8, Path(build_path(ASSETS, ["source", "jx3", "tabs", "Custom_Trinket.tab"]))),
-    (6, Path(build_path(ASSETS, ["source", "jx3", "tabs", "Custom_Weapon.tab"]))),
-    (5, Path(build_path(ASSETS, ["source", "jx3", "tabs", "Other.tab"]))),
+    (7, Path(build_path(ASSETS, ["source", "jx3", "tabs", "item", "Custom_Armor.tab"]))),
+    (8, Path(build_path(ASSETS, ["source", "jx3", "tabs", "item", "Custom_Trinket.tab"]))),
+    (6, Path(build_path(ASSETS, ["source", "jx3", "tabs", "item", "Custom_Weapon.tab"]))),
+    (5, Path(build_path(ASSETS, ["source", "jx3", "tabs", "item", "Other.tab"]))),
 )
 
 COMPARABLE_MAGIC_TYPES = {
@@ -31,7 +30,6 @@ COMPARABLE_MAGIC_TYPES = {
 TRADE_BIND_TYPES = (0, 1, 2, None)
 SHILIAN_BIND_TYPE = 2
 
-
 def _field(row: list[str], header: list[str], key: str, default: str = "") -> str:
     try:
         index = header.index(key)
@@ -41,7 +39,6 @@ def _field(row: list[str], header: list[str], key: str, default: str = "") -> st
         return default
     return row[index]
 
-
 def _to_int(value: Any, default: int = 0) -> int:
     try:
         if value in ("", None):
@@ -50,53 +47,42 @@ def _to_int(value: Any, default: int = 0) -> int:
     except (TypeError, ValueError):
         return default
 
-
 def _bind_type(value: str) -> int | None:
     if value == "":
         return None
     return _to_int(value)
 
-
 def is_trade_bind_type(bind_type: int | None) -> bool:
     return bind_type in TRADE_BIND_TYPES
-
 
 def is_shilian_bind_type(bind_type: int | None) -> bool:
     return bind_type == SHILIAN_BIND_TYPE
 
-
 def _tab_rows(tab: list[list[str]]) -> tuple[list[str], list[list[str]]]:
     return tab[0], tab[1:]
-
 
 def _trade_id_sort_key(value: str) -> tuple[int, int, str]:
     tab_type, _, source_id = value.partition("_")
     return _to_int(tab_type), _to_int(source_id), value
 
-
-@lru_cache(maxsize=1)
+@lru_cache(maxsize = 1)
 def _load_attribs() -> dict[str, dict[str, str]]:
-    header, rows = _tab_rows(read_tab(str(Path(build_path(ASSETS, ["source", "jx3", "tabs", "Attrib.tab"])))))
+    header, rows = _tab_rows(read_tab(str(Path(build_path(ASSETS, ["source", "jx3", "tabs", "item", "Attrib.tab"])))))
     return {
         _field(row, header, "ID"): {
             "ModifyType": _field(row, header, "ModifyType"),
             "Param1Min": _field(row, header, "Param1Min"),
             "Param1Max": _field(row, header, "Param1Max"),
         }
-        for row in rows
-        if _field(row, header, "ID")
+        for row in rows if _field(row, header, "ID")
     }
 
-
-@lru_cache(maxsize=1)
+@lru_cache(maxsize = 1)
 def _load_skill_events() -> dict[str, str]:
-    header, rows = _tab_rows(read_tab(str(Path(build_path(ASSETS, ["source", "jx3", "tabs", "Skillevent.txt"])))))
-    return {
-        _field(row, header, "ID"): _field(row, header, "Desc")
-        for row in rows
-        if _field(row, header, "ID")
-    }
-
+    header, rows = _tab_rows(
+        read_tab(str(Path(build_path(ASSETS, ["source", "jx3", "tabs", "skill", "Skillevent.txt"])))),
+    )
+    return {_field(row, header, "ID"): _field(row, header, "Desc") for row in rows if _field(row, header, "ID")}
 
 def _row_magic_keys(row: list[str], header: list[str]) -> list[str]:
     attribs = _load_attribs()
@@ -107,7 +93,6 @@ def _row_magic_keys(row: list[str], header: list[str]) -> list[str]:
         if magic_key in COMPARABLE_MAGIC_TYPES:
             keys.append(magic_key)
     return keys
-
 
 def _row_skill_event_nodes(row: list[str], header: list[str]) -> list[dict[str, str]]:
     attribs = _load_attribs()
@@ -124,30 +109,29 @@ def _row_skill_event_nodes(row: list[str], header: list[str]) -> list[dict[str, 
         desc = skill_events.get(skill_event_id, "")
         if not desc:
             continue
-        nodes.append(
-            {
-                "key": "atSkillEventHandler",
-                "label": desc,
-                "color": "orange",
-            }
-        )
+        nodes.append({
+            "key": "atSkillEventHandler",
+            "label": desc,
+            "color": "orange",
+        }, )
     return nodes
 
-
 def _attribute_nodes(keys: list[str], special_nodes: list[dict[str, str]] | None = None) -> list[dict[str, str]]:
-    nodes = [
-        {
-            "key": key,
-            "label": key,
-            "color": "green",
-        }
-        for key in keys
-    ]
+    nodes = [{
+        "key": key,
+        "label": key,
+        "color": "green",
+    } for key in keys]
     nodes.extend(special_nodes or [])
     return nodes
 
-
-def _detail_item(tab_type: int, header: list[str], row: list[str], base: dict[str, Any], magic_keys: list[str] | None = None) -> dict[str, Any]:
+def _detail_item(
+    tab_type: int,
+    header: list[str],
+    row: list[str],
+    base: dict[str, Any],
+    magic_keys: list[str] | None = None
+) -> dict[str, Any]:
     source_id = _field(row, header, "ID")
     trade_id = f"{tab_type}_{source_id}"
     ui_id = _field(row, header, "UiID")
@@ -165,8 +149,7 @@ def _detail_item(tab_type: int, header: list[str], row: list[str], base: dict[st
         "attributes": _attribute_nodes(magic_keys or [], _row_skill_event_nodes(row, header)),
     }
 
-
-@lru_cache(maxsize=1)
+@lru_cache(maxsize = 1)
 def _load_local_items() -> dict[str, dict[str, Any]]:
     item_header, item_rows = _tab_rows(read_tab(str(ITEM_TABLE)))
     item_by_id = {
@@ -176,8 +159,7 @@ def _load_local_items() -> dict[str, dict[str, Any]]:
             "Name": _field(row, item_header, "Name"),
             "Desc": _field(row, item_header, "Desc") or None,
         }
-        for row in item_rows
-        if _field(row, item_header, "ItemID")
+        for row in item_rows if _field(row, item_header, "ItemID")
     }
 
     items: dict[str, dict[str, Any]] = {}
@@ -205,7 +187,6 @@ def _load_local_items() -> dict[str, dict[str, Any]]:
 
     return items
 
-
 def search_local_items(keyword: str, limit: int = 50) -> list[dict[str, Any]]:
     keyword = keyword.strip()
     if not keyword:
@@ -225,9 +206,8 @@ def search_local_items(keyword: str, limit: int = 50) -> list[dict[str, Any]]:
             score = 2
         scored.append((score, len(name), item_id, item))
 
-    scored.sort(key=lambda data: (data[0], data[1], _trade_id_sort_key(data[2])))
+    scored.sort(key = lambda data: (data[0], data[1], _trade_id_sort_key(data[2])))
     return [item.copy() for *_, item in scored[:limit]]
-
 
 def search_local_shilian_equips(
     name_prefix: str,
@@ -242,8 +222,7 @@ def search_local_shilian_equips(
             "Name": _field(row, item_header, "Name"),
             "Desc": _field(row, item_header, "Desc") or None,
         }
-        for row in item_rows
-        if _field(row, item_header, "ItemID")
+        for row in item_rows if _field(row, item_header, "ItemID")
     }
     expected = set(attr_keys) if attr_keys is not None else None
     results = []

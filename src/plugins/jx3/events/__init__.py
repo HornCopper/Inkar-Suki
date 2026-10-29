@@ -11,7 +11,13 @@ from .pifeng import get_pifeng_image
 from .qiongye import get_qiongye_image
 from .zhue import get_zhue_image
 
-chutian_matcher = on_command("jx3_chutian", command_key="名望", aliases={"楚天社"}, force_whitespace=True, priority=5)
+chutian_matcher = on_command(
+    "jx3_chutian",
+    command_key = "名望",
+    aliases = {"楚天社"},
+    force_whitespace = True,
+    priority = 5,
+)
 
 @chutian_matcher.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
@@ -20,7 +26,13 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     image = await get_chutian_image()
     await chutian_matcher.finish(image)
 
-yuncong_matcher = on_command("jx3_yuncong", command_key="名望", aliases={"云从社"}, force_whitespace=True, priority=5)
+yuncong_matcher = on_command(
+    "jx3_yuncong",
+    command_key = "名望",
+    aliases = {"云从社"},
+    force_whitespace = True,
+    priority = 5,
+)
 
 @yuncong_matcher.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
@@ -29,7 +41,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     image = await get_yuncong_image()
     await yuncong_matcher.finish(image)
 
-pifeng_matcher = on_command("jx3_pifeng", command_key="名望", aliases={"披风会"}, force_whitespace=True, priority=5)
+pifeng_matcher = on_command("jx3_pifeng", command_key = "名望", aliases = {"披风会"}, force_whitespace = True, priority = 5)
 
 @pifeng_matcher.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
@@ -38,7 +50,13 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     image = await get_pifeng_image()
     await pifeng_matcher.finish(image)
 
-qiongye_matcher = on_command("jx3_qiongye", command_key="名望", aliases={"穹野卫"}, force_whitespace=True, priority=5)
+qiongye_matcher = on_command(
+    "jx3_qiongye",
+    command_key = "名望",
+    aliases = {"穹野卫"},
+    force_whitespace = True,
+    priority = 5,
+)
 
 @qiongye_matcher.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
@@ -47,7 +65,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     image = await get_qiongye_image()
     await qiongye_matcher.finish(image)
 
-zhue_matcher = on_command("jx3_zhue", command_key="名望", aliases={"诛恶", "诸恶"}, force_whitespace=True, priority=5)
+zhue_matcher = on_command("jx3_zhue", command_key = "名望", aliases = {"诛恶", "诸恶"}, force_whitespace = True, priority = 5)
 
 @zhue_matcher.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):

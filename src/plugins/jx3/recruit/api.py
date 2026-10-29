@@ -14,7 +14,6 @@ from ._template import template_interserver, template_local, table_recruit_head
 
 RECRUIT_WORDS_PATH = build_path(ASSETS, ["source", "jx3", "recruit_words.json"])
 
-
 async def check_ad(msg: str, data: list[list[str]]) -> bool:
     for x in data:
         status = []
@@ -40,12 +39,12 @@ async def get_recruit_image(server: str, keyword: str = "", local: bool = False,
     url = f"{Config.jx3.api.url}/recruit/search"
     if keyword != "":
         params["keyword"] = keyword
-    data = (await Request(url, params=params).get()).json()
+    data = (await Request(url, params = params).get()).json()
     if data["code"] != 200:
         return "唔……未找到相关团队，请检查后重试！"
     adFlags = []
     if filter:
-        with open(RECRUIT_WORDS_PATH, encoding="utf-8") as words_file:
+        with open(RECRUIT_WORDS_PATH, encoding = "utf-8") as words_file:
             adFlags = json.load(words_file)
     time_now = Time(data["time"]).format("%H:%M:%S")
     data = data["data"]
@@ -81,8 +80,8 @@ async def get_recruit_image(server: str, keyword: str = "", local: bool = False,
                 count = count,
                 content = content,
                 time = create_time,
-                flag = flag
-            )
+                flag = flag,
+            ),
         )
         if len(contents) == 50:
             break
@@ -90,8 +89,8 @@ async def get_recruit_image(server: str, keyword: str = "", local: bool = False,
         HTMLSourceCode(
             application_name = f"团队招募 · {keyword} · {time_now}",
             table_head = table_recruit_head,
-            table_body = "\n".join(contents)
-        )
+            table_body = "\n".join(contents),
+        ),
     )
-    image = await generate(html, ".container", segment=True)
+    image = await generate(html, ".container", segment = True)
     return image

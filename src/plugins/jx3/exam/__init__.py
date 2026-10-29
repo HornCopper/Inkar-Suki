@@ -5,7 +5,7 @@ from src.utils.command import on_command
 
 from .api import get_exam_answer
 
-exam_matcher = on_command("jx3_exam", command_key="科举", aliases={"科举"}, force_whitespace=True, priority=5)
+exam_matcher = on_command("jx3_exam", command_key = "科举", aliases = {"科举"}, force_whitespace = True, priority = 5)
 
 @exam_matcher.handle()
 async def _(args: Message = CommandArg()):

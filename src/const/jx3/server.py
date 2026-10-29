@@ -4,7 +4,6 @@ from src.utils.database.operation import get_group_settings
 
 from .constant import server_aliases_data, server_zones_mapping_data, server_internel_id_data
 
-
 class Server:
     server_aliases: dict[str, list[str]] = server_aliases_data
     server_zones_mapping: dict[str, list[str]] = server_zones_mapping_data
@@ -37,7 +36,7 @@ class Server:
                 final_server = get_group_settings(self.group_id, "server") or None
         else:
             final_server = None
-        
+
         if (final_server not in self.server_aliases.keys()) and (final_server is not None):
             for server, aliases in self.server_aliases.items():
                 if final_server in aliases:
@@ -58,11 +57,7 @@ class Server:
         zone_legacy_name = self.zone_legacy
         if zone_legacy_name is None:
             return None
-        return (
-            zone_legacy_name
-            if zone_legacy_name == "无界区"
-            else zone_legacy_name[:2] + "区"
-        )
+        return (zone_legacy_name if zone_legacy_name == "无界区" else zone_legacy_name[:2] + "区")
 
     @property
     def server_id(self) -> str | None:
@@ -72,7 +67,7 @@ class Server:
             for server in zone_data["servers"]:
                 if server["server_name"] == self.server:
                     return server["server_id"]
-    
+
     @property
     def zone_id(self) -> str | None:
         if self.server is None:

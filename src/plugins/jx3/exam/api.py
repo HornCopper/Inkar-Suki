@@ -2,13 +2,15 @@ from src.config import Config
 from src.utils.network import Request
 
 async def get_exam_answer(question_keyword: str):
+
     def qa(q, a):
         return f"问题：{q}\n答案：{a}"
+
     url = f"{Config.jx3.api.url}/exam/search"
     params = {
-        "subject": question_keyword
+        "subject": question_keyword,
     }
-    info = (await Request(url, params=params).get()).json()
+    info = (await Request(url, params = params).get()).json()
     if info["code"] == 400:
         return "没有找到任何与此相关的题目哦~"
     else:

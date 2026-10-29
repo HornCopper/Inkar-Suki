@@ -18,7 +18,7 @@ from src.plugins.jx3.equip.recipe_display import iter_set_attributes
 
 async def get_equip_info(params: dict) -> dict:
     url = f"{Config.jx3.api.calculator_url}/equip"
-    equip = (await Request(url, params=params).get()).json()
+    equip = (await Request(url, params = params).get()).json()
     attr_abbr = []
     color = "rgb" + Colors[int(equip["Quality"])]
     if int(equip["Quality"]) == 5:
@@ -39,7 +39,7 @@ async def get_equip_info(params: dict) -> dict:
         attr_value = equip[f"Magic{n}Value"]
         if attr_key_name == "atSkillEventHandler":
             skillevent.append(
-                "· " + TabCache.get_effect_by_skill_handler_id(int(attr_value))
+                "· " + TabCache.get_effect_by_skill_handler_id(int(attr_value)),
             )
             continue
         if attr_key_name == "atSetEquipmentRecipe":
@@ -55,8 +55,8 @@ async def get_equip_info(params: dict) -> dict:
             Template(_template_green_attrs).render(
                 attr_name = attr_name,
                 attr_value = attr_value,
-                strength_value = int(int(attr_value) * StrengthIncome[strength_income] + 0.5)
-            )
+                strength_value = int(int(attr_value) * StrengthIncome[strength_income] + 0.5),
+            ),
         )
     diamonds = []
     for n in range(1, 3 + 1):
@@ -68,8 +68,8 @@ async def get_equip_info(params: dict) -> dict:
         diamonds.append(
             Template(_template_diamonds).render(
                 diamond_icon = ASSETS + "/image/jx3/attributes/wuxingshi/8.png",
-                attr_name = attr_name
-            )
+                attr_name = attr_name,
+            ),
         )
     final_set_attrs = []
     for set_count, each_attr_key, each_attr_value, description in iter_set_attributes(equip):
@@ -84,8 +84,8 @@ async def get_equip_info(params: dict) -> dict:
         final_set_attrs.append(
             Template(_template_set_attrs).render(
                 count = str(set_count),
-                attr = msg
-            )
+                attr = msg,
+            ),
         )
     remark = "备注：" + equip["MagicType"] + "（" + equip["Index"] + "_" + equip["ID"] + "）"
     result = {
@@ -99,7 +99,7 @@ async def get_equip_info(params: dict) -> dict:
         "diamonds": "\n".join(diamonds),
         "skillevent": "<br>".join(skillevent),
         "set": "\n".join(final_set_attrs),
-        "remark": remark
+        "remark": remark,
     }
     return result
 
@@ -107,17 +107,20 @@ async def get_equip_info_image(info: dict):
     arguments = {
         "font": Path(ASSETS, "font", "PingFangSC-Semibold.otf").as_uri(),
         "saohua": get_saohua(),
-        **info
+        **info,
     }
     html = Template(
-        read(TEMPLATES + "/jx3/equip.html")
+        read(TEMPLATES + "/jx3/equip.html"),
     ).render(
-        **arguments
+        **arguments,
     )
     return await generate(
         html,
         ".card",
-        segment=True,
-        wait_for_network=True,
-        viewport={"height": 1080, "width": 1920},
+        segment = True,
+        wait_for_network = True,
+        viewport = {
+            "height": 1080,
+            "width": 1920,
+        },
     )

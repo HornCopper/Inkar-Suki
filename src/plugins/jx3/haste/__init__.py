@@ -7,12 +7,13 @@ from src.utils.command import on_command
 
 from .app import ORIGIN_FRAME, render_haste_image
 
-
 haste_matcher = on_command(
-    "jx3_haste", command_key="加速", aliases={"加速", "急速"},
-    priority=5, force_whitespace=True,
+    "jx3_haste",
+    command_key = "加速",
+    aliases = {"加速", "急速"},
+    priority = 5,
+    force_whitespace = True,
 )
-
 
 @haste_matcher.handle()
 async def _(args: Message = CommandArg()):

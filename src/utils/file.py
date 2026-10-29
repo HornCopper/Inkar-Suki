@@ -6,10 +6,12 @@ import json
 from typing import overload
 
 @overload
-def read(path: str, output_json: Literal[False] = False) -> str: ...
+def read(path: str, output_json: Literal[False] = False) -> str:
+    ...
 
 @overload
-def read(path: str, output_json: Literal[True]) -> list | dict: ...
+def read(path: str, output_json: Literal[True]) -> list | dict:
+    ...
 
 def read(path: str, output_json: bool = False):
     """
@@ -22,7 +24,7 @@ def read(path: str, output_json: bool = False):
         file_content (str): 文件内容。**当文件不存在时，值为空字符串`""`。**
     """
     try:
-        with open(path, mode="r", encoding="utf-8") as cache:
+        with open(path, mode = "r", encoding = "utf-8") as cache:
             msg = cache.read()
             if output_json:
                 return json.loads(msg)
@@ -48,7 +50,7 @@ def write(path: str, content: str | bytes, mode: Literal["w", "wb"] = "w") -> bo
     """
     p = Path(path).parent
     if not p.exists():
-        p.mkdir(parents=True)
-    with open(path, mode=mode, encoding="utf-8" if mode != "wb" else None) as cache:
+        p.mkdir(parents = True)
+    with open(path, mode = mode, encoding = "utf-8" if mode != "wb" else None) as cache:
         cache.write(content)
     return True

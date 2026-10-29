@@ -14,7 +14,6 @@ from .guess_tenpai import generate_question, is_correct_answer, parse_tiles, ren
 
 import re
 
-
 TENPAI_DIFFICULTY_ALIASES = {
     "简单": "simple",
     "easy": "simple",
@@ -31,7 +30,6 @@ TENPAI_DIFFICULTY_ALIASES = {
 TENPAI_MAX_GUESSES = 5
 TENPAI_NOTEN_ANSWERS = {"未听牌", "没听牌", "沒有听牌", "沒有聽牌", "未聽牌", "没聽牌", "noten"}
 
-
 @dataclass
 class TenpaiGame:
     waits: tuple[int, ...]
@@ -39,21 +37,18 @@ class TenpaiGame:
     difficulty: str
     attempts: dict[int, int]
 
-
 active_tenpai_games: dict[str, TenpaiGame] = {}
-
 
 def _tenpai_session_key(event: MessageEvent) -> str:
     if isinstance(event, GroupMessageEvent):
         return f"group:{event.group_id}"
     return f"private:{event.user_id}"
 
-
 def _is_tenpai_answer_candidate(answer: str) -> bool:
     normalized_answer = answer.strip().lower().replace(" ", "")
     return normalized_answer in TENPAI_NOTEN_ANSWERS or parse_tiles(answer) is not None
 
-MSSearchPlayerMatcher = on_command("mssp", command_key="mssp", priority=5, force_whitespace=True)
+MSSearchPlayerMatcher = on_command("mssp", command_key = "mssp", priority = 5, force_whitespace = True)
 
 @MSSearchPlayerMatcher.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
@@ -62,8 +57,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     data = await find_player(args.extract_plain_text())
     await MSSearchPlayerMatcher.finish(data)
 
-
-MSGameRecordMatcher = on_command("msgr", command_key="msgr", priority=5, force_whitespace=True)
+MSGameRecordMatcher = on_command("msgr", command_key = "msgr", priority = 5, force_whitespace = True)
 
 @MSGameRecordMatcher.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
@@ -72,8 +66,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     data = await get_records(args.extract_plain_text())
     await MSGameRecordMatcher.finish(data)
 
-
-MSGetPTMatcher = on_command("mspt", command_key="mspt", priority=5, force_whitespace=True)
+MSGetPTMatcher = on_command("mspt", command_key = "mspt", priority = 5, force_whitespace = True)
 
 @MSGetPTMatcher.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
@@ -82,7 +75,7 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     data = await player_pt(args.extract_plain_text())
     await MSGetPTMatcher.finish(data)
 
-MSMonthReport = on_command("msmr", command_key="msmr", priority=5, force_whitespace=True)
+MSMonthReport = on_command("msmr", command_key = "msmr", priority = 5, force_whitespace = True)
 
 @MSMonthReport.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
@@ -103,10 +96,8 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
         image = await generator.generate_image()
         await MSMonthReport.finish(image)
 
-
-GuessTenpaiMatcher = on_command("猜听牌", command_key="猜听牌", priority=5, force_whitespace=True)
-GuessTenpaiAnswerMatcher = on_message(priority=6, block=False)
-
+GuessTenpaiMatcher = on_command("猜听牌", command_key = "猜听牌", priority = 5, force_whitespace = True)
+GuessTenpaiAnswerMatcher = on_message(priority = 6, block = False)
 
 @GuessTenpaiMatcher.handle()
 async def _(event: MessageEvent, args: Message = CommandArg()):
@@ -118,10 +109,10 @@ async def _(event: MessageEvent, args: Message = CommandArg()):
         await GuessTenpaiMatcher.finish("参数错误，请使用：猜听牌 [简单|困难|清一色]")
     question = generate_question(difficulty)
     active_tenpai_games[_tenpai_session_key(event)] = TenpaiGame(
-        waits=question.waits,
-        hand_code=question.hand_code,
-        difficulty=difficulty,
-        attempts={},
+        waits = question.waits,
+        hand_code = question.hand_code,
+        difficulty = difficulty,
+        attempts = {},
     )
     image_path = render_hand_image(question.hand)
     message = Message(ms.image(Request(Path(image_path).as_uri()).local_content))
@@ -131,7 +122,6 @@ async def _(event: MessageEvent, args: Message = CommandArg()):
         f"本题可多人作答，每人最多猜 {TENPAI_MAX_GUESSES} 次；猜错不会公布答案。"
     )
     await GuessTenpaiMatcher.send(ms.at(event.user_id) + message)
-
 
 @GuessTenpaiAnswerMatcher.handle()
 async def _(event: MessageEvent):

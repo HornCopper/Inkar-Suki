@@ -11,6 +11,7 @@ from src.utils.generate import generate
 from ._template import template_weather
 
 class QWeather:
+
     def __init__(self, city_name: str):
         self.city = city_name
         self.location_id: str = ""
@@ -18,32 +19,31 @@ class QWeather:
         self.real_time_weather: dict = {}
         self._7d_weather: list[dict] = []
         self.cloth_advice: str = ""
-    
+
     async def get_location(self) -> Literal[False] | None:
         url = "https://geoapi.qweather.com/v2/city/lookup"
         params = {
             "location": self.city,
-            "key": Config.weather.token
+            "key": Config.weather.token,
         }
-        response = (await Request(url, params=params).get())
+        response = (await Request(url, params = params).get())
         if response.status_code != 200:
             return False
         self.location_id = response.json()["location"][0]["id"]
         self.actual_name = (
-            response.json()["location"][0]["adm1"],
-            response.json()["location"][0]["adm2"],
+            response.json()["location"][0]["adm1"], response.json()["location"][0]["adm2"],
             response.json()["location"][0]["name"]
         )
-        
+
     async def get_real_time_weather(self) -> Literal[False] | None:
         if not self.location_id:
             return False
         url = f"{Config.weather.url}/v7/weather/now"
         params = {
             "location": self.location_id,
-            "key": Config.weather.token
+            "key": Config.weather.token,
         }
-        response = (await Request(url, params=params).get())
+        response = (await Request(url, params = params).get())
         if response.status_code != 200:
             return False
         self.real_time_weather = response.json()["now"]
@@ -54,13 +54,13 @@ class QWeather:
         url = f"{Config.weather.url}/v7/weather/7d"
         params = {
             "location": self.location_id,
-            "key": Config.weather.token
+            "key": Config.weather.token,
         }
-        response = (await Request(url, params=params).get())
+        response = (await Request(url, params = params).get())
         if response.status_code != 200:
             return False
         self._7d_weather = response.json()["daily"]
-    
+
     async def get_cloth_advice(self) -> Literal[False] | None:
         if not self.location_id:
             return False
@@ -68,13 +68,13 @@ class QWeather:
         params = {
             "location": self.location_id,
             "key": Config.weather.token,
-            "type": 3
+            "type": 3,
         }
-        response = (await Request(url, params=params).get())
+        response = (await Request(url, params = params).get())
         if response.status_code != 200:
             return False
         self.cloth_advice = response.json()["daily"][0]["text"]
-    
+
     async def generate_image(self):
         await self.get_location()
         if not self.location_id:
@@ -108,11 +108,11 @@ class QWeather:
                     day_weather = day_weather,
                     night_icon = night_icon,
                     night_weather = night_weather,
-                    temp = temp
-                )
+                    temp = temp,
+                ),
             )
         html = Template(
-            read(TEMPLATES + "/weather/weather.html")
+            read(TEMPLATES + "/weather/weather.html"),
         ).render(
             css = Path(TEMPLATES + "/weather/qweather-icons.css").as_uri(),
             font = ASSETS + "/font/PingFangSC-Semibold.otf",
@@ -126,6 +126,6 @@ class QWeather:
             wind_speed = wind_speed,
             pressure = pressure,
             cloth_advice = self.cloth_advice,
-            future_weather = "\n".join(future_weather)
+            future_weather = "\n".join(future_weather),
         )
-        return await generate(html, ".weather-container", segment=True)
+        return await generate(html, ".weather-container", segment = True)

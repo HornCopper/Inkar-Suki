@@ -1,7 +1,7 @@
 from nonebot.params import CommandArg
 from nonebot.adapters.onebot.v11 import (
     Message,
-    GroupMessageEvent
+    GroupMessageEvent,
 )
 
 from src.config import Config
@@ -12,14 +12,17 @@ from src.utils.permission import check_group_permission
 
 from .api import get_firework_record
 
-firework_matcher = on_command("jx3_firework", command_key="烟花", aliases={"烟花"}, force_whitespace=True, priority=5)
+firework_matcher = on_command(
+    "jx3_firework",
+    command_key = "烟花",
+    aliases = {"烟花"},
+    force_whitespace = True,
+    priority = 5,
+)
 
 @firework_matcher.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
-    if not (
-        Config.jx3.api.enable
-        and check_group_permission(event.group_id, "group.application.firework_records")
-    ):
+    if not (Config.jx3.api.enable and check_group_permission(event.group_id, "group.application.firework_records")):
         return
     if args.extract_plain_text() == "":
         return

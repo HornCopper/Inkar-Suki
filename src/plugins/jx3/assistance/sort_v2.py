@@ -30,7 +30,7 @@ def rearrange_teams_new(input_teams: list[list[dict]]) -> list[list[dict]]:
         else:
             normal_members.append(m)
 
-    normal_members.sort(key=lambda x: x["role_type"] not in (fixed_D + fixed_E))
+    normal_members.sort(key = lambda x: x["role_type"] not in (fixed_D + fixed_E))
 
     # 第一轮：非老板
     for m in normal_members:
@@ -67,7 +67,6 @@ def rearrange_teams_new(input_teams: list[list[dict]]) -> list[list[dict]]:
                 continue
             try_put(COL_E, m)
             continue
-
 
         # 兜底：直接塞 D
         try_put(COL_D, m)

@@ -20,7 +20,6 @@ template_calculator_v2 = """
 </div>
 """
 
-
 therapy_panel_template = """
 <!doctype html>
 <html>

@@ -3,9 +3,9 @@ from pathlib import Path
 from jinja2 import Template
 
 from src.const.path import (
-    ASSETS, 
-    TEMPLATES, 
-    build_path
+    ASSETS,
+    TEMPLATES,
+    build_path,
 )
 from src.utils.file import read
 from src.config import Config
@@ -16,9 +16,9 @@ universal_template = read(
     build_path(
         TEMPLATES,
         [
-            "universe.html"
-        ]
-    )
+            "universe.html",
+        ],
+    ),
 )
 
 def get_saohua() -> str:
@@ -41,7 +41,7 @@ def get_saohua() -> str:
             "今晚没有星星，你可以看我的眼睛",
             "春风十里不如你",
             "为你，与风一起，不远万里",
-            "岁月静好，万物可爱", 
+            "岁月静好，万物可爱",
             "愿你常年闪闪发亮，偶尔躲躲乌云",
             "请不要再到处散发魅力了",
             "我优点太多就缺点你了。",
@@ -50,7 +50,7 @@ def get_saohua() -> str:
             "你不用多好，我喜欢就好。",
             "你有地图吗，我在你眼睛里迷路了",
             "你是三我是九，除了你还是你",
-            "喜欢的少年是你，倒过来也一样", 
+            "喜欢的少年是你，倒过来也一样",
             "看见你的人，失了我的魂",
             "看见你我就知道，今生在劫难逃",
             "千山万水总是情，谈个恋爱行不行",
@@ -83,22 +83,22 @@ def get_saohua() -> str:
             "你不累吗？在我脑子里跑一天了",
             "见什么世面啊，见你就好了",
             "你今天挺怪的，怪漂亮的！",
-            "你怎么不看路，都撞到我心里了"
-        ]
+            "你怎么不看路，都撞到我心里了",
+        ],
     )
 
 class HTMLSourceCode:
     standard = universal_template
 
     def __init__(
-            self,
-            application_name: str,
-            font_path: str = build_path(ASSETS, ["font", "PingFangSC-Medium.otf"]),
-            footer: str = get_saohua(),
-            additional_css: str = "",
-            additional_js: Path | None = None,
-            report_title: str | None = None,
-            **kwargs
+        self,
+        application_name: str,
+        font_path: str = build_path(ASSETS, ["font", "PingFangSC-Medium.otf"]),
+        footer: str = get_saohua(),
+        additional_css: str = "",
+        additional_js: Path | None = None,
+        report_title: str | None = None,
+        **kwargs
     ):
         """
         初始化`HTML`生成器实例。
@@ -121,7 +121,7 @@ class HTMLSourceCode:
         else:
             self.report_title = report_title
             self.name = application_name
-        self.font = font_path    
+        self.font = font_path
         self.font_extra = "font-weight: 700;" if font_path.endswith("PingFangSC-Semibold-Bold.otf") else ""
         self.footer = footer
         self.css = additional_css
@@ -133,8 +133,12 @@ class HTMLSourceCode:
 
     def __str__(self) -> str:
         if self.kwargs.get("table_head", None) is not None:
-            self.kwargs["table_width_length"] = str(len(re.findall(r"<th.*?>.*?</th>", self.kwargs.get("table_head", []), re.DOTALL)))
-        css_path = f"<link rel=\"stylesheet\" href=\"" + self.css + "\">" if self.css.startswith("file") or self.css.startswith("http") else ""
+            self.kwargs["table_width_length"] = str(
+                len(re.findall(r"<th.*?>.*?</th>", self.kwargs.get("table_head", []), re.DOTALL)),
+            )
+        css_path = f"<link rel=\"stylesheet\" href=\"" + self.css + "\">" if self.css.startswith(
+            "file",
+        ) or self.css.startswith("http") else ""
         css_content = self.css if not self.css.startswith("file") and not self.css.startswith("http") else ""
         return Template(self.standard).render(
             css_link = css_path,
@@ -146,21 +150,15 @@ class HTMLSourceCode:
             app_info = self.name,
             footer_msg = self.footer,
             js = self.js,
-            **self.kwargs
+            **self.kwargs,
         )
-    
+
 class SimpleHTML:
     """
     无法使用`HTMLSourceCode`模板生成`HTML`的解决方案。
     """
-    def __init__(
-        self,
-        html_type: str,
-        html_template: str,
-        outside_js: str = "",
-        outside_css: str = "",
-        **kwargs
-    ):
+
+    def __init__(self, html_type: str, html_template: str, outside_js: str = "", outside_css: str = "", **kwargs):
         """
         初始化简易`HTML`读取器。
 
@@ -180,14 +178,14 @@ class SimpleHTML:
                     TEMPLATES,
                     [
                         html_type,
-                        html_template
-                    ]
-                )
-            )
+                        html_template,
+                    ],
+                ),
+            ),
         ).render(
             css = css,
             js = js,
-            **kwargs
+            **kwargs,
         )
 
     def __str__(self):

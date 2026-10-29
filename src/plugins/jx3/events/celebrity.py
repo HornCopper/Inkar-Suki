@@ -9,12 +9,13 @@ from src.utils.time import Time
 
 from ._template import table_chutian_head, template_chutian
 
-
 async def get_celebrity_image(name: str, celebrity_type: int, cycle_hours: int):
     data = (
         await Request(
             "https://cms.jx3box.com/api/cms/game/celebrity",
-            params={"type": celebrity_type},
+            params = {
+                "type": celebrity_type,
+            },
         ).get()
     ).json()
     now = datetime.now()
@@ -32,26 +33,26 @@ async def get_celebrity_image(name: str, celebrity_type: int, cycle_hours: int):
             event_offset = event_hour * 60 + record["time"]
             delta = (event_offset - current_offset) % cycle_minutes
             records.append((delta, record))
-    records.sort(key=lambda item: item[0])
+    records.sort(key = lambda item: item[0])
 
     tables = []
     for delta, record in records[:10]:
-        event_time = now + timedelta(minutes=delta)
+        event_time = now + timedelta(minutes = delta)
         icon = record["icon"] if record["icon"] != "10" else "12"
         tables.append(
             Template(template_chutian).render(
-                time=event_time.strftime("%H:%M"),
-                site=record["map"] + "·" + record["site"],
-                icon=f"https://img.jx3box.com/pve/minimap/minimap_{icon}.png",
-                desc=record["desc"],
-                section=record["stage"],
-            )
+                time = event_time.strftime("%H:%M"),
+                site = record["map"] + "·" + record["site"],
+                icon = f"https://img.jx3box.com/pve/minimap/minimap_{icon}.png",
+                desc = record["desc"],
+                section = record["stage"],
+            ),
         )
     html = str(
         HTMLSourceCode(
-            application_name=f"{name} · {Time().format('%H:%M:%S')}",
-            table_head=table_chutian_head,
-            table_body="\n".join(tables),
-        )
+            application_name = f"{name} · {Time().format('%H:%M:%S')}",
+            table_head = table_chutian_head,
+            table_body = "\n".join(tables),
+        ),
     )
-    return await generate(html, ".container", segment=True)
+    return await generate(html, ".container", segment = True)

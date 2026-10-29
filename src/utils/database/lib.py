@@ -18,13 +18,13 @@ import threading
 import time
 
 T = TypeVar("T")
-ModelT = TypeVar("ModelT", bound="LiteModel")
+ModelT = TypeVar("ModelT", bound = "LiteModel")
 
 NoneType = type(None)
 
-
 def database_operation(func):
     """串行执行同一数据库连接上的操作，并重试短暂的锁冲突。"""
+
     @wraps(func)
     def wrapper(self, *args, **kwargs):
         with self._lock:
@@ -43,20 +43,19 @@ def database_operation(func):
 
     return wrapper
 
-
 class LiteModel(BaseModel):
     TABLE_NAME: ClassVar[str] = ""
     id: int | None = None
 
     def dump(self, *args, **kwargs):
-        
+
         if parse(pydantic.__version__) < parse("2.0.0"):
             return self.dict(*args, **kwargs)
         else:
             return self.model_dump(*args, **kwargs)
 
-
 class Database:
+
     def __init__(self, db_name: str):
 
         if os.path.dirname(db_name) != "" and not os.path.exists(os.path.dirname(db_name)):
@@ -65,7 +64,7 @@ class Database:
         self.db_name = db_name
         self._lock = threading.RLock()
         self._transaction_depth = 0
-        self.conn = sqlite3.connect(db_name, timeout=5, check_same_thread=False)
+        self.conn = sqlite3.connect(db_name, timeout = 5, check_same_thread = False)
         self.conn.execute("PRAGMA busy_timeout = 5000")
         self.conn.execute("PRAGMA journal_mode = WAL")
         self.conn.execute("PRAGMA synchronous = NORMAL")
@@ -105,10 +104,12 @@ class Database:
             self.conn.commit()
 
     @overload
-    def where_one(self, model: ModelT, condition: str = "", *args: Any, default: T) -> ModelT | T: ...
+    def where_one(self, model: ModelT, condition: str = "", *args: Any, default: T) -> ModelT | T:
+        ...
 
     @overload
-    def where_one(self, model: ModelT, condition: str = "", *args: Any) -> ModelT | None: ...
+    def where_one(self, model: ModelT, condition: str = "", *args: Any) -> ModelT | None:
+        ...
 
     @database_operation
     def where_one(self, model: ModelT, condition: str = "", *args: Any, default: T | None = None) -> ModelT | T | None:
@@ -126,13 +127,19 @@ class Database:
         return all_results[0] if all_results else default
 
     @overload
-    def where_all(self, model: ModelT, condition: str = "", *args: Any, default: T) -> list[ModelT] | T: ...
+    def where_all(self, model: ModelT, condition: str = "", *args: Any, default: T) -> list[ModelT] | T:
+        ...
 
     @overload
-    def where_all(self, model: ModelT, condition: str = "", *args: Any) -> list[ModelT] | None: ...
+    def where_all(self, model: ModelT, condition: str = "", *args: Any) -> list[ModelT] | None:
+        ...
 
     @database_operation
-    def where_all(self, model: ModelT, condition: str = "", *args: Any, default: T | None = None) -> list[ModelT] | T | None:
+    def where_all(self,
+                  model: ModelT,
+                  condition: str = "",
+                  *args: Any,
+                  default: T | None = None) -> list[ModelT] | T | None:
         """查询所有
         Args:
             model: 数据模型实例
@@ -155,10 +162,7 @@ class Database:
         if not results:
             return default
         else:
-            return [
-                model_type(**self._load(dict(zip(fields, result))))
-                for result in results if result is not None
-            ]
+            return [model_type(**self._load(dict(zip(fields, result)))) for result in results if result is not None]
 
     @database_operation
     def save(self, *args: LiteModel) -> None:
@@ -167,14 +171,16 @@ class Database:
             *args:
         Returns:
         """
-        table_list = [item[0] for item in self.cursor.execute("SELECT name FROM sqlite_master WHERE type='table'").fetchall()]
+        table_list = [
+            item[0] for item in self.cursor.execute("SELECT name FROM sqlite_master WHERE type='table'").fetchall()
+        ]
         for model in args:
             if not model.TABLE_NAME:
                 raise ValueError(f"数据模型 {model.__class__.__name__} 未提供表名")
             elif model.TABLE_NAME not in table_list:
                 raise ValueError(f"数据模型 {model.__class__.__name__} 表 {model.TABLE_NAME} 不存在，请先迁移")
             else:
-                model_data = model.dump(by_alias=True)
+                model_data = model.dump(by_alias = True)
                 # Pydantic excludes ClassVar fields such as TABLE_NAME from
                 # model dumps.  _save needs it to select the destination table.
                 model_data["TABLE_NAME"] = model.TABLE_NAME
@@ -184,14 +190,14 @@ class Database:
                 callback(model)
 
     def _save(self, obj: Any) -> Any:
-        
+
         if isinstance(obj, dict):
             table_name = obj.get("TABLE_NAME")
             row_id = obj.get("id")
             new_obj = {}
             for field, value in obj.items():
                 if isinstance(value, self.ITERABLE_TYPE):
-                    new_obj[self._get_stored_field_prefix(value) + field] = self._save(value)  
+                    new_obj[self._get_stored_field_prefix(value) + field] = self._save(value)
                 elif isinstance(value, self.BASIC_TYPE):
                     new_obj[field] = value
                 else:
@@ -202,24 +208,27 @@ class Database:
                     if n_field not in ["TABLE_NAME", "id"]:
                         fields.append(n_field)
                         values.append(n_value)
-                
+
                 fields = list(fields)
                 values = list(values)
                 if row_id is not None:
-                    
-                    fields.insert(0, 'id')
-                    
+
+                    fields.insert(0, "id")
+
                     values.insert(0, row_id)
-                fields = ', '.join([f'"{field}"' for field in fields])
-                placeholders = ', '.join('?' for _ in values)
-                self.cursor.execute(f"INSERT OR REPLACE INTO {table_name}({fields}) VALUES ({placeholders})", tuple(values))
+                fields = ", ".join([f'"{field}"' for field in fields])
+                placeholders = ", ".join("?" for _ in values)
+                self.cursor.execute(
+                    f"INSERT OR REPLACE INTO {table_name}({fields}) VALUES ({placeholders})",
+                    tuple(values),
+                )
                 self._commit()
                 foreign_id = self.cursor.execute("SELECT last_insert_rowid()").fetchone()[0]
-                return f"{self.FOREIGN_KEY_PREFIX}{foreign_id}@{table_name}"  
+                return f"{self.FOREIGN_KEY_PREFIX}{foreign_id}@{table_name}"
             else:
-                return pickle.dumps(new_obj)  
+                return pickle.dumps(new_obj)
         elif isinstance(obj, (list, set, tuple)):
-            obj_type = type(obj)  
+            obj_type = type(obj)
             new_obj = []
             for item in obj:
                 if isinstance(item, self.ITERABLE_TYPE):
@@ -228,7 +237,7 @@ class Database:
                     new_obj.append(item)
                 else:
                     raise ValueError(f"数据模型包含不支持的数据类型，值：{item} 值类型：{type(item)}")
-            return pickle.dumps(obj_type(new_obj))  
+            return pickle.dumps(obj_type(new_obj))
         else:
             raise ValueError(f"数据模型包含不支持的数据类型，值：{obj} 值类型：{type(obj)}")
 
@@ -245,9 +254,8 @@ class Database:
                 if field.startswith(self.BYTES_PREFIX):
                     if isinstance(value, bytes):
                         new_obj[field.replace(self.BYTES_PREFIX, "")] = self._load(pickle.loads(value))
-                    else:  
+                    else:
                         pass
-                        
 
                 elif field.startswith(self.FOREIGN_KEY_PREFIX):
 
@@ -267,7 +275,6 @@ class Database:
 
                 if isinstance(item, bytes):
 
-                    
                     try:
                         new_obj.append(self._load(pickle.loads(item)))
                     except Exception:
@@ -309,7 +316,6 @@ class Database:
 
     @database_operation
     def auto_migrate(self, *args: LiteModel) -> None:
-
         """
         自动迁移模型
         Args:
@@ -322,32 +328,33 @@ class Database:
             if not model.TABLE_NAME:
                 raise ValueError(f"数据模型{type(model).__name__}未提供表名")
 
-            
             self.cursor.execute(
-                f'CREATE TABLE IF NOT EXISTS "{model.TABLE_NAME}" (id INTEGER PRIMARY KEY AUTOINCREMENT)'
+                f'CREATE TABLE IF NOT EXISTS "{model.TABLE_NAME}" (id INTEGER PRIMARY KEY AUTOINCREMENT)',
             )
 
-            
             new_structure = {}
-            for n_field, n_value in model.dump(by_alias=True).items():
+            for n_field, n_value in model.dump(by_alias = True).items():
                 if n_field not in ["TABLE_NAME", "id"]:
                     new_structure[self._get_stored_field_prefix(n_value) + n_field] = self._get_stored_type(n_value)
 
-            
-            existing_structure = dict([(column[1], column[2]) for column in self.cursor.execute(f'PRAGMA table_info({model.TABLE_NAME})').fetchall()])
-            
+            existing_structure = dict(
+                [
+                    (column[1], column[2])
+                    for column in self.cursor.execute(f"PRAGMA table_info({model.TABLE_NAME})").fetchall()
+                ],
+            )
+
             for n_field, n_type in new_structure.items():
                 if n_field not in existing_structure.keys() and n_field.lower() not in ["id", "table_name"]:
-                    default_value = self.DEFAULT_MAPPING.get(n_type, 'NULL')
+                    default_value = self.DEFAULT_MAPPING.get(n_type, "NULL")
                     self.cursor.execute(
-                        f"ALTER TABLE '{model.TABLE_NAME}' ADD COLUMN {n_field} {n_type} DEFAULT {self.DEFAULT_MAPPING.get(n_type, default_value)}"
+                        f"ALTER TABLE '{model.TABLE_NAME}' ADD COLUMN {n_field} {n_type} DEFAULT {self.DEFAULT_MAPPING.get(n_type, default_value)}",
                     )
 
-            
             for e_field in existing_structure.keys():
-                if e_field not in new_structure.keys() and e_field.lower() not in ['id']:
+                if e_field not in new_structure.keys() and e_field.lower() not in ["id"]:
                     self.cursor.execute(
-                        f'ALTER TABLE "{model.TABLE_NAME}" DROP COLUMN "{e_field}"'
+                        f'ALTER TABLE "{model.TABLE_NAME}" DROP COLUMN "{e_field}"',
                     )
         self._commit()
 
@@ -355,7 +362,6 @@ class Database:
     def fetch_all(self, query: str, *args: Any) -> list[tuple[Any, ...]]:
         """执行只读查询并一次性返回全部结果。"""
         return self.cursor.execute(query, args).fetchall()
-        
 
     def _get_stored_field_prefix(self, value) -> str:
         """根据类型获取存储字段前缀，一定在后加上字段名
@@ -383,7 +389,7 @@ class Database:
             Sqlite3存储类型
         """
         if isinstance(value, dict) and "TABLE_NAME" in value:
-            
+
             return "INTEGER"
         return self.TYPE_MAPPING.get(type(value), "TEXT")
 
@@ -400,7 +406,7 @@ class Database:
         table_name = foreign_value.split("@")[-1]
         foreign_id = foreign_value.split("@")[0]
         fields = [description[1] for description in self.cursor.execute(f"PRAGMA table_info({table_name})").fetchall()]
-        result = self.cursor.execute(f"SELECT * FROM {table_name} WHERE id = ?", (foreign_id,)).fetchone()
+        result = self.cursor.execute(f"SELECT * FROM {table_name} WHERE id = ?", (foreign_id, )).fetchone()
         if result is None:
             return None
         return dict(zip(fields, result))
@@ -414,7 +420,7 @@ class Database:
         """
 
         def wrapper(model: LiteModel):
-            
+
             sign = inspect.signature(func)
             if param := sign.parameters.get("model"):
                 if isinstance(model, param.annotation):
@@ -423,7 +429,7 @@ class Database:
                     return
             else:
                 return
-            result = func(model) # type: ignore
+            result = func(model)  # type: ignore
             for callback in self._on_save_callbacks:
                 callback(result)
             return result
@@ -432,32 +438,30 @@ class Database:
         return wrapper
 
     TYPE_MAPPING = {
-            int      : "INTEGER",
-            float    : "REAL",
-            str      : "TEXT",
-            bool     : "INTEGER",
-            bytes    : "BLOB",
-            NoneType : "NULL",
-            dict     : "BLOB",  
-            list     : "BLOB",  
-            tuple    : "BLOB",  
-            set      : "BLOB",  
-            LiteModel: "TEXT"  
+        int: "INTEGER",
+        float: "REAL",
+        str: "TEXT",
+        bool: "INTEGER",
+        bytes: "BLOB",
+        NoneType: "NULL",
+        dict: "BLOB",
+        list: "BLOB",
+        tuple: "BLOB",
+        set: "BLOB",
+        LiteModel: "TEXT",
     }
     DEFAULT_MAPPING = {
-            "TEXT"   : "''",
-            "INTEGER": 0,
-            "REAL"   : 0.0,
-            "BLOB"   : None,
-            "NULL"   : None
+        "TEXT": "''",
+        "INTEGER": 0,
+        "REAL": 0.0,
+        "BLOB": None,
+        "NULL": None,
     }
 
-    
     BASIC_TYPE = (int, float, str, bool, bytes, NoneType)
-    
+
     ITERABLE_TYPE = (dict, list, tuple, set, LiteModel)
 
-    
     FOREIGN_KEY_PREFIX = "FOREIGN_KEY_"
-    
+
     BYTES_PREFIX = "PICKLE_BYTES_"

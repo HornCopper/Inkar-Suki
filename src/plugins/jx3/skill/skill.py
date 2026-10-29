@@ -16,14 +16,12 @@ from src.utils.network import Request, cache_image
 
 from ._template import table_head_skill, template_body_skill
 
-
-NOUN_PATH = build_path(ASSETS, ["source", "jx3", "tabs", "Skill_Nouns.txt"])
+NOUN_PATH = build_path(ASSETS, ["source", "jx3", "tabs", "skill", "Skill_Nouns.txt"])
 NOUN_PATTERN = re.compile(r"<NounID\s+(\d+)>")
 
-
-@lru_cache(maxsize=1)
+@lru_cache(maxsize = 1)
 def _load_skill_nouns() -> dict[str, tuple[str, str]]:
-    with open(NOUN_PATH, encoding="gbk") as noun_file:
+    with open(NOUN_PATH, encoding = "gbk") as noun_file:
         rows = [line.rstrip("\n").split("\t") for line in noun_file]
     result = {}
     for row in rows[1:]:
@@ -31,14 +29,12 @@ def _load_skill_nouns() -> dict[str, tuple[str, str]]:
             result[row[0]] = (row[1], row[2])
     return result
 
-
 def _decode_desc(desc: str) -> str:
     try:
         return json.loads(f'"{desc}"').replace("。<", "。\n<").replace("><", ">\n<")
     except json.JSONDecodeError:
-        desc = desc.replace('"', '\\"')
+        desc = desc.replace("\"", "\\\"")
         return json.loads(f'"{desc}"').replace("。<", "。\n<").replace("><", ">\n<")
-
 
 def _expand_noun_tags(desc: str, *, append_details: bool = True, _seen: set[str] | None = None) -> str:
     nouns = _load_skill_nouns()
@@ -64,16 +60,14 @@ def _expand_noun_tags(desc: str, *, append_details: bool = True, _seen: set[str]
             continue
         noun_name, noun_desc = nouns[noun_id]
         seen.add(noun_id)
-        detail_desc = _expand_noun_tags(_decode_desc(noun_desc), append_details=True, _seen=seen)
+        detail_desc = _expand_noun_tags(_decode_desc(noun_desc), append_details = True, _seen = seen)
         details.append(f"[{noun_name}]：{detail_desc}")
     if details:
         expanded += "\n" + "\n".join(details)
     return expanded
 
-
 def _format_skill_desc(desc: str) -> str:
     return _expand_noun_tags(_decode_desc(desc))
-
 
 async def get_skill(skill_keyword: str = "") -> str | Message | ms:
     if "_" in skill_keyword:
@@ -82,17 +76,17 @@ async def get_skill(skill_keyword: str = "") -> str | Message | ms:
         skill_id, skill_level = skill_keyword.split("_")
         params = {
             "skill_id": int(skill_id),
-            "skill_level": int(skill_level)
+            "skill_level": int(skill_level),
         }
     elif check_number(skill_keyword):
         params = {
-            "skill_id": int(skill_keyword)
+            "skill_id": int(skill_keyword),
         }
     else:
         params = {
-            "skill_name": skill_keyword
+            "skill_name": skill_keyword,
         }
-    data = (await Request(f"{Config.jx3.api.calculator_url}/skill", params=params).get()).json()
+    data = (await Request(f"{Config.jx3.api.calculator_url}/skill", params = params).get()).json()
     if data["code"] != 200:
         return "未找到相关技能，请检查后重试！"
     if len(data["data"]) == 1:
@@ -102,7 +96,7 @@ async def get_skill(skill_keyword: str = "") -> str | Message | ms:
         desc = _format_skill_desc(skill["Desc"])
         name = skill["Name"]
         return ms.image(
-            Request(Path(image).as_uri()).local_content
+            Request(Path(image).as_uri()).local_content,
         ) + f"技能名：{name}\n备注：{remark}\n{desc}"
 
     skills = data["data"]
@@ -113,23 +107,22 @@ async def get_skill(skill_keyword: str = "") -> str | Message | ms:
         desc = _format_skill_desc(skill["Desc"])
         tables.append(
             Template(template_body_skill).render(
-                icon=Path(await cache_image("https://icon.jx3box.com/icon/" + skill["IconID"] + ".png")).as_uri(),
-                skill_id=skill["SkillID"] + "_" + skill["Level"],
-                name=skill["Name"],
-                remark=skill["Remark"],
-                desc=H.escape(desc).replace("\n", "<br>")
-            )
+                icon = Path(await cache_image("https://icon.jx3box.com/icon/" + skill["IconID"] + ".png")).as_uri(),
+                skill_id = skill["SkillID"] + "_" + skill["Level"],
+                name = skill["Name"],
+                remark = skill["Remark"],
+                desc = H.escape(desc).replace("\n", "<br>"),
+            ),
         )
     html = str(
         HTMLSourceCode(
-            application_name="技能表",
-            table_head=table_head_skill,
-            table_body="\n".join(tables)
-        )
+            application_name = "技能表",
+            table_head = table_head_skill,
+            table_body = "\n".join(tables),
+        ),
     )
-    image = await generate(html, ".container", True, segment=True)
+    image = await generate(html, ".container", True, segment = True)
     return image
-
 
 async def get_buff(buff_keyword: str = "") -> str | Message | ms:
     if "_" in buff_keyword:
@@ -138,17 +131,17 @@ async def get_buff(buff_keyword: str = "") -> str | Message | ms:
         buff_id, buff_level = buff_keyword.split("_")
         params = {
             "buff_id": int(buff_id),
-            "buff_level": int(buff_level)
+            "buff_level": int(buff_level),
         }
     elif check_number(buff_keyword):
         params = {
-            "buff_id": int(buff_keyword)
+            "buff_id": int(buff_keyword),
         }
     else:
         params = {
-            "buff_name": buff_keyword
+            "buff_name": buff_keyword,
         }
-    data = (await Request(f"{Config.jx3.api.calculator_url}/buff", params=params).get()).json()
+    data = (await Request(f"{Config.jx3.api.calculator_url}/buff", params = params).get()).json()
     if data["code"] != 200:
         return "未找到相关气劲，请检查后重试！"
     if len(data["data"]) == 1:
@@ -158,7 +151,7 @@ async def get_buff(buff_keyword: str = "") -> str | Message | ms:
         desc = _decode_desc(buff["Desc"])
         name = buff["Name"]
         return ms.image(
-            Request(Path(image).as_uri()).local_content
+            Request(Path(image).as_uri()).local_content,
         ) + f"气劲名：{name}\n备注：{remark}\n{desc}"
 
     buffs = data["data"]
@@ -169,19 +162,19 @@ async def get_buff(buff_keyword: str = "") -> str | Message | ms:
         desc = _decode_desc(buff["Desc"])
         tables.append(
             Template(template_body_skill).render(
-                icon=Path(await cache_image("https://icon.jx3box.com/icon/" + buff["IconID"] + ".png")).as_uri(),
-                skill_id=buff["BuffID"] + "_" + buff["Level"],
-                name=buff["Name"],
-                remark=buff["Remark"],
-                desc=H.escape(desc).replace("\n", "<br>")
-            )
+                icon = Path(await cache_image("https://icon.jx3box.com/icon/" + buff["IconID"] + ".png")).as_uri(),
+                skill_id = buff["BuffID"] + "_" + buff["Level"],
+                name = buff["Name"],
+                remark = buff["Remark"],
+                desc = H.escape(desc).replace("\n", "<br>"),
+            ),
         )
     html = str(
         HTMLSourceCode(
-            application_name="气劲表",
-            table_head=table_head_skill,
-            table_body="\n".join(tables)
-        )
+            application_name = "气劲表",
+            table_head = table_head_skill,
+            table_body = "\n".join(tables),
+        ),
     )
-    image = await generate(html, ".container", True, segment=True)
+    image = await generate(html, ".container", True, segment = True)
     return image

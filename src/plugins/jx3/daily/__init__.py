@@ -8,19 +8,20 @@ from .api import get_daily_info
 
 import datetime
 
-daily_matcher = on_command("jx3_daily", command_key="日常", aliases={"日常"}, force_whitespace=True, priority=5)
+daily_matcher = on_command("jx3_daily", command_key = "日常", aliases = {"日常"}, force_whitespace = True, priority = 5)
+
 @daily_matcher.handle()
 async def _(event: GroupMessageEvent):
     msg = await get_daily_info()
     await daily_matcher.finish(msg)
 
-@scheduler.scheduled_job("cron", hour="8", minute="30")
+@scheduler.scheduled_job("cron", hour = "8", minute = "30")
 async def run_at_8_30():
     msg = await get_daily_info()
     msg = "早安！音卡为您送上今天的日常：\n" + msg
     await send_subscribe("日常", msg)
 
-@scheduler.scheduled_job("cron", hour="19", minute="30")
+@scheduler.scheduled_job("cron", hour = "19", minute = "30")
 async def boss():
     if datetime.date.today().weekday() in [2, 4]:
         activity = "世界BOSS（主20:00/分20:05）"
@@ -29,7 +30,7 @@ async def boss():
     msg = activity + "即将开始，请提前到达对应地图等待吧！"
     await send_subscribe("世界BOSS", msg)
 
-@scheduler.scheduled_job("cron", hour="19", minute="20")
+@scheduler.scheduled_job("cron", hour = "19", minute = "20")
 async def small_gf():
     if datetime.date.today().weekday() in [1, 3]:
         activity = "逐鹿中原"
@@ -38,8 +39,8 @@ async def small_gf():
     msg = activity + "即将开始，请提前到达对应地图等待吧！"
     await send_subscribe("攻防", msg)
 
-@scheduler.scheduled_job("cron", hour="18", minute="20")
-@scheduler.scheduled_job("cron", hour="12", minute="20")
+@scheduler.scheduled_job("cron", hour = "18", minute = "20")
+@scheduler.scheduled_job("cron", hour = "12", minute = "20")
 async def gf_notice():
     if datetime.date.today().weekday() == 6:
         map = "恶人谷"

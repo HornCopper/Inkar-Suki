@@ -8,7 +8,6 @@ from pathlib import Path
 from typing import Any, cast
 from jinja2 import Template
 
-
 from src.config import Config
 from src.const.path import ASSETS, build_path
 from src.utils.analyze import Locations
@@ -25,7 +24,6 @@ from ._template import equipment_rating_result_template
 
 from .universe import UniversalCalculator
 
-
 RANK_ICON_FILES = {
     "ACE": "rank_ace.png",
     "S+": "rank_s_plus.png",
@@ -38,7 +36,6 @@ RANK_ICON_FILES = {
 
 CACHE_SCHEMA_VERSION = 7
 
-
 def parse_loop_name(name: str) -> dict[str, str]:
     if "路" in name:
         weapon, haste_loop = name.split("路", 1)
@@ -49,7 +46,6 @@ def parse_loop_name(name: str) -> dict[str, str]:
         raise ValueError(f"无法解析循环名称：{name}")
     weapon, haste, loop = match.groups()
     return {"weapon": weapon, "haste": haste, "loop": loop}
-
 
 def equipment_hash(
     *,
@@ -69,9 +65,8 @@ def equipment_hash(
         "formation_name": formation_name,
         "user_id": user_id,
     }
-    content = json.dumps(raw, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
+    content = json.dumps(raw, ensure_ascii = False, sort_keys = True, separators = (",", ":"))
     return hashlib.sha256(content.encode("utf-8")).hexdigest()
-
 
 def get_rating_cache(equip_hash: str) -> EquipmentRatingCache | None:
     return cast(
@@ -80,10 +75,9 @@ def get_rating_cache(equip_hash: str) -> EquipmentRatingCache | None:
             EquipmentRatingCache(),
             "equip_hash = ?",
             equip_hash,
-            default=None,
+            default = None,
         ),
     )
-
 
 def delete_rating_cache(global_role_id: int, kungfu_id: int) -> bool:
     cache = cast(
@@ -93,7 +87,7 @@ def delete_rating_cache(global_role_id: int, kungfu_id: int) -> bool:
             "global_role_id = ? AND kungfu_id = ?",
             global_role_id,
             kungfu_id,
-            default=None,
+            default = None,
         ),
     )
     if cache is None:
@@ -105,7 +99,6 @@ def delete_rating_cache(global_role_id: int, kungfu_id: int) -> bool:
         kungfu_id,
     )
     return True
-
 
 def save_rating_cache(
     *,
@@ -127,7 +120,7 @@ def save_rating_cache(
             "global_role_id = ? AND kungfu_id = ?",
             global_role_id,
             kungfu_id,
-            default=None,
+            default = None,
         ),
     )
     cache = old_cache or EquipmentRatingCache()
@@ -145,7 +138,6 @@ def save_rating_cache(
     attribute_db.save(cache)
     return cache
 
-
 def get_latest_rating_cache(jcl_data: list[list], kungfu_id: int) -> EquipmentRatingCache | None:
     candidates = cast(
         list[EquipmentRatingCache],
@@ -153,22 +145,16 @@ def get_latest_rating_cache(jcl_data: list[list], kungfu_id: int) -> EquipmentRa
             EquipmentRatingCache(),
             "kungfu_id = ?",
             kungfu_id,
-            default=[],
+            default = [],
         ),
     )
     matches = [
-        cache
-        for cache in candidates
-        if (
-            isinstance(cache, EquipmentRatingCache)
-            and cache.raw_equips_data == jcl_data
-            and bool(cache.ratings)
-        )
+        cache for cache in candidates
+        if (isinstance(cache, EquipmentRatingCache) and cache.raw_equips_data == jcl_data and bool(cache.ratings))
     ]
     if not matches:
         return None
-    return max(matches, key=lambda cache: cache.timestamp)
-
+    return max(matches, key = lambda cache: cache.timestamp)
 
 async def calculate_with_optimized_equips(
     instance: UniversalCalculator,
@@ -187,15 +173,12 @@ async def calculate_with_optimized_equips(
     if user_id:
         url_path = "calculator_custom"
         params["user_id"] = user_id
-    data = (
-        await Request(f"{Config.jx3.api.calculator_url}/{url_path}", params=params).post(
-            timeout=timeout
-        )
-    ).json()
+    data = (await Request(f"{Config.jx3.api.calculator_url}/{url_path}", params = params).post(
+        timeout = timeout,
+    )).json()
     if data.get("code") == 404:
         return data.get("msg", "未找到可用的循环！")
     return data
-
 
 def _as_number(value: Any) -> float | None:
     if isinstance(value, (int, float)):
@@ -207,13 +190,11 @@ def _as_number(value: Any) -> float | None:
             return None
     return None
 
-
 def _find_dps(data: dict[str, Any]) -> float | None:
     for key in ("damage_per_second", "dps", "DPS", "rdps"):
         if key in data:
             return _as_number(data[key])
     return None
-
 
 def _find_item_id(data: dict[str, Any]) -> int | None:
     for key in ("item_id", "itemId", "ID", "id", "equip_id", "equipId"):
@@ -227,7 +208,6 @@ def _find_item_id(data: dict[str, Any]) -> int | None:
         return _find_item_id(equip)
     return None
 
-
 def _find_location(data: dict[str, Any]) -> int | None:
     for key in ("location", "location_code", "position", "slot", "subtype"):
         value = data.get(key)
@@ -239,7 +219,6 @@ def _find_location(data: dict[str, Any]) -> int | None:
             return Locations.index(value)
     return None
 
-
 def _find_name(data: dict[str, Any]) -> str:
     for key in ("name", "Name", "equip_name", "equipName"):
         value = data.get(key)
@@ -249,7 +228,6 @@ def _find_name(data: dict[str, Any]) -> str:
     if isinstance(equip, dict):
         return _find_name(equip)
     return "未知装备"
-
 
 def _find_attr(data: dict[str, Any]) -> str:
     magic_attrs = _parse_magic_attrs(data)
@@ -266,10 +244,8 @@ def _find_attr(data: dict[str, Any]) -> str:
         return _find_attr(equip)
     return ""
 
-
 def _full_attr_name(attr_key: Any) -> str:
     return AttributesFull.get(str(attr_key), "")
-
 
 def _parse_magic_attrs(data: dict[str, Any]) -> str:
     attrs = []
@@ -281,7 +257,6 @@ def _parse_magic_attrs(data: dict[str, Any]) -> str:
         if attr_name:
             attrs.append(attr_name)
     return " ".join(attrs)
-
 
 def _lookup_equip_attr(item_id: int | None, location: int | None) -> str:
     if item_id is None or location is None:
@@ -302,7 +277,6 @@ def _lookup_equip_attr(item_id: int | None, location: int | None) -> str:
     except Exception:
         return ""
 
-
 def _format_attr_text(value: Any) -> str:
     if isinstance(value, list):
         return " ".join([_full_attr_name(item) or str(item) for item in value if item and str(item) != "体质"])
@@ -310,13 +284,11 @@ def _format_attr_text(value: Any) -> str:
         return " ".join([_full_attr_name(item) or item for item in value.split() if item != "体质"])
     return ""
 
-
 def _rating_attr(data: dict[str, Any], fallback: Any = "") -> str:
     attr = _find_attr(data)
     if attr:
         return attr
     return _format_attr_text(fallback)
-
 
 def _find_quality(data: dict[str, Any]) -> int:
     for key in ("quality", "Quality", "level", "Level", "equip_level", "equipLevel"):
@@ -330,14 +302,12 @@ def _find_quality(data: dict[str, Any]) -> int:
         return _find_quality(equip)
     return 0
 
-
 def _equip_tab_key(location: int) -> int:
     if location in [3, 4, 8, 10, 11, 12]:
         return 1
     if location in [5, 6, 7, 9]:
         return 2
     return 3
-
 
 def _lookup_equip_quality(item_id: int | None, location: int | None) -> int:
     if item_id is None or location is None:
@@ -348,7 +318,6 @@ def _lookup_equip_quality(item_id: int | None, location: int | None) -> int:
     except Exception:
         return 0
 
-
 def _lookup_equip_peerless(item_id: int | None, location: int | None) -> bool:
     if item_id is None or location is None:
         return False
@@ -357,7 +326,6 @@ def _lookup_equip_peerless(item_id: int | None, location: int | None) -> bool:
         return "atSkillEventHandler" in equip_data
     except Exception:
         return False
-
 
 def _current_equip_details(current_jcl_data: list[list]) -> dict[int, dict[str, Any]]:
     details: dict[int, dict[str, Any]] = {}
@@ -388,23 +356,19 @@ def _current_equip_details(current_jcl_data: list[list]) -> dict[int, dict[str, 
             }
     return details
 
-
 def _iter_candidate_groups(data: dict[str, Any]) -> list[dict[str, Any]]:
     for key in (
-        "equip_optimization",
-        "optimized_equips",
-        "optimize_equips",
-        "equip_optimizations",
-        "equip_compare",
-        "equip_comparisons",
-        "equips",
+            "equip_optimization",
+            "optimized_equips",
+            "optimize_equips",
+            "equip_optimizations",
+            "equip_compare",
+            "equip_comparisons",
+            "equips",
     ):
         value = data.get(key)
         if isinstance(value, dict) and isinstance(value.get("slots"), dict):
-            return [
-                {"location": location, "candidates": candidates}
-                for location, candidates in value["slots"].items()
-            ]
+            return [{"location": location, "candidates": candidates} for location, candidates in value["slots"].items()]
         if isinstance(value, list):
             return value
         if isinstance(value, dict):
@@ -418,7 +382,6 @@ def _iter_candidate_groups(data: dict[str, Any]) -> list[dict[str, Any]]:
                     groups.append({"location": location, "candidates": candidates})
             return groups
     return []
-
 
 def _extract_candidates(group: Any) -> tuple[int | None, list[dict[str, Any]]]:
     if isinstance(group, list):
@@ -434,7 +397,6 @@ def _extract_candidates(group: Any) -> tuple[int | None, list[dict[str, Any]]]:
         return location, [group]
     return location, []
 
-
 def _rating_summary(data: dict[str, Any]) -> dict[str, Any]:
     summary = data.get("summary")
     if not isinstance(summary, dict):
@@ -444,7 +406,7 @@ def _rating_summary(data: dict[str, Any]) -> dict[str, Any]:
             summary.get(
                 "display_total_score_text",
                 f"{summary.get('display_total_score', 0):.1f}",
-            )
+            ),
         ),
         "grade": str(summary.get("grade", "D")),
         "current_dps_text": _format_dps(_as_number(summary.get("current_dps")) or 0),
@@ -453,7 +415,6 @@ def _rating_summary(data: dict[str, Any]) -> dict[str, Any]:
         "rated_slots": summary.get("rated_slots", 0),
         "total_slots": summary.get("total_slots", 0),
     }
-
 
 def build_equipment_ratings_from_api(data: dict[str, Any], current_jcl_data: list[list]) -> list[dict[str, Any]]:
     summary = _rating_summary(data)
@@ -477,31 +438,58 @@ def build_equipment_ratings_from_api(data: dict[str, Any], current_jcl_data: lis
         if not isinstance(percent_to_best, (int, float)):
             percent_to_best = round(current_dps / best_dps * 100, 2) if best_dps else 0
         result = {
-            "location": slot.get("location_name") or (Locations[location_code] if location_code < len(Locations) else str(location_code)),
-            "location_code": location_code,
-            "item_id": current_details.get(location_code, {}).get("item_id", current.get("item_id") or current.get("ui_id")),
-            "name": current_details.get(location_code, {}).get("name", _find_name(current)),
-            "quality": current_details.get(location_code, {}).get("quality", _find_quality(current)),
-            "attr": _rating_attr(current, current_details.get(location_code, {}).get("attr", "")),
-            "grade": str(rating.get("grade", "D")),
-            "score": rating.get("display_score", rating.get("score", 0)),
-            "rank": rating.get("rank", "-"),
-            "total": rating.get("total", "-"),
-            "dps": int(current_dps),
-            "best_name": _find_name(best),
-            "best_quality": _find_quality(best),
-            "best_attr": _rating_attr(best),
-            "best_dps": int(best_dps),
-            "diff_to_best": int(current_dps - best_dps),
-            "percent_to_best": percent_to_best,
-            "inferred_current": False,
-            "metric_name": summary.get("metric_name", "DPS"),
-            "metric_unit": summary.get("metric_unit", "DPS"),
-            "rating_summary": summary,
+            "location":
+            slot.get("location_name")
+            or (Locations[location_code] if location_code < len(Locations) else str(location_code)),
+            "location_code":
+            location_code,
+            "item_id":
+            current_details.get(location_code, {}).get(
+                "item_id",
+                current.get("item_id") or current.get("ui_id"),
+            ),
+            "name":
+            current_details.get(location_code, {}).get("name", _find_name(current)),
+            "quality":
+            current_details.get(location_code, {}).get("quality", _find_quality(current)),
+            "attr":
+            _rating_attr(
+                current,
+                current_details.get(location_code, {}).get("attr", ""),
+            ),
+            "grade":
+            str(rating.get("grade", "D")),
+            "score":
+            rating.get("display_score", rating.get("score", 0)),
+            "rank":
+            rating.get("rank", "-"),
+            "total":
+            rating.get("total", "-"),
+            "dps":
+            int(current_dps),
+            "best_name":
+            _find_name(best),
+            "best_quality":
+            _find_quality(best),
+            "best_attr":
+            _rating_attr(best),
+            "best_dps":
+            int(best_dps),
+            "diff_to_best":
+            int(current_dps - best_dps),
+            "percent_to_best":
+            percent_to_best,
+            "inferred_current":
+            False,
+            "metric_name":
+            summary.get("metric_name", "DPS"),
+            "metric_unit":
+            summary.get("metric_unit", "DPS"),
+            "rating_summary":
+            summary,
         }
         results.append(result)
-    return sorted(results, key=lambda item: item["location_code"])
-
+    return sorted(results, key = lambda item: item["location_code"])
 
 async def request_equipment_ratings(
     *,
@@ -531,7 +519,7 @@ async def request_equipment_ratings(
         payload["user_id"] = user_id
     try:
         result = (
-            await Request(f"{Config.jx3.api.calculator_url}/equipment_rating", params=payload).post(timeout=300)
+            await Request(f"{Config.jx3.api.calculator_url}/equipment_rating", params = payload).post(timeout = 300)
         ).json()
     except Exception as e:
         return f"装备评级计算失败：{e}"
@@ -539,9 +527,8 @@ async def request_equipment_ratings(
         return result.get("msg", "装备评级计算失败。")
     ratings = build_equipment_ratings_from_api(result["data"], instance.jcl_data or instance.equip_data.equip_lines)
     if not ratings:
-        return format_rating_summary(ratings, detailed=True)
+        return format_rating_summary(ratings, detailed = True)
     return ratings
-
 
 def format_rating_summary(ratings: list[dict[str, Any]], *, detailed: bool = False) -> str:
     if not ratings:
@@ -561,14 +548,11 @@ def format_rating_summary(ratings: list[dict[str, Any]], *, detailed: bool = Fal
         lines.append(line)
     return "\n".join(lines)
 
-
 def _format_dps(value: int | float) -> str:
     return f"{int(value):,}"
 
-
 def _format_diff(value: int | float) -> str:
     return f"{int(value):+,}"
-
 
 def _format_equip_cell(name: Any, quality: Any, attr: Any) -> str:
     quality_value = 0
@@ -578,17 +562,13 @@ def _format_equip_cell(name: Any, quality: Any, attr: Any) -> str:
         quality_value = int(quality)
     quality_text = f"<span class=\"quality\">{quality_value}</span>" if quality_value > 0 else ""
     attr_text = f"<div class=\"attr\">{html.escape(str(attr))}</div>" if attr else ""
-    return (
-        "<div class=\"equip-name\">"
-        f"{quality_text}{html.escape(str(name))}"
-        "</div>"
-        f"{attr_text}"
-    )
-
+    return ("<div class=\"equip-name\">"
+            f"{quality_text}{html.escape(str(name))}"
+            "</div>"
+            f"{attr_text}")
 
 def _asset_uri(*parts: str) -> str:
     return Path(build_path(ASSETS, list(parts))).as_uri()
-
 
 def _format_grade_mark(grade: str) -> str:
     grade_icon = _asset_uri("image", "jx3", "equipment_rating", RANK_ICON_FILES.get(grade, "rank_d.png"))
@@ -597,7 +577,6 @@ def _format_grade_mark(grade: str) -> str:
         f"<img class=\"grade-icon\" src=\"{grade_icon}\" alt=\"{html.escape(grade)}\">"
         "</div>"
     )
-
 
 async def render_rating_table_image(
     ratings: list[dict[str, Any]],
@@ -637,7 +616,7 @@ async def render_rating_table_image(
             f"<td class=\"equip\">{best_equip}</td>"
             f"<td class=\"diff {diff_class}\">{diff_text}</td>"
             f"<td class=\"note\">{html.escape(note)}</td>"
-            "</tr>"
+            "</tr>",
         )
     subtitle_html = f"<div class=\"subtitle\">{html.escape(subtitle)}</div>" if subtitle else ""
     summary = ratings[0].get("rating_summary", {}) if ratings else {}
@@ -650,24 +629,32 @@ async def render_rating_table_image(
     total_slots = html.escape(str(summary.get("total_slots", 0)))
     source_note = f"评分由装备评级接口计算；最优解从候选装备与当前装备中共同取最高{metric_name}。"
     html_source = Template(equipment_rating_result_template).render(
-        value_0=html.escape(title),
-        value_1=subtitle_html,
-        value_2=_asset_uri('image', 'jx3', 'equipment_rating', RANK_ICON_FILES.get(str(summary.get('grade', 'D')), 'rank_d.png')),
-        value_3=total_grade,
-        value_4=total_score_text,
-        value_5=metric_name,
-        value_6=current_dps_text,
-        value_7=rated_slots,
-        value_8=total_slots,
-        value_9=source_note,
-        value_10=metric_unit,
-        value_11=metric_unit,
-        value_12=''.join(rows),
+        value_0 = html.escape(title),
+        value_1 = subtitle_html,
+        value_2 = _asset_uri(
+            "image",
+            "jx3",
+            "equipment_rating",
+            RANK_ICON_FILES.get(str(summary.get("grade", "D")), "rank_d.png"),
+        ),
+        value_3 = total_grade,
+        value_4 = total_score_text,
+        value_5 = metric_name,
+        value_6 = current_dps_text,
+        value_7 = rated_slots,
+        value_8 = total_slots,
+        value_9 = source_note,
+        value_10 = metric_unit,
+        value_11 = metric_unit,
+        value_12 = "".join(rows),
     )
     return await generate(
         html_source,
         ".container",
-        segment=True,
-        wait_for_network=True,
-        viewport={"width": 1600, "height": 980},
+        segment = True,
+        wait_for_network = True,
+        viewport = {
+            "width": 1600,
+            "height": 980,
+        },
     )

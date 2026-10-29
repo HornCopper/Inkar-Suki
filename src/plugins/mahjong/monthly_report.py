@@ -10,7 +10,7 @@ from ._template import (
     koromo_api_sp as sp,
     koromo_api_pr as pr,
     koromo_api_ps as ps,
-    koromo_api_pes as pes
+    koromo_api_pes as pes,
 )
 
 import json
@@ -27,13 +27,13 @@ def get_month_timestamps(month_str: str) -> tuple[int, int]:
     start_date = datetime.strptime(month_str, "%Y-%m")
     start_timestamp = int(start_date.timestamp())
     if start_date.month == 12:
-        end_date = datetime(start_date.year + 1, 1, 1) - timedelta(seconds=1)
+        end_date = datetime(start_date.year + 1, 1, 1) - timedelta(seconds = 1)
     else:
-        end_date = datetime(start_date.year, start_date.month + 1, 1) - timedelta(seconds=1)
+        end_date = datetime(start_date.year, start_date.month + 1, 1) - timedelta(seconds = 1)
     end_timestamp = int(end_date.timestamp())
     return start_timestamp, end_timestamp
 
-class MSMRG: # Majsoul Monthly Report Generator
+class MSMRG:  # Majsoul Monthly Report Generator
     search_player_url = sp
     player_record_url = pr.replace("limit=8&", "limit=400&")
     player_stats_url = ps
@@ -52,15 +52,13 @@ class MSMRG: # Majsoul Monthly Report Generator
 
     @classmethod
     async def with_role_name(cls, name: str, month: str = get_previous_month()) -> "MSMRG | str":
-        possible_roles: list[dict] = (
-            await Request(
-                cls.search_player_url.format(player=name)
-            ).get()
-        ).json()
+        possible_roles: list[dict] = (await Request(
+            cls.search_player_url.format(player = name),
+        ).get()).json()
         if len(possible_roles) == 0:
             return "未找到该玩家，请检查后重试！"
         return cls(possible_roles[0]["id"], possible_roles[0]["nickname"], month)
-    
+
     async def get_information(self):
         self.records = []
         self.summary_stats = {}
@@ -73,7 +71,7 @@ class MSMRG: # Majsoul Monthly Report Generator
             "mode": self.mode,
         }
         record_response = await Request(
-            self.player_record_url.format(**url_params)
+            self.player_record_url.format(**url_params),
         ).get()
         self.partial = record_response.status_code in (403, 429)
         if not self.partial:
@@ -83,22 +81,22 @@ class MSMRG: # Majsoul Monthly Report Generator
                 raise ValueError("雀魂逐局记录接口返回了非列表数据")
 
         extended_response = await Request(
-            self.player_extended_stats_url.format(**url_params)
+            self.player_extended_stats_url.format(**url_params),
         ).get()
         extended_response.raise_for_status()
         self.stats = extended_response.json()
 
         if self.partial:
             summary_response = await Request(
-                self.player_stats_url.format(**url_params)
+                self.player_stats_url.format(**url_params),
             ).get()
             summary_response.raise_for_status()
             self.summary_stats = summary_response.json()
-        
+
     @property
     def count(self):
         return str(self.summary_stats["count"] if self.partial else len(self.records))
-    
+
     def rank_count(self, rank: int) -> int:
         if self.partial:
             return round(self.summary_stats["count"] * self.summary_stats["rank_rates"][rank - 1])
@@ -124,7 +122,7 @@ class MSMRG: # Majsoul Monthly Report Generator
                 if player["accountId"] == self.role_id:
                     count += player["gradingScore"]
         return "+" + str(count) if count >= 0 else str(count)
-    
+
     @property
     def pt_changes(self) -> str:
         changes = []
@@ -132,10 +130,10 @@ class MSMRG: # Majsoul Monthly Report Generator
             for player in each_game["players"]:
                 if player["accountId"] == self.role_id:
                     changes.append(
-                        player["gradingScore"]
+                        player["gradingScore"],
                     )
-        return json.dumps(changes, ensure_ascii=False)
-    
+        return json.dumps(changes, ensure_ascii = False)
+
     @property
     def avg_rank(self) -> str:
         if not int(self.count):
@@ -144,36 +142,31 @@ class MSMRG: # Majsoul Monthly Report Generator
             return str(round(self.summary_stats["avg_rank"], 2))
         total = 0
         for rank in range(4):
-            total += (rank + 1)*self.rank_count(rank + 1)
+            total += (rank + 1) * self.rank_count(rank + 1)
         return str(round(total / int(self.count), 2))
-    
+
     @staticmethod
     def percent(x: float):
-        return str(round(x*100, 2)) + "%"
+        return str(round(x * 100, 2)) + "%"
 
     @property
     def basic_attr(self) -> dict[str, str]:
         data = self.stats
-        values = {
-            attr: self.percent(data.get(attr, 0))
-            for attr in ["立直率", "副露率", "和牌率", "放铳率", "默听率"]
-        }
-        values.update({
-            attr: str(data.get(attr, 0))
-            for attr in ["平均打点", "平均铳点"]
-        })
+        values = {attr: self.percent(data.get(attr, 0)) for attr in ["立直率", "副露率", "和牌率", "放铳率", "默听率"]}
+        values.update({attr: str(data.get(attr, 0))
+                       for attr in ["平均打点", "平均铳点"]}, )
         return values
-    
+
     async def get_pt(self) -> int:
         time_start, time_end = get_month_timestamps(self.month)
         player_stats: dict = (
             await Request(
                 self.player_stats_url.format(
-                    player_id=str(self.role_id),
-                    end_timestamp=str(time_end*1000),
-                    start_timestamp=str(time_start*1000),
-                    mode=self.mode
-                )
+                    player_id = str(self.role_id),
+                    end_timestamp = str(time_end * 1000),
+                    start_timestamp = str(time_start * 1000),
+                    mode = self.mode,
+                ),
             ).get()
         ).json()
         return player_stats["level"]["score"] + player_stats["level"]["delta"]
@@ -188,31 +181,24 @@ class MSMRG: # Majsoul Monthly Report Generator
         input_data["show_pt_charts"] = not self.partial and bool(self.records)
         input_data["total_pt"] = "暂不可用" if self.partial else self.pt_change
         input_data["show_data"] = self.basic_attr
-        input_data["rank_data"] = list(zip(
-            ["一位", "二位", "三位", "四位"],
-            [
-                str(self.rank_count(rank + 1))
-                for rank
-                in range(4)
-            ],
-            [
-                self.percent(self.rank_rate(rank + 1))
-                for rank
-                in range(4)
-            ]
-        ))
+        input_data["rank_data"] = list(
+            zip(
+                ["一位", "二位", "三位", "四位"],
+                [str(self.rank_count(rank + 1)) for rank in range(4)],
+                [self.percent(self.rank_rate(rank + 1)) for rank in range(4)],
+            ),
+        )
         input_data["pt_change"] = self.pt_changes if input_data["show_pt_charts"] else "[]"
-        input_data["init_pt"] = str(
-            (await self.get_pt()) - int(self.pt_change)
-        ) if input_data["show_pt_charts"] else "0"
+        input_data["init_pt"] = str((await self.get_pt()) -
+                                    int(self.pt_change), ) if input_data["show_pt_charts"] else "0"
         input_data["month"] = self.month
         input_data["font"] = ASSETS + "/font/PingFangSC-Semibold.otf"
         input_data["avg_rank"] = self.avg_rank
         html = str(
             SimpleHTML(
-                html_type="majsoul",
-                html_template="majsoul_monthly_report.html",
-                **input_data
-            )
+                html_type = "majsoul",
+                html_template = "majsoul_monthly_report.html",
+                **input_data,
+            ),
         )
-        return await generate(html, ".container", first=True, segment=True)
+        return await generate(html, ".container", first = True, segment = True)

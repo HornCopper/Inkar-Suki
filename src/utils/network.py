@@ -9,12 +9,15 @@ from src.utils.exceptions import RequestDataException
 from src.utils.decorators import ticket_required
 from src.utils.tuilan import generate_x_sk, generate_timestamp, format_request_body
 from src.utils.time import Time
+from src.utils.jx3_icons import asset_url, asset_cache_name
 from src.utils.file import write
 
 import httpx
 import os
+import time
 
 class Request:
+
     def __init__(self, url: str, *, headers: dict = {}, params: str | dict = {}):
         """
         构造网络请求，亦可以请求本地内容。
@@ -24,8 +27,8 @@ class Request:
             headers (dict): 请求头。
             params (dict, str): 请求体，当为`dict`时按`json`传参给`POST`请求，按`params`传参给`GET`请求；当为`str`时不可传入`GET`请求，按`data`传参给`POST`请求。
         """
-        self.url = url
-        self.headers = headers 
+        self.url = asset_url(url)
+        self.headers = headers
         self.params = params
 
     @property
@@ -46,34 +49,46 @@ class Request:
         """
         if isinstance(self.params, str):
             raise RequestDataException("Method `GET` not accept argument `params` with type `str`!")
-        
-        if expire_at != 0:
-            cached: RequestData | Any = cache_db.where_one(RequestData(), "timestamp >= ? AND url = ?", Time().raw_time, self.url, default=None)
-            if cached is not None:
-                return httpx.Response(status_code=200, content=cached.response_data.encode("utf-8"))
 
-        async with httpx.AsyncClient(follow_redirects=True, verify=False, trust_env=self.trust_env) as client:
+        if expire_at != 0:
+            cached: RequestData | Any = cache_db.where_one(
+                RequestData(),
+                "timestamp >= ? AND url = ?",
+                Time().raw_time,
+                self.url,
+                default = None,
+            )
+            if cached is not None:
+                return httpx.Response(status_code = 200, content = cached.response_data.encode("utf-8"))
+
+        async with httpx.AsyncClient(follow_redirects = True, verify = False, trust_env = self.trust_env) as client:
             request_url = self.url
             request_params = self.params or None
             if request_params and "?" in self.url:
                 request_url = str(httpx.URL(self.url).copy_merge_params(request_params))
                 request_params = None
-            response = await client.get(request_url, params=request_params, headers=self.headers, timeout=timeout, **kwargs)
+            response = await client.get(
+                request_url,
+                params = request_params,
+                headers = self.headers,
+                timeout = timeout,
+                **kwargs,
+            )
 
         if expire_at != 0:
             cache_db.delete(RequestData(), "url = ? AND timestamp < ?", self.url, Time().raw_time)
             cache_db.save(
                 RequestData(
-                    url=self.url,
-                    headers=self.headers,
-                    params=self.params,
-                    response_data=response.text,
-                    timestamp=expire_at,
-                )
+                    url = self.url,
+                    headers = self.headers,
+                    params = self.params,
+                    response_data = response.text,
+                    timestamp = expire_at,
+                ),
             )
 
         return response
-    
+
     async def post(self, tuilan: bool = False, timeout: int = 20) -> httpx.Response:
         """
         发送`POST`请求。
@@ -82,26 +97,26 @@ class Request:
             tuilan (bool): 是否为推栏请求，如果是则构造推栏请求。
             timeout (int): 超时时间，单位秒（s）。
         """
-        async with httpx.AsyncClient(follow_redirects=True, verify=False, trust_env=self.trust_env) as client:
+        async with httpx.AsyncClient(follow_redirects = True, verify = False, trust_env = self.trust_env) as client:
             if isinstance(self.params, str):
                 request_params = {
                     "url": self.url,
                     "data": self.params,
-                    "headers": self.headers
+                    "headers": self.headers,
                 }
             else:
                 request_params = {
                     "url": self.url,
                     "json": self.params,
-                    "headers": self.headers
+                    "headers": self.headers,
                 }
             if tuilan:
                 if not isinstance(self.params, dict):
                     raise ValueError("Cannot accept argument `params` without type `dict` when `tuilan` equal `True`.")
                 request_params: dict = self._build_tuilan_request(self.params)
-            response = await client.post(timeout=timeout, **request_params)
+            response = await client.post(timeout = timeout, **request_params)
             return response
-        
+
     @property
     def local_content(self) -> bytes:
         """
@@ -111,7 +126,7 @@ class Request:
             raise ValueError("Canot accept the argument `url` without one started with `file`!")
         with urlopen(self.url) as f:
             return f.read()
-    
+
     @ticket_required
     def _build_tuilan_request(self, params: dict, ticket: str = "") -> dict:
         """
@@ -147,28 +162,33 @@ class Request:
             "clientkey": "1",
             "User-Agent": "SeasunGame/202CFNetwork/1410.0.3Darwin/22.6.0",
             "sign": "true",
-            "x-sk": xsk
+            "x-sk": xsk,
         }
         request_params = {
             "url": self.url,
             "data": params_,
-            "headers": basic_headers
+            "headers": basic_headers,
         }
         return request_params
 
-async def cache_image(url: str):
+async def cache_image(url: str) -> str:
+    url = asset_url(url)
     if url.startswith("https://q.qlogo.cn"):
         return url
 
     if not url.startswith("http"):
         return url
     else:
-        name = url.split("/")[-1].split("?v=2")[0]
-        if os.path.exists(CONST + "/cache/icons/" + name):
-            return CONST + "/cache/icons/" + name
-        write(
-            CONST + "/cache/icons/" + name,
-            (await Request(url).get()).content,
-            "wb"
-        )
-        return CONST + "/cache/icons/" + name
+        owned_name = asset_cache_name(url)
+        name = owned_name or url.split("/")[-1].split("?v=2")[0]
+        path = CONST + "/cache/icons/" + name
+        if os.path.exists(path) and (not owned_name or time.time() - os.path.getmtime(path) < 86400):
+            return path
+        response = await Request(url).get()
+        if owned_name:
+            response.raise_for_status()
+            if response.headers.get("X-Icon-Missing") == "1":
+                # 占位图单独缓存，新增图标后下次请求即可取到原图。
+                path += ".missing.png"
+        write(path, response.content, "wb")
+        return path

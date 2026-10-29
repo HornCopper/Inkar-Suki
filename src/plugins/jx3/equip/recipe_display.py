@@ -2,7 +2,6 @@
 
 from collections import defaultdict, deque
 
-
 def iter_set_attributes(equip: dict):
     descriptions = defaultdict(deque)
     for effect in equip.get("SetEffects", []):

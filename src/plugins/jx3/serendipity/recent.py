@@ -11,10 +11,9 @@ from src.utils.time import Time
 
 from ._template import recent_serendipity_head, recent_serendipity_row
 
-
 async def get_recent_serendipity(server: str):
     params = {"server": server, "token": Config.jx3.api.token}
-    data = (await Request(f"{Config.jx3.api.url}/event/recent", params=params).get()).json()
+    data = (await Request(f"{Config.jx3.api.url}/event/recent", params = params).get()).json()
     if data["code"] != 200 or not data["data"]:
         return "未找到近期奇遇记录，请检查服务器后重试！"
 
@@ -29,18 +28,18 @@ async def get_recent_serendipity(server: str):
         event_name = record["event"]
         rows.append(
             Template(recent_serendipity_row).render(
-                role_name=record["name"],
-                event_name=event_name,
-                event_icon=icons[event_name] if event_name in icons else "",
-                time=Time(record["time"]).format(),
-                relative_time=Time().relate(record["time"]),
-            )
+                role_name = record["name"],
+                event_name = event_name,
+                event_icon = icons[event_name] if event_name in icons else "",
+                time = Time(record["time"]).format(),
+                relative_time = Time().relate(record["time"]),
+            ),
         )
     html = str(
         HTMLSourceCode(
-            application_name=f"近期奇遇 · {server}",
-            table_head=recent_serendipity_head,
-            table_body="\n".join(rows),
-        )
+            application_name = f"近期奇遇 · {server}",
+            table_head = recent_serendipity_head,
+            table_body = "\n".join(rows),
+        ),
     )
-    return await generate(html, ".container", segment=True)
+    return await generate(html, ".container", segment = True)

@@ -20,9 +20,9 @@ from .without_jx3api import JX3Serendipity
 import os
 
 class JX3Serendipities:
+
     def __init__(self, data: list):
         self.data = data
-        
 
     @property
     def common(self):
@@ -31,7 +31,7 @@ class JX3Serendipities:
             if serendipity["level"] == 1:
                 new.append(serendipity)
         return new
-    
+
     @property
     def pet(self):
         new = []
@@ -48,10 +48,8 @@ class JX3Serendipities:
                 new.append(serendipity)
         return new
 
-async def check_role(
-    server: str, name: str
-) -> Literal[False] | tuple[str, str, str]:
-    player_data = await search_player(role_name=name, server_name=server)
+async def check_role(server: str, name: str) -> Literal[False] | tuple[str, str, str]:
+    player_data = await search_player(role_name = name, server_name = server)
     role_id = player_data.roleId
     if role_id == "":
         return False
@@ -65,7 +63,7 @@ def _featured_image_path(name: str, category: str, school: str) -> str:
     directory = build_path(
         ASSETS,
         ["image", "jx3", "serendipity", "show", category],
-        end_with_slash=True,
+        end_with_slash = True,
     )
     for asset_name in (name, f"{name}-{school}"):
         path = directory + asset_name + ".png"
@@ -73,10 +71,11 @@ def _featured_image_path(name: str, category: str, school: str) -> str:
             return path
     return ""
 
-
 def _featured_name_path(name: str, level: int) -> str:
     directory = build_path(
-        ASSETS, ["image", "jx3", "serendipity", "name"], end_with_slash=True
+        ASSETS,
+        ["image", "jx3", "serendipity", "name"],
+        end_with_slash = True,
     )
     name_path = directory + name + ".png"
     if Path(name_path).exists():
@@ -84,7 +83,6 @@ def _featured_name_path(name: str, level: int) -> str:
     if level == 3:
         return directory + "宠物奇缘.png"
     return ""
-
 
 def generate_table(
     local_data: list[dict],
@@ -106,12 +104,12 @@ def generate_table(
         serendipity = local_dict.get(name)
         status = serendipity is not None
 
-        if status:
+        if serendipity is not None:
             level = int(serendipity["level"])
             image_path = build_path(
                 ASSETS,
                 ["image", "jx3", "serendipity", "serendipity", path_map[level - 1]],
-                end_with_slash=True
+                end_with_slash = True,
             ) + name + ".png"
         else:
             image_path = ""
@@ -132,7 +130,7 @@ def generate_table(
         image_path = build_path(
             ASSETS,
             ["image", "jx3", "serendipity", "serendipity", path_map[level - 1]],
-            end_with_slash=True
+            end_with_slash = True,
         ) + name + ".png"
 
         cell_data.append((name, serendipity, image_path, "no", "尚未触发"))
@@ -144,10 +142,9 @@ def generate_table(
     featured_candidates = sorted(
         (
             (index, cell)
-            for index, cell in enumerate(cell_data)
-            if cell[3] == "yes" and record_times.get(cell[0], 0) > 0
+            for index, cell in enumerate(cell_data) if cell[3] == "yes" and record_times.get(cell[0], 0) > 0
         ),
-        key=lambda candidate: abs(record_times[candidate[1][0]] - now),
+        key = lambda candidate: abs(record_times[candidate[1][0]] - now),
     )
     for index, (name, serendipity, _, _, _) in featured_candidates:
         level = int(serendipity["level"]) if serendipity else 1
@@ -171,32 +168,34 @@ def generate_table(
 
         rendered_cells.append(
             Template(template).render(
-                image_path=image_path,
-                featured_image_path=featured_image_path,
-                featured_name_path=name_path,
-                serendipity_icon=build_path(
-                    ASSETS, ["image", "jx3", "serendipity", "vector", "icon.png"]
+                image_path = image_path,
+                featured_image_path = featured_image_path,
+                featured_name_path = name_path,
+                serendipity_icon = build_path(
+                    ASSETS,
+                    ["image", "jx3", "serendipity", "vector", "icon.png"],
                 ),
-                serendipity_close=build_path(
-                    ASSETS, ["image", "jx3", "serendipity", "vector", "close.png"]
+                serendipity_close = build_path(
+                    ASSETS,
+                    ["image", "jx3", "serendipity", "vector", "close.png"],
                 ),
-                name=name,
-                category=path_map[level - 1],
-                status=status,
-                msg=msg
-            )
+                name = name,
+                category = path_map[level - 1],
+                status = status,
+                msg = msg,
+            ),
         )
 
     table_list = []
     offset = 0
     if has_featured:
-        table_list.append(Template(template_v3_row).render(cells="\n".join(rendered_cells[:5])))
-        table_list.append(Template(template_v3_row).render(cells="\n".join(rendered_cells[5:9])))
+        table_list.append(Template(template_v3_row).render(cells = "\n".join(rendered_cells[:5])))
+        table_list.append(Template(template_v3_row).render(cells = "\n".join(rendered_cells[5:9])))
         offset = 9
 
     for index in range(offset, len(rendered_cells), 5):
         table_list.append(
-            Template(template_v3_row).render(cells="\n".join(rendered_cells[index:index + 5]))
+            Template(template_v3_row).render(cells = "\n".join(rendered_cells[index:index + 5])),
         )
 
     return table_list
@@ -212,15 +211,22 @@ async def get_serendipity_image_v3(server: str, name: str):
         params = {
             "server": server,
             "name": name,
-            "token": Config.jx3.api.token
+            "token": Config.jx3.api.token,
         }
-        serendipity_data = (await Request(url, params=params).get()).json()
+        serendipity_data = (await Request(url, params = params).get()).json()
         data: list[dict] = await JX3Serendipity().merge_api_with_my_data(
-            serendipity_data["data"], server, name, global_role_id, uid
+            serendipity_data["data"],
+            server,
+            name,
+            global_role_id,
+            uid,
         )
     else:
         data: list[dict] = await JX3Serendipity().integration(
-            server, name, uid, global_role_id
+            server,
+            name,
+            uid,
+            global_role_id,
         )
     data_obj = JX3Serendipities(data)
 
@@ -228,12 +234,31 @@ async def get_serendipity_image_v3(server: str, name: str):
     peerless: list[dict] = data_obj.peerless
     pet: list[dict] = data_obj.pet
 
-    local_common: list[dict] = [{"name": serendipity[:-4], "level": 1} for serendipity in os.listdir(build_path(ASSETS, ["image", "jx3", "serendipity", "serendipity", "common"], end_with_slash=True))]
-    local_peerless: list[dict] = [{"name": serendipity[:-4], "level": 2} for serendipity in os.listdir(build_path(ASSETS, ["image", "jx3", "serendipity", "serendipity", "peerless"], end_with_slash=True))]
-    local_pet: list[dict] = [{"name": serendipity[:-4], "level": 3} for serendipity in os.listdir(build_path(ASSETS, ["image", "jx3", "serendipity", "serendipity", "pet"], end_with_slash=True))]
-    
+    local_common: list[dict] = [
+        {
+            "name": serendipity[:-4],
+            "level": 1,
+        } for serendipity in
+        os.listdir(build_path(ASSETS, ["image", "jx3", "serendipity", "serendipity", "common"], end_with_slash = True))
+    ]
+    local_peerless: list[dict] = [
+        {
+            "name": serendipity[:-4],
+            "level": 2,
+        } for serendipity in os.listdir(
+            build_path(ASSETS, ["image", "jx3", "serendipity", "serendipity", "peerless"], end_with_slash = True),
+        )
+    ]
+    local_pet: list[dict] = [
+        {
+            "name": serendipity[:-4],
+            "level": 3,
+        } for serendipity in
+        os.listdir(build_path(ASSETS, ["image", "jx3", "serendipity", "serendipity", "pet"], end_with_slash = True))
+    ]
+
     path_map: list[str] = ["common", "peerless", "pet"]
- 
+
     common_table = generate_table(local_common, common, path_map, template_v3_cell, school)
     peerless_table = generate_table(local_peerless, peerless, path_map, template_v3_cell, school)
     pet_table = generate_table(local_pet, pet, path_map, template_v3_cell, school)
@@ -243,20 +268,20 @@ async def get_serendipity_image_v3(server: str, name: str):
             "jx3",
             "serendipity_v3",
             **{
-            "font": build_path(ASSETS, ["font", "PingFangSC-Medium.otf"]),
-            "ink_background": build_path(ASSETS, ["image", "jx3", "serendipity", "vector", "background.png"]),
-            "name": name,
-            "server": server,
-            "total": f"{len(data)}/{len(local_common + local_peerless + local_pet)}",
-            "peerless": len(peerless),
-            "pet": len(pet),
-            "saohua": get_saohua(),
-            "app_info": f"个人奇遇记录 · {server} · {name} · " + Time().format("%H:%M:%S"),
-            "table_content_peerless": "\n".join(peerless_table),
-            "table_content_common": "\n".join(common_table),
-            "table_content_pet": "\n".join(pet_table)
-        }
-        )
+                "font": build_path(ASSETS, ["font", "PingFangSC-Medium.otf"]),
+                "ink_background": build_path(ASSETS, ["image", "jx3", "serendipity", "vector", "background.png"]),
+                "name": name,
+                "server": server,
+                "total": f"{len(data)}/{len(local_common + local_peerless + local_pet)}",
+                "peerless": len(peerless),
+                "pet": len(pet),
+                "saohua": get_saohua(),
+                "app_info": f"个人奇遇记录 · {server} · {name} · " + Time().format("%H:%M:%S"),
+                "table_content_peerless": "\n".join(peerless_table),
+                "table_content_common": "\n".join(common_table),
+                "table_content_pet": "\n".join(pet_table),
+            },
+        ),
     )
-    image = await generate(html, ".serendipity-report", segment=True)
+    image = await generate(html, ".serendipity-report", segment = True)
     return image

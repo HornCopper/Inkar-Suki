@@ -7,23 +7,35 @@ from src.utils.database.player import search_player
 from src.utils.permission import check_permission
 
 class RoleBind:
+
     def __init__(self, user_id: str | int, roles: list[tuple[str, str]]):
         self.user_id = int(user_id)
         self.roles = roles
 
     async def bind(self) -> str:
         exist_roles: list[RoleData] = []
-        personal_settings: PersonalSettings | Any = db.where_one(PersonalSettings(), "user_id = ?", self.user_id, default=PersonalSettings(user_id=self.user_id))
+        personal_settings: PersonalSettings | Any = db.where_one(
+            PersonalSettings(),
+            "user_id = ?",
+            self.user_id,
+            default = PersonalSettings(user_id = self.user_id),
+        )
         bound_roles = personal_settings.roles
         if len(self.roles) == 1:
             role, server = self.roles[0]
-            role_data = await search_player(role_name=role, server_name=server)
+            role_data = await search_player(role_name = role, server_name = server)
             if role_data.roleId == "":
                 return f"绑定失败：未找到角色 [{role}·{server}]，请检查区服和角色名！"
             exist_roles.append(copy.deepcopy(role_data))
         else:
             for role, server in self.roles:
-                role_data: RoleData | Any = db.where_one(RoleData(), "roleName = ? AND serverName = ?", role, server, default=None)
+                role_data: RoleData | Any = db.where_one(
+                    RoleData(),
+                    "roleName = ? AND serverName = ?",
+                    role,
+                    server,
+                    default = None,
+                )
                 if role_data is not None:
                     exist_roles.append(copy.deepcopy(role_data))
         final_bound_roles = list(set(bound_roles) | set(exist_roles))
@@ -38,24 +50,24 @@ class RoleBind:
                     for r
                     in final_bound_roles
                 ]
-            ) + \
+            ,) + \
             "\n若确认无误但此处并未显示，请先查询属性再绑定。"
         return msg
 
     def unbind(self, all: bool = False) -> str:
-        personal_settings: PersonalSettings | Any = db.where_one(PersonalSettings(), "user_id = ?", self.user_id, default=PersonalSettings(user_id=self.user_id))
+        personal_settings: PersonalSettings | Any = db.where_one(
+            PersonalSettings(),
+            "user_id = ?",
+            self.user_id,
+            default = PersonalSettings(user_id = self.user_id),
+        )
         if all:
             personal_settings.roles = []
             db.save(personal_settings)
             return "已清除所有的角色绑定！"
         else:
             bound_roles = personal_settings.roles
-            final_roles = [
-                r
-                for r
-                in bound_roles
-                if (r.roleName, r.serverName) not in self.roles
-            ]
+            final_roles = [r for r in bound_roles if (r.roleName, r.serverName) not in self.roles]
             personal_settings.roles = final_roles
             db.save(personal_settings)
             msg = "解绑成功，当前剩余绑定的角色如下：\n" + \
@@ -65,5 +77,5 @@ class RoleBind:
                         for r
                         in final_roles
                     ]
-                )
+                ,)
             return msg

@@ -18,14 +18,14 @@ from src.plugins.jx3.equip.recipe_display import iter_set_attributes
 
 async def get_equip_info(equip_name: str, quality: int = -1) -> list[tuple[str, dict]] | str:
     params: dict = {
-        "equip_name": equip_name
+        "equip_name": equip_name,
     }
     if quality != -1:
         params["min_level"] = quality
         params["max_level"] = quality
     url = f"{Config.jx3.api.calculator_url}/equip"
     results = []
-    data = (await Request(url, params=params).get()).json()
+    data = (await Request(url, params = params).get()).json()
     if len(data) == 0:
         return "未找到符合条件的装备，请检查装备名称！"
     else:
@@ -50,7 +50,7 @@ async def get_equip_info(equip_name: str, quality: int = -1) -> list[tuple[str, 
                 attr_value = each_equip[f"Magic{n}Value"]
                 if attr_key_name == "atSkillEventHandler":
                     skillevent.append(
-                        "· " + TabCache.get_effect_by_skill_handler_id(int(attr_value))
+                        "· " + TabCache.get_effect_by_skill_handler_id(int(attr_value)),
                     )
                     continue
                 if attr_key_name == "atSetEquipmentRecipe":
@@ -66,8 +66,8 @@ async def get_equip_info(equip_name: str, quality: int = -1) -> list[tuple[str, 
                     Template(_template_green_attrs).render(
                         attr_name = attr_name,
                         attr_value = attr_value,
-                        strength_value = int(int(attr_value) * StrengthIncome[strength_income] + 0.5)
-                    )
+                        strength_value = int(int(attr_value) * StrengthIncome[strength_income] + 0.5),
+                    ),
                 )
             diamonds = []
             for n in range(1, 3 + 1):
@@ -79,8 +79,8 @@ async def get_equip_info(equip_name: str, quality: int = -1) -> list[tuple[str, 
                 diamonds.append(
                     Template(_template_diamonds).render(
                         diamond_icon = ASSETS + "/image/jx3/attributes/wuxingshi/8.png",
-                        attr_name = attr_name
-                    )
+                        attr_name = attr_name,
+                    ),
                 )
             final_set_attrs = []
             for set_count, each_attr_key, each_attr_value, description in iter_set_attributes(each_equip):
@@ -95,8 +95,8 @@ async def get_equip_info(equip_name: str, quality: int = -1) -> list[tuple[str, 
                 final_set_attrs.append(
                     Template(_template_set_attrs).render(
                         count = str(set_count),
-                        attr = msg
-                    )
+                        attr = msg,
+                    ),
                 )
             remark = "备注：" + each_equip["MagicType"] + "（" + each_equip["Index"] + "_" + each_equip["ID"] + "）"
             result = {
@@ -110,28 +110,29 @@ async def get_equip_info(equip_name: str, quality: int = -1) -> list[tuple[str, 
                 "diamonds": "\n".join(diamonds),
                 "skillevent": "<br>".join(skillevent),
                 "set": "\n".join(final_set_attrs),
-                "remark": remark
+                "remark": remark,
             }
-            results.append(
-                (f"{name}\n{quality} {' '.join(attr_abbr)}", result)
-            )
+            results.append((f"{name}\n{quality} {' '.join(attr_abbr)}", result), )
         return results
 
 async def get_equip_info_image(info: dict):
     arguments = {
         "font": Path(ASSETS, "font", "PingFangSC-Semibold.otf").as_uri(),
         "saohua": get_saohua(),
-        **info
+        **info,
     }
     html = Template(
-        read(TEMPLATES + "/jx3/equip.html")
+        read(TEMPLATES + "/jx3/equip.html"),
     ).render(
-        **arguments
+        **arguments,
     )
     return await generate(
         html,
         ".card",
-        segment=True,
-        wait_for_network=True,
-        viewport={"height": 1080, "width": 1920},
+        segment = True,
+        wait_for_network = True,
+        viewport = {
+            "height": 1080,
+            "width": 1920,
+        },
     )

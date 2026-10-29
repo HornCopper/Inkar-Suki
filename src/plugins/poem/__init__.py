@@ -9,7 +9,7 @@ from .api import get_poem
 
 import random
 
-PoemMatcher = on_command("randomPoem", command_key="对诗", aliases={"对诗"}, force_whitespace=True, priority=5)
+PoemMatcher = on_command("randomPoem", command_key = "对诗", aliases = {"对诗"}, force_whitespace = True, priority = 5)
 
 @PoemMatcher.handle()
 async def _(state: T_State, event: MessageEvent, args: Message = CommandArg()):
@@ -34,7 +34,6 @@ async def _(state: T_State, event: MessageEvent, args: Message = CommandArg()):
     question = ms.at(event.user_id) + f" 请听题！\n{blank}"
     await PoemMatcher.send(question)
     return
-
 
 @PoemMatcher.receive("answer")
 async def __(state: T_State, event: MessageEvent = Received("answer")):

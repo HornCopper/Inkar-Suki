@@ -2,7 +2,7 @@ from playwright.async_api import (
     async_playwright,
     Browser,
     BrowserContext,
-    Page
+    Page,
 )
 from pathlib import Path
 from nonebot.log import logger
@@ -13,6 +13,7 @@ from typing import Any, Literal, overload
 from src.const.path import CACHE, TEMPLATES, build_path
 from src.utils.file import read, write
 from src.utils.network import Request
+from src.utils.jx3_icons import JX3_ASSET_PATTERN, serve_api_asset
 from src.utils.decorators import time_record
 from src.utils.database import db
 from src.utils.database.classes import PersonalSettings
@@ -20,7 +21,6 @@ from src.utils.ui_theme import build_ui_color_css, supports_ui_color
 
 import uuid
 import asyncio
-
 
 STYLE_2_CSS = read(build_path(TEMPLATES, ["style_2.css"]))
 
@@ -46,20 +46,22 @@ class ScreenshotConfig:
         user_agent (str): Browser user agent override. Defaults to the browser user agent.
     """
 
-    def __init__(self, 
-                web: bool = False, 
-                locate: str = "", 
-                first: bool = False, 
-                delay: int = 0, 
-                additional_css: str = "", 
-                additional_js: str = "",
-                viewport: dict = {}, 
-                full_screen: bool = False, 
-                hide_classes: list = [],
-                device_scale_factor: float = 1.0,
-                output_path: str = "",
-                wait_for_network: int = 20,
-                user_agent: str = ""):
+    def __init__(
+        self,
+        web: bool = False,
+        locate: str = "",
+        first: bool = False,
+        delay: int = 0,
+        additional_css: str = "",
+        additional_js: str = "",
+        viewport: dict = {},
+        full_screen: bool = False,
+        hide_classes: list = [],
+        device_scale_factor: float = 1.0,
+        output_path: str = "",
+        wait_for_network: int = 20,
+        user_agent: str = ""
+    ):
         self.web = web
         self.locate = locate
         self.first = first
@@ -80,7 +82,6 @@ class ScreenshotGenerator:
     _playwright: Any | None = None
     _launch_lock: asyncio.Lock | None = None
 
-
     @classmethod
     async def launch(cls):
         if cls._launch_lock is None:
@@ -88,7 +89,7 @@ class ScreenshotGenerator:
         async with cls._launch_lock:
             if cls._browser is None:
                 cls._playwright = await async_playwright().start()
-                cls._browser = await cls._playwright.chromium.launch(headless=True)
+                cls._browser = await cls._playwright.chromium.launch(headless = True)
             if cls._context is None:
                 cls._context = await cls._browser.new_context()
                 logger.info("Playwright 已载入")
@@ -100,7 +101,7 @@ class ScreenshotGenerator:
             cls._context = None
         if cls._browser:
             await cls._browser.close()
-            await cls._playwright.stop() # type: ignore
+            await cls._playwright.stop()  # type: ignore
             cls._browser = None
             cls._playwright = None
 
@@ -114,10 +115,11 @@ class ScreenshotGenerator:
         page_options: dict[str, Any] = {"viewport": config.viewport}
         if config.user_agent:
             page_options["user_agent"] = config.user_agent
-        page = await self._browser.new_page(**page_options) # type: ignore
+        page = await self._browser.new_page(**page_options)  # type: ignore
         try:
+            await page.route(JX3_ASSET_PATTERN, serve_api_asset)
             if config.wait_for_network:
-                await page.goto(page_source, wait_until="networkidle")
+                await page.goto(page_source, wait_until = "networkidle")
             else:
                 await page.goto(page_source)
 
@@ -136,13 +138,15 @@ class ScreenshotGenerator:
         if config.delay > 0:
             await asyncio.sleep(config.delay / 1000)
         if config.additional_css:
-            await page.add_style_tag(content=config.additional_css)
+            await page.add_style_tag(content = config.additional_css)
             await page.evaluate("() => document.fonts.ready.then(() => true)")
         if config.additional_js:
             await page.evaluate(config.additional_js)
         if config.hide_classes:
-            combined_selector = ', '.join(f'.{cls}' for cls in config.hide_classes)
-            await page.evaluate(f"document.querySelectorAll('{combined_selector}').forEach(el => el.style.display = 'none')")
+            combined_selector = ", ".join(f".{cls}" for cls in config.hide_classes)
+            await page.evaluate(
+                f"document.querySelectorAll('{combined_selector}').forEach(el => el.style.display = 'none')",
+            )
 
     async def _save_screenshot(self, page: Page, config: ScreenshotConfig):
         """
@@ -153,9 +157,9 @@ class ScreenshotGenerator:
             locator = page.locator(config.locate)
             if config.first:
                 locator = locator.first
-            await locator.screenshot(path=output_path)
+            await locator.screenshot(path = output_path)
         else:
-            await page.screenshot(path=output_path, full_page=config.full_screen)
+            await page.screenshot(path = output_path, full_page = config.full_screen)
         return output_path
 
 @overload
@@ -232,7 +236,7 @@ async def generate(
         wait_for_network (bool): 是否等待页面网络元素加载完毕。
         user_agent (str): 自定义浏览器 User-Agent。
     """
-    
+
     # 确定 source 类型
     web = source.startswith("http")  # 如果是 URL
     is_html = "<html" in source.lower()  # 如果是 HTML 源代码
@@ -240,10 +244,10 @@ async def generate(
     if is_html:
         # 创建缓存文件路径
         html_file_path = build_path(CACHE, [get_uuid() + ".html"])
-        
+
         # 将 HTML 源代码写入缓存文件
         write(html_file_path, source)
-        
+
         # 将文件路径作为 page_source 传递
         page_source = Path(html_file_path).as_uri()
     elif web:
@@ -264,35 +268,38 @@ async def generate(
                     user_id = None
                 if user_id is not None:
                     settings = db.where_one(
-                        PersonalSettings(), "user_id = ?", str(user_id), default=None,
+                        PersonalSettings(),
+                        "user_id = ?",
+                        str(user_id),
+                        default = None,
                     )
                     if settings is not None:
                         additional_css += build_ui_color_css(settings.setting.ui_color)
 
     config = ScreenshotConfig(
-        web=web,
-        locate=locate,
-        first=first,
-        delay=delay,
-        additional_css=additional_css,
-        additional_js=additional_js,
-        viewport=viewport,
-        full_screen=full_screen,
-        hide_classes=hide_classes,
-        device_scale_factor=device_scale_factor,
-        output_path=output_path,
-        wait_for_network=wait_for_network,
-        user_agent=user_agent
+        web = web,
+        locate = locate,
+        first = first,
+        delay = delay,
+        additional_css = additional_css,
+        additional_js = additional_js,
+        viewport = viewport,
+        full_screen = full_screen,
+        hide_classes = hide_classes,
+        device_scale_factor = device_scale_factor,
+        output_path = output_path,
+        wait_for_network = wait_for_network,
+        user_agent = user_agent,
     )
-    
+
     generator = ScreenshotGenerator()
     image = await generator.generate(config, page_source)
     if segment:
         image = ms.image(
             Request(
                 Path(
-                    image
-                ).as_uri()
-            ).local_content
+                    image,
+                ).as_uri(),
+            ).local_content,
         )
     return image

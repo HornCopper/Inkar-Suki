@@ -3,8 +3,8 @@ from typing import Any
 from src.utils.database import db
 from src.utils.database.classes import BannedUser
 
-
 class Ban:
+
     def __init__(self, user_id: int | str):
         self._user_id = user_id
 
@@ -39,7 +39,7 @@ class Ban:
         """
         if self.status:
             return False
-        db.save(BannedUser(user_id=int(self._user_id), reason=reason))
+        db.save(BannedUser(user_id = int(self._user_id), reason = reason))
         return True
 
     def unban(self) -> bool:

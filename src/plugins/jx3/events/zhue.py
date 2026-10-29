@@ -12,24 +12,24 @@ async def get_zhue_image(server: str):
     url = f"{Config.jx3.api.url}/wicked/records"
     params = {
         "server": server,
-        "token": Config.jx3.api.token_v2
+        "token": Config.jx3.api.token_v2,
     }
-    data = (await Request(url, params=params).get()).json()
+    data = (await Request(url, params = params).get()).json()
     tables = []
     for info in data["data"]:
         tables.append(
             Template(template_zhue).render(
                 server = info["server"],
                 map = info["mapName"],
-                relate = Time().relate(info["time"])
-            )
+                relate = Time().relate(info["time"]),
+            ),
         )
     html = str(
         HTMLSourceCode(
             application_name = f"诛恶事件 · {server}",
             table_head = table_zhue_head,
-            table_body = "\n".join(tables)
-        )
+            table_body = "\n".join(tables),
+        ),
     )
-    image = await generate(html, ".container", segment=True)
+    image = await generate(html, ".container", segment = True)
     return image

@@ -13,19 +13,16 @@ from PIL import Image
 from src.const.path import ASSETS, CACHE
 from src.utils.image_style import frame_report
 
-
 SUITS = "mps"
 TERMINAL_HONORS = {0, 8, 9, 17, 18, 26, *range(27, 34)}
 TILE_IMAGE_DIR = Path(ASSETS) / "image" / "mahjong"
 FAKE_TENPAI_RATE = 0.2
 
-
-@dataclass(frozen=True)
+@dataclass(frozen = True)
 class TenpaiQuestion:
     hand: tuple[int, ...]
     waits: tuple[int, ...]
     hand_code: str
-
 
 def tile_to_code(tile: int) -> str:
     if tile < 9:
@@ -35,7 +32,6 @@ def tile_to_code(tile: int) -> str:
     if tile < 27:
         return f"{tile - 17}s"
     return f"{tile - 26}z"
-
 
 def tiles_to_code(tiles: list[int] | tuple[int, ...]) -> str:
     parts: list[str] = []
@@ -48,7 +44,6 @@ def tiles_to_code(tiles: list[int] | tuple[int, ...]) -> str:
     if honors:
         parts.append(honors + "z")
     return "".join(parts)
-
 
 def parse_tiles(text: str) -> list[int] | None:
     normalized = text.lower().replace(" ", "").replace(",", "").replace("，", "")
@@ -75,7 +70,6 @@ def parse_tiles(text: str) -> list[int] | None:
     if pos != len(normalized):
         return None
     return tiles
-
 
 def _can_form_melds(counts: list[int], start: int = 0) -> bool:
     try:
@@ -105,7 +99,6 @@ def _can_form_melds(counts: list[int], start: int = 0) -> bool:
 
     return False
 
-
 def is_standard_win(counts: list[int]) -> bool:
     for tile in range(34):
         if counts[tile] >= 2:
@@ -116,14 +109,11 @@ def is_standard_win(counts: list[int]) -> bool:
             counts[tile] += 2
     return False
 
-
 def is_chiitoi(counts: list[int]) -> bool:
     return sum(count == 2 for count in counts) == 7
 
-
 def is_kokushi(counts: list[int]) -> bool:
     return all(counts[tile] for tile in TERMINAL_HONORS) and any(counts[tile] >= 2 for tile in TERMINAL_HONORS)
-
 
 def is_win(tiles: list[int] | tuple[int, ...]) -> bool:
     if len(tiles) != 14:
@@ -135,12 +125,10 @@ def is_win(tiles: list[int] | tuple[int, ...]) -> bool:
             return False
     return is_kokushi(counts) or is_chiitoi(counts) or is_standard_win(counts)
 
-
 def get_waits(hand: list[int] | tuple[int, ...]) -> tuple[int, ...]:
     counts = Counter(hand)
     waits = [tile for tile in range(34) if counts[tile] < 4 and is_win([*hand, tile])]
     return tuple(waits)
-
 
 def _random_standard_win() -> list[int]:
     for _ in range(5000):
@@ -169,17 +157,14 @@ def _random_standard_win() -> list[int]:
 
     raise RuntimeError("failed to generate standard winning hand")
 
-
 def _random_chiitoi_win() -> list[int]:
     pairs = random.sample(range(34), 7)
     return [tile for tile in pairs for _ in range(2)]
-
 
 def _random_kokushi_win() -> list[int]:
     tiles = list(TERMINAL_HONORS)
     tiles.append(random.choice(tiles))
     return tiles
-
 
 def _random_chinitsu_win() -> list[int]:
     base = random.choice((0, 9, 18))
@@ -210,11 +195,9 @@ def _random_chinitsu_win() -> list[int]:
 
     raise RuntimeError("failed to generate chinitsu winning hand")
 
-
 def _is_chinitsu(tiles: list[int] | tuple[int, ...]) -> bool:
     suited_tiles = [tile for tile in tiles if tile < 27]
     return len(suited_tiles) == len(tiles) and len({tile // 9 for tile in suited_tiles}) == 1
-
 
 def _matches_difficulty(waits: tuple[int, ...], difficulty: str) -> bool:
     if difficulty == "hard":
@@ -222,7 +205,6 @@ def _matches_difficulty(waits: tuple[int, ...], difficulty: str) -> bool:
     if difficulty == "chinitsu":
         return bool(waits)
     return bool(waits)
-
 
 def _generate_real_question(difficulty: str = "simple") -> TenpaiQuestion:
     generators = [_random_standard_win] * 8 + [_random_chiitoi_win, _random_kokushi_win]
@@ -243,7 +225,6 @@ def _generate_real_question(difficulty: str = "simple") -> TenpaiQuestion:
 
     raise RuntimeError("failed to generate tenpai question")
 
-
 def _nearby_tile_candidates(tile: int, difficulty: str) -> list[int]:
     if difficulty == "chinitsu":
         base = tile // 9 * 9
@@ -254,9 +235,8 @@ def _nearby_tile_candidates(tile: int, difficulty: str) -> list[int]:
     else:
         candidates = list(range(27, 34))
 
-    candidates.sort(key=lambda candidate: abs(candidate - tile))
+    candidates.sort(key = lambda candidate: abs(candidate - tile))
     return candidates
-
 
 def _generate_fake_question(difficulty: str = "simple") -> TenpaiQuestion:
     for _ in range(1000):
@@ -283,16 +263,13 @@ def _generate_fake_question(difficulty: str = "simple") -> TenpaiQuestion:
 
     raise RuntimeError("failed to generate fake tenpai question")
 
-
 def generate_question(difficulty: str = "simple") -> TenpaiQuestion:
     if random.random() < FAKE_TENPAI_RATE:
         return _generate_fake_question(difficulty)
     return _generate_real_question(difficulty)
 
-
 def _tile_image_path(tile: int) -> Path:
     return TILE_IMAGE_DIR / f"{tile_to_code(tile)}.png"
-
 
 def render_hand_image(tiles: list[int] | tuple[int, ...]) -> str:
     images = [Image.open(_tile_image_path(tile)).convert("RGBA") for tile in tiles]
@@ -306,14 +283,13 @@ def render_hand_image(tiles: list[int] | tuple[int, ...]) -> str:
             x += image.width
 
         cache_dir = Path(CACHE)
-        cache_dir.mkdir(parents=True, exist_ok=True)
+        cache_dir.mkdir(parents = True, exist_ok = True)
         output_path = cache_dir / f"mahjong_tenpai_{uuid.uuid4().hex}.png"
-        frame_report(canvas).save(output_path, format="PNG")
+        frame_report(canvas).save(output_path, format = "PNG")
         return str(output_path)
     finally:
         for image in images:
             image.close()
-
 
 def is_correct_answer(answer: str, waits: tuple[int, ...]) -> bool:
     normalized_answer = answer.strip().lower().replace(" ", "")

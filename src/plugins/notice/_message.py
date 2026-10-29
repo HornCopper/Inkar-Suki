@@ -9,5 +9,4 @@ self_enter_msg = """噔噔咚——音卡很荣幸受邀来到了「$GROUP_ID」
 链接：https://inkar-suki.codethink.cn/Inkar-Suki-Docs/#/donate
 其余注意事项可以查看音卡空间来了解哦，空间也将不定时发布活动等事项，敬请关注！"""
 
-
 # 上述欢迎语内容为@厌睢(监狱牢头)制作，HornCopper修改

@@ -18,11 +18,11 @@ SHILIAN_ATTR_LABELS = {
 }
 SHILIAN_ATTR_KEYS = {value: key for key, value in SHILIAN_ATTR_LABELS.items()}
 
-
 def shilian_attrs_to_keys(attrs: list[str]) -> list[str]:
     return [SHILIAN_ATTR_KEYS.get(attr, attr) for attr in attrs]
 
 class ShilianEquipParser:
+
     def __init__(self, raw: str):
         self.raw = self._preprocess(raw)
         self._attrs = []
@@ -111,7 +111,7 @@ class ShilianEquipParser:
     @property
     def quality(self) -> int:
         return self._quality
-    
+
     @property
     def kungfu_type(self) -> Literal["内", "外"]:
         if "内" in self.raw:
@@ -124,7 +124,12 @@ def coin_to_image(raw_string: str):
     gold = build_path(ASSETS, ["image", "jx3", "trade", "gold.png"])
     silver = build_path(ASSETS, ["image", "jx3", "trade", "silver.png"])
     copper = build_path(ASSETS, ["image", "jx3", "trade", "copper.png"])
-    to_replace = [["砖", f"<img src=\"{brick}\">"], ["金", f"<img src=\"{gold}\">"], ["银", f"<img src=\"{silver}\">"], ["铜", f"<img src=\"{copper}\">"]]
+    to_replace = [
+        ["砖", f"<img src=\"{brick}\">"],
+        ["金", f"<img src=\"{gold}\">"],
+        ["银", f"<img src=\"{silver}\">"],
+        ["铜", f"<img src=\"{copper}\">"],
+    ]
     for waiting in to_replace:
         raw_string = raw_string.replace(waiting[0], waiting[1])
     processedString = raw_string

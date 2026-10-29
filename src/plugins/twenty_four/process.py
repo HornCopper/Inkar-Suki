@@ -2,14 +2,12 @@
 from collections import Counter
 from fractions import Fraction
 
-
 OPERATORS = {
     ast.Add: "+",
     ast.Sub: "-",
     ast.Mult: "*",
     ast.Div: "/",
 }
-
 
 def _apply(left: Fraction, right: Fraction, op: str) -> Fraction | None:
     if op == "+":
@@ -23,7 +21,6 @@ def _apply(left: Fraction, right: Fraction, op: str) -> Fraction | None:
             return None
         return left / right
     return None
-
 
 def _eval_node(node: ast.AST) -> Fraction:
     if isinstance(node, ast.Expression):
@@ -39,13 +36,11 @@ def _eval_node(node: ast.AST) -> Fraction:
         return result
     raise ValueError("invalid expression")
 
-
 def calc(expr: str) -> Fraction | None:
     try:
-        return _eval_node(ast.parse(expr.strip(), mode="eval"))
+        return _eval_node(ast.parse(expr.strip(), mode = "eval"))
     except Exception:
         return None
-
 
 def _extract_numbers(expr: str) -> list[int] | None:
     numbers: list[int] = []
@@ -69,13 +64,11 @@ def _extract_numbers(expr: str) -> list[int] | None:
         return None
     return numbers
 
-
 def check_valid(expr: str) -> bool:
     numbers = _extract_numbers(expr)
     if numbers is None or len(numbers) > 4:
         return False
     return calc(expr) is not None
-
 
 def _search_solution(items: list[tuple[Fraction, str]]) -> str | None:
     if len(items) == 1:
@@ -85,11 +78,7 @@ def _search_solution(items: list[tuple[Fraction, str]]) -> str | None:
         for right_index, right in enumerate(items):
             if left_index == right_index:
                 continue
-            rest = [
-                item
-                for index, item in enumerate(items)
-                if index not in {left_index, right_index}
-            ]
+            rest = [item for index, item in enumerate(items) if index not in {left_index, right_index}]
             for op in ["+", "-", "*", "/"]:
                 value = _apply(left[0], right[0], op)
                 if value is None:
@@ -100,10 +89,8 @@ def _search_solution(items: list[tuple[Fraction, str]]) -> str | None:
                     return solution
     return None
 
-
 async def find_solution(numbers: list[int]) -> str | None:
     return _search_solution([(Fraction(number), str(number)) for number in numbers])
-
 
 def contains_all_numbers(expr: str, numbers: list[int]) -> bool:
     used_numbers = _extract_numbers(expr)
