@@ -1,0 +1,2 @@
+# Keep original client table encodings and line endings unchanged.
+/src/assets/source/jx3/tabs/** -text
