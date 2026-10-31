@@ -158,7 +158,7 @@
                 },
                 {
                     "name": "attribute.sync",
-                    "desc": "同步角色属性数据（等待 JX3API 提供相关接口后启用）"
+                    "desc": "历史个人属性同步节点，属性查询同步由群权限控制"
                 },
                 {
                     "name": "attribute.equipment.delete",
@@ -211,6 +211,10 @@
                         {
                             "name": "role_card",
                             "desc": "允许本群使用角色名片查询"
+                        },
+                        {
+                            "name": "attribute_sync",
+                            "desc": "本群查询属性时同步角色装备数据"
                         },
                         {
                             "name": "chat_records",

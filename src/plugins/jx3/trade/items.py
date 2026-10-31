@@ -26,6 +26,7 @@ COMPARABLE_MAGIC_TYPES = {
     "atMagicOvercome",
     "atSurplusValueBase",
     "atStrainBase",
+    "atHasteBase",
 }
 TRADE_BIND_TYPES = (0, 1, 2, None)
 SHILIAN_BIND_TYPE = 2

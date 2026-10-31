@@ -78,6 +78,10 @@ async def _(event: MessageEvent, args: Message = CommandArg()):
         msg += "\n触发额外奖励！获得 500 金币！"
     if status.pool_prize:
         msg += f"\n抽中奖池奖励：{status.pool_prize.prize_name} ×1！已存入背包（记录 #{status.pool_prize.id}）。发送「背包」查看。"
+        if status.pool_prize.permission_scope:
+            msg += f"\n发送「兑奖 {status.pool_prize.id}」自助领取权限。"
+            if status.pool_prize.permission_scope == "group":
+                msg += "请在要开通权限的群内发送。"
     await CheckinMatcher.finish(msg)
 
 CoinMatcher = on_command("金币", command_key = None, aliases = {"余额"}, force_whitespace = True, priority = 5)

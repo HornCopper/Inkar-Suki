@@ -3,15 +3,15 @@ from io import StringIO
 from typing import Literal, Any, cast, overload
 from typing_extensions import Self
 
-from src.const.prompts import PROMPT
-from src.const.path import ASSETS, CONST
+from src.config import Config
+from src.const.path import ASSETS
 from src.const.jx3.kungfu import Kungfu
 from src.const.jx3.server import Server
-from src.utils.file import read
 from src.utils.database import attribute_db as db
 from src.utils.database.classes import PlayerEquipsCache
 from src.utils.database.tabs import read_tab
 from src.utils.network import Request
+from src.utils.permission import check_group_permission
 from src.utils.analyze import (
     R,
     TuilanData,
@@ -50,6 +50,9 @@ import json
 import zlib
 import asyncio
 import base64
+
+ATTRIBUTE_SYNC_GROUP_PERMISSION = "group.application.attribute_sync"
+ATTRIBUTE_SYNC_URL = "https://www.jx3api.com/calcd/attribute"
 
 def normalize_kungfu_id(kungfu_id: int | str) -> int:
     kungfu_id = int(kungfu_id)
@@ -107,6 +110,8 @@ def split_display_attributes(
     return main_attr, detailed_attr
 
 def get_fivestone_level(item_index: int) -> int:
+    if item_index == 0:
+        return 0
     if item_index in range(24442, 24449 + 1):
         return item_index - 24441
     elif item_index in range(24423, 24430 + 1):
@@ -1245,78 +1250,77 @@ class FinalAttr:
 class JX3PlayerAttribute:
 
     @classmethod
-    async def from_jx3api(cls, server: str, name: str, url_require: bool = False, group_id: int = 0) -> str | None:
-        if not url_require:
-            raw_data = {}
-            raw_data["code"] = 404
-        else:
-            url = read(CONST + "/cache/attribute.txt")
-            params = {
-                "server": server,
-                "name": name,
-                "group_id": group_id,
-                "format": "client",
-            }
-            try:
-                raw_data = (await Request(url, params = params).get()).json()
-            except Exception:
-                return None
-
-        if raw_data["status"] != 200:
-            return PROMPT.PlayerNotExist
-        results = []
-
-        if "equipList" not in raw_data["detail"]:
+    async def from_jx3api(cls, server: str, name: str, url_require: bool = False, group_id: int = 0) -> None:
+        if not url_require or group_id <= 0 or not check_group_permission(group_id, ATTRIBUTE_SYNC_GROUP_PERMISSION):
             return None
-
-        for each_equip in raw_data["detail"]["equipList"]:
-            position_id = each_equip["nItemIndex"]
-
-            if position_id not in range(0, 12 + 1):
-                continue
-
-            tab_type = each_equip["dwTabType"]
-            tab_index = each_equip["dwTabIndex"]
-            strength_level = each_equip["nStrengthLevel"]
-
-            diamonds = []
-
-            for each_diamond in each_equip.get("aSlotItem", []):
-                diamonds.append(
-                    each_diamond,
-                )
-
-            if position_id == 0:
-                diamonds.extend(
-                    each_equip["ColorInfo"],
-                )
-
-            permanent_enchant_id = each_equip["dwPermanentEnchantID"]
-            common_enchant_id = each_equip["dwTemporaryEnchantID"]
-
-            results.append(
-                [
-                    position_id,
-                    tab_type,
-                    tab_index,
-                    strength_level,
-                    diamonds,
-                    permanent_enchant_id,
-                    common_enchant_id,
-                    0,
-                ],
-            )
-
-        instance = cls(
-            results,
-            [],
-            int(raw_data["detail"]["kungfuId"]),
-            int(raw_data["detail"]["globalId"]),
-            timestamp = int(raw_data["detail"]["cacheTime"]),
-        )
+        token = Config.jx3.api.token_v2.strip()
+        if not Config.jx3.api.enable or not token:
+            return None
+        params = {
+            "server": server,
+            "name": name,
+            "format": "client",
+            "token": token,
+        }
         try:
+            raw_data = (await Request(ATTRIBUTE_SYNC_URL, params = params).get()).json()
+            if not isinstance(raw_data, dict) or raw_data.get("code", raw_data.get("status")) != 200:
+                return None
+            detail = raw_data.get("data", raw_data.get("detail"))
+            # 兼容接口直接返回客户端格式，以及 data 中封装的客户端格式。
+            if isinstance(detail, dict) and "detail" in detail:
+                if detail.get("status") != 200:
+                    return None
+                detail = detail["detail"]
+            if not isinstance(detail, dict) or not isinstance(detail.get("equipList"), list):
+                return None
+            results = []
+            for each_equip in detail["equipList"]:
+                position_id = int(each_equip["nItemIndex"])
+                if position_id not in range(0, 13):
+                    continue
+                diamonds = list(each_equip.get("aMountDiamond", each_equip.get("aSlotItem", [])))
+                if "aMountDiamond" in each_equip:
+                    # 客户端接口省略空孔，补齐后保持 JCL 的孔位与五彩石位置。
+                    diamond_count = (
+                        3 if position_id in [0, 1] else
+                        2 if position_id in [3, 4, 8, 10, 11, 12] else
+                        0 if position_id in [6, 7] else 1
+                    )
+                    diamonds.extend([[5, 0] for _ in range(diamond_count - len(diamonds))])
+                if position_id == 0:
+                    if "aColorDiamond" in each_equip:
+                        color_diamond = each_equip["aColorDiamond"]
+                        if color_diamond:
+                            diamonds.append(list(color_diamond))
+                    else:
+                        diamonds.extend(each_equip.get("ColorInfo", []))
+                results.append(
+                    [
+                        position_id,
+                        int(each_equip["dwTabType"]),
+                        int(each_equip["dwTabIndex"]),
+                        int(each_equip["nStrengthLevel"]),
+                        diamonds,
+                        int(each_equip["dwPermanentEnchantID"]),
+                        int(each_equip["dwTemporaryEnchantID"]),
+                        0,
+                    ],
+                )
+            timestamp = int(detail["cacheTime"])
+            if not results or timestamp <= 0:
+                return None
+            instance = cls(
+                results,
+                [],
+                int(detail["kungfuId"]),
+                int(detail["globalId"]),
+                timestamp = timestamp,
+            )
+            instance.validate()
             instance.save()
         except Exception:
+            # 外部同步失败时保留本地装备，查询继续使用本地记录。
             return None
 
     @classmethod

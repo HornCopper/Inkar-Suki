@@ -30,6 +30,9 @@ backpack_row = """
     <td class="backpack-prize">
         <span class="backpack-prize-name">{{ prize_name }}</span>
         <span class="backpack-quantity">×1</span>
+        {% if permission_scope and not delivered_at %}
+        <div class="backpack-redeem-hint">兑奖 {{ award_id }}{% if permission_scope == 'group' %}（在目标群发送）{% endif %}</div>
+        {% endif %}
     </td>
     <td class="backpack-record">#{{ award_id }}</td>
     <td class="backpack-provider">{{ provider_id }}</td>
@@ -39,6 +42,7 @@ backpack_row = """
             {{ '已兑付' if delivered_at else '待兑付' }}
         </span>
         {% if delivered_at %}<div class="backpack-delivery-date">{{ delivered_at }}</div>{% endif %}
+        {% if delivered_target %}<div class="backpack-delivery-date">已授予{{ '群' if permission_scope == 'group' else '用户' }} {{ delivered_target }}</div>{% endif %}
     </td>
 </tr>
 """
@@ -77,6 +81,7 @@ backpack_css = """
     color: var(--inkar-accent-ink, #2c7be5); white-space: nowrap;
 }
 .backpack-record { color: var(--inkar-secondary-text, #666); }
+.backpack-redeem-hint { margin-top: 8px; font-size: 16px; color: var(--inkar-accent-ink, #2c7be5); }
 .backpack-status { display: inline-block; padding: 6px 12px; border-radius: 4px; font-size: 18px; }
 .backpack-pending { background: #fff5df; color: #96601b; }
 .backpack-delivered { background: #e8f5ed; color: #267449; }

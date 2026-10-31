@@ -15,6 +15,7 @@ SHILIAN_ATTR_LABELS = {
     "atMagicOvercome": "内功破防",
     "atSurplusValueBase": "破招",
     "atStrainBase": "无双",
+    "atHasteBase": "加速",
 }
 SHILIAN_ATTR_KEYS = {value: key for key, value in SHILIAN_ATTR_LABELS.items()}
 
@@ -33,7 +34,7 @@ class ShilianEquipParser:
 
     def _preprocess(self, raw: str) -> str:
         # 去掉不必要的词汇
-        raw = raw.replace("攻击", "").replace("攻", "").replace("品", "")
+        raw = raw.replace("无观", "").replace("攻击", "").replace("攻", "").replace("品", "")
         return raw
 
     def _fd(self, keyword: str) -> bool:
@@ -73,6 +74,8 @@ class ShilianEquipParser:
             self._attrs.append("破招")
         if self._fd("无") and not self._fd("纯无"):
             self._attrs.append("无双")
+        if self._fd("加") or self._fd("速"):
+            self._attrs.append("加速")
         if self._fd("会") and not any(self._fd(k) for k in ["双会", "纯会", "会效", "会心会效", "会会"]):
             self._attrs.append("全会心" if self._basic_type == "内功" else self._basic_type + "会心")
 
@@ -92,7 +95,7 @@ class ShilianEquipParser:
         elif any(self._fd(k) for k in ["鞋", "jio", "脚"]):
             return "鞋"
         elif any(self._fd(k) for k in ["链", "项"]):
-            return "链"
+            return "项链"
         elif self._fd("腰坠") or self._fd("腰椎") or (self._fd("坠") and not self._fd("腰带")):
             return "坠"
         elif any(self._fd(k) for k in ["暗器", "囊", "弓弦"]):

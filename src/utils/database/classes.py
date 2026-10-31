@@ -18,6 +18,8 @@ class CheckinPrize(LiteModel):
     enabled: bool = True
     creator_id: int = 0
     created_at: int = 0
+    permission_scope: str = ""  # 空值为人工兑付；user / group 为自助权限奖品
+    permission_node: str = ""
 
 class CheckinPrizeAward(LiteModel):
     TABLE_NAME: ClassVar[str] = "checkin_prize_awards"
@@ -28,6 +30,9 @@ class CheckinPrizeAward(LiteModel):
     awarded_at: int = 0
     delivered_at: int = 0
     delivered_by: int = 0
+    permission_scope: str = ""
+    permission_node: str = ""
+    delivered_target: int = 0  # 权限实际授予的 QQ 号或群号
 
 class Affections(LiteModel):
     TABLE_NAME: ClassVar[str] = "affections"

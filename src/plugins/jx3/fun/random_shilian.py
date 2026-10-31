@@ -10,7 +10,6 @@ from src.utils.jx3_data import search_stones, shilian_equips
 from src.utils.file import read
 from src.utils.generate import generate
 from src.utils.database.operation import get_group_settings
-from src.plugins.jx3.trade.market import JX3Trade
 from src.templates import get_saohua
 
 from .random_item import (
@@ -190,7 +189,7 @@ async def get_random_equip(level: int) -> JX3ShilianItem:  # 无修
 
     equip_type = "内" if get_random(50) else "外"
 
-    final_name = f"{JX3Trade.shilian_basic}{location}·{equip_type}·{end_word}"
+    final_name = f"无修{location}·{equip_type}·{end_word}"
     final_equip = await DataCache.get_wuxiu(final_name, quality, bind_type)
     return JX3ShilianItem(
         attr = final_equip.attr,
@@ -305,7 +304,7 @@ async def generate_shilian_box(level: int, user_choice: int, group_id: int, bot:
             icon = await cache_image(reward.icon)
             if reward.name in ["银叶子·试炼之地", "九花玉露散", "匡义令·星", "五行石（一级）"]:
                 name = f"{reward.name} x{reward.count}"
-            elif reward.name.startswith(JX3Trade.shilian_basic):
+            elif reward.name.startswith("无修"):
                 name = f"[{reward.bind}]{reward.name}<br>{reward.quality} {reward.attr}"
             else:
                 name = reward.name

@@ -123,7 +123,9 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
         return
     arg = args.extract_plain_text().split(" ")
     if len(arg) not in [1, 2]:
-        await trade_sl_matcher.finish(PROMPT.ArgumentCountInvalid + "\n参考格式：交易行试炼 <服务器> <词条(不带空格)>")
+        await trade_sl_matcher.finish(
+            PROMPT.ArgumentCountInvalid + "\n参考格式：交易行试炼 <服务器> <无观词条(不带空格)>\n例如：交易行试炼 梦江南 900内功会无暗器",
+        )
     if len(arg) == 1:
         server = None
         msg = arg[0]
