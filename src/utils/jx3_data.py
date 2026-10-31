@@ -11,14 +11,6 @@ import re
 
 DATA_VERSION = "1.6.0.10022"
 DATA_SEASON = "暗影千机"
-LEGACY_SHILIAN_LEVELS = {
-    28000: 473,
-    30200: 511,
-    32500: 550,
-    35300: 597,
-    38100: 644,
-    41400: 700,
-}
 ITEM_TABLES = {
     5: "Other",
     6: "Custom_Weapon",
@@ -35,6 +27,7 @@ SHOP_TABLES = {
 SHOP_TABLES["funiture.tab"] = SHOP_TABLES["furniture.tab"]
 _ITEM_COLUMNS = (
     "Name", "UiID", "IconID", "Quality", "Level", "BindType", "BelongSchool", "SubType", "_CATEGORY",
+    "Genre", "AucGenre", "AucSubType", "EnchantID", "ScriptName", "MagicKind", "GetType",
     "MaxStrengthLevel", "SkillID", *(f"Magic{index}Type" for index in range(1, 17)),
     *(f"DiamondAttributeID{index}" for index in range(1, 4))
 )
@@ -76,6 +69,14 @@ def _item(key: str) -> dict[str, Any] | None:
     icon = table("Icon.txt", columns = ("Kind", "SubKind")).get(icon_id, {})
     result: dict[str, Any] = {
         "id": key,
+        "ItemType": item_type,
+        "Genre": integer(row.get("Genre")),
+        "AucGenre": integer(row.get("AucGenre")),
+        "AucSubType": integer(row.get("AucSubType")),
+        "EnchantID": integer(row.get("EnchantID")),
+        "ScriptName": row.get("ScriptName", ""),
+        "SkillID": integer(row.get("SkillID")),
+        "MagicKind": row.get("MagicKind", ""),
         "Name": display.get("Name") or row["Name"],
         "IconID": integer(icon_id, 1434),
         "Desc": display.get("Desc", ""),
@@ -106,6 +107,13 @@ def _item(key: str) -> dict[str, Any] | None:
         )
     else:
         result["Type"] = row.get("_CATEGORY", "")
+        if result["EnchantID"]:
+            result["Enchant"] = dict(
+                table(
+                    "item/Enchant.tab",
+                    columns = ("Time", "DestItemSubType", "Attribute1ID", "Attribute1Value1"),
+                ).get(str(result["EnchantID"]), {}),
+            )
     return result
 
 def get_item(key: str) -> dict[str, Any] | None:
@@ -140,12 +148,13 @@ def search_stones(level: int, keyword: str = "") -> list[dict[str, Any]]:
 @lru_cache(maxsize = 1)
 def _shilian() -> list[str]:
     return [
-        f"{item_type}_{item_id}" for item_type in (6, 7, 8) for item_id, row in _item_table(item_type).items()
-        if row["Name"].startswith("无修") and "测试" not in row["Name"]
+        f"{item_type}_{item_id}" for item_type, subtype in ((6, "1"), (8, "4"))
+        for item_id, row in _item_table(item_type).items()
+        if row["Name"].startswith("无观") and row.get("SubType") == subtype
+        and row.get("BelongSchool") == "精简" and row.get("GetType") == "活动"
     ]
 
 def shilian_equips(name: str, quality: int, bind_type: int) -> list[dict[str, Any]]:
-    quality = LEGACY_SHILIAN_LEVELS.get(quality, quality)
     result = []
     for key in _shilian():
         # 编号由物品原表生成，对应的物品记录必定存在。

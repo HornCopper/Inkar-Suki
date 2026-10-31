@@ -23,6 +23,8 @@ class LootProbabilities:
     general_brand: int = 40
     weapon: int = 10
     jingjian: int = 10
+    effect_upgrade: int = 30  # 命中精简掉落后，转为特效装备的条件概率。
+    effect_pendant: int = 10
     xuanjing: int = 4
     sand_material: int = 30
     other_peerless: int = 5
@@ -45,6 +47,8 @@ class LootProbabilities:
 #     general_brand: int = 100
 #     weapon: int = 100
 #     jingjian: int = 100
+#     effect_upgrade: int = 100
+#     effect_pendant: int = 100
 #     xuanjing: int = 100
 #     sand_material: int = 100
 #     other_peerless: int = 100

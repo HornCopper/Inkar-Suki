@@ -9,6 +9,7 @@ from src.const.jx3.school import School
 from src.utils.network import Request, cache_image
 from src.utils.generate import get_uuid
 from src.utils.database.constant import HASTE_DIVISOR
+from src.utils.database.attributes import Talent as SkillTalent
 from src.plugins.jx3.attributes.v2_remake import (
     get_school_background,
 )
@@ -171,6 +172,10 @@ async def get_attr_recommend_image(
         anchor = "mm",
     )
 
+    if len(talents) == 9:
+        kungfu_talent = SkillTalent(int(kungfu.id or 0))
+        talents = [*talents, Talent(icon = kungfu_talent.icon, name = kungfu_talent.name)]
+
     if len(talents) == 12:
         init_icon = 164
         init_text = 198
@@ -205,6 +210,20 @@ async def get_attr_recommend_image(
                 done_time += 1
                 if done_time == 2:
                     break
+    elif len(talents) == 10:
+        for index, talent in enumerate(talents):
+            row, column = divmod(index, 5)
+            x_icon = 183 + column * 65
+            y_icon = 479 + row * 78
+            image = Image.open(await cache_image(talent.icon)).resize((39, 39))
+            background.alpha_composite(image, (x_icon, y_icon))
+            draw.text(
+                (198 + column * 67, y_icon + 51),
+                talent.name,
+                fill = (255, 255, 255),
+                font = ImageFont.truetype(semibold, size = 12),
+                anchor = "mm",
+            )
     else:
         init_icon = 227
         init_text = 246
