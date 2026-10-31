@@ -510,8 +510,8 @@ async def request_equipment_ratings(
         },
         "full_income": instance.income_list + instance.formation_list,
         "candidate_level": {
-            "min": 32500,
-            "max": 43000,
+            "min": 1170,
+            "max": 1300,
         },
         **loop_code,
     }

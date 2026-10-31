@@ -2174,8 +2174,8 @@ async def _build_equipment_rating_payload_by_kungfu(
             "global_role_id": int(player_data.globalRoleId),
         },
         "candidate_level": {
-            "min": 32500,
-            "max": 43000,
+            "min": 1170,
+            "max": 1300,
         },
     }
     return payload, player_data, target_equip
@@ -2196,8 +2196,8 @@ async def _build_equipment_rating_payload_by_pzid(
             "global_role_id": 0,
         },
         "candidate_level": {
-            "min": 32500,
-            "max": 43000,
+            "min": 1170,
+            "max": 1300,
         },
     }
     return payload, f"魔盒配装 {pzid}", "JX3BOX", None
