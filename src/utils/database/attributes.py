@@ -25,13 +25,15 @@ from src.utils.database.constant import (
     A,
     B,
     C,
+    BASE_SHIELD,
     CRITICAL_DAMAGE_DIVISOR,
     CRITICAL_DIVISOR,
     DECRITICAL_DAMAGE_DIVISOR,
     OVERCOME_DIVISOR,
     PVX_STRAIN,
-    SHIELD_130_CONST,
+    SHIELD_DIVISOR,
     STRAIN_DIVISOR,
+    TOUGHNESS_DIVISOR,
     Agility_to_Critical_Cof,
     AttributesShort,
     Colors,
@@ -1129,10 +1131,14 @@ class FinalAttr:
             base_spirit * \
             (1 + int(self.attr.get("atSpiritBasePercentAdd", 0)) / 1024)
         ,)
-        physics_shield = self.attr.get("atPhysicsShieldBase", 0)
-        magic_shield = self.attr.get("atMagicShield", 0)
+        physics_shield = (
+            BASE_SHIELD + self.attr.get("atPhysicsShieldBase", 0) + self.attr.get("atPhysicsShieldAdditional", 0)
+        )
+        magic_shield = BASE_SHIELD + self.attr.get("atMagicShield", 0)
         toughness = self.attr.get("atToughnessBase", 0)
         decritical_damage = self.attr.get("atDecriticalDamagePowerBase", 0)
+        if abbr == "T":
+            coefficient_main_attr = vitality
         for attr_name, attr_value in Kungfu.kungfu_coefficient[kungfu_name].items():
             if attr_name == "Attack":
                 final_attack += int(coefficient_main_attr * attr_value / 1024)
@@ -1170,7 +1176,7 @@ class FinalAttr:
                 "武器伤害":
                 str(weapon_damage),
                 "御劲":
-                str(R(toughness / CRITICAL_DIVISOR * 100, 2)) + "%",
+                str(R(toughness / TOUGHNESS_DIVISOR * 100, 2)) + "%",
                 "化劲":
                 str(
                     round(
@@ -1203,7 +1209,7 @@ class FinalAttr:
                 "基础根骨":
                 str(base_spirit),
                 "御劲":
-                str(R(toughness / CRITICAL_DIVISOR * 100, 2)) + "%",
+                str(R(toughness / TOUGHNESS_DIVISOR * 100, 2)) + "%",
                 "化劲":
                 str(
                     round(
@@ -1216,9 +1222,9 @@ class FinalAttr:
         else:
             return {
                 "内功防御":
-                str(R(magic_shield / (magic_shield + SHIELD_130_CONST) * 100, 2)) + "%",
+                str(R(max(0, min(75, magic_shield / (magic_shield + SHIELD_DIVISOR) * 100)), 2)) + "%",
                 "外功防御":
-                str(R(physics_shield / (physics_shield + SHIELD_130_CONST) * 100, 2)) + "%",
+                str(R(max(0, min(75, physics_shield / (physics_shield + SHIELD_DIVISOR) * 100)), 2)) + "%",
                 "会心":
                 str(R(critical / CRITICAL_DIVISOR * 100, 2)) + "%",
                 "会心效果":
@@ -1236,7 +1242,7 @@ class FinalAttr:
                 "基础体质":
                 str(base_vitality),
                 "御劲":
-                str(R(toughness / CRITICAL_DIVISOR * 100, 2)) + "%",
+                str(R(toughness / TOUGHNESS_DIVISOR * 100, 2)) + "%",
                 "化劲":
                 str(
                     round(

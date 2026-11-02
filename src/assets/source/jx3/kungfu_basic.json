@@ -35,8 +35,7 @@
         "atPhysicsAttackPowerBase": 2789
     },
     "铁牢律": {
-        "atPhysicsShieldBase": 9102,
-        "atMagicShield": 2850,
+        "atPhysicsShieldBase": 457,
         "atParryBase": 3913,
         "atParryValueBase": 15085
     },
@@ -44,15 +43,15 @@
         "atMagicAttackPowerBase": 2535
     },
     "洗髓经": {
-        "atPhysicsShieldBase": 6763,
-        "atMagicShield": 9372
+        "atPhysicsShieldBase": 274,
+        "atMagicShield": 457
     },
     "焚影圣诀": {
         "atMagicAttackPowerBase": 2662
     },
     "明尊琉璃体": {
-        "atPhysicsShieldBase": 6111,
-        "atMagicShield": 6111,
+        "atPhysicsShieldBase": 228,
+        "atMagicShield": 228,
         "atDodge": 6522
     },
     "分山劲": {
@@ -60,8 +59,7 @@
         "atPhysicsOvercomeBase": 164
     },
     "铁骨衣": {
-        "atPhysicsShieldBase": 6763,
-        "atMagicShield": 9372,
+        "atPhysicsShieldBase": 274,
         "atParryBase": 6522,
         "atParryValueBase": 15085
     },
