@@ -37,6 +37,10 @@
                 {
                     "name": "api.call",
                     "desc": "直接调用 OneBot API"
+                },
+                {
+                    "name": "identity.bind",
+                    "desc": "匹配官方用户或群的内部 ID 与真实号码，并合并关联数据"
                 }
             ]
         },

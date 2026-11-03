@@ -15,6 +15,7 @@ from src.utils.command import on_command
 from src.utils.database import db
 from src.utils.database.classes import CheckinPrize, CheckinPrizeAward
 from src.utils.permission import check_permission, denied
+from src.utils.identity import resolve_user_id
 from src.utils.time import Time
 from src.utils.generate import generate
 from src.templates import HTMLSourceCode
@@ -89,6 +90,7 @@ def pool_listing(page: int) -> str:
 
 def backpack_listing(user_id: int, page: int) -> str:
     """生成背包报告 HTML，个人查询和管理员查看共用同一界面。"""
+    user_id = resolve_user_id(user_id)
     total, pending = db.fetch_all(
         "SELECT COUNT(*), COALESCE(SUM(delivered_at = 0), 0) FROM checkin_prize_awards WHERE user_id = ?",
         user_id,
@@ -199,7 +201,8 @@ BackpackMatcher = on_command("背包", aliases = {"我的背包"}, force_whitesp
 RedeemMatcher = on_command("兑奖", aliases = {"自助兑奖"}, force_whitespace = True, priority = 5)
 
 def redeem_response(event: MessageEvent, award_id: int) -> str:
-    award = PrizePoolManage(event.user_id).redeem(award_id, getattr(event, "group_id", 0))
+    group_id = getattr(event, "group_id", 0) if event.message_type == "group" else 0
+    award = PrizePoolManage(event.user_id).redeem(award_id, group_id)
     target = f"群 {award.delivered_target}" if award.permission_scope == "group" else f"你（{award.user_id}）"
     return f"兑奖成功！已为{target}开通「{award.prize_name}」（记录 #{award.id}）。"
 
@@ -244,7 +247,10 @@ async def handle_prize_pool(event: MessageEvent, args: Message = CommandArg()):
                 prize = manager.change(positive_number(parts[1]), action)
                 response = f"已{action}奖品 #{prize.id}：{prize.name}。"
             elif action == "记录" and len(parts) in {2, 3}:
-                html = backpack_listing(positive_number(parts[1]), positive_number(parts[2]) if len(parts) == 3 else 1)
+                user_id = int(parts[1])
+                if user_id == 0 or not -(1 << 63) <= user_id < (1 << 63):
+                    raise ValueError("用户 ID 需要是非零整数，支持负数内部 ID。")
+                html = backpack_listing(user_id, positive_number(parts[2]) if len(parts) == 3 else 1)
                 response = await generate(html, ".container", segment = True)
             elif action in {"未兑奖", "未兑付", "待兑付"} and len(parts) in {2, 3}:
                 html = pending_prize_listing(

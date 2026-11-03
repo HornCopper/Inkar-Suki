@@ -4,9 +4,8 @@ from typing import Literal
 from nonebot.adapters.onebot.v11 import Message, MessageEvent
 from nonebot.params import CommandArg
 
-from src.config import Config
 from src.utils.command import on_command
-from src.utils.permission import get_permission_holders
+from src.utils.permission import get_permission_holders, is_bot_owner
 
 PAGE_SIZE = 20
 HELP = """格式：权限反查 <用户|群> <权限节点> [页码]
@@ -24,7 +23,7 @@ PermissionHoldersMatcher = on_command(
 
 @PermissionHoldersMatcher.handle()
 async def handle_permission_holders(event: MessageEvent, args: Message = CommandArg()) -> None:
-    if str(event.user_id) not in Config.bot_basic.bot_owner:
+    if not is_bot_owner(event.user_id):
         await PermissionHoldersMatcher.finish("只有 Bot 主人可以按权限节点查询用户或群。")
         return
     parts = args.extract_plain_text().split()

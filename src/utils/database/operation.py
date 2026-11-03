@@ -2,10 +2,11 @@ from typing import Any, Literal, overload
 
 from nonebot import get_bots
 from nonebot.exception import ActionFailed
-from nonebot.adapters.onebot.v11 import Message
+from nonebot.adapters.onebot.v11 import Bot, Message
 
 from src.utils.database.classes import GroupSettings
 from src.utils.database import db
+from src.utils.identity import resolve_group_id
 
 @overload
 def get_group_settings(group_id: int | str, key: Literal["subscribe"]) -> list[str]:
@@ -36,6 +37,7 @@ def get_group_settings(group_id: int | str, key: Literal["wiki"]) -> dict:
     ...
 
 def get_group_settings(group_id: int | str, key: str = "") -> Any:
+    group_id = resolve_group_id(group_id)
     group_data: GroupSettings | Any = db.where_one(GroupSettings(), "group_id = ?", str(group_id), default = None)
     if group_data is not None:
         return group_data.dump().get(key) if key else group_data.dump()
@@ -44,6 +46,7 @@ def get_group_settings(group_id: int | str, key: str = "") -> Any:
         return getattr(GroupSettings(), key)
 
 def set_group_settings(group_id: int | str, key: str, content: Any) -> None:
+    group_id = resolve_group_id(group_id)
     group_data: GroupSettings | Any = db.where_one(GroupSettings(), "group_id = ?", str(group_id), default = None)
     if group_data is None:
         group_data = GroupSettings(group_id = str(group_id))
@@ -74,6 +77,8 @@ async def send_subscribe(subscribe: str = "", msg: str | Message = "", server: s
     group: dict[str, list[str]] = {}
 
     for i in list(bots):
+        if not isinstance(bots[i], Bot):
+            continue
         try:
             single_groups = await bots[i].call_api("get_group_list")
         except Exception:

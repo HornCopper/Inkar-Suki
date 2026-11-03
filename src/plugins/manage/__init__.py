@@ -25,7 +25,9 @@ from src.utils.permission import (
     get_deepest_permission_nodes,
     is_defined_permission_node,
     normalize_permission_nodes,
+    is_bot_owner,
 )
+from src.utils.identity import resolve_group_id, resolve_user_id
 from src.utils.database import db
 from src.utils.database.classes import GroupSettings, Account
 from src.utils.database.operation import get_groups, get_group_settings
@@ -36,6 +38,7 @@ from src.utils.message import message_universal
 from ._message import leave_msg
 from . import developer as _developer
 from . import permission_lookup as _permission_lookup
+from . import identity_mapping as _identity_mapping
 
 try:
     from .auto_accept import *  # type: ignore
@@ -195,12 +198,12 @@ AdminMatcher = on_command(
 async def _(bot: Bot, event: MessageEvent, full_argument: Message = CommandArg()):
     if full_argument.extract_plain_text() == "":
         return
-    not_owner = str(event.user_id) not in Config.bot_basic.bot_owner
+    not_owner = not is_bot_owner(event.user_id)
     if not_owner:
         await AdminMatcher.finish("只有Bot主人可以分发权限！")
     args = full_argument.extract_plain_text().split(" ")
     if len(args) != 2:
-        await AdminMatcher.finish("格式错误：setop <uQQ号|g群号> <权限节点>")
+        await AdminMatcher.finish("格式错误：setop <u用户ID|g群ID> <权限节点>，支持负数内部 ID。")
     target = args[0]
     node = args[1]
     if len(target) < 2 or target[0] not in ["u", "g"]:
@@ -209,9 +212,10 @@ async def _(bot: Bot, event: MessageEvent, full_argument: Message = CommandArg()
     target_id = target[1:]
     if target_id == "":
         await AdminMatcher.finish("目标格式错误：用户权限请使用 u+QQ号，群权限请使用 g+QQ群号。")
-    if not target_id.isdigit():
+    if not target_id.removeprefix("-").isdigit():
         await AdminMatcher.finish("目标格式错误：QQ号或群号需要是数字。")
     if target_type == "u":
+        target_id = str(resolve_user_id(target_id))
         data: Account | GroupSettings | Any = db.where_one(
             Account(),
             "user_id = ?",
@@ -220,6 +224,7 @@ async def _(bot: Bot, event: MessageEvent, full_argument: Message = CommandArg()
         )
         target_name = f"用户（{target_id}）"
     else:
+        target_id = str(resolve_group_id(target_id))
         data = db.where_one(
             GroupSettings(),
             "group_id = ?",
@@ -264,11 +269,11 @@ async def _(event: MessageEvent, args: Message = CommandArg()):
     target_id = str(event.user_id)
     target_desc = "你当前"
     if target:
-        if str(event.user_id) not in Config.bot_basic.bot_owner:
+        if not is_bot_owner(event.user_id):
             await PermissionNodesMatcher.finish("只有 Bot 主人可以查看他人的权限节点。")
         if target.startswith("u"):
             target = target[1:]
-        if not target.isdigit():
+        if not target.removeprefix("-").isdigit():
             await PermissionNodesMatcher.finish("格式：permissions [QQ号]")
         target_id = target
         target_desc = f"用户 {target_id} 当前"
@@ -289,11 +294,11 @@ GroupPermissionNodesMatcher = on_command(
 async def _(event: MessageEvent, args: Message = CommandArg()):
     target = args.extract_plain_text().strip()
     if target:
-        if str(event.user_id) not in Config.bot_basic.bot_owner:
+        if not is_bot_owner(event.user_id):
             await GroupPermissionNodesMatcher.finish("只有 Bot 主人可以查看其他群的权限节点。")
         if target.startswith("g"):
             target = target[1:]
-        if not target.isdigit():
+        if not target.removeprefix("-").isdigit():
             await GroupPermissionNodesMatcher.finish("格式：grouppermissions [群号]")
         group_id = target
         target_desc = f"群 {group_id} 当前"

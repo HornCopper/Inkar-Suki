@@ -2,7 +2,7 @@ from typing import Any
 
 from nonebot import get_bots
 from nonebot.params import CommandArg
-from nonebot.adapters.onebot.v11 import GroupMessageEvent, Message
+from nonebot.adapters.onebot.v11 import Bot, GroupMessageEvent, Message
 
 from src.utils.command import on_command
 from src.utils.analyze import check_number
@@ -41,6 +41,8 @@ async def check_activation():
     bots = get_bots()
     database: list[GroupSettings] | Any = db.where_all(GroupSettings(), default = [])
     for bot in bots.values():
+        if not isinstance(bot, Bot):
+            continue
         account_groups: list[str] = [str(g["group_id"]) for g in (await bot.call_api("get_group_list"))]
         database_groups: list[GroupSettings] = [g for g in database if g.group_id in account_groups]
         for group in database_groups:

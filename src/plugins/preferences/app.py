@@ -8,6 +8,7 @@ from src.utils.database.classes import PersonalSettings
 from src.utils.generate import generate
 from src.templates import get_saohua
 from src.utils.ui_theme import DEFAULT_UI_COLOR, normalize_ui_color
+from src.utils.identity import resolve_user_id
 
 from ._template import template_preferences
 
@@ -28,6 +29,7 @@ class Preference:
     }
 
     def __init__(self, user_id: int, key: str = "", value: str = ""):
+        user_id = resolve_user_id(user_id)
         self.data: dict[str, dict[str, str]] = json.loads(
             read(build_path(ASSETS, ["source", "preference", "preferences.json"])),
         )

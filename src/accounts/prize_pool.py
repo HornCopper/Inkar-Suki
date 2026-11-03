@@ -12,6 +12,7 @@ from src.utils.permission import (
     normalize_permission_nodes,
 )
 from src.utils.time import Time
+from src.utils.identity import resolve_group_id, resolve_user_id
 
 POOL_PERMISSION = "economy.checkin.pool.manage"
 PROBABILITY_SCALE = 1_000_000
@@ -56,7 +57,7 @@ def format_probability(value: int) -> str:
 class PrizePoolManage:
 
     def __init__(self, operator_id: int):
-        self.operator_id = operator_id
+        self.operator_id = resolve_user_id(operator_id)
 
     def _authorize(self) -> None:
         if not check_permission(self.operator_id, POOL_PERMISSION):
@@ -163,6 +164,7 @@ class PrizePoolManage:
 
     def redeem(self, award_id: int, group_id: int = 0) -> CheckinPrizeAward:
         """只兑换本人的权限奖品，授权与兑付记录在同一事务中提交。"""
+        group_id = resolve_group_id(group_id)
         with db.transaction():
             award = db.where_one(
                 CheckinPrizeAward(), "id = ? AND user_id = ?", award_id, self.operator_id,
@@ -175,7 +177,7 @@ class PrizePoolManage:
                 raise ValueError("这件奖品需要由投放人安排发放，不支持自助兑奖。")
             node = validate_prize_permission(award.permission_scope, award.permission_node)
             if award.permission_scope == "group":
-                if not 0 < group_id <= MAX_STOCK:
+                if group_id == 0 or not -MAX_STOCK <= group_id <= MAX_STOCK:
                     raise ValueError("群权限奖品请在要开通权限的群内发送兑奖命令。")
                 target_id = group_id
                 target = db.where_one(
@@ -204,6 +206,7 @@ class PrizePoolManage:
 
 def draw_checkin_prize(user_id: int) -> CheckinPrizeAward | None:
     """由签到事务调用，库存扣减和获奖记录随签到一起提交。"""
+    user_id = resolve_user_id(user_id)
     entries = db.where_all(CheckinPrize(), "enabled = 1 AND remaining != 0 ORDER BY id", default = [])
     if not entries:
         return None

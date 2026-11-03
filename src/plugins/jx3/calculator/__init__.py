@@ -22,6 +22,7 @@ from src.utils.database.classes import AnalyzerUsage
 from src.utils.database.player import search_player
 from src.utils.database.attributes import JX3PlayerAttribute
 from src.utils.permission import check_permission, denied
+from src.utils.identity import resolve_group_id, resolve_user_id
 from src.utils.time import Time
 
 from src.plugins.notice import notice
@@ -2157,13 +2158,13 @@ def _normalize_public_loop_approval_config(data: Any) -> dict[str, Any]:
     if not isinstance(data, dict):
         return config
     try:
-        group_id = int(data.get("approval_group_id") or config["approval_group_id"])
+        group_id = resolve_group_id(data.get("approval_group_id") or config["approval_group_id"])
     except (TypeError, ValueError):
         group_id = config["approval_group_id"]
     approvers = []
     for user_id in data.get("approver_user_ids") or []:
         try:
-            parsed_id = int(user_id)
+            parsed_id = resolve_user_id(user_id)
         except (TypeError, ValueError):
             continue
         if parsed_id not in approvers:

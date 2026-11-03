@@ -6,16 +6,21 @@ from typing import Any, Literal, Sequence
 from src.const.path import ASSETS, build_path
 from src.utils.database.classes import Account, GroupSettings
 from src.utils.database import db
+from src.utils.identity import resolve_group_id, resolve_user_id
 
 def _bot_owner_ids() -> tuple[str, ...]:
     try:
         from src.config import Config
     except ModuleNotFoundError:
         return ()
-    return tuple(Config.bot_basic.bot_owner)
+    return tuple(dict.fromkeys(str(resolve_user_id(owner_id)) for owner_id in Config.bot_basic.bot_owner))
 
-def _is_bot_owner(user_id: str | int) -> bool:
-    return str(user_id) in _bot_owner_ids()
+def is_bot_owner(user_id: str | int) -> bool:
+    return str(resolve_user_id(user_id)) in _bot_owner_ids()
+
+
+# 保留奖池等已有模块使用的导入名称。
+_is_bot_owner = is_bot_owner
 
 def _normalize_node(node: str | int) -> str:
     return str(node).strip().strip(".")
@@ -95,7 +100,7 @@ def _check_nodes_permission(nodes: Sequence[str | int], required: str | int) -> 
     return any(_node_match(node, required) for node in grants)
 
 def _check_user_permission(account: Account, node: str | int) -> bool:
-    if _is_bot_owner(account.user_id):
+    if is_bot_owner(account.user_id):
         _, denies = _split_permission_nodes(account.permission_nodes)
         return not any(_node_match(denied_node, node) for denied_node in denies)
     return _check_node_permission(account, node)
@@ -145,6 +150,7 @@ def get_deepest_permission_nodes(user_id: str | int) -> list[str]:
     父节点和通配符会展开为 node.json 中定义的叶子节点。
     未知的自定义节点会原样保留，方便管理员查看。
     """
+    user_id = resolve_user_id(user_id)
     data: Account | Any = db.where_one(
         Account(),
         "user_id = ?",
@@ -152,13 +158,14 @@ def get_deepest_permission_nodes(user_id: str | int) -> list[str]:
         default = Account(user_id = int(user_id)),
     )
     leaves = _defined_leaf_nodes("user")
-    if _is_bot_owner(user_id):
+    if is_bot_owner(user_id):
         return _resolve_deepest_nodes(["*", *data.permission_nodes], leaves)
     return _resolve_deepest_nodes(data.permission_nodes, leaves)
 
 def get_deepest_group_permission_nodes(group_id: str | int) -> list[str]:
     from src.utils.database.classes import GroupSettings
 
+    group_id = resolve_group_id(group_id)
     data: GroupSettings | Any = db.where_one(
         GroupSettings(),
         "group_id = ?",
@@ -175,6 +182,7 @@ def check_permission(user_id: str | int, node: str | int) -> bool:
         user_id (str, int): 用户 QQ 号。
         node (str): 所需的权限节点。
     """
+    user_id = resolve_user_id(user_id)
     data: Account | Any = db.where_one(
         Account(),
         "user_id = ?",
@@ -184,6 +192,7 @@ def check_permission(user_id: str | int, node: str | int) -> bool:
     return _check_user_permission(data, node)
 
 def check_group_permission(group_id: str | int, node: str | int) -> bool:
+    group_id = resolve_group_id(group_id)
     data: GroupSettings | Any = db.where_one(
         GroupSettings(),
         "group_id = ?",
@@ -204,17 +213,17 @@ def get_permission_holders(node: str, scope: Literal["user", "group"]) -> list[s
     if scope == "user":
         accounts: dict[str, Account] = {}
         for account in db.where_all(Account(), "1=1 ORDER BY id", default = []):
-            if account.user_id > 0:
+            if account.user_id != 0:
                 accounts.setdefault(str(account.user_id), account)
         # Bot 主人即使没有账户记录也具备权限，显式拒绝仍然生效。
         for owner_id in _bot_owner_ids():
-            if owner_id.isdigit() and int(owner_id) > 0:
+            if owner_id.removeprefix("-").isdigit() and int(owner_id) != 0:
                 accounts.setdefault(owner_id, Account(user_id = int(owner_id)))
         matches.update(user_id for user_id, account in accounts.items() if _check_user_permission(account, node))
     else:
         groups: dict[str, GroupSettings] = {}
         for group in db.where_all(GroupSettings(), "1=1 ORDER BY id", default = []):
-            if group.group_id.isdigit() and int(group.group_id) > 0:
+            if group.group_id.removeprefix("-").isdigit() and int(group.group_id) != 0:
                 groups.setdefault(group.group_id, group)
         matches.update(
             group_id for group_id, group in groups.items() if _check_nodes_permission(group.permission_nodes, node)

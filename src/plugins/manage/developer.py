@@ -5,10 +5,11 @@ from nonebot.adapters.onebot.v11 import Bot, Message, GroupMessageEvent
 
 from src.config import Config
 from src.utils.command import on_command
-from src.utils.permission import check_permission
+from src.utils.permission import check_permission, is_bot_owner
 from src.utils.generate import generate
 from src.utils.database import db
 from src.utils.database.classes import Account, GroupSettings
+from src.utils.identity import resolve_group_id, resolve_user_id
 
 import json
 
@@ -31,7 +32,7 @@ ResetGlobalPermissionMatcher = on_command("重置权限", command_key = None, pr
 
 @ResetGlobalPermissionMatcher.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
-    if str(event.user_id) not in Config.bot_basic.bot_owner:
+    if not is_bot_owner(event.user_id):
         return
     await ResetGlobalPermissionMatcher.send("确定要重置所有人的权限吗？\n警告：请确认自己在做什么！如果确认无误，请发送“确认重置权限”。")
 
@@ -49,7 +50,7 @@ ResetGlobalCoinMatcher = on_command("重置货币", command_key = None, priority
 
 @ResetGlobalCoinMatcher.handle()
 async def _(event: GroupMessageEvent, args: Message = CommandArg()):
-    if str(event.user_id) not in Config.bot_basic.bot_owner:
+    if not is_bot_owner(event.user_id):
         return
     await ResetGlobalCoinMatcher.send("确定要重置所有人的货币吗？\n警告：请确认自己在做什么！如果确认无误，请发送“确认重置货币”。")
 
@@ -74,8 +75,8 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     arg = args.extract_plain_text().split(" ")
     if len(arg) != 2:
         await SetInvitorMatcher.finish("格式错误：设置邀请人 群号 QQ号")
-    group_id = arg[0]
-    user_id = arg[1]
+    group_id = str(resolve_group_id(arg[0]))
+    user_id = resolve_user_id(arg[1])
     current_setting: GroupSettings | Any = db.where_one(
         GroupSettings(),
         "group_id = ?",

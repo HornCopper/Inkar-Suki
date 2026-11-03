@@ -6,6 +6,7 @@ from nonebot.exception import IgnoredException
 from nonebot.message import event_preprocessor, handle_event
 
 from src.config import Config
+from src.utils.identity import resolve_group_id
 
 _PRIVATE_REPLY_USER: ContextVar[int | None] = ContextVar("private_reply_user", default = None)
 _PRIVATE_REPLY_GROUP: ContextVar[int | None] = ContextVar("private_reply_group", default = None)
@@ -51,7 +52,7 @@ async def _(bot: Bot, event: MessageEvent):
     if not Config.bot_basic.allow_private_commands:
         return
 
-    group_id = Config.bot_basic.private_command_group_id
+    group_id = resolve_group_id(Config.bot_basic.private_command_group_id)
     if group_id <= 0:
         return
 

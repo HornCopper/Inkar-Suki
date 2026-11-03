@@ -11,6 +11,7 @@ from src.const.path import (
     build_path,
 )
 from src.utils.time import Time
+from src.utils.permission import is_bot_owner
 from src.utils.generate import generate
 from src.utils.database.operation import get_group_settings, set_group_settings
 
@@ -250,7 +251,7 @@ class Assistance:
         raw_teams: list[dict] = get_group_settings(str(from_group), "opening")
         goal_teams: list[dict] = get_group_settings(str(to_group), "opening")
         for each_team in raw_teams:
-            if (str(each_team["creator"]) == str(creator) or str(creator) in Config.bot_basic.bot_owner) and (
+            if (str(each_team["creator"]) == str(creator) or is_bot_owner(creator)) and (
                     each_team["description"] == keyword or str(raw_teams.index(each_team) + 1) == keyword):
                 goal_teams.append(each_team)
                 set_group_settings(str(to_group), "opening", goal_teams)

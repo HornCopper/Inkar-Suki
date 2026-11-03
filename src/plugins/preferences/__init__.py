@@ -8,6 +8,7 @@ from src.utils.analyze import check_number
 from src.utils.database import db
 from src.utils.database.classes import PersonalSettings
 from src.utils.permission import check_permission, denied
+from src.utils.identity import resolve_user_id
 
 from .app import Preference
 
@@ -47,7 +48,7 @@ async def _(event: GroupMessageEvent, state: T_State, matcher: Matcher, msg: Mes
 @reset_preferences.got("reply")
 async def _(event: GroupMessageEvent, state: T_State, reply: Message = Arg()):
     if reply.extract_plain_text() == "是":
-        target_user_id = state["user_id"]
+        target_user_id = resolve_user_id(state["user_id"])
         if event.user_id != target_user_id:
             if not check_permission(event.user_id, "preferences.reset_other"):
                 await reset_preferences.finish(denied("preferences.reset_other"))

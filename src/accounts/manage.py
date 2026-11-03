@@ -6,6 +6,7 @@ from src.utils.database import db
 from src.utils.database.classes import Account, CheckinPrizeAward
 from src.accounts.prize_pool import draw_checkin_prize
 from src.utils.time import Time
+from src.utils.identity import resolve_user_id
 
 import random
 
@@ -19,6 +20,7 @@ class CheckinRewards(BaseModel):
 class AccountManage:
 
     def __init__(self, user_id: int | str):
+        user_id = resolve_user_id(user_id)
         self.user_id = user_id
         self.data: Account | Any = db.where_one(
             Account(),

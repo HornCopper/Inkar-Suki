@@ -12,6 +12,13 @@ bot_basic: # Bot 基础类信息
     allow_private_commands: False # 是否允许私聊调试所有命令
     private_command_group_id: 0 # 私聊调试时使用的群上下文
 
+qq_official: # QQ 官方机器人，可与原有 OneBot 同时连接
+    enabled: False # 填好凭证后改为 True
+    app_id: "" # QQ 开放平台 AppID
+    app_secret: "" # QQ 开放平台 AppSecret
+    use_websocket: False # False = HTTPS Webhook；后台支持长连接时可改为 True
+    driver: "~fastapi+~httpx+~websockets" # 同时支持现有 OneBot 服务与官方接口
+
 github: # GitHub 相关配置
     web_path: "" # Webhook 接收路径
     github_personal_token: "" # Rest API Token

@@ -5,11 +5,12 @@ from src.utils.database import db
 from src.utils.database.classes import PersonalSettings, RoleData
 from src.utils.database.player import search_player
 from src.utils.permission import check_permission
+from src.utils.identity import resolve_user_id
 
 class RoleBind:
 
     def __init__(self, user_id: str | int, roles: list[tuple[str, str]]):
-        self.user_id = int(user_id)
+        self.user_id = resolve_user_id(user_id)
         self.roles = roles
 
     async def bind(self) -> str:

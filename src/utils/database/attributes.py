@@ -1257,7 +1257,7 @@ class JX3PlayerAttribute:
 
     @classmethod
     async def from_jx3api(cls, server: str, name: str, url_require: bool = False, group_id: int = 0) -> None:
-        if not url_require or group_id <= 0 or not check_group_permission(group_id, ATTRIBUTE_SYNC_GROUP_PERMISSION):
+        if not url_require or group_id == 0 or not check_group_permission(group_id, ATTRIBUTE_SYNC_GROUP_PERMISSION):
             return None
         token = Config.jx3.api.token_v2.strip()
         if not Config.jx3.api.enable or not token:

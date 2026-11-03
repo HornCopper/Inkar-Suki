@@ -1,6 +1,7 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from src.const.path import CONFIG, build_path
+from src.utils.qq_official_config import QQOfficialConfig
 
 import yaml
 
@@ -63,6 +64,7 @@ class config(BaseModel):
     jx3: Jx3Config
     weather: QWeather
     hidden: Hidden
+    qq_official: QQOfficialConfig = Field(default_factory = QQOfficialConfig)
 
     @classmethod
     def from_yaml(cls, yaml_str: str) -> "config":

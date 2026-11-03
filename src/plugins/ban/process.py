@@ -2,11 +2,12 @@ from typing import Any
 
 from src.utils.database import db
 from src.utils.database.classes import BannedUser
+from src.utils.identity import resolve_user_id
 
 class Ban:
 
     def __init__(self, user_id: int | str):
-        self._user_id = user_id
+        self._user_id = resolve_user_id(user_id)
 
     @property
     def _data(self) -> list:
