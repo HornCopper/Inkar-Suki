@@ -1,8 +1,9 @@
 from typing import Any, Literal, overload
 
 from nonebot import get_bots
-from nonebot.exception import ActionFailed
+from nonebot.exception import ActionFailed, NetworkError
 from nonebot.adapters.onebot.v11 import Bot, Message
+from nonebot.adapters.qq import Bot as QQBot
 
 from src.utils.database.classes import GroupSettings
 from src.utils.database import db
@@ -74,7 +75,8 @@ async def send_subscribe(subscribe: str = "", msg: str | Message = "", server: s
     groups = get_groups()
     if isinstance(groups, bool):
         return
-    group: dict[str, list[str]] = {}
+    group: dict[str, list[int]] = {}
+    official = [bot for bot in bots.values() if isinstance(bot, QQBot)]
 
     for i in list(bots):
         if not isinstance(bots[i], Bot):
@@ -88,17 +90,28 @@ async def send_subscribe(subscribe: str = "", msg: str | Message = "", server: s
             group_id_s.append(x["group_id"])
         group[i] = group_id_s
 
-    for group_id in groups:
+    # 协议投递留在共用基础设施，公告和定时任务继续使用原来的 send_subscribe。
+    if official:
+        from src.adapters.qq_official.proactive import send_group_subscription
+        from src.utils.identity import get_identity_store
+
+        identities = get_identity_store()
+    for group_id in dict.fromkeys(resolve_group_id(value) for value in groups):
+        group_data = get_group_settings(group_id, "subscribe")
+        if not isinstance(group_data, list) or subscribe not in group_data:
+            continue
+        group_server = get_group_settings(group_id, "server")
+        if server != "" and (group_server == "" or group_server != server):
+            continue
+        delivered = False
         for x in list(group):
-            if int(group_id) in group[x]:
-                group_data = get_group_settings(str(group_id), "subscribe")
-                if not isinstance(group_data, list):
-                    return
-                if subscribe in group_data:
-                    group_server = get_group_settings(str(group_id), "server")
-                    if server != "" and (group_server == "" or group_server != server):
-                        continue
-                    try:
-                        await bots[x].call_api("send_group_msg", group_id = int(group_id), message = msg)
-                    except ActionFailed:
-                        continue
+            if group_id in group[x]:
+                try:
+                    await bots[x].call_api("send_group_msg", group_id = group_id, message = msg)
+                    delivered = True
+                except (ActionFailed, NetworkError):
+                    continue
+        if not delivered:
+            for bot in official:
+                if await send_group_subscription(bot, identities, group_id, subscribe, msg, server):
+                    break

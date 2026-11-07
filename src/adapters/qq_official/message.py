@@ -19,7 +19,9 @@ def incoming_message(message: QQMessage) -> Message:
             if url.startswith("//"):
                 url = "https:" + url
             if urlsplit(url).scheme in {"http", "https"}:
-                result.append(MessageSegment.image(url))
+                image = MessageSegment.image(url)
+                image.data["url"] = url
+                result.append(image)
     return result
 
 

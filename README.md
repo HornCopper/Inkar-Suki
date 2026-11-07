@@ -40,6 +40,27 @@ Inkar Suki 是一个集成多种功能的群聊机器人，基于 [Nonebot 2](ht
 
 官方群在未匹配真实群号时默认停用业务功能，包括已经加入但尚未匹配的群；仅保留 `官号信息`（`qq身份`）、`匹配群`、`匹配个人` 作为配置入口，匹配操作仍需要 `manage.identity.bind` 权限。匹配群号后，下一条消息自动按对应群号正常处理，无需重启。此限制不影响 OneBot 群聊和官方单聊。
 
+业务命令继续使用 OneBot 接口，协议差异由 `src/adapters/qq_official` 处理。兼容 Bot 对插件暴露 OneBot 协议，与转换后的消息段保持一致，Alconna/UniSeg 也按 OneBot 解析图片，实际连接和发送仍使用 QQ 官方协议。官方接口兼容范围如下：
+
+| OneBot 接口 | 官方接入的处理方式 |
+| --- | --- |
+| `get_group_list`、`get_friend_list` | 统计当前应用在本地已识别的群聊、单聊会话，合并已匹配号码、去除重复身份，不代表官方完整名单。管理员 `ping` 无需改动业务代码也能回复。 |
+| `get_group_info` | 调用官方群资料接口；未获授权时显示群号，省略未知人数。官方单聊返回单聊上下文名称。 |
+| `get_group_member_info` | 当前发送者使用消息事件中的身份；机器人自身及其他已知成员使用官方查询接口，OpenID 限定在当前应用和当前群。 |
+| `get_group_member_list` | 调用官方接口并遍历分页，按匹配后的身份去重；未获白名单权限时跳过，不伪造完整名单。 |
+| `get_stranger_info`、`get_image` | 昵称使用当前事件或本次查询已确认的成员资料，未知昵称以 ID 显示；图片解析只使用当前消息的真实附件地址。 |
+| `upload_group_file`、`upload_private_file` | 转为当前会话的官方文件消息，支持生成的 APNG 文件；保留文件名，上传时关闭自动发送，再按原消息被动回复。超过 5MB 的二进制使用分片上传，上传上限为 200MB。 |
+| `set_group_ban` | 将匹配前后用户 ID 转回当前群成员 OpenID；支持禁言和解除禁言，最长 30 天，仍需官方授予相应权限及机器人群管理员身份。 |
+| `get_cookies`、`get_group_file_url`、`set_group_leave`、`set_group_add_request` | 没有可直接复用的官方对应能力或 OneBot 事件参数；含这些直接调用的业务响应器会提前跳过，避免发送无法完成的确认提示。 |
+
+完整成员查询等能力受官方白名单限制，配置 OpenID 匹配不会自动获得接口权限。任意业务跨群发送和其他 OneBot 专属事件仍不在此接入范围内。接口依据见 [官方群资料接口](https://bot.q.qq.com/wiki/develop/api-v2/autogen/api/v2_groups_group_openid_info.get.html)、[群成员接口](https://bot.q.qq.com/wiki/develop/api-v2/autogen/api/v2_groups_group_openid_members.get.html)、[富媒体上传](https://bot.q.qq.com/wiki/develop/api-v2/autogen/api/v2_groups_group_openid_files.post.html)。
+
+公告、微博卡片、日常和活动提醒等经共用 `send_subscribe` 发送的群订阅已接入官方主动推送，支持文字和图片，沿用原订阅项目及区服筛选。官方群必须先匹配真实群号、在对应群开启订阅，并在 QQ 客户端允许机器人主动发送消息；不需要先发消息来维持五分钟回复窗口。当前工作进程中的 OneBot 已向同群成功投递时不再重复发送官 Bot；OneBot 发送失败或不在群内时，尝试已知的官方群 OpenID。两种协议分别连接在不同工作进程时，仍可能各推送一次；同群避免同时使用两个推送账号。
+
+官方推送记录进群、退群和主动消息开关事件，退群或关闭主动消息后暂停投递；不依赖需白名单的群状态查询接口，遗漏事件时以官方发送结果为准。兼容层按未认证应用的保守额度排队等待（每应用 30 条/分钟、每群 20 条/分钟），每群每天最多尝试 1000 条，日界线为北京时间零点。十分钟内同一应用、群、订阅项目、区服和相同内容的同一消息分段只尝试一次，以避免多进程重复发送；失败不自动重试，避免超时后重复触达。状态、限额和去重摘要保存在本地 `qq_official.sqlite3`，权限、配额及媒体失败会写入 `WARNING` 日志，不影响其他群继续推送。平台实际权限与额度仍以 [官方主动消息规则](https://bot.q.qq.com/wiki/develop/api-v2/server-inter/message/overview.html) 及 [群消息接口](https://bot.q.qq.com/wiki/develop/api-v2/autogen/api/v2_groups_group_openid_messages.post.html) 为准。
+
+兼容层会将未适配接口、功能提前跳过、权限不足、查询降级、无法转换的消息段及未接入事件写入 `WARNING` 日志，默认 `LOG_LEVEL=SUCCESS` 即可看到。日志包含应用、群、用户和消息 ID，以及可取得的接口名、命令、响应器和官方错误码，不输出正文、API 参数、附件地址或服务端响应体。同一条消息的相同原因只记录一次；随正文省略的装饰性 @、引用段使用 `DEBUG`，避免普通回复刷屏。
+
 **如果搭建过程中遇到问题，欢迎来提问或发起`Issue`，而不是使用本仓库的代码去纠缠数据源的人员！**
 
 ## 功能

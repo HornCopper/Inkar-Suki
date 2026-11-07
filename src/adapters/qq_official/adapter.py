@@ -8,6 +8,7 @@ from nonebot.adapters.qq import Adapter as QQAdapter, Bot
 from nonebot.adapters.qq.config import BotInfo
 from nonebot.adapters.qq.event import Event
 from nonebot.adapters.qq.models import Dispatch
+from nonebot.drivers import Request, Response
 
 from src.const.path import DATA
 from .lease import websocket_lease
@@ -17,6 +18,18 @@ WEBSOCKET_LEASE_RETRY = 3
 
 
 class Adapter(QQAdapter):
+    async def request(self, setup: Request) -> Response:
+        parts = setup.url.path.strip("/").split("/")
+        if (setup.method == "POST" and len(parts) == 4 and parts[0] == "v2"
+            and parts[1] in {"groups", "users"} and parts[3] == "files"
+            and setup.url.host == self.get_api_base().host
+            and isinstance(setup.json, dict) and setup.json.get("file_data")
+            and not setup.json.get("file_name")):
+            # SDK 的小图片二进制上传没有提供现行接口要求的文件名。
+            name = "image.png" if setup.json.get("file_type") == 1 else "file.bin"
+            setup.json = {**setup.json, "file_name": name}
+        return await super().request(setup)
+
     async def run_bot_websocket(self, bot_info: BotInfo) -> None:
         shard = bot_info.shard[0] if bot_info.shard else 0
         key = hashlib.sha256(f"{bot_info.id}:{shard}".encode()).hexdigest()[:24]
