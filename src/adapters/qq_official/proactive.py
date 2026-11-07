@@ -26,10 +26,10 @@ class GroupPush:
     subscribe: str
     is_group: bool = True
 
-    def log(self, reason: str, *, action: str = "跳过推送", **fields: Any) -> None:
+    def log(self, reason: str, *, action: str = "跳过推送", level: str = "WARNING", **fields: Any) -> None:
         fields = {"app_id": self.native.self_id, "group_id": self.group_id, "subscribe": self.subscribe, **fields}
         details = " ".join(f"{key}={value!r}" for key, value in fields.items() if value is not None)
-        logger.bind(qq_compat=True, action=action, reason=reason, **fields).warning(
+        logger.bind(qq_compat=True, action=action, reason=reason, **fields).log(level,
             "QQ 官方兼容层{}：{} | {}", action, reason, details,
         )
 
@@ -54,7 +54,7 @@ class GroupPush:
                 reported_wait = True
             await asyncio.sleep(delay)
 
-    async def send(self, message: Message, server: str | None) -> bool:
+    async def send(self, message: Message, server: str | None, *, delivery_key: str = "") -> bool:
         try:
             replies = outgoing_messages(message)
             unsupported = sorted({part.type for part in message if part.type not in {"text", "image"}})
@@ -66,6 +66,10 @@ class GroupPush:
             digest = hashlib.sha256()
             for value in (self.subscribe, server or "", str(message)):
                 encoded = value.encode("utf-8")
+                digest.update(len(encoded).to_bytes(8, "big"))
+                digest.update(encoded)
+            if delivery_key:
+                encoded = delivery_key.encode("utf-8")
                 digest.update(len(encoded).to_bytes(8, "big"))
                 digest.update(encoded)
             for index, reply in enumerate(replies):

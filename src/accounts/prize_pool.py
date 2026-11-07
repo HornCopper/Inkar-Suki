@@ -178,7 +178,7 @@ class PrizePoolManage:
             node = validate_prize_permission(award.permission_scope, award.permission_node)
             if award.permission_scope == "group":
                 if group_id == 0 or not -MAX_STOCK <= group_id <= MAX_STOCK:
-                    raise ValueError("群权限奖品请在要开通权限的群内发送兑奖命令。")
+                    raise ValueError("群权限奖品请在要开通权限的群内发送兑奖命令，或在命令末尾指定群号。")
                 target_id = group_id
                 target = db.where_one(
                     GroupSettings(), "group_id = ?", str(group_id),

@@ -31,7 +31,7 @@ backpack_row = """
         <span class="backpack-prize-name">{{ prize_name }}</span>
         <span class="backpack-quantity">×1</span>
         {% if permission_scope and not delivered_at %}
-        <div class="backpack-redeem-hint">兑奖 {{ award_id }}{% if permission_scope == 'group' %}（在目标群发送）{% endif %}</div>
+        <div class="backpack-redeem-hint">兑奖 {{ award_id }}{% if permission_scope == 'group' %} [群号]（省略时使用当前群）{% endif %}</div>
         {% endif %}
     </td>
     <td class="backpack-record">#{{ award_id }}</td>

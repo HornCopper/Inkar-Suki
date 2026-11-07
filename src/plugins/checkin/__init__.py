@@ -63,7 +63,7 @@ async def pq_(reply: str = ArgPlainText("pb")):
             at_sender = True,
         )
 
-CheckinMatcher = on_command("签到", command_key = "签到", aliases = {"打卡"}, force_whitespace = True, priority = 5)
+CheckinMatcher = on_command("签到", command_key = "签到", aliases = {"打卡", "祈祷"}, force_whitespace = True, priority = 5)
 
 @CheckinMatcher.handle()
 async def _(event: MessageEvent, args: Message = CommandArg()):
@@ -81,7 +81,7 @@ async def _(event: MessageEvent, args: Message = CommandArg()):
         if status.pool_prize.permission_scope:
             msg += f"\n发送「兑奖 {status.pool_prize.id}」自助领取权限。"
             if status.pool_prize.permission_scope == "group":
-                msg += "请在要开通权限的群内发送。"
+                msg += f"请在目标群内发送，或使用「兑奖 {status.pool_prize.id} 群号」指定群。"
     await CheckinMatcher.finish(msg)
 
 CoinMatcher = on_command("金币", command_key = None, aliases = {"余额"}, force_whitespace = True, priority = 5)

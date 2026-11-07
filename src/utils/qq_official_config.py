@@ -10,6 +10,7 @@ class QQOfficialConfig(BaseModel):
     app_id: str = ""
     app_secret: SecretStr = Field(default = SecretStr(""), repr = False)
     use_websocket: bool = False
+    group_member_events: bool = False
     driver: str = "~fastapi+~httpx+~websockets"
 
     @field_validator("app_id", mode = "before")
@@ -37,6 +38,7 @@ class QQOfficialConfig(BaseModel):
                     "message_audit": False,
                     "at_messages": False,
                     "c2c_group_at_messages": True,
+                    "group_members": self.group_member_events,
                 },
             }],
         }

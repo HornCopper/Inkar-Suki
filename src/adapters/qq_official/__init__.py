@@ -6,12 +6,12 @@ from contextvars import ContextVar
 from datetime import datetime, timezone
 from typing import Any
 
-from nonebot import get_adapter
+from nonebot import get_adapter, get_driver
 from nonebot.adapters.onebot.v11 import Adapter as OneBotAdapter, Bot, GroupMessageEvent, Message, MessageSegment
 from nonebot.adapters.qq import Bot as QQBot
 from nonebot.adapters.qq.event import (
     C2CMessageCreateEvent, Event as QQEvent, GroupMessageCreateEvent,
-    GroupAddRobotEvent, GroupDelRobotEvent, GroupMsgReceiveEvent, GroupMsgRejectEvent,
+    GroupAddRobotEvent, GroupDelRobotEvent, GroupMsgReceiveEvent, GroupMsgRejectEvent, GroupMemberAddEvent,
 )
 from nonebot.adapters.qq.exception import ActionFailed
 from nonebot.exception import FinishedException, IgnoredException
@@ -25,6 +25,7 @@ from src.utils.qq_official_policy import allowed_in_unmatched_group
 from .api import ContextAPI, UNHANDLED, UNSUPPORTED_APIS, unavailable
 from .media import DIRECT_UPLOAD_LIMIT, file_source, send_media
 from .message import incoming_message, outgoing_messages
+from .notice import QQGroupNoticeBot
 
 QQIncoming = C2CMessageCreateEvent | GroupMessageCreateEvent
 _installed = False
@@ -223,9 +224,17 @@ def install_bridge(path: str = "src/data/qq_official.sqlite3") -> None:
         return
     identities = IdentityStore(path)
 
+    @get_driver().on_bot_connect
+    async def report_welcome_subscription(bot: QQBot) -> None:
+        if isinstance(bot, QQBot) and bot.bot_info.use_websocket and not bot.bot_info.intent.group_members:
+            logger.bind(qq_compat=True, action="欢迎语配置提示", app_id=bot.self_id).warning(
+                "QQ 官方欢迎语尚未启用：未订阅群成员事件；获平台授权后配置 qq_official.group_member_events=true | app_id={!r}",
+                bot.self_id,
+            )
+
     @run_preprocessor
     async def require_matched_group(bot: Bot, matcher: Matcher, state: T_State) -> None:
-        if (isinstance(bot, QQCompatBot) and bot.is_group and bot.group_id < 0
+        if (isinstance(bot, (QQCompatBot, QQGroupNoticeBot)) and bot.is_group and bot.group_id < 0
             and not allowed_in_unmatched_group(matcher)):
             bot.log_compatibility("未匹配群号，业务功能已停用", action = "跳过功能", matcher = matcher,
                                   command = state.get("_prefix", {}).get("raw_command"))
@@ -253,6 +262,12 @@ def install_bridge(path: str = "src/data/qq_official.sqlite3") -> None:
                 translated = proxy.build_event()
                 if translated.message:
                     await handle_event(proxy, translated)
+        elif isinstance(event, GroupMemberAddEvent):
+            proxy = QQGroupNoticeBot(bot, event, identities)
+            if identities.claim_message(bot.self_id, "member-add:" + event.group_openid, proxy.delivery_key):
+                identities.observe_group(bot.self_id, proxy.target, joined=True, timestamp=proxy.timestamp)
+                if proxy.can_welcome():
+                    await handle_event(proxy, proxy.build_event())
         elif isinstance(event, (GroupAddRobotEvent, GroupDelRobotEvent, GroupMsgReceiveEvent, GroupMsgRejectEvent)):
             raw_group = identities.identify(bot.self_id, "group", event.group_openid)
             timestamp = event.timestamp.replace(tzinfo=event.timestamp.tzinfo or timezone.utc).timestamp()

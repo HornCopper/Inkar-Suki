@@ -39,7 +39,7 @@ POOL_HELP = """签到奖池：每次成功签到最多抽中一件奖品，概�
 中奖记录：签到奖池 记录 <QQ号> [页码]
 未兑奖记录：签到奖池 未兑奖 <奖品编号> [页码]
 标记兑付：签到奖池 兑付 <背包记录编号>
-自助兑奖：兑奖 <背包记录编号>，或 签到奖池 兑奖 <背包记录编号>
+自助兑奖：兑奖 <背包记录编号> [群号]，或 签到奖池 兑奖 <背包记录编号> [群号]
 我的奖品：背包 [页码]
 清空全部背包（仅 Bot 主人）：签到奖池 清空背包
 例如：签到奖池 投放 "纪念徽章" 5% 10
@@ -48,7 +48,7 @@ POOL_HELP = """签到奖池：每次成功签到最多抽中一件奖品，概�
 上架总概率不超过100%；耗尽后不再抽取，其他奖品概率保持不变。
 奖池全局共享；管理操作需要 economy.checkin.pool.manage 权限。
 投放人可为自己的奖品绑定权限，Bot 主人可管理全部奖品；绑定或取消只对后续中奖生效。
-仅权限奖品支持自助兑奖；个人权限授予本人，群权限需在目标群内兑奖。
+仅权限奖品支持自助兑奖；个人权限授予本人，群权限可指定群号，省略时使用当前群。
 已拥有或被拒绝的权限不会消耗奖品；普通奖品由投放人安排发放，兑付命令仅记录状态。
 清空背包会删除所有人的已兑付和未兑付记录；奖池、库存及已授予的权限保留。"""
 PAGE_SIZE = 10
@@ -57,9 +57,9 @@ def positive_number(value: str) -> int:
     try:
         number = int(value)
     except ValueError:
-        raise ValueError("编号、QQ号、数量和页码需要是正整数。") from None
+        raise ValueError("编号、QQ号、群号、数量和页码需要是正整数。") from None
     if number <= 0 or number > 9_223_372_036_854_775_807:
-        raise ValueError("编号、QQ号、数量和页码需要是有效的正整数。")
+        raise ValueError("编号、QQ号、群号、数量和页码需要是有效的正整数。")
     return number
 
 def page_bounds(total: int, page: int) -> tuple[int, int]:
@@ -130,7 +130,7 @@ def backpack_listing(user_id: int, page: int) -> str:
             table_body = "\n".join(rows),
             additional_css = backpack_css,
             footer = (
-                f"第 {page}/{pages} 页 · 每页 {PAGE_SIZE} 件 · 权限奖品发送「兑奖 记录编号」领取，群权限需在目标群内兑奖。"
+                f"第 {page}/{pages} 页 · 每页 {PAGE_SIZE} 件 · 权限奖品发送「兑奖 记录编号」领取，群权限可追加群号，省略时使用当前群。"
                 "普通奖品请联系投放人，兑付后保留记录。"
             ),
         ),
@@ -200,8 +200,9 @@ PrizePoolMatcher = on_command("签到奖池", force_whitespace = True, priority 
 BackpackMatcher = on_command("背包", aliases = {"我的背包"}, force_whitespace = True, priority = 5)
 RedeemMatcher = on_command("兑奖", aliases = {"自助兑奖"}, force_whitespace = True, priority = 5)
 
-def redeem_response(event: MessageEvent, award_id: int) -> str:
-    group_id = getattr(event, "group_id", 0) if event.message_type == "group" else 0
+def redeem_response(event: MessageEvent, award_id: int, group_id: int | None = None) -> str:
+    if group_id is None:
+        group_id = getattr(event, "group_id", 0) if event.message_type == "group" else 0
     award = PrizePoolManage(event.user_id).redeem(award_id, group_id)
     target = f"群 {award.delivered_target}" if award.permission_scope == "group" else f"你（{award.user_id}）"
     return f"兑奖成功！已为{target}开通「{award.prize_name}」（记录 #{award.id}）。"
@@ -215,8 +216,10 @@ async def handle_prize_pool(event: MessageEvent, args: Message = CommandArg()):
             response = POOL_HELP
         elif not parts or (len(parts) == 1 and parts[0].isdigit()):
             response = pool_listing(positive_number(parts[0]) if parts else 1)
-        elif len(parts) == 2 and parts[0] == "兑奖":
-            response = redeem_response(event, positive_number(parts[1]))
+        elif len(parts) in {2, 3} and parts[0] == "兑奖":
+            response = redeem_response(
+                event, positive_number(parts[1]), positive_number(parts[2]) if len(parts) == 3 else None,
+            )
         else:
             if not check_permission(event.user_id, POOL_PERMISSION):
                 raise PermissionError(POOL_PERMISSION)
@@ -273,9 +276,11 @@ async def handle_prize_pool(event: MessageEvent, args: Message = CommandArg()):
 async def handle_redeem(event: MessageEvent, args: Message = CommandArg()):
     try:
         parts = args.extract_plain_text().split()
-        if len(parts) != 1:
-            raise ValueError("格式：兑奖 <背包记录编号>。群权限奖品请在目标群内兑奖。")
-        response = redeem_response(event, positive_number(parts[0]))
+        if len(parts) not in {1, 2}:
+            raise ValueError("格式：兑奖 <背包记录编号> [群号]。群权限奖品可指定群号，省略时使用当前群。")
+        response = redeem_response(
+            event, positive_number(parts[0]), positive_number(parts[1]) if len(parts) == 2 else None,
+        )
     except ValueError as error:
         response = str(error)
     await RedeemMatcher.finish(response)
