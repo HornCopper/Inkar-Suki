@@ -70,12 +70,14 @@
         .grid {
             flex: 1;
             display: grid;
-            grid-template-columns: repeat(5, 1fr);
+            grid-template-columns: repeat(5, minmax(0, 1fr));
             grid-template-rows: repeat(5, 1fr);
             gap: 5px;
         }
 
         .cell {
+            min-width: 0;
+            padding: 6px;
             background: rgba(0, 0, 0, 0.05);
             display: flex;
             justify-content: center;
@@ -88,19 +90,68 @@
             display: flex;
             align-items: center;
             font-size: 14px;
+            min-width: 0;
+            width: 100%;
+            gap: 8px;
         }
 
-        .player img {
+        .avatar-wrap {
+            position: relative;
             width: 36px;
             height: 36px;
-            margin-right: 6px;
+            flex: 0 0 36px;
+        }
+
+        .member-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 1px solid #fff;
+        }
+
+        .profession-avatar {
+            border-radius: 5px;
+        }
+
+        .job-icon {
+            position: absolute;
+            right: -3px;
+            bottom: -3px;
+            width: 17px;
+            height: 17px;
+            border: 1px solid #fff;
+            border-radius: 4px;
+        }
+
+        .member-identity {
+            min-width: 0;
+            flex: 1;
+        }
+
+        .member-role {
+            font-size: 15px;
+            font-weight: 600;
+            line-height: 1.6;
+        }
+
+        .member-name {
+            color: #485766;
+            font-size: 12px;
+            line-height: 1.6;
+        }
+
+        .member-role, .member-name {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
         }
 
         .member-time {
             display: block;
             margin-top: 3px;
             color: #666;
-            font-size: 10px;
+            font-size: 9px;
             white-space: nowrap;
         }
 

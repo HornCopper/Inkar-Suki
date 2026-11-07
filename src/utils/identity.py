@@ -8,6 +8,7 @@ from contextlib import contextmanager
 from functools import cache
 from pathlib import Path
 from typing import Iterator, Literal
+from urllib.parse import quote
 
 IdentityScope = Literal["user", "group"]
 
@@ -109,6 +110,18 @@ class IdentityStore:
             if canonical == expected:
                 return openid
         return None
+
+    def user_avatar_url(self, identity: int | str) -> str | None:
+        """仅为本地已记录的用户身份构造头像地址，不将群或消息身份当作用户。"""
+        with self.connect() as conn:
+            row = conn.execute(
+                "SELECT app_id, openid FROM identities WHERE id = ? AND (scope = 'user' OR scope LIKE 'member:%')",
+                (int(identity),),
+            ).fetchone()
+        if row is None:
+            return None
+        app_id, openid = (quote(value, safe = "") for value in row)
+        return f"https://q.qlogo.cn/qqapp/{app_id}/{openid}/100"
 
     def claim_message(self, app_id: str, session: str, message_id: str) -> bool:
         now = time.time()

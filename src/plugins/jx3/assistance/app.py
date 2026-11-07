@@ -1,5 +1,6 @@
 from typing import Any, Literal, overload
 from datetime import datetime
+from html import escape
 from jinja2 import Template
 
 from nonebot.adapters.onebot.v11 import MessageSegment as ms
@@ -12,6 +13,7 @@ from src.const.path import (
 )
 from src.utils.time import Time
 from src.utils.permission import is_bot_owner
+from src.utils.avatars import load_user_avatars
 from src.utils.generate import generate
 from src.utils.database.operation import get_group_settings, set_group_settings
 
@@ -46,6 +48,15 @@ def format_member_time(value: Any) -> str:
     except (TypeError, ValueError, OSError, OverflowError):
         return "未知"
 
+
+def format_user_display(user_id: str, nickname: str = "") -> str:
+    """内部身份仅用于判权，未匹配号码的官方用户以昵称显示。"""
+    identity = str(user_id)
+    if identity.startswith("-"):
+        return str(nickname or "").strip() or "群友"
+    return identity
+
+
 class Assistance:
 
     def __init__(self):
@@ -75,12 +86,15 @@ class Assistance:
             return Kungfu(kungfu_name).icon
         return build_path(ASSETS, ["image", "jx3", "kungfu"], end_with_slash = True) + "老板.png"
 
-    def create_group(self, group_id: str, keyword: str, creator_id: str, /, limit: str = "") -> str | None:
+    def create_group(
+        self, group_id: str, keyword: str, creator_id: str, /, limit: str = "", *, creator_name: str = "",
+    ) -> str | None:
         status = self.check_description(group_id, keyword)
         if not status:
             return "开团失败，已经有相同的团队关键词！\n使用“团队列表”可查看本群目前正在进行的团队。"
         new = {
             "creator": creator_id,
+            "creator_name": creator_name,
             "applying": [],
             "member": [[], [], [], [], []],
             "create_time": Time().raw_time,
@@ -94,7 +108,9 @@ class Assistance:
         set_group_settings(group_id, "opening", opening)
         return "开团成功，团员可通过以下命令进行报名：\n报名 <团队关键词/序号> <职业> <角色名>\n可使用“团队列表”查看该团队的序号！"
 
-    def apply_for_place(self, group_id: str, keyword: str, role_name: str, role_type: str, user_id: str) -> str:
+    def apply_for_place(
+        self, group_id: str, keyword: str, role_name: str, role_type: str, user_id: str, *, user_name: str = "",
+    ) -> str:
         if role_name == "#":
             return "请不要以单个井号创建预留位，可在井号后追加任意文字！"
         status = self.check_apply(group_id, keyword, role_name)
@@ -135,6 +151,7 @@ class Assistance:
             "role": role_name,
             "role_type": role_actual_type,
             "apply": user_id,
+            "apply_name": user_name,
             "time": Time().raw_time,
         }
         storge_status = self.storge(group_id, keyword, new)
@@ -285,7 +302,11 @@ class Assistance:
         images = []
         for i in now:
             if (i["description"] == keyword or str(now.index(i) + 1) == keyword) or all:
-                creator = i["creator"]
+                creator = escape(format_user_display(i["creator"], i.get("creator_name", "")))
+                avatars = await load_user_avatars(
+                    member["apply"] for row in i["member"] for member in row
+                    if member.get("role") and not member["role"].startswith("#")
+                )
                 count = {
                     "T": 0,
                     "N": 0,
@@ -307,8 +328,9 @@ class Assistance:
                             # icon = a["img"]
                             icon = self.get_kungfu_icon(a["role_type"])
                             color = Kungfu(a["role_type"]).color  # 默认颜色为白色
-                            name = a["role"]
-                            qq = a["apply"]
+                            name = escape(a["role"])
+                            qq = escape(format_user_display(a["apply"], a.get("apply_name", "")))
+                            avatar = avatars.get(str(a["apply"])) if not name.startswith("#") else None
                             if name[0] == "#":
                                 name = f"<span style=\"text-decoration: line-through;\">{name}</span>"
                                 qq = "<span style=\"color:gold\"><b>可报名此职业</b></span>"
@@ -317,6 +339,7 @@ class Assistance:
                             cell_content = Template(template_assistance_unit).render(
                                 color = to_transparent_hex(color),
                                 icon = icon,
+                                avatar = avatar,
                                 name = name,
                                 qq = qq,
                                 time = format_member_time(a.get("time")),
@@ -338,7 +361,7 @@ class Assistance:
                     font = font,
                     footer_msg = get_saohua(),
                     # background = bg,
-                    title = i["description"],
+                    title = escape(i["description"]),
                 )
                 image = await generate(
                     str(html),

@@ -8,9 +8,14 @@ from src.utils.command import on_command
 from src.utils.analyze import check_number
 from src.utils.database.operation import get_group_settings, set_group_settings
 
-from .app import Assistance, parse_limit, get_yzk_answer, get_gyc_answer
+from .app import Assistance, format_user_display, parse_limit, get_yzk_answer, get_gyc_answer
 
 AssistanceInstance = Assistance()
+
+
+def sender_name(event: GroupMessageEvent) -> str:
+    return (event.sender.card or "").strip() or (event.sender.nickname or "").strip()
+
 
 create_team_matcher = on_command("创建团队", command_key = None, force_whitespace = True, priority = 5)
 
@@ -26,11 +31,15 @@ async def _(event: GroupMessageEvent, argument: Message = CommandArg()):
     args = argument.extract_plain_text().split(" ")
     if not parse_limit(args[-1]):
         team_name = argument.extract_plain_text()
-        resp = AssistanceInstance.create_group(str(event.group_id), team_name, str(event.user_id))
+        resp = AssistanceInstance.create_group(
+            str(event.group_id), team_name, str(event.user_id), creator_name = sender_name(event),
+        )
     else:
         team_name = " ".join(args[:-1])
         team_limit = args[-1]
-        resp = AssistanceInstance.create_group(str(event.group_id), team_name, str(event.user_id), team_limit)
+        resp = AssistanceInstance.create_group(
+            str(event.group_id), team_name, str(event.user_id), team_limit, creator_name = sender_name(event),
+        )
     await create_team_matcher.finish(resp)
 
 book_team_matcher = on_command("预定", command_key = None, aliases = {"预订", "报名"}, force_whitespace = True, priority = 5)
@@ -55,7 +64,9 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
         id = arg[1]
     if not keyword:
         await book_team_matcher.finish("当前进行中的团队超过1个，请携带团队关键词/序号！")
-    resp = AssistanceInstance.apply_for_place(str(event.group_id), keyword, id, job, str(event.user_id))
+    resp = AssistanceInstance.apply_for_place(
+        str(event.group_id), keyword, id, job, str(event.user_id), user_name = sender_name(event),
+    )
     final_resp = ms.at(event.user_id) + " " + str(resp)
     await book_team_matcher.finish(final_resp)
 
@@ -183,7 +194,7 @@ async def _(event: GroupMessageEvent):
     msg = "本群有以下团队：\n"
     for i in range(len(all_teams)):
         name = all_teams[i]["description"]
-        leader = str(all_teams[i]["creator"])
+        leader = format_user_display(all_teams[i]["creator"], all_teams[i].get("creator_name", ""))
         if "limit" not in all_teams[i]:
             limit = "无"
         else:
