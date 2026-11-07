@@ -6,9 +6,10 @@ from src.utils.command import on_command
 from src.utils.database.identity import ID_HELP, MATCH_PERMISSION, match_identity
 from src.utils.identity import IdentityScope
 from src.utils.permission import check_permission, denied
+from src.utils.qq_official_policy import allow_unmatched_group
 
-group_matcher = on_command("匹配群", force_whitespace = True, priority = 5)
-personal_matcher = on_command("匹配个人", force_whitespace = True, priority = 5)
+group_matcher = allow_unmatched_group(on_command("匹配群", force_whitespace = True, priority = 5))
+personal_matcher = allow_unmatched_group(on_command("匹配个人", force_whitespace = True, priority = 5))
 
 
 async def handle_match_identity(matcher: type[Matcher], scope: IdentityScope, event: MessageEvent, args: Message) -> None:

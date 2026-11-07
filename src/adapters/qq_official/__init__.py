@@ -10,10 +10,12 @@ from nonebot.adapters.qq import Bot as QQBot
 from nonebot.adapters.qq.event import C2CMessageCreateEvent, Event as QQEvent, GroupMessageCreateEvent
 from nonebot.exception import FinishedException, IgnoredException
 from nonebot.log import logger
-from nonebot.message import event_preprocessor, handle_event
+from nonebot.matcher import Matcher
+from nonebot.message import event_preprocessor, handle_event, run_preprocessor
 
 from .identity import IdentityStore
 from src.utils.identity import IdentityScope
+from src.utils.qq_official_policy import allowed_in_unmatched_group
 from .message import incoming_message, outgoing_messages
 
 QQIncoming = C2CMessageCreateEvent | GroupMessageCreateEvent
@@ -135,6 +137,12 @@ def install_bridge(path: str = "src/data/qq_official.sqlite3") -> None:
     if _installed:
         return
     identities = IdentityStore(path)
+
+    @run_preprocessor
+    async def require_matched_group(bot: Bot, matcher: Matcher) -> None:
+        if (isinstance(bot, QQCompatBot) and bot.is_group and bot.group_id < 0
+            and not allowed_in_unmatched_group(matcher)):
+            raise IgnoredException("QQ official group is disabled until its group number is matched")
 
     @event_preprocessor
     async def bridge(bot: QQBot, event: QQEvent) -> None:
