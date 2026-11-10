@@ -64,6 +64,12 @@ cache_db.auto_migrate(
     GroupMessage(),
 )
 
+# 每条群消息都会按群、成员查找统计记录；同时支持按群查询排行榜。
+with cache_db.transaction():
+    cache_db.conn.execute(
+        "CREATE INDEX IF NOT EXISTS idx_group_message_group_user ON group_message (group_id, user_id)",
+    )
+
 serendipity_db = Database(build_path(DATA, ["serendipity.db"]))
 
 serendipity_db.auto_migrate(
