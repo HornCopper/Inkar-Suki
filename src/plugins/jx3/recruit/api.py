@@ -40,7 +40,7 @@ async def get_recruit_image(server: str, keyword: str = "", local: bool = False,
         params["keyword"] = keyword
     data = await jx3api_get(url, params = params)
     if data["code"] != 200:
-        return data["msg"] or "唔……未找到相关团队，请检查后重试！"
+        return "唔……未找到相关团队，请检查后重试！"
     adFlags = []
     if filter:
         with open(RECRUIT_WORDS_PATH, encoding = "utf-8") as words_file:
