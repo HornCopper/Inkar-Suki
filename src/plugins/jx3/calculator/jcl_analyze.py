@@ -11,6 +11,7 @@ from src.const.jx3.kungfu import Kungfu
 from src.utils.file import read
 from src.utils.analyze import sort_dict_list
 from src.utils.time import Time
+from src.utils.tcs_rank import save_tcs_rank_data
 from src.utils.generate import generate
 from src.templates import SimpleHTML, HTMLSourceCode, get_saohua
 
@@ -297,43 +298,67 @@ def build_tcs_analysis_data(raw_data: Any, anonymous: bool = False) -> list[list
         groups.append(current_group)
     return groups
 
+def _build_tcs_metric_data(raw_data: Any, anonymous: bool) -> dict[str, Any]:
+    metric = raw_data if isinstance(raw_data, dict) else {}
+    groups = build_tcs_analysis_data(metric.get("players"), anonymous)
+    players = sorted(
+        (player for group in groups for player in group),
+        key = lambda player: player["value"],
+        reverse = True,
+    )
+    total = max(0, _tcs_safe_int(metric.get("total", sum(player["value"] for player in players))))
+    for player in players:
+        player["percent"] = f"{player['value'] / total * 100:.2f}%" if total else "0.00%"
+    return {
+        "total": total,
+        "unattributed": max(0, _tcs_safe_int(metric.get("unattributed"))),
+        "players": players,
+    }
+
+def build_tcs_rounds_data(raw_data: Any, anonymous: bool = False) -> list[dict[str, Any]]:
+    if isinstance(raw_data, dict) and isinstance(raw_data.get("rounds"), list):
+        rounds = []
+        for index, record in enumerate(raw_data["rounds"], 1):
+            if not isinstance(record, dict):
+                continue
+            if not any(isinstance(record.get(key), dict) for key in ("tank_healing", "sword_damage")):
+                continue
+            tank = record.get("tank")
+            tank = tank if isinstance(tank, dict) else {}
+            rounds.append({
+                "order": max(1, _tcs_safe_int(record.get("order", index))),
+                "tank_name": "匿名玩家" if anonymous else str(tank.get("name") or "未记录"),
+                "tank_healing": _build_tcs_metric_data(record.get("tank_healing"), anonymous),
+                "sword_damage": (
+                    _build_tcs_metric_data(record["sword_damage"], anonymous)
+                    if isinstance(record.get("sword_damage"), dict) else None
+                ),
+            })
+        return rounds
+
+    # Older services only return healing groups separated by {}.
+    rounds = []
+    for index, group in enumerate(build_tcs_analysis_data(raw_data, anonymous), 1):
+        total = sum(player["value"] for player in group)
+        for player in group:
+            player["percent"] = f"{player['value'] / total * 100:.2f}%" if total else "0.00%"
+        rounds.append({
+            "order": index,
+            "tank_name": "未记录",
+            "tank_healing": {"total": total, "unattributed": 0, "players": group},
+            "sword_damage": None,
+        })
+    return rounds
+
 def render_tcs_analysis_html(raw_data: Any, anonymous: bool = False) -> str | None:
-    groups = build_tcs_analysis_data(raw_data, anonymous)
-    if not groups:
+    rounds = build_tcs_rounds_data(raw_data, anonymous)
+    if not rounds:
         return None
 
-    final_tables = []
-    for group in groups:
-        rows = []
-        for record in group:
-            rows.append(
-                Template(hps_detail_template_body_main).render(
-                    icon = escape(str(record["icon"]), quote = True),
-                    name = escape(record["name"]),
-                    value = f"{record['value']:,}",
-                ),
-            )
-            for skill in record["skills"]:
-                rows.append(
-                    Template(hps_detail_template_body_sub).render(
-                        name = escape(skill["name"]),
-                        count = skill["count"],
-                        value = f"{skill['value']:,}",
-                        percent = skill["percent"],
-                    ),
-                )
-        final_tables.append(
-            Template(yxc_table.replace("有效治疗", "承疗量")).render(
-                tables = "\n".join(rows),
-            ),
-        )
-
-    return Template(read(TEMPLATES + "/jx3/health_detail.html")).render(
+    return Template(read(TEMPLATES + "/jx3/tcs_detail.html"), autoescape = True).render(
         font = ASSETS + "/font/PingFangSC-Semibold.otf",
-        tables = "\n".join(final_tables),
+        rounds = rounds,
         saohua = get_saohua(),
-        function_name = "田承嗣 · 天陨一剑承疗统计",
-        compact = True,
     )
 
 async def TCSAnalyze(file_name: str, url: str, anonymous: bool = False, user_id: int = 0):
@@ -348,10 +373,11 @@ async def TCSAnalyze(file_name: str, url: str, anonymous: bool = False, user_id:
         )
         data = resp.json()
     if isinstance(data, dict) and data.get("code") not in (None, 200):
-        return data.get("msg") or "田承嗣天陨一剑承疗分析失败，请检查 JCL 是否完整。"
+        return data.get("msg") or "田承嗣天陨一剑分析失败，请检查 JCL 是否完整。"
     html = render_tcs_analysis_html(data, anonymous)
     if html is None:
-        return "未识别到天陨一剑承疗记录，请检查 JCL 是否完整。"
+        return "未识别到天陨一剑统计记录，请检查 JCL 是否完整。"
+    save_tcs_rank_data(data)
     return await generate(html, ".container", segment = True)
 
 # Reason of Death

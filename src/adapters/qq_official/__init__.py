@@ -23,7 +23,7 @@ from nonebot.typing import T_State
 from .identity import IdentityStore
 from src.utils.qq_official_policy import allowed_in_unmatched_group
 from .api import ContextAPI, UNHANDLED, UNSUPPORTED_APIS, unavailable
-from .dispatch import install_command_prefilter
+from src.utils.dispatch import install_command_prefilter
 from .media import DIRECT_UPLOAD_LIMIT, file_source, send_media
 from .message import incoming_message, outgoing_messages
 from .notice import QQGroupNoticeBot
@@ -224,7 +224,7 @@ def install_bridge(path: str = "src/data/qq_official.sqlite3") -> None:
     if _installed:
         return
     identities = IdentityStore(path)
-    install_command_prefilter(QQCompatBot)
+    install_command_prefilter()
 
     @get_driver().on_bot_connect
     async def report_welcome_subscription(bot: QQBot) -> None:

@@ -25,6 +25,10 @@ if qq_bots is not None:
     driver.config.qq_bots = qq_bots
 driver.register_adapter(ONEBOT_V11Adapter)
 
+from src.utils.dispatch import install_command_prefilter
+
+install_command_prefilter()
+
 if Config.qq_official.enabled:
     from src.adapters.qq_official.adapter import Adapter as QQAdapter
     from src.adapters.qq_official import install_bridge

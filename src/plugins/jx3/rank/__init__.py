@@ -13,6 +13,7 @@ from src.utils.database import rank_db as db
 from src.utils.database.classes import CQCRank, THRRank
 from src.utils.generate import generate
 from src.utils.permission import check_permission
+from src.utils.tcs_rank import get_tcs_rank_records
 from src.templates import HTMLSourceCode
 
 from .dungeon import get_rank
@@ -504,3 +505,73 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     )
     image = await generate(html, ".container", segment = True)
     await THRRank_uncarry.finish(image)
+
+
+def render_tcs_rank_html(records: list[Any], kungfu_id: int, ascending: bool) -> str:
+    value_type = "health" if Kungfu.with_internel_id(kungfu_id).abbr == "N" else "damage"
+    metric = "HPS" if value_type == "health" else "DPS"
+    title = "巨剑大吸榜" if ascending else "巨剑大C榜"
+    results = []
+    for rank, record in enumerate(records, 1):
+        results.append(Template(cqcrank_template_body, autoescape = True).render(
+            rank = rank,
+            kungfu_icon = Kungfu.with_internel_id(record.kungfu_id).icon,
+            name = record.role_name,
+            server = record.server_name,
+            value = "{:,}".format(getattr(record, f"total_{value_type}")),
+            value_per_second = "{:,}".format(getattr(record, f"{value_type}_per_second")),
+        ))
+    table_head = cqcrank_table_head.replace("总伤/总疗", "两轮总疗" if value_type == "health" else "两轮总伤")
+    table_head = table_head.replace("秒伤/秒疗", f"两轮 {metric} 之和")
+    return str(HTMLSourceCode(
+        application_name = title,
+        table_head = table_head,
+        table_body = "\n".join(results),
+    ))
+
+
+async def _handle_tcs_rank(matcher: Any, event: GroupMessageEvent, args: Message, ascending: bool) -> None:
+    if ascending and not check_permission(event.user_id, "jx3.rank.uncarry.view"):
+        await matcher.finish("暂无权限查看大吸榜！")
+    arguments = args.extract_plain_text().strip().split()
+    if len(arguments) > 1:
+        await matcher.finish(PROMPT.ArgumentCountInvalid)
+    kungfu_id = 0
+    if arguments:
+        kungfu_id = Kungfu(arguments[0]).id
+        if kungfu_id is None:
+            await matcher.finish(PROMPT.KungfuNotExist)
+    records = get_tcs_rank_records(kungfu_id, ascending)
+    if not records:
+        await matcher.finish("暂无符合条件的巨剑榜单数据，请上传两轮均成功拔剑的 TCS- 日志。")
+    html = render_tcs_rank_html(records, kungfu_id, ascending)
+    image = await generate(html, ".container", segment = True)
+    await matcher.finish(image)
+
+
+tcsrank_carry = on_command(
+    "jx3_tcs_carry",
+    command_key = "天梯",
+    aliases = {"巨剑大C榜", "巨剑大c榜"},
+    priority = 5,
+    force_whitespace = True,
+)
+
+
+@tcsrank_carry.handle()
+async def handle_tcs_rank_carry(event: GroupMessageEvent, args: Message = CommandArg()):
+    await _handle_tcs_rank(tcsrank_carry, event, args, False)
+
+
+tcsrank_uncarry = on_command(
+    "jx3_tcs_uncarry",
+    command_key = "天梯",
+    aliases = {"巨剑大吸榜"},
+    priority = 5,
+    force_whitespace = True,
+)
+
+
+@tcsrank_uncarry.handle()
+async def handle_tcs_rank_uncarry(event: GroupMessageEvent, args: Message = CommandArg()):
+    await _handle_tcs_rank(tcsrank_uncarry, event, args, True)

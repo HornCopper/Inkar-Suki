@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        @font-face {
+            font-family: Harmony;
+            src: url("{{ font }}");
+        }
+
+        body {
+            margin: 0;
+            background: #fff;
+            color: #2c3e50;
+            font-family: Harmony, "Microsoft YaHei", sans-serif;
+        }
+
+        .container {
+            box-sizing: border-box;
+            width: 1280px;
+            padding: 24px;
+            background: #fff;
+        }
+
+        .report-header {
+            padding: 20px 24px;
+            margin-bottom: 20px;
+            background: #f8f9fa;
+            border: 1px solid #e7ebef;
+            border-radius: 4px;
+        }
+
+        .report-title { margin: 0; font-size: 30px; }
+        .report-subtitle { margin: 8px 0 0; color: #666; font-size: 18px; }
+        .round-block + .round-block { margin-top: 28px; }
+        .round-title { margin: 0 0 16px; font-size: 24px; overflow-wrap: anywhere; }
+        .round-title span { margin-left: 16px; font-size: 20px; font-weight: normal; }
+        .round-columns { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 24px; }
+        .metric-heading { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-bottom: 12px; }
+        .metric-heading h3 { margin: 0; font-size: 22px; }
+        .metric-total { font-size: 24px; font-weight: 600; font-variant-numeric: tabular-nums; }
+
+        table {
+            width: 100%;
+            table-layout: fixed;
+            border-collapse: collapse;
+            background: #fff;
+        }
+
+        .player-column { width: 57%; }
+        .value-column { width: 27%; }
+        .percent-column { width: 16%; }
+        th { padding: 12px 10px; background: #f8f9fa; color: #444; font-size: 18px; }
+        th:first-child { text-align: left; }
+        th:not(:first-child) { text-align: right; }
+        td { padding: 12px 10px; border-top: 1px solid #eee; font-size: 20px; }
+        .player-label { display: flex; align-items: center; gap: 10px; min-width: 0; }
+        .player-label img { width: 36px; height: 36px; flex: none; }
+        .player-label span { overflow-wrap: anywhere; }
+        .value, .percent { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+        .percent { color: #666; font-size: 16px; }
+        .skill-row td { padding: 4px 10px; border-top: 0; background: #fafafa; font-size: 16px; color: #666; }
+        .skill-line { display: grid; grid-template-columns: minmax(0, 1fr) 54px 172px; gap: 8px; align-items: baseline; }
+        .skill-name { padding-left: 10px; overflow-wrap: anywhere; }
+        .skill-count, .skill-value { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+        .empty, .unattributed { margin: 12px 0; color: #666; font-size: 18px; }
+        .empty-row { padding: 20px; text-align: center; color: #666; font-size: 18px; }
+        .report-footer { margin-top: 20px; padding: 15px; background: #f0f0f0; color: #777; text-align: center; font-size: 20px; }
+    </style>
+</head>
+<body>
+    <div class="container style2-report">
+        <div class="report-header">
+            <h1 class="report-title">田承嗣 · 天陨一剑</h1>
+            <p class="report-subtitle">分轮 T 承疗与巨剑伤害统计</p>
+        </div>
+
+        {% for round in rounds %}
+        <section class="round-block report-section" data-round="{{ round.order }}">
+            <h2 class="round-title">第 {{ round.order }} 轮<span>持剑 T：{{ round.tank_name }}</span></h2>
+            <div class="round-columns">
+                <div class="tank-healing">
+                    <div class="metric-heading">
+                        <h3>T 承疗明细</h3>
+                        <span class="metric-total">{{ "{:,}".format(round.tank_healing.total) }}</span>
+                    </div>
+                    <table>
+                        <colgroup><col class="player-column"><col class="value-column"><col class="percent-column"></colgroup>
+                        <thead><tr><th>治疗来源</th><th>有效承疗</th><th>占比</th></tr></thead>
+                        <tbody>
+                            {% for player in round.tank_healing.players %}
+                            <tr class="player-row">
+                                <td><div class="player-label"><img src="{{ player.icon }}" alt=""><span>{{ player.name }}</span></div></td>
+                                <td class="value">{{ "{:,}".format(player.value) }}</td>
+                                <td class="percent">{{ player.percent }}</td>
+                            </tr>
+                            {% for skill in player.skills %}
+                            <tr class="skill-row"><td colspan="3"><div class="skill-line">
+                                <span class="skill-name">{{ skill.name }}</span>
+                                <span class="skill-count">{{ skill.count }} 次</span>
+                                <span class="skill-value">{{ "{:,}".format(skill.value) }}（{{ skill.percent }}）</span>
+                            </div></td></tr>
+                            {% endfor %}
+                            {% else %}
+                            <tr><td colspan="3" class="empty-row">暂无有效承疗记录</td></tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    {% if round.tank_healing.unattributed %}
+                    <p class="unattributed">未归属玩家的承疗：{{ "{:,}".format(round.tank_healing.unattributed) }}</p>
+                    {% endif %}
+                </div>
+
+                <div class="sword-damage">
+                    <div class="metric-heading">
+                        <h3>巨剑伤害排名</h3>
+                        {% if round.sword_damage is not none %}
+                        <span class="metric-total">{{ "{:,}".format(round.sword_damage.total) }}</span>
+                        {% endif %}
+                    </div>
+                    {% if round.sword_damage is not none %}
+                    <table>
+                        <colgroup><col class="player-column"><col class="value-column"><col class="percent-column"></colgroup>
+                        <thead><tr><th>伤害来源</th><th>有效伤害</th><th>占比</th></tr></thead>
+                        <tbody>
+                            {% for player in round.sword_damage.players %}
+                            <tr class="player-row">
+                                <td><div class="player-label"><img src="{{ player.icon }}" alt=""><span>{{ player.name }}</span></div></td>
+                                <td class="value">{{ "{:,}".format(player.value) }}</td>
+                                <td class="percent">{{ player.percent }}</td>
+                            </tr>
+                            {% else %}
+                            <tr><td colspan="3" class="empty-row">暂无有效伤害记录</td></tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    {% if round.sword_damage.unattributed %}
+                    <p class="unattributed">未归属玩家的伤害：{{ "{:,}".format(round.sword_damage.unattributed) }}</p>
+                    {% endif %}
+                    {% else %}
+                    <p class="empty">暂无巨剑伤害记录</p>
+                    {% endif %}
+                </div>
+            </div>
+        </section>
+        {% endfor %}
+
+        <p class="report-subtitle">有效承疗含自疗；宠物及召唤物贡献归属主人。</p>
+        <footer class="report-footer">田承嗣 · 天陨一剑 | Inkar-Suki：{{ saohua }}</footer>
+    </div>
+</body>
+</html>
