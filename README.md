@@ -157,7 +157,7 @@ Bot 主人可使用 `setop u<QQ号> economy.checkin.pool.manage` 授予奖池管
 - [x] 开服查询；
 - [x] 情缘系统；
 - [x] 日常查询；
-- [x] 副本查询；
+- [x] 副本v1查询；
 - [x] 随机表情；
 - [x] 事件查询；
 - [x] 科举查询；
@@ -174,6 +174,12 @@ Bot 主人可使用 `setop u<QQ号> economy.checkin.pool.manage` 授予奖池管
 - [x] 体服公告差异推送；
 - [x] 交易行价格（含试炼之地）；
 - [x] 咸鱼微博推送（需在配置文件中启用）。
+
+### JX3API 接入
+
+综合版接口已按 [JX3API 最新文档](https://www.jx3api.com/)适配请求头 `token` 和 `status/detail` 响应。配置 `src/config/config.yml` 中的 `jx3.api.url` 为 `https://www.jx3api.com`；使用自建代理时填写对应地址。`token` 保存 LV.1 令牌，`token_v2` 保存 LV.2 令牌；仅配置 LV.2 令牌时，也可调用低等级接口。WebSocket 推送继续使用独立的 `jx3.ws` 配置。
+
+`榜单` 按个人、帮会、据点和绝境战场分类调用对应接口，并转换客户端原始榜单字段；`试炼` 按心法查询，端游藏剑的问水诀、山居剑意统一查询藏剑榜，带 `·悟` 的心法保留完整名称。`副本` / `副本v2` 命令已移除，保留 `副本v1`。`副本列表` 复用推栏副本进度查询，需要配置推栏 `ticket` 和签名密钥。
 
 ## 赞助支持
 

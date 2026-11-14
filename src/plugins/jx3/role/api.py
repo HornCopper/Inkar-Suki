@@ -3,6 +3,7 @@ from src.const.prompts import PROMPT
 from src.const.jx3.server import Server
 from src.utils.decorators import token_required
 from src.utils.network import Request
+from src.utils.jx3api import jx3api_get
 from src.utils.database.player import search_player
 
 @token_required
@@ -12,10 +13,12 @@ async def get_role_info(server: str, name: str, token: str = ""):
         "name": name,
         "server": server,
     }
-    url = f"{Config.jx3.api.url}/role/detail"
-    data = (await Request(url, params = params).get()).json()
+    url = "/role/detail"
+    data = await jx3api_get(url, params = params)
     if data["code"] == 404:
         return "没有找到该玩家哦~\n需要该玩家在世界频道发言后方可查询。"
+    if data["code"] != 200:
+        return data["msg"] or "角色查询失败，请稍后重试！"
     msg = "以下信息仅供参考！\n数据可能已经过期，但UID之类的仍可参考。"
     _zone = data["data"]["zoneName"]
     _server = data["data"]["serverName"]

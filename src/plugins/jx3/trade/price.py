@@ -11,6 +11,7 @@ from src.utils.database.classes import ItemKeywordMap
 from src.utils.file import read
 from src.utils.generate import generate
 from src.utils.network import Request
+from src.utils.jx3api import jx3api_get
 from src.utils.time import Time
 from src.templates import get_saohua
 
@@ -142,27 +143,25 @@ async def get_single_item_price(item_name: str, exact: bool = False) -> str | di
         if local_data is not None:
             query_name = local_data.raw_name
 
-    data = (
-        await Request(
-            f"{Config.jx3.api.url.rstrip('/')}/trade/item/records",
-            params = {
-                "name": query_name,
-                "token": Config.jx3.api.token,
-            },
-        ).get()
-    ).json()
+    data = await jx3api_get(
+        "/trade/item/records",
+        params = {
+            "name": query_name,
+            "token": Config.jx3.api.token,
+        },
+    )
     item_data = data.get("data")
+    if data["code"] not in (200, 400, 404):
+        return [data["msg"] or "外观价格查询失败，请稍后重试！"]
     if data.get("code") != 200 or not isinstance(item_data, dict) or not item_data:
         if not exact:
-            search_data = (
-                await Request(
-                    f"{Config.jx3.api.url.rstrip('/')}/trade/item/search",
-                    params = {
-                        "name": query_name,
-                        "token": Config.jx3.api.token,
-                    },
-                ).get()
-            ).json()
+            search_data = await jx3api_get(
+                "/trade/item/search",
+                params = {
+                    "name": query_name,
+                    "token": Config.jx3.api.token,
+                },
+            )
             matches = search_data.get("data")
             if search_data.get("code") == 200 and isinstance(matches, list):
                 names = [str(item["name"]) for item in matches if isinstance(item, dict) and item.get("name")]

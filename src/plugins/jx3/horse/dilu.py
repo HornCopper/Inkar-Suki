@@ -4,7 +4,7 @@ from src.config import Config
 from src.plugins.jx3.trade.parsers import coin_to_image
 from src.templates import HTMLSourceCode
 from src.utils.generate import generate
-from src.utils.network import Request
+from src.utils.jx3api import jx3api_get
 from src.utils.time import Time
 
 from ._template import bad, good, table_dilu_head, template_dilu
@@ -13,10 +13,10 @@ async def get_dilu_records(server: str = ""):
     params = {"token": Config.jx3.api.token_v2}
     if server:
         params["server"] = server
-    data = (await Request(f"{Config.jx3.api.url}/steed/records", params = params).get()).json()
+    data = await jx3api_get("/steed/records", params = params)
 
     if data["code"] != 200 or not data["data"]:
-        return "未找到相关的卢记录，请检查服务器后重试！"
+        return data["msg"] or "未找到相关的卢记录，请检查服务器后重试！"
 
     records = data["data"] if server else [record["data"] for record in data["data"]]
     camp_icons = {"浩气盟": good, "恶人谷": bad, "中立": ""}

@@ -2,10 +2,9 @@ import json
 
 from jinja2 import Template
 
-from src.config import Config
 from src.const.path import ASSETS, build_path
 from src.utils.decorators import token_required
-from src.utils.network import Request
+from src.utils.jx3api import jx3api_get
 from src.utils.time import Time
 from src.utils.generate import generate
 from src.templates import HTMLSourceCode
@@ -36,17 +35,17 @@ async def get_recruit_image(server: str, keyword: str = "", local: bool = False,
         "server": server,
         "label": 3,
     }
-    url = f"{Config.jx3.api.url}/recruit/search"
+    url = "/recruit/search"
     if keyword != "":
         params["keyword"] = keyword
-    data = (await Request(url, params = params).get()).json()
+    data = await jx3api_get(url, params = params)
     if data["code"] != 200:
-        return "唔……未找到相关团队，请检查后重试！"
+        return data["msg"] or "唔……未找到相关团队，请检查后重试！"
     adFlags = []
     if filter:
         with open(RECRUIT_WORDS_PATH, encoding = "utf-8") as words_file:
             adFlags = json.load(words_file)
-    time_now = Time(data["time"]).format("%H:%M:%S")
+    time_now = Time().format("%H:%M:%S")
     data = data["data"]
     contents = []
     for i in range(len(data)):

@@ -4,7 +4,7 @@ from jinja2 import Template
 from src.config import Config
 from src.const.prompts import PROMPT
 from src.const.path import ASSETS, build_path
-from src.utils.network import Request
+from src.utils.jx3api import jx3api_get
 from src.utils.time import Time
 from src.utils.database.player import search_player
 from src.utils.generate import generate
@@ -25,15 +25,15 @@ async def get_serendipity_v2(server: str, name: str, type: bool):
     if role_id == "":
         return PROMPT.PlayerNotExist
     if Config.jx3.api.enable:
-        url = f"{Config.jx3.api.url}/event/records"
+        url = "/event/records"
         params = {
             "server": server,
             "name": name,
             "token": token,
         }
-        serendipity_data = (await Request(url, params = params).get()).json()
+        serendipity_data = await jx3api_get(url, params = params)
         data: list[dict] = await JX3Serendipity().merge_api_with_my_data(
-            serendipity_data["data"],
+            serendipity_data["data"] or [],
             server,
             name,
             role_data.globalRoleId,

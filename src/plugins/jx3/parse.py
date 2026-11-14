@@ -1,5 +1,5 @@
 from __future__ import annotations
-from pydantic import BaseModel
+from pydantic import AliasChoices, BaseModel, Field
 from typing import Literal, Callable, TypeVar
 from dataclasses import dataclass
 
@@ -86,7 +86,7 @@ class JX3APIClientUpdateEvent(JX3APIPushEvent):
 
 @handle_event(2004)
 class JX3API818Event(JX3APIPushEvent):
-    name: str = ""
+    name: str = Field(default = "", validation_alias = AliasChoices("tieba", "name"))
     title: str = ""
     url: str = ""
     server: str = ""

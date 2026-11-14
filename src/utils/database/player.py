@@ -4,6 +4,7 @@ from src.config import Config
 from src.const.jx3.server import Server
 from src.const.prompts import PROMPT
 from src.utils.network import Request
+from src.utils.jx3api import jx3api_get
 from src.utils.database import db
 from src.utils.database.classes import RoleData
 
@@ -11,16 +12,12 @@ import re
 
 async def get_role_id(roleName: str, serverName: str) -> dict | None:
     if Config.jx3.api.enable:
-        url = f"{Config.jx3.api.url}/role/detail"
         params = {
             "token": Config.jx3.api.token,
             "server": serverName,
             "name": roleName,
         }
-        response = await Request(url, params = params).get()
-        if response.status_code != 200:
-            return None
-        data = response.json()
+        data = await jx3api_get("/role/detail", params = params)
         if data["code"] != 200:
             return None
         return data["data"]
@@ -29,16 +26,12 @@ async def get_role_id(roleName: str, serverName: str) -> dict | None:
 
 async def submit_role_force(roleName: str, serverName: str) -> str | None:
     if Config.jx3.api.enable:
-        url = f"{Config.jx3.api.url}/role/detail"
         params = {
             "token": Config.jx3.api.token,
             "server": serverName,
             "name": roleName,
         }
-        response = await Request(url, params = params).get()
-        if response.status_code != 200:
-            return None
-        data = response.json()
+        data = await jx3api_get("/role/detail", params = params)
         if data["code"] != 200:
             return None
         globalRoleId = data["data"]["globalId"]
@@ -117,14 +110,12 @@ async def get_uid_data(
     roleName = _role_name if "*" not in _role_name else role_name
 
     if not global_role_id and role_id:
-        url = f"{Config.jx3.api.url}/role/detail"
         params = {
             "token": Config.jx3.api.token,
             "server": server,
             "name": roleName,
         }
-        response = await Request(url, params = params).get()
-        api_data = response.json()
+        api_data = await jx3api_get("/role/detail", params = params)
         if api_data["code"] == 200:
             globalRoleId = api_data["data"]["globalId"]
 

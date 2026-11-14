@@ -4,7 +4,7 @@ from src.config import Config
 from src.const.path import ASSETS, build_path
 from src.templates import HTMLSourceCode
 from src.utils.generate import generate
-from src.utils.network import Request
+from src.utils.jx3api import jx3api_get
 from src.utils.time import Time
 
 from .parsers import coin_to_image
@@ -17,10 +17,10 @@ async def get_auction_image(server: str, name: str = ""):
         "limit": 50,
         "token": Config.jx3.api.token_v2,
     }
-    data = (await Request(f"{Config.jx3.api.url}/auction/records", params = params).get()).json()
+    data = await jx3api_get("/auction/records", params = params)
 
     if data["code"] != 200:
-        return "未找到相关记录，请检查物品名称！"
+        return data["msg"] or "未找到相关记录，请检查物品名称！"
 
     records = data["data"]
     if not records:

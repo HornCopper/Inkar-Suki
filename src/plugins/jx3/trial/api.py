@@ -9,21 +9,33 @@ from src.config import Config
 from src.templates import HTMLSourceCode
 from src.utils.generate import generate
 from src.utils.network import Request
+from src.utils.jx3api import jx3api_get
 
 from ._template import SLRANK_TABLE_BODY, SLRANK_TABLE_HEAD
 
 async def get_trial_rank(school: str, server: str):
-    params = {"name": school, "token": Config.jx3.api.token}
+    # The PC 藏剑 board combines both sword stances; 悟 has its own full name.
+    kungfu = "藏剑" if school in {"问水诀", "山居剑意"} else school
+    params = {"kungfu": kungfu, "token": Config.jx3.api.token}
     if server:
         params["server"] = server
-    data = (await Request(
-        f"{Config.jx3.api.url}/rank/trials",
+    data = await jx3api_get(
+        "/rank/trials",
         params = params,
-    ).get()).json()
+    )
     if data["code"] != 200 or not data["data"]:
-        return "未找到该心法的试炼榜单，请检查服务器和心法名称后重试！"
+        return data["msg"] or "未找到该心法的试炼榜单，请检查服务器和心法名称后重试！"
     groups = [data["data"]] if isinstance(data["data"], dict) else data["data"]
-    records = [(group["server"], record) for group in groups for record in group["data"]]
+    records = []
+    # The current client payload uses numeric keys for the four visible columns.
+    fields = {"roleName": "1", "maxLevel": "2", "totalScore": "3", "equipScore": "4"}
+    for group in groups:
+        for raw_record in group["data"]:
+            record = dict(raw_record)
+            for field, client_field in fields.items():
+                if field not in record and client_field in record:
+                    record[field] = record[client_field]
+            records.append((group["server"], record))
     if not server:
         records.sort(
             key = lambda item: (

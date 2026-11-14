@@ -1,5 +1,4 @@
-from src.config import Config
-from src.utils.network import Request
+from src.utils.jx3api import jx3api_get
 from src.utils.time import Time
 
 import datetime
@@ -14,11 +13,14 @@ async def get_daily_info(predict: int = 0):
     Returns:
         msg (str): 日常消息。
     """
-    url = f"{Config.jx3.api.url}/active/calendar"
+    url = "/active/calendar"
     params = {
-        "predict": predict,
+        "mode": "day",
+        "num": predict,
     }
-    data = (await Request(url, params = params).get()).json()
+    data = await jx3api_get(url, params = params)
+    if data["code"] != 200 or not isinstance(data["data"], dict):
+        return data["msg"] or "日常查询失败，请稍后重试！"
     data = data["data"]
     leader = "今日无世界首领"
     if "leader" in data:

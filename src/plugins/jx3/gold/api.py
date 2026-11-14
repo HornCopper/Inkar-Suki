@@ -3,7 +3,7 @@ from jinja2 import Template
 from src.config import Config
 from src.const.path import ASSETS, TEMPLATES
 from src.utils.time import Time
-from src.utils.network import Request
+from src.utils.jx3api import jx3api_get
 from src.utils.generate import generate
 from src.utils.file import read
 from src.templates import get_saohua
@@ -20,8 +20,10 @@ async def get_coin_price_image(server: str = ""):
         "server": server,
         "token": Config.jx3.api.token,
     }
-    url = f"{Config.jx3.api.url}/trade/demon"
-    data = (await Request(url, params = params).get()).json()
+    url = "/trade/demon"
+    data = await jx3api_get(url, params = params)
+    if data["code"] != 200:
+        return data["msg"] or "金价查询失败，请稍后重试！"
     tables = []
     for each_price in data["data"]:
         tables.append(

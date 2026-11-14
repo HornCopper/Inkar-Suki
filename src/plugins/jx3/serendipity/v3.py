@@ -9,7 +9,7 @@ from src.const.path import ASSETS, build_path
 from src.const.jx3.school import School
 from src.utils.generate import generate
 from src.utils.time import Time
-from src.utils.network import Request
+from src.utils.jx3api import jx3api_get
 from src.utils.database.player import search_player
 from src.templates import SimpleHTML, get_saohua
 from src.utils.analyze import sort_dict_list
@@ -207,15 +207,15 @@ async def get_serendipity_image_v3(server: str, name: str):
     uid, global_role_id, school = role
 
     if Config.jx3.api.enable:
-        url = f"{Config.jx3.api.url}/event/records"
+        url = "/event/records"
         params = {
             "server": server,
             "name": name,
             "token": Config.jx3.api.token,
         }
-        serendipity_data = (await Request(url, params = params).get()).json()
+        serendipity_data = await jx3api_get(url, params = params)
         data: list[dict] = await JX3Serendipity().merge_api_with_my_data(
-            serendipity_data["data"],
+            serendipity_data["data"] or [],
             server,
             name,
             global_role_id,

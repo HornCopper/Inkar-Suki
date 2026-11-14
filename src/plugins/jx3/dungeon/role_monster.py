@@ -3,7 +3,7 @@ from jinja2 import Template
 from src.config import Config
 from src.const.path import ASSETS, build_path
 from src.utils.generate import generate
-from src.utils.network import Request
+from src.utils.jx3api import jx3api_get
 from src.utils.database.attributes import TabCache
 from src.templates import SimpleHTML, get_saohua
 
@@ -15,8 +15,10 @@ async def get_role_monsters_map(server: str, role_name: str):
         "name": role_name,
         "token": Config.jx3.api.token_v2,
     }
-    url = f"{Config.jx3.api.url}/monster/records"
-    data = (await Request(url, params = params).get()).json()
+    url = "/monster/records"
+    data = await jx3api_get(url, params = params)
+    if data["code"] != 200:
+        return data["msg"] or "角色百战查询失败，请稍后重试！"
     data = data["data"]
     content = []
     skill_list = sorted(

@@ -1,6 +1,7 @@
 from src.config import Config
 
 from src.utils.network import Request
+from src.utils.jx3api import jx3api_get
 
 def get_ptk(p_skey: str) -> int:
     value = 5381
@@ -15,8 +16,10 @@ async def get_tieba_records(user_id: int) -> str:
         "uid": user_id,
         "token": Config.jx3.api.token,
     }
-    url = f"{Config.jx3.api.url}/fraud/detail"
-    data = (await Request(url, params = params).get()).json()
+    url = "/fraud/detail"
+    data = await jx3api_get(url, params = params)
+    if data["code"] != 200:
+        return data["msg"] or "骗子记录查询失败，请稍后重试！"
     if not data["data"]:
         return "未找到相关记录！"
     records = data["data"]

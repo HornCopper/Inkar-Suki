@@ -4,7 +4,6 @@ from nonebot.log import logger
 
 from src.config import Config
 from src.const.prompts import PROMPT
-from src.utils.exceptions import ConfigurationException
 
 import inspect
 import time
@@ -36,23 +35,23 @@ def token_required(func) -> Callable:
     检查并传入`Token`，同时支持同步和异步函数。
     """
 
+    if inspect.iscoroutinefunction(func):
+
+        @wraps(func)
+        async def async_wrapper(*args, **kwargs):
+            token = Config.jx3.api.token.strip() or Config.jx3.api.token_v2.strip()
+            if not token:
+                return PROMPT.NoToken
+            return await func(*args, token = token, **kwargs)
+
+        return async_wrapper
+
     @wraps(func)
     def wrapper(*args, **kwargs):
-        token = Config.jx3.api.token
-        if token == "":
+        token = Config.jx3.api.token.strip() or Config.jx3.api.token_v2.strip()
+        if not token:
             return PROMPT.NoToken
-        if token == "" and Config.jx3.api.enable:
-            raise ConfigurationException("Cannot enable `JX3API` with a null `token`!")
-
-        # 检查是否为异步函数
-        if inspect.iscoroutinefunction(func):
-
-            async def async_wrapper(*args, **kwargs):
-                return await func(token = token, *args, **kwargs)
-
-            return async_wrapper(*args, **kwargs)
-        else:
-            return func(token = token, *args, **kwargs)
+        return func(*args, token = token, **kwargs)
 
     return wrapper
 

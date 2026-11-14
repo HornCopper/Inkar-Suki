@@ -5,7 +5,7 @@ from jinja2 import Template
 from src.config import Config
 from src.templates import HTMLSourceCode
 from src.utils.generate import generate
-from src.utils.network import Request
+from src.utils.jx3api import jx3api_get
 from src.utils.time import Time
 
 from ._template import (
@@ -15,7 +15,7 @@ from ._template import (
 )
 
 async def get_chat_records(server: str, name: str, page: int = 1, limit: int = 20):
-    url = f"{Config.jx3.api.url}/chat/records"
+    url = "/chat/records"
     params = {
         "token": Config.jx3.api.token_v2 or Config.jx3.api.token,
         "server": server,
@@ -23,7 +23,7 @@ async def get_chat_records(server: str, name: str, page: int = 1, limit: int = 2
         "page": page,
         "limit": limit,
     }
-    data = (await Request(url, params = params).get()).json()
+    data = await jx3api_get(url, params = params)
     if data["code"] != 200:
         return data["msg"] or "聊天记录查询失败，请稍后重试！"
 
