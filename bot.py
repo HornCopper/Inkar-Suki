@@ -34,7 +34,7 @@ if Config.qq_official.enabled:
     from src.adapters.qq_official import install_bridge
 
     driver.register_adapter(QQAdapter)
-    install_bridge()
+    install_bridge(coexistence = Config.qq_official.coexistence)
 
 nonebot.load_from_toml("pyproject.toml")
 

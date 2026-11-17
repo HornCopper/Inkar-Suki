@@ -2,7 +2,19 @@
 
 from typing import Any
 
-from pydantic import BaseModel, Field, SecretStr, field_validator
+from pydantic import BaseModel, Field, SecretStr, field_validator, model_validator
+
+
+class QQCoexistenceConfig(BaseModel):
+    enabled: bool = True
+    window_seconds: float = Field(default = 2.0, gt = 0, le = 60, allow_inf_nan = False)
+    official_wait_seconds: float = Field(default = 1.0, ge = 0, allow_inf_nan = False)
+
+    @model_validator(mode = "after")
+    def check_wait(self) -> "QQCoexistenceConfig":
+        if self.official_wait_seconds >= self.window_seconds:
+            raise ValueError("official_wait_seconds 必须小于 window_seconds")
+        return self
 
 
 class QQOfficialConfig(BaseModel):
@@ -11,6 +23,7 @@ class QQOfficialConfig(BaseModel):
     app_secret: SecretStr = Field(default = SecretStr(""), repr = False)
     use_websocket: bool = False
     group_member_events: bool = False
+    coexistence: QQCoexistenceConfig = Field(default_factory = QQCoexistenceConfig)
     driver: str = "~fastapi+~httpx+~websockets"
 
     @field_validator("app_id", mode = "before")

@@ -22,6 +22,7 @@ from nonebot.typing import T_State
 
 from .identity import IdentityStore
 from src.utils.qq_official_policy import allowed_in_unmatched_group
+from src.utils.qq_official_config import QQCoexistenceConfig
 from .api import ContextAPI, UNHANDLED, UNSUPPORTED_APIS, unavailable
 from src.utils.dispatch import install_command_prefilter
 from .media import DIRECT_UPLOAD_LIMIT, file_source, send_media
@@ -219,12 +220,16 @@ class QQCompatBot(Bot):
         return {"message_id": result_id}
 
 
-def install_bridge(path: str = "src/data/qq_official.sqlite3") -> None:
+def install_bridge(path: str = "src/data/qq_official.sqlite3", *, coexistence: QQCoexistenceConfig | None = None) -> None:
     global _installed
     if _installed:
         return
     identities = IdentityStore(path)
     install_command_prefilter()
+    if coexistence is not None and coexistence.enabled:
+        from .coexistence import install_coexistence
+
+        install_coexistence(identities, coexistence)
 
     @get_driver().on_bot_connect
     async def report_welcome_subscription(bot: QQBot) -> None:
