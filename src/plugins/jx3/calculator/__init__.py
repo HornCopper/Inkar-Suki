@@ -69,6 +69,7 @@ from .jcl_analyze import (
     QJDAnalyze,
     QJHAnalyze,
     SCYAnalyze,
+    SCFAnalyze,
 )
 from ._template import calculator_timeline_template, custom_loop_help_template
 
@@ -134,6 +135,7 @@ JCL_ANALYSIS_HELP_TEXT = (
     "【LNX-】鲁念雪 每阶段减伤/治疗/化解贡献统计\n"
     "【QJD-】千机源枢 藤蔓旁机卒每轮打断情况\n"
     "【SCY-】史朝义 每把剑的拔剑成功与未拔出记录\n"
+    "【SCF-】史朝义 P3 每轮领取翅膀的玩家与碎片层数\n"
     "【ASN-】阿史那承庆 QTE计数+死侍HPS统计\n"
     "【THR-】唐怀仁P1 DPS统计+榜单\n"
     "【TRD-】唐怀仁 P1 阶段 RDPS 分析（powered by 剑三警长）\n"
@@ -3095,6 +3097,8 @@ async def _(bot: Bot, event: GroupUploadNoticeEvent):
         analyzer = QJDAnalyze
     elif check_jcl_name(event.file.name, "SCY-"):
         analyzer = SCYAnalyze
+    elif check_jcl_name(event.file.name, "SCF-"):
+        analyzer = SCFAnalyze
     # elif check_jcl_name(event.file.name, "QJH-"):
     # 由于某位花间玩家的强烈抗议
     elif check_jcl_name(event.file.name, "QJV-"):

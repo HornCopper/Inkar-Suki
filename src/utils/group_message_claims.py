@@ -1,9 +1,10 @@
-"""同机多进程的短时群消息认领；仅保存正文摘要，不保存正文或发送者。"""
+"""同机多进程的短时群消息认领；仅保存分类摘要，不保存正文、文件信息或发送者。"""
 
 from asyncio import sleep, to_thread
 import hashlib
 import time
 import uuid
+from typing import Literal
 
 from .identity import IdentityStore
 from .qq_official_config import QQCoexistenceConfig
@@ -29,9 +30,9 @@ class GroupMessageClaims:
                 (group_id,),
             ).fetchone() is not None
 
-    def offer(self, group_id: int, text: str, *, official: bool) -> str | None:
+    def offer(self, group_id: int, text: str, *, official: bool, kind: Literal["text", "file"] = "text") -> str | None:
         """返回本次认领令牌；官方先占位，OneBot 可在等待期间接手该占位。"""
-        fingerprint = hashlib.sha256(text.encode("utf-8")).hexdigest()
+        fingerprint = hashlib.sha256(f"{kind}\0{text}".encode("utf-8")).hexdigest()
         token = uuid.uuid4().hex
         with self.identities.connect() as conn:
             conn.execute("BEGIN IMMEDIATE")
@@ -63,8 +64,8 @@ class GroupMessageClaims:
                 "UPDATE qq_group_message_claims SET owner = 'official' WHERE token = ? AND owner IS NULL", (token,),
             ).rowcount == 1
 
-    async def accept(self, group_id: int, text: str, *, official: bool) -> bool:
-        token = await to_thread(self.offer, group_id, text, official = official)
+    async def accept(self, group_id: int, text: str, *, official: bool, kind: Literal["text", "file"] = "text") -> bool:
+        token = await to_thread(self.offer, group_id, text, official = official, kind = kind)
         if token is None:
             return False
         if not official:

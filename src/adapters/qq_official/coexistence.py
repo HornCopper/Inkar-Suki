@@ -1,8 +1,9 @@
-"""仅对已匹配群号的纯文字消息执行 OneBot 优先仲裁。"""
+"""对已匹配群号的纯文字消息和群文件执行 OneBot 优先仲裁。"""
 
 import asyncio
+import json
 
-from nonebot.adapters.onebot.v11 import Bot, GroupMessageEvent
+from nonebot.adapters.onebot.v11 import Bot, GroupMessageEvent, GroupUploadNoticeEvent
 from nonebot.exception import IgnoredException
 from nonebot.log import logger
 from nonebot.message import event_preprocessor
@@ -40,6 +41,21 @@ def install_coexistence(identities: IdentityStore, config: QQCoexistenceConfig) 
     from . import QQCompatBot
 
     claims = GroupMessageClaims(identities, config)
+
+    @event_preprocessor
+    async def prefer_onebot_file(bot: Bot, event: GroupUploadNoticeEvent) -> None:
+        if not config.enabled or event.group_id <= 0 or not event.file.name or event.file.size < 0:
+            return
+        official = isinstance(bot, QQCompatBot)
+        if not official and not await asyncio.to_thread(claims.has_official_group, event.group_id):
+            return
+        # 两种协议的文件 ID、下载地址及用户 ID 不同，使用共有的原始文件名和大小。
+        fingerprint = json.dumps([event.file.name, event.file.size], ensure_ascii = True, separators = (",", ":"))
+        accepted = await claims.accept(event.group_id, fingerprint, official = official, kind = "file")
+        logger.debug("群文件共存仲裁：group_id={} protocol={} accepted={}",
+                     event.group_id, "official" if official else "onebot", accepted)
+        if not accepted:
+            raise IgnoredException("Group file already claimed within the coexistence window")
 
     @event_preprocessor
     async def prefer_onebot(bot: Bot, event: GroupMessageEvent) -> None:

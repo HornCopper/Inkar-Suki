@@ -1,4 +1,4 @@
-"""让现有 OneBot 插件通过 QQ 官方协议处理文字与图片。"""
+"""让现有 OneBot 插件通过 QQ 官方协议处理文字、图片与群文件。"""
 
 import asyncio
 import time
@@ -7,6 +7,7 @@ from datetime import datetime, timezone
 from typing import Any
 
 from nonebot import get_adapter, get_driver
+from nonebot.adapters import Event
 from nonebot.adapters.onebot.v11 import Adapter as OneBotAdapter, Bot, GroupMessageEvent, Message, MessageSegment
 from nonebot.adapters.qq import Bot as QQBot
 from nonebot.adapters.qq.event import (
@@ -14,16 +15,18 @@ from nonebot.adapters.qq.event import (
     GroupAddRobotEvent, GroupDelRobotEvent, GroupMsgReceiveEvent, GroupMsgRejectEvent, GroupMemberAddEvent,
 )
 from nonebot.adapters.qq.exception import ActionFailed
-from nonebot.exception import FinishedException, IgnoredException
+from nonebot.exception import FinishedException, IgnoredException, SkippedException
 from nonebot.log import logger
 from nonebot.matcher import Matcher, current_matcher
 from nonebot.message import event_preprocessor, handle_event, run_preprocessor
+from nonebot.params import EventParam
 from nonebot.typing import T_State
 
 from .identity import IdentityStore
 from src.utils.qq_official_policy import allowed_in_unmatched_group
 from src.utils.qq_official_config import QQCoexistenceConfig
 from .api import ContextAPI, UNHANDLED, UNSUPPORTED_APIS, unavailable
+from .files import incoming_uploads, is_file_attachment
 from src.utils.dispatch import install_command_prefilter
 from .media import DIRECT_UPLOAD_LIMIT, file_source, send_media
 from .message import incoming_message, outgoing_messages
@@ -70,13 +73,15 @@ class QQCompatBot(Bot):
 
     def build_event(self) -> GroupMessageEvent:
         original = self.source.get_message()
-        unsupported = sorted({segment.type for segment in original if segment.type not in {"text", "image"}})
+        file_urls = {attachment.url for attachment in self.source.attachments or [] if self.is_group and is_file_attachment(attachment)}
+        unsupported = sorted({segment.type for segment in original if segment.type not in {"text", "image"}
+                              and not (segment.type == "file" and segment.data.get("url") in file_urls)})
         if unsupported:
             self.log_compatibility("收到暂未适配的消息段：" + ",".join(unsupported), action = "省略入站消息段")
         if any(segment.type == "image" and not str(segment.data["url"]).startswith(("http://", "https://", "//")) for segment in original):
             self.log_compatibility("图片附件地址不是 HTTP/HTTPS 地址", action = "省略入站图片")
         message = incoming_message(original)
-        if not message and not unsupported:
+        if not message and not unsupported and not file_urls:
             self.log_compatibility("消息没有可处理的文字或图片", action = "跳过消息")
         if message and message[0].is_text() and "" in self.config.command_start and "/" not in self.config.command_start:
             text = message[0].data["text"].lstrip()
@@ -240,7 +245,7 @@ def install_bridge(path: str = "src/data/qq_official.sqlite3", *, coexistence: Q
             )
 
     @run_preprocessor
-    async def require_matched_group(bot: Bot, matcher: Matcher, state: T_State) -> None:
+    async def require_matched_group(bot: Bot, event: Event, matcher: Matcher, state: T_State) -> None:
         if (isinstance(bot, (QQCompatBot, QQGroupNoticeBot)) and bot.is_group and bot.group_id < 0
             and not allowed_in_unmatched_group(matcher)):
             bot.log_compatibility("未匹配群号，业务功能已停用", action = "跳过功能", matcher = matcher,
@@ -249,6 +254,14 @@ def install_bridge(path: str = "src/data/qq_official.sqlite3", *, coexistence: Q
         if isinstance(bot, QQCompatBot):
             # 连同确认步骤一起跳过确实没有官方对应接口的功能，避免先提示成功再中断。
             for handler in matcher.handlers:
+                try:
+                    # 同一通知响应器可能同时处理入群、禁言和文件上传。
+                    # 仅检查当前事件能进入的处理函数，沿用 NoneBot 的事件类型检查。
+                    for param in handler.params:
+                        if isinstance(param.field_info, EventParam):
+                            await param.field_info._check(event = event)
+                except SkippedException:
+                    continue
                 code = getattr(handler.call, "__code__", None)
                 names = (*code.co_names, *(value for value in code.co_consts if isinstance(value, str))) if code else ()
                 blocked = UNSUPPORTED_APIS.intersection(names)
@@ -269,6 +282,8 @@ def install_bridge(path: str = "src/data/qq_official.sqlite3", *, coexistence: Q
                 translated = proxy.build_event()
                 if translated.message:
                     await handle_event(proxy, translated)
+                for upload in incoming_uploads(proxy):
+                    await handle_event(proxy, upload)
         elif isinstance(event, GroupMemberAddEvent):
             proxy = QQGroupNoticeBot(bot, event, identities)
             if identities.claim_message(bot.self_id, "member-add:" + event.group_openid, proxy.delivery_key):

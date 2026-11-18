@@ -1746,6 +1746,132 @@ async def SCYAnalyze(file_name: str, url: str, anonymous: bool = False, user_id:
     raw_data = data.get("data", data) if isinstance(data, dict) else data
     return await render_scy_analysis(raw_data, anonymous)
 
+def _scf_safe_int(value: Any, default: int = 0) -> int:
+    try:
+        return int(value)
+    except (TypeError, ValueError):
+        return default
+
+
+def _scf_time(timestamp: Any) -> str:
+    from datetime import datetime, timedelta, timezone
+
+    value = _scf_safe_int(timestamp)
+    if value <= 0:
+        return "—"
+    if value >= 10**12:
+        value //= 1000
+    try:
+        return datetime.fromtimestamp(value, timezone(timedelta(hours = 8))).strftime("%H:%M:%S")
+    except (ValueError, OverflowError, OSError):
+        return "—"
+
+
+def _scf_battle_time(milliseconds: Any) -> str:
+    if milliseconds is None:
+        return "—"
+    value = _scf_safe_int(milliseconds, -1)
+    if value < 0:
+        return "—"
+    minutes, seconds = divmod(value // 1000, 60)
+    return f"{minutes:02d}:{seconds:02d}"
+
+
+def build_scf_analysis_data(raw_data: Any, anonymous: bool = False) -> dict[str, Any]:
+    if isinstance(raw_data, dict) and "data" in raw_data:
+        raw_data = raw_data.get("data")
+    raw_rounds = raw_data.get("rounds") if isinstance(raw_data, dict) else None
+    raw_rounds = raw_rounds if isinstance(raw_rounds, list) else []
+    anonymous_names: dict[str, str] = {}
+    rounds = []
+    for index, raw_round in enumerate(raw_rounds, 1):
+        if not isinstance(raw_round, dict) or "players" not in raw_round:
+            continue
+        raw_players = raw_round.get("players")
+        raw_players = raw_players if isinstance(raw_players, list) else []
+        rows = []
+        for player in raw_players:
+            if not isinstance(player, dict) or not player:
+                continue
+            name = str(player.get("player_name") or "未知玩家")
+            if anonymous:
+                player_id = _scf_safe_int(player.get("player_id"))
+                key = f"id:{player_id}" if player_id else f"name:{name}"
+                if key not in anonymous_names:
+                    anonymous_names[key] = f"匿名玩家 {len(anonymous_names) + 1}"
+                name = anonymous_names[key]
+            timestamps = player.get("wing_pickup_timestamps")
+            timestamps = timestamps if isinstance(timestamps, list) else []
+            elapsed = player.get("wing_pickup_elapsed_ms")
+            elapsed = elapsed if isinstance(elapsed, list) else []
+            times = [
+                {"wall_time": _scf_time(timestamp),
+                 "battle_time": _scf_battle_time(elapsed[index] if index < len(elapsed) else None)}
+                for index, timestamp in enumerate(timestamps) if _scf_time(timestamp) != "—"
+            ]
+            count = max(len(times), _scf_safe_int(player.get("wing_pickup_count")))
+            kungfu = Kungfu.with_internel_id(_scf_safe_int(player.get("kungfu_id")), True)
+            rows.append({
+                "player_name": name,
+                "icon": kungfu.icon,
+                "kungfu": kungfu.name or "未知心法",
+                "wing_times": times,
+                "wing_pickup_count": count,
+                "fragment_stacks": max(0, _scf_safe_int(player.get("fragment_stacks"))),
+            })
+        rounds.append({
+            "order": max(1, _scf_safe_int(raw_round.get("order"), index)),
+            "start_time": _scf_time(raw_round.get("start_timestamp")),
+            "start_battle_time": _scf_battle_time(raw_round.get("start_elapsed_ms")),
+            "rows": rows,
+            "wing_pickup_count": sum(row["wing_pickup_count"] for row in rows),
+            "fragment_stacks": sum(row["fragment_stacks"] for row in rows),
+        })
+    rounds.sort(key = lambda item: item["order"])
+    return {
+        "rounds": rounds,
+        "wing_pickup_count": sum(item["wing_pickup_count"] for item in rounds),
+        "fragment_stacks": sum(item["fragment_stacks"] for item in rounds),
+    }
+
+
+def render_scf_analysis_html(raw_data: Any, anonymous: bool = False) -> str | None:
+    report = build_scf_analysis_data(raw_data, anonymous)
+    if not report["rounds"]:
+        return None
+    return Template(read(TEMPLATES + "/jx3/scf_analysis.html"), autoescape = True).render(
+        font = ASSETS + "/font/PingFangSC-Semibold.otf",
+        report = report,
+        saohua = get_saohua(),
+    )
+
+
+async def render_scf_analysis(raw_data: Any, anonymous: bool = False):
+    html_content = render_scf_analysis_html(raw_data, anonymous)
+    if html_content is None:
+        return "未识别到史朝义 P3 翅膀或碎片数据，请检查 JCL 是否包含 P3 阶段。"
+    return await generate(
+        html_content,
+        ".scf-report",
+        segment = True,
+        viewport = {"width": 1000, "height": 1200},
+    )
+
+
+async def SCFAnalyze(file_name: str, url: str, anonymous: bool = False, user_id: int = 0):
+    async with AsyncClient(verify = False) as client:
+        resp = await client.post(
+            f"{Config.jx3.api.cqc_url}/scf_analyze",
+            json = {"jcl_url": url, "jcl_name": file_name},
+            timeout = 600,
+        )
+        resp.raise_for_status()
+        data = resp.json()
+    if isinstance(data, dict) and data.get("code") not in (None, 200):
+        return data.get("msg") or "史朝义翅膀与碎片分析失败，请检查 JCL 是否完整。"
+    return await render_scf_analysis(data, anonymous)
+
+
 # Qian Ji yuan shu Health (已弃用)
 # Qian Ji yuan shu Vine
 async def QJHAnalyze(file_name: str, url: str, anonymous: bool = False, user_id: int = 0):

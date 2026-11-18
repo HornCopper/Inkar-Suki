@@ -83,21 +83,25 @@ async def get_trial_dps(floor: int) -> ms | str:
 
     rows = []
     for name, hp in bosses:
-        clear_seconds, perfect_seconds = (178, 118) if name in {"子", "寅", "雷神"} else (298, 178)
+        if name == "雷神":
+            clear_seconds, perfect_seconds = 175, 118
+        elif name in {"子", "寅"}:
+            clear_seconds, perfect_seconds = 178, 118
+        else:
+            clear_seconds, perfect_seconds = 298, 178
         clear_hp = hp + 4 * floor_data["分身"] if name == "方鹤影" else hp
         perfect_hp = hp + 2 * floor_data["分身"] if name == "方鹤影" else hp
         rows.append(
             "<tr>"
             f"<td>{html.escape(name)}</td>"
-            f"<td>{math.ceil(clear_hp / clear_seconds):,}</td>"
-            f"<td>{math.ceil(perfect_hp / perfect_seconds):,}</td>"
+            f"<td>{math.ceil(clear_hp / clear_seconds):,}({clear_seconds})</td>"
+            f"<td>{math.ceil(perfect_hp / perfect_seconds):,}({perfect_seconds})</td>"
             "</tr>",
         )
 
     source = str(
         HTMLSourceCode(
             application_name = f"试炼之地 · 第 {floor} 层 DPS",
-            footer = "计算时长已扣除 2s：子、寅、雷神 178s / 118s；其他首领 298s / 178s",
             table_head = "<th>首领名</th><th>通关</th><th>完美</th>",
             table_body = "".join(rows),
         ),

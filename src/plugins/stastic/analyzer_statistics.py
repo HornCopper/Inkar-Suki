@@ -31,6 +31,7 @@ ANALYZER_PREFIXES = (
     "QJD-",
     "QJV-",
     "SCY-",
+    "SCF-",
     "TCS-",
 )
 
