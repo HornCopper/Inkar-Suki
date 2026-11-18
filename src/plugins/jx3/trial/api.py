@@ -84,7 +84,7 @@ async def get_trial_dps(floor: int) -> ms | str:
     rows = []
     for name, hp in bosses:
         if name == "雷神":
-            clear_seconds, perfect_seconds = 175, 118
+            clear_seconds, perfect_seconds = 175, 115
         elif name in {"子", "寅"}:
             clear_seconds, perfect_seconds = 178, 118
         else:
