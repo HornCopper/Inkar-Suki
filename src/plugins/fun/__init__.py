@@ -4,6 +4,7 @@ import ast
 import html
 
 from nonebot import on_regex
+from nonebot.log import logger
 from nonebot.params import CommandArg, RawCommand
 from nonebot.adapters.onebot.v11 import (
     Bot,
@@ -518,8 +519,18 @@ async def _(bot: Bot, event: GroupMessageEvent, args: Message = CommandArg()):
     if not ban_record:
         await AllLiftBanMatcher.finish("当前没有抽奖人员处于禁言状态！")
     else:
-        unban_persons: list[int] = [b.user_id for b in ban_record]
+        unban_persons = list(dict.fromkeys(b.user_id for b in ban_record))
         for p in unban_persons:
-            await bot.set_group_ban(group_id = event.group_id, user_id = p, duration = 0)
-        cache_db.delete(BanRecord(), "group_id = ?", str(event.group_id))
+            try:
+                await bot.set_group_ban(group_id = event.group_id, user_id = p, duration = 0)
+            except Exception as exc:
+                # 官方兼容层缺少 OpenID 时会抛出 FinishedException，也只跳过当前成员。
+                logger.warning(
+                    f"大赦天下跳过解禁失败的成员：group_id={event.group_id} user_id={p} "
+                    f"error={type(exc).__name__}",
+                )
+        # 只清理本轮读到的记录，保留解禁期间新产生的抽奖记录。
+        with cache_db.transaction():
+            for record in ban_record:
+                cache_db.delete(BanRecord(), "group_id = ? AND id = ?", str(event.group_id), record.id)
         await AllLiftBanMatcher.finish("已解除所有抽奖的禁言！")
