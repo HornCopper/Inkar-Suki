@@ -1856,7 +1856,7 @@ def _prepare_distribution_view(kungfu_id: Any) -> dict[str, str] | None:
     return {
         "name": str(item.get("name") or "当前心法"),
         "image": _asset_uri("image", "jx3", "equipment_rating", *image.split("/")),
-        "caption": "2026年5月21日统计数据",
+        "caption": str(payload.get("caption") or ""),
     }
 
 def _tank_vitality_conversion_item(
