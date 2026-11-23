@@ -4,9 +4,8 @@ from nonebot.adapters.onebot.v11 import (
 )
 from nonebot.params import CommandArg
 
-from src.config import Config
 from src.utils.command import on_command
-from src.utils.network import Request
+from src.utils.jx3api import jx3api_get
 
 from .image import get_image
 
@@ -61,8 +60,10 @@ async def _(event: GroupMessageEvent, args: Message = CommandArg()):
     if args.extract_plain_text() != "":
         return
     else:
-        url = f"{Config.jx3.api.url}/skill/rework"
-        data = (await Request(url).get()).json()
+        url = "/skill/rework"
+        data = await jx3api_get(url)
+        if data["code"] != 200:
+            await skill_change_matcher.finish(data["msg"] or "技改查询失败，请稍后重试！")
         msg = ""
         for d in data["data"][0:4]:
             title = d["title"]

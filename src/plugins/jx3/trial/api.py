@@ -9,21 +9,33 @@ from src.config import Config
 from src.templates import HTMLSourceCode
 from src.utils.generate import generate
 from src.utils.network import Request
+from src.utils.jx3api import jx3api_get
 
 from ._template import SLRANK_TABLE_BODY, SLRANK_TABLE_HEAD
 
 async def get_trial_rank(school: str, server: str):
-    params = {"name": school, "token": Config.jx3.api.token}
+    # The PC 藏剑 board combines both sword stances; 悟 has its own full name.
+    kungfu = "藏剑" if school in {"问水诀", "山居剑意"} else school
+    params = {"kungfu": kungfu, "token": Config.jx3.api.token}
     if server:
         params["server"] = server
-    data = (await Request(
-        f"{Config.jx3.api.url}/rank/trials",
+    data = await jx3api_get(
+        "/rank/trials",
         params = params,
-    ).get()).json()
+    )
     if data["code"] != 200 or not data["data"]:
-        return "未找到该心法的试炼榜单，请检查服务器和心法名称后重试！"
+        return data["msg"] or "未找到该心法的试炼榜单，请检查服务器和心法名称后重试！"
     groups = [data["data"]] if isinstance(data["data"], dict) else data["data"]
-    records = [(group["server"], record) for group in groups for record in group["data"]]
+    records = []
+    # The current client payload uses numeric keys for the four visible columns.
+    fields = {"roleName": "1", "maxLevel": "2", "totalScore": "3", "equipScore": "4"}
+    for group in groups:
+        for raw_record in group["data"]:
+            record = dict(raw_record)
+            for field, client_field in fields.items():
+                if field not in record and client_field in record:
+                    record[field] = record[client_field]
+            records.append((group["server"], record))
     if not server:
         records.sort(
             key = lambda item: (
@@ -71,21 +83,25 @@ async def get_trial_dps(floor: int) -> ms | str:
 
     rows = []
     for name, hp in bosses:
-        clear_seconds, perfect_seconds = (178, 118) if name in {"子", "寅", "雷神"} else (298, 178)
+        if name == "雷神":
+            clear_seconds, perfect_seconds = 175, 115
+        elif name in {"子", "寅"}:
+            clear_seconds, perfect_seconds = 178, 118
+        else:
+            clear_seconds, perfect_seconds = 298, 178
         clear_hp = hp + 4 * floor_data["分身"] if name == "方鹤影" else hp
         perfect_hp = hp + 2 * floor_data["分身"] if name == "方鹤影" else hp
         rows.append(
             "<tr>"
             f"<td>{html.escape(name)}</td>"
-            f"<td>{math.ceil(clear_hp / clear_seconds):,}</td>"
-            f"<td>{math.ceil(perfect_hp / perfect_seconds):,}</td>"
+            f"<td>{math.ceil(clear_hp / clear_seconds):,}({clear_seconds})</td>"
+            f"<td>{math.ceil(perfect_hp / perfect_seconds):,}({perfect_seconds})</td>"
             "</tr>",
         )
 
     source = str(
         HTMLSourceCode(
             application_name = f"试炼之地 · 第 {floor} 层 DPS",
-            footer = "计算时长已扣除 2s：子、寅、雷神 178s / 118s；其他首领 298s / 178s",
             table_head = "<th>首领名</th><th>通关</th><th>完美</th>",
             table_body = "".join(rows),
         ),

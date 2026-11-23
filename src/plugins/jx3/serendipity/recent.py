@@ -6,16 +6,16 @@ from src.config import Config
 from src.const.path import ASSETS, build_path
 from src.templates import HTMLSourceCode
 from src.utils.generate import generate
-from src.utils.network import Request
+from src.utils.jx3api import jx3api_get
 from src.utils.time import Time
 
 from ._template import recent_serendipity_head, recent_serendipity_row
 
 async def get_recent_serendipity(server: str):
     params = {"server": server, "token": Config.jx3.api.token}
-    data = (await Request(f"{Config.jx3.api.url}/event/recent", params = params).get()).json()
+    data = await jx3api_get("/event/recent", params = params)
     if data["code"] != 200 or not data["data"]:
-        return "未找到近期奇遇记录，请检查服务器后重试！"
+        return data["msg"] or "未找到近期奇遇记录，请检查服务器后重试！"
 
     icons = {}
     for category in ("common", "peerless", "pet"):

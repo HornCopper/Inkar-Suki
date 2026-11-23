@@ -12,7 +12,7 @@ from src.const.prompts import PROMPT
 from src.templates import SimpleHTML, get_saohua
 from src.utils.database.player import search_player
 from src.utils.generate import generate
-from src.utils.network import Request
+from src.utils.jx3api import jx3api_get
 from src.utils.time import Time
 
 from .without_jx3api import JX3Serendipity
@@ -72,15 +72,14 @@ async def get_serendipity_image_v4(server: str, name: str):
         return PROMPT.PlayerNotExist
 
     if Config.jx3.api.enable:
-        response = await Request(
-            f"{Config.jx3.api.url}/event/records",
+        payload = await jx3api_get(
+            "/event/records",
             params = {
                 "server": server,
                 "name": name,
                 "token": Config.jx3.api.token,
             },
-        ).get()
-        payload = response.json()
+        )
         records = await JX3Serendipity().merge_api_with_my_data(
             payload.get("data") or [],
             server,

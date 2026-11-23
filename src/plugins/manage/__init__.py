@@ -17,6 +17,7 @@ from src.const.path import (
 )
 from src.utils.command import on_command
 from src.utils.network import Request
+from src.utils.jx3api import jx3api_get
 from src.utils.time import Time
 from src.utils.permission import (
     check_permission,
@@ -347,9 +348,10 @@ async def _(bot: Bot, matcher: Matcher, event: GroupMessageEvent):
     if "骚话" in group_subscribes and random.random() < 0.04:  # 4%
         t = random.randint(0, 1)
         if t:
-            data = (await Request(f"{Config.jx3.api.url}/saohua/random").get()).json()
-            msg = data["data"]["text"]
-            await bot.send_group_msg(group_id = event.group_id, message = msg)
+            data = await jx3api_get("/saohua/random")
+            if data["code"] == 200:
+                msg = data["data"]["text"]
+                await bot.send_group_msg(group_id = event.group_id, message = msg)
         else:
             image = Message(await get_emoji())
             if image is None:

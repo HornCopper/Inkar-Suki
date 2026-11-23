@@ -5,11 +5,10 @@ from nonebot.adapters.onebot.v11 import Bot, Message, GroupMessageEvent, Message
 from src.accounts.manage import AccountManage
 from src.const.jx3.school import School
 from src.const.jx3.server import Server
-from src.config import Config
 from src.const.prompts import PROMPT
 from src.utils.command import on_command
 from src.utils.analyze import check_number
-from src.utils.network import Request
+from src.utils.jx3api import jx3api_get
 from src.plugins.preferences.app import Preference
 
 from .random_serendipity import get_serendipity, get_serendipity_image
@@ -42,8 +41,10 @@ async def jx3_saohua_random(args: Message = CommandArg()):
     """
     if args.extract_plain_text() != "":
         return
-    url = f"{Config.jx3.api.url}/saohua/random"
-    info = (await Request(url).get()).json()
+    url = "/saohua/random"
+    info = await jx3api_get(url)
+    if info["code"] != 200:
+        await saohua_matcher.finish(info["msg"] or "骚话查询失败，请稍后重试！")
     msg = info["data"]["text"]
     await saohua_matcher.finish(msg)
 
@@ -64,8 +65,10 @@ async def jx3_saohua_tiangou(args: Message = CommandArg()):
     """
     if args.extract_plain_text() != "":
         return
-    url = f"{Config.jx3.api.url}/saohua/content"
-    info = (await Request(url).get()).json()
+    url = "/saohua/content"
+    info = await jx3api_get(url)
+    if info["code"] != 200:
+        await tiangou_matcher.finish(info["msg"] or "舔狗日志查询失败，请稍后重试！")
     msg = info["data"]["text"]
     await tiangou_matcher.finish(msg)
 

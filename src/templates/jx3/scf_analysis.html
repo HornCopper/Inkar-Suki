@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        @font-face { font-family: Harmony; src: url("{{ font }}"); }
+        * { box-sizing: border-box; }
+        body { margin: 0; background: #fff; color: #2c3e50; font-family: Harmony, "Microsoft YaHei", sans-serif; }
+        .scf-report { display: inline-block; width: 900px; padding: 24px; background: #fff; }
+        .report-header { padding: 18px 20px; margin-bottom: 20px; background: #f8f9fa; border: 1px solid #e7ebef; }
+        .report-title { margin: 0; font-size: 30px; line-height: 1.3; }
+        .report-subtitle { margin: 8px 0 0; color: #666; font-size: 18px; }
+        .report-total { margin: 14px 0 0; color: #666; font-size: 17px; }
+        .round-block { margin-bottom: 22px; border: 1px solid #e7ebef; break-inside: avoid; }
+        .round-head { display: flex; justify-content: space-between; align-items: center; gap: 20px; padding: 12px 18px; background: #f8f9fa; }
+        .round-title { margin: 0; font-size: 24px; }
+        .round-time { display: inline-flex; flex-direction: column; margin-left: 14px; color: #666; font-size: 16px; font-weight: normal; vertical-align: middle; }
+        .round-total { color: #666; font-size: 17px; white-space: nowrap; }
+        table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+        th { padding: 10px 16px; color: #666; font-size: 16px; font-weight: normal; text-align: left; }
+        td { padding: 12px 16px; border-top: 1px solid #e7ebef; font-size: 18px; vertical-align: middle; }
+        .time-column { width: 210px; text-align: center; }
+        .stack-column { width: 160px; text-align: center; }
+        .player { display: flex; align-items: center; gap: 10px; min-width: 0; }
+        .player img { flex: 0 0 auto; width: 38px; height: 38px; border-radius: 6px; }
+        .player-name { overflow-wrap: anywhere; font-weight: 600; }
+        .wing-time { display: block; line-height: 1.5; font-variant-numeric: tabular-nums; }
+        .acquisition-time + .acquisition-time { margin-top: 6px; }
+        .battle-time { display: block; color: #888; font-size: 14px; line-height: 1.5; font-variant-numeric: tabular-nums; }
+        .unobserved { color: #777; font-size: 16px; }
+        .fragment-stacks { color: #2c7be5; font-size: 25px; font-weight: 700; }
+        .stack-unit { margin-left: 5px; color: #666; font-size: 16px; }
+        .zero-stacks .stack-column { background: #fff8ec; }
+        .zero-stacks .fragment-stacks { color: #a96917; }
+        .empty { padding: 24px; color: #777; font-size: 18px; text-align: center; }
+        .report-note { margin: 0; color: #777; font-size: 15px; line-height: 1.6; }
+        .report-footer { margin-top: 20px; padding: 15px; background: #f0f0f0; color: #777; font-size: 20px; text-align: center; }
+    </style>
+</head>
+<body>
+<main class="scf-report style2-report">
+    <header class="report-header">
+        <h1 class="report-title">史朝义 · 翅膀与碎片</h1>
+        <p class="report-subtitle">按轮查看领取翅膀的玩家与碎片层数。</p>
+        <p class="report-total">{{ report.rounds|length }} 轮 · {{ report.wing_pickup_count }} 次领翼 · {{ report.fragment_stacks }} 层碎片</p>
+    </header>
+    {% for round in report.rounds %}
+    <section class="round-block">
+        <div class="round-head">
+            <h2 class="round-title">第 {{ round.order }} 轮<span class="round-time"><span>{{ round.start_time }}</span><span class="battle-time">战斗 {{ round.start_battle_time }}</span></span></h2>
+            <span class="round-total">{{ round.wing_pickup_count }} 次领翼 · {{ round.fragment_stacks }} 层碎片</span>
+        </div>
+        <table>
+            <thead><tr><th>玩家</th><th class="time-column">获得时间</th><th class="stack-column">碎片层数</th></tr></thead>
+            <tbody>
+            {% for row in round.rows %}
+                <tr class="player-row{% if row.fragment_stacks == 0 %} zero-stacks{% endif %}">
+                    <td><div class="player"><img src="{{ row.icon }}" alt="{{ row.kungfu }}"><span class="player-name">{{ row.player_name }}</span></div></td>
+                    <td class="time-column">{% for time in row.wing_times %}<div class="acquisition-time"><span class="wing-time">{{ time.wall_time }}</span><span class="battle-time">战斗 {{ time.battle_time }}</span></div>{% else %}<span class="unobserved">{% if row.wing_pickup_count %}已领取（时间缺失）{% else %}未观察到领取{% endif %}</span>{% endfor %}</td>
+                    <td class="stack-column"><span class="fragment-stacks">{{ row.fragment_stacks }}</span><span class="stack-unit">层</span></td>
+                </tr>
+            {% else %}<tr><td class="empty" colspan="3">本轮未观察到领翼或拾片记录</td></tr>{% endfor %}
+            </tbody>
+        </table>
+    </section>
+    {% endfor %}
+    <p class="report-note">上行为北京时间，下行为战斗开始后的时间。0 层表示未观察到碎片叠层；碎片层数不代表交给李复的数量。</p>
+    <footer class="report-footer">Inkar-Suki: {{ saohua }}</footer>
+</main>
+</body>
+</html>

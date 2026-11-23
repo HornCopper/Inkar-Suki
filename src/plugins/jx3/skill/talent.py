@@ -1,20 +1,14 @@
 from typing import Literal
 from pydantic import BaseModel
-from pathlib import Path
-from jinja2 import Template
 
 from nonebot.adapters.onebot.v11 import Message, MessageSegment as ms
 
 from src.const.jx3.kungfu import Kungfu
-from src.const.path import build_path, TEMPLATES
-from src.templates import HTMLSourceCode
 from src.utils.jx3_data import talent_data
 from src.utils.network import Request
 from src.utils.generate import generate
 
-from ._template import template_body_talent, table_head_talent
-
-import html as HTML
+from .talent_report import render_talent_report
 
 class QixueInfo(BaseModel):
     icon: str = ""
@@ -46,8 +40,11 @@ class Qixue:
     def info(self) -> list[QixueInfo]:
         results = []
         kungfu_qixue = self.qixue_data.get(self.kungfu, {})
-        for x in kungfu_qixue:
-            for y in kungfu_qixue[x]:
+        # PointID 是跨心法的内部编号，按该心法的完整排列顺序显示第几重。
+        points = sorted((key for key in kungfu_qixue if str(key).isdigit()), key = int)
+        for order, x in enumerate(points, 1):
+            options = sorted((key for key in kungfu_qixue[x] if str(key).isdigit()), key = int)
+            for y in options:
                 if isinstance(kungfu_qixue[x][y], dict) and self.name in kungfu_qixue[x][y].get("name", ""):
                     data = kungfu_qixue[x][y]
                     results.append(
@@ -55,15 +52,10 @@ class Qixue:
                             icon = "https://icon.jx3box.com/icon/" + str(data["icon"]) + ".png",
                             name = data["name"],
                             desc = data["desc"],
-                            location = (int(x), int(y)),
+                            location = (order, int(y)),
                         ),
                     )
         return results
-
-def safe_format_desc(desc: str) -> str:
-    desc = desc.replace("&lt;", "<").replace("&gt;", ">")
-    desc = desc.replace("<", "&lt;").replace(">", "&gt;")
-    return desc
 
 async def get_talent_info(name: str, kungfu: str, season: str = "") -> str | Message | ms:
     kungfu_name = Kungfu(kungfu).name
@@ -82,23 +74,7 @@ async def get_talent_info(name: str, kungfu: str, season: str = "") -> str | Mes
             response.content,
         ) + f"第{talents[0].location[0]}重·第{talents[0].location[1]}层：{talents[0].name}\n{talents[0].desc}"
     else:  # Much match
-        tables = []
-        for each_talent in talents:
-            tables.append(
-                Template(template_body_talent).render(
-                    icon = each_talent.icon,
-                    name = each_talent.name,
-                    location = f"第{each_talent.location[0]}重·第{each_talent.location[1]}层",
-                    desc = safe_format_desc(HTML.escape(each_talent.desc)),
-                ),
-            )
-        html = str(
-            HTMLSourceCode(
-                application_name = f"奇穴 · {kungfu_name} · {season or '最新'}",
-                additional_js = Path(build_path(TEMPLATES, ["jx3", "qixue.js"])),
-                table_head = table_head_talent,
-                table_body = "\n".join(tables),
-            ),
-        )
-        image = await generate(html, ".container", True, segment = True)
+        html = render_talent_report(talents, kungfu_name, season, name)
+        image = await generate(html, ".talent-report", True, segment = True,
+                               viewport = {"width": 1100, "height": 1000})
         return image

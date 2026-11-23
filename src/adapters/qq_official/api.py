@@ -6,11 +6,13 @@ from datetime import timedelta
 from nonebot.adapters.qq.exception import ActionFailed
 from nonebot.adapters.qq.models.qq import SetMemberMuteState
 
+from .files import incoming_uploads
+
 if TYPE_CHECKING:
     from . import QQCompatBot
 
 UNHANDLED = object()
-UNSUPPORTED_APIS = frozenset({"get_cookies", "get_group_file_url", "set_group_leave", "set_group_add_request"})
+UNSUPPORTED_APIS = frozenset({"get_cookies", "set_group_leave", "set_group_add_request"})
 
 
 def unavailable(error: ActionFailed) -> bool:
@@ -141,6 +143,12 @@ class ContextAPI:
             bot.log_compatibility("用户昵称不可用，使用用户 ID 显示", action = "降级")
             self.notes.add("未获取的用户昵称以用户 ID 显示。")
             return {"user_id": uid, "nickname": str(uid), "qq_official_partial": True}
+        if api == "get_group_file_url":
+            self.require_group(data)
+            for upload in incoming_uploads(bot):
+                if str(data.get("file_id", "")) == upload.file.id and data.get("bus_id", 0) == upload.file.busid:
+                    return {"url": upload.file.model_dump()["url"]}
+            return bot.skip("当前消息中没有对应的群文件附件")
         if api == "get_image":
             requested = str(data.get("file", ""))
             for attachment in bot.source.attachments or []:

@@ -242,6 +242,16 @@ class THRRank(LiteModel):
     health_per_second: int = 0
     total_health: int = 0
 
+class TCSRank(LiteModel):
+    TABLE_NAME: ClassVar[str] = "tcs_rank"
+    role_name: str = ""
+    server_name: str = ""
+    kungfu_id: int = 0
+    damage_per_second: int = 0
+    total_damage: int = 0
+    health_per_second: int = 0
+    total_health: int = 0
+
 class EquipmentRatingDpsRank(LiteModel):
     TABLE_NAME: ClassVar[str] = "equipment_rating_dps_rank"
     role_name: str = ""

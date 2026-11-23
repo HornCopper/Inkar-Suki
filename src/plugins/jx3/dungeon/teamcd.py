@@ -21,7 +21,6 @@ from ._template import (
     template_zone_record,
     table_zone_record_head,
 )
-from .raid import get_raid_records
 
 PERSONAL_TEAMCD_ROLE_LIMIT = 5
 PERSONAL_TEAMCD_PERMISSION = "jx3.dungeon.zones.list"
@@ -38,6 +37,18 @@ def build_teamcd_request(guid: str) -> Request:
         "ts": ts,
     }
     return Request("https://m.pvp.xoyo.com/h5/parser/cd-process/get-by-role", params = params)
+
+async def get_raid_records(server: str, role_name: str) -> dict:
+    # JX3API no longer exposes /raid/records; lists use the existing 推栏 source.
+    role = await search_player(role_name = role_name, server_name = server)
+    if not role.globalRoleId:
+        return {"code": 404, "data": None, "msg": PROMPT.PlayerNotExist}
+    response = await build_teamcd_request(role.globalRoleId).post(tuilan = True)
+    response.raise_for_status()
+    payload = response.json()
+    if payload.get("code") != 0:
+        return {"code": 502, "data": None, "msg": "推栏副本记录查询失败，请稍后重试！"}
+    return {"code": 200, "data": payload.get("data"), "msg": ""}
 
 async def get_zone_record_image(server: str, role: str):
     role_info = await search_player(role_name = role, server_name = server)
@@ -105,6 +116,7 @@ def parse_raid_records(records: list[dict]) -> dict[str, list[bool]]:
         if not isinstance(map_name, str) or not map_name:
             continue
         boss_progress = record.get("bossProgress") or []
+        map_name = f"{record.get('mapType') or ''}{map_name}"
         result[map_name] = [bool(boss.get("finished")) for boss in boss_progress if isinstance(boss, dict)]
     return result
 

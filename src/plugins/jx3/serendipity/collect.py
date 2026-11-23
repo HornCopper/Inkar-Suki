@@ -8,16 +8,16 @@ from src.config import Config
 from src.const.path import ASSETS, build_path
 from src.templates import SimpleHTML, get_saohua
 from src.utils.generate import generate
-from src.utils.network import Request
+from src.utils.jx3api import jx3api_get
 from src.utils.time import Time
 
 from ._template import collect_serendipity_card, collect_serendipity_row
 
 async def get_serendipity_collect(server: str, days: int):
     params = {"server": server, "num": days, "token": Config.jx3.api.token}
-    data = (await Request(f"{Config.jx3.api.url}/event/collect", params = params).get()).json()
+    data = await jx3api_get("/event/collect", params = params)
     if data["code"] != 200 or not data["data"]:
-        return "未找到奇遇汇总记录，请检查服务器后重试！"
+        return data["msg"] or "未找到奇遇汇总记录，请检查服务器后重试！"
 
     assets = {}
     for category in ("common", "peerless", "pet"):

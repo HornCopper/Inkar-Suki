@@ -10,6 +10,7 @@ from src.utils.database.classes import (
     CQCRank,
     EquipmentRatingDpsRank,
     THRRank,
+    TCSRank,
     GroupSettings,
     RaidTeamHealth,
     ItemKeywordMap,
@@ -88,6 +89,7 @@ rank_db = Database(build_path(DATA, ["rank.db"]))
 rank_db.auto_migrate(
     CQCRank(),
     THRRank(),
+    TCSRank(),
     EquipmentRatingDpsRank(),
 )
 

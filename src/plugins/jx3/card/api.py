@@ -32,15 +32,13 @@ def parse_role_response(payload: dict, server: str, identifier: str) -> Role:
 
 async def fetch_role(server: str, identifier: str) -> Role:
     from src.config import Config
-    from src.utils.network import Request
+    from src.utils.jx3api import jx3api_get
 
-    if not Config.jx3.api.enable or not Config.jx3.api.token:
+    if not Config.jx3.api.enable or not (Config.jx3.api.token or Config.jx3.api.token_v2):
         raise ValueError("机器人尚未配置可用的 JX3API 角色查询服务，请联系管理员。")
     params = {"token": Config.jx3.api.token, "server": server, "name": identifier}
     try:
-        response = await Request(f"{Config.jx3.api.url}/role/detail", params = params).get(timeout = 20)
-        response.raise_for_status()
-        payload = response.json()
+        payload = await jx3api_get("/role/detail", params = params, timeout = 20)
     except (httpx.HTTPError, ValueError):
         # Keep token-bearing request URLs out of error messages and tracebacks.
         raise ValueError("角色详情接口暂时不可用，请稍后重试。") from None

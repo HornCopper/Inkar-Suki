@@ -11,6 +11,7 @@ from src.utils.database import attribute_db as db
 from src.utils.database.classes import PlayerEquipsCache
 from src.utils.database.tabs import read_tab
 from src.utils.network import Request
+from src.utils.jx3api import jx3api_get
 from src.utils.permission import check_group_permission
 from src.utils.analyze import (
     R,
@@ -1269,7 +1270,7 @@ class JX3PlayerAttribute:
             "token": token,
         }
         try:
-            raw_data = (await Request(ATTRIBUTE_SYNC_URL, params = params).get()).json()
+            raw_data = await jx3api_get(ATTRIBUTE_SYNC_URL, params = params)
             if not isinstance(raw_data, dict) or raw_data.get("code", raw_data.get("status")) != 200:
                 return None
             detail = raw_data.get("data", raw_data.get("detail"))

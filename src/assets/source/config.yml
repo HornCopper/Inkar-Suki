@@ -18,6 +18,10 @@ qq_official: # QQ 官方机器人，可与原有 OneBot 同时连接
     app_secret: "" # QQ 开放平台 AppSecret
     use_websocket: False # False = HTTPS Webhook；后台支持长连接时可改为 True
     group_member_events: False # 获得群成员事件权限后开启；未授权的 WebSocket 订阅会被平台断开
+    coexistence: # 已匹配群号的纯文字群消息：野生优先，官方等待后接管
+        enabled: True
+        window_seconds: 2.0 # 从首次收到起固定去重，同侧重复、不同用户相同内容也合并
+        official_wait_seconds: 1.0 # 必须小于去重窗口；不影响私聊、图片和订阅推送
     driver: "~fastapi+~httpx+~websockets" # 同时支持现有 OneBot 服务与官方接口
 
 github: # GitHub 相关配置

@@ -2,7 +2,7 @@ from jinja2 import Template
 
 from src.config import Config
 from src.utils.decorators import token_required
-from src.utils.network import Request
+from src.utils.jx3api import jx3api_get
 from src.utils.time import Time
 from src.utils.generate import generate
 from src.templates import HTMLSourceCode
@@ -13,15 +13,17 @@ from ._template import (
 )
 
 async def get_firework_record(server: str, name: str):
-    url = f"{Config.jx3.api.url}/firework/records"
+    url = "/firework/records"
     params = {
         "token": Config.jx3.api.token_v2,
         "server": server,
         "name": name,
     }
-    data = (await Request(url, params = params).get()).json()
+    data = await jx3api_get(url, params = params)
     if data["code"] == 404:
         return "没有找到相关烟花记录，请检查后重试！"
+    if data["code"] != 200:
+        return data["msg"] or "烟花记录查询失败，请稍后重试！"
     table = []
     for record in data["data"]:
         table.append(

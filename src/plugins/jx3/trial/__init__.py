@@ -34,7 +34,7 @@ async def _(event: GroupMessageEvent, msg: Message = CommandArg()):
         server = Server(args[0], event.group_id).server
         query_name = args[1]
     kungfu = Kungfu(query_name)
-    trial_name = "藏剑" if kungfu.school == "藏剑" else kungfu.name
+    trial_name = kungfu.name
     if trial_name is None:
         await trial_rank_matcher.finish(PROMPT.SchoolInvalid)
     if server is None:

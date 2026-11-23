@@ -4,6 +4,7 @@ from functools import lru_cache
 from typing import Any, cast
 
 from src.utils.jx3_attributes import AttributesFull
+from src.utils.jx3_skill_desc import format_skill_description
 from src.utils.jx3_tables import TALENT_HISTORY_ROOT, integer, rows, source_path, table
 
 import json
@@ -257,26 +258,6 @@ def _current_talents() -> dict[str, Any]:
         }
         for row in rows("skill/Skill.txt")
     }
-    nouns = table("skill/Skill_Nouns.txt", "nNounID", ("szName", "szDesc"))
-
-    def expand_nouns(text: str, seen: set[str] | None = None) -> str:
-        seen = set() if seen is None else seen
-        references = []
-
-        def replace(match: re.Match[str]) -> str:
-            noun = nouns.get(match[1])
-            if noun is None:
-                return match[0]
-            if match[1] not in seen:
-                seen.add(match[1])
-                references.append(noun)
-            return f"[{noun['szName']}]"
-
-        text = re.sub(r"<NounID\s+(\d+)>", replace, text.replace("\\n", "\n"))
-        for noun in references:
-            text += f"\n[{noun['szName']}]：" + expand_nouns(noun["szDesc"], seen)
-        return text
-
     result = defaultdict(dict)
     for row in rows("skill/TenExtraPoint.tab"):
         name = names[row["KungFuID"]]["name"]
@@ -292,7 +273,7 @@ def _current_talents() -> dict[str, Any]:
             layer[str(position)] = {
                 "name": skill["Name"],
                 "icon": skill["IconID"],
-                "desc": expand_nouns(skill["Desc"]),
+                "desc": format_skill_description(skill["Desc"]),
                 "id": skill_id,
                 "order": row["PointID"],
                 "pos": position,

@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        @font-face { font-family: Harmony; src: url("{{ font }}"); }
+        * { box-sizing: border-box; }
+        body { margin: 0; color: #2c3e50; background: #fff; font-family: Harmony, "Microsoft YaHei", sans-serif; }
+        .talent-report { width: 1100px; padding: 24px; background: #fff; }
+        .report-header { margin-bottom: 24px; padding: 20px 24px; background: #f8f9fa; border: 1px solid #e7ebef; }
+        .report-title { margin: 0; font-size: 30px; line-height: 1.3; }
+        .report-subtitle { margin: 8px 0 0; color: #666; font-size: 18px; }
+        .report-summary { display: flex; gap: 24px; margin-top: 14px; color: #666; font-size: 16px; }
+        .talent-section + .talent-section { margin-top: 22px; }
+        .tier-heading { display: flex; align-items: baseline; gap: 16px; padding: 10px 14px; background: var(--inkar-muted-surface, #f8f9fa); border-bottom: 2px solid var(--inkar-border, #e7ebef); }
+        .tier-title { margin: 0; color: var(--inkar-accent-ink, #2c7be5); font-size: 22px; }
+        .tier-note { color: #666; font-size: 15px; }
+        .talent-entry { display: grid; grid-template-columns: 188px minmax(0, 1fr); gap: 22px; padding: 16px 14px; border-bottom: 1px solid #e7ebef; }
+        .talent-identity { display: flex; align-items: flex-start; gap: 12px; min-width: 0; }
+        .talent-icon { flex: 0 0 42px; width: 42px; height: 42px; object-fit: contain; border-radius: 3px; }
+        .talent-name { margin: 0; font-size: 21px; line-height: 1.35; overflow-wrap: anywhere; }
+        .talent-position { display: block; margin-top: 5px; color: #7a8591; font-size: 14px; }
+        .talent-body { min-width: 0; }
+        .talent-description { margin: 0; color: #344454; font-size: 20px; line-height: 1.65; white-space: pre-line; overflow-wrap: anywhere; }
+        .noun-reference { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 3px; }
+        .talent-requirement { color: #c0392b; white-space: nowrap; }
+        .report-footer { margin-top: 22px; padding: 14px; color: #777; background: #f0f0f0; text-align: center; font-size: 16px; }
+    </style>
+</head>
+<body>
+<main class="talent-report style2-report">
+    <header class="report-header">
+        <h1 class="report-title">{{ kungfu }}</h1>
+        <p class="report-subtitle">奇穴 · {{ season }}{% if keyword %} · {{ keyword }}{% endif %}</p>
+        <div class="report-summary"><span>{{ report.tier_count }} 重</span><span>{{ report.entry_count }} 个候选奇穴</span></div>
+    </header>
+    {% for section in report.sections %}
+    <section class="talent-section">
+        <div class="tier-heading">
+            <h2 class="tier-title">{{ section.label }}</h2>
+            <span class="tier-note">{% if section.tiers|length > 1 %}共用候选奇穴 · {% endif %}{{ section.entries|length }} 项</span>
+        </div>
+        {% for talent in section.entries %}
+        <article class="talent-entry">
+            <div class="talent-identity">
+                <img class="talent-icon" src="{{ talent.icon }}" alt="">
+                <div><h3 class="talent-name">{{ talent.name }}</h3><span class="talent-position">第{{ talent.position }}项</span></div>
+            </div>
+            <div class="talent-body"><p class="talent-description">{{ talent.description|format_description }}</p></div>
+        </article>
+        {% endfor %}
+    </section>
+    {% endfor %}
+    <footer class="report-footer">Inkar Suki · 奇穴查询</footer>
+</main>
+</body>
+</html>

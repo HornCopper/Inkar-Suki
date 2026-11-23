@@ -1,7 +1,6 @@
 from jinja2 import Template
 
-from src.config import Config
-from src.utils.network import Request
+from src.utils.jx3api import jx3api_get
 from src.utils.time import Time
 from src.utils.decorators import token_required
 from src.utils.generate import generate
@@ -15,14 +14,16 @@ from ._template import (
 
 @token_required
 async def get_item_record(name: str, token: str = ""):
-    url = f"{Config.jx3.api.url}/reward/statistics"
+    url = "/reward/statistics"
     params = {
         "name": name,
         "token": token,
     }
-    data = (await Request(url, params = params).get()).json()
+    data = await jx3api_get(url, params = params)
     if data["code"] == 404:
         return "未找到相关物品，请检查物品名称是否正确！"
+    if data["code"] != 200:
+        return data["msg"] or "掉落记录查询失败，请稍后重试！"
     tables = []
     for i in data["data"]:
         role_name = i["roleName"]
