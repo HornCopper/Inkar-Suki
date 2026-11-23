@@ -355,6 +355,7 @@ def _default_routes(item: dict[str, Any]) -> list[dict[str, str]]:
                 "key": _equipment_rating_rank_jcl_key({
                     "rating_model": "therapy_ruin",
                     "loop_name": model_name,
+                    "season": str(item.get("season") or "").strip(),
                 }, ),
                 "name": f"承压模型 · 破产概率 {model_name}",
                 "weapon": "承压",

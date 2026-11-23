@@ -77,11 +77,28 @@ def _peak_point(
     x, y = all_points[peak_index]
     return x, y, peak
 
+def _buff_legend_items(buff_overlays: list[dict[str, Any]]) -> list[tuple[str, str]]:
+    items: list[tuple[str, str]] = []
+    seen: set[tuple[str, str]] = set()
+    for overlay in buff_overlays:
+        label = str(overlay.get("label") or "").strip()
+        color = str(overlay.get("color") or "#64748B").strip()
+        if not label:
+            continue
+        key = (label, color)
+        if key in seen:
+            continue
+        seen.add(key)
+        items.append(key)
+    return items
+
 def _buff_overlays_svg(
     buff_overlays: list[dict[str, Any]],
     width: int,
     height: int,
     max_second: float,
+    *,
+    show_labels: bool = True,
 ) -> str:
     if not buff_overlays:
         return ""
@@ -104,7 +121,7 @@ def _buff_overlays_svg(
             f'<rect x="{x:.2f}" y="0" width="{frame_width:.2f}" height="{height}" '
             f'rx="4" fill="{color}" stroke="{color}" class="buff-frame"/>',
         )
-        if label:
+        if show_labels and label:
             label_x = x + 6
             anchor = "start"
             if label_x > width - 90:
@@ -117,6 +134,12 @@ def _buff_overlays_svg(
             )
     return "".join(frames + labels)
 
+def _choose_time_tick_step(max_second: float, width: int, min_gap_px: float = 52.0) -> int:
+    for step in (15, 30, 45, 60, 90, 120, 180):
+        if step / max(1.0, max_second) * width >= min_gap_px:
+            return step
+    return 180
+
 def _chart_svg(
     series_list: list[dict[str, Any]],
     key: str,
@@ -128,6 +151,7 @@ def _chart_svg(
     source_key: str = "bins",
     buff_overlays: list[dict[str, Any]] | None = None,
     stroke_width: float = 4,
+    compact_overlays: bool | None = None,
 ) -> str:
     max_value = max(
         (
@@ -158,14 +182,15 @@ def _chart_svg(
             f'<line x1="0" y1="{y:.2f}" x2="{width}" y2="{y:.2f}" stroke="#e6e8ee" stroke-width="1"/>'
             f'<text x="-12" y="{y + 4:.2f}" text-anchor="end" class="axis-label">{html.escape(_format_compact_number(value))}</text>',
         )
+    tick_step = _choose_time_tick_step(max_second, width)
     time_ticks = []
     tick = 0
     while tick < terminal_tick_second:
         time_ticks.append(float(tick))
-        tick += 15
+        tick += tick_step
     terminal_tick_x = terminal_tick_second / max_second * width
     time_ticks = [
-        tick_second for tick_second in time_ticks if abs(tick_second / max_second * width - terminal_tick_x) >= 48
+        tick_second for tick_second in time_ticks if abs(tick_second / max_second * width - terminal_tick_x) >= 42
     ]
     if not any(abs(t - terminal_tick_second) < 0.05 for t in time_ticks):
         time_ticks.append(terminal_tick_second)
@@ -181,9 +206,12 @@ def _chart_svg(
             f'<line x1="{x:.2f}" y1="{height}" x2="{x:.2f}" y2="{height + 7}" stroke="#b7bcc8" stroke-width="1"/>'
             f'<text x="{x:.2f}" y="{height + 24}" text-anchor="{anchor}" class="axis-label">{html.escape(_format_seconds(tick_second))}</text>',
         )
-    overlay_bands = _buff_overlays_svg(buff_overlays or [], width, height, max_second)
+    overlays = buff_overlays or []
+    use_legend = width <= 640 if compact_overlays is None else compact_overlays
+    overlay_bands = _buff_overlays_svg(overlays, width, height, max_second, show_labels = not use_legend)
     paths = []
     peaks = []
+    multi_series = len(series_list) > 1
     for index, series in enumerate(series_list):
         color = colors[index % len(colors)]
         points = _series_points(series, key, width, height, max_value, max_second, source_key)
@@ -195,14 +223,36 @@ def _chart_svg(
             peak = _peak_point(series, width, height, max_value, max_second, source_key)
             if peak is not None:
                 x, y, item = peak
+                if x > width * 0.65:
+                    peak_x = max(8.0, x - 10)
+                    peak_anchor = "end"
+                else:
+                    peak_x = min(width - 8.0, x + 10)
+                    peak_anchor = "start"
+                peak_y = max(4.0, y - 8) if y >= 14 else y + 4
+                prefix = html.escape(str(series.get("label", ""))) if multi_series else ""
                 peaks.append(
-                    f'<circle cx="{x:.2f}" cy="{y:.2f}" r="6" fill="{color}" stroke="#fff" stroke-width="2"/>'
-                    f'<text x="{min(width - 8, x + 10):.2f}" y="{max(16, y - 10):.2f}" class="peak-label" fill="{color}">'
-                    f'{html.escape(series.get("label", ""))}峰值 {_format_compact_number(item.get("damage_per_second_bin"))}</text>',
+                    f'<circle cx="{x:.2f}" cy="{y:.2f}" r="5.5" fill="{color}" stroke="#fff" stroke-width="2"/>'
+                    f'<text x="{peak_x:.2f}" y="{peak_y:.2f}" text-anchor="{peak_anchor}" class="peak-label" fill="{color}">'
+                    f'{prefix}峰值 {_format_compact_number(item.get("damage_per_second_bin"))}</text>',
                 )
+    legend_html = ""
+    if use_legend:
+        legend_items = _buff_legend_items(overlays)
+        if legend_items:
+            spans = "".join(
+                f'<span class="chart-legend-item">'
+                f'<i class="chart-legend-dot" style="background:{html.escape(color)};"></i>'
+                f'{html.escape(label)}</span>' for label, color in legend_items
+            )
+            legend_html = f'<div class="chart-legend">{spans}</div>'
+    header_html = (
+        f'<div class="chart-header"><div class="chart-title">{html.escape(title)}</div>{legend_html}</div>'
+        if legend_html else f'<div class="chart-title">{html.escape(title)}</div>'
+    )
     return (
-        f'<div class="chart-title">{html.escape(title)}</div>'
-        f'<svg viewBox="-78 -10 {width + 96} {height + 40}" class="chart">' + "".join(grid_lines) + overlay_bands +
+        header_html +
+        f'<svg viewBox="-78 -16 {width + 96} {height + 46}" class="chart">' + "".join(grid_lines) + overlay_bands +
         "".join(paths) + "".join(peaks) +
         f'<line x1="0" y1="{height}" x2="{width}" y2="{height}" stroke="#b7bcc8" stroke-width="1.5"/>' +
         "".join(axis_ticks) + "</svg>"

@@ -30,6 +30,7 @@ from src.utils.database.classes import EquipmentRatingDpsRank
 from src.utils.database.constant import (
     CRITICAL_DAMAGE_DIVISOR,
     CRITICAL_DIVISOR,
+    CURRENT_LEVEL,
     HASTE_DIVISOR,
     OVERCOME_DIVISOR,
     STRAIN_DIVISOR,
@@ -50,7 +51,7 @@ from .loop_selection import (
     format_calculator_loop_selection,
 )
 from .race_rank import get_equipment_rating_race_rank
-from .timeline_render import _chart_svg, _format_compact_number
+from .timeline_render import _chart_svg, _format_compact_number, _smooth_path
 from .universe import UniversalCalculator
 
 RANK_ICON_FILES = {
@@ -106,6 +107,121 @@ RANK_THEMES = {
         "rgb": "190 196 206",
     },
 }
+CULTIVATION_SUBTIERS = ("初期", "中期", "后期", "大圆满")
+CULTIVATION_REALMS = (
+    {
+        "id": "feisheng",
+        "name": "飞升期",
+        "min_score": 90.0,
+        "max_score": 100.0,
+        "ink": "#7A1518",
+        "accent": "#B82922",
+        "gold": "#D19A36",
+        "paper": "#FDF7EC",
+        "wash": "#F5DFB8",
+        "border": "#DFB970",
+        "seal_bg": "#A8221D",
+        "seal_fg": "#FFF8EB",
+        "sub_fg": "#8E5D1B",
+        "poem": "坐听无弦曲，明通造化机。都来二十句，端的上天梯。",
+    },
+    {
+        "id": "dujie",
+        "name": "渡劫期",
+        "min_score": 80.0,
+        "max_score": 90.0,
+        "ink": "#7C2D0C",
+        "accent": "#C85A17",
+        "gold": "#E08E26",
+        "paper": "#FFF8F1",
+        "wash": "#F8DEC3",
+        "border": "#E6BC8A",
+        "seal_bg": "#B54712",
+        "seal_fg": "#FFF9F2",
+        "sub_fg": "#944818",
+        "poem": "打破虚空消亿劫，既登彼岸舍舟航。",
+    },
+    {
+        "id": "huashen",
+        "name": "化神期",
+        "min_score": 70.0,
+        "max_score": 80.0,
+        "ink": "#3B2154",
+        "accent": "#663D8E",
+        "gold": "#9A79B8",
+        "paper": "#F9F6FC",
+        "wash": "#E8DDF3",
+        "border": "#CBBBE0",
+        "seal_bg": "#523074",
+        "seal_fg": "#F9F5FC",
+        "sub_fg": "#5D427A",
+        "poem": "十月工夫无间断，一灵妙有超生灭。",
+    },
+    {
+        "id": "yuanying",
+        "name": "元婴期",
+        "min_score": 60.0,
+        "max_score": 70.0,
+        "ink": "#153D63",
+        "accent": "#246399",
+        "gold": "#5290C2",
+        "paper": "#F3F8FD",
+        "wash": "#D7E8F8",
+        "border": "#AFCBE6",
+        "seal_bg": "#1D5280",
+        "seal_fg": "#F4F9FE",
+        "sub_fg": "#285B85",
+        "poem": "是知太一含真炁，十月胎圆入圣基。",
+    },
+    {
+        "id": "jindan",
+        "name": "金丹期",
+        "min_score": 50.0,
+        "max_score": 60.0,
+        "ink": "#144B52",
+        "accent": "#1F7882",
+        "gold": "#4CA3AC",
+        "paper": "#F2FAFB",
+        "wash": "#D3EEF1",
+        "border": "#A9D6DC",
+        "seal_bg": "#1B636B",
+        "seal_fg": "#F2FAFB",
+        "sub_fg": "#23646C",
+        "poem": "一粒金丹吞入腹，始知我命不由天。",
+    },
+    {
+        "id": "zhuji",
+        "name": "筑基期",
+        "min_score": 40.0,
+        "max_score": 50.0,
+        "ink": "#1B4B36",
+        "accent": "#2D7556",
+        "gold": "#5A9E7E",
+        "paper": "#F4FAF6",
+        "wash": "#D8EFE2",
+        "border": "#B2D8C2",
+        "seal_bg": "#235E44",
+        "seal_fg": "#F4FAF7",
+        "sub_fg": "#2B634B",
+        "poem": "绝虑忘思赤子心，归根复命仙人业。",
+    },
+    {
+        "id": "lianqi",
+        "name": "炼气期",
+        "min_score": 0.0,
+        "max_score": 40.0,
+        "ink": "#2E3338",
+        "accent": "#5A626A",
+        "gold": "#8A929A",
+        "paper": "#F8F9FA",
+        "wash": "#E6E9EC",
+        "border": "#CFD5DC",
+        "seal_bg": "#484F56",
+        "seal_fg": "#F8F9FA",
+        "sub_fg": "#575F67",
+        "poem": "恍惚之中寻有象，杳冥之内觅真精。",
+    },
+)
 ADAPTIVE_FORMATION_RANK_GRADES = {1: "ACE", 2: "S+", 3: "S"}
 EQUIPMENT_RATING_IMAGE_SEND_FAILED = ("装备评级图片已生成，但 QQ/NapCat 拒绝了图片上传。\n"
                                       "建议重启 NapCat。")
@@ -146,9 +262,17 @@ ADAPTIVE_ICON_ITEM_NAME_BY_CODE = {
     **{f"CA_BANQUET_{attr}": "长安珍馐宴（通用）"
        for attr in ("VITALITY", "AGILITY", "SPUNK", "STRENGTH", "SPIRIT")},
     "BLSZY": "百炼水煮鱼",
-    "FY_ATTACK_INGOT_PHYSICS": "风语·瀑沙熔锭（外攻）",
-    "FY_ATTACK_INGOT_MAGIC": "风语·坠宵熔锭（内攻）",
-    "FY_THERAPY_INGOT": "风语·絮泊熔锭（疗伤）",
+    # 苍生铸世起评级与试炼统一使用焠晶；旧 FY_* 熔锭代码在 calculator 中只是 CS_* 焠晶的兼容别名。
+    # 本表只用于按物品名查图标：紫色 CS_*_INGOT 在本地 Item.txt 中没有同名物品，借用同系焠晶图标。
+    "CS_ATTACK_CRYSTAL": "苍生·坠宵焠晶（攻击）",
+    "CS_THERAPY_CRYSTAL": "苍生·絮泊焠晶（疗伤）",
+    "CS_WEAPON_DAMAGE_CRYSTAL": "苍生·瀑沙焠晶（武伤）",
+    "CS_ATTACK_INGOT": "苍生·坠宵焠晶（攻击）",
+    "CS_THERAPY_INGOT": "苍生·絮泊焠晶（疗伤）",
+    "CS_WEAPON_DAMAGE_INGOT": "苍生·瀑沙焠晶（武伤）",
+    "FY_ATTACK_INGOT_PHYSICS": "苍生·坠宵焠晶（攻击）",
+    "FY_ATTACK_INGOT_MAGIC": "苍生·坠宵焠晶（攻击）",
+    "FY_THERAPY_INGOT": "苍生·絮泊焠晶（疗伤）",
     "HOME_WINE_FEN_THIRTEEN_DAYS": "汾酒·旬又三",
     "HOME_WINE_GUANWAI_THIRTEEN_DAYS": "关外白酒·旬又三",
     "HOME_WINE_GAOLIANG_THIRTEEN_DAYS": "高粱酒·旬又三",
@@ -163,6 +287,7 @@ ADAPTIVE_ICON_ITEM_NAME_BY_CODE = {
     "CREATIVE_FOOD_SHENG_LIFE_DOWN_CRITICAL": "创意食品·盛",
 }
 ADAPTIVE_FORMATION_ALIASES = {
+    "坦克阵眼": "防御阵",
     "龙皇雪风阵": "凌雪阵",
     "千机百变阵": "天罗阵",
     "苍梧引灵阵": "万灵阵",
@@ -175,6 +300,9 @@ ADAPTIVE_FORMATION_ALIASES = {
     "万蛊噬心阵": "毒经阵",
     "横云破锋阵": "刀宗阵",
     "九音惊弦阵": "冰心阵",
+    "依山观澜阵": "藏剑阵",
+    "流星赶月阵": "惊羽阵",
+    "降龙伏虎阵": "丐帮阵",
     "江湖行侠阵": "通用阵",
 }
 ADAPTIVE_FORMATION_FALLBACK_ICON_IDS = {
@@ -184,8 +312,8 @@ ADAPTIVE_DISPLAY_GROUPS = [
     ("food", "食品类", {"辅助食品", "增强食品"}),
     ("medicine", "药品类", {"辅助药品", "增强药品"}),
     ("banquet", "常规宴席", {"常规宴席"}),
-    ("home", "家园类（酒 / 创意料理）", {"家园酒", "创意料理·盛"}),
-    ("ingot", "熔锭", {"熔锭"}),
+    ("home", "家园类（酒 / 香膏 / 创意料理）", {"家园酒", "家园香膏", "创意料理·盛"}),
+    ("ingot", "焠晶", {"熔锭", "焠晶"}),
 ]
 
 def _asset_uri(*parts: str) -> str:
@@ -225,7 +353,7 @@ MAIN_ATTR_LABELS = {
     "atSpunkBase": "元气",
     "atVitalityBase": "体质",
 }
-HIDDEN_DETAIL_ATTRIBUTE_LABELS = {"化劲"}
+HIDDEN_DETAIL_ATTRIBUTE_LABELS = {"化劲", "破招"}
 HIDDEN_ATTRIBUTE_TEXTS = {
     "atPhysicsShieldBase",
     "atPhysicsshieldBase",
@@ -244,7 +372,11 @@ ATTRIBUTE_INCOME_DISPLAY_KEYS = {
         "atAllTypeCriticalStrike",
         "atAllTypeCriticalDamagePowerBase",
         "atPhysicsOvercomeBase",
-        "atSurplusValueBase",
+        "atAgilityBase",
+        "atStrengthBase",
+        "atSpunkBase",
+        "atSpiritBase",
+        "atVitalityBase",
         "atStrainBase",
     ),
     "Magic": (
@@ -252,7 +384,11 @@ ATTRIBUTE_INCOME_DISPLAY_KEYS = {
         "atAllTypeCriticalStrike",
         "atAllTypeCriticalDamagePowerBase",
         "atMagicOvercome",
-        "atSurplusValueBase",
+        "atAgilityBase",
+        "atStrengthBase",
+        "atSpunkBase",
+        "atSpiritBase",
+        "atVitalityBase",
         "atStrainBase",
     ),
     "Therapy": (
@@ -261,7 +397,8 @@ ATTRIBUTE_INCOME_DISPLAY_KEYS = {
         "atAllTypeCriticalDamagePowerBase",
     ),
 }
-TANK_VITALITY_CONVERSION_STEP = 3310
+# 苍生铸世（50 级）基础体质转增益层数除数，与 calculator assets/coefficient.py 的 VITALITY_TO_BUFF_DIVISOR 一致。
+TANK_VITALITY_CONVERSION_STEP = 96
 TANK_VITALITY_CONVERSION_MAX_STACKS = 100
 
 def _is_hidden_attribute_text(value: Any) -> bool:
@@ -502,7 +639,11 @@ TRIAL_LAND_ATTRIBUTE_LABELS = {
     "atAllTypeCriticalDamagePowerBase": "会效",
     "atPhysicsOvercomeBase": "破防",
     "atMagicOvercome": "破防",
-    "atSurplusValueBase": "破招",
+    "atAgilityBase": "身法",
+    "atStrengthBase": "力道",
+    "atSpunkBase": "元气",
+    "atSpiritBase": "根骨",
+    "atVitalityBase": "体质",
     "atStrainBase": "无双",
 }
 
@@ -514,6 +655,8 @@ def _prepare_trial_land_attribute_incomes(raw: Any, target: dict[str, Any] | Non
         if not isinstance(item, dict) or str(item.get("metric_key") or "") != "raw_dps":
             continue
         attribute_key = str(item.get("attribute_key") or "").strip()
+        if attribute_key == "atSurplusValueBase":
+            continue
         dps_per_100 = _trial_land_float(item.get("dps_per_100"))
         dps_per_point = _trial_land_float(item.get("dps_per_point"))
         dps_per_enchant = _trial_land_float(item.get("dps_per_sample"))
@@ -570,6 +713,8 @@ def _trial_land_summary_metrics(
     capped: bool,
     target: dict[str, Any] | None,
     wine_locked_for_haste: bool,
+    haste_locked_slots: set[str] | None = None,
+    target_level: int = CURRENT_LEVEL + 4,
 ) -> list[dict[str, str]]:
     if target is None:
         target_metric = (
@@ -596,6 +741,11 @@ def _trial_land_summary_metrics(
             "detail": "无需额外DPS" if reached else f"还差 {target['gap_dps_text']} DPS",
             "state": "ok" if reached else "warning",
         }
+    locked_slots = haste_locked_slots if haste_locked_slots is not None else ({"wine"} if wine_locked_for_haste else set())
+    if locked_slots:
+        haste_detail = "加速配置已锁定" if locked_slots != {"wine"} else "加速酒已锁定"
+    else:
+        haste_detail = "主属性酒已锁定"
     return [
         {
             "key":
@@ -613,9 +763,9 @@ def _trial_land_summary_metrics(
         },
         {
             "key": "expected_dps",
-            "label": "试炼预期DPS（133级首领）",
+            "label": f"试炼预期DPS（{target_level}级首领）",
             "value": _format_number(expected_dps),
-            "detail": "加速酒已锁定" if wine_locked_for_haste else "主属性酒已锁定",
+            "detail": haste_detail,
             "state": "default",
         },
         target_metric,
@@ -762,8 +912,37 @@ def _prepare_trial_land(raw: Any) -> dict[str, Any] | None:
     )
     attribute_incomes = _prepare_trial_land_attribute_incomes(raw.get("attribute_incomes"), target)
     buffs = _as_dict(raw.get("buffs"))
-    wine_locked_for_haste = _trial_land_bool(_as_dict(raw.get("haste")).get("wine_locked_for_haste"))
+    haste_info = _as_dict(raw.get("haste"))
+    wine_locked_for_haste = _trial_land_bool(haste_info.get("wine_locked_for_haste"))
+    raw_locked_slots = haste_info.get("locked_slots")
+    if isinstance(raw_locked_slots, list):
+        haste_locked_slots = {str(slot).strip() for slot in raw_locked_slots if str(slot).strip()}
+    else:
+        haste_locked_slots = {"wine"} if wine_locked_for_haste else set()
     selected = _as_dict(buffs.get("selected"))
+
+    def _build_trial_consumable_item(
+        key: str,
+        label: str,
+        name: str,
+        code: str,
+        group: str,
+        *,
+        locked_for_haste: bool = False,
+    ) -> dict[str, Any]:
+        return {
+            "key": key,
+            "label": label,
+            "name": name,
+            "code": code,
+            "group": group,
+            "locked_for_haste": locked_for_haste,
+            "icon": _adaptive_icon({
+                "name": name,
+                "codes": [code] if code else [],
+            }, ),
+        }
+
     consumables = []
     for key, label in (
         ("wine", "酒"),
@@ -774,31 +953,50 @@ def _prepare_trial_land(raw: Any) -> dict[str, Any] | None:
         name, code = _trial_land_item_fields(raw_item)
         name = name or "未提供"
         consumables.append(
-            {
-                "key": key,
-                "label": label,
-                "name": name,
-                "code": code,
-                "group": "择优增益",
-                "icon": _adaptive_icon({
-                    "name": name,
-                    "codes": [code] if code else [],
-                }, ),
-            },
+            _build_trial_consumable_item(
+                key,
+                label,
+                name,
+                code,
+                "择优增益",
+                locked_for_haste = key in haste_locked_slots,
+            ),
         )
+    main_food_item: dict[str, Any] | None = None
+    main_medicine_item: dict[str, Any] | None = None
     fixed_consumables = []
     fixed_buffs = buffs.get("fixed")
     for index, item in enumerate(fixed_buffs if isinstance(fixed_buffs, list) else []):
         name, code = _trial_land_item_fields(item)
         if not name:
             continue
+        if code.startswith("FY_FOOD_") or (not code and "羹" in name):
+            if main_food_item is None:
+                main_food_item = _build_trial_consumable_item(
+                    "main_food",
+                    "辅助食品",
+                    name,
+                    code,
+                    "食品类",
+                )
+            continue
+        if code.startswith("FY_MEDICINE_") or (not code and "五气" in name):
+            if main_medicine_item is None:
+                main_medicine_item = _build_trial_consumable_item(
+                    "main_medicine",
+                    "辅助药品",
+                    name,
+                    code,
+                    "药品类",
+                )
+            continue
         if code == "BLSZY" or "百炼水煮鱼" in name:
             base_key = "fish"
             label = "百炼水煮鱼"
             display_order = 2
-        elif "INGOT" in code or "熔锭" in name:
+        elif "INGOT" in code or code.startswith("CS_") or "熔锭" in name or "焠晶" in name:
             base_key = "ingot"
-            label = "熔锭"
+            label = "焠晶" if ("焠晶" in name or code.endswith("_CRYSTAL")) else "熔锭"
             display_order = 1
         else:
             base_key = f"fixed_{index + 1}"
@@ -807,23 +1005,67 @@ def _prepare_trial_land(raw: Any) -> dict[str, Any] | None:
         key = base_key
         if any(existing["key"] == key for existing in fixed_consumables):
             key = f"{base_key}_{index + 1}"
-        fixed_consumables.append(
-            {
-                "key": key,
-                "label": label,
-                "name": name,
-                "code": code,
-                "group": "固定增益",
-                "icon": _adaptive_icon({
-                    "name": name,
-                    "codes": [code] if code else [],
-                }, ),
-                "_display_order": display_order,
-            },
-        )
+        fixed_entry = _build_trial_consumable_item(key, label, name, code, "固定增益")
+        fixed_entry["_display_order"] = display_order
+        fixed_consumables.append(fixed_entry)
     fixed_consumables.sort(key = lambda item: item["_display_order"])
     for item in fixed_consumables:
         item.pop("_display_order", None)
+
+    if main_food_item is None and selected.get("main_food"):
+        name, code = _trial_land_item_fields(selected.get("main_food"))
+        if name:
+            main_food_item = _build_trial_consumable_item("main_food", "辅助食品", name, code, "食品类")
+    if main_medicine_item is None and selected.get("main_medicine"):
+        name, code = _trial_land_item_fields(selected.get("main_medicine"))
+        if name:
+            main_medicine_item = _build_trial_consumable_item("main_medicine", "辅助药品", name, code, "药品类")
+
+    enhance_food_item: dict[str, Any] | None = None
+    if selected.get("enhance_food"):
+        name, code = _trial_land_item_fields(selected.get("enhance_food"))
+        if name:
+            enhance_food_item = _build_trial_consumable_item(
+                "enhance_food",
+                "增强食品",
+                name,
+                code,
+                "食品类",
+                locked_for_haste = "enhance_food" in haste_locked_slots,
+            )
+    enhance_medicine_item: dict[str, Any] | None = None
+    if selected.get("enhance_medicine"):
+        name, code = _trial_land_item_fields(selected.get("enhance_medicine"))
+        if name:
+            enhance_medicine_item = _build_trial_consumable_item(
+                "enhance_medicine",
+                "增强药品",
+                name,
+                code,
+                "药品类",
+                locked_for_haste = "enhance_medicine" in haste_locked_slots,
+            )
+
+    food_items = [item for item in (main_food_item, enhance_food_item) if item is not None]
+    medicine_items = [item for item in (main_medicine_item, enhance_medicine_item) if item is not None]
+    pill_groups = []
+    if food_items:
+        pill_groups.append({"key": "food", "label": "食品类", "items": food_items})
+    if medicine_items:
+        pill_groups.append({"key": "medicine", "label": "药品类", "items": medicine_items})
+    pill_consumables = [*food_items, *medicine_items]
+
+    target_level = (
+        _trial_land_int(raw.get("target_level"))
+        or _trial_land_int(_as_dict(raw.get("data")).get("target_level"))
+        or (CURRENT_LEVEL + 4)
+    )
+    sample_values = {
+        int(item["sample_value"]) for item in attribute_incomes if item.get("sample_value")
+    }
+    income_caption = (
+        f"每 {next(iter(sample_values))} 点附魔收益" if len(sample_values) == 1 else "每附魔属性收益"
+    )
     return {
         "status":
         "ok",
@@ -831,6 +1073,10 @@ def _prepare_trial_land(raw: Any) -> dict[str, Any] | None:
         max_floor,
         "max_floor_text":
         max_floor_text,
+        "target_level":
+        target_level,
+        "income_caption":
+        income_caption,
         "raw_dps":
         dps,
         "raw_dps_text":
@@ -854,6 +1100,8 @@ def _prepare_trial_land(raw: Any) -> dict[str, Any] | None:
             capped = capped,
             target = target,
             wine_locked_for_haste = wine_locked_for_haste,
+            haste_locked_slots = haste_locked_slots,
+            target_level = target_level,
         ),
         "boss_rows":
         boss_rows,
@@ -868,6 +1116,10 @@ def _prepare_trial_land(raw: Any) -> dict[str, Any] | None:
         "consumables":
         consumables,
         "consumable_items": [*consumables, *fixed_consumables],
+        "pill_consumables":
+        pill_consumables,
+        "pill_groups":
+        pill_groups,
     }
 
 def _equipment_rating_timeline_loop_payload(meta: dict[str, Any]) -> dict[str, Any] | None:
@@ -932,33 +1184,107 @@ async def _request_equipment_rating_timeline(
     data = result.get("data")
     return data if isinstance(data, dict) else None
 
-def _prepare_rating_timeline(timeline_data: dict[str, Any] | None) -> dict[str, str] | None:
+def _prepare_rating_timeline(timeline_data: dict[str, Any] | None, *, wide: bool = False) -> dict[str, Any] | None:
     if not isinstance(timeline_data, dict):
         return None
     series_list = [series for series in timeline_data.get("series") or [] if isinstance(series, dict)]
     if not series_list:
         return None
     bin_size = _to_float(timeline_data.get("bin_size"), EQUIPMENT_RATING_TIMELINE_BIN_SIZE)
+    width = 940 if wide else 460
+    height = 148 if wide else 142
     chart = _chart_svg(
         series_list,
         "damage_per_second_bin",
         ["#2F6BFF"],
         f"每{bin_size:g}秒伤害量" if bin_size != 1 else "每秒伤害量",
-        460,
-        142,
+        width,
+        height,
         True,
         buff_overlays = timeline_data.get("buff_overlays") or [],
-        stroke_width = 3,
+        stroke_width = 2.5 if wide else 3,
+        compact_overlays = True,
     )
     if not chart:
         return None
     series = series_list[0]
     adjusted = _as_dict(series.get("adjusted"))
+    phase_pills: list[dict[str, str]] = []
+    if wide:
+        bins = [b for b in (adjusted.get("bins") or []) if isinstance(b, dict)]
+        cum_bins = [c for c in (adjusted.get("cumulative_dps_bins") or []) if isinstance(c, dict)]
+        cum_source = cum_bins if cum_bins else bins
+        cum_time_offset = 1.0 if cum_bins else bin_size
+        max_val = max((_to_float(b.get("damage_per_second_bin")) for b in bins), default = 1.0)
+        max_val = max(max_val, 1.0)
+        max_bin_sec = max((_to_float(b.get("second")) for b in bins), default = 0.0)
+        battle_sec = _to_float(adjusted.get("battle_time"))
+        term_sec = max(1.0, max_bin_sec, battle_sec)
+        max_sec = term_sec + max(5.0, term_sec * 0.04)
+
+        cum_pts = [
+            (
+                min(term_sec, _to_float(c.get("second")) + cum_time_offset) / max_sec * width,
+                max(2.0, min(float(height), height - (_to_float(c.get("cumulative_dps")) * bin_size) / max_val * height)),
+            )
+            for c in cum_source
+            if (_to_float(c.get("second")) + cum_time_offset) >= 3.0
+        ]
+        if len(cum_pts) >= 2:
+            cum_path = (
+                f'<path d="{_smooth_path(cum_pts)}" fill="none" stroke="#0D9488" '
+                f'stroke-width="2" stroke-dasharray="6 4" opacity="0.88"/>'
+            )
+            chart = chart.replace("</svg>", f"{cum_path}</svg>", 1)
+            legend_item = (
+                '<span class="chart-legend-item">'
+                '<i class="chart-legend-line" style="border-top:2px dashed #0D9488;"></i>累计均值收敛'
+                "</span>"
+            )
+            if 'class="chart-legend">' in chart:
+                chart = chart.replace('class="chart-legend">', f'class="chart-legend">{legend_item}', 1)
+
+        peak_bin = max(bins, key = lambda b: _to_float(b.get("damage_per_second_bin")), default = {})
+        peak_rate = _to_float(peak_bin.get("damage_per_second_bin")) / max(bin_size, 0.1)
+        peak_sec = _to_float(peak_bin.get("second"))
+
+        phase_pills.append(
+            {"label": "瞬间峰值", "value": f"{_format_compact_number(peak_rate)}/s", "note": f"@{peak_sec:g}s"},
+        )
+        cumulative_damage = {
+            int(_to_float(item.get("second"))) + 1: _to_float(item.get("cumulative_damage"))
+            for item in cum_bins
+        }
+        cumulative_damage[0] = 0.0
+        window_ends = (
+            end for end in sorted(cumulative_damage)
+            if 10 <= end <= battle_sec and end - 10 in cumulative_damage
+        )
+        peak_end = max(
+            window_ends,
+            key = lambda end: cumulative_damage[end] - cumulative_damage[end - 10],
+            default = None,
+        )
+        if peak_end is not None:
+            peak_start = peak_end - 10
+            peak_dps = (cumulative_damage[peak_end] - cumulative_damage[peak_start]) / 10
+            phase_pills.append(
+                {"label": "10秒最高窗", "value": f"{_format_compact_number(peak_dps)}/s", "note": f"@{peak_start}–{peak_end}s"},
+            )
+        if battle_sec >= 15 and 15 in cumulative_damage:
+            opener_dps = cumulative_damage[15] / 15
+            phase_pills.append(
+                {"label": "起手15秒", "value": f"{_format_compact_number(opener_dps)}/s", "note": "0–15s"},
+            )
+        phase_pills.append(
+            {"label": "全程总伤", "value": _format_compact_number(adjusted.get("total_damage")), "note": f"秒伤 {_format_compact_number(adjusted.get('dps'))}"},
+        )
     return {
         "chart": chart,
         "loop_name": str(series.get("loop_name") or "评级循环"),
         "dps": _format_compact_number(adjusted.get("dps")),
         "total_damage": _format_compact_number(adjusted.get("total_damage")),
+        "phase_pills": phase_pills,
     }
 
 def _equipment_rating_adaptive_dps(data: dict[str, Any]) -> int:
@@ -986,6 +1312,10 @@ def _equipment_rating_rank_jcl_key(meta: dict[str, Any]) -> str:
             "rating_model": rating_model,
             "model_name": str(meta.get("loop_name") or "").strip(),
         }
+        # 承压模型没有随赛季变化的 JCL 文件名，按 calculator 返回的赛季分榜，避免新旧赛季承压能力混排。
+        season = str(meta.get("season") or "").strip()
+        if season:
+            payload["season"] = season
         return json.dumps(payload, ensure_ascii = False, sort_keys = True, separators = (",", ":"))
     weapon = str(jcl.get("weapon") or "").strip()
     haste = str(jcl.get("haste") or "").strip()
@@ -1263,12 +1593,21 @@ def _equipment_rating_loop_payload(loop_entry: dict[str, Any]) -> dict[str, Any]
 def _percent_from_rating(value: Any, divisor: float, base: float = 0) -> str:
     return _format_percent((_to_float(value) / divisor + base) * 100)
 
+SHORT_GCD_HASTE_KUNGFU_IDS = frozenset({10242, 10243, 100725, 100726, 101716, 101740})
+BINGXIN_INNATE_HASTE_RATE = 51
+CANGJIAN_INNATE_HASTE_RATE = 82
+CANGJIAN_HASTE_KUNGFU_IDS = frozenset({10144, 10145})
+
 def _haste_level(value: Any, kungfu_id: int = 0) -> int:
-    origin_frames = 16 if kungfu_id in (10242, 10243) else 24
+    # 与 calculator api/extra_func.py 的 get_haste_section 保持一致：
+    # 明教与已接入的无界输出心法使用 16 帧 GCD；冰心自带 51、藏剑自带 82 郭氏加速。
+    origin_frames = 16 if kungfu_id in SHORT_GCD_HASTE_KUNGFU_IDS else 24
     haste = max(0, _to_float(value))
     guoshi_haste = int(haste / HASTE_DIVISOR * 1024)
     if kungfu_id == 10081:
-        guoshi_haste += 205
+        guoshi_haste += BINGXIN_INNATE_HASTE_RATE
+    elif kungfu_id in CANGJIAN_HASTE_KUNGFU_IDS:
+        guoshi_haste += CANGJIAN_INNATE_HASTE_RATE
     current_frames = int(origin_frames * 1024 / (guoshi_haste + 1024))
     return min(5, max(0, origin_frames - current_frames))
 
@@ -1277,6 +1616,41 @@ def _grade_icon(grade: Any) -> str:
 
 def _grade_theme(grade: Any) -> dict[str, str]:
     return RANK_THEMES.get(str(grade), RANK_THEMES["D"]).copy()
+
+def _cultivation_realm(score: Any) -> dict[str, Any]:
+    clamped = max(0.0, min(100.0, _to_float(score)))
+    realm = CULTIVATION_REALMS[-1]
+    for item in CULTIVATION_REALMS:
+        if clamped >= item["min_score"]:
+            realm = item
+            break
+    span = realm["max_score"] - realm["min_score"]
+    offset = clamped - realm["min_score"]
+    sub_index = min(3, max(0, int((offset / span) * 4))) if span > 0 else 0
+    subtier = CULTIVATION_SUBTIERS[sub_index]
+    short_name = realm["name"].removesuffix("期")
+    poem = str(realm.get("poem") or "").strip()
+    if len(poem) > 18 and "。" in poem[:-1]:
+        split_at = poem.index("。") + 1
+        poem_lines = [poem[:split_at], poem[split_at:]]
+    elif poem:
+        poem_lines = [poem]
+    else:
+        poem_lines = []
+    return {
+        **realm,
+        "short_name": short_name,
+        "cert_name": f"{short_name}证",
+        "stage": sub_index + 1,
+        "subtier": subtier,
+        "subtier_chars": list(subtier),
+        "is_peak": sub_index == 3,
+        "is_three_chars": len(subtier) == 3,
+        "full_name": f"{realm['name']}·{subtier}",
+        "poem": poem,
+        "poem_lines": poem_lines,
+        "is_two_line_poem": len(poem_lines) > 1,
+    }
 
 def _rating_avatar() -> str:
     return _asset_uri("image", "jx3", "equipment_rating", "Inkar.jpg")
@@ -1294,9 +1668,32 @@ def _attr_text(attributes: Any) -> str:
         )
     return ""
 
-def _equip_icon(detail: dict[str, Any]) -> str:
+def _equip_icon(detail: dict[str, Any], fallback_icon: str = "", location_code: int | None = None) -> str:
+    ui_id = int(_to_float(detail.get("ui_id")))
+    if ui_id <= 0 and location_code is not None:
+        item_id = int(_to_float(detail.get("item_id")))
+        if item_id > 0:
+            tab_key: Any = 3 if location_code in {0, 1, 2} else (2 if location_code in {5, 6, 7, 9} else 1)
+            try:
+                equip_row = TabCache.get_equip(item_id, tab_key)
+                if len(equip_row) > 2:
+                    ui_id = int(_to_float(equip_row[2]))
+            except Exception:
+                pass
+    if ui_id > 0:
+        try:
+            icon_id, _ = TabCache.get_icon_for_equip(ui_id)
+            if icon_id and int(icon_id) > 0:
+                return f"https://icon.jx3box.com/icon/{icon_id}.png"
+        except Exception:
+            pass
+    by_name = _item_icon_by_name(str(detail.get("name") or ""))
+    if by_name and not by_name.endswith("/1434.png"):
+        return by_name
+    if fallback_icon:
+        return fallback_icon
     try:
-        icon_id, _ = TabCache.get_icon_for_equip(int(detail.get("ui_id", 0)))
+        icon_id, _ = TabCache.get_icon_for_equip(0)
     except Exception:
         icon_id = 1434
     return f"https://icon.jx3box.com/icon/{icon_id}.png"
@@ -1453,12 +1850,13 @@ def _prepare_slots(
         best = slot.get("best") or {}
         raw_location_name = slot.get("location_name")
         location_name = SLOT_NAME_OVERRIDES.get(str(raw_location_name or ""), raw_location_name or "")
+        current_icon = _equip_icon(current, location_code = location_code)
         row = {
             **slot,
             "location_name": location_name,
             "current": {
                 **current,
-                "icon": _equip_icon(current),
+                "icon": current_icon,
                 "level_text": _format_plain_int(current.get("level")),
                 "attribute_text": _attr_text(current.get("attribute")),
                 "quality_class": _quality_class(current),
@@ -1466,7 +1864,7 @@ def _prepare_slots(
             },
             "best": {
                 **best,
-                "icon": _equip_icon(best),
+                "icon": _equip_icon(best, current_icon, location_code = location_code),
                 "level_text": _format_plain_int(best.get("level")),
                 "attribute_text": _attr_text(best.get("attribute")),
                 "quality_class": _quality_class(best),
@@ -1526,12 +1924,109 @@ def _prepare_header_summary(summary: dict[str, Any], slots: list[dict[str, Any]]
         "priority_text": " / ".join(names) if names else "暂无明显短板",
     }
 
+def _prepare_top_upgrades(
+    slots: list[dict[str, Any]],
+    raw_combinations: Any,
+    base_metric: float,
+    metric_unit: str = "DPS",
+) -> list[dict[str, Any]]:
+    rated_slots = [slot for slot in slots if slot.get("is_rated") and _to_float(slot.get("upgrade_value")) > 0.5]
+    if not rated_slots:
+        return []
+
+    ring_slots = [slot for slot in rated_slots if int(_to_float(slot.get("location_code"), 99)) in {6, 7}]
+    other_slots = [slot for slot in rated_slots if int(_to_float(slot.get("location_code"), 99)) not in {6, 7}]
+
+    valid_combos = [
+        combo for combo in (raw_combinations or [])
+        if isinstance(combo, dict)
+        and _to_float(combo.get("diff_dps")) > 0.5
+        and len([it for it in (combo.get("items") or []) if isinstance(it, dict)]) == 2
+    ]
+    best_combo = max(valid_combos, key = lambda c: _to_float(c.get("diff_dps"))) if valid_combos else None
+
+    candidates: list[dict[str, Any]] = []
+    merged_rings = False
+    if len(ring_slots) == 2 and best_combo is not None:
+        combo_gain = _to_float(best_combo.get("diff_dps"))
+        ring_gains = [_to_float(s.get("upgrade_value")) for s in ring_slots]
+        max_ring_gain = max(ring_gains)
+        min_ring_gain = min(ring_gains)
+        other_gains = sorted((_to_float(s.get("upgrade_value")) for s in other_slots), reverse = True)
+        third_best_other = other_gains[2] if len(other_gains) >= 3 else 0.0
+        if combo_gain > max_ring_gain and (min_ring_gain >= third_best_other or min_ring_gain >= 0.25 * max_ring_gain):
+            merged_rings = True
+            combo_items = [it for it in (best_combo.get("items") or []) if isinstance(it, dict)]
+            item0, item1 = combo_items[0], combo_items[1]
+            name0 = str(item0.get("name") or "").strip()
+            name1 = str(item1.get("name") or "").strip()
+            slot0_cur_icon = str((ring_slots[0].get("current") or {}).get("icon") or "")
+            slot1_cur_icon = str((ring_slots[1].get("current") or {}).get("icon") or slot0_cur_icon)
+            icon0 = _equip_icon(item0, slot0_cur_icon, location_code = 6)
+            attrs0 = _attr_text(item0.get("attribute"))
+            attrs1 = _attr_text(item1.get("attribute"))
+            level0 = _format_plain_int(item0.get("level"))
+            level1 = _format_plain_int(item1.get("level"))
+            level_text = level0 if (not level1 or level0 == level1) else f"{level0}/{level1}"
+            if name0 == name1:
+                title = f"{name0} ×2"
+                icon1 = ""
+                quality_class2 = ""
+                attrs_text = attrs0 or "双戒组合最优替换"
+            else:
+                title = f"{name0} + {name1}"
+                icon1 = _equip_icon(item1, slot1_cur_icon, location_code = 7)
+                quality_class2 = _quality_class(item1)
+                attrs_text = (attrs0 if (not attrs1 or attrs0 == attrs1) else f"{attrs0} / {attrs1}") or "双戒组合最优替换"
+            pct = combo_gain / base_metric * 100.0 if base_metric > 0 else 0.0
+            candidates.append(
+                {
+                    "slot": "双戒指",
+                    "name": title,
+                    "level": level_text,
+                    "attrs": attrs_text,
+                    "icon": icon0,
+                    "icon2": icon1,
+                    "quality_class": _quality_class(item0),
+                    "quality_class2": quality_class2,
+                    "gain": combo_gain,
+                    "gain_text": _format_signed(combo_gain),
+                    "unit_text": f"{metric_unit} (+{pct:.1f}%)" if base_metric > 0 else metric_unit,
+                },
+            )
+
+    source_slots = other_slots if merged_rings else rated_slots
+    for slot in source_slots:
+        gain = _to_float(slot.get("upgrade_value"))
+        best = slot.get("best") or {}
+        pct = gain / base_metric * 100.0 if base_metric > 0 else 0.0
+        candidates.append(
+            {
+                "slot": str(slot.get("location_name") or ""),
+                "name": str(best.get("name") or "候选装备"),
+                "level": str(best.get("level_text") or _format_plain_int(best.get("level"))),
+                "attrs": str(best.get("attribute_text") or _attr_text(best.get("attribute"))),
+                "icon": str(best.get("icon") or (slot.get("current") or {}).get("icon") or ""),
+                "icon2": "",
+                "quality_class": str(best.get("quality_class") or _quality_class(best)),
+                "quality_class2": "",
+                "gain": gain,
+                "gain_text": _format_signed(gain),
+                "unit_text": f"{metric_unit} (+{pct:.1f}%)" if base_metric > 0 else metric_unit,
+            },
+        )
+
+    candidates.sort(key = lambda item: -_to_float(item.get("gain")))
+    return candidates[:3]
+
 def _prepare_attributes(
     summary: dict[str, Any],
     kungfu: Kungfu,
     rating_equip: JX3PlayerAttribute | None = None,
+    kungfu_id: int = 0,
 ) -> tuple[list[dict[str, str]], list[dict[str, str]], list[dict[str, str]]]:
     attributes = summary.get("attributes") or {}
+    resolved_kungfu_id = int(kungfu_id or 0) or int(_to_float(attributes.get("kungfu_id"))) or (kungfu.id or 0)
     main_attr_key = attributes.get("MainAttrKey", "")
     main_attr_label = MAIN_ATTR_LABELS.get(main_attr_key, "主属性")
     is_therapy_rating = summary.get("metric") == "therapy_ruin_capacity" or attributes.get("kungfu_type") == "Therapy"
@@ -1550,7 +2045,7 @@ def _prepare_attributes(
         },
         {
             "label": "目标",
-            "value": "10秒承压窗口" if is_therapy_rating else "134级木桩",
+            "value": "10秒承压窗口" if is_therapy_rating else f"{CURRENT_LEVEL + 4}级木桩",
         },
     ]
     if rating_equip is not None:
@@ -1561,11 +2056,11 @@ def _prepare_attributes(
         if display_attrs:
             basic_display_attrs, detail_display_attrs = split_display_attributes(display_attrs, kungfu.abbr)
             basic_attrs = [
-                _prepare_display_attribute_row(name, value, kungfu.id or 0)
-                for name, value in basic_display_attrs.items()
+                _prepare_display_attribute_row(name, value, resolved_kungfu_id)
+                for name, value in basic_display_attrs.items() if str(name) not in HIDDEN_DETAIL_ATTRIBUTE_LABELS
             ]
             detail_attrs = [
-                _prepare_display_attribute_row(name, value, kungfu.id or 0)
+                _prepare_display_attribute_row(name, value, resolved_kungfu_id)
                 for name, value in detail_display_attrs.items() if str(name) not in HIDDEN_DETAIL_ATTRIBUTE_LABELS
             ]
             return role_info, basic_attrs, detail_attrs
@@ -1599,7 +2094,7 @@ def _prepare_attributes(
             },
             {
                 "label": "加速",
-                "value": _format_haste(attributes.get("Haste"), kungfu.id or 0),
+                "value": _format_haste(attributes.get("Haste"), resolved_kungfu_id),
             },
         ]
         return role_info, basic_attrs, detail_attrs
@@ -1639,12 +2134,8 @@ def _prepare_attributes(
             "value": _percent_from_rating(attributes.get("Strain"), STRAIN_DIVISOR),
         },
         {
-            "label": "破招",
-            "value": _format_number(attributes.get("Surplus")),
-        },
-        {
             "label": "加速",
-            "value": _format_haste(attributes.get("Haste"), kungfu.id or 0),
+            "value": _format_haste(attributes.get("Haste"), resolved_kungfu_id),
         },
     ]
     return role_info, basic_attrs, detail_attrs
@@ -1681,6 +2172,7 @@ def _prepare_attribute_incomes(summary: dict[str, Any]) -> list[dict[str, Any]]:
             "label": label,
             "value": value,
             "value_text": _format_signed_float(value),
+            "sample_value": int(_to_float(item.get("sample_value") or item.get("enchant_value"))),
         }, )
     if not incomes:
         return []
@@ -1817,6 +2309,11 @@ def _prepare_adaptive_consumables(raw: Any, kungfu_id: int = 0) -> dict[str, Any
     if formation_entries:
         formation = formation_entries[0]
     groups = [group for group in grouped_items if group["entries"]]
+    for group in groups:
+        if group["key"] == "ingot":
+            categories = {str(entry.get("category") or "") for entry in group["entries"]}
+            if categories and "焠晶" not in categories:
+                group["category"] = "熔锭"
     if not formation and not groups:
         return None
     baseline = _as_dict(raw.get("baseline"))
@@ -1927,20 +2424,25 @@ async def render_equipment_rating_image(
     meta = data["meta"]
     summary = data["summary"]
     kungfu = Kungfu.with_internel_id(meta["kungfu_id"])
+    kungfu_id = int(_to_float(meta.get("kungfu_id"))) or (kungfu.id or 0)
     theme_color = kungfu.color if kungfu.name else "#4f6f87"
     is_therapy_rating = summary.get("metric") == "therapy_ruin_capacity"
     trial_land = (_prepare_trial_land(data.get("trial_land")) if kungfu.abbr == "D" and not is_therapy_rating else None)
-    role_info, basic_attrs, detail_attrs = _prepare_attributes(summary, kungfu, rating_equip)
+    role_info, basic_attrs, detail_attrs = _prepare_attributes(summary, kungfu, rating_equip, kungfu_id)
     battle_time = _to_float(summary.get("battle_time"))
-    haste_level = _haste_level(summary.get("current_haste"), kungfu.id or 0)
+    haste_level = _haste_level(summary.get("current_haste"), kungfu_id)
+    realm_score = summary.get("display_total_score")
+    if realm_score is None:
+        realm_score = summary.get("total_score", 0)
     summary_view = {
         **summary,
         "current_score_text": _format_number(summary.get("current_score")),
         "total_score_text": summary.get("display_total_score_text", f"{summary.get('display_total_score', 0):.1f}"),
         "grade_icon": _grade_icon(summary.get("grade", "D")),
         "grade_theme": _grade_theme(summary.get("grade", "D")),
+        "realm": _cultivation_realm(realm_score),
         "battle_time_text": f"{battle_time:.1f}秒",
-        "haste_level_text": f"{haste_level}段",
+        "haste_level_text": f"当前{haste_level}段",
     }
     slots = _prepare_slots(
         data["slots"],
@@ -1955,10 +2457,34 @@ async def render_equipment_rating_image(
         summary_view["haste_level_text"],
         summary_view["battle_time_text"],
     ]
+    attribute_incomes = _prepare_attribute_incomes(summary)
+    income_sample_values = {
+        int(item["sample_value"]) for item in attribute_incomes if item.get("sample_value")
+    }
+    if len(income_sample_values) == 1:
+        sample_points = next(iter(income_sample_values))
+        attribute_income_caption = (
+            f"每 {sample_points} 点属性承压提升" if is_therapy_rating else f"每 {sample_points} 点附魔提升"
+        )
+    else:
+        attribute_income_caption = ""
+    use_folio_spread = bool(trial_land and trial_land.get("status") == "ok")
+    metric_unit = "承压" if is_therapy_rating else "DPS"
+    top_upgrades = _prepare_top_upgrades(
+        slots,
+        data.get("combination_recommendations"),
+        _to_float(summary.get("current_dps")),
+        metric_unit,
+    )
     html = Template(
         read(build_path(TEMPLATES, ["jx3", "equipment_rating.html"])),
     ).render(
         font = Path(build_path(ASSETS, ["font", "PingFangSC-Semibold.otf"])).as_uri(),
+        realm_calligraphy_font = Path(build_path(ASSETS, ["font", "ZhiMangXing-Rating.woff2"])).as_uri(),
+        realm_serif_font = Path(build_path(ASSETS, ["font", "ZCOOLXiaoWei-Rating.woff2"])).as_uri(),
+        use_folio_spread = use_folio_spread,
+        top_upgrades = top_upgrades,
+        metric_unit = metric_unit,
         theme_color = theme_color,
         role_name = role_name or "未命名配装",
         server_name = server_name,
@@ -1970,22 +2496,23 @@ async def render_equipment_rating_image(
         header_summary = {
             **_prepare_header_summary(summary_view, slots),
             "title": (
-                f"{kungfu.name}承压报告" if is_therapy_rating and kungfu.name else
-                (f"{kungfu.name}体检报告" if kungfu.name else "体检报告")
+                f"{kungfu.name}·{summary_view['realm']['cert_name']}"
+                if kungfu.name else summary_view["realm"]["cert_name"]
             ),
         },
         role_info = role_info,
         basic_attrs = basic_attrs,
         detail_attrs = detail_attrs,
-        attribute_incomes = _prepare_attribute_incomes(summary),
+        attribute_incomes = attribute_incomes,
+        attribute_income_caption = attribute_income_caption,
         adaptive_consumables = _prepare_adaptive_consumables(
             data.get("adaptive_consumables"),
-            kungfu.id or 0,
+            kungfu_id,
         ),
         trial_land = trial_land,
         equipment_rating_rank = rank_data,
         race_rank = race_rank_data,
-        rating_timeline = _prepare_rating_timeline(timeline_data),
+        rating_timeline = _prepare_rating_timeline(timeline_data, wide = use_folio_spread),
         equipment_rating_qrcode = _rating_group_qrcode(),
         tank_vitality_conversion = _prepare_tank_vitality_conversion(summary, kungfu),
         distribution = _prepare_distribution_view(meta.get("kungfu_id")),
@@ -2000,8 +2527,8 @@ async def render_equipment_rating_image(
         segment = True,
         wait_for_network = True,
         viewport = {
-            "width": 1220,
-            "height": 1800,
+            "width": 2424 if use_folio_spread else 1220,
+            "height": 1900,
         },
     )
 
@@ -2233,7 +2760,13 @@ async def _finish_equipment_rating_calculation(
     race_rank_task = (
         asyncio.create_task(get_equipment_rating_race_rank(global_role_id)) if global_role_id > 0 else None
     )
-    rating_payload = {**payload, "include_trial_land": True}
+    rating_payload = {
+        **payload,
+        "include_trial_land": True,
+        "include_timeline": True,
+        "timeline_bin_size": EQUIPMENT_RATING_TIMELINE_BIN_SIZE,
+        "timeline_rolling_window": EQUIPMENT_RATING_TIMELINE_ROLLING_WINDOW,
+    }
     data = await _request_equipment_rating_data(rating_payload)
     if isinstance(data, str):
         if race_rank_task is not None:
@@ -2253,7 +2786,11 @@ async def _finish_equipment_rating_calculation(
             rank_data = record_equipment_rating_rank(data, role_name, server_name, role_id, global_role_id)
         except Exception as exc:
             logger.warning(f"装备评级排名记录失败：{exc}")
-    timeline_data = await _request_equipment_rating_timeline(data, payload)
+    if "rating_timeline" in data:
+        raw_timeline = data.get("rating_timeline")
+        timeline_data = raw_timeline if isinstance(raw_timeline, dict) else None
+    else:
+        timeline_data = await _request_equipment_rating_timeline(data, payload)
     race_rank_data = None
     if race_rank_task is not None:
         try:

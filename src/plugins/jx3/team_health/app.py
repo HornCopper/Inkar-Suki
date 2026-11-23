@@ -39,7 +39,7 @@ from src.plugins.jx3.calculator.equipment_rating import (
 
 TEAM_HEALTH_CAPACITY = 25
 TEAM_HEALTH_TEMPLATE = build_path(TEMPLATES, ["jx3", "team_health_check.html"])
-TEAM_HEALTH_CACHE_VERSION = 2
+TEAM_HEALTH_CACHE_VERSION = 3 # 3: 苍生铸世焠晶推荐计入熔锭列且 T 增益层数系数改为 96，旧缓存行需重算
 TEAM_HEALTH_CANDIDATE_LEVEL = {
     "min": 1170,
     "max": 1300,
