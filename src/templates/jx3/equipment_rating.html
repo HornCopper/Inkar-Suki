@@ -1035,6 +1035,10 @@
             gap: 7px;
         }
 
+        .income-bars.coefficient-values .income-item {
+            grid-template-columns: 36px minmax(0, 1fr) max-content;
+        }
+
         .income-value {
             max-width: 100%;
             color: #3d454f;
@@ -2556,7 +2560,7 @@
                     {% if attribute_income_caption %}
                     <div class="side-subheading">{{ attribute_income_caption }}</div>
                     {% endif %}
-                    <div class="income-bars">
+                    <div class="income-bars{% if meta.rating_model == 'xiangzhi_policy_v1' %} coefficient-values{% endif %}">
                         {% for income in attribute_incomes %}
                         <div class="income-item{% if income.is_top %} income-top{% endif %}">
                             <div class="income-label">{{ income.label }}</div>
