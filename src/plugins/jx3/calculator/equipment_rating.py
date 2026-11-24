@@ -393,6 +393,7 @@ ATTRIBUTE_INCOME_DISPLAY_KEYS = {
     ),
     "Therapy": (
         "atTherapyPowerBase",
+        "atSpiritBase",
         "atAllTypeCriticalStrike",
         "atAllTypeCriticalDamagePowerBase",
     ),
@@ -1288,6 +1289,8 @@ def _prepare_rating_timeline(timeline_data: dict[str, Any] | None, *, wide: bool
     }
 
 def _equipment_rating_adaptive_dps(data: dict[str, Any]) -> int:
+    if _as_dict(data.get("meta")).get("rating_model") == "xiangzhi_policy_v1":
+        return round(1_000_000 * _to_float(_as_dict(data.get("summary")).get("rank_coefficient")))
     adaptive = _as_dict(data.get("adaptive_consumables"))
     if adaptive.get("status") != "ok":
         return 0
@@ -1299,6 +1302,8 @@ def _equipment_rating_rank_label(data: dict[str, Any]) -> str:
     summary = summary_data if isinstance(summary_data, dict) else {}
     meta = meta_data if isinstance(meta_data, dict) else {}
     metric = str(summary.get("metric") or meta.get("metric") or "").strip()
+    if metric == "xiangzhi_policy_v1":
+        return "治疗能力排名"
     if metric == "therapy_ruin_capacity":
         return "承压排名"
     return "伤害排名"
@@ -1307,6 +1312,8 @@ def _equipment_rating_rank_jcl_key(meta: dict[str, Any]) -> str:
     jcl = _as_dict(meta.get("jcl"))
     selected_loop = _as_dict(meta.get("jcl_loop"))
     rating_model = str(meta.get("rating_model") or "").strip()
+    if rating_model == "xiangzhi_policy_v1":
+        return json.dumps([rating_model, meta.get("season"), meta.get("rank_version")], ensure_ascii=False)
     if rating_model == "therapy_ruin":
         payload = {
             "rating_model": rating_model,
@@ -1545,6 +1552,8 @@ def _format_supported_kungfu_list(data: dict[str, Any]) -> str:
 
 def _format_supported_kungfu_detail(item: dict[str, Any]) -> str:
     selected = item.get("selected") or {}
+    if item.get("rating_model") == "xiangzhi_policy_v1":
+        return "装备评级支持：长歌·相知\n染魂、英雄拔剑、藤蔓三项等权，基准配装为「我的相知」。"
     if item.get("rating_model") == "therapy_ruin":
         lines = [
             f"装备评级支持：{_supported_kungfu_school(item)}·{_supported_kungfu_name(item)}",
@@ -1839,6 +1848,7 @@ def _prepare_ring_combination_notes(raw_items: Any) -> dict[int, str]:
 def _prepare_slots(
     slots: list[dict[str, Any]],
     ring_combination_notes: dict[int, str] | None = None,
+    *, policy_index: bool = False,
 ) -> list[dict[str, Any]]:
     prepared = []
     ring_combination_notes = ring_combination_notes or {}
@@ -1888,7 +1898,7 @@ def _prepare_slots(
                     "grade_icon": _grade_icon(grade),
                     "score_text": str(rating.get("display_score", 0)),
                     "score_value": _to_float(rating.get("display_score")),
-                    "best_note": f"最优 {_best_equipment_text(best)}: {_format_signed(best_diff)}",
+                    "best_note": f"最优 {_best_equipment_text(best)}: {f'{best_diff:+.2f}' if policy_index else _format_signed(best_diff)}",
                     "has_haste_adjustment": bool(adjustment.get("applied")),
                     "upgrade_value": best_diff,
                 },
@@ -1930,7 +1940,8 @@ def _prepare_top_upgrades(
     base_metric: float,
     metric_unit: str = "DPS",
 ) -> list[dict[str, Any]]:
-    rated_slots = [slot for slot in slots if slot.get("is_rated") and _to_float(slot.get("upgrade_value")) > 0.5]
+    minimum_gain = 0.005 if metric_unit == "指数" else 0.5
+    rated_slots = [slot for slot in slots if slot.get("is_rated") and _to_float(slot.get("upgrade_value")) > minimum_gain]
     if not rated_slots:
         return []
 
@@ -2011,7 +2022,7 @@ def _prepare_top_upgrades(
                 "quality_class": str(best.get("quality_class") or _quality_class(best)),
                 "quality_class2": "",
                 "gain": gain,
-                "gain_text": _format_signed(gain),
+                "gain_text": f"{gain:+.2f}" if metric_unit == "指数" else _format_signed(gain),
                 "unit_text": f"{metric_unit} (+{pct:.1f}%)" if base_metric > 0 else metric_unit,
             },
         )
@@ -2045,7 +2056,8 @@ def _prepare_attributes(
         },
         {
             "label": "目标",
-            "value": "10秒承压窗口" if is_therapy_rating else f"{CURRENT_LEVEL + 4}级木桩",
+            "value": ("三项治疗实测" if summary.get("metric") == "xiangzhi_policy_v1" else
+                      "10秒承压窗口" if is_therapy_rating else f"{CURRENT_LEVEL + 4}级木桩"),
         },
     ]
     if rating_equip is not None:
@@ -2171,7 +2183,7 @@ def _prepare_attribute_incomes(summary: dict[str, Any]) -> list[dict[str, Any]]:
         incomes.append({
             "label": label,
             "value": value,
-            "value_text": _format_signed_float(value),
+            "value_text": f"{value:+.5f}×" if item.get("metric") == "xiangzhi_absolute" else _format_signed_float(value),
             "sample_value": int(_to_float(item.get("sample_value") or item.get("enchant_value"))),
         }, )
     if not incomes:
@@ -2327,9 +2339,9 @@ def _prepare_adaptive_consumables(raw: Any, kungfu_id: int = 0) -> dict[str, Any
         "summary": " / ".join(summary_parts),
         "metric_name": str(raw.get("metric_name") or "最终DPS"),
         "metric_unit": str(raw.get("metric_unit") or "DPS"),
-        "dps_text": _format_compact_number(raw.get("dps")),
-        "raw_dps_text": _format_compact_number(raw.get("raw_dps")),
-        "delta_text": _format_signed(raw.get("delta")),
+        "dps_text": f"{_to_float(raw.get('dps')):.5f}" if raw.get("metric_unit") == "×" else _format_compact_number(raw.get("dps")),
+        "raw_dps_text": f"{_to_float(raw.get('raw_dps')):.5f}" if raw.get("metric_unit") == "×" else _format_compact_number(raw.get("raw_dps")),
+        "delta_text": f"{_to_float(raw.get('delta')):+.5f}" if raw.get("metric_unit") == "×" else _format_signed(raw.get("delta")),
         "delta_percent_text": _format_signed_percent(raw.get("delta_percent")),
         "full_income_codes": [str(code) for code in raw.get("full_income_codes") or [] if str(code)],
         "haste": _prepare_adaptive_haste(raw.get("haste"), kungfu_id),
@@ -2423,6 +2435,7 @@ async def render_equipment_rating_image(
 ):
     meta = data["meta"]
     summary = data["summary"]
+    policy_index = meta.get("rating_model") == "xiangzhi_policy_v1"
     kungfu = Kungfu.with_internel_id(meta["kungfu_id"])
     kungfu_id = int(_to_float(meta.get("kungfu_id"))) or (kungfu.id or 0)
     theme_color = kungfu.color if kungfu.name else "#4f6f87"
@@ -2447,6 +2460,7 @@ async def render_equipment_rating_image(
     slots = _prepare_slots(
         data["slots"],
         _prepare_ring_combination_notes(data.get("combination_recommendations")),
+        policy_index=policy_index,
     )
     chips = [
         meta.get("loop_name", "评级专用循环"),
@@ -2458,6 +2472,16 @@ async def render_equipment_rating_image(
         summary_view["battle_time_text"],
     ]
     attribute_incomes = _prepare_attribute_incomes(summary)
+    if policy_index:
+        measured = summary["current"]
+        chips = [meta["loop_name"], f"治疗指数 {measured['index']:.2f}",
+                 f"染魂每跳 {measured['ranhun']:,}", f"英雄拔剑 {measured['sword']:.1f}%",
+                 f"藤蔓缺血 {measured['vine']/10000:.1f} 万", summary_view["haste_level_text"]]
+        if summary.get("ranking"):
+            ranked = summary["ranking"]
+            chips.append(f"推荐增益排名系数 {ranked['coefficient']:.5f}×")
+            for name, key in (("染魂","ranhun"),("拔剑","sword"),("藤蔓","vine")):
+                chips.append(f"{name} {ranked['factors'][key]:.4f}×")
     income_sample_values = {
         int(item["sample_value"]) for item in attribute_incomes if item.get("sample_value")
     }
@@ -2468,8 +2492,10 @@ async def render_equipment_rating_image(
         )
     else:
         attribute_income_caption = ""
+    if policy_index:
+        attribute_income_caption = "每份附魔的承受系数提升（推荐阵眼与小药）"
     use_folio_spread = bool(trial_land and trial_land.get("status") == "ok")
-    metric_unit = "承压" if is_therapy_rating else "DPS"
+    metric_unit = "指数" if policy_index else ("承压" if is_therapy_rating else "DPS")
     top_upgrades = _prepare_top_upgrades(
         slots,
         data.get("combination_recommendations"),

@@ -2542,7 +2542,7 @@
                         </div>
                         <div class="total-meta">
                             <div class="side-row"><span>评级增益</span><strong>{{ meta.income_name }}</strong></div>
-                            <div class="side-row"><span>{{ "破产概率" if meta.rating_model == "therapy_ruin" else "评级循环" }}</span><strong>{{ meta.loop_name }}</strong></div>
+                            <div class="side-row"><span>{{ "破产概率" if meta.rating_model == "therapy_ruin" else "评级策略" if meta.rating_model == "xiangzhi_policy_v1" else "评级循环" }}</span><strong>{{ meta.loop_name }}</strong></div>
                             {% if meta.rating_model != "therapy_ruin" and meta.jcl and meta.jcl.weapon %}
                             <div class="side-row"><span>循环类型</span><strong>{{ meta.jcl.weapon }}循环</strong></div>
                             {% endif %}
