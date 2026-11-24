@@ -2160,6 +2160,7 @@ def _prepare_display_attribute_row(name: Any, value: Any, kungfu_id: int = 0) ->
 
 def _prepare_attribute_incomes(summary: dict[str, Any]) -> list[dict[str, Any]]:
     raw_items = [item for item in summary.get("attribute_incomes") or [] if isinstance(item, dict)]
+    score_gains = summary.get("metric") == "xiangzhi_policy_v1"
     attributes = summary.get("attributes") or {}
     kungfu_type = str(attributes.get("kungfu_type") or "")
     expected_keys = ATTRIBUTE_INCOME_DISPLAY_KEYS.get(kungfu_type, ())
@@ -2173,6 +2174,9 @@ def _prepare_attribute_incomes(summary: dict[str, Any]) -> list[dict[str, Any]]:
         if "dps_per_enchant" not in item:
             continue
         value = _to_float(item.get("dps_per_enchant"))
+        if score_gains and item.get("metric") == "xiangzhi_absolute":
+            base = _to_float(summary.get("rank_coefficient"))
+            value = max(0, min(100, 100 * (base + value)) - min(100, 100 * base))
         label = str(item.get("name") or "").strip() or get_attr_name(attribute_key) or str(
             item.get("key") or "",
         ).strip()
@@ -2183,7 +2187,8 @@ def _prepare_attribute_incomes(summary: dict[str, Any]) -> list[dict[str, Any]]:
         incomes.append({
             "label": label,
             "value": value,
-            "value_text": f"{value:+.5f}×" if item.get("metric") == "xiangzhi_absolute" else _format_signed_float(value),
+            "value_text": (f"+{value:.2f} 分" if value > 0 else "0.00 分")
+            if score_gains else _format_signed_float(value),
             "sample_value": int(_to_float(item.get("sample_value") or item.get("enchant_value"))),
         }, )
     if not incomes:
@@ -2191,8 +2196,9 @@ def _prepare_attribute_incomes(summary: dict[str, Any]) -> list[dict[str, Any]]:
     incomes.sort(key = lambda item: item["value"], reverse = True)
     max_value = max(abs(item["value"]) for item in incomes) or 1
     for item in incomes:
-        item["percent"] = f"{max(4, abs(item['value']) / max_value * 100):.1f}"
-    incomes[0]["is_top"] = True
+        width = abs(item["value"]) / max_value * 100
+        item["percent"] = f"{width if score_gains else max(4, width):.1f}"
+    incomes[0]["is_top"] = not score_gains or incomes[0]["value"] > 0
     return incomes
 
 def _prepare_adaptive_haste(raw: Any, kungfu_id: int = 0) -> dict[str, str] | None:
@@ -2472,16 +2478,14 @@ async def render_equipment_rating_image(
         summary_view["battle_time_text"],
     ]
     attribute_incomes = _prepare_attribute_incomes(summary)
+    rank_score_text = ""
     if policy_index:
-        measured = summary["current"]
-        chips = [meta["loop_name"], f"治疗指数 {measured['index']:.2f}",
-                 f"染魂每跳 {measured['ranhun']:,}", f"英雄拔剑 {measured['sword']:.1f}%",
-                 f"藤蔓缺血 {measured['vine']/10000:.1f} 万", summary_view["haste_level_text"]]
-        if summary.get("ranking"):
-            ranked = summary["ranking"]
-            chips.append(f"推荐增益排名系数 {ranked['coefficient']:.5f}×")
-            for name, key in (("染魂","ranhun"),("拔剑","sword"),("藤蔓","vine")):
-                chips.append(f"{name} {ranked['factors'][key]:.4f}×")
+        chips = [f"配装评分 {summary['total_score']:.2f} 分"]
+        ranked = summary.get("ranking")
+        if ranked:
+            score = ranked.get("score", min(100, max(0, 100 * ranked["coefficient"])))
+            rank_score_text = f"{score:.2f} 分"
+            chips.append(f"排名评分 {rank_score_text}")
     income_sample_values = {
         int(item["sample_value"]) for item in attribute_incomes if item.get("sample_value")
     }
@@ -2493,7 +2497,7 @@ async def render_equipment_rating_image(
     else:
         attribute_income_caption = ""
     if policy_index:
-        attribute_income_caption = "每份附魔的承受系数提升（推荐阵眼与小药）"
+        attribute_income_caption = f"推荐增益下，每 {sample_points} 点附魔可提升的评分" if len(income_sample_values) == 1 else "推荐增益下，每份附魔可提升的评分"
     use_folio_spread = bool(trial_land and trial_land.get("status") == "ok")
     metric_unit = "指数" if policy_index else ("承压" if is_therapy_rating else "DPS")
     top_upgrades = _prepare_top_upgrades(
@@ -2518,6 +2522,7 @@ async def render_equipment_rating_image(
         kungfu_icon = Path(kungfu.icon).as_uri(),
         meta = meta,
         summary = summary_view,
+        rank_score_text = rank_score_text,
         header_avatar = _rating_avatar(),
         header_summary = {
             **_prepare_header_summary(summary_view, slots),

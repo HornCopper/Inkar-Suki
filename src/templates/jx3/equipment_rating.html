@@ -1039,6 +1039,8 @@
             grid-template-columns: 36px minmax(0, 1fr) max-content;
         }
 
+        .coefficient-values .income-bar { min-width: 0; }
+
         .income-value {
             max-width: 100%;
             color: #3d454f;
@@ -3124,8 +3126,8 @@
                 </div>
                 {% if adaptive_consumables and adaptive_consumables.status == "ok" %}
                 <div class="combat-final-dps">
-                    <span>{{ adaptive_consumables.metric_name or "最终DPS" }}</span>
-                    <strong>{{ adaptive_consumables.dps_text }}</strong>
+                    <span>{{ "排名评分" if rank_score_text else adaptive_consumables.metric_name or "最终DPS" }}</span>
+                    <strong>{{ rank_score_text or adaptive_consumables.dps_text }}</strong>
                     {% if equipment_rating_rank %}
                     <div class="combat-final-rank">{{ equipment_rating_rank.text }}</div>
                     {% endif %}
