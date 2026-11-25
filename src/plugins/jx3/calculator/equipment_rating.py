@@ -1611,7 +1611,7 @@ def _equipment_rating_loop_payload(loop_entry: dict[str, Any]) -> dict[str, Any]
 def _percent_from_rating(value: Any, divisor: float, base: float = 0) -> str:
     return _format_percent((_to_float(value) / divisor + base) * 100)
 
-SHORT_GCD_HASTE_KUNGFU_IDS = frozenset({10242, 10243, 100725, 100726, 101716, 101740})
+SHORT_GCD_HASTE_KUNGFU_IDS = frozenset({10242, 10243, 100654, 100725, 100726, 101716, 101740, 102278})
 BINGXIN_INNATE_HASTE_RATE = 51
 CANGJIAN_INNATE_HASTE_RATE = 82
 CANGJIAN_HASTE_KUNGFU_IDS = frozenset({10144, 10145})
