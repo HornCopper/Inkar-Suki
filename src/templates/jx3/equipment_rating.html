@@ -2483,6 +2483,500 @@
             margin-top: 5px;
             font-size: 13px;
         }
+
+        /* 6. Xiangzhi 3-Task Evaluation & Skill Statistics */
+        .combat-final-dps.is-xiangzhi-rank strong {
+            color: #166e5a;
+        }
+
+        .xz-overview-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            padding: 6px 12px;
+            border: 1px solid #cbe4dc;
+            border-radius: 8px;
+            background: #f3faf8;
+            color: #465a65;
+            font-size: 11.5px;
+            line-height: 1.2;
+            font-weight: 900;
+            font-variant-numeric: tabular-nums;
+            white-space: nowrap;
+        }
+
+        .xz-overview-pill strong {
+            color: #156b57;
+            font-size: 13px;
+        }
+
+        .xz-overview-arrow {
+            color: #7da399;
+            font-weight: 900;
+        }
+
+        .xz-tasks-card {
+            margin-top: 10px;
+            padding: 14px 16px 13px;
+            border: 1px solid #d5e5e0;
+            border-radius: 10px;
+            background: linear-gradient(160deg, #f6fcfa 0%, #ffffff 36%);
+            box-shadow: 0 10px 26px rgba(32, 64, 58, 0.055);
+            font-variant-numeric: tabular-nums;
+        }
+
+        .xz-tasks-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            align-items: stretch;
+        }
+
+        .xz-task-col {
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+            padding: 0 14px;
+        }
+
+        .xz-task-col:first-child {
+            padding-left: 0;
+        }
+
+        .xz-task-col:last-child {
+            padding-right: 0;
+        }
+
+        .xz-task-col + .xz-task-col {
+            border-left: 1px solid #e0ebe8;
+        }
+
+        .xz-task-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+        }
+
+        .xz-task-title {
+            min-width: 0;
+            color: #1f2d3a;
+            font-size: 14px;
+            line-height: 1.25;
+            font-weight: 900;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .xz-task-score-pill {
+            flex-shrink: 0;
+            padding: 2px 8px;
+            border: 1px solid #bde2d6;
+            border-radius: 999px;
+            background: #eaf7f3;
+            color: #146955;
+            font-size: 11px;
+            line-height: 1.25;
+            font-weight: 900;
+        }
+
+        .xz-task-threshold {
+            margin-top: 7px;
+            padding: 8px 10px;
+            border: 1px solid #dfece8;
+            border-radius: 8px;
+            background: #ffffff;
+        }
+
+        .xz-strength-row {
+            display: flex;
+            align-items: baseline;
+            justify-content: space-between;
+            gap: 6px;
+        }
+
+        .xz-strength-main {
+            display: inline-flex;
+            align-items: baseline;
+            gap: 3px;
+        }
+
+        .xz-strength-main strong {
+            color: #125d4b;
+            font-size: 21px;
+            line-height: 1.05;
+            font-weight: 900;
+        }
+
+        .xz-strength-main small {
+            color: #5a706b;
+            font-size: 11px;
+            font-weight: 900;
+        }
+
+        .xz-strength-gain {
+            color: #677784;
+            font-size: 10px;
+            line-height: 1.2;
+            font-weight: 800;
+            white-space: nowrap;
+        }
+
+        .xz-strength-gain em {
+            margin-left: 3px;
+            font-style: normal;
+            color: #16795f;
+            font-weight: 900;
+        }
+
+        .xz-threshold-track {
+            position: relative;
+            height: 6px;
+            margin-top: 6px;
+            border-radius: 999px;
+            background: #e8eff2;
+            overflow: hidden;
+        }
+
+        .xz-threshold-fill-rec {
+            position: absolute;
+            inset: 0 auto 0 0;
+            border-radius: 999px;
+            background: #87d6c2;
+        }
+
+        .xz-threshold-fill-unb {
+            position: absolute;
+            inset: 0 auto 0 0;
+            border-radius: 999px;
+            background: linear-gradient(90deg, #27937b, #18725d);
+        }
+
+        .xz-threshold-meta {
+            margin-top: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 6px;
+            color: #6b7986;
+            font-size: 9.5px;
+            line-height: 1.25;
+            font-weight: 800;
+        }
+
+        .xz-threshold-meta span:first-child {
+            min-width: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .xz-threshold-meta span:last-child {
+            flex-shrink: 0;
+            color: #526270;
+        }
+
+        .xz-combat-grid {
+            margin-top: 8px;
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 5px;
+        }
+
+        .xz-combat-cell {
+            min-width: 0;
+            padding: 5px 7px;
+            border: 1px solid #e6eef2;
+            border-radius: 6px;
+            background: #f8fbfc;
+        }
+
+        .xz-combat-top {
+            display: flex;
+            align-items: baseline;
+            justify-content: space-between;
+            gap: 4px;
+        }
+
+        .xz-combat-top span {
+            color: #6d7c89;
+            font-size: 9.5px;
+            font-weight: 800;
+            white-space: nowrap;
+        }
+
+        .xz-combat-top strong {
+            color: #202e3a;
+            font-size: 12px;
+            line-height: 1.15;
+            font-weight: 900;
+            white-space: nowrap;
+        }
+
+        .xz-combat-sub {
+            margin-top: 2px;
+            color: #7c8a97;
+            font-size: 8.8px;
+            line-height: 1.25;
+            font-weight: 800;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .xz-skill-section {
+            margin-top: 9px;
+        }
+
+        .xz-subhead {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 6px;
+            margin-bottom: 4px;
+        }
+
+        .xz-subhead strong {
+            color: #2c3946;
+            font-size: 10.5px;
+            line-height: 1.2;
+            font-weight: 900;
+        }
+
+        .xz-subhead span {
+            color: #82909d;
+            font-size: 8.8px;
+            line-height: 1.2;
+            font-weight: 800;
+        }
+
+        .xz-skill-list {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+        }
+
+        .xz-skill-row {
+            display: grid;
+            grid-template-columns: minmax(0, 1.12fr) 32px minmax(0, 1.08fr) 37px;
+            align-items: center;
+            gap: 5px;
+            min-height: 21px;
+            padding: 2px 5px;
+            border-radius: 4px;
+            background: linear-gradient(90deg, rgba(46, 158, 133, 0.13) var(--sk-bar, 0%), rgba(244, 248, 250, 0.55) var(--sk-bar, 0%));
+        }
+
+        .xz-skill-row.is-top {
+            background: linear-gradient(90deg, rgba(30, 138, 114, 0.2) var(--sk-bar, 0%), rgba(242, 249, 247, 0.7) var(--sk-bar, 0%));
+        }
+
+        .xz-sk-ident {
+            min-width: 0;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .xz-sk-icon {
+            width: 15px;
+            height: 15px;
+            flex: 0 0 15px;
+            border-radius: 3px;
+            object-fit: cover;
+            background: #dce6ec;
+        }
+
+        .xz-sk-dot {
+            width: 15px;
+            height: 15px;
+            flex: 0 0 15px;
+            border-radius: 3px;
+            background: #e3ebf0;
+            color: #6b7987;
+            font-size: 8.5px;
+            font-weight: 900;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .xz-sk-name {
+            min-width: 0;
+            color: #273440;
+            font-size: 10px;
+            line-height: 1.2;
+            font-weight: 900;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .xz-sk-count {
+            text-align: right;
+            color: #6c7a87;
+            font-size: 9.5px;
+            font-weight: 800;
+            white-space: nowrap;
+        }
+
+        .xz-sk-eff {
+            display: flex;
+            align-items: baseline;
+            justify-content: flex-end;
+            gap: 3px;
+            white-space: nowrap;
+        }
+
+        .xz-sk-eff strong {
+            color: #1f2d39;
+            font-size: 10px;
+            font-weight: 900;
+        }
+
+        .xz-sk-eff small {
+            color: #7a8895;
+            font-size: 8.5px;
+            font-weight: 800;
+        }
+
+        .xz-sk-share {
+            text-align: right;
+            color: #495867;
+            font-size: 9.5px;
+            font-weight: 900;
+            white-space: nowrap;
+        }
+
+        .xz-skill-row.is-top .xz-sk-share {
+            color: #146a56;
+        }
+
+        .xz-bottom-zone {
+            margin-top: 2px;
+            padding-top: 6px;
+        }
+
+        .xz-prot-block {
+            padding-top: 7px;
+            border-top: 1px dashed #dfeae7;
+        }
+
+        .xz-prot-list {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+        }
+
+        .xz-prot-row {
+            display: grid;
+            grid-template-columns: auto minmax(0, 1fr) auto auto auto;
+            align-items: center;
+            gap: 5px;
+            padding: 2px 5px;
+            border-radius: 4px;
+            background: #f6f9fb;
+            font-size: 9.5px;
+        }
+
+        .xz-prot-tag {
+            padding: 1px 4px;
+            border-radius: 3px;
+            font-size: 8.5px;
+            line-height: 1.2;
+            font-weight: 900;
+        }
+
+        .xz-prot-tag.absorb {
+            background: #fff2db;
+            color: #965d14;
+        }
+
+        .xz-prot-tag.reduce {
+            background: #e6f2fb;
+            color: #24618d;
+        }
+
+        .xz-prot-name {
+            min-width: 0;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            color: #2a3744;
+            font-weight: 900;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .xz-prot-count {
+            color: #748290;
+            font-size: 9px;
+            font-weight: 800;
+            white-space: nowrap;
+        }
+
+        .xz-prot-eff {
+            color: #202e3a;
+            font-weight: 900;
+            white-space: nowrap;
+        }
+
+        .xz-prot-rate {
+            color: #5b6d7c;
+            font-size: 8.8px;
+            font-weight: 800;
+            white-space: nowrap;
+        }
+
+        .xz-prot-empty {
+            padding: 5px 7px;
+            border-radius: 5px;
+            background: #f7fafb;
+            color: #7c8a96;
+            font-size: 9px;
+            line-height: 1.35;
+            font-weight: 800;
+        }
+
+        .xz-casts-block {
+            margin-top: 7px;
+            padding-top: 6px;
+            border-top: 1px dashed #e3ecef;
+        }
+
+        .xz-casts-pills {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+        }
+
+        .xz-cast-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 3px;
+            padding: 1.5px 5px;
+            border: 1px solid #e2ebf0;
+            border-radius: 4px;
+            background: #ffffff;
+            color: #465462;
+            font-size: 9px;
+            line-height: 1.2;
+            font-weight: 800;
+            white-space: nowrap;
+        }
+
+        .xz-cast-pill img {
+            width: 12px;
+            height: 12px;
+            border-radius: 2px;
+            object-fit: cover;
+        }
+
+        .xz-cast-pill b {
+            color: #166c58;
+            font-weight: 900;
+        }
     </style>
 </head>
 <body{% if use_folio_spread %} class="folio-body"{% endif %}>
@@ -3125,7 +3619,7 @@
                     <div class="combat-subtitle">{{ adaptive_consumables.subtitle if adaptive_consumables else "基于当前配装与目标加速档自动推荐" }}</div>
                 </div>
                 {% if adaptive_consumables and adaptive_consumables.status == "ok" %}
-                <div class="combat-final-dps">
+                <div class="combat-final-dps{% if rank_score_text %} is-xiangzhi-rank{% endif %}">
                     <span>{{ "排名评分" if rank_score_text else adaptive_consumables.metric_name or "最终DPS" }}</span>
                     <strong>{{ rank_score_text or adaptive_consumables.dps_text }}</strong>
                     {% if equipment_rating_rank %}
@@ -3299,6 +3793,148 @@
         {% endif %}
         {% endset %}
 
+        {% set xiangzhi_tasks_section %}
+        {% if xiangzhi_tasks and xiangzhi_tasks.tasks %}
+        <section class="combat-advice">
+            <div class="combat-heading">
+                <div class="combat-heading-text">
+                    <div class="combat-title">三项任务实测与技能统计</div>
+                    <div class="combat-subtitle">推荐增益面板固定种子实测 · 三项机制承受系数等权计入排名评分</div>
+                </div>
+                <div class="xz-overview-pill">
+                    <span>裸装 {{ xiangzhi_tasks.unbuffed_score_text }}</span>
+                    <span class="xz-overview-arrow">→</span>
+                    <span>推荐增益 <strong>{{ xiangzhi_tasks.recommended_score_text }}</strong></span>
+                </div>
+            </div>
+            <section class="xz-tasks-card">
+                <div class="xz-tasks-grid">
+                    {% for task in xiangzhi_tasks.tasks %}
+                    <div class="xz-task-col">
+                        <div class="xz-task-head">
+                            <div class="xz-task-title">{{ task.name }}</div>
+                            <span class="xz-task-score-pill">{{ task.score_text }}</span>
+                        </div>
+                        <div class="xz-task-threshold">
+                            <div class="xz-strength-row">
+                                <div class="xz-strength-main">
+                                    <strong>{{ task.recommended_text }}</strong>
+                                    {% if task.unit_text %}
+                                    <small>{{ task.unit_text }}</small>
+                                    {% endif %}
+                                </div>
+                                <div class="xz-strength-gain">
+                                    裸装 {{ task.unbuffed_text }}<em>{{ task.buff_gain_text }}</em>
+                                </div>
+                            </div>
+                            <div class="xz-threshold-track">
+                                <i class="xz-threshold-fill-rec" style="width: {{ task.progress_percent }}%;"></i>
+                                <i class="xz-threshold-fill-unb" style="width: {{ task.unbuffed_progress_percent }}%;"></i>
+                            </div>
+                            <div class="xz-threshold-meta">
+                                <span>{{ task.encounter_note }}</span>
+                                <span>基准 {{ task.benchmark_text }}</span>
+                            </div>
+                        </div>
+
+                        {% if task.combat_metrics %}
+                        <div class="xz-combat-grid">
+                            {% for metric in task.combat_metrics %}
+                            <div class="xz-combat-cell">
+                                <div class="xz-combat-top">
+                                    <span>{{ metric.label }}</span>
+                                    <strong>{{ metric.value }}</strong>
+                                </div>
+                                <div class="xz-combat-sub">{{ metric.sub }}</div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+
+                        {% if task.healing_rows %}
+                        <div class="xz-skill-section">
+                            <div class="xz-subhead">
+                                <strong>治疗招式统计（{{ task.healing_skill_count }}项）</strong>
+                                <span>次数 / 有效·HPS / 占比</span>
+                            </div>
+                            <div class="xz-skill-list">
+                                {% for sk in task.healing_rows %}
+                                <div class="xz-skill-row{% if sk.is_top %} is-top{% endif %}" style="--sk-bar: {{ sk.bar_width }};">
+                                    <div class="xz-sk-ident">
+                                        {% if sk.icon %}
+                                        <img class="xz-sk-icon" src="{{ sk.icon }}" alt="">
+                                        {% else %}
+                                        <span class="xz-sk-dot">余</span>
+                                        {% endif %}
+                                        <span class="xz-sk-name">{{ sk.name }}</span>
+                                    </div>
+                                    <span class="xz-sk-count">{{ sk.count_text }}</span>
+                                    <span class="xz-sk-eff">
+                                        <strong>{{ sk.effective_text }}</strong>
+                                        <small>{{ sk.hps_text }}</small>
+                                    </span>
+                                    <span class="xz-sk-share">{{ sk.share_text }}</span>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        {% endif %}
+
+                        {% if task.has_combat %}
+                        <div class="xz-bottom-zone">
+                            <div class="xz-prot-block">
+                                <div class="xz-subhead">
+                                    <strong>护盾吸收与减伤明细</strong>
+                                    {% if task.protection_rows %}
+                                    <span>次数 / 数值 / 速率</span>
+                                    {% endif %}
+                                </div>
+                                {% if task.protection_rows %}
+                                <div class="xz-prot-list">
+                                    {% for pr in task.protection_rows %}
+                                    <div class="xz-prot-row">
+                                        <span class="xz-prot-tag {{ pr.kind_class }}">{{ pr.kind }}</span>
+                                        <span class="xz-prot-name">
+                                            <img class="xz-sk-icon" src="{{ pr.icon }}" alt="">
+                                            <span>{{ pr.name }}</span>
+                                        </span>
+                                        <span class="xz-prot-count">{{ pr.count_text }}</span>
+                                        <span class="xz-prot-eff">{{ pr.effective_text }}</span>
+                                        <span class="xz-prot-rate">{{ pr.rate_text }}</span>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                                {% else %}
+                                <div class="xz-prot-empty">{{ task.protection_empty_note }}</div>
+                                {% endif %}
+                            </div>
+
+                            {% if task.cast_pills %}
+                            <div class="xz-casts-block">
+                                <div class="xz-subhead">
+                                    <strong>主动招式施放</strong>
+                                </div>
+                                <div class="xz-casts-pills">
+                                    {% for c in task.cast_pills %}
+                                    <span class="xz-cast-pill">
+                                        <img src="{{ c.icon }}" alt="">
+                                        <span>{{ c.name }}</span>
+                                        <b>{{ c.count_text }}</b>
+                                    </span>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            {% endif %}
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+            </section>
+        </section>
+        {% endif %}
+        {% endset %}
+
         {% set talents_section %}
         {% if talents %}
         <section class="combat-advice">
@@ -3354,6 +3990,10 @@
             <div class="bottom-line bottom-line-between"></div>
             {{ trial_land_reference }}
             {% endif %}
+            {% if xiangzhi_tasks %}
+            <div class="bottom-line bottom-line-between"></div>
+            {{ xiangzhi_tasks_section }}
+            {% endif %}
             {% if talents %}
             <div class="bottom-line bottom-line-between"></div>
             {{ talents_section }}
@@ -3372,7 +4012,7 @@
         <div class="bottom-line{% if realm and realm.poem %} bottom-line-between{% endif %}"></div>
         {{ upgrade_priority_section }}
         {% endif %}
-        {% if adaptive_consumables or talents or rating_timeline or trial_land %}
+        {% if adaptive_consumables or talents or rating_timeline or trial_land or xiangzhi_tasks %}
         <div class="bottom-line{% if (realm and realm.poem) or top_upgrades %} bottom-line-between{% endif %}"></div>
         {{ combat_config_section }}
         {% if trial_land %}
@@ -3381,8 +4021,14 @@
         {% endif %}
         {{ trial_land_reference }}
         {% endif %}
-        {% if talents %}
+        {% if xiangzhi_tasks %}
         {% if adaptive_consumables or rating_timeline or trial_land %}
+        <div class="bottom-line bottom-line-between"></div>
+        {% endif %}
+        {{ xiangzhi_tasks_section }}
+        {% endif %}
+        {% if talents %}
+        {% if adaptive_consumables or rating_timeline or trial_land or xiangzhi_tasks %}
         <div class="bottom-line bottom-line-between"></div>
         {% endif %}
         {{ talents_section }}

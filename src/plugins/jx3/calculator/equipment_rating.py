@@ -1464,6 +1464,10 @@ def _selected_jcl_record(item: dict[str, Any]) -> dict[str, Any]:
     return record if isinstance(record, dict) else {}
 
 def _format_jcl_record_brief(item: dict[str, Any]) -> str:
+    if item.get("rating_model") == "therapy_ruin":
+        season = str(item.get("season") or "").strip()
+        if season:
+            return season
     record = _selected_jcl_record(item)
     season = str(record.get("season") or "").strip()
     return season or "未标注"
@@ -1516,8 +1520,11 @@ def _season_group_sort_key(group: tuple[str, list[dict[str, Any]]]) -> tuple[int
     season, items = group
     current_season = ""
     for item in items:
-        record = _selected_jcl_record(item)
-        current_season = str(record.get("current_season") or "").strip()
+        if item.get("rating_model") == "therapy_ruin":
+            current_season = str(item.get("season") or "").strip()
+        else:
+            record = _selected_jcl_record(item)
+            current_season = str(record.get("current_season") or "").strip()
         if current_season:
             break
     min_kungfu_id = min(_supported_kungfu_sort_key(item) for item in items)
@@ -1579,6 +1586,8 @@ async def _fetch_equipment_rating_loop_entries(
     event: MessageEvent,
     instance: UniversalCalculator | JX3BOXCalculator,
 ) -> list[dict[str, Any]] | str:
+    if Kungfu.with_internel_id(instance.kungfu_id).abbr == "N":
+        return "治疗心法无需选择循环，请去掉「评级列表」直接发起评级。"
     use_custom_loops = Preference(event.user_id, "", "").setting("计算器来源") == "自定义"
     return await _calculator_loop_entries(
         instance,
@@ -2420,6 +2429,307 @@ def _prepare_tank_vitality_conversion(summary: dict[str, Any], kungfu: Kungfu) -
         item["full_stacks"] = f"{full_item['stacks']}层"
     return item
 
+XIANGZHI_POLICY_TALENTS = [38612, 36012, 14405, 40333, 18819, 44420, 45817, 17521, 14442]
+XIANGZHI_FALLBACK_TASKS = (
+    {
+        "id": "ranhun",
+        "key": "ranhun",
+        "name": "阿史那承庆·染魂",
+        "short_name": "染魂",
+        "mechanic": "25人全团穿透直伤与30跳持续掉血 · 40秒零减员",
+        "strength_label": "每跳伤害",
+        "benchmark_strength": 4779.0,
+    },
+    {
+        "id": "sword-heroic",
+        "key": "sword",
+        "name": "田承嗣·拔剑（英雄）",
+        "short_name": "英雄拔剑",
+        "mechanic": "洗髓T承剑50跳递增穿透与全团同步外功受击 · 30秒不倒T",
+        "strength_label": "承伤比例",
+        "benchmark_strength": 100.0,
+    },
+    {
+        "id": "vine",
+        "key": "vine",
+        "name": "千机源枢·藤蔓",
+        "short_name": "藤蔓",
+        "mechanic": "第5秒友方藤蔓降至半血 · 35秒检查前治疗回满",
+        "strength_label": "治疗缺口",
+        "benchmark_strength": 750000.0,
+    },
+)
+
+def _format_stat_amount(value: Any) -> str:
+    num = _to_float(value)
+    if abs(num) >= 100000:
+        return f"{num / 10000:.1f}万"
+    if abs(num) >= 10000:
+        return f"{num / 10000:.2f}万"
+    return f"{int(round(num)):,}"
+
+def _format_xiangzhi_strength(key: str, value: Any, *, compact_unit: bool = False) -> tuple[str, str]:
+    num = _to_float(value)
+    if key == "ranhun":
+        text = f"{int(round(num)):,}"
+        return (f"{text}/跳", "") if compact_unit else (text, "/跳")
+    if key == "sword":
+        return f"{num:.1f}%", ""
+    if key == "vine":
+        text = f"{num / 10000:.1f}万"
+        return (text, "") if compact_unit else (text, "缺口")
+    return _format_number(num), ""
+
+def _prepare_xiangzhi_tasks(data: dict[str, Any], summary: dict[str, Any]) -> dict[str, Any] | None:
+    raw_tasks = data.get("tasks") or summary.get("tasks")
+    ranking = _as_dict(summary.get("ranking"))
+    unbuffed_root = _as_dict(summary.get("unbuffed_strength"))
+    benchmarks = _as_dict(ranking.get("benchmarks"))
+    if not isinstance(raw_tasks, list) or not raw_tasks:
+        if not ranking:
+            return None
+        raw_tasks = []
+        for spec in XIANGZHI_FALLBACK_TASKS:
+            key = spec["key"]
+            rec_val = _to_float(ranking.get(key))
+            unb_val = _to_float(unbuffed_root.get(key))
+            bench_val = _to_float(benchmarks.get(key), spec["benchmark_strength"]) or 1.0
+            factor = _to_float(_as_dict(ranking.get("factors")).get(key), rec_val / bench_val)
+            unb_factor = _to_float(_as_dict(unbuffed_root.get("factors")).get(key), unb_val / bench_val)
+            raw_tasks.append(
+                {
+                    **spec,
+                    "recommended_strength": rec_val,
+                    "unbuffed_strength": unb_val,
+                    "benchmark_strength": bench_val,
+                    "factor": factor,
+                    "unbuffed_factor": unb_factor,
+                    "score": min(100.0, max(0.0, 100.0 * factor)),
+                    "unbuffed_score": min(100.0, max(0.0, 100.0 * unb_factor)),
+                    "buff_gain_percent": ((rec_val - unb_val) / unb_val * 100.0) if unb_val > 0 else 0.0,
+                    "encounter": {},
+                    "combat": {},
+                    "skills": {},
+                },
+            )
+
+    prepared_tasks = []
+    for raw in raw_tasks:
+        if not isinstance(raw, dict):
+            continue
+        key = str(raw.get("key") or raw.get("id") or "").strip()
+        if key == "sword-heroic":
+            key = "sword"
+        rec_val = _to_float(raw.get("recommended_strength"))
+        unb_val = _to_float(raw.get("unbuffed_strength"))
+        bench_val = _to_float(raw.get("benchmark_strength"), 1.0) or 1.0
+        score = _to_float(raw.get("score"), min(100.0, max(0.0, rec_val / bench_val * 100.0)))
+        unb_score = _to_float(raw.get("unbuffed_score"), min(100.0, max(0.0, unb_val / bench_val * 100.0)))
+        buff_gain = _to_float(
+            raw.get("buff_gain_percent"),
+            ((rec_val - unb_val) / unb_val * 100.0) if unb_val > 0 else 0.0,
+        )
+        rec_text, rec_unit = _format_xiangzhi_strength(key, rec_val)
+        unb_text, _ = _format_xiangzhi_strength(key, unb_val, compact_unit = True)
+        bench_text, _ = _format_xiangzhi_strength(key, bench_val, compact_unit = True)
+        enc = _as_dict(raw.get("encounter"))
+        if key == "ranhun":
+            direct_dmg = int(_to_float(enc.get("direct_damage"), min(5 * round(rec_val), 18000)))
+            encounter_note = f"穿透直伤 {_format_number(direct_dmg)} · 30跳持续 · 25人零减员"
+        elif key == "sword":
+            ticks = int(_to_float(enc.get("ticks"), 50))
+            survived = int(_to_float(enc.get("survived_ticks"), ticks))
+            tank_peak = int(_to_float(enc.get("tank_peak_hit"), math.floor(26100 * (rec_val / 100.0) + 0.5)))
+            raid_peak = int(_to_float(enc.get("raid_peak_hit"), math.floor(4048 * (rec_val / 100.0) + 0.5)))
+            encounter_note = f"承剑 {survived}/{ticks}跳 · T峰 {_format_number(tank_peak)} · 团峰 {_format_number(raid_peak)}"
+        else:
+            max_hp = _to_float(enc.get("max_hp"), rec_val * 2)
+            encounter_note = f"藤蔓总血 {max_hp / 10000:.1f}万 · 5秒半血 → 35秒满血检查"
+
+        combat = _as_dict(raw.get("combat"))
+        has_combat = bool(combat and _to_float(combat.get("duration")) > 0)
+        combat_metrics = []
+        if has_combat:
+            duration = _to_float(combat.get("duration"))
+            casts = int(_to_float(combat.get("casts")))
+            song_switches = int(_to_float(combat.get("song_switches")))
+            healing = _to_float(combat.get("healing"))
+            hps = _to_float(combat.get("hps"))
+            eff_rate = _to_float(combat.get("effective_rate"), 100.0)
+            absorbed = _to_float(combat.get("absorbed"))
+            aps = _to_float(combat.get("aps"))
+            shield_casts = int(_to_float(combat.get("shield_casts")))
+            shield_gen = _to_float(combat.get("shield_generated"))
+            mitigated = _to_float(combat.get("mitigated"))
+            drps = _to_float(combat.get("drps"))
+            dur_text = f"{duration:.2f}s" if abs(duration * 10 - round(duration * 10)) > 1e-3 else f"{duration:.1f}s"
+            combat_metrics = [
+                {
+                    "label": "有效治疗",
+                    "value": _format_stat_amount(healing),
+                    "sub": f"HPS {_format_number(hps)} · 有效 {eff_rate:.1f}%",
+                },
+                {
+                    "label": "护盾吸收",
+                    "value": _format_stat_amount(absorbed),
+                    "sub": (
+                        f"APS {_format_number(aps)} · 施盾 {shield_casts}次"
+                        if absorbed > 0 else
+                        (f"施盾 {shield_casts}次（{_format_number(shield_gen)}）" if shield_casts > 0 else "本机制无护盾吸收")
+                    ),
+                },
+                {
+                    "label": "减免伤害",
+                    "value": _format_stat_amount(mitigated),
+                    "sub": (
+                        f"DRPS {_format_number(drps)}"
+                        if mitigated > 0 else
+                        ("T承剑为穿透伤害" if key == "sword" else "友方NPC治疗机制" if key == "vine" else "无减伤触发")
+                    ),
+                },
+                {
+                    "label": "战斗耗时",
+                    "value": dur_text,
+                    "sub": f"施放 {casts}次 · 切曲 {song_switches}次",
+                },
+            ]
+
+        skills_root = _as_dict(raw.get("skills"))
+        raw_healing_skills = [
+            it for it in (skills_root.get("healing") or [])
+            if isinstance(it, dict) and _to_float(it.get("effective")) > 0
+        ]
+        max_rows = 11
+        if len(raw_healing_skills) > max_rows:
+            kept = raw_healing_skills[:max_rows - 1]
+            tail = raw_healing_skills[max_rows - 1:]
+            duration_div = max(1.0, _to_float(combat.get("duration"), 1.0))
+            tail_eff = sum(_to_float(it.get("effective")) for it in tail)
+            kept.append(
+                {
+                    "name": f"其他（{len(tail)}项）",
+                    "icon_id": 1434,
+                    "count": sum(int(_to_float(it.get("count"))) for it in tail),
+                    "effective": tail_eff,
+                    "hps": round(tail_eff / duration_div),
+                    "share_percent": sum(_to_float(it.get("share_percent")) for it in tail),
+                    "is_other": True,
+                },
+            )
+            display_healing = kept
+        else:
+            display_healing = raw_healing_skills
+        max_skill_eff = max((_to_float(it.get("effective")) for it in display_healing), default = 0.0)
+        healing_rows = []
+        for idx, item in enumerate(display_healing):
+            eff = _to_float(item.get("effective"))
+            bar_pct = (eff / max_skill_eff * 100.0) if max_skill_eff > 0 else 0.0
+            healing_rows.append(
+                {
+                    "name": str(item.get("name") or "招式"),
+                    "icon": "" if item.get("is_other") else _jx3_icon(item.get("icon_id")),
+                    "is_other": bool(item.get("is_other")),
+                    "is_top": idx == 0,
+                    "count_text": _format_number(item.get("count")),
+                    "effective_text": _format_stat_amount(eff),
+                    "hps_text": f"{_format_number(item.get('hps'))}/s",
+                    "share_text": f"{_to_float(item.get('share_percent')):.1f}%",
+                    "bar_width": f"{min(100.0, max(3.0, bar_pct)):.1f}%",
+                },
+            )
+
+        protection_rows = []
+        for item in skills_root.get("absorption") or []:
+            if not isinstance(item, dict) or _to_float(item.get("effective")) <= 0:
+                continue
+            protection_rows.append(
+                {
+                    "kind": "吸收",
+                    "kind_class": "absorb",
+                    "name": str(item.get("name") or "梅花三弄"),
+                    "icon": _jx3_icon(item.get("icon_id") or 7059),
+                    "count_text": f"{_format_number(item.get('count'))}次",
+                    "effective_text": _format_stat_amount(item.get("effective")),
+                    "rate_text": f"{_format_number(item.get('aps'))} APS",
+                },
+            )
+        for item in skills_root.get("reduction") or []:
+            if not isinstance(item, dict) or _to_float(item.get("effective")) <= 0:
+                continue
+            protection_rows.append(
+                {
+                    "kind": "减伤",
+                    "kind_class": "reduce",
+                    "name": str(item.get("name") or "减伤"),
+                    "icon": _jx3_icon(item.get("icon_id")),
+                    "count_text": f"{_format_number(item.get('count'))}次",
+                    "effective_text": _format_stat_amount(item.get("effective")),
+                    "rate_text": f"{_format_number(item.get('drps'))} DRPS",
+                },
+            )
+        protection_empty_note = (
+            "洗髓T承剑为穿透外功，本轮策略以直疗与脉冲回血稳T通关。"
+            if key == "sword" else
+            "友方绿名藤蔓满血检查机制，无团队受击与护盾减伤结算。"
+            if key == "vine" else
+            "本轮实测无额外护盾吸收或减伤结算。"
+        )
+
+        cast_pills = []
+        for item in skills_root.get("casts") or []:
+            if not isinstance(item, dict) or int(_to_float(item.get("count"))) <= 0:
+                continue
+            cast_pills.append(
+                {
+                    "name": str(item.get("name") or ""),
+                    "icon": _jx3_icon(item.get("icon_id")),
+                    "count_text": f"×{int(_to_float(item.get('count')))}",
+                },
+            )
+
+        prepared_tasks.append(
+            {
+                "id": str(raw.get("id") or key),
+                "key": key,
+                "name": str(raw.get("name") or key),
+                "short_name": str(raw.get("short_name") or raw.get("name") or key),
+                "mechanic": str(raw.get("mechanic") or ""),
+                "strength_label": str(raw.get("strength_label") or "通过强度"),
+                "recommended_text": rec_text,
+                "unit_text": rec_unit,
+                "unbuffed_text": unb_text,
+                "benchmark_text": bench_text,
+                "score_text": f"{score:.2f} 分",
+                "unbuffed_score_text": f"{unb_score:.2f} 分",
+                "buff_gain_text": f"{buff_gain:+.1f}%",
+                "progress_percent": round(min(100.0, max(0.0, score)), 1),
+                "unbuffed_progress_percent": round(min(100.0, max(0.0, unb_score)), 1),
+                "encounter_note": encounter_note,
+                "has_combat": has_combat,
+                "combat_metrics": combat_metrics,
+                "healing_rows": healing_rows,
+                "healing_skill_count": len(raw_healing_skills),
+                "protection_rows": protection_rows,
+                "protection_empty_note": protection_empty_note,
+                "cast_pills": cast_pills,
+            },
+        )
+    if not prepared_tasks:
+        return None
+    unb_total_score = _to_float(
+        unbuffed_root.get("score"),
+        min(100.0, max(0.0, _to_float(unbuffed_root.get("coefficient")) * 100.0)),
+    )
+    rec_total_score = _to_float(
+        ranking.get("score"),
+        min(100.0, max(0.0, _to_float(ranking.get("coefficient")) * 100.0)),
+    )
+    return {
+        "tasks": prepared_tasks,
+        "unbuffed_score_text": f"{unb_total_score:.2f} 分",
+        "recommended_score_text": f"{rec_total_score:.2f} 分",
+    }
+
 def _prepare_talents(talents: Any) -> list[dict[str, str]]:
     prepared = []
     for talent_id in talents or []:
@@ -2498,14 +2808,20 @@ async def render_equipment_rating_image(
         attribute_income_caption = ""
     if policy_index:
         attribute_income_caption = f"推荐增益下，每 {sample_points} 点附魔可提升的评分" if len(income_sample_values) == 1 else "推荐增益下，每份附魔可提升的评分"
-    use_folio_spread = bool(trial_land and trial_land.get("status") == "ok")
+    xiangzhi_tasks = _prepare_xiangzhi_tasks(data, summary) if policy_index else None
+    use_folio_spread = bool((trial_land and trial_land.get("status") == "ok") or xiangzhi_tasks)
     metric_unit = "指数" if policy_index else ("承压" if is_therapy_rating else "DPS")
+    upgrade_base_metric = (
+        _to_float(summary.get("rating_current_capacity") or summary.get("current_dps"))
+        if is_therapy_rating else _to_float(summary.get("current_dps"))
+    )
     top_upgrades = _prepare_top_upgrades(
         slots,
         data.get("combination_recommendations"),
-        _to_float(summary.get("current_dps")),
+        upgrade_base_metric,
         metric_unit,
     )
+    talent_ids = summary.get("talents") or (XIANGZHI_POLICY_TALENTS if policy_index else None)
     html = Template(
         read(build_path(TEMPLATES, ["jx3", "equipment_rating.html"])),
     ).render(
@@ -2541,6 +2857,7 @@ async def render_equipment_rating_image(
             kungfu_id,
         ),
         trial_land = trial_land,
+        xiangzhi_tasks = xiangzhi_tasks,
         equipment_rating_rank = rank_data,
         race_rank = race_rank_data,
         rating_timeline = _prepare_rating_timeline(timeline_data, wide = use_folio_spread),
@@ -2548,7 +2865,7 @@ async def render_equipment_rating_image(
         tank_vitality_conversion = _prepare_tank_vitality_conversion(summary, kungfu),
         distribution = _prepare_distribution_view(meta.get("kungfu_id")),
         slots = slots,
-        talents = _prepare_talents(summary.get("talents")),
+        talents = _prepare_talents(talent_ids),
         warnings = data.get("warnings", []),
         chips = [chip for chip in chips if chip],
     )
@@ -2720,6 +3037,13 @@ async def _build_equipment_rating_payload_by_kungfu(
         (equip for equip in pve_equips if equip.kungfu_id == kungfu_id and equip.tag == "PVE"),
         None,
     )
+    if target_equip is None:
+        pc_kungfu_id = Kungfu.with_internel_id(kungfu_id, convert_to_pc = True).id
+        if pc_kungfu_id and pc_kungfu_id != kungfu_id:
+            target_equip = next(
+                (equip for equip in pve_equips if equip.kungfu_id == pc_kungfu_id and equip.tag == "PVE"),
+                None,
+            )
     if target_equip is None:
         await matcher.finish("未找到该心法对应的 PVE 装备，请先提交或查询该心法 PVE 装备后重试。")
 

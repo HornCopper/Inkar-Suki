@@ -1356,8 +1356,8 @@ html body .guide.rating-help .hero {
   <div class="section">
     <div class="section-title">奶妈承压评级依据</div>
     <div class="steps">
-      <div class="step"><div class="num">H</div><div>直接使用装备面板的治疗量、会心、会效和加速。不考虑装备特效，心法特性，纯静态面板计算。</div></div>
-      <div class="step"><div class="num">T</div><div>高压窗口 \(T=10\) 秒，血量上限 \(U=3200000\)，目标破产概率 \(q=5\%\)。伤害从 \(t=0\) 开始，到 \(t=10\) 结束，共结算 11 次。</div></div>
+      <div class="step"><div class="num">H</div><div>使用装备面板（含水特效武器、双特效戒等常驻特效）的治疗量、会心、会效和加速，单跳基础治疗按 \(h_0 = \mathrm{FinalTherapy}\times 12 / 53.31663\) 换算。</div></div>
+      <div class="step"><div class="num">T</div><div>高压窗口 \(T=10\) 秒，血量上限 \(U=22000\)，目标破产概率 \(q=5\%\)。伤害从 \(t=0\) 开始，到 \(t=10\) 结束，共结算 11 次。</div></div>
       <div class="step"><div class="num">G</div><div>治疗间隔 \(\Delta=1.5/(1+a_{\mathrm{eff}}/10107.9)\)，其中 \(a_{\mathrm{eff}}=\min(a,2024)\)。每个治疗时间点按 3 次独立治疗计算，会心按面板概率分布。</div></div>
     </div>
     <div class="formula-grid" style="margin-top: 16px;">

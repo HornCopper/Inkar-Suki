@@ -519,7 +519,9 @@ async def request_equipment_ratings(
         payload["user_id"] = user_id
     try:
         result = (
-            await Request(f"{Config.jx3.api.calculator_url}/equipment_rating", params = payload).post(timeout = 300)
+            await Request(f"{Config.jx3.api.calculator_url}/equipment_rating", params = payload).post(
+                timeout = 3600 if int(payload.get("kungfu_id") or 0) in {10448, 101125} else 300
+            )
         ).json()
     except Exception as e:
         return f"装备评级计算失败：{e}"

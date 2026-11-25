@@ -38,7 +38,7 @@ class Jx3WS(BaseModel):
 
 class Jx3RaceRank(BaseModel):
     enabled: bool = True
-    event_id: int = 23
+    event_id: int = 24
     event_api: str = "https://team.jx3box.com/api/team/rank/events/{event_id}"
     boss_rank_api: str = (
         "https://team.jx3box.com/api/team/race/achieve/{achievement_id}/top100"
