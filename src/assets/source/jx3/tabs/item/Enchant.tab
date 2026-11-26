@@ -6707,7 +6707,7 @@ ID	Name	UIID	AttriName	Attribute1ID	Attribute1Value1	Attribute1Value2	Score	Diam
 10334	仙踪·头·铸（内功）	帽子	内功攻击提升82点	atMagicAttackPowerBase	3	3	2																										3					
 10335	仙踪·头·铸（治疗）	帽子	疗伤成效提升74点	atTherapyPowerBase	2	2	2																										3					
 10336	仙踪·头·铸（无双）	帽子	无双提升1点	atStrainBase	1	1	2																										3					
-10337	仙踪·头·铸（急速）	帽子	加速提升152点	atHasteBase	2	2	2																										3					
+10337	仙踪·头·铸（加速）	帽子	加速提升152点	atHasteBase	2	2	2																										3					
 10338	仙踪·腰·铸（体质）	腰带	体质提升56点	atVitalityBase	1	1	2																										6					
 10339	仙踪·腰·铸（气血）	腰带	最大气血值提升758点	atMaxLifeBase	8	8	2																										6					
 10340	仙踪·腰·铸（格挡）	腰带	拆招提升942点	atParryValueBase	22	22	2																										6					
@@ -6730,7 +6730,7 @@ ID	Name	UIID	AttriName	Attribute1ID	Attribute1Value1	Attribute1Value2	Score	Diam
 10357	仙踪·头·甲（内功）	帽子	内功攻击提升41点	atMagicAttackPowerBase	2	2	1																										3				0	0
 10358	仙踪·头·甲（治疗）	帽子	疗伤成效提升37点	atTherapyPowerBase	1	1	1																										3				0	0
 10359	仙踪·头·甲（无双）	帽子	无双提升1点	atStrainBase	1	1	1																										3				0	0
-10360	仙踪·头·甲（急速）	帽子	加速提升76点	atHasteBase	1	1	1																										3				0	0
+10360	仙踪·头·甲（加速）	帽子	加速提升76点	atHasteBase	1	1	1																										3				0	0
 10361	仙踪·腰·甲（体质）	腰带	体质提升28点	atVitalityBase	1	1	1																										6				0	0
 10362	仙踪·腰·甲（气血）	腰带	最大气血值提升379点	atMaxLifeBase	4	4	1																										6				0	0
 10363	仙踪·腰·甲（格挡）	腰带	拆招提升471点	atParryValueBase	11	11	1																										6				0	0
@@ -6777,7 +6777,7 @@ ID	Name	UIID	AttriName	Attribute1ID	Attribute1Value1	Attribute1Value2	Score	Diam
 10404	仙踪·鞋·绣（内功）	鞋子	内功攻击提升82点	atMagicAttackPowerBase	3	3	2																										9					
 10405	仙踪·鞋·绣（治疗）	鞋子	疗伤成效提升74点	atTherapyPowerBase	2	2	2																										9					
 10406	仙踪·鞋·绣（无双）	鞋子	无双提升1点	atStrainBase	1	1	2																										9					
-10407	仙踪·鞋·绣（急速）	鞋子	加速提升152点	atHasteBase	2	2	2																										9					
+10407	仙踪·鞋·绣（加速）	鞋子	加速提升152点	atHasteBase	2	2	2																										9					
 10408	仙踪·衣·绣（体质）	上装	体质提升56点	atVitalityBase	1	1	2																										2					
 10409	仙踪·衣·绣（气血）	上装	最大气血值提升758点	atMaxLifeBase	8	8	2																										2					
 10410	仙踪·衣·绣（格挡）	上装	拆招提升942点	atParryValueBase	22	22	2																										2					
@@ -6800,7 +6800,7 @@ ID	Name	UIID	AttriName	Attribute1ID	Attribute1Value1	Attribute1Value2	Score	Diam
 10427	仙踪·鞋·染（内功）	鞋子	内功攻击提升41点	atMagicAttackPowerBase	2	2	1																										9				0	0
 10428	仙踪·鞋·染（治疗）	鞋子	疗伤成效提升37点	atTherapyPowerBase	1	1	1																										9				0	0
 10429	仙踪·鞋·染（无双）	鞋子	无双提升1点	atStrainBase	1	1	1																										9				0	0
-10430	仙踪·鞋·染（急速）	鞋子	加速提升76点	atHasteBase	1	1	1																										9				0	0
+10430	仙踪·鞋·染（加速）	鞋子	加速提升76点	atHasteBase	1	1	1																										9				0	0
 10431	仙踪·衣·染（体质）	上装	体质提升28点	atVitalityBase	1	1	1																										2				0	0
 10432	仙踪·衣·染（气血）	上装	最大气血值提升379点	atMaxLifeBase	4	4	1																										2				0	0
 10433	仙踪·衣·染（格挡）	上装	拆招提升471点	atParryValueBase	11	11	1																										2				0	0
@@ -6905,7 +6905,7 @@ ID	Name	UIID	AttriName	Attribute1ID	Attribute1Value1	Attribute1Value2	Score	Diam
 10532	仙踪·鞋·绣（内功）	鞋子	内功攻击提升89点	atMagicAttackPowerBase	3	3	2																										9					
 10533	仙踪·鞋·绣（治疗）	鞋子	疗伤成效提升81点	atTherapyPowerBase	2	2	2																										9					
 10534	仙踪·鞋·绣（无双）	鞋子	无双提升1点	atStrainBase	1	1	2																										9					
-10535	仙踪·鞋·绣（急速）	鞋子	加速提升166点	atHasteBase	2	2	2																										9					
+10535	仙踪·鞋·绣（加速）	鞋子	加速提升166点	atHasteBase	2	2	2																										9					
 10536	仙踪·衣·绣（体质）	上装	体质提升62点	atVitalityBase	1	1	2																										2					
 10537	仙踪·衣·绣（气血）	上装	最大气血值提升831点	atMaxLifeBase	8	8	2																										2					
 10538	仙踪·衣·绣（格挡）	上装	拆招提升1032点	atParryValueBase	24	24	2																										2					
@@ -6928,7 +6928,7 @@ ID	Name	UIID	AttriName	Attribute1ID	Attribute1Value1	Attribute1Value2	Score	Diam
 10555	仙踪·鞋·染（内功）	鞋子	内功攻击提升44点	atMagicAttackPowerBase	2	2	1																										9				0	0
 10556	仙踪·鞋·染（治疗）	鞋子	疗伤成效提升40点	atTherapyPowerBase	1	1	1																										9				0	0
 10557	仙踪·鞋·染（无双）	鞋子	无双提升1点	atStrainBase	1	1	1																										9				0	0
-10558	仙踪·鞋·染（急速）	鞋子	加速提升84点	atHasteBase	1	1	1																										9				0	0
+10558	仙踪·鞋·染（加速）	鞋子	加速提升84点	atHasteBase	1	1	1																										9				0	0
 10559	仙踪·衣·染（体质）	上装	体质提升31点	atVitalityBase	1	1	1																										2				0	0
 10560	仙踪·衣·染（气血）	上装	最大气血值提升415点	atMaxLifeBase	4	4	1																										2				0	0
 10561	仙踪·衣·染（格挡）	上装	拆招提升516点	atParryValueBase	12	12	2																										2				0	0
@@ -6959,7 +6959,7 @@ ID	Name	UIID	AttriName	Attribute1ID	Attribute1Value1	Attribute1Value2	Score	Diam
 10586	仙踪·头·铸（内功）	帽子	内功攻击提升89点	atMagicAttackPowerBase	3	3	2																										3					
 10587	仙踪·头·铸（治疗）	帽子	疗伤成效提升81点	atTherapyPowerBase	2	2	2																										3					
 10588	仙踪·头·铸（无双）	帽子	无双提升1点	atStrainBase	1	1	2																										3					
-10589	仙踪·头·铸（急速）	帽子	加速提升166点	atHasteBase	2	2	2																										3					
+10589	仙踪·头·铸（加速）	帽子	加速提升166点	atHasteBase	2	2	2																										3					
 10590	仙踪·腰·铸（体质）	腰带	体质提升62点	atVitalityBase	1	1	2																										6					
 10591	仙踪·腰·铸（气血）	腰带	最大气血值提升831点	atMaxLifeBase	8	8	2																										6					
 10592	仙踪·腰·铸（格挡）	腰带	拆招提升1032点	atParryValueBase	24	24	2																										6					
@@ -6982,7 +6982,7 @@ ID	Name	UIID	AttriName	Attribute1ID	Attribute1Value1	Attribute1Value2	Score	Diam
 10609	仙踪·头·甲（内功）	帽子	内功攻击提升44点	atMagicAttackPowerBase	2	2	1																										3				0	0
 10610	仙踪·头·甲（治疗）	帽子	疗伤成效提升40点	atTherapyPowerBase	1	1	1																										3				0	0
 10611	仙踪·头·甲（无双）	帽子	无双提升1点	atStrainBase	1	1	1																										3				0	0
-10612	仙踪·头·甲（急速）	帽子	加速提升83点	atHasteBase	1	1	1																										3				0	0
+10612	仙踪·头·甲（加速）	帽子	加速提升83点	atHasteBase	1	1	1																										3				0	0
 10613	仙踪·腰·甲（体质）	腰带	体质提升31点	atVitalityBase	1	1	1																										6				0	0
 10614	仙踪·腰·甲（气血）	腰带	最大气血值提升415点	atMaxLifeBase	4	4	1																										6				0	0
 10615	仙踪·腰·甲（格挡）	腰带	拆招提升516点	atParryValueBase	12	12	1																										6				0	0
@@ -7045,7 +7045,7 @@ ID	Name	UIID	AttriName	Attribute1ID	Attribute1Value1	Attribute1Value2	Score	Diam
 10672	仙踪·鞋·绣（内功）	鞋子	内功攻击提升101点	atMagicAttackPowerBase	4	4	3																										9					
 10673	仙踪·鞋·绣（治疗）	鞋子	疗伤成效提升91点	atTherapyPowerBase	2	2	3																										9					
 10674	仙踪·鞋·绣（无双）	鞋子	无双提升2点	atStrainBase	2	2	3																										9					
-10675	仙踪·鞋·绣（急速）	鞋子	加速提升188点	atHasteBase	2	2	3																										9					
+10675	仙踪·鞋·绣（加速）	鞋子	加速提升188点	atHasteBase	2	2	3																										9					
 10676	仙踪·衣·绣（体质）	上装	体质提升70点	atVitalityBase	1	1	2																										2					
 10677	仙踪·衣·绣（气血）	上装	最大气血值提升939点	atMaxLifeBase	9	9	3																										2					
 10678	仙踪·衣·绣（格挡）	上装	拆招提升1166点	atParryValueBase	28	28	3																										2					
@@ -7068,7 +7068,7 @@ ID	Name	UIID	AttriName	Attribute1ID	Attribute1Value1	Attribute1Value2	Score	Diam
 10695	仙踪·鞋·染（内功）	鞋子	内功攻击提升51点	atMagicAttackPowerBase	2	2	1																										9				0	0
 10696	仙踪·鞋·染（治疗）	鞋子	疗伤成效提升46点	atTherapyPowerBase	1	1	1																										9				0	0
 10697	仙踪·鞋·染（无双）	鞋子	无双提升1点	atStrainBase	1	1	1																										9				0	0
-10698	仙踪·鞋·染（急速）	鞋子	加速提升94点	atHasteBase	1	1	1																										9				0	0
+10698	仙踪·鞋·染（加速）	鞋子	加速提升94点	atHasteBase	1	1	1																										9				0	0
 10699	仙踪·衣·染（体质）	上装	体质提升35点	atVitalityBase	1	1	1																										2				0	0
 10700	仙踪·衣·染（气血）	上装	最大气血值提升470点	atMaxLifeBase	5	5	1																										2				0	0
 10701	仙踪·衣·染（格挡）	上装	拆招提升583点	atParryValueBase	14	14	1																										2				0	0
@@ -7096,7 +7096,7 @@ ID	Name	UIID	AttriName	Attribute1ID	Attribute1Value1	Attribute1Value2	Score	Diam
 10723	仙踪·头·铸（内功）	帽子	内功攻击提升101点	atMagicAttackPowerBase	4	4	3																										3					
 10724	仙踪·头·铸（治疗）	帽子	疗伤成效提升91点	atTherapyPowerBase	2	2	3																										3					
 10725	仙踪·头·铸（无双）	帽子	无双提升2点	atStrainBase	2	2	3																										3					
-10726	仙踪·头·铸（急速）	帽子	加速提升188点	atHasteBase	2	2	3																										3					
+10726	仙踪·头·铸（加速）	帽子	加速提升188点	atHasteBase	2	2	3																										3					
 10727	仙踪·腰·铸（体质）	腰带	体质提升70点	atVitalityBase	1	1	2																										6					
 10728	仙踪·腰·铸（气血）	腰带	最大气血值提升939点	atMaxLifeBase	9	9	3																										6					
 10729	仙踪·腰·铸（格挡）	腰带	拆招提升1166点	atParryValueBase	28	28	3																										6					
@@ -7119,7 +7119,7 @@ ID	Name	UIID	AttriName	Attribute1ID	Attribute1Value1	Attribute1Value2	Score	Diam
 10746	仙踪·头·甲（内功）	帽子	内功攻击提升51点	atMagicAttackPowerBase	2	2	1																										3				0	0
 10747	仙踪·头·甲（治疗）	帽子	疗伤成效提升46点	atTherapyPowerBase	1	1	1																										3				0	0
 10748	仙踪·头·甲（无双）	帽子	无双提升1点	atStrainBase	1	1	1																										3				0	0
-10749	仙踪·头·甲（急速）	帽子	加速提升94点	atHasteBase	1	1	1																										3				0	0
+10749	仙踪·头·甲（加速）	帽子	加速提升94点	atHasteBase	1	1	1																										3				0	0
 10750	仙踪·腰·甲（体质）	腰带	体质提升35点	atVitalityBase	1	1	1																										6				0	0
 10751	仙踪·腰·甲（气血）	腰带	最大气血值提升470点	atMaxLifeBase	5	5	1																										6				0	0
 10752	仙踪·腰·甲（格挡）	腰带	拆招提升583点	atParryValueBase	14	14	1																										6				0	0
@@ -7217,7 +7217,7 @@ ID	Name	UIID	AttriName	Attribute1ID	Attribute1Value1	Attribute1Value2	Score	Diam
 10844	仙踪·鞋·绣（内功）	鞋子	内功攻击提升113点	atMagicAttackPowerBase	4	4	3																										9					
 10845	仙踪·鞋·绣（治疗）	鞋子	疗伤成效提升102点	atTherapyPowerBase	2	2	3																										9					
 10846	仙踪·鞋·绣（无双）	鞋子	无双提升2点	atStrainBase	2	2	3																										9					
-10847	仙踪·鞋·绣（急速）	鞋子	加速提升209点	atHasteBase	2	2	3																										9					
+10847	仙踪·鞋·绣（加速）	鞋子	加速提升209点	atHasteBase	2	2	3																										9					
 10848	仙踪·衣·绣（体质）	上装	体质提升78点	atVitalityBase	1	1	2																										2					
 10849	仙踪·衣·绣（气血）	上装	最大气血值提升1047点	atMaxLifeBase	10	10	3																										2					
 10850	仙踪·衣·绣（格挡）	上装	拆招提升1301点	atParryValueBase	31	31	3																										2					
@@ -7240,7 +7240,7 @@ ID	Name	UIID	AttriName	Attribute1ID	Attribute1Value1	Attribute1Value2	Score	Diam
 10867	仙踪·鞋·染（内功）	鞋子	内功攻击提升57点	atMagicAttackPowerBase	2	2	2																										9				0	0
 10868	仙踪·鞋·染（治疗）	鞋子	疗伤成效提升51点	atTherapyPowerBase	1	1	2																										9				0	0
 10869	仙踪·鞋·染（无双）	鞋子	无双提升1点	atStrainBase	1	1	2																										9				0	0
-10870	仙踪·鞋·染（急速）	鞋子	加速提升105点	atHasteBase	1	1	2																										9				0	0
+10870	仙踪·鞋·染（加速）	鞋子	加速提升105点	atHasteBase	1	1	2																										9				0	0
 10871	仙踪·衣·染（体质）	上装	体质提升39点	atVitalityBase	1	1	1																										2				0	0
 10872	仙踪·衣·染（气血）	上装	最大气血值提升524点	atMaxLifeBase	5	5	2																										2				0	0
 10873	仙踪·衣·染（格挡）	上装	拆招提升651点	atParryValueBase	15	15	2																										2				0	0
@@ -7268,7 +7268,7 @@ ID	Name	UIID	AttriName	Attribute1ID	Attribute1Value1	Attribute1Value2	Score	Diam
 10895	仙踪·头·铸（内功）	帽子	内功攻击提升113点	atMagicAttackPowerBase	4	4	3																										3					
 10896	仙踪·头·铸（治疗）	帽子	疗伤成效提升102点	atTherapyPowerBase	2	2	3																										3					
 10897	仙踪·头·铸（无双）	帽子	无双提升2点	atStrainBase	2	2	3																										3					
-10898	仙踪·头·铸（急速）	帽子	加速提升209点	atHasteBase	2	2	3																										3					
+10898	仙踪·头·铸（加速）	帽子	加速提升209点	atHasteBase	2	2	3																										3					
 10899	仙踪·腰·铸（体质）	腰带	体质提升78点	atVitalityBase	1	1	2																										6					
 10900	仙踪·腰·铸（气血）	腰带	最大气血值提升1047点	atMaxLifeBase	10	10	3																										6					
 10901	仙踪·腰·铸（格挡）	腰带	拆招提升1301点	atParryValueBase	31	31	3																										6					
@@ -7291,7 +7291,7 @@ ID	Name	UIID	AttriName	Attribute1ID	Attribute1Value1	Attribute1Value2	Score	Diam
 10918	仙踪·头·甲（内功）	帽子	内功攻击提升57点	atMagicAttackPowerBase	2	2	2																										3				0	0
 10919	仙踪·头·甲（治疗）	帽子	疗伤成效提升51点	atTherapyPowerBase	1	1	2																										3				0	0
 10920	仙踪·头·甲（无双）	帽子	无双提升1点	atStrainBase	1	1	2																										3				0	0
-10921	仙踪·头·甲（急速）	帽子	加速提升105点	atHasteBase	1	1	2																										3				0	0
+10921	仙踪·头·甲（加速）	帽子	加速提升105点	atHasteBase	1	1	2																										3				0	0
 10922	仙踪·腰·甲（体质）	腰带	体质提升39点	atVitalityBase	1	1	1																										6				0	0
 10923	仙踪·腰·甲（气血）	腰带	最大气血值提升524点	atMaxLifeBase	5	5	2																										6				0	0
 10924	仙踪·腰·甲（格挡）	腰带	拆招提升651点	atParryValueBase	15	15	2																										6				0	0
@@ -7398,7 +7398,7 @@ ID	Name	UIID	AttriName	Attribute1ID	Attribute1Value1	Attribute1Value2	Score	Diam
 11025	奉天·头·铸（内攻）	帽子	内功攻击提升175点	atMagicAttackPowerBase	7	7	5																										3				0	0
 11026	奉天·头·铸（治疗）	帽子	疗伤成效提升158点	atTherapyPowerBase	4	4	5																										3				0	0
 11027	奉天·头·铸（无双）	帽子	无双提升3点	atStrainBase	3	3	5																										3				0	0
-11028	奉天·头·铸（急速）	帽子	加速提升325点	atHasteBase	4	4	5																										3				0	0
+11028	奉天·头·铸（加速）	帽子	加速提升325点	atHasteBase	4	4	5																										3				0	0
 11029	奉天·腰·铸（体质）	腰带	体质提升120点	atVitalityBase	2	2	4																										6				0	0
 11030	奉天·腰·铸（气血）	腰带	最大气血值提升1625点	atMaxLifeBase	16	16	5																										6				0	0
 11031	奉天·腰·铸（格挡）	腰带	拆招提升2019点	atParryValueBase	48	48	5																										6				0	0
@@ -7421,7 +7421,7 @@ ID	Name	UIID	AttriName	Attribute1ID	Attribute1Value1	Attribute1Value2	Score	Diam
 11048	奉天·头·甲（内攻）	帽子	内功攻击提升155点	atMagicAttackPowerBase	6	6	4																										3				0	0
 11049	奉天·头·甲（治疗）	帽子	疗伤成效提升140点	atTherapyPowerBase	3	3	4																										3				0	0
 11050	奉天·头·甲（无双）	帽子	无双提升3点	atStrainBase	3	3	4																										3				0	0
-11051	奉天·头·甲（急速）	帽子	加速提升289点	atHasteBase	3	3	4																										3				0	0
+11051	奉天·头·甲（加速）	帽子	加速提升289点	atHasteBase	3	3	4																										3				0	0
 11052	奉天·腰·甲（体质）	腰带	体质提升107点	atVitalityBase	2	2	3																										6				0	0
 11053	奉天·腰·甲（气血）	腰带	最大气血值提升1444点	atMaxLifeBase	14	14	4																										6				0	0
 11054	奉天·腰·甲（格挡）	腰带	拆招提升1794点	atParryValueBase	42	42	4																										6				0	0
@@ -7453,7 +7453,7 @@ ID	Name	UIID	AttriName	Attribute1ID	Attribute1Value1	Attribute1Value2	Score	Diam
 11080	奉天·鞋·绣（内攻）	鞋子	内功攻击提升175点	atMagicAttackPowerBase	7	7	5																										9				0	0
 11081	奉天·鞋·绣（治疗）	鞋子	疗伤成效提升158点	atTherapyPowerBase	4	4	5																										9				0	0
 11082	奉天·鞋·绣（无双）	鞋子	无双提升3点	atStrainBase	3	3	5																										9				0	0
-11083	奉天·鞋·绣（急速）	鞋子	加速提升325点	atHasteBase	4	4	5																										9				0	0
+11083	奉天·鞋·绣（加速）	鞋子	加速提升325点	atHasteBase	4	4	5																										9				0	0
 11084	奉天·衣·绣（体质）	上装	体质提升120点	atVitalityBase	2	2	4																										2				0	0
 11085	奉天·衣·绣（气血）	上装	最大气血值提升1625点	atMaxLifeBase	16	16	5																										2				0	0
 11086	奉天·衣·绣（格挡）	上装	拆招提升2019点	atParryValueBase	48	48	5																										2				0	0
@@ -7476,7 +7476,7 @@ ID	Name	UIID	AttriName	Attribute1ID	Attribute1Value1	Attribute1Value2	Score	Diam
 11103	奉天·鞋·染（内攻）	鞋子	内功攻击提升155点	atMagicAttackPowerBase	6	6	4																										9				0	0
 11104	奉天·鞋·染（治疗）	鞋子	疗伤成效提升140点	atTherapyPowerBase	3	3	4																										9				0	0
 11105	奉天·鞋·染（无双）	鞋子	无双提升3点	atStrainBase	3	3	4																										9				0	0
-11106	奉天·鞋·染（急速）	鞋子	加速提升289点	atHasteBase	3	3	4																										9				0	0
+11106	奉天·鞋·染（加速）	鞋子	加速提升289点	atHasteBase	3	3	4																										9				0	0
 11107	奉天·衣·染（体质）	上装	体质提升107点	atVitalityBase	2	2	3																										2				0	0
 11108	奉天·衣·染（气血）	上装	最大气血值提升1444点	atMaxLifeBase	14	14	4																										2				0	0
 11109	奉天·衣·染（格挡）	上装	拆招提升1794点	atParryValueBase	42	42	4																										2				0	0
@@ -7585,7 +7585,7 @@ ID	Name	UIID	AttriName	Attribute1ID	Attribute1Value1	Attribute1Value2	Score	Diam
 11212	奉天·头·铸（内攻）	帽子	内功攻击提升214点	atMagicAttackPowerBase	8	8	6																										3				0	0
 11213	奉天·头·铸（治疗）	帽子	疗伤成效提升193点	atTherapyPowerBase	5	5	6																										3				0	0
 11214	奉天·头·铸（无双）	帽子	无双提升4点	atStrainBase	4	4	6																										3				0	0
-11215	奉天·头·铸（急速）	帽子	加速提升397点	atHasteBase	5	5	6																										3				0	0
+11215	奉天·头·铸（加速）	帽子	加速提升397点	atHasteBase	5	5	6																										3				0	0
 11216	奉天·腰·铸（体质）	腰带	体质提升147点	atVitalityBase	2	2	4																										6				0	0
 11217	奉天·腰·铸（气血）	腰带	最大气血值提升1986点	atMaxLifeBase	20	20	6																										6				0	0
 11218	奉天·腰·铸（格挡）	腰带	拆招提升2467点	atParryValueBase	58	58	6																										6				0	0
@@ -7608,7 +7608,7 @@ ID	Name	UIID	AttriName	Attribute1ID	Attribute1Value1	Attribute1Value2	Score	Diam
 11235	奉天·鞋·绣（内攻）	鞋子	内功攻击提升214点	atMagicAttackPowerBase	8	8	6																										9				0	0
 11236	奉天·鞋·绣（治疗）	鞋子	疗伤成效提升193点	atTherapyPowerBase	5	5	6																										9				0	0
 11237	奉天·鞋·绣（无双）	鞋子	无双提升4点	atStrainBase	4	4	6																										9				0	0
-11238	奉天·鞋·绣（急速）	鞋子	加速提升397点	atHasteBase	5	5	6																										9				0	0
+11238	奉天·鞋·绣（加速）	鞋子	加速提升397点	atHasteBase	5	5	6																										9				0	0
 11239	奉天·衣·绣（体质）	上装	体质提升147点	atVitalityBase	2	2	4																										2				0	0
 11240	奉天·衣·绣（气血）	上装	最大气血值提升1986点	atMaxLifeBase	20	20	6																										2				0	0
 11241	奉天·衣·绣（格挡）	上装	拆招提升2467点	atParryValueBase	58	58	6																										2				0	0
@@ -7673,7 +7673,7 @@ ID	Name	UIID	AttriName	Attribute1ID	Attribute1Value1	Attribute1Value2	Score	Diam
 11300	奉天·头·铸（内攻）	帽子	内功攻击提升237点	atMagicAttackPowerBase	9	9	7																										3				0	0
 11301	奉天·头·铸（治疗）	帽子	疗伤成效提升214点	atTherapyPowerBase	5	5	7																										3				0	0
 11302	奉天·头·铸（无双）	帽子	无双提升5点	atStrainBase	5	5	7																										3				0	0
-11303	奉天·头·铸（急速）	帽子	加速提升441点	atHasteBase	5	5	7																										3				0	0
+11303	奉天·头·铸（加速）	帽子	加速提升441点	atHasteBase	5	5	7																										3				0	0
 11304	奉天·腰·铸（体质）	腰带	体质提升163点	atVitalityBase	2	2	5																										6				0	0
 11305	奉天·腰·铸（气血）	腰带	最大气血值提升2203点	atMaxLifeBase	22	22	7																										6				0	0
 11306	奉天·腰·铸（格挡）	腰带	拆招提升2736点	atParryValueBase	65	65	7																										6				0	0
@@ -7696,7 +7696,7 @@ ID	Name	UIID	AttriName	Attribute1ID	Attribute1Value1	Attribute1Value2	Score	Diam
 11323	奉天·鞋·绣（内攻）	鞋子	内功攻击提升237点	atMagicAttackPowerBase	9	9	7																										9				0	0
 11324	奉天·鞋·绣（治疗）	鞋子	疗伤成效提升214点	atTherapyPowerBase	5	5	7																										9				0	0
 11325	奉天·鞋·绣（无双）	鞋子	无双提升5点	atStrainBase	5	5	7																										9				0	0
-11326	奉天·鞋·绣（急速）	鞋子	加速提升441点	atHasteBase	5	5	7																										9				0	0
+11326	奉天·鞋·绣（加速）	鞋子	加速提升441点	atHasteBase	5	5	7																										9				0	0
 11327	奉天·衣·绣（体质）	上装	体质提升163点	atVitalityBase	2	2	5																										2				0	0
 11328	奉天·衣·绣（气血）	上装	最大气血值提升2203点	atMaxLifeBase	22	22	7																										2				0	0
 11329	奉天·衣·绣（格挡）	上装	拆招提升2736点	atParryValueBase	65	65	7																										2				0	0
@@ -7817,7 +7817,7 @@ ID	Name	UIID	AttriName	Attribute1ID	Attribute1Value1	Attribute1Value2	Score	Diam
 11444	奉天·头·铸（内攻）	帽子	内功攻击提升264点	atMagicAttackPowerBase	10	10	7																										3				0	0
 11445	奉天·头·铸（治疗）	帽子	疗伤成效提升238点	atTherapyPowerBase	6	6	7																										3				0	0
 11446	奉天·头·铸（无双）	帽子	无双提升5点	atStrainBase	5	5	7																										3				0	0
-11447	奉天·头·铸（急速）	帽子	加速提升491点	atHasteBase	6	6	7																										3				0	0
+11447	奉天·头·铸（加速）	帽子	加速提升491点	atHasteBase	6	6	7																										3				0	0
 11448	奉天·腰·铸（体质）	腰带	体质提升182点	atVitalityBase	3	3	5																										6				0	0
 11449	奉天·腰·铸（气血）	腰带	最大气血值提升2456点	atMaxLifeBase	25	25	7																										6				0	0
 11450	奉天·腰·铸（格挡）	腰带	拆招提升3050点	atParryValueBase	72	72	7																										6				0	0
@@ -7840,7 +7840,7 @@ ID	Name	UIID	AttriName	Attribute1ID	Attribute1Value1	Attribute1Value2	Score	Diam
 11467	奉天·鞋·绣（内攻）	鞋子	内功攻击提升264点	atMagicAttackPowerBase	10	10	7																										9				0	0
 11468	奉天·鞋·绣（治疗）	鞋子	疗伤成效提升238点	atTherapyPowerBase	6	6	7																										9				0	0
 11469	奉天·鞋·绣（无双）	鞋子	无双提升5点	atStrainBase	5	5	7																										9				0	0
-11470	奉天·鞋·绣（急速）	鞋子	加速提升491点	atHasteBase	6	6	7																										9				0	0
+11470	奉天·鞋·绣（加速）	鞋子	加速提升491点	atHasteBase	6	6	7																										9				0	0
 11471	奉天·衣·绣（体质）	上装	体质提升182点	atVitalityBase	3	3	5																										2				0	0
 11472	奉天·衣·绣（气血）	上装	最大气血值提升2456点	atMaxLifeBase	25	25	7																										2				0	0
 11473	奉天·衣·绣（格挡）	上装	拆招提升3050点	atParryValueBase	72	72	7																										2				0	0
@@ -8599,7 +8599,7 @@ ID	Name	UIID	AttriName	Attribute1ID	Attribute1Value1	Attribute1Value2	Score	Diam
 12226	风语·头·铸（内攻）	帽子	内功攻击提升633点	atMagicAttackPowerBase	25	25	39																										3				0	0
 12227	风语·头·铸（治疗）	帽子	疗伤成效提升1014点	atTherapyPowerBase	25	25	39																										3				0	0
 12228	风语·头·铸（无双）	帽子	无双提升24点	atStrainBase	24	24	39																										3				0	0
-12229	风语·头·铸（急速）	帽子	加速提升2089点	atHasteBase	25	25	39																										3				0	0
+12229	风语·头·铸（加速）	帽子	加速提升2089点	atHasteBase	25	25	39																										3				0	0
 12230	风语·腰·铸（体质）	腰带	体质提升774点	atVitalityBase	11	11	39																										6				0	0
 12231	风语·腰·铸（气血）	腰带	最大气血值提升10443点	atMaxLifeBase	104	104	39																										6				0	0
 12232	风语·腰·铸（格挡）	腰带	拆招提升1044点	atParryValueBase	25	25	39																										6				0	0
@@ -8622,7 +8622,7 @@ ID	Name	UIID	AttriName	Attribute1ID	Attribute1Value1	Attribute1Value2	Score	Diam
 12249	风语·头·甲（内攻）	帽子	内功攻击提升316点	atMagicAttackPowerBase	12	12	19																										3				0	0
 12250	风语·头·甲（治疗）	帽子	疗伤成效提升507点	atTherapyPowerBase	12	12	19																										3				0	0
 12251	风语·头·甲（无双）	帽子	无双提升12点	atStrainBase	12	12	19																										3				0	0
-12252	风语·头·甲（急速）	帽子	加速提升1044点	atHasteBase	12	12	19																										3				0	0
+12252	风语·头·甲（加速）	帽子	加速提升1044点	atHasteBase	12	12	19																										3				0	0
 12253	风语·腰·甲（体质）	腰带	体质提升387点	atVitalityBase	6	6	19																										6				0	0
 12254	风语·腰·甲（气血）	腰带	最大气血值提升5222点	atMaxLifeBase	52	52	19																										6				0	0
 12255	风语·腰·甲（格挡）	腰带	拆招提升522点	atParryValueBase	12	12	19																										6				0	0
@@ -8654,7 +8654,7 @@ ID	Name	UIID	AttriName	Attribute1ID	Attribute1Value1	Attribute1Value2	Score	Diam
 12281	风语·鞋·绣（内攻）	鞋子	内功攻击提升633点	atMagicAttackPowerBase	25	25	39																										9				0	0
 12282	风语·鞋·绣（治疗）	鞋子	疗伤成效提升1014点	atTherapyPowerBase	25	25	39																										9				0	0
 12283	风语·鞋·绣（无双）	鞋子	无双提升24点	atStrainBase	24	24	39																										9				0	0
-12284	风语·鞋·绣（急速）	鞋子	加速提升2089点	atHasteBase	25	25	39																										9				0	0
+12284	风语·鞋·绣（加速）	鞋子	加速提升2089点	atHasteBase	25	25	39																										9				0	0
 12285	风语·衣·绣（体质）	上装	体质提升774点	atVitalityBase	11	11	39																										2				0	0
 12286	风语·衣·绣（气血）	上装	最大气血值提升10443点	atMaxLifeBase	104	104	39																										2				0	0
 12287	风语·衣·绣（格挡）	上装	拆招提升1044点	atParryValueBase	25	25	39																										2				0	0
@@ -8677,7 +8677,7 @@ ID	Name	UIID	AttriName	Attribute1ID	Attribute1Value1	Attribute1Value2	Score	Diam
 12304	风语·鞋·染（内攻）	鞋子	内功攻击提升316点	atMagicAttackPowerBase	12	12	19																										9				0	0
 12305	风语·鞋·染（治疗）	鞋子	疗伤成效提升507点	atTherapyPowerBase	12	12	19																										9				0	0
 12306	风语·鞋·染（无双）	鞋子	无双提升12点	atStrainBase	12	12	19																										9				0	0
-12307	风语·鞋·染（急速）	鞋子	加速提升1044点	atHasteBase	12	12	19																										9				0	0
+12307	风语·鞋·染（加速）	鞋子	加速提升1044点	atHasteBase	12	12	19																										9				0	0
 12308	风语·衣·染（体质）	上装	体质提升387点	atVitalityBase	6	6	19																										2				0	0
 12309	风语·衣·染（气血）	上装	最大气血值提升5222点	atMaxLifeBase	52	52	19																										2				0	0
 12310	风语·衣·染（格挡）	上装	拆招提升522点	atParryValueBase	12	12	19																										2				0	0
@@ -12170,7 +12170,7 @@ ID	Name	UIID	AttriName	Attribute1ID	Attribute1Value1	Attribute1Value2	Score	Diam
 15797	风语·头·铸（内攻）	帽子	内功攻击提升728点	atMagicAttackPowerBase	29	29	42																										3				0	0
 15798	风语·头·铸（治疗）	帽子	疗伤成效提升1166点	atTherapyPowerBase	29	29	42																										3				0	0
 15799	风语·头·铸（无双）	帽子	无双提升28点	atStrainBase	28	28	42																										3				0	0
-15800	风语·头·铸（急速）	帽子	加速提升2401点	atHasteBase	28	28	42																										3				0	0
+15800	风语·头·铸（加速）	帽子	加速提升2401点	atHasteBase	28	28	42																										3				0	0
 15801	风语·腰·铸（体质）	腰带	体质提升889点	atVitalityBase	13	13	42																										6				0	0
 15802	风语·腰·铸（气血）	腰带	最大气血值提升12005点	atMaxLifeBase	120	120	42																										6				0	0
 15803	风语·腰·铸（格挡）	腰带	拆招提升1200点	atParryValueBase	28	28	42																										6				0	0
@@ -12193,7 +12193,7 @@ ID	Name	UIID	AttriName	Attribute1ID	Attribute1Value1	Attribute1Value2	Score	Diam
 15820	风语·头·甲（内攻）	帽子	内功攻击提升364点	atMagicAttackPowerBase	14	14	21																										3				0	0
 15821	风语·头·甲（治疗）	帽子	疗伤成效提升583点	atTherapyPowerBase	14	14	21																										3				0	0
 15822	风语·头·甲（无双）	帽子	无双提升14点	atStrainBase	14	14	21																										3				0	0
-15823	风语·头·甲（急速）	帽子	加速提升1200点	atHasteBase	14	14	21																										3				0	0
+15823	风语·头·甲（加速）	帽子	加速提升1200点	atHasteBase	14	14	21																										3				0	0
 15824	风语·腰·甲（体质）	腰带	体质提升444点	atVitalityBase	6	6	21																										6				0	0
 15825	风语·腰·甲（气血）	腰带	最大气血值提升6003点	atMaxLifeBase	60	60	21																										6				0	0
 15826	风语·腰·甲（格挡）	腰带	拆招提升600点	atParryValueBase	14	14	21																										6				0	0
@@ -12225,7 +12225,7 @@ ID	Name	UIID	AttriName	Attribute1ID	Attribute1Value1	Attribute1Value2	Score	Diam
 15852	风语·鞋·绣（内攻）	鞋子	内功攻击提升728点	atMagicAttackPowerBase	29	29	42																										9				0	0
 15853	风语·鞋·绣（治疗）	鞋子	疗伤成效提升1166点	atTherapyPowerBase	29	29	42																										9				0	0
 15854	风语·鞋·绣（无双）	鞋子	无双提升28点	atStrainBase	28	28	42																										9				0	0
-15855	风语·鞋·绣（急速）	鞋子	加速提升2401点	atHasteBase	28	28	42																										9				0	0
+15855	风语·鞋·绣（加速）	鞋子	加速提升2401点	atHasteBase	28	28	42																										9				0	0
 15856	风语·衣·绣（体质）	上装	体质提升889点	atVitalityBase	13	13	42																										2				0	0
 15857	风语·衣·绣（气血）	上装	最大气血值提升12005点	atMaxLifeBase	120	120	42																										2				0	0
 15858	风语·衣·绣（格挡）	上装	拆招提升1200点	atParryValueBase	28	28	42																										2				0	0
@@ -12248,7 +12248,7 @@ ID	Name	UIID	AttriName	Attribute1ID	Attribute1Value1	Attribute1Value2	Score	Diam
 15875	风语·鞋·染（内攻）	鞋子	内功攻击提升364点	atMagicAttackPowerBase	14	14	21																										9				0	0
 15876	风语·鞋·染（治疗）	鞋子	疗伤成效提升583点	atTherapyPowerBase	14	14	21																										9				0	0
 15877	风语·鞋·染（无双）	鞋子	无双提升14点	atStrainBase	14	14	21																										9				0	0
-15878	风语·鞋·染（急速）	鞋子	加速提升1200点	atHasteBase	14	14	21																										9				0	0
+15878	风语·鞋·染（加速）	鞋子	加速提升1200点	atHasteBase	14	14	21																										9				0	0
 15879	风语·衣·染（体质）	上装	体质提升444点	atVitalityBase	6	6	21																										2				0	0
 15880	风语·衣·染（气血）	上装	最大气血值提升6003点	atMaxLifeBase	60	60	21																										2				0	0
 15881	风语·衣·染（格挡）	上装	拆招提升600点	atParryValueBase	14	14	21																										2				0	0
@@ -12396,7 +12396,7 @@ ID	Name	UIID	AttriName	Attribute1ID	Attribute1Value1	Attribute1Value2	Score	Diam
 16023	风语·头·铸（内攻）	帽子	内功攻击提升849点	atMagicAttackPowerBase	33	33	49																										3				0	0
 16024	风语·头·铸（治疗）	帽子	疗伤成效提升1360点	atTherapyPowerBase	33	33	49																										3				0	0
 16025	风语·头·铸（无双）	帽子	无双提升33点	atStrainBase	33	33	49																										3				0	0
-16026	风语·头·铸（急速）	帽子	加速提升2801点	atHasteBase	33	33	49																										3				0	0
+16026	风语·头·铸（加速）	帽子	加速提升2801点	atHasteBase	33	33	49																										3				0	0
 16027	风语·腰·铸（体质）	腰带	体质提升1037点	atVitalityBase	15	15	49																										6				0	0
 16028	风语·腰·铸（气血）	腰带	最大气血值提升14006点	atMaxLifeBase	140	140	49																										6				0	0
 16029	风语·腰·铸（格挡）	腰带	拆招提升1401点	atParryValueBase	33	33	49																										6				0	0
@@ -12419,7 +12419,7 @@ ID	Name	UIID	AttriName	Attribute1ID	Attribute1Value1	Attribute1Value2	Score	Diam
 16046	风语·头·甲（内攻）	帽子	内功攻击提升424点	atMagicAttackPowerBase	17	17	24																										3				0	0
 16047	风语·头·甲（治疗）	帽子	疗伤成效提升680点	atTherapyPowerBase	17	17	24																										3				0	0
 16048	风语·头·甲（无双）	帽子	无双提升16点	atStrainBase	16	16	24																										3				0	0
-16049	风语·头·甲（急速）	帽子	加速提升1401点	atHasteBase	17	17	24																										3				0	0
+16049	风语·头·甲（加速）	帽子	加速提升1401点	atHasteBase	17	17	24																										3				0	0
 16050	风语·腰·甲（体质）	腰带	体质提升519点	atVitalityBase	7	7	24																										6				0	0
 16051	风语·腰·甲（气血）	腰带	最大气血值提升7003点	atMaxLifeBase	70	70	24																										6				0	0
 16052	风语·腰·甲（格挡）	腰带	拆招提升700点	atParryValueBase	17	17	24																										6				0	0
@@ -12451,7 +12451,7 @@ ID	Name	UIID	AttriName	Attribute1ID	Attribute1Value1	Attribute1Value2	Score	Diam
 16078	风语·鞋·绣（内攻）	鞋子	内功攻击提升849点	atMagicAttackPowerBase	33	33	49																										9				0	0
 16079	风语·鞋·绣（治疗）	鞋子	疗伤成效提升1360点	atTherapyPowerBase	33	33	49																										9				0	0
 16080	风语·鞋·绣（无双）	鞋子	无双提升33点	atStrainBase	33	33	49																										9				0	0
-16081	风语·鞋·绣（急速）	鞋子	加速提升2801点	atHasteBase	33	33	49																										9				0	0
+16081	风语·鞋·绣（加速）	鞋子	加速提升2801点	atHasteBase	33	33	49																										9				0	0
 16082	风语·衣·绣（体质）	上装	体质提升1037点	atVitalityBase	15	15	49																										2				0	0
 16083	风语·衣·绣（气血）	上装	最大气血值提升14006点	atMaxLifeBase	140	140	49																										2				0	0
 16084	风语·衣·绣（格挡）	上装	拆招提升1401点	atParryValueBase	33	33	49																										2				0	0
@@ -12474,7 +12474,7 @@ ID	Name	UIID	AttriName	Attribute1ID	Attribute1Value1	Attribute1Value2	Score	Diam
 16101	风语·鞋·染（内攻）	鞋子	内功攻击提升424点	atMagicAttackPowerBase	17	17	24																										9				0	0
 16102	风语·鞋·染（治疗）	鞋子	疗伤成效提升680点	atTherapyPowerBase	17	17	24																										9				0	0
 16103	风语·鞋·染（无双）	鞋子	无双提升16点	atStrainBase	16	16	24																										9				0	0
-16104	风语·鞋·染（急速）	鞋子	加速提升1401点	atHasteBase	17	17	24																										9				0	0
+16104	风语·鞋·染（加速）	鞋子	加速提升1401点	atHasteBase	17	17	24																										9				0	0
 16105	风语·衣·染（体质）	上装	体质提升519点	atVitalityBase	7	7	24																										2				0	0
 16106	风语·衣·染（气血）	上装	最大气血值提升7003点	atMaxLifeBase	70	70	24																										2				0	0
 16107	风语·衣·染（格挡）	上装	拆招提升700点	atParryValueBase	17	17	24																										2				0	0
@@ -12622,7 +12622,7 @@ ID	Name	UIID	AttriName	Attribute1ID	Attribute1Value1	Attribute1Value2	Score	Diam
 16249	风语·头·铸（内攻）	帽子	内功攻击提升994点	atMagicAttackPowerBase	39	39	57																										3				0	0
 16250	风语·头·铸（治疗）	帽子	疗伤成效提升1592点	atTherapyPowerBase	39	39	57																										3				0	0
 16251	风语·头·铸（无双）	帽子	无双提升38点	atStrainBase	38	38	57																										3				0	0
-16252	风语·头·铸（急速）	帽子	加速提升3279点	atHasteBase	39	39	57																										3				0	0
+16252	风语·头·铸（加速）	帽子	加速提升3279点	atHasteBase	39	39	57																										3				0	0
 16253	风语·腰·铸（体质）	腰带	体质提升1215点	atVitalityBase	17	17	57																										6				0	0
 16254	风语·腰·铸（气血）	腰带	最大气血值提升16397点	atMaxLifeBase	164	164	57																										6				0	0
 16255	风语·腰·铸（格挡）	腰带	拆招提升1640点	atParryValueBase	39	39	57																										6				0	0
@@ -12645,7 +12645,7 @@ ID	Name	UIID	AttriName	Attribute1ID	Attribute1Value1	Attribute1Value2	Score	Diam
 16272	风语·头·甲（内攻）	帽子	内功攻击提升497点	atMagicAttackPowerBase	19	19	28																										3				0	0
 16273	风语·头·甲（治疗）	帽子	疗伤成效提升796点	atTherapyPowerBase	19	19	28																										3				0	0
 16274	风语·头·甲（无双）	帽子	无双提升19点	atStrainBase	19	19	28																										3				0	0
-16275	风语·头·甲（急速）	帽子	加速提升1640点	atHasteBase	19	19	28																										3				0	0
+16275	风语·头·甲（加速）	帽子	加速提升1640点	atHasteBase	19	19	28																										3				0	0
 16276	风语·腰·甲（体质）	腰带	体质提升608点	atVitalityBase	9	9	28																										6				0	0
 16277	风语·腰·甲（气血）	腰带	最大气血值提升8199点	atMaxLifeBase	82	82	28																										6				0	0
 16278	风语·腰·甲（格挡）	腰带	拆招提升820点	atParryValueBase	19	19	28																										6				0	0
@@ -12677,7 +12677,7 @@ ID	Name	UIID	AttriName	Attribute1ID	Attribute1Value1	Attribute1Value2	Score	Diam
 16304	风语·鞋·绣（内攻）	鞋子	内功攻击提升994点	atMagicAttackPowerBase	39	39	57																										9				0	0
 16305	风语·鞋·绣（治疗）	鞋子	疗伤成效提升1592点	atTherapyPowerBase	39	39	57																										9				0	0
 16306	风语·鞋·绣（无双）	鞋子	无双提升38点	atStrainBase	38	38	57																										9				0	0
-16307	风语·鞋·绣（急速）	鞋子	加速提升3279点	atHasteBase	39	39	57																										9				0	0
+16307	风语·鞋·绣（加速）	鞋子	加速提升3279点	atHasteBase	39	39	57																										9				0	0
 16308	风语·衣·绣（体质）	上装	体质提升1215点	atVitalityBase	17	17	57																										2				0	0
 16309	风语·衣·绣（气血）	上装	最大气血值提升16397点	atMaxLifeBase	164	164	57																										2				0	0
 16310	风语·衣·绣（格挡）	上装	拆招提升1640点	atParryValueBase	39	39	57																										2				0	0
@@ -12700,7 +12700,7 @@ ID	Name	UIID	AttriName	Attribute1ID	Attribute1Value1	Attribute1Value2	Score	Diam
 16327	风语·鞋·染（内攻）	鞋子	内功攻击提升497点	atMagicAttackPowerBase	19	19	28																										9				0	0
 16328	风语·鞋·染（治疗）	鞋子	疗伤成效提升796点	atTherapyPowerBase	19	19	28																										9				0	0
 16329	风语·鞋·染（无双）	鞋子	无双提升19点	atStrainBase	19	19	28																										9				0	0
-16330	风语·鞋·染（急速）	鞋子	加速提升1640点	atHasteBase	19	19	28																										9				0	0
+16330	风语·鞋·染（加速）	鞋子	加速提升1640点	atHasteBase	19	19	28																										9				0	0
 16331	风语·衣·染（体质）	上装	体质提升608点	atVitalityBase	9	9	28																										2				0	0
 16332	风语·衣·染（气血）	上装	最大气血值提升8198点	atMaxLifeBase	82	82	28																										2				0	0
 16333	风语·衣·染（格挡）	上装	拆招提升820点	atParryValueBase	19	19	28																										2				0	0
@@ -12856,102 +12856,102 @@ ID	Name	UIID	AttriName	Attribute1ID	Attribute1Value1	Attribute1Value2	Score	Diam
 16483	苍生·坠宵磨石（攻击）	武器限时	全攻击提升54点	atAllTypeAttackPowerBase	54	54	0																									1800	0				11	0
 16484	苍生·絮泊磨石（疗伤）	武器限时	疗伤成效提升54点	atTherapyPowerBase	54	54	0																									1800	0				11	0
 16485	苍生·巨灵磨石（仇恨）	武器限时	仇恨百分比提升10%点	atActiveThreatCoefficient	0	102	0																									1800	0				11	0
-16486	峡金铸·兵（攻击）	武器	全攻击提升72点	atAllTypeAttackPowerBase	72	72	105																										0				0	0
-16487	峡金铸·兵（疗伤）	武器	疗伤成效提升72点	atTherapyPowerBase	72	72	105																										0				0	0
-16488	峡金铸·兵（武伤）	武器	武器伤害提升12点	atMeleeWeaponDamageBase	12	12	105																										0				0	0
-16489	峡金铸·兵（仇恨）	武器	仇恨百分比提升13%	atActiveThreatCoefficient	0	133	105																										0				0	0
-16490	峡金铸·裤（身法）	下装	身法提升72点	atAgilityBase	72	72	105																										8				0	0
-16491	峡金铸·裤（元气）	下装	元气提升72点	atSpunkBase	72	72	105																										8				0	0
-16492	峡金铸·裤（力道）	下装	力道提升72点	atStrengthBase	72	72	105																										8				0	0
-16493	峡金铸·裤（根骨）	下装	根骨提升72点	atSpiritBase	72	72	105																										8				0	0
-16494	峡金铸·裤（仇恨）	下装	仇恨百分比提升13%	atActiveThreatCoefficient	0	133	105																										8				0	0
-16495	峡金铸·裤（破防）	下装	全破防等级提升72点	atAllTypeOvercomeBase	72	72	105																										8				0	0
-16496	峡金铸·裤（会心）	下装	全会心提升72点	atAllTypeCriticalStrike	72	72	105																										8				0	0
-16497	峡金铸·裤（无双）	下装	无双等级提升72点	atStrainBase	72	72	105																										8				0	0
-16498	峡金铸·头（攻击）	帽子	全攻击提升72点	atAllTypeAttackPowerBase	72	72	105																										3				0	0
-16499	峡金铸·头（治疗）	帽子	疗伤成效提升72点	atTherapyPowerBase	72	72	105																										3				0	0
-16500	峡金铸·头（急速）	帽子	加速提升72点	atHasteBase	72	72	105																										3				0	0
-16501	峡金铸·腰（体质）	腰带	体质提升72点	atVitalityBase	72	72	105																										6				0	0
-16502	峡金铸·腰（御劲）	腰带	御劲提升72点	atToughnessBase	72	72	105																										6				0	0
-16503	峡金铸·腰（化劲）	腰带	化劲提升72点	atDecriticalDamagePowerBase	72	72	105																										6				0	0
-16504	峡金焠·兵（攻击）	武器	全攻击提升90点	atAllTypeAttackPowerBase	90	90	122																										0				0	0
-16505	峡金焠·兵（疗伤）	武器	疗伤成效提升90点	atTherapyPowerBase	90	90	122																										0				0	0
-16506	峡金焠·兵（武伤）	武器	武器伤害提升15点	atMeleeWeaponDamageBase	15	15	122																										0				0	0
-16507	峡金焠·兵（仇恨）	武器	仇恨百分比提升17%	atActiveThreatCoefficient	0	174	122																										0				0	0
-16508	峡金焠·裤（身法）	下装	身法提升90点	atAgilityBase	90	90	122																										8				0	0
-16509	峡金焠·裤（元气）	下装	元气提升90点	atSpunkBase	90	90	122																										8				0	0
-16510	峡金焠·裤（力道）	下装	力道提升90点	atStrengthBase	90	90	122																										8				0	0
-16511	峡金焠·裤（根骨）	下装	根骨提升90点	atSpiritBase	90	90	122																										8				0	0
-16512	峡金焠·裤（仇恨）	下装	仇恨百分比提升17%	atActiveThreatCoefficient	0	174	122																										8				0	0
-16513	峡金焠·裤（破防）	下装	全破防等级提升90点	atAllTypeOvercomeBase	90	90	122																										8				0	0
-16514	峡金焠·裤（会心）	下装	全会心提升90点	atAllTypeCriticalStrike	90	90	122																										8				0	0
-16515	峡金焠·裤（无双）	下装	无双等级提升90点	atStrainBase	90	90	122																										8				0	0
-16516	峡金焠·头（攻击）	帽子	全攻击提升90点	atAllTypeAttackPowerBase	90	90	122																										3				0	0
-16517	峡金焠·头（治疗）	帽子	疗伤成效提升90点	atTherapyPowerBase	90	90	122																										3				0	0
-16518	峡金焠·头（急速）	帽子	加速提升90点	atHasteBase	90	90	122																										3				0	0
-16519	峡金焠·腰（体质）	腰带	体质提升90点	atVitalityBase	90	90	122																										6				0	0
-16520	峡金焠·腰（御劲）	腰带	御劲提升90点	atToughnessBase	90	90	122																										6				0	0
-16521	峡金焠·腰（化劲）	腰带	化劲提升90点	atDecriticalDamagePowerBase	90	90	122																										6				0	0
-16522	云冈石·裤（身法）	下装	身法提升36点	atAgilityBase	36	36	52																										8				0	0
-16523	云冈石·裤（元气）	下装	元气提升36点	atSpunkBase	36	36	52																										8				0	0
-16524	云冈石·裤（力道）	下装	力道提升36点	atStrengthBase	36	36	52																										8				0	0
-16525	云冈石·裤（根骨）	下装	根骨提升36点	atSpiritBase	36	36	52																										8				0	0
-16526	云冈石·裤（仇恨）	下装	仇恨百分比提升7%	atActiveThreatCoefficient	0	72	52																										8				0	0
-16527	云冈石·裤（破防）	下装	全破防等级提升36点	atAllTypeOvercomeBase	36	36	52																										8				0	0
-16528	云冈石·裤（会心）	下装	全会心提升36点	atAllTypeCriticalStrike	36	36	52																										8				0	0
-16529	云冈石·裤（无双）	下装	无双等级提升36点	atStrainBase	36	36	52																										8				0	0
-16530	云冈石·头（攻击）	帽子	全攻击提升36点	atAllTypeAttackPowerBase	36	36	52																										3				0	0
-16531	云冈石·头（治疗）	帽子	疗伤成效提升36点	atTherapyPowerBase	36	36	52																										3				0	0
-16532	云冈石·头（急速）	帽子	加速提升36点	atHasteBase	36	36	52																										3				0	0
-16533	云冈石·腰（体质）	腰带	体质提升36点	atVitalityBase	36	36	52																										6				0	0
-16534	云冈石·腰（御劲）	腰带	御劲提升36点	atToughnessBase	36	36	52																										6				0	0
-16535	云冈石·腰（化劲）	腰带	化劲提升36点	atDecriticalDamagePowerBase	36	36	52																										6				0	0
-16536	云冈石·兵（攻击）	武器	全攻击提升36点	atAllTypeAttackPowerBase	36	36	52																										0				0	0
-16537	云冈石·兵（疗伤）	武器	疗伤成效提升36点	atTherapyPowerBase	36	36	52																										0				0	0
-16538	云冈石·兵（武伤）	武器	武器伤害提升6点	atMeleeWeaponDamageBase	6	6	52																										0				0	0
-16539	云冈石·兵（仇恨）	武器	仇恨百分比提升7%点	atActiveThreatCoefficient	0	72	52																										0				0	0
-16540	蜀锦绣·腕（身法）	护手	身法提升72点	atAgilityBase	72	72	105																										10				0	0
-16541	蜀锦绣·腕（元气）	护手	元气提升72点	atSpunkBase	72	72	105																										10				0	0
-16542	蜀锦绣·腕（力道）	护手	力道提升72点	atStrengthBase	72	72	105																										10				0	0
-16543	蜀锦绣·腕（根骨）	护手	根骨提升72点	atSpiritBase	72	72	105																										10				0	0
-16544	蜀锦绣·腕（仇恨）	护手	仇恨百分比提升13%	atActiveThreatCoefficient	0	133	105																										10				0	0
-16545	蜀锦绣·腕（破防）	护手	全破防等级提升72点	atAllTypeOvercomeBase	72	72	105																										10				0	0
-16546	蜀锦绣·腕（会心）	护手	全会心提升72点	atAllTypeCriticalStrike	72	72	105																										10				0	0
-16547	蜀锦绣·腕（无双）	护手	无双等级提升72点	atStrainBase	72	72	105																										10				0	0
-16548	蜀锦绣·鞋（攻击）	鞋子	全攻击提升72点	atAllTypeAttackPowerBase	72	72	105																										9				0	0
-16549	蜀锦绣·鞋（治疗）	鞋子	疗伤成效提升72点	atTherapyPowerBase	72	72	105																										9				0	0
-16550	蜀锦绣·鞋（急速）	鞋子	加速提升72点	atHasteBase	72	72	105																										9				0	0
-16551	蜀锦绣·衣（体质）	上装	体质提升72点	atVitalityBase	72	72	105																										2				0	0
-16552	蜀锦绣·衣（化劲）	上装	化劲提升72点	atDecriticalDamagePowerBase	72	72	105																										2				0	0
-16553	蜀锦绣·衣（御劲）	上装	御劲提升72点	atToughnessBase	72	72	105																										2				0	0
-16554	云锦绣·腕（身法）	护手	身法提升90点	atAgilityBase	90	90	122																										10				0	0
-16555	云锦绣·腕（元气）	护手	元气提升90点	atSpunkBase	90	90	122																										10				0	0
-16556	云锦绣·腕（力道）	护手	力道提升90点	atStrengthBase	90	90	122																										10				0	0
-16557	云锦绣·腕（根骨）	护手	根骨提升90点	atSpiritBase	90	90	122																										10				0	0
-16558	云锦绣·腕（仇恨）	护手	仇恨百分比提升17%	atActiveThreatCoefficient	0	174	122																										10				0	0
-16559	云锦绣·腕（破防）	护手	全破防等级提升90点	atAllTypeOvercomeBase	90	90	122																										10				0	0
-16560	云锦绣·腕（会心）	护手	全会心提升90点	atAllTypeCriticalStrike	90	90	122																										10				0	0
-16561	云锦绣·腕（无双）	护手	无双等级提升90点	atStrainBase	90	90	122																										10				0	0
-16562	云锦绣·鞋（攻击）	鞋子	全攻击提升90点	atAllTypeAttackPowerBase	90	90	122																										9				0	0
-16563	云锦绣·鞋（治疗）	鞋子	疗伤成效提升90点	atTherapyPowerBase	90	90	122																										9				0	0
-16564	云锦绣·鞋（急速）	鞋子	加速提升90点	atHasteBase	90	90	122																										9				0	0
-16565	云锦绣·衣（体质）	上装	体质提升90点	atVitalityBase	90	90	122																										2				0	0
-16566	云锦绣·衣（化劲）	上装	化劲提升90点	atDecriticalDamagePowerBase	90	90	122																										2				0	0
-16567	云锦绣·衣（御劲）	上装	御劲提升90点	atToughnessBase	90	90	122																										2				0	0
-16568	河洛纹·腕（身法）	护手	身法提升36点	atAgilityBase	36	36	52																										10				0	0
-16569	河洛纹·腕（元气）	护手	元气提升36点	atSpunkBase	36	36	52																										10				0	0
-16570	河洛纹·腕（力道）	护手	力道提升36点	atStrengthBase	36	36	52																										10				0	0
-16571	河洛纹·腕（根骨）	护手	根骨提升36点	atSpiritBase	36	36	52																										10				0	0
-16572	河洛纹·腕（仇恨）	护手	仇恨百分比提升7%点	atActiveThreatCoefficient	0	72	52																										10				0	0
-16573	河洛纹·腕（破防）	护手	全破防等级提升36点	atAllTypeOvercomeBase	36	36	52																										10				0	0
-16574	河洛纹·腕（会心）	护手	全会心提升36点	atAllTypeCriticalStrike	36	36	52																										10				0	0
-16575	河洛纹·腕（无双）	护手	无双等级提升36点	atStrainBase	36	36	52																										10				0	0
-16576	河洛纹·鞋（攻击）	鞋子	全攻击提升36点	atAllTypeAttackPowerBase	36	36	52																										9				0	0
-16577	河洛纹·鞋（治疗）	鞋子	疗伤成效提升36点	atTherapyPowerBase	36	36	52																										9				0	0
-16578	河洛纹·鞋（急速）	鞋子	加速提升36点	atHasteBase	36	36	52																										9				0	0
-16579	河洛纹·衣（体质）	上装	体质提升36点	atVitalityBase	36	36	52																										2				0	0
-16580	河洛纹·衣（化劲）	上装	化劲提升36点	atDecriticalDamagePowerBase	36	36	52																										2				0	0
-16581	河洛纹·衣（御劲）	上装	御劲提升36点	atToughnessBase	36	36	52																										2				0	0
+16486	苍生·峡金铸·兵（攻击）	武器	全攻击提升72点	atAllTypeAttackPowerBase	72	72	105																										0				0	0
+16487	苍生·峡金铸·兵（疗伤）	武器	疗伤成效提升72点	atTherapyPowerBase	72	72	105																										0				0	0
+16488	苍生·峡金铸·兵（武伤）	武器	武器伤害提升14点	atMeleeWeaponDamageBase	14	14	105																										0				0	0
+16489	苍生·峡金铸·兵（仇恨）	武器	仇恨百分比提升13%	atActiveThreatCoefficient	0	133	105																										0				0	0
+16490	苍生·峡金铸·裤（身法）	下装	身法提升72点	atAgilityBase	72	72	105																										8				0	0
+16491	苍生·峡金铸·裤（元气）	下装	元气提升72点	atSpunkBase	72	72	105																										8				0	0
+16492	苍生·峡金铸·裤（力道）	下装	力道提升72点	atStrengthBase	72	72	105																										8				0	0
+16493	苍生·峡金铸·裤（根骨）	下装	根骨提升72点	atSpiritBase	72	72	105																										8				0	0
+16494	苍生·峡金铸·裤（仇恨）	下装	仇恨百分比提升13%	atActiveThreatCoefficient	0	133	105																										8				0	0
+16495	苍生·峡金铸·裤（破防）	下装	全破防等级提升72点	atAllTypeOvercomeBase	72	72	105																										8				0	0
+16496	苍生·峡金铸·裤（会心）	下装	全会心提升72点	atAllTypeCriticalStrike	72	72	105																										8				0	0
+16497	苍生·峡金铸·裤（无双）	下装	无双等级提升72点	atStrainBase	72	72	105																										8				0	0
+16498	苍生·峡金铸·头（攻击）	帽子	全攻击提升72点	atAllTypeAttackPowerBase	72	72	105																										3				0	0
+16499	苍生·峡金铸·头（治疗）	帽子	疗伤成效提升72点	atTherapyPowerBase	72	72	105																										3				0	0
+16500	苍生·峡金铸·头（加速）	帽子	加速提升72点	atHasteBase	72	72	105																										3				0	0
+16501	苍生·峡金铸·腰（体质）	腰带	体质提升72点	atVitalityBase	72	72	105																										6				0	0
+16502	苍生·峡金铸·腰（御劲）	腰带	御劲提升72点	atToughnessBase	72	72	105																										6				0	0
+16503	苍生·峡金铸·腰（化劲）	腰带	化劲提升72点	atDecriticalDamagePowerBase	72	72	105																										6				0	0
+16504	苍生·峡金焠·兵（攻击）	武器	全攻击提升90点	atAllTypeAttackPowerBase	90	90	122																										0				0	0
+16505	苍生·峡金焠·兵（疗伤）	武器	疗伤成效提升90点	atTherapyPowerBase	90	90	122																										0				0	0
+16506	苍生·峡金焠·兵（武伤）	武器	武器伤害提升16点	atMeleeWeaponDamageBase	16	16	122																										0				0	0
+16507	苍生·峡金焠·兵（仇恨）	武器	仇恨百分比提升17%	atActiveThreatCoefficient	0	174	122																										0				0	0
+16508	苍生·峡金焠·裤（身法）	下装	身法提升90点	atAgilityBase	90	90	122																										8				0	0
+16509	苍生·峡金焠·裤（元气）	下装	元气提升90点	atSpunkBase	90	90	122																										8				0	0
+16510	苍生·峡金焠·裤（力道）	下装	力道提升90点	atStrengthBase	90	90	122																										8				0	0
+16511	苍生·峡金焠·裤（根骨）	下装	根骨提升90点	atSpiritBase	90	90	122																										8				0	0
+16512	苍生·峡金焠·裤（仇恨）	下装	仇恨百分比提升17%	atActiveThreatCoefficient	0	174	122																										8				0	0
+16513	苍生·峡金焠·裤（破防）	下装	全破防等级提升90点	atAllTypeOvercomeBase	90	90	122																										8				0	0
+16514	苍生·峡金焠·裤（会心）	下装	全会心提升90点	atAllTypeCriticalStrike	90	90	122																										8				0	0
+16515	苍生·峡金焠·裤（无双）	下装	无双等级提升90点	atStrainBase	90	90	122																										8				0	0
+16516	苍生·峡金焠·头（攻击）	帽子	全攻击提升90点	atAllTypeAttackPowerBase	90	90	122																										3				0	0
+16517	苍生·峡金焠·头（治疗）	帽子	疗伤成效提升90点	atTherapyPowerBase	90	90	122																										3				0	0
+16518	苍生·峡金焠·头（加速）	帽子	加速提升90点	atHasteBase	90	90	122																										3				0	0
+16519	苍生·峡金焠·腰（体质）	腰带	体质提升90点	atVitalityBase	90	90	122																										6				0	0
+16520	苍生·峡金焠·腰（御劲）	腰带	御劲提升90点	atToughnessBase	90	90	122																										6				0	0
+16521	苍生·峡金焠·腰（化劲）	腰带	化劲提升90点	atDecriticalDamagePowerBase	90	90	122																										6				0	0
+16522	苍生·云冈石·裤（身法）	下装	身法提升36点	atAgilityBase	36	36	52																										8				0	0
+16523	苍生·云冈石·裤（元气）	下装	元气提升36点	atSpunkBase	36	36	52																										8				0	0
+16524	苍生·云冈石·裤（力道）	下装	力道提升36点	atStrengthBase	36	36	52																										8				0	0
+16525	苍生·云冈石·裤（根骨）	下装	根骨提升36点	atSpiritBase	36	36	52																										8				0	0
+16526	苍生·云冈石·裤（仇恨）	下装	仇恨百分比提升7%	atActiveThreatCoefficient	0	72	52																										8				0	0
+16527	苍生·云冈石·裤（破防）	下装	全破防等级提升36点	atAllTypeOvercomeBase	36	36	52																										8				0	0
+16528	苍生·云冈石·裤（会心）	下装	全会心提升36点	atAllTypeCriticalStrike	36	36	52																										8				0	0
+16529	苍生·云冈石·裤（无双）	下装	无双等级提升36点	atStrainBase	36	36	52																										8				0	0
+16530	苍生·云冈石·头（攻击）	帽子	全攻击提升36点	atAllTypeAttackPowerBase	36	36	52																										3				0	0
+16531	苍生·云冈石·头（治疗）	帽子	疗伤成效提升36点	atTherapyPowerBase	36	36	52																										3				0	0
+16532	苍生·云冈石·头（加速）	帽子	加速提升36点	atHasteBase	36	36	52																										3				0	0
+16533	苍生·云冈石·腰（体质）	腰带	体质提升36点	atVitalityBase	36	36	52																										6				0	0
+16534	苍生·云冈石·腰（御劲）	腰带	御劲提升36点	atToughnessBase	36	36	52																										6				0	0
+16535	苍生·云冈石·腰（化劲）	腰带	化劲提升36点	atDecriticalDamagePowerBase	36	36	52																										6				0	0
+16536	苍生·云冈石·兵（攻击）	武器	全攻击提升36点	atAllTypeAttackPowerBase	36	36	52																										0				0	0
+16537	苍生·云冈石·兵（疗伤）	武器	疗伤成效提升36点	atTherapyPowerBase	36	36	52																										0				0	0
+16538	苍生·云冈石·兵（武伤）	武器	武器伤害提升8点	atMeleeWeaponDamageBase	8	8	52																										0				0	0
+16539	苍生·云冈石·兵（仇恨）	武器	仇恨百分比提升7%点	atActiveThreatCoefficient	0	72	52																										0				0	0
+16540	苍生·蜀锦绣·腕（身法）	护手	身法提升72点	atAgilityBase	72	72	105																										10				0	0
+16541	苍生·蜀锦绣·腕（元气）	护手	元气提升72点	atSpunkBase	72	72	105																										10				0	0
+16542	苍生·蜀锦绣·腕（力道）	护手	力道提升72点	atStrengthBase	72	72	105																										10				0	0
+16543	苍生·蜀锦绣·腕（根骨）	护手	根骨提升72点	atSpiritBase	72	72	105																										10				0	0
+16544	苍生·蜀锦绣·腕（仇恨）	护手	仇恨百分比提升13%	atActiveThreatCoefficient	0	133	105																										10				0	0
+16545	苍生·蜀锦绣·腕（破防）	护手	全破防等级提升72点	atAllTypeOvercomeBase	72	72	105																										10				0	0
+16546	苍生·蜀锦绣·腕（会心）	护手	全会心提升72点	atAllTypeCriticalStrike	72	72	105																										10				0	0
+16547	苍生·蜀锦绣·腕（无双）	护手	无双等级提升72点	atStrainBase	72	72	105																										10				0	0
+16548	苍生·蜀锦绣·鞋（攻击）	鞋子	全攻击提升72点	atAllTypeAttackPowerBase	72	72	105																										9				0	0
+16549	苍生·蜀锦绣·鞋（治疗）	鞋子	疗伤成效提升72点	atTherapyPowerBase	72	72	105																										9				0	0
+16550	苍生·蜀锦绣·鞋（加速）	鞋子	加速提升72点	atHasteBase	72	72	105																										9				0	0
+16551	苍生·蜀锦绣·衣（体质）	上装	体质提升72点	atVitalityBase	72	72	105																										2				0	0
+16552	苍生·蜀锦绣·衣（化劲）	上装	化劲提升72点	atDecriticalDamagePowerBase	72	72	105																										2				0	0
+16553	苍生·蜀锦绣·衣（御劲）	上装	御劲提升72点	atToughnessBase	72	72	105																										2				0	0
+16554	苍生·云锦绣·腕（身法）	护手	身法提升90点	atAgilityBase	90	90	122																										10				0	0
+16555	苍生·云锦绣·腕（元气）	护手	元气提升90点	atSpunkBase	90	90	122																										10				0	0
+16556	苍生·云锦绣·腕（力道）	护手	力道提升90点	atStrengthBase	90	90	122																										10				0	0
+16557	苍生·云锦绣·腕（根骨）	护手	根骨提升90点	atSpiritBase	90	90	122																										10				0	0
+16558	苍生·云锦绣·腕（仇恨）	护手	仇恨百分比提升17%	atActiveThreatCoefficient	0	174	122																										10				0	0
+16559	苍生·云锦绣·腕（破防）	护手	全破防等级提升90点	atAllTypeOvercomeBase	90	90	122																										10				0	0
+16560	苍生·云锦绣·腕（会心）	护手	全会心提升90点	atAllTypeCriticalStrike	90	90	122																										10				0	0
+16561	苍生·云锦绣·腕（无双）	护手	无双等级提升90点	atStrainBase	90	90	122																										10				0	0
+16562	苍生·云锦绣·鞋（攻击）	鞋子	全攻击提升90点	atAllTypeAttackPowerBase	90	90	122																										9				0	0
+16563	苍生·云锦绣·鞋（治疗）	鞋子	疗伤成效提升90点	atTherapyPowerBase	90	90	122																										9				0	0
+16564	苍生·云锦绣·鞋（加速）	鞋子	加速提升90点	atHasteBase	90	90	122																										9				0	0
+16565	苍生·云锦绣·衣（体质）	上装	体质提升90点	atVitalityBase	90	90	122																										2				0	0
+16566	苍生·云锦绣·衣（化劲）	上装	化劲提升90点	atDecriticalDamagePowerBase	90	90	122																										2				0	0
+16567	苍生·云锦绣·衣（御劲）	上装	御劲提升90点	atToughnessBase	90	90	122																										2				0	0
+16568	苍生·河洛纹·腕（身法）	护手	身法提升36点	atAgilityBase	36	36	52																										10				0	0
+16569	苍生·河洛纹·腕（元气）	护手	元气提升36点	atSpunkBase	36	36	52																										10				0	0
+16570	苍生·河洛纹·腕（力道）	护手	力道提升36点	atStrengthBase	36	36	52																										10				0	0
+16571	苍生·河洛纹·腕（根骨）	护手	根骨提升36点	atSpiritBase	36	36	52																										10				0	0
+16572	苍生·河洛纹·腕（仇恨）	护手	仇恨百分比提升7%点	atActiveThreatCoefficient	0	72	52																										10				0	0
+16573	苍生·河洛纹·腕（破防）	护手	全破防等级提升36点	atAllTypeOvercomeBase	36	36	52																										10				0	0
+16574	苍生·河洛纹·腕（会心）	护手	全会心提升36点	atAllTypeCriticalStrike	36	36	52																										10				0	0
+16575	苍生·河洛纹·腕（无双）	护手	无双等级提升36点	atStrainBase	36	36	52																										10				0	0
+16576	苍生·河洛纹·鞋（攻击）	鞋子	全攻击提升36点	atAllTypeAttackPowerBase	36	36	52																										9				0	0
+16577	苍生·河洛纹·鞋（治疗）	鞋子	疗伤成效提升36点	atTherapyPowerBase	36	36	52																										9				0	0
+16578	苍生·河洛纹·鞋（加速）	鞋子	加速提升36点	atHasteBase	36	36	52																										9				0	0
+16579	苍生·河洛纹·衣（体质）	上装	体质提升36点	atVitalityBase	36	36	52																										2				0	0
+16580	苍生·河洛纹·衣（化劲）	上装	化劲提升36点	atDecriticalDamagePowerBase	36	36	52																										2				0	0
+16581	苍生·河洛纹·衣（御劲）	上装	御劲提升36点	atToughnessBase	36	36	52																										2				0	0
 16582	撑天·裤·会心	下装	下装全会心等级提高29	atAllTypeCriticalStrike	29	29	42																										8				0	0
 16583	撑天·腕·会心	护手	护腕全会心等级提高29	atAllTypeCriticalStrike	29	29	42																										10				0	0
 16584	撑天·头·急速	帽子	帽子加速等级提高29	atHasteBase	29	29	42																										3				0	0

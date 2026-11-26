@@ -1410,7 +1410,6 @@ ShopTemplateID	ShopName	ConfigFile	CanRepair	ScriptName	RequireForceID	PlayerRem
 1525	东宫·装备	Popularity/130th_TJG_Armor.tab			280			装备	1
 1526	奢品商店·珍品	Special\HighValue_Goods.tab		scripts/Map/Act_运营活动通用/shop/奢品商店.lua				其他	1
 1528	威望·通用强化	Prestige\Prestige_Strength.tab	1					其他	1
-1529	威望·通用强化	Prestige\Prestige_Strength.tab	1					其他	1
 1532	侠行·初级套装	Justice\Justice_3.tab	1					装备	1
 1533	五行石·周兑换	Usual\WuXingShi_Goods.tab				1182		其他	1
 1534	除名券商店	Special\ChuMing.tab				1115		其他	
@@ -1462,7 +1461,7 @@ ShopTemplateID	ShopName	ConfigFile	CanRepair	ScriptName	RequireForceID	PlayerRem
 1587	大同军·装备	Popularity/50th_DaTongJun_Armor.tab			287			装备	
 1588	长风营·装备	Popularity/50th_ChangFengYing_Armor.tab			288			装备	
 1589	珠联璧合	Special\50th_QieGao_Weapon.tab	1					装备	1
-1590	防具兑换（暂未启用）	Special\50th_QieGao_Armor.tab	1					装备	1
+1590	珠联璧合·绑定	Special\50th_QieGao_Weapon_Bind.tab	1					装备	1
 1591	浩气盟·矿车装备	Popularity/50th_KuangChe_Equip_HQ.tab	1		289			装备	1
 1592	恶人谷·矿车装备	Popularity/50th_KuangChe_Equip_ER.tab	1		290			装备	1
 1593	名望·书籍	Special\50th_MuYuanShe_Book.tab		scripts/Map/场景事件/shop/名望_装备_木鸢社.lua				其他	1

@@ -10,7 +10,7 @@ from src.utils.jx3_tables import TALENT_HISTORY_ROOT, integer, rows, source_path
 import json
 import re
 
-DATA_VERSION = "1.6.0.10022"
+DATA_VERSION = "1.6.0.10100"
 DATA_SEASON = "暗影千机"
 ITEM_TABLES = {
     5: "Other",

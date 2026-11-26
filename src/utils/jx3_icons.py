@@ -2,6 +2,9 @@ from hashlib import sha256
 from typing import TYPE_CHECKING
 from urllib.parse import quote, unquote, urlsplit
 
+from nonebot.log import logger
+from playwright.async_api import Error as PlaywrightError
+
 import re
 
 if TYPE_CHECKING:
@@ -11,6 +14,7 @@ JX3_ASSET_PATTERN = re.compile(
     r"^https?://(?:icon|img|cdn)\.jx3box\.com(?::[0-9]+)?/",
     re.IGNORECASE,
 )
+JX3_ASSET_TIMEOUT = 5_000
 _UI_PREFIXES = {
     "img.jx3box.com": {
         "/image/camp/": "/image/camp/",
@@ -82,5 +86,11 @@ async def serve_api_asset(route: "Route") -> None:
     if target == source:
         await route.continue_()
     else:
-        response = await route.fetch(url = target)
+        try:
+            response = await route.fetch(url = target, timeout = JX3_ASSET_TIMEOUT)
+        except PlaywrightError:
+            if not route.request.frame.page.is_closed():
+                logger.warning(f"截图资源加载失败，跳过该资源：{source}")
+                await route.abort()
+            return
         await route.fulfill(response = response)

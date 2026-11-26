@@ -3,6 +3,7 @@ from playwright.async_api import (
     Browser,
     BrowserContext,
     Page,
+    TimeoutError as PlaywrightTimeoutError,
 )
 from pathlib import Path
 from nonebot.log import logger
@@ -23,6 +24,7 @@ import uuid
 import asyncio
 
 STYLE_2_CSS = read(build_path(TEMPLATES, ["style_2.css"]))
+LOCAL_RESOURCE_TIMEOUT = 10_000
 
 def get_uuid():
     return str(uuid.uuid1()).replace("-", "")
@@ -59,7 +61,7 @@ class ScreenshotConfig:
         hide_classes: list = [],
         device_scale_factor: float = 1.0,
         output_path: str = "",
-        wait_for_network: int = 20,
+        wait_for_network: bool = False,
         user_agent: str = ""
     ):
         self.web = web
@@ -118,10 +120,20 @@ class ScreenshotGenerator:
         page = await self._browser.new_page(**page_options)  # type: ignore
         try:
             await page.route(JX3_ASSET_PATTERN, serve_api_asset)
-            if config.wait_for_network:
-                await page.goto(page_source, wait_until = "networkidle")
+            if config.web:
+                await page.goto(page_source, wait_until = "networkidle" if config.wait_for_network else "load")
             else:
-                await page.goto(page_source)
+                # Local reports are already rendered; optional remote assets must
+                # not prevent the price table (or other report text) being sent.
+                await page.goto(page_source, wait_until = "domcontentloaded")
+                try:
+                    await page.wait_for_load_state(
+                        "networkidle" if config.wait_for_network else "load",
+                        timeout = LOCAL_RESOURCE_TIMEOUT,
+                    )
+                except PlaywrightTimeoutError:
+                    logger.warning("本地截图资源加载超时，停止加载并继续截图。")
+                    await page.evaluate("window.stop()")
 
             # 应用自定义的 CSS 和 JS
             await self._apply_customizations(page, config)
@@ -139,7 +151,26 @@ class ScreenshotGenerator:
             await asyncio.sleep(config.delay / 1000)
         if config.additional_css:
             await page.add_style_tag(content = config.additional_css)
-            await page.evaluate("() => document.fonts.ready.then(() => true)")
+            if config.web:
+                await page.evaluate("() => document.fonts.ready.then(() => true)")
+            else:
+                # New CSS can start another font request after the load event.
+                # Stop it on timeout so Playwright's screenshot font wait can finish.
+                fonts_loaded = await page.evaluate(
+                    """timeout => new Promise(resolve => {
+                        const timer = setTimeout(() => {
+                            window.stop();
+                            resolve(false);
+                        }, timeout);
+                        document.fonts.ready.then(() => {
+                            clearTimeout(timer);
+                            resolve(true);
+                        });
+                    })""",
+                    LOCAL_RESOURCE_TIMEOUT,
+                )
+                if not fonts_loaded:
+                    logger.warning("本地截图字体加载超时，使用备用字体继续截图。")
         if config.additional_js:
             await page.evaluate(config.additional_js)
         if config.hide_classes:

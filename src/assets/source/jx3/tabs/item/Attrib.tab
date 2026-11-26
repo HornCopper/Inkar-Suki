@@ -116019,3 +116019,27 @@ ID	Value	ModifyType	Param1Min	Param1Max	Param2Min	Param2Max	Group1	Group2	Group3
 116259		atLifeReplenishExt	1550	1550												
 116260	0	atSkillEventHandler	3339	3339	0	0	0	0	0	0	0	0	0	0	0	0
 116261	0	atSkillEventHandler	3340	3340	0	0	0	0	0	0	0	0	0	0	0	0
+116262	0	atActiveThreatCoefficient	0	0	389	389	0	0	0	0	0	0	0	0	0	0
+116263		atPVXAllRound	168	168												
+116264		atPVXAllRound	168	168	1	1										
+116265		atPhysicsShieldBase	285	285												
+116266		atToughnessBase	67	67												
+116267		atSolarCriticalStrike	386	386												
+116268		atMagicShield	952	952												
+116269	0	atNeutralCriticalStrike	387	387	0	0	0	0	0	0	0	0	0	0	0	0
+116270		atPhysicsShieldBase	952	952												
+116271	0	atPoisonCriticalStrike	387	387	0	0	0	0	0	0	0	0	0	0	0	0
+116272		atSolarAndLunarCriticalStrike	386	386												
+116273		atPVXAllRound	196	196												
+116274		atTherapyPowerBase	372	372												
+116275		atPVXAllRound	196	196	1	1										
+116276	0	atToughnessBase	78	78	0	0	0	0	0	0	0	0	0	0	0	0
+116277		atPVXAllRound	252	252												
+116278		atPVXAllRound	252	252	1	1										
+116279		atPhysicsShieldBase	553	553												
+116280		atSpiritBase	98	98												
+116281		atMagicAttackPowerBase	120	120												
+116282		atPVXAllRound	140	140												
+116283		atStrengthBase	98	98												
+116284		atPVXAllRound	140	140	1	1										
+116285	0	atToughnessBase	56	56	0	0	0	0	0	0	0	0	0	0	0	0
