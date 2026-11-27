@@ -13,7 +13,8 @@
         .report-summary { display: flex; gap: 24px; margin-top: 14px; color: #666; font-size: 16px; }
         .talent-section + .talent-section { margin-top: 22px; }
         .tier-heading { display: flex; align-items: baseline; gap: 16px; padding: 10px 14px; background: var(--inkar-muted-surface, #f8f9fa); border-bottom: 2px solid var(--inkar-border, #e7ebef); }
-        .tier-title { margin: 0; color: var(--inkar-accent-ink, #2c7be5); font-size: 22px; }
+        .tier-title { display: flex; align-items: center; gap: 8px; margin: 0; color: var(--inkar-accent-ink, #2c7be5); font-size: 22px; }
+        .kungfu-icon { flex: 0 0 28px; width: 28px; height: 28px; object-fit: contain; }
         .tier-note { color: #666; font-size: 15px; }
         .talent-entry { display: grid; grid-template-columns: 188px minmax(0, 1fr); gap: 22px; padding: 16px 14px; border-bottom: 1px solid #e7ebef; }
         .talent-identity { display: flex; align-items: flex-start; gap: 12px; min-width: 0; }
@@ -32,13 +33,13 @@
     <header class="report-header">
         <h1 class="report-title">{{ kungfu }}</h1>
         <p class="report-subtitle">奇穴 · {{ season }}{% if keyword %} · {{ keyword }}{% endif %}</p>
-        <div class="report-summary"><span>{{ report.tier_count }} 重</span><span>{{ report.entry_count }} 个候选奇穴</span></div>
+        <div class="report-summary"><span>{% if show_kungfu %}{{ report.kungfu_count }} 个心法{% else %}{{ report.tier_count }} 重{% endif %}</span><span>{{ report.entry_count }} 个候选奇穴</span></div>
     </header>
     {% for section in report.sections %}
     <section class="talent-section">
         <div class="tier-heading">
-            <h2 class="tier-title">{{ section.label }}</h2>
-            <span class="tier-note">{% if section.tiers|length > 1 %}共用候选奇穴 · {% endif %}{{ section.entries|length }} 项</span>
+            <h2 class="tier-title">{% if show_kungfu %}<img class="kungfu-icon" src="{{ section.kungfu_icon }}" alt=""><span class="kungfu-name" style="color: {{ section.kungfu_color }};">{{ section.kungfu }}</span> · {% endif %}{{ section.label }}</h2>
+            <span class="tier-note">{% if section.tiers|length > 1 %}混池 · {% endif %}{{ section.entries|length }} 项</span>
         </div>
         {% for talent in section.entries %}
         <article class="talent-entry">

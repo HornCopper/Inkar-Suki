@@ -15,6 +15,7 @@ class QixueInfo(BaseModel):
     name: str = ""
     desc: str = ""
     location: tuple[int, int] = (0, 0)
+    kungfu: str = ""
 
 class Qixue:
 
@@ -39,28 +40,30 @@ class Qixue:
     @property
     def info(self) -> list[QixueInfo]:
         results = []
-        kungfu_qixue = self.qixue_data.get(self.kungfu, {})
-        # PointID 是跨心法的内部编号，按该心法的完整排列顺序显示第几重。
-        points = sorted((key for key in kungfu_qixue if str(key).isdigit()), key = int)
-        for order, x in enumerate(points, 1):
-            options = sorted((key for key in kungfu_qixue[x] if str(key).isdigit()), key = int)
-            for y in options:
-                if isinstance(kungfu_qixue[x][y], dict) and self.name in kungfu_qixue[x][y].get("name", ""):
-                    data = kungfu_qixue[x][y]
-                    results.append(
-                        QixueInfo(
-                            icon = "https://icon.jx3box.com/icon/" + str(data["icon"]) + ".png",
-                            name = data["name"],
-                            desc = data["desc"],
-                            location = (order, int(y)),
-                        ),
-                    )
+        for kungfu in [self.kungfu] if self.kungfu else self.qixue_data:
+            kungfu_qixue = self.qixue_data.get(kungfu, {})
+            # PointID 是跨心法的内部编号，按该心法的完整排列顺序显示第几重。
+            points = sorted((key for key in kungfu_qixue if str(key).isdigit()), key = int)
+            for order, x in enumerate(points, 1):
+                options = sorted((key for key in kungfu_qixue[x] if str(key).isdigit()), key = int)
+                for y in options:
+                    if isinstance(kungfu_qixue[x][y], dict) and self.name in kungfu_qixue[x][y].get("name", ""):
+                        data = kungfu_qixue[x][y]
+                        results.append(
+                            QixueInfo(
+                                icon = "https://icon.jx3box.com/icon/" + str(data["icon"]) + ".png",
+                                name = data["name"],
+                                desc = data["desc"],
+                                location = (order, int(y)),
+                                kungfu = kungfu,
+                            ),
+                        )
         return results
 
 async def get_talent_info(name: str, kungfu: str, season: str = "") -> str | Message | ms:
-    kungfu_name = Kungfu(kungfu).name
+    kungfu_name = Kungfu(kungfu).name if kungfu else ""
     if kungfu_name is None:
-        return "无法识别该心法，请检查后重试！\n参考格式：奇穴 心法 关键词\n奇穴 心法 关键词 赛季名\n奇穴 心法 赛季名\n奇穴 心法\n赛季名可使用【v+日期】，例如 v20260413，若报错说明当天无数据，请往前调整一天。"
+        return "无法识别该心法，请检查后重试！\n参考格式：奇穴 心法 关键词\n奇穴 心法 关键词 赛季名\n奇穴 心法 赛季名\n奇穴 心法\n奇穴 关键词（搜索所有心法）\n赛季名可使用【v+日期】，例如 v20260413，若报错说明当天无数据，请往前调整一天。"
     talents = await Qixue.create(name, kungfu_name, season)
     if not talents:
         return "本地没有该版本的奇穴快照，请检查版本名称，或省略版本查询最新奇穴。"
@@ -70,9 +73,10 @@ async def get_talent_info(name: str, kungfu: str, season: str = "") -> str | Mes
     elif len(talents) == 1:  # Unique match
         response = await Request(talents[0].icon).get()
         response.raise_for_status()
+        kungfu_label = f"{talents[0].kungfu}·" if not kungfu_name else ""
         return ms.image(
             response.content,
-        ) + f"第{talents[0].location[0]}重·第{talents[0].location[1]}层：{talents[0].name}\n{talents[0].desc}"
+        ) + f"{kungfu_label}第{talents[0].location[0]}重·第{talents[0].location[1]}层：{talents[0].name}\n{talents[0].desc}"
     else:  # Much match
         html = render_talent_report(talents, kungfu_name, season, name)
         image = await generate(html, ".talent-report", True, segment = True,

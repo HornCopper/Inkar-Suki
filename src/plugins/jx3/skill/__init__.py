@@ -46,9 +46,9 @@ async def _(argument: Message = CommandArg()):
     """
     查询奇穴。
     """
-    args = argument.extract_plain_text().split(" ")
+    args = argument.extract_plain_text().split()
     if len(args) not in [1, 2, 3]:
-        await talent_matcher.finish(PROMPT.ArgumentCountInvalid + "\n参考格式：奇穴 <心法> [关键词] [赛季]")
+        await talent_matcher.finish(PROMPT.ArgumentCountInvalid + "\n参考格式：奇穴 <心法> [关键词] [赛季]\n奇穴 <关键词>（搜索所有心法）")
     if len(args) == 3:
         kungfu = args[0]
         qixue = args[1]
@@ -64,6 +64,9 @@ async def _(argument: Message = CommandArg()):
         kungfu = args[0]
         qixue = ""
         season = ""
+        if Kungfu(kungfu).name is None:
+            qixue = kungfu
+            kungfu = ""
     msg = await get_talent_info(qixue, kungfu, season)
     await talent_matcher.finish(msg)
 

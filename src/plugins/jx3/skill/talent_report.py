@@ -7,6 +7,7 @@ from typing import TYPE_CHECKING
 from jinja2 import Environment
 from markupsafe import Markup, escape
 
+from src.const.jx3.kungfu import Kungfu
 from src.const.path import ASSETS, TEMPLATES
 
 if TYPE_CHECKING:
@@ -34,14 +35,14 @@ def _tier_label(tiers: list[int]) -> str:
 
 
 def build_talent_report(talents: list["QixueInfo"]) -> dict:
-    tiers: dict[int, list[QixueInfo]] = {}
+    tiers: dict[tuple[str, int], list[QixueInfo]] = {}
     for talent in talents:
-        tiers.setdefault(talent.location[0], []).append(talent)
+        tiers.setdefault((getattr(talent, "kungfu", ""), talent.location[0]), []).append(talent)
     sections = []
     pools = {}
-    for tier, options in sorted(tiers.items()):
+    for (kungfu, tier), options in sorted(tiers.items()):
         options = sorted(options, key = lambda option: option.location[1])
-        signature = tuple((option.location[1], option.name, option.icon, option.desc) for option in options)
+        signature = (kungfu, tuple((option.location[1], option.name, option.icon, option.desc) for option in options))
         if signature in pools:
             pools[signature]["tiers"].append(tier)
             continue
@@ -49,20 +50,28 @@ def build_talent_report(talents: list["QixueInfo"]) -> dict:
         for option in options:
             entries.append({"position": option.location[1], "name": option.name, "icon": option.icon,
                             "description": option.desc})
-        section = {"tiers": [tier], "entries": entries}
+        section = {"kungfu": kungfu, "tiers": [tier], "entries": entries}
         pools[signature] = section
         sections.append(section)
     for section in sections:
         section["label"] = _tier_label(section["tiers"])
     return {"sections": sections, "tier_count": len(tiers),
+            "kungfu_count": len({kungfu for kungfu, _ in tiers}),
             "entry_count": sum(len(section["entries"]) for section in sections)}
 
 
 def render_talent_report(talents: list["QixueInfo"], kungfu: str, season: str = "", keyword: str = "") -> str:
+    report = build_talent_report(talents)
+    if not kungfu:
+        for section in report["sections"]:
+            section_kungfu = Kungfu(section["kungfu"])
+            section["kungfu_icon"] = Path(section_kungfu.icon).as_uri()
+            section["kungfu_color"] = section_kungfu.color
     source = Path(TEMPLATES, "jx3", "talents.html").read_text(encoding = "utf-8")
     environment = Environment(autoescape = True)
     environment.filters["format_description"] = _format_description
     return environment.from_string(source).render(
-        report = build_talent_report(talents), kungfu = kungfu, season = season or "最新", keyword = keyword,
+        report = report, kungfu = kungfu or "所有心法", show_kungfu = not kungfu,
+        season = season or "最新", keyword = keyword,
         font = Path(ASSETS, "font", "PingFangSC-Medium.otf").as_uri(),
     )
