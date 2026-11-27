@@ -13,7 +13,7 @@ from src.utils.generate import generate
 from src.utils.jx3_skill_desc import format_skill_description
 from src.utils.network import Request, cache_image
 
-from ._template import table_head_skill, template_body_skill
+from ._template import skill_table_css, table_head_skill, template_body_skill
 
 def _decode_desc(desc: str) -> str:
     try:
@@ -23,7 +23,7 @@ def _decode_desc(desc: str) -> str:
         return json.loads(f'"{desc}"').replace("。<", "。\n<").replace("><", ">\n<")
 
 def _format_skill_desc(desc: str) -> str:
-    return format_skill_description(desc)
+    return format_skill_description(desc).replace("。<", "。\n<").replace("><", ">\n<")
 
 async def get_skill(skill_keyword: str = "") -> str | Message | ms:
     if "_" in skill_keyword:
@@ -73,6 +73,7 @@ async def get_skill(skill_keyword: str = "") -> str | Message | ms:
     html = str(
         HTMLSourceCode(
             application_name = "技能表",
+            additional_css = skill_table_css,
             table_head = table_head_skill,
             table_body = "\n".join(tables),
         ),

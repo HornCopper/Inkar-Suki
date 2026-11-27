@@ -15,6 +15,15 @@ template_body_talent = """
 </tr>
 """
 
+skill_table_css = """
+.item-table td.skill-description {
+    max-width: 900px;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    text-align: left;
+}
+"""
+
 table_head_skill = """
 <tr>
     <th class="short-column">图标</th>
@@ -30,6 +39,6 @@ template_body_skill = """
     <td class="short-column">{{ skill_id }}</td>
     <td class="short-column">{{ name }}</td>
     <td class="short-column">{{ remark }}</td>
-    <td class="short-column">{{ desc }}</td>
+    <td class="skill-description">{{ desc }}</td>
 </tr>
 """
