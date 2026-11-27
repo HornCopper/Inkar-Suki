@@ -22,6 +22,20 @@ skill_table_css = """
     overflow-wrap: anywhere;
     text-align: left;
 }
+.skill-description .skill-talent-effect {
+    color: #2fa8a7;
+}
+.skill-description .noun-reference {
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
+}
+.skill-description .skill-talent-icon {
+    width: 24px;
+    height: 24px;
+    object-fit: contain;
+    vertical-align: -4px;
+}
 """
 
 table_head_skill = """

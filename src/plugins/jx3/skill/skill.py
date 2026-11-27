@@ -10,7 +10,8 @@ from src.config import Config
 from src.templates import HTMLSourceCode
 from src.utils.analyze import check_number
 from src.utils.generate import generate
-from src.utils.jx3_skill_desc import format_skill_description
+from src.utils.jx3_icons import icon_url
+from src.utils.jx3_skill_desc import format_skill_description, load_skill_icons
 from src.utils.network import Request, cache_image
 
 from ._template import skill_table_css, table_head_skill, template_body_skill
@@ -22,8 +23,36 @@ def _decode_desc(desc: str) -> str:
         desc = desc.replace("\"", "\\\"")
         return json.loads(f'"{desc}"').replace("。<", "。\n<").replace("><", ">\n<")
 
-def _format_skill_desc(desc: str) -> str:
-    return format_skill_description(desc).replace("。<", "。\n<").replace("><", ">\n<")
+def _format_skill_desc(desc: str, *, talent_references: list[tuple[int, int, str]] | None = None) -> str:
+    return format_skill_description(desc, talent_references = talent_references).replace("。<", "。\n<").replace("><", ">\n<")
+
+def _format_skill_desc_html(desc: str, talent_references: list[tuple[int, int, str]] | None = None) -> str:
+    def format_text(text: str) -> str:
+        return re.sub(r"\[[^\]\r\n]+\]", lambda match: f'<span class="noun-reference">{match[0]}</span>', H.escape(text))
+
+    lines = []
+    is_talent = False
+    icons = load_skill_icons() if talent_references else {}
+    talent_icons = {}
+    for skill_id, level, name in talent_references or []:
+        icon = icons.get((skill_id, level)) or icons.get((skill_id, 0)) or icons.get((skill_id, 1))
+        talent_icons.setdefault(name, []).append(icon)
+    for line in desc.split("\n"):
+        escaped = format_text(line)
+        if line.startswith("【奇穴 "):
+            is_talent = True
+            match = re.match(r"^【奇穴 ([^】]+)】", line)
+            if match:
+                escaped = f'{format_text(match[1])}：{format_text(line[match.end():])}'
+                if talent_icons.get(match[1]):
+                    icon = talent_icons[match[1]].pop(0)
+                    if icon:
+                        source = H.escape(icon_url(icon), quote = True)
+                        escaped = f'<img class="skill-talent-icon" src="{source}" alt=""> {escaped}'
+        elif re.match(r"^\[[^\]\r\n]+\]：", line):
+            is_talent = False
+        lines.append(f'<span class="skill-talent-effect">{escaped}</span>' if is_talent else escaped)
+    return "<br>".join(lines)
 
 async def get_skill(skill_keyword: str = "") -> str | Message | ms:
     if "_" in skill_keyword:
@@ -60,14 +89,15 @@ async def get_skill(skill_keyword: str = "") -> str | Message | ms:
         skills = skills[:30]
     tables = []
     for skill in skills:
-        desc = _format_skill_desc(skill.get("DisplayDesc") or skill["Desc"])
+        talent_references = []
+        desc = _format_skill_desc(skill.get("DisplayDesc") or skill["Desc"], talent_references = talent_references)
         tables.append(
             Template(template_body_skill).render(
                 icon = Path(await cache_image("https://icon.jx3box.com/icon/" + skill["IconID"] + ".png")).as_uri(),
                 skill_id = skill["SkillID"] + "_" + skill["Level"],
                 name = skill["Name"],
                 remark = skill["Remark"],
-                desc = H.escape(desc).replace("\n", "<br>"),
+                desc = _format_skill_desc_html(desc, talent_references),
             ),
         )
     html = str(
