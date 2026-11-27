@@ -30,6 +30,7 @@ class ShilianEquipParser:
         self._basic_type = self._determine_basic_type()
         self._quality = self._extract_quality()
         self._location = self._determine_place()
+        self._has_skill_event = self._determine_skill_event()
         self._extract_attributes()
 
     def _preprocess(self, raw: str) -> str:
@@ -47,6 +48,17 @@ class ShilianEquipParser:
             return "内功"
         else:
             raise ValueError("无法确定基础攻击类型")
+
+    def _determine_skill_event(self) -> bool | None:
+        white = self._fd("白字")
+        yellow = self._fd("黄字")
+        if white and yellow:
+            raise ValueError("白字和黄字不能同时指定")
+        if yellow:
+            return True
+        if white:
+            return False
+        return None
 
     def _extract_attributes(self):
         # 基础攻击
@@ -106,6 +118,10 @@ class ShilianEquipParser:
     @property
     def attributes(self) -> list[str]:
         return self._attrs
+
+    @property
+    def has_skill_event(self) -> bool | None:
+        return self._has_skill_event
 
     @property
     def location(self) -> str:

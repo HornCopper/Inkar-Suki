@@ -95,6 +95,13 @@ def _row_magic_keys(row: list[str], header: list[str]) -> list[str]:
             keys.append(magic_key)
     return keys
 
+def _row_has_skill_event(row: list[str], header: list[str]) -> bool:
+    attribs = _load_attribs()
+    return any(
+        attribs.get(_field(row, header, f"Magic{index}Type"), {}).get("ModifyType") == "atSkillEventHandler"
+        for index in range(1, 17)
+    )
+
 def _row_skill_event_nodes(row: list[str], header: list[str]) -> list[dict[str, str]]:
     attribs = _load_attribs()
     skill_events = _load_skill_events()
@@ -215,6 +222,8 @@ def search_local_shilian_equips(
     quality: int,
     attr_keys: list[str] | None = None,
     limit: int = 50,
+    *,
+    has_skill_event: bool | None = None,
 ) -> list[dict[str, Any]]:
     item_header, item_rows = _tab_rows(read_tab(str(ITEM_TABLE)))
     item_by_id = {
@@ -240,6 +249,8 @@ def search_local_shilian_equips(
                 continue
             magic_keys = _row_magic_keys(row, header)
             if expected is not None and set(magic_keys) != expected:
+                continue
+            if has_skill_event is not None and _row_has_skill_event(row, header) != has_skill_event:
                 continue
             base = item_by_id.get(_field(row, header, "UiID"))
             if base is None:

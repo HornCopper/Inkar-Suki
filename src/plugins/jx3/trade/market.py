@@ -185,7 +185,7 @@ class JX3Trade:
         attr_keys = shilian_attrs_to_keys(attrs)
         name_prefix = f"{cls.shilian_basic}{location}·{kungfu_type}·"
         # 无观按当前品级筛选，不再使用无修的旧品级分段或品级转换。
-        data = search_local_shilian_equips(name_prefix, quality, attr_keys)
+        data = search_local_shilian_equips(name_prefix, quality, attr_keys, has_skill_event = parser.has_skill_event)
         for item in data:
             equipment_attr = {
                 attr["key"]
@@ -323,20 +323,21 @@ class JX3Trade:
 
     async def get_logs(self, item_id: str, server: str) -> ItemPriceLog | None:
         if (item_id, server) in self._daily_data:
-            return ItemPriceLog(self._daily_data[(item_id, server)], item_id, server)
-        url = "https://next2.jx3box.com/api/auction/"
-        data: list[dict] = (
-            await Request(
-                url,
-                params = {
-                    "server": server,
-                    "item_id": item_id,
-                    "aggregate_type": "daily",
-                },
-            ).post()
-        ).json()
-        if not data:
-            data = await self.get_legacy_logs(item_id, server)
+            data = self._daily_data[(item_id, server)]
+        else:
+            url = "https://next2.jx3box.com/api/auction/"
+            data: list[dict] = (
+                await Request(
+                    url,
+                    params = {
+                        "server": server,
+                        "item_id": item_id,
+                        "aggregate_type": "daily",
+                    },
+                ).post()
+            ).json()
+            if not data:
+                data = await self.get_legacy_logs(item_id, server)
         if not data:
             if not self.all_server:
                 self._no_data_items.append(item_id)
